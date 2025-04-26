@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import './Auth.css';
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
+import Profile from './Profile';
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -19,8 +20,8 @@ export default function Auth({ onLogin }) {
       const auth = getAuth();
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      onLogin(user);
+      setCurrentUser(result.user);
+      onLogin(result.user);
     } catch (error) {
       console.error("Error signing in with Google:", error);
     }
@@ -31,7 +32,21 @@ export default function Auth({ onLogin }) {
     console.log('Apple sign in clicked');
   };
 
-  return (
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const handleLogout = async () => {
+    try {
+      const auth = getAuth();
+      await signOut(auth);
+      setCurrentUser(null);
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
+  return currentUser ? (
+    <Profile user={currentUser} onLogout={handleLogout} />
+  ) : (
     <div className="auth-container">
       <div className="auth-methods">
         <script
