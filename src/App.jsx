@@ -29,7 +29,12 @@ function App() {
       sqft: 8000,
       price: 15000000,
       amenities: ["Pool", "Parking", "Security"],
-      location: "Palm Jumeirah"
+      location: "Palm Jumeirah",
+      images: [
+        "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
+        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
+        "https://images.unsplash.com/photo-1506126613408-eca07ce68773?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
+      ]
     },
     {
       id: 2,
@@ -120,13 +125,25 @@ function App() {
         <PropertySearch onSearch={handleSearch} />
         <div className="property-grid">
           {filteredProperties.map(property => (
-            <div className="property-card" key={property.id}>
+            <div className="property-card" id={`property-${property.id}`} key={property.id}>
             <div className="image-gallery">
-              <div className="property-image"></div>
+              <div 
+                className="property-image" 
+                style={{backgroundImage: `url(${property.images[0]})`}}
+              ></div>
               <div className="gallery-nav">
-                <div className="gallery-dot active"></div>
-                <div className="gallery-dot"></div>
-                <div className="gallery-dot"></div>
+                {property.images.map((_, index) => (
+                  <div 
+                    key={index} 
+                    className={`gallery-dot ${index === 0 ? 'active' : ''}`}
+                    onClick={() => {
+                      const image = document.querySelector(`#property-${property.id} .property-image`);
+                      image.style.backgroundImage = `url(${property.images[index]})`;
+                      document.querySelectorAll(`#property-${property.id} .gallery-dot`).forEach(dot => dot.classList.remove('active'));
+                      document.querySelectorAll(`#property-${property.id} .gallery-dot`)[index].classList.add('active');
+                    }}
+                  ></div>
+                ))}
               </div>
             </div>
             <h3>{property.title}</h3>
