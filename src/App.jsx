@@ -14,6 +14,7 @@ function ThemeToggle() {
 }
 
 import MobileNav from './components/MobileNav';
+import ContactForm from './components/ContactForm';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -109,6 +110,7 @@ function App() {
           <p>Phone: +971 4 XXX XXXX</p>
           <p>Address: Downtown Dubai, UAE</p>
         </div>
+        <ContactForm />
       </section>
 
       <footer>

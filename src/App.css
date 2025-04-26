@@ -316,6 +316,42 @@ nav {
   color: #666;
 }
 
+.contact-form {
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.contact-form textarea {
+  resize: vertical;
+}
+
+.error {
+  color: #ff4444;
+  font-size: 0.8rem;
+  position: absolute;
+  bottom: -1.2rem;
+  left: 0;
+}
+
+.contact-form .cta-button {
+  width: 100%;
+  margin-top: 1rem;
+}
+
 footer {
   background: #333;
   color: white;
