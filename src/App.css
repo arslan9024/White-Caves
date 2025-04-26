@@ -55,12 +55,12 @@ body.dark-mode .contact-info p {
 }
 
 body.dark-mode .cta-button {
-  background: #8b7339;
+  background: #c41835;
   color: #ffffff;
 }
 
 body.dark-mode .cta-button:hover {
-  background: #6d5a2d;
+  background: #a31530;
 }
 
 body.dark-mode input,
@@ -178,7 +178,7 @@ nav {
 .cta-button {
   padding: 1rem 2rem;
   font-size: 1.2rem;
-  background: #c8a45c;
+  background: #e41e3f;
   border: none;
   color: white;
   cursor: pointer;
@@ -187,7 +187,7 @@ nav {
 }
 
 .cta-button:hover {
-  background: #b08d4a;
+  background: #c41835;
 }
 
 .featured-properties {
@@ -386,7 +386,7 @@ nav {
 .property-card .price {
   padding: 1rem;
   font-weight: bold;
-  color: #c8a45c;
+  color: #e41e3f;
 }
 
 .contact {
