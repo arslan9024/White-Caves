@@ -1,10 +1,35 @@
 
+import { useState, useEffect } from 'react'
 import './App.css'
+import Auth from './components/Auth'
 
 export default function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Check authentication status
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/@me');
+        const userData = await response.json();
+        setUser(userData);
+      } catch (error) {
+        console.error('Auth check failed:', error);
+      }
+    };
+    checkAuth();
+  }, []);
   return (
     <div className="app">
-      <header>
+      {!user ? (
+        <div className="login-page">
+          <h1>Welcome to White Caves</h1>
+          <p>Please login to continue</p>
+          <Auth onLogin={() => window.location.reload()} />
+        </div>
+      ) : (
+        <>
+          <header>
         <nav>
           <div className="logo">White Caves</div>
           <div className="nav-links">
@@ -58,6 +83,8 @@ export default function App() {
       <footer>
         <p>© 2024 White Caves Real Estate. All rights reserved.</p>
       </footer>
+        </>
+      )}
     </div>
   )
 }
