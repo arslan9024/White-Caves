@@ -10,8 +10,14 @@ export function ThemeProvider({ children }) {
   });
 
   useEffect(() => {
-    document.body.className = isDark ? 'dark-mode' : '';
+    document.body.className = isDark ? 'dark-mode theme-transition' : 'theme-transition';
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    
+    const timer = setTimeout(() => {
+      document.body.classList.remove('theme-transition');
+    }, 400);
+    
+    return () => clearTimeout(timer);
   }, [isDark]);
 
   return (
