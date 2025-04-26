@@ -13,8 +13,11 @@ function ThemeToggle() {
   );
 }
 
+import MobileNav from './components/MobileNav';
+
 function App() {
   const [user, setUser] = useState(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   useEffect(() => {
     // Check authentication status
@@ -42,6 +45,9 @@ function App() {
           <header>
         <nav>
           <div className="logo">White Caves</div>
+          <button className="hamburger" onClick={() => setMobileNavOpen(true)}>
+            ☰
+          </button>
           <div className="nav-links">
             <a href="#home">Home</a>
             <a href="#properties">Properties</a>
@@ -51,6 +57,7 @@ function App() {
           </div>
         </nav>
       </header>
+      <MobileNav isOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
 
       <section className="hero">
         <h1>Luxury Real Estate in Dubai</h1>

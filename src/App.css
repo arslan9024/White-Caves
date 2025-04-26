@@ -247,9 +247,74 @@ footer {
   padding: 2rem;
 }
 
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.mobile-nav {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 80%;
+  height: 100vh;
+  background: white;
+  z-index: 1000;
+  transition: right 0.3s ease-in-out;
+  box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+}
+
+.mobile-nav.open {
+  right: 0;
+}
+
+body.dark-mode .mobile-nav {
+  background: #2d2d2d;
+}
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  gap: 1.5rem;
+}
+
+.mobile-nav-links a {
+  text-decoration: none;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+body.dark-mode .mobile-nav-links a {
+  color: #fff;
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #333;
+}
+
+body.dark-mode .close-btn {
+  color: #fff;
+}
+
 @media (max-width: 768px) {
   .nav-links {
     display: none;
+  }
+  
+  .hamburger {
+    display: block;
   }
   
   .hero h1 {
