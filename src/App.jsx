@@ -69,10 +69,23 @@ function App() {
         <h2>Featured Properties</h2>
         <div className="property-grid">
           <div className="property-card">
-            <div className="property-image"></div>
+            <div className="image-gallery">
+              <div className="property-image"></div>
+              <div className="gallery-nav">
+                <div className="gallery-dot active"></div>
+                <div className="gallery-dot"></div>
+                <div className="gallery-dot"></div>
+              </div>
+            </div>
             <h3>Luxury Villa - Palm Jumeirah</h3>
             <p>5 Bed | 6 Bath | 8,000 sq ft</p>
             <p className="price">AED 15,000,000</p>
+            <div className="property-amenities">
+              <span className="amenity">🏊‍♂️ Pool</span>
+              <span className="amenity">🚗 Parking</span>
+              <span className="amenity">👮‍♂️ Security</span>
+            </div>
+            <button className="view-details">View Details</button>
           </div>
           <div className="property-card">
             <div className="property-image"></div>

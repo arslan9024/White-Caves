@@ -212,6 +212,67 @@ nav {
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.property-card:hover {
+  transform: translateY(-5px);
+}
+
+.property-amenities {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid #eee;
+}
+
+.amenity {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.view-details {
+  width: 100%;
+  padding: 1rem;
+  background: #c8a45c;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.view-details:hover {
+  background: #b08d4a;
+}
+
+.image-gallery {
+  position: relative;
+  height: 200px;
+}
+
+.gallery-nav {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.gallery-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  cursor: pointer;
+}
+
+.gallery-dot.active {
+  background: white;
 }
 
 .property-image {
