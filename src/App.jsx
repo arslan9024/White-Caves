@@ -133,8 +133,9 @@ function App() {
         <PropertySearch onSearch={handleSearch} />
         <div className="property-grid">
           {filteredProperties.map(property => (
-            <div className="property-card" id={`property-${property.id}`} key={property.id}>
-            <div className="image-gallery">
+            <React.Fragment key={property.id}>
+              <div className="property-card" id={`property-${property.id}`}>
+              <div className="image-gallery">
               <div 
                 className="property-image" 
                 style={{backgroundImage: `url(${property.images[0]})`}}
@@ -171,6 +172,7 @@ function App() {
             </div>
             <button className="view-details">View Details</button>
           </div>
+          </React.Fragment>
         </div>
       </section>
 
