@@ -1,11 +1,29 @@
 
 import React from 'react';
 import './Auth.css';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+
+const firebaseConfig = {
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  appId: process.env.FIREBASE_APP_ID
+};
+
+initializeApp(firebaseConfig);
 
 export default function Auth({ onLogin }) {
-  const handleGoogleSignIn = () => {
-    // TODO: Implement Google sign-in
-    console.log('Google sign in clicked');
+  const handleGoogleSignIn = async () => {
+    try {
+      const auth = getAuth();
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      onLogin(user);
+    } catch (error) {
+      console.error("Error signing in with Google:", error);
+    }
   };
 
   const handleAppleSignIn = () => {

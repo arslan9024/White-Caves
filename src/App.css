@@ -207,13 +207,73 @@ nav {
   padding: 0 1rem;
 }
 
-.property-search input[type="text"] {
+.property-search {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.property-search .search-input {
   width: 100%;
   padding: 1rem;
   border: 1px solid #ddd;
   border-radius: 5px;
   font-size: 1rem;
   margin-bottom: 1rem;
+}
+
+.filters-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.filter-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filter-group input,
+.filter-group select {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.amenities-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.amenity-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.clear-filters {
+  align-self: flex-end;
+  padding: 0.8rem 1.5rem;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.clear-filters:hover {
+  background: #e0e0e0;
 }
 
 .filter-group {

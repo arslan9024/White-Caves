@@ -61,15 +61,23 @@ function App() {
 
   const handleSearch = (filters) => {
     const filtered = properties.filter(property => {
-      const matchesSearch = filters.search === '' || 
+      const matchesSearch = !filters.search || 
         property.title.toLowerCase().includes(filters.search.toLowerCase()) ||
         property.location.toLowerCase().includes(filters.search.toLowerCase());
       
       const matchesMinPrice = !filters.minPrice || property.price >= parseInt(filters.minPrice);
       const matchesMaxPrice = !filters.maxPrice || property.price <= parseInt(filters.maxPrice);
       const matchesBeds = filters.beds === 'any' || property.beds >= parseInt(filters.beds);
+      const matchesLocation = !filters.location || 
+        property.location.toLowerCase().includes(filters.location.toLowerCase());
+      const matchesMinSqft = !filters.minSqft || property.sqft >= parseInt(filters.minSqft);
+      const matchesMaxSqft = !filters.maxSqft || property.sqft <= parseInt(filters.maxSqft);
+      const matchesAmenities = filters.amenities.length === 0 || 
+        filters.amenities.every(amenity => property.amenities.includes(amenity));
 
-      return matchesSearch && matchesMinPrice && matchesMaxPrice && matchesBeds;
+      return matchesSearch && matchesMinPrice && matchesMaxPrice && 
+             matchesBeds && matchesLocation && matchesMinSqft && 
+             matchesMaxSqft && matchesAmenities;
     });
     setFilteredProperties(filtered);
   };
