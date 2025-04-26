@@ -20,6 +20,54 @@ import PropertySearch from './components/PropertySearch';
 function App() {
   const [user, setUser] = useState(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [properties] = useState([
+    {
+      id: 1,
+      title: "Luxury Villa - Palm Jumeirah",
+      beds: 5,
+      baths: 6,
+      sqft: 8000,
+      price: 15000000,
+      amenities: ["Pool", "Parking", "Security"],
+      location: "Palm Jumeirah"
+    },
+    {
+      id: 2,
+      title: "Downtown Penthouse",
+      beds: 4,
+      baths: 5,
+      sqft: 5500,
+      price: 12500000,
+      amenities: ["Gym", "Parking", "Concierge"],
+      location: "Downtown Dubai"
+    },
+    {
+      id: 3,
+      title: "Emirates Hills Villa",
+      beds: 6,
+      baths: 7,
+      sqft: 10000,
+      price: 25000000,
+      amenities: ["Pool", "Garden", "Security"],
+      location: "Emirates Hills"
+    }
+  ]);
+  const [filteredProperties, setFilteredProperties] = useState(properties);
+
+  const handleSearch = (filters) => {
+    const filtered = properties.filter(property => {
+      const matchesSearch = filters.search === '' || 
+        property.title.toLowerCase().includes(filters.search.toLowerCase()) ||
+        property.location.toLowerCase().includes(filters.search.toLowerCase());
+      
+      const matchesMinPrice = !filters.minPrice || property.price >= parseInt(filters.minPrice);
+      const matchesMaxPrice = !filters.maxPrice || property.price <= parseInt(filters.maxPrice);
+      const matchesBeds = filters.beds === 'any' || property.beds >= parseInt(filters.beds);
+
+      return matchesSearch && matchesMinPrice && matchesMaxPrice && matchesBeds;
+    });
+    setFilteredProperties(filtered);
+  };
 
   useEffect(() => {
     // Check authentication status
@@ -69,12 +117,10 @@ function App() {
 
       <section className="featured-properties">
         <h2>Featured Properties</h2>
-        <PropertySearch onSearch={(filters) => {
-          console.log('Search filters:', filters);
-          // TODO: Implement actual filtering logic
-        }} />
+        <PropertySearch onSearch={handleSearch} />
         <div className="property-grid">
-          <div className="property-card">
+          {filteredProperties.map(property => (
+            <div className="property-card" key={property.id}>
             <div className="image-gallery">
               <div className="property-image"></div>
               <div className="gallery-nav">
@@ -83,27 +129,22 @@ function App() {
                 <div className="gallery-dot"></div>
               </div>
             </div>
-            <h3>Luxury Villa - Palm Jumeirah</h3>
-            <p>5 Bed | 6 Bath | 8,000 sq ft</p>
-            <p className="price">AED 15,000,000</p>
+            <h3>{property.title}</h3>
+            <p>{property.beds} Bed | {property.baths} Bath | {property.sqft.toLocaleString()} sq ft</p>
+            <p className="price">AED {property.price.toLocaleString()}</p>
             <div className="property-amenities">
-              <span className="amenity">🏊‍♂️ Pool</span>
-              <span className="amenity">🚗 Parking</span>
-              <span className="amenity">👮‍♂️ Security</span>
+              {property.amenities.map((amenity, index) => (
+                <span key={index} className="amenity">
+                  {amenity === 'Pool' ? '🏊‍♂️' : 
+                   amenity === 'Parking' ? '🚗' : 
+                   amenity === 'Security' ? '👮‍♂️' : 
+                   amenity === 'Gym' ? '💪' : 
+                   amenity === 'Garden' ? '🌳' : 
+                   amenity === 'Concierge' ? '👔' : '✨'} {amenity}
+                </span>
+              ))}
             </div>
             <button className="view-details">View Details</button>
-          </div>
-          <div className="property-card">
-            <div className="property-image"></div>
-            <h3>Downtown Penthouse</h3>
-            <p>4 Bed | 5 Bath | 5,500 sq ft</p>
-            <p className="price">AED 12,500,000</p>
-          </div>
-          <div className="property-card">
-            <div className="property-image"></div>
-            <h3>Emirates Hills Villa</h3>
-            <p>6 Bed | 7 Bath | 10,000 sq ft</p>
-            <p className="price">AED 25,000,000</p>
           </div>
         </div>
       </section>
