@@ -2,8 +2,18 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import Auth from './components/Auth'
+import { ThemeProvider, useTheme } from './context/ThemeContext'
 
-export default function App() {
+function ThemeToggle() {
+  const { isDark, setIsDark } = useTheme();
+  return (
+    <button className="theme-toggle" onClick={() => setIsDark(!isDark)}>
+      {isDark ? '🌞' : '🌙'}
+    </button>
+  );
+}
+
+function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -37,6 +47,7 @@ export default function App() {
             <a href="#properties">Properties</a>
             <a href="#about">About</a>
             <a href="#contact">Contact</a>
+            <ThemeToggle />
           </div>
         </nav>
       </header>
@@ -87,4 +98,12 @@ export default function App() {
       )}
     </div>
   )
+}
+
+export default function AppWrapper() {
+  return (
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
+  );
 }
