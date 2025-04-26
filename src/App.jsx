@@ -15,6 +15,7 @@ function ThemeToggle() {
 
 import MobileNav from './components/MobileNav';
 import ContactForm from './components/ContactForm';
+import PropertySearch from './components/PropertySearch';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -68,6 +69,10 @@ function App() {
 
       <section className="featured-properties">
         <h2>Featured Properties</h2>
+        <PropertySearch onSearch={(filters) => {
+          console.log('Search filters:', filters);
+          // TODO: Implement actual filtering logic
+        }} />
         <div className="property-grid">
           <div className="property-card">
             <div className="image-gallery">
