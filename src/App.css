@@ -39,6 +39,31 @@ body.dark-mode .contact-info p {
   color: #ffffff;
 }
 
+body.dark-mode .cta-button {
+  background: #8b7339;
+  color: #ffffff;
+}
+
+body.dark-mode .cta-button:hover {
+  background: #6d5a2d;
+}
+
+body.dark-mode input,
+body.dark-mode textarea {
+  background: #2d2d2d;
+  color: #ffffff;
+  border: 1px solid #444;
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+  color: #888;
+}
+
+body.dark-mode .theme-toggle {
+  color: #ffffff;
+}
+
 .theme-toggle {
   background: none;
   border: none;
