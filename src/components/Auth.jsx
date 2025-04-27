@@ -4,9 +4,9 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 import Profile from './Profile';
 // Added imports for database interaction (replace with your actual imports)
-import { createUser } from './dbUtils'; // Placeholder, replace with your actual database utilities
-import { useDispatch } from 'react-redux'; // Assuming you're using Redux for state management
-import { setUser } from './redux/userSlice'; // Placeholder, replace with your actual reducer
+import { createUser } from '../utils/db';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../store/userSlice';
 
 
 const firebaseConfig = {
