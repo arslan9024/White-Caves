@@ -1,9 +1,13 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Auth.css';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 import Profile from './Profile';
+// Added imports for database interaction (replace with your actual imports)
+import { createUser } from './dbUtils'; // Placeholder, replace with your actual database utilities
+import { useDispatch } from 'react-redux'; // Assuming you're using Redux for state management
+import { setUser } from './redux/userSlice'; // Placeholder, replace with your actual reducer
+
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -15,13 +19,24 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 
 export default function Auth({ onLogin }) {
+  const dispatch = useDispatch(); // Added useDispatch hook
+
   const handleGoogleSignIn = async () => {
     try {
       const auth = getAuth();
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      setCurrentUser(result.user);
-      onLogin(result.user);
+      const firebaseUser = result.user;
+
+      const dbUser = await createUser({
+        id: firebaseUser.uid,
+        email: firebaseUser.email,
+        name: firebaseUser.displayName,
+        photoUrl: firebaseUser.photoURL
+      });
+
+      dispatch(setUser(dbUser));
+      onLogin(dbUser);
     } catch (error) {
       console.error("Error signing in with Google:", error);
     }
@@ -39,6 +54,8 @@ export default function Auth({ onLogin }) {
       const auth = getAuth();
       await signOut(auth);
       setCurrentUser(null);
+      // Consider dispatching a logout action here as well, if using Redux
+      dispatch(setUser(null));
     } catch (error) {
       console.error("Error signing out:", error);
     }
