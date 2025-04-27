@@ -21,6 +21,8 @@
     "vite": "^5.0.0"
   },
   "dependencies": {
-    "firebase": "^11.6.1"
+    "@reduxjs/toolkit": "^2.7.0",
+    "firebase": "^11.6.1",
+    "react-redux": "^9.2.0"
   }
 }

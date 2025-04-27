@@ -1,8 +1,13 @@
-
 import { useState, useEffect } from 'react'
 import './App.css'
 import Auth from './components/Auth'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
+import { useSelector, useDispatch } from 'react-redux';
+import { setProperties } from './store/propertySlice';
+import { setUser } from './store/userSlice';
+import MobileNav from './components/MobileNav';
+import ContactForm from './components/ContactForm';
+import PropertySearch from './components/PropertySearch';
 
 function ThemeToggle() {
   const { isDark, setIsDark } = useTheme();
@@ -13,58 +18,69 @@ function ThemeToggle() {
   );
 }
 
-import MobileNav from './components/MobileNav';
-import ContactForm from './components/ContactForm';
-import PropertySearch from './components/PropertySearch';
 
 function App() {
-  const [user, setUser] = useState(null);
+  const dispatch = useDispatch();
+  const user = useSelector(state => state.user.currentUser);
+  const filteredProperties = useSelector(state => state.properties.filteredProperties);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [properties] = useState([
-    {
-      id: 1,
-      title: "Luxury Villa - Palm Jumeirah",
-      beds: 5,
-      baths: 6,
-      sqft: 8000,
-      price: 15000000,
-      amenities: ["Pool", "Parking", "Security"],
-      location: "Palm Jumeirah",
-      images: [
-        "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
-        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
-        "https://images.unsplash.com/photo-1506126613408-eca07ce68773?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
-      ]
-    },
-    {
-      id: 2,
-      title: "Downtown Penthouse",
-      beds: 4,
-      baths: 5,
-      sqft: 5500,
-      price: 12500000,
-      amenities: ["Gym", "Parking", "Concierge"],
-      location: "Downtown Dubai"
-    },
-    {
-      id: 3,
-      title: "Emirates Hills Villa",
-      beds: 6,
-      baths: 7,
-      sqft: 10000,
-      price: 25000000,
-      amenities: ["Pool", "Garden", "Security"],
-      location: "Emirates Hills"
-    }
-  ]);
-  const [filteredProperties, setFilteredProperties] = useState(properties);
 
+  useEffect(() => {
+    dispatch(setProperties([
+      {
+        id: 1,
+        title: "Luxury Villa - Palm Jumeirah",
+        beds: 5,
+        baths: 6,
+        sqft: 8000,
+        price: 15000000,
+        amenities: ["Pool", "Parking", "Security"],
+        location: "Palm Jumeirah",
+        images: [
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
+          "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
+          "https://images.unsplash.com/photo-1506126613408-eca07ce68773?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
+        ]
+      },
+      {
+        id: 2,
+        title: "Downtown Penthouse",
+        beds: 4,
+        baths: 5,
+        sqft: 5500,
+        price: 12500000,
+        amenities: ["Gym", "Parking", "Concierge"],
+        location: "Downtown Dubai"
+      },
+      {
+        id: 3,
+        title: "Emirates Hills Villa",
+        beds: 6,
+        baths: 7,
+        sqft: 10000,
+        price: 25000000,
+        amenities: ["Pool", "Garden", "Security"],
+        location: "Emirates Hills"
+      }
+    ]));
+    // Check authentication status
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/@me');
+        const userData = await response.json();
+        dispatch(setUser(userData));
+      } catch (error) {
+        console.error('Auth check failed:', error);
+      }
+    };
+    checkAuth();
+  }, [dispatch]);
   const handleSearch = (filters) => {
-    const filtered = properties.filter(property => {
+    const filtered = filteredProperties.filter(property => {
       const matchesSearch = !filters.search || 
         property.title.toLowerCase().includes(filters.search.toLowerCase()) ||
         property.location.toLowerCase().includes(filters.search.toLowerCase());
-      
+
       const matchesMinPrice = !filters.minPrice || property.price >= parseInt(filters.minPrice);
       const matchesMaxPrice = !filters.maxPrice || property.price <= parseInt(filters.maxPrice);
       const matchesBeds = filters.beds === 'any' || property.beds >= parseInt(filters.beds);
@@ -79,22 +95,9 @@ function App() {
              matchesBeds && matchesLocation && matchesMinSqft && 
              matchesMaxSqft && matchesAmenities;
     });
-    setFilteredProperties(filtered);
+    dispatch(setProperties(filtered));
   };
 
-  useEffect(() => {
-    // Check authentication status
-    const checkAuth = async () => {
-      try {
-        const response = await fetch('/@me');
-        const userData = await response.json();
-        setUser(userData);
-      } catch (error) {
-        console.error('Auth check failed:', error);
-      }
-    };
-    checkAuth();
-  }, []);
   return (
     <div className="app">
       {!user ? (
@@ -173,6 +176,7 @@ function App() {
             <button className="view-details">View Details</button>
           </div>
           </React.Fragment>
+        ))}
         </div>
       </section>
 
@@ -202,3 +206,55 @@ export default function AppWrapper() {
     </ThemeProvider>
   );
 }
+
+// Redux store files (propertySlice.js and userSlice.js) need to be created separately.  Example below
+
+//propertySlice.js
+import { createSlice } from '@reduxjs/toolkit';
+
+const propertySlice = createSlice({
+  name: 'properties',
+  initialState: {
+    filteredProperties: []
+  },
+  reducers: {
+    setProperties: (state, action) => {
+      state.filteredProperties = action.payload;
+    }
+  }
+});
+
+export const { setProperties } = propertySlice.actions;
+export default propertySlice.reducer;
+
+
+//userSlice.js
+import { createSlice } from '@reduxjs/toolkit';
+
+const userSlice = createSlice({
+  name: 'user',
+  initialState: {
+    currentUser: null
+  },
+  reducers: {
+    setUser: (state, action) => {
+      state.currentUser = action.payload;
+    }
+  }
+});
+
+export const { setUser } = userSlice.actions;
+export default userSlice.reducer;
+
+
+//index.js (or similar entry point for your redux store)
+import { configureStore } from '@reduxjs/toolkit';
+import propertyReducer from './store/propertySlice';
+import userReducer from './store/userSlice';
+
+export const store = configureStore({
+  reducer: {
+    properties: propertyReducer,
+    user: userReducer
+  }
+});
