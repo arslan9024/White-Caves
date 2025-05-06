@@ -10,7 +10,18 @@ const serviceSchema = new mongoose.Schema({
   },
   serviceType: {
     type: String,
-    enum: ['PROPERTY_VALUATION', 'PROPERTY_LISTING', 'PROPERTY_VIEWING', 'NEGOTIATION', 'DOCUMENTATION', 'CONSULTATION'],
+    enum: [
+      'PROPERTY_VALUATION', 
+      'PROPERTY_LISTING', 
+      'PROPERTY_VIEWING', 
+      'NEGOTIATION', 
+      'DOCUMENTATION', 
+      'CONSULTATION',
+      'TENANCY_CONTRACT',
+      'EJARI_REGISTRATION',
+      'DEWA_REGISTRATION',
+      'MOVE_IN_PERMIT'
+    ],
     required: true
   },
   status: {

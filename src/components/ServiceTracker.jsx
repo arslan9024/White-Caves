@@ -70,6 +70,14 @@ export default function ServiceTracker({ userId, userRole }) {
           <option value="PROPERTY_VIEWING">Property Viewing</option>
           <option value="NEGOTIATION">Negotiation</option>
           <option value="DOCUMENTATION">Documentation</option>
+          {user.role === 'AGENT' && (
+            <>
+              <option value="TENANCY_CONTRACT">Tenancy Contract</option>
+              <option value="EJARI_REGISTRATION">EJARI Registration</option>
+              <option value="DEWA_REGISTRATION">DEWA Registration</option>
+              <option value="MOVE_IN_PERMIT">Move-in Permit</option>
+            </>
+          )}
         </select>
         
         <textarea
