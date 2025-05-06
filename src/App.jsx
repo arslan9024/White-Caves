@@ -8,6 +8,7 @@ import { setUser } from './store/userSlice';
 import MobileNav from './components/MobileNav';
 import ContactForm from './components/ContactForm';
 import PropertySearch from './components/PropertySearch';
+import PropertyMap from './components/PropertyMap';
 
 function ThemeToggle() {
   const { isDark, setIsDark } = useTheme();
@@ -172,6 +173,9 @@ function App() {
                    amenity === 'Concierge' ? '👔' : '✨'} {amenity}
                 </span>
               ))}
+            </div>
+            <div className="property-map">
+              <PropertyMap location={property.location} />
             </div>
             <button className="view-details">View Details</button>
           </div>
