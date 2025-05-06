@@ -21,10 +21,15 @@
     "vite": "^5.0.0"
   },
   "dependencies": {
+    "@babel/core": "^7.27.1",
+    "@babel/preset-env": "^7.27.2",
     "@prisma/client": "^6.6.0",
     "@react-google-maps/api": "^2.20.6",
     "@reduxjs/toolkit": "^2.7.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "firebase": "^11.6.1",
+    "mongoose": "^8.14.1",
     "prisma": "^6.6.0",
     "react-redux": "^9.2.0"
   }

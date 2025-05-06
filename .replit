@@ -11,9 +11,9 @@ language = "nodejs"
 
 [deployment]
 deploymentTarget = "static"
-build = ["sh", "-c", "npx prisma generate"]
+build = ["sh", "-c", "npm run build"]
 publicDir = "dist"
-run = ["sh", "-c", "npm run dev"]
+run = ["sh", "-c", "node src/server/index.js"]
 
 [[ports]]
 localPort = 5173

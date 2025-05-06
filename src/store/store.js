@@ -6,6 +6,10 @@ import userReducer from './userSlice';
 export const store = configureStore({
   reducer: {
     properties: propertyReducer,
-    user: userReducer,
+    user: userReducer
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false
+    })
 });
