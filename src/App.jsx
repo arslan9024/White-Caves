@@ -7,7 +7,7 @@ import { setProperties } from './store/propertySlice';
 import { setUser } from './store/userSlice';
 import MobileNav from './components/MobileNav';
 import ContactForm from './components/ContactForm';
-import SocialLinks from './components/SocialLinks';
+import Footer from './components/Footer';
 import PropertySearch from './components/PropertySearch';
 import PropertyMap from './components/PropertyMap';
 
@@ -207,10 +207,7 @@ function App() {
         <ContactForm />
       </section>
 
-      <footer>
-        <SocialLinks />
-        <p>© 2024 White Caves Real Estate. All rights reserved.</p>
-      </footer>
+      <Footer />
         </>
       )}
     </div>
