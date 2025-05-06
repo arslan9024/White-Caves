@@ -136,6 +136,7 @@ function App() {
       <section className="featured-properties">
         <h2>Featured Properties</h2>
         <PropertySearch onSearch={handleSearch} />
+        <FeaturedAgents />
         <div className="property-grid">
           {filteredProperties.map(property => (
             <React.Fragment key={property.id}>
