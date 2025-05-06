@@ -76,6 +76,12 @@ export default function ServiceTracker({ userId, userRole }) {
               <option value="EJARI_REGISTRATION">EJARI Registration</option>
               <option value="DEWA_REGISTRATION">DEWA Registration</option>
               <option value="MOVE_IN_PERMIT">Move-in Permit</option>
+              <option value="FORM_B">Form B (DLD)</option>
+              <option value="FORM_F">Form F (DLD)</option>
+              <option value="DEVELOPER_NOC">Developer NOC</option>
+              <option value="DEWA_CLEARANCE">DEWA Clearance Certificate</option>
+              <option value="PROPERTY_TRANSFER">Property Transfer Scheduling</option>
+              <option value="TITLE_DEED_UPLOAD">Title Deed Upload</option>
             </>
           )}
         </select>
