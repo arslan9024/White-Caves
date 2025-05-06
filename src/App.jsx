@@ -160,7 +160,24 @@ function App() {
               </div>
             </div>
             <h3>{property.title}</h3>
-            <p>{property.beds} Bed | {property.baths} Bath | {property.sqft.toLocaleString()} sq ft</p>
+            <div className="property-stats">
+              <div className="stat">
+                <span className="stat-icon">🛏️</span>
+                <span className="stat-value">{property.beds} Beds</span>
+              </div>
+              <div className="stat">
+                <span className="stat-icon">🚿</span>
+                <span className="stat-value">{property.baths} Baths</span>
+              </div>
+              <div className="stat">
+                <span className="stat-icon">📏</span>
+                <span className="stat-value">{property.sqft.toLocaleString()} sq.ft</span>
+              </div>
+            </div>
+            <div className="property-price">
+              <span className="currency">AED</span>
+              <span className="amount">{property.price.toLocaleString()}</span>
+            </div>q ft</p>
             <p className="price">AED {property.price.toLocaleString()}</p>
             <div className="property-amenities">
               {property.amenities.map((amenity, index) => (
