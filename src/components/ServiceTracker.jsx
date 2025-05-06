@@ -28,8 +28,34 @@ export default function ServiceTracker({ userId, userRole }) {
     }
   };
 
+  const validateServiceDependencies = async (serviceType) => {
+    if (serviceType === 'KEY_HANDOVER') {
+      const completedServices = services.filter(s => s.status === 'COMPLETED');
+      const requiredServices = ['EJARI_REGISTRATION', 'DEWA_REGISTRATION', 'MOVE_IN_PERMIT'];
+      
+      const missingServices = requiredServices.filter(required => 
+        !completedServices.some(service => service.serviceType === required)
+      );
+      
+      if (missingServices.length > 0) {
+        return {
+          valid: false,
+          message: `Cannot proceed with key handover. Missing completed services: ${missingServices.join(', ')}`
+        };
+      }
+    }
+    return { valid: true };
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    const validation = await validateServiceDependencies(newService.serviceType);
+    if (!validation.valid) {
+      alert(validation.message);
+      return;
+    }
+
     try {
       const response = await fetch('/api/services', {
         method: 'POST',
