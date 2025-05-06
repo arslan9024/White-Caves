@@ -13,6 +13,16 @@
   margin-bottom: 2rem;
 }
 
+.role-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #4CAF50;
+  color: white;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
 .profile-avatar {
   width: 100px;
   height: 100px;
