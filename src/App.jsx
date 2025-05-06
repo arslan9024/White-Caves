@@ -202,12 +202,7 @@ function App() {
       </section>
 
       <section className="contact">
-        <h2>Contact Us</h2>
-        <div className="contact-info">
-          <p>Email: info@whitecaves.ae</p>
-          <p>Phone: +971 4 XXX XXXX</p>
-          <p>Address: Downtown Dubai, UAE</p>
-        </div>
+        <ContactUs />
         <ContactForm />
       </section>
 
