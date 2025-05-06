@@ -12,7 +12,10 @@ const initialState = {
     location: '',
     minSqft: '',
     maxSqft: '',
-    amenities: []
+    amenities: [],
+    propertyType: 'any',
+    yearBuilt: '',
+    furnished: 'any'
   }
 };
 

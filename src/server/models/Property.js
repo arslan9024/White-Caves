@@ -10,6 +10,9 @@ const propertySchema = new mongoose.Schema({
   sqft: Number,
   amenities: [String],
   images: [String],
+  propertyType: { type: String, enum: ['Apartment', 'Villa', 'Townhouse', 'Penthouse'] },
+  yearBuilt: Number,
+  furnished: Boolean,
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 });
 

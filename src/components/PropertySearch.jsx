@@ -10,7 +10,10 @@ export default function PropertySearch({ onSearch }) {
     location: '',
     amenities: [],
     minSqft: '',
-    maxSqft: ''
+    maxSqft: '',
+    propertyType: 'any',
+    yearBuilt: '',
+    furnished: 'any'
   });
 
   const amenitiesList = ["Pool", "Parking", "Security", "Gym", "Garden", "Concierge"];
