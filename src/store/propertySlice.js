@@ -36,6 +36,9 @@ export const propertySlice = createSlice({
           property.title.toLowerCase().includes(state.filters.search.toLowerCase()) ||
           property.location.toLowerCase().includes(state.filters.search.toLowerCase());
         
+        const matchesListingType = state.filters.listingType === 'all' || 
+          property.listingType === state.filters.listingType;
+        
         const matchesMinPrice = !state.filters.minPrice || property.price >= parseInt(state.filters.minPrice);
         const matchesMaxPrice = !state.filters.maxPrice || property.price <= parseInt(state.filters.maxPrice);
         const matchesBeds = state.filters.beds === 'any' || property.beds >= parseInt(state.filters.beds);
@@ -46,7 +49,7 @@ export const propertySlice = createSlice({
         const matchesAmenities = state.filters.amenities.length === 0 || 
           state.filters.amenities.every(amenity => property.amenities.includes(amenity));
 
-        return matchesSearch && matchesMinPrice && matchesMaxPrice && 
+        return matchesSearch && matchesListingType && matchesMinPrice && matchesMaxPrice && 
                matchesBeds && matchesLocation && matchesMinSqft && 
                matchesMaxSqft && matchesAmenities;
       });

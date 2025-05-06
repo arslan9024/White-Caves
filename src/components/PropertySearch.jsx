@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 export default function PropertySearch({ onSearch }) {
   const [filters, setFilters] = useState({
     search: '',
+    listingType: 'all',
     minPrice: '',
     maxPrice: '',
     beds: 'any',
@@ -65,6 +66,13 @@ export default function PropertySearch({ onSearch }) {
         className="search-input"
       />
       <div className="filters-container">
+        <div className="filter-group listing-type">
+          <select name="listingType" value={filters.listingType} onChange={handleChange} className="listing-type-select">
+            <option value="all">All Properties</option>
+            <option value="RENT">For Rent</option>
+            <option value="SALE">For Sale</option>
+          </select>
+        </div>
         <div className="filter-group">
           <input
             type="number"
