@@ -1,0 +1,31 @@
+
+.appointment-scheduler {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 20px 0;
+}
+
+.date-picker {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin: 10px 0;
+}
+
+.appointment-scheduler button {
+  background: #e41e3f;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.appointment-scheduler button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
