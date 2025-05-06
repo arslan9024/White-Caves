@@ -44,6 +44,7 @@ export default function Profile({ user, onLogout }) {
           </>
         )}
       </div>
+      <ServiceTracker userId={user.id} userRole={user.role} />
       <button className="logout-btn" onClick={onLogout}>Logout</button>
     </div>
   );
