@@ -12,6 +12,12 @@ const userSchema = new mongoose.Schema({
   },
   properties: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Property' }],
   verified: { type: Boolean, default: false },
+  passport: {
+    documentUrl: String,
+    documentNumber: String,
+    expiryDate: Date,
+    verified: { type: Boolean, default: false }
+  },
   contactInfo: {
     phone: String,
     address: String

@@ -44,6 +44,9 @@ export default function Profile({ user, onLogout }) {
           </>
         )}
       </div>
+      {!user.passport?.verified && (
+        <PassportUpload userId={user.id} onUploadComplete={() => window.location.reload()} />
+      )}
       <ServiceTracker userId={user.id} userRole={user.role} />
       <button className="logout-btn" onClick={onLogout}>Logout</button>
     </div>

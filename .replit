@@ -23,13 +23,42 @@ externalPort = 80
 localPort = 5174
 externalPort = 3000
 
+[[ports]]
+localPort = 5175
+externalPort = 3001
+
+[[ports]]
+localPort = 5176
+externalPort = 3002
+
+[[ports]]
+localPort = 5177
+externalPort = 3003
+
+[[ports]]
+localPort = 5178
+externalPort = 4200
+
 [workflows]
-runButton = "Dev Server"
+runButton = "Demo Server"
 
 [[workflows.workflow]]
 name = "Dev Server"
 author = 41956876
 mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+
+[[workflows.workflow]]
+name = "Demo Server"
+author = 41956876
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
