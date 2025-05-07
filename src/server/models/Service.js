@@ -1,5 +1,11 @@
 const mongoose = require('mongoose');
 
+const securityChequeSchema = new mongoose.Schema({
+  amount: { type: Number, required: true },
+  chequeNumber: { type: String, required: true },
+  bank: { type: String, required: true }
+});
+
 const serviceSchema = new mongoose.Schema({
   clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   type: { type: String, enum: ['BUYER', 'SELLER', 'TENANT'], required: true },
@@ -33,6 +39,7 @@ const serviceSchema = new mongoose.Schema({
     enum: ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'FAILED'],
     default: 'PENDING'
   },
+  securityCheque: securityChequeSchema,
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

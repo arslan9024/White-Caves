@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import './ServiceTracker.css';
 import Loading from './Loading';
@@ -11,6 +10,13 @@ export default function ServiceTracker({ userId, userRole }) {
     serviceType: 'CONSULTATION',
     description: ''
   });
+  const [securityCheque, setSecurityCheque] = useState({
+    chequeNumber: '',
+    amount: '',
+    bankName: ''
+  });
+  const [property, setProperty] = useState(null); // Placeholder for property details
+
 
   useEffect(() => {
     fetchServices();
@@ -32,11 +38,11 @@ export default function ServiceTracker({ userId, userRole }) {
     if (serviceType === 'KEY_HANDOVER') {
       const completedServices = services.filter(s => s.status === 'COMPLETED');
       const requiredServices = ['EJARI_REGISTRATION', 'DEWA_REGISTRATION', 'MOVE_IN_PERMIT'];
-      
-      const missingServices = requiredServices.filter(required => 
+
+      const missingServices = requiredServices.filter(required =>
         !completedServices.some(service => service.serviceType === required)
       );
-      
+
       if (missingServices.length > 0) {
         return {
           valid: false,
@@ -49,11 +55,24 @@ export default function ServiceTracker({ userId, userRole }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const validation = await validateServiceDependencies(newService.serviceType);
     if (!validation.valid) {
       alert(validation.message);
       return;
+    }
+
+    if (newService.serviceType === 'FORM_F') {
+      // Validate security cheque
+      const offerPrice = property.price; // Needs to be fetched from somewhere
+      const requiredAmount = offerPrice * 0.1;
+
+      if (securityCheque.amount < requiredAmount || securityCheque.chequeNumber === '' || securityCheque.bankName === '') {
+        alert(`Security cheque must be at least 10% of offer price (${requiredAmount} AED), and all fields must be filled.`);
+        return;
+      }
+      // Add securityCheque to the request body
+      newService.securityCheque = securityCheque;
     }
 
     try {
@@ -65,6 +84,7 @@ export default function ServiceTracker({ userId, userRole }) {
       if (response.ok) {
         fetchServices();
         setNewService({ type: 'BUYER', serviceType: 'CONSULTATION', description: '' });
+        setSecurityCheque({chequeNumber: '', amount: '', bankName: ''}); // Clear form
       }
     } catch (error) {
       console.error('Error creating service:', error);
@@ -76,19 +96,19 @@ export default function ServiceTracker({ userId, userRole }) {
   return (
     <div className="service-tracker">
       <h2>Service History</h2>
-      
+
       <form onSubmit={handleSubmit} className="service-form">
         <select
           value={newService.type}
-          onChange={(e) => setNewService({...newService, type: e.target.value})}
+          onChange={(e) => setNewService({ ...newService, type: e.target.value })}
         >
           <option value="BUYER">Buyer</option>
           <option value="SELLER">Seller</option>
         </select>
-        
+
         <select
           value={newService.serviceType}
-          onChange={(e) => setNewService({...newService, serviceType: e.target.value})}
+          onChange={(e) => setNewService({ ...newService, serviceType: e.target.value })}
         >
           <option value="CONSULTATION">Consultation</option>
           <option value="PROPERTY_VALUATION">Property Valuation</option>
@@ -96,7 +116,7 @@ export default function ServiceTracker({ userId, userRole }) {
           <option value="PROPERTY_VIEWING">Property Viewing</option>
           <option value="NEGOTIATION">Negotiation</option>
           <option value="DOCUMENTATION">Documentation</option>
-          {user.role === 'AGENT' && (
+          {userRole === 'AGENT' && (
             <>
               <option value="TENANCY_CONTRACT">Tenancy Contract</option>
               <option value="EJARI_REGISTRATION">EJARI Registration</option>
@@ -111,13 +131,26 @@ export default function ServiceTracker({ userId, userRole }) {
             </>
           )}
         </select>
-        
+
         <textarea
           value={newService.description}
-          onChange={(e) => setNewService({...newService, description: e.target.value})}
+          onChange={(e) => setNewService({ ...newService, description: e.target.value })}
           placeholder="Service description"
         />
-        
+
+        {newService.serviceType === 'FORM_F' && (
+          <>
+            <label htmlFor="chequeNumber">Cheque Number:</label>
+            <input type="text" id="chequeNumber" value={securityCheque.chequeNumber} onChange={(e) => setSecurityCheque({...securityCheque, chequeNumber: e.target.value})} />
+
+            <label htmlFor="chequeAmount">Cheque Amount (AED):</label>
+            <input type="number" id="chequeAmount" value={securityCheque.amount} onChange={(e) => setSecurityCheque({...securityCheque, amount: parseFloat(e.target.value)})} />
+
+            <label htmlFor="bankName">Bank Name:</label>
+            <input type="text" id="bankName" value={securityCheque.bankName} onChange={(e) => setSecurityCheque({...securityCheque, bankName: e.target.value})} />
+          </>
+        )}
+
         <button type="submit">Add Service</button>
       </form>
 
