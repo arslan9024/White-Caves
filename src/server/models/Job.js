@@ -7,7 +7,8 @@ const jobSchema = new mongoose.Schema({
   requirements: [String],
   department: String,
   location: String,
-  type: { type: String, enum: ['FULL_TIME', 'PART_TIME', 'CONTRACT'] },
+  type: { type: String, enum: ['FULL_TIME', 'PART_TIME', 'CONTRACT', 'FREELANCE'] },
+  workLocation: { type: String, enum: ['ONSITE', 'REMOTE', 'HYBRID'], default: 'ONSITE' },
   status: { type: String, enum: ['OPEN', 'CLOSED'], default: 'OPEN' },
   createdAt: { type: Date, default: Date.now }
 });

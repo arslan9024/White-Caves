@@ -75,6 +75,19 @@ export default function JobBoard() {
                 <option value="">Select Role</option>
                 <option value="SALES_AGENT">Sales Agent</option>
                 <option value="LEASING_AGENT">Leasing Agent</option>
+                <option value="FREELANCE_AGENT">Freelance Agent</option>
+                <option value="FREELANCE_CONSULTANT">Freelance Consultant</option>
+              </select>
+              
+              <select 
+                value={applicationForm.workLocation}
+                onChange={(e) => setApplicationForm({...applicationForm, workLocation: e.target.value})}
+                required
+              >
+                <option value="">Select Work Location</option>
+                <option value="ONSITE">On-site</option>
+                <option value="REMOTE">Remote</option>
+                <option value="HYBRID">Hybrid</option>
               </select>
               
               <input 
