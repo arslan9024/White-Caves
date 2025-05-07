@@ -45,3 +45,25 @@
 .job-card button:hover {
   background: #c41834;
 }
+
+.application-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.application-form select,
+.application-form input {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.application-form input[type="file"] {
+  border: none;
+  padding: 0.5rem 0;
+}
