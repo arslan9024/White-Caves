@@ -74,10 +74,12 @@ function App() {
     const checkAuth = async () => {
       try {
         const response = await fetch('/@me');
-        const userData = await response.json();
-        dispatch(setUser(userData));
+        if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
+          const userData = await response.json();
+          dispatch(setUser(userData));
+        }
       } catch (error) {
-        console.error('Auth check failed:', error);
+        // Silently fail - backend may not be running
       }
     };
     checkAuth();
