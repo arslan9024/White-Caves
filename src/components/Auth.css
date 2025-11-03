@@ -75,28 +75,35 @@
 }
 
 .auth-btn.google {
-  background: white;
-  color: #333;
-  border-color: #dadce0;
+  background: linear-gradient(to right, #ffffff 0%, #f8f9fa 100%);
+  color: #1f1f1f;
+  border: 2px solid #dadce0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .auth-btn.google:hover:not(:disabled) {
-  background: #f8f9fa;
+  background: linear-gradient(to right, #f8f9fa 0%, #e8eaed 100%);
   border-color: #4285f4;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.2);
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+}
+
+.auth-btn.google img {
+  filter: none;
 }
 
 .auth-btn.facebook {
-  background: #1877F2;
-  color: #fff;
-  border-color: #1877F2;
+  background: linear-gradient(135deg, #1877F2 0%, #0c63d4 100%);
+  color: #ffffff;
+  border: 2px solid #1877F2;
+  box-shadow: 0 2px 4px rgba(24, 119, 242, 0.3);
 }
 
 .auth-btn.facebook:hover:not(:disabled) {
-  background: #166fe5;
+  background: linear-gradient(135deg, #166fe5 0%, #0b5cc5 100%);
+  border-color: #166fe5;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(24, 119, 242, 0.4);
+  box-shadow: 0 4px 16px rgba(24, 119, 242, 0.5);
 }
 
 .auth-btn.facebook img {
@@ -221,23 +228,37 @@
 }
 
 [data-theme="dark"] .auth-btn.google {
-  background: white;
-  border-color: #dadce0;
-  color: #333;
+  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+  color: #ffffff;
+  border: 2px solid #4a5568;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 [data-theme="dark"] .auth-btn.google:hover:not(:disabled) {
-  background: #f8f9fa;
+  background: linear-gradient(135deg, #374151 0%, #2d3748 100%);
   border-color: #4285f4;
+  box-shadow: 0 4px 16px rgba(66, 133, 244, 0.4);
+}
+
+[data-theme="dark"] .auth-btn.google img {
+  filter: brightness(1.2);
 }
 
 [data-theme="dark"] .auth-btn.facebook {
-  background: #1877F2;
-  border-color: #1877F2;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  color: #ffffff;
+  border: 2px solid #2563eb;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
 }
 
 [data-theme="dark"] .auth-btn.facebook:hover:not(:disabled) {
-  background: #166fe5;
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+  border-color: #3b82f6;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.5);
+}
+
+[data-theme="dark"] .auth-btn.facebook img {
+  filter: brightness(0) invert(1);
 }
 
 [data-theme="dark"] .auth-toggle {
