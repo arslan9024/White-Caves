@@ -79,6 +79,89 @@ body.dark-mode .theme-toggle {
   color: #ffffff;
 }
 
+body.dark-mode .about-section {
+  background: #1a1a1a;
+}
+
+body.dark-mode .about-content h2 {
+  color: #ffffff;
+}
+
+body.dark-mode .about-content > p {
+  color: #cccccc;
+}
+
+body.dark-mode .feature h3 {
+  color: #ffffff;
+}
+
+body.dark-mode .feature p {
+  color: #cccccc;
+}
+
+body.dark-mode .featured-locations {
+  background: linear-gradient(to bottom, #1a1a1a, #0d0d0d);
+}
+
+body.dark-mode .featured-locations h2 {
+  color: #ffffff;
+}
+
+body.dark-mode .section-subtitle {
+  color: #aaaaaa;
+}
+
+body.dark-mode .services-info {
+  background: #1a1a1a;
+}
+
+body.dark-mode .services-info h2,
+body.dark-mode .service-detail h3 {
+  color: #ffffff;
+}
+
+body.dark-mode .service-detail {
+  background: #2d2d2d;
+  border: 1px solid #404040;
+}
+
+body.dark-mode .service-detail li {
+  color: #cccccc;
+}
+
+body.dark-mode .dubai-laws {
+  background: #0d0d0d;
+}
+
+body.dark-mode .dubai-laws h2,
+body.dark-mode .law-section h3 {
+  color: #ffffff;
+}
+
+body.dark-mode .law-section {
+  background: #2d2d2d;
+  border: 1px solid #404040;
+}
+
+body.dark-mode .law-section p,
+body.dark-mode .law-section li {
+  color: #cccccc;
+}
+
+body.dark-mode .footer {
+  background: #2d2d2d;
+  border-top: 1px solid #404040;
+}
+
+body.dark-mode .footer p,
+body.dark-mode .footer a {
+  color: #cccccc;
+}
+
+body.dark-mode .footer a:hover {
+  color: #c41835;
+}
+
 .theme-toggle {
   background: none;
   border: none;
@@ -86,6 +169,11 @@ body.dark-mode .theme-toggle {
   cursor: pointer;
   margin-left: 1rem;
   padding: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.2);
 }
 
 .login-page {
