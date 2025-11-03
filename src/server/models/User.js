@@ -7,9 +7,11 @@ const userSchema = new mongoose.Schema({
   photoUrl: String,
   role: {
     type: String,
-    enum: ['VISITOR', 'AGENT', 'EMPLOYEE', 'BUYER', 'SELLER', 'TENANT', 'LANDLORD', 'PROPERTY_OWNER'],
+    enum: ['VISITOR', 'AGENT', 'EMPLOYEE', 'BUYER', 'SELLER', 'TENANT', 'LANDLORD', 'PROPERTY_OWNER', 'SUPER_USER'],
     default: 'VISITOR'
   },
+  isSuperUser: { type: Boolean, default: false },
+  isDecisionMaker: { type: Boolean, default: false },
   properties: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Property' }],
   verified: { type: Boolean, default: false },
   passport: {

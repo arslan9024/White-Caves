@@ -10,7 +10,8 @@ const roleLabels = {
   SELLER: 'Property Seller',
   TENANT: 'Tenant',
   LANDLORD: 'Landlord',
-  PROPERTY_OWNER: 'Property Owner'
+  PROPERTY_OWNER: 'Property Owner',
+  SUPER_USER: 'Company Owner'
 };
 
 export default function Profile({ user, onLogout }) {
@@ -21,6 +22,8 @@ export default function Profile({ user, onLogout }) {
         <h2>{user.displayName}</h2>
         <p>{user.email}</p>
         <span className="role-badge">{roleLabels[user.role]}</span>
+        {user.isSuperUser && <span className="role-badge super-user">Super User</span>}
+        {user.isDecisionMaker && <span className="role-badge decision-maker">Decision Maker</span>}
       </div>
       <div className="profile-info">
         <div className="info-item">
