@@ -1,33 +1,4 @@
-
 import React from 'react';
-import './FeaturedAgents.css';
-
-export default function FeaturedAgents() {
-  const agents = [
-    {
-      name: "Sarah Johnson",
-      specialization: "Luxury Villas",
-      experience: "10+ years",
-      photo: "https://randomuser.me/api/portraits/women/44.jpg",
-      languages: ["English", "Arabic"]
-    },
-    {
-      name: "Michael Chen",
-      specialization: "Downtown Properties",
-      experience: "8 years",
-      photo: "https://randomuser.me/api/portraits/men/32.jpg",
-      languages: ["English", "Chinese", "Arabic"]
-    },
-    {
-      name: "Aisha Al-Rashid",
-      specialization: "Waterfront Properties",
-      experience: "12 years",
-      photo: "https://randomuser.me/api/portraits/women/68.jpg",
-      languages: ["Arabic", "English", "French"]
-    }
-  ];
-
-  import React from 'react';
 import './FeaturedAgents.css';
 
 export default function FeaturedAgents() {

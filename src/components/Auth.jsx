@@ -10,18 +10,29 @@ import { setUser } from '../store/userSlice';
 
 
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  appId: process.env.FIREBASE_APP_ID
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-initializeApp(firebaseConfig);
+let firebaseApp = null;
+if (firebaseConfig.apiKey) {
+  try {
+    firebaseApp = initializeApp(firebaseConfig);
+  } catch (error) {
+    console.warn('Firebase initialization failed:', error.message);
+  }
+}
 
 export default function Auth({ onLogin }) {
   const dispatch = useDispatch(); // Added useDispatch hook
 
   const handleGoogleSignIn = async () => {
+    if (!firebaseApp) {
+      console.error("Firebase is not configured. Please add Firebase credentials.");
+      return;
+    }
     try {
       const auth = getAuth();
       const provider = new GoogleAuthProvider();

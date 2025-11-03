@@ -11,9 +11,10 @@ import ContactUs from './components/ContactUs';
 import Footer from './components/Footer';
 import PropertySearch from './components/PropertySearch';
 import PropertyMap from './components/PropertyMap';
-import Services from './components/Services'; // Import Services component
+import Services from './components/Services';
 import JobApplicants from './components/JobApplicants';
 import WhatsAppButton from './components/WhatsAppButton';
+import FeaturedAgents from './components/FeaturedAgents';
 
 function ThemeToggle() {
   const { isDark, setIsDark } = useTheme();
