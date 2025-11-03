@@ -11,6 +11,7 @@ import Footer from './components/Footer';
 import PropertySearch from './components/PropertySearch';
 import PropertyMap from './components/PropertyMap';
 import Services from './components/Services'; // Import Services component
+import JobApplicants from './components/JobApplicants';
 
 function ThemeToggle() {
   const { isDark, setIsDark } = useTheme();
@@ -134,6 +135,10 @@ function App() {
         <button className="cta-button">Explore Properties</button>
       </section>
       <Services /> {/* Added Services component */}
+
+      <section className="job-applicants-section">
+        <JobApplicants />
+      </section>
 
       <section className="featured-properties">
         <h2>Featured Properties</h2>

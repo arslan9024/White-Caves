@@ -73,8 +73,9 @@ export default function JobBoard() {
                 required
               >
                 <option value="">Select Role</option>
-                <option value="SALES_AGENT">Sales Agent</option>
                 <option value="LEASING_AGENT">Leasing Agent</option>
+                <option value="SALES_AGENT_SECONDARY">Sales Agent - Secondary Properties</option>
+                <option value="SALES_AGENT_OFF_PLAN">Sales Agent - Off Plan Properties</option>
                 <option value="FREELANCE_AGENT">Freelance Agent</option>
                 <option value="FREELANCE_CONSULTANT">Freelance Consultant</option>
               </select>

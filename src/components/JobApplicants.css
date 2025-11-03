@@ -1,0 +1,241 @@
+
+.job-applicants {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.job-applicants h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.filters button {
+  padding: 0.8rem 1.5rem;
+  border: 2px solid #e41e3f;
+  background: white;
+  color: #e41e3f;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+.filters button.active {
+  background: #e41e3f;
+  color: white;
+}
+
+.filters button:hover {
+  background: #e41e3f;
+  color: white;
+}
+
+.applications-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.application-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.application-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.application-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.status-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 15px;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.application-details {
+  margin-bottom: 1rem;
+}
+
+.application-details p {
+  margin: 0.5rem 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.application-details strong {
+  color: #333;
+}
+
+.application-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.application-actions button,
+.application-actions a {
+  flex: 1;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.application-actions button {
+  background: #2196F3;
+  color: white;
+}
+
+.download-resume {
+  background: #4CAF50;
+  color: white;
+  display: inline-block;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.quick-actions button {
+  flex: 1;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.review-btn {
+  background: #2196F3;
+}
+
+.accept-btn {
+  background: #4CAF50;
+}
+
+.reject-btn {
+  background: #F44336;
+}
+
+.quick-actions button:hover {
+  opacity: 0.9;
+}
+
+.application-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.close-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #666;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-modal:hover {
+  color: #e41e3f;
+}
+
+.modal-body p {
+  margin: 0.8rem 0;
+  color: #666;
+}
+
+.modal-body strong {
+  color: #333;
+}
+
+.cover-letter {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.cover-letter h3 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.cover-letter p {
+  line-height: 1.6;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .applications-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .filters {
+    flex-direction: column;
+  }
+  
+  .filters button {
+    width: 100%;
+  }
+}
