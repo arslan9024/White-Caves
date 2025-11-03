@@ -8,7 +8,7 @@ export default function Footer() {
     <footer className="footer">
       <div className="footer-content">
         <div className="footer-section">
-          <h3>White Caves</h3>
+          <img src="/company-logo.jpg" alt="White Caves" className="footer-logo" />
           <p>Your trusted partner in Dubai real estate</p>
         </div>
         <div className="footer-section">

@@ -6,7 +6,10 @@ White Caves is a comprehensive real estate platform focused on the Dubai luxury 
 
 ## Recent Changes
 
-**November 3, 2025** - Enhanced authentication with multiple login methods:
+**November 3, 2025** - Company branding and enhanced authentication:
+- Added company logo to navigation header and footer
+- Logo displays in both light and dark modes with appropriate styling
+- Logo file stored in public folder as company-logo.jpg
 - Added tabbed authentication interface with 3 login options: Social Login, Email, Mobile
 - Email authentication with sign-up/sign-in toggle, password validation, and confirmation
 - Mobile/Phone authentication with OTP verification system using Firebase SMS

@@ -227,7 +227,9 @@ function App() {
         <>
           <header>
             <nav>
-              <div className="logo">White Caves</div>
+              <div className="logo">
+                <img src="/company-logo.jpg" alt="White Caves" className="logo-img" />
+              </div>
               <button className="hamburger" onClick={() => setMobileNavOpen(true)}>
                 ☰
               </button>
@@ -464,7 +466,9 @@ function App() {
         <>
           <header>
         <nav>
-          <div className="logo">White Caves</div>
+          <div className="logo">
+            <img src="/company-logo.jpg" alt="White Caves" className="logo-img" />
+          </div>
           <button className="hamburger" onClick={() => setMobileNavOpen(true)}>
             ☰
           </button>
