@@ -4,7 +4,8 @@ import { initializeApp } from 'firebase/app';
 import { 
   getAuth, 
   signInWithPopup, 
-  GoogleAuthProvider, 
+  GoogleAuthProvider,
+  FacebookAuthProvider,
   signOut,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -100,6 +101,36 @@ export default function Auth({ onLogin }) {
     } catch (error) {
       console.error("Error signing in with Google:", error);
       toast.error('Failed to sign in with Google');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFacebookSignIn = async () => {
+    if (!firebaseApp) {
+      toast.error("Firebase is not configured. Please add Firebase credentials.");
+      return;
+    }
+    try {
+      setLoading(true);
+      const auth = getAuth();
+      const provider = new FacebookAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const firebaseUser = result.user;
+
+      const dbUser = await createUser({
+        id: firebaseUser.uid,
+        email: firebaseUser.email,
+        name: firebaseUser.displayName,
+        photoUrl: firebaseUser.photoURL
+      });
+
+      dispatch(setUser(dbUser));
+      toast.success('Successfully signed in with Facebook!');
+      onLogin(dbUser);
+    } catch (error) {
+      console.error("Error signing in with Facebook:", error);
+      toast.error('Failed to sign in with Facebook');
     } finally {
       setLoading(false);
     }
@@ -275,6 +306,10 @@ export default function Auth({ onLogin }) {
           <button className="auth-btn google" onClick={handleGoogleSignIn} disabled={loading}>
             <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" />
             Sign in with Google
+          </button>
+          <button className="auth-btn facebook" onClick={handleFacebookSignIn} disabled={loading}>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook" />
+            Sign in with Facebook
           </button>
           <button className="auth-btn apple" onClick={handleAppleSignIn} disabled={loading}>
             <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple" />

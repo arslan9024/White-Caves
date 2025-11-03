@@ -11,6 +11,7 @@ White Caves is a comprehensive real estate platform focused on the Dubai luxury 
 - Logo displays in both light and dark modes with appropriate styling
 - Logo file stored in public folder as company-logo.jpg
 - Added tabbed authentication interface with 3 login options: Social Login, Email, Mobile
+- Social login supports Google, Facebook, and Apple sign-in via Firebase
 - Email authentication with sign-up/sign-in toggle, password validation, and confirmation
 - Mobile/Phone authentication with OTP verification system using Firebase SMS
 - Form validation with inline error messages using FormField component
