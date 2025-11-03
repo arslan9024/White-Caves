@@ -1,0 +1,136 @@
+.example-error-handling {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.example-error-handling h2 {
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.example-error-handling > p {
+  color: #718096;
+  margin-bottom: 2rem;
+}
+
+.test-section {
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background: #f7fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.test-section h3 {
+  color: #2d3748;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-success {
+  background: #48bb78;
+  color: white;
+}
+
+.btn-error {
+  background: #f56565;
+  color: white;
+}
+
+.btn-warning {
+  background: #ed8936;
+  color: white;
+}
+
+.btn-info {
+  background: #4299e1;
+  color: white;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-secondary {
+  background: #718096;
+  color: white;
+}
+
+.info-box {
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  border-left: 4px solid #4299e1;
+}
+
+.info-box p {
+  margin: 0.5rem 0;
+  color: #2d3748;
+}
+
+.info-box ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+  color: #718096;
+}
+
+.info-box li {
+  margin: 0.25rem 0;
+}
+
+[data-theme="dark"] .example-error-handling h2 {
+  color: #f7fafc;
+}
+
+[data-theme="dark"] .example-error-handling > p {
+  color: #cbd5e0;
+}
+
+[data-theme="dark"] .test-section {
+  background: #2d3748;
+  border-color: #4a5568;
+}
+
+[data-theme="dark"] .test-section h3 {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .info-box {
+  background: #1a202c;
+}
+
+[data-theme="dark"] .info-box p {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .info-box ul {
+  color: #cbd5e0;
+}

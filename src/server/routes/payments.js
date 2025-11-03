@@ -1,10 +1,16 @@
 
 import express from 'express';
 import Stripe from 'stripe';
+import { ConfigurationError, PaymentError, ValidationError } from '../../utils/errors.js';
+import { asyncHandler } from '../middleware/errorHandler.js';
+import { validateAmount, validateRequired } from '../middleware/validation.js';
+
 const router = express.Router();
 
 let stripe;
-if (process.env.STRIPE_SECRET_KEY) {
+const isStripeConfigured = !!process.env.STRIPE_SECRET_KEY;
+
+if (isStripeConfigured) {
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
     apiVersion: "2023-10-16",
   });
@@ -12,20 +18,20 @@ if (process.env.STRIPE_SECRET_KEY) {
   console.warn('STRIPE_SECRET_KEY not found. Payment processing will not work until this is set.');
 }
 
-router.post('/create-payment-intent', async (req, res) => {
+const checkStripeConfig = (req, res, next) => {
+  if (!isStripeConfigured || !stripe) {
+    throw new ConfigurationError('Payment processing is currently unavailable. Please contact support.');
+  }
+  next();
+};
+
+router.post('/create-payment-intent', checkStripeConfig, asyncHandler(async (req, res) => {
+  const { amount, propertyId, propertyTitle } = req.body;
+
+  validateRequired(amount, 'amount');
+  validateAmount(amount);
+  
   try {
-    if (!stripe) {
-      return res.status(500).json({ 
-        error: 'Stripe is not configured. Please add STRIPE_SECRET_KEY to your environment variables.' 
-      });
-    }
-
-    const { amount, propertyId, propertyTitle } = req.body;
-
-    if (!amount || amount <= 0) {
-      return res.status(400).json({ error: 'Valid amount is required' });
-    }
-
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100),
       currency: "usd",
@@ -35,28 +41,35 @@ router.post('/create-payment-intent', async (req, res) => {
       },
     });
 
-    res.json({ clientSecret: paymentIntent.client_secret });
-  } catch (error) {
-    console.error('Error creating payment intent:', error);
-    res.status(500).json({ 
-      error: 'Error creating payment intent: ' + error.message 
-    });
-  }
-});
-
-router.post('/payment-success', async (req, res) => {
-  try {
-    const { paymentIntentId, propertyId, userId } = req.body;
-    
     res.json({ 
       success: true,
-      message: 'Payment processed successfully',
-      paymentIntentId 
+      clientSecret: paymentIntent.client_secret 
     });
   } catch (error) {
-    console.error('Error processing payment success:', error);
-    res.status(500).json({ error: 'Error processing payment success' });
+    console.error('Stripe error:', error);
+    throw new PaymentError(error.message || 'Payment processing failed');
   }
+}));
+
+router.post('/payment-success', asyncHandler(async (req, res) => {
+  const { paymentIntentId, propertyId, userId } = req.body;
+  
+  validateRequired(paymentIntentId, 'paymentIntentId');
+  
+  res.json({ 
+    success: true,
+    message: 'Payment processed successfully',
+    paymentIntentId 
+  });
+}));
+
+router.get('/status', (req, res) => {
+  res.json({
+    configured: isStripeConfigured,
+    message: isStripeConfigured 
+      ? 'Payment processing is available' 
+      : 'Payment processing is not configured'
+  });
 });
 
 export default router;
