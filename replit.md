@@ -6,6 +6,15 @@ White Caves is a comprehensive real estate platform focused on the Dubai luxury 
 
 ## Recent Changes
 
+**November 3, 2025** - Dubai property content update:
+- Expanded property listings from 3 to 12 diverse properties across premium Dubai locations
+- Added realistic Dubai locations: Palm Jumeirah, Downtown Dubai, Emirates Hills, Dubai Marina, Arabian Ranches, JVC, Business Bay, JBR, Dubai Hills Estate, City Walk, MBR City, The Springs
+- Updated property types: Villas, Penthouses, Apartments, Townhouses
+- Realistic Dubai luxury real estate pricing in AED (3.2M to 65M AED range)
+- Enhanced property details with descriptions highlighting unique features and locations
+- Added diverse amenities: Pool, Beach Access, Garden, Gym, Cinema, Concierge, Security
+- Property sizes ranging from 2,100 to 15,000 sqft reflecting Dubai's luxury market
+
 **November 3, 2025** - Comprehensive error handling implementation:
 - Created custom error classes for different error types (AppError, ValidationError, PaymentError, etc.)
 - Implemented HttpError class in API client for proper error propagation
