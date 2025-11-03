@@ -1,4 +1,3 @@
-
 .profile-container {
   max-width: 600px;
   margin: 2rem auto;
@@ -62,4 +61,42 @@
 
 .logout-btn:hover {
   background: #ff6666;
+}
+
+.role-badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.agent-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.buyer-badge {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.seller-badge {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.tenant-badge {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.landlord-badge {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.property-owner-badge {
+  background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+}
+
+.employee-badge {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+.visitor-badge {
+  background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
 }

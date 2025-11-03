@@ -5,10 +5,10 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   photoUrl: String,
-  role: {
-    type: String,
+  roles: {
+    type: [String],
     enum: ['VISITOR', 'AGENT', 'EMPLOYEE', 'BUYER', 'SELLER', 'TENANT', 'LANDLORD', 'PROPERTY_OWNER', 'SUPER_USER'],
-    default: 'VISITOR'
+    default: ['VISITOR']
   },
   isSuperUser: { type: Boolean, default: false },
   isDecisionMaker: { type: Boolean, default: false },

@@ -1,6 +1,8 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import './Profile.css';
+import PassportUpload from './PassportUpload';
+import PerformanceTracker from './PerformanceTracker';
+import RoleSelector from './RoleSelector';
 
 const roleLabels = {
   VISITOR: 'Visitor',
@@ -13,6 +15,29 @@ const roleLabels = {
   PROPERTY_OWNER: 'Property Owner',
   SUPER_USER: 'Company Owner'
 };
+
+function getRoleBadgeClass(role) {
+  switch (role) {
+    case 'BUYER':
+      return 'buyer-badge';
+    case 'TENANT':
+      return 'tenant-badge';
+    case 'SELLER':
+      return 'seller-badge';
+    case 'LANDLORD':
+      return 'landlord-badge';
+    case 'AGENT':
+      return 'agent-badge';
+    case 'EMPLOYEE':
+      return 'employee-badge';
+    case 'PROPERTY_OWNER':
+      return 'property-owner-badge';
+    case 'SUPER_USER':
+      return 'super-user-badge';
+    default:
+      return 'visitor-badge';
+  }
+}
 
 export default function Profile({ user, onLogout }) {
   return (
