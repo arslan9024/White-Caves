@@ -5,6 +5,9 @@
   "description": "React TypeScript on Replit, using Vite bundler",
   "scripts": {
     "dev": "vite",
+    "server": "node src/server/index.js",
+    "client": "vite",
+    "dev:all": "concurrently \"npm run server\" \"npm run client\"",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -28,6 +31,7 @@
     "@reduxjs/toolkit": "^2.7.0",
     "@stripe/react-stripe-js": "^5.3.0",
     "@stripe/stripe-js": "^8.2.0",
+    "concurrently": "^9.2.1",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "firebase": "^11.6.1",

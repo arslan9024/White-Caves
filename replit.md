@@ -6,12 +6,15 @@ White Caves is a comprehensive real estate platform focused on the Dubai luxury 
 
 ## Recent Changes
 
-**November 3, 2025** - Landing page updated with enhanced visual design:
+**November 3, 2025** - Landing page and development environment updates:
 - Redesigned hero section with gradient overlay, improved typography, and fade-in animations
 - Added statistics showcase (500+ properties, 1000+ clients, 15+ years experience, 50+ agents)
 - New "Featured Locations" section highlighting Palm Jumeirah, Downtown Dubai, Emirates Hills, and Dubai Marina
 - Modern hover effects and interactive elements
+- Enhanced dark/light theme toggle with comprehensive styling across all sections
 - Improved mobile responsiveness
+- Added `concurrently` package to run frontend (Vite on port 5000) and backend (Express on port 3000) simultaneously
+- Created unified development workflow using `npm run dev:all`
 
 ## User Preferences
 
