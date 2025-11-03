@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import './App.css'
 import Auth from './components/Auth'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
@@ -7,6 +7,7 @@ import { setProperties } from './store/propertySlice';
 import { setUser } from './store/userSlice';
 import MobileNav from './components/MobileNav';
 import ContactForm from './components/ContactForm';
+import ContactUs from './components/ContactUs';
 import Footer from './components/Footer';
 import PropertySearch from './components/PropertySearch';
 import PropertyMap from './components/PropertyMap';
@@ -325,67 +326,66 @@ function App() {
         <FeaturedAgents />
         <div className="property-grid">
           {filteredProperties.map(property => (
-            <React.Fragment key={property.id}>
-              <div className="property-card" id={`property-${property.id}`}>
+            <div key={property.id} className="property-card" id={`property-${property.id}`}>
               <div className="image-gallery">
-              <div 
-                className="property-image" 
-                style={{backgroundImage: `url(${property.images[0]})`}}
-              ></div>
-              <div className="gallery-nav">
-                {property.images.map((_, index) => (
-                  <div 
-                    key={index} 
-                    className={`gallery-dot ${index === 0 ? 'active' : ''}`}
-                    onClick={() => {
-                      const image = document.querySelector(`#property-${property.id} .property-image`);
-                      image.style.backgroundImage = `url(${property.images[index]})`;
-                      document.querySelectorAll(`#property-${property.id} .gallery-dot`).forEach(dot => dot.classList.remove('active'));
-                      document.querySelectorAll(`#property-${property.id} .gallery-dot`)[index].classList.add('active');
-                    }}
-                  ></div>
+                <div 
+                  className="property-image" 
+                  style={{backgroundImage: `url(${property.images?.[0] || 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'})`}}
+                ></div>
+                {property.images && (
+                  <div className="gallery-nav">
+                    {property.images.map((_, index) => (
+                      <div 
+                        key={index} 
+                        className={`gallery-dot ${index === 0 ? 'active' : ''}`}
+                        onClick={() => {
+                          const image = document.querySelector(`#property-${property.id} .property-image`);
+                          image.style.backgroundImage = `url(${property.images[index]})`;
+                          document.querySelectorAll(`#property-${property.id} .gallery-dot`).forEach(dot => dot.classList.remove('active'));
+                          document.querySelectorAll(`#property-${property.id} .gallery-dot`)[index].classList.add('active');
+                        }}
+                      ></div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <h3>{property.title}</h3>
+              <div className="property-stats">
+                <div className="stat">
+                  <span className="stat-icon">🛏️</span>
+                  <span className="stat-value">{property.beds} Beds</span>
+                </div>
+                <div className="stat">
+                  <span className="stat-icon">🚿</span>
+                  <span className="stat-value">{property.baths} Baths</span>
+                </div>
+                <div className="stat">
+                  <span className="stat-icon">📏</span>
+                  <span className="stat-value">{property.sqft.toLocaleString()} sq.ft</span>
+                </div>
+              </div>
+              <div className="property-price">
+                <span className="currency">AED</span>
+                <span className="amount">{property.price.toLocaleString()}</span>
+              </div>
+              <div className="property-amenities">
+                {property.amenities?.map((amenity, index) => (
+                  <span key={index} className="amenity">
+                    {amenity === 'Pool' ? '🏊‍♂️' : 
+                     amenity === 'Parking' ? '🚗' : 
+                     amenity === 'Security' ? '👮‍♂️' : 
+                     amenity === 'Gym' ? '💪' : 
+                     amenity === 'Garden' ? '🌳' : 
+                     amenity === 'Concierge' ? '👔' : '✨'} {amenity}
+                  </span>
                 ))}
               </div>
-            </div>
-            <h3>{property.title}</h3>
-            <div className="property-stats">
-              <div className="stat">
-                <span className="stat-icon">🛏️</span>
-                <span className="stat-value">{property.beds} Beds</span>
+              <div className="property-map">
+                <PropertyMap location={property.location} />
               </div>
-              <div className="stat">
-                <span className="stat-icon">🚿</span>
-                <span className="stat-value">{property.baths} Baths</span>
-              </div>
-              <div className="stat">
-                <span className="stat-icon">📏</span>
-                <span className="stat-value">{property.sqft.toLocaleString()} sq.ft</span>
-              </div>
+              <button className="view-details">View Details</button>
             </div>
-            <div className="property-price">
-              <span className="currency">AED</span>
-              <span className="amount">{property.price.toLocaleString()}</span>
-            </div>q ft</p>
-            <p className="price">AED {property.price.toLocaleString()}</p>
-            <div className="property-amenities">
-              {property.amenities.map((amenity, index) => (
-                <span key={index} className="amenity">
-                  {amenity === 'Pool' ? '🏊‍♂️' : 
-                   amenity === 'Parking' ? '🚗' : 
-                   amenity === 'Security' ? '👮‍♂️' : 
-                   amenity === 'Gym' ? '💪' : 
-                   amenity === 'Garden' ? '🌳' : 
-                   amenity === 'Concierge' ? '👔' : '✨'} {amenity}
-                </span>
-              ))}
-            </div>
-            <div className="property-map">
-              <PropertyMap location={property.location} />
-            </div>
-            <button className="view-details">View Details</button>
-          </div>
-          </React.Fragment>
-        ))}
+          ))}
         </div>
       </section>
 
