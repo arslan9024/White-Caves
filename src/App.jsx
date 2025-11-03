@@ -105,11 +105,188 @@ function App() {
   return (
     <div className="app">
       {!user ? (
-        <div className="login-page">
-          <h1>Welcome to White Caves</h1>
-          <p>Please login to continue</p>
-          <Auth onLogin={() => window.location.reload()} />
-        </div>
+        <>
+          <header>
+            <nav>
+              <div className="logo">White Caves</div>
+              <button className="hamburger" onClick={() => setMobileNavOpen(true)}>
+                ☰
+              </button>
+              <div className="nav-links">
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#services">Services</a>
+                <a href="#laws">Dubai Laws</a>
+                <a href="#contact">Contact</a>
+                <ThemeToggle />
+              </div>
+            </nav>
+          </header>
+          <MobileNav isOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
+
+          <section className="hero" id="home">
+            <h1>Luxury Real Estate in Dubai</h1>
+            <p>Discover Premium Properties with White Caves</p>
+            <Auth onLogin={() => window.location.reload()} />
+          </section>
+
+          <section className="about-section" id="about">
+            <div className="about-content">
+              <h2>About White Caves Real Estate</h2>
+              <p>White Caves is Dubai's premier luxury real estate agency, specializing in high-end properties across the emirate. With years of experience in the Dubai property market, we offer unparalleled expertise in buying, selling, and leasing premium residential and commercial properties.</p>
+              
+              <div className="company-features">
+                <div className="feature">
+                  <h3>🏆 Excellence</h3>
+                  <p>Award-winning service with a track record of satisfied clients</p>
+                </div>
+                <div className="feature">
+                  <h3>🌍 Global Reach</h3>
+                  <p>International network connecting buyers and sellers worldwide</p>
+                </div>
+                <div className="feature">
+                  <h3>💼 Professional Team</h3>
+                  <p>Expert agents fluent in multiple languages</p>
+                </div>
+                <div className="feature">
+                  <h3>🔒 Trust & Security</h3>
+                  <p>Fully licensed and regulated by Dubai Land Department</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="services-info" id="services">
+            <h2>Our Comprehensive Services</h2>
+            <div className="services-grid">
+              <div className="service-detail">
+                <h3>For Buyers</h3>
+                <ul>
+                  <li><strong>Property Search:</strong> Personalized property matching based on your requirements</li>
+                  <li><strong>Market Analysis:</strong> Detailed market insights and property valuations</li>
+                  <li><strong>Viewing Arrangements:</strong> Scheduled property tours at your convenience</li>
+                  <li><strong>Negotiation Support:</strong> Expert negotiation to secure the best deal</li>
+                  <li><strong>Documentation:</strong> Complete assistance with Form B, title deeds, and transfer</li>
+                  <li><strong>DEWA Registration:</strong> Utility connection and account setup</li>
+                  <li><strong>Post-Purchase Support:</strong> Ongoing assistance after completion</li>
+                </ul>
+              </div>
+
+              <div className="service-detail">
+                <h3>For Sellers</h3>
+                <ul>
+                  <li><strong>Property Valuation:</strong> Accurate market-based pricing</li>
+                  <li><strong>Marketing:</strong> Premium listings on major property portals</li>
+                  <li><strong>Photography:</strong> Professional property photography and videography</li>
+                  <li><strong>Buyer Screening:</strong> Pre-qualified buyer matching</li>
+                  <li><strong>Form F Processing:</strong> Sales agreement documentation (requires 10% security cheque)</li>
+                  <li><strong>Transaction Management:</strong> End-to-end sale coordination</li>
+                </ul>
+              </div>
+
+              <div className="service-detail">
+                <h3>For Tenants</h3>
+                <ul>
+                  <li><strong>Property Search:</strong> Find your ideal rental home</li>
+                  <li><strong>Viewing Coordination:</strong> Multiple property viewings</li>
+                  <li><strong>Lease Negotiation:</strong> Favorable rental terms</li>
+                  <li><strong>EJARI Registration:</strong> Official tenancy contract registration</li>
+                  <li><strong>DEWA Registration:</strong> Utility connection services</li>
+                  <li><strong>Move-in Permit:</strong> Building access and key handover</li>
+                  <li><strong>Renewal Services:</strong> Lease renewal assistance</li>
+                </ul>
+              </div>
+
+              <div className="service-detail">
+                <h3>For Landlords</h3>
+                <ul>
+                  <li><strong>Tenant Sourcing:</strong> Find reliable, verified tenants</li>
+                  <li><strong>Property Management:</strong> Full-service property management</li>
+                  <li><strong>Rent Collection:</strong> Timely rent collection services</li>
+                  <li><strong>Maintenance Coordination:</strong> Property upkeep and repairs</li>
+                  <li><strong>Legal Compliance:</strong> EJARI and all legal requirements</li>
+                  <li><strong>Annual Inspections:</strong> Regular property condition reports</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section className="dubai-laws" id="laws">
+            <h2>Dubai Real Estate Laws & Regulations</h2>
+            <div className="laws-content">
+              <div className="law-section">
+                <h3>Dubai Land Department (DLD) Regulations</h3>
+                <p>All real estate transactions in Dubai are governed by the Dubai Land Department. Key regulations include:</p>
+                <ul>
+                  <li><strong>Title Deed Registration:</strong> All property ownership must be registered with DLD</li>
+                  <li><strong>Transfer Fees:</strong> 4% of property value (2% buyer, 2% seller) plus administrative fees</li>
+                  <li><strong>Trustee Registration:</strong> All real estate agencies must be registered with RERA (Real Estate Regulatory Agency)</li>
+                  <li><strong>Agent Licensing:</strong> All agents must hold valid RERA licenses</li>
+                </ul>
+              </div>
+
+              <div className="law-section">
+                <h3>EJARI System</h3>
+                <p>EJARI is the mandatory tenancy contract registration system in Dubai:</p>
+                <ul>
+                  <li>All rental contracts must be registered within 90 days of signing</li>
+                  <li>Required for DEWA connection, visa applications, and legal protection</li>
+                  <li>Registration fee: AED 220 (including knowledge fee and innovation fee)</li>
+                  <li>Protects both landlord and tenant rights under Dubai rental laws</li>
+                </ul>
+              </div>
+
+              <div className="law-section">
+                <h3>Rental Laws</h3>
+                <ul>
+                  <li><strong>Rent Increases:</strong> Regulated by RERA Rental Index (Decree No. 43 of 2013)</li>
+                  <li><strong>Security Deposit:</strong> Typically 5% of annual rent (up to 10% for furnished properties)</li>
+                  <li><strong>Payment Terms:</strong> Usually 1-4 cheques per year</li>
+                  <li><strong>Notice Period:</strong> 90 days for contract termination or non-renewal</li>
+                  <li><strong>Eviction:</strong> Only permitted through legal channels with valid reasons</li>
+                </ul>
+              </div>
+
+              <div className="law-section">
+                <h3>Property Ownership Laws</h3>
+                <ul>
+                  <li><strong>Freehold Areas:</strong> Foreign nationals can own property in designated freehold areas</li>
+                  <li><strong>Leasehold:</strong> 99-year leases available in certain areas</li>
+                  <li><strong>Off-Plan Properties:</strong> Protected under Escrow Account Law (Law No. 8 of 2007)</li>
+                  <li><strong>Developer Regulations:</strong> All developers must register with RERA</li>
+                  <li><strong>Mortgage Laws:</strong> Maximum 75% LTV for first-time buyers (UAE nationals), 80% for expats on ready properties</li>
+                </ul>
+              </div>
+
+              <div className="law-section">
+                <h3>Form Requirements</h3>
+                <ul>
+                  <li><strong>Form A:</strong> Memorandum of Understanding for off-plan purchases</li>
+                  <li><strong>Form B:</strong> Sale agreement for ready properties (requires payment)</li>
+                  <li><strong>Form F:</strong> Final sales contract (requires original 10% security cheque)</li>
+                  <li><strong>NOC:</strong> No Objection Certificate from developer for resales</li>
+                </ul>
+              </div>
+
+              <div className="law-section">
+                <h3>Service Charges & Fees</h3>
+                <ul>
+                  <li><strong>Agency Commission:</strong> Typically 2% of transaction value + 5% VAT</li>
+                  <li><strong>Trustee Office Fee:</strong> AED 420 for property registration</li>
+                  <li><strong>Mortgage Registration:</strong> 0.25% of loan amount + AED 290</li>
+                  <li><strong>DEWA Deposit:</strong> AED 2,000 for apartments, AED 4,000 for villas</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section className="contact" id="contact">
+            <ContactUs />
+            <ContactForm />
+          </section>
+
+          <Footer />
+        </>
       ) : (
         <>
           <header>
