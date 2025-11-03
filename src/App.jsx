@@ -127,9 +127,62 @@ function App() {
           <MobileNav isOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
 
           <section className="hero" id="home">
-            <h1>Luxury Real Estate in Dubai</h1>
-            <p>Discover Premium Properties with White Caves</p>
-            <Auth onLogin={() => window.location.reload()} />
+            <div className="hero-overlay"></div>
+            <div className="hero-content">
+              <h1 className="hero-title">Luxury Real Estate in Dubai</h1>
+              <p className="hero-subtitle">Discover Premium Properties with White Caves</p>
+              <p className="hero-description">Experience unparalleled luxury living in Dubai's most prestigious locations</p>
+              <Auth onLogin={() => window.location.reload()} />
+              <div className="hero-stats">
+                <div className="stat-item">
+                  <h3>500+</h3>
+                  <p>Premium Properties</p>
+                </div>
+                <div className="stat-item">
+                  <h3>1000+</h3>
+                  <p>Happy Clients</p>
+                </div>
+                <div className="stat-item">
+                  <h3>15+</h3>
+                  <p>Years Experience</p>
+                </div>
+                <div className="stat-item">
+                  <h3>50+</h3>
+                  <p>Expert Agents</p>
+                </div>
+              </div>
+            </div>
+          </section>
+          
+          <section className="featured-locations">
+            <h2>Explore Dubai's Premier Locations</h2>
+            <p className="section-subtitle">From Palm Jumeirah to Downtown Dubai</p>
+            <div className="locations-grid">
+              <div className="location-card" style={{backgroundImage: "url(https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80)"}}>
+                <div className="location-overlay">
+                  <h3>Palm Jumeirah</h3>
+                  <p>Iconic waterfront villas</p>
+                </div>
+              </div>
+              <div className="location-card" style={{backgroundImage: "url(https://images.unsplash.com/photo-1582672060674-bc2bd808a8b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80)"}}>
+                <div className="location-overlay">
+                  <h3>Downtown Dubai</h3>
+                  <p>Luxury apartments & penthouses</p>
+                </div>
+              </div>
+              <div className="location-card" style={{backgroundImage: "url(https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80)"}}>
+                <div className="location-overlay">
+                  <h3>Emirates Hills</h3>
+                  <p>Exclusive golf course villas</p>
+                </div>
+              </div>
+              <div className="location-card" style={{backgroundImage: "url(https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80)"}}>
+                <div className="location-overlay">
+                  <h3>Dubai Marina</h3>
+                  <p>Waterfront living redefined</p>
+                </div>
+              </div>
+            </div>
           </section>
 
           <section className="about-section" id="about">

@@ -4,6 +4,15 @@
 
 White Caves is a comprehensive real estate platform focused on the Dubai luxury property market. The application handles property listings (both sales and rentals), appointment scheduling, tenancy agreement management, payment processing, job applications, and employee performance tracking. It serves multiple user types including visitors, agents, employees, buyers, sellers, tenants, landlords, and property owners, with role-based access control and special permissions for super users and decision makers.
 
+## Recent Changes
+
+**November 3, 2025** - Landing page updated with enhanced visual design:
+- Redesigned hero section with gradient overlay, improved typography, and fade-in animations
+- Added statistics showcase (500+ properties, 1000+ clients, 15+ years experience, 50+ agents)
+- New "Featured Locations" section highlighting Palm Jumeirah, Downtown Dubai, Emirates Hills, and Dubai Marina
+- Modern hover effects and interactive elements
+- Improved mobile responsiveness
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
