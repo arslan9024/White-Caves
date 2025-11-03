@@ -66,3 +66,4 @@ args = "npm run dev"
 
 [agent]
 expertMode = true
+integrations = ["javascript_stripe:1.0.0"]
