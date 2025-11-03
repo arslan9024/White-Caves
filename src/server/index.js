@@ -16,6 +16,8 @@ app.use(express.json());
 app.use('/api/users', require('./routes/users'));
 app.use('/api/properties', require('./routes/properties'));
 app.use('/api/appointments', require('./routes/appointments'));
+app.use('/api/payments', require('./routes/payments'));
+app.use('/api/tenancy-agreements', require('./routes/tenancyAgreements'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {

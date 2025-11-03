@@ -32,8 +32,12 @@
     "express": "^5.1.0",
     "firebase": "^11.6.1",
     "mongoose": "^8.14.1",
+    "pdfjs-dist": "^5.4.394",
     "prisma": "^6.6.0",
+    "react-pdf": "^10.2.0",
     "react-redux": "^9.2.0",
+    "react-signature-canvas": "^1.1.0-alpha.2",
+    "signature_pad": "^5.1.1",
     "stripe": "^19.2.0"
   }
 }

@@ -31,7 +31,8 @@ const propertySchema = new mongoose.Schema({
   propertyType: { type: String, enum: ['Apartment', 'Villa', 'Townhouse', 'Penthouse'] },
   yearBuilt: Number,
   furnished: Boolean,
-  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  propertyManagerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 });
 
 module.exports = mongoose.model('Property', propertySchema);
