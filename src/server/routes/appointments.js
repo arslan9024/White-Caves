@@ -1,8 +1,8 @@
 
-const express = require('express');
+import express from 'express';
+import { google } from 'googleapis';
+import Appointment from '../models/Appointment.js';
 const router = express.Router();
-const { google } = require('googleapis');
-const Appointment = require('../models/Appointment');
 
 const calendar = google.calendar({ version: 'v3', auth: process.env.GOOGLE_API_KEY });
 
@@ -51,4 +51,4 @@ router.post('/', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

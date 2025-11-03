@@ -1,7 +1,7 @@
 
-const express = require('express');
+import express from 'express';
+import Stripe from 'stripe';
 const router = express.Router();
-const Stripe = require('stripe');
 
 let stripe;
 if (process.env.STRIPE_SECRET_KEY) {
@@ -59,4 +59,4 @@ router.post('/payment-success', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

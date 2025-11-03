@@ -1,5 +1,5 @@
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const tenancyAgreementSchema = new mongoose.Schema({
   propertyId: { 
@@ -87,4 +87,4 @@ tenancyAgreementSchema.pre('save', function(next) {
   next();
 });
 
-module.exports = mongoose.model('TenancyAgreement', tenancyAgreementSchema);
+export default mongoose.model('TenancyAgreement', tenancyAgreementSchema);

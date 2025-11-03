@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const securityChequeSchema = new mongoose.Schema({
   amount: { type: Number, required: true },
@@ -46,4 +46,4 @@ const serviceSchema = new mongoose.Schema({
 
 const Service = mongoose.model('Service', serviceSchema);
 
-module.exports = Service;
+export default Service;

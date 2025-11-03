@@ -1,10 +1,10 @@
 
-const express = require('express');
+import express from 'express';
+import TenancyAgreement from '../models/TenancyAgreement.js';
+import Property from '../models/Property.js';
+import User from '../models/User.js';
+import { google } from 'googleapis';
 const router = express.Router();
-const TenancyAgreement = require('../models/TenancyAgreement');
-const Property = require('../models/Property');
-const User = require('../models/User');
-const { google } = require('googleapis');
 
 const calendar = google.calendar({ 
   version: 'v3', 
@@ -274,4 +274,4 @@ router.get('/user/:userId', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

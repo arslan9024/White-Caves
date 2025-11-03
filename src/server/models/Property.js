@@ -1,5 +1,5 @@
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const propertySchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -35,4 +35,4 @@ const propertySchema = new mongoose.Schema({
   propertyManagerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 });
 
-module.exports = mongoose.model('Property', propertySchema);
+export default mongoose.model('Property', propertySchema);
