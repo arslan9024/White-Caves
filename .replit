@@ -23,10 +23,6 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 5173
-externalPort = 80
-
-[[ports]]
 localPort = 5174
 externalPort = 3000
 
@@ -51,6 +47,10 @@ localPort = 39123
 externalPort = 6000
 
 [[ports]]
+localPort = 42083
+externalPort = 5173
+
+[[ports]]
 localPort = 42693
 externalPort = 5000
 
@@ -63,8 +63,8 @@ runButton = "Project"
 
 [[workflows.workflow]]
 name = "Dev Server"
+mode = "parallel"
 author = "agent"
-mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
