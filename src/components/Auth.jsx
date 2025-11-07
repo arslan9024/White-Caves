@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import './Auth.css';
-import { initializeApp } from 'firebase/app';
 import { 
-  getAuth, 
-  signInWithPopup, 
-  GoogleAuthProvider,
-  FacebookAuthProvider,
-  signOut,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  RecaptchaVerifier,
-  signInWithPhoneNumber
-} from 'firebase/auth';
+  auth,
+  signInWithGoogle,
+  signInWithFacebook,
+  signInWithApple,
+  signInWithEmail,
+  signUpWithEmail,
+  signInWithPhone,
+  createRecaptchaVerifier,
+  signOut as firebaseSignOut
+} from '../config/firebase';
 import Profile from './Profile';
 import { createUser } from '../utils/db';
 import { useDispatch } from 'react-redux';
@@ -20,23 +19,6 @@ import { useToast } from './Toast';
 import { useFormValidation } from '../hooks/useFormValidation';
 import FormField from './FormField';
 
-
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID
-};
-
-let firebaseApp = null;
-if (firebaseConfig.apiKey) {
-  try {
-    firebaseApp = initializeApp(firebaseConfig);
-  } catch (error) {
-    console.warn('Firebase initialization failed:', error.message);
-  }
-}
-
 export default function Auth({ onLogin }) {
   const dispatch = useDispatch();
   const toast = useToast();
@@ -44,7 +26,7 @@ export default function Auth({ onLogin }) {
   const [authMode, setAuthMode] = useState('social'); // 'social', 'email', 'phone'
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [verificationId, setVerificationId] = useState(null);
+  const [confirmationResult, setConfirmationResult] = useState(null);
 
   const { values, errors, touched, handleChange, handleBlur, validateForm, setFieldValue } = useFormValidation(
     {
@@ -72,20 +54,18 @@ export default function Auth({ onLogin }) {
         pattern: /^\+?[1-9]\d{1,14}$/,
         patternMessage: 'Please enter a valid phone number with country code (e.g., +971501234567)'
       },
-      otp: { required: verificationId !== null, minLength: 6, maxLength: 6 }
+      otp: { required: confirmationResult !== null, minLength: 6, maxLength: 6 }
     }
   );
 
   const handleGoogleSignIn = async () => {
-    if (!firebaseApp) {
+    if (!auth) {
       toast.error("Firebase is not configured. Please add Firebase credentials.");
       return;
     }
     try {
       setLoading(true);
-      const auth = getAuth();
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithGoogle();
       const firebaseUser = result.user;
 
       const dbUser = await createUser({
@@ -107,15 +87,13 @@ export default function Auth({ onLogin }) {
   };
 
   const handleFacebookSignIn = async () => {
-    if (!firebaseApp) {
+    if (!auth) {
       toast.error("Firebase is not configured. Please add Firebase credentials.");
       return;
     }
     try {
       setLoading(true);
-      const auth = getAuth();
-      const provider = new FacebookAuthProvider();
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithFacebook();
       const firebaseUser = result.user;
 
       const dbUser = await createUser({
@@ -136,8 +114,32 @@ export default function Auth({ onLogin }) {
     }
   };
 
-  const handleAppleSignIn = () => {
-    toast.info('Apple sign-in will be available soon!');
+  const handleAppleSignIn = async () => {
+    if (!auth) {
+      toast.error("Firebase is not configured. Please add Firebase credentials.");
+      return;
+    }
+    try {
+      setLoading(true);
+      const result = await signInWithApple();
+      const firebaseUser = result.user;
+
+      const dbUser = await createUser({
+        id: firebaseUser.uid,
+        email: firebaseUser.email,
+        name: firebaseUser.displayName || 'Apple User',
+        photoUrl: firebaseUser.photoURL
+      });
+
+      dispatch(setUser(dbUser));
+      toast.success('Successfully signed in with Apple!');
+      onLogin(dbUser);
+    } catch (error) {
+      console.error("Error signing in with Apple:", error);
+      toast.error('Failed to sign in with Apple. Make sure Apple sign-in is enabled.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEmailAuth = async (e) => {
@@ -148,22 +150,21 @@ export default function Auth({ onLogin }) {
       return;
     }
 
-    if (!firebaseApp) {
+    if (!auth) {
       toast.error("Firebase is not configured.");
       return;
     }
 
     try {
       setLoading(true);
-      const auth = getAuth();
       let firebaseUser;
 
       if (isSignUp) {
-        const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+        const userCredential = await signUpWithEmail(values.email, values.password);
         firebaseUser = userCredential.user;
         toast.success('Account created successfully!');
       } else {
-        const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+        const userCredential = await signInWithEmail(values.email, values.password);
         firebaseUser = userCredential.user;
         toast.success('Successfully signed in!');
       }
@@ -195,10 +196,7 @@ export default function Auth({ onLogin }) {
 
   const setupRecaptcha = () => {
     if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(getAuth(), 'recaptcha-container', {
-        size: 'invisible',
-        callback: () => {}
-      });
+      window.recaptchaVerifier = createRecaptchaVerifier('recaptcha-container');
     }
   };
 
@@ -210,7 +208,7 @@ export default function Auth({ onLogin }) {
       return;
     }
 
-    if (!firebaseApp) {
+    if (!auth) {
       toast.error("Firebase is not configured.");
       return;
     }
@@ -218,10 +216,9 @@ export default function Auth({ onLogin }) {
     try {
       setLoading(true);
       setupRecaptcha();
-      const auth = getAuth();
       const appVerifier = window.recaptchaVerifier;
-      const confirmationResult = await signInWithPhoneNumber(auth, values.phone, appVerifier);
-      setVerificationId(confirmationResult.verificationId);
+      const result = await signInWithPhone(values.phone, appVerifier);
+      setConfirmationResult(result);
       toast.success('OTP sent to your phone!');
     } catch (error) {
       console.error("Phone auth error:", error);
@@ -239,10 +236,14 @@ export default function Auth({ onLogin }) {
       return;
     }
 
+    if (!confirmationResult) {
+      toast.error('Please send OTP first');
+      return;
+    }
+
     try {
       setLoading(true);
-      const auth = getAuth();
-      const credential = window.recaptchaVerifier.confirm(values.otp);
+      const credential = await confirmationResult.confirm(values.otp);
       const firebaseUser = credential.user;
 
       const dbUser = await createUser({
@@ -265,8 +266,7 @@ export default function Auth({ onLogin }) {
 
   const handleLogout = async () => {
     try {
-      const auth = getAuth();
-      await signOut(auth);
+      await firebaseSignOut();
       setCurrentUser(null);
       dispatch(setUser(null));
       toast.success('Logged out successfully');
