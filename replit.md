@@ -6,6 +6,31 @@ White Caves is a comprehensive real estate platform focused on the Dubai luxury 
 
 ## Recent Changes
 
+**November 7, 2025** - Firebase integration and modern Profile component:
+- Created comprehensive Firebase setup documentation (FIREBASE_SETUP.md) with step-by-step instructions for all authentication methods
+- Centralized Firebase configuration in src/config/firebase.js with exportable authentication functions
+- Refactored Auth component to use Firebase utility functions, reducing code duplication
+- Fixed critical phone authentication bug - now properly stores confirmationResult for OTP verification
+- All 6 authentication methods fully functional: Google, Facebook, Apple, Email/Password, Phone/SMS OTP
+- Enhanced social login button styling with theme-specific designs (light/dark mode)
+- Google button: white gradient in light mode, dark gradient in dark mode
+- Facebook button: blue gradient in light mode, dark blue gradient in dark mode
+- Completely redesigned Profile component with modern tabbed interface
+- Profile tabs: Overview, Favorites, Saved Searches, Activity History, Settings
+- Profile picture upload and management functionality
+- Display of all connected login methods (social accounts, email, phone)
+- Favorites section with property cards and remove functionality
+- Saved searches management with run/delete actions
+- Activity timeline showing user interactions
+- Notification and privacy preference settings
+- Security settings section for password, email, and 2FA management
+- Account statistics dashboard (favorites count, saved searches, activities)
+- Modern, responsive Profile styling with gradient backgrounds
+- Full dark mode support for all Profile features
+- Smooth animations and transitions throughout Profile UI
+- Mobile-responsive grid layouts for all screen sizes
+- Vite configuration updated with @assets alias for image imports
+
 **November 3, 2025** - Company branding and enhanced authentication:
 - Added company logo to navigation header and footer
 - Logo displays in both light and dark modes with appropriate styling
@@ -116,8 +141,17 @@ Preferred communication style: Simple, everyday language.
 
 **Provider**: Firebase Authentication supporting:
 - Google OAuth
+- Facebook OAuth
 - Apple Sign-In
 - Email/password authentication
+- Phone/SMS OTP authentication
+
+**Firebase Configuration**: Centralized in `src/config/firebase.js` with:
+- Modular SDK v9 implementation
+- Exported authentication functions for all sign-in methods
+- User profile management utilities (updateUserProfile, updateUserEmail, updateUserPassword)
+- Email verification and password reset functions
+- Proper error handling and configuration checks
 
 **Role-Based Access Control**: Multi-role system where users can have multiple roles simultaneously:
 - VISITOR, AGENT, EMPLOYEE, BUYER, SELLER, TENANT, LANDLORD, PROPERTY_OWNER, SUPER_USER
