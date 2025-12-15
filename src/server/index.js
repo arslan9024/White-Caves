@@ -7,6 +7,9 @@ import propertiesRouter from './routes/properties.js';
 import appointmentsRouter from './routes/appointments.js';
 import paymentsRouter from './routes/payments.js';
 import tenancyAgreementsRouter from './routes/tenancyAgreements.js';
+import favoritesRouter from './routes/favorites.js';
+import savedSearchesRouter from './routes/savedSearches.js';
+import alertsRouter from './routes/alerts.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 
 const app = express();
@@ -39,6 +42,9 @@ app.use('/api/properties', propertiesRouter);
 app.use('/api/appointments', appointmentsRouter);
 app.use('/api/payments', paymentsRouter);
 app.use('/api/tenancy-agreements', tenancyAgreementsRouter);
+app.use('/api/favorites', favoritesRouter);
+app.use('/api/saved-searches', savedSearchesRouter);
+app.use('/api/alerts', alertsRouter);
 
 app.use(notFound);
 app.use(errorHandler);
