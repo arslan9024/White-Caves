@@ -4,6 +4,7 @@ import {
   GoogleAuthProvider, 
   FacebookAuthProvider, 
   OAuthProvider,
+  EmailAuthProvider,
   signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -14,7 +15,8 @@ import {
   updateEmail,
   updatePassword,
   sendPasswordResetEmail,
-  sendEmailVerification
+  sendEmailVerification,
+  reauthenticateWithCredential
 } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -115,5 +117,5 @@ export const verifyEmail = async (user) => {
   return await sendEmailVerification(user);
 };
 
-export { auth };
+export { auth, EmailAuthProvider, reauthenticateWithCredential };
 export default app;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Profile.css';
-import { updateUserProfile, updateUserEmail, updateUserPassword, verifyEmail, reauthenticateWithCredential, EmailAuthProvider } from '../config/firebase';
+import { updateUserProfile, updateUserEmail, updateUserPassword, verifyEmail, EmailAuthProvider, reauthenticateWithCredential } from '../config/firebase';
 import { useToast } from './Toast';
 
 const GoogleIcon = () => (
