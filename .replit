@@ -82,3 +82,12 @@ outputType = "webview"
 [agent]
 expertMode = true
 integrations = ["javascript_stripe:1.0.0"]
+
+[userenv]
+
+[userenv.shared]
+VITE_FIREBASE_AUTH_DOMAIN = "white-caves-fb.firebaseapp.com"
+VITE_FIREBASE_PROJECT_ID = "white-caves-fb"
+VITE_FIREBASE_STORAGE_BUCKET = "white-caves-fb.firebasestorage.app"
+VITE_FIREBASE_MESSAGING_SENDER_ID = "536150736818"
+VITE_FIREBASE_APP_ID = "1:536150736818:web:4754b355390403d9696eab"
