@@ -26,6 +26,7 @@ import UserDashboard from './components/UserDashboard';
 import BlogSection from './components/BlogSection';
 import TestimonialsCarousel from './components/TestimonialsCarousel';
 import NewsletterSubscription from './components/NewsletterSubscription';
+import AdminDashboard from './components/AdminDashboard';
 
 
 function App() {
@@ -482,6 +483,10 @@ function App() {
 
           <section className="dashboard-section" id="dashboard">
             <UserDashboard />
+          </section>
+
+          <section className="admin-section" id="admin">
+            <AdminDashboard />
           </section>
 
           <section className="mortgage-section">
