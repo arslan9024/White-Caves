@@ -19,6 +19,7 @@ import WhatsAppButton from './components/WhatsAppButton';
 import FeaturedAgents from './components/FeaturedAgents';
 import MortgageCalculator from './components/MortgageCalculator';
 import RecentlyViewed, { useRecentlyViewed } from './components/RecentlyViewed';
+import InteractiveMap from './components/InteractiveMap';
 
 
 function App() {
@@ -252,6 +253,10 @@ function App() {
                 </div>
               </div>
             </div>
+          </section>
+
+          <section className="map-section" id="map">
+            <InteractiveMap onPropertySelect={(property) => handlePropertyClick(property.id)} />
           </section>
           
           <section className="featured-locations">
