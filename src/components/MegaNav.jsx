@@ -137,9 +137,9 @@ export default function MegaNav({ onLogin, user }) {
                       </div>
 
                       <div className="mega-col">
-                        <h4>Property Types</h4>
+                        <h4>{item.submenu.propertyTypes ? 'Property Types' : 'Developers'}</h4>
                         <ul className="mega-links">
-                          {item.submenu.propertyTypes.map((type) => (
+                          {(item.submenu.propertyTypes || item.submenu.developers || []).map((type) => (
                             <li key={type}><a href="#">{type}</a></li>
                           ))}
                         </ul>
@@ -155,9 +155,9 @@ export default function MegaNav({ onLogin, user }) {
                       </div>
 
                       <div className="mega-col">
-                        <h4>{item.submenu.priceRanges ? 'Price Range' : item.submenu.paymentPlans ? 'Payment Plans' : 'Developers'}</h4>
+                        <h4>{item.submenu.priceRanges ? 'Price Range' : 'Payment Plans'}</h4>
                         <ul className="mega-links">
-                          {(item.submenu.priceRanges || item.submenu.paymentPlans || item.submenu.developers || []).map((val) => (
+                          {(item.submenu.priceRanges || item.submenu.paymentPlans || []).map((val) => (
                             <li key={val}><a href="#">{val}</a></li>
                           ))}
                         </ul>

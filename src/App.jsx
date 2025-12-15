@@ -1,29 +1,23 @@
 import React, { useState, useEffect } from 'react'
 import './App.css'
+import './styles/design-system.css'
 import Auth from './components/Auth'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
 import { useSelector, useDispatch } from 'react-redux';
 import { setProperties } from './store/propertySlice';
 import { setUser } from './store/userSlice';
+import MegaNav from './components/MegaNav';
 import MobileNav from './components/MobileNav';
 import ContactForm from './components/ContactForm';
 import ContactUs from './components/ContactUs';
 import Footer from './components/Footer';
-import PropertySearch from './components/PropertySearch';
+import AdvancedSearch from './components/AdvancedSearch';
 import PropertyMap from './components/PropertyMap';
 import Services from './components/Services';
 import JobApplicants from './components/JobApplicants';
 import WhatsAppButton from './components/WhatsAppButton';
 import FeaturedAgents from './components/FeaturedAgents';
-
-function ThemeToggle() {
-  const { isDark, setIsDark } = useTheme();
-  return (
-    <button className="theme-toggle" onClick={() => setIsDark(!isDark)}>
-      {isDark ? '🌞' : '🌙'}
-    </button>
-  );
-}
+import MortgageCalculator from './components/MortgageCalculator';
 
 
 function App() {
@@ -31,6 +25,7 @@ function App() {
   const user = useSelector(state => state.user.currentUser);
   const filteredProperties = useSelector(state => state.properties.filteredProperties);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
     dispatch(setProperties([
@@ -198,60 +193,36 @@ function App() {
     };
     checkAuth();
   }, [dispatch]);
-  const handleSearch = (filters) => {
-    const filtered = filteredProperties.filter(property => {
-      const matchesSearch = !filters.search || 
-        property.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-        property.location.toLowerCase().includes(filters.search.toLowerCase());
-
-      const matchesMinPrice = !filters.minPrice || property.price >= parseInt(filters.minPrice);
-      const matchesMaxPrice = !filters.maxPrice || property.price <= parseInt(filters.maxPrice);
-      const matchesBeds = filters.beds === 'any' || property.beds >= parseInt(filters.beds);
-      const matchesLocation = !filters.location || 
-        property.location.toLowerCase().includes(filters.location.toLowerCase());
-      const matchesMinSqft = !filters.minSqft || property.sqft >= parseInt(filters.minSqft);
-      const matchesMaxSqft = !filters.maxSqft || property.sqft <= parseInt(filters.maxSqft);
-      const matchesAmenities = filters.amenities.length === 0 || 
-        filters.amenities.every(amenity => property.amenities.includes(amenity));
-
-      return matchesSearch && matchesMinPrice && matchesMaxPrice && 
-             matchesBeds && matchesLocation && matchesMinSqft && 
-             matchesMaxSqft && matchesAmenities;
-    });
-    dispatch(setProperties(filtered));
-  };
 
   return (
     <div className="app">
       {!user ? (
         <>
-          <header>
-            <nav>
-              <div className="logo">
-                <img src="/company-logo.jpg" alt="White Caves" className="logo-img" />
+          <MegaNav user={user} onLogin={() => setShowAuthModal(true)} />
+
+          {showAuthModal && (
+            <div className="auth-modal-overlay" onClick={() => setShowAuthModal(false)}>
+              <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
+                <button className="auth-modal-close" onClick={() => setShowAuthModal(false)}>
+                  &times;
+                </button>
+                <Auth onLogin={() => {
+                  setShowAuthModal(false);
+                  window.location.reload();
+                }} />
               </div>
-              <button className="hamburger" onClick={() => setMobileNavOpen(true)}>
-                ☰
-              </button>
-              <div className="nav-links">
-                <a href="#home">Home</a>
-                <a href="#about">About</a>
-                <a href="#services">Services</a>
-                <a href="#laws">Dubai Laws</a>
-                <a href="#contact">Contact</a>
-                <ThemeToggle />
-              </div>
-            </nav>
-          </header>
-          <MobileNav isOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
+            </div>
+          )}
 
           <section className="hero" id="home">
             <div className="hero-overlay"></div>
             <div className="hero-content">
-              <h1 className="hero-title">Luxury Real Estate in Dubai</h1>
-              <p className="hero-subtitle">Discover Premium Properties with White Caves</p>
-              <p className="hero-description">Experience unparalleled luxury living in Dubai's most prestigious locations</p>
-              <Auth onLogin={() => window.location.reload()} />
+              <h1 className="hero-title animate-fadeInUp">Luxury Real Estate in Dubai</h1>
+              <p className="hero-subtitle animate-fadeInUp animate-delay-100">Discover Premium Properties with White Caves</p>
+              <p className="hero-description animate-fadeInUp animate-delay-200">Experience unparalleled luxury living in Dubai's most prestigious locations</p>
+              <button className="btn btn-primary btn-lg animate-fadeInUp animate-delay-300" onClick={() => setShowAuthModal(true)}>
+                Get Started
+              </button>
               <div className="hero-stats">
                 <div className="stat-item">
                   <h3>500+</h3>
@@ -464,31 +435,28 @@ function App() {
         </>
       ) : (
         <>
-          <header>
-        <nav>
-          <div className="logo">
-            <img src="/company-logo.jpg" alt="White Caves" className="logo-img" />
-          </div>
-          <button className="hamburger" onClick={() => setMobileNavOpen(true)}>
-            ☰
-          </button>
-          <div className="nav-links">
-            <a href="#home">Home</a>
-            <a href="#properties">Properties</a>
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
-            <ThemeToggle />
-          </div>
-        </nav>
-      </header>
-      <MobileNav isOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
+          <MegaNav user={user} onLogin={() => setShowAuthModal(true)} />
 
-      <section className="hero">
-        <h1>Luxury Real Estate in Dubai</h1>
-        <p>Discover Premium Properties with White Caves</p>
-        <button className="cta-button">Explore Properties</button>
-      </section>
-      <Services /> {/* Added Services component */}
+          <section className="hero" id="home">
+            <div className="hero-overlay"></div>
+            <div className="hero-content">
+              <h1 className="hero-title animate-fadeInUp">Welcome back, {user.name || 'User'}</h1>
+              <p className="hero-subtitle animate-fadeInUp animate-delay-100">Find your dream property in Dubai</p>
+              <a href="#properties" className="btn btn-primary btn-lg animate-fadeInUp animate-delay-200">
+                Browse Properties
+              </a>
+            </div>
+          </section>
+
+          <section className="mortgage-section">
+            <div className="container">
+              <h2 className="section-title">Mortgage Calculator</h2>
+              <p className="section-subtitle">Plan your property investment with our easy-to-use calculator</p>
+              <MortgageCalculator />
+            </div>
+          </section>
+
+          <Services />
 
       <section className="job-applicants-section">
         <JobApplicants />
@@ -496,7 +464,7 @@ function App() {
 
       <section className="featured-properties">
         <h2>Featured Properties</h2>
-        <PropertySearch onSearch={handleSearch} />
+        <AdvancedSearch />
         <FeaturedAgents />
         <div className="property-grid">
           {filteredProperties.map(property => (
