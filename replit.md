@@ -6,6 +6,23 @@ White Caves is a comprehensive real estate platform focused on the Dubai luxury 
 
 ## Recent Changes
 
+**December 15, 2025** - Major platform upgrade with 15 new features:
+- Design system with CSS variables, glass panels, and animations
+- MegaNav with mega dropdowns (Buy/Rent/Commercial/New Projects)
+- Skeleton loaders and micro-interactions throughout the app
+- Mortgage calculator with amortization schedule
+- Advanced search filters (price slider, beds/baths, property types, sorting)
+- Recently viewed properties section with local storage persistence
+- Backend APIs for favorites, saved searches, and price alerts
+- Interactive SVG-based Dubai map with neighborhood exploration
+- Property comparison tool (compare up to 4 properties side-by-side)
+- Full-screen image gallery with swipe gestures and neighborhood info
+- User dashboard with tabs (overview, favorites, searches, alerts, activity)
+- Blog section with featured posts, category filters, and load more
+- Testimonials carousel with auto-play and smooth transitions
+- Newsletter subscription component
+- Admin dashboard with full property CRUD (create, read, update, delete)
+
 **November 7, 2025** - Firebase integration and modern Profile component:
 - Created comprehensive Firebase setup documentation (FIREBASE_SETUP.md) with step-by-step instructions for all authentication methods
 - Centralized Firebase configuration in src/config/firebase.js with exportable authentication functions
