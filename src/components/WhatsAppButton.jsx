@@ -3,7 +3,7 @@ import React from 'react';
 import './WhatsAppButton.css';
 
 export default function WhatsAppButton() {
-  const phoneNumber = '+971563616136';
+  const phoneNumber = '+9715636136';
   const message = encodeURIComponent('Hello! I would like to inquire about White Caves Real Estate services.');
   
   const handleWhatsAppClick = () => {

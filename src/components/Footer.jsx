@@ -1,4 +1,3 @@
-
 import React from 'react';
 import './Footer.css';
 import SocialLinks from './SocialLinks';
@@ -8,8 +7,13 @@ export default function Footer() {
     <footer className="footer">
       <div className="footer-content">
         <div className="footer-section">
-          <img src="/company-logo.jpg" alt="White Caves" className="footer-logo" />
+          <img src="/company-logo.jpg" alt="White Caves Real Estate LLC" className="footer-logo" />
           <p>Your trusted partner in Dubai real estate</p>
+          <div className="footer-contact">
+            <p>📍 Office D-72, El-Shaye-4, Port Saeed, Dubai</p>
+            <p>📞 +971 4 335 0592</p>
+            <p>📧 the.white.caves@gmail.com</p>
+          </div>
         </div>
         <div className="footer-section">
           <h3>Quick Links</h3>
@@ -26,7 +30,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="footer-bottom">
-        <p>© 2024 White Caves Real Estate. All rights reserved.</p>
+        <p>© 2025 White Caves Real Estate LLC. All rights reserved.</p>
       </div>
     </footer>
   );
