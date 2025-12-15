@@ -17,10 +17,7 @@ const app = express();
 let isMongoDBConnected = false;
 
 if (process.env.MONGODB_URI) {
-  mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  }).then(() => {
+  mongoose.connect(process.env.MONGODB_URI).then(() => {
     isMongoDBConnected = true;
     console.log('✓ Connected to MongoDB');
   }).catch(err => {
