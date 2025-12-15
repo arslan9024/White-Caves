@@ -20,6 +20,7 @@ import FeaturedAgents from './components/FeaturedAgents';
 import MortgageCalculator from './components/MortgageCalculator';
 import RecentlyViewed, { useRecentlyViewed } from './components/RecentlyViewed';
 import InteractiveMap from './components/InteractiveMap';
+import PropertyComparison from './components/PropertyComparison';
 
 
 function App() {
@@ -257,6 +258,10 @@ function App() {
 
           <section className="map-section" id="map">
             <InteractiveMap onPropertySelect={(property) => handlePropertyClick(property.id)} />
+          </section>
+
+          <section className="comparison-section" id="compare">
+            <PropertyComparison />
           </section>
           
           <section className="featured-locations">
