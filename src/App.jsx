@@ -18,6 +18,7 @@ import JobApplicants from './components/JobApplicants';
 import WhatsAppButton from './components/WhatsAppButton';
 import FeaturedAgents from './components/FeaturedAgents';
 import MortgageCalculator from './components/MortgageCalculator';
+import RecentlyViewed, { useRecentlyViewed } from './components/RecentlyViewed';
 
 
 function App() {
@@ -26,6 +27,15 @@ function App() {
   const filteredProperties = useSelector(state => state.properties.filteredProperties);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const { recentIds, addToRecent, clearRecent } = useRecentlyViewed();
+
+  const handlePropertyClick = (propertyId) => {
+    addToRecent(propertyId);
+    const element = document.getElementById(`property-${propertyId}`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
 
   useEffect(() => {
     dispatch(setProperties([
@@ -462,13 +472,24 @@ function App() {
         <JobApplicants />
       </section>
 
-      <section className="featured-properties">
+      <RecentlyViewed 
+        recentIds={recentIds} 
+        onClear={clearRecent} 
+        onPropertyClick={handlePropertyClick} 
+      />
+
+      <section className="featured-properties" id="properties">
         <h2>Featured Properties</h2>
         <AdvancedSearch />
         <FeaturedAgents />
         <div className="property-grid">
           {filteredProperties.map(property => (
-            <div key={property.id} className="property-card" id={`property-${property.id}`}>
+            <div 
+              key={property.id} 
+              className="property-card" 
+              id={`property-${property.id}`}
+              onClick={() => addToRecent(property.id)}
+            >
               <div className="image-gallery">
                 <div 
                   className="property-image" 
