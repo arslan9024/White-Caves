@@ -1,5 +1,5 @@
 run = "npm run dev"
-modules = ["nodejs-20"]
+modules = ["nodejs-20", "python-3.11"]
 hidden = [".config", "package-lock.json"]
 entrypoint = "index.html"
 
@@ -81,7 +81,7 @@ outputType = "webview"
 
 [agent]
 expertMode = true
-integrations = ["javascript_stripe:1.0.0"]
+integrations = ["javascript_stripe:1.0.0", "github:1.0.0"]
 
 [userenv]
 
