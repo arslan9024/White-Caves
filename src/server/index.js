@@ -2,6 +2,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import './config/firebaseAdmin.js';
 import usersRouter from './routes/users.js';
 import propertiesRouter from './routes/properties.js';
 import appointmentsRouter from './routes/appointments.js';
