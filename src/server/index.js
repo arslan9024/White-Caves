@@ -11,6 +11,7 @@ import tenancyAgreementsRouter from './routes/tenancyAgreements.js';
 import favoritesRouter from './routes/favorites.js';
 import savedSearchesRouter from './routes/savedSearches.js';
 import alertsRouter from './routes/alerts.js';
+import authRouter from './routes/auth.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 
 const app = express();
@@ -35,6 +36,7 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/properties', propertiesRouter);
 app.use('/api/appointments', appointmentsRouter);

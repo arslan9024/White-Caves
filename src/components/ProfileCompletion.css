@@ -1,0 +1,221 @@
+.profile-completion-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.profile-completion-modal {
+  background: var(--card-bg, #fff);
+  border-radius: 20px;
+  max-width: 480px;
+  width: 100%;
+  padding: 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-completion-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.welcome-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--primary-color, #2563eb) 0%, var(--secondary-color, #7c3aed) 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.welcome-icon svg {
+  width: 40px;
+  height: 40px;
+  color: white;
+}
+
+.profile-completion-header h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-color, #1a1a1a);
+  margin: 0 0 0.5rem;
+}
+
+.profile-completion-header p {
+  color: var(--text-muted, #6b7280);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.profile-completion-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.profile-completion-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.profile-completion-form label {
+  font-weight: 600;
+  color: var(--text-color, #1a1a1a);
+  font-size: 0.95rem;
+}
+
+.profile-completion-form input {
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: var(--input-bg, #f9fafb);
+  color: var(--text-color, #1a1a1a);
+}
+
+.profile-completion-form input:focus {
+  outline: none;
+  border-color: var(--primary-color, #2563eb);
+  background: var(--card-bg, #fff);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.profile-completion-form input::placeholder {
+  color: var(--text-muted, #9ca3af);
+}
+
+.form-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted, #6b7280);
+}
+
+.phone-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--bg-secondary, #f3f4f6);
+  border-radius: 12px;
+  flex-wrap: wrap;
+}
+
+.phone-label {
+  font-weight: 600;
+  color: var(--text-color, #1a1a1a);
+}
+
+.phone-value {
+  color: var(--text-muted, #6b7280);
+  flex: 1;
+}
+
+.verified-badge {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.profile-completion-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.btn-complete {
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, var(--primary-color, #2563eb) 0%, var(--secondary-color, #7c3aed) 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-complete:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+.btn-complete:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-skip {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  color: var(--text-muted, #6b7280);
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-skip:hover:not(:disabled) {
+  color: var(--text-color, #1a1a1a);
+  background: var(--bg-secondary, #f3f4f6);
+}
+
+[data-theme="dark"] .profile-completion-modal {
+  background: var(--card-bg, #1f2937);
+}
+
+[data-theme="dark"] .profile-completion-form input {
+  background: var(--input-bg, #374151);
+  border-color: var(--border-color, #4b5563);
+}
+
+[data-theme="dark"] .phone-display {
+  background: var(--bg-secondary, #374151);
+}
+
+@media (max-width: 480px) {
+  .profile-completion-modal {
+    padding: 1.5rem;
+  }
+  
+  .profile-completion-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .welcome-icon {
+    width: 64px;
+    height: 64px;
+  }
+  
+  .welcome-icon svg {
+    width: 32px;
+    height: 32px;
+  }
+}

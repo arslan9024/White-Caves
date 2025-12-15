@@ -2,18 +2,22 @@
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-  email: { type: String, required: true, unique: true },
-  name: { type: String, required: true },
+  firebaseUid: { type: String, sparse: true, unique: true },
+  email: { type: String, sparse: true },
+  phone: { type: String, sparse: true },
+  name: { type: String, default: '' },
   photoUrl: String,
   roles: {
     type: [String],
     enum: ['VISITOR', 'AGENT', 'EMPLOYEE', 'BUYER', 'SELLER', 'TENANT', 'LANDLORD', 'PROPERTY_OWNER', 'SUPER_USER'],
     default: ['VISITOR']
   },
+  role: { type: String, default: 'user' },
   isSuperUser: { type: Boolean, default: false },
   isDecisionMaker: { type: Boolean, default: false },
   properties: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Property' }],
   verified: { type: Boolean, default: false },
+  profileComplete: { type: Boolean, default: false },
   passport: {
     documentUrl: String,
     documentNumber: String,
@@ -21,10 +25,12 @@ const userSchema = new mongoose.Schema({
     verified: { type: Boolean, default: false }
   },
   contactInfo: {
-    phone: String,
     address: String
   },
-  createdAt: { type: Date, default: Date.now }
+  lastLogin: { type: Date },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
 });
+
 
 export default mongoose.model('User', userSchema);
