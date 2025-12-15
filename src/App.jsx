@@ -21,6 +21,11 @@ import MortgageCalculator from './components/MortgageCalculator';
 import RecentlyViewed, { useRecentlyViewed } from './components/RecentlyViewed';
 import InteractiveMap from './components/InteractiveMap';
 import PropertyComparison from './components/PropertyComparison';
+import ImageGallery from './components/ImageGallery';
+import UserDashboard from './components/UserDashboard';
+import BlogSection from './components/BlogSection';
+import TestimonialsCarousel from './components/TestimonialsCarousel';
+import NewsletterSubscription from './components/NewsletterSubscription';
 
 
 function App() {
@@ -29,6 +34,7 @@ function App() {
   const filteredProperties = useSelector(state => state.properties.filteredProperties);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [galleryProperty, setGalleryProperty] = useState(null);
   const { recentIds, addToRecent, clearRecent } = useRecentlyViewed();
 
   const handlePropertyClick = (propertyId) => {
@@ -445,6 +451,12 @@ function App() {
             </div>
           </section>
 
+          <TestimonialsCarousel />
+          
+          <BlogSection />
+          
+          <NewsletterSubscription />
+
           <section className="contact" id="contact">
             <ContactUs />
             <ContactForm />
@@ -466,6 +478,10 @@ function App() {
                 Browse Properties
               </a>
             </div>
+          </section>
+
+          <section className="dashboard-section" id="dashboard">
+            <UserDashboard />
           </section>
 
           <section className="mortgage-section">
@@ -556,11 +572,28 @@ function App() {
               <div className="property-map">
                 <PropertyMap location={property.location} />
               </div>
-              <button className="view-details">View Details</button>
+              <div className="property-actions">
+                <button 
+                  className="view-gallery-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setGalleryProperty(property);
+                  }}
+                >
+                  📷 Gallery & Neighborhood
+                </button>
+                <button className="view-details">View Details</button>
+              </div>
             </div>
           ))}
         </div>
       </section>
+
+      <ImageGallery 
+        property={galleryProperty}
+        isOpen={!!galleryProperty}
+        onClose={() => setGalleryProperty(null)}
+      />
 
       <section className="contact">
         <ContactUs />

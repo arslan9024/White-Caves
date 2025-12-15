@@ -852,6 +852,40 @@ nav {
   background: #b08d4a;
 }
 
+.property-actions {
+  display: flex;
+  gap: 8px;
+  padding: 0 1rem 1rem 1rem;
+}
+
+.view-gallery-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.view-gallery-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.property-actions .view-details {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+}
+
+[data-theme="dark"] .view-gallery-btn {
+  background: linear-gradient(135deg, #5a67d8, #6b46c1);
+}
+
 .image-gallery {
   position: relative;
   height: 200px;
@@ -1101,6 +1135,16 @@ body.dark-mode .auth-modal {
 @keyframes scaleIn {
   from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
+}
+
+.dashboard-section {
+  padding: 2rem 0;
+  background: var(--bg-secondary, #f8f9fa);
+}
+
+body.dark-mode .dashboard-section,
+[data-theme="dark"] .dashboard-section {
+  background: #1a1a2e;
 }
 
 .mortgage-section {

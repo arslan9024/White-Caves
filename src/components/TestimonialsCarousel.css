@@ -1,0 +1,265 @@
+.testimonials-section {
+  padding: 80px 0;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  overflow: hidden;
+}
+
+.testimonials-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.testimonials-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.testimonials-header h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 12px 0;
+}
+
+.testimonials-header p {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+.carousel-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.carousel-btn {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.carousel-btn:hover {
+  background: var(--primary, #c9a962);
+  border-color: var(--primary, #c9a962);
+  transform: scale(1.1);
+}
+
+.carousel-track {
+  flex: 1;
+  position: relative;
+  height: 420px;
+  overflow: hidden;
+}
+
+.testimonial-card {
+  position: absolute;
+  width: 100%;
+  max-width: 700px;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  transition: all 0.5s ease;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .testimonial-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.testimonial-card:not(.active) {
+  pointer-events: none;
+}
+
+.quote-icon {
+  font-size: 5rem;
+  line-height: 1;
+  color: var(--primary, #c9a962);
+  opacity: 0.3;
+  font-family: Georgia, serif;
+  margin-bottom: -20px;
+}
+
+.testimonial-text {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: var(--text-primary, #1a1a2e);
+  margin: 0 0 16px 0;
+  font-style: italic;
+}
+
+[data-theme="dark"] .testimonial-text {
+  color: white;
+}
+
+.property-purchased {
+  font-size: 0.9rem;
+  color: var(--primary, #c9a962);
+  font-weight: 600;
+  margin: 0 0 16px 0;
+}
+
+.testimonial-rating {
+  margin-bottom: 24px;
+}
+
+.star {
+  font-size: 1.2rem;
+  color: #ddd;
+  margin: 0 2px;
+}
+
+.star.filled {
+  color: #ffc107;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.author-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary, #c9a962);
+}
+
+.author-info h4 {
+  margin: 0 0 4px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a2e);
+}
+
+[data-theme="dark"] .author-info h4 {
+  color: white;
+}
+
+.author-info p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #6b7280);
+}
+
+[data-theme="dark"] .author-info p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 32px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.dot:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.dot.active {
+  background: var(--primary, #c9a962);
+  transform: scale(1.3);
+}
+
+.trust-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  margin-top: 60px;
+  padding-top: 40px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.trust-item {
+  text-align: center;
+}
+
+.trust-number {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary, #c9a962);
+  margin-bottom: 8px;
+}
+
+.trust-label {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+  .testimonials-section {
+    padding: 60px 0;
+  }
+
+  .testimonials-header h2 {
+    font-size: 2rem;
+  }
+
+  .carousel-btn {
+    display: none;
+  }
+
+  .carousel-track {
+    height: 480px;
+  }
+
+  .testimonial-card {
+    padding: 30px 20px;
+    max-width: 100%;
+  }
+
+  .testimonial-text {
+    font-size: 1rem;
+  }
+
+  .quote-icon {
+    font-size: 3rem;
+    margin-bottom: -10px;
+  }
+
+  .trust-indicators {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .trust-number {
+    font-size: 2rem;
+  }
+}
