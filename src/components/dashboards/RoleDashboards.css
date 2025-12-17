@@ -1,0 +1,592 @@
+.role-dashboard {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.dashboard-welcome h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.dashboard-welcome p {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.dashboard-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.stat-change {
+  font-size: 0.75rem;
+  color: var(--primary-color);
+  margin-top: 0.25rem;
+}
+
+.dashboard-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--glass-border);
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 0;
+}
+
+.dashboard-tabs .tab {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: none;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.dashboard-tabs .tab:hover {
+  color: var(--text-primary);
+}
+
+.dashboard-tabs .tab.active {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.dashboard-tabs .tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--primary-color);
+  border-radius: 2px 2px 0 0;
+}
+
+.dashboard-content {
+  min-height: 400px;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.dashboard-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+}
+
+.dashboard-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.dashboard-card h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+}
+
+.placeholder-text {
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 2rem;
+}
+
+.btn-link {
+  background: transparent;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+  display: block;
+  margin-top: 1rem;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+.leads-list,
+.viewings-list,
+.maintenance-list,
+.documents-list,
+.team-performance-list,
+.deals-list,
+.payments-list,
+.saved-properties-list,
+.alerts-list,
+.inquiries-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.lead-item,
+.viewing-item,
+.maintenance-item,
+.document-item,
+.team-member-item,
+.deal-item,
+.payment-item,
+.saved-property-item,
+.alert-item,
+.inquiry-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  gap: 1rem;
+}
+
+.lead-info,
+.viewing-info,
+.maintenance-info,
+.doc-info,
+.member-info,
+.deal-info,
+.payment-info,
+.property-info,
+.alert-info,
+.inquiry-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.lead-name,
+.viewing-property,
+.maintenance-issue,
+.doc-name,
+.member-name,
+.deal-property,
+.payment-property,
+.property-title,
+.alert-property,
+.inquiry-buyer,
+.listing-title {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.lead-property,
+.viewing-client,
+.viewing-agent,
+.maintenance-date,
+.doc-date,
+.member-stats,
+.deal-agent,
+.payment-tenant,
+.property-details,
+.alert-criteria,
+.inquiry-property,
+.listing-price {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.lead-meta,
+.viewing-time,
+.deal-meta,
+.payment-meta,
+.property-meta,
+.inquiry-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.lead-status,
+.maintenance-status,
+.deal-status,
+.property-status,
+.inquiry-status,
+.listing-status,
+.status-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+}
+
+.status-hot,
+.status-new {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.status-warm,
+.status-in-progress {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.status-new {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.status-completed,
+.status-closed,
+.status-received {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.status-scheduled,
+.status-negotiating,
+.status-responded,
+.status-viewing-scheduled {
+  background: rgba(139, 92, 246, 0.15);
+  color: #8b5cf6;
+}
+
+.status-badge.occupied {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.status-badge.vacant {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.status-badge.active {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.status-price-dropped {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.status-available {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.lead-date,
+.viewing-date,
+.payment-date,
+.inquiry-date {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.member-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.performance-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+}
+
+.performance-badge.excellent {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.performance-badge.good {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.performance-badge.average {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.deal-value,
+.payment-amount {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.property-thumb {
+  width: 48px;
+  height: 48px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.property-price {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.alert-matches {
+  font-size: 0.875rem;
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.lease-summary-card {
+  background: linear-gradient(135deg, var(--primary-color) 0%, #a01833 100%);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  color: white;
+  margin-bottom: 2rem;
+}
+
+.lease-summary-card h3 {
+  color: white;
+  opacity: 0.9;
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lease-property {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.property-icon {
+  font-size: 2rem;
+}
+
+.lease-property strong {
+  display: block;
+  font-size: 1.25rem;
+}
+
+.lease-property span {
+  opacity: 0.8;
+  font-size: 0.875rem;
+}
+
+.lease-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.lease-info-item {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+}
+
+.lease-info-item .label {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.8;
+  margin-bottom: 0.25rem;
+}
+
+.lease-info-item .value {
+  font-weight: 600;
+}
+
+.lease-info-item.highlight {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.properties-table {
+  overflow-x: auto;
+}
+
+.properties-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.properties-table th,
+.properties-table td {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.properties-table th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.listings-performance {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.listing-performance-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.listing-metrics {
+  display: flex;
+  gap: 2rem;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.metric-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.doc-icon {
+  font-size: 1.5rem;
+}
+
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 768px) {
+  .role-dashboard {
+    padding: 1rem;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+  }
+
+  .dashboard-actions {
+    width: 100%;
+  }
+
+  .dashboard-actions .btn {
+    flex: 1;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .listing-performance-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .listing-metrics {
+    width: 100%;
+    justify-content: space-around;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
