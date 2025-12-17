@@ -213,13 +213,22 @@ function App() {
     checkAuth();
   }, [dispatch]);
 
+  if (user) {
+    return (
+      <div className="app">
+        <MegaNav user={user} onLogout={() => window.location.reload()} />
+        <Auth onLogin={() => {}} />
+        <Footer />
+        <WhatsAppButton />
+      </div>
+    );
+  }
+
   return (
     <div className="app">
-      {!user ? (
-        <>
-          <MegaNav user={user} onLogin={() => setShowAuthModal(true)} />
+      <MegaNav user={user} onLogin={() => setShowAuthModal(true)} />
 
-          {showAuthModal && (
+      {showAuthModal && (
             <div className="auth-modal-overlay" onClick={() => setShowAuthModal(false)}>
               <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
                 <button className="auth-modal-close" onClick={() => setShowAuthModal(false)}>
@@ -463,45 +472,6 @@ function App() {
             <ContactForm />
           </section>
 
-          <Footer />
-          <WhatsAppButton />
-        </>
-      ) : (
-        <>
-          <MegaNav user={user} onLogin={() => setShowAuthModal(true)} />
-
-          <section className="hero" id="home">
-            <div className="hero-overlay"></div>
-            <div className="hero-content">
-              <h1 className="hero-title animate-fadeInUp">Welcome back, {user.name || 'User'}</h1>
-              <p className="hero-subtitle animate-fadeInUp animate-delay-100">Find your dream property in Dubai</p>
-              <a href="#properties" className="btn btn-primary btn-lg animate-fadeInUp animate-delay-200">
-                Browse Properties
-              </a>
-            </div>
-          </section>
-
-          <section className="dashboard-section" id="dashboard">
-            <UserDashboard />
-          </section>
-
-          <section className="admin-section" id="admin">
-            <AdminDashboard />
-          </section>
-
-          <section className="mortgage-section">
-            <div className="container">
-              <h2 className="section-title">Mortgage Calculator</h2>
-              <p className="section-subtitle">Plan your property investment with our easy-to-use calculator</p>
-              <MortgageCalculator />
-            </div>
-          </section>
-
-          <Services />
-
-      <section className="job-applicants-section">
-        <JobApplicants />
-      </section>
 
       <RecentlyViewed 
         recentIds={recentIds} 
@@ -607,10 +577,8 @@ function App() {
 
       <Footer />
       <WhatsAppButton />
-        </>
-      )}
     </div>
-  )
+  );
 }
 
 export default function AppWrapper() {
