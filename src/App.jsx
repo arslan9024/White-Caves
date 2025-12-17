@@ -22,11 +22,19 @@ import RecentlyViewed, { useRecentlyViewed } from './components/RecentlyViewed';
 import InteractiveMap from './components/InteractiveMap';
 import PropertyComparison from './components/PropertyComparison';
 import ImageGallery from './components/ImageGallery';
-import UserDashboard from './components/UserDashboard';
 import BlogSection from './components/BlogSection';
 import TestimonialsCarousel from './components/TestimonialsCarousel';
 import NewsletterSubscription from './components/NewsletterSubscription';
 import AdminDashboard from './components/AdminDashboard';
+import {
+  AgentDashboard,
+  TenantDashboard,
+  TeamLeaderDashboard,
+  LandlordDashboard,
+  BuyerDashboard,
+  SellerDashboard,
+  RoleSelector
+} from './components/dashboards';
 
 
 function App() {
@@ -37,6 +45,34 @@ function App() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [galleryProperty, setGalleryProperty] = useState(null);
   const { recentIds, addToRecent, clearRecent } = useRecentlyViewed();
+  
+  const [userRole, setUserRole] = useState(() => {
+    return localStorage.getItem('whitecaves_user_role') || null;
+  });
+
+  const handleRoleChange = (role) => {
+    setUserRole(role);
+    localStorage.setItem('whitecaves_user_role', role);
+  };
+
+  const renderRoleDashboard = () => {
+    switch (userRole) {
+      case 'agent':
+        return <AgentDashboard user={user} />;
+      case 'tenant':
+        return <TenantDashboard user={user} />;
+      case 'team_leader':
+        return <TeamLeaderDashboard user={user} />;
+      case 'landlord':
+        return <LandlordDashboard user={user} />;
+      case 'buyer':
+        return <BuyerDashboard user={user} />;
+      case 'seller':
+        return <SellerDashboard user={user} />;
+      default:
+        return <RoleSelector currentRole={userRole} onRoleChange={handleRoleChange} />;
+    }
+  };
 
   const handlePropertyClick = (propertyId) => {
     addToRecent(propertyId);
@@ -234,7 +270,10 @@ function App() {
         </section>
 
         <section className="dashboard-section" id="dashboard">
-          <UserDashboard />
+          <div className="role-switch-bar">
+            <RoleSelector compact currentRole={userRole} onRoleChange={handleRoleChange} />
+          </div>
+          {renderRoleDashboard()}
         </section>
 
         <section className="properties" id="properties">

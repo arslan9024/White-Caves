@@ -1155,3 +1155,18 @@ body.dark-mode .dashboard-section,
 body.dark-mode .mortgage-section {
   background: #1a1a2e;
 }
+
+.role-switch-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem 2rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.dashboard-section {
+  min-height: 80vh;
+  padding-top: 0;
+}
+
