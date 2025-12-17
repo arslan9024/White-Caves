@@ -216,8 +216,54 @@ function App() {
   if (user) {
     return (
       <div className="app">
-        <MegaNav user={user} onLogout={() => window.location.reload()} />
-        <Auth onLogin={() => {}} />
+        <MegaNav user={user} onLogout={() => {
+          localStorage.removeItem('whitecaves_auth_token');
+          localStorage.removeItem('whitecaves_user');
+          window.location.reload();
+        }} />
+        
+        <section className="hero" id="home">
+          <div className="hero-overlay"></div>
+          <div className="hero-content">
+            <h1 className="hero-title animate-fadeInUp">Welcome back{user.name ? `, ${user.name}` : ''}!</h1>
+            <p className="hero-subtitle animate-fadeInUp animate-delay-100">Manage your property journey with White Caves</p>
+            <a href="#dashboard" className="btn btn-primary btn-lg animate-fadeInUp animate-delay-200">
+              Go to Dashboard
+            </a>
+          </div>
+        </section>
+
+        <section className="dashboard-section" id="dashboard">
+          <UserDashboard />
+        </section>
+
+        <section className="properties" id="properties">
+          <div className="container">
+            <h2>Featured Properties</h2>
+            <AdvancedFilters />
+            <div className="property-grid">
+              {filteredProperties.slice(0, 6).map(property => (
+                <PropertyCard
+                  key={property.id}
+                  property={property}
+                  isFavorite={favorites.includes(property.id)}
+                  onFavorite={() => handleFavorite(property.id)}
+                  onCompare={() => handleCompare(property.id)}
+                  isComparing={compareList.includes(property.id)}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="mortgage-section">
+          <div className="container">
+            <h2 className="section-title">Mortgage Calculator</h2>
+            <p className="section-subtitle">Plan your property investment</p>
+            <MortgageCalculator />
+          </div>
+        </section>
+
         <Footer />
         <WhatsAppButton />
       </div>
