@@ -1390,9 +1390,15 @@ body.dark-mode .quick-link-card {
 }
 
 @media (max-width: 1024px) {
+  .role-page {
+    flex-direction: column;
+  }
+
   .role-page-content {
     margin-left: 0;
     margin-top: 70px;
+    padding: 1.5rem;
+    max-width: 100%;
   }
 
   .calculator-layout {
@@ -1402,11 +1408,69 @@ body.dark-mode .quick-link-card {
   .pipeline-summary {
     grid-template-columns: 1fr;
   }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .links-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
   .role-page-content {
     padding: 1rem;
+    margin-top: 60px;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .page-header p {
+    font-size: 0.875rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.8125rem;
+  }
+
+  .links-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .quick-link-card {
+    padding: 1rem;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .link-icon {
+    font-size: 1.25rem;
+  }
+
+  .link-title {
+    font-size: 0.9375rem;
+  }
+
+  .link-desc {
+    display: none;
   }
 
   .dashboard-grid {
@@ -1419,5 +1483,94 @@ body.dark-mode .quick-link-card {
 
   .results-grid {
     grid-template-columns: 1fr;
+  }
+
+  .quick-links h3 {
+    font-size: 1.125rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .role-page-content {
+    padding: 0.75rem;
+  }
+
+  .page-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.375rem;
+  }
+
+  .stat-card {
+    padding: 0.875rem;
+  }
+
+  .stat-icon {
+    font-size: 1.5rem;
+  }
+
+  .stat-value {
+    font-size: 1.125rem;
+  }
+
+  .quick-link-card {
+    padding: 0.875rem;
+    border-radius: 10px;
+  }
+
+  .process-step {
+    padding: 0.875rem;
+    gap: 0.75rem;
+  }
+
+  .process-step .step-number {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .role-page-content {
+    margin-top: 50px;
+    padding: 0.75rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+
+  .stat-card {
+    padding: 0.75rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 0.25rem;
+  }
+
+  .stat-icon {
+    font-size: 1.25rem;
+  }
+
+  .stat-value {
+    font-size: 1rem;
+  }
+
+  .stat-label {
+    font-size: 0.6875rem;
+  }
+
+  .links-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .page-header {
+    margin-bottom: 1rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.25rem;
   }
 }

@@ -160,6 +160,13 @@ body.dark-mode .nav-divider {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    z-index: 1000;
+  }
+
+  body.dark-mode .role-navigation {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .role-nav-header {
@@ -181,6 +188,8 @@ body.dark-mode .nav-divider {
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid var(--border-color);
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
   }
 
   body.dark-mode .role-nav-menu {
@@ -189,5 +198,87 @@ body.dark-mode .nav-divider {
 
   .role-nav-menu.open {
     display: flex;
+  }
+
+  .nav-item {
+    padding: 0.875rem 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .role-navigation {
+    padding: 0.75rem 1rem;
+  }
+
+  .role-nav-logo img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .role-nav-logo span {
+    font-size: 1rem;
+  }
+
+  .mobile-menu-toggle {
+    font-size: 1.25rem;
+  }
+
+  .nav-item {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .nav-icon {
+    font-size: 1rem;
+    width: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .role-navigation {
+    padding: 0.625rem 0.75rem;
+  }
+
+  .role-nav-logo img {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+  }
+
+  .role-nav-logo span {
+    font-size: 0.9375rem;
+  }
+
+  .role-nav-menu {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+  }
+
+  .nav-item {
+    padding: 0.625rem 0.75rem;
+    border-radius: 6px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .role-navigation {
+    padding: 0.5rem 1rem;
+  }
+
+  .role-nav-logo img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .role-nav-logo span {
+    font-size: 0.875rem;
+  }
+
+  .role-nav-menu {
+    max-height: calc(100vh - 50px);
+  }
+
+  .nav-item {
+    padding: 0.5rem 0.75rem;
   }
 }
