@@ -2,6 +2,8 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import './config/firebaseAdmin.js';
 import usersRouter from './routes/users.js';
 import propertiesRouter from './routes/properties.js';
@@ -13,6 +15,9 @@ import savedSearchesRouter from './routes/savedSearches.js';
 import alertsRouter from './routes/alerts.js';
 import authRouter from './routes/auth.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -46,10 +51,18 @@ app.use('/api/favorites', favoritesRouter);
 app.use('/api/saved-searches', savedSearchesRouter);
 app.use('/api/alerts', alertsRouter);
 
-app.use(notFound);
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../../dist')));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../dist/index.html'));
+  });
+} else {
+  app.use(notFound);
+}
+
 app.use(errorHandler);
 
-const PORT = process.env.BACKEND_PORT || 3000;
+const PORT = process.env.NODE_ENV === 'production' ? 5000 : (process.env.BACKEND_PORT || 3000);
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Backend server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
