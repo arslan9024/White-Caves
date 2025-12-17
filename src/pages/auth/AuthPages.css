@@ -1,19 +1,14 @@
-:root {
-  --auth-bg: #0f0f23;
-  --auth-card-bg: rgba(255, 255, 255, 0.05);
-  --auth-border: rgba(255, 255, 255, 0.1);
-  --auth-text: #ffffff;
-  --auth-text-secondary: rgba(255, 255, 255, 0.7);
-  --auth-primary: #c41835;
-}
-
 .auth-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+  background: var(--bg-secondary);
   padding: 2rem;
+}
+
+body.dark-mode .auth-page {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
 }
 
 .auth-container {
@@ -40,14 +35,20 @@
 .auth-logo span {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--auth-text);
+  color: var(--text-primary);
 }
 
 .auth-card {
-  background: rgba(15, 15, 35, 0.9);
-  border: 1px solid var(--auth-border);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
   border-radius: 24px;
   padding: 2.5rem;
+  box-shadow: var(--shadow-xl);
+}
+
+body.dark-mode .auth-card {
+  background: rgba(15, 15, 35, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
@@ -55,14 +56,14 @@
 .auth-card h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--auth-text);
+  color: var(--text-primary);
   margin: 0 0 0.5rem 0;
   text-align: center;
 }
 
 .auth-subtitle {
   font-size: 0.9375rem;
-  color: var(--auth-text-secondary);
+  color: var(--text-secondary);
   text-align: center;
   margin: 0 0 1.5rem 0;
 }
@@ -91,9 +92,13 @@
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-tertiary);
   padding: 0.25rem;
   border-radius: 12px;
+}
+
+body.dark-mode .auth-tabs {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .auth-tab {
@@ -101,7 +106,7 @@
   padding: 0.75rem;
   border: none;
   background: transparent;
-  color: var(--auth-text-secondary);
+  color: var(--text-secondary);
   font-size: 0.875rem;
   font-weight: 500;
   border-radius: 8px;
@@ -110,11 +115,11 @@
 }
 
 .auth-tab:hover {
-  color: var(--auth-text);
+  color: var(--text-primary);
 }
 
 .auth-tab.active {
-  background: var(--auth-primary);
+  background: var(--primary-color);
   color: white;
 }
 
@@ -134,17 +139,27 @@
   justify-content: center;
   gap: 0.75rem;
   padding: 0.875rem 1.5rem;
-  border: 1px solid var(--auth-border);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--auth-text);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
   font-size: 0.9375rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
+body.dark-mode .social-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
 .social-btn:hover:not(:disabled) {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+body.dark-mode .social-btn:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.2);
 }
@@ -180,29 +195,35 @@
 
 .form-group label {
   font-size: 0.875rem;
-  color: var(--auth-text-secondary);
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
 .form-group input,
 .form-group select {
   padding: 0.875rem 1rem;
-  border: 1px solid var(--auth-border);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--auth-text);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
   font-size: 1rem;
   transition: border-color 0.2s ease;
+}
+
+body.dark-mode .form-group input,
+body.dark-mode .form-group select {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: var(--auth-primary);
+  border-color: var(--primary-color);
 }
 
 .form-group input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-muted);
 }
 
 .form-group input:disabled {
@@ -212,7 +233,7 @@
 
 .input-hint {
   font-size: 0.75rem;
-  color: var(--auth-text-secondary);
+  color: var(--text-muted);
 }
 
 .btn {
@@ -230,12 +251,12 @@
 }
 
 .btn-primary {
-  background: var(--auth-primary);
+  background: var(--primary-color);
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #a01833;
+  background: var(--primary-dark);
 }
 
 .btn-primary:disabled {
@@ -244,12 +265,21 @@
 }
 
 .btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+body.dark-mode .btn-secondary {
   background: rgba(255, 255, 255, 0.1);
-  color: var(--auth-text);
-  border: 1px solid var(--auth-border);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .btn-secondary:hover {
+  background: var(--bg-secondary);
+}
+
+body.dark-mode .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.15);
 }
 
@@ -265,7 +295,7 @@
 
 .btn-link {
   background: transparent;
-  color: var(--auth-primary);
+  color: var(--primary-color);
   padding: 0.5rem;
 }
 
@@ -329,12 +359,12 @@
 .category-label {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--auth-text);
+  color: var(--text-primary);
 }
 
 .category-desc {
   font-size: 0.875rem;
-  color: var(--auth-text-secondary);
+  color: var(--text-secondary);
 }
 
 .category-check {
@@ -411,13 +441,13 @@
 .role-label {
   font-size: 0.9375rem;
   font-weight: 600;
-  color: var(--auth-text);
+  color: var(--text-primary);
   margin-bottom: 0.25rem;
 }
 
 .role-desc {
   font-size: 0.75rem;
-  color: var(--auth-text-secondary);
+  color: var(--text-secondary);
   line-height: 1.3;
 }
 
@@ -425,11 +455,11 @@
   text-align: center;
   margin-top: 1.5rem;
   font-size: 0.8125rem;
-  color: var(--auth-text-secondary);
+  color: var(--text-muted);
 }
 
 .auth-footer a {
-  color: var(--auth-primary);
+  color: var(--primary-color);
   text-decoration: none;
 }
 
@@ -466,12 +496,12 @@
 }
 
 .detail-label {
-  color: var(--auth-text-secondary);
+  color: var(--text-secondary);
   font-size: 0.875rem;
 }
 
 .detail-value {
-  color: var(--auth-text);
+  color: var(--text-primary);
   font-weight: 500;
 }
 
@@ -494,7 +524,7 @@
 .pending-info p {
   margin: 0 0 0.5rem 0;
   font-size: 0.875rem;
-  color: var(--auth-text-secondary);
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 
@@ -570,13 +600,13 @@
 
 .profile-user-card h3 {
   margin: 0 0 0.25rem 0;
-  color: var(--auth-text);
+  color: var(--text-primary);
   font-size: 1.125rem;
 }
 
 .profile-user-card p {
   margin: 0 0 0.75rem 0;
-  color: var(--auth-text-secondary);
+  color: var(--text-secondary);
   font-size: 0.875rem;
 }
 
@@ -605,7 +635,7 @@
   padding: 0.75rem 1rem;
   border: none;
   background: transparent;
-  color: var(--auth-text-secondary);
+  color: var(--text-secondary);
   font-size: 0.9375rem;
   border-radius: 8px;
   cursor: pointer;
@@ -617,7 +647,7 @@
 
 .profile-nav .nav-item:hover {
   background: rgba(255, 255, 255, 0.05);
-  color: var(--auth-text);
+  color: var(--text-primary);
 }
 
 .profile-nav .nav-item.active {
@@ -650,12 +680,12 @@
 .profile-section h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--auth-text);
+  color: var(--text-primary);
   margin: 0 0 0.5rem 0;
 }
 
 .section-subtitle {
-  color: var(--auth-text-secondary);
+  color: var(--text-secondary);
   margin: 0 0 2rem 0;
 }
 
@@ -675,12 +705,12 @@
 .info-card h3 {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--auth-text);
+  color: var(--text-primary);
   margin: 0 0 1rem 0;
 }
 
 .info-card p {
-  color: var(--auth-text-secondary);
+  color: var(--text-secondary);
   font-size: 0.875rem;
   margin: 0 0 1rem 0;
 }
@@ -711,12 +741,12 @@
 }
 
 .info-label {
-  color: var(--auth-text-secondary);
+  color: var(--text-secondary);
   font-size: 0.875rem;
 }
 
 .info-value {
-  color: var(--auth-text);
+  color: var(--text-primary);
   font-weight: 500;
 }
 
@@ -743,7 +773,7 @@
 
 .stat-item .stat-label {
   font-size: 0.75rem;
-  color: var(--auth-text-secondary);
+  color: var(--text-secondary);
 }
 
 .connected-accounts {
@@ -789,12 +819,12 @@
 
 .account-name {
   flex: 1;
-  color: var(--auth-text);
+  color: var(--text-primary);
 }
 
 .account-status {
   font-size: 0.75rem;
-  color: var(--auth-text-secondary);
+  color: var(--text-secondary);
 }
 
 .account-status.connected {
@@ -817,7 +847,7 @@
 .settings-section h3 {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--auth-text);
+  color: var(--text-primary);
   margin: 0 0 1rem 0;
 }
 
@@ -839,7 +869,7 @@
 }
 
 .toggle-item span {
-  color: var(--auth-text);
+  color: var(--text-primary);
 }
 
 .toggle-item input[type="checkbox"] {

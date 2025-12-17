@@ -1,16 +1,11 @@
-:root {
-  --page-bg: #0f0f23;
-  --card-bg: rgba(255, 255, 255, 0.05);
-  --card-border: rgba(255, 255, 255, 0.1);
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --primary-color: #c41835;
-}
-
 .role-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+  background: var(--bg-secondary);
   display: flex;
+}
+
+body.dark-mode .role-page {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
 }
 
 .role-page-content {
@@ -45,13 +40,20 @@
 }
 
 .stat-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+body.dark-mode .stat-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
 }
 
 .stat-icon {
@@ -92,8 +94,8 @@
 }
 
 .quick-link-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 1.25rem;
   text-decoration: none;
@@ -101,6 +103,13 @@
   flex-direction: column;
   gap: 0.5rem;
   transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+body.dark-mode .quick-link-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
 }
 
 .quick-link-card:hover {

@@ -4,12 +4,18 @@
   top: 0;
   bottom: 0;
   width: 260px;
-  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-color);
   padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
   z-index: 100;
   overflow-y: auto;
+}
+
+body.dark-mode .role-navigation {
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+  border-right: none;
 }
 
 .role-nav-header {
@@ -36,14 +42,14 @@
 .role-nav-logo span {
   font-size: 1.125rem;
   font-weight: 700;
-  color: white;
+  color: var(--text-primary);
 }
 
 .mobile-menu-toggle {
   display: none;
   background: transparent;
   border: none;
-  color: white;
+  color: var(--text-primary);
   font-size: 1.5rem;
   cursor: pointer;
 }
@@ -53,10 +59,14 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-tertiary);
   border-radius: 12px;
   margin-bottom: 1.5rem;
   border: 1px solid var(--role-color, #c41835);
+}
+
+body.dark-mode .role-badge {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .role-badge .role-icon {
@@ -66,7 +76,7 @@
 .role-badge .role-label {
   font-size: 0.9375rem;
   font-weight: 600;
-  color: white;
+  color: var(--text-primary);
 }
 
 .role-nav-menu {
@@ -83,7 +93,7 @@
   padding: 0.75rem 1rem;
   border-radius: 8px;
   text-decoration: none;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
   transition: all 0.2s ease;
   background: transparent;
   border: none;
@@ -94,8 +104,12 @@
 }
 
 .nav-item:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+body.dark-mode .nav-item:hover {
   background: rgba(255, 255, 255, 0.1);
-  color: white;
 }
 
 .nav-item.active {
@@ -115,13 +129,17 @@
 
 .nav-divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border-color);
   margin: 1rem 0;
+}
+
+body.dark-mode .nav-divider {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .nav-item.logout {
   margin-top: auto;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-muted);
 }
 
 .nav-item.logout:hover {
@@ -162,7 +180,11 @@
     width: 100%;
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--border-color);
+  }
+
+  body.dark-mode .role-nav-menu {
+    border-top-color: rgba(255, 255, 255, 0.1);
   }
 
   .role-nav-menu.open {
