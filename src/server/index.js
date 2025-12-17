@@ -53,7 +53,7 @@ app.use('/api/alerts', alertsRouter);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../../dist')));
-  app.get('*', (req, res) => {
+  app.get('/{*splat}', (req, res) => {
     res.sendFile(path.join(__dirname, '../../dist/index.html'));
   });
 } else {
