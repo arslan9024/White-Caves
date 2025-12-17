@@ -30,19 +30,20 @@ import AdminDashboard from './components/AdminDashboard';
 import RoleGateway from './components/RoleGateway';
 import SignInPage from './pages/auth/SignInPage';
 import ProfilePage from './pages/auth/ProfilePage';
+import PendingApprovalPage from './pages/auth/PendingApprovalPage';
 
 function ProtectedRoute({ children, allowedRoles }) {
   const user = useSelector(state => state.user.currentUser);
-  const [userRole, setUserRole] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const stored = localStorage.getItem('userRole');
     if (stored) {
       try {
-        setUserRole(JSON.parse(stored));
+        setUserData(JSON.parse(stored));
       } catch (e) {
-        setUserRole(null);
+        setUserData(null);
       }
     }
     setIsLoading(false);
@@ -56,12 +57,16 @@ function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to="/" replace />;
   }
 
-  if (!userRole) {
+  if (!userData) {
     return <Navigate to="/select-role" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(userRole.role)) {
-    return <Navigate to={`/${userRole.role}/dashboard`} replace />;
+  if (userData.status === 'pending') {
+    return <Navigate to="/pending-approval" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(userData.role)) {
+    return <Navigate to={`/${userData.role}/dashboard`} replace />;
   }
 
   return children;
@@ -79,6 +84,7 @@ import LeasingAgentDashboardPage from './pages/leasing-agent/LeasingAgentDashboa
 import TenantScreeningPage from './pages/leasing-agent/TenantScreeningPage';
 import SalesAgentDashboardPage from './pages/secondary-sales-agent/SalesAgentDashboardPage';
 import SalesPipelinePage from './pages/secondary-sales-agent/SalesPipelinePage';
+import TenantDashboardPage from './pages/tenant/TenantDashboardPage';
 
 function HomePage() {
   const dispatch = useDispatch();
@@ -315,6 +321,7 @@ function App() {
         <Route path="/select-role" element={
           user ? <RoleGateway user={user} onRoleSelect={handleRoleSelect} /> : <Navigate to="/signin" replace />
         } />
+        <Route path="/pending-approval" element={user ? <PendingApprovalPage /> : <Navigate to="/signin" replace />} />
         
         <Route path="/buyer/dashboard" element={
           <ProtectedRoute allowedRoles={['buyer']}>
@@ -378,6 +385,12 @@ function App() {
         <Route path="/secondary-sales-agent/sales-pipeline" element={
           <ProtectedRoute allowedRoles={['secondary-sales-agent']}>
             <SalesPipelinePage />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/tenant/dashboard" element={
+          <ProtectedRoute allowedRoles={['tenant']}>
+            <TenantDashboardPage />
           </ProtectedRoute>
         } />
         

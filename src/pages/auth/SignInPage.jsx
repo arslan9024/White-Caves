@@ -13,12 +13,33 @@ import {
 } from '../../config/firebase';
 import './AuthPages.css';
 
-const ROLES = [
-  { id: 'buyer', label: 'Buyer', icon: '🏠', desc: 'Looking to purchase property' },
-  { id: 'seller', label: 'Seller', icon: '💰', desc: 'Selling your property' },
-  { id: 'landlord', label: 'Landlord', icon: '🏢', desc: 'Renting out properties' },
-  { id: 'leasing-agent', label: 'Leasing Agent', icon: '🔑', desc: 'Property rental professional' },
-  { id: 'secondary-sales-agent', label: 'Sales Agent', icon: '📊', desc: 'Property sales professional' },
+const USER_CATEGORIES = [
+  { 
+    id: 'client', 
+    label: 'Client', 
+    icon: '🏠', 
+    desc: 'Looking to buy, sell, or rent property',
+    color: '#10b981'
+  },
+  { 
+    id: 'staff', 
+    label: 'Staff Member', 
+    icon: '💼', 
+    desc: 'White Caves employee or agent',
+    color: '#3b82f6'
+  }
+];
+
+const CLIENT_ROLES = [
+  { id: 'buyer', label: 'Buyer', icon: '🔍', desc: 'Looking to purchase property' },
+  { id: 'seller', label: 'Seller', icon: '💰', desc: 'Want to sell your property' },
+  { id: 'landlord', label: 'Landlord', icon: '🏢', desc: 'Renting out your property' },
+  { id: 'tenant', label: 'Tenant', icon: '🔑', desc: 'Looking to rent a property' }
+];
+
+const STAFF_ROLES = [
+  { id: 'leasing-agent', label: 'Leasing Agent', icon: '📋', desc: 'Property rental specialist' },
+  { id: 'secondary-sales-agent', label: 'Sales Agent', icon: '📊', desc: 'Property sales specialist' },
   { id: 'team-leader', label: 'Team Leader', icon: '👥', desc: 'Managing agent teams' }
 ];
 
@@ -36,7 +57,9 @@ export default function SignInPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
+  const [employeeId, setEmployeeId] = useState('');
   
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
@@ -45,8 +68,13 @@ export default function SignInPage() {
   
   const [pendingUser, setPendingUser] = useState(null);
 
-  const saveUserRole = (role) => {
-    localStorage.setItem('userRole', JSON.stringify({ role, locked: true }));
+  const saveUserData = (category, role, status = 'active') => {
+    localStorage.setItem('userRole', JSON.stringify({ 
+      category, 
+      role, 
+      status,
+      locked: true 
+    }));
   };
 
   const handleSignInSuccess = (user) => {
@@ -57,11 +85,16 @@ export default function SignInPage() {
       photo: user.photoURL
     }));
     
-    const existingRole = localStorage.getItem('userRole');
-    if (existingRole) {
-      const parsed = JSON.parse(existingRole);
-      setSuccess('Sign in successful!');
-      setTimeout(() => navigate(`/${parsed.role}/dashboard`), 1000);
+    const existingData = localStorage.getItem('userRole');
+    if (existingData) {
+      const parsed = JSON.parse(existingData);
+      if (parsed.status === 'pending') {
+        setSuccess('Your staff account is pending approval.');
+        setTimeout(() => navigate('/pending-approval'), 1000);
+      } else {
+        setSuccess('Sign in successful!');
+        setTimeout(() => navigate(`/${parsed.role}/dashboard`), 1000);
+      }
     } else {
       setSuccess('Sign in successful!');
       setTimeout(() => navigate('/select-role'), 1000);
@@ -78,16 +111,33 @@ export default function SignInPage() {
     setStep(2);
   };
 
+  const proceedToRoleSelection = () => {
+    if (!selectedCategory) {
+      setError('Please select a category');
+      return;
+    }
+    setError('');
+    setStep(3);
+  };
+
   const completeSignUp = () => {
     if (!selectedRole) {
       setError('Please select a role to continue');
       return;
     }
     
+    const status = selectedCategory === 'staff' ? 'pending' : 'active';
+    
     dispatch(setUser(pendingUser));
-    saveUserRole(selectedRole);
-    setSuccess('Account created successfully!');
-    setTimeout(() => navigate(`/${selectedRole}/dashboard`), 1000);
+    saveUserData(selectedCategory, selectedRole, status);
+    
+    if (selectedCategory === 'staff') {
+      setSuccess('Registration submitted! Your account is pending approval.');
+      setTimeout(() => navigate('/pending-approval'), 1500);
+    } else {
+      setSuccess('Account created successfully!');
+      setTimeout(() => navigate(`/${selectedRole}/dashboard`), 1000);
+    }
   };
 
   const handleSocialAuth = async (provider) => {
@@ -188,8 +238,14 @@ export default function SignInPage() {
   const switchMode = () => {
     setMode(mode === 'signin' ? 'signup' : 'signin');
     setStep(1);
+    setSelectedCategory('');
+    setSelectedRole('');
     setError('');
     setSuccess('');
+  };
+
+  const getRolesForCategory = () => {
+    return selectedCategory === 'staff' ? STAFF_ROLES : CLIENT_ROLES;
   };
 
   return (
@@ -402,16 +458,74 @@ export default function SignInPage() {
 
           {step === 2 && (
             <>
+              <h1>I am a...</h1>
+              <p className="auth-subtitle">
+                Select your account type
+              </p>
+
+              {error && <div className="auth-error">{error}</div>}
+
+              <div className="category-selection">
+                {USER_CATEGORIES.map(cat => (
+                  <button
+                    key={cat.id}
+                    className={`category-card ${selectedCategory === cat.id ? 'selected' : ''}`}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    style={{ '--accent-color': cat.color }}
+                  >
+                    <span className="category-icon">{cat.icon}</span>
+                    <div className="category-info">
+                      <span className="category-label">{cat.label}</span>
+                      <span className="category-desc">{cat.desc}</span>
+                    </div>
+                    {selectedCategory === cat.id && (
+                      <span className="category-check">✓</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {selectedCategory === 'staff' && (
+                <div className="staff-notice">
+                  <span className="notice-icon">ℹ️</span>
+                  <p>Staff accounts require admin approval. You'll receive access once verified.</p>
+                </div>
+              )}
+
+              <button 
+                className="btn btn-primary btn-full" 
+                onClick={proceedToRoleSelection}
+                disabled={!selectedCategory}
+              >
+                Continue
+              </button>
+
+              <button 
+                className="btn btn-link"
+                onClick={() => {
+                  setStep(1);
+                  setSelectedCategory('');
+                }}
+              >
+                Go Back
+              </button>
+            </>
+          )}
+
+          {step === 3 && (
+            <>
               <h1>Select Your Role</h1>
               <p className="auth-subtitle">
-                Choose how you'll be using White Caves
+                {selectedCategory === 'staff' 
+                  ? 'Choose your position at White Caves'
+                  : 'How will you be using White Caves?'}
               </p>
 
               {error && <div className="auth-error">{error}</div>}
               {success && <div className="auth-success">{success}</div>}
 
               <div className="role-selection-grid">
-                {ROLES.map(role => (
+                {getRolesForCategory().map(role => (
                   <button
                     key={role.id}
                     className={`role-card ${selectedRole === role.id ? 'selected' : ''}`}
@@ -424,17 +538,32 @@ export default function SignInPage() {
                 ))}
               </div>
 
+              {selectedCategory === 'staff' && (
+                <div className="form-group" style={{ marginBottom: '1rem' }}>
+                  <label>Employee ID (Optional)</label>
+                  <input 
+                    type="text" 
+                    value={employeeId}
+                    onChange={(e) => setEmployeeId(e.target.value)}
+                    placeholder="Enter your employee ID"
+                  />
+                </div>
+              )}
+
               <button 
                 className="btn btn-primary btn-full" 
                 onClick={completeSignUp}
                 disabled={!selectedRole || loading}
               >
-                Complete Registration
+                {selectedCategory === 'staff' ? 'Submit for Approval' : 'Complete Registration'}
               </button>
 
               <button 
                 className="btn btn-link"
-                onClick={() => setStep(1)}
+                onClick={() => {
+                  setStep(2);
+                  setSelectedRole('');
+                }}
               >
                 Go Back
               </button>
