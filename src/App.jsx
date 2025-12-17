@@ -240,20 +240,12 @@ function App() {
         <section className="properties" id="properties">
           <div className="container">
             <h2>Featured Properties</h2>
-            <AdvancedFilters />
-            <div className="property-grid">
-              {filteredProperties.slice(0, 6).map(property => (
-                <PropertyCard
-                  key={property.id}
-                  property={property}
-                  isFavorite={favorites.includes(property.id)}
-                  onFavorite={() => handleFavorite(property.id)}
-                  onCompare={() => handleCompare(property.id)}
-                  isComparing={compareList.includes(property.id)}
-                />
-              ))}
-            </div>
+            <AdvancedSearch />
           </div>
+        </section>
+
+        <section className="comparison-section" id="compare">
+          <PropertyComparison />
         </section>
 
         <section className="mortgage-section">
