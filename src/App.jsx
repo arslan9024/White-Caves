@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import './App.css'
 import './styles/design-system.css'
 import Auth from './components/Auth'
@@ -28,6 +28,42 @@ import TestimonialsCarousel from './components/TestimonialsCarousel';
 import NewsletterSubscription from './components/NewsletterSubscription';
 import AdminDashboard from './components/AdminDashboard';
 import RoleGateway from './components/RoleGateway';
+
+function ProtectedRoute({ children, allowedRoles }) {
+  const user = useSelector(state => state.user.currentUser);
+  const [userRole, setUserRole] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('userRole');
+    if (stored) {
+      try {
+        setUserRole(JSON.parse(stored));
+      } catch (e) {
+        setUserRole(null);
+      }
+    }
+    setIsLoading(false);
+  }, []);
+
+  if (isLoading) {
+    return <div className="loading-screen">Loading...</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (!userRole) {
+    return <Navigate to="/select-role" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(userRole.role)) {
+    return <Navigate to={`/${userRole.role}/dashboard`} replace />;
+  }
+
+  return children;
+}
 
 import BuyerDashboardPage from './pages/buyer/BuyerDashboardPage';
 import MortgageCalculatorPage from './pages/buyer/MortgageCalculatorPage';
@@ -286,24 +322,74 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/select-role" element={<RoleGateway user={user} onRoleSelect={handleRoleSelect} />} />
+        <Route path="/select-role" element={
+          user ? <RoleGateway user={user} onRoleSelect={handleRoleSelect} /> : <Navigate to="/" replace />
+        } />
         
-        <Route path="/buyer/dashboard" element={<BuyerDashboardPage />} />
-        <Route path="/buyer/mortgage-calculator" element={<MortgageCalculatorPage />} />
-        <Route path="/buyer/dld-fees" element={<DLDFeesPage />} />
-        <Route path="/buyer/title-deed-registration" element={<TitleDeedRegistrationPage />} />
+        <Route path="/buyer/dashboard" element={
+          <ProtectedRoute allowedRoles={['buyer']}>
+            <BuyerDashboardPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/buyer/mortgage-calculator" element={
+          <ProtectedRoute allowedRoles={['buyer']}>
+            <MortgageCalculatorPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/buyer/dld-fees" element={
+          <ProtectedRoute allowedRoles={['buyer']}>
+            <DLDFeesPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/buyer/title-deed-registration" element={
+          <ProtectedRoute allowedRoles={['buyer']}>
+            <TitleDeedRegistrationPage />
+          </ProtectedRoute>
+        } />
         
-        <Route path="/seller/dashboard" element={<SellerDashboardPage />} />
-        <Route path="/seller/pricing-tools" element={<PricingToolsPage />} />
+        <Route path="/seller/dashboard" element={
+          <ProtectedRoute allowedRoles={['seller']}>
+            <SellerDashboardPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/seller/pricing-tools" element={
+          <ProtectedRoute allowedRoles={['seller']}>
+            <PricingToolsPage />
+          </ProtectedRoute>
+        } />
         
-        <Route path="/landlord/dashboard" element={<LandlordDashboardPage />} />
-        <Route path="/landlord/rental-management" element={<RentalManagementPage />} />
+        <Route path="/landlord/dashboard" element={
+          <ProtectedRoute allowedRoles={['landlord']}>
+            <LandlordDashboardPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/landlord/rental-management" element={
+          <ProtectedRoute allowedRoles={['landlord']}>
+            <RentalManagementPage />
+          </ProtectedRoute>
+        } />
         
-        <Route path="/leasing-agent/dashboard" element={<LeasingAgentDashboardPage />} />
-        <Route path="/leasing-agent/tenant-screening" element={<TenantScreeningPage />} />
+        <Route path="/leasing-agent/dashboard" element={
+          <ProtectedRoute allowedRoles={['leasing-agent']}>
+            <LeasingAgentDashboardPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/leasing-agent/tenant-screening" element={
+          <ProtectedRoute allowedRoles={['leasing-agent']}>
+            <TenantScreeningPage />
+          </ProtectedRoute>
+        } />
         
-        <Route path="/secondary-sales-agent/dashboard" element={<SalesAgentDashboardPage />} />
-        <Route path="/secondary-sales-agent/sales-pipeline" element={<SalesPipelinePage />} />
+        <Route path="/secondary-sales-agent/dashboard" element={
+          <ProtectedRoute allowedRoles={['secondary-sales-agent']}>
+            <SalesAgentDashboardPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/secondary-sales-agent/sales-pipeline" element={
+          <ProtectedRoute allowedRoles={['secondary-sales-agent']}>
+            <SalesPipelinePage />
+          </ProtectedRoute>
+        } />
         
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
