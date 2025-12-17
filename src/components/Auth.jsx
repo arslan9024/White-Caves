@@ -161,18 +161,32 @@ export default function Auth({ onLogin }) {
       setLoading(true);
       const result = await signInWithGoogle();
       const firebaseUser = result.user;
-      const dbUser = await createUser({
+      
+      const userData = {
         id: firebaseUser.uid,
         email: firebaseUser.email,
-        name: firebaseUser.displayName,
-        photoUrl: firebaseUser.photoURL
-      });
-      dispatch(setUser(dbUser));
+        name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
+        photoUrl: firebaseUser.photoURL,
+        provider: 'google'
+      };
+      
+      setAuthToken(await firebaseUser.getIdToken());
+      setStoredUser(userData);
+      setCurrentUser(userData);
+      dispatch(setUser(userData));
       toast.success('Successfully signed in with Google!');
-      onLogin(dbUser);
+      onLogin(userData);
     } catch (error) {
       console.error("Error signing in with Google:", error);
-      toast.error('Failed to sign in with Google');
+      if (error.code === 'auth/popup-closed-by-user') {
+        toast.error('Sign-in cancelled. Please try again.');
+      } else if (error.code === 'auth/popup-blocked') {
+        toast.error('Popup blocked. Please allow popups for this site.');
+      } else if (error.code === 'auth/unauthorized-domain') {
+        toast.error('This domain is not authorized. Please add it to Firebase Console.');
+      } else {
+        toast.error(error.message || 'Failed to sign in with Google');
+      }
     } finally {
       setLoading(false);
     }
@@ -187,18 +201,30 @@ export default function Auth({ onLogin }) {
       setLoading(true);
       const result = await signInWithFacebook();
       const firebaseUser = result.user;
-      const dbUser = await createUser({
+      
+      const userData = {
         id: firebaseUser.uid,
         email: firebaseUser.email,
-        name: firebaseUser.displayName,
-        photoUrl: firebaseUser.photoURL
-      });
-      dispatch(setUser(dbUser));
+        name: firebaseUser.displayName || 'Facebook User',
+        photoUrl: firebaseUser.photoURL,
+        provider: 'facebook'
+      };
+      
+      setAuthToken(await firebaseUser.getIdToken());
+      setStoredUser(userData);
+      setCurrentUser(userData);
+      dispatch(setUser(userData));
       toast.success('Successfully signed in with Facebook!');
-      onLogin(dbUser);
+      onLogin(userData);
     } catch (error) {
       console.error("Error signing in with Facebook:", error);
-      toast.error('Failed to sign in with Facebook');
+      if (error.code === 'auth/popup-closed-by-user') {
+        toast.error('Sign-in cancelled. Please try again.');
+      } else if (error.code === 'auth/account-exists-with-different-credential') {
+        toast.error('An account already exists with this email using a different sign-in method.');
+      } else {
+        toast.error(error.message || 'Failed to sign in with Facebook');
+      }
     } finally {
       setLoading(false);
     }
@@ -213,18 +239,28 @@ export default function Auth({ onLogin }) {
       setLoading(true);
       const result = await signInWithApple();
       const firebaseUser = result.user;
-      const dbUser = await createUser({
+      
+      const userData = {
         id: firebaseUser.uid,
         email: firebaseUser.email,
         name: firebaseUser.displayName || 'Apple User',
-        photoUrl: firebaseUser.photoURL
-      });
-      dispatch(setUser(dbUser));
+        photoUrl: firebaseUser.photoURL,
+        provider: 'apple'
+      };
+      
+      setAuthToken(await firebaseUser.getIdToken());
+      setStoredUser(userData);
+      setCurrentUser(userData);
+      dispatch(setUser(userData));
       toast.success('Successfully signed in with Apple!');
-      onLogin(dbUser);
+      onLogin(userData);
     } catch (error) {
       console.error("Error signing in with Apple:", error);
-      toast.error('Failed to sign in with Apple. Make sure Apple sign-in is enabled.');
+      if (error.code === 'auth/popup-closed-by-user') {
+        toast.error('Sign-in cancelled. Please try again.');
+      } else {
+        toast.error(error.message || 'Failed to sign in with Apple');
+      }
     } finally {
       setLoading(false);
     }
@@ -246,30 +282,39 @@ export default function Auth({ onLogin }) {
       if (isSignUp) {
         const userCredential = await signUpWithEmail(values.email, values.password);
         firebaseUser = userCredential.user;
-        toast.success('Account created successfully!');
       } else {
         const userCredential = await signInWithEmail(values.email, values.password);
         firebaseUser = userCredential.user;
-        toast.success('Successfully signed in!');
       }
-      const dbUser = await createUser({
+      
+      const userData = {
         id: firebaseUser.uid,
         email: firebaseUser.email,
-        name: values.name || firebaseUser.email.split('@')[0],
-        photoUrl: firebaseUser.photoURL
-      });
-      dispatch(setUser(dbUser));
-      onLogin(dbUser);
+        name: values.name || firebaseUser.displayName || firebaseUser.email.split('@')[0],
+        photoUrl: firebaseUser.photoURL,
+        provider: 'email'
+      };
+      
+      setAuthToken(await firebaseUser.getIdToken());
+      setStoredUser(userData);
+      setCurrentUser(userData);
+      dispatch(setUser(userData));
+      toast.success(isSignUp ? 'Account created successfully!' : 'Successfully signed in!');
+      onLogin(userData);
     } catch (error) {
       console.error("Email auth error:", error);
       if (error.code === 'auth/email-already-in-use') {
         toast.error('Email already in use. Try signing in instead.');
-      } else if (error.code === 'auth/wrong-password') {
-        toast.error('Incorrect password');
+      } else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        toast.error('Incorrect email or password');
       } else if (error.code === 'auth/user-not-found') {
-        toast.error('No account found with this email');
+        toast.error('No account found with this email. Try signing up.');
+      } else if (error.code === 'auth/invalid-email') {
+        toast.error('Invalid email address');
+      } else if (error.code === 'auth/weak-password') {
+        toast.error('Password should be at least 6 characters');
       } else {
-        toast.error('Authentication failed. Please try again.');
+        toast.error(error.message || 'Authentication failed. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -331,28 +376,22 @@ export default function Auth({ onLogin }) {
       setLoading(true);
       const credential = await confirmationResult.confirm(values.otp);
       const firebaseUser = credential.user;
-      const idToken = await firebaseUser.getIdToken();
-      const response = await fetch('/api/auth/verify-firebase-token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken })
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to verify token');
-      }
-      if (data.isNewUser || !data.user.profileComplete) {
-        setPendingUser(data.user);
-        setPendingToken(data.token);
-        setShowProfileCompletion(true);
-      } else {
-        setAuthToken(data.token);
-        setStoredUser(data.user);
-        setCurrentUser(data.user);
-        dispatch(setUser(data.user));
-        toast.success('Successfully signed in!');
-        onLogin(data.user);
-      }
+      
+      const userData = {
+        id: firebaseUser.uid,
+        email: firebaseUser.email,
+        phone: firebaseUser.phoneNumber,
+        name: firebaseUser.displayName || 'User',
+        photoUrl: firebaseUser.photoURL,
+        provider: 'phone'
+      };
+      
+      setAuthToken(await firebaseUser.getIdToken());
+      setStoredUser(userData);
+      setCurrentUser(userData);
+      dispatch(setUser(userData));
+      toast.success('Successfully signed in!');
+      onLogin(userData);
     } catch (error) {
       console.error("OTP verification error:", error);
       if (error.code === 'auth/invalid-verification-code') {
