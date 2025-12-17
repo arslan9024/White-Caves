@@ -590,3 +590,1165 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Team Type Selector */
+.team-type-selector {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem;
+  background: var(--glass-bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  width: fit-content;
+}
+
+.team-type-btn {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.team-type-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.team-type-btn.active {
+  background: var(--primary-color);
+  color: white;
+}
+
+/* Property Filters */
+.properties-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.property-filters {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.filter-btn {
+  padding: 0.5rem 1rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--text-primary);
+}
+
+.filter-btn.active {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+/* Available Properties Grid */
+.available-grid,
+.saved-grid,
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.available-card,
+.saved-card,
+.listing-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.available-card:hover,
+.saved-card:hover,
+.listing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.available-card-image,
+.saved-card-image,
+.listing-card-image {
+  height: 120px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #a01833 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+}
+
+.available-card-content,
+.saved-card-content,
+.listing-card-content {
+  padding: 1rem;
+}
+
+.available-card-content h4,
+.saved-card-content h4,
+.listing-card-content h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.property-specs,
+.listing-specs {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.property-rent,
+.listing-price {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.available-card-actions,
+.saved-card-actions,
+.listing-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Priority Badges */
+.priority-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+}
+
+.priority-high {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.priority-medium {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.priority-low {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+/* Finance Summary */
+.finance-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.finance-item {
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.finance-label {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.finance-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.finance-value.warning {
+  color: #f59e0b;
+}
+
+/* Section Description */
+.section-description {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+/* Renewal Items */
+.renewals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.renewal-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.renewal-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.renewal-property {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.renewal-tenant {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.renewal-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.renewal-date {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+/* Team Table */
+.team-table {
+  overflow-x: auto;
+}
+
+.team-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.team-table th,
+.team-table td {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.team-table th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.agent-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.member-avatar.small {
+  width: 32px;
+  height: 32px;
+  font-size: 0.875rem;
+}
+
+/* Pipeline Stages */
+.pipeline-stages {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 1rem 0;
+}
+
+.pipeline-stage {
+  flex: 1;
+  min-width: 120px;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.pipeline-stage h4 {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.5rem 0;
+}
+
+.stage-count {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+/* Reports Grid */
+.reports-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.report-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.report-icon {
+  font-size: 1.5rem;
+}
+
+.report-name {
+  flex: 1;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Targets */
+.targets-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.target-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.target-label {
+  width: 150px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.target-progress {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.target-progress .progress-bar {
+  height: 100%;
+  background: var(--primary-color);
+  border-radius: var(--radius-full);
+}
+
+.target-value {
+  width: 120px;
+  text-align: right;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Market Insights */
+.market-insights {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.insight-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.insight-metric {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.insight-data {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.insight-value {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.insight-trend {
+  font-size: 0.8125rem;
+  color: #22c55e;
+}
+
+/* Market Tips */
+.market-tips {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.market-tips h4 {
+  margin: 0 0 0.75rem 0;
+  color: var(--text-primary);
+}
+
+.market-tips ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.market-tips li {
+  margin-bottom: 0.5rem;
+}
+
+/* Documents Checklist */
+.documents-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.doc-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.doc-check {
+  font-size: 1.25rem;
+}
+
+/* Costs Grid */
+.costs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.cost-item {
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.cost-title {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.cost-value {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.cost-desc {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+/* Journey Steps */
+.journey-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.journey-step {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.journey-step.completed {
+  opacity: 0.7;
+}
+
+.journey-step.in-progress {
+  border-left: 3px solid var(--primary-color);
+}
+
+.step-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.step-info {
+  flex: 1;
+}
+
+.step-title {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.step-status {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Quick Mortgage */
+.quick-mortgage {
+  text-align: center;
+}
+
+.mortgage-preview {
+  display: flex;
+  justify-content: space-around;
+  margin: 1.5rem 0;
+}
+
+.mortgage-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Buying Guide */
+.buying-guide {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.guide-step {
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.guide-step-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h4 {
+  margin: 0 0 0.25rem 0;
+  color: var(--text-primary);
+}
+
+.step-content p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.step-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+}
+
+.step-badge.completed {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.step-badge.in-progress {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.step-badge.pending {
+  background: rgba(156, 163, 175, 0.15);
+  color: #9ca3af;
+}
+
+.guide-info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.info-card {
+  padding: 1.5rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.info-card h4 {
+  margin: 0 0 1rem 0;
+  color: var(--text-primary);
+}
+
+.info-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-card li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--glass-border);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.info-card li:last-child {
+  border-bottom: none;
+}
+
+/* Quick Actions */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.quick-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quick-action-btn:hover {
+  border-color: var(--primary-color);
+  background: rgba(196, 24, 53, 0.05);
+}
+
+.action-icon {
+  font-size: 1.5rem;
+}
+
+/* Renewal Preview */
+.renewal-preview {
+  text-align: center;
+}
+
+.renewal-countdown {
+  margin-bottom: 1rem;
+}
+
+.countdown-number {
+  display: block;
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.countdown-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.renewal-recommendation {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+/* Renewal Details */
+.renewal-details {
+  max-width: 600px;
+}
+
+.renewal-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.renewal-info-item {
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.renewal-info-item .label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.renewal-info-item .value {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.renewal-recommendation-box {
+  padding: 1rem;
+  background: rgba(34, 197, 94, 0.1);
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+}
+
+.renewal-recommendation-box h4 {
+  margin: 0 0 0.5rem 0;
+  color: #22c55e;
+}
+
+.renewal-recommendation-box p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.renewal-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Rights Grid */
+.rights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.right-card {
+  padding: 1.5rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.right-card h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.right-card p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.rights-info {
+  padding: 1.5rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.rights-info h4 {
+  margin: 0 0 1rem 0;
+  color: var(--text-primary);
+}
+
+.rights-info ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.rights-info li {
+  margin-bottom: 0.75rem;
+}
+
+/* Commission Info */
+.commission-info {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.commission-stat {
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.commission-structure {
+  padding: 1.5rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.commission-structure h4 {
+  margin: 0 0 1rem 0;
+  color: var(--text-primary);
+}
+
+.commission-structure ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.commission-structure li {
+  margin-bottom: 0.5rem;
+}
+
+/* Resources Grid */
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.resource-card {
+  padding: 1.5rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.resource-card h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.resource-card p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.helpful-links {
+  padding: 1.5rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.helpful-links h4 {
+  margin: 0 0 1rem 0;
+  color: var(--text-primary);
+}
+
+.helpful-links ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.helpful-links li {
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+
+.helpful-links li:hover {
+  color: var(--primary-color);
+}
+
+/* Performance Summary */
+.performance-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.perf-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.perf-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.perf-value {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.progress-bar-container {
+  height: 8px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+/* Member Specialty */
+.member-specialty {
+  font-size: 0.75rem;
+  color: var(--primary-color);
+}
+
+/* Deal Type */
+.deal-type {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Mortgage Section */
+.mortgage-section .mortgage-calculator {
+  max-width: 100%;
+}
+
+/* Listings Table */
+.listings-table {
+  overflow-x: auto;
+}
+
+.listings-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.listings-table th,
+.listings-table td {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.listings-table th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* Listings Preview */
+.listings-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.listing-preview-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.listing-type {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+/* Documents Grid */
+.documents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.document-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  gap: 0.75rem;
+}
+
+.doc-icon.large {
+  font-size: 2.5rem;
+}
+
+.doc-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.doc-category {
+  font-size: 0.75rem;
+  color: var(--primary-color);
+}
+
+/* Tenant Row */
+.tenant-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  margin-bottom: 0.75rem;
+}
+
+.tenant-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tenant-property {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.tenant-rent {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.tenant-lease {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+/* No Data */
+.no-data {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 2rem;
+}
+
+/* Payment Summary */
+.payment-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.payment-stat {
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.payment-stat.highlight {
+  background: rgba(196, 24, 53, 0.1);
+  border: 1px solid var(--primary-color);
+}
+
+/* Payments Table */
+.payments-table {
+  overflow-x: auto;
+}
+
+.payments-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.payments-table th,
+.payments-table td {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.payments-table th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* Available Property Item */
+.available-property-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  margin-bottom: 0.75rem;
+}
+
+/* Viewing Address/Owner */
+.viewing-address,
+.viewing-owner {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Lead Budget */
+.lead-budget {
+  font-size: 0.75rem;
+  color: var(--primary-color);
+}
+
+/* Inquiry Budget */
+.inquiry-budget {
+  font-size: 0.75rem;
+  color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+  .team-type-selector {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .costs-grid,
+  .renewal-info-grid,
+  .commission-info,
+  .payment-summary {
+    grid-template-columns: 1fr;
+  }
+  
+  .quick-actions {
+    grid-template-columns: 1fr;
+  }
+}
