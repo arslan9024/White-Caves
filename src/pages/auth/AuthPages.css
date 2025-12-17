@@ -311,7 +311,7 @@ body.dark-mode .btn-secondary:hover {
   text-align: center;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--auth-border);
+  border-top: 1px solid var(--border-color);
 }
 
 .category-selection {
@@ -327,7 +327,7 @@ body.dark-mode .btn-secondary:hover {
   gap: 1rem;
   padding: 1.25rem;
   background: rgba(255, 255, 255, 0.03);
-  border: 2px solid var(--auth-border);
+  border: 2px solid var(--border-color);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -341,7 +341,7 @@ body.dark-mode .btn-secondary:hover {
 
 .category-card.selected {
   background: rgba(var(--accent-color), 0.1);
-  border-color: var(--accent-color, var(--auth-primary));
+  border-color: var(--accent-color, var(--primary-color));
 }
 
 .category-icon {
@@ -371,7 +371,7 @@ body.dark-mode .btn-secondary:hover {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: var(--auth-primary);
+  background: var(--primary-color);
   color: white;
   display: flex;
   align-items: center;
@@ -416,7 +416,7 @@ body.dark-mode .btn-secondary:hover {
   align-items: center;
   padding: 1.25rem 1rem;
   background: rgba(255, 255, 255, 0.03);
-  border: 2px solid var(--auth-border);
+  border: 2px solid var(--border-color);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -430,7 +430,7 @@ body.dark-mode .btn-secondary:hover {
 
 .role-card.selected {
   background: rgba(196, 24, 53, 0.15);
-  border-color: var(--auth-primary);
+  border-color: var(--primary-color);
 }
 
 .role-icon {
@@ -478,7 +478,7 @@ body.dark-mode .btn-secondary:hover {
 
 .pending-details {
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--auth-border);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 1rem;
   margin: 1.5rem 0;
@@ -488,7 +488,7 @@ body.dark-mode .btn-secondary:hover {
   display: flex;
   justify-content: space-between;
   padding: 0.75rem 0;
-  border-bottom: 1px solid var(--auth-border);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .detail-row:last-child {
@@ -557,7 +557,7 @@ body.dark-mode .btn-secondary:hover {
 .profile-sidebar {
   width: 280px;
   background: rgba(255, 255, 255, 0.03);
-  border-right: 1px solid var(--auth-border);
+  border-right: 1px solid var(--border-color);
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -571,8 +571,8 @@ body.dark-mode .btn-secondary:hover {
 .profile-user-card {
   text-align: center;
   padding: 1.5rem;
-  background: var(--auth-card-bg);
-  border: 1px solid var(--auth-border);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   margin-bottom: 1.5rem;
 }
@@ -581,7 +581,7 @@ body.dark-mode .btn-secondary:hover {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: var(--auth-primary);
+  background: var(--primary-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -614,9 +614,9 @@ body.dark-mode .btn-secondary:hover {
   display: inline-block;
   padding: 0.25rem 0.75rem;
   background: rgba(196, 24, 53, 0.15);
-  border: 1px solid var(--auth-primary);
+  border: 1px solid var(--primary-color);
   border-radius: 20px;
-  color: var(--auth-primary);
+  color: var(--primary-color);
   font-size: 0.75rem;
   font-weight: 600;
 }
@@ -651,13 +651,13 @@ body.dark-mode .btn-secondary:hover {
 }
 
 .profile-nav .nav-item.active {
-  background: var(--auth-primary);
+  background: var(--primary-color);
   color: white;
 }
 
 .profile-nav .nav-divider {
   height: 1px;
-  background: var(--auth-border);
+  background: var(--border-color);
   margin: 0.75rem 0;
 }
 
@@ -696,8 +696,8 @@ body.dark-mode .btn-secondary:hover {
 }
 
 .info-card {
-  background: var(--auth-card-bg);
-  border: 1px solid var(--auth-border);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 1.5rem;
 }
@@ -733,7 +733,7 @@ body.dark-mode .btn-secondary:hover {
   display: flex;
   justify-content: space-between;
   padding: 0.5rem 0;
-  border-bottom: 1px solid var(--auth-border);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .info-row:last-child {
@@ -767,7 +767,7 @@ body.dark-mode .btn-secondary:hover {
   display: block;
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--auth-primary);
+  color: var(--primary-color);
   margin-bottom: 0.25rem;
 }
 
@@ -841,7 +841,7 @@ body.dark-mode .btn-secondary:hover {
 .settings-section {
   margin-top: 2rem;
   padding-top: 2rem;
-  border-top: 1px solid var(--auth-border);
+  border-top: 1px solid var(--border-color);
 }
 
 .settings-section h3 {
@@ -862,8 +862,8 @@ body.dark-mode .btn-secondary:hover {
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1rem;
-  background: var(--auth-card-bg);
-  border: 1px solid var(--auth-border);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   cursor: pointer;
 }
@@ -875,7 +875,7 @@ body.dark-mode .btn-secondary:hover {
 .toggle-item input[type="checkbox"] {
   width: 20px;
   height: 20px;
-  accent-color: var(--auth-primary);
+  accent-color: var(--primary-color);
 }
 
 .security-cards {
