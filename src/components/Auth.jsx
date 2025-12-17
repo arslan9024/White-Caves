@@ -304,15 +304,24 @@ export default function Auth({ onLogin }) {
     } catch (error) {
       console.error("Email auth error:", error);
       if (error.code === 'auth/email-already-in-use') {
-        toast.error('Email already in use. Try signing in instead.');
+        toast.error('This email is already registered. Switch to "Sign In" mode.');
+        setIsSignUp(false);
       } else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-        toast.error('Incorrect email or password');
+        if (isSignUp) {
+          toast.error('Could not create account. Try signing in instead.');
+          setIsSignUp(false);
+        } else {
+          toast.error('Incorrect email or password. Check your credentials or sign up for a new account.');
+        }
       } else if (error.code === 'auth/user-not-found') {
-        toast.error('No account found with this email. Try signing up.');
+        toast.error('No account found. Switch to "Sign Up" to create one.');
+        setIsSignUp(true);
       } else if (error.code === 'auth/invalid-email') {
-        toast.error('Invalid email address');
+        toast.error('Please enter a valid email address');
       } else if (error.code === 'auth/weak-password') {
-        toast.error('Password should be at least 6 characters');
+        toast.error('Password must be at least 6 characters');
+      } else if (error.code === 'auth/operation-not-allowed') {
+        toast.error('Email sign-in is not enabled. Please enable it in Firebase Console.');
       } else {
         toast.error(error.message || 'Authentication failed. Please try again.');
       }
