@@ -6,6 +6,21 @@ White Caves is a comprehensive real estate platform focused on the Dubai luxury 
 
 ## Recent Changes
 
+**December 17, 2025** - Role-based dashboards for all user types:
+- Created 6 distinct dashboard components for different user roles
+- Agent Dashboard: leads, listings, viewings, commission tracking
+- Tenant Dashboard: lease info, maintenance requests, payments, documents
+- Team Leader Dashboard: team performance, deals pipeline, reports
+- Landlord Dashboard: property portfolio, tenants, finances, occupancy
+- Buyer Dashboard: saved properties, viewings, price alerts
+- Seller Dashboard: listing performance, inquiries, analytics
+- Added RoleSelector component for users to choose their role
+- Role selection persists in localStorage between sessions
+- Compact role switcher in dashboard header for easy role changes
+- Glassmorphism styling with consistent design system
+- Tab-based navigation within each dashboard
+- Mobile-responsive layouts for all dashboard views
+
 **December 15, 2025** - Major platform upgrade with 15 new features:
 - Design system with CSS variables, glass panels, and animations
 - MegaNav with mega dropdowns (Buy/Rent/Commercial/New Projects)
