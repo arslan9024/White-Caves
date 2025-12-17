@@ -1,0 +1,136 @@
+Here is a comprehensive, all-in-one prompt for an AI software agent to implement your real estate platform:
+
+---
+
+**PROJECT:** Create a complete real estate management platform with mandatory role selection and strict role-specific content segregation.
+
+## **1. MANDATORY ROLE SELECTION SYSTEM**
+- Users MUST select a role before accessing any content
+- Available roles: Buyer, Seller, Landlord, Leasing Agent, Secondary Sales Agent, Leasing Team Leader, Secondary Sales Team Leader, Admin
+- Role selection is SINGLE choice only - no multi-role users
+- After registration/login, force users to select role before proceeding
+- Role cannot be self-changed later (requires admin approval)
+
+## **2. STRICT CONTENT SEGREGATION BY ROLE**
+
+### **BUYER-EXCLUSIVE CONTENT (NOT accessible to any other role):**
+- **Mortgage Calculator:** Full-featured with loan amount, interest rates, amortization, down payment calculation
+- **DLD Fee Information:** Complete Dubai Land Department fee breakdown (4% property value calculator, registration fees, trustee fees)
+- **Title Deed Registration:** Step-by-step process, required documents, transfer fees, verification service
+- **Additional:** Property valuation tools, market trends, financing comparisons, inspection checklists
+
+### **SELLER-EXCLUSIVE CONTENT:**
+- Sales commission calculator
+- Capital gains information
+- Pricing analysis tools
+- Sales contract templates
+
+### **LANDLORD-EXCLUSIVE CONTENT:**
+- Rental yield calculator
+- Tenant screening tools
+- Ejari registration assistance
+- Maintenance cost estimators
+
+### **AGENT & TEAM LEADER CONTENT:** (Separate for leasing vs sales teams)
+- Commission tracking
+- Lead management
+- Team performance dashboards
+- Professional tools specific to their role
+
+## **3. DASHBOARD ARCHITECTURE**
+- Each role gets completely different dashboard with zero overlap of irrelevant content
+- URL structure: `/{role}/dashboard`, `/{role}/specific-feature`
+- Navigation menus show ONLY role-relevant items
+- Middleware blocks unauthorized role access to other roles' pages
+- Header clearly displays current role
+
+## **4. TEAM MANAGEMENT HIERARCHY**
+- Leasing Agents → managed by Leasing Team Leader
+- Secondary Sales Agents → managed by Secondary Sales Team Leader
+- Team Leaders see team performance metrics, can assign properties
+- Clients (Buyers/Sellers/Landlords) are NOT managed by team leaders
+
+## **5. PROPERTY CATEGORIZATION**
+- **Rental Properties:** From Landlord Dashboard → visible in Leasing Team Dashboard
+- **Resale Properties:** From Seller Dashboard → visible in Secondary Sales Team Dashboard
+- Buyers can see both rental and resale properties in search
+- Auto-assignment: New properties automatically assigned to appropriate agents
+- Manual override: Team Leaders can reassign properties
+
+## **6. TECHNICAL REQUIREMENTS**
+
+### **Database Schema Must Include:**
+```sql
+Users: id, email, role (ENUM), role_selected_at, role_locked
+RolePermissions: role, content_key, allowed
+Properties: id, type (rental/sale), owner_id, assigned_agent_id
+Teams: id, type (leasing/sales), leader_id
+UserTeams: user_id, team_id, is_leader
+```
+
+### **Access Control:**
+- Role-based route guards on every page
+- API endpoints check user role before processing
+- Database queries filter by role permissions
+- UI components conditionally render based on role
+
+### **Frontend:**
+- Separate dashboard components per role
+- Role-based theme/color coding
+- Dynamic navigation generation
+- Responsive design for all devices
+
+## **7. USER FLOW**
+1. Register/Login
+2. **FORCED ROLE SELECTION SCREEN** (cannot skip)
+3. Redirect to role-specific dashboard
+4. See ONLY content relevant to chosen role
+5. Attempts to access other roles' content → redirect to own dashboard
+
+## **8. SECURITY REQUIREMENTS**
+- Zero cross-role data leakage
+- Audit logs for all role-based access attempts
+- Secure session management with role binding
+- Regular permission audits
+
+## **9. IMPLEMENTATION PRIORITIES**
+**Phase 1 (Core):**
+- User registration with role selection
+- Role-based routing and middleware
+- Buyer dashboard with mortgage calculator, DLD fees, title deed info
+- Basic property listing for landlords/sellers
+
+**Phase 2 (Management):**
+- Team hierarchy implementation
+- Agent assignment system
+- All role-specific dashboards
+- Communication system
+
+**Phase 3 (Advanced):**
+- Analytics per role
+- Document management
+- Payment integrations
+- Mobile optimization
+
+## **10. SUCCESS CRITERIA**
+- Users see ONLY their role-relevant content
+- No unauthorized access between roles
+- All specified exclusive content (mortgage calculator, DLD fees, title deed) visible ONLY to buyers
+- Team management hierarchy functioning correctly
+- Property assignment working automatically and manually
+
+## **DELIVERABLES REQUIRED:**
+1. Complete database schema with role permissions
+2. Full backend API with role-based endpoints
+3. Frontend dashboards for all 8 roles
+4. Role selection gateway implementation
+5. Access control middleware
+6. Property management system
+7. Team hierarchy management
+8. All specified calculators and tools (mortgage, DLD, etc.)
+
+**CRITICAL RULE:** Content must be completely segregated - a Seller should NEVER see mortgage calculator, a Buyer should NEVER see sales commission tools, unless they have that specific role.
+
+---
+
+**Implement this as a complete, production-ready web application with proper authentication, database, frontend, and backend systems.**

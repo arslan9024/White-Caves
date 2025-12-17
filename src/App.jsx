@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import './App.css'
 import './styles/design-system.css'
 import Auth from './components/Auth'
@@ -26,53 +27,26 @@ import BlogSection from './components/BlogSection';
 import TestimonialsCarousel from './components/TestimonialsCarousel';
 import NewsletterSubscription from './components/NewsletterSubscription';
 import AdminDashboard from './components/AdminDashboard';
-import {
-  AgentDashboard,
-  TenantDashboard,
-  TeamLeaderDashboard,
-  LandlordDashboard,
-  BuyerDashboard,
-  SellerDashboard,
-  RoleSelector
-} from './components/dashboards';
+import RoleGateway from './components/RoleGateway';
 
+import BuyerDashboardPage from './pages/buyer/BuyerDashboardPage';
+import MortgageCalculatorPage from './pages/buyer/MortgageCalculatorPage';
+import DLDFeesPage from './pages/buyer/DLDFeesPage';
+import TitleDeedRegistrationPage from './pages/buyer/TitleDeedRegistrationPage';
+import SellerDashboardPage from './pages/seller/SellerDashboardPage';
+import PricingToolsPage from './pages/seller/PricingToolsPage';
+import LandlordDashboardPage from './pages/landlord/LandlordDashboardPage';
+import RentalManagementPage from './pages/landlord/RentalManagementPage';
+import LeasingAgentDashboardPage from './pages/leasing-agent/LeasingAgentDashboardPage';
+import TenantScreeningPage from './pages/leasing-agent/TenantScreeningPage';
+import SalesAgentDashboardPage from './pages/secondary-sales-agent/SalesAgentDashboardPage';
+import SalesPipelinePage from './pages/secondary-sales-agent/SalesPipelinePage';
 
-function App() {
+function HomePage({ onLogin }) {
   const dispatch = useDispatch();
   const user = useSelector(state => state.user.currentUser);
-  const filteredProperties = useSelector(state => state.properties.filteredProperties);
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [galleryProperty, setGalleryProperty] = useState(null);
   const { recentIds, addToRecent, clearRecent } = useRecentlyViewed();
-  
-  const [userRole, setUserRole] = useState(() => {
-    return localStorage.getItem('whitecaves_user_role') || null;
-  });
-
-  const handleRoleChange = (role) => {
-    setUserRole(role);
-    localStorage.setItem('whitecaves_user_role', role);
-  };
-
-  const renderRoleDashboard = () => {
-    switch (userRole) {
-      case 'agent':
-        return <AgentDashboard user={user} />;
-      case 'tenant':
-        return <TenantDashboard user={user} />;
-      case 'team_leader':
-        return <TeamLeaderDashboard user={user} />;
-      case 'landlord':
-        return <LandlordDashboard user={user} />;
-      case 'buyer':
-        return <BuyerDashboard user={user} />;
-      case 'seller':
-        return <SellerDashboard user={user} />;
-      default:
-        return <RoleSelector currentRole={userRole} onRoleChange={handleRoleChange} />;
-    }
-  };
 
   const handlePropertyClick = (propertyId) => {
     addToRecent(propertyId);
@@ -94,12 +68,7 @@ function App() {
         amenities: ["Pool", "Beach Access", "Parking", "Security", "Garden", "Gym"],
         location: "Palm Jumeirah",
         type: "Villa",
-        description: "Stunning beachfront villa on the prestigious Palm Jumeirah fronds with panoramic views of the Arabian Gulf. Features private beach access, infinity pool, and world-class finishes.",
-        images: [
-          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
-          "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
-          "https://images.unsplash.com/photo-1506126613408-eca07ce68773?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
-        ]
+        description: "Stunning beachfront villa on the prestigious Palm Jumeirah fronds with panoramic views of the Arabian Gulf."
       },
       {
         id: 2,
@@ -111,7 +80,7 @@ function App() {
         amenities: ["Gym", "Parking", "Concierge", "Pool", "Security"],
         location: "Downtown Dubai",
         type: "Penthouse",
-        description: "Ultra-luxury penthouse with breathtaking views of Burj Khalifa and Dubai Fountain. Premium finishes, smart home technology, and exclusive access to 5-star amenities."
+        description: "Ultra-luxury penthouse with breathtaking views of Burj Khalifa and Dubai Fountain."
       },
       {
         id: 3,
@@ -123,7 +92,7 @@ function App() {
         amenities: ["Pool", "Garden", "Security", "Parking", "Gym", "Cinema"],
         location: "Emirates Hills",
         type: "Villa",
-        description: "Magnificent Mediterranean-inspired mansion on the prestigious Emirates Hills golf course. Features championship golf course views, private cinema, gym, and expansive gardens."
+        description: "Magnificent Mediterranean-inspired mansion on the prestigious Emirates Hills golf course."
       },
       {
         id: 4,
@@ -135,7 +104,7 @@ function App() {
         amenities: ["Pool", "Gym", "Parking", "Concierge", "Security"],
         location: "Dubai Marina",
         type: "Apartment",
-        description: "Elegant waterfront apartment with stunning marina views. Walk to Dubai Marina Mall, JBR Beach, and fine dining. Premium tower with resort-style amenities."
+        description: "Elegant waterfront apartment with stunning marina views."
       },
       {
         id: 5,
@@ -147,7 +116,7 @@ function App() {
         amenities: ["Pool", "Garden", "Parking", "Security"],
         location: "Arabian Ranches",
         type: "Villa",
-        description: "Contemporary villa overlooking the championship golf course in Arabian Ranches. Family-friendly community with excellent schools, parks, and lifestyle amenities nearby."
+        description: "Contemporary villa overlooking the championship golf course in Arabian Ranches."
       },
       {
         id: 6,
@@ -159,82 +128,139 @@ function App() {
         amenities: ["Pool", "Parking", "Garden", "Security"],
         location: "Jumeirah Village Circle",
         type: "Townhouse",
-        description: "Spacious townhouse in the heart of JVC. Modern design with private garden, community pool, and excellent connectivity to major Dubai landmarks."
-      },
-      {
-        id: 7,
-        title: "Sky Palace Penthouse - Business Bay",
-        beds: 5,
-        baths: 6,
-        sqft: 8000,
-        price: 42000000,
-        amenities: ["Pool", "Gym", "Parking", "Concierge", "Security"],
-        location: "Business Bay",
-        type: "Penthouse",
-        description: "Exclusive sky palace with 360-degree views of Dubai skyline. Private pool, rooftop terrace, and direct elevator access. The pinnacle of luxury living."
-      },
-      {
-        id: 8,
-        title: "Beachfront Apartment - Jumeirah Beach Residence",
-        beds: 2,
-        baths: 3,
-        sqft: 2100,
-        price: 5500000,
-        amenities: ["Beach Access", "Pool", "Gym", "Parking", "Security"],
-        location: "Jumeirah Beach Residence",
-        type: "Apartment",
-        description: "Stunning beachfront apartment with direct beach access in JBR. Wake up to ocean views, walk to The Beach and Marina Walk. Perfect investment or lifestyle property."
-      },
-      {
-        id: 9,
-        title: "Contemporary Villa - Dubai Hills Estate",
-        beds: 6,
-        baths: 7,
-        sqft: 10500,
-        price: 28000000,
-        amenities: ["Pool", "Garden", "Parking", "Security", "Gym"],
-        location: "Dubai Hills Estate",
-        type: "Villa",
-        description: "Brand new contemporary villa in Dubai Hills Estate. Golf course community with premium schools, Dubai Hills Mall, and direct access to Al Khail Road."
-      },
-      {
-        id: 10,
-        title: "Luxury Apartment - City Walk",
-        beds: 3,
-        baths: 4,
-        sqft: 2800,
-        price: 9500000,
-        amenities: ["Pool", "Gym", "Parking", "Concierge"],
-        location: "City Walk",
-        type: "Apartment",
-        description: "Designer apartment in the vibrant City Walk district. Steps from boutique shops, cafes, and art galleries. Urban lifestyle with green spaces and community events."
-      },
-      {
-        id: 11,
-        title: "Waterfront Villa - District One MBR City",
-        beds: 6,
-        baths: 8,
-        sqft: 13500,
-        price: 55000000,
-        amenities: ["Pool", "Beach Access", "Garden", "Parking", "Security"],
-        location: "Mohammed Bin Rashid City",
-        type: "Villa",
-        description: "Exclusive waterfront villa in District One with crystal lagoon access. Contemporary architecture, private beach, and resort-style living in the heart of Dubai."
-      },
-      {
-        id: 12,
-        title: "Garden Apartment - The Springs",
-        beds: 3,
-        baths: 3,
-        sqft: 2400,
-        price: 3200000,
-        amenities: ["Pool", "Garden", "Parking", "Security"],
-        location: "The Springs",
-        type: "Apartment",
-        description: "Peaceful garden apartment in family-friendly Springs community. Lake views, landscaped gardens, and excellent schools. Perfect for families seeking tranquility."
+        description: "Spacious townhouse in the heart of JVC."
       }
     ]));
-    // Check authentication status
+  }, [dispatch]);
+
+  return (
+    <div className="app">
+      <MegaNav user={user} onLogin={() => setShowAuthModal(true)} />
+
+      {showAuthModal && (
+        <div className="auth-modal-overlay" onClick={() => setShowAuthModal(false)}>
+          <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="auth-modal-close" onClick={() => setShowAuthModal(false)}>
+              &times;
+            </button>
+            <Auth onLogin={() => {
+              setShowAuthModal(false);
+              window.location.reload();
+            }} />
+          </div>
+        </div>
+      )}
+
+      <section className="hero" id="home">
+        <div className="hero-overlay"></div>
+        <div className="hero-content">
+          <h1 className="hero-title animate-fadeInUp">Luxury Real Estate in Dubai</h1>
+          <p className="hero-subtitle animate-fadeInUp animate-delay-100">Discover Premium Properties with White Caves</p>
+          <p className="hero-description animate-fadeInUp animate-delay-200">Experience unparalleled luxury living in Dubai's most prestigious locations</p>
+          <button className="btn btn-primary btn-lg animate-fadeInUp animate-delay-300" onClick={() => setShowAuthModal(true)}>
+            Get Started
+          </button>
+          <div className="hero-stats">
+            <div className="stat-item">
+              <h3>500+</h3>
+              <p>Premium Properties</p>
+            </div>
+            <div className="stat-item">
+              <h3>1000+</h3>
+              <p>Happy Clients</p>
+            </div>
+            <div className="stat-item">
+              <h3>15+</h3>
+              <p>Years Experience</p>
+            </div>
+            <div className="stat-item">
+              <h3>50+</h3>
+              <p>Expert Agents</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="map-section" id="map">
+        <InteractiveMap onPropertySelect={(property) => handlePropertyClick(property.id)} />
+      </section>
+
+      <section className="comparison-section" id="compare">
+        <PropertyComparison />
+      </section>
+      
+      <section className="featured-locations">
+        <h2>Explore Dubai's Premier Locations</h2>
+        <p className="section-subtitle">From Palm Jumeirah to Downtown Dubai</p>
+        <div className="locations-grid">
+          <div className="location-card" style={{backgroundImage: "url(https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80)"}}>
+            <div className="location-overlay">
+              <h3>Palm Jumeirah</h3>
+              <p>Iconic waterfront villas</p>
+            </div>
+          </div>
+          <div className="location-card" style={{backgroundImage: "url(https://images.unsplash.com/photo-1582672060674-bc2bd808a8b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80)"}}>
+            <div className="location-overlay">
+              <h3>Downtown Dubai</h3>
+              <p>Luxury apartments & penthouses</p>
+            </div>
+          </div>
+          <div className="location-card" style={{backgroundImage: "url(https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80)"}}>
+            <div className="location-overlay">
+              <h3>Emirates Hills</h3>
+              <p>Exclusive golf course villas</p>
+            </div>
+          </div>
+          <div className="location-card" style={{backgroundImage: "url(https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80)"}}>
+            <div className="location-overlay">
+              <h3>Dubai Marina</h3>
+              <p>Waterfront living redefined</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="about-section" id="about">
+        <div className="about-content">
+          <h2>About White Caves Real Estate</h2>
+          <p>White Caves is Dubai's premier luxury real estate agency, specializing in high-end properties across the emirate.</p>
+          
+          <div className="company-features">
+            <div className="feature">
+              <h3>Excellence</h3>
+              <p>Award-winning service with a track record of satisfied clients</p>
+            </div>
+            <div className="feature">
+              <h3>Global Reach</h3>
+              <p>International network connecting buyers and sellers worldwide</p>
+            </div>
+            <div className="feature">
+              <h3>Professional Team</h3>
+              <p>Expert agents fluent in multiple languages</p>
+            </div>
+            <div className="feature">
+              <h3>Trust & Security</h3>
+              <p>Fully licensed and regulated by Dubai Land Department</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <TestimonialsCarousel />
+      <BlogSection />
+      <NewsletterSubscription />
+      <ContactUs />
+      <Footer />
+      <WhatsAppButton />
+    </div>
+  );
+}
+
+function App() {
+  const dispatch = useDispatch();
+  const user = useSelector(state => state.user.currentUser);
+
+  useEffect(() => {
     const checkAuth = async () => {
       try {
         const response = await fetch('/@me');
@@ -243,425 +269,46 @@ function App() {
           dispatch(setUser(userData));
         }
       } catch (error) {
-        // Silently fail - backend may not be running
       }
     };
     checkAuth();
   }, [dispatch]);
 
-  if (user) {
-    return (
-      <div className="app">
-        <MegaNav user={user} onLogout={() => {
-          localStorage.removeItem('whitecaves_auth_token');
-          localStorage.removeItem('whitecaves_user');
-          window.location.reload();
-        }} />
+  const handleRoleSelect = (role) => {
+    localStorage.setItem('userRole', JSON.stringify({
+      role,
+      selectedAt: new Date().toISOString(),
+      locked: true
+    }));
+  };
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/select-role" element={<RoleGateway user={user} onRoleSelect={handleRoleSelect} />} />
         
-        <section className="hero" id="home">
-          <div className="hero-overlay"></div>
-          <div className="hero-content">
-            <h1 className="hero-title animate-fadeInUp">Welcome back{user.name ? `, ${user.name}` : ''}!</h1>
-            <p className="hero-subtitle animate-fadeInUp animate-delay-100">Manage your property journey with White Caves</p>
-            <a href="#dashboard" className="btn btn-primary btn-lg animate-fadeInUp animate-delay-200">
-              Go to Dashboard
-            </a>
-          </div>
-        </section>
-
-        <section className="dashboard-section" id="dashboard">
-          <div className="role-switch-bar">
-            <RoleSelector compact currentRole={userRole} onRoleChange={handleRoleChange} />
-          </div>
-          {renderRoleDashboard()}
-        </section>
-
-        <section className="properties" id="properties">
-          <div className="container">
-            <h2>Featured Properties</h2>
-            <AdvancedSearch />
-          </div>
-        </section>
-
-        <section className="comparison-section" id="compare">
-          <PropertyComparison />
-        </section>
-
-        <section className="mortgage-section">
-          <div className="container">
-            <h2 className="section-title">Mortgage Calculator</h2>
-            <p className="section-subtitle">Plan your property investment</p>
-            <MortgageCalculator />
-          </div>
-        </section>
-
-        <Footer />
-        <WhatsAppButton />
-      </div>
-    );
-  }
-
-  return (
-    <div className="app">
-      <MegaNav user={user} onLogin={() => setShowAuthModal(true)} />
-
-      {showAuthModal && (
-            <div className="auth-modal-overlay" onClick={() => setShowAuthModal(false)}>
-              <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
-                <button className="auth-modal-close" onClick={() => setShowAuthModal(false)}>
-                  &times;
-                </button>
-                <Auth onLogin={() => {
-                  setShowAuthModal(false);
-                  window.location.reload();
-                }} />
-              </div>
-            </div>
-          )}
-
-          <section className="hero" id="home">
-            <div className="hero-overlay"></div>
-            <div className="hero-content">
-              <h1 className="hero-title animate-fadeInUp">Luxury Real Estate in Dubai</h1>
-              <p className="hero-subtitle animate-fadeInUp animate-delay-100">Discover Premium Properties with White Caves</p>
-              <p className="hero-description animate-fadeInUp animate-delay-200">Experience unparalleled luxury living in Dubai's most prestigious locations</p>
-              <button className="btn btn-primary btn-lg animate-fadeInUp animate-delay-300" onClick={() => setShowAuthModal(true)}>
-                Get Started
-              </button>
-              <div className="hero-stats">
-                <div className="stat-item">
-                  <h3>500+</h3>
-                  <p>Premium Properties</p>
-                </div>
-                <div className="stat-item">
-                  <h3>1000+</h3>
-                  <p>Happy Clients</p>
-                </div>
-                <div className="stat-item">
-                  <h3>15+</h3>
-                  <p>Years Experience</p>
-                </div>
-                <div className="stat-item">
-                  <h3>50+</h3>
-                  <p>Expert Agents</p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="map-section" id="map">
-            <InteractiveMap onPropertySelect={(property) => handlePropertyClick(property.id)} />
-          </section>
-
-          <section className="comparison-section" id="compare">
-            <PropertyComparison />
-          </section>
-          
-          <section className="featured-locations">
-            <h2>Explore Dubai's Premier Locations</h2>
-            <p className="section-subtitle">From Palm Jumeirah to Downtown Dubai</p>
-            <div className="locations-grid">
-              <div className="location-card" style={{backgroundImage: "url(https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80)"}}>
-                <div className="location-overlay">
-                  <h3>Palm Jumeirah</h3>
-                  <p>Iconic waterfront villas</p>
-                </div>
-              </div>
-              <div className="location-card" style={{backgroundImage: "url(https://images.unsplash.com/photo-1582672060674-bc2bd808a8b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80)"}}>
-                <div className="location-overlay">
-                  <h3>Downtown Dubai</h3>
-                  <p>Luxury apartments & penthouses</p>
-                </div>
-              </div>
-              <div className="location-card" style={{backgroundImage: "url(https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80)"}}>
-                <div className="location-overlay">
-                  <h3>Emirates Hills</h3>
-                  <p>Exclusive golf course villas</p>
-                </div>
-              </div>
-              <div className="location-card" style={{backgroundImage: "url(https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80)"}}>
-                <div className="location-overlay">
-                  <h3>Dubai Marina</h3>
-                  <p>Waterfront living redefined</p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="about-section" id="about">
-            <div className="about-content">
-              <h2>About White Caves Real Estate</h2>
-              <p>White Caves is Dubai's premier luxury real estate agency, specializing in high-end properties across the emirate. With years of experience in the Dubai property market, we offer unparalleled expertise in buying, selling, and leasing premium residential and commercial properties.</p>
-              
-              <div className="company-features">
-                <div className="feature">
-                  <h3>🏆 Excellence</h3>
-                  <p>Award-winning service with a track record of satisfied clients</p>
-                </div>
-                <div className="feature">
-                  <h3>🌍 Global Reach</h3>
-                  <p>International network connecting buyers and sellers worldwide</p>
-                </div>
-                <div className="feature">
-                  <h3>💼 Professional Team</h3>
-                  <p>Expert agents fluent in multiple languages</p>
-                </div>
-                <div className="feature">
-                  <h3>🔒 Trust & Security</h3>
-                  <p>Fully licensed and regulated by Dubai Land Department</p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="services-info" id="services">
-            <h2>Our Comprehensive Services</h2>
-            <div className="services-grid">
-              <div className="service-detail">
-                <h3>For Buyers</h3>
-                <ul>
-                  <li><strong>Property Search:</strong> Personalized property matching based on your requirements</li>
-                  <li><strong>Market Analysis:</strong> Detailed market insights and property valuations</li>
-                  <li><strong>Viewing Arrangements:</strong> Scheduled property tours at your convenience</li>
-                  <li><strong>Negotiation Support:</strong> Expert negotiation to secure the best deal</li>
-                  <li><strong>Documentation:</strong> Complete assistance with Form B, title deeds, and transfer</li>
-                  <li><strong>DEWA Registration:</strong> Utility connection and account setup</li>
-                  <li><strong>Post-Purchase Support:</strong> Ongoing assistance after completion</li>
-                </ul>
-              </div>
-
-              <div className="service-detail">
-                <h3>For Sellers</h3>
-                <ul>
-                  <li><strong>Property Valuation:</strong> Accurate market-based pricing</li>
-                  <li><strong>Marketing:</strong> Premium listings on major property portals</li>
-                  <li><strong>Photography:</strong> Professional property photography and videography</li>
-                  <li><strong>Buyer Screening:</strong> Pre-qualified buyer matching</li>
-                  <li><strong>Form F Processing:</strong> Sales agreement documentation (requires 10% security cheque)</li>
-                  <li><strong>Transaction Management:</strong> End-to-end sale coordination</li>
-                </ul>
-              </div>
-
-              <div className="service-detail">
-                <h3>For Tenants</h3>
-                <ul>
-                  <li><strong>Property Search:</strong> Find your ideal rental home</li>
-                  <li><strong>Viewing Coordination:</strong> Multiple property viewings</li>
-                  <li><strong>Lease Negotiation:</strong> Favorable rental terms</li>
-                  <li><strong>EJARI Registration:</strong> Official tenancy contract registration</li>
-                  <li><strong>DEWA Registration:</strong> Utility connection services</li>
-                  <li><strong>Move-in Permit:</strong> Building access and key handover</li>
-                  <li><strong>Renewal Services:</strong> Lease renewal assistance</li>
-                </ul>
-              </div>
-
-              <div className="service-detail">
-                <h3>For Landlords</h3>
-                <ul>
-                  <li><strong>Tenant Sourcing:</strong> Find reliable, verified tenants</li>
-                  <li><strong>Property Management:</strong> Full-service property management</li>
-                  <li><strong>Rent Collection:</strong> Timely rent collection services</li>
-                  <li><strong>Maintenance Coordination:</strong> Property upkeep and repairs</li>
-                  <li><strong>Legal Compliance:</strong> EJARI and all legal requirements</li>
-                  <li><strong>Annual Inspections:</strong> Regular property condition reports</li>
-                </ul>
-              </div>
-            </div>
-          </section>
-
-          <section className="dubai-laws" id="laws">
-            <h2>Dubai Real Estate Laws & Regulations</h2>
-            <div className="laws-content">
-              <div className="law-section">
-                <h3>Dubai Land Department (DLD) Regulations</h3>
-                <p>All real estate transactions in Dubai are governed by the Dubai Land Department. Key regulations include:</p>
-                <ul>
-                  <li><strong>Title Deed Registration:</strong> All property ownership must be registered with DLD</li>
-                  <li><strong>Transfer Fees:</strong> 4% of property value (2% buyer, 2% seller) plus administrative fees</li>
-                  <li><strong>Trustee Registration:</strong> All real estate agencies must be registered with RERA (Real Estate Regulatory Agency)</li>
-                  <li><strong>Agent Licensing:</strong> All agents must hold valid RERA licenses</li>
-                </ul>
-              </div>
-
-              <div className="law-section">
-                <h3>EJARI System</h3>
-                <p>EJARI is the mandatory tenancy contract registration system in Dubai:</p>
-                <ul>
-                  <li>All rental contracts must be registered within 90 days of signing</li>
-                  <li>Required for DEWA connection, visa applications, and legal protection</li>
-                  <li>Registration fee: AED 220 (including knowledge fee and innovation fee)</li>
-                  <li>Protects both landlord and tenant rights under Dubai rental laws</li>
-                </ul>
-              </div>
-
-              <div className="law-section">
-                <h3>Rental Laws</h3>
-                <ul>
-                  <li><strong>Rent Increases:</strong> Regulated by RERA Rental Index (Decree No. 43 of 2013)</li>
-                  <li><strong>Security Deposit:</strong> Typically 5% of annual rent (up to 10% for furnished properties)</li>
-                  <li><strong>Payment Terms:</strong> Usually 1-4 cheques per year</li>
-                  <li><strong>Notice Period:</strong> 90 days for contract termination or non-renewal</li>
-                  <li><strong>Eviction:</strong> Only permitted through legal channels with valid reasons</li>
-                </ul>
-              </div>
-
-              <div className="law-section">
-                <h3>Property Ownership Laws</h3>
-                <ul>
-                  <li><strong>Freehold Areas:</strong> Foreign nationals can own property in designated freehold areas</li>
-                  <li><strong>Leasehold:</strong> 99-year leases available in certain areas</li>
-                  <li><strong>Off-Plan Properties:</strong> Protected under Escrow Account Law (Law No. 8 of 2007)</li>
-                  <li><strong>Developer Regulations:</strong> All developers must register with RERA</li>
-                  <li><strong>Mortgage Laws:</strong> Maximum 75% LTV for first-time buyers (UAE nationals), 80% for expats on ready properties</li>
-                </ul>
-              </div>
-
-              <div className="law-section">
-                <h3>Form Requirements</h3>
-                <ul>
-                  <li><strong>Form A:</strong> Memorandum of Understanding for off-plan purchases</li>
-                  <li><strong>Form B:</strong> Sale agreement for ready properties (requires payment)</li>
-                  <li><strong>Form F:</strong> Final sales contract (requires original 10% security cheque)</li>
-                  <li><strong>NOC:</strong> No Objection Certificate from developer for resales</li>
-                </ul>
-              </div>
-
-              <div className="law-section">
-                <h3>Service Charges & Fees</h3>
-                <ul>
-                  <li><strong>Agency Commission:</strong> Typically 2% of transaction value + 5% VAT</li>
-                  <li><strong>Trustee Office Fee:</strong> AED 420 for property registration</li>
-                  <li><strong>Mortgage Registration:</strong> 0.25% of loan amount + AED 290</li>
-                  <li><strong>DEWA Deposit:</strong> AED 2,000 for apartments, AED 4,000 for villas</li>
-                </ul>
-              </div>
-            </div>
-          </section>
-
-          <TestimonialsCarousel />
-          
-          <BlogSection />
-          
-          <NewsletterSubscription />
-
-          <section className="contact" id="contact">
-            <ContactUs />
-            <ContactForm />
-          </section>
-
-
-      <RecentlyViewed 
-        recentIds={recentIds} 
-        onClear={clearRecent} 
-        onPropertyClick={handlePropertyClick} 
-      />
-
-      <section className="featured-properties" id="properties">
-        <h2>Featured Properties</h2>
-        <AdvancedSearch />
-        <FeaturedAgents />
-        <div className="property-grid">
-          {filteredProperties.map(property => (
-            <div 
-              key={property.id} 
-              className="property-card" 
-              id={`property-${property.id}`}
-              onClick={() => addToRecent(property.id)}
-            >
-              <div className="image-gallery">
-                <div 
-                  className="property-image" 
-                  style={{backgroundImage: `url(${property.images?.[0] || 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'})`}}
-                ></div>
-                {property.images && (
-                  <div className="gallery-nav">
-                    {property.images.map((_, index) => (
-                      <div 
-                        key={index} 
-                        className={`gallery-dot ${index === 0 ? 'active' : ''}`}
-                        onClick={() => {
-                          const image = document.querySelector(`#property-${property.id} .property-image`);
-                          image.style.backgroundImage = `url(${property.images[index]})`;
-                          document.querySelectorAll(`#property-${property.id} .gallery-dot`).forEach(dot => dot.classList.remove('active'));
-                          document.querySelectorAll(`#property-${property.id} .gallery-dot`)[index].classList.add('active');
-                        }}
-                      ></div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <h3>{property.title}</h3>
-              <div className="property-stats">
-                <div className="stat">
-                  <span className="stat-icon">🛏️</span>
-                  <span className="stat-value">{property.beds} Beds</span>
-                </div>
-                <div className="stat">
-                  <span className="stat-icon">🚿</span>
-                  <span className="stat-value">{property.baths} Baths</span>
-                </div>
-                <div className="stat">
-                  <span className="stat-icon">📏</span>
-                  <span className="stat-value">{property.sqft.toLocaleString()} sq.ft</span>
-                </div>
-              </div>
-              <div className="property-price">
-                <span className="currency">AED</span>
-                <span className="amount">{property.price.toLocaleString()}</span>
-              </div>
-              <div className="property-amenities">
-                {property.amenities?.map((amenity, index) => (
-                  <span key={index} className="amenity">
-                    {amenity === 'Pool' ? '🏊‍♂️' : 
-                     amenity === 'Parking' ? '🚗' : 
-                     amenity === 'Security' ? '👮‍♂️' : 
-                     amenity === 'Gym' ? '💪' : 
-                     amenity === 'Garden' ? '🌳' : 
-                     amenity === 'Concierge' ? '👔' : '✨'} {amenity}
-                  </span>
-                ))}
-              </div>
-              <div className="property-map">
-                <PropertyMap location={property.location} />
-              </div>
-              <div className="property-actions">
-                <button 
-                  className="view-gallery-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setGalleryProperty(property);
-                  }}
-                >
-                  📷 Gallery & Neighborhood
-                </button>
-                <button className="view-details">View Details</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <ImageGallery 
-        property={galleryProperty}
-        isOpen={!!galleryProperty}
-        onClose={() => setGalleryProperty(null)}
-      />
-
-      <section className="contact">
-        <ContactUs />
-        <ContactForm />
-      </section>
-
-      <Footer />
-      <WhatsAppButton />
-    </div>
+        <Route path="/buyer/dashboard" element={<BuyerDashboardPage />} />
+        <Route path="/buyer/mortgage-calculator" element={<MortgageCalculatorPage />} />
+        <Route path="/buyer/dld-fees" element={<DLDFeesPage />} />
+        <Route path="/buyer/title-deed-registration" element={<TitleDeedRegistrationPage />} />
+        
+        <Route path="/seller/dashboard" element={<SellerDashboardPage />} />
+        <Route path="/seller/pricing-tools" element={<PricingToolsPage />} />
+        
+        <Route path="/landlord/dashboard" element={<LandlordDashboardPage />} />
+        <Route path="/landlord/rental-management" element={<RentalManagementPage />} />
+        
+        <Route path="/leasing-agent/dashboard" element={<LeasingAgentDashboardPage />} />
+        <Route path="/leasing-agent/tenant-screening" element={<TenantScreeningPage />} />
+        
+        <Route path="/secondary-sales-agent/dashboard" element={<SalesAgentDashboardPage />} />
+        <Route path="/secondary-sales-agent/sales-pipeline" element={<SalesPipelinePage />} />
+        
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
-export default function AppWrapper() {
-  return (
-    <ThemeProvider>
-      <App />
-    </ThemeProvider>
-  );
-}
+export default App
