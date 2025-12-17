@@ -28,6 +28,8 @@ import TestimonialsCarousel from './components/TestimonialsCarousel';
 import NewsletterSubscription from './components/NewsletterSubscription';
 import AdminDashboard from './components/AdminDashboard';
 import RoleGateway from './components/RoleGateway';
+import SignInPage from './pages/auth/SignInPage';
+import ProfilePage from './pages/auth/ProfilePage';
 
 function ProtectedRoute({ children, allowedRoles }) {
   const user = useSelector(state => state.user.currentUser);
@@ -78,10 +80,10 @@ import TenantScreeningPage from './pages/leasing-agent/TenantScreeningPage';
 import SalesAgentDashboardPage from './pages/secondary-sales-agent/SalesAgentDashboardPage';
 import SalesPipelinePage from './pages/secondary-sales-agent/SalesPipelinePage';
 
-function HomePage({ onLogin }) {
+function HomePage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const user = useSelector(state => state.user.currentUser);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const { recentIds, addToRecent, clearRecent } = useRecentlyViewed();
 
   const handlePropertyClick = (propertyId) => {
@@ -171,21 +173,7 @@ function HomePage({ onLogin }) {
 
   return (
     <div className="app">
-      <MegaNav user={user} onLogin={() => setShowAuthModal(true)} />
-
-      {showAuthModal && (
-        <div className="auth-modal-overlay" onClick={() => setShowAuthModal(false)}>
-          <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="auth-modal-close" onClick={() => setShowAuthModal(false)}>
-              &times;
-            </button>
-            <Auth onLogin={() => {
-              setShowAuthModal(false);
-              window.location.reload();
-            }} />
-          </div>
-        </div>
-      )}
+      <MegaNav user={user} />
 
       <section className="hero" id="home">
         <div className="hero-overlay"></div>
@@ -193,7 +181,7 @@ function HomePage({ onLogin }) {
           <h1 className="hero-title animate-fadeInUp">Luxury Real Estate in Dubai</h1>
           <p className="hero-subtitle animate-fadeInUp animate-delay-100">Discover Premium Properties with White Caves</p>
           <p className="hero-description animate-fadeInUp animate-delay-200">Experience unparalleled luxury living in Dubai's most prestigious locations</p>
-          <button className="btn btn-primary btn-lg animate-fadeInUp animate-delay-300" onClick={() => setShowAuthModal(true)}>
+          <button className="btn btn-primary btn-lg animate-fadeInUp animate-delay-300" onClick={() => navigate(user ? '/select-role' : '/signin')}>
             Get Started
           </button>
           <div className="hero-stats">
@@ -322,8 +310,10 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/signin" element={user ? <Navigate to="/select-role" replace /> : <SignInPage />} />
+        <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to="/signin" replace />} />
         <Route path="/select-role" element={
-          user ? <RoleGateway user={user} onRoleSelect={handleRoleSelect} /> : <Navigate to="/" replace />
+          user ? <RoleGateway user={user} onRoleSelect={handleRoleSelect} /> : <Navigate to="/signin" replace />
         } />
         
         <Route path="/buyer/dashboard" element={
