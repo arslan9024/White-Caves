@@ -61,16 +61,25 @@ app.use('/api/saved-searches', savedSearchesRouter);
 app.use('/api/alerts', alertsRouter);
 
 if (process.env.NODE_ENV === 'production') {
-  const distPath = path.join(__dirname, '../../dist');
+  // Use process.cwd() for reliable path resolution in production
+  const distPath = path.join(process.cwd(), 'dist');
+  console.log('Serving static files from:', distPath);
+  
   app.use(express.static(distPath));
   
-  // Serve index.html for all non-API routes (SPA routing) - Express 5 syntax
+  // Serve index.html for all non-API routes (SPA routing)
   app.use((req, res, next) => {
     // Skip API routes and health check
     if (req.path.startsWith('/api/') || req.path === '/health') {
       return next();
     }
-    res.sendFile(path.join(distPath, 'index.html'));
+    const indexPath = path.join(distPath, 'index.html');
+    res.sendFile(indexPath, (err) => {
+      if (err) {
+        console.error('Error serving index.html:', err);
+        next(err);
+      }
+    });
   });
 }
 
