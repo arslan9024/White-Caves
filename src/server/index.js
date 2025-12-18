@@ -3,6 +3,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import './config/firebaseAdmin.js';
 import usersRouter from './routes/users.js';
@@ -67,27 +68,33 @@ app.use('/api/saved-searches', savedSearchesRouter);
 app.use('/api/alerts', alertsRouter);
 
 if (process.env.NODE_ENV === 'production') {
-  // Use __dirname and navigate up to find dist folder
-  const distPath = path.resolve(__dirname, '../../dist');
-  console.log('Serving static files from:', distPath);
-  console.log('Current __dirname:', __dirname);
-  console.log('Current working directory:', process.cwd());
+  // Try multiple possible dist paths
+  const possiblePaths = [
+    path.resolve(__dirname, '../../dist'),
+    path.join(process.cwd(), 'dist'),
+    '/home/runner/workspace/dist'
+  ];
   
-  // Check if dist exists
-  import('fs').then(fs => {
-    if (fs.existsSync(distPath)) {
-      console.log('✓ dist folder exists');
-      console.log('dist contents:', fs.readdirSync(distPath));
-    } else {
-      console.error('✗ dist folder NOT found at:', distPath);
+  let distPath = null;
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      distPath = p;
+      console.log('✓ Found dist folder at:', p);
+      console.log('dist contents:', fs.readdirSync(p));
+      break;
     }
-  });
+  }
+  
+  if (!distPath) {
+    console.error('✗ dist folder NOT found in any location');
+    console.error('Checked paths:', possiblePaths);
+    distPath = path.join(process.cwd(), 'dist');
+  }
   
   app.use(express.static(distPath, { index: 'index.html' }));
   
   // Serve index.html for all non-API routes (SPA routing)
   app.get('*', (req, res, next) => {
-    // Skip API routes and health check
     if (req.path.startsWith('/api/') || req.path === '/health') {
       return next();
     }
