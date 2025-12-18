@@ -1,0 +1,32 @@
+{
+  "name": "White Caves Real Estate",
+  "short_name": "White Caves",
+  "description": "Dubai's premier luxury real estate platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#D4AF37",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["real estate", "property", "lifestyle"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Browse Properties",
+      "url": "/#properties",
+      "description": "View all available properties"
+    },
+    {
+      "name": "Contact Us",
+      "url": "/contact",
+      "description": "Get in touch with our team"
+    }
+  ]
+}

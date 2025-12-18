@@ -15,6 +15,7 @@ import favoritesRouter from './routes/favorites.js';
 import savedSearchesRouter from './routes/savedSearches.js';
 import alertsRouter from './routes/alerts.js';
 import authRouter from './routes/auth.js';
+import recommendationsRouter from './routes/recommendations.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -66,6 +67,7 @@ app.use('/api/tenancy-agreements', tenancyAgreementsRouter);
 app.use('/api/favorites', favoritesRouter);
 app.use('/api/saved-searches', savedSearchesRouter);
 app.use('/api/alerts', alertsRouter);
+app.use('/api/recommendations', recommendationsRouter);
 
 if (process.env.NODE_ENV === 'production') {
   // Try multiple possible dist paths
