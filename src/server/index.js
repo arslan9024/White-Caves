@@ -64,9 +64,9 @@ if (process.env.NODE_ENV === 'production') {
   const distPath = path.join(__dirname, '../../dist');
   app.use(express.static(distPath));
   
-  // Serve index.html for all non-API routes (SPA routing)
-  app.get('*', (req, res, next) => {
-    // Skip API routes
+  // Serve index.html for all non-API routes (SPA routing) - Express 5 syntax
+  app.use((req, res, next) => {
+    // Skip API routes and health check
     if (req.path.startsWith('/api/') || req.path === '/health') {
       return next();
     }
@@ -77,8 +77,8 @@ if (process.env.NODE_ENV === 'production') {
 app.use(notFound);
 app.use(errorHandler);
 
-// Use port 3000 for production deployment, 3000 for development backend
-const PORT = process.env.PORT || 3000;
+// Use port 5000 for production (maps to external port 80), 3000 for development
+const PORT = process.env.PORT || (process.env.NODE_ENV === 'production' ? 5000 : 3000);
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
