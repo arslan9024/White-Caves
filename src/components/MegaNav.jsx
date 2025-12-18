@@ -75,6 +75,7 @@ export default function MegaNav({ user }) {
   const simpleLinks = [
     { label: 'About', href: '#about' },
     { label: 'Services', href: '/services', isRoute: true },
+    { label: 'Careers', href: '/careers', isRoute: true },
     { label: 'Contact', href: '#contact' },
   ];
 
