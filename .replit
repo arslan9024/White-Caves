@@ -12,7 +12,7 @@ language = "nodejs"
 [deployment]
 deploymentTarget = "autoscale"
 build = ["npm", "run", "build"]
-run = ["bash", "-c", "NODE_ENV=production node src/server/index.js"]
+run = ["bash", "-c", "NODE_ENV=production PORT=5000 node src/server/index.js"]
 
 [[ports]]
 localPort = 3000
