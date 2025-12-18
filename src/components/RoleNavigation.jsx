@@ -99,6 +99,18 @@ const roleMenus = {
       { path: '/admin/properties', label: 'Properties', icon: '🏠' },
       { path: '/admin/roles', label: 'Roles', icon: '🔐' },
     ]
+  },
+  'owner': {
+    label: 'Company Owner',
+    icon: '👑',
+    color: '#ffd700',
+    items: [
+      { path: '/owner/dashboard', label: 'Dashboard', icon: '📊' },
+      { path: '/owner/agents', label: 'Manage Agents', icon: '👥' },
+      { path: '/owner/properties', label: 'All Properties', icon: '🏠' },
+      { path: '/owner/reports', label: 'Reports', icon: '📈' },
+      { path: '/owner/settings', label: 'Settings', icon: '⚙️' },
+    ]
   }
 };
 

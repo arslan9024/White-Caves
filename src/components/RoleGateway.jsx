@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RoleGateway.css';
 
+const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
+
 const ROLES = [
   { id: 'buyer', label: 'Buyer', icon: '🏠', description: 'Looking to purchase property in Dubai' },
   { id: 'seller', label: 'Seller', icon: '💰', description: 'Selling residential or commercial property' },
@@ -17,6 +19,19 @@ export default function RoleGateway({ user, onRoleSelect }) {
   const [selectedRole, setSelectedRole] = useState(null);
   const [isConfirming, setIsConfirming] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user?.email === OWNER_EMAIL) {
+      const ownerRole = {
+        role: 'owner',
+        selectedAt: new Date().toISOString(),
+        locked: true,
+        isOwner: true
+      };
+      localStorage.setItem('userRole', JSON.stringify(ownerRole));
+      navigate('/owner/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleRoleSelect = (roleId) => {
     setSelectedRole(roleId);

@@ -85,6 +85,7 @@ import TenantScreeningPage from './pages/leasing-agent/TenantScreeningPage';
 import SalesAgentDashboardPage from './pages/secondary-sales-agent/SalesAgentDashboardPage';
 import SalesPipelinePage from './pages/secondary-sales-agent/SalesPipelinePage';
 import TenantDashboardPage from './pages/tenant/TenantDashboardPage';
+import OwnerDashboardPage from './pages/owner/OwnerDashboardPage';
 
 function HomePage() {
   const dispatch = useDispatch();
@@ -391,6 +392,12 @@ function App() {
         <Route path="/tenant/dashboard" element={
           <ProtectedRoute allowedRoles={['tenant']}>
             <TenantDashboardPage />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/owner/dashboard" element={
+          <ProtectedRoute allowedRoles={['owner']}>
+            <OwnerDashboardPage />
           </ProtectedRoute>
         } />
         

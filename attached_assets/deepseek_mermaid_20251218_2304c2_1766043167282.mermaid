@@ -1,0 +1,24 @@
+graph LR
+    A[Client Signing] --> B[Property Valuation];
+    B --> C[Professional Photography/Virtual Tour];
+    C --> D[Listing Creation];
+    D --> E[Multi-Channel Distribution];
+    E --> F[Lead Management];
+    F --> G[Viewing Coordination];
+    G --> H[Offer Management];
+    H --> I[Negotiation];
+    I --> J[Transaction Processing];
+    J --> K[Handover];
+    K --> L[Post-Sale Follow-up];
+    
+    subgraph "Digital Distribution"
+    E1[Property Portals]
+    E2[Social Media]
+    E3[Email Campaign]
+    E4[Company Website]
+    end
+    
+    E --> E1
+    E --> E2
+    E --> E3
+    E --> E4
