@@ -87,6 +87,7 @@ import SalesPipelinePage from './pages/secondary-sales-agent/SalesPipelinePage';
 import TenantDashboardPage from './pages/tenant/TenantDashboardPage';
 import OwnerDashboardPage from './pages/owner/OwnerDashboardPage';
 import BusinessModelPage from './pages/owner/BusinessModelPage';
+import ServicesPage from './pages/ServicesPage';
 
 function HomePage() {
   const dispatch = useDispatch();
@@ -318,6 +319,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/services" element={<ServicesPage />} />
         <Route path="/signin" element={user ? <Navigate to="/select-role" replace /> : <SignInPage />} />
         <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to="/signin" replace />} />
         <Route path="/select-role" element={

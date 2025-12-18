@@ -74,7 +74,7 @@ export default function MegaNav({ user }) {
 
   const simpleLinks = [
     { label: 'About', href: '#about' },
-    { label: 'Services', href: '#services' },
+    { label: 'Services', href: '/services', isRoute: true },
     { label: 'Contact', href: '#contact' },
   ];
 
@@ -189,7 +189,11 @@ export default function MegaNav({ user }) {
 
               {simpleLinks.map((link) => (
                 <li key={link.label} className="mega-nav-item simple">
-                  <a href={link.href} className="mega-nav-link">{link.label}</a>
+                  {link.isRoute ? (
+                    <Link to={link.href} className="mega-nav-link">{link.label}</Link>
+                  ) : (
+                    <a href={link.href} className="mega-nav-link">{link.label}</a>
+                  )}
                 </li>
               ))}
             </ul>
