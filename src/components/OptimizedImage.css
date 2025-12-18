@@ -1,0 +1,88 @@
+.optimized-image-container {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-secondary);
+}
+
+.image-placeholder {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.image-placeholder.blur {
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary, #2a2a3a));
+  filter: blur(20px);
+  transform: scale(1.1);
+}
+
+.image-placeholder.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 25%,
+    var(--bg-tertiary, #2a2a3a) 50%,
+    var(--bg-secondary) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.optimized-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.optimized-image.visible {
+  opacity: 1;
+}
+
+.optimized-image-container.loaded .image-placeholder {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.image-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+.image-error svg {
+  width: 40px;
+  height: 40px;
+  opacity: 0.5;
+}
+
+.image-error span {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.lazy-background {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: opacity 0.3s ease;
+}
+
+.lazy-background:not(.loaded) {
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary, #2a2a3a));
+}
