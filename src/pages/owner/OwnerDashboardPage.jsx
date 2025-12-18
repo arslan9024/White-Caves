@@ -186,6 +186,10 @@ export default function OwnerDashboardPage() {
         <div className="quick-actions">
           <h2>Quick Actions</h2>
           <div className="actions-grid">
+            <button className="action-btn secret" onClick={() => navigate('/owner/business-model')}>
+              <span className="action-icon">📋</span>
+              <span>Business Model</span>
+            </button>
             <button className="action-btn" onClick={() => navigate('/owner/agents')}>
               <span className="action-icon">👥</span>
               <span>Manage Agents</span>
