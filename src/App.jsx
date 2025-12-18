@@ -87,6 +87,7 @@ import SalesPipelinePage from './pages/secondary-sales-agent/SalesPipelinePage';
 import TenantDashboardPage from './pages/tenant/TenantDashboardPage';
 import OwnerDashboardPage from './pages/owner/OwnerDashboardPage';
 import BusinessModelPage from './pages/owner/BusinessModelPage';
+import ClientServicesPage from './pages/owner/ClientServicesPage';
 import ServicesPage from './pages/ServicesPage';
 
 function HomePage() {
@@ -406,6 +407,11 @@ function App() {
         <Route path="/owner/business-model" element={
           <ProtectedRoute allowedRoles={['owner']}>
             <BusinessModelPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/owner/client-services" element={
+          <ProtectedRoute allowedRoles={['owner']}>
+            <ClientServicesPage />
           </ProtectedRoute>
         } />
         

@@ -107,6 +107,7 @@ const roleMenus = {
     items: [
       { path: '/owner/dashboard', label: 'Dashboard', icon: '📊' },
       { path: '/owner/business-model', label: 'Business Model', icon: '📋' },
+      { path: '/owner/client-services', label: 'Client Services', icon: '🏢' },
       { path: '/owner/agents', label: 'Manage Agents', icon: '👥' },
       { path: '/owner/properties', label: 'All Properties', icon: '🏠' },
       { path: '/owner/reports', label: 'Reports', icon: '📈' },
