@@ -30,9 +30,15 @@ app.get('/health', (req, res) => {
 
 app.use(cors());
 
+// Build MongoDB URI from credentials or use direct URI
+let mongoURI = process.env.MONGODB_URI;
+if (process.env.DB_PASSWORD) {
+  mongoURI = `mongodb+srv://arslanmalikgoraha_db_user:${encodeURIComponent(process.env.DB_PASSWORD)}@whitecavesdb.opetsag.mongodb.net/whitecaves?retryWrites=true&w=majority&appName=WhiteCavesDB`;
+}
+
 // Connect to MongoDB in background (non-blocking)
-if (process.env.MONGODB_URI) {
-  mongoose.connect(process.env.MONGODB_URI, {
+if (mongoURI) {
+  mongoose.connect(mongoURI, {
     serverSelectionTimeoutMS: 5000,
     socketTimeoutMS: 45000,
   }).then(() => {
@@ -43,7 +49,7 @@ if (process.env.MONGODB_URI) {
     console.warn('Database features will be unavailable');
   });
 } else {
-  console.warn('WARNING: MONGODB_URI not set. Database features will not work.');
+  console.warn('WARNING: MongoDB credentials not set. Database features will not work.');
 }
 
 export { isMongoDBConnected };
