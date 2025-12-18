@@ -61,14 +61,20 @@ app.use('/api/saved-searches', savedSearchesRouter);
 app.use('/api/alerts', alertsRouter);
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../../dist')));
-  app.get('/{*splat}', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../dist/index.html'));
+  const distPath = path.join(__dirname, '../../dist');
+  app.use(express.static(distPath));
+  
+  // Serve index.html for all non-API routes (SPA routing)
+  app.get('*', (req, res, next) => {
+    // Skip API routes
+    if (req.path.startsWith('/api/') || req.path === '/health') {
+      return next();
+    }
+    res.sendFile(path.join(distPath, 'index.html'));
   });
-} else {
-  app.use(notFound);
 }
 
+app.use(notFound);
 app.use(errorHandler);
 
 // Use port 3000 for production deployment, 3000 for development backend
