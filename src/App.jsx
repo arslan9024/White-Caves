@@ -90,6 +90,7 @@ import BusinessModelPage from './pages/owner/BusinessModelPage';
 import ClientServicesPage from './pages/owner/ClientServicesPage';
 import ServicesPage from './pages/ServicesPage';
 import CareersPage from './pages/CareersPage';
+import ContactPage from './pages/ContactPage';
 
 function HomePage() {
   const dispatch = useDispatch();
@@ -323,6 +324,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/careers" element={<CareersPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/signin" element={user ? <Navigate to="/select-role" replace /> : <SignInPage />} />
         <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to="/signin" replace />} />
         <Route path="/select-role" element={

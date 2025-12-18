@@ -76,7 +76,7 @@ export default function MegaNav({ user }) {
     { label: 'About', href: '#about' },
     { label: 'Services', href: '/services', isRoute: true },
     { label: 'Careers', href: '/careers', isRoute: true },
-    { label: 'Contact', href: '#contact' },
+    { label: 'Contact', href: '/contact', isRoute: true },
   ];
 
   useEffect(() => {
