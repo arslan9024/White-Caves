@@ -67,14 +67,26 @@ app.use('/api/saved-searches', savedSearchesRouter);
 app.use('/api/alerts', alertsRouter);
 
 if (process.env.NODE_ENV === 'production') {
-  // Use process.cwd() for reliable path resolution in production
-  const distPath = path.join(process.cwd(), 'dist');
+  // Use __dirname and navigate up to find dist folder
+  const distPath = path.resolve(__dirname, '../../dist');
   console.log('Serving static files from:', distPath);
+  console.log('Current __dirname:', __dirname);
+  console.log('Current working directory:', process.cwd());
   
-  app.use(express.static(distPath));
+  // Check if dist exists
+  import('fs').then(fs => {
+    if (fs.existsSync(distPath)) {
+      console.log('✓ dist folder exists');
+      console.log('dist contents:', fs.readdirSync(distPath));
+    } else {
+      console.error('✗ dist folder NOT found at:', distPath);
+    }
+  });
+  
+  app.use(express.static(distPath, { index: 'index.html' }));
   
   // Serve index.html for all non-API routes (SPA routing)
-  app.use((req, res, next) => {
+  app.get('*', (req, res, next) => {
     // Skip API routes and health check
     if (req.path.startsWith('/api/') || req.path === '/health') {
       return next();
@@ -83,7 +95,7 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(indexPath, (err) => {
       if (err) {
         console.error('Error serving index.html:', err);
-        next(err);
+        res.status(500).send('Error loading application');
       }
     });
   });
