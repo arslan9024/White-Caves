@@ -26,26 +26,29 @@ export default function OwnerDashboardPage() {
     }
   }, [user, navigate]);
 
-  const businessSteps = [
-    { id: 'A', label: 'Client Signing', icon: '✍️', color: '#e74c3c' },
-    { id: 'B', label: 'Property Valuation', icon: '📊', color: '#e67e22' },
-    { id: 'C', label: 'Photography & Virtual Tour', icon: '📸', color: '#f39c12' },
-    { id: 'D', label: 'Listing Creation', icon: '📝', color: '#27ae60' },
-    { id: 'E', label: 'Multi-Channel Distribution', icon: '🌐', color: '#3498db' },
-    { id: 'F', label: 'Lead Management', icon: '📋', color: '#9b59b6' },
-    { id: 'G', label: 'Viewing Coordination', icon: '🏠', color: '#1abc9c' },
-    { id: 'H', label: 'Offer Management', icon: '💼', color: '#e74c3c' },
-    { id: 'I', label: 'Negotiation', icon: '🤝', color: '#e67e22' },
-    { id: 'J', label: 'Transaction Processing', icon: '💳', color: '#27ae60' },
-    { id: 'K', label: 'Handover', icon: '🔑', color: '#3498db' },
-    { id: 'L', label: 'Post-Sale Follow-up', icon: '⭐', color: '#9b59b6' }
+  const topFlowSteps = [
+    { id: '1', label: 'Client Signing', color: '#e8e0f0' },
+    { id: '2', label: 'Property Valuation', color: '#e8e0f0' },
+    { id: '3', label: 'Professional Photography/Virtual Tour', color: '#e8e0f0' },
+    { id: '4', label: 'Listing Creation', color: '#e8e0f0' },
+    { id: '5', label: 'Multi-Channel Distribution', color: '#e8e0f0' }
   ];
 
   const distributionChannels = [
-    { id: 'E1', label: 'Property Portals', icon: '🏢', count: 12 },
-    { id: 'E2', label: 'Social Media', icon: '📱', count: 5 },
-    { id: 'E3', label: 'Email Campaign', icon: '📧', count: 8500 },
-    { id: 'E4', label: 'Company Website', icon: '🌐', count: 1 }
+    { id: 'E1', label: 'Property Portals', color: '#fff9c4' },
+    { id: 'E2', label: 'Social Media', color: '#fff9c4' },
+    { id: 'E3', label: 'Email Campaign', color: '#fff9c4' },
+    { id: 'E4', label: 'Company Website', color: '#fff9c4' }
+  ];
+
+  const bottomFlowSteps = [
+    { id: '6', label: 'Lead Management', color: '#e8e0f0' },
+    { id: '7', label: 'Viewing Coordination', color: '#e8e0f0' },
+    { id: '8', label: 'Offer Management', color: '#e8e0f0' },
+    { id: '9', label: 'Negotiation', color: '#e8e0f0' },
+    { id: '10', label: 'Transaction Processing', color: '#e8e0f0' },
+    { id: '11', label: 'Handover', color: '#e8e0f0' },
+    { id: '12', label: 'Post-Sale Follow-up', color: '#e8e0f0' }
   ];
 
   return (
@@ -133,52 +136,42 @@ export default function OwnerDashboardPage() {
           <h2>Business Model Flow</h2>
           <p className="section-subtitle">White Caves Real Estate Business Process</p>
           
-          <div className="business-flow">
-            <div className="flow-container">
-              {businessSteps.map((step, index) => (
-                <div key={step.id} className="flow-step">
-                  <div 
-                    className="step-node" 
-                    style={{ backgroundColor: step.color }}
-                  >
-                    <span className="step-icon">{step.icon}</span>
-                    <span className="step-id">{step.id}</span>
+          <div className="flowchart-container">
+            <div className="flowchart-top-row">
+              {topFlowSteps.map((step, index) => (
+                <React.Fragment key={step.id}>
+                  <div className="flowchart-node" style={{ backgroundColor: step.color }}>
+                    {step.label}
                   </div>
-                  <div className="step-label">{step.label}</div>
-                  {index < businessSteps.length - 1 && (
-                    <div className="flow-arrow">→</div>
-                  )}
-                </div>
+                  {index < topFlowSteps.length - 1 && <div className="flowchart-arrow">→</div>}
+                </React.Fragment>
               ))}
             </div>
-          </div>
 
-          <div className="distribution-section">
-            <h3>Digital Distribution Channels</h3>
-            <div className="distribution-grid">
-              {distributionChannels.map(channel => (
-                <div key={channel.id} className="distribution-card">
-                  <span className="channel-icon">{channel.icon}</span>
-                  <h4>{channel.label}</h4>
-                  <p className="channel-id">{channel.id}</p>
+            <div className="flowchart-middle">
+              <div className="flowchart-connector-down"></div>
+              <div className="digital-distribution-box">
+                <div className="distribution-header">Digital Distribution</div>
+                <div className="distribution-items">
+                  {distributionChannels.map(channel => (
+                    <div key={channel.id} className="distribution-item" style={{ backgroundColor: channel.color }}>
+                      {channel.label}
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+              <div className="flowchart-connector-down"></div>
             </div>
-            <div className="distribution-flow">
-              <div className="distribution-source">
-                <span>Multi-Channel Distribution</span>
-                <span className="source-id">E</span>
-              </div>
-              <div className="distribution-arrows">
-                <div className="arrow-branch"></div>
-              </div>
-              <div className="distribution-targets">
-                {distributionChannels.map(channel => (
-                  <div key={channel.id} className="target-badge">
-                    {channel.icon} {channel.label}
+
+            <div className="flowchart-bottom-row">
+              {bottomFlowSteps.map((step, index) => (
+                <React.Fragment key={step.id}>
+                  <div className="flowchart-node" style={{ backgroundColor: step.color }}>
+                    {step.label}
                   </div>
-                ))}
-              </div>
+                  {index < bottomFlowSteps.length - 1 && <div className="flowchart-arrow">→</div>}
+                </React.Fragment>
+              ))}
             </div>
           </div>
         </div>

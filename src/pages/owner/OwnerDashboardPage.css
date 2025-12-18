@@ -140,167 +140,138 @@
   margin-bottom: 2rem;
 }
 
-.business-flow {
+.flowchart-container {
+  background: #f8f9fa;
+  border-radius: 16px;
+  padding: 2rem;
   overflow-x: auto;
-  padding: 1rem 0;
 }
 
-.flow-container {
+[data-theme="dark"] .flowchart-container {
+  background: rgba(30, 30, 50, 0.5);
+}
+
+.flowchart-top-row,
+.flowchart-bottom-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  min-width: max-content;
-  padding: 1rem;
 }
 
-.flow-step {
+.flowchart-node {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+  min-width: 120px;
+  max-width: 180px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.flowchart-node:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .flowchart-node {
+  color: #333;
+  border-color: #999;
+}
+
+.flowchart-arrow {
+  font-size: 1.25rem;
+  color: #666;
+  padding: 0 4px;
+}
+
+[data-theme="dark"] .flowchart-arrow {
+  color: #aaa;
+}
+
+.flowchart-middle {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: 1.5rem 0;
+}
+
+.flowchart-connector-down {
+  width: 2px;
+  height: 30px;
+  background: #666;
   position: relative;
 }
 
-.step-node {
-  width: 70px;
-  height: 70px;
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease;
-  cursor: pointer;
-}
-
-.step-node:hover {
-  transform: scale(1.1);
-}
-
-.step-icon {
-  font-size: 1.5rem;
-}
-
-.step-id {
-  font-weight: 700;
-  font-size: 0.75rem;
-  margin-top: 2px;
-}
-
-.step-label {
-  margin-top: 0.75rem;
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  text-align: center;
-  max-width: 90px;
-  line-height: 1.3;
-}
-
-.flow-arrow {
+.flowchart-connector-down::after {
+  content: '▼';
   position: absolute;
-  right: -20px;
-  top: 25px;
-  font-size: 1.5rem;
-  color: var(--primary-color);
-  font-weight: bold;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: #666;
 }
 
-.distribution-section {
-  margin-top: 2.5rem;
-  padding-top: 2rem;
-  border-top: 1px solid var(--glass-border);
+[data-theme="dark"] .flowchart-connector-down {
+  background: #aaa;
 }
 
-.distribution-section h3 {
-  font-size: 1.25rem;
-  color: var(--text-primary);
-  margin-bottom: 1.5rem;
-  text-align: center;
+[data-theme="dark"] .flowchart-connector-down::after {
+  color: #aaa;
 }
 
-.distribution-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.distribution-card {
-  background: var(--card-bg);
+.digital-distribution-box {
+  border: 2px solid #666;
   border-radius: 12px;
-  padding: 1.25rem;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  background: white;
+  min-width: 200px;
+}
+
+[data-theme="dark"] .digital-distribution-box {
+  background: rgba(50, 50, 70, 0.8);
+  border-color: #888;
+}
+
+.distribution-header {
   text-align: center;
-  border: 1px solid var(--glass-border);
-  transition: transform 0.3s ease;
-}
-
-.distribution-card:hover {
-  transform: translateY(-3px);
-}
-
-.channel-icon {
-  font-size: 2rem;
-  display: block;
+  font-weight: 600;
+  color: #333;
   margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #ddd;
 }
 
-.distribution-card h4 {
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  margin-bottom: 0.25rem;
+[data-theme="dark"] .distribution-header {
+  color: #eee;
+  border-bottom-color: #555;
 }
 
-.channel-id {
-  color: var(--primary-color);
-  font-weight: 700;
-  font-size: 0.8rem;
-}
-
-.distribution-flow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  background: var(--card-bg);
-  border-radius: 12px;
-}
-
-.distribution-source {
+.distribution-items {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 1rem 1.5rem;
-  background: linear-gradient(135deg, #3498db, #2980b9);
-  border-radius: 12px;
-  color: white;
+  gap: 0.5rem;
 }
 
-.source-id {
-  font-weight: 700;
-  font-size: 1.25rem;
-  margin-top: 0.25rem;
-}
-
-.distribution-arrows {
-  font-size: 2rem;
-  color: var(--primary-color);
-}
-
-.distribution-targets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.target-badge {
-  padding: 0.5rem 1rem;
-  background: var(--glass-bg);
-  border-radius: 20px;
+.distribution-item {
+  padding: 8px 12px;
+  border-radius: 6px;
   font-size: 0.85rem;
-  color: var(--text-primary);
-  border: 1px solid var(--glass-border);
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+  border: 1px solid #e0d68a;
+}
+
+[data-theme="dark"] .distribution-item {
+  color: #333;
 }
 
 .quick-actions {
