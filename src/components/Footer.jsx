@@ -12,7 +12,7 @@ export default function Footer() {
           <div className="footer-contact">
             <p>📍 Office D-72, El-Shaye-4, Port Saeed, Dubai</p>
             <p>📞 +971 4 335 0592</p>
-            <p>📧 the.white.caves@gmail.com</p>
+            <p>📧 admin@whitecaves.com</p>
           </div>
         </div>
         <div className="footer-section">

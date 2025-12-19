@@ -76,7 +76,7 @@ export default function ContactPage() {
                 </div>
                 <div className="contact-details">
                   <h3>Email Addresses</h3>
-                  <p><strong>General:</strong> the.white.caves@gmail.com</p>
+                  <p><strong>General:</strong> admin@whitecaves.com</p>
                   <p><strong>Sales:</strong> sales@whitecaves.com</p>
                   <p><strong>Leasing:</strong> leasing@whitecaves.com</p>
                 </div>
@@ -142,7 +142,7 @@ export default function ContactPage() {
                   <span className="quick-icon">💬</span>
                   WhatsApp
                 </a>
-                <a href="mailto:the.white.caves@gmail.com" className="quick-link">
+                <a href="mailto:admin@whitecaves.com" className="quick-link">
                   <span className="quick-icon">✉️</span>
                   Send Email
                 </a>
