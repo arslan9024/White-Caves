@@ -7,8 +7,11 @@ class ErrorBoundary extends React.Component {
     this.state = { 
       hasError: false,
       error: null,
-      errorInfo: null
+      errorInfo: null,
+      countdown: 5
     };
+    this.redirectTimer = null;
+    this.countdownInterval = null;
   }
 
   static getDerivedStateFromError(error) {
@@ -19,19 +22,57 @@ class ErrorBoundary extends React.Component {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
     this.setState({
       error,
-      errorInfo
+      errorInfo,
+      countdown: 5
     });
+    
+    this.startAutoRedirect();
+  }
+
+  startAutoRedirect = () => {
+    this.countdownInterval = setInterval(() => {
+      this.setState(prev => {
+        if (prev.countdown <= 1) {
+          this.clearTimers();
+          window.location.href = '/';
+          return prev;
+        }
+        return { countdown: prev.countdown - 1 };
+      });
+    }, 1000);
+  };
+
+  clearTimers = () => {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+      this.countdownInterval = null;
+    }
+    if (this.redirectTimer) {
+      clearTimeout(this.redirectTimer);
+      this.redirectTimer = null;
+    }
+  };
+
+  componentWillUnmount() {
+    this.clearTimers();
   }
 
   handleReset = () => {
+    this.clearTimers();
     this.setState({ 
       hasError: false,
       error: null,
-      errorInfo: null
+      errorInfo: null,
+      countdown: 5
     });
     if (this.props.onReset) {
       this.props.onReset();
     }
+  };
+
+  handleGoHome = () => {
+    this.clearTimers();
+    window.location.href = '/';
   };
 
   render() {
@@ -46,16 +87,19 @@ class ErrorBoundary extends React.Component {
             <div className="error-icon">⚠️</div>
             <h1>Oops! Something went wrong</h1>
             <p>We're sorry for the inconvenience. An unexpected error has occurred.</p>
+            <p className="redirect-notice">
+              Redirecting to home page in <span className="countdown">{this.state.countdown}</span> seconds...
+            </p>
             
             <div className="error-actions">
               <button onClick={this.handleReset} className="error-button primary">
                 Try Again
               </button>
               <button 
-                onClick={() => window.location.href = '/'} 
+                onClick={this.handleGoHome} 
                 className="error-button secondary"
               >
-                Go to Home
+                Go to Home Now
               </button>
             </div>
 

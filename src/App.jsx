@@ -84,6 +84,7 @@ import LeasingAgentDashboardPage from './pages/leasing-agent/LeasingAgentDashboa
 import TenantScreeningPage from './pages/leasing-agent/TenantScreeningPage';
 import SalesAgentDashboardPage from './pages/secondary-sales-agent/SalesAgentDashboardPage';
 import SalesPipelinePage from './pages/secondary-sales-agent/SalesPipelinePage';
+import NotFoundPage from './pages/NotFoundPage';
 import TenantDashboardPage from './pages/tenant/TenantDashboardPage';
 import OwnerDashboardPage from './pages/owner/OwnerDashboardPage';
 import BusinessModelPage from './pages/owner/BusinessModelPage';
@@ -419,7 +420,7 @@ function App() {
           </ProtectedRoute>
         } />
         
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );
