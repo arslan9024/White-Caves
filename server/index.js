@@ -66,6 +66,15 @@ function generateContractNumber() {
   return `WC-${year}-${random}`;
 }
 
+function normalizeContract(contract) {
+  if (!contract) return null;
+  const obj = contract.toObject ? contract.toObject() : contract;
+  if (obj._id && !obj.id) {
+    obj.id = obj._id.toString();
+  }
+  return obj;
+}
+
 connectDB().then(() => {
   useDatabase = true;
   console.log('Using MongoDB for storage');
@@ -81,7 +90,7 @@ app.get('/api/contracts', async (req, res) => {
   try {
     if (useDatabase) {
       const contracts = await Contract.find().sort({ createdAt: -1 });
-      return res.json({ success: true, contracts });
+      return res.json({ success: true, contracts: contracts.map(normalizeContract) });
     }
     const contracts = loadContracts();
     res.json({ success: true, contracts });
@@ -97,7 +106,7 @@ app.get('/api/contracts/:id', async (req, res) => {
       if (!contract) {
         return res.status(404).json({ success: false, error: 'Contract not found' });
       }
-      return res.json({ success: true, contract });
+      return res.json({ success: true, contract: normalizeContract(contract) });
     }
     const contracts = loadContracts();
     const contract = contracts.find(c => c.id === req.params.id);
@@ -124,7 +133,7 @@ app.post('/api/contracts', async (req, res) => {
         signatureLinks: { lessor: null, tenant: null }
       });
       await newContract.save();
-      return res.json({ success: true, contract: newContract });
+      return res.json({ success: true, contract: normalizeContract(newContract) });
     }
     
     const contracts = loadContracts();
@@ -159,7 +168,7 @@ app.put('/api/contracts/:id', async (req, res) => {
       if (!contract) {
         return res.status(404).json({ success: false, error: 'Contract not found' });
       }
-      return res.json({ success: true, contract });
+      return res.json({ success: true, contract: normalizeContract(contract) });
     }
     
     const contracts = loadContracts();
