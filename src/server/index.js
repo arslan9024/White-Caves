@@ -96,7 +96,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(distPath, { index: 'index.html' }));
   
   // Serve index.html for all non-API routes (SPA routing)
-  app.get('*', (req, res, next) => {
+  app.use((req, res, next) => {
     if (req.path.startsWith('/api/') || req.path === '/health') {
       return next();
     }
