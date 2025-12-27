@@ -23,8 +23,8 @@ export const PUBLIC_NAV = {
     { label: 'Market Insights', path: '/services#market', icon: '📈' }
   ],
   company: [
-    { label: 'About Us', path: '/services#about', icon: 'ℹ️' },
-    { label: 'Our Team', path: '/services#team', icon: '👥' },
+    { label: 'About Us', path: '/about', icon: 'ℹ️' },
+    { label: 'Our Team', path: '/about#team', icon: '👥' },
     { label: 'Careers', path: '/careers', icon: '💼' },
     { label: 'Contact Us', path: '/contact', icon: '📞' }
   ]

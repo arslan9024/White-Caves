@@ -143,6 +143,12 @@ export default function MobileNav({ isOpen, onClose }) {
           <div className="mobile-nav-divider" />
 
           <div className="mobile-nav-links">
+            <button onClick={() => handleNavClick('/properties')}>
+              <span>🏢</span> Properties
+            </button>
+            <button onClick={() => handleNavClick('/about')}>
+              <span>ℹ️</span> About Us
+            </button>
             <button onClick={() => handleNavClick('/services')}>
               <span>⚙️</span> Services
             </button>
