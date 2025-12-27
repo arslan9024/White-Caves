@@ -33,6 +33,8 @@ import NeighborhoodAnalyzer from './components/NeighborhoodAnalyzer';
 import VirtualTourGallery from './components/VirtualTourGallery';
 import DubaiMap from './components/DubaiMap';
 import RoleGateway from './components/RoleGateway';
+import OnboardingGateway from './components/OnboardingGateway';
+import ThemeToggle from './components/ThemeToggle';
 import SignInPage from './pages/auth/SignInPage';
 import ProfilePage from './pages/auth/ProfilePage';
 import PendingApprovalPage from './pages/auth/PendingApprovalPage';
@@ -225,6 +227,8 @@ function HomePage() {
           </div>
         </div>
       </section>
+
+      <OnboardingGateway />
 
       <section className="map-section" id="map">
         <InteractiveMap onPropertySelect={(property) => handlePropertyClick(property.id)} />

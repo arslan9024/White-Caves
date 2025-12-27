@@ -1,0 +1,74 @@
+.theme-toggle-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-track {
+  width: 52px;
+  height: 28px;
+  background: var(--border-color);
+  border-radius: 14px;
+  position: relative;
+  transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.toggle-track.dark {
+  background: var(--primary-color);
+}
+
+.toggle-icons {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 7px;
+  box-sizing: border-box;
+}
+
+.icon-sun {
+  color: var(--accent-gold);
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.icon-moon {
+  color: #FFFFFF;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.toggle-track.dark .icon-sun {
+  opacity: 0.5;
+}
+
+.toggle-track.dark .icon-moon {
+  opacity: 1;
+}
+
+.toggle-thumb {
+  width: 22px;
+  height: 22px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  position: absolute;
+  left: 3px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toggle-track.dark .toggle-thumb {
+  transform: translateX(24px);
+}
+
+@media (hover: hover) {
+  .theme-toggle-btn:hover .toggle-track {
+    box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.2);
+  }
+}
