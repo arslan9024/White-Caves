@@ -86,6 +86,95 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString(), database: useDatabase ? 'mongodb' : 'file' });
 });
 
+const serverStartTime = Date.now();
+
+app.get('/api/system/health', async (req, res) => {
+  const formatUptime = (ms) => {
+    const seconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    if (days > 0) return `${days}d ${hours % 24}h ${minutes % 60}m`;
+    if (hours > 0) return `${hours}h ${minutes % 60}m ${seconds % 60}s`;
+    if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
+    return `${seconds}s`;
+  };
+
+  let mongodbStatus = { status: 'disconnected', storageMode: 'file', database: '-' };
+  if (useDatabase) {
+    try {
+      const mongoose = await import('mongoose');
+      if (mongoose.default.connection.readyState === 1) {
+        mongodbStatus = {
+          status: 'connected',
+          storageMode: 'mongodb',
+          database: mongoose.default.connection.name || 'WhiteCavesDB'
+        };
+      }
+    } catch (e) {
+      mongodbStatus = { status: 'error', storageMode: 'file', error: e.message };
+    }
+  } else {
+    mongodbStatus = { status: 'fallback', storageMode: 'file', error: 'Using file-based storage' };
+  }
+
+  const firebaseStatus = {
+    status: process.env.FIREBASE_SERVICE_ACCOUNT ? 'configured' : 'not_configured',
+    projectId: process.env.VITE_FIREBASE_PROJECT_ID || '-',
+    authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN || '-',
+    adminSdk: process.env.FIREBASE_SERVICE_ACCOUNT ? 'Configured' : 'Not Set'
+  };
+
+  const stripeKey = process.env.STRIPE_SECRET_KEY || process.env.STRIPE_API_KEY;
+  const stripeStatus = {
+    status: stripeKey ? 'configured' : 'not_configured',
+    configured: !!stripeKey,
+    mode: stripeKey ? (stripeKey.includes('_test_') ? 'Test' : 'Live') : '-'
+  };
+
+  let googleDriveStatus = { status: 'not_configured', configured: false };
+  try {
+    const hasCredentials = !!(process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_SERVICE_ACCOUNT);
+    googleDriveStatus = {
+      status: hasCredentials ? 'configured' : 'not_configured',
+      configured: hasCredentials
+    };
+  } catch (e) {
+    googleDriveStatus = { status: 'error', configured: false, error: e.message };
+  }
+
+  const googleMapsStatus = {
+    status: process.env.GOOGLE_API_KEY ? 'configured' : 'not_configured',
+    configured: !!process.env.GOOGLE_API_KEY
+  };
+
+  const envVars = [
+    { name: 'MONGODB_URI', set: !!process.env.MONGODB_URI },
+    { name: 'FIREBASE_SERVICE_ACCOUNT', set: !!process.env.FIREBASE_SERVICE_ACCOUNT },
+    { name: 'VITE_FIREBASE_API_KEY', set: !!process.env.VITE_FIREBASE_API_KEY },
+    { name: 'VITE_FIREBASE_PROJECT_ID', set: !!process.env.VITE_FIREBASE_PROJECT_ID },
+    { name: 'STRIPE_SECRET_KEY', set: !!(process.env.STRIPE_SECRET_KEY || process.env.STRIPE_API_KEY) },
+    { name: 'GOOGLE_API_KEY', set: !!process.env.GOOGLE_API_KEY },
+    { name: 'SESSION_SECRET', set: !!process.env.SESSION_SECRET },
+    { name: 'REPLIT_DEV_DOMAIN', set: !!process.env.REPLIT_DEV_DOMAIN }
+  ];
+
+  res.json({
+    server: {
+      status: 'healthy',
+      uptime: formatUptime(Date.now() - serverStartTime),
+      environment: process.env.NODE_ENV || 'development',
+      port: PORT
+    },
+    mongodb: mongodbStatus,
+    firebase: firebaseStatus,
+    stripe: stripeStatus,
+    googleDrive: googleDriveStatus,
+    googleMaps: googleMapsStatus,
+    envVars
+  });
+});
+
 app.get('/api/contracts', async (req, res) => {
   try {
     if (useDatabase) {

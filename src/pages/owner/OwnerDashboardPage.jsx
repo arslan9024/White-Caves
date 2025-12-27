@@ -199,6 +199,10 @@ export default function OwnerDashboardPage() {
               <span className="action-icon">⚙️</span>
               <span>Settings</span>
             </button>
+            <button className="action-btn system-health" onClick={() => navigate('/owner/system-health')}>
+              <span className="action-icon">🩺</span>
+              <span>System Health</span>
+            </button>
           </div>
         </div>
 

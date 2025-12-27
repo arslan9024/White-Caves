@@ -109,3 +109,15 @@ Preferred communication style: Simple, everyday language.
   - Status tracking: draft → partially_signed → fully_signed
 - Google Drive integration for storing fully signed contracts as HTML
 - API response normalization ensures consistent `id` field across MongoDB and file-based storage
+
+### System Health Dashboard (December 2024)
+- Created owner-only System Health page at `/owner/system-health`
+- Real-time monitoring of:
+  - Server status (uptime, environment, port)
+  - MongoDB connection status and storage mode
+  - Firebase configuration (Project ID, Auth Domain, Admin SDK)
+  - Stripe integration (API key status, test/live mode)
+  - Google Drive credentials
+  - Google Maps API key
+- Environment variable overview showing configured/missing secrets
+- Added quick access from Owner Dashboard

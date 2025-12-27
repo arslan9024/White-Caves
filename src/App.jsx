@@ -87,6 +87,7 @@ import SalesAgentDashboardPage from './pages/secondary-sales-agent/SalesAgentDas
 import SalesPipelinePage from './pages/secondary-sales-agent/SalesPipelinePage';
 import NotFoundPage from './pages/NotFoundPage';
 import SignContractPage from './pages/SignContractPage';
+import SystemHealthPage from './pages/owner/SystemHealthPage';
 import TenantDashboardPage from './pages/tenant/TenantDashboardPage';
 import OwnerDashboardPage from './pages/owner/OwnerDashboardPage';
 import BusinessModelPage from './pages/owner/BusinessModelPage';
@@ -424,6 +425,11 @@ function App() {
         <Route path="/owner/client-services" element={
           <ProtectedRoute allowedRoles={['owner']}>
             <ClientServicesPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/owner/system-health" element={
+          <ProtectedRoute allowedRoles={['owner']}>
+            <SystemHealthPage />
           </ProtectedRoute>
         } />
         

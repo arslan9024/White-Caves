@@ -1,0 +1,308 @@
+.system-health-page {
+  padding: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.btn-back {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 25px;
+  transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.health-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.health-header h1 {
+  color: white;
+  margin: 0 0 8px;
+  font-size: 2rem;
+}
+
+.health-header .subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.btn-refresh {
+  background: linear-gradient(135deg, #D4AF37, #B8860B);
+  border: none;
+  color: #0a0a0f;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-refresh:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+}
+
+.btn-refresh:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.last-checked {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+  margin-bottom: 25px;
+}
+
+.loading-state,
+.error-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(212, 175, 55, 0.2);
+  border-top-color: #D4AF37;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.health-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.health-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.3s ease;
+}
+
+.health-card:hover {
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-header h3 {
+  color: white;
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-healthy {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+}
+
+.status-warning {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+}
+
+.status-error {
+  background: rgba(220, 53, 69, 0.2);
+  color: #dc3545;
+}
+
+.status-unknown {
+  background: rgba(150, 150, 150, 0.2);
+  color: #999;
+}
+
+.card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detail-row .label {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+}
+
+.detail-row .value {
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: right;
+  max-width: 60%;
+  word-break: break-word;
+}
+
+.detail-row.error .value {
+  color: #dc3545;
+  font-size: 0.75rem;
+}
+
+.env-section {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 25px;
+}
+
+.env-section h2 {
+  color: white;
+  font-size: 1.25rem;
+  margin: 0 0 20px;
+}
+
+.env-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.env-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.env-item.set {
+  border-left: 3px solid #28a745;
+}
+
+.env-item.not-set {
+  border-left: 3px solid #dc3545;
+}
+
+.env-name {
+  color: rgba(255, 255, 255, 0.8);
+  font-family: monospace;
+  font-size: 0.8125rem;
+}
+
+.env-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.env-status.configured {
+  color: #28a745;
+}
+
+.env-status.missing {
+  color: #dc3545;
+}
+
+body.light-mode .system-health-page .btn-back {
+  background: #f0f0f0;
+  border-color: #ddd;
+  color: #333;
+}
+
+body.light-mode .health-header h1 {
+  color: #333;
+}
+
+body.light-mode .health-header .subtitle {
+  color: #666;
+}
+
+body.light-mode .last-checked {
+  color: #888;
+}
+
+body.light-mode .health-card {
+  background: white;
+  border-color: #eee;
+}
+
+body.light-mode .card-header {
+  border-color: #eee;
+}
+
+body.light-mode .card-header h3 {
+  color: #333;
+}
+
+body.light-mode .detail-row .label {
+  color: #888;
+}
+
+body.light-mode .detail-row .value {
+  color: #333;
+}
+
+body.light-mode .env-section {
+  background: #f9f9f9;
+  border-color: #eee;
+}
+
+body.light-mode .env-section h2 {
+  color: #333;
+}
+
+body.light-mode .env-item {
+  background: white;
+}
+
+body.light-mode .env-name {
+  color: #555;
+}
+
+@media (max-width: 768px) {
+  .health-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .health-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .env-grid {
+    grid-template-columns: 1fr;
+  }
+}
