@@ -69,52 +69,56 @@ app.use('/api/saved-searches', savedSearchesRouter);
 app.use('/api/alerts', alertsRouter);
 app.use('/api/recommendations', recommendationsRouter);
 
-if (process.env.NODE_ENV === 'production') {
-  // Try multiple possible dist paths
-  const possiblePaths = [
-    path.resolve(__dirname, '../../dist'),
-    path.join(process.cwd(), 'dist'),
-    '/home/runner/workspace/dist'
-  ];
-  
-  let distPath = null;
-  for (const p of possiblePaths) {
-    if (fs.existsSync(p)) {
-      distPath = p;
-      console.log('✓ Found dist folder at:', p);
+// Try multiple possible dist paths
+const possiblePaths = [
+  path.resolve(__dirname, '../../dist'),
+  path.join(process.cwd(), 'dist'),
+  '/home/runner/workspace/dist'
+];
+
+let distPath = null;
+for (const p of possiblePaths) {
+  if (fs.existsSync(p)) {
+    distPath = p;
+    console.log('✓ Found dist folder at:', p);
+    try {
       console.log('dist contents:', fs.readdirSync(p));
-      break;
-    }
+    } catch (e) {}
+    break;
   }
-  
-  if (!distPath) {
-    console.error('✗ dist folder NOT found in any location');
-    console.error('Checked paths:', possiblePaths);
-    distPath = path.join(process.cwd(), 'dist');
-  }
-  
-  app.use(express.static(distPath, { index: 'index.html' }));
+}
+
+if (distPath) {
+  // Serve static files from dist
+  app.use(express.static(distPath, { 
+    index: 'index.html',
+    maxAge: '1d'
+  }));
   
   // Serve index.html for all non-API routes (SPA routing)
   app.use((req, res, next) => {
-    if (req.path.startsWith('/api/') || req.path === '/health') {
+    // Skip API routes and health check
+    if (req.path.startsWith('/api') || req.path === '/health') {
       return next();
     }
+    
     const indexPath = path.join(distPath, 'index.html');
-    res.sendFile(indexPath, (err) => {
-      if (err) {
-        console.error('Error serving index.html:', err);
-        res.status(500).send('Error loading application');
-      }
-    });
+    if (fs.existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      next();
+    }
   });
+} else {
+  console.warn('⚠ dist folder not found - frontend will not be served');
 }
 
-app.use(notFound);
-app.use(errorHandler);
+// Error handlers (only for API routes)
+app.use('/api', notFound);
+app.use('/api', errorHandler);
 
-// Use port 5000 for production (maps to external port 80), 3000 for development
-const PORT = process.env.PORT || (process.env.NODE_ENV === 'production' ? 5000 : 3000);
+// Always use port 5000 for Replit deployment
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
