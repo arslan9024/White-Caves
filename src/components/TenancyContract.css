@@ -1,0 +1,318 @@
+.tenancy-contract {
+  background: white;
+  color: #333;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.contract-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #D4AF37;
+}
+
+.contract-logo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.contract-logo img {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.company-info h2 {
+  font-size: 1.25rem;
+  color: #0a0a0f;
+  margin-bottom: 4px;
+}
+
+.company-info p {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.contract-meta {
+  text-align: right;
+}
+
+.contract-number {
+  display: block;
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.contract-status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-draft {
+  background: #f0f0f0;
+  color: #666;
+}
+
+.status-partially_signed {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-fully_signed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.contract-title {
+  text-align: center;
+  font-size: 1.75rem;
+  color: #0a0a0f;
+  margin-bottom: 8px;
+}
+
+.contract-subtitle {
+  text-align: center;
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.contract-section {
+  margin-bottom: 30px;
+}
+
+.contract-section h3 {
+  font-size: 1rem;
+  color: #D4AF37;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-item label {
+  font-size: 0.75rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detail-item span {
+  font-size: 0.9375rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.terms-list {
+  padding-left: 20px;
+  color: #555;
+  font-size: 0.875rem;
+  line-height: 1.8;
+}
+
+.terms-list li {
+  margin-bottom: 10px;
+}
+
+.signatures-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.signature-box {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.signature-box.broker {
+  grid-column: 1 / -1;
+}
+
+.signature-box h4 {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.signature-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.signature-display img {
+  max-width: 200px;
+  max-height: 80px;
+  margin-bottom: 10px;
+}
+
+.signer-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.sign-date {
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.signature-placeholder {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f8f8;
+  border-radius: 8px;
+  color: #999;
+}
+
+.btn-sign {
+  background: linear-gradient(135deg, #D4AF37, #B8860B);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-sign:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+}
+
+.contract-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.contract-actions .btn {
+  padding: 14px 30px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.contract-actions .btn-secondary {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
+.contract-actions .btn-secondary:hover {
+  background: #eee;
+}
+
+.contract-actions .btn-primary {
+  background: linear-gradient(135deg, #D4AF37, #B8860B);
+  border: none;
+  color: #0a0a0f;
+}
+
+.contract-actions .btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+}
+
+.contract-actions .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.contract-footer {
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  color: #999;
+  font-size: 0.75rem;
+}
+
+.contract-footer p {
+  margin: 4px 0;
+}
+
+@media (max-width: 600px) {
+  .tenancy-contract {
+    padding: 20px;
+    margin: 10px;
+  }
+
+  .contract-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .contract-meta {
+    text-align: left;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .signatures-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .signature-box.broker {
+    grid-column: 1;
+  }
+
+  .contract-actions {
+    flex-direction: column;
+  }
+
+  .contract-actions .btn {
+    width: 100%;
+  }
+}
+
+@media print {
+  .tenancy-contract {
+    box-shadow: none;
+    max-width: none;
+  }
+
+  .contract-actions {
+    display: none;
+  }
+
+  .btn-sign {
+    display: none;
+  }
+}

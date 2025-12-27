@@ -48,6 +48,7 @@ const roleMenus = {
     items: [
       { path: '/leasing-agent/dashboard', label: 'Dashboard', icon: '📊' },
       { path: '/leasing-agent/tenant-screening', label: 'Tenant Screening', icon: '👤' },
+      { path: '/leasing-agent/contracts', label: 'Contracts', icon: '📜' },
       { path: '/leasing-agent/listings', label: 'My Listings', icon: '🏠' },
       { path: '/leasing-agent/leads', label: 'Leads', icon: '📞' },
       { path: '/leasing-agent/calendar', label: 'Calendar', icon: '📅' },

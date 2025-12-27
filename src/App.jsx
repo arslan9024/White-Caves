@@ -82,6 +82,7 @@ import LandlordDashboardPage from './pages/landlord/LandlordDashboardPage';
 import RentalManagementPage from './pages/landlord/RentalManagementPage';
 import LeasingAgentDashboardPage from './pages/leasing-agent/LeasingAgentDashboardPage';
 import TenantScreeningPage from './pages/leasing-agent/TenantScreeningPage';
+import ContractManagementPage from './pages/leasing-agent/ContractManagementPage';
 import SalesAgentDashboardPage from './pages/secondary-sales-agent/SalesAgentDashboardPage';
 import SalesPipelinePage from './pages/secondary-sales-agent/SalesPipelinePage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -384,6 +385,11 @@ function App() {
         <Route path="/leasing-agent/tenant-screening" element={
           <ProtectedRoute allowedRoles={['leasing-agent']}>
             <TenantScreeningPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/leasing-agent/contracts" element={
+          <ProtectedRoute allowedRoles={['leasing-agent']}>
+            <ContractManagementPage />
           </ProtectedRoute>
         } />
         

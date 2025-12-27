@@ -57,7 +57,7 @@ outputType = "webview"
 
 [agent]
 expertMode = true
-integrations = ["javascript_stripe:1.0.0", "github:1.0.0"]
+integrations = ["javascript_stripe:1.0.0", "github:1.0.0", "google-drive:1.0.0"]
 
 [userenv]
 
