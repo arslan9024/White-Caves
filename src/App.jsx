@@ -102,6 +102,8 @@ import ClientServicesPage from './pages/owner/ClientServicesPage';
 import ServicesPage from './pages/ServicesPage';
 import CareersPage from './pages/CareersPage';
 import ContactPage from './pages/ContactPage';
+import PropertiesPage from './pages/PropertiesPage';
+import AboutPage from './pages/AboutPage';
 
 function HomePage() {
   const dispatch = useDispatch();
@@ -355,6 +357,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/properties" element={<PropertiesPage />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/careers" element={<CareersPage />} />
         <Route path="/contact" element={<ContactPage />} />
