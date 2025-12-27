@@ -12,7 +12,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+// Use port 5000 in production (when static files exist), 3000 in development
+const isProduction = process.env.NODE_ENV === 'production';
+const PORT = process.env.PORT || (isProduction ? 5000 : 3000);
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));

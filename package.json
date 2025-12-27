@@ -10,7 +10,7 @@
     "dev:all": "concurrently \"npm run server\" \"npm run client\"",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "NODE_ENV=production node src/server/index.js"
+    "start": "NODE_ENV=production node server/index.js"
   },
   "keywords": [],
   "author": "",
