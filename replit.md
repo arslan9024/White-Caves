@@ -53,6 +53,41 @@ Preferred communication style: Simple, everyday language.
 
 ### Document Processing
 - **PDF.js**: Client-side rendering of PDF documents, specifically for tenancy agreements.
+- **React Signature Canvas**: Digital signature capture for tenancy contracts between landlords, tenants, and brokers.
+
+### Cloud Storage
+- **Google Drive API**: Integrated for saving signed tenancy contracts and documents to cloud storage.
 
 ### Third-Party Services
 - **WhatsApp Business API**: Integrated for customer support via a floating button.
+
+## Recent Changes (December 2024)
+
+### Navigation System Update
+- Added HomeButton component with multiple variants (default, primary, minimal, floating)
+- Created centralized navigation configuration (`src/config/navigation.js`) with role-based menus
+- Updated MegaNav with logo linking to home page
+- Enhanced MobileNav with role-aware accordion menus and expandable sections
+- Updated RoleNavigation sidebar with Quick Links section (Home, Properties, Services, Contact, Profile)
+
+### PDF Signature Feature
+- Created SignaturePad component using react-signature-canvas for digital signatures
+- Built TenancyContract component with complete contract display and signature workflow
+- Implemented three-party signing flow: Broker creates → Landlord signs → Tenant signs
+- Contract status tracking: draft, partially_signed, fully_signed
+
+### Google Drive Integration
+- Set up Google Drive connector for document storage
+- Created server endpoint for uploading signed contracts to Google Drive
+- HTML contract generation with embedded signatures for cloud storage
+
+### Contract Management (Leasing Agent)
+- Created ContractManagementPage for leasing agents at `/leasing-agent/contracts`
+- Contract creation form with property, landlord, tenant, and lease term fields
+- Contract list view with status badges and actions
+- Statistics dashboard for contract tracking
+
+### Error Handling
+- NotFoundPage with 5-second auto-redirect countdown
+- ErrorBoundary component with automatic recovery
+- Error component with styled countdown timer
