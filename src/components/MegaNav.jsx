@@ -104,9 +104,9 @@ export default function MegaNav({ user }) {
     <header className="mega-nav-header" ref={navRef}>
       <nav className="mega-nav">
         <div className="mega-nav-container">
-          <a href="#home" className="mega-nav-logo">
+          <Link to="/" className="mega-nav-logo">
             <img src="/company-logo.jpg" alt="White Caves" className="logo-img" />
-          </a>
+          </Link>
 
           <button className="mobile-menu-btn" onClick={() => setMobileOpen(!mobileOpen)}>
             <span className={`hamburger-icon ${mobileOpen ? 'open' : ''}`}>

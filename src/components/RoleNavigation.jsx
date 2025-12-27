@@ -165,9 +165,33 @@ export default function RoleNavigation({ role }) {
 
         <div className="nav-divider"></div>
         
-        <Link to="/" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
+        <div className="nav-section-label">Quick Links</div>
+        
+        <Link to="/" className="nav-item home-link" onClick={() => setMobileMenuOpen(false)}>
           <span className="nav-icon">🏠</span>
           <span className="nav-label">Home</span>
+        </Link>
+        
+        <Link to="/properties" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
+          <span className="nav-icon">🔍</span>
+          <span className="nav-label">Browse Properties</span>
+        </Link>
+        
+        <Link to="/services" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
+          <span className="nav-icon">⚙️</span>
+          <span className="nav-label">Services</span>
+        </Link>
+        
+        <Link to="/contact" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
+          <span className="nav-icon">📞</span>
+          <span className="nav-label">Contact Us</span>
+        </Link>
+        
+        <div className="nav-divider"></div>
+        
+        <Link to="/profile" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
+          <span className="nav-icon">👤</span>
+          <span className="nav-label">My Profile</span>
         </Link>
         
         <button className="nav-item logout" onClick={handleLogout}>

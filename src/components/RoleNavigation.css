@@ -133,6 +133,36 @@ body.dark-mode .nav-item:hover {
   margin: 1rem 0;
 }
 
+.nav-section-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+}
+
+.nav-item.home-link {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(184, 134, 11, 0.15));
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: #D4AF37;
+}
+
+.nav-item.home-link:hover {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(184, 134, 11, 0.25));
+  color: #D4AF37;
+}
+
+body.light-mode .nav-item.home-link {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: rgba(184, 134, 11, 0.3);
+  color: #B8860B;
+}
+
+body.light-mode .nav-item.home-link:hover {
+  background: rgba(212, 175, 55, 0.2);
+}
+
 body.dark-mode .nav-divider {
   background: rgba(255, 255, 255, 0.1);
 }
