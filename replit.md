@@ -91,3 +91,21 @@ Preferred communication style: Simple, everyday language.
 - NotFoundPage with 5-second auto-redirect countdown
 - ErrorBoundary component with automatic recovery
 - Error component with styled countdown timer
+
+### Ejari Unified Tenancy Contract System (December 2024)
+- Created MongoDB schemas for Contract and SignatureToken with all Ejari-compliant fields
+- Built complete server API for contract CRUD, signature link generation, and secure signing
+- ContractManagementPage with bilingual Ejari form (English/Arabic):
+  - Owner/Lessor information section
+  - Tenant information section
+  - Property details (usage, type, location, area, DEWA premises)
+  - Contract terms (period, rent, deposit, payment mode)
+  - Broker information
+- Digital signature workflow:
+  - Broker creates contract and signs first
+  - Generates secure tokenized links for Lessor and Tenant (72-hour expiration)
+  - Copy-to-clipboard functionality for manual link sharing
+  - Public signature page at `/sign/:token` for external parties
+  - Status tracking: draft → partially_signed → fully_signed
+- Google Drive integration for storing fully signed contracts as HTML
+- API response normalization ensures consistent `id` field across MongoDB and file-based storage
