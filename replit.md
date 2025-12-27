@@ -215,3 +215,24 @@ Preferred communication style: Simple, everyday language.
 - Filter by property segment
 - Legend and map statistics
 - Property quick-view on marker click
+
+### Brand Theme Redesign (December 2024)
+- Completely redesigned with new Red (#D32F2F) and White color scheme
+- Primary color changed from blue (#1a365d) to Red (#D32F2F)
+- Implemented comprehensive light/dark theme system with CSS variables
+- Created ThemeToggle component (`src/components/ThemeToggle.jsx`)
+  - Persistent theme preference via localStorage
+  - Smooth toggle animations with data-theme attribute on root element
+- Built OnboardingGateway component (`src/components/OnboardingGateway.jsx`)
+  - "How can we assist you today?" role selection prompt
+  - Branded tiles for Seller, Buyer, Tenant, Employee roles
+  - Role-specific navigation to dedicated dashboards
+  - Hover effects with glassmorphism styling
+- Updated RoleGateway CSS for new Red/White brand identity
+- Integrated ThemeToggle into MegaNav navigation bar
+- Updated design-system.css with:
+  - Primary: #D32F2F (red) for main CTAs, headers, navigation
+  - Secondary: #212121 (dark gray) for text
+  - White backgrounds (#FFFFFF for light mode)
+  - Dark mode support with appropriate color mappings
+  - Typography: Montserrat for headings, Open Sans for body text
