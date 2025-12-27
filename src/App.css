@@ -3,7 +3,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  transition: all 0.4s ease-in-out;
 }
 
 .theme-transition {
@@ -22,12 +21,12 @@
 }
 
 body.dark-mode {
-  background-color: #1a1a1a;
-  color: #ffffff;
+  background-color: var(--bg-dark, #2d3748);
+  color: var(--text-on-dark, #f7fafc);
 }
 
 body.dark-mode .app header {
-  background: #2d2d2d;
+  background: var(--bg-dark, #2d3748);
   box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
@@ -59,12 +58,12 @@ body.dark-mode .contact-info p {
 }
 
 body.dark-mode .cta-button {
-  background: #c41835;
+  background: var(--primary-color, #1a365d);
   color: #ffffff;
 }
 
 body.dark-mode .cta-button:hover {
-  background: #a31530;
+  background: var(--primary-hover, #234773);
 }
 
 body.dark-mode input,
@@ -210,7 +209,7 @@ body.dark-mode .footer a:hover {
 }
 
 .app {
-  font-family: 'Arial', sans-serif;
+  font-family: var(--font-body, 'Open Sans', sans-serif);
 }
 
 header {
@@ -272,7 +271,7 @@ nav {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(196,24,53,0.4) 100%);
+  background: linear-gradient(135deg, rgba(26,54,93,0.85) 0%, rgba(197,48,48,0.4) 100%);
   z-index: 1;
 }
 
@@ -337,7 +336,7 @@ nav {
 .stat-item h3 {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #c41835;
+  color: var(--secondary-color, #c53030);
   margin-bottom: 0.5rem;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
@@ -350,13 +349,14 @@ nav {
 
 .featured-locations {
   padding: 5rem 5%;
-  background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+  background: linear-gradient(to bottom, var(--bg-light, #f7fafc), #ffffff);
 }
 
 .featured-locations h2 {
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
   font-size: 2.8rem;
   text-align: center;
-  color: #1a1a1a;
+  color: var(--primary-color, #1a365d);
   margin-bottom: 0.5rem;
   font-weight: 700;
 }
@@ -378,7 +378,7 @@ nav {
 
 .location-card {
   height: 350px;
-  border-radius: 15px;
+  border-radius: var(--radius-lg, 0.75rem);
   overflow: hidden;
   position: relative;
   cursor: pointer;
@@ -389,7 +389,7 @@ nav {
 
 .location-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  box-shadow: var(--shadow-xl, 0 16px 40px rgba(0,0,0,0.12));
 }
 
 .location-overlay {
@@ -404,7 +404,7 @@ nav {
 }
 
 .location-card:hover .location-overlay {
-  background: linear-gradient(to top, rgba(196,24,53,0.95) 0%, rgba(196,24,53,0.6) 70%, transparent 100%);
+  background: linear-gradient(to top, rgba(26,54,93,0.95) 0%, rgba(26,54,93,0.6) 70%, transparent 100%);
 }
 
 .location-overlay h3 {
@@ -485,14 +485,17 @@ nav {
 
 .feature {
   text-align: center;
-  padding: 2rem;
-  background: #f9f9f9;
-  border-radius: 10px;
-  transition: transform 0.3s;
+  padding: var(--tile-padding, 2rem);
+  background: var(--bg-light, #f7fafc);
+  border-radius: var(--radius-lg, 0.75rem);
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.06));
+  border: 1px solid var(--border-light, #edf2f7);
 }
 
 .feature:hover {
   transform: translateY(-5px);
+  box-shadow: var(--shadow-lg, 0 8px 24px rgba(0,0,0,0.1));
 }
 
 .feature h3 {
@@ -527,17 +530,25 @@ nav {
 }
 
 .service-detail {
-  background: white;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  background: var(--bg-primary, white);
+  padding: var(--tile-padding, 2rem);
+  border-radius: var(--radius-lg, 0.75rem);
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(0,0,0,0.08));
+  border: 1px solid var(--border-light, #edf2f7);
+  transition: all 0.3s ease;
+}
+
+.service-detail:hover {
+  box-shadow: var(--shadow-lg, 0 8px 24px rgba(0,0,0,0.1));
+  transform: translateY(-4px);
 }
 
 .service-detail h3 {
-  color: #e41e3f;
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  color: var(--primary-color, #1a365d);
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
-  border-bottom: 2px solid #e41e3f;
+  border-bottom: 2px solid var(--secondary-color, #c53030);
   padding-bottom: 0.5rem;
 }
 
@@ -556,7 +567,7 @@ nav {
 
 .service-detail ul li:before {
   content: "✓";
-  color: #e41e3f;
+  color: var(--secondary-color, #c53030);
   position: absolute;
   left: 0;
   font-weight: bold;
@@ -586,14 +597,16 @@ nav {
 }
 
 .law-section {
-  background: #f9f9f9;
-  padding: 2rem;
-  border-radius: 10px;
-  border-left: 4px solid #e41e3f;
+  background: var(--bg-light, #f7fafc);
+  padding: var(--tile-padding, 2rem);
+  border-radius: var(--radius-lg, 0.75rem);
+  border-left: 4px solid var(--primary-color, #1a365d);
+  box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.06));
 }
 
 .law-section h3 {
-  color: #e41e3f;
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  color: var(--primary-color, #1a365d);
   font-size: 1.5rem;
   margin-bottom: 1rem;
 }
@@ -619,7 +632,7 @@ nav {
 
 .law-section ul li:before {
   content: "•";
-  color: #e41e3f;
+  color: var(--secondary-color, #c53030);
   position: absolute;
   left: 0;
   font-weight: bold;
@@ -642,17 +655,22 @@ nav {
 
 .cta-button {
   padding: 1rem 2rem;
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
   font-size: 1.2rem;
-  background: #e41e3f;
+  font-weight: 600;
+  background: var(--primary-color, #1a365d);
   border: none;
   color: white;
   cursor: pointer;
-  border-radius: 5px;
-  transition: background 0.3s;
+  border-radius: var(--radius-lg, 0.75rem);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(26, 54, 93, 0.3);
 }
 
 .cta-button:hover {
-  background: #c41835;
+  background: var(--primary-hover, #234773);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(26, 54, 93, 0.4);
 }
 
 .featured-properties {
@@ -763,13 +781,14 @@ nav {
 }
 
 .property-card {
-  background: white;
-  border-radius: 10px;
+  background: var(--bg-primary, white);
+  border-radius: var(--radius-lg, 0.75rem);
   overflow: hidden;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease;
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(0,0,0,0.08));
+  transition: all 0.3s ease;
   position: relative;
   padding-bottom: 1rem;
+  border: 1px solid var(--border-light, #edf2f7);
 }
 
 .property-stats {
@@ -808,11 +827,12 @@ nav {
 
 .amount {
   font-size: 1.2rem;
-  color: #c8a45c;
+  color: var(--secondary-color, #c53030);
 }
 
 .property-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl, 0 16px 40px rgba(0,0,0,0.12));
 }
 
 .property-map {
@@ -840,16 +860,19 @@ nav {
 .view-details {
   width: 100%;
   padding: 1rem;
-  background: #c8a45c;
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-weight: 600;
+  background: var(--primary-color, #1a365d);
   border: none;
   color: white;
-  font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s;
+  border-radius: var(--radius-lg, 0.75rem);
+  transition: all 0.3s ease;
 }
 
 .view-details:hover {
-  background: #b08d4a;
+  background: var(--primary-hover, #234773);
+  transform: translateY(-2px);
 }
 
 .property-actions {
@@ -931,8 +954,9 @@ nav {
 
 .property-card .price {
   padding: 1rem;
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
   font-weight: bold;
-  color: #e41e3f;
+  color: var(--secondary-color, #c53030);
 }
 
 .contact {
@@ -989,10 +1013,10 @@ nav {
 }
 
 footer {
-  background: #333;
-  color: white;
+  background: var(--bg-dark, #2d3748);
+  color: var(--text-on-dark, #f7fafc);
   text-align: center;
-  padding: 2rem;
+  padding: var(--spacing-xl, 3rem) var(--spacing-lg, 2rem);
 }
 
 .hamburger {
