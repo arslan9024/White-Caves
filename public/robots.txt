@@ -1,0 +1,30 @@
+# White Caves Real Estate - Robots.txt
+# https://whitecaves.com
+
+User-agent: *
+Allow: /
+
+# Allow search engines to crawl all pages
+Allow: /properties
+Allow: /services
+Allow: /careers
+Allow: /contact
+Allow: /about
+
+# Block admin and private areas
+Disallow: /admin/
+Disallow: /owner/
+Disallow: /api/
+Disallow: /leasing-agent/
+Disallow: /secondary-sales-agent/
+
+# Block temporary and duplicate content
+Disallow: /*?*
+Disallow: /pending-approval
+Disallow: /select-role
+
+# Sitemap location
+Sitemap: https://whitecaves.com/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
