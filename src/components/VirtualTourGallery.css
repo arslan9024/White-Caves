@@ -1,0 +1,496 @@
+.virtual-tour-gallery {
+  padding: var(--spacing-xl, 3rem) 5%;
+  background: var(--bg-light, #f7fafc);
+}
+
+.gallery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg, 2rem);
+}
+
+.header-content h2 {
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-size: 2rem;
+  color: var(--primary-color, #1a365d);
+  margin-bottom: 0.5rem;
+}
+
+.header-content p {
+  color: var(--text-muted, #718096);
+}
+
+.view-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.view-btn {
+  padding: 0.5rem 1rem;
+  background: var(--bg-primary, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-md, 0.5rem);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-btn.active {
+  background: var(--primary-color, #1a365d);
+  color: var(--text-on-primary, #ffffff);
+  border-color: var(--primary-color, #1a365d);
+}
+
+.featured-tours {
+  margin-bottom: var(--spacing-xl, 3rem);
+}
+
+.featured-tours h3,
+.all-tours h3 {
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-size: 1.25rem;
+  color: var(--text-primary, #1a202c);
+  margin-bottom: var(--spacing-md, 1.5rem);
+}
+
+.featured-slider {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: var(--spacing-md, 1.5rem);
+}
+
+.featured-tour-card {
+  background: var(--bg-primary, #ffffff);
+  border-radius: var(--radius-lg, 0.75rem);
+  overflow: hidden;
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(0,0,0,0.08));
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.featured-tour-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl, 0 16px 40px rgba(0,0,0,0.12));
+}
+
+.tour-thumbnail {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+}
+
+.tour-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.featured-tour-card:hover .tour-thumbnail img,
+.tour-card:hover .tour-thumbnail img {
+  transform: scale(1.05);
+}
+
+.tour-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.featured-tour-card:hover .tour-overlay,
+.tour-card:hover .tour-overlay {
+  opacity: 1;
+}
+
+.play-button {
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  animation: pulse 2s infinite;
+}
+
+.play-button span {
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-color, #1a365d);
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.tour-badges {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full, 9999px);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge.drone {
+  background: var(--primary-color, #1a365d);
+  color: var(--text-on-primary, #ffffff);
+}
+
+.badge.video {
+  background: var(--secondary-color, #c53030);
+  color: var(--text-on-primary, #ffffff);
+}
+
+.tour-type {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(0,0,0,0.6);
+  color: var(--text-on-primary, #ffffff);
+  font-size: 0.75rem;
+  border-radius: var(--radius-full, 9999px);
+}
+
+.tour-info,
+.tour-content {
+  padding: var(--spacing-md, 1.5rem);
+}
+
+.tour-info h4,
+.tour-content h4 {
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-size: 1.1rem;
+  color: var(--text-primary, #1a202c);
+  margin-bottom: 0.5rem;
+}
+
+.tour-location {
+  color: var(--text-muted, #718096);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.tour-details,
+.tour-specs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tour-details span,
+.tour-specs span {
+  font-size: 0.85rem;
+  color: var(--text-primary, #1a202c);
+}
+
+.tour-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-light, #edf2f7);
+}
+
+.tour-price {
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-weight: 700;
+  color: var(--secondary-color, #c53030);
+}
+
+.tour-views {
+  font-size: 0.8rem;
+  color: var(--text-muted, #718096);
+}
+
+.all-tours.grid .tours-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-md, 1.5rem);
+}
+
+.all-tours.list .tours-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.all-tours.list .tour-card {
+  display: flex;
+  flex-direction: row;
+}
+
+.all-tours.list .tour-card .tour-thumbnail {
+  width: 300px;
+  height: 180px;
+  flex-shrink: 0;
+}
+
+.all-tours.list .tour-card .tour-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tour-card {
+  background: var(--bg-primary, #ffffff);
+  border-radius: var(--radius-lg, 0.75rem);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.06));
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tour-card:hover {
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(0,0,0,0.08));
+  transform: translateY(-4px);
+}
+
+.tour-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+}
+
+.modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  max-height: 90vh;
+  background: var(--bg-primary, #ffffff);
+  border-radius: var(--radius-lg, 0.75rem);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.close-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  background: var(--bg-primary, #ffffff);
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(0,0,0,0.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-header {
+  padding: var(--spacing-md, 1.5rem);
+  background: var(--primary-color, #1a365d);
+  color: var(--text-on-primary, #ffffff);
+}
+
+.modal-header h3 {
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.modal-header p {
+  opacity: 0.9;
+}
+
+.tour-viewer {
+  flex: 1;
+  min-height: 400px;
+  background: var(--bg-dark, #2d3748);
+}
+
+.viewer-placeholder {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewer-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.5);
+}
+
+.viewer-controls {
+  position: absolute;
+  text-align: center;
+  color: var(--text-on-primary, #ffffff);
+}
+
+.control-icon {
+  width: 100px;
+  height: 100px;
+  background: rgba(255,255,255,0.2);
+  border: 3px solid var(--text-on-primary, #ffffff);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  animation: pulse 2s infinite;
+}
+
+.icon-360 {
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.viewer-controls p {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.start-tour-btn {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background: var(--secondary-color, #c53030);
+  color: var(--text-on-primary, #ffffff);
+  text-decoration: none;
+  border-radius: var(--radius-lg, 0.75rem);
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.start-tour-btn:hover {
+  background: var(--secondary-hover, #b52828);
+  transform: scale(1.05);
+}
+
+.modal-info {
+  padding: var(--spacing-md, 1.5rem);
+  border-top: 1px solid var(--border-light, #edf2f7);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: var(--spacing-md, 1.5rem);
+}
+
+.info-item {
+  text-align: center;
+  padding: 1rem;
+  background: var(--bg-light, #f7fafc);
+  border-radius: var(--radius-md, 0.5rem);
+}
+
+.info-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted, #718096);
+  margin-bottom: 0.25rem;
+}
+
+.info-value {
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary, #1a202c);
+}
+
+.info-value.price {
+  color: var(--secondary-color, #c53030);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.modal-actions .action-btn {
+  flex: 1;
+  padding: 0.875rem;
+  border-radius: var(--radius-lg, 0.75rem);
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-actions .action-btn.primary {
+  background: var(--primary-color, #1a365d);
+  border: none;
+  color: var(--text-on-primary, #ffffff);
+}
+
+.modal-actions .action-btn.secondary {
+  background: var(--secondary-color, #c53030);
+  border: none;
+  color: var(--text-on-primary, #ffffff);
+}
+
+.modal-actions .action-btn.outline {
+  background: transparent;
+  border: 2px solid var(--border-color, #e2e8f0);
+  color: var(--text-primary, #1a202c);
+}
+
+@media (max-width: 768px) {
+  .gallery-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .featured-slider {
+    grid-template-columns: 1fr;
+  }
+
+  .all-tours.list .tour-card {
+    flex-direction: column;
+  }
+
+  .all-tours.list .tour-card .tour-thumbnail {
+    width: 100%;
+    height: 200px;
+  }
+
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+}

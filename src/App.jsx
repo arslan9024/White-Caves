@@ -30,6 +30,8 @@ import AdminDashboard from './components/AdminDashboard';
 import RentVsBuyCalculator from './components/RentVsBuyCalculator';
 import OffPlanTracker from './components/OffPlanTracker';
 import NeighborhoodAnalyzer from './components/NeighborhoodAnalyzer';
+import VirtualTourGallery from './components/VirtualTourGallery';
+import DubaiMap from './components/DubaiMap';
 import RoleGateway from './components/RoleGateway';
 import SignInPage from './pages/auth/SignInPage';
 import ProfilePage from './pages/auth/ProfilePage';
@@ -242,6 +244,14 @@ function HomePage() {
 
       <section className="calculator-section" id="calculator">
         <RentVsBuyCalculator />
+      </section>
+
+      <section className="virtual-tours-section" id="virtual-tours">
+        <VirtualTourGallery />
+      </section>
+
+      <section className="dubai-map-section" id="dubai-map">
+        <DubaiMap onPropertySelect={(property) => handlePropertyClick(property.id)} />
       </section>
       
       <section className="featured-locations">
