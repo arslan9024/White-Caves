@@ -367,3 +367,367 @@ body.light-mode .form-group label {
     grid-template-columns: 1fr;
   }
 }
+
+.ejari-modal {
+  max-width: 900px;
+}
+
+.arabic-subtitle {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.ejari-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.ejari-form .form-section {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.ejari-form .form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.ejari-form .form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.property-usage-select {
+  margin-bottom: 15px;
+}
+
+.property-usage-select > label {
+  display: block;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  margin-bottom: 10px;
+}
+
+.radio-group {
+  display: flex;
+  gap: 20px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+  accent-color: #D4AF37;
+}
+
+.contract-detail {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 25px;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-header h2 {
+  color: white;
+  margin: 0 0 8px;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.ejari-form-preview h3 {
+  color: white;
+  text-align: center;
+  margin: 0 0 5px;
+}
+
+.ejari-form-preview .arabic-title {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 25px;
+}
+
+.preview-section {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.preview-section h4 {
+  color: #D4AF37;
+  font-size: 0.875rem;
+  margin: 0 0 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.preview-field {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.preview-field label {
+  display: block;
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 5px;
+}
+
+.preview-field span {
+  color: white;
+  font-size: 0.9375rem;
+}
+
+.signature-links-section {
+  background: rgba(212, 175, 55, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 12px;
+  padding: 25px;
+  margin-top: 25px;
+}
+
+.signature-links-section h4 {
+  color: #D4AF37;
+  margin: 0 0 8px;
+}
+
+.section-desc {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+  margin: 0 0 20px;
+}
+
+.signature-link-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.sig-link-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+}
+
+.sig-link-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.sig-role {
+  font-weight: 600;
+  color: white;
+}
+
+.sig-status {
+  font-size: 0.6875rem;
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.sig-status.signed {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+}
+
+.sig-status.pending {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+}
+
+.sig-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.sig-preview {
+  max-width: 120px;
+  max-height: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  background: white;
+}
+
+.sig-name {
+  color: white;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.sig-date {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid #D4AF37;
+  color: #D4AF37;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+  background: rgba(212, 175, 55, 0.1);
+}
+
+.copied-notice {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+  padding: 8px;
+  border-radius: 6px;
+  margin-top: 10px;
+  font-size: 0.75rem;
+}
+
+.signature-modal {
+  max-width: 550px;
+}
+
+.signature-modal-content {
+  text-align: center;
+}
+
+.signature-modal-content p {
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 20px;
+}
+
+.signature-pad-container {
+  position: relative;
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  display: inline-block;
+}
+
+.broker-signature-canvas {
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  cursor: crosshair;
+}
+
+.clear-sig-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 900px) {
+  .signature-link-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .ejari-form .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+body.light-mode .ejari-form .form-section {
+  background: #f9f9f9;
+  border-color: #eee;
+}
+
+body.light-mode .contract-detail {
+  background: white;
+  border-color: #eee;
+}
+
+body.light-mode .detail-header {
+  border-color: #eee;
+}
+
+body.light-mode .detail-header h2 {
+  color: #333;
+}
+
+body.light-mode .preview-section {
+  background: #f9f9f9;
+  border-color: #eee;
+}
+
+body.light-mode .preview-field {
+  background: white;
+}
+
+body.light-mode .preview-field span {
+  color: #333;
+}
+
+body.light-mode .sig-link-card {
+  background: #f9f9f9;
+  border-color: #eee;
+}
+
+body.light-mode .sig-role {
+  color: #333;
+}
+
+body.light-mode .sig-name {
+  color: #333;
+}
+
+body.light-mode .signature-modal-content p {
+  color: #666;
+}
