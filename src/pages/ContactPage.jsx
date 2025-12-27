@@ -124,9 +124,9 @@ export default function ContactPage() {
                 </div>
                 <div className="contact-details">
                   <h3>License Information</h3>
-                  <p><strong>RERA License:</strong> 12345</p>
-                  <p><strong>Trade License:</strong> 987654</p>
-                  <p><strong>DED Registered</strong></p>
+                  <p><strong>RERA Certified</strong></p>
+                  <p><strong>DED Licensed</strong></p>
+                  <p><strong>Dubai Land Department Registered</strong></p>
                 </div>
               </div>
             </div>

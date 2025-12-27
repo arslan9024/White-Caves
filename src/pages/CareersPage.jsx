@@ -306,7 +306,7 @@ export default function CareersPage() {
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      placeholder="your.email@example.com"
+                      placeholder="name@email.com"
                     />
                   </div>
                 </div>
