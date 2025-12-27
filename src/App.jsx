@@ -27,6 +27,9 @@ import BlogSection from './components/BlogSection';
 import TestimonialsCarousel from './components/TestimonialsCarousel';
 import NewsletterSubscription from './components/NewsletterSubscription';
 import AdminDashboard from './components/AdminDashboard';
+import RentVsBuyCalculator from './components/RentVsBuyCalculator';
+import OffPlanTracker from './components/OffPlanTracker';
+import NeighborhoodAnalyzer from './components/NeighborhoodAnalyzer';
 import RoleGateway from './components/RoleGateway';
 import SignInPage from './pages/auth/SignInPage';
 import ProfilePage from './pages/auth/ProfilePage';
@@ -227,6 +230,18 @@ function HomePage() {
 
       <section className="comparison-section" id="compare">
         <PropertyComparison />
+      </section>
+
+      <section className="offplan-section" id="offplan">
+        <OffPlanTracker />
+      </section>
+
+      <section className="neighborhood-section" id="neighborhood">
+        <NeighborhoodAnalyzer />
+      </section>
+
+      <section className="calculator-section" id="calculator">
+        <RentVsBuyCalculator />
       </section>
       
       <section className="featured-locations">

@@ -1,0 +1,293 @@
+.rent-vs-buy-calculator {
+  background: var(--bg-primary, #ffffff);
+  border-radius: var(--radius-lg, 0.75rem);
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(0,0,0,0.08));
+  padding: var(--spacing-lg, 2rem);
+  margin: var(--spacing-lg, 2rem) 0;
+}
+
+.calculator-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl, 3rem);
+}
+
+.calculator-header h2 {
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-size: 2rem;
+  color: var(--primary-color, #1a365d);
+  margin-bottom: 0.5rem;
+}
+
+.calculator-header p {
+  color: var(--text-muted, #718096);
+}
+
+.calculator-content {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: var(--spacing-xl, 3rem);
+}
+
+.inputs-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 1.5rem);
+}
+
+.input-group {
+  background: var(--bg-light, #f7fafc);
+  border-radius: var(--radius-lg, 0.75rem);
+  padding: var(--spacing-md, 1.5rem);
+}
+
+.input-group h3 {
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-size: 1rem;
+  color: var(--primary-color, #1a365d);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--secondary-color, #c53030);
+}
+
+.input-field {
+  margin-bottom: 1rem;
+}
+
+.input-field:last-child {
+  margin-bottom: 0;
+}
+
+.input-field label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted, #718096);
+  margin-bottom: 0.25rem;
+}
+
+.input-field input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-md, 0.5rem);
+  font-size: 1rem;
+  color: var(--text-primary, #1a202c);
+  background: var(--bg-primary, #ffffff);
+  transition: border-color 0.2s ease;
+}
+
+.input-field input:focus {
+  outline: none;
+  border-color: var(--primary-color, #1a365d);
+  box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
+}
+
+.results-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 1.5rem);
+}
+
+.recommendation-card {
+  text-align: center;
+  padding: var(--spacing-lg, 2rem);
+  border-radius: var(--radius-lg, 0.75rem);
+  color: var(--text-on-primary, #ffffff);
+}
+
+.recommendation-card.buy {
+  background: linear-gradient(135deg, var(--success-color, #38a169), #2f855a);
+}
+
+.recommendation-card.rent {
+  background: linear-gradient(135deg, var(--primary-color, #1a365d), #234773);
+}
+
+.recommendation-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.recommendation-card h3 {
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.recommendation-card p {
+  font-size: 1rem;
+  opacity: 0.95;
+}
+
+.break-even {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md, 1.5rem);
+}
+
+.summary-card {
+  background: var(--bg-light, #f7fafc);
+  border-radius: var(--radius-lg, 0.75rem);
+  padding: var(--spacing-md, 1.5rem);
+  border-left: 4px solid var(--border-color, #e2e8f0);
+}
+
+.summary-card.buying {
+  border-left-color: var(--success-color, #38a169);
+}
+
+.summary-card.renting {
+  border-left-color: var(--primary-color, #1a365d);
+}
+
+.summary-card h4 {
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-size: 1rem;
+  color: var(--text-primary, #1a202c);
+  margin-bottom: 1rem;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-light, #edf2f7);
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.summary-item span {
+  font-size: 0.85rem;
+  color: var(--text-muted, #718096);
+}
+
+.summary-item strong {
+  font-size: 0.95rem;
+  color: var(--text-primary, #1a202c);
+}
+
+.summary-item.highlight {
+  background: var(--bg-tertiary, #edf2f7);
+  margin: 0.5rem -1rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md, 0.5rem);
+}
+
+.summary-item.highlight strong {
+  color: var(--secondary-color, #c53030);
+  font-size: 1.1rem;
+}
+
+.comparison-chart {
+  background: var(--bg-light, #f7fafc);
+  border-radius: var(--radius-lg, 0.75rem);
+  padding: var(--spacing-md, 1.5rem);
+}
+
+.comparison-chart h4 {
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-size: 1rem;
+  color: var(--primary-color, #1a365d);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.chart-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 200px;
+  padding: 1rem 0;
+}
+
+.chart-bar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chart-bars {
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+}
+
+.chart-bar {
+  width: 20px;
+  border-radius: 4px 4px 0 0;
+  min-height: 10px;
+  transition: height 0.3s ease;
+  cursor: pointer;
+}
+
+.chart-bar.buying {
+  background: var(--success-color, #38a169);
+}
+
+.chart-bar.renting {
+  background: var(--primary-color, #1a365d);
+}
+
+.chart-bar:hover {
+  opacity: 0.8;
+}
+
+.chart-label {
+  font-size: 0.75rem;
+  color: var(--text-muted, #718096);
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--text-muted, #718096);
+}
+
+.legend-item::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 0.5rem;
+}
+
+.legend-item.buying::before {
+  background: var(--success-color, #38a169);
+}
+
+.legend-item.renting::before {
+  background: var(--primary-color, #1a365d);
+}
+
+@media (max-width: 1024px) {
+  .calculator-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-bar {
+    width: 12px;
+  }
+}

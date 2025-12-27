@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import RoleNavigation from '../../components/RoleNavigation';
+import ProductivityTools from '../../components/owner/ProductivityTools';
 import './OwnerDashboardPage.css';
 
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
@@ -223,6 +224,8 @@ export default function OwnerDashboardPage() {
             </div>
           </div>
         </div>
+
+        <ProductivityTools />
       </div>
     </div>
   );
