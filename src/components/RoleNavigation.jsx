@@ -109,11 +109,26 @@ const roleMenus = {
       { path: '/owner/dashboard', label: 'Dashboard', icon: '📊' },
       { path: '/owner/business-model', label: 'Business Model', icon: '📋' },
       { path: '/owner/client-services', label: 'Client Services', icon: '🏢' },
+      { path: '/owner/system-health', label: 'System Health', icon: '🩺' },
       { path: '/owner/agents', label: 'Manage Agents', icon: '👥' },
       { path: '/owner/properties', label: 'All Properties', icon: '🏠' },
       { path: '/owner/reports', label: 'Reports', icon: '📈' },
       { path: '/owner/settings', label: 'Settings', icon: '⚙️' },
-    ]
+    ],
+    browseAs: {
+      clients: [
+        { path: '/buyer/dashboard', label: 'Buyer Portal', icon: '🏠' },
+        { path: '/seller/dashboard', label: 'Seller Portal', icon: '💰' },
+        { path: '/landlord/dashboard', label: 'Landlord Portal', icon: '🏢' },
+        { path: '/tenant/dashboard', label: 'Tenant Portal', icon: '🔑' },
+      ],
+      employees: [
+        { path: '/leasing-agent/dashboard', label: 'Leasing Agent', icon: '📋' },
+        { path: '/secondary-sales-agent/dashboard', label: 'Sales Agent', icon: '💼' },
+        { path: '/team-leader/dashboard', label: 'Team Leader', icon: '👔' },
+        { path: '/leasing-agent/contracts', label: 'Contract Management', icon: '📜' },
+      ]
+    }
   }
 };
 
@@ -163,6 +178,38 @@ export default function RoleNavigation({ role }) {
             <span className="nav-label">{item.label}</span>
           </Link>
         ))}
+
+        {menu.browseAs && (
+          <>
+            <div className="nav-divider"></div>
+            <div className="nav-section-label">Browse as Client</div>
+            {menu.browseAs.clients.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`nav-item browse-as-item client ${location.pathname === item.path ? 'active' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <span className="nav-icon">{item.icon}</span>
+                <span className="nav-label">{item.label}</span>
+              </Link>
+            ))}
+            
+            <div className="nav-divider"></div>
+            <div className="nav-section-label">Browse as Employee</div>
+            {menu.browseAs.employees.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`nav-item browse-as-item employee ${location.pathname === item.path ? 'active' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <span className="nav-icon">{item.icon}</span>
+                <span className="nav-label">{item.label}</span>
+              </Link>
+            ))}
+          </>
+        )}
 
         <div className="nav-divider"></div>
         

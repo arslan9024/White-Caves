@@ -177,6 +177,79 @@ export default function OwnerDashboardPage() {
           </div>
         </div>
 
+        <div className="browse-as-section">
+          <h2>Browse As User</h2>
+          <p className="section-subtitle">Navigate the platform as different user types</p>
+          
+          <div className="browse-as-group">
+            <h3>Client Portals</h3>
+            <div className="browse-as-grid">
+              <button className="browse-as-btn client" onClick={() => navigate('/buyer/dashboard')}>
+                <span className="browse-icon">🏠</span>
+                <div className="browse-info">
+                  <span className="browse-label">Buyer Portal</span>
+                  <span className="browse-desc">View as property buyer</span>
+                </div>
+              </button>
+              <button className="browse-as-btn client" onClick={() => navigate('/seller/dashboard')}>
+                <span className="browse-icon">💰</span>
+                <div className="browse-info">
+                  <span className="browse-label">Seller Portal</span>
+                  <span className="browse-desc">View as property seller</span>
+                </div>
+              </button>
+              <button className="browse-as-btn client" onClick={() => navigate('/landlord/dashboard')}>
+                <span className="browse-icon">🏢</span>
+                <div className="browse-info">
+                  <span className="browse-label">Landlord Portal</span>
+                  <span className="browse-desc">View as landlord</span>
+                </div>
+              </button>
+              <button className="browse-as-btn client" onClick={() => navigate('/tenant/dashboard')}>
+                <span className="browse-icon">🔑</span>
+                <div className="browse-info">
+                  <span className="browse-label">Tenant Portal</span>
+                  <span className="browse-desc">View as tenant</span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div className="browse-as-group">
+            <h3>Employee Dashboards</h3>
+            <div className="browse-as-grid">
+              <button className="browse-as-btn employee" onClick={() => navigate('/leasing-agent/dashboard')}>
+                <span className="browse-icon">📋</span>
+                <div className="browse-info">
+                  <span className="browse-label">Leasing Agent</span>
+                  <span className="browse-desc">Rental and leasing operations</span>
+                </div>
+              </button>
+              <button className="browse-as-btn employee" onClick={() => navigate('/secondary-sales-agent/dashboard')}>
+                <span className="browse-icon">💼</span>
+                <div className="browse-info">
+                  <span className="browse-label">Sales Agent</span>
+                  <span className="browse-desc">Property sales dashboard</span>
+                </div>
+              </button>
+              <button className="browse-as-btn employee" onClick={() => navigate('/team-leader/dashboard')}>
+                <span className="browse-icon">👔</span>
+                <div className="browse-info">
+                  <span className="browse-label">Team Leader</span>
+                  <span className="browse-desc">Team management dashboard</span>
+                </div>
+              </button>
+              <button className="browse-as-btn employee" onClick={() => navigate('/leasing-agent/contracts')}>
+                <span className="browse-icon">📜</span>
+                <div className="browse-info">
+                  <span className="browse-label">Contract Management</span>
+                  <span className="browse-desc">Ejari contracts and signing</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div className="quick-actions">
           <h2>Quick Actions</h2>
           <div className="actions-grid">

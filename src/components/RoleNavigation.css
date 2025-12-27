@@ -167,6 +167,41 @@ body.dark-mode .nav-divider {
   background: rgba(255, 255, 255, 0.1);
 }
 
+.nav-item.browse-as-item {
+  font-size: 0.875rem;
+  padding: 0.625rem 1rem;
+  margin-left: 0.5rem;
+  border-radius: 6px;
+}
+
+.nav-item.browse-as-item.client {
+  border-left: 3px solid #4CAF50;
+}
+
+.nav-item.browse-as-item.client:hover {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4CAF50;
+}
+
+.nav-item.browse-as-item.client.active {
+  background: #4CAF50;
+  color: white;
+}
+
+.nav-item.browse-as-item.employee {
+  border-left: 3px solid var(--primary-color, #D32F2F);
+}
+
+.nav-item.browse-as-item.employee:hover {
+  background: rgba(211, 47, 47, 0.15);
+  color: var(--primary-color, #D32F2F);
+}
+
+.nav-item.browse-as-item.employee.active {
+  background: var(--primary-color, #D32F2F);
+  color: white;
+}
+
 .nav-item.logout {
   margin-top: auto;
   color: var(--text-muted);

@@ -274,6 +274,106 @@
   color: #333;
 }
 
+.browse-as-section {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--glass-border);
+}
+
+.browse-as-section h2 {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.browse-as-section .section-subtitle {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.browse-as-group {
+  margin-bottom: 1.5rem;
+}
+
+.browse-as-group:last-child {
+  margin-bottom: 0;
+}
+
+.browse-as-group h3 {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.browse-as-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.browse-as-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--card-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.browse-as-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.browse-as-btn.client {
+  border-left: 4px solid #4CAF50;
+}
+
+.browse-as-btn.client:hover {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05));
+  border-color: #4CAF50;
+}
+
+.browse-as-btn.employee {
+  border-left: 4px solid var(--primary-color);
+}
+
+.browse-as-btn.employee:hover {
+  background: linear-gradient(135deg, rgba(211, 47, 47, 0.1), rgba(211, 47, 47, 0.05));
+  border-color: var(--primary-color);
+}
+
+.browse-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.browse-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.browse-label {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.browse-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
 .quick-actions {
   background: var(--glass-bg);
   backdrop-filter: blur(20px);
@@ -388,7 +488,8 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .actions-grid {
+  .actions-grid,
+  .browse-as-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -442,7 +543,8 @@
 
 @media (max-width: 480px) {
   .distribution-grid,
-  .actions-grid {
+  .actions-grid,
+  .browse-as-grid {
     grid-template-columns: 1fr;
   }
 

@@ -129,11 +129,25 @@ export const ROLE_NAV = {
       { label: 'Dashboard', path: '/owner/dashboard', icon: '📊' },
       { label: 'Business Model', path: '/owner/business-model', icon: '💼' },
       { label: 'Client Services', path: '/owner/client-services', icon: '🤝' },
+      { label: 'System Health', path: '/owner/system-health', icon: '🔧' },
       { label: 'All Properties', path: '/owner/dashboard#properties', icon: '🏢' },
       { label: 'User Management', path: '/owner/dashboard#users', icon: '👥' },
       { label: 'Analytics', path: '/owner/dashboard#analytics', icon: '📈' },
       { label: 'Settings', path: '/owner/dashboard#settings', icon: '⚙️' }
-    ]
+    ],
+    browseAs: {
+      clients: [
+        { label: 'Buyer Portal', path: '/buyer/dashboard', icon: '🏠', description: 'View as property buyer' },
+        { label: 'Seller Portal', path: '/seller/dashboard', icon: '💰', description: 'View as property seller' },
+        { label: 'Landlord Portal', path: '/landlord/dashboard', icon: '🏢', description: 'View as landlord' },
+        { label: 'Tenant Portal', path: '/tenant/dashboard', icon: '🔑', description: 'View as tenant' }
+      ],
+      employees: [
+        { label: 'Leasing Agent', path: '/leasing-agent/dashboard', icon: '📋', description: 'Leasing agent dashboard' },
+        { label: 'Sales Agent', path: '/secondary-sales-agent/dashboard', icon: '💼', description: 'Sales agent dashboard' },
+        { label: 'Team Leader', path: '/team-leader/dashboard', icon: '👔', description: 'Team leader dashboard' }
+      ]
+    }
   }
 };
 
