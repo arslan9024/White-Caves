@@ -32,6 +32,13 @@ Preferred communication style: Simple, everyday language.
 - **Company Profile Section**: Comprehensive company information display with downloadable PDF brochure.
 - **Click-to-Chat WhatsApp**: Enhanced WhatsApp integration with quick message options and custom message support.
 - **Owner Dashboards**: Includes System Health monitoring, Productivity Tools (Google Workspace integration), and Multi-Role Navigation for owners to browse as different user types.
+- **WhatsApp Business Dashboard** (Owner-Exclusive): Complete messaging management system for the company owner (arslanmalikgoraha@gmail.com):
+  - Messages Dashboard: Real-time chat interface with contacts, message history, quick replies, and stats overview
+  - Chatbot Rules Manager: Automated response configuration with trigger types (keyword, contains, regex, any), priority levels, and usage tracking
+  - Analytics: Message tracking, peak hours analysis, top contacts, and chatbot automation metrics
+  - MongoDB schemas: WhatsAppMessage, WhatsAppChatbotRule, WhatsAppSettings, WhatsAppContact
+  - API routes protected by owner middleware at /api/whatsapp/*
+  - Webhook endpoints for Meta Business API integration
 - **Advanced Tools**: Features include Smart Rent vs. Buy Calculator (Dubai-specific), Off-Plan Property Tracker, AI Neighborhood Analyzer (investment scoring, demographics, amenities), and Virtual Tour Gallery (Matterport integration).
 - **Interactive Mapping**: Enhanced SVG-based Dubai map with custom, color-coded markers, property previews, and filtering.
 - **SEO Optimization**: Comprehensive meta tags, Open Graph, Twitter Cards, structured data (JSON-LD), sitemap, robots.txt, and performance optimizations (lazy loading, prefetching).
@@ -134,3 +141,14 @@ src/components/homepage/
 ├── Testimonials/   - Auto-playing carousel with navigation
 └── Contact/        - Contact form and business information
 ```
+
+## WhatsApp Business Dashboard (Owner-Exclusive)
+```
+src/pages/owner/
+├── WhatsAppDashboardPage.jsx   - Main messaging interface with chat UI
+├── WhatsAppChatbotPage.jsx     - Chatbot rules configuration
+├── WhatsAppAnalyticsPage.jsx   - Analytics and performance tracking
+└── *.css                       - Styling with WhatsApp green (#25D366) theme
+```
+Routes: /owner/whatsapp, /owner/whatsapp/chatbot, /owner/whatsapp/analytics
+Access: Protected by ProtectedRoute (owner role only)

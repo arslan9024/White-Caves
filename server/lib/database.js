@@ -104,3 +104,63 @@ const signatureTokenSchema = new mongoose.Schema({
 
 export const Contract = mongoose.model('Contract', contractSchema);
 export const SignatureToken = mongoose.model('SignatureToken', signatureTokenSchema);
+
+const whatsappMessageSchema = new mongoose.Schema({
+  waId: { type: String, required: true },
+  phoneNumber: { type: String, required: true },
+  contactName: String,
+  direction: { type: String, enum: ['incoming', 'outgoing'], required: true },
+  messageType: { type: String, enum: ['text', 'image', 'document', 'audio', 'video', 'location', 'template'], default: 'text' },
+  content: String,
+  mediaUrl: String,
+  status: { type: String, enum: ['sent', 'delivered', 'read', 'failed'], default: 'sent' },
+  isRead: { type: Boolean, default: false }
+}, { timestamps: true });
+
+const whatsappChatbotRuleSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  trigger: { type: String, required: true },
+  triggerType: { type: String, enum: ['keyword', 'contains', 'regex', 'any'], default: 'keyword' },
+  response: { type: String, required: true },
+  isActive: { type: Boolean, default: true },
+  priority: { type: Number, default: 0 },
+  usageCount: { type: Number, default: 0 }
+}, { timestamps: true });
+
+const whatsappSettingsSchema = new mongoose.Schema({
+  ownerEmail: { type: String, required: true, unique: true },
+  isConnected: { type: Boolean, default: false },
+  phoneNumber: String,
+  phoneNumberId: String,
+  businessId: String,
+  accessToken: String,
+  webhookVerifyToken: String,
+  connectedAt: Date,
+  settings: {
+    autoReply: { type: Boolean, default: false },
+    awayMessage: { type: String, default: 'Hello! We will get back to you soon.' },
+    workingHours: {
+      enabled: { type: Boolean, default: false },
+      start: { type: String, default: '09:00' },
+      end: { type: String, default: '22:00' },
+      timezone: { type: String, default: 'Asia/Dubai' }
+    },
+    chatbotEnabled: { type: Boolean, default: false }
+  }
+}, { timestamps: true });
+
+const whatsappContactSchema = new mongoose.Schema({
+  waId: { type: String, required: true, unique: true },
+  phoneNumber: { type: String, required: true },
+  name: String,
+  profilePicture: String,
+  lastMessageAt: Date,
+  unreadCount: { type: Number, default: 0 },
+  tags: [String],
+  notes: String
+}, { timestamps: true });
+
+export const WhatsAppMessage = mongoose.model('WhatsAppMessage', whatsappMessageSchema);
+export const WhatsAppChatbotRule = mongoose.model('WhatsAppChatbotRule', whatsappChatbotRuleSchema);
+export const WhatsAppSettings = mongoose.model('WhatsAppSettings', whatsappSettingsSchema);
+export const WhatsAppContact = mongoose.model('WhatsAppContact', whatsappContactSchema);

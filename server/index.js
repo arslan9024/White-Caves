@@ -5,8 +5,28 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { Readable } from 'stream';
+import admin from 'firebase-admin';
 import { uploadToDrive, createFolder, listFiles } from './lib/googleDrive.js';
-import { connectDB, Contract, SignatureToken } from './lib/database.js';
+import { connectDB, Contract, SignatureToken, WhatsAppMessage, WhatsAppChatbotRule, WhatsAppSettings, WhatsAppContact } from './lib/database.js';
+
+let firebaseInitialized = false;
+try {
+  const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT 
+    ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
+    : null;
+  
+  if (serviceAccount) {
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+    firebaseInitialized = true;
+    console.log('Firebase Admin SDK initialized');
+  } else {
+    console.log('Firebase Admin SDK not configured - FIREBASE_SERVICE_ACCOUNT not set');
+  }
+} catch (error) {
+  console.error('Firebase Admin initialization error:', error.message);
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -584,6 +604,229 @@ app.post('/api/drive/create-folder', async (req, res) => {
   } catch (error) {
     console.error('Error creating folder:', error);
     res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
+
+const isOwnerMiddleware = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, error: 'Authorization required' });
+    }
+    
+    const idToken = authHeader.split('Bearer ')[1];
+    
+    if (firebaseInitialized) {
+      const decodedToken = await admin.auth().verifyIdToken(idToken);
+      if (decodedToken.email !== OWNER_EMAIL) {
+        return res.status(403).json({ success: false, error: 'Access denied. Owner only feature.' });
+      }
+      req.user = decodedToken;
+    } else {
+      const headerEmail = req.headers['x-owner-email'];
+      if (headerEmail !== OWNER_EMAIL) {
+        return res.status(403).json({ success: false, error: 'Access denied. Owner only feature.' });
+      }
+    }
+    
+    next();
+  } catch (error) {
+    console.error('Auth verification error:', error.message);
+    return res.status(401).json({ success: false, error: 'Invalid authentication token' });
+  }
+};
+
+app.get('/api/whatsapp/settings', isOwnerMiddleware, async (req, res) => {
+  try {
+    if (!useDatabase) {
+      return res.json({ success: true, settings: { isConnected: false } });
+    }
+    let settings = await WhatsAppSettings.findOne({ ownerEmail: OWNER_EMAIL });
+    if (!settings) {
+      settings = await WhatsAppSettings.create({ ownerEmail: OWNER_EMAIL });
+    }
+    res.json({ success: true, settings });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.put('/api/whatsapp/settings', isOwnerMiddleware, async (req, res) => {
+  try {
+    if (!useDatabase) {
+      return res.status(400).json({ success: false, error: 'Database not available' });
+    }
+    const settings = await WhatsAppSettings.findOneAndUpdate(
+      { ownerEmail: OWNER_EMAIL },
+      { ...req.body, updatedAt: new Date() },
+      { new: true, upsert: true }
+    );
+    res.json({ success: true, settings });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/whatsapp/messages', isOwnerMiddleware, async (req, res) => {
+  try {
+    if (!useDatabase) {
+      return res.json({ success: true, messages: [] });
+    }
+    const { contactId, limit = 50 } = req.query;
+    const query = contactId ? { waId: contactId } : {};
+    const messages = await WhatsAppMessage.find(query).sort({ createdAt: -1 }).limit(parseInt(limit));
+    res.json({ success: true, messages });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/whatsapp/messages', isOwnerMiddleware, async (req, res) => {
+  try {
+    if (!useDatabase) {
+      return res.status(400).json({ success: false, error: 'Database not available' });
+    }
+    const message = await WhatsAppMessage.create({
+      ...req.body,
+      direction: 'outgoing',
+      status: 'sent'
+    });
+    res.json({ success: true, message });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/whatsapp/contacts', isOwnerMiddleware, async (req, res) => {
+  try {
+    if (!useDatabase) {
+      return res.json({ success: true, contacts: [] });
+    }
+    const contacts = await WhatsAppContact.find().sort({ lastMessageAt: -1 });
+    res.json({ success: true, contacts });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/whatsapp/chatbot/rules', isOwnerMiddleware, async (req, res) => {
+  try {
+    if (!useDatabase) {
+      return res.json({ success: true, rules: [] });
+    }
+    const rules = await WhatsAppChatbotRule.find().sort({ priority: -1 });
+    res.json({ success: true, rules });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/whatsapp/chatbot/rules', isOwnerMiddleware, async (req, res) => {
+  try {
+    if (!useDatabase) {
+      return res.status(400).json({ success: false, error: 'Database not available' });
+    }
+    const rule = await WhatsAppChatbotRule.create(req.body);
+    res.json({ success: true, rule });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.put('/api/whatsapp/chatbot/rules/:id', isOwnerMiddleware, async (req, res) => {
+  try {
+    if (!useDatabase) {
+      return res.status(400).json({ success: false, error: 'Database not available' });
+    }
+    const rule = await WhatsAppChatbotRule.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!rule) {
+      return res.status(404).json({ success: false, error: 'Rule not found' });
+    }
+    res.json({ success: true, rule });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.delete('/api/whatsapp/chatbot/rules/:id', isOwnerMiddleware, async (req, res) => {
+  try {
+    if (!useDatabase) {
+      return res.status(400).json({ success: false, error: 'Database not available' });
+    }
+    await WhatsAppChatbotRule.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Rule deleted' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/whatsapp/analytics', isOwnerMiddleware, async (req, res) => {
+  try {
+    if (!useDatabase) {
+      return res.json({ success: true, analytics: { totalMessages: 0, uniqueContacts: 0 } });
+    }
+    const totalMessages = await WhatsAppMessage.countDocuments();
+    const uniqueContacts = await WhatsAppContact.countDocuments();
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayMessages = await WhatsAppMessage.countDocuments({ createdAt: { $gte: todayStart } });
+    const unreadCount = await WhatsAppMessage.countDocuments({ isRead: false, direction: 'incoming' });
+    res.json({
+      success: true,
+      analytics: { totalMessages, uniqueContacts, todayMessages, unreadCount }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/whatsapp/webhook', async (req, res) => {
+  try {
+    const { entry } = req.body;
+    if (entry) {
+      for (const e of entry) {
+        const changes = e.changes || [];
+        for (const change of changes) {
+          if (change.value && change.value.messages) {
+            for (const msg of change.value.messages) {
+              if (useDatabase) {
+                await WhatsAppMessage.create({
+                  waId: msg.from,
+                  phoneNumber: msg.from,
+                  direction: 'incoming',
+                  messageType: msg.type || 'text',
+                  content: msg.text?.body || '',
+                  isRead: false
+                });
+                await WhatsAppContact.findOneAndUpdate(
+                  { waId: msg.from },
+                  { waId: msg.from, phoneNumber: msg.from, lastMessageAt: new Date(), $inc: { unreadCount: 1 } },
+                  { upsert: true }
+                );
+              }
+            }
+          }
+        }
+      }
+    }
+    res.status(200).send('OK');
+  } catch (error) {
+    console.error('Webhook error:', error);
+    res.status(500).send('Error');
+  }
+});
+
+app.get('/api/whatsapp/webhook', (req, res) => {
+  const mode = req.query['hub.mode'];
+  const token = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+  const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN || 'whitecaves_whatsapp_verify';
+  if (mode === 'subscribe' && token === verifyToken) {
+    res.status(200).send(challenge);
+  } else {
+    res.status(403).send('Forbidden');
   }
 });
 

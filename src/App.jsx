@@ -76,6 +76,9 @@ import CareersPage from './pages/CareersPage';
 import ContactPage from './pages/ContactPage';
 import PropertiesPage from './pages/PropertiesPage';
 import AboutPage from './pages/AboutPage';
+import WhatsAppDashboardPage from './pages/owner/WhatsAppDashboardPage';
+import WhatsAppChatbotPage from './pages/owner/WhatsAppChatbotPage';
+import WhatsAppAnalyticsPage from './pages/owner/WhatsAppAnalyticsPage';
 
 function App() {
   const dispatch = useDispatch();
@@ -213,6 +216,21 @@ function App() {
         <Route path="/owner/system-health" element={
           <ProtectedRoute allowedRoles={['owner']}>
             <SystemHealthPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/owner/whatsapp" element={
+          <ProtectedRoute allowedRoles={['owner']}>
+            <WhatsAppDashboardPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/owner/whatsapp/chatbot" element={
+          <ProtectedRoute allowedRoles={['owner']}>
+            <WhatsAppChatbotPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/owner/whatsapp/analytics" element={
+          <ProtectedRoute allowedRoles={['owner']}>
+            <WhatsAppAnalyticsPage />
           </ProtectedRoute>
         } />
         

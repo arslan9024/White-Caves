@@ -115,6 +115,11 @@ const roleMenus = {
       { path: '/owner/reports', label: 'Reports', icon: '📈' },
       { path: '/owner/settings', label: 'Settings', icon: '⚙️' },
     ],
+    whatsappBusiness: [
+      { path: '/owner/whatsapp', label: 'WhatsApp Messages', icon: '💬' },
+      { path: '/owner/whatsapp/chatbot', label: 'Chatbot Rules', icon: '🤖' },
+      { path: '/owner/whatsapp/analytics', label: 'Analytics', icon: '📈' },
+    ],
     browseAs: {
       clients: [
         { path: '/buyer/dashboard', label: 'Buyer Portal', icon: '🏠' },
@@ -178,6 +183,27 @@ export default function RoleNavigation({ role }) {
             <span className="nav-label">{item.label}</span>
           </Link>
         ))}
+
+        {menu.whatsappBusiness && (
+          <>
+            <div className="nav-divider"></div>
+            <div className="nav-section-label whatsapp-label">
+              <span className="whatsapp-icon">💬</span> WhatsApp Business
+              <span className="badge-exclusive">Owner Only</span>
+            </div>
+            {menu.whatsappBusiness.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`nav-item whatsapp-nav-item ${location.pathname === item.path ? 'active' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <span className="nav-icon">{item.icon}</span>
+                <span className="nav-label">{item.label}</span>
+              </Link>
+            ))}
+          </>
+        )}
 
         {menu.browseAs && (
           <>
