@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import './SystemHealthPage.css';
+
+const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
 
 function SystemHealthPage() {
   const navigate = useNavigate();
+  const user = useSelector(state => state.user.currentUser);
   const [healthData, setHealthData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [lastChecked, setLastChecked] = useState(null);
+
+  useEffect(() => {
+    if (!user || user.email !== OWNER_EMAIL) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const checkHealth = async () => {
     setLoading(true);
@@ -223,6 +233,75 @@ function SystemHealthPage() {
         </div>
       )}
 
+      <div className="deployment-section">
+        <h2>Production Deployment Readiness</h2>
+        
+        {healthData?.productionReadiness && (
+          <div className="readiness-overview">
+            <div className={`readiness-score ${healthData.productionReadiness.isDeployable ? 'deployable' : 'not-deployable'}`}>
+              <div className="score-circle">
+                <span className="score-value">{healthData.productionReadiness.score}%</span>
+                <span className="score-label">Ready</span>
+              </div>
+              <div className="score-details">
+                <div className="score-stat">
+                  <span className="stat-value">{healthData.productionReadiness.passedChecks}/{healthData.productionReadiness.totalChecks}</span>
+                  <span className="stat-label">Checks Passed</span>
+                </div>
+                <div className="score-stat">
+                  <span className={`stat-value ${healthData.productionReadiness.criticalIssues > 0 ? 'critical' : ''}`}>
+                    {healthData.productionReadiness.criticalIssues}
+                  </span>
+                  <span className="stat-label">Critical Issues</span>
+                </div>
+                <div className={`deploy-status ${healthData.productionReadiness.isDeployable ? 'ready' : 'not-ready'}`}>
+                  {healthData.productionReadiness.isDeployable ? '✓ Ready to Deploy' : '✗ Fix Critical Issues'}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        <div className="deployment-checks">
+          {healthData?.deploymentChecks?.map((check, index) => (
+            <div key={index} className={`deployment-check ${check.status}`}>
+              <div className="check-header">
+                <span className={`check-icon ${check.status}`}>
+                  {check.status === 'ready' || check.status === 'production' ? '✓' : 
+                   check.status === 'simulated' ? '○' : '✗'}
+                </span>
+                <span className="check-name">{check.name}</span>
+                {check.critical && <span className="critical-badge">Critical</span>}
+              </div>
+              <p className="check-message">{check.message}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <div className="health-card whatsapp-card">
+        <div className="card-header">
+          <h3>WhatsApp Business</h3>
+          <span className={`status-badge ${getStatusClass(healthData?.whatsapp?.status)}`}>
+            {getStatusIcon(healthData?.whatsapp?.status)} {healthData?.whatsapp?.status || 'Unknown'}
+          </span>
+        </div>
+        <div className="card-details">
+          <div className="detail-row">
+            <span className="label">API Token</span>
+            <span className="value">{healthData?.whatsapp?.configured ? 'Configured' : 'Not Set (Simulated)'}</span>
+          </div>
+          <div className="detail-row">
+            <span className="label">Phone Number ID</span>
+            <span className="value">{healthData?.whatsapp?.phoneNumberId || '-'}</span>
+          </div>
+          <div className="detail-row">
+            <span className="label">AI Chatbot</span>
+            <span className="value">{healthData?.whatsapp?.chatbotEnabled ? 'Enabled' : 'Disabled'}</span>
+          </div>
+        </div>
+      </div>
+      
       <div className="env-section">
         <h2>Environment Variables</h2>
         <div className="env-grid">

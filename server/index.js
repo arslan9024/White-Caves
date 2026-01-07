@@ -179,6 +179,13 @@ app.get('/api/system/health', async (req, res) => {
     configured: !!process.env.GOOGLE_API_KEY
   };
 
+  const whatsappStatus = {
+    status: process.env.WHATSAPP_ACCESS_TOKEN ? 'configured' : 'not_configured',
+    configured: !!process.env.WHATSAPP_ACCESS_TOKEN,
+    phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID ? 'Set' : 'Not Set',
+    chatbotEnabled: true
+  };
+
   const envVars = [
     { name: 'MONGODB_URI', set: !!process.env.MONGODB_URI },
     { name: 'FIREBASE_SERVICE_ACCOUNT', set: !!process.env.FIREBASE_SERVICE_ACCOUNT },
@@ -187,8 +194,70 @@ app.get('/api/system/health', async (req, res) => {
     { name: 'STRIPE_SECRET_KEY', set: !!(process.env.STRIPE_SECRET_KEY || process.env.STRIPE_API_KEY) },
     { name: 'GOOGLE_API_KEY', set: !!process.env.GOOGLE_API_KEY },
     { name: 'SESSION_SECRET', set: !!process.env.SESSION_SECRET },
-    { name: 'REPLIT_DEV_DOMAIN', set: !!process.env.REPLIT_DEV_DOMAIN }
+    { name: 'WHATSAPP_ACCESS_TOKEN', set: !!process.env.WHATSAPP_ACCESS_TOKEN }
   ];
+
+  const buildExists = fs.existsSync(path.join(__dirname, '..', 'dist'));
+  const isProductionMode = process.env.NODE_ENV === 'production';
+  
+  const deploymentChecks = [
+    { 
+      name: 'Production Build', 
+      status: buildExists ? 'ready' : 'not_ready',
+      message: buildExists ? 'Build files exist in /dist' : 'Run npm run build to create production files',
+      critical: true
+    },
+    { 
+      name: 'Environment Mode', 
+      status: isProductionMode ? 'production' : 'development',
+      message: isProductionMode ? 'Running in production mode' : 'Set NODE_ENV=production for deployment',
+      critical: false
+    },
+    { 
+      name: 'Database Connection', 
+      status: useDatabase ? 'ready' : 'not_ready',
+      message: useDatabase ? 'MongoDB connected' : 'Configure MONGODB_URI for persistent storage',
+      critical: true
+    },
+    { 
+      name: 'Authentication', 
+      status: process.env.FIREBASE_SERVICE_ACCOUNT ? 'ready' : 'not_ready',
+      message: process.env.FIREBASE_SERVICE_ACCOUNT ? 'Firebase configured' : 'Set FIREBASE_SERVICE_ACCOUNT',
+      critical: true
+    },
+    { 
+      name: 'Payment Processing', 
+      status: stripeKey ? 'ready' : 'not_ready',
+      message: stripeKey ? `Stripe ${stripeKey.includes('_test_') ? '(Test Mode)' : '(Live Mode)'}` : 'Configure STRIPE_SECRET_KEY',
+      critical: false
+    },
+    { 
+      name: 'Static Assets', 
+      status: buildExists && fs.existsSync(path.join(__dirname, '..', 'dist', 'index.html')) ? 'ready' : 'not_ready',
+      message: buildExists ? 'Static files ready to serve' : 'Build required for static hosting',
+      critical: true
+    },
+    { 
+      name: 'WhatsApp Integration', 
+      status: process.env.WHATSAPP_ACCESS_TOKEN ? 'ready' : 'simulated',
+      message: process.env.WHATSAPP_ACCESS_TOKEN ? 'WhatsApp API connected' : 'Running in simulation mode',
+      critical: false
+    },
+    { 
+      name: 'Google Services', 
+      status: (process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_API_KEY) ? 'ready' : 'not_ready',
+      message: (process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_API_KEY) ? 'Google APIs configured' : 'Configure Google credentials',
+      critical: false
+    }
+  ];
+
+  const productionReadiness = {
+    score: Math.round((deploymentChecks.filter(c => c.status === 'ready' || c.status === 'production').length / deploymentChecks.length) * 100),
+    criticalIssues: deploymentChecks.filter(c => c.critical && c.status !== 'ready').length,
+    totalChecks: deploymentChecks.length,
+    passedChecks: deploymentChecks.filter(c => c.status === 'ready' || c.status === 'production' || c.status === 'simulated').length,
+    isDeployable: deploymentChecks.filter(c => c.critical && c.status !== 'ready').length === 0
+  };
 
   res.json({
     server: {
@@ -202,7 +271,10 @@ app.get('/api/system/health', async (req, res) => {
     stripe: stripeStatus,
     googleDrive: googleDriveStatus,
     googleMaps: googleMapsStatus,
-    envVars
+    whatsapp: whatsappStatus,
+    envVars,
+    deploymentChecks,
+    productionReadiness
   });
 });
 

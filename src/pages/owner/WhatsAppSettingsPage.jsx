@@ -6,7 +6,8 @@ import RoleNavigation from '../../components/RoleNavigation';
 import { 
   Settings, QrCode, Smartphone, Link2, Unlink, RefreshCw, 
   MessageCircle, Bot, Clock, Send, CheckCircle, AlertCircle,
-  Wifi, WifiOff, Save, Plus, Trash2, ToggleLeft, ToggleRight
+  Wifi, WifiOff, Save, Plus, Trash2, ToggleLeft, ToggleRight,
+  TestTube2, Loader2, Sparkles, Globe, Target, TrendingUp
 } from 'lucide-react';
 import './WhatsAppSettingsPage.css';
 
@@ -49,6 +50,11 @@ const WhatsAppSettingsPage = () => {
   });
   
   const [newQuickReply, setNewQuickReply] = useState({ trigger: '', response: '' });
+  
+  const [testMessage, setTestMessage] = useState('');
+  const [testResult, setTestResult] = useState(null);
+  const [testLoading, setTestLoading] = useState(false);
+  const [testHistory, setTestHistory] = useState([]);
 
   const fetchSession = useCallback(async () => {
     try {
@@ -229,6 +235,56 @@ const WhatsAppSettingsPage = () => {
         i === index ? { ...qr, enabled: !qr.enabled } : qr
       )
     }));
+  };
+
+  const handleTestChatbot = async () => {
+    if (!testMessage.trim()) return;
+    
+    setTestLoading(true);
+    try {
+      const headers = await getAuthHeaders();
+      const response = await fetch('/api/whatsapp/chatbot/test', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ message: testMessage })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setTestResult(data);
+        setTestHistory(prev => [{
+          input: testMessage,
+          response: data.response,
+          intent: data.intent,
+          confidence: data.confidence,
+          language: data.language,
+          leadScore: data.leadScore,
+          timestamp: new Date()
+        }, ...prev].slice(0, 10));
+        setTestMessage('');
+      }
+    } catch (error) {
+      console.error('Chatbot test error:', error);
+      setTestResult({ error: 'Failed to test chatbot' });
+    } finally {
+      setTestLoading(false);
+    }
+  };
+
+  const handleClearTestContext = async () => {
+    try {
+      const headers = await getAuthHeaders();
+      await fetch('/api/whatsapp/chatbot/clear-context', {
+        method: 'POST',
+        headers
+      });
+      setTestHistory([]);
+      setTestResult(null);
+      setNotification({ type: 'success', message: 'Test conversation cleared' });
+    } catch (error) {
+      console.error('Clear context error:', error);
+    }
   };
 
   const isConnected = session?.connectionStatus === 'connected' || session?.connectionStatus === 'authenticated';
@@ -535,6 +591,98 @@ const WhatsAppSettingsPage = () => {
             </div>
           </div>
         </div>
+        
+        <div className="settings-card chatbot-test-card">
+            <div className="card-header">
+              <h2><TestTube2 size={22} /> Chatbot Testing</h2>
+              {testHistory.length > 0 && (
+                <button className="clear-btn" onClick={handleClearTestContext}>
+                  <Trash2 size={14} /> Clear
+                </button>
+              )}
+            </div>
+            
+            <div className="test-input-section">
+              <div className="test-input-wrapper">
+                <input
+                  type="text"
+                  placeholder="Type a test message (English or Arabic)..."
+                  value={testMessage}
+                  onChange={(e) => setTestMessage(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleTestChatbot()}
+                  disabled={testLoading}
+                />
+                <button 
+                  className="test-btn" 
+                  onClick={handleTestChatbot}
+                  disabled={testLoading || !testMessage.trim()}
+                >
+                  {testLoading ? <Loader2 size={18} className="spin" /> : <Send size={18} />}
+                </button>
+              </div>
+              <p className="test-hint">Test how the AI chatbot responds to customer messages</p>
+            </div>
+            
+            {testResult && !testResult.error && (
+              <div className="test-result">
+                <div className="result-header">
+                  <Sparkles size={16} /> AI Response
+                </div>
+                <div className="result-response">{testResult.response}</div>
+                <div className="result-metrics">
+                  <div className="metric">
+                    <Target size={14} />
+                    <span className="metric-label">Intent:</span>
+                    <span className="metric-value">{testResult.intent}</span>
+                  </div>
+                  <div className="metric">
+                    <TrendingUp size={14} />
+                    <span className="metric-label">Confidence:</span>
+                    <span className="metric-value">{testResult.confidence}%</span>
+                  </div>
+                  <div className="metric">
+                    <Globe size={14} />
+                    <span className="metric-label">Language:</span>
+                    <span className="metric-value">{testResult.language === 'ar' ? 'Arabic' : 'English'}</span>
+                  </div>
+                  <div className="metric">
+                    <Sparkles size={14} />
+                    <span className="metric-label">Lead Score:</span>
+                    <span className="metric-value">{testResult.leadScore}/100</span>
+                  </div>
+                </div>
+                {testResult.suggestedActions?.length > 0 && (
+                  <div className="suggested-actions">
+                    <span className="actions-label">Suggested Actions:</span>
+                    {testResult.suggestedActions.map((action, i) => (
+                      <span key={i} className="action-chip">{action}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {testHistory.length > 0 && (
+              <div className="test-history">
+                <h4>Recent Tests</h4>
+                {testHistory.map((item, index) => (
+                  <div key={index} className="history-item">
+                    <div className="history-input">
+                      <span className="direction">You:</span> {item.input}
+                    </div>
+                    <div className="history-response">
+                      <span className="direction">Bot:</span> {item.response}
+                    </div>
+                    <div className="history-meta">
+                      <span>{item.intent}</span>
+                      <span>{item.confidence}%</span>
+                      <span>{item.language === 'ar' ? 'AR' : 'EN'}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         
         <div className="settings-actions">
           <button className="save-btn" onClick={handleSaveSettings} disabled={saving}>

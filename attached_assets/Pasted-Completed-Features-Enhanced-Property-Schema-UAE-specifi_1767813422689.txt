@@ -1,0 +1,4445 @@
+Completed Features:
+
+Enhanced Property Schema - UAE-specific fields including RERA, DLD, Ejari, DEWA, and Makani numbers, plus document management and viewing tracking
+
+Arabic/English Bilingual Support - Complete language toggle with RTL styling, 700+ translated phrases, and Arabic number/date formatting
+
+AI Chatbot Service - Intent classification for property inquiries with entity extraction (type, location, bedrooms, budget), full Arabic support, and lead scoring
+
+Agent Assignment Engine - Weighted scoring algorithm considering expertise (30%), availability (25%), performance (20%), proximity (15%), and client preferences (10%)
+
+Google Calendar Integration - OAuth 2.0 setup with calendar events for viewings and task creation for follow-ups (OAuth redirect URI fixed per review)
+
+Market Analytics Dashboard - KPIs, Emirates breakdown, property type distribution, lead sources, and agent performance leaderboard
+
+Remaining Task:
+
+WhatsApp Business API integration - This requires Meta Business API credentials and webhook configuration to connect your chatbot directly to WhatsApp messages
+Note from Review:
+The architect noted that while all services are structurally complete, the Google Calendar integration will need secure token storage when you're ready to use it in production. The new services (chatbot, agent assignment, dashboard) are ready to be wired into the UI flows as needed.
+
+Here's the comprehensive prompt that consolidates all your requirements into one detailed implementation guide for Replit Agent 3:
+
+Would you like me to add a chatbot testing interface to the WhatsApp Settings page, yes.
+
+## **PROJECT OVERVIEW**
+UAE-based real estate company needing a complete digital transformation with AI-powered automation, multi-language support, and Google Workspace integration.
+
+---
+
+## **PHASE 1: DATABASE & FOUNDATION**
+
+### **1. Enhanced Property Schema with UAE-Specific Fields**
+```javascript
+// Complete Property Schema Implementation
+const PropertySchema = {
+  // Core Identification
+  propertyCode: { type: String, unique: true, required: true }, // DXB-PRO-001
+  emirate: {
+    type: String,
+    enum: ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'RAK', 'Fujairah', 'UQ'],
+    required: true
+  },
+  community: String, // Dubai Marina, Palm Jumeirah, etc.
+  
+  // UAE Legal & Compliance
+  legalDetails: {
+    dldNumber: String,      // DLD/RERA permit
+    ejariNumber: String,    // Rental registration
+    dewaNumber: String,     // Utility reference
+    titleDeed: String,      // Title deed number
+    completionCertificate: String,
+    nocFromDeveloper: Boolean
+  },
+  
+  // Property Specifications (UAE Standard)
+  specifications: {
+    propertyType: {
+      type: String,
+      enum: ['Apartment', 'Villa', 'Townhouse', 'Penthouse', 
+             'Office', 'Warehouse', 'Land', 'Commercial']
+    },
+    bedrooms: Number,
+    bathrooms: Number,
+    maidRoom: { type: Boolean, default: false },
+    builtUpArea: Number,     // sq ft
+    plotArea: Number,        // sq ft (for villas/land)
+    floorNumber: Number,
+    totalFloors: Number,
+    parkingSpaces: Number
+  },
+  
+  // Pricing & Financials (Multi-currency with AED default)
+  pricing: {
+    amount: { type: Number, required: true },
+    currency: { type: String, default: 'AED', enum: ['AED', 'USD', 'EUR'] },
+    type: { type: String, enum: ['sale', 'rent'] },
+    paymentTerms: {
+      rental: ['1 Cheque', '2 Cheques', '4 Cheques', '12 Cheques'],
+      sale: ['Cash', 'Mortgage', 'Installments']
+    },
+    commission: {
+      percentage: Number,
+      fixedAmount: Number,
+      responsibility: ['owner', 'tenant', 'both']
+    },
+    annualCommunityFees: Number,
+    annualServiceCharges: Number
+  },
+  
+  // UAE-Specific Amenities
+  amenities: [{
+    category: {
+      type: String,
+      enum: ['Community', 'Security', 'Recreational', 'Luxury', 'Convenience']
+    },
+    items: [{
+      name: String,
+      type: {
+        type: String,
+        enum: ['Private Pool', 'Shared Pool', 'Gym', 'Concierge', 'Valet Parking',
+               'Children\'s Play Area', 'Barbecue Area', 'Private Garden',
+               'Covered Parking', '24/7 Security', 'Central AC', 'Balcony',
+               'Sea View', 'Maids Room', 'Driver\'s Room', 'Walk-in Closet']
+      },
+      details: String
+    }]
+  }],
+  
+  // Documents Management (UAE Requirements)
+  documents: [{
+    type: {
+      type: String,
+      enum: ['Title Deed', 'Ejari Certificate', 'DLD Certificate', 
+             'Building Plans', 'NOC', 'Passport Copy', 'Visa Copy', 
+             'Emirates ID', 'Power of Attorney', 'Bank Approval Letter']
+    },
+    name: String,
+    url: String,
+    uploadDate: Date,
+    expiryDate: Date,
+    verified: { type: Boolean, default: false },
+    verifiedBy: String,
+    verificationDate: Date
+  }],
+  
+  // Status Tracking with Complete History
+  status: {
+    current: {
+      type: String,
+      enum: ['available', 'reserved', 'under_contract', 'sold', 
+             'rented', 'off_market', 'under_maintenance'],
+      default: 'available'
+    },
+    history: [{
+      status: String,
+      changedBy: { type: String, ref: 'User' },
+      timestamp: { type: Date, default: Date.now },
+      notes: String,
+      documents: [String]
+    }]
+  },
+  
+  // Viewing Management System
+  viewings: [{
+    dateTime: { type: Date, required: true },
+    client: { type: Schema.Types.ObjectId, ref: 'Client' },
+    agent: { type: Schema.Types.ObjectId, ref: 'User' },
+    status: {
+      type: String,
+      enum: ['scheduled', 'confirmed', 'completed', 'cancelled', 'no_show'],
+      default: 'scheduled'
+    },
+    notes: String,
+    feedback: {
+      clientInterest: { type: String, enum: ['high', 'medium', 'low'] },
+      clientFeedback: String,
+      agentNotes: String
+    },
+    followUpTasks: [{
+      task: String,
+      assignedTo: { type: Schema.Types.ObjectId, ref: 'User' },
+      dueDate: Date,
+      completed: Boolean
+    }],
+    googleCalendarEventId: String
+  }],
+  
+  // Assignment & Tracking
+  assignment: {
+    primaryAgent: { type: Schema.Types.ObjectId, ref: 'User' },
+    secondaryAgents: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    assignedDate: Date,
+    assignmentScore: Number, // From AI algorithm
+    assignmentReason: String
+  },
+  
+  // Client Information
+  client: {
+    clientId: { type: Schema.Types.ObjectId, ref: 'Client' },
+    type: { type: String, enum: ['buyer', 'seller', 'tenant', 'landlord'] },
+    requirements: {
+      urgency: { type: String, enum: ['immediate', '1_week', '1_month', 'flexible'] },
+      preferredViewingTimes: [String],
+      specialRequirements: String,
+      budgetRange: {
+        min: Number,
+        max: Number,
+        currency: String
+      }
+    }
+  },
+  
+  // Analytics & Metrics
+  metrics: {
+    totalViews: { type: Number, default: 0 },
+    whatsappInquiries: { type: Number, default: 0 },
+    emailInquiries: { type: Number, default: 0 },
+    callInquiries: { type: Number, default: 0 },
+    timeOnMarket: Number, // days
+    priceHistory: [{
+      oldPrice: Number,
+      newPrice: Number,
+      date: Date,
+      reason: String
+    }],
+    lastUpdated: Date
+  },
+  
+  // Timestamps
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: Date,
+  listedDate: Date,
+  expectedClosure: Date
+};
+```
+
+### **2. Arabic/English Language Toggle System**
+```javascript
+// Language Management System
+const LanguageConfig = {
+  // Storage & State
+  storage: {
+    localStorageKey: 'realestate_language',
+    defaultLanguage: 'en',
+    supportedLanguages: ['en', 'ar']
+  },
+  
+  // RTL Support Configuration
+  rtlConfig: {
+    arabic: {
+      direction: 'rtl',
+      fontFamily: "'Cairo', 'Noto Sans Arabic', sans-serif",
+      textAlign: 'right'
+    },
+    english: {
+      direction: 'ltr',
+      fontFamily: "'Inter', -apple-system, sans-serif",
+      textAlign: 'left'
+    }
+  },
+  
+  // Bilingual Content Structure
+  translations: {
+    // Property related
+    propertyTypes: {
+      en: ['Apartment', 'Villa', 'Townhouse', 'Penthouse'],
+      ar: ['شقة', 'فيلا', 'تاون هاوس', 'بنتهاوس']
+    },
+    
+    // Statuses
+    propertyStatus: {
+      en: ['available', 'reserved', 'sold', 'rented'],
+      ar: ['متاح', 'محجوز', 'مباع', 'مؤجر']
+    },
+    
+    // Common UI text
+    ui: {
+      en: {
+        search: 'Search Properties',
+        filter: 'Filter',
+        viewDetails: 'View Details',
+        contactAgent: 'Contact Agent'
+      },
+      ar: {
+        search: 'بحث عن عقارات',
+        filter: 'تصفية',
+        viewDetails: 'عرض التفاصيل',
+        contactAgent: 'اتصل بالوكيل'
+      }
+    }
+  },
+  
+  // Implementation Components
+  components: {
+    LanguageToggle: {
+      position: 'top-right',
+      type: 'dropdown', // or 'toggle-switch'
+      showFlags: true,
+      persistSelection: true
+    },
+    
+    // Date formatting (Hijri/Gregorian)
+    dateFormats: {
+      gregorian: 'DD/MM/YYYY',
+      hijri: 'iYYYY/iMM/iDD',
+      display: (date, lang) => {
+        return lang === 'ar' ? 
+          `${hijriFormat} هـ` : 
+          `${gregorianFormat}`;
+      }
+    },
+    
+    // Number formatting (Arabic/English numerals)
+    numberFormatting: {
+      arabicNumerals: ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'],
+      convert: (number, toArabic) => {
+        if (toArabic) {
+          return number.toString().replace(/\d/g, d => arabicNumerals[d]);
+        }
+        return number;
+      }
+    }
+  }
+};
+```
+
+---
+
+## **PHASE 2: AI CHATBOT SYSTEM**
+
+### **3. Chatbot Training Data Structure**
+```javascript
+const ChatbotTrainingData = {
+  // Intent Classification
+  intents: [
+    {
+      name: "property_inquiry",
+      examples: {
+        en: [
+          "Looking for 2 bedroom apartment in Dubai Marina",
+          "Show me villas for rent in Arabian Ranches",
+          "Properties for sale in Business Bay under 2M AED"
+        ],
+        ar: [
+          "أبحث عن شقة غرفتين في دبي مارينا",
+          "أرغب في فيلات للإيجار في الرانش العربية",
+          "عقارات للبيع في بيزنس باي بأقل من ٢ مليون درهم"
+        ]
+      },
+      responses: {
+        en: [
+          "I found {count} properties in {location}. What's your budget range?",
+          "Great! I have {count} {property_type} options in {location}. When would you like to view?"
+        ],
+        ar: [
+          "وجدت {count} عقار في {location}. ما هو نطاق ميزانيتك؟",
+          "ممتاز! لدي {count} خيار {property_type} في {location}. متى ترغب في المعاينة؟"
+        ]
+      }
+    },
+    
+    {
+      name: "viewing_request",
+      examples: {
+        en: [
+          "Can I view the property tomorrow?",
+          "Schedule a viewing for Friday at 4 PM",
+          "I want to visit the villa this weekend"
+        ],
+        ar: [
+          "هل يمكنني معاينة العقار غداً؟",
+          "حدد موعد معاينة يوم الجمعة الساعة ٤ مساءً",
+          "أرغب في زيارة الفيلا نهاية هذا الأسبوع"
+        ]
+      },
+      responses: {
+        en: [
+          "I've scheduled a viewing for {date} at {time}. You'll receive a calendar invite shortly.",
+          "Viewing scheduled! Your agent {agent_name} will meet you at the property."
+        ],
+        ar: [
+          "لقد حددت موعد معاينة يوم {date} الساعة {time}. ستستلم دعوة التقويم قريباً.",
+          "تم تحديد موعد المعاينة! وكيلك {agent_name} سيلتقيك في العقار."
+        ]
+      }
+    },
+    
+    {
+      name: "price_inquiry",
+      examples: {
+        en: [
+          "What's the price of this property?",
+          "Is there any discount available?",
+          "What are the payment terms?"
+        ],
+        ar: [
+          "ما هو سعر هذا العقار؟",
+          "هل يوجد خصم متاح؟",
+          "ما هي شروط الدفع؟"
+        ]
+      }
+    }
+  ],
+  
+  // Entity Extraction Configuration
+  entities: {
+    location: {
+      type: "list",
+      values: [
+        { value: "Dubai Marina", synonyms: ["Marina", "دبي مارينا"] },
+        { value: "Palm Jumeirah", synonyms: ["Palm", "نخلة جميرا"] },
+        { value: "Business Bay", synonyms: ["بيزنس باي", "Business Bay Area"] }
+      ]
+    },
+    property_type: {
+      type: "list",
+      values: [
+        { value: "apartment", synonyms: ["flat", "unit", "شقة"] },
+        { value: "villa", synonyms: ["house", "فيلا", "منزل"] }
+      ]
+    },
+    budget: {
+      type: "amount",
+      currency: "AED",
+      range: true
+    },
+    bedrooms: {
+      type: "number",
+      min: 1,
+      max: 10
+    }
+  },
+  
+  // Context Management
+  contexts: {
+    "property_search": {
+      required: ["location", "property_type"],
+      optional: ["budget", "bedrooms", "timeline"],
+      followUp: {
+        after_location: "Great! In {location}. What type of property?",
+        after_type: "Perfect. How many bedrooms are you looking for?"
+      }
+    },
+    "viewing_scheduling": {
+      required: ["date", "time"],
+      optional: ["attendees", "special_requirements"]
+    }
+  },
+  
+  // Arabic Language Support
+  arabicSupport: {
+    transliteration: true,
+    stopwords: ["و", "في", "من", "على", "إلى"],
+    stemming: true,
+    diacritics: "remove" // or "preserve" based on need
+  }
+};
+```
+
+### **4. WhatsApp Business API Integration with Chatbot**
+```javascript
+const WhatsAppChatbotIntegration = {
+  // Connection Configuration
+  connection: {
+    api: "whatsapp-web.js", // Open-source alternative
+    sessionManagement: {
+      encryption: true,
+      autoReconnect: true,
+      multiDevice: true
+    }
+  },
+  
+  // Message Processing Pipeline
+  processingPipeline: [
+    {
+      step: "language_detection",
+      detect: ["en", "ar"],
+      fallback: "en"
+    },
+    {
+      step: "intent_classification",
+      model: "tensorflow.js", // Open-source
+      confidenceThreshold: 0.7
+    },
+    {
+      step: "entity_extraction",
+      extract: ["location", "property_type", "budget", "bedrooms"]
+    },
+    {
+      step: "response_generation",
+      use: "template_based", // or "ai_generated"
+      templates: "bilingual"
+    }
+  ],
+  
+  // Lead Scoring System
+  leadScoring: {
+    factors: [
+      {
+        name: "budget_clarity",
+        weight: 0.3,
+        scoring: {
+          specific_amount: 10,
+          range: 7,
+          not_mentioned: 0
+        }
+      },
+      {
+        name: "timeline_urgency",
+        weight: 0.25,
+        scoring: {
+          immediate: 10,
+          within_week: 8,
+          within_month: 5,
+          flexible: 3
+        }
+      },
+      {
+        name: "property_specificity",
+        weight: 0.2,
+        scoring: {
+          exact_location_type: 10,
+          location_only: 7,
+          general_area: 4
+        }
+      },
+      {
+        name: "engagement_level",
+        weight: 0.15,
+        scoring: {
+          multiple_questions: 10,
+          specific_questions: 8,
+          general_inquiry: 5
+        }
+      },
+      {
+        name: "contact_readiness",
+        weight: 0.1,
+        scoring: {
+          provided_number: 10,
+          asked_for_call: 7,
+          chat_only: 3
+        }
+      }
+    ],
+    
+    scoringBands: {
+      hot_lead: { min: 80, color: "#EF4444", action: "immediate_followup" },
+      warm_lead: { min: 60, color: "#F59E0B", action: "followup_24h" },
+      cold_lead: { min: 30, color: "#6B7280", action: "nurture_campaign" },
+      inquiry: { min: 0, color: "#9CA3AF", action: "automated_response" }
+    }
+  },
+  
+  // Integration with Existing WhatsApp Dashboard
+  dashboardIntegration: {
+    realtimeUpdates: true,
+    conversationTagging: true,
+    automatedResponseLogging: true,
+    agentEscalationRules: [
+      {
+        condition: "lead_score >= 80",
+        action: "notify_agent_immediate",
+        agentSelection: "ai_assignment"
+      },
+      {
+        condition: "message_contains_urgent",
+        action: "transfer_to_human",
+        queue: "priority"
+      }
+    ]
+  }
+};
+```
+
+---
+
+## **PHASE 3: GOOGLE WORKSPACE INTEGRATION**
+
+### **5. Google Calendar Integration**
+```javascript
+const GoogleCalendarIntegration = {
+  // OAuth Configuration
+  auth: {
+    scopes: [
+      'https://www.googleapis.com/auth/calendar',
+      'https://www.googleapis.com/auth/calendar.events'
+    ],
+    tokenStorage: "encrypted_database",
+    autoRefresh: true
+  },
+  
+  // Event Creation Templates
+  eventTemplates: {
+    property_viewing: {
+      summary: "Property Viewing - {property_code}",
+      description: `
+Property: {property_title}
+Location: {property_location}
+Type: {property_type}
+Price: {property_price}
+
+Client: {client_name}
+Client Phone: {client_phone}
+Agent: {agent_name}
+Agent Phone: {agent_phone}
+
+Notes: {viewing_notes}
+      `,
+      location: "{property_address}",
+      colorId: "5", // Yellow for viewings
+      reminders: {
+        useDefault: false,
+        overrides: [
+          { method: "popup", minutes: 60 },
+          { method: "email", minutes: 1440 } // 24 hours
+        ]
+      },
+      attendees: [
+        { email: "{client_email}", optional: false },
+        { email: "{agent_email}", optional: false },
+        { email: "company@email.com", optional: true }
+      ],
+      transparency: "opaque",
+      visibility: "private"
+    },
+    
+    client_meeting: {
+      summary: "Client Meeting - {client_name}",
+      description: "Meeting to discuss {property_types} in {locations}",
+      colorId: "2", // Green for meetings
+      duration: "1h"
+    }
+  },
+  
+  // Automatic Reminders System
+  reminders: {
+    beforeViewing: [
+      { time: "24h", method: "whatsapp", template: "viewing_reminder_24h" },
+      { time: "2h", method: "whatsapp", template: "viewing_reminder_2h" },
+      { time: "30m", method: "sms", template: "viewing_reminder_30m" }
+    ],
+    
+    afterViewing: [
+      { time: "1h", method: "whatsapp", template: "followup_thanks" },
+      { time: "24h", method: "email", template: "property_feedback" },
+      { time: "3d", method: "whatsapp", template: "followup_interest" }
+    ]
+  },
+  
+  // Sync Management
+  sync: {
+    bidirectional: true,
+    conflictResolution: "server_wins", // or "client_wins", "manual"
+    syncFrequency: "15m",
+    webhookForUpdates: true
+  }
+};
+```
+
+### **6. Google Tasks Integration**
+```javascript
+const GoogleTasksIntegration = {
+  // Task Creation Rules
+  autoCreateTasks: {
+    fromChatbot: {
+      conditions: [
+        "lead_score >= 60",
+        "client_requested_callback",
+        "viewing_scheduled",
+        "price_inquiry_without_response"
+      ],
+      templates: {
+        follow_up_call: {
+          title: "Follow-up call with {client_name}",
+          notes: "Client inquired about {property_types}. Lead score: {lead_score}",
+          due: "today 17:00"
+        },
+        send_details: {
+          title: "Send property details to {client_name}",
+          notes: "Property: {property_code}. Requested via {source}",
+          due: "today 12:00"
+        }
+      }
+    },
+    
+    fromViewings: {
+      conditions: [
+        "viewing_completed",
+        "viewing_cancelled",
+        "client_no_show"
+      ],
+      templates: {
+        feedback_followup: {
+          title: "Get feedback from {client_name}",
+          notes: "Viewed {property_code} on {viewing_date}",
+          due: "tomorrow 10:00"
+        }
+      }
+    }
+  },
+  
+  // Task Assignment System
+  assignment: {
+    autoAssign: true,
+    assignmentLogic: "round_robin", // or "load_based", "expertise_based"
+    defaultList: "Real Estate Tasks",
+    
+    lists: {
+      high_priority: {
+        color: "red",
+        defaultAssignee: "team_lead"
+      },
+      follow_ups: {
+        color: "yellow",
+        defaultAssignee: "assigned_agent"
+      },
+      admin_tasks: {
+        color: "blue",
+        defaultAssignee: "admin"
+      }
+    }
+  },
+  
+  // Due Date Management
+  dueDates: {
+    defaultOffset: "24h", // 24 hours from creation
+    priorityBased: {
+      high: "4h",
+      medium: "24h",
+      low: "72h"
+    },
+    
+    reminderSettings: {
+      enabled: true,
+      methods: ["notification", "email"],
+      timing: ["30m_before", "1h_before", "24h_before"]
+    }
+  },
+  
+  // Integration with Property System
+  propertyIntegration: {
+    linkTasksToProperties: true,
+    taskStatusUpdatesProperty: true,
+    completionTriggers: {
+      task_completed: "update_property_status",
+      all_tasks_completed: "mark_property_ready"
+    }
+  }
+};
+```
+
+---
+
+## **PHASE 4: AI & ANALYTICS**
+
+### **7. AI Agent Assignment Algorithm**
+```javascript
+class AgentAssignmentEngine {
+  constructor() {
+    this.weights = {
+      expertise: 0.35,     // 35%
+      availability: 0.25,  // 25%
+      performance: 0.20,   // 20%
+      proximity: 0.10,     // 10%
+      clientMatch: 0.10    // 10%
+    };
+  }
+
+  async assignAgent(property, client, agents) {
+    const scores = await Promise.all(
+      agents.map(async agent => {
+        const scoreBreakdown = {
+          expertise: await this.calculateExpertiseScore(agent, property),
+          availability: await this.calculateAvailabilityScore(agent),
+          performance: this.calculatePerformanceScore(agent),
+          proximity: await this.calculateProximityScore(agent, property),
+          clientMatch: this.calculateClientMatchScore(agent, client)
+        };
+
+        // Calculate weighted total
+        const totalScore = Object.keys(scoreBreakdown).reduce((sum, key) => {
+          return sum + (scoreBreakdown[key] * this.weights[key]);
+        }, 0);
+
+        return {
+          agentId: agent._id,
+          name: agent.name,
+          totalScore: parseFloat(totalScore.toFixed(2)),
+          breakdown: scoreBreakdown,
+          recommendation: this.getRecommendation(totalScore)
+        };
+      })
+    );
+
+    // Sort by score descending
+    return scores.sort((a, b) => b.totalScore - a.totalScore);
+  }
+
+  async calculateExpertiseScore(agent, property) {
+    let score = 0;
+    const maxScore = 100;
+    
+    // 1. Property Type Expertise (40 points)
+    const propertyTypeExpertise = agent.expertise?.propertyTypes || [];
+    if (propertyTypeExpertise.includes(property.specifications.propertyType)) {
+      score += 40;
+    } else if (propertyTypeExpertise.includes('general')) {
+      score += 20;
+    }
+    
+    // 2. Location Expertise (30 points)
+    const locationExpertise = agent.expertise?.locations || [];
+    const propertyLocation = `${property.emirate}-${property.community}`;
+    if (locationExpertise.includes(propertyLocation)) {
+      score += 30;
+    } else if (locationExpertise.includes(property.emirate)) {
+      score += 15;
+    }
+    
+    // 3. Price Range Expertise (20 points)
+    const priceRangeExpertise = agent.expertise?.priceRanges || [];
+    const propertyPrice = property.pricing.amount;
+    const matchingRange = priceRangeExpertise.find(range => 
+      propertyPrice >= range.min && propertyPrice <= range.max
+    );
+    if (matchingRange) score += 20;
+    
+    // 4. Client Type Expertise (10 points)
+    const clientTypeExpertise = agent.expertise?.clientTypes || [];
+    if (clientTypeExpertise.includes(property.client.type)) {
+      score += 10;
+    }
+    
+    return Math.min(score, maxScore) / maxScore; // Normalize to 0-1
+  }
+
+  async calculateAvailabilityScore(agent) {
+    const currentLoad = agent.assignedProperties?.length || 0;
+    const maxLoad = agent.maxProperties || 10;
+    const workloadRatio = 1 - (currentLoad / maxLoad);
+    
+    // Check calendar availability for next 3 days
+    const calendarAvailability = await this.checkCalendarAvailability(agent, 3);
+    
+    // Weighted average: 70% workload, 30% calendar
+    return (workloadRatio * 0.7) + (calendarAvailability * 0.3);
+  }
+
+  calculatePerformanceScore(agent) {
+    const performance = agent.performance || {};
+    
+    // Convert all metrics to 0-1 scale
+    const closureRate = (performance.closureRate || 0) / 100;
+    const responseTime = this.normalizeResponseTime(performance.avgResponseTime || 24);
+    const clientRating = (performance.avgClientRating || 0) / 5;
+    const dealSize = (performance.avgDealSize || 0) / 5000000; // Normalize to 5M AED max
+    
+    // Weighted average
+    return (closureRate * 0.4) + 
+           (responseTime * 0.3) + 
+           (clientRating * 0.2) + 
+           (dealSize * 0.1);
+  }
+
+  async calculateProximityScore(agent, property) {
+    // Using approximate distance calculation
+    const agentLocation = agent.location || { lat: 0, lng: 0 };
+    const propertyLocation = property.location?.coordinates || { lat: 0, lng: 0 };
+    
+    const distance = this.calculateDistance(agentLocation, propertyLocation);
+    
+    // Score based on distance (closer = higher score)
+    if (distance < 5) return 1.0;    // Within 5km
+    if (distance < 10) return 0.8;   // 5-10km
+    if (distance < 20) return 0.6;   // 10-20km
+    if (distance < 30) return 0.4;   // 20-30km
+    return 0.2;                      // >30km
+  }
+
+  calculateClientMatchScore(agent, client) {
+    if (!client) return 0.5; // Default score if no client data
+    
+    let score = 0;
+    
+    // Language match
+    const clientLanguage = client.preferredLanguage || 'en';
+    const agentLanguages = agent.languages || ['en'];
+    if (agentLanguages.includes(clientLanguage)) score += 0.3;
+    
+    // Previous interactions
+    const previousInteractions = agent.clientHistory?.filter(
+      ch => ch.clientId.toString() === client._id.toString()
+    ).length || 0;
+    if (previousInteractions > 0) score += 0.4;
+    
+    // Client rating of agent (if exists)
+    const clientRating = client.agentRatings?.find(
+      r => r.agentId.toString() === agent._id.toString()
+    )?.rating;
+    if (clientRating) score += (clientRating / 5) * 0.3;
+    
+    return Math.min(score, 1);
+  }
+
+  getRecommendation(score) {
+    if (score >= 0.8) return 'Highly Recommended';
+    if (score >= 0.6) return 'Recommended';
+    if (score >= 0.4) return 'Suitable';
+    return 'Not Recommended';
+  }
+}
+```
+
+### **8. Real-time Dashboard with UAE Market KPIs**
+```javascript
+const RealTimeDashboard = {
+  // Dashboard Layout Configuration
+  layout: {
+    gridColumns: 12,
+    rowHeight: 60,
+    breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480 },
+    widgets: {
+      resizable: true,
+      draggable: true,
+      savePosition: true
+    }
+  },
+
+  // UAE Market KPIs
+  kpis: {
+    // Core Business Metrics
+    monthlyDeals: {
+      title: { en: "Monthly Deals", ar: "الصفقات الشهرية" },
+      target: 15,
+      current: 12,
+      period: "month",
+      growth: "+8%",
+      calculation: "completed_deals / target * 100",
+      color: "#10B981", // Green
+      icon: "📊"
+    },
+
+    averageClosureTime: {
+      title: { en: "Avg Closure Time", ar: "متوسط وقت الإغلاق" },
+      target: "45 days",
+      current: "52 days",
+      trend: "-7 days",
+      calculation: "avg(deal_completion_date - deal_start_date)",
+      color: "#F59E0B", // Amber
+      icon: "⏱️"
+    },
+
+    whatsappLeadConversion: {
+      title: { en: "WhatsApp Conversion", ar: "تحويل واتساب" },
+      target: "25%",
+      current: "22%",
+      period: "month",
+      calculation: "whatsapp_deals / whatsapp_leads * 100",
+      color: "#3B82F6", // Blue
+      icon: "💬"
+    },
+
+    clientSatisfaction: {
+      title: { en: "Client Satisfaction", ar: "رضا العملاء" },
+      target: "4.8/5",
+      current: "4.6/5",
+      period: "quarter",
+      calculation: "avg(client_ratings)",
+      color: "#8B5CF6", // Purple
+      icon: "⭐"
+    },
+
+    // UAE-Specific Metrics
+    uaeMarketShare: {
+      title: { en: "UAE Market Share", ar: "الحصة السوقية في الإمارات" },
+      calculation: "company_deals / market_total_deals * 100",
+      breakdownByEmirate: true
+    },
+
+    propertyInventoryValue: {
+      title: { en: "Inventory Value", ar: "قيمة المخزون" },
+      calculation: "sum(property_prices)",
+      currency: "AED",
+      format: "1.2a" // 1.2M AED
+    }
+  },
+
+  // Emirates-wise Transaction Breakdown
+  emiratesAnalytics: {
+    data: [
+      {
+        emirate: "Dubai",
+        transactions: 1250,
+        avgPrice: "2.1M AED",
+        growth: "+12%",
+        marketShare: "65%",
+        topCommunities: ["Dubai Marina", "Palm Jumeirah", "Business Bay"]
+      },
+      {
+        emirate: "Abu Dhabi",
+        transactions: 890,
+        avgPrice: "1.8M AED",
+        growth: "+8%",
+        marketShare: "23%",
+        topCommunities: ["Yas Island", "Al Reem Island", "Saadiyat Island"]
+      },
+      {
+        emirate: "Sharjah",
+        transactions: 540,
+        avgPrice: "850K AED",
+        growth: "+5%",
+        marketShare: "12%",
+        topCommunities: ["Al Khan", "Al Majaz", "Al Taawun"]
+      }
+    ],
+
+    visualization: {
+      type: "map_chart", // UAE map with heat zones
+      colorScale: ["#E0F2FE", "#38BDF8", "#0EA5E9", "#0284C7"],
+      interactive: true,
+      tooltip: {
+        show: true,
+        template: "{emirate}: {transactions} transactions\nAvg: {avgPrice}"
+      }
+    }
+  },
+
+  // Property Type Analytics
+  propertyTypeAnalytics: {
+    data: {
+      categories: [
+        { type: "Apartment", percentage: 45, growth: "+12%", avgPrice: "1.2M AED" },
+        { type: "Villa", percentage: 30, growth: "+8%", avgPrice: "3.5M AED" },
+        { type: "Commercial", percentage: 15, growth: "+15%", avgPrice: "5.8M AED" },
+        { type: "Land", percentage: 10, growth: "+5%", avgPrice: "4.2M AED" }
+      ],
+
+      trends: {
+        monthly: {
+          apartments: [120, 135, 142, 158, 165, 172],
+          villas: [85, 88, 92, 95, 98, 102],
+          commercial: [45, 48, 52, 55, 58, 62],
+          land: [30, 32, 34, 36, 38, 40]
+        },
+
+        quarterlyGrowth: {
+          q1: "+8%",
+          q2: "+12%",
+          q3: "+15%",
+          q4: "+18%"
+        }
+      }
+    },
+
+    visualization: {
+      primary: "pie_chart",
+      secondary: "line_chart",
+      comparison: "year_over_year"
+    }
+  },
+
+  // Agent Performance Leaderboards
+  agentLeaderboard: {
+    metrics: [
+      "total_deals",
+      "deal_value",
+      "closure_rate",
+      "response_time",
+      "client_rating"
+    ],
+
+    ranking: {
+      period: "monthly",
+      updateFrequency: "realtime",
+      rewards: {
+        topPerformer: { badge: "🏆", bonus: true },
+        top3: { badge: "⭐", recognition: true },
+        mostImproved: { badge: "📈", recognition: true }
+      }
+    },
+
+    visualization: {
+      type: "ranking_table",
+      sortBy: "total_deals",
+      columns: [
+        { key: "rank", title: "Rank", width: 80 },
+        { key: "agent", title: "Agent", width: 150 },
+        { key: "deals", title: "Deals", width: 100, format: "number" },
+        { key: "value", title: "Value", width: 120, format: "currency:aed" },
+        { key: "closure", title: "Closure %", width: 100, format: "percent" },
+        { key: "rating", title: "Rating", width: 100, format: "star:5" }
+      ],
+
+      // Real-time updates
+      realtime: {
+        enabled: true,
+        updateInterval: 30000, // 30 seconds
+        highlightChanges: true
+      }
+    }
+  },
+
+  // Real-time Data Updates
+  realtime: {
+    enabled: true,
+    technologies: ["WebSocket", "Server-Sent Events"],
+    updateChannels: [
+      {
+        channel: "new_leads",
+        component: "lead_counter",
+        action: "increment
+
+
+Here's the comprehensive prompt for Replit Agent 3 to implement a complete tenancy contract workflow with tenant and landlord verification:
+
+---
+
+**Prompt for Replit Agent 3:**
+
+```
+I need to implement a comprehensive tenancy contract workflow system for my UAE-based real estate MERN stack application. This system must enforce complete verification of both tenant and landlord documents before allowing contract generation or signing meetings.
+
+## **TENANCY CONTRACT WORKFLOW SYSTEM**
+
+### **1. COMPLETE WORKFLOW OVERVIEW**
+```
+Tenant Application → Document Collection → Landlord Verification → 
+Contract Generation → e-Signing → Ejari Registration → Handover
+```
+
+### **2. TENANT VERIFICATION REQUIREMENTS (6 MANDATORY ITEMS)**
+
+**Database Schema for Tenant Verification:**
+```javascript
+const TenantVerificationSchema = {
+  // Basic Information
+  tenantId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  propertyId: { type: Schema.Types.ObjectId, ref: 'Property', required: true },
+  applicationDate: { type: Date, default: Date.now },
+  applicationStatus: {
+    type: String,
+    enum: ['draft', 'submitted', 'under_review', 'approved', 'rejected'],
+    default: 'draft'
+  },
+  
+  // 6 MANDATORY ITEMS WITH VALIDATION
+  mandatoryDocuments: {
+    // 1. Mobile Number (UAE Format Validation)
+    mobile: {
+      number: {
+        type: String,
+        required: [true, 'Mobile number is required'],
+        validate: {
+          validator: function(v) {
+            // UAE mobile format: +9715XXXXXXXX or 05XXXXXXXX
+            return /^(?:\+971|0)5[0-9]{8}$/.test(v);
+          },
+          message: 'Please provide a valid UAE mobile number'
+        }
+      },
+      verified: { type: Boolean, default: false },
+      verificationMethod: {
+        type: String,
+        enum: ['sms_otp', 'whatsapp', 'call', null],
+        default: null
+      },
+      verificationDate: Date
+    },
+    
+    // 2. Email Address
+    email: {
+      address: {
+        type: String,
+        required: [true, 'Email is required'],
+        lowercase: true,
+        validate: {
+          validator: function(v) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+          },
+          message: 'Please provide a valid email address'
+        }
+      },
+      verified: { type: Boolean, default: false },
+      verificationDate: Date
+    },
+    
+    // 3. Emirates ID (With OCR Validation)
+    emiratesId: {
+      number: {
+        type: String,
+        required: [true, 'Emirates ID is required'],
+        validate: {
+          validator: function(v) {
+            // UAE Emirates ID format: 784-XXXX-XXXXXXX-X
+            return /^784-\d{4}-\d{7}-\d{1}$/.test(v);
+          },
+          message: 'Please provide a valid Emirates ID (784-XXXX-XXXXXXX-X)'
+        }
+      },
+      frontImage: {
+        url: String,
+        uploadDate: Date,
+        verifiedBy: String,
+        ocrData: {
+          extractedNumber: String,
+          expiryDate: Date,
+          name: String,
+          nationality: String,
+          confidence: Number
+        }
+      },
+      backImage: {
+        url: String,
+        uploadDate: Date
+      },
+      expiryDate: Date,
+      verified: { type: Boolean, default: false },
+      verificationDate: Date
+    },
+    
+    // 4. Passport Copy (Pages 1 & 2 with Signature)
+    passport: {
+      // Passport Details
+      number: {
+        type: String,
+        required: [true, 'Passport number is required'],
+        uppercase: true
+      },
+      nationality: String,
+      expiryDate: Date,
+      
+      // Required Pages with Signature Validation
+      pages: {
+        page1: {  // Bio-data page
+          url: String,
+          uploadDate: Date,
+          hasSignature: { type: Boolean, default: false },
+          signatureValidated: { type: Boolean, default: false },
+          ocrData: {
+            passportNumber: String,
+            name: String,
+            nationality: String,
+            dateOfBirth: Date,
+            issueDate: Date,
+            expiryDate: Date
+          }
+        },
+        page2: {  // Signature page
+          url: String,
+          uploadDate: Date,
+          signaturePresent: { type: Boolean, default: false },
+          signatureMatchesPage1: { type: Boolean, default: false }
+        },
+        visaPage: {  // UAE Residence Visa
+          url: String,
+          uploadDate: Date
+        }
+      },
+      
+      verified: { type: Boolean, default: false },
+      verificationNotes: String
+    },
+    
+    // 5. UAE Residence Permit (Tasreeh/Aiqama)
+    residencePermit: {
+      number: {
+        type: String,
+        required: [true, 'Residence permit number is required']
+      },
+      type: {
+        type: String,
+        enum: ['employment', 'family', 'investor', 'student', 'retirement'],
+        required: true
+      },
+      sponsorName: String,
+      expiryDate: {
+        type: Date,
+        required: true
+      },
+      document: {
+        url: String,
+        uploadDate: Date,
+        verifiedBy: String
+      },
+      verified: { type: Boolean, default: false },
+      daysToExpiry: {  // Calculated field
+        type: Number,
+        default: function() {
+          return Math.floor((this.expiryDate - new Date()) / (1000 * 60 * 60 * 24));
+        }
+      }
+    },
+    
+    // 6. Bank Account & Cheque Book Confirmation
+    bankDetails: {
+      bankName: {
+        type: String,
+        required: [true, 'Bank name is required'],
+        enum: ['Emirates NBD', 'Mashreq', 'ADCB', 'DIB', 'RAKBANK', 
+               'CBD', 'ENBD', 'FAB', 'Other']
+      },
+      accountNumber: {
+        type: String,
+        required: [true, 'Account number is required'],
+        minlength: [10, 'Account number must be at least 10 digits']
+      },
+      iban: {
+        type: String,
+        required: [true, 'IBAN is required'],
+        validate: {
+          validator: function(v) {
+            // UAE IBAN format: AEXX XXXX XXXX XXXX XXXX XXXX
+            return /^AE\d{2}[A-Z]{4}\d{16}$/.test(v.replace(/\s/g, ''));
+          },
+          message: 'Please provide a valid UAE IBAN'
+        }
+      },
+      chequeBook: {
+        confirmed: { type: Boolean, default: false },
+        confirmationMethod: {
+          type: String,
+          enum: ['bank_letter', 'cheque_copy', 'bank_statement', 'bank_verification_call', null]
+        },
+        document: {
+          url: String,
+          uploadDate: Date
+        },
+        verifiedBy: String
+      },
+      verificationLetter: {
+        url: String,
+        uploadDate: Date,
+        issuedDate: Date
+      },
+      verified: { type: Boolean, default: false }
+    }
+  },
+  
+  // Additional Tenant Information
+  tenantInfo: {
+    employmentDetails: {
+      companyName: String,
+      designation: String,
+      salary: Number,
+      salaryCertificate: { url: String, verified: Boolean }
+    },
+    previousAddress: {
+      address: String,
+      emirate: String,
+      landlordContact: String,
+      tenancyContract: { url: String }
+    },
+    familyMembers: [{
+      name: String,
+      relation: String,
+      emiratesId: String,
+      passportNumber: String
+    }]
+  },
+  
+  // Verification Status Tracking
+  verificationStatus: {
+    documentsComplete: { type: Boolean, default: false },
+    documentsVerified: { type: Boolean, default: false },
+    backgroundCheck: {
+      status: { type: String, enum: ['pending', 'in_progress', 'passed', 'failed'] },
+      conductedBy: String,
+      conductedDate: Date,
+      notes: String
+    },
+    approvalLevels: {
+      agentApproval: { approved: Boolean, approvedBy: String, date: Date },
+      managerApproval: { approved: Boolean, approvedBy: String, date: Date },
+      finalApproval: { approved: Boolean, approvedBy: String, date: Date }
+    }
+  },
+  
+  // Timestamps
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: Date,
+  submittedAt: Date,
+  approvedAt: Date
+};
+```
+
+### **3. LANDLORD VERIFICATION REQUIREMENTS**
+
+**Database Schema for Landlord Verification:**
+```javascript
+const LandlordVerificationSchema = {
+  landlordId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  propertyId: { type: Schema.Types.ObjectId, ref: 'Property', required: true },
+  
+  // Mandatory Landlord Documents
+  mandatoryDocuments: {
+    // 1. Title Deed (Proof of Ownership)
+    titleDeed: {
+      deedNumber: {
+        type: String,
+        required: [true, 'Title deed number is required'],
+        uppercase: true
+      },
+      issueDate: Date,
+      issuedBy: { type: String, enum: ['DLD', 'Dubai Land Department', 'Other'] },
+      document: {
+        url: String,
+        uploadDate: Date,
+        verifiedBy: String,
+        ocrData: {
+          propertyNumber: String,
+          ownerName: String,
+          location: String,
+          area: Number
+        }
+      },
+      verified: { type: Boolean, default: false }
+    },
+    
+    // 2. Passport Copy
+    passport: {
+      number: String,
+      nationality: String,
+      expiryDate: Date,
+      document: {
+        url: String,
+        uploadDate: Date,
+        verifiedBy: String
+      },
+      verified: { type: Boolean, default: false }
+    },
+    
+    // 3. Latest DEWA Bill (Utility Proof)
+    dewaBill: {
+      accountNumber: {
+        type: String,
+        required: [true, 'DEWA account number is required']
+      },
+      billDate: Date,
+      amount: Number,
+      consumption: String,
+      document: {
+        url: String,
+        uploadDate: Date,
+        verifiedBy: String,
+        ocrData: {
+          accountNumber: String,
+          customerName: String,
+          propertyAddress: String
+        }
+      },
+      verified: { type: Boolean, default: false }
+    },
+    
+    // 4. Emirates ID (if UAE Resident)
+    emiratesId: {
+      number: String,
+      expiryDate: Date,
+      document: { url: String, uploadDate: Date },
+      verified: { type: Boolean, default: false }
+    },
+    
+    // 5. NOC from Mortgage Bank (if property mortgaged)
+    nocFromBank: {
+      required: { type: Boolean, default: false },
+      bankName: String,
+      nocNumber: String,
+      expiryDate: Date,
+      document: { url: String, uploadDate: Date },
+      verified: { type: Boolean, default: false }
+    }
+  },
+  
+  // Property Vacancy Status
+  vacancyStatus: {
+    currentStatus: {
+      type: String,
+      enum: ['occupied', 'vacant', 'will_be_vacant'],
+      required: true
+    },
+    
+    // If currently occupied
+    currentTenant: {
+      name: String,
+      contractEndDate: Date,
+      noticeGiven: Boolean,
+      noticePeriodDays: Number,
+      expectedVacantDate: Date
+    },
+    
+    // If will be vacant
+    futureVacancy: {
+      vacantFrom: Date,
+      reason: { type: String, enum: ['contract_end', 'tenant_leaving', 'renovation'] },
+      confirmedByTenant: Boolean,
+      handoverDate: Date
+    },
+    
+    // Property Condition
+    propertyCondition: {
+      needsRepair: Boolean,
+      repairItems: [String],
+      lastMaintenanceDate: Date,
+      photos: [String]
+    },
+    
+    verified: { type: Boolean, default: false }
+  },
+  
+  // Permission to Rent with Our Company
+  companyAuthorization: {
+    authorized: { type: Boolean, default: false },
+    authorizationLetter: {
+      url: String,
+      uploadDate: Date,
+      signedDate: Date,
+      expiryDate: Date
+    },
+    termsAccepted: {
+      commission: { type: Number, default: 5 }, // 5% default
+      managementFee: Number,
+      duration: { type: Number, default: 12 }, // 12 months
+      acceptedDate: Date
+    },
+    verified: { type: Boolean, default: false }
+  },
+  
+  // Verification Status
+  verificationStatus: {
+    documentsComplete: { type: Boolean, default: false },
+    documentsVerified: { type: Boolean, default: false },
+    propertyInspection: {
+      scheduled: Boolean,
+      date: Date,
+      conductedBy: String,
+      report: String
+    },
+    approved: { type: Boolean, default: false }
+  },
+  
+  // Timestamps
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: Date
+};
+```
+
+### **4. APPLICATION STATUS WORKFLOW ENGINE**
+
+```javascript
+const ApplicationWorkflow = {
+  stages: [
+    {
+      stage: 1,
+      name: { en: 'Tenant Application', ar: 'طلب المستأجر' },
+      status: 'pending',
+      requirements: ['tenant_profile_complete', 'property_selected'],
+      nextStage: 'document_collection'
+    },
+    {
+      stage: 2,
+      name: { en: 'Document Collection', ar: 'جمع المستندات' },
+      status: 'in_progress',
+      requirements: [
+        'tenant_documents_uploaded',
+        'landlord_documents_uploaded'
+      ],
+      validationRules: {
+        tenant: 'all_6_items_present',
+        landlord: 'all_4_items_present'
+      },
+      nextStage: 'verification'
+    },
+    {
+      stage: 3,
+      name: { en: 'Verification', ar: 'التحقق' },
+      status: 'pending',
+      requirements: [
+        'mobile_verified',
+        'email_verified',
+        'emirates_id_valid',
+        'passport_valid',
+        'residence_permit_valid',
+        'bank_confirmed',
+        'title_deed_valid',
+        'dewa_bill_valid',
+        'vacancy_confirmed'
+      ],
+      nextStage: 'approval'
+    },
+    {
+      stage: 4,
+      name: { en: 'Approval', ar: 'الموافقة' },
+      status: 'pending',
+      requirements: [
+        'agent_approval',
+        'manager_approval',
+        'landlord_final_approval'
+      ],
+      nextStage: 'contract_generation'
+    },
+    {
+      stage: 5,
+      name: { en: 'Contract Generation', ar: 'إنشاء العقد' },
+      status: 'locked', // Locked until all previous stages complete
+      requirements: ['all_stages_complete'],
+      nextStage: 'signing'
+    }
+  ],
+  
+  // Validation Functions
+  validators: {
+    checkTenantDocumentsComplete: (tenantVerification) => {
+      const docs = tenantVerification.mandatoryDocuments;
+      return docs.mobile.number && 
+             docs.email.address && 
+             docs.emiratesId.number &&
+             docs.passport.number &&
+             docs.residencePermit.number &&
+             docs.bankDetails.accountNumber;
+    },
+    
+    checkLandlordDocumentsComplete: (landlordVerification) => {
+      const docs = landlordVerification.mandatoryDocuments;
+      return docs.titleDeed.deedNumber &&
+             docs.passport.number &&
+             docs.dewaBill.accountNumber &&
+             landlordVerification.vacancyStatus.currentStatus &&
+             landlordVerification.companyAuthorization.authorized;
+    },
+    
+    // Check if tenant can request contract
+    canRequestContract: (tenantVerification, landlordVerification) => {
+      const tenantComplete = this.validators.checkTenantDocumentsComplete(tenantVerification);
+      const landlordComplete = this.validators.checkLandlordDocumentsComplete(landlordVerification);
+      
+      // Check all verifications are true
+      const tenantVerified = 
+        tenantVerification.mandatoryDocuments.mobile.verified &&
+        tenantVerification.mandatoryDocuments.email.verified &&
+        tenantVerification.mandatoryDocuments.emiratesId.verified &&
+        tenantVerification.mandatoryDocuments.passport.verified &&
+        tenantVerification.mandatoryDocuments.residencePermit.verified &&
+        tenantVerification.mandatoryDocuments.bankDetails.verified;
+      
+      const landlordVerified =
+        landlordVerification.mandatoryDocuments.titleDeed.verified &&
+        landlordVerification.mandatoryDocuments.passport.verified &&
+        landlordVerification.mandatoryDocuments.dewaBill.verified &&
+        landlordVerification.vacancyStatus.verified &&
+        landlordVerification.companyAuthorization.verified;
+      
+      return tenantComplete && landlordComplete && tenantVerified && landlordVerified;
+    }
+  }
+};
+```
+
+### **5. FRONTEND IMPLEMENTATION - TENANT DASHBOARD**
+
+**Component: TenantApplicationForm.js**
+```javascript
+const TenantApplicationForm = () => {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [documents, setDocuments] = useState({
+    mobile: { number: '', verified: false },
+    email: { address: '', verified: false },
+    emiratesId: { 
+      number: '', 
+      frontImage: null, 
+      backImage: null, 
+      verified: false 
+    },
+    passport: {
+      number: '',
+      page1: null,
+      page2: null,
+      visaPage: null,
+      verified: false
+    },
+    residencePermit: {
+      number: '',
+      document: null,
+      verified: false
+    },
+    bankDetails: {
+      bankName: '',
+      accountNumber: '',
+      iban: '',
+      chequeBookConfirmed: false,
+      verificationLetter: null,
+      verified: false
+    }
+  });
+  
+  // Progress Calculation
+  const calculateProgress = () => {
+    const totalItems = 6;
+    const completedItems = Object.values(documents).filter(
+      doc => doc.verified
+    ).length;
+    return (completedItems / totalItems) * 100;
+  };
+  
+  // OTP Verification for Mobile
+  const verifyMobile = async (mobileNumber) => {
+    // Send OTP via SMS
+    const response = await axios.post('/api/verification/send-otp', {
+      mobile: mobileNumber,
+      type: 'mobile_verification'
+    });
+    
+    // Show OTP input modal
+    const otp = await showOTPModal();
+    
+    // Verify OTP
+    const verification = await axios.post('/api/verification/verify-otp', {
+      mobile: mobileNumber,
+      otp: otp
+    });
+    
+    if (verification.data.verified) {
+      setDocuments(prev => ({
+        ...prev,
+        mobile: { ...prev.mobile, verified: true }
+      }));
+    }
+  };
+  
+  // Emirates ID OCR Upload
+  const handleEmiratesIdUpload = async (file, side) => {
+    const formData = new FormData();
+    formData.append('emiratesId', file);
+    formData.append('side', side);
+    
+    const response = await axios.post('/api/documents/upload-emirates-id', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    
+    // Extract data via OCR
+    if (response.data.ocrData) {
+      setDocuments(prev => ({
+        ...prev,
+        emiratesId: {
+          ...prev.emiratesId,
+          number: response.data.ocrData.extractedNumber,
+          verified: response.data.ocrData.confidence > 0.9
+        }
+      }));
+    }
+  };
+  
+  // Passport Signature Validation
+  const validatePassportSignature = async (page1File, page2File) => {
+    // Compare signatures between pages
+    const response = await axios.post('/api/documents/validate-passport-signature', {
+      page1: page1File,
+      page2: page2File
+    });
+    
+    return response.data.signatureMatches;
+  };
+  
+  // Bank Verification Process
+  const verifyBankAccount = async (bankDetails) => {
+    // Method 1: Upload bank verification letter
+    // Method 2: Upload cheque copy
+    // Method 3: Bank statement with account number visible
+    
+    const response = await axios.post('/api/bank/verify-account', {
+      bankName: bankDetails.bankName,
+      accountNumber: bankDetails.accountNumber,
+      iban: bankDetails.iban,
+      verificationMethod: 'document_upload'
+    });
+    
+    return response.data.verified;
+  };
+  
+  // Check if contract can be requested
+  const canRequestContract = () => {
+    return calculateProgress() === 100;
+  };
+  
+  return (
+    <div className="tenant-application-container">
+      {/* Progress Tracker */}
+      <div className="progress-tracker">
+        <div className="progress-bar" style={{ width: `${calculateProgress()}%` }} />
+        <div className="steps">
+          {['Mobile', 'Email', 'Emirates ID', 'Passport', 'Residence Permit', 'Bank Details'].map((step, index) => (
+            <div key={index} className={`step ${documents[Object.keys(documents)[index]]?.verified ? 'completed' : ''}`}>
+              <div className="step-number">{index + 1}</div>
+              <div className="step-label">{step}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      {/* Document Upload Sections */}
+      {currentStep === 1 && (
+        <MobileVerificationSection
+          mobile={documents.mobile}
+          onVerify={verifyMobile}
+          onComplete={() => setCurrentStep(2)}
+        />
+      )}
+      
+      {currentStep === 2 && (
+        <EmailVerificationSection
+          email={documents.email}
+          onVerify={verifyEmail}
+          onComplete={() => setCurrentStep(3)}
+        />
+      )}
+      
+      {currentStep === 3 && (
+        <EmiratesIdSection
+          emiratesId={documents.emiratesId}
+          onUpload={handleEmiratesIdUpload}
+          onComplete={() => setCurrentStep(4)}
+        />
+      )}
+      
+      {/* ... Other sections ... */}
+      
+      {/* Contract Request Button (Only enabled when all verified) */}
+      <div className="contract-request-section">
+        <button
+          className="request-contract-btn"
+          disabled={!canRequestContract()}
+          onClick={() => handleContractRequest()}
+        >
+          {canRequestContract() ? 'Request Tenancy Contract' : 'Complete All Documents First'}
+        </button>
+        
+        {!canRequestContract() && (
+          <div className="requirements-list">
+            <h4>Pending Requirements:</h4>
+            <ul>
+              {!documents.mobile.verified && <li>Mobile verification pending</li>}
+              {!documents.email.verified && <li>Email verification pending</li>}
+              {!documents.emiratesId.verified && <li>Emirates ID verification pending</li>}
+              {!documents.passport.verified && <li>Passport verification pending</li>}
+              {!documents.residencePermit.verified && <li>Residence permit verification pending</li>}
+              {!documents.bankDetails.verified && <li>Bank account verification pending</li>}
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+```
+
+### **6. LANDLORD PORTAL IMPLEMENTATION**
+
+**Component: LandlordVerificationPortal.js**
+```javascript
+const LandlordVerificationPortal = ({ propertyId }) => {
+  const [landlordDocs, setLandlordDocs] = useState({
+    titleDeed: { uploaded: false, verified: false },
+    passport: { uploaded: false, verified: false },
+    dewaBill: { uploaded: false, verified: false },
+    vacancyStatus: { confirmed: false, verified: false },
+    companyAuthorization: { agreed: false, signed: false }
+  });
+  
+  const [vacancyDetails, setVacancyDetails] = useState({
+    currentStatus: '',
+    vacantFrom: null,
+    handoverDate: null,
+    propertyCondition: ''
+  });
+  
+  // Title Deed OCR Processing
+  const handleTitleDeedUpload = async (file) => {
+    const formData = new FormData();
+    formData.append('titleDeed', file);
+    
+    const response = await axios.post('/api/documents/upload-title-deed', formData);
+    
+    if (response.data.ocrData) {
+      // Auto-fill property details from title deed
+      updatePropertyDetails(response.data.ocrData);
+      
+      setLandlordDocs(prev => ({
+        ...prev,
+        titleDeed: { ...prev.titleDeed, uploaded: true, verified: true }
+      }));
+    }
+  };
+  
+  // DEWA Bill Validation
+  const validateDEWABill = async (billFile) => {
+    // Check bill date is within last 3 months
+    // Verify property address matches
+    // Extract account number via OCR
+    
+    const response = await axios.post('/api/documents/validate-dewa-bill', {
+      bill: billFile,
+      propertyId: propertyId
+    });
+    
+    return response.data.valid;
+  };
+  
+  // Vacancy Status Confirmation
+  const confirmVacancyStatus = async (status, details) => {
+    if (status === 'will_be_vacant') {
+      // Require vacancy date
+      if (!details.vacantFrom) {
+        throw new Error('Please provide vacant from date');
+      }
+      
+      // If currently occupied, require notice period confirmation
+      if (details.currentTenant) {
+        const confirmed = await confirmNoticePeriod(details.currentTenant);
+        if (!confirmed) return false;
+      }
+    }
+    
+    setVacancyDetails(details);
+    setLandlordDocs(prev => ({
+      ...prev,
+      vacancyStatus: { ...prev.vacancyStatus, confirmed: true }
+    }));
+    
+    return true;
+  };
+  
+  // Company Authorization Agreement
+  const handleCompanyAuthorization = async (terms) => {
+    // Generate authorization letter
+    const letterUrl = await generateAuthorizationLetter(terms);
+    
+    // Send for e-signature
+    const signed = await requestESignature(letterUrl, landlordEmail);
+    
+    if (signed) {
+      setLandlordDocs(prev => ({
+        ...prev,
+        companyAuthorization: { ...prev.companyAuthorization, agreed: true, signed: true }
+      }));
+    }
+  };
+  
+  // Check if landlord can approve tenant
+  const canApproveTenant = () => {
+    return Object.values(landlordDocs).every(doc => 
+      doc.verified || (doc.confirmed && doc.agreed)
+    );
+  };
+  
+  return (
+    <div className="landlord-portal">
+      <h2>Landlord Verification Portal</h2>
+      <p>Complete these steps to approve tenancy application</p>
+      
+      {/* Document Checklist */}
+      <div className="landlord-checklist">
+        <ChecklistItem
+          title="1. Upload Title Deed"
+          description="Property ownership proof (DLD issued)"
+          completed={landlordDocs.titleDeed.verified}
+          component={
+            <TitleDeedUploader
+              onUpload={handleTitleDeedUpload}
+              propertyId={propertyId}
+            />
+          }
+        />
+        
+        <ChecklistItem
+          title="2. Upload Passport Copy"
+          description="Clear copy of passport bio page"
+          completed={landlordDocs.passport.verified}
+          component={<PassportUploader />}
+        />
+        
+        <ChecklistItem
+          title="3. Latest DEWA Bill"
+          description="Bill from last 3 months showing property address"
+          completed={landlordDocs.dewaBill.verified}
+          component={<DEWABillUploader onValidate={validateDEWABill} />}
+        />
+        
+        <ChecklistItem
+          title="4. Confirm Vacancy Status"
+          description="Is the property currently vacant or when will it be available?"
+          completed={landlordDocs.vacancyStatus.confirmed}
+          component={
+            <VacancyStatusForm
+              onSubmit={confirmVacancyStatus}
+              propertyId={propertyId}
+            />
+          }
+        />
+        
+        <ChecklistItem
+          title="5. Authorize Our Company"
+          description="Sign authorization letter and agree to terms"
+          completed={landlordDocs.companyAuthorization.signed}
+          component={
+            <CompanyAuthorizationForm
+              onAgree={handleCompanyAuthorization}
+              propertyId={propertyId}
+            />
+          }
+        />
+      </div>
+      
+      {/* Tenant Approval Section */}
+      <div className="tenant-approval-section">
+        <h3>Tenant Application Approval</h3>
+        <TenantApplicationPreview tenantId={tenantId} />
+        
+        <button
+          className="approve-tenant-btn"
+          disabled={!canApproveTenant()}
+          onClick={() => approveTenantApplication()}
+        >
+          {canApproveTenant() ? 'Approve Tenant & Generate Contract' : 'Complete All Requirements First'}
+        </button>
+        
+        {!canApproveTenant() && (
+          <div className="pending-requirements">
+            <h4>Pending Landlord Requirements:</h4>
+            <ul>
+              {!landlordDocs.titleDeed.verified && <li>Title deed upload required</li>}
+              {!landlordDocs.passport.verified && <li>Passport copy required</li>}
+              {!landlordDocs.dewaBill.verified && <li>DEWA bill required</li>}
+              {!landlordDocs.vacancyStatus.confirmed && <li>Vacancy status confirmation required</li>}
+              {!landlordDocs.companyAuthorization.signed && <li>Company authorization required</li>}
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+```
+
+### **7. BACKEND VALIDATION & WORKFLOW MANAGEMENT**
+
+**API Endpoints:**
+```javascript
+// Tenant Verification Routes
+POST    /api/tenant/application                // Start new application
+POST    /api/tenant/upload-document/:type     // Upload specific document
+GET     /api/tenant/application/:id           // Get application status
+POST    /api/tenant/verify-mobile             // Verify mobile with OTP
+POST    /api/tenant/verify-email              // Verify email
+POST    /api/tenant/validate-documents        // Validate all documents
+POST    /api/tenant/request-contract          // Request contract generation
+
+// Landlord Verification Routes
+POST    /api/landlord/start-verification      // Start landlord verification
+POST    /api/landlord/upload-document/:type   // Upload landlord document
+POST    /api/landlord/confirm-vacancy         // Confirm vacancy status
+POST    /api/landlord/authorize-company       // Authorize company
+POST    /api/landlord/approve-tenant          // Approve tenant application
+
+// Document Processing Routes
+POST    /api/documents/ocr-process            // OCR processing for IDs
+POST    /api/documents/validate-signature     // Signature validation
+POST    /api/documents/extract-bank-info      // Extract bank details
+
+// Contract Management
+POST    /api/contract/generate                // Generate tenancy contract
+POST    /api/contract/send-for-signing        // Send for e-signature
+GET     /api/contract/status/:id              // Check signing status
+POST    /api/contract/ejari-register          // Register with Ejari
+```
+
+**Validation Middleware:**
+```javascript
+const validateTenantForContract = async (req, res, next) => {
+  const { tenantId, propertyId } = req.body;
+  
+  try {
+    // Check tenant verification
+    const tenantVerification = await TenantVerification.findOne({
+      tenantId,
+      propertyId
+    });
+    
+    if (!tenantVerification) {
+      return res.status(400).json({
+        error: 'Tenant application not found'
+      });
+    }
+    
+    // Check all 6 items are verified
+    const docs = tenantVerification.mandatoryDocuments;
+    const allVerified = 
+      docs.mobile.verified &&
+      docs.email.verified &&
+      docs.emiratesId.verified &&
+      docs.passport.verified &&
+      docs.residencePermit.verified &&
+      docs.bankDetails.verified;
+    
+    if (!allVerified) {
+      return res.status(400).json({
+        error: 'All tenant documents must be verified',
+        pending: {
+          mobile: !docs.mobile.verified,
+          email: !docs.email.verified,
+          emiratesId: !docs.emiratesId.verified,
+          passport: !docs.passport.verified,
+          residencePermit: !docs.residencePermit.verified,
+          bank: !docs.bankDetails.verified
+        }
+      });
+    }
+    
+    // Check landlord verification
+    const landlordVerification = await LandlordVerification.findOne({
+      propertyId
+    });
+    
+    if (!landlordVerification || !landlordVerification.verificationStatus.approved) {
+      return res.status(400).json({
+        error: 'Landlord verification pending'
+      });
+    }
+    
+    // Check vacancy status
+    if (landlordVerification.vacancyStatus.currentStatus === 'occupied') {
+      const vacantFrom = landlordVerification.vacancyStatus.futureVacancy?.vacantFrom;
+      if (!vacantFrom || vacantFrom > new Date()) {
+        return res.status(400).json({
+          error: 'Property not available for given dates'
+        });
+      }
+    }
+    
+    // All checks passed
+    req.tenantVerification = tenantVerification;
+    req.landlordVerification = landlordVerification;
+    next();
+    
+  } catch (error) {
+    res.status(500).json({ error: 'Validation failed', details: error.message });
+  }
+};
+```
+
+### **8. CONTRACT GENERATION WORKFLOW**
+
+**Contract Generation Process:**
+```javascript
+const generateTenancyContract = async (tenantVerification, landlordVerification, property) => {
+  // 1. Gather all verified data
+  const contractData = {
+    // Tenant Information
+    tenant: {
+      name: tenantVerification.tenantInfo.fullName,
+      mobile: tenantVerification.mandatoryDocuments.mobile.number,
+      email: tenantVerification.mandatoryDocuments.email.address,
+      emiratesId: tenantVerification.mandatoryDocuments.emiratesId.number,
+      passport: tenantVerification.mandatoryDocuments.passport.number,
+      residencePermit: tenantVerification.mandatoryDocuments.residencePermit.number,
+      bankDetails: tenantVerification.mandatoryDocuments.bankDetails
+    },
+    
+    // Landlord Information
+    landlord: {
+      name: landlordVerification.landlordInfo.fullName,
+      passport: landlordVerification.mandatoryDocuments.passport.number,
+      titleDeed: landlordVerification.mandatoryDocuments.titleDeed.deedNumber
+    },
+    
+    // Property Information
+    property: {
+      address: property.fullAddress,
+      type: property.specifications.propertyType,
+      area: property.specifications.builtUpArea,
+      dewaAccount: landlordVerification.mandatoryDocuments.dewaBill.accountNumber
+    },
+    
+    // Contract Terms
+    terms: {
+      startDate: landlordVerification.vacancyStatus.futureVacancy?.vacantFrom || new Date(),
+      duration: 12, // months
+      rentAmount: property.pricing.amount,
+      paymentFrequency: property.pricing.paymentTerms.rental[0],
+      securityDeposit: property.pricing.amount * 1, // 1 month rent
+      agencyCommission: landlordVerification.companyAuthorization.terms.commission
+    },
+    
+    // Legal Clauses (UAE Specific)
+    legalClauses: {
+      ejariRegistration: 'Both parties agree to register contract with Ejari',
+      dewaTransfer: 'Tenant responsible for DEWA transfer and bills',
+      maintenance: 'Landlord responsible for major maintenance',
+      earlyTermination: '2 months notice or 2 months rent penalty'
+    }
+  };
+  
+  // 2. Generate contract PDF
+  const contractPdf = await generateContractPDF(contractData);
+  
+  // 3. Create contract record
+  const contract = await Contract.create({
+    tenantId: tenantVerification.tenantId,
+    landlordId: landlordVerification.landlordId,
+    propertyId: property._id,
+    contractData: contractData,
+    pdfUrl: contractPdf.url,
+    status: 'generated',
+    generatedAt: new Date()
+  });
+  
+  // 4. Send for e-signature
+  const signingSession = await initiateESignature(contractPdf.url, [
+    { email: tenantVerification.mandatoryDocuments.email.address, role: 'tenant' },
+    { email: landlordVerification.landlordInfo.email, role: 'landlord' },
+    { email: 'company@realestate.ae', role: 'witness' }
+  ]);
+  
+  // 5. Update contract with signing info
+  contract.signingSessionId = signingSession.id;
+  contract.signingStatus = 'pending';
+  await contract.save();
+  
+  return contract;
+};
+```
+Here's the comprehensive inventory management system for the company owner:
+
+---
+
+**Prompt for Replit Agent 3:**
+
+```
+I need to implement an exclusive inventory management system for my UAE real estate company owner. This should be a comprehensive system to track all properties across different statuses with advanced analytics and management features.
+
+## **OWNER-EXCLUSIVE INVENTORY MANAGEMENT SYSTEM**
+
+### **1. SYSTEM OVERVIEW**
+```
+Real-time property tracking across:
+• Available for Rent
+• Available for Sale  
+• Occupied by Tenants
+• Owner-Occupied
+• Future Availability (Pre-leased/Pre-sold)
+• Under Maintenance
+• Off-Market
+```
+
+### **2. EXCLUSIVE ACCESS CONTROL**
+```javascript
+// Owner-Exclusive Middleware
+const ownerOnlyAccess = (req, res, next) => {
+  if (req.user.role !== 'owner') {
+    return res.status(403).json({
+      error: 'Access Denied',
+      message: 'This feature is exclusively for company owner',
+      requiredRole: 'owner',
+      userRole: req.user.role
+    });
+  }
+  next();
+};
+
+// Routes Protection
+app.get('/api/owner/inventory/*', ownerOnlyAccess);
+app.post('/api/owner/inventory/*', ownerOnlyAccess);
+app.put('/api/owner/inventory/*', ownerOnlyAccess);
+app.delete('/api/owner/inventory/*', ownerOnlyAccess);
+```
+
+### **3. COMPREHENSIVE INVENTORY SCHEMA**
+
+```javascript
+const InventorySchema = {
+  // Core Property Information
+  propertyId: { type: Schema.Types.ObjectId, ref: 'Property', required: true },
+  inventoryCode: { type: String, unique: true, required: true }, // INV-DXB-001
+  
+  // Inventory Status Categories
+  category: {
+    type: String,
+    enum: [
+      'available_rent',
+      'available_sale', 
+      'tenant_occupied',
+      'owner_occupied',
+      'future_available',
+      'under_maintenance',
+      'off_market',
+      'reserved',
+      'under_contract'
+    ],
+    required: true
+  },
+  
+  // Detailed Status Tracking
+  statusDetails: {
+    // For Available Properties
+    available: {
+      listedDate: Date,
+      listingPrice: {
+        rent: { monthly: Number, annually: Number },
+        sale: Number
+      },
+      marketingChannels: [{
+        platform: { type: String, enum: ['propertyfinder', 'dubizzle', 'bayut', 'company_website'] },
+        listingId: String,
+        views: Number,
+        inquiries: Number,
+        lastUpdated: Date
+      }],
+      showings: [{
+        date: Date,
+        clientId: Schema.Types.ObjectId,
+        agentId: Schema.Types.ObjectId,
+        feedback: String
+      }],
+      offers: [{
+        clientId: Schema.Types.ObjectId,
+        amount: Number,
+        terms: String,
+        status: { type: String, enum: ['pending', 'accepted', 'rejected', 'countered'] },
+        date: Date
+      }]
+    },
+    
+    // For Tenant Occupied
+    tenantOccupied: {
+      tenantId: { type: Schema.Types.ObjectId, ref: 'Tenant' },
+      contractId: { type: Schema.Types.ObjectId, ref: 'Contract' },
+      contractStart: Date,
+      contractEnd: Date,
+      rentAmount: Number,
+      paymentFrequency: String,
+      securityDeposit: { amount: Number, status: { type: String, enum: ['held', 'partially_refunded', 'fully_refunded'] } },
+      nextRentDue: Date,
+      rentPaymentHistory: [{
+        period: String,
+        amount: Number,
+        dueDate: Date,
+        paidDate: Date,
+        status: { type: String, enum: ['paid', 'overdue', 'pending'] },
+        lateFee: Number
+      }],
+      maintenanceRequests: [{
+        id: String,
+        issue: String,
+        reportedDate: Date,
+        priority: { type: String, enum: ['emergency', 'high', 'medium', 'low'] },
+        status: { type: String, enum: ['open', 'in_progress', 'completed'] },
+        cost: Number,
+        completionDate: Date
+      }]
+    },
+    
+    // For Owner Occupied
+    ownerOccupied: {
+      ownerId: { type: Schema.Types.ObjectId, ref: 'User' },
+      sinceDate: Date,
+      expectedVacancy: Date,
+      notes: String
+    },
+    
+    // For Future Available (Pre-leased/Pre-sold)
+    futureAvailable: {
+      availabilityDate: { type: Date, required: true },
+      type: { type: String, enum: ['pre_leased', 'pre_sold', 'coming_soon'] },
+      reservedFor: {
+        clientId: Schema.Types.ObjectId,
+        clientName: String,
+        agreementType: { type: String, enum: ['reservation', 'letter_of_intent', 'pre_contract'] },
+        depositAmount: Number,
+        depositPaid: Boolean
+      },
+      marketingStrategy: {
+        preMarketing: Boolean,
+        waitlist: [{
+          clientId: Schema.Types.ObjectId,
+          position: Number,
+          addedDate: Date
+        }],
+        expectedPrice: Number
+      }
+    },
+    
+    // For Under Maintenance
+    underMaintenance: {
+      startDate: Date,
+      expectedCompletion: Date,
+      type: { type: String, enum: ['renovation', 'repair', 'deep_cleaning', 'upgrade'] },
+      contractor: {
+        name: String,
+        contact: String,
+        contractValue: Number,
+        warranty: String
+      },
+      tasks: [{
+        description: String,
+        assignedTo: String,
+        estimatedCost: Number,
+        actualCost: Number,
+        status: { type: String, enum: ['pending', 'in_progress', 'completed'] },
+        completionDate: Date
+      }],
+      totalBudget: Number,
+      spentToDate: Number,
+      beforePhotos: [String],
+      afterPhotos: [String]
+    },
+    
+    // For Off-Market
+    offMarket: {
+      reason: { 
+        type: String, 
+        enum: ['seasonal', 'market_conditions', 'legal_issues', 'owner_request', 'refinancing'] 
+      },
+      sinceDate: Date,
+      expectedReturn: Date,
+      notes: String
+    }
+  },
+  
+  // Financial Tracking
+  financials: {
+    acquisitionCost: Number,  // If purchased by company
+    currentValuation: Number,
+    monthlyExpenses: {
+      serviceCharges: Number,
+      maintenanceReserve: Number,
+      insurance: Number,
+      municipalityFees: Number,
+      other: Number
+    },
+    income: {
+      monthlyRent: Number,
+      annualAppreciation: Number,
+      otherIncome: Number
+    },
+    roi: {
+      capRate: Number,  // Net Operating Income / Property Value
+      cashOnCash: Number,
+      annualReturn: Number
+    }
+  },
+  
+  // Performance Metrics
+  performance: {
+    daysOnMarket: Number,
+    priceReductions: [{
+      oldPrice: Number,
+      newPrice: Number,
+      date: Date,
+      reason: String
+    }],
+    inquiryToShowing: { ratio: Number, count: Number },
+    showingToOffer: { ratio: Number, count: Number },
+    offerToClose: { ratio: Number, count: Number },
+    tenantQuality: {
+      paymentHistory: String,
+      maintenanceRequests: Number,
+      propertyCare: String
+    }
+  },
+  
+  // Historical Tracking
+  history: [{
+    date: Date,
+    fromCategory: String,
+    toCategory: String,
+    changedBy: String,
+    notes: String,
+    documents: [String]
+  }],
+  
+  // Agent Assignment & Commission
+  agentAssignment: {
+    listingAgent: { type: Schema.Types.ObjectId, ref: 'User' },
+    sellingAgent: { type: Schema.Types.ObjectId, ref: 'User' },
+    propertyManager: { type: Schema.Types.ObjectId, ref: 'User' },
+    commissionStructure: {
+      listingSide: { percentage: Number, amount: Number },
+      sellingSide: { percentage: Number, amount: Number },
+      referralFee: Number,
+      paidDate: Date
+    }
+  },
+  
+  // Critical Dates
+  criticalDates: {
+    dewaBillDue: Date,
+    municipalityFeeDue: Date,
+    serviceChargeDue: Date,
+    insuranceRenewal: Date,
+    contractRenewal: Date,
+    nextValuation: Date
+  },
+  
+  // Owner Notes & Alerts
+  ownerNotes: [{
+    date: Date,
+    note: String,
+    priority: { type: String, enum: ['high', 'medium', 'low'] },
+    actionRequired: Boolean,
+    actionTaken: Boolean,
+    actionDate: Date
+  }],
+  
+  // Automated Alerts Configuration
+  alerts: {
+    rentPayment: { enabled: Boolean, daysBefore: Number },
+    contractExpiry: { enabled: Boolean, daysBefore: Number },
+    maintenance: { enabled: Boolean, frequency: String },
+    marketPrice: { enabled: Boolean, threshold: Number }
+  },
+  
+  // Timestamps
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+  lastStatusChange: Date,
+  nextReviewDate: Date
+};
+```
+
+### **4. INVENTORY DASHBOARD FOR OWNER**
+
+**Component: OwnerInventoryDashboard.js**
+```javascript
+const OwnerInventoryDashboard = () => {
+  const [inventoryData, setInventoryData] = useState(null);
+  const [filters, setFilters] = useState({
+    category: 'all',
+    emirate: 'all',
+    priceRange: [0, 10000000],
+    dateRange: [new Date(), new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)],
+    agent: 'all'
+  });
+  
+  // Fetch real-time inventory data
+  useEffect(() => {
+    fetchInventoryData();
+    // Real-time updates every 30 seconds
+    const interval = setInterval(fetchInventoryData, 30000);
+    return () => clearInterval(interval);
+  }, [filters]);
+  
+  const fetchInventoryData = async () => {
+    const response = await axios.get('/api/owner/inventory/dashboard', { params: filters });
+    setInventoryData(response.data);
+  };
+  
+  // Quick Actions for Owner
+  const quickActions = [
+    {
+      id: 'add-property',
+      label: 'Add New Property',
+      icon: '➕',
+      action: () => navigate('/owner/inventory/add'),
+      color: 'green'
+    },
+    {
+      id: 'bulk-update',
+      label: 'Bulk Update',
+      icon: '📋',
+      action: () => showBulkUpdateModal(),
+      color: 'blue'
+    },
+    {
+      id: 'generate-reports',
+      label: 'Generate Reports',
+      icon: '📊',
+      action: () => generateReports(),
+      color: 'purple'
+    },
+    {
+      id: 'market-analysis',
+      label: 'Market Analysis',
+      icon: '📈',
+      action: () => showMarketAnalysis(),
+      color: 'orange'
+    }
+  ];
+  
+  return (
+    <div className="owner-inventory-dashboard">
+      {/* Exclusive Owner Banner */}
+      <div className="owner-exclusive-banner">
+        <div className="owner-badge">👑 OWNER EXCLUSIVE</div>
+        <h1>Inventory Management System</h1>
+        <p>Complete control over all company properties</p>
+      </div>
+      
+      {/* Quick Stats Overview */}
+      <div className="inventory-quick-stats">
+        <StatCard
+          title="Total Properties"
+          value={inventoryData?.summary?.total || 0}
+          change="+5%"
+          icon="🏠"
+          color="blue"
+        />
+        <StatCard
+          title="Vacancy Rate"
+          value={`${inventoryData?.summary?.vacancyRate || 0}%`}
+          change="-2%"
+          icon="📊"
+          color={inventoryData?.summary?.vacancyRate > 10 ? 'red' : 'green'}
+        />
+        <StatCard
+          title="Monthly Revenue"
+          value={`${formatCurrency(inventoryData?.summary?.monthlyRevenue || 0)}`}
+          change="+12%"
+          icon="💰"
+          color="green"
+        />
+        <StatCard
+          title="Avg Days on Market"
+          value={inventoryData?.summary?.avgDaysOnMarket || 0}
+          change="-8"
+          icon="⏱️"
+          color="orange"
+        />
+      </div>
+      
+      {/* Quick Actions Bar */}
+      <div className="owner-quick-actions">
+        {quickActions.map(action => (
+          <button
+            key={action.id}
+            className={`quick-action-btn ${action.color}`}
+            onClick={action.action}
+          >
+            <span className="action-icon">{action.icon}</span>
+            <span className="action-label">{action.label}</span>
+          </button>
+        ))}
+      </div>
+      
+      {/* Main Dashboard Grid */}
+      <div className="inventory-main-grid">
+        {/* Left Panel: Category Breakdown */}
+        <div className="category-breakdown">
+          <h3>Inventory by Category</h3>
+          <CategoryChart data={inventoryData?.categories} />
+          
+          <div className="category-details">
+            {inventoryData?.categoryDetails?.map(category => (
+              <CategoryItem
+                key={category.name}
+                category={category}
+                onSelect={() => setFilters({...filters, category: category.name})}
+              />
+            ))}
+          </div>
+        </div>
+        
+        {/* Middle Panel: Property List */}
+        <div className="property-list-panel">
+          <div className="list-controls">
+            <SearchBar onSearch={handleSearch} />
+            <FilterButton filters={filters} onChange={setFilters} />
+            <ExportButton data={inventoryData?.properties} />
+          </div>
+          
+          <PropertyTable
+            properties={inventoryData?.properties || []}
+            onPropertySelect={handlePropertySelect}
+            showActions={true}
+          />
+        </div>
+        
+        {/* Right Panel: Selected Property Details */}
+        {selectedProperty && (
+          <div className="property-detail-panel">
+            <PropertyDetailView
+              property={selectedProperty}
+              onUpdate={handlePropertyUpdate}
+              onStatusChange={handleStatusChange}
+            />
+          </div>
+        )}
+      </div>
+      
+      {/* Bottom Panel: Analytics & Alerts */}
+      <div className="analytics-alerts-panel">
+        {/* Financial Analytics */}
+        <div className="financial-analytics">
+          <h3>Financial Performance</h3>
+          <RevenueChart data={inventoryData?.financials} />
+          <ROIMetrics metrics={inventoryData?.roi} />
+        </div>
+        
+        {/* Critical Alerts */}
+        <div className="critical-alerts">
+          <h3>Critical Alerts ⚠️</h3>
+          <AlertList alerts={inventoryData?.alerts} />
+          <UpcomingDeadlines deadlines={inventoryData?.deadlines} />
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+### **5. INVENTORY CATEGORY MANAGEMENT**
+
+**Component: InventoryCategoryManager.js**
+```javascript
+const InventoryCategoryManager = () => {
+  const [categories, setCategories] = useState({
+    available_rent: [],
+    available_sale: [],
+    tenant_occupied: [],
+    owner_occupied: [],
+    future_available: [],
+    under_maintenance: [],
+    off_market: []
+  });
+  
+  // Bulk Category Update
+  const handleBulkCategoryUpdate = async (propertyIds, newCategory, transitionData) => {
+    try {
+      const response = await axios.post('/api/owner/inventory/bulk-update', {
+        propertyIds,
+        newCategory,
+        transitionData
+      });
+      
+      // Update local state
+      setCategories(prev => {
+        const updated = { ...prev };
+        
+        // Remove from old categories
+        Object.keys(updated).forEach(cat => {
+          updated[cat] = updated[cat].filter(p => !propertyIds.includes(p._id));
+        });
+        
+        // Add to new category
+        const movedProperties = response.data.updatedProperties;
+        updated[newCategory] = [...updated[newCategory], ...movedProperties];
+        
+        return updated;
+      });
+      
+      // Show success notification
+      showNotification(`Moved ${propertyIds.length} properties to ${newCategory}`, 'success');
+      
+    } catch (error) {
+      showNotification('Bulk update failed', 'error');
+    }
+  };
+  
+  // Category-specific actions
+  const categoryActions = {
+    available_rent: {
+      label: 'Available for Rent',
+      actions: [
+        { label: 'Schedule Viewing', action: scheduleViewing },
+        { label: 'Update Price', action: updatePrice },
+        { label: 'Move to Reserved', action: () => changeCategory('reserved') }
+      ]
+    },
+    tenant_occupied: {
+      label: 'Tenant Occupied',
+      actions: [
+        { label: 'View Contract', action: viewContract },
+        { label: 'Log Maintenance', action: logMaintenance },
+        { label: 'Send Rent Reminder', action: sendRentReminder },
+        { label: 'Prepare for Renewal', action: prepareRenewal }
+      ]
+    },
+    future_available: {
+      label: 'Future Available',
+      actions: [
+        { label: 'Update Availability Date', action: updateAvailabilityDate },
+        { label: 'Manage Waitlist', action: manageWaitlist },
+        { label: 'Start Pre-marketing', action: startPreMarketing }
+      ]
+    }
+  };
+  
+  return (
+    <div className="category-manager">
+      {/* Category Tabs */}
+      <div className="category-tabs">
+        {Object.entries(categories).map(([categoryKey, properties]) => (
+          <div 
+            key={categoryKey}
+            className={`category-tab ${activeCategory === categoryKey ? 'active' : ''}`}
+            onClick={() => setActiveCategory(categoryKey)}
+          >
+            <div className="category-header">
+              <span className="category-name">
+                {categoryActions[categoryKey]?.label || categoryKey}
+              </span>
+              <span className="property-count">{properties.length}</span>
+            </div>
+            <div className="category-summary">
+              {/* Quick summary for each category */}
+              {categoryKey === 'available_rent' && (
+                <span>Avg Price: {calculateAverage(properties, 'price')} AED/month</span>
+              )}
+              {categoryKey === 'tenant_occupied' && (
+                <span>Collection Rate: {calculateCollectionRate(properties)}%</span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      {/* Category Content */}
+      {activeCategory && (
+        <div className="category-content">
+          <div className="category-actions">
+            <h3>{categoryActions[activeCategory]?.label}</h3>
+            <div className="action-buttons">
+              {categoryActions[activeCategory]?.actions.map((action, idx) => (
+                <button key={idx} onClick={action.action}>
+                  {action.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Property Grid */}
+          <div className="property-grid">
+            {categories[activeCategory].map(property => (
+              <PropertyCard 
+                key={property._id}
+                property={property}
+                category={activeCategory}
+                onAction={handlePropertyAction}
+                showCheckbox={true}
+              />
+            ))}
+          </div>
+          
+          {/* Bulk Actions */}
+          {selectedProperties.length > 0 && (
+            <div className="bulk-actions-bar">
+              <span>{selectedProperties.length} properties selected</span>
+              <select onChange={(e) => handleBulkCategoryUpdate(selectedProperties, e.target.value)}>
+                <option value="">Move to category...</option>
+                {Object.keys(categories).map(cat => (
+                  <option key={cat} value={cat}>{categoryActions[cat]?.label}</option>
+                ))}
+              </select>
+              <button onClick={() => bulkUpdatePrice(selectedProperties)}>
+                Bulk Update Price
+              </button>
+              <button onClick={() => bulkAssignAgent(selectedProperties)}>
+                Bulk Assign Agent
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+```
+
+### **6. FUTURE AVAILABILITY FORECASTING**
+
+**Component: FutureAvailabilityForecast.js**
+```javascript
+const FutureAvailabilityForecast = () => {
+  const [forecastData, setForecastData] = useState({
+    timeline: [],
+    upcomingVacancies: [],
+    marketTrends: {},
+    recommendations: []
+  });
+  
+  // Generate 12-month forecast
+  const generateForecast = async () => {
+    const response = await axios.get('/api/owner/inventory/forecast', {
+      params: { months: 12 }
+    });
+    setForecastData(response.data);
+  };
+  
+  // Calculate optimal listing dates
+  const calculateOptimalListing = (property) => {
+    // Consider:
+    // 1. Current market demand for property type/location
+    // 2. Seasonal trends (winter vs summer)
+    // 3. Competitor listings
+    // 4. Historical performance data
+    
+    const marketDemand = forecastData.marketTrends[property.emirate]?.[property.type] || 1;
+    const seasonalFactor = getSeasonalFactor(property.availabilityDate);
+    const competitorCount = getCompetitorCount(property);
+    
+    return {
+      optimalListingDate: calculateDate(property.availabilityDate, -45), // 45 days before
+      expectedDaysOnMarket: 30 * marketDemand,
+      recommendedPrice: calculateOptimalPrice(property),
+      marketingBudget: calculateMarketingBudget(property)
+    };
+  };
+  
+  // Waitlist Management
+  const [waitlist, setWaitlist] = useState([]);
+  
+  const manageWaitlist = (propertyId) => {
+    return (
+      <div className="waitlist-manager">
+        <h4>Property Waitlist</h4>
+        <div className="waitlist-controls">
+          <button onClick={() => addToWaitlist(propertyId)}>Add Client</button>
+          <button onClick={() importWaitlist(propertyId)}>Import from CRM</button>
+        </div>
+        
+        <div className="waitlist-table">
+          {waitlist.map((client, index) => (
+            <div key={client.id} className="waitlist-item">
+              <span className="position">{index + 1}</span>
+              <span className="client-name">{client.name}</span>
+              <span className="client-budget">{formatCurrency(client.budget)}</span>
+              <span className="client-requirements">{client.requirements}</span>
+              <span className="waitlist-date">{formatDate(client.joinedDate)}</span>
+              <div className="waitlist-actions">
+                <button onClick={() => notifyClient(client, propertyId)}>Notify</button>
+                <button onClick={() => removeFromWaitlist(client.id)}>Remove</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+  
+  return (
+    <div className="future-availability-forecast">
+      <h2>Future Availability Forecasting</h2>
+      
+      {/* Timeline Visualization */}
+      <div className="availability-timeline">
+        <h3>12-Month Availability Timeline</h3>
+        <TimelineChart data={forecastData.timeline} />
+      </div>
+      
+      {/* Upcoming Vacancies Table */}
+      <div className="upcoming-vacancies">
+        <h3>Upcoming Vacancies (Next 90 Days)</h3>
+        <table className="vacancies-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Current Tenant</th>
+              <th>Vacant From</th>
+              <th>Current Rent</th>
+              <th>Market Rent</th>
+              <th>Increase Potential</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {forecastData.upcomingVacancies.map(vacancy => (
+              <tr key={vacancy.propertyId}>
+                <td>{vacancy.propertyCode}</td>
+                <td>{vacancy.currentTenant}</td>
+                <td>{formatDate(vacancy.vacantFrom)}</td>
+                <td>{formatCurrency(vacancy.currentRent)}</td>
+                <td>{formatCurrency(vacancy.marketRent)}</td>
+                <td className={vacancy.increasePotential > 0 ? 'positive' : 'negative'}>
+                  {vacancy.increasePotential > 0 ? '+' : ''}{vacancy.increasePotential}%
+                </td>
+                <td>
+                  <button onClick={() => startPreMarketing(vacancy.propertyId)}>
+                    Start Pre-marketing
+                  </button>
+                  <button onClick={() => showWaitlist(vacancy.propertyId)}>
+                    Manage Waitlist
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      
+      {/* Market Trends Analysis */}
+      <div className="market-trends-analysis">
+        <h3>Market Trends Analysis</h3>
+        <div className="trends-grid">
+          <TrendCard
+            title="Rental Price Trends"
+            data={forecastData.marketTrends.rental}
+            type="line"
+            period="12 months"
+          />
+          <TrendCard
+            title="Demand by Property Type"
+            data={forecastData.marketTrends.demandByType}
+            type="bar"
+            period="quarterly"
+          />
+          <TrendCard
+            title="Days on Market"
+            data={forecastData.marketTrends.daysOnMarket}
+            type="area"
+            period="6 months"
+          />
+          <TrendCard
+            title="Competitor Analysis"
+            data={forecastData.marketTrends.competitor}
+            type="comparison"
+            period="current"
+          />
+        </div>
+      </div>
+      
+      {/* AI-Powered Recommendations */}
+      <div className="ai-recommendations">
+        <h3>AI Recommendations 🤖</h3>
+        <div className="recommendations-list">
+          {forecastData.recommendations.map((rec, idx) => (
+            <div key={idx} className="recommendation-card">
+              <div className="rec-icon">{rec.priority === 'high' ? '🔴' : '🟡'}</div>
+              <div className="rec-content">
+                <h4>{rec.title}</h4>
+                <p>{rec.description}</p>
+                <div className="rec-actions">
+                  <button onClick={() => implementRecommendation(rec)}>Implement</button>
+                  <button onClick={() => scheduleRecommendation(rec)}>Schedule</button>
+                  <button onClick={() => dismissRecommendation(rec.id)}>Dismiss</button>
+                </div>
+              </div>
+              <div className="rec-impact">
+                <span className="impact-label">Expected Impact:</span>
+                <span className={`impact-value ${rec.impact > 0 ? 'positive' : 'negative'}`}>
+                  {rec.impact > 0 ? '+' : ''}{rec.impact}%
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+### **7. FINANCIAL ANALYTICS & ROI TRACKING**
+
+**Component: InventoryFinancialAnalytics.js**
+```javascript
+const InventoryFinancialAnalytics = () => {
+  const [financialData, setFinancialData] = useState({
+    summary: {},
+    properties: [],
+    trends: {},
+    forecasts: {}
+  });
+  
+  // Key Financial Metrics
+  const financialMetrics = [
+    {
+      id: 'total_value',
+      label: 'Total Portfolio Value',
+      value: formatCurrency(financialData.summary.totalValue),
+      formula: '∑(Property Current Valuations)',
+      trend: financialData.trends.valueTrend
+    },
+    {
+      id: 'monthly_cashflow',
+      label: 'Monthly Cash Flow',
+      value: formatCurrency(financialData.summary.monthlyCashflow),
+      formula: 'Monthly Rent - Monthly Expenses',
+      trend: financialData.trends.cashflowTrend
+    },
+    {
+      id: 'cap_rate',
+      label: 'Average Cap Rate',
+      value: `${financialData.summary.avgCapRate}%`,
+      formula: 'NOI / Property Value',
+      benchmark: 'UAE Average: 5-7%'
+    },
+    {
+      id: 'roi',
+      label: 'Annual ROI',
+      value: `${financialData.summary.annualROI}%`,
+      formula: '(Annual Profit / Total Investment) × 100',
+      trend: financialData.trends.roiTrend
+    }
+  ];
+  
+  // Property Performance Ranking
+  const performanceRanking = financialData.properties
+    .sort((a, b) => b.performance.score - a.performance.score)
+    .slice(0, 10);
+  
+  // Underperforming Properties
+  const underperforming = financialData.properties
+    .filter(p => p.performance.score < 60)
+    .sort((a, b) => a.performance.score - b.performance.score);
+  
+  return (
+    <div className="financial-analytics">
+      <div className="financial-header">
+        <h2>Financial Analytics Dashboard</h2>
+        <div className="period-selector">
+          <select onChange={(e) => updatePeriod(e.target.value)}>
+            <option value="monthly">Monthly</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+          <button onClick={exportFinancialReport}>Export Report</button>
+        </div>
+      </div>
+      
+      {/* Financial Metrics Grid */}
+      <div className="metrics-grid">
+        {financialMetrics.map(metric => (
+          <FinancialMetricCard key={metric.id} metric={metric} />
+        ))}
+      </div>
+      
+      {/* Income vs Expenses Breakdown */}
+      <div className="income-expenses-breakdown">
+        <h3>Income vs Expenses</h3>
+        <div className="breakdown-charts">
+          <PieChart
+            title="Income Sources"
+            data={financialData.summary.incomeBreakdown}
+            colors={['#10B981', '#3B82F6', '#8B5CF6', '#F59E0B']}
+          />
+          <PieChart
+            title="Expense Distribution"
+            data={financialData.summary.expenseBreakdown}
+            colors={['#EF4444', '#F59E0B', '#6B7280', '#8B5CF6']}
+          />
+          <BarChart
+            title="Monthly Cash Flow Trend"
+            data={financialData.trends.monthlyCashflow}
+            positiveColor="#10B981"
+            negativeColor="#EF4444"
+          />
+        </div>
+      </div>
+      
+      {/* Property Performance Analysis */}
+      <div className="property-performance">
+        <div className="top-performers">
+          <h3>🏆 Top Performing Properties</h3>
+          <PerformanceTable properties={performanceRanking} />
+        </div>
+        
+        <div className="underperforming">
+          <h3>⚠️ Underperforming Properties</h3>
+          <UnderperformingTable 
+            properties={underperforming}
+            onAction={handleUnderperformingAction}
+          />
+        </div>
+      </div>
+      
+      {/* ROI Optimization Suggestions */}
+      <div className="roi-optimization">
+        <h3>ROI Optimization Opportunities</h3>
+        <div className="optimization-suggestions">
+          {financialData.forecasts.optimizationOpportunities.map(opp => (
+            <OptimizationCard
+              key={opp.id}
+              opportunity={opp}
+              onImplement={implementOptimization}
+            />
+          ))}
+        </div>
+      </div>
+      
+      {/* Predictive Analytics */}
+      <div className="predictive-analytics">
+        <h3>Predictive Analytics 🔮</h3>
+        <div className="predictions">
+          <PredictionCard
+            title="6-Month Revenue Forecast"
+            prediction={financialData.forecasts.revenue}
+            confidence={financialData.forecasts.confidence}
+          />
+          <PredictionCard
+            title="Portfolio Growth Projection"
+            prediction={financialData.forecasts.growth}
+            confidence={financialData.forecasts.growthConfidence}
+          />
+          <PredictionCard
+            title="Risk Assessment"
+            prediction={financialData.forecasts.risk}
+            confidence={financialData.forecasts.riskConfidence}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+### **8. BACKEND API FOR OWNER INVENTORY**
+
+```javascript
+// Owner-exclusive inventory routes
+router.get('/owner/inventory/summary', ownerOnlyAccess, getInventorySummary);
+router.get('/owner/inventory/categories', ownerOnlyAccess, getInventoryByCategory);
+router.get('/owner/inventory/property/:id', ownerOnlyAccess, getPropertyDetails);
+router.put('/owner/inventory/property/:id', ownerOnlyAccess, updatePropertyStatus);
+router.post('/owner/inventory/bulk-update', ownerOnlyAccess, bulkUpdateInventory);
+router.get('/owner/inventory/forecast', ownerOnlyAccess, getAvailabilityForecast);
+router.get('/owner/inventory/financials', ownerOnlyAccess, getFinancialAnalytics);
+router.get('/owner/inventory/reports', ownerOnlyAccess, generateInventoryReport);
+router.post('/owner/inventory/import', ownerOnlyAccess, importInventoryData);
+router.delete('/owner/inventory/property/:id', ownerOnlyAccess, removeFromInventory);
+
+// Real-time inventory updates
+const inventorySocket = (io) => {
+  io.on('connection', (socket) => {
+    // Join owner room for real-time updates
+    socket.on('join-owner-room', (ownerId) => {
+      socket.join(`owner-${ownerId}`);
+    });
+    
+    // Listen for inventory changes
+    socket.on('inventory-update', (data) => {
+      // Broadcast to owner room
+      io.to(`owner-${data.ownerId}`).emit('inventory-changed', data);
+    });
+  });
+};
+
+// Inventory summary controller
+const getInventorySummary = async (req, res) => {
+  try {
+    const ownerId = req.user._id;
+    
+    // Get all properties managed by company
+    const properties = await Inventory.find({}).populate('propertyId');
+    
+    // Calculate summary
+    const summary = {
+      total: properties.length,
+      byCategory: {},
+      vacancyRate: 0,
+      monthlyRevenue: 0,
+      avgDaysOnMarket: 0,
+      upcomingVacancies: 0
+    };
+    
+    // Calculate category breakdown
+    properties.forEach(property => {
+      const category = property.category;
+      summary.byCategory[category] = (summary.byCategory[category] || 0) + 1;
+      
+      // Calculate revenue
+      if (property.category === 'tenant_occupied') {
+        summary.monthlyRevenue += property.statusDetails?.tenantOccupied?.rentAmount || 0;
+      }
+      
+      // Calculate vacancy rate
+      if (property.category === 'available_rent' || property.category === 'available_sale') {
+        summary.vacancyRate += 1;
+      }
+      
+      // Calculate days on market
+      if (property.category.includes('available')) {
+        const listedDate = property.statusDetails?.available?.listedDate;
+        if (listedDate) {
+          const days = Math.floor((new Date() - listedDate) / (1000 * 60 * 60 * 24));
+          summary.avgDaysOnMarket += days;
+        }
+      }
+      
+      // Count upcoming vacancies
+      if (property.category === 'future_available') {
+        summary.upcomingVacancies += 1;
+      }
+    });
+    
+    // Calculate averages
+    summary.vacancyRate = ((summary.vacancyRate / summary.total) * 100).toFixed(1);
+    summary.avgDaysOnMarket = Math.floor(summary.avgDaysOnMarket / 
+      (summary.byCategory['available_rent'] + summary.byCategory['available_sale'] || 1));
+    
+    res.json({ summary, properties });
+    
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Bulk update inventory
+const bulkUpdateInventory = async (req, res) => {
+  try {
+    const { propertyIds, newCategory, transitionData } = req.body;
+    
+    // Validate owner has permission
+    const properties = await Inventory.find({ _id: { $in: propertyIds } });
+    
+    // Update each property
+    const updatedProperties = await Promise.all(
+      propertyIds.map(async (propertyId) => {
+        const property = await Inventory.findById(propertyId);
+        
+        // Add to history
+        property.history.push({
+          date: new Date(),
+          fromCategory: property.category,
+          toCategory: newCategory,
+          changedBy: req.user._id,
+          notes: transitionData?.notes,
+          documents: transitionData?.documents
+        });
+        
+        // Update category
+        property.category = newCategory;
+        property.lastStatusChange = new Date();
+        
+        // Set category-specific data
+        if (newCategory ===
+
+Here's the comprehensive inventory management system that tracks properties from all sources (company-owned, other agents, other companies, freelancers):
+
+---
+
+**Prompt for Replit Agent 3:**
+
+```
+I need to implement a comprehensive inventory management system that tracks properties from ALL sources and maintains real-time updates. The system must handle:
+
+1. Company-owned properties (direct listings)
+2. Properties from other agencies/companies
+3. Properties from freelance agents/brokers
+4. Owner-direct listings
+5. Multi-source tracking with commission structures
+
+## **COMPREHENSIVE INVENTORY MANAGEMENT SYSTEM**
+
+### **1. MULTI-SOURCE INVENTORY SCHEMA**
+
+```javascript
+const MultiSourceInventorySchema = {
+  // Core Property Identification
+  propertyReference: { 
+    type: String, 
+    unique: true, 
+    required: true 
+  }, // Format: SOURCE-TYPE-CODE (e.g., AGENCY-RENT-DXB-001, FREELANCE-SALE-AD-005)
+  
+  // Source Tracking
+  source: {
+    type: {
+      type: String,
+      enum: [
+        'company_direct',      // Company-owned/operated
+        'other_agency',        // Other real estate company
+        'freelance_agent',     // Independent agent/broker
+        'owner_direct',        // Owner listing directly
+        'joint_venture',       // Partnership with other company
+        'referral',            // Referral from another source
+        'online_portal',       // From PropertyFinder/Bayut etc.
+        'developer',           // Direct from property developer
+        'bank_repossession',   // Bank-owned properties
+        'government_auction'   // Government auction properties
+      ],
+      required: true
+    },
+    
+    // Source Details based on type
+    details: {
+      // For Other Agencies
+      agency: {
+        companyName: String,
+        licenseNumber: String,
+        contactPerson: String,
+        contactEmail: String,
+        contactPhone: String,
+        agreementSigned: Boolean,
+        agreementExpiry: Date,
+        commissionSplit: {
+          ourShare: Number,    // Percentage
+          theirShare: Number   // Percentage
+        }
+      },
+      
+      // For Freelance Agents
+      freelance: {
+        agentName: String,
+        emiratesId: String,
+        mobileNumber: String,
+        email: String,
+        referralCode: String,
+        commissionType: {
+          type: String,
+          enum: ['fixed_amount', 'percentage', 'tiered']
+        },
+        commissionAmount: Number,
+        paymentTerms: String,
+        agreementDocument: String  // URL to signed agreement
+      },
+      
+      // For Owner Direct
+      owner: {
+        ownerId: Schema.Types.ObjectId,
+        relationship: {
+          type: String,
+          enum: ['existing_client', 'new_client', 'referral', 'cold_contact']
+        },
+        exclusivity: {
+          type: String,
+          enum: ['exclusive', 'non_exclusive', 'first_option']
+        },
+        listingAgreement: {
+          signed: Boolean,
+          startDate: Date,
+          endDate: Date,
+          document: String
+        }
+      },
+      
+      // For Joint Ventures
+      jointVenture: {
+        partnerCompany: String,
+        partnershipType: String,
+        profitSharing: {
+          ourShare: Number,
+          partnerShare: Number
+        },
+        agreementDocument: String
+      },
+      
+      // For Online Portals
+      portal: {
+        platform: String,
+        listingId: String,
+        subscriptionType: String,
+        autoSync: Boolean,
+        lastSynced: Date
+      }
+    },
+    
+    // Source Performance Metrics
+    performance: {
+      totalPropertiesProvided: Number,
+      successfulDeals: Number,
+      totalCommissionEarned: Number,
+      averageDaysToClose: Number,
+      reliabilityScore: Number, // 1-10 rating
+      lastDealDate: Date
+    },
+    
+    // Contact History
+    contactHistory: [{
+      date: Date,
+      type: { type: String, enum: ['call', 'email', 'meeting', 'whatsapp'] },
+      purpose: String,
+      outcome: String,
+      nextFollowUp: Date,
+      notes: String
+    }]
+  },
+  
+  // Property Availability Status
+  availability: {
+    currentStatus: {
+      type: String,
+      enum: [
+        'available',          // Ready for listing
+        'listed',             // Currently marketed
+        'under_offer',        // Offer received
+        'reserved',           // Deposit paid
+        'sold_leased',        // Deal completed
+        'withdrawn',          // Taken off market
+        'expired',            // Listing expired
+        'pending_verification' // Needs documentation
+      ],
+      required: true,
+      default: 'pending_verification'
+    },
+    
+    // Transaction Type
+    transactionType: {
+      type: String,
+      enum: ['rent', 'sale', 'rent_to_own', 'short_term'],
+      required: true
+    },
+    
+    // Availability Dates
+    dates: {
+      receivedDate: { type: Date, default: Date.now }, // When we got the listing
+      availableFrom: Date,      // When property is available
+      listingStart: Date,       // When marketing starts
+      expectedClosing: Date,    // Expected deal closure
+      actualClosing: Date,      // Actual deal closure
+      expiryDate: Date          // Listing expiry
+    },
+    
+    // Exclusive Period (if applicable)
+    exclusivity: {
+      exclusive: Boolean,
+      periodMonths: Number,
+      startDate: Date,
+      endDate: Date,
+      autoRenew: Boolean
+    }
+  },
+  
+  // Property Details (Comprehensive)
+  propertyDetails: {
+    // Basic Information
+    title: String,
+    description: { english: String, arabic: String },
+    
+    // Location Details
+    location: {
+      emirate: {
+        type: String,
+        enum: ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'RAK', 'Fujairah', 'Umm Al Quwain']
+      },
+      area: String,
+      community: String,
+      buildingName: String,
+      unitNumber: String,
+      exactLocation: String,
+      googleMapsLink: String,
+      nearbyLandmarks: [String]
+    },
+    
+    // Specifications
+    specifications: {
+      propertyType: {
+        type: String,
+        enum: ['apartment', 'villa', 'townhouse', 'penthouse', 'office', 'warehouse', 'land', 'commercial']
+      },
+      bedrooms: Number,
+      bathrooms: Number,
+      builtUpArea: Number, // sq ft
+      plotArea: Number,    // sq ft (for villas/land)
+      yearBuilt: Number,
+      parkingSpaces: Number,
+      furnishing: {
+        type: String,
+        enum: ['furnished', 'semi_furnished', 'unfurnished']
+      },
+      amenities: [String]
+    },
+    
+    // Pricing Information
+    pricing: {
+      askingPrice: Number,
+      currency: { type: String, default: 'AED' },
+      priceNegotiable: Boolean,
+      minimumPrice: Number,
+      commission: {
+        type: { type: String, enum: ['percentage', 'fixed'] },
+        value: Number,
+        whoPays: { type: String, enum: ['owner', 'tenant', 'both'] }
+      },
+      paymentTerms: {
+        rent: [String], // ['1 Cheque', '2 Cheques', etc.]
+        sale: [String]  // ['Cash', 'Mortgage', etc.]
+      },
+      additionalCosts: {
+        dewaDeposit: Number,
+        agencyFees: Number,
+        municipalityFees: Number
+      }
+    },
+    
+    // Media Assets
+    media: {
+      photos: [{
+        url: String,
+        caption: String,
+        category: String,
+        isPrimary: Boolean,
+        order: Number
+      }],
+      videos: [{
+        url: String,
+        type: String,
+        duration: Number
+      }],
+      floorPlans: [{
+        url: String,
+        type: String,
+        dimensions: String
+      }],
+      virtualTours: [{
+        url: String,
+        platform: String
+      }]
+    },
+    
+    // Documents & Verification
+    documents: {
+      // Required for listing
+      required: [{
+        type: String,
+        enum: ['title_deed', 'ejari', 'passport', 'emirates_id', 'dewa_bill', 'noc']
+      }],
+      
+      // Uploaded documents
+      uploaded: [{
+        documentType: String,
+        name: String,
+        url: String,
+        uploadDate: Date,
+        verified: Boolean,
+        verifiedBy: String,
+        expiryDate: Date
+      }],
+      
+      // Document status
+      status: {
+        allVerified: Boolean,
+        missing: [String],
+        verificationDate: Date
+      }
+    }
+  },
+  
+  // Marketing & Promotion
+  marketing: {
+    channels: [{
+      platform: {
+        type: String,
+        enum: ['propertyfinder', 'bayut', 'dubizzle', 'company_website', 'social_media', 'email_campaign']
+      },
+      listingId: String,
+      listingURL: String,
+      status: String,
+      views: Number,
+      inquiries: Number,
+      lastUpdated: Date,
+      performanceScore: Number
+    }],
+    
+    campaigns: [{
+      name: String,
+      type: String,
+      startDate: Date,
+      endDate: Date,
+      budget: Number,
+      spent: Number,
+      results: {
+        views: Number,
+        leads: Number,
+        viewings: Number
+      }
+    }],
+    
+    promotionalMaterial: {
+      flyers: [String],
+      brochures: [String],
+      socialMediaPosts: [String]
+    }
+  },
+  
+  // Deal Progress Tracking
+  dealProgress: {
+    stage: {
+      type: String,
+      enum: [
+        'lead_generation',
+        'initial_contact',
+        'property_viewing',
+        'offer_made',
+        'offer_accepted',
+        'contract_preparation',
+        'contract_signed',
+        'payment_processing',
+        'handover',
+        'completed'
+      ]
+    },
+    
+    leads: [{
+      leadId: Schema.Types.ObjectId,
+      source: String,
+      date: Date,
+      status: String,
+      assignedTo: Schema.Types.ObjectId
+    }],
+    
+    viewings: [{
+      date: Date,
+      time: String,
+      clientId: Schema.Types.ObjectId,
+      agentId: Schema.Types.ObjectId,
+      feedback: String,
+      followUpRequired: Boolean
+    }],
+    
+    offers: [{
+      clientId: Schema.Types.ObjectId,
+      amount: Number,
+      terms: String,
+      status: {
+        type: String,
+        enum: ['pending', 'accepted', 'rejected', 'counter_offer']
+      },
+      date: Date,
+      expiryDate: Date,
+      conditions: [String]
+    }],
+    
+    currentOffer: {
+      clientId: Schema.Types.ObjectId,
+      amount: Number,
+      depositPaid: Boolean,
+      depositAmount: Number
+    }
+  },
+  
+  // Commission & Payment Tracking
+  commission: {
+    // For Other Agencies/Freelancers
+    sourceCommission: {
+      payableTo: String,  // Agency name or freelancer name
+      amount: Number,
+      percentage: Number,
+      paymentTerms: String,
+      paymentStatus: {
+        type: String,
+        enum: ['pending', 'partial', 'paid', 'overdue']
+      },
+      paymentDate: Date,
+      invoiceNumber: String
+    },
+    
+    // Our Commission
+    ourCommission: {
+      amount: Number,
+      percentage: Number,
+      received: Boolean,
+      receivedDate: Date,
+      invoiceSent: Boolean,
+      invoiceNumber: String
+    },
+    
+    // Total Deal Value
+    dealValue: Number,
+    
+    // Payment Schedule
+    payments: [{
+      type: String,
+      amount: Number,
+      dueDate: Date,
+      paidDate: Date,
+      status: String,
+      reference: String
+    }]
+  },
+  
+  // Internal Management
+  internal: {
+    assignedTo: [{
+      agentId: Schema.Types.ObjectId,
+      role: { type: String, enum: ['primary', 'secondary', 'support'] },
+      assignedDate: Date,
+      performance: {
+        viewingsArranged: Number,
+        offersGenerated: Number,
+        dealsClosed: Number
+      }
+    }],
+    
+    priority: {
+      level: { type: Number, min: 1, max: 5, default: 3 },
+      reason: String,
+      setBy: Schema.Types.ObjectId,
+      setDate: Date
+    },
+    
+    tags: [String], // ['hot_property', 'exclusive', 'quick_sale', 'high_commission']
+    
+    notes: [{
+      date: Date,
+      author: Schema.Types.ObjectId,
+      content: String,
+      type: { type: String, enum: ['internal', 'client', 'source'] }
+    }],
+    
+    // Automated reminders
+    reminders: [{
+      type: String,
+      dueDate: Date,
+      completed: Boolean,
+      completedBy: Schema.Types.ObjectId
+    }]
+  },
+  
+  // Performance Analytics
+  analytics: {
+    daysOnMarket: Number,
+    totalViews: Number,
+    totalInquiries: Number,
+    viewingToOfferRatio: Number,
+    offerToCloseRatio: Number,
+    priceAdjustments: [{
+      oldPrice: Number,
+      newPrice: Number,
+      date: Date,
+      reason: String
+    }],
+    
+    // Source effectiveness
+    sourcePerformance: {
+      leadGenerationTime: Number, // Days from listing to first lead
+      qualityScore: Number,       // 1-10 based on lead quality
+      conversionRate: Number      // Inquiries to viewings
+    }
+  },
+  
+  // Audit Trail
+  auditTrail: [{
+    action: String,
+    performedBy: Schema.Types.ObjectId,
+    timestamp: { type: Date, default: Date.now },
+    changes: Object,
+    ipAddress: String,
+    userAgent: String
+  }],
+  
+  // Timestamps
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: Date,
+  lastActivity: Date
+};
+```
+
+### **2. PROPERTY INTAKE SYSTEM FROM ALL SOURCES**
+
+**Component: PropertyIntakePortal.js**
+```javascript
+const PropertyIntakePortal = () => {
+  const [intakeType, setIntakeType] = useState('');
+  const [sourceDetails, setSourceDetails] = useState({});
+  const [propertyDetails, setPropertyDetails] = useState({});
+  
+  // Different intake forms based on source
+  const intakeForms = {
+    other_agency: AgencyIntakeForm,
+    freelance_agent: FreelanceIntakeForm,
+    owner_direct: OwnerDirectIntakeForm,
+    online_portal: PortalIntakeForm,
+    joint_venture: JVIntakeForm
+  };
+  
+  // Handle different source types
+  const renderIntakeForm = () => {
+    const FormComponent = intakeForms[intakeType];
+    return FormComponent ? <FormComponent onSubmit={handleSubmit} /> : null;
+  };
+  
+  // Agency Intake Form
+  const AgencyIntakeForm = ({ onSubmit }) => (
+    <div className="agency-intake-form">
+      <h3>Add Property from Other Agency</h3>
+      
+      {/* Agency Details */}
+      <div className="form-section">
+        <h4>Agency Information</h4>
+        <Input label="Agency Name" name="agencyName" required />
+        <Input label="License Number" name="licenseNumber" required />
+        <Input label="Contact Person" name="contactPerson" required />
+        <Input label="Contact Email" name="contactEmail" type="email" required />
+        <Input label="Contact Phone" name="contactPhone" required />
+        
+        {/* Commission Split */}
+        <div className="commission-split">
+          <h5>Commission Agreement</h5>
+          <div className="split-inputs">
+            <Input label="Our Share %" name="ourShare" type="number" min="0" max="100" />
+            <Input label="Their Share %" name="theirShare" type="number" min="0" max="100" />
+          </div>
+          <Input label="Agreement Expiry Date" name="agreementExpiry" type="date" />
+          <FileUpload label="Upload Agreement" name="agreementDocument" accept=".pdf,.doc,.docx" />
+        </div>
+      </div>
+      
+      {/* Property Details */}
+      <PropertyDetailsForm onChange={setPropertyDetails} />
+      
+      <button onClick={() => onSubmit({ sourceType: 'other_agency', ...sourceDetails, propertyDetails })}>
+        Add to Inventory
+      </button>
+    </div>
+  );
+  
+  // Freelance Agent Intake Form
+  const FreelanceIntakeForm = ({ onSubmit }) => (
+    <div className="freelance-intake-form">
+      <h3>Add Property from Freelance Agent</h3>
+      
+      <div className="form-section">
+        <h4>Agent Details</h4>
+        <Input label="Agent Name" name="agentName" required />
+        <Input label="Emirates ID" name="emiratesId" required />
+        <Input label="Mobile Number" name="mobileNumber" required />
+        <Input label="Email Address" name="email" type="email" required />
+        <Input label="Referral Code (if any)" name="referralCode" />
+        
+        {/* Commission Structure */}
+        <div className="commission-structure">
+          <h5>Commission Structure</h5>
+          <Select label="Commission Type" name="commissionType" options={[
+            { value: 'percentage', label: 'Percentage' },
+            { value: 'fixed_amount', label: 'Fixed Amount' },
+            { value: 'tiered', label: 'Tiered' }
+          ]} />
+          
+          <Input label="Commission Amount" name="commissionAmount" type="number" />
+          <TextArea label="Payment Terms" name="paymentTerms" />
+          <FileUpload label="Agent Agreement" name="agentAgreement" required />
+        </div>
+      </div>
+      
+      <PropertyDetailsForm onChange={setPropertyDetails} />
+      
+      <button onClick={() => onSubmit({ sourceType: 'freelance_agent', ...sourceDetails, propertyDetails })}>
+        Add to Inventory
+      </button>
+    </div>
+  );
+  
+  // Online Portal Sync
+  const PortalIntakeForm = ({ onSubmit }) => {
+    const [connectedPortals, setConnectedPortals] = useState([]);
+    
+    // Fetch properties from connected portals
+    const fetchPortalProperties = async (portal) => {
+      const response = await axios.post('/api/inventory/sync-portal', {
+        portal: portal.name,
+        credentials: portal.credentials
+      });
+      
+      return response.data.properties;
+    };
+    
+    // Auto-match with existing inventory
+    const autoMatchProperties = (portalProperties) => {
+      return portalProperties.map(portalProp => {
+        // Check if property already exists
+        const existing = checkExistingProperty(portalProp);
+        if (existing) {
+          return {
+            ...portalProp,
+            matched: true,
+            existingId: existing._id,
+            action: 'update'
+          };
+        }
+        return {
+          ...portalProp,
+          matched: false,
+          action: 'create'
+        };
+      });
+    };
+    
+    return (
+      <div className="portal-intake-form">
+        <h3>Sync from Online Portals</h3>
+        
+        {/* Connected Portals */}
+        <div className="connected-portals">
+          <h4>Connected Portals</h4>
+          {connectedPortals.map(portal => (
+            <div key={portal.id} className="portal-card">
+              <span className="portal-name">{portal.name}</span>
+              <span className="last-sync">Last sync: {formatDate(portal.lastSynced)}</span>
+              <button onClick={() => syncPortal(portal.id)}>Sync Now</button>
+            </div>
+          ))}
+        </div>
+        
+        {/* Sync Results */}
+        <div className="sync-results">
+          <h4>New Properties Found</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>Source</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {syncResults.map((prop, index) => (
+                <tr key={index}>
+                  <td>{prop.title}</td>
+                  <td>{prop.source}</td>
+                  <td>{prop.matched ? 'Already exists' : 'New'}</td>
+                  <td>
+                    {prop.matched ? (
+                      <button onClick={() => updateExisting(prop.existingId, prop)}>
+                        Update Existing
+                      </button>
+                    ) : (
+                      <button onClick={() => addNewProperty(prop)}>
+                        Add to Inventory
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+  
+  // Handle property submission
+  const handlePropertySubmission = async (propertyData) => {
+    try {
+      // Generate unique reference code
+      const reference = generatePropertyReference(propertyData);
+      
+      const response = await axios.post('/api/inventory/add', {
+        ...propertyData,
+        propertyReference: reference
+      });
+      
+      if (response.data.success) {
+        showNotification('Property added to inventory successfully', 'success');
+        
+        // Auto-start verification process
+        if (propertyData.sourceType !== 'company_direct') {
+          startVerificationProcess(response.data.propertyId);
+        }
+        
+        // Auto-assign based on source type
+        autoAssignAgent(response.data.propertyId, propertyData.sourceType);
+      }
+      
+    } catch (error) {
+      showNotification('Failed to add property', 'error');
+    }
+  };
+  
+  return (
+    <div className="property-intake-portal">
+      <h2>Property Intake Portal</h2>
+      <p>Add properties from all sources to inventory</p>
+      
+      {/* Source Type Selection */}
+      <div className="source-type-selector">
+        <h3>Select Source Type</h3>
+        <div className="source-cards">
+          {[
+            { id: 'company_direct', label: 'Company Direct', icon: '🏢', color: 'blue' },
+            { id: 'other_agency', label: 'Other Agency', icon: '🤝', color: 'green' },
+            { id: 'freelance_agent', label: 'Freelance Agent', icon: '👤', color: 'purple' },
+            { id: 'owner_direct', label: 'Owner Direct', icon: '👑', color: 'orange' },
+            { id: 'online_portal', label: 'Online Portal', icon: '🌐', color: 'teal' },
+            { id: 'joint_venture', label: 'Joint Venture', icon: '🤲', color: 'red' }
+          ].map(source => (
+            <div 
+              key={source.id}
+              className={`source-card ${intakeType === source.id ? 'selected' : ''} ${source.color}`}
+              onClick={() => setIntakeType(source.id)}
+            >
+              <div className="source-icon">{source.icon}</div>
+              <div className="source-label">{source.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      {/* Dynamic Form based on Selection */}
+      {intakeType && (
+        <div className="intake-form-container">
+          {renderIntakeForm()}
+        </div>
+      )}
+    </div>
+  );
+};
+```
+
+### **3. REAL-TIME INVENTORY DASHBOARD (OWNER VIEW)**
+
+**Component: OwnerInventoryDashboard.js**
+```javascript
+const OwnerInventoryDashboard = () => {
+  const [inventoryStats, setInventoryStats] = useState({
+    bySource: {},
+    byStatus: {},
+    byEmirate: {},
+    financials: {},
+    performance: {}
+  });
+  
+  const [activeFilters, setActiveFilters] = useState({
+    source: 'all',
+    status: 'all',
+    emirate: 'all',
+    dateRange: 'month',
+    agent: 'all'
+  });
+  
+  // Fetch real-time inventory data
+  useEffect(() => {
+    fetchInventoryData();
+    // WebSocket for real-time updates
+    const ws = new WebSocket(`${process.env.REACT_APP_WS_URL}/inventory`);
+    
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'inventory_update') {
+        updateInventory(data.payload);
+      }
+    };
+    
+    return () => ws.close();
+  }, [activeFilters]);
+  
+  // Source-wise analytics
+  const sourceAnalytics = [
+    {
+      source: 'Company Direct',
+      count: inventoryStats.bySource?.company_direct || 0,
+      dealsClosed: inventoryStats.performance?.company_direct?.dealsClosed || 0,
+      avgCommission: inventoryStats.financials?.company_direct?.avgCommission || 0,
+      color: '#3B82F6'
+    },
+    {
+      source: 'Other Agencies',
+      count: inventoryStats.bySource?.other_agency || 0,
+      dealsClosed: inventoryStats.performance?.other_agency?.dealsClosed || 0,
+      avgCommission: inventoryStats.financials?.other_agency?.avgCommission || 0,
+      color: '#10B981'
+    },
+    {
+      source: 'Freelance Agents',
+      count: inventoryStats.bySource?.freelance_agent || 0,
+      dealsClosed: inventoryStats.performance?.freelance_agent?.dealsClosed || 0,
+      avgCommission: inventoryStats.financials?.freelance_agent?.avgCommission || 0,
+      color: '#8B5CF6'
+    },
+    {
+      source: 'Owner Direct',
+      count: inventoryStats.bySource?.owner_direct || 0,
+      dealsClosed: inventoryStats.performance?.owner_direct?.dealsClosed || 0,
+      avgCommission: inventoryStats.financials?.owner_direct?.avgCommission || 0,
+      color: '#F59E0B'
+    }
+  ];
+  
+  // Performance metrics by source
+  const sourcePerformance = sourceAnalytics.map(source => ({
+    ...source,
+    conversionRate: source.dealsClosed / source.count * 100 || 0,
+    revenuePerProperty: (source.avgCommission * source.dealsClosed) / source.count || 0
+  }));
+  
+  // Source comparison chart
+  const SourceComparisonChart = () => (
+    <div className="source-comparison-chart">
+      <h3>Performance by Source Type</h3>
+      <div className="comparison-metrics">
+        {['conversionRate', 'revenuePerProperty', 'avgCommission'].map(metric => (
+          <div key={metric} className="metric-chart">
+            <h4>{metric.replace(/([A-Z])/g, ' $1')}</h4>
+            {sourcePerformance.map(source => (
+              <div key={source.source} className="metric-bar">
+                <div 
+                  className="bar-fill" 
+                  style={{
+                    width: `${source[metric] / Math.max(...sourcePerformance.map(s => s[metric])) * 100}%`,
+                    backgroundColor: source.color
+                  }}
+                />
+                <span className="bar-label">{source.source}</span>
+                <span className="bar-value">{source[metric].toFixed(2)}</span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+  
+  // Source management panel
+  const SourceManagementPanel = () => {
+    const [sources, setSources] = useState([]);
+    
+    // Top performing sources
+    const topPerforming = [...sources]
+      .sort((a, b) => b.performance.reliabilityScore - a.performance.reliabilityScore)
+      .slice(0, 5);
+    
+    // Sources needing attention
+    const needsAttention = sources.filter(s => 
+      s.contactHistory.length === 0 || 
+      s.performance.reliabilityScore < 5
+    );
+    
+    return (
+      <div className="source-management-panel">
+        <h3>Source Management</h3>
+        
+        {/* Top Performing Sources */}
+        <div className="top-sources">
+          <h4>🏆 Top Performing Sources</h4>
+          {topPerforming.map(source => (
+            <div key={source._id} className="source-card">
+              <div className="source-header">
+                <span className="source-name">{source.name}</span>
+                <span className="source-type">{source.type}</span>
+                <span className="reliability-score">
+                  Score: {source.performance.reliabilityScore}/10
+                </span>
+              </div>
+              <div className="source-metrics">
+                <span>Properties: {source.performance.totalPropertiesProvided}</span>
+                <span>Deals: {source.performance.successfulDeals}</span>
+                <span>Commission: {formatCurrency(source.performance.totalCommissionEarned)}</span>
+              </div>
+              <div className="source-actions">
+                <button onClick={() => contactSource(source)}>Contact</button>
+                <button onClick={() => viewDetails(source)}>Details</button>
+                <button onClick={() => requestMoreProperties(source)}>Request More</button>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        {/* Sources Needing Attention */}
+        <div className="attention-needed">
+          <h4>⚠️ Attention Needed</h4>
+          {needsAttention.map(source => (
+            <div key={source._id} className="attention-card">
+              <div className="attention-reason">
+                {!source.contactHistory.length ? 'No contact history' : 'Low reliability score'}
+              </div>
+              <div className="source-info">
+                <span>{source.name}</span>
+                <span>Last contact: {source.contactHistory[0]?.date ? formatDate(source.contactHistory[0].date) : 'Never'}</span>
+              </div>
+              <button onClick={() => scheduleFollowup(source)}>
+                Schedule Follow-up
+              </button>
+            </div>
+          ))}
+        </div>
+        
+        {/* Source Growth Analysis */}
+        <div className="source-growth">
+          <h4>Source Growth Analysis</h4>
+          <div className="growth-metrics">
+            <div className="growth-card">
+              <span className="metric-label">New Sources This Month</span>
+              <span className="metric-value">{sources.filter(s => 
+                new Date(s.createdAt) > new Date(Date.now() - 30*24*60*60*1000)
+              ).length}</span>
+            </div>
+            <div className="growth-card">
+              <span className="metric-label">Active Sources</span>
+              <span className="metric-value">{sources.filter(s => 
+                s.performance.lastDealDate > new Date(Date.now() - 90*24*60*60*1000)
+              ).length}</span>
+            </div>
+            <div className="growth-card">
+              <span className="metric-label">Avg Properties per Source</span>
+              <span className="metric-value">
+                {(sources.reduce((sum, s) => sum + s.performance.totalPropertiesProvided, 0) / sources.length).toFixed(1)}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+  // Inventory overview with source breakdown
+  return (
+    <div className="owner-inventory-dashboard">
+      {/* Exclusive Owner Header */}
+      <div className="owner-header">
+        <h1>📊 Multi-Source Inventory Management</h1>
+        <div className="owner-controls">
+          <button onClick={exportFullReport}>Export Full Report</button>
+          <button onClick={syncAllSources}>Sync All Sources</button>
+          <button onClick={addNewSource}>Add New Source</button>
+        </div>
+      </div>
+      
+      {/* Quick Stats */}
+      <div className="quick-stats-grid">
+        <StatCard
+          title="Total Properties"
+          value={inventoryStats.total || 0}
+          subtitle="Across all sources"
+          icon="🏠"
+          color="blue"
+        />
+        <StatCard
+          title="Active Sources"
+          value={Object.keys(inventoryStats.bySource || {}).length}
+          subtitle="Providing properties"
+          icon="🤝"
+          color="green"
+        />
+        <StatCard
+          title="Monthly Revenue"
+          value={formatCurrency(inventoryStats.financials?.monthlyRevenue || 0)}
+          subtitle="From all deals"
+          icon="💰"
+          color="purple"
+        />
+        <StatCard
+          title="Conversion Rate"
+          value={`${inventoryStats.performance?.overallConversion || 0}%`}
+          subtitle="Leads to deals"
+          icon="📈"
+          color="orange"
+        />
+      </div>
+      
+      {/* Main Dashboard Grid */}
+      <div className="dashboard-grid">
+        {/* Left: Source Analysis */}
+        <div className="source-analysis">
+          <SourceComparisonChart />
+          <SourceManagementPanel />
+        </div>
+        
+        {/* Middle: Inventory List */}
+        <div className="inventory-list-panel">
+          <div className="list-controls">
+            <SearchBar onSearch={handleSearch} placeholder="Search by property, source, or agent..." />
+            <AdvancedFilters filters={activeFilters} onChange={setActiveFilters} />
+          </div>
+          
+          <MultiSourcePropertyTable
+            filters={activeFilters}
+            onPropertySelect={handlePropertySelect}
+            showSourceInfo={true}
+          />
+        </div>
+        
+        {/* Right: Selected Property Details */}
+        {selectedProperty && (
+          <div className="property-details-panel">
+            <PropertyDetailView 
+              property={selectedProperty}
+              showSourceDetails={true}
+              showCommission={true}
+              showDealProgress={true}
+              onUpdate={handlePropertyUpdate}
+              onStatusChange={handleStatusChange}
+            />
+            
+            {/* Source-specific actions */}
+            {selectedProperty.source.type === 'other_agency' && (
+              <AgencyActions property={selectedProperty} />
+            )}
+            
+            {selectedProperty.source.type === 'freelance_agent' && (
+              <FreelanceActions property={selectedProperty} />
+            )}
+          </div>
+        )}
+      </div>
+      
+      {/* Bottom: Analytics & Alerts */}
+      <div className="analytics-alerts">
+        {/* Commission Tracking */}
+        <div className="commission-tracking">
+          <h3>Commission Tracking</h3>
+          <CommissionChart data={inventoryStats.financials?.commissionBreakdown} />
+        </div>
+        
+        {/* Source Performance Alerts */}
+        <div className="source-alerts">
+          <h3>Source Alerts ⚠️</h3>
+          <AlertList alerts={inventoryStats.alerts} />
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+### **4. COMMISSION TRACKING & PAYMENT SYSTEM**
+
+**Component: CommissionTracker.js**
+```javascript
+const CommissionTracker = () => {
+  const [commissions, setCommissions] = useState({
+    pending: [],
+    approved: [],
+    paid: [],
+    overdue: []
+  });
+  
+  const [selectedSource, setSelectedSource] = useState(null);
+  
+  // Calculate total commissions by source type
+  const calculateCommissionSummary = () => {
+    const summary = {
+      totalPayable: 0,
+      totalReceived: 0,
+      bySourceType: {},
+      upcomingPayments: []
+    };
+    
+    // Process all commissions
+    Object.values(commissions).flat().forEach(commission => {
+      summary.totalPayable += commission.amount;
+      if (commission.paid) {
+        summary.totalReceived += commission.amount;
+      }
+      
+      // Group by source type
+      const sourceType = commission.sourceType;
+      summary.bySourceType[sourceType] = summary.bySourceType[sourceType] || {
+        payable: 0,
+        received: 0,
+        count: 0
+      };
+      summary.bySourceType[sourceType].payable += commission.amount;
+      if (commission.paid) {
+        summary.bySourceType[sourceType].received += commission.amount;
+      }
+      summary.bySourceType[sourceType].count++;
+      
+      // Track upcoming payments
+      if (!commission.paid && commission.dueDate) {
+        summary.upcomingPayments.push({
+          ...commission,
+          daysUntilDue: Math.ceil((new Date(commission.dueDate) - new Date()) / (1000 * 60 * 60 * 24))
+        });
+      }
+    });
+    
+    return summary;
+  };
+  
+  const commissionSummary = calculateCommissionSummary();
+  
+  // Generate payment batches
+  const generatePaymentBatch = (sourceType) => {
+    const batchCommissions = commissions.pending.filter(c => 
+      c.sourceType === sourceType && !c.paid
+    );
+    
+    const totalAmount = batchCommissions.reduce((sum, c) => sum + c.amount, 0);
+    const batchId = `BATCH-${sourceType.toUpperCase()}-${Date.now()}`;
+    
+    return {
+      batchId,
+      sourceType,
+      commissions: batchCommissions,
+      totalAmount,
+      count: batchCommissions.length,
+      generatedDate: new
+

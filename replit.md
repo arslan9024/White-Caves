@@ -42,6 +42,9 @@ Preferred communication style: Simple, everyday language.
 - **Market Analytics Dashboard**: Provides KPIs, transaction breakdowns, lead source visualization, and agent performance leaderboards.
 - **WhatsApp Business Connection**: Session management, QR code generation, Meta Business OAuth support, and automation settings.
 - **AI Chatbot Integration with WhatsApp**: Server-side chatbot with bilingual support, intent recognition, entity extraction, context management, and lead scoring.
+- **Chatbot Testing Interface**: Interactive testing UI in WhatsApp Settings with real-time response analysis and conversation history.
+- **Production Deployment Readiness**: System Health page includes 8 automated deployment checks with deployability score.
+- **Proprietary Licensing**: README.md and LICENSE updated with White Caves Real Estate LLC company information.
 
 ## External Dependencies
 
