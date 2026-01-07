@@ -1,0 +1,1895 @@
+Here's a focused prompt for Replit Agent 3 to upgrade your MERN stack website's dashboard/profile pages and implement your requested features:
+
+---
+Here's a detailed breakdown to help you and the Replit Agent understand and implement the project better:
+
+## **Project Understanding: Real Estate Business Automation**
+
+### **1. Business Workflow Understanding**
+
+**Current Client Journey:**
+```
+Client Inquiry (WhatsApp/Email/Call) 
+→ Initial Response (Manual)
+→ Property Details Collection 
+→ Appointment Scheduling (Manual)
+→ Property Viewing 
+→ Negotiation 
+→ Documentation 
+→ Deal Closure
+```
+
+**Proposed AI-Enhanced Workflow:**
+```
+Client Inquiry → AI Chatbot (Instant Reply)
+→ Automatic Lead Scoring → Property Matching
+→ Auto-calendar Booking → Agent Assignment (AI Optimized)
+→ Automated Follow-ups → Performance Tracking
+→ Deal Analytics
+```
+
+### **2. Core Components Deep Dive**
+
+#### **A. AI Chatbot Architecture**
+
+```javascript
+// Chatbot Training Data Structure
+const trainingData = {
+  intents: [
+    {
+      name: "property_inquiry",
+      examples: [
+        "Looking for 2 bedroom apartment in Dubai Marina",
+        "Show me villas for rent in Arabian Ranches",
+        "Properties for sale in Business Bay"
+      ],
+      responses: [
+        "I'll help you find properties in ${location}. What's your budget?",
+        "Great! I have ${count} properties in ${location}. When would you like to view?"
+      ],
+      entities: ["location", "property_type", "bedrooms", "budget"]
+    }
+  ],
+  
+  // Context Management
+  contexts: {
+    "property_search": {
+      requires: ["location", "property_type"],
+      optional: ["budget", "timeline", "amenities"]
+    }
+  },
+  
+  // Arabic Support
+  arabic_intents: [
+    {
+      name: "arabic_inquiry",
+      examples: ["أبحث عن شقة في دبي", "فيلات للإيجار في دبي"],
+      responses: ["سأجد لك عقارات في ${location}"],
+      entities: ["المكان", "نوع_العقار", "غرف_النوم"]
+    }
+  ]
+};
+```
+
+#### **B. Google Integration Flow**
+
+```mermaid
+Sequence Diagram:
+Client → Chatbot: "Schedule viewing on Friday"
+Chatbot → Google API: Create event
+Google API → Calendar: Add event
+Calendar → Chatbot: Event created (eventId)
+Chatbot → Client: "Scheduled! Calendar invite sent"
+Chatbot → Google Tasks: Create task "Follow-up"
+System → Agent: Notification + Calendar event
+```
+
+**OAuth Implementation:**
+```javascript
+// Google OAuth Configuration
+const googleConfig = {
+  clientId: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  redirectUri: `${process.env.APP_URL}/api/google/callback`,
+  scopes: [
+    'https://www.googleapis.com/auth/calendar',
+    'https://www.googleapis.com/auth/tasks',
+    'openid',
+    'email',
+    'profile'
+  ]
+};
+
+// Token Refresh Strategy
+const tokenManagement = {
+  refreshThreshold: 5 * 60 * 1000, // 5 minutes before expiry
+  storage: 'encrypted_db', // Store encrypted in MongoDB
+  autoRefresh: true
+};
+```
+
+#### **C. Property Inventory Data Model**
+
+```javascript
+// Enhanced Property Schema
+const PropertySchema = new Schema({
+  // Identification
+  propertyCode: { type: String, unique: true }, // DXB-PRO-001
+  listingSource: {
+    platform: ['whatsapp', 'email', 'call', 'website', 'walkin'],
+    conversationId: String, // Link to chat history
+    clientId: String,
+    capturedBy: String, // agentId or 'chatbot'
+    timestamp: Date
+  },
+  
+  // Property Details (UAE Specific)
+  details: {
+    emirate: {
+      type: String,
+      enum: ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'RAK', 'Fujairah', 'Umm Al Quwain']
+    },
+    community: String, // Dubai Marina, Palm Jumeirah, etc.
+    buildingName: String,
+    unitNumber: String,
+    propertyType: {
+      type: String,
+      enum: ['Apartment', 'Villa', 'Townhouse', 'Penthouse', 'Office', 'Warehouse', 'Land']
+    },
+    
+    // UAE Specific Details
+    permitNumber: String, // DLD/RERA permit
+    ejariNumber: String, // For rental properties
+    dewaNumber: String, // Utility reference
+    
+    // Pricing (AED)
+    price: {
+      amount: Number,
+      currency: { type: String, default: 'AED' },
+      paymentTerms: ['annually', 'quarterly', 'monthly', 'cheque'],
+      commission: {
+        percentage: Number,
+        fixedAmount: Number
+      }
+    },
+    
+    // Specifications
+    size: {
+      builtUp: Number, // sq ft
+      plot: Number, // for villas/land
+      bedrooms: Number,
+      bathrooms: Number,
+      maidRoom: Boolean,
+    },
+    
+    // UAE Amenities
+    amenities: [{
+      type: String,
+      enum: ['Private Pool', 'Gym', 'Concierge', 'Valet Parking', 'Children\'s Play Area', 
+             'Barbecue Area', 'Balcony', 'Sea View', 'Private Garden', 'Maids Room', 
+             'Covered Parking', 'Security', 'Central AC']
+    }],
+    
+    // Documents (UAE Requirements)
+    documents: [{
+      type: { 
+        type: String,
+        enum: ['Title Deed', 'Ejari', 'DLD Certificate', 'Building Plans', 
+               'NOC', 'Passport Copy', 'Visa Copy', 'Emirates ID']
+      },
+      url: String,
+      expiryDate: Date,
+      verified: Boolean
+    }]
+  },
+  
+  // Status Tracking
+  status: {
+    current: {
+      type: String,
+      enum: ['available', 'reserved', 'under_contract', 'sold', 'rented', 'off_market'],
+      default: 'available'
+    },
+    history: [{
+      status: String,
+      changedBy: String,
+      timestamp: Date,
+      notes: String
+    }]
+  },
+  
+  // Client Information
+  client: {
+    type: { type: String, enum: ['buyer', 'seller', 'tenant', 'landlord'] },
+    clientId: Schema.Types.ObjectId,
+    requirements: {
+      urgency: ['immediate', '1_month', '3_months', 'flexible'],
+      viewingTimes: [Date],
+      specialRequirements: String
+    }
+  },
+  
+  // Assignment & Workflow
+  assignment: {
+    primaryAgent: {
+      agentId: Schema.Types.ObjectId,
+      assignedDate: Date,
+      assignmentReason: String // 'expertise_match', 'availability', 'client_request'
+    },
+    supportingAgents: [Schema.Types.ObjectId],
+    tasks: [{
+      taskId: String, // Linked to Google Tasks
+      description: String,
+      dueDate: Date,
+      completed: Boolean
+    }]
+  },
+  
+  // Viewing Management
+  viewings: [{
+    dateTime: Date,
+    clientId: Schema.Types.ObjectId,
+    agentId: Schema.Types.ObjectId,
+    status: ['scheduled', 'completed', 'cancelled', 'no_show'],
+    feedback: String,
+    followUpTasks: [String]
+  }],
+  
+  // Analytics
+  metrics: {
+    views: Number,
+    inquiries: Number,
+    whatsappClicks: Number,
+    timeOnMarket: Number, // days
+    priceReductions: [{
+      oldPrice: Number,
+      newPrice: Number,
+      date: Date,
+      reason: String
+    }]
+  },
+  
+  // Timestamps
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: Date,
+  listedDate: Date,
+  expectedClosure: Date
+});
+```
+
+### **3. AI Agent Assignment Algorithm**
+
+```javascript
+// AI Assignment Scoring System
+class AgentAssignmentEngine {
+  constructor() {
+    this.factors = {
+      expertise: 0.3,      // 30% weight
+      availability: 0.25,   // 25% weight  
+      performance: 0.2,     // 20% weight
+      proximity: 0.15,      // 15% weight
+      clientPreference: 0.1 // 10% weight
+    };
+  }
+
+  async calculateAgentScore(agent, property, client) {
+    const scores = {
+      expertise: this.calculateExpertiseScore(agent, property),
+      availability: this.calculateAvailabilityScore(agent),
+      performance: this.calculatePerformanceScore(agent),
+      proximity: this.calculateProximityScore(agent, property),
+      clientPreference: this.calculateClientPreference(agent, client)
+    };
+
+    // Weighted sum
+    const totalScore = Object.keys(scores).reduce((sum, key) => {
+      return sum + (scores[key] * this.factors[key]);
+    }, 0);
+
+    return {
+      agentId: agent._id,
+      score: totalScore,
+      breakdown: scores,
+      recommendations: this.generateRecommendations(scores)
+    };
+  }
+
+  calculateExpertiseScore(agent, property) {
+    const specializations = agent.specializations || [];
+    let score = 0;
+    
+    // Property type expertise
+    if (specializations.includes(property.type)) score += 0.4;
+    
+    // Location expertise
+    if (specializations.includes(property.emirate)) score += 0.3;
+    
+    // Price range expertise
+    if (this.isInExpertiseRange(agent, property.price.amount)) score += 0.3;
+    
+    return Math.min(score, 1);
+  }
+
+  calculateAvailabilityScore(agent) {
+    const currentLoad = agent.assignedProperties.length;
+    const maxLoad = agent.maxProperties || 10;
+    
+    // More availability = higher score
+    const availabilityRatio = (maxLoad - currentLoad) / maxLoad;
+    
+    // Consider calendar availability
+    const calendarScore = await this.checkCalendarAvailability(agent);
+    
+    return (availabilityRatio * 0.7) + (calendarScore * 0.3);
+  }
+
+  calculatePerformanceScore(agent) {
+    const performance = agent.performance || {};
+    const metrics = {
+      closureRate: performance.closureRate || 0,
+      avgResponseTime: this.normalizeResponseTime(performance.avgResponseTime),
+      clientRating: performance.avgRating || 0
+    };
+
+    return (metrics.closureRate * 0.5) + 
+           (metrics.avgResponseTime * 0.3) + 
+           (metrics.clientRating * 0.2);
+  }
+}
+```
+
+### **4. Arabic Language Processing**
+
+```javascript
+// Bilingual Support Implementation
+const arabicSupport = {
+  // Arabic NLP Processing
+  nlpProcessor: {
+    tokenizer: 'arabic-tokenizer', // Use arabic-stopwords package
+    stemmer: 'arabic-stemmer',
+    transliterator: 'buckwalter'
+  },
+
+  // Bilingual Templates
+  templates: {
+    greeting: {
+      english: "Hello, how can I help you today?",
+      arabic: "مرحباً، كيف يمكنني مساعدتك اليوم؟"
+    },
+    propertyDetails: {
+      english: "I found ${count} properties in ${location}",
+      arabic: "وجدت ${count} عقار في ${location}"
+    }
+  },
+
+  // RTL Support
+  styling: {
+    direction: 'rtl',
+    fontFamily: "'Cairo', 'Noto Sans Arabic', sans-serif",
+    fontSize: '16px'
+  },
+
+  // Date Formatting (Hijri/Gregorian)
+  dateFormats: {
+    gregorian: 'DD/MM/YYYY',
+    hijri: 'iYYYY/iMM/iDD',
+    display: (date) => {
+      return `${gregorianFormat} (${hijriFormat})`;
+    }
+  }
+};
+```
+
+### **5. Real-Time Dashboard Components**
+
+```javascript
+// Dashboard Metrics - UAE Real Estate Specific
+const dashboardMetrics = {
+  kpis: [
+    {
+      name: 'Monthly Deals',
+      target: 15,
+      current: 12,
+      period: 'month',
+      growth: '+8%'
+    },
+    {
+      name: 'Average Time to Close',
+      target: '45 days',
+      current: '52 days',
+      period: 'quarter'
+    },
+    {
+      name: 'WhatsApp Lead Conversion',
+      target: '25%',
+      current: '22%',
+      period: 'month'
+    },
+    {
+      name: 'Client Satisfaction',
+      target: '4.8/5',
+      current: '4.6/5',
+      period: 'quarter'
+    }
+  ],
+
+  // UAE Market Analytics
+  marketData: {
+    emirates: [
+      { name: 'Dubai', transactions: 1250, avgPrice: '2.1M AED' },
+      { name: 'Abu Dhabi', transactions: 890, avgPrice: '1.8M AED' },
+      { name: 'Sharjah', transactions: 540, avgPrice: '850K AED' }
+    ],
+    propertyTypes: {
+      'Apartment': { percentage: 45, growth: '+12%' },
+      'Villa': { percentage: 30, growth: '+8%' },
+      'Commercial': { percentage: 15, growth: '+15%' },
+      'Land': { percentage: 10, growth: '+5%' }
+    }
+  }
+};
+```
+
+### **6. Implementation Priority Checklist**
+
+**Phase 1: Core Infrastructure (Week 1-2)**
+- [ ] Setup MongoDB with proper indexing for real estate data
+- [ ] Implement JWT authentication with role-based permissions
+- [ ] Create basic property CRUD API with validation
+- [ ] Setup Google OAuth 2.0 integration
+- [ ] Implement Arabic/English language toggle
+
+**Phase 2: AI Chatbot (Week 3-4)**
+- [ ] Setup Rasa/Botpress server
+- [ ] Create training dataset with UAE real estate intents
+- [ ] Implement WhatsApp chat integration
+- [ ] Build conversation history database
+- [ ] Create admin training interface
+
+**Phase 3: Google Integration (Week 5-6)**
+- [ ] Implement Calendar event creation from chats
+- [ ] Create Google Tasks from client requests
+- [ ] Build notification system (email/SMS/WhatsApp)
+- [ ] Implement automatic follow-up reminders
+
+**Phase 4: Inventory Management (Week 7-8)**
+- [ ] Complete property schema with UAE requirements
+- [ ] Build AI agent assignment engine
+- [ ] Create property listing dashboard
+- [ ] Implement document management system
+- [ ] Add analytics and reporting
+
+**Phase 5: Optimization (Week 9-10)**
+- [ ] Performance optimization
+- [ ] Mobile responsiveness
+- [ ] Security hardening
+- [ ] Backup and recovery procedures
+- [ ] User training documentation
+
+### **7. UAE-Specific Considerations**
+
+```javascript
+// UAE Legal & Business Requirements
+const uaeCompliance = {
+  // RERA/DLD Compliance
+  requiredDocuments: [
+    'Title Deed (صك ملكية)',
+    'Ejari Certificate (إيجاري)',
+    'Passport & Visa Copies',
+    'Emirates ID Copy',
+    'Power of Attorney (if applicable)',
+    'NOC from Developer'
+  ],
+
+  // Payment Terms
+  paymentTerms: {
+    rental: ['1 Cheque', '2 Cheques', '4 Cheques', '12 Cheques'],
+    sale: ['Full Cash', 'Mortgage', 'Post-dated Cheques'],
+    commissions: {
+      rental: '5% of annual rent',
+      sale: '2% of property value'
+    }
+  },
+
+  // Areas & Communities Database
+  dubaiAreas: {
+    residential: [
+      'Dubai Marina', 'Palm Jumeirah', 'Downtown Dubai', 
+      'Business Bay', 'Jumeirah', 'Al Barsha', 'Arabian Ranches',
+      'Dubai Hills', 'Meydan', 'JVC', 'Town Square'
+    ],
+    commercial: [
+      'DIFC', 'Dubai Internet City', 'Dubai Media City',
+      'JLT', 'Tecom', 'Dubai Silicon Oasis'
+    ]
+  },
+
+  // Tax & Fee Structure
+  fees: {
+    dldFees: '4% of property value + AED 580',
+    mortgageRegistration: '0.25% of loan amount',
+    ejariRegistration: 'AED 220',
+    knowledgeFee: 'AED 10',
+    innovationFee: 'AED 10'
+  }
+};
+```
+
+### **8. Testing Strategy**
+
+```javascript
+// Test Cases for UAE Real Estate
+const testCases = {
+  chatbot: [
+    {
+      input: "Looking for 2BR in Dubai Marina for 150k AED",
+      expected: {
+        intent: 'property_inquiry',
+        entities: {
+          bedrooms: 2,
+          location: 'Dubai Marina',
+          budget: 150000
+        }
+      }
+    },
+    {
+      input: "أريد فيلا للإيجار في دبي",
+      expected: {
+        intent: 'arabic_inquiry',
+        entities: {
+          property_type: 'فيلا',
+          transaction_type: 'إيجار'
+        }
+      }
+    }
+  ],
+
+  propertyAssignment: [
+    {
+      property: { type: 'Villa', emirate: 'Dubai', price: 5000000 },
+      agents: [agent1, agent2, agent3],
+      expected: agent2 // Specializes in Dubai villas
+    }
+  ],
+
+  calendarIntegration: [
+    {
+      action: 'Schedule viewing',
+      property: 'DXB-PRO-001',
+      date: '2024-01-15 16:00',
+      expected: {
+        googleEvent: true,
+        notification: true,
+        whatsappReminder: true
+      }
+    }
+  ]
+};
+```
+
+### **9. Deployment Checklist for UAE**
+
+1. **Hosting**: AWS/GCP Middle East region (Bahrain)
+2. **Domain**: .ae domain with Arabic support
+3. **SSL**: Valid SSL certificate
+4. **CDN**: CloudFront with Middle East edge locations
+5. **Backup**: Daily backups stored in UAE
+6. **Compliance**: GDPR/PDPL data protection
+7. **Monitoring**: 24/7 monitoring with Arabic notifications
+8. **Support**: Arabic/English support team
+
+### **10. Success Metrics**
+
+```javascript
+const successMetrics = {
+  shortTerm: [
+    { metric: 'Chatbot Response Accuracy', target: '85%' },
+    { metric: 'Lead Response Time', target: '< 5 minutes' },
+    { metric: 'Property Listing Time', target: '< 30 minutes' }
+  ],
+  
+  mediumTerm: [
+    { metric: 'Deal Closure Rate', target: '+15% improvement' },
+    { metric: 'Agent Productivity', target: '+25% improvement' },
+    { metric: 'Client Satisfaction', target: '4.5/5 rating' }
+  ],
+  
+  longTerm: [
+    { metric: 'Market Share Growth', target: '+10% annually' },
+    { metric: 'Operational Efficiency', target: '-30% manual work' },
+    { metric: 'Digital Transformation', target: '90% processes automated' }
+  ]
+};
+```
+
+This detailed breakdown should give Replit Agent 3 clear understanding of:
+1. **Business context** (UAE real estate)
+2. **Technical requirements** (full stack with AI)
+3. **Cultural considerations** (Arabic language, RTL)
+4. **Legal compliance** (UAE real estate regulations)
+5. **Implementation priorities** (phased approach)
+
+Would you like me to elaborate on any specific component or provide sample code for particular features?
+Here's the enhanced prompt covering WhatsApp QR integration, modern dashboard design, and interactive React features:
+
+---
+
+**Prompt for Replit Agent 3:**
+
+```
+I need to implement three major upgrades to my MERN stack real estate website:
+
+1. WhatsApp Account Integration via QR Code/WhatsApp Web
+2. Modern Interactive Dashboard with auto-hide sidebar
+3. Update entire UI to reflect modern React interactive features
+
+**Current Status:**
+- MERN stack with Chakra UI/other open-source libraries
+- Basic dashboard exists but outdated
+- WhatsApp integration planned but not implemented
+- Need owner-exclusive features
+
+**PART 1: WhatsApp Integration with QR Code/WhatsApp Web**
+
+**Requirements:**
+- Owner can connect personal/business WhatsApp via website
+- Two connection methods: QR Code scan OR WhatsApp Web pairing
+- Session persistence with secure storage
+- Multi-device support if possible
+
+**Open-Source Implementation:**
+
+**A. Using baileys (Recommended - MIT License)**
+```javascript
+// WhatsApp Service Structure
+const WhatsAppService = {
+  connectionMethods: {
+    qrCode: {
+      generateQR: true,
+      autoRefresh: true,
+      displayInModal: true
+    },
+    whatsappWeb: {
+      pairingCode: true,
+      manualLinking: true
+    }
+  },
+  
+  features: {
+    multiDevice: true,
+    sessionPersistence: true,
+    autoReconnect: true,
+    webhookSupport: true
+  }
+};
+```
+
+**B. Implementation Details:**
+
+**Frontend Components:**
+```
+1. WhatsAppConnectModal.js
+   - QR Code display with auto-refresh
+   - Pairing code input option
+   - Connection status indicator
+   - Device list management
+
+2. WhatsAppDashboard.js
+   - Connected accounts panel
+   - Message statistics
+   - Quick reply templates
+   - Broadcast composer
+```
+
+**Backend Routes:**
+```javascript
+// WhatsApp Connection Routes
+POST    /api/whatsapp/init-session    // Start new WhatsApp session
+GET     /api/whatsapp/qr              // Get QR code
+POST    /api/whatsapp/pair            // Pair with code
+GET     /api/whatsapp/sessions        // List active sessions
+DELETE  /api/whatsapp/session/:id     // Logout from session
+POST    /api/whatsapp/send            // Send message
+GET     /api/whatsapp/chats           // Get conversations
+```
+
+**QR Code Flow:**
+```
+1. Owner clicks "Connect WhatsApp" in dashboard
+2. Backend creates baileys session
+3. QR code generated and sent to frontend
+4. Frontend displays QR in modal with countdown
+5. Owner scans with WhatsApp mobile app
+6. Connection confirmed, session saved
+7. Real-time chat interface enabled
+```
+
+**Security Measures:**
+- Encrypt session data in database
+- Owner-only access middleware
+- Session timeout handling
+- Log all connection attempts
+- Rate limiting for message sending
+
+**PART 2: Modern Dashboard with Auto-Hide Sidebar**
+
+**Dashboard Design Principles:**
+- Glassmorphism/Neumorphism design
+- Dark/light mode support
+- Responsive with mobile-first approach
+- Micro-interactions and animations
+- Real-time data visualization
+
+**Auto-Hide Sidebar Implementation:**
+
+```javascript
+// Sidebar Component Features
+const SidebarConfig = {
+  behavior: {
+    autoHide: true,
+    hideDelay: 3000, // ms
+    showOnHover: true,
+    collapseToIcons: true,
+    rememberState: true
+  },
+  
+  states: {
+    expanded: '250px',
+    collapsed: '70px',
+    hidden: '0px'
+  },
+  
+  triggers: {
+    mouseLeave: 'hide',
+    inactivity: 'collapse',
+    mobile: 'drawer'
+  }
+};
+```
+
+**Interactive Features:**
+1. **Hover Effects:** Cards lift, buttons pulse
+2. **Loading States:** Skeleton screens, progress bars
+3. **Transitions:** Smooth page transitions, fade-ins
+4. **Drag & Drop:** Reorder dashboard widgets
+5. **Real-time Updates:** Live counters, notifications
+
+**Dashboard Components Structure:**
+
+```
+DashboardLayout.js
+├── AutoHideSidebar.js
+│   ├── NavigationItems.js (with active states)
+│   ├── UserProfileMini.js
+│   └── QuickActions.js
+├── TopNavigation.js
+│   ├── DubaiTimeWidget.js (live updating)
+│   ├── WeatherWidget.js (with animations)
+│   ├── NotificationsBell.js (with badge)
+│   └── SearchGlobal.js
+├── MainContent.js
+│   ├── WelcomeBanner.js (personalized)
+│   ├── StatsGrid.js (animated counters)
+│   ├── RecentActivity.js (live feed)
+│   └── QuickActionsGrid.js
+└── DashboardFooter.js
+    ├── LiveStats.js
+    └── SystemStatus.js
+```
+
+**Implementation Code Example:**
+
+```javascript
+// AutoHideSidebar Component
+const AutoHideSidebar = () => {
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [isVisible, setIsVisible] = useState(true);
+  const inactivityTimer = useRef(null);
+  
+  // Auto-hide logic
+  useEffect(() => {
+    const handleActivity = () => {
+      setIsVisible(true);
+      clearTimeout(inactivityTimer.current);
+      
+      inactivityTimer.current = setTimeout(() => {
+        setIsVisible(false);
+        setIsExpanded(false);
+      }, 3000);
+    };
+    
+    // Listeners for user activity
+    window.addEventListener('mousemove', handleActivity);
+    window.addEventListener('keydown', handleActivity);
+    window.addEventListener('click', handleActivity);
+    
+    return () => {
+      clearTimeout(inactivityTimer.current);
+      window.removeEventListener('mousemove', handleActivity);
+      window.removeEventListener('keydown', handleActivity);
+      window.removeEventListener('click', handleActivity);
+    };
+  }, []);
+  
+  return (
+    <Box
+      className={`sidebar ${isExpanded ? 'expanded' : 'collapsed'} ${isVisible ? 'visible' : 'hidden'}`}
+      onMouseEnter={() => {
+        setIsVisible(true);
+        setIsExpanded(true);
+      }}
+      onMouseLeave={() => {
+        setTimeout(() => {
+          setIsExpanded(false);
+        }, 500);
+      }}
+    >
+      {/* Sidebar content */}
+    </Box>
+  );
+};
+```
+
+**PART 3: Modern React Interactive Features**
+
+**A. Micro-interactions Library (Framer Motion - MIT License)**
+```javascript
+// Animation Configuration
+const animations = {
+  pageTransition: {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 },
+    transition: { duration: 0.3 }
+  },
+  
+  cardHover: {
+    whileHover: { y: -5, scale: 1.02 },
+    whileTap: { scale: 0.98 }
+  },
+  
+  buttonPress: {
+    whileTap: { scale: 0.95 }
+  },
+  
+  listItem: {
+    initial: { opacity: 0, x: -20 },
+    animate: { opacity: 1, x: 0 }
+  }
+};
+```
+
+**B. Interactive Components to Implement:**
+
+1. **Draggable Dashboard Widgets:**
+   - Use `@dnd-kit` (MIT) for drag-and-drop
+   - Save widget positions to localStorage/DB
+   - Grid layout with resizing
+
+2. **Live Data Visualization:**
+   - Recharts (MIT) for graphs
+   - Real-time updates with WebSocket
+   - Interactive tooltips and zoom
+
+3. **Advanced Form Interactions:**
+   - React Hook Form + Zod validation
+   - Auto-save forms
+   - Step-by-step wizards
+   - File upload with preview
+
+4. **Notification System:**
+   - Toast notifications with progress
+   - Sound alerts for important events
+   - Notification center with filters
+
+5. **Context Menu & Right-Click Actions:**
+   - Custom context menus
+   - Quick actions on data items
+   - Bulk operations
+
+**C. Modern UI Patterns to Implement:**
+
+1. **Skeleton Screens:** Show loading states
+2. **Progressive Disclosure:** Show info as needed
+3. **Pull-to-Refresh:** Mobile-friendly refresh
+4. **Infinite Scroll:** For chat/lists
+5. **Virtualized Lists:** For large datasets
+6. **Offline Support:** Service workers for PWA
+7. **Keyboard Navigation:** Full keyboard support
+
+**Implementation Example - Interactive Property Card:**
+
+```javascript
+const PropertyCard = ({ property }) => {
+  const [isLiked, setIsLiked] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+  
+  return (
+    <motion.div
+      className="property-card"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      whileHover={{ y: -8, boxShadow: "0 20px 40px rgba(0,0,0,0.1)" }}
+      transition={{ type: "spring", stiffness: 300 }}
+    >
+      {/* Image with quick actions overlay */}
+      <div className="image-container">
+        <img src={property.image} alt={property.title} />
+        <div className="quick-actions">
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setIsLiked(!isLiked)}
+          >
+            <HeartIcon filled={isLiked} />
+          </motion.button>
+          <motion.button whileTap={{ scale: 0.9 }}>
+            <ShareIcon />
+          </motion.button>
+        </div>
+      </div>
+      
+      {/* Details with expandable section */}
+      <div className="property-details">
+        <h3>{property.title}</h3>
+        <p>{property.location}</p>
+        <div className="price-badge">
+          <AnimatePresence>
+            {property.discount && (
+              <motion.span
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0 }}
+                className="discount"
+              >
+                -{property.discount}%
+              </motion.span>
+            )}
+          </AnimatePresence>
+          <span className="price">{property.price} AED</span>
+        </div>
+        
+        {/* Expandable details */}
+        <motion.div
+          animate={{ height: showDetails ? "auto" : 0 }}
+          className="expandable-details"
+        >
+          {showDetails && (
+            <div className="details-content">
+              {/* Property specifications */}
+            </div>
+          )}
+        </motion.div>
+        
+        <button onClick={() => setShowDetails(!showDetails)}>
+          {showDetails ? "Show Less" : "Show More"}
+        </button>
+      </div>
+    </motion.div>
+  );
+};
+```
+
+**PART 4: Modern Dashboard Features List**
+
+**Essential Widgets:**
+1. **Analytics Dashboard:**
+   - Real-time lead counter
+   - Property views graph
+   - Conversion funnel
+   - Revenue projection
+
+2. **Agent Performance:**
+   - Leaderboard with rankings
+   - Activity heatmap
+   - Response time metrics
+   - Commission calculator
+
+3. **Property Pipeline:**
+   - Kanban board view
+   - Timeline visualization
+   - Document status
+   - Task completion
+
+4. **Communication Hub:**
+   - WhatsApp message center
+   - Email inbox preview
+   - Call log with recordings
+   - SMS campaign status
+
+**Modern UI/UX Requirements:**
+
+**Color Scheme:**
+- Primary: Professional blue/green palette
+- Secondary: Warm accents for CTAs
+- Dark mode with auto-detection
+- Accessibility compliant (WCAG 2.1)
+
+**Typography:**
+- Google Fonts: Inter (English), Cairo (Arabic)
+- Responsive font sizes
+- Proper hierarchy and spacing
+
+**Icons:**
+- Tabler Icons (MIT) - 4500+ icons
+- Custom icons for real estate
+- Animated icons for status
+
+**Layout:**
+- 12-column grid system
+- Consistent spacing (8px base)
+- Breakpoints: mobile, tablet, desktop, widescreen
+
+**PART 5: Implementation Steps**
+
+**Phase 1: Dashboard Modernization (Week 1-2)**
+1. Install Framer Motion and @dnd-kit
+2. Create AutoHideSidebar component
+3. Design modern color scheme
+4. Implement responsive grid layout
+5. Add dark/light mode toggle
+
+**Phase 2: WhatsApp Integration (Week 3-4)**
+1. Setup baileys WhatsApp service
+2. Create QR code generator
+3. Build connection modal
+4. Implement session management
+5. Create chat interface
+
+**Phase 3: Interactive Features (Week 5-6)**
+1. Add micro-interactions to all components
+2. Implement drag-and-drop dashboard
+3. Create animated charts and graphs
+4. Add keyboard shortcuts
+5. Implement PWA features
+
+**Phase 4: Polish & Optimization (Week 7-8)**
+1. Performance optimization
+2. Accessibility audit
+3. Browser compatibility
+4. Load time optimization
+5. Security hardening
+
+**Technical Specifications:**
+
+**Required Dependencies (All Open-Source MIT):**
+```json
+{
+  "dependencies": {
+    "framer-motion": "^10.0.0", // Animations
+    "@dnd-kit/sortable": "^7.0.0", // Drag & drop
+    "@whiskeysockets/baileys": "^6.0.0", // WhatsApp
+    "qrcode": "^1.5.0", // QR generation
+    "recharts": "^2.5.0", // Charts
+    "date-fns": "^2.30.0", // Date handling
+    "date-fns-tz": "^2.0.0", // Timezones
+    "socket.io-client": "^4.5.0", // Real-time
+    "react-query": "^3.39.0", // Data fetching
+    "zustand": "^4.0.0", // State management
+    "react-hook-form": "^7.45.0", // Forms
+    "zod": "^3.21.0" // Validation
+  }
+}
+```
+
+**Performance Targets:**
+- Lighthouse score > 90
+- First Contentful Paint < 1.5s
+- Time to Interactive < 3s
+- Mobile responsive score > 95
+
+**Testing Requirements:**
+- Unit tests for all utilities
+- Integration tests for WhatsApp flow
+- E2E tests for dashboard interactions
+- Cross-browser testing
+
+**Accessibility Requirements:**
+- Screen reader compatible
+- Keyboard navigation
+- Color contrast compliance
+- ARIA labels everywhere
+
+Please implement this modern, interactive dashboard with WhatsApp integration using ONLY open-source libraries. Focus on creating a professional, responsive interface that works seamlessly on all devices with special attention to the real estate business context in UAE.
+```
+
+---
+
+**Key Features Summary:**
+
+1. **WhatsApp Integration:** QR code + WhatsApp Web pairing with secure session management
+2. **Auto-Hide Sidebar:** Intelligent sidebar that collapses/hides based on user activity
+3. **Modern Dashboard:** Glassmorphism design, dark/light mode, real-time updates
+4. **Interactive React:** Framer Motion animations, drag-and-drop, micro-interactions
+5. **Real Estate Focus:** UAE-specific features, Arabic support, property management tools
+
+**Visual Design Principles:**
+- Clean, professional aesthetic
+- Consistent spacing and typography
+- Meaningful animations (not excessive)
+- Intuitive user flows
+- Mobile-optimized touch interactions
+
+This implementation will create a world-class dashboard that competes with modern SaaS platforms while being tailored specifically for UAE real estate business needs.
+
+**Prompt for Replit Agent 3:**
+
+```
+I need to upgrade the dashboard and user profile pages in my MERN stack website. Currently, these pages don't match the modern design and theme consistency from the homepage. Please implement the following improvements:
+
+**Current Setup:**
+- MERN stack (MongoDB, Express.js, React, Node.js)
+- Existing dashboard and user profile pages are built but outdated in design
+- Homepage has modern design that should be extended to all pages
+
+**Required Updates:**
+
+1. **Design & Theme Consistency**
+   - Analyze the homepage's design system (colors, typography, spacing, components)
+   - Apply the same design system to:
+     - User profile page
+     - All dashboard pages/sections
+   - Ensure responsive design matches homepage quality
+   - Use the same component library/design patterns as homepage
+
+2. **Dashboard Navigation Header**
+   - Add a persistent top navigation bar to ALL dashboard pages containing:
+     a. **Live Dubai Time**: Display current time in Dubai (GMT+4) with auto-updating
+     b. **Live Weather**: Show Dubai weather with:
+        - Temperature
+        - Weather condition (icon + text)
+        - Auto-refresh every 30 minutes
+     c. Keep existing navigation elements (user menu, notifications, etc.)
+
+3. **Tab-Based Content Loading**
+   - Restructure dashboard to load content dynamically when tabs are clicked:
+     - Profile tab → Load user profile editing interface
+     - Details tab → Load relevant details section
+     - Settings tab → Load settings panel
+     - [Add other existing tabs]
+   - Implement smooth transitions between tab content
+   - Maintain state persistence where appropriate
+
+4. **Specific Page Improvements:**
+
+   **User Profile Page:**
+   - Modernize layout to match homepage aesthetic
+   - Add profile picture upload with preview/crop
+   - Section for personal details (form with validation)
+   - Preferences/settings subsection
+   - Activity history/log display
+
+   **Dashboard Pages:**
+   - Consistent card-based layout matching homepage
+   - Proper spacing and typography hierarchy
+   - Interactive elements with hover/focus states
+   - Loading states for async content
+
+**Technical Requirements:**
+- Use React functional components with hooks
+- Implement Context API or Redux for state management (whichever is in current codebase)
+- Use axios/fetch for weather API integration (suggest OpenWeatherMap or WeatherAPI)
+- Time display using `moment-timezone` or `date-fns-tz`
+- Implement lazy loading for tab content where appropriate
+- Add loading skeletons for better UX
+- Ensure all API calls have error handling
+
+**API Integration for Weather:**
+- Suggest using OpenWeatherMap API (free tier available)
+- Create environment variables for API keys
+- Build a weather service in backend to cache responses (prevent rate limiting)
+
+**Code Structure:**
+- Create reusable components:
+  - `DashboardLayout.js` (with integrated time/weather header)
+  - `TabNavigation.js` (for dashboard tabs)
+  - `WeatherWidget.js`
+  - `DubaiTime.js`
+- Update existing profile/dashboard components to use new design system
+
+**Steps to Follow:**
+1. First analyze current dashboard/profile component structure
+2. Identify design tokens from homepage (CSS variables/theme)
+3. Create the time/weather widgets
+4. Build the enhanced dashboard layout
+5. Refactor existing pages to match new design
+6. Implement tab-based content loading
+7. Test responsive behavior
+8. Add proper error boundaries
+
+Please provide a step-by-step implementation plan and ask for clarification if any part of the current codebase structure is unclear.
+```
+
+---
+
+**Additional Notes for You:**
+1. **Weather API**: You'll need to sign up for a free API key from [OpenWeatherMap](https://openweathermap.org/api) or similar service
+2. **Time Zone**: Dubai is GMT+4 (Asia/Dubai timezone)
+3. **Backend**: You'll need to create a secure endpoint to fetch weather data (to hide API key)
+4. **Design Analysis**: Make sure the agent can access your homepage design files/CSS
+
+Would you like me to break down any specific part of this implementation or help you with the backend weather API setup?
+Here's a comprehensive prompt for Replit Agent 3 to implement an exclusive WhatsApp account management system with chat bot integration:
+
+---
+
+**Prompt for Replit Agent 3:**
+
+```
+I need to implement an exclusive WhatsApp account management system in my MERN stack company website. This should be an admin-only feature where the company owner can monitor client chats and upgrade/configure an AI chatbot for handling the WhatsApp account.
+
+**Current Setup:**
+- MERN stack application
+- Admin dashboard already exists (being upgraded)
+- User authentication and role-based access (admin/user roles)
+- WhatsApp is NOT currently integrated
+
+**Core Requirements:**
+
+1. **Exclusive Admin Tab - "WhatsApp Manager"**
+   - Create a new tab in the admin dashboard (owner-only access)
+   - This tab should ONLY be visible/accessible to users with "owner" role
+   - Implement role verification: `user.role === 'owner'`
+
+2. **WhatsApp Chat Interface Features:**
+   - Real-time chat display showing all client conversations
+   - **Chat List Panel**: Show all active chats with:
+     - Client profile/name
+     - Last message preview
+     - Unread message count
+     - Timestamp
+   - **Chat Window**: When a chat is selected:
+     - Complete message history with timestamps
+     - Media message support (images, documents, audio preview)
+     - Message status indicators (sent, delivered, read)
+     - Quick reply interface
+   - **Search & Filter**:
+     - Search conversations by client name/phone
+     - Filter by date, unread status, tags
+   - **Chat Management**:
+     - Assign tags/labels to conversations
+     - Mark as resolved/important
+     - Export chat history
+
+3. **AI Chatbot Configuration Panel:**
+   - **Chatbot Status Dashboard**:
+     - Current chatbot status (active/inactive)
+     - Response rate analytics
+     - Common query patterns
+   - **Training & Configuration**:
+     - Upload FAQ documents for training
+     - Set automated responses for common queries
+     - Configure business hours for auto-replies
+     - Set escalation rules (when to notify human agent)
+   - **Personality Settings**:
+     - Adjust chatbot tone (professional/friendly)
+     - Custom greeting messages
+     - Response delay settings
+   - **Learning & Improvement**:
+     - Review failed/flagged responses
+     - Manual correction interface
+     - Feedback loop for improvement
+
+4. **Latest WhatsApp Features Integration:**
+   - **Quick Replies**: Pre-defined response buttons
+   - **List Messages**: Interactive menu options
+   - **Buttons & CTAs**: Call-to-action buttons
+   - **Templates**: Pre-approved message templates
+   - **Media Support**: Image, document, audio messages
+   - **Location Sharing**: Client location requests
+   - **Catalog Integration**: Product showcase
+   - **Payment Links**: (If applicable)
+
+5. **Technical Implementation:**
+
+   **Backend (Node.js/Express):**
+   ```
+   Routes needed:
+   - POST /api/whatsapp/webhook (for incoming messages)
+   - GET /api/admin/whatsapp/chats
+   - GET /api/admin/whatsapp/chats/:chatId
+   - POST /api/admin/whatsapp/send
+   - PUT /api/admin/whatsapp/bot/config
+   - GET /api/admin/whatsapp/analytics
+   - POST /api/admin/whatsapp/broadcast
+   ```
+
+   **WhatsApp API Integration:**
+   - Use WhatsApp Business API (Meta) or third-party service like:
+     - Twilio API for WhatsApp
+     - WATI.io
+     - MessageBird
+   - Webhook setup for real-time message reception
+   - Implement message queuing for rate limiting
+
+   **Real-time Features:**
+   - Use Socket.io for real-time chat updates
+   - Live typing indicators
+   - Message read receipts
+   - Online status for clients
+
+   **Security:**
+   - Encrypt chat data in database
+   - Secure webhook verification
+   - Rate limiting on API endpoints
+   - Session management for WhatsApp connection
+
+   **Database Schema Additions:**
+   ```
+   Collection: whatsapp_chats
+   - chatId, clientPhone, clientName, lastMessage, unreadCount, tags, status
+   
+   Collection: whatsapp_messages  
+   - messageId, chatId, sender, content, type, timestamp, status, mediaUrl
+   
+   Collection: chatbot_config
+   - configId, responses, businessHours, escalationRules, trainedData
+   
+   Collection: whatsapp_analytics
+   - date, totalMessages, responseRate, avgResponseTime
+   ```
+
+6. **Frontend (React) Components to Create:**
+   ```
+   - WhatsAppManager.js (main container)
+   - ChatList.js (conversations list)
+   - ChatWindow.js (message interface)
+   - ChatbotConfig.js (bot settings)
+   - QuickReplyBuilder.js (template builder)
+   - AnalyticsDashboard.js (performance metrics)
+   - BroadcastComposer.js (for bulk messages)
+   ```
+
+7. **Advanced Features:**
+   - **Automated Tagging**: AI-powered conversation tagging
+   - **Sentiment Analysis**: Detect client mood/urgency
+   - **Auto-Translation**: Multi-language support
+   - **Voice Messages**: Transcribe and respond to voice notes
+   - **CRM Integration**: Link chats to customer profiles
+   - **Scheduled Messages**: Plan messages for later delivery
+   - **Broadcast Campaigns**: Send to multiple clients
+
+8. **Setup Instructions for Replit Agent 3:**
+   - First, analyze current admin dashboard structure
+   - Create secure WhatsApp API service layer
+   - Implement real-time messaging infrastructure
+   - Build the React components with Material-UI/Chakra UI
+   - Add comprehensive error handling
+   - Create admin onboarding guide for the feature
+   - Test thoroughly with simulated WhatsApp messages
+
+**Important Notes:**
+- This feature is OWNER-EXCLUSIVE (strict access control)
+- Must comply with WhatsApp Business Policy
+- Implement data retention settings
+- Add backup/restore functionality for chat history
+- Include comprehensive logging for audit trail
+
+Please provide a phased implementation plan starting with:
+1. WhatsApp API integration setup
+2. Basic chat interface
+3. Admin access controls
+4. Chatbot configuration
+5. Advanced features rollout
+```
+
+---
+
+**Additional Notes for You:**
+
+1. **API Service Choice**: You'll need to choose a WhatsApp Business API provider:
+   - **Meta's Official API**: More control but complex setup
+   - **Third-party (Twilio/WATI)**: Easier implementation, often with built-in features
+
+2. **Cost Considerations**: WhatsApp Business API has messaging costs (usually per conversation)
+
+3. **Legal Compliance**: Ensure you inform clients about chat monitoring and data storage
+
+4. **Testing Strategy**: Create a test WhatsApp number before going live
+
+**Quick Start Questions for the Agent:**
+- Which WhatsApp API provider should we integrate with?
+- How should we handle message encryption?
+- What's the best way to implement real-time updates?
+- How to structure the database for efficient chat retrieval?
+
+Would you like me to help you choose a specific WhatsApp API provider or create a more detailed implementation plan for any particular feature?
+Here's the updated prompt focusing exclusively on open-source libraries and modern replacements:
+
+---
+Here's the comprehensive prompt for Replit Agent 3 to implement the AI chatbot system with Google integration and property inventory management:
+
+---
+
+**Prompt for Replit Agent 3:**
+
+```
+I need to implement a comprehensive AI-powered business management system for my real estate company's MERN stack website. This includes:
+
+1. AI Learning Chatbot for client handling
+2. Google Calendar & Tasks integration
+3. Property Inventory Management system
+
+**Current Setup:**
+- MERN stack with open-source libraries (Chakra UI, date-fns, etc.)
+- Basic dashboard with Dubai time/weather
+- WhatsApp integration planned
+- User roles: owner, admin, agents, staff, clients
+
+**Part 1: AI Learning Chatbot System**
+
+**Requirements:**
+- AI chatbot that learns from client interactions
+- Handles WhatsApp, email, and website chat
+- Context-aware conversations
+- Multi-language support (English, Arabic preferred)
+
+**Open-Source AI Stack:**
+```
+Core AI Engine:
+- Rasa Open Source (Apache 2.0) - For NLP and dialogue management
+- OR Botpress (MIT) - If simpler setup needed
+
+Machine Learning:
+- TensorFlow.js (Apache 2.0) for browser-based learning
+- Transformers.js (Apache 2.0) for pre-trained models
+- Natural (MIT) for NLP processing
+
+Training Data Management:
+- Create structured training dataset from past conversations
+- Implement feedback loop for continuous learning
+- Manual correction interface for admins
+```
+
+**Chatbot Features:**
+- Property inquiry handling
+- Appointment scheduling
+- FAQ responses
+- Lead qualification
+- Sentiment analysis
+- Escalation to human agents
+- Conversation history and context retention
+
+**Training Pipeline:**
+```
+1. Data Collection: Aggregate past WhatsApp/email conversations
+2. Preprocessing: Clean and anonymize data
+3. Intent Classification: Train model to identify client intents
+4. Entity Recognition: Extract property details, locations, budgets
+5. Response Generation: Create appropriate responses
+6. Evaluation: Test with sample conversations
+```
+
+**Part 2: Google Calendar & Tasks Integration**
+
+**Open-Source Google Integration:**
+```
+Authentication:
+- Google OAuth 2.0 with openid-client (MIT)
+- Store tokens securely with encryption
+
+Libraries:
+- googleapis (MIT) - Official Google APIs client
+- node-ical (MIT) - For calendar parsing
+
+Features Needed:
+1. Calendar Integration:
+   - Auto-create appointments from chatbot conversations
+   - Sync property viewing schedules
+   - Send reminders to clients/agents
+   - Team calendar for coordination
+
+2. Tasks Integration:
+   - Convert client requests to Google Tasks
+   - Assign tasks to agents/staff
+   - Priority-based task management
+   - Deadline reminders
+   - Progress tracking
+
+Implementation:
+- Create /api/google/connect endpoint for OAuth
+- Store calendar/task IDs with corresponding properties/leads
+- Real-time sync using webhooks
+- Handle multiple Google accounts (company, agents)
+```
+
+**Part 3: Property Inventory Management System**
+
+**Requirements:**
+- Centralized inventory of properties for rent/sale
+- Track properties from initial inquiry to closure
+- Source tagging (WhatsApp, Call, Email, Website)
+- Agent assignment and performance tracking
+
+**Database Schema Additions:**
+```javascript
+// Properties Collection
+{
+  propertyId: String,
+  type: ['sale', 'rent', 'commercial'],
+  status: ['available', 'reserved', 'sold', 'rented'],
+  source: ['whatsapp', 'call', 'email', 'website'],
+  sourceDetails: {
+    conversationId: String,
+    clientId: String,
+    dateAdded: Date
+  },
+  details: {
+    location: { emirate: String, area: String, coordinates: Object },
+    price: { amount: Number, currency: String, paymentTerms: String },
+    specifications: { bedrooms: Number, bathrooms: Number, area: Number },
+    amenities: [String],
+    images: [String],
+    documents: [String]
+  },
+  timeline: [
+    {
+      date: Date,
+      action: String,
+      agentId: String,
+      notes: String
+    }
+  ],
+  assignedTo: {
+    agentId: String,
+    assignedDate: Date,
+    priority: Number
+  },
+  clientInfo: {
+    clientId: String,
+    requirements: Object,
+    budget: Number,
+    timeline: String
+  }
+}
+
+// Agents Performance Collection
+{
+  agentId: String,
+  assignedProperties: [propertyId],
+  completedDeals: Number,
+  responseTime: Number,
+  clientRating: Number,
+  specializations: [String],
+  availability: Boolean
+}
+```
+
+**Property Workflow:**
+```
+1. Lead Capture (WhatsApp/Email/Call) → 2. Initial Qualification (Chatbot) → 
+3. Property Details Collection → 4. Source Tagging → 5. Agent Assignment →
+6. Follow-up Scheduling → 7. Viewing Arrangement → 8. Deal Progress → 9. Closure
+```
+
+**AI-Powered Agent Assignment:**
+```
+Use machine learning to assign properties to optimal agents:
+- Agent's specialization match (location/property type)
+- Current workload
+- Historical performance
+- Client preferences
+- Availability
+
+Implementation with TensorFlow.js:
+- Create recommendation model
+- Train on past successful assignments
+- Real-time assignment suggestions
+```
+
+**Part 4: Unified Dashboard Implementation**
+
+**Components to Build:**
+```
+1. AI Chatbot Dashboard
+   - Conversation monitoring
+   - Training interface
+   - Performance analytics
+   - Manual override controls
+
+2. Google Integration Panel
+   - Calendar sync status
+   - Task management
+   - Appointment scheduling
+   - Reminder settings
+
+3. Property Inventory Dashboard
+   - Property listing (with filters)
+   - Source analytics (WhatsApp vs Email vs Call)
+   - Agent performance metrics
+   - Deal pipeline visualization
+   - Document management
+
+4. Assignment Engine
+   - Auto-assignment interface
+   - Manual assignment override
+   - Workload balancing
+   - Priority management
+```
+
+**Part 5: Integration Architecture**
+
+**Backend Services:**
+```javascript
+Services to Create:
+1. ChatbotService.js - AI conversation handling
+2. GoogleService.js - Calendar/Tasks integration
+3. PropertyService.js - Inventory management
+4. AssignmentService.js - AI-powered agent assignment
+5. NotificationService.js - Unified notifications
+```
+
+**API Endpoints:**
+```
+POST    /api/chatbot/train          - Train chatbot with new data
+POST    /api/chatbot/message        - Process incoming message
+GET     /api/chatbot/conversations  - Get chat history
+
+POST    /api/google/connect         - OAuth connection
+POST    /api/google/event           - Create calendar event
+POST    /api/google/task           - Create/update task
+
+POST    /api/properties            - Add new property
+PUT     /api/properties/:id        - Update property
+GET     /api/properties/analytics  - Get inventory analytics
+POST    /api/properties/assign     - Assign property to agent
+
+POST    /api/assignment/suggest    - Get AI assignment suggestions
+PUT     /api/assignment/override   - Manual assignment override
+```
+
+**Part 6: Implementation Steps**
+
+**Phase 1: Foundation (Week 1-2)**
+1. Set up Rasa/Botpress chatbot framework
+2. Create Google OAuth integration
+3. Design property database schema
+4. Implement basic inventory CRUD
+
+**Phase 2: AI Integration (Week 3-4)**
+1. Train chatbot with sample real estate conversations
+2. Implement Google Calendar sync
+3. Build AI assignment model
+4. Create source tracking system
+
+**Phase 3: Dashboard & Analytics (Week 5-6)**
+1. Build comprehensive dashboards
+2. Implement real-time notifications
+3. Add performance analytics
+4. Create reporting system
+
+**Phase 4: Optimization (Week 7-8)**
+1. Fine-tune AI models
+2. Optimize assignment algorithms
+3. Add advanced features
+4. Performance testing
+
+**Technical Specifications:**
+
+**Frontend (React with Chakra UI):**
+- Use React Query (MIT) for data fetching
+- Implement Zustand (MIT) for state management
+- Use React Hook Form (MIT) + Zod (MIT) for forms
+- Add Recharts (MIT) for data visualization
+- Implement AG Grid (MIT) for data tables
+
+**Backend (Node.js/Express):**
+- Use Bull (MIT) for job queues (reminders, notifications)
+- Implement Redis (BSD) for caching
+- Use Mongoose (MIT) with MongoDB
+- Add rate limiting with express-rate-limit (MIT)
+- Implement comprehensive logging with Winston (MIT)
+
+**Security:**
+- JWT authentication with refresh tokens
+- Role-based access control (RBAC)
+- Data encryption at rest
+- Secure file uploads
+- API key management for Google services
+
+**Testing:**
+- Unit tests with Vitest (MIT)
+- E2E tests with Playwright (Apache 2.0)
+- API tests with Supertest (MIT)
+- Load testing with Artillery (MPL 2.0)
+
+**Deployment:**
+- Docker containerization
+- CI/CD with GitHub Actions
+- Environment-based configuration
+- Backup and recovery procedures
+
+**Constraints:**
+- ALL libraries must be open-source (MIT, Apache 2.0, BSD preferred)
+- NO proprietary services
+- Focus on modular, maintainable code
+- Comprehensive documentation required
+- Arabic language support from start
+
+Please provide a detailed implementation plan with specific library recommendations and step-by-step instructions.
+```
+
+---
+
+**Key Open-Source Stack Summary:**
+
+1. **AI Chatbot:** Rasa (Apache 2.0) or Botpress (MIT)
+2. **Machine Learning:** TensorFlow.js (Apache 2.0) + Natural (MIT)
+3. **Google Integration:** googleapis (MIT) + openid-client (MIT)
+4. **Frontend:** React + Chakra UI + React Query + Zustand
+5. **Backend:** Express + Mongoose + Bull + Redis
+6. **Database:** MongoDB (open-source community edition)
+7. **Testing:** Vitest + Playwright + Supertest
+8. **Visualization:** Recharts + AG Grid
+
+**Important Notes:**
+- Google Calendar/Tasks integration requires OAuth consent screen setup
+- Rasa chatbot requires Python environment (can run in separate microservice)
+- Property data should be GDPR/PDPL compliant for UAE
+- Implement Arabic/English bilingual support throughout
+
+Would you like me to break down any specific component or provide more details on the AI training pipeline?
+
+**Prompt for Replit Agent 3:**
+
+```
+I need to upgrade my MERN stack project using ONLY open-source libraries, and replace any outdated dependencies with modern open-source alternatives. Please focus on these specific areas:
+
+**Current Issues to Fix:**
+1. Dashboard/Profile pages don't match homepage design
+2. Need Dubai time & weather in dashboard navigation
+3. Need exclusive WhatsApp management tab for owner
+4. MUST replace all old/outdated libraries with modern open-source alternatives
+
+**Core Principle: Use ONLY Open-Source Libraries**
+
+**1. Design System & UI Consistency**
+   - **Replace if using:** Material-UI v4, Bootstrap 4, older Ant Design
+   - **Use instead:**
+     - **Chakra UI** (MIT License) - Modern, accessible component library
+     - **Mantine** (MIT) - Feature-rich, modern components
+     - **Radix UI** (MIT) + **Tailwind CSS** (MIT) - Unstyled components + utility-first CSS
+     - **React Aria** (Apache 2.0) - Accessibility primitives
+   
+   **Action:** Analyze homepage design, extract design tokens, create consistent theme across all pages using chosen open-source library
+
+**2. Dashboard Navigation with Dubai Time & Weather**
+   - **Time Display:**
+     - Remove: `moment.js` (heavy, legacy)
+     - Use: **`date-fns`** + **`date-fns-tz`** (MIT) - Lightweight modern date library
+     - OR: **`Luxon`** (MIT) - Modern datetime library
+   
+   - **Weather Integration:**
+     - Backend: Use **OpenWeatherMap Free API** (no premium libraries)
+     - Frontend: **`axios`** (MIT) for API calls
+     - Caching: **`node-cache`** (MIT) on backend to prevent API rate limits
+   
+   - **Real-time Updates:**
+     - Remove: Old socket libraries
+     - Use: **`Socket.io`** (MIT) for real-time features
+
+**3. WhatsApp Integration (Open-Source Only)**
+   **DO NOT USE:** Proprietary services (Twilio, MessageBird paid tiers)
+   **USE INSTEAD:**
+   
+   A. **WhatsApp Web Protocol (Reverse Engineered):**
+     - **`whatsapp-web.js`** (GPL-3.0) - Node.js client for WhatsApp Web
+     - **`venom-bot`** (MIT) - Alternative WhatsApp Web client
+     - **Note:** These use WhatsApp Web protocol (may have stability concerns)
+   
+   B. **Self-Hosted Solution:**
+     - **`baileys`** (MIT) - Latest WhatsApp Web protocol implementation
+     - **Features:** Multimedia, groups, stories, status
+     - **Webhook Server:** Build with Express + Socket.io
+   
+   C. **Chatbot Framework:**
+     - **`Rasa`** (Apache 2.0) - Open-source AI chatbot
+     - **`Botpress`** (MIT) - Alternative open-source bot platform
+     - **`TensorFlow.js`** (Apache 2.0) for ML features
+
+**4. Database & Backend Updates**
+   - **ODM:** Keep **Mongoose** (MIT) - Ensure latest version
+   - **Validation:** **`Joi`** (MIT) or **`Zod`** (MIT) - Replace any outdated validators
+   - **Authentication:** **`jsonwebtoken`** (MIT) + **`bcryptjs`** (MIT)
+   - **File Upload:** **`multer`** (MIT) + **`sharp`** (Apache 2.0) for image processing
+
+**5. Complete Library Replacement Strategy**
+   
+   **Step 1: Audit Current Dependencies**
+   ```bash
+   npm list --depth=0
+   ```
+   Identify and replace:
+   - Legacy UI libraries → Chakra UI/Mantine
+   - Old HTTP clients → axios/fetch
+   - Outdated utilities → modern alternatives
+   
+   **Step 2: Priority Replacements**
+   ```
+   High Priority (Security/Performance):
+   - React Router v5 → v6 (MIT)
+   - Webpack 4 → Vite (MIT) for faster builds
+   - Express 4 → Latest Express (MIT)
+   - Old testing libraries → Vitest (MIT) + React Testing Library (MIT)
+   
+   Medium Priority:
+   - Redux (if used) → Zustand (MIT) or Jotai (MIT)
+   - CSS-in-JS legacy → Emotion (MIT) or Stitches (MIT)
+   - Form libraries → React Hook Form (MIT) + Zod (MIT)
+   ```
+
+**6. WhatsApp Feature Implementation (Open-Source Stack)**
+   
+   **Backend Structure:**
+   ```javascript
+   // Use baileys for WhatsApp connection
+   const makeWASocket = require('@whiskeysockets/baileys').default
+   
+   // Webhook endpoint for messages
+   app.post('/api/whatsapp/webhook', authenticateOwner, handleMessage)
+   
+   // Real-time with Socket.io (MIT license)
+   const io = require('socket.io')(server)
+   ```
+   
+   **Frontend Components (Using Chakra UI):**
+   ```
+   - ChatInterface.js (with Chakra components)
+   - MessageBubble.js
+   - ChatList.js
+   - BotTrainer.js
+   ```
+
+**7. Security & Best Practices**
+   - **Environment Variables:** **`dotenv`** (BSD-2-Clause)
+   - **Rate Limiting:** **`express-rate-limit`** (MIT)
+   - **Input Sanitization:** **`dompurify`** (Apache 2.0) + **`validator.js`** (MIT)
+   - **Logging:** **`winston`** (MIT) or **`pino`** (MIT)
+   - **Monitoring:** **`prom-client`** (Apache 2.0) for metrics
+
+**8. Testing Stack (Open-Source)**
+   - **Unit Tests:** **`Vitest`** (MIT) - Faster than Jest
+   - **E2E Tests:** **`Playwright`** (Apache 2.0)
+   - **API Tests:** **`Supertest`** (MIT)
+   - **Mocking:** **`MSW`** (MIT) for API mocking
+
+**9. Build & Deployment**
+   - **Bundler:** **`Vite`** (MIT) instead of Webpack/CRA
+   - **Code Quality:** **`ESLint`** (MIT) + **`Prettier`** (MIT)
+   - **Type Safety:** Add **`TypeScript`** (Apache 2.0) if not present
+
+**Implementation Instructions:**
+
+1. **First:** Run dependency audit, identify outdated packages
+2. **Second:** Update all packages to latest open-source versions
+3. **Third:** Implement design consistency using Chakra UI or Mantine
+4. **Fourth:** Build WhatsApp integration using baileys/venom-bot
+5. **Fifth:** Add Dubai time/weather features
+6. **Sixth:** Implement owner-exclusive access control
+7. **Seventh:** Thorough testing with open-source testing tools
+
+**Important Constraints:**
+- NO proprietary libraries or paid services
+- NO deprecated/unsupported packages
+- Prefer MIT, Apache 2.0, or BSD licenses
+- Avoid GPL if possible for business flexibility
+- All libraries must be actively maintained (GitHub stars + recent commits)
+
+Please provide a migration plan starting with the most critical security updates, then UI consistency, then new features.
+```
+
+---
+
+**Key Open-Source Recommendations:**
+
+1. **UI Library:** **Chakra UI** (recommended) or **Mantine**
+2. **WhatsApp:** **`baileys`** (most reliable open-source option)
+3. **Date/Time:** **`date-fns`** + **`date-fns-tz`**
+4. **Forms:** **React Hook Form** + **Zod**
+5. **State Management:** **Zustand** or **Jotai**
+6. **Build Tool:** **Vite**
+7. **Testing:** **Vitest** + **Playwright**
+
+**Note about WhatsApp Open-Source:** The `baileys` library is currently the most maintained open-source WhatsApp Web implementation, but be aware that using WhatsApp Web protocol may have limitations compared to the official Business API.
+
+Would you like me to create a specific migration checklist or help with choosing between these open-source alternatives?
+
