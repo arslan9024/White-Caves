@@ -29,13 +29,5 @@
         { "key": "X-XSS-Protection", "value": "1; mode=block" }
       ]
     }
-  ],
-  "env": {
-    "NODE_ENV": "production",
-    "MONGODB_URI": "@mongodb_uri",
-    "FIREBASE_SERVICE_ACCOUNT": "@firebase_service_account",
-    "STRIPE_SECRET_KEY": "@stripe_secret_key",
-    "VITE_FIREBASE_API_KEY": "@vite_firebase_api_key",
-    "VITE_STRIPE_PUBLIC_KEY": "@vite_stripe_public_key"
-  }
+  ]
 }

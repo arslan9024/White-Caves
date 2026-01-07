@@ -19,7 +19,7 @@ async function connectDB() {
   
   const mongoUri = process.env.MONGODB_URI;
   if (!mongoUri) {
-    console.log('MongoDB URI not configured');
+    console.log('MongoDB URI not configured - running without database');
     return false;
   }
   
@@ -33,6 +33,7 @@ async function connectDB() {
     return true;
   } catch (error) {
     console.error('MongoDB connection error:', error.message);
+    dbConnected = false;
     return false;
   }
 }
