@@ -10,6 +10,7 @@ import { uploadToDrive, createFolder, listFiles } from './lib/googleDrive.js';
 import { connectDB, Contract, SignatureToken, WhatsAppMessage, WhatsAppChatbotRule, WhatsAppSettings, WhatsAppContact } from './lib/database.js';
 import WhatsAppSession from './models/WhatsAppSession.js';
 import * as googleCalendar from './lib/googleCalendar.js';
+import chatbotService from './services/ChatbotService.js';
 
 let firebaseInitialized = false;
 try {
@@ -878,29 +879,128 @@ app.get('/api/whatsapp/analytics', isOwnerMiddleware, async (req, res) => {
   }
 });
 
+async function isWithinBusinessHours(session) {
+  if (!session?.businessHoursOnly) return true;
+  const now = new Date();
+  const dubaiTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Dubai' }));
+  const hours = dubaiTime.getHours();
+  const businessHours = session.businessHours || { start: '09:00', end: '22:00' };
+  const startHour = parseInt(businessHours.start.split(':')[0], 10);
+  const endHour = parseInt(businessHours.end.split(':')[0], 10);
+  return hours >= startHour && hours < endHour;
+}
+
+async function sendWhatsAppReply(phoneNumber, message, session) {
+  if (!process.env.WHATSAPP_ACCESS_TOKEN || !process.env.WHATSAPP_PHONE_NUMBER_ID) {
+    console.log('[WhatsApp] Auto-reply simulated (no API credentials):', { to: phoneNumber, message: message.substring(0, 50) + '...' });
+    return { success: true, simulated: true };
+  }
+  try {
+    const response = await fetch(`https://graph.facebook.com/v18.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        to: phoneNumber,
+        type: 'text',
+        text: { body: message }
+      })
+    });
+    const data = await response.json();
+    return { success: response.ok, data };
+  } catch (error) {
+    console.error('[WhatsApp] Send error:', error);
+    return { success: false, error: error.message };
+  }
+}
+
 app.post('/api/whatsapp/webhook', async (req, res) => {
   try {
     const { entry } = req.body;
     if (entry) {
+      const session = useDatabase ? await WhatsAppSession.findOne({ ownerEmail: OWNER_EMAIL }) : null;
+      
       for (const e of entry) {
         const changes = e.changes || [];
         for (const change of changes) {
           if (change.value && change.value.messages) {
             for (const msg of change.value.messages) {
+              const messageContent = msg.text?.body || '';
+              const senderPhone = msg.from;
+              const conversationId = `wa_${senderPhone}`;
+              
               if (useDatabase) {
                 await WhatsAppMessage.create({
-                  waId: msg.from,
-                  phoneNumber: msg.from,
+                  waId: senderPhone,
+                  phoneNumber: senderPhone,
                   direction: 'incoming',
                   messageType: msg.type || 'text',
-                  content: msg.text?.body || '',
+                  content: messageContent,
                   isRead: false
                 });
                 await WhatsAppContact.findOneAndUpdate(
-                  { waId: msg.from },
-                  { waId: msg.from, phoneNumber: msg.from, lastMessageAt: new Date(), $inc: { unreadCount: 1 } },
+                  { waId: senderPhone },
+                  { waId: senderPhone, phoneNumber: senderPhone, lastMessageAt: new Date(), $inc: { unreadCount: 1 } },
                   { upsert: true }
                 );
+              }
+              
+              if (session?.chatbotEnabled && messageContent) {
+                const withinHours = await isWithinBusinessHours(session);
+                let replyMessage = null;
+                
+                if (!withinHours && session.awayMessage) {
+                  replyMessage = session.awayMessage;
+                } else if (withinHours) {
+                  const quickReply = session.quickReplies?.find(qr => 
+                    qr.enabled && messageContent.toLowerCase().includes(qr.trigger.toLowerCase())
+                  );
+                  
+                  if (quickReply) {
+                    replyMessage = quickReply.response;
+                  } else {
+                    const chatResponse = chatbotService.processMessage(messageContent, conversationId);
+                    replyMessage = chatResponse.response;
+                    
+                    const leadScore = chatbotService.calculateLeadScore(conversationId);
+                    if (useDatabase && leadScore > 0) {
+                      await WhatsAppContact.findOneAndUpdate(
+                        { waId: senderPhone },
+                        { 
+                          leadScore,
+                          detectedIntent: chatResponse.intent,
+                          detectedLanguage: chatResponse.language,
+                          extractedEntities: chatResponse.entities
+                        }
+                      );
+                    }
+                  }
+                }
+                
+                if (replyMessage) {
+                  const sendResult = await sendWhatsAppReply(senderPhone, replyMessage, session);
+                  
+                  if (useDatabase && sendResult.success) {
+                    await WhatsAppMessage.create({
+                      waId: senderPhone,
+                      phoneNumber: senderPhone,
+                      direction: 'outgoing',
+                      messageType: 'text',
+                      content: replyMessage,
+                      isRead: true,
+                      metadata: { automated: true, simulated: sendResult.simulated }
+                    });
+                    
+                    if (session) {
+                      session.messageCount = (session.messageCount || 0) + 1;
+                      session.lastMessageAt = new Date();
+                      await session.save();
+                    }
+                  }
+                }
               }
             }
           }
@@ -1077,6 +1177,69 @@ app.get('/api/whatsapp/meta/callback', async (req, res) => {
   } catch (error) {
     console.error('Meta callback error:', error);
     res.redirect('/owner/whatsapp/settings?error=callback_failed');
+  }
+});
+
+app.post('/api/whatsapp/chatbot/test', isOwnerMiddleware, async (req, res) => {
+  try {
+    const { message, conversationId = 'test_conversation' } = req.body;
+    if (!message) return res.status(400).json({ error: 'Message is required' });
+    
+    const result = chatbotService.processMessage(message, conversationId);
+    const leadScore = chatbotService.calculateLeadScore(conversationId);
+    
+    res.json({
+      success: true,
+      input: message,
+      response: result.response,
+      intent: result.intent,
+      confidence: Math.round(result.confidence * 100),
+      language: result.language,
+      entities: result.entities,
+      suggestedActions: result.suggestedActions,
+      leadScore
+    });
+  } catch (error) {
+    console.error('Chatbot test error:', error);
+    res.status(500).json({ error: 'Failed to process message' });
+  }
+});
+
+app.post('/api/whatsapp/chatbot/clear-context', isOwnerMiddleware, (req, res) => {
+  const { conversationId = 'test_conversation' } = req.body;
+  chatbotService.clearContext(conversationId);
+  res.json({ success: true, message: 'Conversation context cleared' });
+});
+
+app.post('/api/whatsapp/simulate/message', isOwnerMiddleware, async (req, res) => {
+  try {
+    const { from, message } = req.body;
+    if (!from || !message) return res.status(400).json({ error: 'from and message are required' });
+    
+    const webhookPayload = {
+      entry: [{
+        changes: [{
+          value: {
+            messages: [{
+              from: from,
+              type: 'text',
+              text: { body: message }
+            }]
+          }
+        }]
+      }]
+    };
+    
+    const response = await fetch(`http://localhost:${PORT}/api/whatsapp/webhook`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(webhookPayload)
+    });
+    
+    res.json({ success: true, message: 'Simulated message sent to webhook', webhookResponse: response.status });
+  } catch (error) {
+    console.error('Simulate message error:', error);
+    res.status(500).json({ error: 'Failed to simulate message' });
   }
 });
 

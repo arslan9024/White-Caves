@@ -157,7 +157,13 @@ const whatsappContactSchema = new mongoose.Schema({
   lastMessageAt: Date,
   unreadCount: { type: Number, default: 0 },
   tags: [String],
-  notes: String
+  notes: String,
+  leadScore: { type: Number, default: 0 },
+  detectedIntent: String,
+  detectedLanguage: String,
+  extractedEntities: { type: mongoose.Schema.Types.Mixed, default: {} },
+  assignedAgent: { type: String, default: null },
+  conversationStatus: { type: String, enum: ['active', 'pending', 'resolved', 'escalated'], default: 'active' }
 }, { timestamps: true });
 
 export const WhatsAppMessage = mongoose.model('WhatsAppMessage', whatsappMessageSchema);
