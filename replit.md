@@ -81,3 +81,9 @@ Preferred communication style: Simple, everyday language.
 ### Third-Party Services
 - **WhatsApp Business API**: For customer support and chatbot integration.
 - **Matterport**: For virtual tour integration.
+
+## Documentation
+
+### Security & Compliance
+- **Location**: `docs/SECURITY_COMPLIANCE.md`
+- **Covers**: UAE regulatory compliance (RERA, DLD, Ejari), GDPR data protection, authentication hardening, payment security (PCI-DSS via Stripe), document security, API protection, and audit logging requirements.
