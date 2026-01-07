@@ -29,6 +29,8 @@ Preferred communication style: Simple, everyday language.
 ### Key Features & Design Decisions
 - **Ejari Unified Tenancy Contract System**: Implements compliant contract generation, secure digital signature workflows for multiple parties (Broker, Lessor, Tenant) with tokenized links, and status tracking.
 - **Brand Theme**: Red and White color scheme, Montserrat/Open Sans typography, consistent design system with CSS variables, and comprehensive light/dark theme support.
+- **Company Profile Section**: Comprehensive company information display with downloadable PDF brochure.
+- **Click-to-Chat WhatsApp**: Enhanced WhatsApp integration with quick message options and custom message support.
 - **Owner Dashboards**: Includes System Health monitoring, Productivity Tools (Google Workspace integration), and Multi-Role Navigation for owners to browse as different user types.
 - **Advanced Tools**: Features include Smart Rent vs. Buy Calculator (Dubai-specific), Off-Plan Property Tracker, AI Neighborhood Analyzer (investment scoring, demographics, amenities), and Virtual Tour Gallery (Matterport integration).
 - **Interactive Mapping**: Enhanced SVG-based Dubai map with custom, color-coded markers, property previews, and filtering.
@@ -60,5 +62,13 @@ Preferred communication style: Simple, everyday language.
 - **Google Drive API**: For saving signed tenancy contracts and documents.
 
 ### Third-Party Services
-- **WhatsApp Business API**: For customer support.
+- **WhatsApp Business API**: For customer support via Click-to-Chat component.
 - **Matterport**: For virtual tour integration.
+
+## Recent Changes (January 2026)
+- Added CompanyProfile component with PDF download functionality
+- Created enhanced ClickToChat WhatsApp component with quick message options
+- Generated company profile PDF using pdf-lib
+- Added SSR/deployment guards for window/document availability
+- Updated navigation to include Properties and About pages in mobile menu
+- Fixed SEO schema.org address and phone number
