@@ -1,8 +1,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  base: '/',
   server: {
     host: '0.0.0.0',
     port: 5000,
@@ -17,10 +19,17 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@assets': '/attached_assets'
+      '@assets': path.resolve(__dirname, 'attached_assets'),
+      '@components': path.resolve(__dirname, 'src/components'),
+      '@pages': path.resolve(__dirname, 'src/pages'),
+      '@utils': path.resolve(__dirname, 'src/utils')
     }
   },
   build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: false,
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: (id) => {
@@ -39,5 +48,8 @@ export default defineConfig({
       }
     },
     chunkSizeWarningLimit: 600
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom']
   }
 })

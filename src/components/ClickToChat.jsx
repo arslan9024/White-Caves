@@ -1,12 +1,23 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import './ClickToChat.css';
 
 export default function ClickToChat() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [message, setMessage] = useState('');
+  const [isOnline, setIsOnline] = useState(true);
   
-  const phoneNumber = '+971563616136';
+  const phoneNumber = import.meta.env.VITE_WHATSAPP_NUMBER || '971563616136';
   const baseUrl = import.meta.env.BASE_URL || '/';
+  
+  useEffect(() => {
+    const checkOnlineStatus = () => {
+      const hour = new Date().getHours();
+      setIsOnline(hour >= 9 && hour < 22);
+    };
+    checkOnlineStatus();
+    const interval = setInterval(checkOnlineStatus, 60000);
+    return () => clearInterval(interval);
+  }, []);
   
   const quickMessages = [
     { id: 1, text: 'Property Inquiry', message: 'Hello! I would like to inquire about a property.' },
@@ -46,7 +57,9 @@ export default function ClickToChat() {
               <img src={`${baseUrl}company-logo.jpg`.replace('//', '/')} alt="White Caves" className="chat-avatar" />
               <div>
                 <h4>White Caves Support</h4>
-                <span className="online-status">Online now</span>
+                <span className={`online-status ${isOnline ? 'online' : 'offline'}`}>
+                  {isOnline ? 'Online now' : 'Away - Leave a message'}
+                </span>
               </div>
             </div>
             <button className="close-chat" onClick={() => setIsExpanded(false)}>×</button>

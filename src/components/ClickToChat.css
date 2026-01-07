@@ -106,11 +106,20 @@
   gap: 0.25rem;
 }
 
-.online-status::before {
+.online-status.online::before {
   content: '';
   width: 8px;
   height: 8px;
   background: #90EE90;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.online-status.offline::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #ffa500;
   border-radius: 50%;
   display: inline-block;
 }
