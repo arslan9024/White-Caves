@@ -176,6 +176,28 @@ export default function Testimonials() {
           ))}
         </div>
 
+        <motion.div 
+          className="review-invitation"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          <div className="review-box">
+            <h3>Share Your Experience!</h3>
+            <p>Had a great experience with White Caves? We'd love to hear from you!</p>
+            <div className="star-invite">
+              <span className="star-text">Rate us:</span>
+              <a href="https://g.page/r/whitecaves/review" target="_blank" rel="noopener noreferrer" className="star-link">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star key={star} size={28} fill="#FFB300" color="#FFB300" className="star-icon" />
+                ))}
+              </a>
+            </div>
+            <p className="review-note">Your feedback helps us serve you better!</p>
+          </div>
+        </motion.div>
+
         <div className="client-logos">
           <motion.div 
             className="logos-track"
@@ -183,13 +205,12 @@ export default function Testimonials() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
           >
-            <span className="trusted-by">Trusted by leading companies</span>
+            <span className="trusted-by">Trusted by leading companies worldwide</span>
             <div className="logos-container">
-              <div className="logo-placeholder">Company 1</div>
-              <div className="logo-placeholder">Company 2</div>
-              <div className="logo-placeholder">Company 3</div>
-              <div className="logo-placeholder">Company 4</div>
-              <div className="logo-placeholder">Company 5</div>
+              <div className="logo-placeholder">RERA Licensed</div>
+              <div className="logo-placeholder">DLD Registered</div>
+              <div className="logo-placeholder">Dubai Chamber</div>
+              <div className="logo-placeholder">UAE Certified</div>
             </div>
           </motion.div>
         </div>

@@ -84,10 +84,23 @@ Preferred communication style: Simple, everyday language.
   - Features section with 8 animated service cards showcasing platform capabilities
   - Locations section highlighting 4 premier Dubai neighborhoods with interactive cards
   - Team section with 4 team member profiles, social links, and career CTA
-  - Testimonials carousel with auto-play, navigation dots, and client logos
+  - Testimonials carousel with auto-play, navigation dots, star rating invitation, and trust badges
   - Contact CTA section with modern form design and contact methods
   - All animations powered by Framer Motion with scroll-triggered reveals
   - New HomePage.jsx in src/pages/ integrating all sections while preserving existing tools
+- **Multi-Channel Contact Support**: ClickToChat now supports 4 contact methods:
+  - WhatsApp (+971 56 361 6136)
+  - Botim app (botim://call?number=+971563616136)
+  - GoChat UAE (https://gochat.me/+971563616136)
+  - Direct call
+- **Dubai Real Estate Data**: Comprehensive database in `src/data/dubaiDevelopers.js`:
+  - 10 major developers (Emaar, DAMAC, Nakheel, Sobha, Meraas, etc.) with RERA registration
+  - 32 Dubai projects with images, price ranges, and features
+  - RERA regulatory information (laws, online services, license types)
+  - Dubai Land Department information (fees, services, contact)
+- **Social Media Integration**: TikTok, Instagram, Facebook links in Footer and SocialLinks component
+- **Star Rating Invitations**: Added to testimonials section and ClickToChat to encourage reviews
+- **Enhanced Footer**: 5-column layout with RERA/DLD badges, app buttons, quick links
 - **Animation Libraries**: Added framer-motion, swiper, and lucide-react for modern animations
 - **Vercel Deployment Ready**: Added vercel.json with proper SPA routing that preserves API routes
 - **Build Optimization**: Switched from terser to esbuild for faster production builds
@@ -95,11 +108,21 @@ Preferred communication style: Simple, everyday language.
 - **Loading Components**: Added PageLoader and LazyImage for better UX
 - **Path Aliases**: Added @assets, @components, @utils aliases in Vite config
 - Added CompanyProfile component with PDF download functionality
-- Created enhanced ClickToChat WhatsApp component with quick message options
 - Generated company profile PDF using pdf-lib
 - Added SSR/deployment guards for window/document availability
 - Updated navigation to include Properties and About pages in mobile menu
 - Fixed SEO schema.org address and phone number
+
+## Company Contact Information
+- **Company Name**: White Caves Real Estate LLC
+- **Address**: Office D-72, El-Shaye-4, Port Saeed, Dubai
+- **Office Landline**: +971 4 335 0592
+- **Mobile/WhatsApp**: +971 56 361 6136
+- **Email**: admin@whitecaves.com
+- **Website**: https://www.whitecaves.com
+- **TikTok**: https://www.tiktok.com/@the.white.caves
+- **Instagram**: https://www.instagram.com/the.white.caves/
+- **Facebook**: https://www.facebook.com/the.white.caves/
 
 ## Homepage Component Structure
 ```
