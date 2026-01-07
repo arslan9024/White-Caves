@@ -16,6 +16,7 @@ import savedSearchesRouter from './routes/savedSearches.js';
 import alertsRouter from './routes/alerts.js';
 import authRouter from './routes/auth.js';
 import recommendationsRouter from './routes/recommendations.js';
+import dashboardRouter from './routes/dashboard.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -68,6 +69,7 @@ app.use('/api/favorites', favoritesRouter);
 app.use('/api/saved-searches', savedSearchesRouter);
 app.use('/api/alerts', alertsRouter);
 app.use('/api/recommendations', recommendationsRouter);
+app.use('/api/dashboard', dashboardRouter);
 
 // Try multiple possible dist paths
 const possiblePaths = [

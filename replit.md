@@ -44,6 +44,10 @@ Preferred communication style: Simple, everyday language.
 - **AI Chatbot Integration with WhatsApp**: Server-side chatbot with bilingual support, intent recognition, entity extraction, context management, and lead scoring.
 - **Agent Assignment Engine**: Weighted scoring algorithm with expertise (35%), availability (25%), performance (20%), proximity (10%), and client match (10%) for intelligent agent matching.
 - **Chatbot Training Data Module**: Comprehensive bilingual training data with intents, entities, patterns, and quick replies for property inquiries.
+- **Language Configuration Utility**: Centralized language config with translations, RTL settings, number/currency formatting for Arabic and English.
+- **Dashboard Service**: Analytics API for market insights, agent performance, property distribution, and real-time metrics.
+- **Notification Service**: Multi-channel notification system supporting email, SMS, WhatsApp, and push notifications.
+- **Deployment Verification Scripts**: Automated deployment checks and code validation tools (`npm run validate`, `npm run verify-deploy`).
 - **Chatbot Testing Interface**: Interactive testing UI in WhatsApp Settings with real-time response analysis and conversation history.
 - **Production Deployment Readiness**: System Health page includes 8 automated deployment checks with deployability score.
 - **Proprietary Licensing**: README.md and LICENSE updated with White Caves Real Estate LLC company information.
