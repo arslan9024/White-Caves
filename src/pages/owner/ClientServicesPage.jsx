@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import RoleNavigation from '../../components/RoleNavigation';
 import './ClientServicesPage.css';
 
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
@@ -26,10 +25,8 @@ export default function ClientServicesPage() {
   ];
 
   return (
-    <div className="client-services-page">
-      <RoleNavigation role="owner" userName={user?.displayName || user?.email} />
-      
-      <div className="cs-container">
+    <div className="client-services-page no-sidebar">
+      <div className="cs-container full-width">
         <header className="cs-header">
           <h1>White Caves Real Estate LLC</h1>
           <p className="cs-tagline">"Your Gateway to Dubai's Future"</p>

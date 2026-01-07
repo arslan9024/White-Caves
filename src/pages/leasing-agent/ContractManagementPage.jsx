@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
-import RoleNavigation from '../../components/RoleNavigation';
 import '../RolePages.css';
 import './ContractManagementPage.css';
 
@@ -185,9 +184,8 @@ export default function ContractManagementPage() {
 
   if (selectedContract && !showSignatureModal) {
     return (
-      <div className="role-page">
-        <RoleNavigation role="leasing-agent" />
-        <div className="role-page-content">
+      <div className="role-page no-sidebar">
+        <div className="role-page-content full-width">
           <div className="page-header">
             <button className="btn btn-back" onClick={() => setSelectedContract(null)}>
               ← Back to Contracts
@@ -415,10 +413,8 @@ export default function ContractManagementPage() {
   }
 
   return (
-    <div className="role-page">
-      <RoleNavigation role="leasing-agent" />
-      
-      <div className="role-page-content">
+    <div className="role-page no-sidebar">
+      <div className="role-page-content full-width">
         <div className="page-header">
           <div>
             <h1>Contract Management</h1>

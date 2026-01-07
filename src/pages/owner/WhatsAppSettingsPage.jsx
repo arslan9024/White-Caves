@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
-import RoleNavigation from '../../components/RoleNavigation';
 import { 
   Settings, QrCode, Smartphone, Link2, Unlink, RefreshCw, 
   MessageCircle, Bot, Clock, Send, CheckCircle, AlertCircle,
@@ -291,8 +290,7 @@ const WhatsAppSettingsPage = () => {
 
   if (loading) {
     return (
-      <div className="whatsapp-settings-page">
-        <RoleNavigation role="owner" userName={user?.displayName || user?.email} />
+      <div className="whatsapp-settings-page no-sidebar">
         <div className="loading-container">
           <RefreshCw size={40} className="spin" />
           <p>Loading settings...</p>
@@ -302,9 +300,7 @@ const WhatsAppSettingsPage = () => {
   }
 
   return (
-    <div className="whatsapp-settings-page">
-      <RoleNavigation role="owner" userName={user?.displayName || user?.email} />
-      
+    <div className="whatsapp-settings-page no-sidebar">
       {notification && (
         <div className={`notification ${notification.type}`}>
           {notification.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}

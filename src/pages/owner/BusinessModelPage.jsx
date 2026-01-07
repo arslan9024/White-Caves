@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import RoleNavigation from '../../components/RoleNavigation';
 import './BusinessModelPage.css';
 
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
@@ -26,10 +25,8 @@ export default function BusinessModelPage() {
   ];
 
   return (
-    <div className="business-model-page">
-      <RoleNavigation role="owner" userName={user?.displayName || user?.email} />
-      
-      <div className="bm-container">
+    <div className="business-model-page no-sidebar">
+      <div className="bm-container full-width">
         <header className="bm-header">
           <h1>White Caves Real Estate LLC</h1>
           <p className="bm-tagline">"Your Gateway to Dubai's Future"</p>

@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import RoleNavigation from '../../components/RoleNavigation';
 import '../RolePages.css';
 
 export default function DLDFeesPage() {
@@ -44,10 +43,8 @@ export default function DLDFeesPage() {
   };
 
   return (
-    <div className="role-page">
-      <RoleNavigation role="buyer" />
-      
-      <div className="role-page-content">
+    <div className="role-page no-sidebar">
+      <div className="role-page-content full-width">
         <div className="page-header">
           <h1>DLD Fee Calculator</h1>
           <p>Calculate Dubai Land Department fees and property transfer costs</p>

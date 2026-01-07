@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import RoleNavigation from '../../components/RoleNavigation';
 import '../RolePages.css';
 
 export default function PricingToolsPage() {
@@ -51,10 +50,8 @@ export default function PricingToolsPage() {
   };
 
   return (
-    <div className="role-page">
-      <RoleNavigation role="seller" />
-      
-      <div className="role-page-content">
+    <div className="role-page no-sidebar">
+      <div className="role-page-content full-width">
         <div className="page-header">
           <h1>Pricing Tools</h1>
           <p>Get market insights and estimate your property value</p>

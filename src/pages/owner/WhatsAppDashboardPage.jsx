@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
-import RoleNavigation from '../../components/RoleNavigation';
 import { MessageCircle, Send, Search, Phone, Video, MoreVertical, Paperclip, Smile, Mic, Check, CheckCheck, Clock, Users, TrendingUp, Bot, Bell, Settings } from 'lucide-react';
 import './WhatsAppDashboardPage.css';
 
@@ -89,8 +88,7 @@ const WhatsAppDashboardPage = () => {
 
   if (!isConnected) {
     return (
-      <div className="whatsapp-dashboard">
-        <RoleNavigation role="owner" userName={user?.displayName || user?.email} />
+      <div className="whatsapp-dashboard no-sidebar">
         <div className="whatsapp-setup-wizard">
           <div className="setup-card">
             <div className="setup-icon">💬</div>
@@ -113,10 +111,8 @@ const WhatsAppDashboardPage = () => {
   }
 
   return (
-    <div className="whatsapp-dashboard">
-      <RoleNavigation role="owner" userName={user?.displayName || user?.email} />
-      
-      <div className="whatsapp-content">
+    <div className="whatsapp-dashboard no-sidebar">
+      <div className="whatsapp-content full-width">
         <div className="whatsapp-header">
           <div className="header-left">
             <h1><MessageCircle size={28} /> WhatsApp Business Manager</h1>

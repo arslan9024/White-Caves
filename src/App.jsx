@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from './store/userSlice';
 import { LanguageProvider } from './context/LanguageContext';
 import AppLayout from './components/layout/AppLayout';
+import UniversalComponents from './components/layout/UniversalComponents';
 import RoleGateway from './components/RoleGateway';
 import SignInPage from './pages/auth/SignInPage';
 import ProfilePage from './pages/auth/ProfilePage';
@@ -113,6 +114,7 @@ function App() {
   return (
   <LanguageProvider>
     <BrowserRouter>
+      <UniversalComponents />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/properties" element={<PropertiesPage />} />

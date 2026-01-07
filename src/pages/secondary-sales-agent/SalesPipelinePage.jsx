@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import RoleNavigation from '../../components/RoleNavigation';
 import '../RolePages.css';
 
 export default function SalesPipelinePage() {
@@ -35,10 +34,8 @@ export default function SalesPipelinePage() {
   }, 0);
 
   return (
-    <div className="role-page">
-      <RoleNavigation role="secondary-sales-agent" />
-      
-      <div className="role-page-content">
+    <div className="role-page no-sidebar">
+      <div className="role-page-content full-width">
         <div className="page-header">
           <h1>Sales Pipeline</h1>
           <p>Track your deals from inquiry to closing</p>

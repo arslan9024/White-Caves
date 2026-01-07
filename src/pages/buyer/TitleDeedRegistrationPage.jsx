@@ -1,5 +1,4 @@
 import React from 'react';
-import RoleNavigation from '../../components/RoleNavigation';
 import '../RolePages.css';
 
 export default function TitleDeedRegistrationPage() {
@@ -63,10 +62,8 @@ export default function TitleDeedRegistrationPage() {
   ];
 
   return (
-    <div className="role-page">
-      <RoleNavigation role="buyer" />
-      
-      <div className="role-page-content">
+    <div className="role-page no-sidebar">
+      <div className="role-page-content full-width">
         <div className="page-header">
           <h1>Title Deed Registration</h1>
           <p>Complete guide to property ownership transfer in Dubai</p>

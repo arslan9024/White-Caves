@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
-import RoleNavigation from '../../components/RoleNavigation';
 import { TrendingUp, ArrowLeft, MessageCircle, Users, Clock, CheckCheck, ArrowUpRight, ArrowDownRight, Calendar } from 'lucide-react';
 import './WhatsAppAnalyticsPage.css';
 
@@ -68,10 +67,8 @@ const WhatsAppAnalyticsPage = () => {
   const maxHourlyMessages = Math.max(...peakHours.map(h => h.messages));
 
   return (
-    <div className="whatsapp-analytics-page">
-      <RoleNavigation role="owner" userName={user?.displayName || user?.email} />
-      
-      <div className="analytics-content">
+    <div className="whatsapp-analytics-page no-sidebar">
+      <div className="analytics-content full-width">
         <div className="analytics-header">
           <div className="header-left">
             <Link to="/owner/whatsapp" className="back-btn">

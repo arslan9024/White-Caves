@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import RoleNavigation from '../../components/RoleNavigation';
 import '../RolePages.css';
 
 export default function TenantScreeningPage() {
@@ -45,10 +44,8 @@ export default function TenantScreeningPage() {
   ];
 
   return (
-    <div className="role-page">
-      <RoleNavigation role="leasing-agent" />
-      
-      <div className="role-page-content">
+    <div className="role-page no-sidebar">
+      <div className="role-page-content full-width">
         <div className="page-header">
           <h1>Tenant Screening</h1>
           <p>Verify tenant credentials and manage applications</p>

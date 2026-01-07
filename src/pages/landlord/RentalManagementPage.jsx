@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import RoleNavigation from '../../components/RoleNavigation';
 import '../RolePages.css';
 
 export default function RentalManagementPage() {
@@ -69,10 +68,8 @@ export default function RentalManagementPage() {
     : properties.filter(p => p.status.toLowerCase() === filter);
 
   return (
-    <div className="role-page">
-      <RoleNavigation role="landlord" />
-      
-      <div className="role-page-content">
+    <div className="role-page no-sidebar">
+      <div className="role-page-content full-width">
         <div className="page-header">
           <h1>Rental Management</h1>
           <p>Manage your rental properties and tenants</p>

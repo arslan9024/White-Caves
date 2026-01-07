@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
-import RoleNavigation from '../../components/RoleNavigation';
 import { Bot, Plus, Edit2, Trash2, ToggleLeft, ToggleRight, ArrowLeft, Save, MessageCircle } from 'lucide-react';
 import './WhatsAppChatbotPage.css';
 
@@ -74,10 +73,8 @@ const WhatsAppChatbotPage = () => {
   };
 
   return (
-    <div className="whatsapp-chatbot-page">
-      <RoleNavigation role="owner" userName={user?.displayName || user?.email} />
-      
-      <div className="chatbot-content">
+    <div className="whatsapp-chatbot-page no-sidebar">
+      <div className="chatbot-content full-width">
         <div className="chatbot-header">
           <div className="header-left">
             <Link to="/owner/whatsapp" className="back-btn">
