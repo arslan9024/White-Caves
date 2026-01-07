@@ -17,6 +17,8 @@ import PropertyMap from './components/PropertyMap';
 import Services from './components/Services';
 import JobApplicants from './components/JobApplicants';
 import WhatsAppButton from './components/WhatsAppButton';
+import ClickToChat from './components/ClickToChat';
+import CompanyProfile from './components/CompanyProfile';
 import FeaturedAgents from './components/FeaturedAgents';
 import MortgageCalculator from './components/MortgageCalculator';
 import RecentlyViewed, { useRecentlyViewed } from './components/RecentlyViewed';
@@ -291,38 +293,14 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="about-section" id="about">
-        <div className="about-content">
-          <h2>About White Caves Real Estate</h2>
-          <p>White Caves is Dubai's premier luxury real estate agency, specializing in high-end properties across the emirate.</p>
-          
-          <div className="company-features">
-            <div className="feature">
-              <h3>Excellence</h3>
-              <p>Award-winning service with a track record of satisfied clients</p>
-            </div>
-            <div className="feature">
-              <h3>Global Reach</h3>
-              <p>International network connecting buyers and sellers worldwide</p>
-            </div>
-            <div className="feature">
-              <h3>Professional Team</h3>
-              <p>Expert agents fluent in multiple languages</p>
-            </div>
-            <div className="feature">
-              <h3>Trust & Security</h3>
-              <p>Fully licensed and regulated by Dubai Land Department</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <CompanyProfile />
 
       <TestimonialsCarousel />
       <BlogSection />
       <NewsletterSubscription />
       <ContactUs />
       <Footer />
-      <WhatsAppButton />
+      <ClickToChat />
     </div>
   );
 }
