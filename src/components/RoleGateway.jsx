@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setActiveRole } from '../store/navigationSlice';
 import './RoleGateway.css';
 
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
@@ -19,6 +21,7 @@ export default function RoleGateway({ user, onRoleSelect }) {
   const [selectedRole, setSelectedRole] = useState(null);
   const [isConfirming, setIsConfirming] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (user?.email === OWNER_EMAIL) {
@@ -29,9 +32,10 @@ export default function RoleGateway({ user, onRoleSelect }) {
         isOwner: true
       };
       localStorage.setItem('userRole', JSON.stringify(ownerRole));
+      dispatch(setActiveRole('owner'));
       navigate('/owner/dashboard');
     }
-  }, [user, navigate]);
+  }, [user, navigate, dispatch]);
 
   const handleRoleSelect = (roleId) => {
     setSelectedRole(roleId);
@@ -47,6 +51,7 @@ export default function RoleGateway({ user, onRoleSelect }) {
     };
     
     localStorage.setItem('userRole', JSON.stringify(userRole));
+    dispatch(setActiveRole(selectedRole));
     
     if (onRoleSelect) {
       onRoleSelect(selectedRole);
