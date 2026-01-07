@@ -81,6 +81,7 @@ import AboutPage from './pages/AboutPage';
 import WhatsAppDashboardPage from './pages/owner/WhatsAppDashboardPage';
 import WhatsAppChatbotPage from './pages/owner/WhatsAppChatbotPage';
 import WhatsAppAnalyticsPage from './pages/owner/WhatsAppAnalyticsPage';
+import WhatsAppSettingsPage from './pages/owner/WhatsAppSettingsPage';
 
 function App() {
   const dispatch = useDispatch();
@@ -234,6 +235,11 @@ function App() {
         <Route path="/owner/whatsapp/analytics" element={
           <ProtectedRoute allowedRoles={['owner']}>
             <WhatsAppAnalyticsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/owner/whatsapp/settings" element={
+          <ProtectedRoute allowedRoles={['owner']}>
+            <WhatsAppSettingsPage />
           </ProtectedRoute>
         } />
         

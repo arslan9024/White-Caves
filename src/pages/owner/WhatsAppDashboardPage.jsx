@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
 import RoleNavigation from '../../components/RoleNavigation';
-import { MessageCircle, Send, Search, Phone, Video, MoreVertical, Paperclip, Smile, Mic, Check, CheckCheck, Clock, Users, TrendingUp, Bot, Bell } from 'lucide-react';
+import { MessageCircle, Send, Search, Phone, Video, MoreVertical, Paperclip, Smile, Mic, Check, CheckCheck, Clock, Users, TrendingUp, Bot, Bell, Settings } from 'lucide-react';
 import './WhatsAppDashboardPage.css';
 
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
@@ -102,9 +102,9 @@ const WhatsAppDashboardPage = () => {
               <div className="step"><span>3</span> Configure Settings</div>
               <div className="step"><span>4</span> Test Connection</div>
             </div>
-            <button className="setup-btn" onClick={() => setIsConnected(true)}>
-              Connect to Meta Business
-            </button>
+            <Link to="/owner/whatsapp/settings" className="setup-btn">
+              Connect WhatsApp Account
+            </Link>
             <p className="setup-note">This feature is exclusive to the company owner.</p>
           </div>
         </div>
@@ -131,6 +131,9 @@ const WhatsAppDashboardPage = () => {
             </Link>
             <Link to="/owner/whatsapp/analytics" className="header-btn">
               <TrendingUp size={18} /> Analytics
+            </Link>
+            <Link to="/owner/whatsapp/settings" className="header-btn">
+              <Settings size={18} /> Settings
             </Link>
           </div>
         </div>

@@ -210,3 +210,27 @@ Access: Protected by ProtectedRoute (owner role only)
 - Lead sources visualization (WhatsApp, Website, Referral)
 - Top performing areas with demand indicators
 - Agent performance leaderboard
+
+### WhatsApp Business Connection (January 2026)
+- **Session Management**: MongoDB model at `server/models/WhatsAppSession.js`
+  - Connection status tracking (disconnected, connecting, qr_pending, connected, authenticated)
+  - QR code generation with 5-minute expiry
+  - Meta Business OAuth support
+  - Automation settings (chatbot, auto-reply, business hours)
+  - Quick replies configuration
+- **Settings Page**: `src/pages/owner/WhatsAppSettingsPage.jsx`
+  - QR code connection flow with visual instructions
+  - Meta Business OAuth integration option
+  - AI chatbot and auto-reply toggles
+  - Business hours configuration
+  - Welcome/away message templates
+  - Quick replies management
+- **API Routes** at `/api/whatsapp/*`:
+  - GET /session - Fetch current session state
+  - POST /connect - Initiate QR or Meta connection
+  - POST /disconnect - Disconnect WhatsApp account
+  - PUT /session/settings - Update automation settings
+  - GET /qr/refresh - Generate new QR code
+  - POST /simulate/connect - Test connection (development)
+  - GET /meta/callback - OAuth callback handler
+- Access: Protected by owner middleware (arslanmalikgoraha@gmail.com only)
