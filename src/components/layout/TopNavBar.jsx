@@ -4,8 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   setOnlineStatus,
   updateCurrentTime,
-  toggleProfileMenu,
-  closeProfileMenu,
   toggleRoleMenu,
   closeRoleMenu,
   toggleWhatsappMenu,
@@ -14,6 +12,7 @@ import {
   setActiveRole,
   setTheme
 } from '../../store/navigationSlice';
+import UniversalProfile from './UniversalProfile';
 import './TopNavBar.css';
 
 const roleMenus = {
@@ -136,7 +135,6 @@ export default function TopNavBar() {
   const { 
     isOnline, 
     currentTime, 
-    profileMenuOpen, 
     roleMenuOpen, 
     whatsappMenuOpen,
     activeRole,
@@ -144,7 +142,6 @@ export default function TopNavBar() {
   } = useSelector(state => state.navigation);
   
   const menuRef = useRef(null);
-  const profileRef = useRef(null);
   const whatsappRef = useRef(null);
 
   const menu = activeRole ? roleMenus[activeRole] : null;
@@ -174,9 +171,6 @@ export default function TopNavBar() {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         dispatch(closeRoleMenu());
       }
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        dispatch(closeProfileMenu());
-      }
       if (whatsappRef.current && !whatsappRef.current.contains(event.target)) {
         dispatch(closeWhatsappMenu());
       }
@@ -201,27 +195,9 @@ export default function TopNavBar() {
     });
   };
 
-  const handleLogout = () => {
-    dispatch(setActiveRole(null));
-    dispatch(closeAllMenus());
-    navigate('/');
-  };
-
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     dispatch(setTheme(newTheme));
-  };
-
-  const getInitials = (name) => {
-    if (!name) return '?';
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-  };
-
-  const getProfileImage = () => {
-    if (user?.photoURL) {
-      return <img src={user.photoURL} alt="Profile" className="profile-img" />;
-    }
-    return <span className="profile-initials">{getInitials(user?.displayName || user?.email)}</span>;
   };
 
   return (
@@ -361,53 +337,7 @@ export default function TopNavBar() {
           <div className="time">{formatTime(currentDateTime)}</div>
         </div>
 
-        <div className="profile-dropdown" ref={profileRef}>
-          <button 
-            className="profile-trigger"
-            onClick={() => dispatch(toggleProfileMenu())}
-          >
-            <div className="profile-circle">
-              {getProfileImage()}
-            </div>
-          </button>
-
-          {profileMenuOpen && (
-            <div className="dropdown-menu profile-menu">
-              <div className="profile-header">
-                <div className="profile-circle large">
-                  {getProfileImage()}
-                </div>
-                <div className="profile-info">
-                  <span className="profile-name">{user?.displayName || 'Guest'}</span>
-                  <span className="profile-email">{user?.email}</span>
-                  {activeRole && (
-                    <span className="profile-role" style={{ color: menu?.color }}>
-                      {menu?.icon} {menu?.label}
-                    </span>
-                  )}
-                </div>
-              </div>
-              
-              <div className="dropdown-divider"></div>
-              
-              <Link to="/profile" className="dropdown-item" onClick={() => dispatch(closeProfileMenu())}>
-                <span className="item-icon">👤</span>
-                My Profile
-              </Link>
-              <Link to="/select-role" className="dropdown-item" onClick={() => dispatch(closeProfileMenu())}>
-                <span className="item-icon">🔄</span>
-                Switch Role
-              </Link>
-              
-              <div className="dropdown-divider"></div>
-              
-              <button className="dropdown-item logout" onClick={handleLogout}>
-                <span className="item-icon">🚪</span>
-                Sign Out
-              </button>
-            </div>
-          )}
-        </div>
+        <UniversalProfile />
       </div>
     </header>
   );

@@ -27,7 +27,8 @@ Preferred communication style: Simple, everyday language.
 - **Role-Based Access Control**: Multi-role system (`BUYER`, `SELLER`, `LANDLORD`, `TENANT`, `AGENT`, `ADMIN`) with `isSuperUser` and `isDecisionMaker` flags.
 
 ### Key Features & Design Decisions
-- **Global Top Navigation System**: Replaced sidebar navigation with global TopNavBar featuring live time/date display, profile picture dropdown, and role-based menu items. AppLayout wrapper provides universal navigation structure.
+- **Global Top Navigation System**: Replaced sidebar navigation with global TopNavBar featuring live time/date display, role-based menu items, and AppLayout wrapper provides universal navigation structure.
+- **Universal Profile Component**: Reusable `UniversalProfile` component (`src/components/layout/UniversalProfile.jsx`) provides consistent user profile functionality across all navigation contexts (MegaNav for public pages, TopNavBar for dashboards). Shows Sign In button when not authenticated, user avatar with dropdown menu (Profile, Switch Role, Dashboard, Sign Out) when authenticated.
 - **Transaction Timeline System**: Comprehensive TenancyTimeline and SaleTimeline MongoDB models with document tracking, stage progression (16 tenancy stages, 14 sale stages), and verification workflows. API routes at `/api/timelines`.
 - **Ejari Unified Tenancy Contract System**: Compliant contract generation, secure digital signature workflows, and status tracking.
 - **Brand Theme**: Red and White color scheme, Montserrat/Open Sans typography, consistent design system with CSS variables, and comprehensive light/dark theme support.

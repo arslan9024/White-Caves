@@ -1,22 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
-import { auth } from '../config/firebase';
-import { signOut } from 'firebase/auth';
-import { useDispatch } from 'react-redux';
-import { setUser } from '../store/userSlice';
 import ThemeToggle from './ThemeToggle';
+import UniversalProfile from './layout/UniversalProfile';
 import './MegaNav.css';
 
 export default function MegaNav({ user }) {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { isDark, setIsDark } = useTheme();
   const [activeMenu, setActiveMenu] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const navRef = useRef(null);
-  const userMenuRef = useRef(null);
 
   const menuItems = [
     {
@@ -84,9 +78,6 @@ export default function MegaNav({ user }) {
     const handleClickOutside = (event) => {
       if (navRef.current && !navRef.current.contains(event.target)) {
         setActiveMenu(null);
-      }
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
-        setUserMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -202,78 +193,7 @@ export default function MegaNav({ user }) {
 
             <div className="mega-nav-actions">
               <ThemeToggle />
-
-              {user ? (
-                <div className="user-menu" ref={userMenuRef}>
-                  <button 
-                    className="user-avatar-btn" 
-                    onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  >
-                    {user.photo ? (
-                      <img src={user.photo} alt={user.name} />
-                    ) : (
-                      <span>{user.name?.charAt(0) || user.email?.charAt(0) || 'U'}</span>
-                    )}
-                  </button>
-                  {userMenuOpen && (
-                    <div className="user-dropdown">
-                      <div className="user-dropdown-header">
-                        <div className="user-dropdown-avatar">
-                          {user.photo ? (
-                            <img src={user.photo} alt={user.name} />
-                          ) : (
-                            <span>{user.name?.charAt(0) || user.email?.charAt(0) || 'U'}</span>
-                          )}
-                        </div>
-                        <div className="user-dropdown-info">
-                          <span className="user-dropdown-name">{user.name || 'User'}</span>
-                          <span className="user-dropdown-email">{user.email || ''}</span>
-                        </div>
-                      </div>
-                      <div className="user-dropdown-divider"></div>
-                      <Link to="/profile" className="user-dropdown-item" onClick={() => setUserMenuOpen(false)}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                          <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                        Profile
-                      </Link>
-                      <Link to="/select-role" className="user-dropdown-item" onClick={() => setUserMenuOpen(false)}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <rect x="3" y="3" width="7" height="7"/>
-                          <rect x="14" y="3" width="7" height="7"/>
-                          <rect x="14" y="14" width="7" height="7"/>
-                          <rect x="3" y="14" width="7" height="7"/>
-                        </svg>
-                        Dashboard
-                      </Link>
-                      <div className="user-dropdown-divider"></div>
-                      <button className="user-dropdown-item logout" onClick={async () => {
-                        setUserMenuOpen(false);
-                        try {
-                          await signOut(auth);
-                          localStorage.removeItem('userRole');
-                          dispatch(setUser(null));
-                          navigate('/');
-                        } catch (error) {
-                          console.error('Logout error:', error);
-                        }
-                      }}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                          <polyline points="16 17 21 12 16 7"/>
-                          <line x1="21" y1="12" x2="9" y2="12"/>
-                        </svg>
-                        Sign Out
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Link to="/signin" className="btn btn-primary btn-sm">
-                  Sign In
-                </Link>
-              )}
+              <UniversalProfile />
             </div>
           </div>
         </div>
