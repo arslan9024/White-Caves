@@ -8,6 +8,7 @@ import { Readable } from 'stream';
 import admin from 'firebase-admin';
 import { uploadToDrive, createFolder, listFiles } from './lib/googleDrive.js';
 import { connectDB, Contract, SignatureToken, WhatsAppMessage, WhatsAppChatbotRule, WhatsAppSettings, WhatsAppContact } from './lib/database.js';
+import * as googleCalendar from './lib/googleCalendar.js';
 
 let firebaseInitialized = false;
 try {
@@ -603,6 +604,100 @@ app.post('/api/drive/create-folder', async (req, res) => {
     res.json({ success: true, folder: result });
   } catch (error) {
     console.error('Error creating folder:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/calendar/auth', (req, res) => {
+  try {
+    const state = req.query.state || '';
+    const authUrl = googleCalendar.getAuthUrl(state);
+    res.json({ success: true, authUrl });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/calendar/callback', async (req, res) => {
+  try {
+    const { code, state } = req.query;
+    const tokens = await googleCalendar.getTokens(code);
+    res.redirect(`/calendar-connected?success=true&state=${state || ''}`);
+  } catch (error) {
+    res.redirect(`/calendar-connected?success=false&error=${encodeURIComponent(error.message)}`);
+  }
+});
+
+app.post('/api/calendar/events', async (req, res) => {
+  try {
+    const result = await googleCalendar.createCalendarEvent(req.body);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/calendar/viewing', async (req, res) => {
+  try {
+    const result = await googleCalendar.createPropertyViewingEvent(req.body);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/calendar/upcoming', async (req, res) => {
+  try {
+    const maxResults = parseInt(req.query.maxResults) || 10;
+    const result = await googleCalendar.getUpcomingEvents(maxResults);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.delete('/api/calendar/events/:eventId', async (req, res) => {
+  try {
+    const result = await googleCalendar.deleteCalendarEvent(req.params.eventId);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/tasks', async (req, res) => {
+  try {
+    const result = await googleCalendar.createTask(req.body);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/tasks/followup', async (req, res) => {
+  try {
+    const result = await googleCalendar.createFollowUpTask(req.body);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/tasks', async (req, res) => {
+  try {
+    const showCompleted = req.query.showCompleted === 'true';
+    const result = await googleCalendar.getTasks('@default', showCompleted);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.patch('/api/tasks/:taskId/complete', async (req, res) => {
+  try {
+    const result = await googleCalendar.completeTask(req.params.taskId);
+    res.json(result);
+  } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 });

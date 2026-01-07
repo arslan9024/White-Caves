@@ -3,8 +3,10 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import './App.css'
 import './styles/theme.css'
 import './styles/design-system.css'
+import './styles/rtl.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from './store/userSlice';
+import { LanguageProvider } from './context/LanguageContext';
 import RoleGateway from './components/RoleGateway';
 import SignInPage from './pages/auth/SignInPage';
 import ProfilePage from './pages/auth/ProfilePage';
@@ -107,6 +109,7 @@ function App() {
   };
 
   return (
+  <LanguageProvider>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -238,6 +241,7 @@ function App() {
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
+  </LanguageProvider>
   );
 }
 

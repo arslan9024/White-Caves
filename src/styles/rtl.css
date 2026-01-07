@@ -1,0 +1,246 @@
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] body {
+  font-family: 'Cairo', 'Noto Sans Arabic', sans-serif;
+}
+
+[dir="rtl"] .flex-row {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+[dir="rtl"] .text-right {
+  text-align: left;
+}
+
+[dir="rtl"] .ml-auto {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+[dir="rtl"] .mr-auto {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+[dir="rtl"] .pl-4 {
+  padding-left: 0;
+  padding-right: 1rem;
+}
+
+[dir="rtl"] .pr-4 {
+  padding-right: 0;
+  padding-left: 1rem;
+}
+
+[dir="rtl"] .border-l {
+  border-left: none;
+  border-right: 1px solid;
+}
+
+[dir="rtl"] .border-r {
+  border-right: none;
+  border-left: 1px solid;
+}
+
+[dir="rtl"] .left-0 {
+  left: auto;
+  right: 0;
+}
+
+[dir="rtl"] .right-0 {
+  right: auto;
+  left: 0;
+}
+
+[dir="rtl"] input[type="text"],
+[dir="rtl"] input[type="email"],
+[dir="rtl"] input[type="tel"],
+[dir="rtl"] input[type="password"],
+[dir="rtl"] input[type="number"],
+[dir="rtl"] textarea,
+[dir="rtl"] select {
+  text-align: right;
+  direction: rtl;
+}
+
+[dir="rtl"] input[type="tel"],
+[dir="rtl"] input[type="number"] {
+  direction: ltr;
+  text-align: left;
+}
+
+[dir="rtl"] .icon-left {
+  margin-left: 0.5rem;
+  margin-right: 0;
+}
+
+[dir="rtl"] .icon-right {
+  margin-right: 0.5rem;
+  margin-left: 0;
+}
+
+[dir="rtl"] .nav-menu {
+  right: auto;
+  left: 0;
+}
+
+[dir="rtl"] .sidebar {
+  right: 0;
+  left: auto;
+  border-left: 1px solid var(--border-color);
+  border-right: none;
+}
+
+[dir="rtl"] .main-content-with-sidebar {
+  margin-left: 0;
+  margin-right: 260px;
+}
+
+[dir="rtl"] .dropdown-menu {
+  left: 0;
+  right: auto;
+}
+
+[dir="rtl"] .card-actions {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+[dir="rtl"] .breadcrumb-separator {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .arrow-icon {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .chevron-right {
+  transform: rotate(180deg);
+}
+
+[dir="rtl"] .chevron-left {
+  transform: rotate(180deg);
+}
+
+[dir="rtl"] .progress-bar {
+  direction: ltr;
+}
+
+[dir="rtl"] .slider {
+  direction: ltr;
+}
+
+[dir="rtl"] .table th,
+[dir="rtl"] .table td {
+  text-align: right;
+}
+
+[dir="rtl"] .table th:first-child,
+[dir="rtl"] .table td:first-child {
+  border-left: none;
+  border-right: 1px solid var(--border-color);
+}
+
+[dir="rtl"] .list-item::before {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+[dir="rtl"] .checkbox-label,
+[dir="rtl"] .radio-label {
+  padding-left: 0;
+  padding-right: 1.75rem;
+}
+
+[dir="rtl"] .checkbox-input,
+[dir="rtl"] .radio-input {
+  left: auto;
+  right: 0;
+}
+
+[dir="rtl"] .notification-badge {
+  right: auto;
+  left: -0.5rem;
+}
+
+[dir="rtl"] .tooltip-arrow-left {
+  left: auto;
+  right: 100%;
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .tooltip-arrow-right {
+  right: auto;
+  left: 100%;
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .stat-card .stat-icon {
+  margin-right: 0;
+  margin-left: 1rem;
+}
+
+[dir="rtl"] .property-card .property-info {
+  text-align: right;
+}
+
+[dir="rtl"] .message-bubble.outgoing {
+  margin-left: 0;
+  margin-right: auto;
+  border-radius: 18px 18px 4px 18px;
+}
+
+[dir="rtl"] .message-bubble.incoming {
+  margin-right: 0;
+  margin-left: auto;
+  border-radius: 18px 18px 18px 4px;
+}
+
+[dir="rtl"] .chat-input-container {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .role-navigation {
+  left: auto;
+  right: 0;
+  border-left: 1px solid var(--sidebar-border);
+  border-right: none;
+}
+
+[dir="rtl"] .role-content {
+  margin-left: 0;
+  margin-right: 260px;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/cairo/v28/SLXgc1nY6HkvangtZmpcWmhzfH5lWWgcSIV-FA.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+200C-200D, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/cairo/v28/SLXgc1nY6HkvangtZmpca2hzfH5lWWgcSIV-FA.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+200C-200D, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/cairo/v28/SLXgc1nY6HkvangtZmpcUGhzfH5lWWgcSIV-FA.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+200C-200D, U+FB50-FDFF, U+FE70-FEFF;
+}

@@ -152,3 +152,61 @@ src/pages/owner/
 ```
 Routes: /owner/whatsapp, /owner/whatsapp/chatbot, /owner/whatsapp/analytics
 Access: Protected by ProtectedRoute (owner role only)
+
+## AI-Powered Business Automation (January 2026)
+
+### Enhanced Property Schema
+- UAE-specific fields: permit numbers, Ejari, DEWA, RERA, DLD, Makani numbers
+- Comprehensive property types: Apartment, Villa, Townhouse, Penthouse, Office, Warehouse, Land, Studio
+- Emirates support: Dubai, Abu Dhabi, Sharjah, Ajman, RAK, Fujairah, Umm Al Quwain
+- 30+ UAE-specific amenities (Private Pool, Sea View, Burj Khalifa View, Palm View, etc.)
+- Document management with verification status and expiry tracking
+- Listing source tracking (WhatsApp, email, call, website, walk-in)
+- Lead scoring with market trend analysis
+- Viewing management with calendar integration
+- Status tracking with full history
+
+### Arabic/English Bilingual Support
+- Language context provider at `src/context/LanguageContext.jsx`
+- Comprehensive translations at `src/i18n/translations.js`
+- RTL (Right-to-Left) CSS support at `src/styles/rtl.css`
+- Language toggle component with multiple variants
+- Cairo/Noto Sans Arabic font support
+- Number/currency/date formatting for Arabic locale
+
+### AI Chatbot Service
+- Located at `src/services/ChatbotService.js`
+- Intent classification for property inquiries, viewings, budget, contact
+- Entity extraction: property type, location, bedrooms, budget
+- Full Arabic support with intents and responses
+- Context management for multi-turn conversations
+- Lead scoring based on conversation analysis
+- Suggested actions for quick responses
+
+### AI Agent Assignment Engine
+- Located at `src/services/AgentAssignmentService.js`
+- Weighted scoring algorithm:
+  - Expertise: 30% (property type, location, price range)
+  - Availability: 25% (current load, calendar, working hours)
+  - Performance: 20% (closure rate, response time, ratings)
+  - Proximity: 15% (primary/secondary areas)
+  - Client Preference: 10% (language, previous agent)
+- Round-robin fallback assignment
+- Team workload analysis
+
+### Google Calendar Integration
+- Located at `server/lib/googleCalendar.js`
+- OAuth 2.0 with Calendar and Tasks scopes
+- Property viewing event creation with Google Meet
+- Automatic attendee invitations
+- Task creation for follow-ups
+- API routes: /api/calendar/*, /api/tasks/*
+
+### Market Analytics Dashboard
+- Located at `src/components/dashboard/MarketAnalyticsDashboard.jsx`
+- KPIs: Monthly Deals, Avg Close Time, Lead Conversion, Satisfaction
+- Emirates transaction breakdown with growth trends
+- Property type distribution with pie chart
+- Lead sources visualization (WhatsApp, Website, Referral)
+- Top performing areas with demand indicators
+- Agent performance leaderboard
