@@ -6,6 +6,10 @@
   display: flex;
 }
 
+.role-page.no-sidebar {
+  display: block;
+}
+
 body.dark-mode .role-page {
   --card-bg: rgba(255, 255, 255, 0.05);
   --card-border: rgba(255, 255, 255, 0.1);
@@ -17,6 +21,17 @@ body.dark-mode .role-page {
   margin-left: 260px;
   padding: 2rem;
   max-width: 1400px;
+}
+
+.role-page-content.full-width {
+  margin-left: 0;
+  max-width: 100%;
+  padding: 2rem 3rem;
+}
+
+.role-page.no-sidebar .role-page-content {
+  margin-left: 0;
+  max-width: 100%;
 }
 
 .page-header {

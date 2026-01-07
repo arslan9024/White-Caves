@@ -1,0 +1,20 @@
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1;
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+}
+
+.app-main.with-nav {
+  padding-top: 70px;
+}
+
+@media (max-width: 768px) {
+  .app-main.with-nav {
+    padding-top: 60px;
+  }
+}

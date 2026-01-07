@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import RoleNavigation from '../../components/RoleNavigation';
 import '../RolePages.css';
 
 export default function LeasingAgentDashboardPage() {
@@ -29,10 +28,8 @@ export default function LeasingAgentDashboardPage() {
   ];
 
   return (
-    <div className="role-page">
-      <RoleNavigation role="leasing-agent" />
-      
-      <div className="role-page-content">
+    <div className="role-page no-sidebar">
+      <div className="role-page-content full-width">
         <div className="page-header">
           <h1>Leasing Agent Dashboard</h1>
           <p>Manage your rental listings and tenant leads</p>

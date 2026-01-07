@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import RoleNavigation from '../../components/RoleNavigation';
 import '../RolePages.css';
 
 export default function BuyerDashboardPage() {
@@ -25,10 +24,8 @@ export default function BuyerDashboardPage() {
   ];
 
   return (
-    <div className="role-page">
-      <RoleNavigation role="buyer" />
-      
-      <div className="role-page-content">
+    <div className="role-page no-sidebar">
+      <div className="role-page-content full-width">
         <div className="page-header">
           <h1>Buyer Dashboard</h1>
           <p>Find your dream property in Dubai</p>
@@ -110,3 +107,5 @@ export default function BuyerDashboardPage() {
     </div>
   );
 }
+
+// Removed RoleNavigation import - now using global TopNavBar

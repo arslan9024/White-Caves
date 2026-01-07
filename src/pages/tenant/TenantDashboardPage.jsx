@@ -1,16 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import RoleNavigation from '../../components/RoleNavigation';
 import '../RolePages.css';
 
 export default function TenantDashboardPage() {
-  const navItems = [
-    { path: '/tenant/dashboard', label: 'Dashboard', icon: '📊' },
-    { path: '/tenant/my-rentals', label: 'My Rentals', icon: '🏠' },
-    { path: '/tenant/payments', label: 'Payments', icon: '💳' },
-    { path: '/tenant/maintenance', label: 'Maintenance', icon: '🔧' }
-  ];
-
   const stats = [
     { label: 'Active Lease', value: '1', icon: '📋' },
     { label: 'Days Remaining', value: '245', icon: '📅' },
@@ -19,10 +11,8 @@ export default function TenantDashboardPage() {
   ];
 
   return (
-    <div className="role-dashboard">
-      <RoleNavigation items={navItems} role="tenant" roleLabel="Tenant" />
-      
-      <main className="dashboard-main">
+    <div className="role-page no-sidebar">
+      <div className="role-page-content full-width">
         <div className="dashboard-header">
           <h1>Tenant Dashboard</h1>
           <p>Manage your rental and stay connected with your landlord</p>
@@ -75,7 +65,7 @@ export default function TenantDashboardPage() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

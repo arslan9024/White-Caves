@@ -7,6 +7,7 @@ import './styles/rtl.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from './store/userSlice';
 import { LanguageProvider } from './context/LanguageContext';
+import AppLayout from './components/layout/AppLayout';
 import RoleGateway from './components/RoleGateway';
 import SignInPage from './pages/auth/SignInPage';
 import ProfilePage from './pages/auth/ProfilePage';
@@ -128,118 +129,118 @@ function App() {
         
         <Route path="/buyer/dashboard" element={
           <ProtectedRoute allowedRoles={['buyer']}>
-            <BuyerDashboardPage />
+            <AppLayout><BuyerDashboardPage /></AppLayout>
           </ProtectedRoute>
         } />
         <Route path="/buyer/mortgage-calculator" element={
           <ProtectedRoute allowedRoles={['buyer']}>
-            <MortgageCalculatorPage />
+            <AppLayout><MortgageCalculatorPage /></AppLayout>
           </ProtectedRoute>
         } />
         <Route path="/buyer/dld-fees" element={
           <ProtectedRoute allowedRoles={['buyer']}>
-            <DLDFeesPage />
+            <AppLayout><DLDFeesPage /></AppLayout>
           </ProtectedRoute>
         } />
         <Route path="/buyer/title-deed-registration" element={
           <ProtectedRoute allowedRoles={['buyer']}>
-            <TitleDeedRegistrationPage />
+            <AppLayout><TitleDeedRegistrationPage /></AppLayout>
           </ProtectedRoute>
         } />
         
         <Route path="/seller/dashboard" element={
           <ProtectedRoute allowedRoles={['seller']}>
-            <SellerDashboardPage />
+            <AppLayout><SellerDashboardPage /></AppLayout>
           </ProtectedRoute>
         } />
         <Route path="/seller/pricing-tools" element={
           <ProtectedRoute allowedRoles={['seller']}>
-            <PricingToolsPage />
+            <AppLayout><PricingToolsPage /></AppLayout>
           </ProtectedRoute>
         } />
         
         <Route path="/landlord/dashboard" element={
           <ProtectedRoute allowedRoles={['landlord']}>
-            <LandlordDashboardPage />
+            <AppLayout><LandlordDashboardPage /></AppLayout>
           </ProtectedRoute>
         } />
         <Route path="/landlord/rental-management" element={
           <ProtectedRoute allowedRoles={['landlord']}>
-            <RentalManagementPage />
+            <AppLayout><RentalManagementPage /></AppLayout>
           </ProtectedRoute>
         } />
         
         <Route path="/leasing-agent/dashboard" element={
           <ProtectedRoute allowedRoles={['leasing-agent']}>
-            <LeasingAgentDashboardPage />
+            <AppLayout><LeasingAgentDashboardPage /></AppLayout>
           </ProtectedRoute>
         } />
         <Route path="/leasing-agent/tenant-screening" element={
           <ProtectedRoute allowedRoles={['leasing-agent']}>
-            <TenantScreeningPage />
+            <AppLayout><TenantScreeningPage /></AppLayout>
           </ProtectedRoute>
         } />
         <Route path="/leasing-agent/contracts" element={
           <ProtectedRoute allowedRoles={['leasing-agent']}>
-            <ContractManagementPage />
+            <AppLayout><ContractManagementPage /></AppLayout>
           </ProtectedRoute>
         } />
         
         <Route path="/secondary-sales-agent/dashboard" element={
           <ProtectedRoute allowedRoles={['secondary-sales-agent']}>
-            <SalesAgentDashboardPage />
+            <AppLayout><SalesAgentDashboardPage /></AppLayout>
           </ProtectedRoute>
         } />
         <Route path="/secondary-sales-agent/sales-pipeline" element={
           <ProtectedRoute allowedRoles={['secondary-sales-agent']}>
-            <SalesPipelinePage />
+            <AppLayout><SalesPipelinePage /></AppLayout>
           </ProtectedRoute>
         } />
         
         <Route path="/tenant/dashboard" element={
           <ProtectedRoute allowedRoles={['tenant']}>
-            <TenantDashboardPage />
+            <AppLayout><TenantDashboardPage /></AppLayout>
           </ProtectedRoute>
         } />
         
         <Route path="/owner/dashboard" element={
           <ProtectedRoute allowedRoles={['owner']}>
-            <OwnerDashboardPage />
+            <AppLayout><OwnerDashboardPage /></AppLayout>
           </ProtectedRoute>
         } />
         <Route path="/owner/business-model" element={
           <ProtectedRoute allowedRoles={['owner']}>
-            <BusinessModelPage />
+            <AppLayout><BusinessModelPage /></AppLayout>
           </ProtectedRoute>
         } />
         <Route path="/owner/client-services" element={
           <ProtectedRoute allowedRoles={['owner']}>
-            <ClientServicesPage />
+            <AppLayout><ClientServicesPage /></AppLayout>
           </ProtectedRoute>
         } />
         <Route path="/owner/system-health" element={
           <ProtectedRoute allowedRoles={['owner']}>
-            <SystemHealthPage />
+            <AppLayout><SystemHealthPage /></AppLayout>
           </ProtectedRoute>
         } />
         <Route path="/owner/whatsapp" element={
           <ProtectedRoute allowedRoles={['owner']}>
-            <WhatsAppDashboardPage />
+            <AppLayout><WhatsAppDashboardPage /></AppLayout>
           </ProtectedRoute>
         } />
         <Route path="/owner/whatsapp/chatbot" element={
           <ProtectedRoute allowedRoles={['owner']}>
-            <WhatsAppChatbotPage />
+            <AppLayout><WhatsAppChatbotPage /></AppLayout>
           </ProtectedRoute>
         } />
         <Route path="/owner/whatsapp/analytics" element={
           <ProtectedRoute allowedRoles={['owner']}>
-            <WhatsAppAnalyticsPage />
+            <AppLayout><WhatsAppAnalyticsPage /></AppLayout>
           </ProtectedRoute>
         } />
         <Route path="/owner/whatsapp/settings" element={
           <ProtectedRoute allowedRoles={['owner']}>
-            <WhatsAppSettingsPage />
+            <AppLayout><WhatsAppSettingsPage /></AppLayout>
           </ProtectedRoute>
         } />
         

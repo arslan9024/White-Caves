@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import RoleNavigation from '../../components/RoleNavigation';
 import '../RolePages.css';
 
 export default function SalesAgentDashboardPage() {
@@ -29,10 +28,8 @@ export default function SalesAgentDashboardPage() {
   ];
 
   return (
-    <div className="role-page">
-      <RoleNavigation role="secondary-sales-agent" />
-      
-      <div className="role-page-content">
+    <div className="role-page no-sidebar">
+      <div className="role-page-content full-width">
         <div className="page-header">
           <h1>Sales Agent Dashboard</h1>
           <p>Manage your property sales and buyer leads</p>

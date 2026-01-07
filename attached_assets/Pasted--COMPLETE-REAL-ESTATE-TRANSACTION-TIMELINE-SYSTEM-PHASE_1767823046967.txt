@@ -1,0 +1,4091 @@
+# **COMPLETE REAL ESTATE TRANSACTION TIMELINE SYSTEM**
+
+## **📊 PHASE 12: TRANSACTION TIMELINE & STATUS TRACKING SYSTEM**
+
+**Estimated Time:** 4-5 hours
+
+### **Step 12.1: Create Transaction Timeline Models**
+
+#### **File 1:** `server/models/TenancyTimeline.js`
+```javascript
+const mongoose = require('mongoose');
+
+const tenancyTimelineSchema = new mongoose.Schema({
+  // Transaction Identification
+  transactionId: {
+    type: String,
+    required: true,
+    unique: true,
+    index: true
+  },
+  propertyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Property',
+    required: true
+  },
+  
+  // Parties Involved
+  tenant: {
+    id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    name: String,
+    email: String,
+    phone: String
+  },
+  landlord: {
+    id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    name: String,
+    email: String,
+    phone: String
+  },
+  agent: {
+    id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    name: String
+  },
+  
+  // Tenancy Details
+  contractType: {
+    type: String,
+    enum: ['new', 'renewal', 'transfer'],
+    default: 'new'
+  },
+  startDate: Date,
+  endDate: Date,
+  rentAmount: Number,
+  securityDeposit: Number,
+  paymentFrequency: {
+    type: String,
+    enum: ['monthly', 'quarterly', 'yearly', 'custom']
+  },
+  
+  // UAE-Specific Documents
+  documents: {
+    // Tenant Documents
+    tenantEmiratesId: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String,
+      uploadedDate: Date,
+      verifiedDate: Date
+    },
+    tenantPassport: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String,
+      uploadedDate: Date
+    },
+    tenantVisaCopy: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String
+    },
+    tenantBankCheque: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String,
+      chequeNumber: String,
+      bankName: String
+    },
+    
+    // Landlord Documents
+    titleDeed: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String,
+      dldNumber: String
+    },
+    landlordEmiratesId: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String
+    },
+    landlordPassport: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String
+    },
+    dewaBill: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String,
+      accountNumber: String
+    },
+    bankNoc: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String,
+      bankName: String
+    },
+    
+    // Contract Documents
+    tenancyContract: {
+      generated: { type: Boolean, default: false },
+      fileUrl: String,
+      generatedDate: Date
+    },
+    ejariCertificate: {
+      registered: { type: Boolean, default: false },
+      ejariNumber: String,
+      fileUrl: String,
+      registrationDate: Date
+    },
+    dewaTransfer: {
+      completed: { type: Boolean, default: false },
+      accountNumber: String,
+      completionDate: Date
+    }
+  },
+  
+  // Status Timeline
+  statusTimeline: [{
+    stage: {
+      type: String,
+      enum: [
+        'initial_contact',
+        'document_collection_tenant',
+        'document_collection_landlord',
+        'contract_preparation',
+        'contract_review',
+        'tenant_signing',
+        'landlord_signing',
+        'ejari_registration',
+        'dewa_transfer',
+        'keys_handover',
+        'completed',
+        'renewal_pending',
+        'renewal_offered',
+        'renewal_accepted',
+        'termination_requested',
+        'termination_completed'
+      ],
+      required: true
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'in_progress', 'completed', 'cancelled', 'on_hold'],
+      default: 'pending'
+    },
+    initiatedBy: {
+      type: String,
+      enum: ['tenant', 'landlord', 'agent', 'system'],
+      required: true
+    },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    notes: String,
+    dueDate: Date,
+    completedDate: Date,
+    documents: [{
+      name: String,
+      fileUrl: String,
+      uploadedBy: String,
+      uploadDate: Date
+    }],
+    createdAt: { type: Date, default: Date.now }
+  }],
+  
+  // Current Stage
+  currentStage: {
+    type: String,
+    enum: [
+      'initial_contact',
+      'document_collection_tenant',
+      'document_collection_landlord',
+      'contract_preparation',
+      'contract_review',
+      'tenant_signing',
+      'landlord_signing',
+      'ejari_registration',
+      'dewa_transfer',
+      'keys_handover',
+      'completed',
+      'renewal_pending',
+      'renewal_offered',
+      'renewal_accepted',
+      'termination_requested',
+      'termination_completed'
+    ],
+    default: 'initial_contact'
+  },
+  
+  // Overall Status
+  overallStatus: {
+    type: String,
+    enum: ['active', 'pending', 'completed', 'cancelled', 'on_hold', 'renewal_due'],
+    default: 'pending'
+  },
+  
+  // Notifications
+  lastNotificationSent: Date,
+  nextNotificationDue: Date,
+  
+  // Timestamps
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+  completedAt: Date
+}, {
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+// Indexes for performance
+tenancyTimelineSchema.index({ transactionId: 1 });
+tenancyTimelineSchema.index({ propertyId: 1 });
+tenancyTimelineSchema.index({ 'tenant.id': 1 });
+tenancyTimelineSchema.index({ 'landlord.id': 1 });
+tenancyTimelineSchema.index({ currentStage: 1 });
+tenancyTimelineSchema.index({ overallStatus: 1 });
+tenancyTimelineSchema.index({ endDate: 1 }); // For renewal reminders
+
+// Virtual for percentage completion
+tenancyTimelineSchema.virtual('completionPercentage').get(function() {
+  const totalStages = 10; // Adjust based on actual stages
+  const completedStages = this.statusTimeline.filter(stage => 
+    stage.status === 'completed'
+  ).length;
+  
+  return Math.round((completedStages / totalStages) * 100);
+});
+
+// Virtual for days remaining in tenancy
+tenancyTimelineSchema.virtual('daysRemaining').get(function() {
+  if (!this.endDate) return null;
+  
+  const today = new Date();
+  const endDate = new Date(this.endDate);
+  const diffTime = endDate - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  return diffDays > 0 ? diffDays : 0;
+});
+
+// Pre-save middleware to update overall status
+tenancyTimelineSchema.pre('save', function(next) {
+  // Update overall status based on current stage
+  if (this.currentStage === 'completed') {
+    this.overallStatus = 'completed';
+  } else if (this.currentStage === 'renewal_pending') {
+    this.overallStatus = 'renewal_due';
+  }
+  
+  // Auto-update renewal status if end date is near
+  if (this.endDate) {
+    const daysRemaining = this.daysRemaining;
+    if (daysRemaining <= 60 && daysRemaining > 0) {
+      this.overallStatus = 'renewal_due';
+    }
+  }
+  
+  next();
+});
+
+module.exports = mongoose.model('TenancyTimeline', tenancyTimelineSchema);
+```
+
+#### **File 2:** `server/models/SaleTimeline.js`
+```javascript
+const mongoose = require('mongoose');
+
+const saleTimelineSchema = new mongoose.Schema({
+  // Transaction Identification
+  transactionId: {
+    type: String,
+    required: true,
+    unique: true,
+    index: true
+  },
+  propertyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Property',
+    required: true
+  },
+  
+  // Parties Involved
+  buyer: {
+    id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    name: String,
+    email: String,
+    phone: String,
+    nationality: String
+  },
+  seller: {
+    id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    name: String,
+    email: String,
+    phone: String
+  },
+  buyerAgent: {
+    id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    name: String
+  },
+  sellerAgent: {
+    id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    name: String
+  },
+  
+  // Sale Details
+  salePrice: { type: Number, required: true },
+  paymentMethod: {
+    type: String,
+    enum: ['cash', 'mortgage', 'installments', 'combination'],
+    required: true
+  },
+  downPayment: Number,
+  mortgageAmount: Number,
+  bankName: String,
+  completionDate: Date,
+  possessionDate: Date,
+  
+  // UAE-Specific Documents & Forms
+  documents: {
+    // Form F - Memorandum of Sale
+    formF: {
+      generated: { type: Boolean, default: false },
+      signedByBuyer: { type: Boolean, default: false },
+      signedBySeller: { type: Boolean, default: false },
+      fileUrl: String,
+      signingDate: Date,
+      witnesses: [{
+        name: String,
+        emiratesId: String,
+        signatureUrl: String
+      }]
+    },
+    
+    // Form B - Offer to Purchase
+    formB: {
+      generated: { type: Boolean, default: false },
+      signedByBuyer: { type: Boolean, default: false },
+      fileUrl: String,
+      signingDate: Date
+    },
+    
+    // Buyer Documents
+    buyerEmiratesId: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String
+    },
+    buyerPassport: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String
+    },
+    buyerVisa: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String
+    },
+    buyerPoA: { // Power of Attorney
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String,
+      poaNumber: String
+    },
+    
+    // Seller Documents
+    sellerEmiratesId: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String
+    },
+    sellerPassport: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String
+    },
+    titleDeed: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String,
+      dldNumber: String
+    },
+    nocFromBank: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String,
+      bankName: String,
+      nocNumber: String
+    },
+    dewaClearance: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String,
+      certificateNumber: String
+    },
+    serviceChargeClearance: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String,
+      providerName: String
+    },
+    
+    // Payment Documents
+    managerCheque: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String,
+      chequeNumber: String,
+      bankName: String,
+      amount: Number,
+      dateIssued: Date
+    },
+    bankTransferProof: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String,
+      transactionId: String,
+      bankName: String,
+      amount: Number,
+      date: Date
+    },
+    mortgageOfferLetter: {
+      uploaded: { type: Boolean, default: false },
+      verified: { type: Boolean, default: false },
+      fileUrl: String,
+      bankName: String,
+      approvalDate: Date
+    },
+    
+    // DLD Documents
+    mouzaaContract: {
+      generated: { type: Boolean, default: false },
+      fileUrl: String,
+      dldReference: String
+    },
+    titleDeedTransfer: {
+      completed: { type: Boolean, default: false },
+      newTitleDeedNumber: String,
+      transferDate: Date,
+      fileUrl: String
+    }
+  },
+  
+  // Status Timeline
+  statusTimeline: [{
+    stage: {
+      type: String,
+      enum: [
+        'offer_made',
+        'offer_accepted',
+        'form_b_signed',
+        'form_f_preparation',
+        'form_f_signing_buyer',
+        'form_f_signing_seller',
+        'deposit_paid',
+        'document_collection_buyer',
+        'document_collection_seller',
+        'noc_application',
+        'dewa_clearance',
+        'service_charge_clearance',
+        'mortgage_approval',
+        'final_payment',
+        'dld_transfer',
+        'keys_handover',
+        'completed'
+      ],
+      required: true
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'in_progress', 'completed', 'cancelled', 'on_hold'],
+      default: 'pending'
+    },
+    initiatedBy: {
+      type: String,
+      enum: ['buyer', 'seller', 'buyer_agent', 'seller_agent', 'system'],
+      required: true
+    },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    notes: String,
+    dueDate: Date,
+    completedDate: Date,
+    documents: [{
+      name: String,
+      fileUrl: String,
+      uploadedBy: String,
+      uploadDate: Date
+    }],
+    createdAt: { type: Date, default: Date.now }
+  }],
+  
+  // Current Stage
+  currentStage: {
+    type: String,
+    enum: [
+      'offer_made',
+      'offer_accepted',
+      'form_b_signed',
+      'form_f_preparation',
+      'form_f_signing_buyer',
+      'form_f_signing_seller',
+      'deposit_paid',
+      'document_collection_buyer',
+      'document_collection_seller',
+      'noc_application',
+      'dewa_clearance',
+      'service_charge_clearance',
+      'mortgage_approval',
+      'final_payment',
+      'dld_transfer',
+      'keys_handover',
+      'completed'
+    ],
+    default: 'offer_made'
+  },
+  
+  // Overall Status
+  overallStatus: {
+    type: String,
+    enum: ['active', 'pending', 'completed', 'cancelled', 'on_hold'],
+    default: 'pending'
+  },
+  
+  // Financial Tracking
+  payments: [{
+    type: {
+      type: String,
+      enum: ['deposit', 'down_payment', 'installment', 'final_payment', 'commission']
+    },
+    amount: Number,
+    dueDate: Date,
+    paidDate: Date,
+    method: String,
+    reference: String,
+    status: {
+      type: String,
+      enum: ['pending', 'paid', 'overdue', 'cancelled'],
+      default: 'pending'
+    }
+  }],
+  
+  // Commission Tracking
+  commissions: {
+    buyerAgent: {
+      amount: Number,
+      percentage: Number,
+      paid: { type: Boolean, default: false },
+      paymentDate: Date
+    },
+    sellerAgent: {
+      amount: Number,
+      percentage: Number,
+      paid: { type: Boolean, default: false },
+      paymentDate: Date
+    }
+  },
+  
+  // Notifications
+  lastNotificationSent: Date,
+  nextNotificationDue: Date,
+  
+  // Timestamps
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+  completedAt: Date
+}, {
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+// Indexes for performance
+saleTimelineSchema.index({ transactionId: 1 });
+saleTimelineSchema.index({ propertyId: 1 });
+saleTimelineSchema.index({ 'buyer.id': 1 });
+saleTimelineSchema.index({ 'seller.id': 1 });
+saleTimelineSchema.index({ currentStage: 1 });
+saleTimelineSchema.index({ overallStatus: 1 });
+saleTimelineSchema.index({ completionDate: 1 });
+
+// Virtual for percentage completion
+saleTimelineSchema.virtual('completionPercentage').get(function() {
+  const totalStages = 16; // Total stages in sale process
+  const completedStages = this.statusTimeline.filter(stage => 
+    stage.status === 'completed'
+  ).length;
+  
+  return Math.round((completedStages / totalStages) * 100);
+});
+
+// Virtual for days remaining to completion
+saleTimelineSchema.virtual('daysToCompletion').get(function() {
+  if (!this.completionDate) return null;
+  
+  const today = new Date();
+  const completionDate = new Date(this.completionDate);
+  const diffTime = completionDate - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  return diffDays;
+});
+
+// Pre-save middleware
+saleTimelineSchema.pre('save', function(next) {
+  // Update overall status
+  if (this.currentStage === 'completed') {
+    this.overallStatus = 'completed';
+    this.completedAt = new Date();
+  }
+  
+  // Auto-update payment status
+  if (this.payments && this.payments.length > 0) {
+    this.payments.forEach(payment => {
+      if (!payment.paidDate && payment.dueDate) {
+        const today = new Date();
+        if (today > payment.dueDate && payment.status !== 'paid') {
+          payment.status = 'overdue';
+        }
+      }
+    });
+  }
+  
+  next();
+});
+
+module.exports = mongoose.model('SaleTimeline', saleTimelineSchema);
+```
+
+### **Step 12.2: Create Timeline Controllers**
+
+#### **File 3:** `server/controllers/timeline.controller.js`
+```javascript
+const TenancyTimeline = require('../models/TenancyTimeline');
+const SaleTimeline = require('../models/SaleTimeline');
+const Property = require('../models/Property');
+const User = require('../models/User');
+
+/**
+ * Tenancy Timeline Management
+ */
+
+// Create new tenancy timeline
+exports.createTenancyTimeline = async (req, res) => {
+  try {
+    const { propertyId, tenantId, landlordId, agentId, contractDetails } = req.body;
+    
+    // Generate unique transaction ID
+    const transactionId = `TEN-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    
+    // Get user details
+    const [tenant, landlord, property] = await Promise.all([
+      User.findById(tenantId).select('profile.email phone'),
+      User.findById(landlordId).select('profile.email phone'),
+      Property.findById(propertyId).select('propertyCode emirate community')
+    ]);
+    
+    // Create timeline
+    const timeline = new TenancyTimeline({
+      transactionId,
+      propertyId,
+      tenant: {
+        id: tenantId,
+        name: `${tenant.profile.firstName} ${tenant.profile.lastName}`,
+        email: tenant.email,
+        phone: tenant.phone
+      },
+      landlord: {
+        id: landlordId,
+        name: `${landlord.profile.firstName} ${landlord.profile.lastName}`,
+        email: landlord.email,
+        phone: landlord.phone
+      },
+      agent: agentId ? { id: agentId } : null,
+      ...contractDetails,
+      statusTimeline: [{
+        stage: 'initial_contact',
+        status: 'completed',
+        initiatedBy: 'system',
+        notes: 'Tenancy timeline created',
+        completedDate: new Date()
+      }]
+    });
+    
+    await timeline.save();
+    
+    res.status(201).json({
+      success: true,
+      message: 'Tenancy timeline created successfully',
+      timeline
+    });
+  } catch (error) {
+    console.error('Create tenancy timeline error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create tenancy timeline'
+    });
+  }
+};
+
+// Update tenancy timeline status
+exports.updateTenancyStatus = async (req, res) => {
+  try {
+    const { transactionId } = req.params;
+    const { stage, status, initiatedBy, userId, notes, documents } = req.body;
+    
+    const timeline = await TenancyTimeline.findOne({ transactionId });
+    
+    if (!timeline) {
+      return res.status(404).json({
+        success: false,
+        message: 'Timeline not found'
+      });
+    }
+    
+    // Add new status update
+    timeline.statusTimeline.push({
+      stage,
+      status,
+      initiatedBy,
+      userId,
+      notes,
+      documents,
+      completedDate: status === 'completed' ? new Date() : null
+    });
+    
+    // Update current stage if completed
+    if (status === 'completed') {
+      timeline.currentStage = stage;
+      
+      // Trigger next stage based on current
+      const nextStage = getNextTenancyStage(stage);
+      if (nextStage) {
+        timeline.statusTimeline.push({
+          stage: nextStage,
+          status: 'pending',
+          initiatedBy: 'system',
+          notes: 'Next stage triggered automatically',
+          createdAt: new Date()
+        });
+      }
+    }
+    
+    // Update document status if provided
+    if (documents && documents.length > 0) {
+      documents.forEach(doc => {
+        const docPath = `documents.${doc.name}`;
+        if (timeline.schema.path(docPath)) {
+          timeline.set(`${docPath}.uploaded`, true);
+          timeline.set(`${docPath}.fileUrl`, doc.fileUrl);
+          timeline.set(`${docPath}.uploadedDate`, new Date());
+        }
+      });
+    }
+    
+    await timeline.save();
+    
+    // Send notifications to relevant parties
+    await sendTenancyNotification(timeline, stage, status, initiatedBy);
+    
+    res.json({
+      success: true,
+      message: 'Timeline updated successfully',
+      timeline
+    });
+  } catch (error) {
+    console.error('Update tenancy status error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update timeline'
+    });
+  }
+};
+
+// Get tenancy timeline for user
+exports.getUserTenancyTimelines = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { status, type } = req.query;
+    
+    const query = {
+      $or: [
+        { 'tenant.id': userId },
+        { 'landlord.id': userId },
+        { 'agent.id': userId }
+      ]
+    };
+    
+    if (status) query.overallStatus = status;
+    if (type) query.contractType = type;
+    
+    const timelines = await TenancyTimeline.find(query)
+      .populate('propertyId', 'propertyCode title images')
+      .sort({ updatedAt: -1 });
+    
+    res.json({
+      success: true,
+      timelines
+    });
+  } catch (error) {
+    console.error('Get user tenancy timelines error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch timelines'
+    });
+  }
+};
+
+// Get detailed tenancy timeline
+exports.getTenancyTimeline = async (req, res) => {
+  try {
+    const { transactionId } = req.params;
+    const userId = req.userId;
+    
+    const timeline = await TenancyTimeline.findOne({ transactionId })
+      .populate('propertyId')
+      .populate('agent.id', 'profile.name phone email');
+    
+    if (!timeline) {
+      return res.status(404).json({
+        success: false,
+        message: 'Timeline not found'
+      });
+    }
+    
+    // Check if user has access
+    const hasAccess = timeline.tenant.id.toString() === userId.toString() ||
+                      timeline.landlord.id.toString() === userId.toString() ||
+                      (timeline.agent.id && timeline.agent.id._id.toString() === userId.toString());
+    
+    if (!hasAccess) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied'
+      });
+    }
+    
+    res.json({
+      success: true,
+      timeline
+    });
+  } catch (error) {
+    console.error('Get tenancy timeline error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch timeline'
+    });
+  }
+};
+
+/**
+ * Sale Timeline Management
+ */
+
+// Create new sale timeline
+exports.createSaleTimeline = async (req, res) => {
+  try {
+    const { propertyId, buyerId, sellerId, buyerAgentId, sellerAgentId, saleDetails } = req.body;
+    
+    // Generate unique transaction ID
+    const transactionId = `SALE-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    
+    // Get user details
+    const [buyer, seller, property] = await Promise.all([
+      User.findById(buyerId).select('profile email phone'),
+      User.findById(sellerId).select('profile email phone'),
+      Property.findById(propertyId).select('propertyCode title price')
+    ]);
+    
+    // Create timeline
+    const timeline = new SaleTimeline({
+      transactionId,
+      propertyId,
+      buyer: {
+        id: buyerId,
+        name: `${buyer.profile.firstName} ${buyer.profile.lastName}`,
+        email: buyer.email,
+        phone: buyer.phone
+      },
+      seller: {
+        id: sellerId,
+        name: `${seller.profile.firstName} ${seller.profile.lastName}`,
+        email: seller.email,
+        phone: seller.phone
+      },
+      buyerAgent: buyerAgentId ? { id: buyerAgentId } : null,
+      sellerAgent: sellerAgentId ? { id: sellerAgentId } : null,
+      ...saleDetails,
+      statusTimeline: [{
+        stage: 'offer_made',
+        status: 'completed',
+        initiatedBy: 'system',
+        notes: 'Sale timeline created',
+        completedDate: new Date()
+      }]
+    });
+    
+    await timeline.save();
+    
+    res.status(201).json({
+      success: true,
+      message: 'Sale timeline created successfully',
+      timeline
+    });
+  } catch (error) {
+    console.error('Create sale timeline error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create sale timeline'
+    });
+  }
+};
+
+// Update sale timeline status
+exports.updateSaleStatus = async (req, res) => {
+  try {
+    const { transactionId } = req.params;
+    const { stage, status, initiatedBy, userId, notes, documents } = req.body;
+    
+    const timeline = await SaleTimeline.findOne({ transactionId });
+    
+    if (!timeline) {
+      return res.status(404).json({
+        success: false,
+        message: 'Timeline not found'
+      });
+    }
+    
+    // Add new status update
+    timeline.statusTimeline.push({
+      stage,
+      status,
+      initiatedBy,
+      userId,
+      notes,
+      documents,
+      completedDate: status === 'completed' ? new Date() : null
+    });
+    
+    // Update current stage if completed
+    if (status === 'completed') {
+      timeline.currentStage = stage;
+      
+      // Trigger next stage based on current
+      const nextStage = getNextSaleStage(stage);
+      if (nextStage) {
+        timeline.statusTimeline.push({
+          stage: nextStage,
+          status: 'pending',
+          initiatedBy: 'system',
+          notes: 'Next stage triggered automatically',
+          createdAt: new Date()
+        });
+      }
+    }
+    
+    // Update document status if provided
+    if (documents && documents.length > 0) {
+      documents.forEach(doc => {
+        const docPath = `documents.${doc.name}`;
+        if (timeline.schema.path(docPath)) {
+          timeline.set(`${docPath}.uploaded`, true);
+          timeline.set(`${docPath}.fileUrl`, doc.fileUrl);
+          if (doc.verified) {
+            timeline.set(`${docPath}.verified`, true);
+          }
+        }
+      });
+    }
+    
+    await timeline.save();
+    
+    // Send notifications
+    await sendSaleNotification(timeline, stage, status, initiatedBy);
+    
+    res.json({
+      success: true,
+      message: 'Timeline updated successfully',
+      timeline
+    });
+  } catch (error) {
+    console.error('Update sale status error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update timeline'
+    });
+  }
+};
+
+// Sign Form F
+exports.signFormF = async (req, res) => {
+  try {
+    const { transactionId } = req.params;
+    const { signedBy, signatureUrl, witness } = req.body;
+    
+    const timeline = await SaleTimeline.findOne({ transactionId });
+    
+    if (!timeline) {
+      return res.status(404).json({
+        success: false,
+        message: 'Timeline not found'
+      });
+    }
+    
+    // Update Form F signing status
+    if (signedBy === 'buyer') {
+      timeline.documents.formF.signedByBuyer = true;
+      timeline.documents.formF.signingDate = new Date();
+      
+      // Add to timeline
+      timeline.statusTimeline.push({
+        stage: 'form_f_signing_buyer',
+        status: 'completed',
+        initiatedBy: 'buyer',
+        userId: timeline.buyer.id,
+        notes: 'Form F signed by buyer',
+        completedDate: new Date()
+      });
+    } else if (signedBy === 'seller') {
+      timeline.documents.formF.signedBySeller = true;
+      timeline.documents.formF.signingDate = new Date();
+      
+      // Add witness if provided
+      if (witness) {
+        timeline.documents.formF.witnesses.push(witness);
+      }
+      
+      // Add to timeline
+      timeline.statusTimeline.push({
+        stage: 'form_f_signing_seller',
+        status: 'completed',
+        initiatedBy: 'seller',
+        userId: timeline.seller.id,
+        notes: 'Form F signed by seller',
+        completedDate: new Date()
+      });
+    }
+    
+    // Check if both have signed
+    if (timeline.documents.formF.signedByBuyer && timeline.documents.formF.signedBySeller) {
+      timeline.currentStage = 'form_f_signing_seller';
+      
+      // Trigger next stage
+      timeline.statusTimeline.push({
+        stage: 'deposit_paid',
+        status: 'pending',
+        initiatedBy: 'system',
+        notes: 'Form F fully executed. Proceed with deposit payment.',
+        createdAt: new Date()
+      });
+    }
+    
+    await timeline.save();
+    
+    res.json({
+      success: true,
+      message: 'Form F signing updated successfully',
+      timeline
+    });
+  } catch (error) {
+    console.error('Sign Form F error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update Form F signing'
+    });
+  }
+};
+
+// Upload payment proof (manager cheque)
+exports.uploadPaymentProof = async (req, res) => {
+  try {
+    const { transactionId } = req.params;
+    const { paymentType, fileUrl, chequeDetails } = req.body;
+    
+    const timeline = await SaleTimeline.findOne({ transactionId });
+    
+    if (!timeline) {
+      return res.status(404).json({
+        success: false,
+        message: 'Timeline not found'
+      });
+    }
+    
+    if (paymentType === 'manager_cheque') {
+      timeline.documents.managerCheque = {
+        uploaded: true,
+        fileUrl,
+        chequeNumber: chequeDetails.chequeNumber,
+        bankName: chequeDetails.bankName,
+        amount: chequeDetails.amount,
+        dateIssued: new Date(chequeDetails.dateIssued)
+      };
+      
+      // Add to timeline
+      timeline.statusTimeline.push({
+        stage: 'deposit_paid',
+        status: 'completed',
+        initiatedBy: 'buyer',
+        userId: timeline.buyer.id,
+        notes: 'Manager cheque uploaded as deposit proof',
+        completedDate: new Date()
+      });
+      
+      // Trigger next stage
+      timeline.statusTimeline.push({
+        stage: 'document_collection_seller',
+        status: 'pending',
+        initiatedBy: 'system',
+        notes: 'Deposit received. Seller to provide NOC and clearances.',
+        createdAt: new Date()
+      });
+    }
+    
+    await timeline.save();
+    
+    res.json({
+      success: true,
+      message: 'Payment proof uploaded successfully',
+      timeline
+    });
+  } catch (error) {
+    console.error('Upload payment proof error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to upload payment proof'
+    });
+  }
+};
+
+// Get user sale timelines
+exports.getUserSaleTimelines = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { status } = req.query;
+    
+    const query = {
+      $or: [
+        { 'buyer.id': userId },
+        { 'seller.id': userId },
+        { 'buyerAgent.id': userId },
+        { 'sellerAgent.id': userId }
+      ]
+    };
+    
+    if (status) query.overallStatus = status;
+    
+    const timelines = await SaleTimeline.find(query)
+      .populate('propertyId', 'propertyCode title images price')
+      .sort({ updatedAt: -1 });
+    
+    res.json({
+      success: true,
+      timelines
+    });
+  } catch (error) {
+    console.error('Get user sale timelines error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch timelines'
+    });
+  }
+};
+
+// Get detailed sale timeline
+exports.getSaleTimeline = async (req, res) => {
+  try {
+    const { transactionId } = req.params;
+    const userId = req.userId;
+    
+    const timeline = await SaleTimeline.findOne({ transactionId })
+      .populate('propertyId')
+      .populate('buyerAgent.id', 'profile.name phone email')
+      .populate('sellerAgent.id', 'profile.name phone email');
+    
+    if (!timeline) {
+      return res.status(404).json({
+        success: false,
+        message: 'Timeline not found'
+      });
+    }
+    
+    // Check if user has access
+    const hasAccess = timeline.buyer.id.toString() === userId.toString() ||
+                      timeline.seller.id.toString() === userId.toString() ||
+                      (timeline.buyerAgent.id && timeline.buyerAgent.id._id.toString() === userId.toString()) ||
+                      (timeline.sellerAgent.id && timeline.sellerAgent.id._id.toString() === userId.toString());
+    
+    if (!hasAccess) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied'
+      });
+    }
+    
+    res.json({
+      success: true,
+      timeline
+    });
+  } catch (error) {
+    console.error('Get sale timeline error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch timeline'
+    });
+  }
+};
+
+/**
+ * Helper Functions
+ */
+
+function getNextTenancyStage(currentStage) {
+  const stages = {
+    'initial_contact': 'document_collection_tenant',
+    'document_collection_tenant': 'document_collection_landlord',
+    'document_collection_landlord': 'contract_preparation',
+    'contract_preparation': 'contract_review',
+    'contract_review': 'tenant_signing',
+    'tenant_signing': 'landlord_signing',
+    'landlord_signing': 'ejari_registration',
+    'ejari_registration': 'dewa_transfer',
+    'dewa_transfer': 'keys_handover',
+    'keys_handover': 'completed'
+  };
+  
+  return stages[currentStage];
+}
+
+function getNextSaleStage(currentStage) {
+  const stages = {
+    'offer_made': 'offer_accepted',
+    'offer_accepted': 'form_b_signed',
+    'form_b_signed': 'form_f_preparation',
+    'form_f_preparation': 'form_f_signing_buyer',
+    'form_f_signing_buyer': 'form_f_signing_seller',
+    'form_f_signing_seller': 'deposit_paid',
+    'deposit_paid': 'document_collection_seller',
+    'document_collection_seller': 'noc_application',
+    'noc_application': 'dewa_clearance',
+    'dewa_clearance': 'service_charge_clearance',
+    'service_charge_clearance': 'mortgage_approval',
+    'mortgage_approval': 'final_payment',
+    'final_payment': 'dld_transfer',
+    'dld_transfer': 'keys_handover',
+    'keys_handover': 'completed'
+  };
+  
+  return stages[currentStage];
+}
+
+async function sendTenancyNotification(timeline, stage, status, initiatedBy) {
+  // Implementation for sending notifications (email, WhatsApp, SMS)
+  // This would integrate with your notification service
+  
+  const notifications = [];
+  
+  // Example: Notify both parties when contract is ready for signing
+  if (stage === 'contract_preparation' && status === 'completed') {
+    notifications.push({
+      to: timeline.tenant.email,
+      subject: 'Tenancy Contract Ready for Signing',
+      message: `Your tenancy contract for property ${timeline.propertyId} is ready. Please review and sign.`
+    });
+    
+    notifications.push({
+      to: timeline.landlord.email,
+      subject: 'Tenancy Contract Ready for Signing',
+      message: `Tenancy contract for your property is ready. Please review and sign.`
+    });
+  }
+  
+  // Implement actual notification sending logic here
+  return Promise.all(notifications.map(notification => 
+    sendNotification(notification)
+  ));
+}
+
+async function sendSaleNotification(timeline, stage, status, initiatedBy) {
+  // Similar implementation for sale notifications
+  const notifications = [];
+  
+  // Example: Notify when Form F is fully signed
+  if (stage === 'form_f_signing_seller' && status === 'completed') {
+    notifications.push({
+      to: timeline.buyer.email,
+      subject: 'Form F Fully Executed',
+      message: 'Form F has been signed by both parties. Please proceed with deposit payment.'
+    });
+    
+    notifications.push({
+      to: timeline.seller.email,
+      subject: 'Form F Fully Executed',
+      message: 'Form F has been signed by both parties. Please provide required documents.'
+    });
+  }
+  
+  // Implement actual notification sending logic
+  return Promise.all(notifications.map(notification => 
+    sendNotification(notification)
+  ));
+}
+
+async function sendNotification(notification) {
+  // Placeholder for actual notification service
+  console.log('Notification sent:', notification);
+  return true;
+}
+```
+
+### **Step 12.3: Create Timeline Routes**
+
+#### **File 4:** `server/routes/timeline.routes.js`
+```javascript
+const express = require('express');
+const router = express.Router();
+const timelineController = require('../controllers/timeline.controller');
+const { authMiddleware, roleMiddleware } = require('../middleware/auth.middleware');
+const upload = require('../middleware/upload.middleware');
+
+// Tenancy Timeline Routes
+router.post('/tenancy/create', authMiddleware, timelineController.createTenancyTimeline);
+router.put('/tenancy/:transactionId/status', authMiddleware, timelineController.updateTenancyStatus);
+router.get('/tenancy/user', authMiddleware, timelineController.getUserTenancyTimelines);
+router.get('/tenancy/:transactionId', authMiddleware, timelineController.getTenancyTimeline);
+
+// Document Upload for Tenancy
+router.post('/tenancy/:transactionId/upload-document', 
+  authMiddleware,
+  upload.single('document'),
+  async (req, res) => {
+    try {
+      const { transactionId } = req.params;
+      const { documentType } = req.body;
+      
+      // Handle document upload logic
+      res.json({
+        success: true,
+        message: 'Document uploaded successfully',
+        fileUrl: req.file.path
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Upload failed' });
+    }
+  }
+);
+
+// Sale Timeline Routes
+router.post('/sale/create', authMiddleware, timelineController.createSaleTimeline);
+router.put('/sale/:transactionId/status', authMiddleware, timelineController.updateSaleStatus);
+router.put('/sale/:transactionId/sign-formf', authMiddleware, timelineController.signFormF);
+router.post('/sale/:transactionId/payment-proof', authMiddleware, timelineController.uploadPaymentProof);
+router.get('/sale/user', authMiddleware, timelineController.getUserSaleTimelines);
+router.get('/sale/:transactionId', authMiddleware, timelineController.getSaleTimeline);
+
+// Document Upload for Sale
+router.post('/sale/:transactionId/upload-document',
+  authMiddleware,
+  upload.single('document'),
+  async (req, res) => {
+    try {
+      const { transactionId } = req.params;
+      const { documentType } = req.body;
+      
+      // Handle document upload logic
+      res.json({
+        success: true,
+        message: 'Document uploaded successfully',
+        fileUrl: req.file.path
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Upload failed' });
+    }
+  }
+);
+
+// Admin routes for timeline management
+router.get('/admin/tenancy/all', 
+  authMiddleware, 
+  roleMiddleware('super_admin', 'company_owner', 'branch_manager'),
+  async (req, res) => {
+    // Get all tenancy timelines
+    const TenancyTimeline = require('../models/TenancyTimeline');
+    const timelines = await TenancyTimeline.find()
+      .populate('propertyId', 'propertyCode title')
+      .populate('tenant.id', 'profile.name email')
+      .populate('landlord.id', 'profile.name email')
+      .sort({ createdAt: -1 });
+    
+    res.json({ success: true, timelines });
+  }
+);
+
+router.get('/admin/sale/all',
+  authMiddleware,
+  roleMiddleware('super_admin', 'company_owner', 'branch_manager'),
+  async (req, res) => {
+    // Get all sale timelines
+    const SaleTimeline = require('../models/SaleTimeline');
+    const timelines = await SaleTimeline.find()
+      .populate('propertyId', 'propertyCode title price')
+      .populate('buyer.id', 'profile.name email')
+      .populate('seller.id', 'profile.name email')
+      .sort({ createdAt: -1 });
+    
+    res.json({ success: true, timelines });
+  }
+);
+
+// Statistics and Reports
+router.get('/stats/tenancy', authMiddleware, async (req, res) => {
+  const TenancyTimeline = require('../models/TenancyTimeline');
+  
+  const stats = await TenancyTimeline.aggregate([
+    {
+      $group: {
+        _id: '$overallStatus',
+        count: { $sum: 1 },
+        totalRent: { $sum: '$rentAmount' }
+      }
+    }
+  ]);
+  
+  res.json({ success: true, stats });
+});
+
+router.get('/stats/sale', authMiddleware, async (req, res) => {
+  const SaleTimeline = require('../models/SaleTimeline');
+  
+  const stats = await SaleTimeline.aggregate([
+    {
+      $group: {
+        _id: '$overallStatus',
+        count: { $sum: 1 },
+        totalValue: { $sum: '$salePrice' }
+      }
+    }
+  ]);
+  
+  res.json({ success: true, stats });
+});
+
+module.exports = router;
+```
+
+### **Step 12.4: Create Upload Middleware**
+
+#### **File 5:** `server/middleware/upload.middleware.js`
+```javascript
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Ensure upload directory exists
+const uploadDir = 'uploads/documents';
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Configure storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const transactionId = req.params.transactionId || 'general';
+    const userDir = path.join(uploadDir, transactionId);
+    
+    if (!fs.existsSync(userDir)) {
+      fs.mkdirSync(userDir, { recursive: true });
+    }
+    
+    cb(null, userDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+  }
+});
+
+// File filter for security
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/jpg',
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  ];
+  
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid file type. Only images, PDF, and Word documents are allowed.'), false);
+  }
+};
+
+// Create upload instance
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  }
+});
+
+module.exports = upload;
+```
+
+### **Step 12.5: Create Timeline React Components**
+
+#### **File 6:** `client/src/components/Timeline/TenancyTimelineView.js`
+```javascript
+import React, { useState, useEffect } from 'react';
+import { 
+  Timeline, 
+  Card, 
+  Steps, 
+  Button, 
+  Upload, 
+  message, 
+  Modal, 
+  Form, 
+  Input, 
+  DatePicker,
+  Tag,
+  Progress,
+  Row,
+  Col,
+  Statistic,
+  Descriptions,
+  Divider
+} from 'antd';
+import { 
+  FileTextOutlined, 
+  CheckCircleOutlined, 
+  ClockCircleOutlined, 
+  UserOutlined,
+  HomeOutlined,
+  DollarOutlined,
+  CalendarOutlined,
+  UploadOutlined,
+  EyeOutlined,
+  DownloadOutlined,
+  SignatureOutlined
+} from '@ant-design/icons';
+import axios from 'axios';
+import moment from 'moment';
+import './Timeline.css';
+
+const { Step } = Steps;
+const { Dragger } = Upload;
+
+const TenancyTimelineView = ({ transactionId }) => {
+  const [timeline, setTimeline] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState(null);
+  const [signModalVisible, setSignModalVisible] = useState(false);
+
+  useEffect(() => {
+    fetchTimeline();
+  }, [transactionId]);
+
+  const fetchTimeline = async () => {
+    try {
+      const response = await axios.get(`/api/timeline/tenancy/${transactionId}`);
+      setTimeline(response.data.timeline);
+    } catch (error) {
+      message.error('Failed to load timeline');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateStatus = async (stage, status, notes) => {
+    try {
+      await axios.put(`/api/timeline/tenancy/${transactionId}/status`, {
+        stage,
+        status,
+        initiatedBy: 'user',
+        notes
+      });
+      message.success('Status updated successfully');
+      fetchTimeline();
+    } catch (error) {
+      message.error('Failed to update status');
+    }
+  };
+
+  const handleDocumentUpload = async (file) => {
+    const formData = new FormData();
+    formData.append('document', file);
+    formData.append('documentType', selectedDocument);
+
+    try {
+      await axios.post(
+        `/api/timeline/tenancy/${transactionId}/upload-document`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+      message.success('Document uploaded successfully');
+      setUploadModalVisible(false);
+      fetchTimeline();
+    } catch (error) {
+      message.error('Upload failed');
+    }
+  };
+
+  const renderTenancyStages = () => {
+    const stages = [
+      {
+        title: 'Initial Contact',
+        description: 'First contact between tenant and landlord',
+        status: getStageStatus('initial_contact')
+      },
+      {
+        title: 'Tenant Documents',
+        description: 'Collect tenant Emirates ID, passport, visa, cheque',
+        status: getStageStatus('document_collection_tenant')
+      },
+      {
+        title: 'Landlord Documents',
+        description: 'Collect title deed, landlord ID, DEWA bill, bank NOC',
+        status: getStageStatus('document_collection_landlord')
+      },
+      {
+        title: 'Contract Preparation',
+        description: 'Prepare tenancy contract in English/Arabic',
+        status: getStageStatus('contract_preparation')
+      },
+      {
+        title: 'Contract Review',
+        description: 'Both parties review contract terms',
+        status: getStageStatus('contract_review')
+      },
+      {
+        title: 'Tenant Signing',
+        description: 'Tenant signs the contract',
+        status: getStageStatus('tenant_signing')
+      },
+      {
+        title: 'Landlord Signing',
+        description: 'Landlord signs the contract',
+        status: getStageStatus('landlord_signing')
+      },
+      {
+        title: 'Ejari Registration',
+        description: 'Register contract with Ejari system',
+        status: getStageStatus('ejari_registration')
+      },
+      {
+        title: 'DEWA Transfer',
+        description: 'Transfer DEWA account to tenant',
+        status: getStageStatus('dewa_transfer')
+      },
+      {
+        title: 'Keys Handover',
+        description: 'Hand over property keys to tenant',
+        status: getStageStatus('keys_handover')
+      }
+    ];
+
+    return (
+      <Steps direction="vertical" current={getCurrentStageIndex()}>
+        {stages.map((stage, index) => (
+          <Step
+            key={index}
+            title={stage.title}
+            description={stage.description}
+            status={stage.status}
+            icon={getStageIcon(stage.status)}
+          />
+        ))}
+      </Steps>
+    );
+  };
+
+  const getStageStatus = (stageName) => {
+    if (!timeline) return 'wait';
+    
+    const stage = timeline.statusTimeline.find(s => s.stage === stageName);
+    if (!stage) return 'wait';
+    
+    switch (stage.status) {
+      case 'completed': return 'finish';
+      case 'in_progress': return 'process';
+      case 'cancelled': return 'error';
+      default: return 'wait';
+    }
+  };
+
+  const getCurrentStageIndex = () => {
+    const stages = [
+      'initial_contact',
+      'document_collection_tenant',
+      'document_collection_landlord',
+      'contract_preparation',
+      'contract_review',
+      'tenant_signing',
+      'landlord_signing',
+      'ejari_registration',
+      'dewa_transfer',
+      'keys_handover'
+    ];
+    
+    return stages.findIndex(stage => stage === timeline?.currentStage);
+  };
+
+  const getStageIcon = (status) => {
+    switch (status) {
+      case 'finish': return <CheckCircleOutlined />;
+      case 'process': return <ClockCircleOutlined />;
+      default: return <ClockCircleOutlined />;
+    }
+  };
+
+  const renderDocumentsSection = () => {
+    const documents = [
+      { key: 'tenantEmiratesId', label: 'Tenant Emirates ID', required: true },
+      { key: 'tenantPassport', label: 'Tenant Passport Copy', required: true },
+      { key: 'tenantVisaCopy', label: 'Tenant Visa Copy', required: true },
+      { key: 'tenantBankCheque', label: 'Tenant Bank Cheque', required: true },
+      { key: 'titleDeed', label: 'Title Deed', required: true },
+      { key: 'landlordEmiratesId', label: 'Landlord Emirates ID', required: true },
+      { key: 'landlordPassport', label: 'Landlord Passport', required: true },
+      { key: 'dewaBill', label: 'DEWA Bill', required: true },
+      { key: 'bankNoc', label: 'Bank NOC', required: timeline?.documents?.titleDeed?.verified }
+    ];
+
+    return (
+      <div className="documents-grid">
+        <h3>Required Documents</h3>
+        <Row gutter={[16, 16]}>
+          {documents.map(doc => {
+            const docData = timeline?.documents?.[doc.key];
+            const isUploaded = docData?.uploaded;
+            const isVerified = docData?.verified;
+            
+            return (
+              <Col xs={24} sm={12} md={8} lg={6} key={doc.key}>
+                <Card 
+                  className={`document-card ${isUploaded ? 'uploaded' : 'pending'}`}
+                  hoverable
+                  onClick={() => {
+                    setSelectedDocument(doc.key);
+                    setUploadModalVisible(true);
+                  }}
+                >
+                  <div className="document-status">
+                    {isVerified ? (
+                      <Tag color="green">Verified</Tag>
+                    ) : isUploaded ? (
+                      <Tag color="blue">Uploaded</Tag>
+                    ) : (
+                      <Tag color="orange">Pending</Tag>
+                    )}
+                  </div>
+                  
+                  <div className="document-icon">
+                    <FileTextOutlined />
+                  </div>
+                  
+                  <div className="document-name">
+                    {doc.label}
+                    {doc.required && <span className="required">*</span>}
+                  </div>
+                  
+                  {isUploaded && docData.fileUrl && (
+                    <div className="document-actions">
+                      <Button
+                        type="link"
+                        icon={<EyeOutlined />}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(docData.fileUrl, '_blank');
+                        }}
+                      />
+                      <Button
+                        type="link"
+                        icon={<DownloadOutlined />}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Handle download
+                        }}
+                      />
+                    </div>
+                  )}
+                </Card>
+              </Col>
+            );
+          })}
+        </Row>
+      </div>
+    );
+  };
+
+  const renderContractSigning = () => {
+    const isTenant = true; // Determine if current user is tenant
+    const isLandlord = false; // Determine if current user is landlord
+    
+    const tenantSigned = timeline?.documents?.tenancyContract?.tenantSigned;
+    const landlordSigned = timeline?.documents?.tenancyContract?.landlordSigned;
+    
+    return (
+      <Card title="Contract Signing" className="signing-card">
+        <div className="signing-status">
+          <Row gutter={[24, 24]}>
+            <Col span={12}>
+              <div className={`party-signing ${tenantSigned ? 'signed' : 'pending'}`}>
+                <UserOutlined />
+                <h4>Tenant</h4>
+                <p>{tenantSigned ? 'Signed' : 'Awaiting Signature'}</p>
+                {isTenant && !tenantSigned && (
+                  <Button
+                    type="primary"
+                    icon={<SignatureOutlined />}
+                    onClick={() => setSignModalVisible(true)}
+                  >
+                    Sign Contract
+                  </Button>
+                )}
+              </div>
+            </Col>
+            
+            <Col span={12}>
+              <div className={`party-signing ${landlordSigned ? 'signed' : 'pending'}`}>
+                <UserOutlined />
+                <h4>Landlord</h4>
+                <p>{landlordSigned ? 'Signed' : 'Awaiting Signature'}</p>
+                {isLandlord && !landlordSigned && (
+                  <Button
+                    type="primary"
+                    icon={<SignatureOutlined />}
+                    onClick={() => setSignModalVisible(true)}
+                  >
+                    Sign Contract
+                  </Button>
+                )}
+              </div>
+            </Col>
+          </Row>
+          
+          {timeline?.documents?.tenancyContract?.fileUrl && (
+            <div className="contract-view">
+              <Button
+                type="link"
+                icon={<FileTextOutlined />}
+                onClick={() => window.open(timeline.documents.tenancyContract.fileUrl, '_blank')}
+              >
+                View Contract
+              </Button>
+            </div>
+          )}
+        </div>
+      </Card>
+    );
+  };
+
+  const renderTimelineHistory = () => {
+    return (
+      <Timeline mode="left" className="timeline-history">
+        {timeline?.statusTimeline?.map((event, index) => (
+          <Timeline.Item
+            key={index}
+            label={moment(event.createdAt).format('DD MMM YYYY, h:mm a')}
+            color={getTimelineColor(event.status)}
+            dot={getTimelineDot(event.status)}
+          >
+            <div className="timeline-event">
+              <h4>{formatStageName(event.stage)}</h4>
+              <p>{event.notes}</p>
+              <small>
+                Initiated by: {event.initiatedBy} • 
+                Status: <Tag color={getStatusColor(event.status)}>{event.status}</Tag>
+              </small>
+              
+              {event.documents && event.documents.length > 0 && (
+                <div className="event-documents">
+                  <strong>Documents:</strong>
+                  <ul>
+                    {event.documents.map((doc, docIndex) => (
+                      <li key={docIndex}>
+                        <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
+                          {doc.name}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </Timeline.Item>
+        ))}
+      </Timeline>
+    );
+  };
+
+  const getTimelineColor = (status) => {
+    switch (status) {
+      case 'completed': return 'green';
+      case 'in_progress': return 'blue';
+      case 'cancelled': return 'red';
+      default: return 'gray';
+    }
+  };
+
+  const getTimelineDot = (status) => {
+    switch (status) {
+      case 'completed': return <CheckCircleOutlined />;
+      case 'in_progress': return <ClockCircleOutlined />;
+      default: return <ClockCircleOutlined />;
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'completed': return 'success';
+      case 'in_progress': return 'processing';
+      case 'pending': return 'default';
+      case 'cancelled': return 'error';
+      default: return 'default';
+    }
+  };
+
+  const formatStageName = (stage) => {
+    return stage
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  if (loading) {
+    return <div>Loading timeline...</div>;
+  }
+
+  if (!timeline) {
+    return <div>Timeline not found</div>;
+  }
+
+  return (
+    <div className="tenancy-timeline-container">
+      {/* Header with Stats */}
+      <Card className="timeline-header">
+        <Row gutter={[24, 24]}>
+          <Col xs={24} md={6}>
+            <Statistic
+              title="Completion"
+              value={timeline.completionPercentage || 0}
+              suffix="%"
+              valueStyle={{ color: '#3f8600' }}
+            />
+            <Progress percent={timeline.completionPercentage || 0} size="small" />
+          </Col>
+          
+          <Col xs={24} md={6}>
+            <Statistic
+              title="Current Stage"
+              value={formatStageName(timeline.currentStage)}
+              prefix={<ClockCircleOutlined />}
+            />
+          </Col>
+          
+          <Col xs={24} md={6}>
+            <Statistic
+              title="Days Remaining"
+              value={timeline.daysRemaining || 'N/A'}
+              prefix={<CalendarOutlined />}
+            />
+          </Col>
+          
+          <Col xs={24} md={6}>
+            <Statistic
+              title="Rent Amount"
+              value={timeline.rentAmount || 0}
+              prefix={<DollarOutlined />}
+              suffix="AED"
+            />
+          </Col>
+        </Row>
+      </Card>
+      
+      <Row gutter={[24, 24]}>
+        {/* Left Column - Progress Steps */}
+        <Col xs={24} lg={8}>
+          <Card title="Tenancy Progress" className="progress-card">
+            {renderTenancyStages()}
+          </Card>
+          
+          {/* Contract Signing Section */}
+          {renderContractSigning()}
+        </Col>
+        
+        {/* Right Column - Details & History */}
+        <Col xs={24} lg={16}>
+          {/* Documents Section */}
+          {renderDocumentsSection()}
+          
+          <Divider />
+          
+          {/* Timeline History */}
+          <Card title="Timeline History">
+            {renderTimelineHistory()}
+          </Card>
+        </Col>
+      </Row>
+      
+      {/* Upload Modal */}
+      <Modal
+        title={`Upload ${selectedDocument}`}
+        visible={uploadModalVisible}
+        onCancel={() => setUploadModalVisible(false)}
+        footer={null}
+      >
+        <Dragger
+          beforeUpload={(file) => {
+            handleDocumentUpload(file);
+            return false;
+          }}
+          accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+        >
+          <p className="ant-upload-drag-icon">
+            <UploadOutlined />
+          </p>
+          <p className="ant-upload-text">
+            Click or drag file to upload
+          </p>
+          <p className="ant-upload-hint">
+            Support for PDF, JPG, PNG, DOC files up to 10MB
+          </p>
+        </Dragger>
+      </Modal>
+      
+      {/* Signing Modal */}
+      <Modal
+        title="Sign Tenancy Contract"
+        visible={signModalVisible}
+        onCancel={() => setSignModalVisible(false)}
+        onOk={() => {
+          // Handle signing logic
+          setSignModalVisible(false);
+        }}
+      >
+        <Form layout="vertical">
+          <Form.Item label="Digital Signature">
+            <Input.TextArea
+              placeholder="Type your name as digital signature"
+              rows={2}
+            />
+          </Form.Item>
+          <Form.Item>
+            <p>
+              By signing this contract, you agree to all terms and conditions.
+              This signature is legally binding.
+            </p>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
+  );
+};
+
+export default TenancyTimelineView;
+```
+
+#### **File 7:** `client/src/components/Timeline/SaleTimelineView.js`
+```javascript
+import React, { useState, useEffect } from 'react';
+import { 
+  Card, 
+  Steps, 
+  Button, 
+  Upload, 
+  message, 
+  Modal, 
+  Form, 
+  Input, 
+  Tag,
+  Progress,
+  Row,
+  Col,
+  Statistic,
+  Descriptions,
+  Timeline,
+  Divider,
+  Table,
+  Tabs
+} from 'antd';
+import { 
+  FileTextOutlined, 
+  CheckCircleOutlined, 
+  ClockCircleOutlined,
+  DollarOutlined,
+  BankOutlined,
+  SignatureOutlined,
+  UploadOutlined,
+  EyeOutlined,
+  DownloadOutlined,
+  UserOutlined,
+  HomeOutlined,
+  CalendarOutlined
+} from '@ant-design/icons';
+import axios from 'axios';
+import moment from 'moment';
+import './Timeline.css';
+
+const { Step } = Steps;
+const { TabPane } = Tabs;
+const { Dragger } = Upload;
+
+const SaleTimelineView = ({ transactionId }) => {
+  const [timeline, setTimeline] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('progress');
+  const [formFSignModal, setFormFSignModal] = useState(false);
+  const [paymentModal, setPaymentModal] = useState(false);
+
+  useEffect(() => {
+    fetchTimeline();
+  }, [transactionId]);
+
+  const fetchTimeline = async () => {
+    try {
+      const response = await axios.get(`/api/timeline/sale/${transactionId}`);
+      setTimeline(response.data.timeline);
+    } catch (error) {
+      message.error('Failed to load timeline');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderSaleStages = () => {
+    const stages = [
+      {
+        title: 'Offer Made',
+        description: 'Buyer makes initial offer',
+        key: 'offer_made'
+      },
+      {
+        title: 'Offer Accepted',
+        description: 'Seller accepts the offer',
+        key: 'offer_accepted'
+      },
+      {
+        title: 'Form B Signed',
+        description: 'Buyer signs Offer to Purchase',
+        key: 'form_b_signed'
+      },
+      {
+        title: 'Form F Preparation',
+        description: 'Prepare Memorandum of Sale',
+        key: 'form_f_preparation'
+      },
+      {
+        title: 'Form F - Buyer Signing',
+        description: 'Buyer signs Form F',
+        key: 'form_f_signing_buyer'
+      },
+      {
+        title: 'Form F - Seller Signing',
+        description: 'Seller signs Form F',
+        key: 'form_f_signing_seller'
+      },
+      {
+        title: 'Deposit Paid',
+        description: 'Buyer pays deposit',
+        key: 'deposit_paid'
+      },
+      {
+        title: 'Seller Documents',
+        description: 'Collect NOC, DEWA clearance',
+        key: 'document_collection_seller'
+      },
+      {
+        title: 'NOC Application',
+        description: 'Apply for Bank NOC',
+        key: 'noc_application'
+      },
+      {
+        title: 'DEWA Clearance',
+        description: 'Obtain DEWA clearance certificate',
+        key: 'dewa_clearance'
+      },
+      {
+        title: 'Service Charges',
+        description: 'Clear service charges',
+        key: 'service_charge_clearance'
+      },
+      {
+        title: 'Mortgage Approval',
+        description: 'Bank mortgage approval',
+        key: 'mortgage_approval'
+      },
+      {
+        title: 'Final Payment',
+        description: 'Final payment transfer',
+        key: 'final_payment'
+      },
+      {
+        title: 'DLD Transfer',
+        description: 'Transfer title at DLD',
+        key: 'dld_transfer'
+      },
+      {
+        title: 'Keys Handover',
+        description: 'Hand over property keys',
+        key: 'keys_handover'
+      }
+    ];
+
+    const currentIndex = stages.findIndex(stage => 
+      stage.key === timeline?.currentStage
+    );
+
+    return (
+      <Steps direction="vertical" current={currentIndex}>
+        {stages.map((stage, index) => {
+          const stageStatus = getStageStatus(stage.key);
+          
+          return (
+            <Step
+              key={index}
+              title={stage.title}
+              description={stage.description}
+              status={stageStatus}
+              icon={getStageIcon(stageStatus)}
+            />
+          );
+        })}
+      </Steps>
+    );
+  };
+
+  const getStageStatus = (stageKey) => {
+    if (!timeline) return 'wait';
+    
+    const stage = timeline.statusTimeline.find(s => s.stage === stageKey);
+    if (!stage) return 'wait';
+    
+    switch (stage.status) {
+      case 'completed': return 'finish';
+      case 'in_progress': return 'process';
+      case 'cancelled': return 'error';
+      default: return 'wait';
+    }
+  };
+
+  const renderFormFStatus = () => {
+    const formF = timeline?.documents?.formF;
+    const isBuyer = true; // Determine if current user is buyer
+    const isSeller = false; // Determine if current user is seller
+    
+    return (
+      <Card title="Form F - Memorandum of Sale" className="formf-card">
+        <Row gutter={[24, 24]}>
+          <Col span={12}>
+            <div className={`signing-party ${formF?.signedByBuyer ? 'signed' : 'pending'}`}>
+              <h4>Buyer Signature</h4>
+              <p>
+                Status: {formF?.signedByBuyer ? (
+                  <Tag color="green">Signed</Tag>
+                ) : (
+                  <Tag color="orange">Pending</Tag>
+                )}
+              </p>
+              {formF?.signedByBuyer && (
+                <p>Signed on: {moment(formF.signingDate).format('DD MMM YYYY')}</p>
+              )}
+              {isBuyer && !formF?.signedByBuyer && (
+                <Button
+                  type="primary"
+                  icon={<SignatureOutlined />}
+                  onClick={() => setFormFSignModal(true)}
+                >
+                  Sign Form F
+                </Button>
+              )}
+            </div>
+          </Col>
+          
+          <Col span={12}>
+            <div className={`signing-party ${formF?.signedBySeller ? 'signed' : 'pending'}`}>
+              <h4>Seller Signature</h4>
+              <p>
+                Status: {formF?.signedBySeller ? (
+                  <Tag color="green">Signed</Tag>
+                ) : (
+                  <Tag color="orange">Pending</Tag>
+                )}
+              </p>
+              {formF?.signedBySeller && (
+                <>
+                  <p>Signed on: {moment(formF.signingDate).format('DD MMM YYYY')}</p>
+                  {formF.witnesses && formF.witnesses.length > 0 && (
+                    <p>Witnesses: {formF.witnesses.length}</p>
+                  )}
+                </>
+              )}
+              {isSeller && !formF?.signedBySeller && (
+                <Button
+                  type="primary"
+                  icon={<SignatureOutlined />}
+                  onClick={() => setFormFSignModal(true)}
+                >
+                  Sign Form F
+                </Button>
+              )}
+            </div>
+          </Col>
+        </Row>
+        
+        {formF?.signedByBuyer && formF?.signedBySeller && (
+          <div className="formf-completed">
+            <CheckCircleOutlined style={{ color: '#52c41a', fontSize: '24px' }} />
+            <h4>Form F Fully Executed</h4>
+            <p>Both parties have signed Form F. Proceed with next steps.</p>
+          </div>
+        )}
+      </Card>
+    );
+  };
+
+  const renderPaymentSection = () => {
+    const payments = timeline?.payments || [];
+    const managerCheque = timeline?.documents?.managerCheque;
+    
+    const paymentColumns = [
+      {
+        title: 'Payment Type',
+        dataIndex: 'type',
+        key: 'type',
+        render: type => (
+          <Tag color={
+            type === 'deposit' ? 'blue' :
+            type === 'down_payment' ? 'green' :
+            type === 'final_payment' ? 'purple' : 'default'
+          }>
+            {type.toUpperCase()}
+          </Tag>
+        )
+      },
+      {
+        title: 'Amount',
+        dataIndex: 'amount',
+        key: 'amount',
+        render: amount => `AED ${amount?.toLocaleString()}`
+      },
+      {
+        title: 'Due Date',
+        dataIndex: 'dueDate',
+        key: 'dueDate',
+        render: date => date ? moment(date).format('DD MMM YYYY') : '-'
+      },
+      {
+        title: 'Paid Date',
+        dataIndex: 'paidDate',
+        key: 'paidDate',
+        render: date => date ? moment(date).format('DD MMM YYYY') : '-'
+      },
+      {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
+        render: status => (
+          <Tag color={
+            status === 'paid' ? 'success' :
+            status === 'overdue' ? 'error' :
+            status === 'pending' ? 'warning' : 'default'
+          }>
+            {status.toUpperCase()}
+          </Tag>
+        )
+      }
+    ];
+
+    return (
+      <div className="payment-section">
+        <Card 
+          title="Payment Tracking" 
+          extra={
+            <Button
+              type="primary"
+              icon={<UploadOutlined />}
+              onClick={() => setPaymentModal(true)}
+            >
+              Upload Payment Proof
+            </Button>
+          }
+        >
+          <Table
+            columns={paymentColumns}
+            dataSource={payments}
+            rowKey="type"
+            pagination={false}
+          />
+          
+          {managerCheque?.uploaded && (
+            <div className="cheque-info">
+              <h4>Manager's Cheque Details</h4>
+              <Descriptions column={2} size="small">
+                <Descriptions.Item label="Cheque Number">
+                  {managerCheque.chequeNumber}
+                </Descriptions.Item>
+                <Descriptions.Item label="Bank">
+                  {managerCheque.bankName}
+                </Descriptions.Item>
+                <Descriptions.Item label="Amount">
+                  AED {managerCheque.amount?.toLocaleString()}
+                </Descriptions.Item>
+                <Descriptions.Item label="Date Issued">
+                  {moment(managerCheque.dateIssued).format('DD MMM YYYY')}
+                </Descriptions.Item>
+              </Descriptions>
+              
+              {managerCheque.fileUrl && (
+                <Button
+                  type="link"
+                  icon={<EyeOutlined />}
+                  onClick={() => window.open(managerCheque.fileUrl, '_blank')}
+                >
+                  View Cheque Copy
+                </Button>
+              )}
+            </div>
+          )}
+        </Card>
+      </div>
+    );
+  };
+
+  const renderDocumentChecklist = () => {
+    const buyerDocs = [
+      { key: 'buyerEmiratesId', label: 'Buyer Emirates ID', required: true },
+      { key: 'buyerPassport', label: 'Buyer Passport', required: true },
+      { key: 'buyerVisa', label: 'Buyer Visa', required: true },
+      { key: 'buyerPoA', label: 'Power of Attorney', required: false }
+    ];
+
+    const sellerDocs = [
+      { key: 'sellerEmiratesId', label: 'Seller Emirates ID', required: true },
+      { key: 'sellerPassport', label: 'Seller Passport', required: true },
+      { key: 'titleDeed', label: 'Title Deed', required: true },
+      { key: 'nocFromBank', label: 'Bank NOC', required: true },
+      { key: 'dewaClearance', label: 'DEWA Clearance', required: true },
+      { key: 'serviceChargeClearance', label: 'Service Charge Clearance', required: true }
+    ];
+
+    return (
+      <Tabs defaultActiveKey="buyer">
+        <TabPane tab="Buyer Documents" key="buyer">
+          <div className="documents-list">
+            {buyerDocs.map(doc => {
+              const docData = timeline?.documents?.[doc.key];
+              
+              return (
+                <div key={doc.key} className="document-item">
+                  <div className="document-info">
+                    <FileTextOutlined />
+                    <span>{doc.label}</span>
+                    {doc.required && <span className="required">*</span>}
+                  </div>
+                  
+                  <div className="document-status">
+                    {docData?.verified ? (
+                      <Tag color="green">Verified</Tag>
+                    ) : docData?.uploaded ? (
+                      <Tag color="blue">Uploaded</Tag>
+                    ) : (
+                      <Tag color="orange">Pending</Tag>
+                    )}
+                  </div>
+                  
+                  {docData?.fileUrl && (
+                    <div className="document-actions">
+                      <Button
+                        type="link"
+                        icon={<EyeOutlined />}
+                        onClick={() => window.open(docData.fileUrl, '_blank')}
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </TabPane>
+        
+        <TabPane tab="Seller Documents" key="seller">
+          <div className="documents-list">
+            {sellerDocs.map(doc => {
+              const docData = timeline?.documents?.[doc.key];
+              
+              return (
+                <div key={doc.key} className="document-item">
+                  <div className="document-info">
+                    <FileTextOutlined />
+                    <span>{doc.label}</span>
+                    {doc.required && <span className="required">*</span>}
+                  </div>
+                  
+                  <div className="document-status">
+                    {docData?.verified ? (
+                      <Tag color="green">Verified</Tag>
+                    ) : docData?.uploaded ? (
+                      <Tag color="blue">Uploaded</Tag>
+                    ) : (
+                      <Tag color="orange">Pending</Tag>
+                    )}
+                  </div>
+                  
+                  {docData?.fileUrl && (
+                    <div className="document-actions">
+                      <Button
+                        type="link"
+                        icon={<EyeOutlined />}
+                        onClick={() => window.open(docData.fileUrl, '_blank')}
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </TabPane>
+      </Tabs>
+    );
+  };
+
+  const renderTimelineHistory = () => {
+    return (
+      <Timeline mode="left" className="timeline-history">
+        {timeline?.statusTimeline?.map((event, index) => (
+          <Timeline.Item
+            key={index}
+            label={moment(event.createdAt).format('DD MMM YYYY, h:mm a')}
+            color={getTimelineColor(event.status)}
+          >
+            <div className="timeline-event">
+              <h4>{formatStageName(event.stage)}</h4>
+              <p>{event.notes}</p>
+              <small>
+                By: {event.initiatedBy} • 
+                Status: <Tag color={getStatusColor(event.status)}>{event.status}</Tag>
+              </small>
+            </div>
+          </Timeline.Item>
+        ))}
+      </Timeline>
+    );
+  };
+
+  const getTimelineColor = (status) => {
+    switch (status) {
+      case 'completed': return 'green';
+      case 'in_progress': return 'blue';
+      case 'cancelled': return 'red';
+      default: return 'gray';
+    }
+  };
+
+  const getStageIcon = (status) => {
+    switch (status) {
+      case 'finish': return <CheckCircleOutlined />;
+      case 'process': return <ClockCircleOutlined />;
+      default: return <ClockCircleOutlined />;
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'completed': return 'success';
+      case 'in_progress': return 'processing';
+      case 'pending': return 'default';
+      case 'cancelled': return 'error';
+      default: return 'default';
+    }
+  };
+
+  const formatStageName = (stage) => {
+    return stage
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  if (loading) {
+    return <div>Loading sale timeline...</div>;
+  }
+
+  if (!timeline) {
+    return <div>Sale timeline not found</div>;
+  }
+
+  return (
+    <div className="sale-timeline-container">
+      {/* Header with Stats */}
+      <Card className="timeline-header">
+        <Row gutter={[24, 24]}>
+          <Col xs={24} md={6}>
+            <Statistic
+              title="Completion"
+              value={timeline.completionPercentage || 0}
+              suffix="%"
+              valueStyle={{ color: '#3f8600' }}
+            />
+            <Progress percent={timeline.completionPercentage || 0} size="small" />
+          </Col>
+          
+          <Col xs={24} md={6}>
+            <Statistic
+              title="Sale Price"
+              value={timeline.salePrice || 0}
+              prefix={<DollarOutlined />}
+              suffix="AED"
+            />
+          </Col>
+          
+          <Col xs={24} md={6}>
+            <Statistic
+              title="Days to Completion"
+              value={timeline.daysToCompletion || 'N/A'}
+              prefix={<CalendarOutlined />}
+            />
+          </Col>
+          
+          <Col xs={24} md={6}>
+            <Statistic
+              title="Current Stage"
+              value={formatStageName(timeline.currentStage)}
+              prefix={<ClockCircleOutlined />}
+            />
+          </Col>
+        </Row>
+      </Card>
+      
+      <Tabs activeKey={activeTab} onChange={setActiveTab}>
+        <TabPane tab="Progress Timeline" key="progress">
+          <Row gutter={[24, 24]}>
+            <Col xs={24} lg={8}>
+              <Card title="Sale Progress">
+                {renderSaleStages()}
+              </Card>
+            </Col>
+            
+            <Col xs={24} lg={16}>
+              {/* Form F Status */}
+              {renderFormFStatus()}
+              
+              <Divider />
+              
+              {/* Payment Section */}
+              {renderPaymentSection()}
+            </Col>
+          </Row>
+        </TabPane>
+        
+        <TabPane tab="Documents" key="documents">
+          <Card title="Document Checklist">
+            {renderDocumentChecklist()}
+          </Card>
+        </TabPane>
+        
+        <TabPane tab="History" key="history">
+          <Card title="Transaction History">
+            {renderTimelineHistory()}
+          </Card>
+        </TabPane>
+      </Tabs>
+      
+      {/* Form F Signing Modal */}
+      <Modal
+        title="Sign Form F"
+        visible={formFSignModal}
+        onCancel={() => setFormFSignModal(false)}
+        onOk={async () => {
+          try {
+            await axios.put(`/api/timeline/sale/${transactionId}/sign-formf`, {
+              signedBy: 'buyer', // or 'seller' based on user
+              signatureUrl: 'digital-signature-url'
+            });
+            message.success('Form F signed successfully');
+            setFormFSignModal(false);
+            fetchTimeline();
+          } catch (error) {
+            message.error('Failed to sign Form F');
+          }
+        }}
+      >
+        <Form layout="vertical">
+          <Form.Item label="Digital Signature">
+            <Input 
+              placeholder="Type your full name as digital signature"
+            />
+          </Form.Item>
+          <Form.Item label="Witness Name (Optional)">
+            <Input placeholder="Witness name if present" />
+          </Form.Item>
+          <Form.Item>
+            <p className="legal-notice">
+              By signing Form F, you acknowledge this is a legally binding 
+              Memorandum of Sale for the property transaction.
+            </p>
+          </Form.Item>
+        </Form>
+      </Modal>
+      
+      {/* Payment Proof Modal */}
+      <Modal
+        title="Upload Payment Proof"
+        visible={paymentModal}
+        onCancel={() => setPaymentModal(false)}
+        footer={null}
+      >
+        <Dragger
+          beforeUpload={(file) => {
+            handlePaymentUpload(file);
+            return false;
+          }}
+          accept=".pdf,.jpg,.jpeg,.png"
+        >
+          <p className="ant-upload-drag-icon">
+            <UploadOutlined />
+          </p>
+          <p className="ant-upload-text">
+            Upload Manager's Cheque or Bank Transfer Proof
+          </p>
+          <p className="ant-upload-hint">
+            Supported: PDF, JPG, PNG up to 10MB
+          </p>
+        </Dragger>
+        
+        <Form layout="vertical" style={{ marginTop: 24 }}>
+          <Form.Item label="Cheque Number (if applicable)">
+            <Input placeholder="Enter cheque number" />
+          </Form.Item>
+          <Form.Item label="Bank Name">
+            <Input placeholder="Enter bank name" />
+          </Form.Item>
+          <Form.Item label="Amount">
+            <Input placeholder="Enter amount" />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
+  );
+};
+
+const handlePaymentUpload = async (file) => {
+  // Handle payment proof upload
+  console.log('Uploading payment proof:', file);
+};
+
+export default SaleTimelineView;
+```
+
+#### **File 8:** `client/src/components/Timeline/TimelineDashboard.js`
+```javascript
+import React, { useState, useEffect } from 'react';
+import { 
+  Card, 
+  Row, 
+  Col, 
+  Tabs, 
+  Table, 
+  Tag, 
+  Button, 
+  Input, 
+  Select, 
+  DatePicker,
+  Statistic,
+  Progress,
+  Badge,
+  Avatar,
+  Tooltip
+} from 'antd';
+import { 
+  SearchOutlined, 
+  FilterOutlined,
+  EyeOutlined,
+  FileTextOutlined,
+  HomeOutlined,
+  DollarOutlined,
+  ClockCircleOutlined,
+  CheckCircleOutlined,
+  ExclamationCircleOutlined,
+  UserOutlined
+} from '@ant-design/icons';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import moment from 'moment';
+import './Timeline.css';
+
+const { TabPane } = Tabs;
+const { Search } = Input;
+const { RangePicker } = DatePicker;
+const { Option } = Select;
+
+const TimelineDashboard = () => {
+  const [activeTab, setActiveTab] = useState('active');
+  const [tenancyTimelines, setTenancyTimelines] = useState([]);
+  const [saleTimelines, setSaleTimelines] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({
+    status: '',
+    dateRange: [],
+    search: ''
+  });
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchTimelines();
+  }, [activeTab, filters]);
+
+  const fetchTimelines = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch tenancy timelines
+      const tenancyResponse = await axios.get('/api/timeline/tenancy/user', {
+        params: {
+          status: activeTab === 'all' ? '' : activeTab
+        }
+      });
+      
+      // Fetch sale timelines
+      const saleResponse = await axios.get('/api/timeline/sale/user', {
+        params: {
+          status: activeTab === 'all' ? '' : activeTab
+        }
+      });
+      
+      setTenancyTimelines(tenancyResponse.data.timelines || []);
+      setSaleTimelines(saleResponse.data.timelines || []);
+    } catch (error) {
+      console.error('Failed to fetch timelines:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'active':
+      case 'completed': return 'green';
+      case 'pending': return 'blue';
+      case 'on_hold': return 'orange';
+      case 'cancelled': return 'red';
+      case 'renewal_due': return 'purple';
+      default: return 'default';
+    }
+  };
+
+  const getStageIcon = (stage) => {
+    switch (stage) {
+      case 'completed': return <CheckCircleOutlined />;
+      case 'in_progress': return <ClockCircleOutlined />;
+      case 'pending': return <ClockCircleOutlined />;
+      case 'on_hold': return <ExclamationCircleOutlined />;
+      default: return <ClockCircleOutlined />;
+    }
+  };
+
+  const tenancyColumns = [
+    {
+      title: 'Property',
+      dataIndex: 'propertyId',
+      key: 'property',
+      render: (property) => (
+        <div className="property-info">
+          <Avatar 
+            icon={<HomeOutlined />} 
+            src={property?.images?.[0]?.url}
+            size="small"
+          />
+          <span style={{ marginLeft: 8 }}>
+            {property?.propertyCode || 'N/A'}
+          </span>
+        </div>
+      )
+    },
+    {
+      title: 'Tenant/Landlord',
+      key: 'parties',
+      render: (record) => (
+        <div>
+          <div><UserOutlined /> {record.tenant.name}</div>
+          <div><UserOutlined /> {record.landlord.name}</div>
+        </div>
+      )
+    },
+    {
+      title: 'Rent',
+      dataIndex: 'rentAmount',
+      key: 'rent',
+      render: (amount) => (
+        <div>
+          <DollarOutlined /> {amount?.toLocaleString()} AED
+          <div className="sub-text">
+            {record.paymentFrequency || 'Monthly'}
+          </div>
+        </div>
+      )
+    },
+    {
+      title: 'Current Stage',
+      dataIndex: 'currentStage',
+      key: 'stage',
+      render: (stage) => (
+        <div className="stage-info">
+          {getStageIcon(stage)}
+          <span style={{ marginLeft: 8 }}>
+            {formatStageName(stage)}
+          </span>
+        </div>
+      )
+    },
+    {
+      title: 'Progress',
+      key: 'progress',
+      render: (record) => (
+        <div>
+          <Progress 
+            percent={record.completionPercentage || 0} 
+            size="small" 
+            showInfo={false}
+          />
+          <div className="progress-text">
+            {record.completionPercentage || 0}% complete
+          </div>
+        </div>
+      )
+    },
+    {
+      title: 'Status',
+      dataIndex: 'overallStatus',
+      key: 'status',
+      render: (status) => (
+        <Tag color={getStatusColor(status)}>
+          {status.toUpperCase()}
+        </Tag>
+      )
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (record) => (
+        <Button
+          type="link"
+          icon={<EyeOutlined />}
+          onClick={() => navigate(`/dashboard/timeline/tenancy/${record.transactionId}`)}
+        >
+          View
+        </Button>
+      )
+    }
+  ];
+
+  const saleColumns = [
+    {
+      title: 'Property',
+      dataIndex: 'propertyId',
+      key: 'property',
+      render: (property) => (
+        <div className="property-info">
+          <Avatar 
+            icon={<HomeOutlined />} 
+            src={property?.images?.[0]?.url}
+            size="small"
+          />
+          <span style={{ marginLeft: 8 }}>
+            {property?.propertyCode || 'N/A'}
+          </span>
+        </div>
+      )
+    },
+    {
+      title: 'Buyer/Seller',
+      key: 'parties',
+      render: (record) => (
+        <div>
+          <div><UserOutlined /> {record.buyer.name}</div>
+          <div><UserOutlined /> {record.seller.name}</div>
+        </div>
+      )
+    },
+    {
+      title: 'Sale Price',
+      dataIndex: 'salePrice',
+      key: 'price',
+      render: (price) => (
+        <div>
+          <DollarOutlined /> {price?.toLocaleString()} AED
+        </div>
+      )
+    },
+    {
+      title: 'Current Stage',
+      dataIndex: 'currentStage',
+      key: 'stage',
+      render: (stage) => (
+        <div className="stage-info">
+          {getStageIcon(stage)}
+          <span style={{ marginLeft: 8 }}>
+            {formatStageName(stage)}
+          </span>
+        </div>
+      )
+    },
+    {
+      title: 'Progress',
+      key: 'progress',
+      render: (record) => (
+        <div>
+          <Progress 
+            percent={record.completionPercentage || 0} 
+            size="small" 
+            showInfo={false}
+          />
+          <div className="progress-text">
+            {record.completionPercentage || 0}% complete
+          </div>
+        </div>
+      )
+    },
+    {
+      title: 'Status',
+      dataIndex: 'overallStatus',
+      key: 'status',
+      render: (status) => (
+        <Tag color={getStatusColor(status)}>
+          {status.toUpperCase()}
+        </Tag>
+      )
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (record) => (
+        <Button
+          type="link"
+          icon={<EyeOutlined />}
+          onClick={() => navigate(`/dashboard/timeline/sale/${record.transactionId}`)}
+        >
+          View
+        </Button>
+      )
+    }
+  ];
+
+  const formatStageName = (stage) => {
+    if (!stage) return 'N/A';
+    return stage
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  const stats = {
+    activeTenancies: tenancyTimelines.filter(t => t.overallStatus === 'active').length,
+    pendingTenancies: tenancyTimelines.filter(t => t.overallStatus === 'pending').length,
+    renewalDue: tenancyTimelines.filter(t => t.overallStatus === 'renewal_due').length,
+    activeSales: saleTimelines.filter(t => t.overallStatus === 'active').length,
+    pendingSales: saleTimelines.filter(t => t.overallStatus === 'pending').length,
+    totalValue: saleTimelines.reduce((sum, sale) => sum + (sale.salePrice || 0), 0)
+  };
+
+  return (
+    <div className="timeline-dashboard">
+      {/* Statistics Overview */}
+      <Row gutter={[24, 24]} className="stats-row">
+        <Col xs={24} sm={12} md={8} lg={4}>
+          <Card>
+            <Statistic
+              title="Active Tenancies"
+              value={stats.activeTenancies}
+              valueStyle={{ color: '#52c41a' }}
+              prefix={<HomeOutlined />}
+            />
+          </Card>
+        </Col>
+        
+        <Col xs={24} sm={12} md={8} lg={4}>
+          <Card>
+            <Statistic
+              title="Pending Tenancies"
+              value={stats.pendingTenancies}
+              valueStyle={{ color: '#1890ff' }}
+              prefix={<ClockCircleOutlined />}
+            />
+          </Card>
+        </Col>
+        
+        <Col xs={24} sm={12} md={8} lg={4}>
+          <Card>
+            <Statistic
+              title="Renewals Due"
+              value={stats.renewalDue}
+              valueStyle={{ color: '#722ed1' }}
+              prefix={<ExclamationCircleOutlined />}
+            />
+          </Card>
+        </Col>
+        
+        <Col xs={24} sm={12} md={8} lg={4}>
+          <Card>
+            <Statistic
+              title="Active Sales"
+              value={stats.activeSales}
+              valueStyle={{ color: '#faad14' }}
+              prefix={<DollarOutlined />}
+            />
+          </Card>
+        </Col>
+        
+        <Col xs={24} sm={12} md={8} lg={4}>
+          <Card>
+            <Statistic
+              title="Pending Sales"
+              value={stats.pendingSales}
+              valueStyle={{ color: '#1890ff' }}
+              prefix={<ClockCircleOutlined />}
+            />
+          </Card>
+        </Col>
+        
+        <Col xs={24} sm={12} md={8} lg={4}>
+          <Card>
+            <Statistic
+              title="Total Value"
+              value={stats.totalValue}
+              valueStyle={{ color: '#52c41a' }}
+              prefix={<DollarOutlined />}
+              suffix="AED"
+            />
+          </Card>
+        </Col>
+      </Row>
+      
+      {/* Filters */}
+      <Card className="filters-card">
+        <Row gutter={[16, 16]} align="middle">
+          <Col xs={24} md={8}>
+            <Search
+              placeholder="Search transactions..."
+              allowClear
+              enterButton={<SearchOutlined />}
+              onSearch={(value) => setFilters({ ...filters, search: value })}
+            />
+          </Col>
+          
+          <Col xs={24} md={8}>
+            <Select
+              placeholder="Filter by Status"
+              style={{ width: '100%' }}
+              allowClear
+              onChange={(value) => setFilters({ ...filters, status: value })}
+            >
+              <Option value="active">Active</Option>
+              <Option value="pending">Pending</Option>
+              <Option value="completed">Completed</Option>
+              <Option value="cancelled">Cancelled</Option>
+              <Option value="renewal_due">Renewal Due</Option>
+            </Select>
+          </Col>
+          
+          <Col xs={24} md={8}>
+            <RangePicker
+              style={{ width: '100%' }}
+              onChange={(dates) => setFilters({ ...filters, dateRange: dates })}
+            />
+          </Col>
+        </Row>
+      </Card>
+      
+      {/* Tabs for Tenancy and Sale */}
+      <Tabs defaultActiveKey="tenancy" className="timeline-tabs">
+        <TabPane tab="Tenancy Transactions" key="tenancy">
+          <Card>
+            <Table
+              columns={tenancyColumns}
+              dataSource={tenancyTimelines}
+              rowKey="transactionId"
+              loading={loading}
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: true,
+                showTotal: (total) => `Total ${total} transactions`
+              }}
+            />
+          </Card>
+        </TabPane>
+        
+        <TabPane tab="Sale Transactions" key="sale">
+          <Card>
+            <Table
+              columns={saleColumns}
+              dataSource={saleTimelines}
+              rowKey="transactionId"
+              loading={loading}
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: true,
+                showTotal: (total) => `Total ${total} transactions`
+              }}
+            />
+          </Card>
+        </TabPane>
+      </Tabs>
+      
+      {/* Recent Activity */}
+      <Card title="Recent Activity" className="recent-activity">
+        <Timeline>
+          {[...tenancyTimelines, ...saleTimelines]
+            .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+            .slice(0, 5)
+            .map((transaction, index) => (
+              <Timeline.Item key={index} color={getStatusColor(transaction.overallStatus)}>
+                <div className="activity-item">
+                  <div className="activity-header">
+                    <strong>{transaction.transactionId}</strong>
+                    <Tag color={getStatusColor(transaction.overallStatus)}>
+                      {transaction.overallStatus}
+                    </Tag>
+                  </div>
+                  <div className="activity-details">
+                    <p>
+                      {transaction.propertyId?.propertyCode} • 
+                      {transaction.rentAmount ? ` Rent: AED ${transaction.rentAmount}` : 
+                       transaction.salePrice ? ` Sale: AED ${transaction.salePrice}` : ''}
+                    </p>
+                    <small>
+                      Updated: {moment(transaction.updatedAt).fromNow()}
+                    </small>
+                  </div>
+                </div>
+              </Timeline.Item>
+            ))}
+        </Timeline>
+      </Card>
+    </div>
+  );
+};
+
+export default TimelineDashboard;
+```
+
+#### **File 9:** `client/src/components/Timeline/Timeline.css`
+```css
+/* Timeline Component Styles */
+
+.timeline-header {
+  margin-bottom: 24px;
+}
+
+.timeline-header .ant-card-body {
+  padding: 24px;
+}
+
+.progress-card {
+  margin-bottom: 24px;
+}
+
+.progress-card .ant-steps {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.document-card {
+  text-align: center;
+  transition: all 0.3s ease;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.document-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.document-card.uploaded {
+  border: 2px solid #52c41a;
+}
+
+.document-card.pending {
+  border: 2px dashed #d9d9d9;
+}
+
+.document-status {
+  margin-bottom: 12px;
+}
+
+.document-icon {
+  font-size: 36px;
+  color: #1890ff;
+  margin-bottom: 12px;
+}
+
+.document-name {
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.document-name .required {
+  color: #ff4d4f;
+  margin-left: 4px;
+}
+
+.document-actions {
+  margin-top: 8px;
+}
+
+.signing-card {
+  margin-top: 24px;
+}
+
+.party-signing {
+  text-align: center;
+  padding: 24px;
+  border-radius: 8px;
+  border: 2px solid #f0f0f0;
+}
+
+.party-signing.signed {
+  border-color: #52c41a;
+  background-color: rgba(82, 196, 26, 0.1);
+}
+
+.party-signing.pending {
+  border-color: #faad14;
+  background-color: rgba(250, 173, 20, 0.1);
+}
+
+.party-signing .anticon {
+  font-size: 48px;
+  color: #1890ff;
+  margin-bottom: 16px;
+}
+
+.contract-view {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.timeline-history {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 16px;
+}
+
+.timeline-event {
+  background: #fafafa;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.timeline-event h4 {
+  margin-bottom: 8px;
+  color: #1a365d;
+}
+
+.timeline-event p {
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.event-documents {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e8e8e8;
+}
+
+.event-documents ul {
+  margin: 8px 0 0 0;
+  padding-left: 20px;
+}
+
+.event-documents li {
+  margin-bottom: 4px;
+}
+
+/* Sale Timeline Specific */
+.formf-card {
+  margin-bottom: 24px;
+}
+
+.signing-party {
+  text-align: center;
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid #f0f0f0;
+}
+
+.signing-party.signed {
+  border-color: #52c41a;
+  background-color: rgba(82, 196, 26, 0.1);
+}
+
+.signing-party.pending {
+  border-color: #faad14;
+  background-color: rgba(250, 173, 20, 0.1);
+}
+
+.formf-completed {
+  text-align: center;
+  padding: 24px;
+  background-color: #f6ffed;
+  border: 1px solid #b7eb8f;
+  border-radius: 8px;
+  margin-top: 24px;
+}
+
+.payment-section {
+  margin-top: 24px;
+}
+
+.cheque-info {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #fafafa;
+  border-radius: 8px;
+}
+
+.documents-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.document-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.document-item:last-child {
+  border-bottom: none;
+}
+
+.document-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.document-info .anticon {
+  margin-right: 12px;
+  color: #1890ff;
+}
+
+.document-status {
+  margin-right: 16px;
+}
+
+/* Dashboard Styles */
+.timeline-dashboard {
+  padding: 24px;
+}
+
+.stats-row {
+  margin-bottom: 24px;
+}
+
+.filters-card {
+  margin-bottom: 24px;
+}
+
+.timeline-tabs {
+  margin-bottom: 24px;
+}
+
+.property-info {
+  display: flex;
+  align-items: center;
+}
+
+.stage-info {
+  display: flex;
+  align-items: center;
+}
+
+.progress-text {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.sub-text {
+  font-size: 12px;
+  color: #999;
+}
+
+.recent-activity {
+  margin-top: 24px;
+}
+
+.activity-item {
+  padding: 8px 0;
+}
+
+.activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.activity-details {
+  color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .document-card {
+    height: auto;
+    padding: 16px;
+  }
+  
+  .party-signing {
+    padding: 16px;
+  }
+  
+  .signing-party {
+    padding: 16px;
+  }
+  
+  .stats-row .ant-col {
+    margin-bottom: 16px;
+  }
+}
+```
+
+### **Step 12.6: Create Notification Service for Timeline Updates**
+
+#### **File 10:** `server/services/timelineNotification.service.js`
+```javascript
+const nodemailer = require('nodemailer');
+const axios = require('axios');
+
+class TimelineNotificationService {
+  constructor() {
+    this.transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      secure: false,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
+      }
+    });
+  }
+
+  // Send email notification
+  async sendEmailNotification(to, subject, html, attachments = []) {
+    try {
+      const mailOptions = {
+        from: `"White Caves Real Estate" <${process.env.SMTP_USER}>`,
+        to,
+        subject,
+        html,
+        attachments
+      };
+
+      await this.transporter.sendMail(mailOptions);
+      console.log(`Email sent to ${to}: ${subject}`);
+      return true;
+    } catch (error) {
+      console.error('Email sending failed:', error);
+      return false;
+    }
+  }
+
+  // Send WhatsApp notification
+  async sendWhatsAppNotification(phone, message) {
+    try {
+      const response = await axios.post(
+        `https://graph.facebook.com/v17.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+        {
+          messaging_product: "whatsapp",
+          recipient_type: "individual",
+          to: phone,
+          type: "text",
+          text: { body: message }
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${process.env.WHATSAPP_API_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      console.log(`WhatsApp sent to ${phone}`);
+      return true;
+    } catch (error) {
+      console.error('WhatsApp sending failed:', error);
+      return false;
+    }
+  }
+
+  // Send SMS notification (using Twilio or similar)
+  async sendSMSNotification(phone, message) {
+    // Implement SMS service integration
+    console.log(`SMS would be sent to ${phone}: ${message}`);
+    return true;
+  }
+
+  // Tenancy-specific notifications
+  async notifyTenancyStatusUpdate(timeline, stage, status, initiatedBy) {
+    const { tenant, landlord, agent, propertyId } = timeline;
+    
+    let subject = '';
+    let message = '';
+    let recipients = [];
+
+    switch (stage) {
+      case 'contract_preparation':
+        subject = 'Tenancy Contract Ready for Review';
+        message = `Your tenancy contract for property ${propertyId} is ready for review.`;
+        recipients = [tenant.email, landlord.email];
+        break;
+
+      case 'tenant_signing':
+        subject = 'Action Required: Sign Tenancy Contract';
+        message = `Please sign the tenancy contract for property ${propertyId}.`;
+        recipients = [tenant.email];
+        break;
+
+      case 'landlord_signing':
+        subject = 'Action Required: Sign Tenancy Contract';
+        message = `Tenant has signed. Please sign the tenancy contract for property ${propertyId}.`;
+        recipients = [landlord.email];
+        break;
+
+      case 'ejari_registration':
+        subject = 'Ejari Registration Completed';
+        message = `Tenancy contract has been registered with Ejari.`;
+        recipients = [tenant.email, landlord.email];
+        break;
+
+      case 'renewal_pending':
+        const daysRemaining = timeline.daysRemaining;
+        subject = `Tenancy Renewal Due in ${daysRemaining} days`;
+        message = `Your tenancy agreement expires in ${daysRemaining} days. Please contact us for renewal.`;
+        recipients = [tenant.email, landlord.email];
+        break;
+    }
+
+    // Send notifications to all recipients
+    for (const recipient of recipients) {
+      await this.sendEmailNotification(
+        recipient,
+        subject,
+        this.generateTenancyEmailHTML(subject, message, timeline)
+      );
+      
+      // Also send WhatsApp if phone available
+      if (recipient === tenant.email && tenant.phone) {
+        await this.sendWhatsAppNotification(tenant.phone, message);
+      }
+      if (recipient === landlord.email && landlord.phone) {
+        await this.sendWhatsAppNotification(landlord.phone, message);
+      }
+    }
+
+    // Notify agent if exists
+    if (agent && agent.id) {
+      await this.sendEmailNotification(
+        agent.email,
+        `Update: ${subject}`,
+        this.generateAgentNotificationHTML(timeline, stage, status)
+      );
+    }
+  }
+
+  // Sale-specific notifications
+  async notifySaleStatusUpdate(timeline, stage, status, initiatedBy) {
+    const { buyer, seller, buyerAgent, sellerAgent, propertyId } = timeline;
+    
+    let subject = '';
+    let message = '';
+    let recipients = [];
+
+    switch (stage) {
+      case 'form_f_preparation':
+        subject = 'Form F - Memorandum of Sale Ready';
+        message = `Form F is ready for signing for property ${propertyId}.`;
+        recipients = [buyer.email, seller.email];
+        break;
+
+      case 'form_f_signing_buyer':
+        subject = 'Action Required: Sign Form F';
+        message = `Please sign Form F for property ${propertyId}.`;
+        recipients = [buyer.email];
+        break;
+
+      case 'form_f_signing_seller':
+        subject = 'Action Required: Sign Form F';
+        message = `Buyer has signed Form F. Please sign for property ${propertyId}.`;
+        recipients = [seller.email];
+        break;
+
+      case 'deposit_paid':
+        subject = 'Deposit Payment Received';
+        message = `Deposit payment has been received for property ${propertyId}.`;
+        recipients = [seller.email, buyerAgent?.email, sellerAgent?.email].filter(Boolean);
+        break;
+
+      case 'noc_application':
+        subject = 'Bank NOC Required';
+        message = `Please provide Bank NOC for property ${propertyId}.`;
+        recipients = [seller.email];
+        break;
+
+      case 'dld_transfer':
+        subject = 'Title Deed Transfer Completed';
+        message = `Property ownership has been transferred at DLD.`;
+        recipients = [buyer.email, seller.email];
+        break;
+    }
+
+    // Send notifications
+    for (const recipient of recipients) {
+      await this.sendEmailNotification(
+        recipient,
+        subject,
+        this.generateSaleEmailHTML(subject, message, timeline)
+      );
+    }
+  }
+
+  // Generate HTML email templates
+  generateTenancyEmailHTML(subject, message, timeline) {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background-color: #1a365d; color: white; padding: 20px; text-align: center; }
+          .content { padding: 30px; background-color: #f9f9f9; }
+          .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+          .button { display: inline-block; padding: 12px 24px; background-color: #1a365d; color: white; text-decoration: none; border-radius: 5px; }
+          .timeline-info { background-color: white; padding: 20px; border-radius: 5px; margin: 20px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>White Caves Real Estate</h1>
+            <h2>${subject}</h2>
+          </div>
+          
+          <div class="content">
+            <p>${message}</p>
+            
+            <div class="timeline-info">
+              <h3>Transaction Details:</h3>
+              <p><strong>Transaction ID:</strong> ${timeline.transactionId}</p>
+              <p><strong>Property:</strong> ${timeline.propertyId?.propertyCode || 'N/A'}</p>
+              <p><strong>Current Stage:</strong> ${formatStageName(timeline.currentStage)}</p>
+              <p><strong>Completion:</strong> ${timeline.completionPercentage || 0}%</p>
+            </div>
+            
+            <p>
+              <a href="${process.env.CLIENT_URL}/dashboard/timeline/tenancy/${timeline.transactionId}" class="button">
+                View Transaction Timeline
+              </a>
+            </p>
+            
+            <p>If you have any questions, please contact your agent or call +971 56 361 6136.</p>
+          </div>
+          
+          <div class="footer">
+            <p>White Caves Real Estate LLC • Dubai, UAE</p>
+            <p>Phone: +971 56 361 6136 • Email: admin@whitecaves.com</p>
+            <p>This is an automated message. Please do not reply to this email.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  generateSaleEmailHTML(subject, message, timeline) {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background-color: #1a365d; color: white; padding: 20px; text-align: center; }
+          .content { padding: 30px; background-color: #f9f9f9; }
+          .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+          .button { display: inline-block; padding: 12px 24px; background-color: #1a365d; color: white; text-decoration: none; border-radius: 5px; }
+          .transaction-info { background-color: white; padding: 20px; border-radius: 5px; margin: 20px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>White Caves Real Estate</h1>
+            <h2>${subject}</h2>
+          </div>
+          
+          <div class="content">
+            <p>${message}</p>
+            
+            <div class="transaction-info">
+              <h3>Sale Transaction Details:</h3>
+              <p><strong>Transaction ID:</strong> ${timeline.transactionId}</p>
+              <p><strong>Property:</strong> ${timeline.propertyId?.propertyCode || 'N/A'}</p>
+              <p><strong>Sale Price:</strong> AED ${timeline.salePrice?.toLocaleString() || '0'}</p>
+              <p><strong>Current Stage:</strong> ${formatStageName(timeline.currentStage)}</p>
+              <p><strong>Completion:</strong> ${timeline.completionPercentage || 0}%</p>
+            </div>
+            
+            <p>
+              <a href="${process.env.CLIENT_URL}/dashboard/timeline/sale/${timeline.transactionId}" class="button">
+                View Sale Timeline
+              </a>
+            </p>
+            
+            <p><strong>Important:</strong> Please ensure all documents are submitted on time to avoid delays.</p>
+          </div>
+          
+          <div class="footer">
+            <p>White Caves Real Estate LLC • Dubai, UAE</p>
+            <p>Phone: +971 56 361 6136 • Email: admin@whitecaves.com</p>
+            <p>This is an automated message. Please do not reply to this email.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  generateAgentNotificationHTML(timeline, stage, status) {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background-color: #1a365d; color: white; padding: 20px; }
+          .content { padding: 30px; background-color: #f5f5f5; }
+          .alert { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h2>Agent Notification: Timeline Update</h2>
+          </div>
+          
+          <div class="content">
+            <div class="alert">
+              <h3>${formatStageName(stage)} - ${status.toUpperCase()}</h3>
+            </div>
+            
+            <p><strong>Transaction:</strong> ${timeline.transactionId}</p>
+            <p><strong>Property:</strong> ${timeline.propertyId?.propertyCode || 'N/A'}</p>
+            <p><strong>Parties:</strong> ${timeline.tenant?.name} & ${timeline.landlord?.name}</p>
+            <p><strong>Updated:</strong> ${new Date().toLocaleString()}</p>
+            
+            <p>Please follow up with the relevant parties if action is required.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+}
+
+// Helper function
+function formatStageName(stage) {
+  if (!stage) return 'N/A';
+  return stage
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+module.exports = TimelineNotificationService;
+```
+
+### **Step 12.7: Create Routes Configuration**
+
+#### **File 11:** Update `server/routes/index.js`
+```javascript
+const express = require('express');
+const router = express.Router();
+
+// Import all route files
+const authRoutes = require('./auth.routes');
+const propertyRoutes = require('./property.routes');
+const agentRoutes = require('./agent.routes');
+const timelineRoutes = require('./timeline.routes');
+const uaepassRoutes = require('./uaepass.routes');
+const dashboardRoutes = require('./dashboard.routes');
+const chatbotRoutes = require('./chatbot.routes');
+
+// Use routes
+router.use('/auth', authRoutes);
+router.use('/properties', propertyRoutes);
+router.use('/agents', agentRoutes);
+router.use('/timeline', timelineRoutes); // Add timeline routes
+router.use('/uaepass', uaepassRoutes);
+router.use('/dashboard', dashboardRoutes);
+router.use('/chatbot', chatbotRoutes);
+
+module.exports = router;
+```
+
+### **Step 12.8: Create Timeline Routes in Client**
+
+#### **File 12:** Update `client/src/App.js`
+```javascript
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import PrivateRoute from './components/routing/PrivateRoute';
+import Layout from './components/Layout/Layout';
+import TimelineDashboard from './components/Timeline/TimelineDashboard';
+import TenancyTimelineView from './components/Timeline/TenancyTimelineView';
+import SaleTimelineView from './components/Timeline/SaleTimelineView';
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Layout>
+          <Routes>
+            {/* Existing routes */}
+            
+            {/* Timeline Routes */}
+            <Route path="/dashboard/timeline" element={
+              <PrivateRoute>
+                <TimelineDashboard />
+              </PrivateRoute>
+            } />
+            
+            <Route path="/dashboard/timeline/tenancy/:transactionId" element={
+              <PrivateRoute>
+                <TenancyTimelineView />
+              </PrivateRoute>
+            } />
+            
+            <Route path="/dashboard/timeline/sale/:transactionId" element={
+              <PrivateRoute>
+                <SaleTimelineView />
+              </PrivateRoute>
+            } />
+          </Routes>
+        </Layout>
+      </Router>
+    </AuthProvider>
+  );
+}
+
+export default App;
+```
+
+## **🚀 IMPLEMENTATION CHECKLIST**
+
+### **Backend Implementation:**
+- [ ] Create TenancyTimeline model
+- [ ] Create SaleTimeline model  
+- [ ] Create timeline controller
+- [ ] Create timeline routes
+- [ ] Create upload middleware
+- [ ] Create notification service
+- [ ] Update main routes index
+
+### **Frontend Implementation:**
+- [ ] Create TenancyTimelineView component
+- [ ] Create SaleTimelineView component
+- [ ] Create TimelineDashboard component
+- [ ] Create Timeline CSS styles
+- [ ] Add routes to App.js
+- [ ] Update navigation to include timeline
+
+### **Database Setup:**
+- [ ] Run MongoDB migrations for new models
+- [ ] Create indexes for performance
+- [ ] Set up backup strategy for timeline data
+
+### **Testing:**
+- [ ] Test tenancy timeline creation
+- [ ] Test sale timeline creation  
+- [ ] Test status updates
+- [ ] Test document upload
+- [ ] Test notifications
+- [ ] Test user access controls
+
+## **📊 TIMELINE FEATURES SUMMARY**
+
+### **Tenancy Timeline Features:**
+1. **Stage Tracking:** 10 stages from initial contact to keys handover
+2. **Document Management:** UAE-specific documents (Emirates ID, passport, cheque, DEWA, NOC)
+3. **Contract Signing:** Separate signing status for tenant and landlord
+4. **Ejari Integration:** Track Ejari registration status
+5. **Renewal Management:** Automatic renewal reminders
+6. **Progress Tracking:** Visual progress with percentages
+7. **Notifications:** Automated emails and WhatsApp updates
+8. **Audit Trail:** Complete history of all status changes
+
+### **Sale Timeline Features:**
+1. **Stage Tracking:** 16 stages from offer to completion
+2. **Form F Management:** Track signing by buyer and seller
+3. **Form B Tracking:** Offer to purchase document
+4. **Payment Tracking:** Deposit, down payment, final payment
+5. **Document Checklist:** Buyer and seller documents
+6. **Bank NOC Tracking:** Mortgage and NOC requirements
+7. **DEWA Clearance:** Utility clearance tracking
+8. **DLD Transfer:** Title deed transfer status
+
+### **User Experience:**
+1. **Real-time Updates:** Live status updates for all parties
+2. **Document Upload:** Easy upload with preview
+3. **Mobile Responsive:** Works on all devices
+4. **Email Notifications:** Automated status emails
+5. **WhatsApp Integration:** Instant updates via WhatsApp
+6. **Progress Visualization:** Clear visual progress indicators
+7. **Task Management:** Action items for each party
+8. **Timeline History:** Complete audit trail
+
+## **🔧 DEPLOYMENT STEPS**
+
+1. **Backend Deployment:**
+```bash
+cd server
+npm install
+npm run migrate:timeline  # Create migration script
+npm start
+```
+
+2. **Frontend Deployment:**
+```bash
+cd client
+npm install
+npm run build
+```
+
+3. **Database Migration:**
+```sql
+-- Create indexes for performance
+db.tenancytimelines.createIndex({ transactionId: 1 }, { unique: true });
+db.saletimelines.createIndex({ transactionId: 1 }, { unique: true });
+db.tenancytimelines.createIndex({ 'tenant.id': 1, 'landlord.id': 1 });
+db.saletimelines.createIndex({ 'buyer.id': 1, 'seller.id': 1 });
+```
+
+## **🎯 SUCCESS METRICS**
+
+| Metric | Target | Benefit |
+|--------|--------|---------|
+| Transaction Completion Time | 30% faster | Reduced manual follow-up |
+| Document Submission Rate | 90% on-time | Fewer delays |
+| User Satisfaction | > 4.5/5 rating | Better client experience |
+| Agent Productivity | 40% time saved | More transactions per agent |
+| Error Reduction | 60% fewer errors | Better compliance |
+
+This comprehensive timeline system provides complete visibility into real estate transactions for all parties involved, with UAE-specific document tracking and automated notifications to ensure smooth transactions.

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import RoleNavigation from '../../components/RoleNavigation';
 import ProductivityTools from '../../components/owner/ProductivityTools';
 import './OwnerDashboardPage.css';
 
@@ -53,13 +52,8 @@ export default function OwnerDashboardPage() {
   ];
 
   return (
-    <div className="owner-dashboard">
-      <RoleNavigation 
-        role="owner" 
-        userName={user?.displayName || user?.email}
-      />
-      
-      <div className="owner-dashboard-content">
+    <div className="owner-dashboard no-sidebar">
+      <div className="owner-dashboard-content full-width">
         <div className="owner-header">
           <div className="owner-welcome">
             <h1>Welcome, Owner</h1>
