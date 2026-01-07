@@ -1,0 +1,22 @@
+.homepage {
+  min-height: 100vh;
+  background: var(--bg-primary);
+}
+
+.section-wrapper {
+  position: relative;
+}
+
+.section-wrapper + .section-wrapper {
+  border-top: 1px solid var(--border-light);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
