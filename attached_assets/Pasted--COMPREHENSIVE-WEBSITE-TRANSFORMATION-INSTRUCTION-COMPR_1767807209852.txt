@@ -1,0 +1,5164 @@
+# COMPREHENSIVE WEBSITE TRANSFORMATION INSTRUCTION
+# COMPREHENSIVE WEBSITE UNIFICATION & USER SYSTEM INSTRUCTION
+
+## **CORE MANDATE:**
+**Unify design across ALL pages to match homepage aesthetics and implement 100% complete user CRUD system with database integration.**
+
+---
+
+## **SECTION 1: DESIGN UNIFICATION SYSTEM**
+
+### **1.1 Design Consistency Framework**
+
+```javascript
+// src/design-system/ThemeProvider.js
+import React, { createContext, useContext } from 'react';
+
+// DUBAI REAL ESTATE DESIGN SYSTEM
+export const DubaiTheme = {
+  // COLOR PALETTE (GOLD/SAND/NAVY/WHITE)
+  colors: {
+    primary: {
+      gold: '#D4AF37',        // Main brand gold
+      sand: '#E6D2AA',        // Sand accent
+      navy: '#0F3460',        // Deep navy blue
+      white: '#FFFFFF',       // Pure white
+    },
+    secondary: {
+      lightGold: '#F4E4BC',
+      darkGold: '#B7950B',
+      lightNavy: '#1E4B8C',
+      cream: '#FAF8F0',
+    },
+    semantic: {
+      success: '#10B981',     // Green for positive actions
+      warning: '#F59E0B',     // Orange for alerts
+      error: '#EF4444',       // Red for errors
+      info: '#3B82F6',        // Blue for information
+    }
+  },
+  
+  // TYPOGRAPHY (Dubai-friendly fonts)
+  typography: {
+    primary: "'Cairo', 'Segoe UI', sans-serif",  // Arabic-friendly
+    secondary: "'Montserrat', 'Poppins', sans-serif",
+    fontSize: {
+      h1: '3.5rem',
+      h2: '2.5rem',
+      h3: '2rem',
+      h4: '1.5rem',
+      body: '1rem',
+      small: '0.875rem'
+    }
+  },
+  
+  // SPACING SYSTEM (Consistent across all pages)
+  spacing: {
+    xs: '0.5rem',
+    sm: '1rem',
+    md: '1.5rem',
+    lg: '2rem',
+    xl: '3rem',
+    xxl: '4rem'
+  },
+  
+  // SHADOWS & EFFECTS
+  shadows: {
+    soft: '0 4px 20px rgba(0, 0, 0, 0.08)',
+    medium: '0 8px 30px rgba(0, 0, 0, 0.12)',
+    strong: '0 15px 50px rgba(0, 0, 0, 0.15)',
+    goldGlow: '0 0 25px rgba(212, 175, 55, 0.3)'
+  },
+  
+  // BORDER RADIUS
+  borderRadius: {
+    sm: '4px',
+    md: '8px',
+    lg: '12px',
+    xl: '20px',
+    circle: '50%'
+  }
+};
+
+// Create Theme Context
+export const ThemeContext = createContext(DubaiTheme);
+
+export const useTheme = () => useContext(ThemeContext);
+```
+
+### **1.2 Global Layout Wrapper Component**
+
+```jsx
+// src/layouts/MainLayout.jsx
+import React from 'react';
+import Header from '../components/Header/Header';
+import Footer from '../components/Footer/Footer';
+import WhatsAppButton from '../components/WhatsAppButton';
+import { DubaiTheme } from '../design-system/ThemeProvider';
+import './MainLayout.css';
+
+const MainLayout = ({ children }) => {
+  return (
+    <div className="main-layout" style={{ 
+      '--color-gold': DubaiTheme.colors.primary.gold,
+      '--color-sand': DubaiTheme.colors.primary.sand,
+      '--color-navy': DubaiTheme.colors.primary.navy,
+      '--color-white': DubaiTheme.colors.primary.white,
+    }}>
+      {/* Unified Header */}
+      <Header />
+      
+      {/* Main Content - Consistent styling across all pages */}
+      <main className="main-content">
+        {children}
+      </main>
+      
+      {/* Unified Footer */}
+      <Footer />
+      
+      {/* Universal WhatsApp Component */}
+      <WhatsAppButton />
+    </div>
+  );
+};
+
+export default MainLayout;
+```
+
+### **1.3 Component Design Templates for All Pages**
+
+```jsx
+// src/templates/PageTemplate.jsx
+import React from 'react';
+import './PageTemplate.css';
+
+// REUSABLE PAGE SECTIONS TEMPLATE
+const PageTemplate = ({ 
+  title,
+  subtitle,
+  breadcrumbs,
+  heroImage,
+  children,
+  sidebar,
+  containerClass = ''
+}) => {
+  return (
+    <div className={`page-template ${containerClass}`}>
+      
+      {/* Page Hero Section - Consistent across all pages */}
+      <section className="page-hero">
+        {heroImage && (
+          <div className="hero-image">
+            <img src={heroImage} alt={title} />
+            <div className="hero-overlay"></div>
+          </div>
+        )}
+        
+        <div className="hero-content">
+          {breadcrumbs && (
+            <div className="breadcrumbs">
+              {breadcrumbs}
+            </div>
+          )}
+          
+          <h1 className="page-title">{title}</h1>
+          {subtitle && <p className="page-subtitle">{subtitle}</p>}
+        </div>
+      </section>
+      
+      {/* Main Content Area */}
+      <div className="page-content-container">
+        {sidebar ? (
+          <div className="page-with-sidebar">
+            <div className="main-content-area">
+              {children}
+            </div>
+            <aside className="sidebar-area">
+              {sidebar}
+            </aside>
+          </div>
+        ) : (
+          <div className="full-width-content">
+            {children}
+          </div>
+        )}
+      </div>
+      
+      {/* Standardized Call-to-Action Section */}
+      <section className="standard-cta">
+        <h2>Find Your Dream Property in Dubai</h2>
+        <p>Browse thousands of verified properties with RERA-certified agents</p>
+        <button className="cta-button">Explore Properties</button>
+      </section>
+    </div>
+  );
+};
+
+export default PageTemplate;
+```
+
+### **1.4 CSS Variables for Consistency**
+
+```css
+/* src/styles/global-variables.css */
+:root {
+  /* COLORS - MATCH HOMEPAGE */
+  --primary-gold: #D4AF37;
+  --primary-sand: #E6D2AA;
+  --primary-navy: #0F3460;
+  --primary-white: #FFFFFF;
+  
+  /* GRADIENTS (Used across all pages) */
+  --gradient-gold: linear-gradient(135deg, #D4AF37 0%, #F4E4BC 100%);
+  --gradient-navy: linear-gradient(135deg, #0F3460 0%, #1E4B8C 100%);
+  --gradient-sand: linear-gradient(135deg, #E6D2AA 0%, #FAF8F0 100%);
+  
+  /* SHADOWS - Consistent with homepage */
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --shadow-gold: 0 0 25px rgba(212, 175, 55, 0.3);
+  
+  /* BORDER RADIUS */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+  
+  /* SPACING - Same as homepage */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  
+  /* TRANSITIONS */
+  --transition-fast: 150ms ease;
+  --transition-normal: 300ms ease;
+  --transition-slow: 500ms ease;
+}
+
+/* Apply to ALL pages */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Cairo', 'Montserrat', sans-serif;
+  color: var(--primary-navy);
+  background-color: var(--primary-white);
+  line-height: 1.6;
+}
+```
+
+### **1.5 Page-Specific Implementation Examples**
+
+```jsx
+// src/pages/Properties.jsx - EXAMPLE
+import React from 'react';
+import PageTemplate from '../templates/PageTemplate';
+import PropertyGrid from '../components/PropertyGrid';
+import SearchFilters from '../components/SearchFilters';
+import DubaiMap from '../components/DubaiMap';
+import './Properties.css';
+
+const PropertiesPage = () => {
+  const breadcrumbs = [
+    { label: 'Home', link: '/' },
+    { label: 'Properties', link: '/properties' }
+  ];
+  
+  return (
+    <PageTemplate
+      title="Find Your Perfect Property in Dubai"
+      subtitle="Browse thousands of verified properties across all Dubai communities"
+      breadcrumbs={breadcrumbs}
+      heroImage="/images/properties-hero.jpg"
+      sidebar={
+        <div className="properties-sidebar">
+          <SearchFilters />
+          <div className="map-mini-view">
+            <DubaiMap interactive={false} />
+          </div>
+        </div>
+      }
+    >
+      {/* Property listings grid - same styling as homepage featured section */}
+      <PropertyGrid />
+      
+      {/* Dubai Areas Guide - consistent design */}
+      <section className="areas-guide">
+        <h2>Explore Dubai Communities</h2>
+        <div className="areas-grid">
+          {/* Same card design as homepage */}
+        </div>
+      </section>
+    </PageTemplate>
+  );
+};
+```
+
+---
+
+## **SECTION 2: COMPLETE USER AUTHENTICATION & CRUD SYSTEM**
+
+### **2.1 Backend API Structure (Node.js/Express Example)**
+
+```javascript
+// backend/models/User.js
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+  // UAE Pass Integration
+  uaePassId: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  
+  // Personal Information (100% Profile Completion)
+  personalInfo: {
+    fullName: {
+      arabic: String,
+      english: String
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true
+    },
+    phone: {
+      countryCode: { type: String, default: '+971' },
+      number: String
+    },
+    dateOfBirth: Date,
+    nationality: String,
+    emiratesId: String,
+    passportNumber: String,
+    profileImage: String,
+    gender: {
+      type: String,
+      enum: ['male', 'female']
+    }
+  },
+  
+  // UAE Address Information
+  address: {
+    emirate: String,
+    area: String,
+    buildingName: String,
+    apartmentNumber: String,
+    poBox: String,
+    coordinates: {
+      lat: Number,
+      lng: Number
+    }
+  },
+  
+  // Real Estate Preferences
+  preferences: {
+    propertyType: [String], // ['apartment', 'villa', 'townhouse']
+    budgetRange: {
+      min: Number,
+      max: Number,
+      currency: { type: String, default: 'AED' }
+    },
+    preferredAreas: [String],
+    bedrooms: Number,
+    bathrooms: Number,
+    amenities: [String],
+    moveInDate: Date,
+    financingType: {
+      type: String,
+      enum: ['cash', 'mortgage', 'installment']
+    }
+  },
+  
+  // User Documents (CRUD Operations)
+  documents: [{
+    name: String,
+    type: {
+      type: String,
+      enum: ['passport', 'emirates_id', 'salary_certificate', 'bank_statement', 'visa']
+    },
+    fileUrl: String,
+    uploadDate: { type: Date, default: Date.now },
+    verified: { type: Boolean, default: false }
+  }],
+  
+  // Saved Properties & Searches
+  savedProperties: [{
+    propertyId: mongoose.Schema.Types.ObjectId,
+    savedDate: { type: Date, default: Date.now },
+    notes: String
+  }],
+  
+  savedSearches: [{
+    filters: Object,
+    name: String,
+    lastNotified: Date,
+    active: { type: Boolean, default: true }
+  }],
+  
+  // Agent/Broker Specific Fields
+  isAgent: { type: Boolean, default: false },
+  agentProfile: {
+    reraNumber: String,
+    reraLicenseExpiry: Date,
+    companyName: String,
+    brokerageLicense: String,
+    languages: [String],
+    specialization: [String],
+    yearsExperience: Number,
+    certifications: [String],
+    officeLocation: String,
+    whatsappBusiness: String,
+    bio: String,
+    services: [String],
+    achievements: [String]
+  },
+  
+  // Developer Profile
+  isDeveloper: { type: Boolean, default: false },
+  developerProfile: {
+    companyName: String,
+    tradeLicense: String,
+    establishedYear: Number,
+    completedProjects: Number,
+    ongoingProjects: Number,
+    totalDelivery: Number, // in sqft
+    companyBio: String,
+    awards: [String],
+    partnerships: [String]
+  },
+  
+  // Account Security
+  password: {
+    type: String,
+    minlength: 8,
+    select: false
+  },
+  isEmailVerified: { type: Boolean, default: false },
+  isPhoneVerified: { type: Boolean, default: false },
+  twoFactorEnabled: { type: Boolean, default: false },
+  loginHistory: [{
+    timestamp: Date,
+    ipAddress: String,
+    device: String,
+    location: String
+  }],
+  
+  // System Fields
+  profileCompletion: { type: Number, default: 0 }, // 0-100%
+  lastActive: Date,
+  status: {
+    type: String,
+    enum: ['active', 'inactive', 'suspended', 'pending_verification'],
+    default: 'pending_verification'
+  },
+  
+  // Timestamps
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+}, {
+  timestamps: true
+});
+
+// Calculate profile completion percentage
+userSchema.methods.calculateProfileCompletion = function() {
+  let completion = 0;
+  const requiredFields = [
+    'personalInfo.fullName.english',
+    'personalInfo.email',
+    'personalInfo.phone.number',
+    'address.emirate',
+    'preferences.propertyType',
+    'preferences.budgetRange.min'
+  ];
+  
+  // Calculate based on filled fields
+  // Implementation logic here
+  
+  this.profileCompletion = completion;
+  return completion;
+};
+
+module.exports = mongoose.model('User', userSchema);
+```
+
+### **2.2 Complete Authentication API Endpoints**
+
+```javascript
+// backend/routes/auth.js
+const express = require('express');
+const router = express.Router();
+const User = require('../models/User');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+
+// 1. REGISTER USER
+router.post('/register', async (req, res) => {
+  try {
+    const { email, password, phone, fullName } = req.body;
+    
+    // Check if user exists
+    const existingUser = await User.findOne({ 
+      $or: [{ 'personalInfo.email': email }, { 'personalInfo.phone.number': phone }] 
+    });
+    
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'User already exists'
+      });
+    }
+    
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
+    
+    // Create new user
+    const user = new User({
+      personalInfo: {
+        email,
+        phone: { number: phone },
+        fullName: { english: fullName }
+      },
+      password: hashedPassword
+    });
+    
+    await user.save();
+    
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+    
+    res.status(201).json({
+      success: true,
+      message: 'User registered successfully',
+      token,
+      user: {
+        id: user._id,
+        email: user.personalInfo.email,
+        profileCompletion: user.profileCompletion
+      }
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Registration failed',
+      error: error.message
+    });
+  }
+});
+
+// 2. LOGIN USER
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    // Find user
+    const user = await User.findOne({ 'personalInfo.email': email })
+      .select('+password');
+    
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
+      });
+    }
+    
+    // Check password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
+      });
+    }
+    
+    // Generate token
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+    
+    // Update last active
+    user.lastActive = new Date();
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Login successful',
+      token,
+      user: {
+        id: user._id,
+        email: user.personalInfo.email,
+        fullName: user.personalInfo.fullName,
+        profileCompletion: user.profileCompletion,
+        isAgent: user.isAgent,
+        isDeveloper: user.isDeveloper
+      }
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Login failed',
+      error: error.message
+    });
+  }
+});
+
+// 3. UAE PASS LOGIN/REGISTER
+router.post('/uae-pass', async (req, res) => {
+  try {
+    const { uaePassId, userData } = req.body;
+    
+    // Check if user exists with UAE Pass ID
+    let user = await User.findOne({ uaePassId });
+    
+    if (!user) {
+      // Create new user with UAE Pass data
+      user = new User({
+        uaePassId,
+        personalInfo: {
+          fullName: {
+            arabic: userData.nameAr,
+            english: userData.nameEn
+          },
+          email: userData.email,
+          phone: { number: userData.phone },
+          emiratesId: userData.emiratesId,
+          dateOfBirth: userData.dateOfBirth,
+          nationality: userData.nationality
+        },
+        isEmailVerified: true,
+        isPhoneVerified: true,
+        status: 'active'
+      });
+      
+      await user.save();
+    }
+    
+    // Generate token
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+    
+    res.json({
+      success: true,
+      message: 'UAE Pass authentication successful',
+      token,
+      user: {
+        id: user._id,
+        uaePassId: user.uaePassId,
+        fullName: user.personalInfo.fullName,
+        profileCompletion: user.profileCompletion
+      }
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'UAE Pass authentication failed',
+      error: error.message
+    });
+  }
+});
+
+// 4. LOGOUT
+router.post('/logout', (req, res) => {
+  // In JWT, logout is handled client-side by removing token
+  // For enhanced security, implement token blacklisting here
+  res.json({
+    success: true,
+    message: 'Logged out successfully'
+  });
+});
+
+module.exports = router;
+```
+
+### **2.3 Complete User CRUD API Endpoints**
+
+```javascript
+// backend/routes/users.js
+const express = require('express');
+const router = express.Router();
+const User = require('../models/User');
+const auth = require('../middleware/auth');
+const upload = require('../middleware/upload');
+
+// ALL ROUTES PROTECTED
+router.use(auth);
+
+// 1. GET USER PROFILE
+router.get('/profile', async (req, res) => {
+  try {
+    const user = await User.findById(req.userId)
+      .select('-password -loginHistory');
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+    
+    res.json({
+      success: true,
+      user
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch profile',
+      error: error.message
+    });
+  }
+});
+
+// 2. UPDATE USER PROFILE (COMPLETE 100% PROFILE)
+router.put('/profile', async (req, res) => {
+  try {
+    const updates = req.body;
+    const user = await User.findById(req.userId);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+    
+    // Update fields dynamically
+    Object.keys(updates).forEach(key => {
+      if (key.includes('.')) {
+        // Handle nested objects (personalInfo.email, address.area, etc.)
+        const keys = key.split('.');
+        let obj = user;
+        for (let i = 0; i < keys.length - 1; i++) {
+          obj = obj[keys[i]];
+        }
+        obj[keys[keys.length - 1]] = updates[key];
+      } else {
+        user[key] = updates[key];
+      }
+    });
+    
+    // Recalculate profile completion
+    user.calculateProfileCompletion();
+    user.updatedAt = new Date();
+    
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      user: {
+        id: user._id,
+        profileCompletion: user.profileCompletion,
+        personalInfo: user.personalInfo
+      }
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update profile',
+      error: error.message
+    });
+  }
+});
+
+// 3. UPLOAD PROFILE IMAGE
+router.post('/profile/image', upload.single('profileImage'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No file uploaded'
+      });
+    }
+    
+    const user = await User.findById(req.userId);
+    user.personalInfo.profileImage = `/uploads/${req.file.filename}`;
+    user.calculateProfileCompletion();
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Profile image uploaded successfully',
+      imageUrl: user.personalInfo.profileImage
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to upload image',
+      error: error.message
+    });
+  }
+});
+
+// 4. MANAGE DOCUMENTS (CRUD)
+// Create/Upload Document
+router.post('/documents', upload.single('document'), async (req, res) => {
+  try {
+    const { name, type } = req.body;
+    
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No document uploaded'
+      });
+    }
+    
+    const user = await User.findById(req.userId);
+    
+    user.documents.push({
+      name,
+      type,
+      fileUrl: `/uploads/documents/${req.file.filename}`,
+      verified: false
+    });
+    
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Document uploaded successfully',
+      document: user.documents[user.documents.length - 1]
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to upload document',
+      error: error.message
+    });
+  }
+});
+
+// Get All Documents
+router.get('/documents', async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select('documents');
+    res.json({
+      success: true,
+      documents: user.documents
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch documents',
+      error: error.message
+    });
+  }
+});
+
+// Update Document
+router.put('/documents/:docId', async (req, res) => {
+  try {
+    const { name, type } = req.body;
+    const user = await User.findById(req.userId);
+    
+    const document = user.documents.id(req.params.docId);
+    if (!document) {
+      return res.status(404).json({
+        success: false,
+        message: 'Document not found'
+      });
+    }
+    
+    if (name) document.name = name;
+    if (type) document.type = type;
+    
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Document updated successfully',
+      document
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update document',
+      error: error.message
+    });
+  }
+});
+
+// Delete Document
+router.delete('/documents/:docId', async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    
+    user.documents.pull({ _id: req.params.docId });
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Document deleted successfully'
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete document',
+      error: error.message
+    });
+  }
+});
+
+// 5. SAVED PROPERTIES MANAGEMENT
+// Save Property
+router.post('/saved-properties', async (req, res) => {
+  try {
+    const { propertyId, notes } = req.body;
+    
+    const user = await User.findById(req.userId);
+    
+    // Check if already saved
+    const existing = user.savedProperties.find(
+      sp => sp.propertyId.toString() === propertyId
+    );
+    
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: 'Property already saved'
+      });
+    }
+    
+    user.savedProperties.push({
+      propertyId,
+      notes
+    });
+    
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Property saved successfully',
+      savedProperty: user.savedProperties[user.savedProperties.length - 1]
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to save property',
+      error: error.message
+    });
+  }
+});
+
+// Get Saved Properties
+router.get('/saved-properties', async (req, res) => {
+  try {
+    const user = await User.findById(req.userId)
+      .populate('savedProperties.propertyId')
+      .select('savedProperties');
+    
+    res.json({
+      success: true,
+      savedProperties: user.savedProperties
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch saved properties',
+      error: error.message
+    });
+  }
+});
+
+// Remove Saved Property
+router.delete('/saved-properties/:propertyId', async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    
+    user.savedProperties = user.savedProperties.filter(
+      sp => sp.propertyId.toString() !== req.params.propertyId
+    );
+    
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Property removed from saved list'
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to remove property',
+      error: error.message
+    });
+  }
+});
+
+// 6. SAVED SEARCHES MANAGEMENT (CRUD)
+router.post('/saved-searches', async (req, res) => {
+  try {
+    const { filters, name } = req.body;
+    
+    const user = await User.findById(req.userId);
+    
+    user.savedSearches.push({
+      filters,
+      name,
+      active: true
+    });
+    
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Search saved successfully'
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to save search',
+      error: error.message
+    });
+  }
+});
+
+// 7. UPDATE PASSWORD
+router.put('/password', async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    
+    const user = await User.findById(req.userId).select('+password');
+    
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Current password is incorrect'
+      });
+    }
+    
+    // Hash new password
+    user.password = await bcrypt.hash(newPassword, 12);
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Password updated successfully'
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update password',
+      error: error.message
+    });
+  }
+});
+
+// 8. DELETE ACCOUNT
+router.delete('/account', async (req, res) => {
+  try {
+    const { password } = req.body;
+    
+    const user = await User.findById(req.userId).select('+password');
+    
+    // Verify password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Password is incorrect'
+      });
+    }
+    
+    // Soft delete (mark as inactive)
+    user.status = 'inactive';
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Account deleted successfully'
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete account',
+      error: error.message
+    });
+  }
+});
+
+module.exports = router;
+```
+
+### **2.4 Frontend React Components for Complete User System**
+
+```jsx
+// src/components/auth/LoginForm.jsx
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import './AuthForms.css';
+
+const LoginForm = () => {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    
+    try {
+      await login(formData.email, formData.password);
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleUaePassLogin = () => {
+    // UAE Pass OAuth flow
+    window.location.href = 'https://uaepass.ae/auth';
+  };
+  
+  return (
+    <div className="auth-form-container">
+      <div className="auth-form-card">
+        <h2 className="auth-form-title">Login to Your Account</h2>
+        
+        {error && (
+          <div className="auth-error-alert">
+            {error}
+          </div>
+        )}
+        
+        {/* UAE Pass Login Button */}
+        <button 
+          type="button"
+          onClick={handleUaePassLogin}
+          className="uae-pass-btn"
+        >
+          <img src="/icons/uae-pass-logo.svg" alt="UAE Pass" />
+          Login with UAE Pass
+        </button>
+        
+        <div className="auth-divider">
+          <span>or</span>
+        </div>
+        
+        {/* Traditional Login Form */}
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="email">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
+              required
+            />
+            <Link to="/forgot-password" className="forgot-password">
+              Forgot password?
+            </Link>
+          </div>
+          
+          <button 
+            type="submit" 
+            className="auth-submit-btn"
+            disabled={loading}
+          >
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
+        
+        <div className="auth-footer">
+          <p>
+            Don't have an account?{' '}
+            <Link to="/register" className="auth-link">
+              Register here
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default LoginForm;
+```
+
+```jsx
+// src/pages/user/UserProfile.jsx
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import UserProfileForm from '../../components/user/UserProfileForm';
+import UserDocuments from '../../components/user/UserDocuments';
+import SavedProperties from '../../components/user/SavedProperties';
+import ProfileCompletion from '../../components/user/ProfileCompletion';
+import './UserProfile.css';
+
+const UserProfile = () => {
+  const { user, updateProfile } = useAuth();
+  const [activeTab, setActiveTab] = useState('profile');
+  const [profileData, setProfileData] = useState({});
+  
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        personalInfo: user.personalInfo || {},
+        address: user.address || {},
+        preferences: user.preferences || {}
+      });
+    }
+  }, [user]);
+  
+  const handleSaveProfile = async (data) => {
+    try {
+      await updateProfile(data);
+      alert('Profile updated successfully!');
+    } catch (error) {
+      alert('Failed to update profile: ' + error.message);
+    }
+  };
+  
+  const tabs = [
+    { id: 'profile', label: 'Profile Information' },
+    { id: 'documents', label: 'My Documents' },
+    { id: 'saved', label: 'Saved Properties' },
+    { id: 'searches', label: 'Saved Searches' },
+    { id: 'security', label: 'Security' }
+  ];
+  
+  return (
+    <div className="user-profile-page">
+      {/* Page Header */}
+      <div className="profile-header">
+        <div className="profile-avatar">
+          <img 
+            src={user?.personalInfo?.profileImage || '/default-avatar.png'} 
+            alt="Profile" 
+          />
+          <button className="change-avatar-btn">Change Photo</button>
+        </div>
+        
+        <div className="profile-info-summary">
+          <h1>
+            {user?.personalInfo?.fullName?.english || 'User Profile'}
+          </h1>
+          <p>{user?.personalInfo?.email}</p>
+          <div className="profile-stats">
+            <span>Member since: {new Date(user?.createdAt).toLocaleDateString()}</span>
+            <span>•</span>
+            <span>Last active: {new Date(user?.lastActive).toLocaleDateString()}</span>
+          </div>
+        </div>
+        
+        <ProfileCompletion percentage={user?.profileCompletion || 0} />
+      </div>
+      
+      {/* Profile Completion Progress Bar */}
+      <div className="completion-section">
+        <h3>Complete Your Profile</h3>
+        <p>Complete your profile to get personalized property recommendations</p>
+        <div className="progress-bar">
+          <div 
+            className="progress-fill" 
+            style={{ width: `${user?.profileCompletion || 0}%` }}
+          ></div>
+
+# **COMPREHENSIVE IMPLEMENTATION INSTRUCTION WITH LEGACY PRESERVATION**
+
+## **CRITICAL MANDATE: PRESERVE ALL EXISTING FUNCTIONALITY**
+
+### **GOLDEN RULE: DO NOT BREAK ANYTHING**
+**For every new feature implementation, follow this protocol:**
+
+```javascript
+// PRESERVATION PROTOCOL
+const preservationProtocol = {
+  1: "Document all existing features before modification",
+  2: "Create backup files before changes",
+  3: "Test existing functionality after each change",
+  4: "Never delete code - only extend or refactor",
+  5: "Maintain backward compatibility",
+  6: "Add deprecation warnings instead of removal",
+  7: "Create migration path for old features",
+  8: "Keep all API endpoints active"
+};
+```
+
+---
+
+## **SECTION 1: LEGACY SYSTEM PRESERVATION STRATEGY**
+
+### **1.1 Feature Inventory & Documentation**
+**Before ANY changes, document ALL existing features:**
+
+```javascript
+// Create: src/documentation/legacy-features.json
+{
+  "existingFeatures": {
+    "authentication": [
+      "Email/Password login",
+      "Social login integrations",
+      "Password reset flow",
+      "Email verification",
+      "Session management"
+    ],
+    "propertyManagement": [
+      "Property listing CRUD",
+      "Image gallery upload",
+      "Property search filters",
+      "Favorite properties",
+      "Property comparison"
+    ],
+    "userManagement": [
+      "User profiles",
+      "Agent dashboards",
+      "Lead management",
+      "Communication system",
+      "Document upload"
+    ],
+    "thirdPartyIntegrations": [
+      "Payment gateways",
+      "SMS services",
+      "Email marketing",
+      "Analytics tracking"
+    ],
+    "businessLogic": [
+      "Mortgage calculator",
+      "ROI calculator",
+      "Property valuation",
+      "Commission calculations",
+      "Reporting systems"
+    ]
+  },
+  
+  "databaseSchemas": {
+    "backupDate": "2024-01-15",
+    "collections": [
+      "users",
+      "properties",
+      "transactions",
+      "leads",
+      "documents",
+      "settings"
+    ]
+  },
+  
+  "apiEndpoints": {
+    "activeEndpoints": [
+      "/api/v1/users/*",
+      "/api/v1/properties/*",
+      "/api/v1/auth/*",
+      "/api/v1/leads/*"
+    ],
+    "deprecatedButActive": []
+  }
+}
+```
+
+### **1.2 Safe Migration Strategy**
+```javascript
+// Use Feature Flags for Gradual Rollout
+const featureFlags = {
+  "enableRedWhiteTheme": true,
+  "enableNewUserRoles": false,  // Start disabled
+  "enableGoogleMapsAdvanced": false,
+  "enableCRMAccessControl": false
+};
+
+// Safe Implementation Pattern
+class SafeFeatureUpdater {
+  constructor(existingFeature) {
+    this.existingFeature = existingFeature;
+    this.backup = this.createBackup();
+  }
+  
+  createBackup() {
+    // Create timestamped backup
+    const timestamp = new Date().toISOString();
+    fs.writeFileSync(
+      `backups/${timestamp}-${this.existingFeature}.json`,
+      JSON.stringify(currentState)
+    );
+    return true;
+  }
+  
+  addFeature(newFeature) {
+    // Add without removing old
+    return {
+      ...this.existingFeature,
+      newFeature: newFeature,
+      legacySupport: true
+    };
+  }
+}
+```
+
+### **1.3 Versioned API Strategy**
+```javascript
+// Keep old APIs active, add new versions
+// backend/routes/
+// ├── v1/ (LEGACY - PRESERVE AS-IS)
+// │   ├── auth.js
+// │   ├── properties.js
+// │   └── users.js
+// └── v2/ (NEW FEATURES)
+//     ├── auth.js (with UAE Pass)
+//     ├── properties.js (with advanced features)
+//     └── users.js (with role management)
+
+// Example: Preserve old endpoints
+app.use('/api/v1', require('./routes/v1')); // KEEP ACTIVE
+app.use('/api/v2', require('./routes/v2')); // ADD NEW
+
+// All v1 endpoints remain functional
+```
+
+---
+
+## **SECTION 2: ADVANCED GOOGLE MAPS & GOOGLE APIs INTEGRATION**
+
+### **2.1 Google Maps Platform Setup**
+```javascript
+// src/config/google-maps.js
+export const GoogleMapsConfig = {
+  // API Keys (Store in environment variables)
+  apiKey: process.env.GOOGLE_MAPS_API_KEY,
+  
+  // Required APIs
+  libraries: [
+    'places',
+    'geometry',
+    'drawing',
+    'visualization',
+    'marker'
+  ],
+  
+  // Dubai-specific Settings
+  defaultCenter: { lat: 25.2048, lng: 55.2708 }, // Dubai coordinates
+  defaultZoom: 12,
+  
+  // Map Styles (Dubai Theme)
+  mapStyles: [
+    {
+      featureType: 'all',
+      elementType: 'geometry',
+      stylers: [{ color: '#f5f5f5' }]
+    },
+    {
+      featureType: 'water',
+      elementType: 'geometry',
+      stylers: [{ color: '#c9c9c9' }]
+    }
+  ],
+  
+  // Advanced Features Configuration
+  features: {
+    enableStreetView: true,
+    enableTrafficLayer: true,
+    enableTransitLayer: true,
+    enableBicyclingLayer: true,
+    enableHeatmap: true,
+    enableDrawingTools: true,
+    enableClustering: true,
+    enableDirections: true
+  }
+};
+```
+
+### **2.2 Enhanced Google Maps Component**
+```jsx
+// src/components/maps/AdvancedDubaiMap.jsx
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  GoogleMap,
+  LoadScript,
+  Marker,
+  InfoWindow,
+  Polyline,
+  Polygon,
+  Circle,
+  Rectangle,
+  DirectionsService,
+  DirectionsRenderer,
+  TrafficLayer,
+  TransitLayer,
+  BicyclingLayer,
+  HeatmapLayer,
+  DrawingManager,
+  MarkerClusterer
+} from '@react-google-maps/api';
+import './AdvancedDubaiMap.css';
+
+const AdvancedDubaiMap = ({
+  properties = [],
+  showHeatmap = false,
+  showTraffic = true,
+  showDirections = false,
+  editable = false,
+  onMapClick,
+  onMarkerDragEnd
+}) => {
+  const [map, setMap] = useState(null);
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [directions, setDirections] = useState(null);
+  const [heatmapData, setHeatmapData] = useState([]);
+  const [userLocation, setUserLocation] = useState(null);
+  
+  // Map reference
+  const mapRef = useRef();
+  
+  // Dubai Community Boundaries (approximate)
+  const dubaiCommunities = {
+    'Downtown Dubai': {
+      paths: [
+        { lat: 25.1972, lng: 55.2744 },
+        { lat: 25.1972, lng: 55.2794 },
+        { lat: 25.1922, lng: 55.2794 },
+        { lat: 25.1922, lng: 55.2744 }
+      ],
+      fillColor: '#DC2626',
+      fillOpacity: 0.1
+    },
+    'Dubai Marina': {
+      paths: [
+        { lat: 25.0764, lng: 55.1366 },
+        { lat: 25.0764, lng: 55.1416 },
+        { lat: 25.0714, lng: 55.1416 },
+        { lat: 25.0714, lng: 55.1366 }
+      ],
+      fillColor: '#3B82F6',
+      fillOpacity: 0.1
+    }
+    // Add more communities...
+  };
+  
+  // Initialize heatmap data from properties
+  useEffect(() => {
+    if (properties.length > 0) {
+      const heatmapPoints = properties.map(property => ({
+        location: new window.google.maps.LatLng(
+          property.location.lat,
+          property.location.lng
+        ),
+        weight: property.price / 1000000 // Weight by price
+      }));
+      setHeatmapData(heatmapPoints);
+    }
+  }, [properties]);
+  
+  // Get user location
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+        },
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    }
+  }, []);
+  
+  // Calculate directions
+  const calculateDirections = (origin, destination) => {
+    const directionsService = new window.google.maps.DirectionsService();
+    
+    directionsService.route(
+      {
+        origin: origin,
+        destination: destination,
+        travelMode: window.google.maps.TravelMode.DRIVING,
+        drivingOptions: {
+          departureTime: new Date(),
+          trafficModel: 'bestguess'
+        },
+        provideRouteAlternatives: true
+      },
+      (result, status) => {
+        if (status === 'OK') {
+          setDirections(result);
+        }
+      }
+    );
+  };
+  
+  // Property price heatmap gradient
+  const heatmapGradient = [
+    'rgba(102, 255, 0, 0)',
+    'rgba(102, 255, 0, 1)',
+    'rgba(147, 255, 0, 1)',
+    'rgba(193, 255, 0, 1)',
+    'rgba(238, 255, 0, 1)',
+    'rgba(244, 227, 0, 1)',
+    'rgba(249, 198, 0, 1)',
+    'rgba(255, 170, 0, 1)',
+    'rgba(255, 113, 0, 1)',
+    'rgba(255, 57, 0, 1)',
+    'rgba(255, 0, 0, 1)'
+  ];
+  
+  return (
+    <LoadScript
+      googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
+      libraries={['places', 'visualization', 'geometry', 'drawing']}
+    >
+      <div className="advanced-map-container">
+        <GoogleMap
+          mapContainerStyle={{ width: '100%', height: '600px' }}
+          center={GoogleMapsConfig.defaultCenter}
+          zoom={GoogleMapsConfig.defaultZoom}
+          options={{
+            styles: GoogleMapsConfig.mapStyles,
+            disableDefaultUI: false,
+            zoomControl: true,
+            mapTypeControl: true,
+            scaleControl: true,
+            streetViewControl: true,
+            rotateControl: true,
+            fullscreenControl: true,
+            mapTypeId: 'hybrid'
+          }}
+          onLoad={(map) => {
+            setMap(map);
+            mapRef.current = map;
+          }}
+        >
+          {/* User Location Marker */}
+          {userLocation && (
+            <Marker
+              position={userLocation}
+              icon={{
+                path: window.google.maps.SymbolPath.CIRCLE,
+                scale: 10,
+                fillColor: '#4285F4',
+                fillOpacity: 1,
+                strokeColor: '#FFFFFF',
+                strokeWeight: 2
+              }}
+              title="Your Location"
+            />
+          )}
+          
+          {/* Property Markers with Clustering */}
+          <MarkerClusterer
+            averageCenter
+            enableRetinaIcons
+            gridSize={60}
+          >
+            {(clusterer) => (
+              <>
+                {properties.map((property) => (
+                  <Marker
+                    key={property.id}
+                    position={{
+                      lat: property.location.lat,
+                      lng: property.location.lng
+                    }}
+                    clusterer={clusterer}
+                    onClick={() => setSelectedProperty(property)}
+                    icon={{
+                      url: `/property-marker-${property.type}.png`,
+                      scaledSize: new window.google.maps.Size(40, 40)
+                    }}
+                    animation={window.google.maps.Animation.DROP}
+                  />
+                ))}
+              </>
+            )}
+          </MarkerClusterer>
+          
+          {/* Dubai Community Boundaries */}
+          {Object.entries(dubaiCommunities).map(([name, data]) => (
+            <Polygon
+              key={name}
+              paths={data.paths}
+              options={{
+                fillColor: data.fillColor,
+                fillOpacity: data.fillOpacity,
+                strokeColor: '#DC2626',
+                strokeOpacity: 0.8,
+                strokeWeight: 2
+              }}
+            />
+          ))}
+          
+          {/* Heatmap Layer (Property Prices) */}
+          {showHeatmap && heatmapData.length > 0 && (
+            <HeatmapLayer
+              data={heatmapData}
+              options={{
+                radius: 50,
+                opacity: 0.6,
+                gradient: heatmapGradient
+              }}
+            />
+          )}
+          
+          {/* Traffic Layer */}
+          {showTraffic && <TrafficLayer />}
+          
+          {/* Transit Layer */}
+          <TransitLayer />
+          
+          {/* Directions */}
+          {directions && <DirectionsRenderer directions={directions} />}
+          
+          {/* Drawing Manager (for admins/agents) */}
+          {editable && (
+            <DrawingManager
+              options={{
+                drawingControl: true,
+                drawingControlOptions: {
+                  position: window.google.maps.ControlPosition.TOP_CENTER,
+                  drawingModes: [
+                    window.google.maps.drawing.OverlayType.MARKER,
+                    window.google.maps.drawing.OverlayType.CIRCLE,
+                    window.google.maps.drawing.OverlayType.POLYGON,
+                    window.google.maps.drawing.OverlayType.POLYLINE,
+                    window.google.maps.drawing.OverlayType.RECTANGLE
+                  ]
+                },
+                markerOptions: {
+                  draggable: true
+                },
+                circleOptions: {
+                  fillColor: '#DC2626',
+                  fillOpacity: 0.2,
+                  strokeWeight: 2,
+                  clickable: false,
+                  editable: true,
+                  zIndex: 1
+                }
+              }}
+            />
+          )}
+          
+          {/* Property Info Window */}
+          {selectedProperty && (
+            <InfoWindow
+              position={{
+                lat: selectedProperty.location.lat,
+                lng: selectedProperty.location.lng
+              }}
+              onCloseClick={() => setSelectedProperty(null)}
+            >
+              <div className="property-info-window">
+                <img 
+                  src={selectedProperty.images[0]} 
+                  alt={selectedProperty.title}
+                  className="info-image"
+                />
+                <h3>{selectedProperty.title}</h3>
+                <p>{selectedProperty.location.address}</p>
+                <p className="price">
+                  AED {selectedProperty.price.toLocaleString()}
+                </p>
+                <div className="property-details">
+                  <span>Bed: {selectedProperty.bedrooms}</span>
+                  <span>Bath: {selectedProperty.bathrooms}</span>
+                  <span>Sqft: {selectedProperty.area}</span>
+                </div>
+                <button 
+                  className="btn-view-details"
+                  onClick={() => window.location.href = `/property/${selectedProperty.id}`}
+                >
+                  View Details
+                </button>
+                <button 
+                  className="btn-get-directions"
+                  onClick={() => {
+                    if (userLocation) {
+                      calculateDirections(userLocation, {
+                        lat: selectedProperty.location.lat,
+                        lng: selectedProperty.location.lng
+                      });
+                    }
+                  }}
+                >
+                  Get Directions
+                </button>
+              </div>
+            </InfoWindow>
+          )}
+        </GoogleMap>
+        
+        {/* Map Controls Panel */}
+        <div className="map-controls-panel">
+          <div className="control-group">
+            <h4>Map Layers</h4>
+            <label>
+              <input type="checkbox" checked={showTraffic} onChange={() => {}} />
+              Traffic
+            </label>
+            <label>
+              <input type="checkbox" checked={showHeatmap} onChange={() => {}} />
+              Price Heatmap
+            </label>
+          </div>
+          
+          <div className="control-group">
+            <h4>Communities</h4>
+            {Object.keys(dubaiCommunities).map(community => (
+              <label key={community}>
+                <input type="checkbox" defaultChecked />
+                {community}
+              </label>
+            ))}
+          </div>
+          
+          <div className="control-group">
+            <h4>Property Types</h4>
+            <label>
+              <input type="checkbox" defaultChecked />
+              Apartments
+            </label>
+            <label>
+              <input type="checkbox" defaultChecked />
+              Villas
+            </label>
+            <label>
+              <input type="checkbox" defaultChecked />
+              Townhouses
+            </label>
+          </div>
+        </div>
+      </div>
+    </LoadScript>
+  );
+};
+
+export default AdvancedDubaiMap;
+```
+
+### **2.3 Additional Google APIs Integration**
+
+#### **Google Places API - Dubai Property Search**
+```javascript
+// src/services/google-places.js
+export class GooglePlacesService {
+  constructor() {
+    this.autocompleteService = new window.google.maps.places.AutocompleteService();
+    this.placesService = new window.google.maps.places.PlacesService(
+      document.createElement('div')
+    );
+  }
+  
+  // Search Dubai properties
+  async searchDubaiProperties(query, options = {}) {
+    const request = {
+      query: `${query} Dubai real estate`,
+      fields: [
+        'formatted_address',
+        'geometry',
+        'name',
+        'photos',
+        'place_id',
+        'types',
+        'opening_hours',
+        'rating',
+        'user_ratings_total'
+      ],
+      locationBias: {
+        center: { lat: 25.2048, lng: 55.2708 },
+        radius: 50000 // 50km around Dubai
+      }
+    };
+    
+    return new Promise((resolve, reject) => {
+      this.placesService.findPlaceFromQuery(request, (results, status) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+          resolve(results);
+        } else {
+          reject(new Error(`Places API error: ${status}`));
+        }
+      });
+    });
+  }
+  
+  // Get property details
+  async getPropertyDetails(placeId) {
+    return new Promise((resolve, reject) => {
+      this.placesService.getDetails(
+        {
+          placeId: placeId,
+          fields: [
+            'address_components',
+            'adr_address',
+            'formatted_address',
+            'geometry',
+            'icon',
+            'name',
+            'photos',
+            'place_id',
+            'plus_code',
+            'types',
+            'url',
+            'utc_offset',
+            'vicinity',
+            'website'
+          ]
+        },
+        (place, status) => {
+          if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+            resolve(place);
+          } else {
+            reject(new Error(`Details API error: ${status}`));
+          }
+        }
+      );
+    });
+  }
+  
+  // Dubai-specific autocomplete
+  async dubaiPropertyAutocomplete(input) {
+    return new Promise((resolve, reject) => {
+      this.autocompleteService.getPlacePredictions(
+        {
+          input: input,
+          types: ['establishment'],
+          componentRestrictions: { country: 'ae' },
+          location: new window.google.maps.LatLng(25.2048, 55.2708),
+          radius: 50000
+        },
+        (predictions, status) => {
+          if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+            resolve(predictions);
+          } else {
+            reject(new Error(`Autocomplete error: ${status}`));
+          }
+        }
+      );
+    });
+  }
+  
+  // Get nearby amenities for a property
+  async getNearbyAmenities(location, radius = 1000) {
+    const amenities = {};
+    const types = [
+      'school',
+      'hospital',
+      'shopping_mall',
+      'train_station',
+      'mosque',
+      'park',
+      'restaurant',
+      'supermarket'
+    ];
+    
+    for (const type of types) {
+      amenities[type] = await this.nearbySearch(location, radius, type);
+    }
+    
+    return amenities;
+  }
+  
+  async nearbySearch(location, radius, type) {
+    return new Promise((resolve, reject) => {
+      this.placesService.nearbySearch(
+        {
+          location: location,
+          radius: radius,
+          type: type
+        },
+        (results, status) => {
+          if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+            resolve(results);
+          } else {
+            resolve([]); // Return empty array instead of rejecting
+          }
+        }
+      );
+    });
+  }
+}
+```
+
+#### **Google Distance Matrix API - Dubai Travel Times**
+```javascript
+// src/services/distance-matrix.js
+export class DistanceMatrixService {
+  constructor() {
+    this.service = new window.google.maps.DistanceMatrixService();
+  }
+  
+  // Calculate travel time between Dubai locations
+  async calculateTravelTime(origins, destinations, options = {}) {
+    const defaultOptions = {
+      travelMode: window.google.maps.TravelMode.DRIVING,
+      unitSystem: window.google.maps.UnitSystem.METRIC,
+      avoidHighways: false,
+      avoidTolls: false,
+      departureTime: new Date(),
+      trafficModel: 'bestguess',
+      drivingOptions: {
+        departureTime: new Date(),
+        trafficModel: 'bestguess'
+      }
+    };
+    
+    const request = {
+      ...defaultOptions,
+      ...options,
+      origins: Array.isArray(origins) ? origins : [origins],
+      destinations: Array.isArray(destinations) ? destinations : [destinations]
+    };
+    
+    return new Promise((resolve, reject) => {
+      this.service.getDistanceMatrix(request, (response, status) => {
+        if (status === 'OK') {
+          resolve(response);
+        } else {
+          reject(new Error(`Distance Matrix error: ${status}`));
+        }
+      });
+    });
+  }
+  
+  // Dubai-specific travel time calculations
+  async dubaiPropertyTravelTimes(propertyLocation, keyPoints) {
+    const results = {};
+    
+    // Common Dubai destinations
+    const destinations = {
+      dubaiMall: { lat: 25.1972, lng: 55.2794 },
+      dubaiAirport: { lat: 25.2532, lng: 55.3657 },
+      jbrBeach: { lat: 25.0764, lng: 55.1366 },
+      palmJumeirah: { lat: 25.1121, lng: 55.1381 },
+      downtownDubai: { lat: 25.1972, lng: 55.2744 }
+    };
+    
+    for (const [key, destination] of Object.entries(destinations)) {
+      try {
+        const result = await this.calculateTravelTime(
+          propertyLocation,
+          destination,
+          { departureTime: new Date(Date.now() + 3600000) } // 1 hour from now
+        );
+        
+        results[key] = {
+          distance: result.rows[0].elements[0].distance.text,
+          duration: result.rows[0].elements[0].duration.text,
+          durationInTraffic: result.rows[0].elements[0].duration_in_traffic?.text
+        };
+      } catch (error) {
+        console.error(`Error calculating travel time to ${key}:`, error);
+      }
+    }
+    
+    return results;
+  }
+}
+```
+
+#### **Google Street View Integration**
+```jsx
+// src/components/maps/PropertyStreetView.jsx
+import React, { useState } from 'react';
+import { StreetViewPanorama } from '@react-google-maps/api';
+
+const PropertyStreetView = ({ propertyLocation }) => {
+  const [streetViewVisible, setStreetViewVisible] = useState(false);
+  
+  return (
+    <div className="street-view-container">
+      <button 
+        className="btn-street-view"
+        onClick={() => setStreetViewVisible(!streetViewVisible)}
+      >
+        {streetViewVisible ? 'Hide Street View' : 'Show Street View'}
+      </button>
+      
+      {streetViewVisible && (
+        <div className="street-view-wrapper">
+          <StreetViewPanorama
+            position={propertyLocation}
+            visible={true}
+            options={{
+              position: propertyLocation,
+              pov: { heading: 165, pitch: 0 },
+              zoom: 1,
+              addressControl: true,
+              showRoadLabels: true,
+              zoomControl: true,
+              fullscreenControl: true
+            }}
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+```
+
+### **2.4 Google Analytics 4 Integration**
+```javascript
+// src/utils/google-analytics.js
+import ReactGA from 'react-ga4';
+
+export const initGA = () => {
+  if (process.env.REACT_APP_GA_MEASUREMENT_ID) {
+    ReactGA.initialize(process.env.REACT_APP_GA_MEASUREMENT_ID, {
+      gtagOptions: {
+        anonymize_ip: true,
+        allow_ad_personalization_signals: false,
+        restrict_domain: ['yourdomain.ae']
+      }
+    });
+    
+    // Track pageview
+    ReactGA.send({ hitType: "pageview", page: window.location.pathname });
+  }
+};
+
+// Real Estate Specific Events
+export const trackRealEstateEvent = (category, action, label, value) => {
+  ReactGA.event({
+    category: category,
+    action: action,
+    label: label,
+    value: value
+  });
+};
+
+// Common Real Estate Events
+export const GAEvents = {
+  propertyView: (propertyId, propertyType) => 
+    trackRealEstateEvent('Property', 'View', propertyId, propertyType),
+  
+  propertySave: (propertyId) => 
+    trackRealEstateEvent('Property', 'Save', propertyId),
+  
+  propertyContact: (propertyId, contactMethod) => 
+    trackRealEvent('Property', 'Contact', `${propertyId}_${contactMethod}`),
+  
+  search: (filters, resultCount) => 
+    trackRealEstateEvent('Search', 'Execute', JSON.stringify(filters), resultCount),
+  
+  mortgageCalculator: (amount, duration) => 
+    trackRealEstateEvent('Tools', 'Mortgage_Calculate', `${amount}_${duration}`),
+  
+  userRegistration: (method) => 
+    trackRealEstateEvent('User', 'Register', method),
+  
+  uaePassLogin: () => 
+    trackRealEstateEvent('Auth', 'UAE_Pass_Login')
+};
+
+// Enhanced E-commerce Tracking for Real Estate
+export const trackPropertyLead = (property, leadType) => {
+  ReactGA.event({
+    category: 'Ecommerce',
+    action: 'generate_lead',
+    label: property.id,
+    value: property.price,
+    items: [{
+      item_id: property.id,
+      item_name: property.title,
+      item_category: property.type,
+      price: property.price,
+      quantity: 1
+    }]
+  });
+};
+```
+
+---
+
+## **SECTION 3: IMPLEMENTATION PRIORITY WITH LEGACY PRESERVATION**
+
+### **Phase 1: Documentation & Backup (Week 1)**
+1. **Inventory all existing features** - Create detailed documentation
+2. **Backup current codebase** - Timestamped backups
+3. **Set up feature flags** - Enable gradual rollout
+4. **Create test suite** - Ensure existing functionality works
+
+### **Phase 2: Safe Design Integration (Week 2)**
+1. **Add new CSS variables** without removing old ones
+2. **Create new components** alongside existing ones
+3. **Implement theme switching** (allow fallback to old theme)
+4. **Test backward compatibility** - All old URLs work
+
+### **Phase 3: Google APIs Integration (Week 3)**
+1. **Add advanced Google Maps** as optional layer
+2. **Integrate Places API** for enhanced search
+3. **Add Street View** as toggleable feature
+4. **Implement Analytics 4** with custom real estate events
+
+### **Phase 4: User System Enhancement (Week 4)**
+1. **Add new user roles** without breaking existing auth
+2. **Extend user schema** with new fields
+3. **Create admin dashboard** in addition to existing admin panels
+4. **Add CRM access control** as new module
+
+---
+
+## **SECTION 4: VERIFICATION CHECKLIST**
+
+### **BEFORE DEPLOYMENT VERIFICATION:**
+```javascript
+const verificationChecklist = {
+  design: [
+    "Old color scheme still accessible via query param ?theme=legacy",
+    "All existing pages load without errors",
+    "CSS from old theme still works",
+    "Navigation remains functional"
+  ],
+  
+  functionality: [
+    "All existing API endpoints respond correctly",
+    "User authentication works for existing users",
+    "Property search filters return same results",
+    "Payment processing unchanged",
+    "Email/SMS notifications still send"
+  ],
+  
+  data: [
+    "All existing user data accessible",
+    "Property listings unchanged",
+    "Transaction history intact",
+    "User preferences preserved"
+  ],
+  
+  performance: [
+    "Page load times not degraded",
+    "Database queries optimized",
+    "Image loading unchanged",
+    "Mobile responsiveness maintained"
+  ]
+};
+```
+
+### **AFTER DEPLOYMENT MONITORING:**
+1. **Error tracking** - Monitor for any new errors
+2. **Performance metrics** - Compare before/after stats
+3. **User feedback** - Track complaints about missing features
+4. **Rollback plan** - Have immediate rollback capability
+
+---
+
+## **SECTION 5: EXECUTION COMMAND FOR REPLIT AI**
+
+"Implement the following with STRICT LEGACY PRESERVATION:
+
+1. **PRESERVE ALL EXISTING FUNCTIONS** - No features can be lost or broken
+2. **Add Red/White theme** as new option alongside existing themes
+3. **Implement advanced Google Maps** with Dubai-specific features
+4. **Add Google Places API** for enhanced property search
+5. **Integrate Google Analytics 4** with real estate tracking
+6. **Extend user system** with new roles without breaking existing auth
+7. **Create admin CRM access control** as additional module
+
+**SAFETY PROTOCOL:**
+- Create backups before any changes
+- Document all existing features first
+- Use feature flags for new functionality
+- Maintain backward compatibility
+- Test existing features after each change
+- Keep all API endpoints active
+- Provide migration path for data
+
+**DELIVERABLES:**
+1. Complete feature inventory document
+2. Backup system implementation
+3. New design system (alongside old)
+4. Advanced Google Maps integration
+5. Extended user management
+6. Verification test suite
+7. Rollback procedures"
+
+## **FINAL CONSOLIDATED REQUIREMENTS**
+
+### **1. BRAND IDENTITY (PERMANENT COLORS)**
+**Primary Colors (Never Change):**
+- **RED:** `#DC2626` (Brand Red)
+- **WHITE:** `#FFFFFF` (Primary Background)
+- **ACCENT REDS:** 
+  - `#B91C1C` (Dark Red - Hover States)
+  - `#FEE2E2` (Light Red - Backgrounds)
+
+**Neutral Palette:**
+- `#000000` (Primary Text)
+- `#1F2937` (Secondary Text)
+- `#6B7280` (Muted Text)
+- `#E5E7EB` (Borders)
+
+### **2. USER ROLE MANAGEMENT SYSTEM**
+
+#### **Role Hierarchy:**
+```
+1. SUPER ADMIN (OWNER)
+   - Full system access
+   - Can create/demote admins
+   - View all analytics
+   - Change system settings
+   - Bypass all restrictions
+
+2. ADMIN (PARTIAL ACCESS)
+   - Can manage users (add/edit/remove)
+   - Assign user permissions
+   - View assigned CRM sections
+   - Limited analytics access
+   - Cannot change system settings
+
+3. AGENT/BROKER
+   - Manage own properties
+   - View assigned leads
+   - Access to CRM for own clients
+   - Cannot access other agents' data
+
+4. REGISTERED USER
+   - Basic profile management
+   - Save properties
+   - Contact agents
+   - No CRM access
+
+5. GUEST
+   - Browse properties only
+   - No account required
+```
+
+#### **Admin CRM Access Control Features:**
+```javascript
+// Admin Permission Matrix
+const adminPermissions = {
+  // USER MANAGEMENT
+  canViewUsers: true,
+  canAddUsers: true,
+  canEditUsers: true,
+  canDeleteUsers: true,
+  canAssignRoles: true,
+  canResetPasswords: true,
+  
+  // PROPERTY MANAGEMENT
+  canApproveListings: true,
+  canEditAllProperties: true,
+  canDeleteProperties: true,
+  canManageFeatured: true,
+  
+  // CRM ACCESS CONTROL
+  canAssignCRMUsers: true,
+  canSetUserPermissions: true,
+  canViewActivityLogs: true,
+  canExportCRMData: true,
+  
+  // RESTRICTIONS
+  canChangeSystemSettings: false,
+  canDeleteAdminAccounts: false,
+  canAccessOwnerAnalytics: false,
+  canModifyPaymentSettings: false
+};
+```
+
+### **3. COMPLETE DESIGN UNIFICATION**
+
+#### **Design System Implementation:**
+```css
+/* RED/WHITE DESIGN SYSTEM */
+:root {
+  /* PRIMARY COLORS - PERMANENT */
+  --color-red-primary: #DC2626;
+  --color-red-dark: #B91C1C;
+  --color-red-light: #FEE2E2;
+  --color-white: #FFFFFF;
+  
+  /* GRADIENTS */
+  --gradient-red: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+  --gradient-red-subtle: linear-gradient(135deg, #FEE2E2 0%, #FFFFFF 100%);
+  
+  /* SHADOWS */
+  --shadow-red: 0 4px 20px rgba(220, 38, 38, 0.15);
+  --shadow-red-strong: 0 8px 30px rgba(220, 38, 38, 0.2);
+}
+
+/* Apply to ALL Pages */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--color-white);
+  color: #000000;
+}
+
+/* Red/White Button Styles */
+.btn-primary {
+  background: var(--color-red-primary);
+  color: var(--color-white);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: var(--color-red-dark);
+  box-shadow: var(--shadow-red-strong);
+}
+
+/* Navigation Styling */
+.navbar {
+  background: var(--color-white);
+  border-bottom: 2px solid var(--color-red-light);
+}
+
+/* Card Design */
+.card {
+  background: var(--color-white);
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  box-shadow: var(--shadow-red);
+}
+
+/* Forms */
+.form-input {
+  border: 2px solid #E5E7EB;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.form-input:focus {
+  border-color: var(--color-red-primary);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+```
+
+### **4. COMPLETE USER SYSTEM WITH CRUD OPERATIONS**
+
+#### **Database Schema for User Management:**
+```javascript
+// User Model with Role-Based Permissions
+const userSchema = new mongoose.Schema({
+  // Basic Information
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  
+  // Role System
+  role: {
+    type: String,
+    enum: ['owner', 'admin', 'agent', 'user', 'guest'],
+    default: 'user'
+  },
+  
+  // Permission Overrides (for admins to customize)
+  permissions: {
+    canManageUsers: { type: Boolean, default: false },
+    canManageProperties: { type: Boolean, default: false },
+    canAccessCRM: { type: Boolean, default: false },
+    canViewAnalytics: { type: Boolean, default: false },
+    canManageContent: { type: Boolean, default: false },
+    canProcessPayments: { type: Boolean, default: false }
+  },
+  
+  // Admin-Assigned CRM Access
+  crmAccess: {
+    hasAccess: { type: Boolean, default: false },
+    accessibleModules: [String], // ['leads', 'properties', 'contacts', 'tasks']
+    accessLevel: { type: String, enum: ['read', 'write', 'full'], default: 'read' },
+    assignedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    assignedDate: Date,
+    expiresAt: Date
+  },
+  
+  // Profile Information (100% Completion)
+  profile: {
+    firstName: String,
+    lastName: String,
+    phone: String,
+    avatar: String,
+    bio: String,
+    location: String,
+    company: String,
+    position: String,
+    // ... more fields for 100% completion
+  },
+  
+  // Activity Tracking
+  lastLogin: Date,
+  loginHistory: [{
+    timestamp: Date,
+    ip: String,
+    device: String
+  }],
+  
+  // Status
+  isActive: { type: Boolean, default: true },
+  isVerified: { type: Boolean, default: false },
+  
+  // Timestamps
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+```
+
+### **5. ADMIN CRM ACCESS MANAGEMENT INTERFACE**
+
+```jsx
+// Admin User Management Dashboard
+const AdminUserManagement = () => {
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  
+  // Fetch all users
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+  
+  const fetchUsers = async () => {
+    const response = await axios.get('/api/admin/users');
+    setUsers(response.data);
+  };
+  
+  // Update user role
+  const updateUserRole = async (userId, newRole) => {
+    await axios.put(`/api/admin/users/${userId}/role`, { role: newRole });
+    fetchUsers();
+  };
+  
+  // Grant CRM Access
+  const grantCRMAccess = async (userId, modules, accessLevel) => {
+    await axios.post(`/api/admin/users/${userId}/crm-access`, {
+      modules,
+      accessLevel,
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
+    });
+    fetchUsers();
+  };
+  
+  // Revoke CRM Access
+  const revokeCRMAccess = async (userId) => {
+    await axios.delete(`/api/admin/users/${userId}/crm-access`);
+    fetchUsers();
+  };
+  
+  return (
+    <div className="admin-dashboard">
+      <h1>User Management</h1>
+      
+      <div className="users-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>CRM Access</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map(user => (
+              <tr key={user._id}>
+                <td>{user.profile?.firstName} {user.profile?.lastName}</td>
+                <td>{user.email}</td>
+                <td>
+                  <select 
+                    value={user.role}
+                    onChange={(e) => updateUserRole(user._id, e.target.value)}
+                    disabled={user.role === 'owner'}
+                  >
+                    <option value="user">User</option>
+                    <option value="agent">Agent</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </td>
+                <td>
+                  {user.crmAccess?.hasAccess ? (
+                    <span className="badge-success">Active</span>
+                  ) : (
+                    <span className="badge-warning">No Access</span>
+                  )}
+                </td>
+                <td>
+                  <button onClick={() => setSelectedUser(user)}>
+                    Manage Access
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      
+      {/* CRM Access Modal */}
+      {selectedUser && (
+        <CRMAccessModal
+          user={selectedUser}
+          onClose={() => setSelectedUser(null)}
+          onGrantAccess={grantCRMAccess}
+          onRevokeAccess={revokeCRMAccess}
+        />
+      )}
+    </div>
+  );
+};
+```
+
+### **6. OWNER VS ADMIN ACCESS DIFFERENTIATION**
+
+```javascript
+// Middleware for Role-Based Access
+const requireRole = (requiredRole, requiredPermissions = []) => {
+  return (req, res, next) => {
+    const user = req.user;
+    
+    // OWNER has full access to everything
+    if (user.role === 'owner') {
+      return next();
+    }
+    
+    // Check if user has required role
+    if (user.role !== requiredRole) {
+      return res.status(403).json({ 
+        error: 'Insufficient role permissions' 
+      });
+    }
+    
+    // Check specific permissions for ADMINS
+    if (requiredPermissions.length > 0) {
+      const hasAllPermissions = requiredPermissions.every(perm => 
+        user.permissions[perm] === true
+      );
+      
+      if (!hasAllPermissions) {
+        return res.status(403).json({ 
+          error: 'Missing required permissions' 
+        });
+      }
+    }
+    
+    next();
+  };
+};
+
+// Route Protection Examples
+router.get('/owner-analytics', 
+  requireRole('owner'), 
+  getOwnerAnalytics
+);
+
+router.get('/admin-dashboard', 
+  requireRole('admin', ['canViewAnalytics']), 
+  getAdminDashboard
+);
+
+router.put('/users/:id', 
+  requireRole('admin', ['canManageUsers']), 
+  updateUser
+);
+
+router.delete('/users/:id', 
+  requireRole('admin', ['canManageUsers']), 
+  deleteUser
+);
+```
+
+### **7. IMPLEMENTATION PRIORITY ORDER**
+
+#### **Phase 1: Design & Basic Auth (Week 1)**
+1. Implement Red/White color scheme across all pages
+2. Create unified design system
+3. Basic user registration/login
+4. Role assignment (owner, admin, user)
+
+#### **Phase 2: User Management (Week 2)**
+1. Complete user profile system (100% completion)
+2. Admin dashboard for user management
+3. CRM access assignment system
+4. Permission management interface
+
+#### **Phase 3: CRM Integration (Week 3)**
+1. Role-based CRM access control
+2. Owner vs admin permission differentiation
+3. User activity logging
+4. Access revocation system
+
+#### **Phase 4: Advanced Features (Week 4)**
+1. Real-time permission updates
+2. Access expiration system
+3. Bulk user management
+4. Audit logging for all admin actions
+
+### **8. MANDATORY FEATURES CHECKLIST**
+
+#### **Design Requirements:**
+- [ ] All pages use #DC2626 red and #FFFFFF white
+- [ ] Consistent navigation across all pages
+- [ ] Unified button styles and forms
+- [ ] Responsive design for all devices
+- [ ] Professional real estate aesthetic
+
+#### **User System Requirements:**
+- [ ] Users can register/login/logout
+- [ ] Users can complete 100% profile
+- [ ] Users can update all profile information
+- [ ] Users can upload documents/images
+- [ ] Users have role-based permissions
+
+#### **Admin Requirements:**
+- [ ] Admin can view all users
+- [ ] Admin can change user roles
+- [ ] Admin can grant/revoke CRM access
+- [ ] Admin can set user permissions
+- [ ] Admin cannot access owner-only features
+
+#### **Owner Requirements:**
+- [ ] Owner has full system access
+- [ ] Owner can create/demote admins
+- [ ] Owner can override any permission
+- [ ] Owner can view all activity logs
+- [ ] Owner can change system settings
+
+#### **Security Requirements:**
+- [ ] JWT token authentication
+- [ ] Role-based route protection
+- [ ] Permission validation on all actions
+- [ ] Activity logging for sensitive operations
+- [ ] Secure password storage
+
+### **9. DELIVERABLES EXPECTED**
+
+1. **Complete Red/White Themed Website** with unified design
+2. **Full User Authentication System** with 100% profile completion
+3. **Role-Based Access Control** with owner/admin/user hierarchy
+4. **Admin CRM Access Management** interface
+5. **Database Schema** for user permissions and roles
+6. **API Endpoints** for all CRUD operations
+7. **Frontend Components** for user management
+8. **Security Middleware** for permission validation
+
+### **10. TECHNICAL SPECIFICATIONS**
+
+**Backend:**
+- Node.js/Express or Laravel
+- MongoDB/PostgreSQL
+- JWT for authentication
+- Bcrypt for password hashing
+
+**Frontend:**
+- React.js with hooks
+- Axios for API calls
+- Context API for auth state
+- Tailwind CSS for styling
+
+**Database Collections:**
+- Users (with permissions)
+- Roles
+- Permissions
+- ActivityLogs
+- CRMAccessRecords
+
+---
+# **ROLE-BASED ACCESS CONTROL WITH ADMIN APPROVAL SYSTEM**
+
+## **COMPLETE ROLE MANAGEMENT & ACCESS CONTROL SYSTEM**
+
+### **1. USER ROLE SELECTION & ADMIN APPROVAL WORKFLOW**
+
+```javascript
+// Enhanced User Schema with Role Request System
+const userSchema = new mongoose.Schema({
+  // Basic Info
+  email: { type: String, required: true, unique: true },
+  
+  // Current Role (Default: 'user')
+  role: {
+    type: String,
+    enum: ['user', 'agent', 'broker', 'developer', 'admin', 'owner'],
+    default: 'user'
+  },
+  
+  // Role Request System
+  roleRequests: [{
+    requestedRole: {
+      type: String,
+      enum: ['agent', 'broker', 'developer', 'admin']
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected', 'revoked'],
+      default: 'pending'
+    },
+    requestedAt: { type: Date, default: Date.now },
+    reviewedAt: Date,
+    reviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    rejectionReason: String,
+    documents: [{
+      name: String,
+      url: String,
+      type: String
+    }],
+    verificationData: {
+      reraLicense: String,
+      tradeLicense: String,
+      companyName: String,
+      experienceYears: Number,
+      portfolio: [String]
+    }
+  }],
+  
+  // Approved Access Permissions
+  permissions: {
+    // Portal Access Flags
+    canAccessAgentPortal: { type: Boolean, default: false },
+    canAccessBrokerPortal: { type: Boolean, default: false },
+    canAccessDeveloperPortal: { type: Boolean, default: false },
+    canAccessAdminPortal: { type: Boolean, default: false },
+    
+    // Module Permissions
+    canManageProperties: { type: Boolean, default: false },
+    canManageLeads: { type: Boolean, default: false },
+    canManageUsers: { type: Boolean, default: false },
+    canManageContent: { type: Boolean, default: false },
+    canViewAnalytics: { type: Boolean, default: false },
+    
+    // Scope Limits
+    maxProperties: { type: Number, default: 0 },
+    maxAgents: { type: Boolean, default: false }, // Can manage agents
+    assignedAreas: [String], // Dubai areas they can operate in
+    accessExpiry: Date
+  },
+  
+  // Activity Logging
+  accessLogs: [{
+    timestamp: Date,
+    action: String,
+    ipAddress: String,
+    userAgent: String,
+    accessedPage: String,
+    status: String
+  }],
+  
+  // Security
+  lastRoleChange: Date,
+  roleChangeHistory: [{
+    oldRole: String,
+    newRole: String,
+    changedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    changedAt: Date,
+    reason: String
+  }]
+});
+```
+
+### **2. USER ROLE SELECTION INTERFACE**
+
+```jsx
+// src/components/user/RoleSelection.jsx
+import React, { useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import './RoleSelection.css';
+
+const RoleSelection = () => {
+  const { user, requestRoleChange } = useAuth();
+  const [selectedRole, setSelectedRole] = useState('');
+  const [documents, setDocuments] = useState([]);
+  const [verificationData, setVerificationData] = useState({});
+  const [loading, setLoading] = useState(false);
+  
+  // Available roles for selection
+  const availableRoles = [
+    {
+      id: 'agent',
+      title: 'Real Estate Agent',
+      description: 'List and manage properties, handle client inquiries',
+      requirements: ['RERA License', 'Professional photo', 'Portfolio'],
+      portalAccess: 'Agent Portal',
+      icon: '🏢'
+    },
+    {
+      id: 'broker',
+      title: 'Real Estate Broker',
+      description: 'Manage team of agents, oversee transactions',
+      requirements: ['Broker RERA License', 'Company registration', 'Insurance'],
+      portalAccess: 'Broker Portal',
+      icon: '🤝'
+    },
+    {
+      id: 'developer',
+      title: 'Property Developer',
+      description: 'List new projects, manage inventory, track sales',
+      requirements: ['Trade License', 'Project portfolio', 'Company documents'],
+      portalAccess: 'Developer Portal',
+      icon: '🏗️'
+    },
+    {
+      id: 'admin',
+      title: 'Administrator',
+      description: 'Manage platform users, content, and settings',
+      requirements: ['Background verification', 'Company authorization'],
+      portalAccess: 'Admin Dashboard',
+      icon: '🛡️'
+    }
+  ];
+  
+  const handleRoleSelect = (roleId) => {
+    setSelectedRole(roleId);
+  };
+  
+  const handleDocumentUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const uploadedDocs = files.map(file => ({
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      url: URL.createObjectURL(file)
+    }));
+    setDocuments([...documents, ...uploadedDocs]);
+  };
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    try {
+      await requestRoleChange({
+        requestedRole: selectedRole,
+        documents,
+        verificationData
+      });
+      
+      alert('Role request submitted successfully! Awaiting admin approval.');
+    } catch (error) {
+      alert('Error submitting request: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const renderRoleRequirements = () => {
+    const role = availableRoles.find(r => r.id === selectedRole);
+    if (!role) return null;
+    
+    return (
+      <div className="requirements-section">
+        <h3>Requirements for {role.title}:</h3>
+        <ul>
+          {role.requirements.map((req, index) => (
+            <li key={index}>{req}</li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+  
+  return (
+    <div className="role-selection-container">
+      <h2>Select Your Professional Role</h2>
+      <p className="subtitle">
+        Choose the role that matches your real estate activities. 
+        All role requests require admin approval.
+      </p>
+      
+      <div className="role-grid">
+        {availableRoles.map((role) => (
+          <div 
+            key={role.id}
+            className={`role-card ${selectedRole === role.id ? 'selected' : ''}`}
+            onClick={() => handleRoleSelect(role.id)}
+          >
+            <div className="role-icon">{role.icon}</div>
+            <h3>{role.title}</h3>
+            <p>{role.description}</p>
+            <div className="role-access">
+              <span className="badge">Access: {role.portalAccess}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      {selectedRole && (
+        <form className="role-request-form" onSubmit={handleSubmit}>
+          {renderRoleRequirements()}
+          
+          {/* Document Upload */}
+          <div className="form-section">
+            <h3>Upload Required Documents</h3>
+            <div className="document-upload-area">
+              <input
+                type="file"
+                multiple
+                onChange={handleDocumentUpload}
+                accept=".pdf,.jpg,.jpeg,.png"
+                className="document-input"
+              />
+              <div className="upload-prompt">
+                <span>📎 Click to upload documents</span>
+                <small>Supported: PDF, JPG, PNG (Max 10MB each)</small>
+              </div>
+            </div>
+            
+            {documents.length > 0 && (
+              <div className="uploaded-documents">
+                <h4>Uploaded Documents:</h4>
+                {documents.map((doc, index) => (
+                  <div key={index} className="document-item">
+                    <span>{doc.name}</span>
+                    <span className="file-size">({Math.round(doc.size / 1024)}KB)</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          {/* Additional Information based on role */}
+          {selectedRole === 'agent' && (
+            <div className="form-section">
+              <h3>Agent Information</h3>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>RERA License Number *</label>
+                  <input
+                    type="text"
+                    value={verificationData.reraLicense || ''}
+                    onChange={(e) => setVerificationData({
+                      ...verificationData,
+                      reraLicense: e.target.value
+                    })}
+                    placeholder="Enter RERA license number"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Years of Experience *</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={verificationData.experienceYears || ''}
+                    onChange={(e) => setVerificationData({
+                      ...verificationData,
+                      experienceYears: parseInt(e.target.value)
+                    })}
+                    placeholder="Years"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {selectedRole === 'developer' && (
+            <div className="form-section">
+              <h3>Developer Information</h3>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Company Name *</label>
+                  <input
+                    type="text"
+                    value={verificationData.companyName || ''}
+                    onChange={(e) => setVerificationData({
+                      ...verificationData,
+                      companyName: e.target.value
+                    })}
+                    placeholder="Enter company name"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Trade License Number *</label>
+                  <input
+                    type="text"
+                    value={verificationData.tradeLicense || ''}
+                    onChange={(e) => setVerificationData({
+                      ...verificationData,
+                      tradeLicense: e.target.value
+                    })}
+                    placeholder="Enter trade license"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <div className="form-footer">
+            <p className="disclaimer">
+              ⚠️ By submitting this request, you agree to verification. 
+              Approval may take 2-3 business days. You'll be notified via email.
+            </p>
+            
+            <div className="action-buttons">
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => setSelectedRole('')}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="btn-primary"
+                disabled={loading || documents.length === 0}
+              >
+                {loading ? 'Submitting...' : 'Submit for Approval'}
+              </button>
+            </div>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+};
+
+export default RoleSelection;
+```
+
+### **3. ADMIN APPROVAL DASHBOARD**
+
+```jsx
+// src/components/admin/RoleApprovalDashboard.jsx
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import './RoleApprovalDashboard.css';
+
+const RoleApprovalDashboard = () => {
+  const { user } = useAuth();
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [filter, setFilter] = useState('all');
+  
+  useEffect(() => {
+    fetchPendingRequests();
+  }, []);
+  
+  const fetchPendingRequests = async () => {
+    try {
+      const response = await axios.get('/api/admin/role-requests/pending');
+      setPendingRequests(response.data);
+    } catch (error) {
+      console.error('Error fetching requests:', error);
+    }
+  };
+  
+  const approveRequest = async (requestId, userId, role) => {
+    try {
+      await axios.post(`/api/admin/role-requests/${requestId}/approve`, {
+        approvedRole: role,
+        approvedBy: user.id
+      });
+      
+      // Update UI
+      setPendingRequests(prev => prev.filter(req => req._id !== requestId));
+      alert('Role request approved successfully!');
+    } catch (error) {
+      alert('Error approving request: ' + error.message);
+    }
+  };
+  
+  const rejectRequest = async (requestId, reason) => {
+    try {
+      await axios.post(`/api/admin/role-requests/${requestId}/reject`, {
+        rejectionReason: reason,
+        rejectedBy: user.id
+      });
+      
+      setPendingRequests(prev => prev.filter(req => req._id !== requestId));
+      alert('Role request rejected.');
+    } catch (error) {
+      alert('Error rejecting request: ' + error.message);
+    }
+  };
+  
+  const filteredRequests = pendingRequests.filter(request => {
+    if (filter === 'all') return true;
+    return request.requestedRole === filter;
+  });
+  
+  return (
+    <div className="role-approval-dashboard">
+      <div className="dashboard-header">
+        <h1>Role Approval Dashboard</h1>
+        <div className="stats-overview">
+          <div className="stat-card">
+            <span className="stat-number">{pendingRequests.length}</span>
+            <span className="stat-label">Pending Requests</span>
+          </div>
+          <div className="stat-card">
+            <span className="stat-number">
+              {pendingRequests.filter(r => r.requestedRole === 'agent').length}
+            </span>
+            <span className="stat-label">Agent Requests</span>
+          </div>
+          <div className="stat-card">
+            <span className="stat-number">
+              {pendingRequests.filter(r => r.requestedRole === 'developer').length}
+            </span>
+            <span className="stat-label">Developer Requests</span>
+          </div>
+        </div>
+      </div>
+      
+      {/* Filter Controls */}
+      <div className="filter-controls">
+        <button 
+          className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
+          onClick={() => setFilter('all')}
+        >
+          All Requests
+        </button>
+        <button 
+          className={`filter-btn ${filter === 'agent' ? 'active' : ''}`}
+          onClick={() => setFilter('agent')}
+        >
+          Agents
+        </button>
+        <button 
+          className={`filter-btn ${filter === 'broker' ? 'active' : ''}`}
+          onClick={() => setFilter('broker')}
+        >
+          Brokers
+        </button>
+        <button 
+          className={`filter-btn ${filter === 'developer' ? 'active' : ''}`}
+          onClick={() => setFilter('developer')}
+        >
+          Developers
+        </button>
+        <button 
+          className={`filter-btn ${filter === 'admin' ? 'active' : ''}`}
+          onClick={() => setFilter('admin')}
+        >
+          Admins
+        </button>
+      </div>
+      
+      {/* Requests Table */}
+      <div className="requests-table-container">
+        <table className="requests-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Requested Role</th>
+              <th>Submitted</th>
+              <th>Documents</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredRequests.map((request) => (
+              <tr key={request._id}>
+                <td>
+                  <div className="user-info">
+                    <img 
+                      src={request.user.profileImage || '/default-avatar.png'} 
+                      alt={request.user.name}
+                      className="user-avatar"
+                    />
+                    <div>
+                      <strong>{request.user.name}</strong>
+                      <small>{request.user.email}</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span className={`role-badge ${request.requestedRole}`}>
+                    {request.requestedRole}
+                  </span>
+                </td>
+                <td>
+                  {new Date(request.requestedAt).toLocaleDateString()}
+                </td>
+                <td>
+                  <button 
+                    className="btn-view-docs"
+                    onClick={() => setSelectedRequest(request)}
+                  >
+                    View ({request.documents.length})
+                  </button>
+                </td>
+                <td>
+                  <span className="status-badge pending">Pending</span>
+                </td>
+                <td>
+                  <div className="action-buttons">
+                    <button 
+                      className="btn-approve"
+                      onClick={() => approveRequest(
+                        request._id, 
+                        request.user._id, 
+                        request.requestedRole
+                      )}
+                    >
+                      Approve
+                    </button>
+                    <button 
+                      className="btn-reject"
+                      onClick={() => {
+                        const reason = prompt('Enter rejection reason:');
+                        if (reason) rejectRequest(request._id, reason);
+                      }}
+                    >
+                      Reject
+                    </button>
+                    <button 
+                      className="btn-view"
+                      onClick={() => setSelectedRequest(request)}
+                    >
+                      Review
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        
+        {filteredRequests.length === 0 && (
+          <div className="empty-state">
+            <p>No pending requests found.</p>
+          </div>
+        )}
+      </div>
+      
+      {/* Request Detail Modal */}
+      {selectedRequest && (
+        <RequestDetailModal
+          request={selectedRequest}
+          onClose={() => setSelectedRequest(null)}
+          onApprove={approveRequest}
+          onReject={rejectRequest}
+        />
+      )}
+    </div>
+  );
+};
+
+export default RoleApprovalDashboard;
+```
+
+### **4. ACCESS CONTROL MIDDLEWARE**
+
+```javascript
+// backend/middleware/accessControl.js
+const User = require('../models/User');
+
+// Role-based Access Control Middleware
+const requireRole = (requiredRole) => {
+  return async (req, res, next) => {
+    try {
+      const user = await User.findById(req.userId);
+      
+      if (!user) {
+        return res.status(401).json({ error: 'User not found' });
+      }
+      
+      // Check if user has the required role
+      if (user.role !== requiredRole) {
+        return res.status(403).json({ 
+          error: `Access denied. Requires ${requiredRole} role.`,
+          currentRole: user.role,
+          requiredRole: requiredRole
+        });
+      }
+      
+      // Check if role is approved and not revoked
+      const roleRequest = user.roleRequests.find(
+        req => req.requestedRole === requiredRole && req.status === 'approved'
+      );
+      
+      if (!roleRequest && requiredRole !== 'user') {
+        return res.status(403).json({ 
+          error: 'Role not approved by admin',
+          status: 'pending_approval'
+        });
+      }
+      
+      next();
+    } catch (error) {
+      res.status(500).json({ error: 'Access control error' });
+    }
+  };
+};
+
+// Portal Access Middleware
+const requirePortalAccess = (portalType) => {
+  return async (req, res, next) => {
+    try {
+      const user = await User.findById(req.userId);
+      
+      if (!user) {
+        return res.status(401).json({ error: 'User not found' });
+      }
+      
+      // Owner has access to everything
+      if (user.role === 'owner') {
+        return next();
+      }
+      
+      // Check portal-specific permissions
+      let hasAccess = false;
+      
+      switch (portalType) {
+        case 'agent':
+          hasAccess = user.permissions.canAccessAgentPortal;
+          break;
+        case 'broker':
+          hasAccess = user.permissions.canAccessBrokerPortal;
+          break;
+        case 'developer':
+          hasAccess = user.permissions.canAccessDeveloperPortal;
+          break;
+        case 'admin':
+          hasAccess = user.permissions.canAccessAdminPortal;
+          break;
+      }
+      
+      if (!hasAccess) {
+        return res.status(403).json({ 
+          error: `Access to ${portalType} portal denied`,
+          requiredPermission: `canAccess${portalType.charAt(0).toUpperCase() + portalType.slice(1)}Portal`
+        });
+      }
+      
+      // Check if access has expired
+      if (user.permissions.accessExpiry && new Date() > user.permissions.accessExpiry) {
+        return res.status(403).json({ 
+          error: 'Portal access has expired',
+          expiredAt: user.permissions.accessExpiry
+        });
+      }
+      
+      // Log access attempt
+      user.accessLogs.push({
+        timestamp: new Date(),
+        action: 'portal_access',
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent'),
+        accessedPage: req.originalUrl,
+        status: 'granted'
+      });
+      
+      await user.save();
+      
+      next();
+    } catch (error) {
+      res.status(500).json({ error: 'Portal access check failed' });
+    }
+  };
+};
+
+// Page-Level Access Guard
+const pageAccessGuard = (pagePermissions) => {
+  return async (req, res, next) => {
+    try {
+      const user = await User.findById(req.userId);
+      
+      if (!user) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+      
+      // Owner bypasses all checks
+      if (user.role === 'owner') {
+        return next();
+      }
+      
+      // Check each required permission
+      for (const permission of pagePermissions) {
+        if (!user.permissions[permission]) {
+          return res.status(403).json({ 
+            error: 'Insufficient permissions',
+            missingPermission: permission,
+            page: req.originalUrl
+          });
+        }
+      }
+      
+      // Check area restrictions for Dubai locations
+      if (pagePermissions.includes('assignedAreas')) {
+        const requestedArea = req.query.area || req.body.area;
+        if (requestedArea && user.permissions.assignedAreas.length > 0) {
+          if (!user.permissions.assignedAreas.includes(requestedArea)) {
+            return res.status(403).json({ 
+              error: 'Access restricted to specific areas',
+              allowedAreas: user.permissions.assignedAreas,
+              requestedArea: requestedArea
+            });
+          }
+        }
+      }
+      
+      next();
+    } catch (error) {
+      res.status(500).json({ error: 'Access guard error' });
+    }
+  };
+};
+
+// Dynamic Permission Checker
+const checkPermission = (permission) => {
+  return async (req, res, next) => {
+    try {
+      const user = await User.findById(req.userId);
+      
+      if (!user) {
+        return res.status(401).json({ error: 'User not found' });
+      }
+      
+      // Owner has all permissions
+      if (user.role === 'owner') {
+        return next();
+      }
+      
+      // Admin permissions check
+      if (user.role === 'admin' && permission.startsWith('canManage')) {
+        if (!user.permissions[permission]) {
+          return res.status(403).json({ 
+            error: 'Admin permission denied',
+            permission: permission
+          });
+        }
+      }
+      
+      // Specific permission check
+      if (!user.permissions[permission]) {
+        return res.status(403).json({ 
+          error: 'Permission denied',
+          required: permission
+        });
+      }
+      
+      next();
+    } catch (error) {
+      res.status(500).json({ error: 'Permission check failed' });
+    }
+  };
+};
+
+module.exports = {
+  requireRole,
+  requirePortalAccess,
+  pageAccessGuard,
+  checkPermission
+};
+```
+
+### **5. ROUTE PROTECTION CONFIGURATION**
+
+```javascript
+// backend/routes/protected-routes.js
+const express = require('express');
+const router = express.Router();
+const { 
+  requireRole, 
+  requirePortalAccess, 
+  pageAccessGuard,
+  checkPermission 
+} = require('../middleware/accessControl');
+
+// Public Routes (No authentication required)
+router.get('/public/properties', getPublicProperties);
+router.get('/public/areas', getDubaiAreas);
+
+// User Routes (Authenticated users only)
+router.get('/user/profile', requireRole('user'), getUserProfile);
+router.put('/user/profile', requireRole('user'), updateUserProfile);
+
+// Agent Portal Routes (Requires agent role AND portal access)
+router.get('/agent/dashboard', 
+  requireRole('agent'), 
+  requirePortalAccess('agent'), 
+  getAgentDashboard
+);
+
+router.get('/agent/properties',
+  requireRole('agent'),
+  requirePortalAccess('agent'),
+  checkPermission('canManageProperties'),
+  getAgentProperties
+);
+
+router.post('/agent/properties',
+  requireRole('agent'),
+  requirePortalAccess('agent'),
+  checkPermission('canManageProperties'),
+  pageAccessGuard(['canManageProperties']),
+  createProperty
+);
+
+// Broker Portal Routes
+router.get('/broker/dashboard',
+  requireRole('broker'),
+  requirePortalAccess('broker'),
+  getBrokerDashboard
+);
+
+router.get('/broker/agents',
+  requireRole('broker'),
+  requirePortalAccess('broker'),
+  checkPermission('canManageAgents'),
+  getBrokerAgents
+);
+
+// Developer Portal Routes
+router.get('/developer/projects',
+  requireRole('developer'),
+  requirePortalAccess('developer'),
+  checkPermission('canManageProperties'),
+  getDeveloperProjects
+);
+
+// Admin Portal Routes
+router.get('/admin/dashboard',
+  requireRole('admin'),
+  requirePortalAccess('admin'),
+  checkPermission('canViewAnalytics'),
+  getAdminDashboard
+);
+
+router.get('/admin/users',
+  requireRole('admin'),
+  requirePortalAccess('admin'),
+  checkPermission('canManageUsers'),
+  getAllUsers
+);
+
+router.put('/admin/users/:id/permissions',
+  requireRole('admin'),
+  requirePortalAccess('admin'),
+  checkPermission('canManageUsers'),
+  updateUserPermissions
+);
+
+// Owner Routes (Full access)
+router.get('/owner/analytics',
+  requireRole('owner'),
+  getOwnerAnalytics
+);
+
+router.put('/owner/system-settings',
+  requireRole('owner'),
+  updateSystemSettings
+);
+
+// Dubai Area-Specific Routes with Area Restrictions
+router.get('/properties/dubai/:area',
+  (req, res, next) => {
+    // Area-based access control
+    const allowedAreas = ['downtown', 'marina', 'palm-jumeirah', 'arabian-ranches'];
+    if (!allowedAreas.includes(req.params.area)) {
+      return res.status(404).json({ error: 'Area not found' });
+    }
+    next();
+  },
+  getAreaProperties
+);
+```
+
+### **6. FRONTEND ROUTE GUARD COMPONENTS**
+
+```jsx
+// src/components/auth/RouteGuard.jsx
+import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+
+const RouteGuard = ({ children, requiredRole, requiredPermissions = [] }) => {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+  
+  if (loading) {
+    return <div className="loading-spinner">Loading...</div>;
+  }
+  
+  if (!user) {
+    // Redirect to login if not authenticated
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+  
+  // Check role requirement
+  if (requiredRole && user.role !== requiredRole) {
+    // Check if user has requested this role
+    const hasPendingRequest = user.roleRequests?.some(
+      req => req.requestedRole === requiredRole && req.status === 'pending'
+    );
+    
+    if (hasPendingRequest) {
+      return (
+        <div className="access-pending">
+          <h2>Access Pending Approval</h2>
+          <p>Your request for {requiredRole} access is under review.</p>
+          <p>You'll be notified via email once approved.</p>
+        </div>
+      );
+    }
+    
+    // Redirect to role selection if no access
+    return <Navigate to="/select-role" replace />;
+  }
+  
+  // Check portal access for specific roles
+  if (requiredRole === 'agent' && !user.permissions?.canAccessAgentPortal) {
+    return (
+      <div className="no-portal-access">
+        <h2>Agent Portal Access Required</h2>
+        <p>You need agent portal access to view this page.</p>
+        <button onClick={() => window.location.href = '/select-role'}>
+          Request Access
+        </button>
+      </div>
+    );
+  }
+  
+  // Check specific permissions
+  if (requiredPermissions.length > 0) {
+    const hasAllPermissions = requiredPermissions.every(
+      perm => user.permissions?.[perm] === true
+    );
+    
+    if (!hasAllPermissions) {
+      return (
+        <div className="insufficient-permissions">
+          <h2>Insufficient Permissions</h2>
+          <p>You don't have the required permissions to access this page.</p>
+          <p>Required: {requiredPermissions.join(', ')}</p>
+          <button onClick={() => window.location.href = '/dashboard'}>
+            Go to Dashboard
+          </button>
+        </div>
+      );
+    }
+  }
+  
+  return children;
+};
+
+// Specialized Guard Components
+export const AgentRoute = ({ children }) => (
+  <RouteGuard requiredRole="agent" requiredPermissions={['canAccessAgentPortal']}>
+    {children}
+  </RouteGuard>
+);
+
+export const BrokerRoute = ({ children }) => (
+  <RouteGuard requiredRole="broker" requiredPermissions={['canAccessBrokerPortal']}>
+    {children}
+  </RouteGuard>
+);
+
+export const DeveloperRoute = ({ children }) => (
+  <RouteGuard requiredRole="developer" requiredPermissions={['canAccessDeveloperPortal']}>
+    {children}
+  </RouteGuard>
+);
+
+export const AdminRoute = ({ children }) => (
+  <RouteGuard requiredRole="admin" requiredPermissions={['canAccessAdminPortal']}>
+    {children}
+  </RouteGuard>
+);
+
+export const OwnerRoute = ({ children }) => (
+  <RouteGuard requiredRole="owner">
+    {children}
+  </RouteGuard>
+);
+
+// Permission-based wrapper
+export const WithPermission = ({ children, permission }) => {
+  const { user } = useAuth();
+  
+  if (!user?.permissions?.[permission]) {
+    return (
+      <div className="permission-denied">
+        <p>You don't have permission to view this content.</p>
+      </div>
+    );
+  }
+  
+  return children;
+};
+
+export default RouteGuard;
+```
+
+### **7. UNAUTHORIZED ACCESS HANDLER**
+
+```jsx
+// src/pages/Unauthorized.jsx
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import './Unauthorized.css';
+
+const Unauthorized = () => {
+  const location = useLocation();
+  const { user } = useAuth();
+  
+  const attemptedPath = location.state?.from?.pathname || '/';
+  const requiredRole = location.state?.requiredRole;
+  const missingPermission = location.state?.missingPermission;
+  
+  const getErrorMessage = () => {
+    if (requiredRole) {
+      return `This page requires ${requiredRole} level access.`;
+    }
+    
+    if (missingPermission) {
+      return `You need "${missingPermission}" permission to access this page.`;
+    }
+    
+    return 'You do not have permission to access this page.';
+  };
+  
+  const getSuggestions = () => {
+    if (!user) {
+      return (
+        <div className="suggestion">
+          <h4>You're not logged in</h4>
+          <p>Please log in to access this page.</p>
+          <Link to="/login" className="btn-primary">
+            Go to Login
+          </Link>
+        </div>
+      );
+    }
+    
+    if (requiredRole && user.role !== requiredRole) {
+      return (
+        <div className="suggestion">
+          <h4>Upgrade Your Account</h4>
+          <p>You need {requiredRole} access. Request it now.</p>
+          <Link to="/select-role" className="btn-primary">
+            Request {requiredRole} Access
+          </Link>
+        </div>
+      );
+    }
+    
+    if (user.role === 'user') {
+      return (
+        <div className="suggestion">
+          <h4>Become a Professional</h4>
+          <p>Upgrade to agent, broker, or developer to access professional features.</p>
+          <Link to="/select-role" className="btn-primary">
+            Explore Professional Roles
+          </Link>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="suggestion">
+        <h4>Contact Support</h4>
+        <p>If you believe this is an error, contact our support team.</p>
+        <Link to="/contact" className="btn-secondary">
+          Contact Support
+        </Link>
+      </div>
+    );
+  };
+  
+  return (
+    <div className="unauthorized-container">
+      <div className="unauthorized-content">
+        <div className="error-code">
+          <h1>403</h1>
+          <h2>Access Denied</h2>
+        </div>
+        
+        <div className="error-details">
+          <h3>{getErrorMessage()}</h3>
+          
+          <div className="user-info">
+            <p>
+              <strong>Your Role:</strong> {user?.role || 'Guest'}
+            </p>
+            <p>
+              <strong>Attempted to access:</strong> {attemptedPath}
+            </p>
+          </div>
+          
+          {getSuggestions()}
+        </div>
+        
+        <div className="alternative-actions">
+          <Link to="/" className="action-link">
+            ← Back to Homepage
+          </Link>
+          <Link to="/dashboard" className="action-link">
+            Go to Dashboard →
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Unauthorized;
+```
+
+### **8. ROLE MANAGEMENT API ENDPOINTS**
+
+```javascript
+// backend/routes/role-management.js
+const express = require('express');
+const router = express.Router();
+const User = require('../models/User');
+const { requireRole } = require('../middleware/accessControl');
+
+// User requests role change
+router.post('/request-role', requireRole('user'), async (req, res) => {
+  try {
+    const { requestedRole, documents, verificationData } = req.body;
+    const userId = req.userId;
+    
+    // Validate role
+    const validRoles = ['agent', 'broker', 'developer', 'admin'];
+    if (!validRoles.includes(requestedRole)) {
+      return res.status(400).json({ error: 'Invalid role requested' });
+    }
+    
+    const user = await User.findById(userId);
+    
+    // Check if already has pending request for this role
+    const existingRequest = user.roleRequests.find(
+      req => req.requestedRole === requestedRole && req.status === 'pending'
+    );
+    
+    if (existingRequest) {
+      return res.status(400).json({ 
+        error: 'Pending request already exists for this role' 
+      });
+    }
+    
+    // Create new role request
+    user.roleRequests.push({
+      requestedRole,
+      status: 'pending',
+      documents,
+      verificationData,
+      requestedAt: new Date()
+    });
+    
+    await user.save();
+    
+    // Notify admins about new request
+    await notifyAdminsAboutRoleRequest(user, requestedRole);
+    
+    res.json({
+      success: true,
+      message: 'Role request submitted for admin approval',
+      requestId: user.roleRequests[user.roleRequests.length - 1]._id
+    });
+    
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to submit role request' });
+  }
+});
+
+// Admin approves role request
+router.post('/:requestId/approve', requireRole('admin'), async (req, res) => {
+  try {
+    const { approvedRole, approvedBy } = req.body;
+    const requestId = req.params.requestId;
+    
+    // Find user with this request
+    const user = await User.findOne({
+      'roleRequests._id': requestId
+    });
+    
+    if (!user) {
+      return res.status(404).json({ error: 'Role request not found' });
+    }
+    
+    const roleRequest = user.roleRequests.id(requestId);
+    
+    if (roleRequest.status !== 'pending') {
+      return res.status(400).json({ error: 'Request already processed' });
+    }
+    
+    // Update request status
+    roleRequest.status = 'approved';
+    roleRequest.reviewedAt = new Date();
+    roleRequest.reviewedBy = approvedBy;
+    
+    // Update user role
+    const oldRole = user.role;
+    user.role = approvedRole;
+    user.lastRoleChange = new Date();
+    
+    // Add to role change history
+    user.roleChangeHistory.push({
+      oldRole,
+      newRole: approvedRole,
+      changedBy: approvedBy,
+      changedAt: new Date(),
+      reason: 'Admin approved role request'
+    });
+    
+    // Grant portal access based on role
+    switch (approvedRole) {
+      case 'agent':
+        user.permissions.canAccessAgentPortal = true;
+        user.permissions.canManageProperties = true;
+        user.permissions.canManageLeads = true
+# **LATEST REACT & NODE.JS UPGRADES FOR OPTIMAL PERFORMANCE**
+
+## **COMPREHENSIVE UPGRADE CHECKLIST FOR 2024**
+
+### **🟢 REACT.JS (18.2.0+) UPGRADES**
+
+#### **1. React 18 New Features Implementation**
+```json
+// package.json - Required Updates
+{
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "^5.0.1",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0"
+  }
+}
+```
+
+#### **2. Concurrent Features Implementation**
+```javascript
+// src/index.js
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App';
+import './index.css';
+
+const container = document.getElementById('root');
+const root = createRoot(container); // New React 18 root API
+
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+```
+
+#### **3. React Server Components (Experimental but Prepare)**
+```javascript
+// Create RSC structure (when stable)
+// app/
+// ├── page.jsx           // Server Component (default)
+// ├── layout.jsx         // Server Component
+// ├── loading.jsx        // Server Component
+// └── (dashboard)/
+//     ├── page.jsx       // Server Component
+//     └── client/
+//         └── UserDashboard.jsx  // Client Component
+
+// Example Server Component
+async function PropertyList({ area }) {
+  // Server-side data fetching
+  const properties = await getPropertiesFromDatabase(area);
+  
+  return (
+    <div>
+      <h1>Properties in {area}</h1>
+      <PropertyGrid properties={properties} />
+    </div>
+  );
+}
+```
+
+#### **4. React Hooks - Latest Patterns**
+```javascript
+// Custom hooks for real estate features
+import { useCallback, useMemo, useTransition, useDeferredValue } from 'react';
+
+// 1. useTransition for non-urgent updates
+const PropertySearch = () => {
+  const [isPending, startTransition] = useTransition();
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  const handleSearch = (term) => {
+    startTransition(() => {
+      setSearchTerm(term);
+    });
+  };
+};
+
+// 2. useDeferredValue for expensive renders
+const PropertyFilters = ({ filters }) => {
+  const deferredFilters = useDeferredValue(filters);
+  
+  return (
+    <MemoizedPropertyGrid 
+      filters={deferredFilters} 
+    />
+  );
+};
+
+// 3. useSyncExternalStore for external stores
+import { useSyncExternalStore } from 'react';
+
+function usePropertyStore() {
+  const properties = useSyncExternalStore(
+    store.subscribe,
+    store.getSnapshot
+  );
+  return properties;
+}
+
+// 4. useId for unique IDs
+const FormField = ({ label }) => {
+  const id = useId();
+  
+  return (
+    <>
+      <label htmlFor={id}>{label}</label>
+      <input id={id} />
+    </>
+  );
+};
+```
+
+#### **5. Performance Optimizations**
+```javascript
+// React.memo with custom comparison
+const PropertyCard = React.memo(({ property }) => {
+  return (
+    <div className="property-card">
+      <PropertyImage image={property.image} />
+      <PropertyDetails details={property} />
+    </div>
+  );
+}, (prevProps, nextProps) => {
+  // Custom comparison for deep objects
+  return prevProps.property.id === nextProps.property.id &&
+         prevProps.property.price === nextProps.property.price;
+});
+
+// useMemo for expensive calculations
+const MortgageCalculator = ({ principal, rate, years }) => {
+  const monthlyPayment = useMemo(() => {
+    // Expensive calculation
+    const monthlyRate = rate / 100 / 12;
+    const numPayments = years * 12;
+    return principal * monthlyRate * 
+           Math.pow(1 + monthlyRate, numPayments) / 
+           (Math.pow(1 + monthlyRate, numPayments) - 1);
+  }, [principal, rate, years]);
+  
+  return <div>Monthly: AED {monthlyPayment.toFixed(2)}</div>;
+};
+```
+
+#### **6. React Error Boundary Updates**
+```javascript
+// Enhanced Error Boundary
+import React from 'react';
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { 
+      hasError: false, 
+      error: null, 
+      errorInfo: null 
+    };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    this.setState({ errorInfo });
+    // Log to error tracking service
+    logErrorToService(error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="error-boundary">
+          <h2>Something went wrong</h2>
+          <details>
+            <summary>Error Details</summary>
+            <p>{this.state.error?.toString()}</p>
+            <p>{this.state.errorInfo?.componentStack}</p>
+          </details>
+          <button onClick={() => window.location.reload()}>
+            Reload Page
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Usage
+<ErrorBoundary>
+  <PropertyListing />
+</ErrorBoundary>
+```
+
+---
+
+### **🟢 NODE.JS (20.x+) UPGRADES**
+
+#### **1. Node.js 20.x Features Implementation**
+```json
+// package.json - Node.js requirements
+{
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "scripts": {
+    "start": "node --experimental-specifier-resolution=node server.js",
+    "dev": "nodemon --experimental-vm-modules server.js",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+  }
+}
+```
+
+#### **2. ES Modules (Native Support)**
+```javascript
+// server.js - Using ES Modules
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import mongoose from 'mongoose';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const app = express();
+
+// Security middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://maps.googleapis.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      connectSrc: ["'self'", "https://api.realestate.ae"]
+    }
+  }
+}));
+
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://yourdomain.ae', 'https://www.yourdomain.ae']
+    : 'http://localhost:3000',
+  credentials: true
+}));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.'
+});
+app.use('/api/', limiter);
+
+export default app;
+```
+
+#### **3. Performance Optimizations**
+```javascript
+// server/optimizations.js
+import cluster from 'cluster';
+import os from 'os';
+import { createServer } from 'http';
+
+// Cluster mode for multi-core utilization
+if (cluster.isPrimary && process.env.NODE_ENV === 'production') {
+  const numCPUs = os.cpus().length;
+  
+  console.log(`Primary ${process.pid} is running`);
+  console.log(`Forking for ${numCPUs} CPUs`);
+  
+  // Fork workers
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+  
+  cluster.on('exit', (worker, code, signal) => {
+    console.log(`Worker ${worker.process.pid} died`);
+    cluster.fork(); // Restart worker
+  });
+} else {
+  // Worker process
+  const app = await import('./app.js').default;
+  const server = createServer(app);
+  
+  // HTTP/2 support
+  const options = {
+    // SSL certificate paths
+  };
+  
+  server.listen(process.env.PORT || 3000, () => {
+    console.log(`Worker ${process.pid} started on port ${process.env.PORT}`);
+  });
+}
+
+// Memory optimization
+import v8 from 'v8';
+
+const memoryStats = () => {
+  const heapStatistics = v8.getHeapStatistics();
+  console.log('Heap Statistics:', heapStatistics);
+  
+  // Monitor memory usage
+  const used = process.memoryUsage();
+  for (let key in used) {
+    console.log(`${key} ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB`);
+  }
+};
+
+// Schedule memory check every 5 minutes
+setInterval(memoryStats, 5 * 60 * 1000);
+```
+
+#### **4. Database Connection Pool Optimization**
+```javascript
+// database/mongodb.js
+import mongoose from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+
+// Connection pooling configuration
+const mongooseOptions = {
+  maxPoolSize: 50, // Maximum number of sockets in the connection pool
+  minPoolSize: 10, // Minimum number of sockets in the connection pool
+  socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+  serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+  family: 4, // Use IPv4, skip trying IPv6
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  retryWrites: true,
+  writeConcern: {
+    w: 'majority',
+    j: true,
+    wtimeout: 5000
+  }
+};
+
+// For development/testing
+let mongoServer;
+
+const connectDB = async () => {
+  try {
+    let mongoUri = process.env.MONGODB_URI;
+    
+    if (process.env.NODE_ENV === 'test') {
+      mongoServer = await MongoMemoryServer.create();
+      mongoUri = mongoServer.getUri();
+    }
+    
+    await mongoose.connect(mongoUri, mongooseOptions);
+    
+    mongoose.connection.on('connected', () => {
+      console.log('MongoDB connected successfully');
+    });
+    
+    mongoose.connection.on('error', (err) => {
+      console.error('MongoDB connection error:', err);
+    });
+    
+    mongoose.connection.on('disconnected', () => {
+      console.log('MongoDB disconnected');
+    });
+    
+    // Graceful shutdown
+    process.on('SIGINT', async () => {
+      await mongoose.connection.close();
+      if (mongoServer) {
+        await mongoServer.stop();
+      }
+      process.exit(0);
+    });
+    
+  } catch (error) {
+    console.error('MongoDB connection failed:', error);
+    process.exit(1);
+  }
+};
+
+export { connectDB, mongoose };
+```
+
+#### **5. Advanced Caching Strategy**
+```javascript
+// server/cache.js
+import Redis from 'ioredis';
+import NodeCache from 'node-cache';
+
+// Multi-layer caching strategy
+class CacheManager {
+  constructor() {
+    // L1: In-memory cache (fast)
+    this.memoryCache = new NodeCache({
+      stdTTL: 60, // 60 seconds default
+      checkperiod: 120,
+      useClones: false
+    });
+    
+    // L2: Redis cache (distributed)
+    this.redis = new Redis({
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT,
+      password: process.env.REDIS_PASSWORD,
+      retryStrategy: (times) => {
+        const delay = Math.min(times * 50, 2000);
+        return delay;
+      }
+    });
+  }
+  
+  async get(key) {
+    // Check L1 cache first
+    const l1Value = this.memoryCache.get(key);
+    if (l1Value !== undefined) {
+      console.log('Cache hit - L1');
+      return l1Value;
+    }
+    
+    // Check L2 cache
+    try {
+      const l2Value = await this.redis.get(key);
+      if (l2Value) {
+        console.log('Cache hit - L2');
+        const parsedValue = JSON.parse(l2Value);
+        // Store in L1 for faster access
+        this.memoryCache.set(key, parsedValue);
+        return parsedValue;
+      }
+    } catch (error) {
+      console.error('Redis error:', error);
+    }
+    
+    console.log('Cache miss');
+    return null;
+  }
+  
+  async set(key, value, ttl = 300) {
+    // Store in L1
+    this.memoryCache.set(key, value, ttl);
+    
+    // Store in L2
+    try {
+      await this.redis.setex(key, ttl, JSON.stringify(value));
+    } catch (error) {
+      console.error('Redis set error:', error);
+    }
+  }
+  
+  // Real estate specific caching
+  async cacheProperty(propertyId, propertyData) {
+    const cacheKey = `property:${propertyId}`;
+    await this.set(cacheKey, propertyData, 300); // 5 minutes
+    
+    // Also cache by area for listings
+    const areaKey = `properties:area:${propertyData.area}`;
+    const areaList = await this.get(areaKey) || [];
+    areaList.push(propertyId);
+    await this.set(areaKey, areaList.slice(-50), 600); // Keep last 50 properties
+  }
+}
+
+export const cacheManager = new CacheManager();
+```
+
+---
+
+### **🟢 LATEST PACKAGES & DEPENDENCIES**
+
+#### **Essential React Packages 2024**
+```json
+{
+  "dependencies": {
+    // State Management
+    "@reduxjs/toolkit": "^2.0.0",
+    "react-redux": "^9.0.0",
+    "zustand": "^4.4.0",
+    
+    // Routing
+    "react-router-dom": "^6.20.0",
+    
+    // Forms
+    "react-hook-form": "^7.48.0",
+    "zod": "^3.22.0",
+    "@hookform/resolvers": "^3.3.0",
+    
+    // UI Components
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-dropdown-menu": "^2.0.6",
+    "@radix-ui/react-tabs": "^1.0.4",
+    
+    // Data Visualization
+    "recharts": "^2.10.0",
+    "victory": "^36.6.11",
+    
+    // Maps
+    "@react-google-maps/api": "^2.19.2",
+    "leaflet": "^1.9.4",
+    
+    // File Handling
+    "react-dropzone": "^14.2.3",
+    "file-saver": "^2.0.5",
+    
+    // Internationalization
+    "react-i18next": "^13.2.0",
+    "i18next": "^23.5.0",
+    
+    // Animations
+    "framer-motion": "^10.16.0",
+    "react-spring": "^9.7.2",
+    
+    // Testing
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/user-event": "^14.5.0",
+    
+    // Performance Monitoring
+    "@sentry/react": "^7.77.0",
+    "web-vitals": "^3.5.0"
+  },
+  "devDependencies": {
+    // TypeScript
+    "typescript": "^5.2.2",
+    "@types/node": "^20.8.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    
+    // Build Tools
+    "vite": "^4.5.0",
+    "@vitejs/plugin-react": "^4.0.4",
+    
+    // Code Quality
+    "eslint": "^8.50.0",
+    "prettier": "^3.0.3",
+    "husky": "^8.0.3",
+    "lint-staged": "^14.0.0",
+    
+    // Bundle Analysis
+    "source-map-explorer": "^2.5.3",
+    "webpack-bundle-analyzer": "^4.9.0",
+    
+    // Testing
+    "jest": "^29.7.0",
+    "vitest": "^0.34.0"
+  }
+}
+```
+
+#### **Essential Node.js Packages 2024**
+```json
+{
+  "dependencies": {
+    // Core
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.0.0",
+    "compression": "^1.7.4",
+    
+    // Database
+    "mongoose": "^7.5.0",
+    "redis": "^4.6.10",
+    "ioredis": "^5.3.2",
+    
+    // Authentication
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "passport": "^0.6.0",
+    "passport-jwt": "^4.0.1",
+    
+    // File Upload
+    "multer": "^1.4.5-lts.1",
+    "sharp": "^0.32.6",
+    "cloudinary": "^1.41.0",
+    
+    // Email
+    "nodemailer": "^6.9.7",
+    "handlebars": "^4.7.8",
+    
+    // Validation
+    "joi": "^17.9.2",
+    "validator": "^13.9.0",
+    
+    // Logging
+    "winston": "^3.10.0",
+    "morgan": "^1.10.0",
+    
+    // Rate Limiting
+    "express-rate-limit": "^6.10.0",
+    "express-slow-down": "^1.5.0",
+    
+    // Security
+    "csurf": "^1.11.0",
+    "sanitize-html": "^2.11.0",
+    "xss-clean": "^0.1.4",
+    
+    // Payments
+    "stripe": "^14.8.0",
+    
+    // Monitoring
+    "newrelic": "^11.0.0"
+  }
+}
+```
+
+---
+
+### **🟢 VITE BUILD SYSTEM (Replace CRA)**
+
+#### **Vite Configuration**
+```javascript
+// vite.config.js
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { visualizer } from 'rollup-plugin-visualizer';
+import { VitePWA } from 'vite-plugin-pwa';
+
+export default defineConfig({
+  plugins: [
+    react({
+      // React Fast Refresh
+      include: '**/*.{jsx,tsx}',
+      babel: {
+        plugins: [
+          ['@babel/plugin-proposal-decorators', { legacy: true }],
+          ['@babel/plugin-proposal-class-properties', { loose: true }]
+        ]
+      }
+    }),
+    
+    // PWA support
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
+      manifest: {
+        name: 'Dubai Real Estate',
+        short_name: 'DubaiRE',
+        theme_color: '#DC2626',
+        icons: [
+          {
+            src: '/icon-192.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: '/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png'
+          }
+        ]
+      }
+    }),
+    
+    // Bundle analyzer
+    visualizer({
+      filename: './dist/stats.html',
+      open: true,
+      gzipSize: true,
+      brotliSize: true
+    })
+  ],
+  
+  server: {
+    port: 3000,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false
+      }
+    }
+  },
+  
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
+          maps: ['@react-google-maps/api', 'leaflet'],
+          charts: ['recharts', 'victory']
+        },
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
+      }
+    },
+    
+    // Performance optimizations
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    },
+    
+    // Enable brotli compression
+    reportCompressedSize: true,
+    
+    // Tree shaking
+    target: 'es2020',
+    modulePreload: {
+      polyfill: false
+    }
+  },
+  
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      '@react-google-maps/api'
+    ],
+    exclude: ['@babel/runtime']
+  },
+  
+  // CSS optimization
+  css: {
+    modules: {
+      localsConvention: 'camelCase'
+    },
+    postcss: './postcss.config.js'
+  }
+});
+```
+
+#### **PostCSS Configuration**
+```javascript
+// postcss.config.js
+module.exports = {
+  plugins: {
+    'postcss-preset-env': {
+      stage: 3,
+      features: {
+        'nesting-rules': true,
+        'custom-media-queries': true,
+        'media-query-ranges': true
+      }
+    },
+    'autoprefixer': {},
+    'cssnano': {
+      preset: 'advanced'
+    }
+  }
+};
+```
+
+---
+
+### **🟢 ADVANCED OPTIMIZATION TECHNIQUES**
+
+#### **1. Image Optimization Pipeline**
+```javascript
+// utils/imageOptimizer.js
+import sharp from 'sharp';
+import path from 'path';
+
+class ImageOptimizer {
+  static async optimize(originalPath, outputPath, options = {}) {
+    const defaultOptions = {
+      width: 1920,
+      height: 1080,
+      quality: 80,
+      format: 'webp',
+      fit: 'cover'
+    };
+    
+    const config = { ...defaultOptions, ...options };
+    
+    await sharp(originalPath)
+      .resize(config.width, config.height, { fit: config.fit })
+      [config.format]({ quality: config.quality })
+      .toFile(outputPath);
+    
+    // Generate responsive images
+    const sizes = [640, 768, 1024, 1280, 1920];
+    const responsiveImages = [];
+    
+    for (const size of sizes) {
+      const responsivePath = outputPath.replace(
+        `.${config.format}`,
+        `-${size}w.${config.format}`
+      );
+      
+      await sharp(originalPath)
+        .resize(size)
+        [config.format]({ quality: config.quality })
+        .toFile(responsivePath);
+      
+      responsiveImages.push({
+        path: responsivePath,
+        size
+      });
+    }
+    
+    return {
+      original: outputPath,
+      responsive: responsiveImages,
+      size: fs.statSync(outputPath).size
+    };
+  }
+}
+```
+
+#### **2. Real-time Performance Monitoring**
+```javascript
+// utils/performanceMonitor.js
+import { getCLS, getFID, getLCP, getFCP, getTTFB } from 'web-vitals';
+
+const reportWebVitals = (onPerfEntry) => {
+  if (onPerfEntry && onPerfEntry instanceof Function) {
+    import('web-vitals').then(({ getCLS, getFID, getLCP, getFCP, getTTFB }) => {
+      getCLS(onPerfEntry);
+      getFID(onPerfEntry);
+      getLCP(onPerfEntry);
+      getFCP(onPerfEntry);
+      getTTFB(onPerfEntry);
+    });
+  }
+};
+
+// Real-time monitoring dashboard
+class PerformanceMonitor {
+  constructor() {
+    this.metrics = new Map();
+    this.observers = [];
+  }
+  
+  startMonitoring() {
+    // Monitor React render times
+    const originalRender = ReactDOM.render;
+    ReactDOM.render = (element, container, callback) => {
+      const start = performance.now();
+      const result = originalRender(element, container, () => {
+        const end = performance.now();
+        this.recordMetric('render_time', end - start);
+        callback && callback();
+      });
+      return result;
+    };
+    
+    // Monitor API response times
+    const originalFetch = window.fetch;
+    window.fetch = async (...args) => {
+      const start = performance.now();
+      const response = await originalFetch(...args);
+      const end = performance.now();
+      this.recordMetric('api_response_time', end - start);
+      return response;
+    };
+  }
+  
+  recordMetric(name, value) {
+    const current = this.metrics.get(name) || [];
+    current.push({ timestamp: Date.now(), value });
+    if (current.length > 100) current.shift(); // Keep last 100
+    this.metrics.set(name, current);
+    
+    // Notify observers
+    this.observers.forEach(observer => observer(name, value));
+  }
+}
+```
+
+#### **3. Code Splitting Strategy**
+```javascript
+// Lazy loading components
+import React, { lazy, Suspense } from 'react';
+
+const PropertyMap = lazy(() => import('./components/PropertyMap'));
+const MortgageCalculator = lazy(() => import('./components/MortgageCalculator'));
+const VRPropertyView = lazy(() => import('./components/VRPropertyView'));
+const AdminDashboard = lazy(() => import('./components/admin/Dashboard'));
+
+const App = () => {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/properties" element={
+          <Suspense fallback={<MapLoading />}>
+            <PropertyMap />
+          </Suspense>
+        } />
+        <Route path="/calculator" element={
+          <Suspense fallback={<CalculatorLoading />}>
+            <MortgageCalculator />
+          </Suspense>
+        } />
+        <Route path="/vr-view/:id" element={
+          <Suspense fallback={<VRLoading />}>
+            <VRPropertyView />
+          </Suspense>
+        } />
+        <Route path="/admin/*" element={
+          <PrivateRoute>
+            <Suspense fallback={<AdminLoading />}>
+              <AdminDashboard />
+            </Suspense>
+          </PrivateRoute>
+        } />
+      </Routes>
+    </Suspense>
+  );
+};
+
+// Dynamic imports for routes
+const loadComponent = (componentName) => {
+  return lazy(() => 
+    import(`./pages/${componentName}`).catch(() => 
+      import('./pages/NotFound')
+    )
+  );
+};
+```
+
+---
+
+### **🟢 DEPLOYMENT OPTIMIZATIONS**
+
+#### **Docker Configuration**
+```dockerfile
+# Dockerfile
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Copy source code
+COPY . .
+
+# Build React app
+RUN npm run build
+
+# Production stage
+FROM nginx:alpine
+
+# Copy built assets
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Copy SSL certificates
+COPY ssl /etc/ssl
+
+EXPOSE 80 443
+
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+#### **Nginx Configuration**
+```nginx
+# nginx.conf
+events {
+    worker_connections 1024;
+}
+
+http {
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied expired no-cache no-store private auth;
+    gzip_types text/plain text/css text/xml text/javascript 
+               application/javascript application/xml+rss application/json;
+    gzip_disable "MSIE [1-6]\.";
+    
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    
+    # Cache static assets
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js|webp)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+    
+    # React Router support
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+    
+    # API proxy
+    location /api/ {
+        proxy_pass http://backend:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+---
+
+### **🟢 SECURITY UPDATES**
+
+#### **Security Configuration**
+```javascript
+// security/config.js
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import hpp from 'hpp';
+import xss from 'xss-clean';
+
+const securityConfig = (app) => {
+  // Helmet for security headers
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://maps.googleapis.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        imgSrc: ["'self'", "data:", "https:", "blob:"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        connectSrc: ["'self'", "https://api.realestate.ae"],
+        frameSrc: ["'self'", "https://www.google.com"]
+      }
+    }
+  }));
+  
+  // Rate limiting
+  app.use('/api/', rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: 'Too many requests from this IP'
+  }));
+  
+  // Body parsing security
+  app.use(express.json({ limit: '10kb' }));
+  app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+  
+  // Data sanitization
+  app.use(xss());
+  app.use(hpp());
+  
+  // CORS
+  app.use(cors({
+    origin: process.env.NODE_ENV === 'production' 
+      ? ['https://yourdomain.ae']
+      : ['http://localhost:3000'],
+    credentials: true
+  }));
+};
+```
+
+---
+
+## **MIGRATION CHECKLIST**
+
+### **Before Starting:**
+1. [ ] Backup existing codebase
+2. [ ] Document current dependencies
+3. [ ] Create rollback plan
+4. [ ] Test current application thoroughly
+
+### **Migration Steps:**
+1. [ ] Update Node.js to 20.x
+2. [ ] Update React to 18.2.0
+3. [ ] Migrate from CRA to Vite
+4. [ ] Update all dependencies
+5. [ ] Implement new security features
+6. [ ] Add performance monitoring
+7. [ ] Optimize images and assets
+8. [ ] Implement caching strategy
+9. [ ] Add PWA support
+10. [ ] Deploy with Docker
+
+### **Post-Migration Testing:**
+1. [ ] All functionality works
+2. [ ] Performance improved
+3. [ ] Security headers present
+4. [ ] Mobile responsive
+5. [ ] SEO optimized
+6. [ ] Error tracking working
+7. [ ] Analytics implemented
+8. [ ] Backup system functional
+
+This comprehensive upgrade will give you a cutting-edge Dubai real estate website with optimal performance, security, and user experience.
+
+
+## **EXECUTION COMMAND FOR REPLIT AI AGENT 3:**
+
+"Implement a complete Dubai real estate website with:
+1. Permanent Red (#DC2626) and White (#FFFFFF) color scheme across all pages
+2. Unified design system matching homepage aesthetics on all pages
+3. Complete user authentication with 100% profile completion and CRUD operations
+4. Role-based system with: OWNER (full access), ADMIN (partial access), USERS
+5. Admin-controlled CRM access management where admin can grant/revoke user access
+6. Database integration for all user operations
+7. Professional real estate design with Dubai-specific features
+8. Most important instruction for replit agent 3 to preserve all old fuctions only upgrade according to new instruction and update functions. 
+9. Document all features and users in a file for the company also
+
+Follow the consolidated requirements above and deliver working code for all components, pages, and backend APIs."
