@@ -262,6 +262,84 @@
   cursor: not-allowed;
 }
 
+.contact-apps {
+  margin-bottom: 1rem;
+}
+
+.apps-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #6b7280);
+  margin: 0 0 0.5rem 0;
+}
+
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.contact-app-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 10px;
+  background: var(--bg-secondary, #f8f9fa);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary, #1a1a2e);
+}
+
+[data-theme="dark"] .contact-app-btn {
+  background: var(--bg-tertiary, #1a1a2e);
+  border-color: var(--border-color, #3a3a5a);
+  color: var(--text-primary, #ffffff);
+}
+
+.contact-app-btn:hover {
+  border-color: var(--app-color);
+  background: color-mix(in srgb, var(--app-color) 10%, transparent);
+  transform: translateY(-2px);
+}
+
+.contact-app-btn svg {
+  flex-shrink: 0;
+}
+
+.star-invitation {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color, #e0e0e0);
+  text-align: center;
+}
+
+.star-invitation p {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #6b7280);
+  margin: 0 0 0.5rem 0;
+}
+
+.star-rating {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.star-rating .star {
+  font-size: 1.5rem;
+  color: #FFB300;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.star-rating .star:hover {
+  transform: scale(1.2);
+}
+
 @media (max-width: 768px) {
   .click-to-chat {
     bottom: 20px;
@@ -280,5 +358,9 @@
   .chat-trigger {
     padding: 0.75rem;
     border-radius: 50%;
+  }
+  
+  .apps-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

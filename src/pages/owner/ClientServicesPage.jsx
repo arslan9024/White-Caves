@@ -36,7 +36,7 @@ export default function ClientServicesPage() {
           <div className="cs-contact-info">
             <span>📍 Dubai, UAE</span>
             <span>📧 info@whitecaves.ae</span>
-            <span>📱 +971 4 335 0592</span>
+            <span>📱 +971 56 361 6136</span>
           </div>
         </header>
 
@@ -487,7 +487,7 @@ export default function ClientServicesPage() {
             <div className="cs-highlight-box">
               <h3>📞 Ready to Start?</h3>
               <p>Contact us today for a free, no-obligation consultation:</p>
-              <p><strong>📱 Phone/WhatsApp:</strong> +971 4 335 0592 / +971 56 361 6136</p>
+              <p><strong>📱 Phone/WhatsApp:</strong> +971 56 361 6136 / +971 56 361 6136</p>
               <p><strong>📧 Email:</strong> info@whitecaves.ae</p>
               <p><strong>📍 Office:</strong> Office D-72, El-Shaye-4, Port Saeed, Dubai</p>
               <p><strong>⏰ Hours:</strong> Sunday - Thursday: 9 AM - 6 PM | Saturday: 10 AM - 2 PM</p>

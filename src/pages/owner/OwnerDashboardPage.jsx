@@ -286,7 +286,7 @@ export default function OwnerDashboardPage() {
             <div className="info-card">
               <h3>White Caves Real Estate LLC</h3>
               <p><strong>Address:</strong> Office D-72, El-Shaye-4, Port Saeed, Dubai</p>
-              <p><strong>Phone:</strong> +971 4 335 0592</p>
+              <p><strong>Phone:</strong> +971 56 361 6136</p>
               <p><strong>Mobile:</strong> +971 56 361 6136</p>
             </div>
             <div className="info-card license">

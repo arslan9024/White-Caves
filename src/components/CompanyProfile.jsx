@@ -126,7 +126,7 @@ export default function CompanyProfile() {
               <span className="contact-icon">📞</span>
               <div>
                 <strong>Phone</strong>
-                <p>+971-4-335-0592</p>
+                <p>+971-56-361-6136</p>
               </div>
             </div>
             <div className="contact-item">

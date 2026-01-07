@@ -435,7 +435,7 @@ export default function CareersPage() {
               </div>
               <div className="cta-item">
                 <span className="cta-icon">📱</span>
-                <span>+971 4 335 0592</span>
+                <span>+971 56 361 6136</span>
               </div>
               <div className="cta-item">
                 <span className="cta-icon">📍</span>

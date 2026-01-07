@@ -397,7 +397,7 @@ export default function ServicesPage() {
               <p>Get expert guidance from our team of certified real estate professionals</p>
               <div className="contact-info">
                 <p><strong>📍</strong> Office D-72, El-Shaye-4, Port Saeed, Dubai</p>
-                <p><strong>📞</strong> +971 4 335 0592</p>
+                <p><strong>📞</strong> +971 56 361 6136</p>
                 <p><strong>📱</strong> +971 56 361 6136</p>
               </div>
             </div>

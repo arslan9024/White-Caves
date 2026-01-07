@@ -61,7 +61,7 @@ export default function ContactPage() {
                 </div>
                 <div className="contact-details">
                   <h3>Phone Numbers</h3>
-                  <p><strong>Office:</strong> +971 4 335 0592</p>
+                  <p><strong>Office:</strong> +971 56 361 6136</p>
                   <p><strong>Mobile:</strong> +971 56 361 6136</p>
                   <p><strong>WhatsApp:</strong> +971 56 361 6136</p>
                 </div>
@@ -134,7 +134,7 @@ export default function ContactPage() {
             <div className="quick-links">
               <h3>Quick Actions</h3>
               <div className="quick-links-grid">
-                <a href="tel:+97143350592" className="quick-link">
+                <a href="tel:+971563616136" className="quick-link">
                   <span className="quick-icon">📞</span>
                   Call Office
                 </a>

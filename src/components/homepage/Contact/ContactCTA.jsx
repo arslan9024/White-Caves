@@ -32,8 +32,8 @@ export default function ContactCTA() {
     {
       icon: Phone,
       label: 'Call Us',
-      value: '+971 4 335 0592',
-      link: 'tel:+97143350592'
+      value: '+971 56 361 6136',
+      link: 'tel:+971563616136'
     },
     {
       icon: Mail,
