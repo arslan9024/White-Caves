@@ -1,0 +1,551 @@
+.stat-icon-wrapper.landlord {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+[data-theme="dark"] .stat-icon-wrapper.landlord {
+  background: rgba(139, 92, 246, 0.2);
+}
+
+.landlord-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.properties-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.property-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: var(--bg-hover);
+  border-radius: 8px;
+}
+
+.property-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.property-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.property-location {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.property-tenant {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tenant-name {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.lease-end {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.no-tenant {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.property-status-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.property-badge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.property-badge.occupied {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.property-badge.available {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.payment-badge {
+  font-size: 0.65rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.payment-badge.paid {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.payment-badge.due-soon {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.payment-badge.overdue {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.maintenance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.maintenance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--bg-hover);
+  border-radius: 8px;
+}
+
+.maintenance-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.maintenance-issue {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.maintenance-property {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.maintenance-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.priority-badge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.priority-badge.high {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.priority-badge.medium {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.priority-badge.low {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.status-badge.pending {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.status-badge.in-progress {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.status-badge.resolved {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.financial-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.financial-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.financial-row.highlight {
+  padding: 0.75rem;
+  background: var(--bg-hover);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.financial-row.net {
+  border-top: 2px solid var(--border-color);
+  padding-top: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.financial-label {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.financial-value {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.financial-value.success {
+  color: #10b981;
+}
+
+.financial-value.warning {
+  color: #f59e0b;
+}
+
+.financial-row.net .financial-value {
+  color: var(--color-primary);
+  font-size: 1.125rem;
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.event-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--bg-hover);
+  border-radius: 8px;
+}
+
+.event-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.event-type {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.event-property {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.event-date {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.date-text {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.days-left {
+  font-size: 0.75rem;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.properties-section,
+.maintenance-section,
+.finances-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.properties-header,
+.maintenance-header,
+.finances-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.properties-header h3,
+.maintenance-header h3,
+.finances-header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.maintenance-filters {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.properties-grid,
+.maintenance-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.property-card-full,
+.maintenance-card {
+  background: var(--bg-hover);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.property-card-header,
+.maintenance-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.property-card-header h4,
+.maintenance-card h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.property-card-location {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0 0 1rem 0;
+}
+
+.property-card-rent {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.rent-label {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.rent-value {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.property-card-tenant {
+  margin-bottom: 1rem;
+}
+
+.tenant-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.tenant-value {
+  display: block;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.lease-info {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.property-card-actions,
+.maintenance-card-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.maintenance-card h4 {
+  margin: 0.5rem 0 0.75rem;
+}
+
+.maintenance-card-property,
+.maintenance-card-date {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0 0 0.5rem 0;
+}
+
+.finances-period {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.period-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.period-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.finances-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.finance-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: 12px;
+}
+
+.finance-card.income {
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.finance-card.collected {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.finance-card.pending {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.finance-card.expenses {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.finance-icon {
+  font-size: 2rem;
+}
+
+.finance-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.finance-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.finance-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.net-income-card {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.net-income-card h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.net-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.net-income-card p {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+@media (max-width: 992px) {
+  .landlord-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .property-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .property-status-col {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .finances-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .finances-grid {
+    grid-template-columns: 1fr;
+  }
+}
