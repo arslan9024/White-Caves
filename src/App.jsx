@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import './App.css'
+import './styles/theme.css'
 import './styles/design-system.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from './store/userSlice';

@@ -235,7 +235,7 @@ async function generateCompanyProfilePDF() {
     'Head Office: Office D-72, El-Shaye-4, Port Saeed, Deira, Dubai, UAE',
     'Phone: +971-4-335-0592',
     'WhatsApp: +971-56-361-6136',
-    'Email: info@whitecaves.com',
+    'Email: admin@whitecaves.com',
     'Website: www.whitecaves.com',
   ];
   

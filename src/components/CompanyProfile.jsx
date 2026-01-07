@@ -140,7 +140,7 @@ export default function CompanyProfile() {
               <span className="contact-icon">✉️</span>
               <div>
                 <strong>Email</strong>
-                <p>info@whitecaves.com</p>
+                <p>admin@whitecaves.com</p>
               </div>
             </div>
           </div>
