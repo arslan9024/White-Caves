@@ -65,7 +65,24 @@ Preferred communication style: Simple, everyday language.
 - **WhatsApp Business API**: For customer support via Click-to-Chat component.
 - **Matterport**: For virtual tour integration.
 
+## Deployment Configuration
+
+### Vercel Setup
+- **vercel.json**: Configured with SPA rewrites (preserves /api/* routes)
+- **Build**: Uses Vite with esbuild minification for faster builds
+- **Output**: `dist/` directory with code-split chunks (vendor, firebase, redux)
+- **Assets**: Static files (robots.txt, sitemap.xml, PDF brochure) copied to dist on build
+
+### Environment Variables
+- All client-side variables must use `VITE_` prefix
+- See `.env.example` for full list of required variables
+
 ## Recent Changes (January 2026)
+- **Vercel Deployment Ready**: Added vercel.json with proper SPA routing that preserves API routes
+- **Build Optimization**: Switched from terser to esbuild for faster production builds
+- **ClickToChat Enhancement**: Added online/offline status based on business hours (9am-10pm GST)
+- **Loading Components**: Added PageLoader and LazyImage for better UX
+- **Path Aliases**: Added @assets, @components, @utils aliases in Vite config
 - Added CompanyProfile component with PDF download functionality
 - Created enhanced ClickToChat WhatsApp component with quick message options
 - Generated company profile PDF using pdf-lib
