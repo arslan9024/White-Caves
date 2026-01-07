@@ -6,6 +6,7 @@ import './styles/design-system.css'
 import './styles/rtl.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from './store/userSlice';
+import { setTheme } from './store/navigationSlice';
 import { LanguageProvider } from './context/LanguageContext';
 import AppLayout from './components/layout/AppLayout';
 import UniversalComponents from './components/layout/UniversalComponents';
@@ -101,6 +102,12 @@ function App() {
       }
     };
     checkAuth();
+  }, [dispatch]);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    dispatch(setTheme(savedTheme));
   }, [dispatch]);
 
   const handleRoleSelect = (role) => {

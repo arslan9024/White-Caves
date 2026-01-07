@@ -71,7 +71,7 @@ const navigationSlice = createSlice({
     setTheme: (state, action) => {
       state.theme = action.payload;
       localStorage.setItem('theme', action.payload);
-      document.body.className = action.payload === 'dark' ? 'dark-mode' : '';
+      document.documentElement.setAttribute('data-theme', action.payload);
     },
     setLanguage: (state, action) => {
       state.language = action.payload;

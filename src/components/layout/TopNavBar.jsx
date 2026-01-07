@@ -11,7 +11,8 @@ import {
   toggleWhatsappMenu,
   closeWhatsappMenu,
   closeAllMenus,
-  setActiveRole
+  setActiveRole,
+  setTheme
 } from '../../store/navigationSlice';
 import './TopNavBar.css';
 
@@ -138,7 +139,8 @@ export default function TopNavBar() {
     profileMenuOpen, 
     roleMenuOpen, 
     whatsappMenuOpen,
-    activeRole 
+    activeRole,
+    theme
   } = useSelector(state => state.navigation);
   
   const menuRef = useRef(null);
@@ -203,6 +205,11 @@ export default function TopNavBar() {
     dispatch(setActiveRole(null));
     dispatch(closeAllMenus());
     navigate('/');
+  };
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    dispatch(setTheme(newTheme));
   };
 
   const getInitials = (name) => {
@@ -336,6 +343,14 @@ export default function TopNavBar() {
       </div>
 
       <div className="nav-right">
+        <button 
+          className="theme-toggle"
+          onClick={toggleTheme}
+          aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+        >
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </button>
+
         <div className="online-indicator">
           <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>
           <span className="status-text">{isOnline ? 'Online' : 'Offline'}</span>
