@@ -71,7 +71,12 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced Properties Page**: Updated properties listing (`src/pages/PropertiesPage.jsx`) with sticky search bar, purpose tabs (Buy/Rent), location and type dropdowns, advanced filter panel, grid/list view toggle, 12 sample properties with multiple images, and property favorites integration with Redux.
 - **AI CRM Assistants**: Five specialized AI-powered CRM systems integrated into the Owner Dashboard:
   - **Linda (WhatsApp CRM)**: `src/components/crm/LindaWhatsAppCRM.jsx` - Conversation management, AI insights, lead scoring, quick replies, real-time chat interface, and lead pre-qualification.
-  - **Mary (Inventory CRM)**: `src/components/crm/MaryInventoryCRM.jsx` - Full CRUD operations for property management with filters, sorting, search, detail views, and comprehensive property forms.
+  - **Mary (Inventory CRM)**: `src/components/crm/MaryInventoryCRM.jsx` - Full CRUD operations for property management with comprehensive filtering system. Features include:
+    - **Data Source**: 9,378 DAMAC Hills 2 properties loaded from JSON (`src/data/damacHills2/`)
+    - **FilterPanel** (`src/components/crm/inventory/FilterPanel.jsx`): 8 dropdown filters (Layout, Status, View, Cluster, Floor, Rooms, Area, Master Project) plus 3 data quality toggles (Multi-Owner, Multi-Phone, Multi-Property)
+    - **PropertyMatrix** (`src/components/crm/inventory/PropertyMatrix.jsx`): Sortable data table with 10 columns, enhanced pagination (First/Prev/Next/Last + page numbers), and row click for detail view
+    - **PropertyDetailsCard** (`src/components/crm/inventory/PropertyDetailsCard.jsx`): All 25+ Excel fields organized into 5 sections (Identification, Location, Specifications, Status & Pricing, Utilities)
+    - **Redux State**: `inventorySlice.js` with memoized selectors for filtering, unique value extraction, and active filter counting
   - **Clara (Leads CRM)**: `src/components/crm/ClaraLeadsCRM.jsx` - Full CRUD operations for lead management with stage tracking, scoring, activity timeline, and contact management.
   - **Nina (WhatsApp Bot Developer)**: `src/components/crm/NinaWhatsAppBotCRM.jsx` - WhatsApp bot session management, QR code scanning, web terminal with command execution, code module viewer/editor, bot analytics with performance metrics, and multi-bot support (Lion0, Lion1, Lion2).
   - **Nancy (HR Manager)**: `src/components/crm/NancyHRCRM.jsx` - Complete HR management system with employee directory (5 dummy employees), job board (3 job postings), applicant tracking (3 applicants), attendance monitoring, and performance reviews with score visualization.
