@@ -1,0 +1,253 @@
+.role-selection-form {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.role-selection-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.role-selection-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary, #1f2937);
+  margin-bottom: 8px;
+}
+
+.role-selection-header p {
+  font-size: 15px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.role-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.role-option {
+  display: block;
+  cursor: pointer;
+}
+
+.role-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.role-option-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 14px;
+  background: var(--bg-secondary, #ffffff);
+  transition: all 0.2s ease;
+}
+
+.role-option:hover .role-option-content {
+  border-color: var(--primary-color, #DC2626);
+  background: rgba(220, 38, 38, 0.02);
+}
+
+.role-option.selected .role-option-content {
+  border-color: var(--primary-color, #DC2626);
+  background: rgba(220, 38, 38, 0.05);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.role-option input:focus-visible + .role-option-content {
+  outline: 2px solid var(--primary-color, #DC2626);
+  outline-offset: 2px;
+}
+
+.role-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.role-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.role-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+}
+
+.role-description {
+  font-size: 13px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.approval-badge {
+  font-size: 11px;
+  font-weight: 500;
+  color: #f59e0b;
+  background: #fef3c7;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.approval-notice {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.notice-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.notice-content {
+  flex: 1;
+}
+
+.notice-content h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #92400e;
+  margin-bottom: 6px;
+}
+
+.notice-content p {
+  font-size: 13px;
+  color: #a16207;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.notice-content textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #ffffff;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.notice-content textarea:focus {
+  outline: none;
+  border-color: #f59e0b;
+}
+
+.role-selection-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.skip-btn {
+  padding: 12px 24px;
+  background: transparent;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-secondary, #6b7280);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.skip-btn:hover:not(:disabled) {
+  background: var(--bg-secondary, #f3f4f6);
+}
+
+.continue-btn {
+  padding: 12px 32px;
+  background: var(--primary-color, #DC2626);
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.continue-btn:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.continue-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+[data-theme="dark"] .role-selection-header h2 {
+  color: var(--text-primary, #f9fafb);
+}
+
+[data-theme="dark"] .role-option-content {
+  background: var(--bg-secondary, #1f2937);
+  border-color: var(--border-color, #374151);
+}
+
+[data-theme="dark"] .role-option:hover .role-option-content {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+[data-theme="dark"] .role-option.selected .role-option-content {
+  background: rgba(220, 38, 38, 0.15);
+}
+
+[data-theme="dark"] .role-label {
+  color: var(--text-primary, #f9fafb);
+}
+
+[data-theme="dark"] .approval-notice {
+  background: #78350f;
+  border-color: #a16207;
+}
+
+[data-theme="dark"] .notice-content h4 {
+  color: #fcd34d;
+}
+
+[data-theme="dark"] .notice-content p {
+  color: #fde68a;
+}
+
+[data-theme="dark"] .notice-content textarea {
+  background: #1f2937;
+  border-color: #a16207;
+  color: #f9fafb;
+}
+
+@media (max-width: 480px) {
+  .role-option-content {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  
+  .approval-badge {
+    order: 3;
+    margin-left: 44px;
+  }
+  
+  .role-selection-actions {
+    flex-direction: column-reverse;
+  }
+  
+  .skip-btn,
+  .continue-btn {
+    width: 100%;
+  }
+}

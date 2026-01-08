@@ -132,6 +132,9 @@ export const roleSlice = createSlice({
     clearStatusHistory: (state) => {
       state.statusHistory = [];
     },
+    setPendingRequests: (state, action) => {
+      state.pendingRequests = action.payload;
+    },
   },
 });
 
@@ -149,6 +152,7 @@ export const {
   clearRoleRequestStatus,
   dismissStatusItem,
   clearStatusHistory,
+  setPendingRequests,
 } = roleSlice.actions;
 
 export const selectAvailableRoles = (state) => state.role.availableRoles;
