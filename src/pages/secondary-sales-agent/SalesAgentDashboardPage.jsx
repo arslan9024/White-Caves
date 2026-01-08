@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import RolePageLayout, { ActionButton } from '../../components/layout/RolePageLayout';
+import RolePageLayout from '../../components/layout/RolePageLayout';
 import {
   StatCard,
   StatCardGrid,
@@ -12,7 +12,8 @@ import {
   LeadListItem,
   PropertyListItem,
   PipelineBoard,
-  DealProgressBar
+  DealProgressBar,
+  ActionButton
 } from '../../components/common';
 import './SalesAgentDashboard.css';
 

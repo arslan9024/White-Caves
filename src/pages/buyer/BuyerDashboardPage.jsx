@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import RolePageLayout, { ActionButton } from '../../components/layout/RolePageLayout';
+import RolePageLayout from '../../components/layout/RolePageLayout';
 import {
   StatCard,
   StatCardGrid,
@@ -9,7 +9,8 @@ import {
   DataList,
   DataListItem,
   QuickLinks,
-  PropertyListItem
+  PropertyListItem,
+  ActionButton
 } from '../../components/common';
 import './BuyerDashboard.css';
 

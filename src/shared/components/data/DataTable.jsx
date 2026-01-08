@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { Button } from '../ui';
-import { Flex } from '../layout';
+import Button from '../ui/Button';
+import Flex from '../layout/Flex';
 import './DataTable.css';
 
 const DataTable = React.memo(({

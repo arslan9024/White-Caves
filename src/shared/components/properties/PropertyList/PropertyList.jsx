@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import PropertyCard from '../PropertyCard';
-import { Grid, Flex } from '../../layout';
-import { Button } from '../../ui';
+import Grid from '../../layout/Grid';
+import Flex from '../../layout/Flex';
+import Button from '../../ui/Button';
 import './PropertyList.css';
 
 const PropertyList = React.memo(({

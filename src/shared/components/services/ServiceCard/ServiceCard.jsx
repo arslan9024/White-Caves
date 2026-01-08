@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { Card, Badge, Button } from '../../ui';
+import Card from '../../ui/Card';
+import Badge from '../../ui/Badge';
+import Button from '../../ui/Button';
 import './ServiceCard.css';
 
 const ServiceCard = React.memo(({

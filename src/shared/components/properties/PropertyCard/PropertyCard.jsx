@@ -1,8 +1,9 @@
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Card, Badge, Button } from '../../ui';
-import { Flex } from '../../layout';
+import Card from '../../ui/Card';
+import Badge from '../../ui/Badge';
+import Button from '../../ui/Button';
+import Flex from '../../layout/Flex';
 import './PropertyCard.css';
 
 const PropertyCard = React.memo(({
@@ -14,8 +15,6 @@ const PropertyCard = React.memo(({
   onView,
   className = ''
 }) => {
-  const dispatch = useDispatch();
-  const activeRole = useSelector(state => state.navigation?.activeRole);
   
   const {
     id,

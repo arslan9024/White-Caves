@@ -1,6 +1,9 @@
 import React, { useState, useCallback } from 'react';
-import { Input, Select, Button } from '../../ui';
-import { Flex, Grid } from '../../layout';
+import Input from '../../ui/Input';
+import Select from '../../ui/Select';
+import Button from '../../ui/Button';
+import Flex from '../../layout/Flex';
+import Grid from '../../layout/Grid';
 import './PropertyFilters.css';
 
 const PropertyFilters = React.memo(({

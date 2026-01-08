@@ -129,10 +129,41 @@
   z-index: 1;
 }
 
+@media (max-width: 767px) {
+  .wc-service-card--horizontal {
+    flex-direction: column;
+  }
+
+  .wc-service-card--horizontal .wc-service-card__image {
+    width: 100%;
+    aspect-ratio: 16/10;
+  }
+
+  .wc-service-card__content {
+    padding: 1rem;
+  }
+
+  .wc-service-card__title {
+    font-size: 1rem;
+  }
+
+  .wc-service-card__actions {
+    flex-direction: column;
+  }
+}
+
 [data-theme="dark"] .wc-service-card__title {
   color: var(--text-primary-dark, #F9FAFB);
 }
 
 [data-theme="dark"] .wc-service-card__meta {
   border-color: var(--border-color-dark, #374151);
+}
+
+[data-theme="dark"] .wc-service-card__icon {
+  background: rgba(220, 38, 38, 0.2);
+}
+
+[data-theme="dark"] .wc-service-card__description {
+  color: var(--text-muted-dark, #9CA3AF);
 }

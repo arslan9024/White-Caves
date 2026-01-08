@@ -1,6 +1,6 @@
 import React from 'react';
 import ServiceCard from '../ServiceCard';
-import { Grid } from '../../layout';
+import Grid from '../../layout/Grid';
 import './ServiceList.css';
 
 const ServiceList = React.memo(({
