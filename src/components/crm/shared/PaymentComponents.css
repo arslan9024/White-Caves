@@ -99,9 +99,40 @@
 }
 
 .qr-code-wrapper {
-  padding: 1rem;
+  padding: 1.5rem;
   background: #fff;
   border-radius: 12px;
+  text-align: center;
+}
+
+.qr-merchant-name {
+  margin-bottom: 1rem;
+}
+
+.merchant-label {
+  color: #666;
+  font-size: 0.75rem;
+  display: block;
+}
+
+.qr-merchant-name h4 {
+  color: #000;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0.25rem 0 0;
+}
+
+.aani-qr-image {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  margin: 0.5rem 0;
+}
+
+.qr-instruction {
+  color: #333;
+  font-size: 0.8125rem;
+  margin-top: 0.75rem;
 }
 
 .qr-code-placeholder {

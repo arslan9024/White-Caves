@@ -1,0 +1,73 @@
+**Final Organized Prompt for Replit Agent:**
+
+**Step 1: Analyze Current State**
+- Access Aurora documentation to review existing project architecture
+- Examine AI assistant registry (12 assistants total)
+- Review current component library and Redux state structure
+- Identify all existing design patterns and reusable components
+
+**Step 2: Process Upgrade Instructions**
+- Read detailed upgrade requirements from the provided text file
+- Map each requirement to specific AI assistants and features
+- Prioritize upgrades based on current project state
+
+**Step 3: Implement Unified Architecture**
+1. **Create AI Command Center Sidebar**
+   - Transform array of 12 assistants into persistent right sidebar
+   - Each assistant tile displays: avatar, name, notification badge, status, quick action
+   - Implement real-time notification system linking user actions to relevant assistants
+
+2. **Establish Dashboard Layout Pattern**
+   - All assistants follow consistent layout:
+     * Left (25%): Assistant-specific feature navigation
+     * Right (75%): Main content area with data views
+   - Implement responsive design for all screen sizes
+
+**Step 4: Assistant-Specific Upgrades (Execute in Order)**
+1. **Theodora**: Payment message generator (QR code, cheque, bank transfer)
+2. **Linda**: Agent task assignment dropdown for message distribution
+3. **Clara**: Lead organization into rent/sale categories with separate views
+4. **Mary**: Single property detail viewer with gallery and specifications
+5. **Nina**: WhatsApp bot manager with QR linking and delete functionality
+6. **Olivia**: Multi-platform property integration (Bayut, Property Finder, Dubizzle)
+7. **Nancy**: Job posting manager with social media sharing
+8. **Sophia, Daisy, Zoe, Laila, Aurora**: Complete dashboard implementations
+
+**Step 5: Component System Enhancement**
+- Extract and create reusable components: BigTileCard, DataGridView, ActivityTimeline
+- Ensure design consistency across all modules
+- Implement proper loading/error states
+
+**Step 6: State Management Optimization**
+- Consolidate duplicate Redux slices into single source
+- Implement proper action-reducer patterns
+- Add memoization and caching strategies
+- Set up real-time update mechanisms
+
+**Step 7: Performance Improvements**
+- Memoize selector functions
+- Implement lazy loading for dashboards
+- Add error boundaries to all modules
+- Optimize bundle size through code splitting
+
+**Step 8: Documentation Update**
+- Refresh Aurora with updated assistant inventory and features
+- Add current project development statistics
+- Update architectural diagrams and component library
+- Document new Redux state structure and API endpoints
+
+**Execution Priority:**
+1. Critical fixes and architecture foundation
+2. Assistant-specific feature implementations
+3. Component extraction and design consistency
+4. Performance optimization
+5. Documentation updates
+
+**Quality Requirements:**
+- Maintain backward compatibility
+- Follow existing project conventions
+- Ensure responsive design throughout
+- Test all user flows thoroughly
+- Document any architectural deviations in Aurora
+
+Execute this plan sequentially, providing progress summaries after each major step. Report any conflicts or technical constraints encountered during implementation.

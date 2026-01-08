@@ -27,31 +27,39 @@ const PAYMENT_METHODS = {
 };
 
 const BANK_DETAILS = {
-  bankName: 'Emirates NBD',
-  accountName: 'White Caves Real Estate LLC',
-  accountNumber: '1012345678901',
-  iban: 'AE070331234567890123456',
-  swiftCode: 'EABORAEDXXX',
-  branch: 'Dubai Main Branch',
+  bankName: 'Mashreq NEOBiz',
+  accountName: 'WHITE CAVES REAL ESTATE L.L.C',
+  accountNumber: '019101501006',
+  iban: 'AE960330000019101501006',
+  swiftCode: 'BOMLAEAD',
+  routingCode: '203320101',
+  accountType: 'Lite',
+  branch: 'Mashreq NEOBiz Digital',
   currency: 'AED'
 };
 
 const QRCodeDisplay = memo(({ amount, reference, onCopy }) => {
-  const qrData = `upi://pay?pa=whitecaves@emiratesnbd&pn=WhiteCaves&am=${amount}&tn=${reference}`;
+  const paymentInfo = `Merchant: WHITE CAVES REAL ESTATE L.L.C\nAmount: AED ${amount?.toLocaleString()}\nReference: ${reference}\nPayment Method: Aani - Scan with enabled bank apps`;
   
   return (
     <div className="qr-code-container">
       <div className="qr-code-wrapper">
-        <div className="qr-code-placeholder">
-          <QrCode size={120} />
-          <span className="qr-hint">QR Code for AED {amount?.toLocaleString()}</span>
+        <div className="qr-merchant-name">
+          <span className="merchant-label">Merchant name</span>
+          <h4>WHITE CAVES REAL ESTATE L.L.C</h4>
         </div>
+        <img 
+          src="/images/aani-qr-code.png" 
+          alt="Aani QR Code - WHITE CAVES REAL ESTATE L.L.C"
+          className="aani-qr-image"
+        />
+        <p className="qr-instruction">Scan and pay using Aani enabled bank apps</p>
       </div>
       <div className="qr-details">
         <p className="qr-amount">Amount: <strong>AED {amount?.toLocaleString()}</strong></p>
         <p className="qr-reference">Reference: <strong>{reference}</strong></p>
-        <button className="copy-btn" onClick={() => onCopy(qrData)}>
-          <Copy size={14} /> Copy QR Data
+        <button className="copy-btn" onClick={() => onCopy(paymentInfo)}>
+          <Copy size={14} /> Copy Payment Info
         </button>
       </div>
     </div>
@@ -100,7 +108,7 @@ const BankTransferDetails = memo(({ amount, reference, onCopy, copied }) => (
     
     <div className="details-grid">
       <div className="detail-row">
-        <span className="detail-label">Account Name</span>
+        <span className="detail-label">Account Holder Name</span>
         <span className="detail-value">{BANK_DETAILS.accountName}</span>
         <button className="copy-icon" onClick={() => onCopy(BANK_DETAILS.accountName, 'accountName')}>
           {copied === 'accountName' ? <Check size={14} /> : <Copy size={14} />}
@@ -118,6 +126,17 @@ const BankTransferDetails = memo(({ amount, reference, onCopy, copied }) => (
         <span className="detail-value">{BANK_DETAILS.iban}</span>
         <button className="copy-icon" onClick={() => onCopy(BANK_DETAILS.iban, 'iban')}>
           {copied === 'iban' ? <Check size={14} /> : <Copy size={14} />}
+        </button>
+      </div>
+      <div className="detail-row">
+        <span className="detail-label">Account Type</span>
+        <span className="detail-value">{BANK_DETAILS.accountType}</span>
+      </div>
+      <div className="detail-row">
+        <span className="detail-label">Routing Code</span>
+        <span className="detail-value">{BANK_DETAILS.routingCode}</span>
+        <button className="copy-icon" onClick={() => onCopy(BANK_DETAILS.routingCode, 'routing')}>
+          {copied === 'routing' ? <Check size={14} /> : <Copy size={14} />}
         </button>
       </div>
       <div className="detail-row">
@@ -195,11 +214,11 @@ const PaymentInstructionDeck = memo(({
     let message = '';
     
     if (selectedMethod === 'qr') {
-      message = `Dear ${clientName},\n\nPlease find attached the QR code for your payment of AED ${amount.toLocaleString()}.\n\nReference: ${reference}\nInvoice: ${invoiceId}\n\nScan the QR code with your banking app to complete the payment.\n\nThank you,\nWhite Caves Real Estate`;
+      message = `Dear ${clientName},\n\nPlease scan the Aani QR code for your payment of AED ${amount.toLocaleString()}.\n\nMerchant: WHITE CAVES REAL ESTATE L.L.C\nReference: ${reference}\nInvoice: ${invoiceId}\n\nScan the QR code using any Aani-enabled bank app to complete the payment.\n\nThank you,\nWhite Caves Real Estate`;
     } else if (selectedMethod === 'cheque') {
       message = `Dear ${clientName},\n\nCheque Payment Instructions:\n\nPayable to: ${BANK_DETAILS.accountName}\nAmount: AED ${amount.toLocaleString()}\nReference: ${reference}\n\nPlease write the reference number on the back of the cheque and cross it "Account Payee Only".\n\nDelivery: White Caves Real Estate, Bay Square, Building 12, Dubai\n\nThank you,\nWhite Caves Real Estate`;
     } else {
-      message = `Dear ${clientName},\n\nBank Transfer Details:\n\nBank: ${BANK_DETAILS.bankName}\nAccount Name: ${BANK_DETAILS.accountName}\nAccount Number: ${BANK_DETAILS.accountNumber}\nIBAN: ${BANK_DETAILS.iban}\nSWIFT: ${BANK_DETAILS.swiftCode}\n\nAmount: AED ${amount.toLocaleString()}\nReference: ${reference}\n\nPlease include the reference number in your transfer description.\n\nThank you,\nWhite Caves Real Estate`;
+      message = `Dear ${clientName},\n\nBank Transfer Details:\n\nBank: ${BANK_DETAILS.bankName}\nAccount Holder Name: ${BANK_DETAILS.accountName}\nAccount Number: ${BANK_DETAILS.accountNumber}\nIBAN: ${BANK_DETAILS.iban}\nAccount Type: ${BANK_DETAILS.accountType}\nRouting Code: ${BANK_DETAILS.routingCode}\nSWIFT Code: ${BANK_DETAILS.swiftCode}\n\nAmount: AED ${amount.toLocaleString()}\nReference: ${reference}\n\nPlease include the reference number in your transfer description.\n\nThank you,\nWhite Caves Real Estate`;
     }
     
     if (onGenerateMessage) {
