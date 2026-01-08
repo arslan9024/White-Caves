@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Play, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import FutureHomeVisualizer from './FutureHomeVisualizer';
 import './Hero.css';
 
 const AnimatedCounter = ({ end, duration = 2000, suffix = '' }) => {
@@ -155,10 +156,13 @@ export default function Hero() {
         </motion.div>
 
         <motion.h1 className="hero-title" variants={itemVariants}>
-          Find Your Dream
-          <span className="gradient-text"> Luxury Home</span>
+          Find Your Dream Home
           <br />in Dubai
         </motion.h1>
+
+        <motion.div variants={itemVariants} className="visualizer-wrapper">
+          <FutureHomeVisualizer />
+        </motion.div>
 
         <motion.p className="hero-description" variants={itemVariants}>
           Experience unparalleled luxury living in Dubai's most prestigious locations.

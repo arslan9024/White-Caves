@@ -113,6 +113,10 @@
   margin-bottom: 1.5rem;
 }
 
+.visualizer-wrapper {
+  margin: 1.5rem 0;
+}
+
 .badge-icon {
   color: var(--accent-gold);
   font-size: 1rem;
