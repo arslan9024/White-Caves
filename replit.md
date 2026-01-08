@@ -46,13 +46,43 @@ Preferred communication style: Simple, everyday language.
     - **DAMAC Asset Fetcher**: S3 URL generator for fetching property images.
     - **Image Data Extractor**: OCR-based tool for extracting text from uploaded images.
     - **Web Data Harvester**: URL template iterator for scraping property data from web pages.
-- **AI Assistant Hub**: Unified command center for all AI assistants with quick stats overview, visual assistant cards, feature map view, and live activity feed.
-- **AI CRM Assistants**: Five specialized AI-powered CRM systems integrated into the Owner Dashboard:
-    - **Linda (WhatsApp CRM)**: Conversation management, AI insights, lead scoring, real-time chat interface.
-    - **Mary (Inventory CRM)**: Full CRUD operations for property management with comprehensive filtering and data display.
-    - **Clara (Leads CRM)**: Full CRUD operations for lead management with stage tracking, scoring, and activity timeline.
-    - **Nina (WhatsApp Bot Developer)**: WhatsApp bot session management, QR code scanning, web terminal, and bot analytics.
-    - **Nancy (HR Manager)**: Complete HR management system with employee directory, job board, applicant tracking, attendance monitoring, and performance reviews.
+- **AI Assistant Dashboard System** (`src/store/slices/aiAssistantDashboardSlice.js`): Unified Redux state management for 11 AI assistants organized by department (Operations, Sales, Communications, Finance, Marketing, Executive, Compliance). Features:
+    - byId/allIds normalized state pattern with memoized selectors
+    - Favorites and recent tracking with owner preferences
+    - Department filtering and search functionality
+    - Real-time activity feed and performance metrics
+    - Quick stats overview and critical alerts
+- **AI Assistant Selector** (`src/components/crm/AIAssistantSelector.jsx`): Intelligent dropdown component with:
+    - Search across all assistants by name, title, or department
+    - Department filter buttons (All, Operations, Sales, Communications, etc.)
+    - Favorites section with star toggle
+    - Recently used assistants tracking
+    - Quick stats footer showing total assistants, active count, and alerts
+    - Redux-controlled open/close state
+- **AI Assistant Hub** (`src/components/crm/AIAssistantHub.jsx`): Unified command center for all AI assistants with:
+    - Department-grouped assistant cards with status indicators
+    - Feature Map view showing 8 data flows between assistants
+    - Live activity feed with real-time updates
+    - Quick stats bar with system-wide metrics
+    - Integration with AI Assistant Selector
+- **WhatsApp Agents Data** (`src/data/whatsappAgentsData.js`): 23 agent records for Linda CRM with:
+    - Status management (active/blocked/submitted/permanent_blocked)
+    - Task priority system (Task1, Task2, Task3)
+    - Performance metrics (response rate, conversion rate, satisfaction)
+    - Message templates library with bilingual support
+    - Daily analytics and trends data
+- **AI CRM Assistants**: 11 specialized AI-powered assistants integrated into Owner Dashboard:
+    - **Linda (WhatsApp CRM)**: Manages 23+ agent numbers, conversation routing, lead pre-qualification, template messaging.
+    - **Mary (Inventory CRM)**: DAMAC Hills 2 property inventory with 9,378+ units, data tools, asset management.
+    - **Clara (Leads CRM)**: Lead pipeline management, qualification workflows, conversion tracking.
+    - **Nina (WhatsApp Bot Developer)**: Bot development, flow design, session management, analytics.
+    - **Nancy (HR Manager)**: Employee management, recruitment, performance tracking, attendance.
+    - **Theodora (Finance Director)**: Invoice management, payment tracking, financial reports.
+    - **Olivia (Marketing Manager)**: Campaign management, social media, listing optimization.
+    - **Zoe (Executive Assistant)**: Calendar management, meeting scheduling, task delegation.
+    - **Laila (Compliance Officer)**: KYC verification, AML monitoring, contract reviews.
+    - **Sophia (Sales Pipeline Manager)**: Sales pipeline, lead assignments, deal tracking, forecasting.
+    - **Daisy (Leasing Manager)**: Rental properties, tenant communications, lease agreements.
 
 ## External Dependencies
 
