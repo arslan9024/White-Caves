@@ -11,6 +11,7 @@ import {
   signInWithPhone,
   createRecaptchaVerifier
 } from '../../config/firebase';
+import { BiometricLoginButton } from '../../features/auth/components/BiometricLogin';
 import './AuthPages.css';
 
 const USER_CATEGORIES = [
@@ -268,6 +269,14 @@ export default function SignInPage() {
 
               {error && <div className="auth-error">{error}</div>}
               {success && <div className="auth-success">{success}</div>}
+
+              {mode === 'signin' && (
+                <BiometricLoginButton 
+                  onSuccess={(user) => handleSignInSuccess(user)}
+                  onError={(error) => setError(error.message)}
+                  disabled={loading}
+                />
+              )}
 
               <div className="social-login-primary">
                 <p className="social-login-label">Quick sign in with</p>

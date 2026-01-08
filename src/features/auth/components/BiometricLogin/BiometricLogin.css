@@ -1,0 +1,213 @@
+.biometric-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid var(--primary-color, #DC2626);
+  background: linear-gradient(135deg, var(--primary-color, #DC2626) 0%, #B91C1C 100%);
+  color: #ffffff;
+  min-height: 56px;
+  margin-bottom: 16px;
+}
+
+.biometric-login-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+}
+
+.biometric-login-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.biometric-login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.biometric-login-btn:focus-visible {
+  outline: 2px solid var(--primary-color, #DC2626);
+  outline-offset: 2px;
+}
+
+.biometric-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+.biometric-icon svg {
+  fill: currentColor;
+}
+
+.biometric-btn-text {
+  flex: 1;
+  text-align: center;
+}
+
+.biometric-setup-card {
+  background: var(--bg-secondary, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 16px;
+  padding: 24px;
+  margin: 16px 0;
+}
+
+.biometric-setup-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.biometric-setup-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--primary-color, #DC2626) 0%, #B91C1C 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.biometric-setup-title h3 {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+}
+
+.biometric-setup-title p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.biometric-setup-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.biometric-setup-btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.biometric-setup-btn.primary {
+  background: var(--primary-color, #DC2626);
+  color: white;
+}
+
+.biometric-setup-btn.primary:hover {
+  background: #B91C1C;
+}
+
+.biometric-setup-btn.secondary {
+  background: var(--bg-tertiary, #f3f4f6);
+  color: var(--text-primary, #1f2937);
+  border: 1px solid var(--border-color, #e5e7eb);
+}
+
+.biometric-setup-btn.secondary:hover {
+  background: var(--bg-secondary, #e5e7eb);
+}
+
+.biometric-credential-list {
+  margin-top: 16px;
+}
+
+.biometric-credential-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--bg-tertiary, #f9fafb);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.biometric-credential-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.biometric-credential-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--primary-color, #DC2626);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.biometric-credential-details h4 {
+  margin: 0 0 2px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary, #1f2937);
+}
+
+.biometric-credential-details span {
+  font-size: 12px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.biometric-remove-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #DC2626;
+  background: transparent;
+  border: 1px solid #DC2626;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.biometric-remove-btn:hover {
+  background: #DC2626;
+  color: white;
+}
+
+[data-theme="dark"] .biometric-setup-card {
+  background: var(--bg-secondary, #1f2937);
+  border-color: var(--border-color, #374151);
+}
+
+[data-theme="dark"] .biometric-credential-item {
+  background: var(--bg-tertiary, #374151);
+}
+
+@media (max-width: 480px) {
+  .biometric-login-btn {
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+  
+  .biometric-setup-actions {
+    flex-direction: column;
+  }
+  
+  .biometric-setup-btn {
+    width: 100%;
+  }
+}

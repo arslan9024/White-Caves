@@ -16,7 +16,11 @@ import {
   updatePassword,
   sendPasswordResetEmail,
   sendEmailVerification,
-  reauthenticateWithCredential
+  reauthenticateWithCredential,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
+  onAuthStateChanged
 } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -115,6 +119,39 @@ export const resetPassword = async (email) => {
 export const verifyEmail = async (user) => {
   if (!auth) throw new Error('Firebase not initialized');
   return await sendEmailVerification(user);
+};
+
+export const setAuthPersistence = async (rememberMe = true) => {
+  if (!auth) throw new Error('Firebase not initialized');
+  const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
+  return await setPersistence(auth, persistence);
+};
+
+export const onAuthChange = (callback) => {
+  if (!auth) {
+    console.warn('Firebase not initialized');
+    return () => {};
+  }
+  return onAuthStateChanged(auth, callback);
+};
+
+export const saveBiometricSession = (user, token) => {
+  const sessionData = {
+    user: {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+      emailVerified: user.emailVerified,
+    },
+    token,
+    savedAt: new Date().toISOString(),
+  };
+  localStorage.setItem('biometric_session', JSON.stringify(sessionData));
+};
+
+export const clearBiometricSession = () => {
+  localStorage.removeItem('biometric_session');
 };
 
 export { auth, EmailAuthProvider, reauthenticateWithCredential };
