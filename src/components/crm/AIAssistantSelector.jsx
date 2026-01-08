@@ -3,7 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   Search, Star, Activity, TrendingUp, Users, AlertCircle,
   Shield, DollarSign, Megaphone, MessageSquare, Briefcase,
-  FileText, Home, Target, Bot, Users2, ChevronDown, ChevronUp, X
+  FileText, Home, Target, Bot, Users2, ChevronDown, ChevronUp, X,
+  Server
 } from 'lucide-react';
 import {
   selectAssistant,
@@ -30,7 +31,8 @@ const DEPARTMENTS = [
   { id: 'finance', label: 'Finance' },
   { id: 'marketing', label: 'Marketing' },
   { id: 'executive', label: 'Executive' },
-  { id: 'compliance', label: 'Compliance' }
+  { id: 'compliance', label: 'Compliance' },
+  { id: 'technology', label: 'Technology' }
 ];
 
 const ASSISTANT_ICONS = {
@@ -44,7 +46,8 @@ const ASSISTANT_ICONS = {
   daisy: Home,
   clara: Target,
   nina: Bot,
-  nancy: Users2
+  nancy: Users2,
+  aurora: Server
 };
 
 const AIAssistantSelector = ({ onSelectAssistant, compact = false }) => {

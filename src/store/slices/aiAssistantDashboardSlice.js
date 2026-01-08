@@ -341,6 +341,59 @@ const AI_ASSISTANTS_REGISTRY = {
     },
     dashboardUrl: '/owner/dashboard?tab=nancy',
     apiEndpoints: ['/api/hr', '/api/employees', '/api/recruitment']
+  },
+  aurora: {
+    id: 'aurora',
+    name: 'Aurora',
+    title: 'Chief Technology Officer',
+    department: 'technology',
+    icon: 'Server',
+    colorScheme: '#0EA5E9',
+    avatar: '👩‍💻',
+    description: 'Oversees all technical operations, system architecture, deployment pipelines, and application portfolio management',
+    capabilities: [
+      'system_health_monitoring',
+      'deployment_pipeline',
+      'application_portfolio',
+      'performance_analytics',
+      'dependency_management',
+      'infrastructure_monitoring',
+      'mobile_app_management',
+      'api_performance_tracking'
+    ],
+    permissions: {
+      viewableBy: ['owner', 'admin'],
+      accessibleBy: ['owner'],
+      dataAccessLevel: 'full'
+    },
+    metrics: {
+      lastActive: null,
+      tasksCompleted: 234,
+      activeUsers: 2,
+      systemHealth: 'optimal'
+    },
+    quickStats: {
+      today: {
+        value: 99.98,
+        label: 'Uptime %',
+        change: 0.02
+      }
+    },
+    dashboardUrl: '/owner/dashboard?tab=aurora',
+    apiEndpoints: ['/api/system', '/api/deployments', '/api/applications'],
+    techStack: {
+      frontend: ['React 18', 'Redux Toolkit', 'Vite'],
+      backend: ['Node.js 20', 'Express', 'MongoDB 7'],
+      database: ['MongoDB', 'Redis'],
+      infrastructure: ['Replit', 'MongoDB Atlas']
+    },
+    systemModules: {
+      applicationPortfolio: true,
+      developmentLifecycle: true,
+      systemHealthMonitor: true,
+      deploymentPipeline: true,
+      apiPerformance: true
+    }
   }
 };
 
@@ -351,7 +404,8 @@ const DEPARTMENT_COLORS = {
   executive: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
   compliance: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
   communications: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
-  sales: 'linear-gradient(135deg, #8B5CF6 0%, #D946EF 100%)'
+  sales: 'linear-gradient(135deg, #8B5CF6 0%, #D946EF 100%)',
+  technology: 'linear-gradient(135deg, #0EA5E9 0%, #06B6D4 100%)'
 };
 
 const generateActivities = () => {
@@ -366,7 +420,9 @@ const generateActivities = () => {
     { id: 7, assistantId: 'laila', action: 'KYC verification completed', target: 'James Wilson', timestamp: new Date(now - 2100000).toISOString(), type: 'success' },
     { id: 8, assistantId: 'nina', action: 'Bot session started', target: 'Lion0 WhatsApp Bot', timestamp: new Date(now - 2400000).toISOString(), type: 'active' },
     { id: 9, assistantId: 'daisy', action: 'Lease renewal processed', target: 'Unit 156 - Palm Views', timestamp: new Date(now - 2700000).toISOString(), type: 'success' },
-    { id: 10, assistantId: 'olivia', action: 'Campaign launched', target: 'Summer Property Showcase', timestamp: new Date(now - 3000000).toISOString(), type: 'success' }
+    { id: 10, assistantId: 'olivia', action: 'Campaign launched', target: 'Summer Property Showcase', timestamp: new Date(now - 3000000).toISOString(), type: 'success' },
+    { id: 11, assistantId: 'aurora', action: 'System health check completed', target: 'All services healthy', timestamp: new Date(now - 3300000).toISOString(), type: 'success' },
+    { id: 12, assistantId: 'aurora', action: 'Deployment successful', target: 'WhatsApp CRM v2.4.1', timestamp: new Date(now - 3600000).toISOString(), type: 'success' }
   ];
 };
 

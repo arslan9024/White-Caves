@@ -6,7 +6,7 @@ import {
   ChevronRight, X, RefreshCw, Bell, Settings,
   Network, GitBranch, Layers, Target, Home,
   DollarSign, Megaphone, Shield, FileText, Users2,
-  Star, AlertCircle
+  Star, AlertCircle, Server
 } from 'lucide-react';
 import {
   selectAllAssistantsArray,
@@ -33,7 +33,8 @@ const ASSISTANT_ICONS = {
   zoe: Briefcase,
   laila: Shield,
   sophia: Users,
-  daisy: Home
+  daisy: Home,
+  aurora: Server
 };
 
 const FEATURE_FLOWS = [
@@ -100,6 +101,22 @@ const FEATURE_FLOWS = [
     target: 'daisy',
     description: 'Available rental properties are synced to the leasing management system',
     automationLevel: 'full'
+  },
+  {
+    id: 'system_health_reporting',
+    name: 'System Health Reporting',
+    source: 'aurora',
+    target: 'zoe',
+    description: 'Critical system alerts and performance reports are sent to executive dashboard',
+    automationLevel: 'full'
+  },
+  {
+    id: 'deployment_tracking',
+    name: 'Deployment Tracking',
+    source: 'aurora',
+    target: 'theodora',
+    description: 'Infrastructure costs and deployment metrics are synced for financial tracking',
+    automationLevel: 'semi-auto'
   }
 ];
 

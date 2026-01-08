@@ -46,7 +46,7 @@ Preferred communication style: Simple, everyday language.
     - **DAMAC Asset Fetcher**: S3 URL generator for fetching property images.
     - **Image Data Extractor**: OCR-based tool for extracting text from uploaded images.
     - **Web Data Harvester**: URL template iterator for scraping property data from web pages.
-- **AI Assistant Dashboard System** (`src/store/slices/aiAssistantDashboardSlice.js`): Unified Redux state management for 11 AI assistants organized by department (Operations, Sales, Communications, Finance, Marketing, Executive, Compliance). Features:
+- **AI Assistant Dashboard System** (`src/store/slices/aiAssistantDashboardSlice.js`): Unified Redux state management for 12 AI assistants organized by department (Operations, Sales, Communications, Finance, Marketing, Executive, Compliance, Technology). Features:
     - byId/allIds normalized state pattern with memoized selectors
     - Favorites and recent tracking with owner preferences
     - Department filtering and search functionality
@@ -71,7 +71,7 @@ Preferred communication style: Simple, everyday language.
     - Performance metrics (response rate, conversion rate, satisfaction)
     - Message templates library with bilingual support
     - Daily analytics and trends data
-- **AI CRM Assistants**: 11 specialized AI-powered assistants integrated into Owner Dashboard:
+- **AI CRM Assistants**: 12 specialized AI-powered assistants integrated into Owner Dashboard:
     - **Linda (WhatsApp CRM)**: Manages 23+ agent numbers, conversation routing, lead pre-qualification, template messaging.
     - **Mary (Inventory CRM)**: DAMAC Hills 2 property inventory with 9,378+ units, data tools, asset management.
     - **Clara (Leads CRM)**: Lead pipeline management, qualification workflows, conversion tracking.
@@ -83,6 +83,15 @@ Preferred communication style: Simple, everyday language.
     - **Laila (Compliance Officer)**: KYC verification, AML monitoring, contract reviews.
     - **Sophia (Sales Pipeline Manager)**: Sales pipeline, lead assignments, deal tracking, forecasting.
     - **Daisy (Leasing Manager)**: Rental properties, tenant communications, lease agreements.
+    - **Aurora (CTO)**: Chief Technology Officer & Systems Architect overseeing all technical operations.
+- **Aurora CTO Dashboard** (`src/components/crm/AuroraCTODashboard.jsx`): Tech Command Center with:
+    - System Health Monitor with real-time CPU, memory, response time, and uptime tracking for 6 core components
+    - Application Portfolio management for web and mobile apps with health scores, costs, and tech stacks
+    - Development Projects tracker with sprint progress, deployment counts, and issue tracking
+    - Deployment Pipeline timeline with success/failed/rollback status visualization
+    - API Performance analytics with endpoint response times and success rates
+    - Time range filtering (1h, 24h, 7d, 30d) for historical analysis
+    - Feature flows connecting Aurora to Zoe (system health reporting) and Theodora (deployment cost tracking)
 
 ## External Dependencies
 
