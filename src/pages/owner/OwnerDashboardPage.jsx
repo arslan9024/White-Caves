@@ -110,16 +110,134 @@ export default function OwnerDashboardPage() {
   const handleTabAction = (action, id) => {
     console.log('Tab action:', action, id);
     switch(action) {
+      case 'addProperty':
+        navigate('/properties/add');
+        break;
       case 'viewProperty':
         navigate(`/properties/${id}`);
         break;
       case 'editProperty':
         navigate(`/properties/edit/${id}`);
         break;
+      case 'deleteProperty':
+        if (window.confirm('Are you sure you want to delete this property?')) {
+          console.log('Delete property:', id);
+        }
+        break;
+      case 'addAgent':
+        navigate('/agents/add');
+        break;
+      case 'viewAgent':
+        navigate(`/agents/${id}`);
+        break;
+      case 'editAgent':
+        navigate(`/agents/edit/${id}`);
+        break;
+      case 'messageAgent':
+        console.log('Message agent:', id);
+        break;
+      case 'addLead':
+        navigate('/leads/add');
+        break;
+      case 'viewLead':
+        navigate(`/leads/${id}`);
+        break;
+      case 'exportLeads':
+        console.log('Export leads');
+        break;
+      case 'callLead':
+        console.log('Call lead:', id);
+        break;
+      case 'whatsappLead':
+        console.log('WhatsApp lead:', id);
+        break;
+      case 'assignLead':
+        console.log('Assign lead:', id);
+        break;
+      case 'addContract':
+        navigate('/contracts/add');
+        break;
+      case 'viewContract':
+        navigate(`/contracts/${id}`);
+        break;
+      case 'editContract':
+        navigate(`/contracts/edit/${id}`);
+        break;
+      case 'downloadContract':
+        console.log('Download contract:', id);
+        break;
+      case 'generateContract':
+        navigate('/contracts/generate');
+        break;
+      case 'trainChatbot':
+        setActiveTab('chatbot');
+        break;
+      case 'viewTrainingData':
+        navigate('/chatbot/training');
+        break;
+      case 'configureResponses':
+        navigate('/chatbot/responses');
+        break;
+      case 'viewLogs':
+        navigate('/chatbot/logs');
+        break;
+      case 'configureRules':
+        navigate('/chatbot/rules');
+        break;
+      case 'openWhatsApp':
+        window.open('https://web.whatsapp.com', '_blank');
+        break;
+      case 'sendBroadcast':
+        console.log('Send broadcast:', id);
+        break;
+      case 'viewAllMessages':
+        navigate('/whatsapp/messages');
+        break;
+      case 'replyMessage':
+        console.log('Reply to message:', id);
+        break;
+      case 'assignMessage':
+        console.log('Assign message:', id);
+        break;
+      case 'addTemplate':
+        navigate('/whatsapp/templates/add');
+        break;
+      case 'editTemplate':
+        navigate(`/whatsapp/templates/${id}`);
+        break;
+      case 'viewUser':
+        navigate(`/users/${id}`);
+        break;
+      case 'verifyUser':
+        console.log('Verify user:', id);
+        break;
+      case 'exportUsers':
+        console.log('Export users');
+        break;
+      case 'configureUAEPass':
+        navigate('/settings/uaepass');
+        break;
+      case 'configureIntegration':
+        navigate(`/settings/integrations/${id}`);
+        break;
       case 'viewSystemHealth':
         navigate('/owner/system-health');
         break;
+      case 'clearCache':
+        if (window.confirm('Are you sure you want to clear the cache?')) {
+          console.log('Clear cache');
+        }
+        break;
+      case 'resetAnalytics':
+        if (window.confirm('Are you sure you want to reset analytics?')) {
+          console.log('Reset analytics');
+        }
+        break;
+      case 'exportData':
+        console.log('Export all data');
+        break;
       default:
+        console.log('Unhandled action:', action, id);
         break;
     }
   };
