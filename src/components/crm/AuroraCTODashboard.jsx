@@ -5,9 +5,60 @@ import {
   Cpu, HardDrive, Wifi, Database, GitBranch, GitCommit,
   Rocket, Shield, TrendingUp, TrendingDown, RefreshCw,
   Box, Smartphone, Globe, Code, Terminal, Zap,
-  BarChart3, AlertCircle, CheckCircle2, XCircle, Timer
+  BarChart3, AlertCircle, CheckCircle2, XCircle, Timer,
+  BookOpen, Users, Layers, FileText, Settings, Network
 } from 'lucide-react';
 import './AuroraCTODashboard.css';
+
+const AI_ASSISTANTS_REGISTRY = [
+  { id: 'linda', name: 'Linda', title: 'WhatsApp CRM Manager', department: 'Communications', status: 'active', features: ['23+ Agent Management', 'Conversation Routing', 'Lead Pre-qualification', 'Template Messaging', 'Performance Tracking'], connections: ['Clara', 'Sophia'] },
+  { id: 'mary', name: 'Mary', title: 'Inventory CRM Manager', department: 'Operations', status: 'active', features: ['DAMAC Hills 2 Inventory (9,378+ units)', 'S3 Asset Fetcher', 'OCR Image Extractor', 'Web Data Harvester', 'Excel Import/Export'], connections: ['Daisy', 'Sophia'] },
+  { id: 'clara', name: 'Clara', title: 'Leads CRM Manager', department: 'Sales', status: 'active', features: ['Lead Pipeline Management', 'Qualification Workflows', 'Conversion Tracking', 'Lead Scoring', 'Auto-Assignment'], connections: ['Linda', 'Sophia', 'Nancy'] },
+  { id: 'nina', name: 'Nina', title: 'WhatsApp Bot Developer', department: 'Communications', status: 'active', features: ['Bot Flow Design', 'Session Management', 'Analytics Dashboard', 'Template Builder', 'Webhook Configuration'], connections: ['Linda', 'Aurora'] },
+  { id: 'nancy', name: 'Nancy', title: 'HR Manager', department: 'Operations', status: 'active', features: ['Employee Directory', 'Recruitment Pipeline', 'Performance Tracking', 'Leave Management', 'Attendance System'], connections: ['Zoe', 'Theodora'] },
+  { id: 'sophia', name: 'Sophia', title: 'Sales Pipeline Manager', department: 'Sales', status: 'active', features: ['Deal Tracking', 'Pipeline Visualization', 'Agent Performance', 'Sales Forecasting', 'Commission Calculator'], connections: ['Clara', 'Mary', 'Theodora'] },
+  { id: 'daisy', name: 'Daisy', title: 'Leasing Manager', department: 'Operations', status: 'active', features: ['Lease Management', 'Tenant Communications', 'Maintenance Requests', 'Renewal Tracking', 'Ejari Integration'], connections: ['Mary', 'Laila', 'Theodora'] },
+  { id: 'theodora', name: 'Theodora', title: 'Finance Director', department: 'Finance', status: 'active', features: ['Invoice Management', 'Payment Tracking', 'Expense Reports', 'P&L Statements', 'Budget Analysis'], connections: ['Sophia', 'Daisy', 'Aurora'] },
+  { id: 'olivia', name: 'Olivia', title: 'Marketing Manager', department: 'Marketing', status: 'active', features: ['Campaign Management', 'Social Media Analytics', 'Listing Optimization', 'Lead Generation', 'Content Calendar'], connections: ['Clara', 'Linda'] },
+  { id: 'zoe', name: 'Zoe', title: 'Executive Assistant', department: 'Executive', status: 'active', features: ['Calendar Management', 'Meeting Scheduling', 'Task Delegation', 'Executive Briefings', 'Priority Management'], connections: ['Nancy', 'Aurora'] },
+  { id: 'laila', name: 'Laila', title: 'Compliance Officer', department: 'Compliance', status: 'active', features: ['KYC Verification', 'AML Monitoring', 'Contract Reviews', 'RERA Compliance', 'Document Validation'], connections: ['Daisy', 'Theodora'] },
+  { id: 'aurora', name: 'Aurora', title: 'CTO & Systems Architect', department: 'Technology', status: 'active', features: ['System Monitoring', 'Technical Documentation', 'Architecture Planning', 'API Management', 'Deployment Pipeline'], connections: ['All Assistants'] }
+];
+
+const PLATFORM_MODULES = [
+  { category: 'Core Business', modules: [
+    { name: 'Property Management', description: 'Listings, search, comparison tools', status: 'production' },
+    { name: 'Transaction Pipeline', description: 'Sales and rental workflows', status: 'production' },
+    { name: 'Tenancy Agreements', description: 'Ejari-compliant contracts', status: 'production' },
+    { name: 'Payment Processing', description: 'Stripe integration', status: 'production' }
+  ]},
+  { category: 'AI & Automation', modules: [
+    { name: 'AI Assistants (12)', description: 'Department-organized CRM bots', status: 'production' },
+    { name: 'WhatsApp Integration', description: 'Business API + Chatbot', status: 'production' },
+    { name: 'Lead Scoring', description: 'AI-powered qualification', status: 'beta' },
+    { name: 'Smart Assignment', description: 'Auto-assign leads to agents', status: 'beta' }
+  ]},
+  { category: 'Data & Analytics', modules: [
+    { name: 'Market Analytics', description: 'KPIs and trends', status: 'production' },
+    { name: 'Agent Performance', description: 'Conversion tracking', status: 'production' },
+    { name: 'DAMAC Inventory', description: '9,378+ units database', status: 'production' },
+    { name: 'Data Tools Suite', description: 'OCR, scraping, import', status: 'production' }
+  ]},
+  { category: 'User Experience', modules: [
+    { name: 'Role-Based Dashboards', description: '24 industry roles', status: 'production' },
+    { name: 'Dark/Light Themes', description: 'Full theme support', status: 'production' },
+    { name: 'Mobile Responsive', description: 'All device sizes', status: 'production' },
+    { name: 'Interactive Maps', description: 'Dubai SVG + Google Maps', status: 'production' }
+  ]}
+];
+
+const TECH_STACK = {
+  frontend: ['React 18', 'Redux Toolkit', 'Vite', 'React Router v6', 'Framer Motion', 'Lucide Icons'],
+  backend: ['Express.js', 'Node.js', 'Mongoose ODM', 'JWT Auth'],
+  database: ['MongoDB Atlas', 'Firebase Auth'],
+  integrations: ['Stripe', 'WhatsApp Business API', 'Google Calendar', 'Google Drive', 'Google Maps', 'Vercel Analytics'],
+  devops: ['Replit', 'Nix', 'Git', 'ESLint']
+};
 
 const SYSTEM_COMPONENTS = [
   {
@@ -214,13 +265,16 @@ const AuroraCTODashboard = () => {
       </div>
 
       <div className="aurora-tabs">
-        {['overview', 'applications', 'deployments', 'api-performance'].map(tab => (
+        {['overview', 'documentation', 'assistants', 'architecture', 'applications', 'deployments', 'api-performance'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
             {tab === 'overview' && <Activity size={16} />}
+            {tab === 'documentation' && <BookOpen size={16} />}
+            {tab === 'assistants' && <Users size={16} />}
+            {tab === 'architecture' && <Layers size={16} />}
             {tab === 'applications' && <Box size={16} />}
             {tab === 'deployments' && <Rocket size={16} />}
             {tab === 'api-performance' && <Zap size={16} />}
@@ -348,6 +402,191 @@ const AuroraCTODashboard = () => {
                   <span>{project.nextRelease}</span>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'documentation' && (
+        <div className="documentation-content">
+          <div className="doc-header">
+            <h3>Platform Documentation Hub</h3>
+            <p>Comprehensive documentation for White Caves Real Estate Platform</p>
+          </div>
+          
+          <div className="modules-grid">
+            {PLATFORM_MODULES.map((category, idx) => (
+              <div key={idx} className="module-category">
+                <h4>{category.category}</h4>
+                <div className="module-list">
+                  {category.modules.map((module, midx) => (
+                    <div key={midx} className="module-item">
+                      <div className="module-info">
+                        <span className="module-name">{module.name}</span>
+                        <span className="module-desc">{module.description}</span>
+                      </div>
+                      <span className={`module-status ${module.status}`}>{module.status}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="tech-stack-section">
+            <h4>Technology Stack</h4>
+            <div className="stack-categories">
+              {Object.entries(TECH_STACK).map(([key, items]) => (
+                <div key={key} className="stack-category">
+                  <span className="stack-label">{key}</span>
+                  <div className="stack-items">
+                    {items.map((item, i) => (
+                      <span key={i} className="stack-tag">{item}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'assistants' && (
+        <div className="assistants-content">
+          <div className="assistants-header">
+            <h3>AI Assistants Registry</h3>
+            <div className="assistant-stats">
+              <span><Users size={16} /> {AI_ASSISTANTS_REGISTRY.length} Assistants</span>
+              <span><CheckCircle size={16} /> {AI_ASSISTANTS_REGISTRY.filter(a => a.status === 'active').length} Active</span>
+            </div>
+          </div>
+          
+          <div className="assistants-grid">
+            {AI_ASSISTANTS_REGISTRY.map(assistant => (
+              <div key={assistant.id} className={`assistant-doc-card ${assistant.department.toLowerCase()}`}>
+                <div className="card-header">
+                  <h4>{assistant.name}</h4>
+                  <span className={`dept-badge ${assistant.department.toLowerCase()}`}>{assistant.department}</span>
+                </div>
+                <p className="assistant-title">{assistant.title}</p>
+                <div className="features-list">
+                  {assistant.features.map((feature, i) => (
+                    <span key={i} className="feature-tag">{feature}</span>
+                  ))}
+                </div>
+                <div className="connections-section">
+                  <span className="conn-label">Connects to:</span>
+                  <span className="conn-list">{assistant.connections.join(', ')}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'architecture' && (
+        <div className="architecture-content">
+          <h3>System Architecture</h3>
+          
+          <div className="arch-section">
+            <h4>Frontend Architecture</h4>
+            <div className="arch-diagram">
+              <div className="arch-layer">
+                <span className="layer-name">Presentation</span>
+                <div className="layer-items">
+                  <span>React Components</span>
+                  <span>CSS Modules</span>
+                  <span>Responsive Layouts</span>
+                </div>
+              </div>
+              <div className="arch-arrow">↓</div>
+              <div className="arch-layer">
+                <span className="layer-name">State Management</span>
+                <div className="layer-items">
+                  <span>Redux Toolkit</span>
+                  <span>Slices per Domain</span>
+                  <span>Memoized Selectors</span>
+                </div>
+              </div>
+              <div className="arch-arrow">↓</div>
+              <div className="arch-layer">
+                <span className="layer-name">API Layer</span>
+                <div className="layer-items">
+                  <span>Axios Client</span>
+                  <span>REST Endpoints</span>
+                  <span>Error Handling</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="arch-section">
+            <h4>Backend Architecture</h4>
+            <div className="arch-diagram">
+              <div className="arch-layer">
+                <span className="layer-name">Routes</span>
+                <div className="layer-items">
+                  <span>Express Router</span>
+                  <span>Auth Middleware</span>
+                  <span>Validation</span>
+                </div>
+              </div>
+              <div className="arch-arrow">↓</div>
+              <div className="arch-layer">
+                <span className="layer-name">Business Logic</span>
+                <div className="layer-items">
+                  <span>Services</span>
+                  <span>Helpers</span>
+                  <span>Integrations</span>
+                </div>
+              </div>
+              <div className="arch-arrow">↓</div>
+              <div className="arch-layer">
+                <span className="layer-name">Data Layer</span>
+                <div className="layer-items">
+                  <span>Mongoose Models</span>
+                  <span>MongoDB</span>
+                  <span>Firebase Auth</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="arch-section departments">
+            <h4>Department Organization</h4>
+            <div className="dept-grid">
+              <div className="dept-card operations">
+                <h5>Operations</h5>
+                <span>Mary, Nancy, Daisy</span>
+              </div>
+              <div className="dept-card sales">
+                <h5>Sales</h5>
+                <span>Clara, Sophia</span>
+              </div>
+              <div className="dept-card communications">
+                <h5>Communications</h5>
+                <span>Linda, Nina</span>
+              </div>
+              <div className="dept-card finance">
+                <h5>Finance</h5>
+                <span>Theodora</span>
+              </div>
+              <div className="dept-card marketing">
+                <h5>Marketing</h5>
+                <span>Olivia</span>
+              </div>
+              <div className="dept-card executive">
+                <h5>Executive</h5>
+                <span>Zoe</span>
+              </div>
+              <div className="dept-card compliance">
+                <h5>Compliance</h5>
+                <span>Laila</span>
+              </div>
+              <div className="dept-card technology">
+                <h5>Technology</h5>
+                <span>Aurora</span>
+              </div>
             </div>
           </div>
         </div>

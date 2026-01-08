@@ -61,7 +61,7 @@ Preferred communication style: Simple, everyday language.
     - Redux-controlled open/close state
 - **AI Assistant Hub** (`src/components/crm/AIAssistantHub.jsx`): Unified command center for all AI assistants with:
     - Department-grouped assistant cards with status indicators
-    - Feature Map view showing 8 data flows between assistants
+    - Feature Map view showing 10 data flows between assistants
     - Live activity feed with real-time updates
     - Quick stats bar with system-wide metrics
     - Integration with AI Assistant Selector
@@ -92,6 +92,25 @@ Preferred communication style: Simple, everyday language.
     - API Performance analytics with endpoint response times and success rates
     - Time range filtering (1h, 24h, 7d, 30d) for historical analysis
     - Feature flows connecting Aurora to Zoe (system health reporting) and Theodora (deployment cost tracking)
+- **AI CRM Dashboard Components** (All 12 assistants now have full dashboard implementations):
+    - `LindaWhatsAppCRM.jsx` - WhatsApp conversation management, agent monitoring
+    - `MaryInventoryCRM.jsx` - DAMAC Hills 2 inventory with data tools
+    - `ClaraLeadsCRM.jsx` - Lead pipeline and qualification workflows
+    - `NinaWhatsAppBotCRM.jsx` - Bot development and session management
+    - `NancyHRCRM.jsx` - Employee directory, recruitment, performance
+    - `SophiaSalesCRM.jsx` - Sales pipeline, deal tracking, forecasting
+    - `DaisyLeasingCRM.jsx` - Lease management, tenant communications, maintenance
+    - `TheodoraFinanceCRM.jsx` - Invoice management, expenses, financial reports
+    - `OliviaMarketingCRM.jsx` - Campaign management, social media, listings
+    - `ZoeExecutiveCRM.jsx` - Executive calendar, tasks, team management
+    - `LailaComplianceCRM.jsx` - KYC verification, AML monitoring, contracts
+    - `AuroraCTODashboard.jsx` - System health, deployments, API performance
+- **Shared Assistant Dashboard Styles** (`src/components/crm/AssistantDashboard.css`): Unified styling for all CRM dashboards with:
+    - Consistent header, stats, and tab components
+    - Status badges, priority indicators, and risk levels
+    - Pipeline stages, tables, and card layouts
+    - Dark theme with glassmorphism effects
+    - Responsive mobile layout
 
 ## External Dependencies
 

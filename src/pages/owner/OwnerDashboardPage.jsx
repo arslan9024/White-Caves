@@ -19,11 +19,33 @@ import MaryInventoryCRM from '../../components/crm/MaryInventoryCRM';
 import ClaraLeadsCRM from '../../components/crm/ClaraLeadsCRM';
 import NinaWhatsAppBotCRM from '../../components/crm/NinaWhatsAppBotCRM';
 import NancyHRCRM from '../../components/crm/NancyHRCRM';
+import SophiaSalesCRM from '../../components/crm/SophiaSalesCRM';
+import DaisyLeasingCRM from '../../components/crm/DaisyLeasingCRM';
+import TheodoraFinanceCRM from '../../components/crm/TheodoraFinanceCRM';
+import OliviaMarketingCRM from '../../components/crm/OliviaMarketingCRM';
+import ZoeExecutiveCRM from '../../components/crm/ZoeExecutiveCRM';
+import LailaComplianceCRM from '../../components/crm/LailaComplianceCRM';
+import AuroraCTODashboard from '../../components/crm/AuroraCTODashboard';
 import AIAssistantHub from '../../components/crm/AIAssistantHub';
 import '../../shared/styles/theme.css';
 import './OwnerDashboardPage.css';
 
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
+
+const AI_ASSISTANTS = [
+  { id: 'linda', name: 'Linda', desc: 'WhatsApp CRM', icon: '💬', color: '#25D366', department: 'communications' },
+  { id: 'mary', name: 'Mary', desc: 'Inventory CRM', icon: '🏢', color: '#3B82F6', department: 'operations' },
+  { id: 'clara', name: 'Clara', desc: 'Leads CRM', icon: '🎯', color: '#EF4444', department: 'sales' },
+  { id: 'nina', name: 'Nina', desc: 'Bot Developer', icon: '🤖', color: '#06B6D4', department: 'communications' },
+  { id: 'nancy', name: 'Nancy', desc: 'HR Manager', icon: '👩‍💼', color: '#F97316', department: 'operations' },
+  { id: 'sophia', name: 'Sophia', desc: 'Sales Pipeline', icon: '📊', color: '#8B5CF6', department: 'sales' },
+  { id: 'daisy', name: 'Daisy', desc: 'Leasing', icon: '🏠', color: '#14B8A6', department: 'operations' },
+  { id: 'theodora', name: 'Theodora', desc: 'Finance', icon: '💰', color: '#EC4899', department: 'finance' },
+  { id: 'olivia', name: 'Olivia', desc: 'Marketing', icon: '📣', color: '#4FACFE', department: 'marketing' },
+  { id: 'zoe', name: 'Zoe', desc: 'Executive', icon: '👔', color: '#43E97B', department: 'executive' },
+  { id: 'laila', name: 'Laila', desc: 'Compliance', icon: '🛡️', color: '#6366F1', department: 'compliance' },
+  { id: 'aurora', name: 'Aurora', desc: 'CTO', icon: '🖥️', color: '#0EA5E9', department: 'technology' }
+];
 
 const TABS = [
   { id: 'overview', label: 'Overview', icon: '📊' },
@@ -34,11 +56,6 @@ const TABS = [
   { id: 'leads', label: 'Leads', icon: '🎯' },
   { id: 'contracts', label: 'Contracts', icon: '📜' },
   { id: 'analytics', label: 'Analytics', icon: '📈' },
-  { id: 'linda', label: 'Linda AI', icon: '💬' },
-  { id: 'mary', label: 'Mary AI', icon: '🏢' },
-  { id: 'clara', label: 'Clara AI', icon: '👤' },
-  { id: 'nina', label: 'Nina AI', icon: '🤖' },
-  { id: 'nancy', label: 'Nancy AI', icon: '👩‍💼' },
   { id: 'chatbot', label: 'AI Settings', icon: '⚙️' },
   { id: 'whatsapp', label: 'WhatsApp', icon: '📱' },
   { id: 'uaepass', label: 'UAE Pass', icon: '🆔' },
@@ -320,6 +337,20 @@ export default function OwnerDashboardPage() {
         return <NinaWhatsAppBotCRM />;
       case 'nancy':
         return <NancyHRCRM />;
+      case 'sophia':
+        return <SophiaSalesCRM />;
+      case 'daisy':
+        return <DaisyLeasingCRM />;
+      case 'theodora':
+        return <TheodoraFinanceCRM />;
+      case 'olivia':
+        return <OliviaMarketingCRM />;
+      case 'zoe':
+        return <ZoeExecutiveCRM />;
+      case 'laila':
+        return <LailaComplianceCRM />;
+      case 'aurora':
+        return <AuroraCTODashboard />;
       case 'chatbot':
         return <ChatbotTab data={dashboardData} loading={loading} onAction={handleTabAction} />;
       case 'whatsapp':
@@ -353,64 +384,28 @@ export default function OwnerDashboardPage() {
       </div>
 
       <div className="ai-assistants-bar">
-        <div className="ai-bar-title">AI Assistants</div>
+        <div className="ai-bar-title">AI Assistants <span className="ai-count">{AI_ASSISTANTS.length}</span></div>
         <div className="ai-buttons">
-          <button 
-            className={`ai-btn linda ${activeTab === 'linda' ? 'active' : ''}`}
-            onClick={() => setActiveTab('linda')}
-          >
-            <span className="ai-icon">💬</span>
-            <div className="ai-info">
-              <span className="ai-name">Linda</span>
-              <span className="ai-desc">WhatsApp CRM</span>
-            </div>
-          </button>
-          <button 
-            className={`ai-btn mary ${activeTab === 'mary' ? 'active' : ''}`}
-            onClick={() => setActiveTab('mary')}
-          >
-            <span className="ai-icon">🏢</span>
-            <div className="ai-info">
-              <span className="ai-name">Mary</span>
-              <span className="ai-desc">Inventory CRM</span>
-            </div>
-          </button>
-          <button 
-            className={`ai-btn clara ${activeTab === 'clara' ? 'active' : ''}`}
-            onClick={() => setActiveTab('clara')}
-          >
-            <span className="ai-icon">👤</span>
-            <div className="ai-info">
-              <span className="ai-name">Clara</span>
-              <span className="ai-desc">Leads CRM</span>
-            </div>
-          </button>
-          <button 
-            className={`ai-btn nina ${activeTab === 'nina' ? 'active' : ''}`}
-            onClick={() => setActiveTab('nina')}
-          >
-            <span className="ai-icon">🤖</span>
-            <div className="ai-info">
-              <span className="ai-name">Nina</span>
-              <span className="ai-desc">Bot Developer</span>
-            </div>
-          </button>
-          <button 
-            className={`ai-btn nancy ${activeTab === 'nancy' ? 'active' : ''}`}
-            onClick={() => setActiveTab('nancy')}
-          >
-            <span className="ai-icon">👩‍💼</span>
-            <div className="ai-info">
-              <span className="ai-name">Nancy</span>
-              <span className="ai-desc">HR Manager</span>
-            </div>
-          </button>
+          {AI_ASSISTANTS.map(assistant => (
+            <button
+              key={assistant.id}
+              className={`ai-btn ${assistant.id} ${activeTab === assistant.id ? 'active' : ''}`}
+              onClick={() => setActiveTab(assistant.id)}
+              style={{ '--assistant-color': assistant.color }}
+            >
+              <span className="ai-icon">{assistant.icon}</span>
+              <div className="ai-info">
+                <span className="ai-name">{assistant.name}</span>
+                <span className="ai-desc">{assistant.desc}</span>
+              </div>
+            </button>
+          ))}
         </div>
       </div>
 
       <div className="dashboard-tabs">
         <div className="tabs-container">
-          {TABS.filter(tab => !['linda', 'mary', 'clara', 'nina', 'nancy'].includes(tab.id)).map((tab) => (
+          {TABS.map((tab) => (
             <button
               key={tab.id}
               className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}

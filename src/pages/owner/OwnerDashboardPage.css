@@ -781,83 +781,45 @@
 
 .ai-buttons {
   display: flex;
-  gap: 12px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ai-count {
+  background: rgba(139, 92, 246, 0.3);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  margin-left: 8px;
 }
 
 .ai-btn {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
+  gap: 8px;
+  padding: 8px 14px;
   background: rgba(255, 255, 255, 0.05);
-  border: 2px solid transparent;
-  border-radius: 12px;
+  border: 2px solid color-mix(in srgb, var(--assistant-color, #8B5CF6) 30%, transparent);
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
+  min-width: max-content;
 }
 
 .ai-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--assistant-color, #8B5CF6) 15%, transparent);
   transform: translateY(-2px);
+  border-color: var(--assistant-color, #8B5CF6);
 }
 
-.ai-btn.linda {
-  border-color: rgba(37, 211, 102, 0.3);
-}
-
-.ai-btn.linda:hover,
-.ai-btn.linda.active {
-  background: rgba(37, 211, 102, 0.15);
-  border-color: #25D366;
-  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.2);
-}
-
-.ai-btn.mary {
-  border-color: rgba(139, 92, 246, 0.3);
-}
-
-.ai-btn.mary:hover,
-.ai-btn.mary.active {
-  background: rgba(139, 92, 246, 0.15);
-  border-color: #8b5cf6;
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.2);
-}
-
-.ai-btn.clara {
-  border-color: rgba(236, 72, 153, 0.3);
-}
-
-.ai-btn.clara:hover,
-.ai-btn.clara.active {
-  background: rgba(236, 72, 153, 0.15);
-  border-color: #ec4899;
-  box-shadow: 0 4px 20px rgba(236, 72, 153, 0.2);
-}
-
-.ai-btn.nina {
-  border-color: rgba(124, 58, 237, 0.3);
-}
-
-.ai-btn.nina:hover,
-.ai-btn.nina.active {
-  background: rgba(124, 58, 237, 0.15);
-  border-color: #7c3aed;
-  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.2);
-}
-
-.ai-btn.nancy {
-  border-color: rgba(236, 72, 153, 0.3);
-}
-
-.ai-btn.nancy:hover,
-.ai-btn.nancy.active {
-  background: rgba(236, 72, 153, 0.15);
-  border-color: #ec4899;
-  box-shadow: 0 4px 20px rgba(236, 72, 153, 0.2);
+.ai-btn.active {
+  background: color-mix(in srgb, var(--assistant-color, #8B5CF6) 20%, transparent);
+  border-color: var(--assistant-color, #8B5CF6);
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--assistant-color, #8B5CF6) 30%, transparent);
 }
 
 .ai-icon {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
 }
 
 .ai-info {
@@ -867,13 +829,13 @@
 }
 
 .ai-name {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   color: white;
 }
 
 .ai-desc {
-  font-size: 11px;
+  font-size: 10px;
   color: rgba(255, 255, 255, 0.5);
 }
 
