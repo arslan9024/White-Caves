@@ -1,0 +1,171 @@
+.tab-navigation {
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+}
+
+.tab-navigation-list {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 0.5rem;
+  margin-bottom: -1px;
+}
+
+.tab-navigation-list::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab-item:hover:not(.disabled) {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+body.dark-mode .tab-item:hover:not(.disabled) {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-item.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+.tab-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tab-icon {
+  font-size: 1.125rem;
+}
+
+.tab-label {
+  line-height: 1;
+}
+
+.tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: var(--primary-color);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+.tab-navigation.pills {
+  border-bottom: none;
+  background: var(--bg-tertiary);
+  padding: 0.25rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+body.dark-mode .tab-navigation.pills {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-navigation.pills .tab-navigation-list {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  gap: 0.25rem;
+}
+
+.tab-navigation.pills .tab-item {
+  border-bottom: none;
+  border-radius: 8px;
+  padding: 0.625rem 1rem;
+}
+
+.tab-navigation.pills .tab-item.active {
+  background: var(--primary-color);
+  color: white;
+}
+
+.tab-navigation.pills .tab-item.active .tab-badge {
+  background: white;
+  color: var(--primary-color);
+}
+
+.tab-navigation.compact .tab-item {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.tab-navigation.compact .tab-icon {
+  font-size: 1rem;
+}
+
+.tab-panel {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .tab-item {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .tab-icon {
+    font-size: 1rem;
+  }
+
+  .tab-badge {
+    min-width: 18px;
+    height: 18px;
+    font-size: 0.6875rem;
+  }
+
+  .tab-navigation.pills {
+    border-radius: 8px;
+  }
+
+  .tab-navigation.pills .tab-item {
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tab-item {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .tab-label {
+    display: none;
+  }
+
+  .tab-icon {
+    font-size: 1.25rem;
+  }
+
+  .tab-item.active .tab-label {
+    display: inline;
+  }
+}
