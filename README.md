@@ -83,7 +83,7 @@ White Caves Real Estate LLC is a comprehensive digital platform specializing in 
 ## Deployment
 
 ### Production Requirements
-- Node.js 18+
+- Node.js 24.x
 - MongoDB database
 - Firebase project with service account
 - Required environment variables configured
