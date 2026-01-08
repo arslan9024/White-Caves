@@ -543,6 +543,73 @@ const getInitialState = () => ({
     isConnected: false
   },
   
+  executiveSuggestions: {
+    inbox: [
+      {
+        id: 'sugg_001',
+        fromAssistant: 'clara',
+        assistantDepartment: 'sales',
+        priority: 'high',
+        type: 'process_improvement',
+        title: 'Automate lead follow-up with new AI tool',
+        analysis: 'Weekly research identified 40% of lost leads cited slow response times. Implementing automated follow-up can reduce first-response time from 2hrs to 5min, potentially increasing conversion by 15%.',
+        dataPoints: ['Source: Dubai Real Estate Market Report Q4', 'Case Study: PropertyCo saw 18% conversion growth'],
+        projectedImpact: 'High impact on sales velocity',
+        confidence: 0.85,
+        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+        status: 'unreviewed'
+      },
+      {
+        id: 'sugg_002',
+        fromAssistant: 'olivia',
+        assistantDepartment: 'marketing',
+        priority: 'medium',
+        type: 'new_opportunity',
+        title: 'Video content generates 3x engagement for luxury properties',
+        analysis: 'Research shows video tours for luxury properties get 3x more engagement on Instagram. Suggest reallocating 20% of content budget to 3D virtual tour videos for top listings.',
+        dataPoints: ['Source: Instagram Business Analytics', 'Competitor Analysis: Palm Realty increased inquiries 40%'],
+        projectedImpact: 'Medium-high impact on lead generation',
+        confidence: 0.78,
+        timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+        status: 'unreviewed'
+      },
+      {
+        id: 'sugg_003',
+        fromAssistant: 'nancy',
+        assistantDepartment: 'operations',
+        priority: 'low',
+        type: 'cost_saving',
+        title: 'Surge in demand for Sustainability Officers in real estate',
+        analysis: 'Job market scan shows 30% surge in demand for Sustainability Officers. Creating a green initiative role could enhance brand value and attract top talent.',
+        dataPoints: ['Source: LinkedIn Jobs Report UAE', 'Industry Trend: ESG-focused firms see 25% lower attrition'],
+        projectedImpact: 'Long-term brand and talent benefit',
+        confidence: 0.72,
+        timestamp: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
+        status: 'acknowledged'
+      },
+      {
+        id: 'sugg_004',
+        fromAssistant: 'theodora',
+        assistantDepartment: 'finance',
+        priority: 'critical',
+        type: 'risk_alert',
+        title: 'Payment collection delays increasing DSO',
+        analysis: 'Days Sales Outstanding increased 12% this quarter. Implementing automated payment reminders could recover AED 2.4M in delayed receivables.',
+        dataPoints: ['Source: Internal Finance Dashboard', 'Benchmark: Industry average DSO is 15 days lower'],
+        projectedImpact: 'Direct cash flow improvement',
+        confidence: 0.92,
+        timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+        status: 'unreviewed'
+      }
+    ],
+    filters: {
+      priority: 'all',
+      department: 'all',
+      status: 'unreviewed'
+    },
+    lastRefresh: new Date().toISOString()
+  },
+
   oliviaAutomation: {
     syncSchedule: '3days',
     lastPropertySync: null,
@@ -867,6 +934,39 @@ const aiAssistantDashboardSlice = createSlice({
       if (state.oliviaAutomation.activityLog.length > 50) {
         state.oliviaAutomation.activityLog.pop();
       }
+    },
+
+    addExecutiveSuggestion: (state, action) => {
+      const suggestion = {
+        id: `sugg_${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        status: 'unreviewed',
+        ...action.payload
+      };
+      state.executiveSuggestions.inbox.unshift(suggestion);
+    },
+
+    updateSuggestionStatus: (state, action) => {
+      const { suggestionId, status } = action.payload;
+      const suggestion = state.executiveSuggestions.inbox.find(s => s.id === suggestionId);
+      if (suggestion) {
+        suggestion.status = status;
+      }
+    },
+
+    setSuggestionFilters: (state, action) => {
+      state.executiveSuggestions.filters = {
+        ...state.executiveSuggestions.filters,
+        ...action.payload
+      };
+    },
+
+    clearSuggestionFilters: (state) => {
+      state.executiveSuggestions.filters = {
+        priority: 'all',
+        department: 'all',
+        status: 'unreviewed'
+      };
     }
   },
   extraReducers: (builder) => {
@@ -925,7 +1025,11 @@ export const {
   updateOliviaInsights,
   updateOliviaCoordination,
   updateOliviaSiteStatus,
-  addOliviaActivity
+  addOliviaActivity,
+  addExecutiveSuggestion,
+  updateSuggestionStatus,
+  setSuggestionFilters,
+  clearSuggestionFilters
 } = aiAssistantDashboardSlice.actions;
 
 const selectAssistantsState = (state) => state.aiAssistantDashboard?.allAssistants?.byId || {};
@@ -1015,6 +1119,39 @@ export const selectGlobalUnreadCount = (state) =>
 
 export const selectOliviaAutomation = (state) => 
   state.aiAssistantDashboard?.oliviaAutomation || {};
+
+export const selectExecutiveSuggestions = (state) => 
+  state.aiAssistantDashboard?.executiveSuggestions || { inbox: [], filters: {} };
+
+export const selectFilteredSuggestions = createSelector(
+  [selectExecutiveSuggestions],
+  (suggestions) => {
+    let filtered = suggestions.inbox || [];
+    const filters = suggestions.filters || {};
+    
+    if (filters.priority && filters.priority !== 'all') {
+      filtered = filtered.filter(s => s.priority === filters.priority);
+    }
+    if (filters.department && filters.department !== 'all') {
+      filtered = filtered.filter(s => s.assistantDepartment === filters.department);
+    }
+    if (filters.status && filters.status !== 'all') {
+      filtered = filtered.filter(s => s.status === filters.status);
+    }
+    
+    return filtered;
+  }
+);
+
+export const selectUnreviewedSuggestionsCount = createSelector(
+  [selectExecutiveSuggestions],
+  (suggestions) => (suggestions.inbox || []).filter(s => s.status === 'unreviewed').length
+);
+
+export const selectCriticalSuggestions = createSelector(
+  [selectExecutiveSuggestions],
+  (suggestions) => (suggestions.inbox || []).filter(s => s.priority === 'critical' && s.status === 'unreviewed')
+);
 
 export const selectAllUnreadCounts = createSelector(
   [selectNotifications, selectAllIds],

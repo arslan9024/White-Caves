@@ -18,3 +18,4 @@ export { default as PropertyMediaGallery, PropertySpecsGrid, PropertyDetailConta
 export { default as BotSessionManager } from './BotSessionManager';
 export { default as PlatformPublisherForm } from './PlatformPublisherForm';
 export { default as JobPostComposer } from './JobPostComposer';
+export { default as WeeklyResearchModule } from './WeeklyResearchModule';

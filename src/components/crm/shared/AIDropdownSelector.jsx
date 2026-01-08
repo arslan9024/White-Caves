@@ -274,10 +274,13 @@ const AssistantItem = memo(({
   onSelect, 
   onToggleFavorite 
 }) => (
-  <button
+  <div
     className={`assistant-item ${isSelected ? 'selected' : ''}`}
     onClick={() => onSelect(assistant.id)}
     style={{ '--item-color': assistant.colorScheme }}
+    role="button"
+    tabIndex={0}
+    onKeyDown={(e) => e.key === 'Enter' && onSelect(assistant.id)}
   >
     <span className="item-avatar">{assistant.avatar}</span>
     <div className="item-info">
@@ -291,7 +294,7 @@ const AssistantItem = memo(({
     >
       <Star size={14} fill={isFavorite ? assistant.colorScheme : 'none'} />
     </button>
-  </button>
+  </div>
 ));
 
 AIDropdownSelector.displayName = 'AIDropdownSelector';

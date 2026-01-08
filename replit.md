@@ -43,9 +43,65 @@ Preferred communication style: Simple, everyday language.
 - **Mary's Data Tools Suite**: Integrated data acquisition tools including DAMAC Asset Fetcher (S3 URL generator), Image Data Extractor (OCR-based), and Web Data Harvester (URL template iterator).
 - **AI Assistant Dashboard System**: Unified Redux state management for 12 AI assistants organized by department (Operations, Sales, Communications, Finance, Marketing, Executive, Compliance, Technology). Features include normalized state, memoized selectors, favorites, recent tracking, department filtering, search, real-time activity feed, and performance metrics.
 - **AI CRM Assistants**: 12 specialized AI-powered assistants integrated into the Owner Dashboard, each with dedicated dashboards for specific functionalities (e.g., Linda for WhatsApp CRM, Mary for Inventory CRM, Clara for Leads CRM, Olivia for Marketing Automation, Aurora for CTO operations).
-- **Olivia Automation System**: Automated property availability sync with Mary's inventory, market intelligence gathering from Bayut/Property Finder/Dubizzle, scheduling controls, and real-time activity logging.
+- **Olivia Automation System**: Automated property availability sync with Mary's inventory, market intelligence gathering from Bayut/Property Finder/Dubizzle, scheduling controls, and real-time activity logging. Redux-integrated automation state with persistent controls.
+- **Zoe Executive Intelligence System**: Executive Suggestion Inbox receiving AI-powered strategic suggestions from all 12 assistants. Features priority filtering (critical/high/medium/low), department categorization, suggestion status management (unreviewed/acknowledged/escalated/archived), confidence scoring, and projected impact analysis.
+- **Weekly Research Module**: Shared component enabling all assistants to perform automated intelligence gathering on configurable schedules (weekly/bi-weekly/monthly). Generates structured suggestions for Zoe's executive review.
+- **Executive Suggestions Redux State**: Centralized suggestion pipeline with structured format including fromAssistant, department, priority, type (process_improvement/new_opportunity/risk_alert/cost_saving), analysis, dataPoints, projectedImpact, and confidence score.
 - **AI Command Center**: Unified dashboard entry point with an AIDropdownSelector for selecting assistants, quick stats bar, lazy-loaded assistant dashboards, and an activity sidebar.
 - **Shared Component Library**: Reusable UI components ensuring design consistency across all dashboards and features.
+
+## AI Assistants Inventory (12 Total)
+
+| Assistant | Role | Department | Key Features |
+|-----------|------|------------|--------------|
+| Linda | WhatsApp CRM Manager | Communications | 23+ Agent Management, Conversation Routing, Lead Pre-qualification |
+| Mary | Inventory CRM Manager | Operations | DAMAC Hills 2 Inventory (9,378+ units), S3 Asset Fetcher, OCR Extractor |
+| Clara | Leads CRM Manager | Sales | Lead Pipeline, Qualification Workflows, Lead Scoring, Auto-Assignment |
+| Nina | WhatsApp Bot Developer | Communications | Bot Flow Design, Session Management, Template Builder |
+| Nancy | HR Manager | Operations | Employee Directory, Recruitment Pipeline, Performance Tracking |
+| Sophia | Sales Pipeline Manager | Sales | Deal Tracking, Pipeline Visualization, Sales Forecasting |
+| Daisy | Leasing Manager | Operations | Lease Management, Tenant Communications, Ejari Integration |
+| Theodora | Finance Director | Finance | Invoice Management, Payment Tracking, Budget Analysis |
+| Olivia | Marketing & Automation Manager | Marketing | Property Sync, Market Intelligence, Website Monitoring, Multi-Portal Publishing |
+| Zoe | Executive Assistant & Strategic Intelligence | Executive | Suggestion Inbox, Priority Alerts, Cross-Department Intelligence, Calendar Management |
+| Laila | Compliance Officer | Compliance | KYC Verification, AML Monitoring, RERA Compliance |
+| Aurora | CTO & Systems Architect | Technology | System Monitoring, Documentation, Architecture Planning |
+
+## Redux State Structure
+
+### Executive Suggestions State
+```javascript
+executiveSuggestions: {
+  inbox: [{
+    id: string,
+    fromAssistant: string,
+    assistantDepartment: string,
+    priority: 'low' | 'medium' | 'high' | 'critical',
+    type: 'process_improvement' | 'new_opportunity' | 'risk_alert' | 'cost_saving',
+    title: string,
+    analysis: string,
+    dataPoints: string[],
+    projectedImpact: string,
+    confidence: number,
+    timestamp: string,
+    status: 'unreviewed' | 'acknowledged' | 'escalated' | 'archived'
+  }],
+  filters: { priority, department, status }
+}
+```
+
+### Olivia Automation State
+```javascript
+oliviaAutomation: {
+  syncSchedule: 'daily' | '3days' | '5days' | 'weekly',
+  lastPropertySync: timestamp,
+  lastMarketResearch: timestamp,
+  activeMonitoring: boolean,
+  activityLog: [],
+  monitoredSites: [{ name, status, lastCheck, dataPoints }],
+  coordination: { maryConnected, inventoryAccess }
+}
+```
 
 ## External Dependencies
 
@@ -61,3 +117,18 @@ Preferred communication style: Simple, everyday language.
 - **Google Drive API**: Storing signed tenancy contracts and documents.
 - **WhatsApp Business API**: Customer support and chatbot integration.
 - **Matterport**: Virtual tour integration.
+
+## Recent Changes (January 2026)
+- Added Executive Suggestions Redux state with priority filtering and department categorization
+- Created WeeklyResearchModule shared component for automated intelligence gathering
+- Upgraded Zoe's Executive Dashboard with Suggestion Inbox and Priority Alerts
+- Enhanced Olivia's automation with Redux-integrated property sync and market intelligence
+- Added selectors for filtered suggestions, unreviewed counts, and critical alerts
+- Updated Aurora documentation with new AI assistant features
+
+## Implementation Guidelines
+- All AI assistants should use the WeeklyResearchModule for automated research
+- Strategic suggestions flow from assistants to Zoe via Redux executiveSuggestions.inbox
+- Olivia coordinates with Mary's inventory via selectInventoryStats selector
+- Use priority levels (critical > high > medium > low) for suggestion sorting
+- Confidence scores should be 0-1 range representing AI certainty
