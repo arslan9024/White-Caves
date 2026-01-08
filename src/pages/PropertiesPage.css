@@ -339,16 +339,26 @@
 
 .properties-grid.list .property-card-enhanced {
   display: grid;
-  grid-template-columns: 400px 1fr;
+  grid-template-columns: 380px 1fr;
+  min-height: 280px;
 }
 
 .properties-grid.list .card-image-wrapper {
   height: 100%;
+  min-height: 280px;
 }
 
-.properties-grid.list .property-image-slider {
+.properties-grid.list .card-image-wrapper .property-image-slider {
   height: 100%;
+  min-height: 280px;
+  aspect-ratio: unset;
   border-radius: 12px 0 0 12px;
+}
+
+.properties-grid.list .card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .property-card-enhanced {

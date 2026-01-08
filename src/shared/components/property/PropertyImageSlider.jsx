@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Expand, Heart, Share2, X } from 'lucide-react';
 import './PropertyImageSlider.css';
 
@@ -14,6 +14,7 @@ export default function PropertyImageSlider({
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const fullscreenRef = useRef(null);
 
   const defaultImages = [
     'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800',
@@ -21,15 +22,15 @@ export default function PropertyImageSlider({
 
   const imageList = images.length > 0 ? images : defaultImages;
 
-  const goToNext = (e) => {
+  const goToNext = useCallback((e) => {
     e?.stopPropagation();
     setCurrentIndex((prev) => (prev + 1) % imageList.length);
-  };
+  }, [imageList.length]);
 
-  const goToPrev = (e) => {
+  const goToPrev = useCallback((e) => {
     e?.stopPropagation();
     setCurrentIndex((prev) => (prev - 1 + imageList.length) % imageList.length);
-  };
+  }, [imageList.length]);
 
   const goToSlide = (index) => {
     setCurrentIndex(index);
@@ -40,15 +41,38 @@ export default function PropertyImageSlider({
     setIsFullscreen(true);
   };
 
-  const closeFullscreen = () => {
+  const closeFullscreen = useCallback(() => {
     setIsFullscreen(false);
-  };
+  }, []);
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'ArrowLeft') goToPrev();
-    if (e.key === 'ArrowRight') goToNext();
-    if (e.key === 'Escape') closeFullscreen();
-  };
+  useEffect(() => {
+    if (!isFullscreen) return;
+    
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeFullscreen();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goToPrev();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        goToNext();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown, true);
+    document.body.style.overflow = 'hidden';
+    
+    if (fullscreenRef.current) {
+      fullscreenRef.current.focus();
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, true);
+      document.body.style.overflow = '';
+    };
+  }, [isFullscreen, closeFullscreen, goToPrev, goToNext]);
 
   return (
     <>
@@ -132,9 +156,11 @@ export default function PropertyImageSlider({
         <div 
           className="fullscreen-gallery" 
           onClick={closeFullscreen}
-          onKeyDown={handleKeyDown}
-          tabIndex={0}
+          ref={fullscreenRef}
+          tabIndex={-1}
           role="dialog"
+          aria-modal="true"
+          aria-label="Image gallery"
         >
           <button className="close-fullscreen" onClick={closeFullscreen}>
             <X size={24} />
