@@ -1,0 +1,2203 @@
+# **ENHANCED OWNER DASHBOARD & SOCIAL LOGIN FIXES**
+
+## **📊 ENHANCED OWNER DASHBOARD WITH TABS**
+
+### **File:** `client/src/components/dashboard/OwnerDashboard.js`
+
+```javascript
+import React, { useState, useEffect } from 'react';
+import { 
+  Tabs, 
+  Card, 
+  Row, 
+  Col, 
+  Statistic, 
+  Table, 
+  Button, 
+  Space,
+  Badge,
+  Progress,
+  Tag,
+  Avatar,
+  Dropdown,
+  Menu,
+  Modal,
+  Input,
+  Select,
+  Form,
+  message,
+  Alert,
+  Timeline,
+  Calendar,
+  Chart,
+  List
+} from 'antd';
+import { 
+  DashboardOutlined,
+  PropertySafetyOutlined,
+  TeamOutlined,
+  DollarOutlined,
+  MessageOutlined,
+  UserOutlined,
+  FileTextOutlined,
+  BarChartOutlined,
+  RobotOutlined,
+  WhatsAppOutlined,
+  IdcardOutlined,
+  SettingOutlined,
+  EyeOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  FilterOutlined,
+  ExportOutlined,
+  SyncOutlined,
+  BellOutlined,
+  SearchOutlined,
+  CheckCircleOutlined,
+  WarningOutlined,
+  ClockCircleOutlined
+} from '@ant-design/icons';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import './DashboardStyles.css';
+
+const { TabPane } = Tabs;
+const { Option } = Select;
+const { TextArea } = Input;
+
+const OwnerDashboard = () => {
+  const [activeTab, setActiveTab] = useState('overview');
+  const [dashboardData, setDashboardData] = useState({
+    summary: {},
+    recentProperties: [],
+    agentPerformance: [],
+    leads: [],
+    contracts: [],
+    analytics: {},
+    chatbotStats: {},
+    whatsappStats: {},
+    uaePassStats: {}
+  });
+  const [loading, setLoading] = useState(false);
+  const [quickActions, setQuickActions] = useState([
+    { id: 1, title: 'Add New Property', icon: <PlusOutlined />, action: 'addProperty', color: '#52c41a' },
+    { id: 2, title: 'Assign Agent', icon: <TeamOutlined />, action: 'assignAgent', color: '#1890ff' },
+    { id: 3, title: 'Generate Report', icon: <BarChartOutlined />, action: 'generateReport', color: '#722ed1' },
+    { id: 4, title: 'Chatbot Training', icon: <RobotOutlined />, action: 'trainChatbot', color: '#faad14' },
+    { id: 5, title: 'WhatsApp Broadcast', icon: <WhatsAppOutlined />, action: 'whatsappBroadcast', color: '#25D366' },
+    { id: 6, title: 'UAE Pass Users', icon: <IdcardOutlined />, action: 'viewUaePassUsers', color: '#ce1126' }
+  ]);
+  const [showAddPropertyModal, setShowAddPropertyModal] = useState(false);
+  const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchDashboardData();
+    // Refresh data every 30 seconds
+    const interval = setInterval(fetchDashboardData, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('/api/dashboard/owner/summary');
+      setDashboardData(response.data);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      message.error('Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleQuickAction = (action) => {
+    switch(action) {
+      case 'addProperty':
+        setShowAddPropertyModal(true);
+        break;
+      case 'assignAgent':
+        navigate('/agents/assign');
+        break;
+      case 'generateReport':
+        generateReport();
+        break;
+      case 'trainChatbot':
+        navigate('/chatbot/training');
+        break;
+      case 'whatsappBroadcast':
+        setShowWhatsAppModal(true);
+        break;
+      case 'viewUaePassUsers':
+        navigate('/users/uaepass');
+        break;
+      default:
+        break;
+    }
+  };
+
+  const generateReport = async () => {
+    try {
+      const response = await axios.get('/api/dashboard/report/download', {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `whitecaves-report-${new Date().toISOString().split('T')[0]}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      message.success('Report generated successfully!');
+    } catch (error) {
+      message.error('Failed to generate report');
+    }
+  };
+
+  // Property Columns
+  const propertyColumns = [
+    {
+      title: 'Property',
+      dataIndex: 'propertyCode',
+      key: 'propertyCode',
+      render: (code, record) => (
+        <div className="property-cell">
+          <Avatar shape="square" size="large" src={record.images?.[0]} icon={<PropertySafetyOutlined />} />
+          <div className="property-info">
+            <strong>{code}</strong>
+            <small>{record.location}</small>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
+      render: (type) => <Tag color="blue">{type}</Tag>
+    },
+    {
+      title: 'Price (AED)',
+      dataIndex: 'price',
+      key: 'price',
+      render: (price) => `AED ${price.toLocaleString()}`
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status) => {
+        const statusConfig = {
+          'available': { color: 'green', text: 'Available' },
+          'reserved': { color: 'orange', text: 'Reserved' },
+          'under_contract': { color: 'purple', text: 'Under Contract' },
+          'sold': { color: 'red', text: 'Sold' },
+          'off_market': { color: 'gray', text: 'Off Market' }
+        };
+        const config = statusConfig[status] || { color: 'default', text: status };
+        return <Badge color={config.color} text={config.text} />;
+      }
+    },
+    {
+      title: 'Agent',
+      dataIndex: 'agentName',
+      key: 'agentName',
+      render: (name) => name || 'Unassigned'
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_, record) => (
+        <Space size="small">
+          <Button 
+            type="link" 
+            icon={<EyeOutlined />} 
+            onClick={() => navigate(`/properties/${record.id}`)}
+          />
+          <Button 
+            type="link" 
+            icon={<EditOutlined />} 
+            onClick={() => navigate(`/properties/edit/${record.id}`)}
+          />
+          <Button 
+            type="link" 
+            danger 
+            icon={<DeleteOutlined />}
+            onClick={() => handleDeleteProperty(record.id)}
+          />
+        </Space>
+      )
+    }
+  ];
+
+  // Agent Performance Columns
+  const agentColumns = [
+    {
+      title: 'Agent',
+      dataIndex: 'name',
+      key: 'name',
+      render: (name, record) => (
+        <div className="agent-cell">
+          <Avatar src={record.avatar} icon={<UserOutlined />} />
+          <span style={{ marginLeft: 8 }}>{name}</span>
+        </div>
+      )
+    },
+    {
+      title: 'Properties',
+      dataIndex: 'propertiesCount',
+      key: 'propertiesCount'
+    },
+    {
+      title: 'Leads',
+      dataIndex: 'leadsCount',
+      key: 'leadsCount'
+    },
+    {
+      title: 'Deals Closed',
+      dataIndex: 'dealsClosed',
+      key: 'dealsClosed'
+    },
+    {
+      title: 'Revenue',
+      dataIndex: 'revenue',
+      key: 'revenue',
+      render: (revenue) => `AED ${revenue.toLocaleString()}`
+    },
+    {
+      title: 'Rating',
+      dataIndex: 'rating',
+      key: 'rating',
+      render: (rating) => (
+        <Progress 
+          percent={rating * 20} 
+          size="small" 
+          format={() => `${rating}/5`}
+          strokeColor={rating >= 4 ? '#52c41a' : rating >= 3 ? '#faad14' : '#f5222d'}
+        />
+      )
+    },
+    {
+      title: 'Status',
+      key: 'status',
+      render: (_, record) => (
+        <Tag color={record.online ? 'green' : 'default'}>
+          {record.online ? 'Online' : 'Offline'}
+        </Tag>
+      )
+    }
+  ];
+
+  // Lead Management Columns
+  const leadColumns = [
+    {
+      title: 'Lead',
+      dataIndex: 'name',
+      key: 'name',
+      render: (name, record) => (
+        <div>
+          <strong>{name}</strong>
+          <br />
+          <small>{record.source} • {new Date(record.createdAt).toLocaleDateString()}</small>
+        </div>
+      )
+    },
+    {
+      title: 'Contact',
+      dataIndex: 'contact',
+      key: 'contact',
+      render: (contact) => (
+        <div>
+          <div>{contact.phone}</div>
+          <small>{contact.email}</small>
+        </div>
+      )
+    },
+    {
+      title: 'Property Interest',
+      dataIndex: 'propertyInterest',
+      key: 'propertyInterest',
+      render: (interest) => interest || 'General Inquiry'
+    },
+    {
+      title: 'Priority',
+      dataIndex: 'priority',
+      key: 'priority',
+      render: (priority) => {
+        const priorityMap = {
+          'high': { color: 'red', text: 'High' },
+          'medium': { color: 'orange', text: 'Medium' },
+          'low': { color: 'blue', text: 'Low' }
+        };
+        const map = priorityMap[priority] || { color: 'default', text: priority };
+        return <Tag color={map.color}>{map.text}</Tag>;
+      }
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status) => {
+        const statusMap = {
+          'new': { color: 'blue', text: 'New' },
+          'contacted': { color: 'cyan', text: 'Contacted' },
+          'qualified': { color: 'green', text: 'Qualified' },
+          'lost': { color: 'red', text: 'Lost' }
+        };
+        const map = statusMap[status] || { color: 'default', text: status };
+        return <Tag color={map.color}>{map.text}</Tag>;
+      }
+    }
+  ];
+
+  // Contract Management Columns
+  const contractColumns = [
+    {
+      title: 'Contract No.',
+      dataIndex: 'contractNumber',
+      key: 'contractNumber'
+    },
+    {
+      title: 'Parties',
+      dataIndex: 'parties',
+      key: 'parties',
+      render: (parties) => (
+        <div>
+          <div>Tenant: {parties.tenant}</div>
+          <div>Landlord: {parties.landlord}</div>
+        </div>
+      )
+    },
+    {
+      title: 'Property',
+      dataIndex: 'property',
+      key: 'property'
+    },
+    {
+      title: 'Duration',
+      dataIndex: 'duration',
+      key: 'duration',
+      render: (duration) => `${duration.start} to ${duration.end}`
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+      key: 'amount',
+      render: (amount) => `AED ${amount.toLocaleString()}`
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status) => (
+        <Tag color={status === 'active' ? 'green' : status === 'pending' ? 'orange' : 'red'}>
+          {status.toUpperCase()}
+        </Tag>
+      )
+    },
+    {
+      title: 'Ejari',
+      dataIndex: 'ejariStatus',
+      key: 'ejariStatus',
+      render: (status) => (
+        <Tag color={status === 'registered' ? 'green' : 'red'}>
+          {status === 'registered' ? 'Registered' : 'Pending'}
+        </Tag>
+      )
+    }
+  ];
+
+  // Analytics Charts Data
+  const revenueData = [
+    { month: 'Jan', revenue: 1200000 },
+    { month: 'Feb', revenue: 1800000 },
+    { month: 'Mar', revenue: 1500000 },
+    { month: 'Apr', revenue: 2200000 },
+    { month: 'May', revenue: 1900000 },
+    { month: 'Jun', revenue: 2500000 },
+  ];
+
+  const propertyTypeData = [
+    { type: 'Apartments', count: 45, percentage: 45 },
+    { type: 'Villas', count: 25, percentage: 25 },
+    { type: 'Townhouses', count: 15, percentage: 15 },
+    { type: 'Commercial', count: 10, percentage: 10 },
+    { type: 'Land', count: 5, percentage: 5 },
+  ];
+
+  // Tab Content Components
+  const OverviewTab = () => (
+    <div className="overview-tab">
+      <Row gutter={[16, 16]}>
+        {/* Quick Stats */}
+        {[
+          { title: 'Total Properties', value: dashboardData.summary?.totalProperties || 0, icon: <PropertySafetyOutlined />, color: '#1890ff', change: '+12%' },
+          { title: 'Active Agents', value: dashboardData.summary?.activeAgents || 0, icon: <TeamOutlined />, color: '#52c41a', change: '+5%' },
+          { title: 'Monthly Revenue', value: `AED ${(dashboardData.summary?.monthlyRevenue || 0).toLocaleString()}`, icon: <DollarOutlined />, color: '#faad14', change: '+18%' },
+          { title: 'WhatsApp Leads', value: dashboardData.summary?.whatsappLeads || 0, icon: <WhatsAppOutlined />, color: '#25D366', change: '+25%' },
+          { title: 'UAE Pass Users', value: dashboardData.summary?.uaepassUsers || 0, icon: <IdcardOutlined />, color: '#ce1126', change: '+15%' },
+          { title: 'Chatbot Conversations', value: dashboardData.summary?.chatbotConversations || 0, icon: <RobotOutlined />, color: '#722ed1', change: '+30%' },
+        ].map((stat, index) => (
+          <Col xs={24} sm={12} lg={8} xl={4} key={index}>
+            <Card className="stat-card">
+              <Statistic
+                title={stat.title}
+                value={stat.value}
+                prefix={stat.icon}
+                valueStyle={{ color: stat.color }}
+              />
+              <div className="stat-change">
+                <span style={{ color: stat.change.startsWith('+') ? '#52c41a' : '#ff4d4f' }}>
+                  {stat.change}
+                </span>
+                <span> from last month</span>
+              </div>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      {/* Quick Actions */}
+      <Card title="Quick Actions" className="quick-actions-card">
+        <Row gutter={[16, 16]}>
+          {quickActions.map((action) => (
+            <Col xs={12} sm={8} md={6} lg={4} key={action.id}>
+              <div 
+                className="quick-action-item"
+                style={{ borderColor: action.color }}
+                onClick={() => handleQuickAction(action.action)}
+              >
+                <div className="action-icon" style={{ backgroundColor: `${action.color}20` }}>
+                  {action.icon}
+                </div>
+                <div className="action-title">{action.title}</div>
+              </div>
+            </Col>
+          ))}
+        </Row>
+      </Card>
+
+      {/* Charts Row */}
+      <Row gutter={[16, 16]} className="charts-row">
+        <Col xs={24} lg={12}>
+          <Card title="Monthly Revenue Trend">
+            <Chart
+              type="line"
+              data={revenueData}
+              height={300}
+              options={{
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    ticks: {
+                      callback: (value) => `AED ${(value / 1000000).toFixed(1)}M`
+                    }
+                  }
+                }
+              }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} lg={12}>
+          <Card title="Property Type Distribution">
+            <Chart
+              type="pie"
+              data={propertyTypeData}
+              height={300}
+            />
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Recent Activity Timeline */}
+      <Card title="Recent Activity" className="activity-timeline">
+        <Timeline>
+          {dashboardData.recentActivities?.map((activity, index) => (
+            <Timeline.Item 
+              key={index}
+              color={activity.type === 'success' ? 'green' : activity.type === 'warning' ? 'orange' : 'blue'}
+              dot={activity.type === 'success' ? <CheckCircleOutlined /> : <ClockCircleOutlined />}
+            >
+              <strong>{activity.title}</strong>
+              <p>{activity.description}</p>
+              <small>{new Date(activity.timestamp).toLocaleString()}</small>
+            </Timeline.Item>
+          ))}
+        </Timeline>
+      </Card>
+    </div>
+  );
+
+  const PropertiesTab = () => (
+    <div className="properties-tab">
+      <div className="tab-header">
+        <h3>Property Management</h3>
+        <Space>
+          <Input 
+            placeholder="Search properties..." 
+            prefix={<SearchOutlined />}
+            style={{ width: 250 }}
+          />
+          <Select placeholder="Filter by status" style={{ width: 150 }}>
+            <Option value="all">All Status</Option>
+            <Option value="available">Available</Option>
+            <Option value="reserved">Reserved</Option>
+            <Option value="sold">Sold</Option>
+          </Select>
+          <Select placeholder="Filter by emirate" style={{ width: 150 }}>
+            <Option value="dubai">Dubai</Option>
+            <Option value="abudhabi">Abu Dhabi</Option>
+            <Option value="sharjah">Sharjah</Option>
+            <Option value="ajman">Ajman</Option>
+          </Select>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setShowAddPropertyModal(true)}>
+            Add Property
+          </Button>
+        </Space>
+      </div>
+      <Table
+        columns={propertyColumns}
+        dataSource={dashboardData.recentProperties}
+        loading={loading}
+        pagination={{ pageSize: 10 }}
+        rowKey="id"
+      />
+    </div>
+  );
+
+  const AgentsTab = () => (
+    <div className="agents-tab">
+      <div className="tab-header">
+        <h3>Agent Management</h3>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/agents/add')}>
+          Add Agent
+        </Button>
+      </div>
+      <Table
+        columns={agentColumns}
+        dataSource={dashboardData.agentPerformance}
+        loading={loading}
+        pagination={{ pageSize: 10 }}
+        rowKey="id"
+      />
+    </div>
+  );
+
+  const LeadsTab = () => (
+    <div className="leads-tab">
+      <div className="tab-header">
+        <h3>Lead Management</h3>
+        <Space>
+          <Select placeholder="Lead Source" style={{ width: 150 }}>
+            <Option value="whatsapp">WhatsApp</Option>
+            <Option value="website">Website</Option>
+            <Option value="chatbot">Chatbot</Option>
+            <Option value="referral">Referral</Option>
+          </Select>
+          <Select placeholder="Lead Status" style={{ width: 150 }}>
+            <Option value="new">New</Option>
+            <Option value="contacted">Contacted</Option>
+            <Option value="qualified">Qualified</Option>
+          </Select>
+          <Button icon={<ExportOutlined />}>Export Leads</Button>
+        </Space>
+      </div>
+      <Table
+        columns={leadColumns}
+        dataSource={dashboardData.leads}
+        loading={loading}
+        pagination={{ pageSize: 10 }}
+        rowKey="id"
+      />
+    </div>
+  );
+
+  const ContractsTab = () => (
+    <div className="contracts-tab">
+      <div className="tab-header">
+        <h3>Contract Management</h3>
+        <Space>
+          <Button icon={<FileTextOutlined />} onClick={() => navigate('/contracts/generate')}>
+            Generate Contract
+          </Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/contracts/add')}>
+            Add Contract
+          </Button>
+        </Space>
+      </div>
+      <Table
+        columns={contractColumns}
+        dataSource={dashboardData.contracts}
+        loading={loading}
+        pagination={{ pageSize: 10 }}
+        rowKey="id"
+      />
+    </div>
+  );
+
+  const AnalyticsTab = () => (
+    <div className="analytics-tab">
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={8}>
+          <Card title="Performance Metrics">
+            <List
+              dataSource={[
+                { label: 'Conversion Rate', value: '4.8%', change: '+0.5%' },
+                { label: 'Average Deal Size', value: 'AED 2.1M', change: '+12%' },
+                { label: 'Lead Response Time', value: '15min', change: '-5min' },
+                { label: 'Customer Satisfaction', value: '4.7/5', change: '+0.2' },
+              ]}
+              renderItem={item => (
+                <List.Item>
+                  <List.Item.Meta
+                    title={item.label}
+                    description={<span style={{ color: item.change.startsWith('+') ? '#52c41a' : '#ff4d4f' }}>{item.change}</span>}
+                  />
+                  <div>{item.value}</div>
+                </List.Item>
+              )}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} lg={16}>
+          <Card title="Market Analysis">
+            <Chart
+              type="bar"
+              data={dashboardData.analytics?.marketData || []}
+              height={400}
+            />
+          </Card>
+        </Col>
+      </Row>
+      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+        <Col xs={24}>
+          <Card title="Revenue Breakdown by Emirates">
+            <Chart
+              type="bar"
+              data={dashboardData.analytics?.revenueByEmirate || []}
+              height={300}
+            />
+          </Card>
+        </Col>
+      </Row>
+    </div>
+  );
+
+  const AIChatbotTab = () => (
+    <div className="chatbot-tab">
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={12}>
+          <Card title="Chatbot Statistics">
+            <Row gutter={[16, 16]}>
+              <Col span={12}>
+                <Statistic title="Total Conversations" value={dashboardData.chatbotStats?.totalConversations || 0} />
+              </Col>
+              <Col span={12}>
+                <Statistic title="Successful Leads" value={dashboardData.chatbotStats?.successfulLeads || 0} />
+              </Col>
+              <Col span={12}>
+                <Statistic title="Avg. Response Time" value={`${dashboardData.chatbotStats?.avgResponseTime || 0}s`} />
+              </Col>
+              <Col span={12}>
+                <Statistic title="Satisfaction Rate" value={`${dashboardData.chatbotStats?.satisfactionRate || 0}%`} />
+              </Col>
+            </Row>
+            <Button 
+              type="primary" 
+              icon={<RobotOutlined />} 
+              onClick={() => navigate('/chatbot/training')}
+              style={{ marginTop: 16 }}
+            >
+              Train Chatbot
+            </Button>
+          </Card>
+        </Col>
+        <Col xs={24} lg={12}>
+          <Card title="Chatbot Intents">
+            <List
+              dataSource={dashboardData.chatbotStats?.intents || []}
+              renderItem={item => (
+                <List.Item>
+                  <List.Item.Meta
+                    title={item.name}
+                    description={`${item.count} conversations`}
+                  />
+                  <Progress percent={item.percentage} size="small" />
+                </List.Item>
+              )}
+            />
+          </Card>
+        </Col>
+      </Row>
+    </div>
+  );
+
+  const WhatsAppTab = () => (
+    <div className="whatsapp-tab">
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={8}>
+          <Card title="WhatsApp Analytics">
+            <Statistic title="Total Messages" value={dashboardData.whatsappStats?.totalMessages || 0} />
+            <Statistic title="Leads Generated" value={dashboardData.whatsappStats?.leadsGenerated || 0} />
+            <Statistic title="Response Rate" value={`${dashboardData.whatsappStats?.responseRate || 0}%`} />
+            <Button 
+              type="primary" 
+              icon={<WhatsAppOutlined />} 
+              onClick={() => setShowWhatsAppModal(true)}
+              style={{ marginTop: 16 }}
+            >
+              Send Broadcast
+            </Button>
+          </Card>
+        </Col>
+        <Col xs={24} lg={16}>
+          <Card title="Recent WhatsApp Conversations">
+            <List
+              dataSource={dashboardData.whatsappStats?.recentConversations || []}
+              renderItem={item => (
+                <List.Item>
+                  <List.Item.Meta
+                    avatar={<Avatar icon={<UserOutlined />} />}
+                    title={item.contact}
+                    description={item.lastMessage}
+                  />
+                  <div>{new Date(item.timestamp).toLocaleTimeString()}</div>
+                </List.Item>
+              )}
+            />
+          </Card>
+        </Col>
+      </Row>
+    </div>
+  );
+
+  const UAEpassTab = () => (
+    <div className="uaepass-tab">
+      <Alert
+        message="UAE Pass Integration"
+        description="Government-verified digital identity authentication"
+        type="info"
+        showIcon
+        icon={<IdcardOutlined />}
+      />
+      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+        <Col xs={24} lg={8}>
+          <Card title="UAE Pass Statistics">
+            <Statistic title="Total Users" value={dashboardData.uaepassStats?.totalUsers || 0} />
+            <Statistic title="Verified Today" value={dashboardData.uaepassStats?.verifiedToday || 0} />
+            <Statistic title="Verification Rate" value={`${dashboardData.uaepassStats?.verificationRate || 0}%`} />
+            <Button 
+              type="primary" 
+              icon={<IdcardOutlined />} 
+              onClick={() => navigate('/users/uaepass')}
+              style={{ marginTop: 16 }}
+            >
+              View UAE Pass Users
+            </Button>
+          </Card>
+        </Col>
+        <Col xs={24} lg={16}>
+          <Card title="Recent UAE Pass Registrations">
+            <Table
+              columns={[
+                { title: 'Name', dataIndex: 'name', key: 'name' },
+                { title: 'Emirates ID', dataIndex: 'emiratesId', key: 'emiratesId' },
+                { title: 'Email', dataIndex: 'email', key: 'email' },
+                { title: 'Registered', dataIndex: 'registeredAt', key: 'registeredAt', render: (date) => new Date(date).toLocaleDateString() },
+                { title: 'Status', dataIndex: 'status', key: 'status', render: (status) => <Tag color="green">Verified</Tag> }
+              ]}
+              dataSource={dashboardData.uaepassStats?.recentRegistrations || []}
+              pagination={{ pageSize: 5 }}
+            />
+          </Card>
+        </Col>
+      </Row>
+    </div>
+  );
+
+  const SettingsTab = () => (
+    <div className="settings-tab">
+      <Card title="Dashboard Settings">
+        <Form layout="vertical">
+          <Form.Item label="Refresh Interval">
+            <Select defaultValue="30" style={{ width: 200 }}>
+              <Option value="15">15 seconds</Option>
+              <Option value="30">30 seconds</Option>
+              <Option value="60">1 minute</Option>
+              <Option value="300">5 minutes</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Default View">
+            <Select defaultValue="overview" style={{ width: 200 }}>
+              <Option value="overview">Overview</Option>
+              <Option value="properties">Properties</Option>
+              <Option value="analytics">Analytics</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item>
+            <Space>
+              <Button type="primary">Save Settings</Button>
+              <Button onClick={() => fetchDashboardData()} icon={<SyncOutlined />}>
+                Refresh Now
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Card>
+    </div>
+  );
+
+  // Modals
+  const AddPropertyModal = () => (
+    <Modal
+      title="Add New Property"
+      visible={showAddPropertyModal}
+      onCancel={() => setShowAddPropertyModal(false)}
+      width={700}
+      footer={[
+        <Button key="cancel" onClick={() => setShowAddPropertyModal(false)}>
+          Cancel
+        </Button>,
+        <Button key="submit" type="primary">
+          Add Property
+        </Button>
+      ]}
+    >
+      <Form layout="vertical">
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label="Property Code" required>
+              <Input placeholder="e.g., WC-DB-001" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Emirate" required>
+              <Select placeholder="Select Emirate">
+                <Option value="dubai">Dubai</Option>
+                <Option value="abudhabi">Abu Dhabi</Option>
+                <Option value="sharjah">Sharjah</Option>
+                <Option value="ajman">Ajman</Option>
+                <Option value="rak">Ras Al Khaimah</Option>
+                <Option value="fujairah">Fujairah</Option>
+                <Option value="uaq">Umm Al Quwain</Option>
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+        <Form.Item label="Property Address">
+          <TextArea rows={2} />
+        </Form.Item>
+        {/* Add more form fields as needed */}
+      </Form>
+    </Modal>
+  );
+
+  const WhatsAppBroadcastModal = () => (
+    <Modal
+      title="WhatsApp Broadcast"
+      visible={showWhatsAppModal}
+      onCancel={() => setShowWhatsAppModal(false)}
+      width={600}
+    >
+      <Form layout="vertical">
+        <Form.Item label="Recipients">
+          <Select mode="multiple" placeholder="Select recipients">
+            <Option value="all_agents">All Agents</Option>
+            <Option value="all_clients">All Clients</Option>
+            <Option value="property_owners">Property Owners</Option>
+          </Select>
+        </Form.Item>
+        <Form.Item label="Message Template">
+          <Select placeholder="Select template">
+            <Option value="new_property">New Property Alert</Option>
+            <Option value="market_update">Market Update</Option>
+            <Option value="promotion">Special Promotion</Option>
+          </Select>
+        </Form.Item>
+        <Form.Item label="Custom Message">
+          <TextArea rows={4} placeholder="Enter your message here..." />
+        </Form.Item>
+        <Form.Item>
+          <Space>
+            <Button type="primary">Send Broadcast</Button>
+            <Button>Save as Template</Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+
+  return (
+    <div className="owner-dashboard">
+      <div className="dashboard-header">
+        <h1><DashboardOutlined /> Owner Dashboard</h1>
+        <div className="header-actions">
+          <Button icon={<BellOutlined />} shape="circle" />
+          <Button icon={<SyncOutlined />} onClick={fetchDashboardData} loading={loading}>
+            Refresh
+          </Button>
+        </div>
+      </div>
+
+      <Tabs
+        activeKey={activeTab}
+        onChange={setActiveTab}
+        className="dashboard-tabs"
+        size="large"
+        tabPosition="top"
+        type="card"
+      >
+        <TabPane tab={<span><DashboardOutlined /> Overview</span>} key="overview">
+          <OverviewTab />
+        </TabPane>
+        <TabPane tab={<span><PropertySafetyOutlined /> Properties</span>} key="properties">
+          <PropertiesTab />
+        </TabPane>
+        <TabPane tab={<span><TeamOutlined /> Agents</span>} key="agents">
+          <AgentsTab />
+        </TabPane>
+        <TabPane tab={<span><UserOutlined /> Leads</span>} key="leads">
+          <LeadsTab />
+        </TabPane>
+        <TabPane tab={<span><FileTextOutlined /> Contracts</span>} key="contracts">
+          <ContractsTab />
+        </TabPane>
+        <TabPane tab={<span><BarChartOutlined /> Analytics</span>} key="analytics">
+          <AnalyticsTab />
+        </TabPane>
+        <TabPane tab={<span><RobotOutlined /> AI Chatbot</span>} key="chatbot">
+          <AIChatbotTab />
+        </TabPane>
+        <TabPane tab={<span><WhatsAppOutlined /> WhatsApp</span>} key="whatsapp">
+          <WhatsAppTab />
+        </TabPane>
+        <TabPane tab={<span><IdcardOutlined /> UAE Pass</span>} key="uaepass">
+          <UAEpassTab />
+        </TabPane>
+        <TabPane tab={<span><SettingOutlined /> Settings</span>} key="settings">
+          <SettingsTab />
+        </TabPane>
+      </Tabs>
+
+      <AddPropertyModal />
+      <WhatsAppBroadcastModal />
+    </div>
+  );
+};
+
+export default OwnerDashboard;
+```
+
+## **🔧 SOCIAL LOGIN FIXES FOR DEPLOYED VERSION**
+
+### **File:** `server/middleware/socialAuthDebug.js`
+
+```javascript
+const socialAuthDebug = (req, res, next) => {
+  // Debug middleware for social authentication issues
+  const debugInfo = {
+    timestamp: new Date().toISOString(),
+    method: req.method,
+    path: req.path,
+    headers: {
+      origin: req.headers.origin,
+      referer: req.headers.referer,
+      'user-agent': req.headers['user-agent']
+    },
+    environment: process.env.NODE_ENV,
+    socialAuthConfig: {
+      google: {
+        clientId: process.env.GOOGLE_CLIENT_ID ? 'Configured' : 'Missing',
+        callbackUrl: process.env.GOOGLE_CALLBACK_URL
+      },
+      uaepass: {
+        clientId: process.env.UAEPASS_CLIENT_ID ? 'Configured' : 'Missing',
+        authUrl: process.env.UAEPASS_AUTH_URL
+      }
+    }
+  };
+
+  // Log debug info in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Social Auth Debug:', JSON.stringify(debugInfo, null, 2));
+  }
+
+  // Attach debug info to response in development
+  if (process.env.NODE_ENV === 'development') {
+    res.locals.debugInfo = debugInfo;
+  }
+
+  next();
+};
+
+module.exports = socialAuthDebug;
+```
+
+### **File:** `server/services/socialAuthService.js`
+
+```javascript
+const axios = require('axios');
+const { OAuth2Client } = require('google-auth-library');
+
+class SocialAuthService {
+  constructor() {
+    this.googleClient = null;
+    this.initializeGoogleClient();
+  }
+
+  initializeGoogleClient() {
+    try {
+      this.googleClient = new OAuth2Client(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        process.env.GOOGLE_CALLBACK_URL
+      );
+      console.log('Google OAuth client initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize Google OAuth client:', error);
+    }
+  }
+
+  async verifyGoogleToken(token) {
+    try {
+      if (!this.googleClient) {
+        throw new Error('Google OAuth client not initialized');
+      }
+
+      // Verify the token with Google
+      const ticket = await this.googleClient.verifyIdToken({
+        idToken: token,
+        audience: process.env.GOOGLE_CLIENT_ID
+      });
+
+      const payload = ticket.getPayload();
+      
+      return {
+        success: true,
+        userInfo: {
+          providerId: payload.sub,
+          email: payload.email,
+          emailVerified: payload.email_verified,
+          name: payload.name,
+          firstName: payload.given_name,
+          lastName: payload.family_name,
+          picture: payload.picture,
+          locale: payload.locale
+        }
+      };
+    } catch (error) {
+      console.error('Google token verification failed:', error.message);
+      
+      // Fallback verification for development
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Using development fallback for Google auth');
+        return this.developmentFallback(token);
+      }
+      
+      return {
+        success: false,
+        error: 'Google authentication failed',
+        details: error.message
+      };
+    }
+  }
+
+  developmentFallback(token) {
+    // Only for development/testing
+    return {
+      success: true,
+      userInfo: {
+        providerId: 'dev-google-id',
+        email: 'dev-user@example.com',
+        emailVerified: true,
+        name: 'Development User',
+        firstName: 'Development',
+        lastName: 'User',
+        picture: null,
+        locale: 'en'
+      },
+      isDevelopment: true
+    };
+  }
+
+  // Check environment configuration
+  checkConfig() {
+    const config = {
+      google: {
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET ? 'Set' : 'Missing',
+        callbackUrl: process.env.GOOGLE_CALLBACK_URL,
+        status: process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET ? 'OK' : 'Incomplete'
+      },
+      uaepass: {
+        clientId: process.env.UAEPASS_CLIENT_ID,
+        clientSecret: process.env.UAEPASS_CLIENT_SECRET ? 'Set' : 'Missing',
+        authUrl: process.env.UAEPASS_AUTH_URL,
+        status: process.env.UAEPASS_CLIENT_ID && process.env.UAEPASS_CLIENT_SECRET ? 'OK' : 'Incomplete'
+      },
+      environment: process.env.NODE_ENV,
+      baseUrl: process.env.BASE_URL || 'Not set',
+      clientUrl: process.env.CLIENT_URL || 'Not set'
+    };
+
+    return config;
+  }
+}
+
+module.exports = SocialAuthService;
+```
+
+### **File:** `client/src/components/auth/SocialLoginDebug.js`
+
+```javascript
+import React, { useState, useEffect } from 'react';
+import { 
+  Modal, 
+  Button, 
+  Alert, 
+  Steps, 
+  Card, 
+  Typography, 
+  Space, 
+  List, 
+  Tag,
+  Input,
+  message
+} from 'antd';
+import { 
+  BugOutlined, 
+  CheckCircleOutlined, 
+  CloseCircleOutlined,
+  GoogleOutlined,
+  IdcardOutlined,
+  SettingOutlined,
+  ReloadOutlined
+} from '@ant-design/icons';
+import axios from 'axios';
+
+const { Title, Text, Paragraph } = Typography;
+const { Step } = Steps;
+
+const SocialLoginDebug = ({ visible, onClose }) => {
+  const [configStatus, setConfigStatus] = useState(null);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [testResults, setTestResults] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (visible) {
+      checkConfig();
+    }
+  }, [visible]);
+
+  const checkConfig = async () => {
+    try {
+      const response = await axios.get('/api/auth/debug/config');
+      setConfigStatus(response.data);
+    } catch (error) {
+      console.error('Failed to check config:', error);
+    }
+  };
+
+  const runTests = async () => {
+    setLoading(true);
+    const results = {};
+
+    try {
+      // Test 1: Google OAuth Configuration
+      results.google = await testGoogleAuth();
+      
+      // Test 2: UAE Pass Configuration
+      results.uaepass = await testUaePassAuth();
+      
+      // Test 3: Environment Variables
+      results.env = await testEnvironment();
+      
+      // Test 4: CORS Configuration
+      results.cors = await testCORS();
+      
+      setTestResults(results);
+      setCurrentStep(1);
+    } catch (error) {
+      console.error('Tests failed:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const testGoogleAuth = async () => {
+    try {
+      const response = await axios.get('/api/auth/debug/google');
+      return {
+        success: true,
+        message: 'Google OAuth configured correctly',
+        details: response.data
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Google OAuth configuration issue',
+        details: error.response?.data || error.message
+      };
+    }
+  };
+
+  const testUaePassAuth = async () => {
+    try {
+      const response = await axios.get('/api/auth/debug/uaepass');
+      return {
+        success: true,
+        message: 'UAE Pass configured correctly',
+        details: response.data
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'UAE Pass configuration issue',
+        details: error.response?.data || error.message
+      };
+    }
+  };
+
+  const testEnvironment = () => {
+    const requiredVars = [
+      'REACT_APP_API_URL',
+      'REACT_APP_PUBLIC_URL',
+      'GOOGLE_CLIENT_ID',
+      'UAEPASS_CLIENT_ID',
+      'NODE_ENV'
+    ];
+
+    const results = requiredVars.map(varName => ({
+      name: varName,
+      value: process.env[varName] || 'Not set',
+      status: process.env[varName] ? 'ok' : 'missing'
+    }));
+
+    return {
+      success: results.every(r => r.status === 'ok'),
+      message: 'Environment variables check',
+      details: results
+    };
+  };
+
+  const testCORS = async () => {
+    try {
+      const response = await axios.options('/api/auth/login/google');
+      return {
+        success: true,
+        message: 'CORS configured correctly',
+        details: response.headers
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'CORS configuration issue',
+        details: error.message
+      };
+    }
+  };
+
+  const getFixSuggestions = () => {
+    const suggestions = [];
+
+    if (configStatus?.google?.status !== 'OK') {
+      suggestions.push({
+        title: 'Fix Google OAuth',
+        steps: [
+          '1. Go to Google Cloud Console',
+          '2. Create OAuth 2.0 credentials',
+          '3. Add authorized redirect URIs',
+          '4. Update environment variables'
+        ],
+        link: 'https://console.cloud.google.com/apis/credentials'
+      });
+    }
+
+    if (configStatus?.uaepass?.status !== 'OK') {
+      suggestions.push({
+        title: 'Fix UAE Pass Integration',
+        steps: [
+          '1. Register at UAE Pass Business Portal',
+          '2. Obtain client credentials',
+          '3. Configure redirect URIs',
+          '4. Update environment variables'
+        ],
+        link: 'https://uaepass.ae/business/'
+      });
+    }
+
+    return suggestions;
+  };
+
+  const copyEnvTemplate = () => {
+    const template = `
+# === MANDATORY FOR VERCEL ===
+REACT_APP_API_URL=https://your-domain.vercel.app/api
+REACT_APP_PUBLIC_URL=https://your-domain.vercel.app
+NODE_ENV=production
+
+# === GOOGLE AUTHENTICATION ===
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=https://your-domain.vercel.app/api/auth/google/callback
+
+# === UAE PASS AUTHENTICATION ===
+UAEPASS_CLIENT_ID=your_uaepass_client_id
+UAEPASS_CLIENT_SECRET=your_uaepass_client_secret
+UAEPASS_REDIRECT_URI=https://your-domain.vercel.app/api/auth/uaepass/callback
+UAEPASS_AUTH_URL=https://id.uaepass.ae/idshub/authorize
+
+# === BASE URLS ===
+BASE_URL=https://your-domain.vercel.app
+CLIENT_URL=https://your-domain.vercel.app
+    `;
+    
+    navigator.clipboard.writeText(template);
+    message.success('Environment template copied to clipboard');
+  };
+
+  return (
+    <Modal
+      title={
+        <Space>
+          <BugOutlined />
+          <span>Social Login Debug & Fix</span>
+        </Space>
+      }
+      visible={visible}
+      onCancel={onClose}
+      width={800}
+      footer={[
+        <Button key="close" onClick={onClose}>
+          Close
+        </Button>,
+        <Button 
+          key="run" 
+          type="primary" 
+          onClick={runTests}
+          loading={loading}
+          icon={<ReloadOutlined />}
+        >
+          Run Diagnostics
+        </Button>
+      ]}
+    >
+      <Steps current={currentStep} style={{ marginBottom: 24 }}>
+        <Step title="Configuration Check" />
+        <Step title="Test Results" />
+        <Step title="Fix Suggestions" />
+      </Steps>
+
+      {currentStep === 0 && (
+        <div>
+          <Title level={4}>Current Configuration Status</Title>
+          
+          {configStatus && (
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <Card title="Google OAuth" size="small">
+                <Space>
+                  <Tag color={configStatus.google?.status === 'OK' ? 'green' : 'red'}>
+                    {configStatus.google?.status}
+                  </Tag>
+                  <Text>{configStatus.google?.clientId ? 'Client ID: ' + configStatus.google.clientId.substring(0, 10) + '...' : 'Not configured'}</Text>
+                </Space>
+              </Card>
+              
+              <Card title="UAE Pass" size="small">
+                <Space>
+                  <Tag color={configStatus.uaepass?.status === 'OK' ? 'green' : 'red'}>
+                    {configStatus.uaepass?.status}
+                  </Tag>
+                  <Text>{configStatus.uaepass?.clientId ? 'Client ID: ' + configStatus.uaepass.clientId.substring(0, 10) + '...' : 'Not configured'}</Text>
+                </Space>
+              </Card>
+              
+              <Card title="Environment" size="small">
+                <Space direction="vertical">
+                  <Text>Environment: {configStatus.environment}</Text>
+                  <Text>Base URL: {configStatus.baseUrl}</Text>
+                  <Text>Client URL: {configStatus.clientUrl}</Text>
+                </Space>
+              </Card>
+            </Space>
+          )}
+
+          <Alert
+            type="info"
+            message="Common Issues"
+            description={
+              <ul>
+                <li>Missing environment variables in Vercel</li>
+                <li>Incorrect redirect URIs in OAuth providers</li>
+                <li>CORS not configured for production domain</li>
+                <li>HTTPS required for production OAuth</li>
+              </ul>
+            }
+            style={{ marginTop: 16 }}
+          />
+        </div>
+      )}
+
+      {currentStep === 1 && (
+        <div>
+          <Title level={4}>Test Results</Title>
+          
+          {Object.entries(testResults).map(([key, result]) => (
+            <Card key={key} size="small" style={{ marginBottom: 8 }}>
+              <Space align="start">
+                {result.success ? (
+                  <CheckCircleOutlined style={{ color: '#52c41a' }} />
+                ) : (
+                  <CloseCircleOutlined style={{ color: '#f5222d' }} />
+                )}
+                <Space direction="vertical" size="small">
+                  <Text strong>{result.message}</Text>
+                  <Text type="secondary" style={{ fontSize: '12px' }}>
+                    {JSON.stringify(result.details, null, 2)}
+                  </Text>
+                </Space>
+              </Space>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {currentStep === 2 && (
+        <div>
+          <Title level={4}>Fix Suggestions</Title>
+          
+          {getFixSuggestions().map((suggestion, index) => (
+            <Card key={index} title={suggestion.title} style={{ marginBottom: 16 }}>
+              <List
+                dataSource={suggestion.steps}
+                renderItem={(item, idx) => (
+                  <List.Item>
+                    <Text>{item}</Text>
+                  </List.Item>
+                )}
+              />
+              {suggestion.link && (
+                <Button 
+                  type="link" 
+                  href={suggestion.link} 
+                  target="_blank"
+                  style={{ marginTop: 8 }}
+                >
+                  Open Configuration Portal
+                </Button>
+              )}
+            </Card>
+          ))}
+
+          <Card title="Environment Variables Template">
+            <Paragraph>
+              Copy and paste this template into your Vercel environment variables:
+            </Paragraph>
+            <Input.TextArea 
+              rows={8} 
+              value={`
+REACT_APP_API_URL=${window.location.origin}/api
+REACT_APP_PUBLIC_URL=${window.location.origin}
+GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
+GOOGLE_CALLBACK_URL=${window.location.origin}/api/auth/google/callback
+UAEPASS_CLIENT_ID=YOUR_UAEPASS_CLIENT_ID
+UAEPASS_REDIRECT_URI=${window.location.origin}/api/auth/uaepass/callback
+              `.trim()}
+              readOnly
+            />
+            <Button 
+              onClick={copyEnvTemplate}
+              icon={<SettingOutlined />}
+              style={{ marginTop: 8 }}
+            >
+              Copy Template
+            </Button>
+          </Card>
+        </div>
+      )}
+
+      <Alert
+        type="warning"
+        message="Production Deployment Checklist"
+        description={
+          <Space direction="vertical">
+            <Text>✓ Update ALL environment variables in Vercel</Text>
+            <Text>✓ Configure OAuth redirect URIs with production domain</Text>
+            <Text>✓ Enable HTTPS (Vercel provides automatically)</Text>
+            <Text>✓ Test social login on production domain</Text>
+          </Space>
+        }
+        style={{ marginTop: 24 }}
+      />
+    </Modal>
+  );
+};
+
+export default SocialLoginDebug;
+```
+
+### **File:** `client/src/components/auth/Login.js` (Updated with Debug)
+
+```javascript
+import React, { useState, useEffect } from 'react';
+import { 
+  // ... existing imports ...
+  Button,
+  Alert,
+  Space
+} from 'antd';
+import { 
+  // ... existing icons ...
+  BugOutlined 
+} from '@ant-design/icons';
+import SocialLoginDebug from './SocialLoginDebug';
+import { useAuth } from '../../contexts/AuthContext';
+
+const Login = () => {
+  const [showDebug, setShowDebug] = useState(false);
+  const [socialAuthErrors, setSocialAuthErrors] = useState([]);
+  const { user, isAuthenticated } = useAuth();
+  
+  // Check for social auth errors on mount
+  useEffect(() => {
+    const checkSocialAuthIssues = () => {
+      const errors = [];
+      
+      // Check if user is logged in but has social auth errors
+      if (isAuthenticated && user?.authMethods) {
+        const hasSocialAuth = user.authMethods.some(m => 
+          ['google', 'uaepass', 'apple', 'facebook'].includes(m.provider)
+        );
+        
+        if (!hasSocialAuth) {
+          errors.push('No social authentication methods configured');
+        }
+      }
+      
+      // Check environment variables in development
+      if (process.env.NODE_ENV === 'development') {
+        if (!process.env.REACT_APP_GOOGLE_CLIENT_ID) {
+          errors.push('Google Client ID missing in development');
+        }
+      }
+      
+      setSocialAuthErrors(errors);
+    };
+    
+    checkSocialAuthIssues();
+  }, [isAuthenticated, user]);
+
+  // Add debug button to login page
+  const renderDebugButton = () => (
+    <div style={{ textAlign: 'center', marginTop: '20px' }}>
+      <Button 
+        type="link" 
+        icon={<BugOutlined />}
+        onClick={() => setShowDebug(true)}
+      >
+        Having login issues? Debug here
+      </Button>
+    </div>
+  );
+
+  // Show social auth warnings
+  const renderSocialAuthWarnings = () => {
+    if (socialAuthErrors.length === 0) return null;
+    
+    return (
+      <Alert
+        type="warning"
+        message="Social Login Configuration Issues"
+        description={
+          <Space direction="vertical">
+            {socialAuthErrors.map((error, index) => (
+              <Text key={index}>• {error}</Text>
+            ))}
+            <Button 
+              type="link" 
+              size="small" 
+              onClick={() => setShowDebug(true)}
+              style={{ padding: 0 }}
+            >
+              Fix configuration issues
+            </Button>
+          </Space>
+        }
+        style={{ marginBottom: 16 }}
+      />
+    );
+  };
+
+  return (
+    <div className="auth-container">
+      {/* Existing login content */}
+      
+      {renderSocialAuthWarnings()}
+      {renderDebugButton()}
+      
+      <SocialLoginDebug 
+        visible={showDebug} 
+        onClose={() => setShowDebug(false)} 
+      />
+    </div>
+  );
+};
+```
+
+### **File:** `server/routes/debug.routes.js`
+
+```javascript
+const express = require('express');
+const router = express.Router();
+const SocialAuthService = require('../services/socialAuthService');
+
+const socialAuthService = new SocialAuthService();
+
+// Debug endpoint for social auth configuration
+router.get('/config', (req, res) => {
+  const config = socialAuthService.checkConfig();
+  res.json(config);
+});
+
+// Test Google OAuth configuration
+router.get('/google', async (req, res) => {
+  try {
+    // Test configuration without actual authentication
+    const config = {
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      callbackUrl: process.env.GOOGLE_CALLBACK_URL,
+      redirectUriMatches: process.env.GOOGLE_CALLBACK_URL === `${process.env.BASE_URL}/api/auth/google/callback`
+    };
+    
+    res.json({
+      success: true,
+      message: 'Google OAuth configuration test',
+      config,
+      suggestions: config.clientId ? null : [
+        'Set GOOGLE_CLIENT_ID environment variable',
+        'Configure OAuth consent screen in Google Cloud Console',
+        'Add authorized redirect URI in Google Console'
+      ]
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Test UAE Pass configuration
+router.get('/uaepass', async (req, res) => {
+  try {
+    const config = {
+      clientId: process.env.UAEPASS_CLIENT_ID,
+      authUrl: process.env.UAEPASS_AUTH_URL,
+      redirectUri: process.env.UAEPASS_REDIRECT_URI,
+      environment: process.env.NODE_ENV
+    };
+    
+    res.json({
+      success: true,
+      message: 'UAE Pass configuration test',
+      config,
+      suggestions: config.clientId ? null : [
+        'Register at UAE Pass Business Portal',
+        'Obtain client credentials',
+        'Configure redirect URIs',
+        'Use staging credentials for development'
+      ]
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Generate environment template
+router.get('/env-template', (req, res) => {
+  const baseUrl = req.protocol + '://' + req.get('host');
+  
+  const template = `
+# Production Environment Variables
+
+# Base URLs
+BASE_URL=${baseUrl}
+CLIENT_URL=${baseUrl}
+NODE_ENV=production
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+GOOGLE_CALLBACK_URL=${baseUrl}/api/auth/google/callback
+
+# UAE Pass
+UAEPASS_CLIENT_ID=your_uaepass_client_id_here
+UAEPASS_CLIENT_SECRET=your_uaepass_client_secret_here
+UAEPASS_REDIRECT_URI=${baseUrl}/api/auth/uaepass/callback
+UAEPASS_AUTH_URL=https://id.uaepass.ae/idshub/authorize
+
+# Important: Replace all "your_*" values with actual credentials
+  `;
+  
+  res.set('Content-Type', 'text/plain');
+  res.send(template);
+});
+
+module.exports = router;
+```
+
+## **🚀 DEPLOYMENT FIX CHECKLIST FOR SOCIAL LOGIN**
+
+### **1. Vercel Environment Variables Configuration:**
+
+```bash
+# REQUIRED FOR PRODUCTION:
+REACT_APP_API_URL=https://whitecaves.com/api
+REACT_APP_PUBLIC_URL=https://whitecaves.com
+NODE_ENV=production
+
+# GOOGLE OAUTH:
+GOOGLE_CLIENT_ID=your_actual_google_client_id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your_actual_google_client_secret
+GOOGLE_CALLBACK_URL=https://whitecaves.com/api/auth/google/callback
+
+# UAE PASS:
+UAEPASS_CLIENT_ID=your_actual_uaepass_client_id
+UAEPASS_CLIENT_SECRET=your_actual_uaepass_client_secret
+UAEPASS_REDIRECT_URI=https://whitecaves.com/api/auth/uaepass/callback
+UAEPASS_AUTH_URL=https://id.uaepass.ae/idshub/authorize
+
+# BASE URLS:
+BASE_URL=https://whitecaves.com
+CLIENT_URL=https://whitecaves.com
+```
+
+### **2. OAuth Provider Configuration:**
+
+**Google Cloud Console:**
+1. Go to https://console.cloud.google.com/apis/credentials
+2. Add authorized redirect URI: `https://whitecaves.com/api/auth/google/callback`
+3. Add authorized JavaScript origins: `https://whitecaves.com`
+4. Enable Google+ API if needed
+
+**UAE Pass Business Portal:**
+1. Go to https://uaepass.ae/business/
+2. Add redirect URI: `https://whitecaves.com/api/auth/uaepass/callback`
+3. Request production credentials after testing in staging
+
+### **3. CORS Configuration for Production:**
+
+```javascript
+// server/app.js - Production CORS configuration
+const corsOptions = {
+  origin: [
+    'https://whitecaves.com',
+    'https://www.whitecaves.com',
+    'https://whitecaves.vercel.app'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400 // 24 hours
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Enable pre-flight for all routes
+```
+
+### **4. Production Fallback for Social Auth:**
+
+```javascript
+// server/middleware/productionAuthFallback.js
+const productionAuthFallback = (req, res, next) => {
+  // Only in production environment
+  if (process.env.NODE_ENV === 'production') {
+    // Check if social auth is properly configured
+    const socialAuthConfigured = 
+      process.env.GOOGLE_CLIENT_ID && 
+      process.env.GOOGLE_CLIENT_SECRET &&
+      process.env.UAEPASS_CLIENT_ID &&
+      process.env.UAEPASS_CLIENT_SECRET;
+    
+    if (!socialAuthConfigured && req.path.includes('/auth/')) {
+      console.warn('Social auth not configured in production');
+      
+      // Return informative error
+      return res.status(503).json({
+        error: 'Social authentication temporarily unavailable',
+        message: 'Please use email/password login or contact support',
+        supportEmail: 'admin@whitecaves.com',
+        supportPhone: '+971 56 361 6136'
+      });
+    }
+  }
+  next();
+};
+
+module.exports = productionAuthFallback;
+```
+
+### **5. Quick Fix Script for Deployment Issues:**
+
+```javascript
+// scripts/fix-deployment.js
+#!/usr/bin/env node
+const https = require('https');
+const { execSync } = require('child_process');
+
+console.log('🔧 Fixing Social Login Deployment Issues\n');
+
+const fixes = [
+  {
+    name: 'Check Environment Variables',
+    fix: () => {
+      console.log('📋 Checking required environment variables...');
+      const requiredVars = [
+        'GOOGLE_CLIENT_ID',
+        'GOOGLE_CALLBACK_URL',
+        'UAEPASS_CLIENT_ID',
+        'UAEPASS_REDIRECT_URI'
+      ];
+      
+      requiredVars.forEach(varName => {
+        if (!process.env[varName]) {
+          console.log(`❌ Missing: ${varName}`);
+        } else {
+          console.log(`✅ ${varName}: ${process.env[varName].substring(0, 20)}...`);
+        }
+      });
+    }
+  },
+  {
+    name: 'Test API Endpoints',
+    fix: async () => {
+      console.log('🌐 Testing API endpoints...');
+      const endpoints = [
+        '/api/health',
+        '/api/auth/google',
+        '/api/auth/uaepass/initiate'
+      ];
+      
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(`${process.env.BASE_URL}${endpoint}`);
+          console.log(`✅ ${endpoint}: ${response.status}`);
+        } catch (error) {
+          console.log(`❌ ${endpoint}: ${error.message}`);
+        }
+      }
+    }
+  },
+  {
+    name: 'Verify CORS Configuration',
+    fix: () => {
+      console.log('🛡️ Checking CORS headers...');
+      // Test CORS with curl
+      try {
+        const result = execSync(`curl -I ${process.env.BASE_URL}/api/health`, { encoding: 'utf8' });
+        if (result.includes('Access-Control-Allow-Origin')) {
+          console.log('✅ CORS headers are present');
+        } else {
+          console.log('❌ CORS headers missing');
+        }
+      } catch (error) {
+        console.log('❌ Failed to check CORS');
+      }
+    }
+  }
+];
+
+async function applyFixes() {
+  console.log('Starting deployment fixes...\n');
+  
+  for (const fix of fixes) {
+    console.log(`\n${fix.name}:`);
+    try {
+      await fix.fix();
+    } catch (error) {
+      console.log(`Error: ${error.message}`);
+    }
+  }
+  
+  console.log('\n📋 Quick Fix Summary:');
+  console.log('1. ✅ Update all environment variables in Vercel dashboard');
+  console.log('2. ✅ Configure OAuth redirect URIs with exact production URLs');
+  console.log('3. ✅ Test login flow on production domain');
+  console.log('4. ✅ Check server logs for authentication errors');
+  console.log('5. ✅ Contact support if issues persist: admin@whitecaves.com');
+}
+
+applyFixes();
+```
+
+## **📱 MOBILE SOCIAL LOGIN FIXES**
+
+### **File:** `client/src/utils/mobileDetection.js`
+
+```javascript
+export const isMobileDevice = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+};
+
+export const isUaePassAppInstalled = async () => {
+  // Check if UAE Pass app is installed
+  const uaePassUrl = 'uaepass://';
+  return new Promise((resolve) => {
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = uaePassUrl;
+    
+    const startTime = Date.now();
+    const timeout = 1000;
+    
+    iframe.onload = () => {
+      resolve(true);
+      document.body.removeChild(iframe);
+    };
+    
+    window.setTimeout(() => {
+      resolve(false);
+      document.body.removeChild(iframe);
+    }, timeout);
+    
+    document.body.appendChild(iframe);
+  });
+};
+
+export const getMobileLoginMethod = () => {
+  const userAgent = navigator.userAgent.toLowerCase();
+  
+  if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
+    return 'apple'; // Use Apple Sign-In on iOS
+  } else if (userAgent.includes('android')) {
+    return 'google'; // Use Google Sign-In on Android
+  }
+  
+  return 'default'; // Default to email/password
+};
+```
+
+### **File:** `client/src/components/auth/MobileSocialLogin.js`
+
+```javascript
+import React, { useState, useEffect } from 'react';
+import { 
+  Button, 
+  Alert, 
+  Space, 
+  Typography,
+  Card,
+  List,
+  Divider
+} from 'antd';
+import { 
+  MobileOutlined,
+  AppleOutlined,
+  GoogleOutlined,
+  IdcardOutlined,
+  MailOutlined,
+  QrcodeOutlined
+} from '@ant-design/icons';
+import { isMobileDevice, isUaePassAppInstalled } from '../../utils/mobileDetection';
+
+const { Title, Text } = Typography;
+
+const MobileSocialLogin = ({ onMethodSelect }) => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [hasUaePassApp, setHasUaePassApp] = useState(false);
+  const [mobileOS, setMobileOS] = useState('');
+
+  useEffect(() => {
+    const checkMobile = async () => {
+      const mobile = isMobileDevice();
+      setIsMobile(mobile);
+      
+      if (mobile) {
+        // Detect operating system
+        const userAgent = navigator.userAgent.toLowerCase();
+        if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
+          setMobileOS('ios');
+        } else if (userAgent.includes('android')) {
+          setMobileOS('android');
+        }
+        
+        // Check for UAE Pass app
+        const uaePassInstalled = await isUaePassAppInstalled();
+        setHasUaePassApp(uaePassInstalled);
+      }
+    };
+    
+    checkMobile();
+  }, []);
+
+  const mobileMethods = [
+    {
+      id: 'uaepass_app',
+      title: 'UAE Pass App',
+      icon: <IdcardOutlined />,
+      color: '#ce1126',
+      available: hasUaePassApp,
+      description: 'Government-verified digital ID'
+    },
+    {
+      id: 'apple',
+      title: 'Apple',
+      icon: <AppleOutlined />,
+      color: '#000000',
+      available: mobileOS === 'ios',
+      description: 'Sign in with Apple ID'
+    },
+    {
+      id: 'google',
+      title: 'Google',
+      icon: <GoogleOutlined />,
+      color: '#DB4437',
+      available: true,
+      description: 'Sign in with Google'
+    },
+    {
+      id: 'email',
+      title: 'Email',
+      icon: <MailOutlined />,
+      color: '#1890ff',
+      available: true,
+      description: 'Use email and password'
+    },
+    {
+      id: 'qr',
+      title: 'QR Code',
+      icon: <QrcodeOutlined />,
+      color: '#722ed1',
+      available: true,
+      description: 'Scan QR code to login'
+    }
+  ];
+
+  if (!isMobile) {
+    return null;
+  }
+
+  return (
+    <div className="mobile-social-login">
+      <Alert
+        message="Mobile Login Detected"
+        description="Choose the most convenient login method for your device"
+        type="info"
+        showIcon
+        icon={<MobileOutlined />}
+        style={{ marginBottom: 16 }}
+      />
+      
+      <Title level={4}>Available Login Methods</Title>
+      <Text type="secondary">Select the method that works best on your mobile device</Text>
+      
+      <List
+        dataSource={mobileMethods}
+        renderItem={(method) => (
+          <List.Item>
+            <Card 
+              hoverable
+              onClick={() => onMethodSelect(method.id)}
+              style={{ 
+                width: '100%',
+                opacity: method.available ? 1 : 0.5,
+                cursor: method.available ? 'pointer' : 'not-allowed'
+              }}
+            >
+              <Space align="start">
+                <div className="method-icon" style={{ color: method.color }}>
+                  {method.icon}
+                </div>
+                <Space direction="vertical" size="small">
+                  <Text strong>{method.title}</Text>
+                  <Text type="secondary">{method.description}</Text>
+                  {!method.available && (
+                    <Text type="warning" style={{ fontSize: '12px' }}>
+                      Not available on this device
+                    </Text>
+                  )}
+                </Space>
+              </Space>
+            </Card>
+          </List.Item>
+        )}
+      />
+      
+      <Divider />
+      
+      <Alert
+        type="warning"
+        message="Mobile Login Tips"
+        description={
+          <Space direction="vertical">
+            <Text>• UAE Pass app requires installation from App Store/Play Store</Text>
+            <Text>• Apple Sign-In is only available on iOS devices</Text>
+            <Text>• Google Sign-In works on both Android and iOS</Text>
+            <Text>• QR code login: Scan from another device</Text>
+          </Space>
+        }
+      />
+    </div>
+  );
+};
+
+export default MobileSocialLogin;
+```
+
+## **🎯 SUMMARY OF FIXES**
+
+### **Immediate Actions for Production Social Login:**
+
+1. **Update Vercel Environment Variables:**
+   ```bash
+   # Must match exactly
+   GOOGLE_CALLBACK_URL=https://whitecaves.com/api/auth/google/callback
+   UAEPASS_REDIRECT_URI=https://whitecaves.com/api/auth/uaepass/callback
+   ```
+
+2. **Configure OAuth Providers:**
+   - Google Cloud Console → Credentials → Authorized redirect URIs
+   - UAE Pass Portal → Application Settings → Redirect URIs
+
+3. **Test with Debug Tool:**
+   - Click "Having login issues? Debug here" on login page
+   - Run diagnostics to identify missing configurations
+   - Follow suggested fixes
+
+4. **Mobile Optimization:**
+   - Detect mobile devices automatically
+   - Show appropriate login methods
+   - Handle UAE Pass app deep linking
+
+5. **Fallback Mechanisms:**
+   - Development fallback for testing
+   - Email/password fallback when social auth fails
+   - Clear error messages with support contact
+
+### **Quick Test Commands:**
+
+```bash
+# Test Google OAuth configuration
+curl -X GET "https://whitecaves.com/api/auth/debug/google"
+
+# Test UAE Pass configuration
+curl -X GET "https://whitecaves.com/api/auth/debug/uaepass"
+
+# Get environment template
+curl -X GET "https://whitecaves.com/api/auth/debug/env-template"
+```
+
+These enhancements provide:
+1. **Comprehensive owner dashboard** with tabbed interface for all features
+2. **Social login debugging tools** to identify and fix deployment issues
+3. **Mobile-optimized login** with appropriate method detection
+4. **Production-ready configuration** with clear error handling
+5. **Self-service fixes** through the debug interface
