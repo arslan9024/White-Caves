@@ -569,3 +569,186 @@
     font-size: 1.25rem;
   }
 }
+
+.owner-dashboard-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  padding-bottom: 60px;
+}
+
+.dashboard-header {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(0, 0, 0, 0.3) 100%);
+  border-bottom: 1px solid rgba(220, 38, 38, 0.3);
+  padding: 30px 40px;
+}
+
+.header-content {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-title h1 {
+  color: white;
+  font-size: 2rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+.header-title p {
+  color: rgba(255, 255, 255, 0.6);
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+}
+
+.header-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  padding: 12px 24px;
+  border-radius: 50px;
+}
+
+.badge-crown {
+  font-size: 1.5rem;
+}
+
+.dashboard-tabs {
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+.tabs-container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tabs-container::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  border-bottom: 3px solid transparent;
+  position: relative;
+}
+
+.tab-btn:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-btn.active {
+  color: white;
+  border-bottom-color: #DC2626;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #DC2626, #F87171);
+}
+
+.tab-icon {
+  font-size: 1.1rem;
+}
+
+.tab-label {
+  font-weight: 500;
+}
+
+.dashboard-content {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 30px 40px;
+}
+
+.dashboard-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px 40px;
+  text-align: center;
+}
+
+.dashboard-footer p {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+[data-theme="light"] .owner-dashboard-page {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #f1f3f4 100%);
+}
+
+[data-theme="light"] .dashboard-header {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.08) 0%, rgba(255, 255, 255, 0.9) 100%);
+  border-bottom-color: rgba(220, 38, 38, 0.2);
+}
+
+[data-theme="light"] .header-title h1 {
+  color: #333;
+}
+
+[data-theme="light"] .header-title p {
+  color: #666;
+}
+
+[data-theme="light"] .dashboard-tabs {
+  background: white;
+  border-bottom-color: #eee;
+}
+
+[data-theme="light"] .tab-btn {
+  color: #666;
+}
+
+[data-theme="light"] .tab-btn:hover {
+  color: #333;
+  background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .tab-btn.active {
+  color: #333;
+}
+
+[data-theme="light"] .dashboard-footer {
+  background: rgba(255, 255, 255, 0.95);
+  border-top-color: #eee;
+}
+
+[data-theme="light"] .dashboard-footer p {
+  color: #888;
+}

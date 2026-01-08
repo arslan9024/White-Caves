@@ -1,0 +1,10 @@
+export { default as OverviewTab } from './OverviewTab';
+export { default as PropertiesTab } from './PropertiesTab';
+export { default as AgentsTab } from './AgentsTab';
+export { default as LeadsTab } from './LeadsTab';
+export { default as ContractsTab } from './ContractsTab';
+export { default as AnalyticsTab } from './AnalyticsTab';
+export { default as ChatbotTab } from './ChatbotTab';
+export { default as WhatsAppTab } from './WhatsAppTab';
+export { default as UAEPassTab } from './UAEPassTab';
+export { default as SettingsTab } from './SettingsTab';

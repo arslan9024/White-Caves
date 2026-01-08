@@ -1,25 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import ProductivityTools from '../../components/owner/ProductivityTools';
+import OverviewTab from '../../components/owner/tabs/OverviewTab';
+import PropertiesTab from '../../components/owner/tabs/PropertiesTab';
+import AgentsTab from '../../components/owner/tabs/AgentsTab';
+import LeadsTab from '../../components/owner/tabs/LeadsTab';
+import ContractsTab from '../../components/owner/tabs/ContractsTab';
+import AnalyticsTab from '../../components/owner/tabs/AnalyticsTab';
+import ChatbotTab from '../../components/owner/tabs/ChatbotTab';
+import WhatsAppTab from '../../components/owner/tabs/WhatsAppTab';
+import UAEPassTab from '../../components/owner/tabs/UAEPassTab';
+import SettingsTab from '../../components/owner/tabs/SettingsTab';
 import FeatureExplorer from '../../components/owner/FeatureExplorer';
 import './OwnerDashboardPage.css';
 
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
 
+const TABS = [
+  { id: 'overview', label: 'Overview', icon: '📊' },
+  { id: 'properties', label: 'Properties', icon: '🏠' },
+  { id: 'agents', label: 'Agents', icon: '👥' },
+  { id: 'leads', label: 'Leads', icon: '🎯' },
+  { id: 'contracts', label: 'Contracts', icon: '📜' },
+  { id: 'analytics', label: 'Analytics', icon: '📈' },
+  { id: 'chatbot', label: 'AI Chatbot', icon: '🤖' },
+  { id: 'whatsapp', label: 'WhatsApp', icon: '💬' },
+  { id: 'uaepass', label: 'UAE Pass', icon: '🆔' },
+  { id: 'features', label: 'Features', icon: '⭐' },
+  { id: 'settings', label: 'Settings', icon: '⚙️' },
+];
+
 export default function OwnerDashboardPage() {
   const navigate = useNavigate();
   const user = useSelector(state => state.user.currentUser);
-  const [stats, setStats] = useState({
-    totalProperties: 156,
-    activeListings: 89,
-    totalAgents: 52,
-    monthlyRevenue: 2450000,
-    pendingDeals: 23,
-    closedDeals: 178,
-    newLeads: 45,
-    conversionRate: 34.2
-  });
+  const [activeTab, setActiveTab] = useState('overview');
+  const [loading, setLoading] = useState(false);
+  const [dashboardData, setDashboardData] = useState({});
 
   useEffect(() => {
     if (!user || user.email !== OWNER_EMAIL) {
@@ -27,275 +43,167 @@ export default function OwnerDashboardPage() {
     }
   }, [user, navigate]);
 
-  const topFlowSteps = [
-    { id: '1', label: 'Client Signing', color: '#e8e0f0' },
-    { id: '2', label: 'Property Valuation', color: '#e8e0f0' },
-    { id: '3', label: 'Professional Photography/Virtual Tour', color: '#e8e0f0' },
-    { id: '4', label: 'Listing Creation', color: '#e8e0f0' },
-    { id: '5', label: 'Multi-Channel Distribution', color: '#e8e0f0' }
-  ];
+  useEffect(() => {
+    fetchDashboardData();
+    const interval = setInterval(fetchDashboardData, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
-  const distributionChannels = [
-    { id: 'E1', label: 'Property Portals', color: '#fff9c4' },
-    { id: 'E2', label: 'Social Media', color: '#fff9c4' },
-    { id: 'E3', label: 'Email Campaign', color: '#fff9c4' },
-    { id: 'E4', label: 'Company Website', color: '#fff9c4' }
-  ];
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/dashboard/owner/summary');
+      if (response.ok) {
+        const data = await response.json();
+        setDashboardData(data);
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const bottomFlowSteps = [
-    { id: '6', label: 'Lead Management', color: '#e8e0f0' },
-    { id: '7', label: 'Viewing Coordination', color: '#e8e0f0' },
-    { id: '8', label: 'Offer Management', color: '#e8e0f0' },
-    { id: '9', label: 'Negotiation', color: '#e8e0f0' },
-    { id: '10', label: 'Transaction Processing', color: '#e8e0f0' },
-    { id: '11', label: 'Handover', color: '#e8e0f0' },
-    { id: '12', label: 'Post-Sale Follow-up', color: '#e8e0f0' }
-  ];
+  const handleQuickAction = (action) => {
+    switch(action) {
+      case 'addProperty':
+        navigate('/properties/add');
+        break;
+      case 'assignAgent':
+        setActiveTab('agents');
+        break;
+      case 'generateReport':
+        handleGenerateReport();
+        break;
+      case 'trainChatbot':
+        setActiveTab('chatbot');
+        break;
+      case 'whatsappBroadcast':
+        setActiveTab('whatsapp');
+        break;
+      case 'viewUaePassUsers':
+        setActiveTab('uaepass');
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleGenerateReport = async () => {
+    try {
+      const response = await fetch('/api/dashboard/report/download');
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `whitecaves-report-${new Date().toISOString().split('T')[0]}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }
+    } catch (error) {
+      console.error('Failed to generate report:', error);
+    }
+  };
+
+  const handleTabAction = (action, id) => {
+    console.log('Tab action:', action, id);
+    switch(action) {
+      case 'viewProperty':
+        navigate(`/properties/${id}`);
+        break;
+      case 'editProperty':
+        navigate(`/properties/edit/${id}`);
+        break;
+      case 'viewSystemHealth':
+        navigate('/owner/system-health');
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleSaveSettings = async (settings) => {
+    try {
+      const response = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings)
+      });
+      if (response.ok) {
+        alert('Settings saved successfully!');
+      }
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+    }
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'overview':
+        return <OverviewTab data={dashboardData} loading={loading} onQuickAction={handleQuickAction} />;
+      case 'properties':
+        return <PropertiesTab data={dashboardData} loading={loading} onAction={handleTabAction} />;
+      case 'agents':
+        return <AgentsTab data={dashboardData} loading={loading} onAction={handleTabAction} />;
+      case 'leads':
+        return <LeadsTab data={dashboardData} loading={loading} onAction={handleTabAction} />;
+      case 'contracts':
+        return <ContractsTab data={dashboardData} loading={loading} onAction={handleTabAction} />;
+      case 'analytics':
+        return <AnalyticsTab data={dashboardData} loading={loading} />;
+      case 'chatbot':
+        return <ChatbotTab data={dashboardData} loading={loading} onAction={handleTabAction} />;
+      case 'whatsapp':
+        return <WhatsAppTab data={dashboardData} loading={loading} onAction={handleTabAction} />;
+      case 'uaepass':
+        return <UAEPassTab data={dashboardData} loading={loading} onAction={handleTabAction} />;
+      case 'features':
+        return <FeatureExplorer />;
+      case 'settings':
+        return <SettingsTab data={dashboardData} onAction={handleTabAction} onSave={handleSaveSettings} />;
+      default:
+        return <OverviewTab data={dashboardData} loading={loading} onQuickAction={handleQuickAction} />;
+    }
+  };
 
   return (
-    <div className="owner-dashboard no-sidebar">
-      <div className="owner-dashboard-content full-width">
-        <div className="owner-header">
-          <div className="owner-welcome">
-            <h1>Welcome, Owner</h1>
-            <p className="owner-subtitle">White Caves Real Estate LLC - Executive Dashboard</p>
+    <div className="owner-dashboard-page">
+      <div className="dashboard-header">
+        <div className="header-content">
+          <div className="header-title">
+            <h1>Owner Dashboard</h1>
+            <p>White Caves Real Estate LLC - Executive Control Center</p>
           </div>
-          <div className="owner-badge">
-            <span className="badge-icon">👑</span>
+          <div className="header-badge">
+            <span className="badge-crown">👑</span>
             <span className="badge-text">Company Owner</span>
           </div>
         </div>
+      </div>
 
-        <div className="stats-overview">
-          <div className="stat-card revenue">
-            <div className="stat-icon">💰</div>
-            <div className="stat-info">
-              <h3>Monthly Revenue</h3>
-              <p className="stat-value">AED {stats.monthlyRevenue.toLocaleString()}</p>
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">🏠</div>
-            <div className="stat-info">
-              <h3>Total Properties</h3>
-              <p className="stat-value">{stats.totalProperties}</p>
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">📋</div>
-            <div className="stat-info">
-              <h3>Active Listings</h3>
-              <p className="stat-value">{stats.activeListings}</p>
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">👥</div>
-            <div className="stat-info">
-              <h3>Total Agents</h3>
-              <p className="stat-value">{stats.totalAgents}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="stats-row">
-          <div className="stat-card small">
-            <div className="stat-icon">🎯</div>
-            <div className="stat-info">
-              <h3>Pending Deals</h3>
-              <p className="stat-value">{stats.pendingDeals}</p>
-            </div>
-          </div>
-          <div className="stat-card small">
-            <div className="stat-icon">✅</div>
-            <div className="stat-info">
-              <h3>Closed Deals</h3>
-              <p className="stat-value">{stats.closedDeals}</p>
-            </div>
-          </div>
-          <div className="stat-card small">
-            <div className="stat-icon">📈</div>
-            <div className="stat-info">
-              <h3>New Leads</h3>
-              <p className="stat-value">{stats.newLeads}</p>
-            </div>
-          </div>
-          <div className="stat-card small">
-            <div className="stat-icon">📊</div>
-            <div className="stat-info">
-              <h3>Conversion Rate</h3>
-              <p className="stat-value">{stats.conversionRate}%</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="business-model-section">
-          <h2>Business Model Flow</h2>
-          <p className="section-subtitle">White Caves Real Estate Business Process</p>
-          
-          <div className="flowchart-container">
-            <div className="flowchart-top-row">
-              {topFlowSteps.map((step, index) => (
-                <React.Fragment key={step.id}>
-                  <div className="flowchart-node" style={{ backgroundColor: step.color }}>
-                    {step.label}
-                  </div>
-                  {index < topFlowSteps.length - 1 && <div className="flowchart-arrow">→</div>}
-                </React.Fragment>
-              ))}
-            </div>
-
-            <div className="flowchart-middle">
-              <div className="flowchart-connector-down"></div>
-              <div className="digital-distribution-box">
-                <div className="distribution-header">Digital Distribution</div>
-                <div className="distribution-items">
-                  {distributionChannels.map(channel => (
-                    <div key={channel.id} className="distribution-item" style={{ backgroundColor: channel.color }}>
-                      {channel.label}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="flowchart-connector-down"></div>
-            </div>
-
-            <div className="flowchart-bottom-row">
-              {bottomFlowSteps.map((step, index) => (
-                <React.Fragment key={step.id}>
-                  <div className="flowchart-node" style={{ backgroundColor: step.color }}>
-                    {step.label}
-                  </div>
-                  {index < bottomFlowSteps.length - 1 && <div className="flowchart-arrow">→</div>}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="browse-as-section">
-          <h2>Browse As User</h2>
-          <p className="section-subtitle">Navigate the platform as different user types</p>
-          
-          <div className="browse-as-group">
-            <h3>Client Portals</h3>
-            <div className="browse-as-grid">
-              <button className="browse-as-btn client" onClick={() => navigate('/buyer/dashboard')}>
-                <span className="browse-icon">🏠</span>
-                <div className="browse-info">
-                  <span className="browse-label">Buyer Portal</span>
-                  <span className="browse-desc">View as property buyer</span>
-                </div>
-              </button>
-              <button className="browse-as-btn client" onClick={() => navigate('/seller/dashboard')}>
-                <span className="browse-icon">💰</span>
-                <div className="browse-info">
-                  <span className="browse-label">Seller Portal</span>
-                  <span className="browse-desc">View as property seller</span>
-                </div>
-              </button>
-              <button className="browse-as-btn client" onClick={() => navigate('/landlord/dashboard')}>
-                <span className="browse-icon">🏢</span>
-                <div className="browse-info">
-                  <span className="browse-label">Landlord Portal</span>
-                  <span className="browse-desc">View as landlord</span>
-                </div>
-              </button>
-              <button className="browse-as-btn client" onClick={() => navigate('/tenant/dashboard')}>
-                <span className="browse-icon">🔑</span>
-                <div className="browse-info">
-                  <span className="browse-label">Tenant Portal</span>
-                  <span className="browse-desc">View as tenant</span>
-                </div>
-              </button>
-            </div>
-          </div>
-
-          <div className="browse-as-group">
-            <h3>Employee Dashboards</h3>
-            <div className="browse-as-grid">
-              <button className="browse-as-btn employee" onClick={() => navigate('/leasing-agent/dashboard')}>
-                <span className="browse-icon">📋</span>
-                <div className="browse-info">
-                  <span className="browse-label">Leasing Agent</span>
-                  <span className="browse-desc">Rental and leasing operations</span>
-                </div>
-              </button>
-              <button className="browse-as-btn employee" onClick={() => navigate('/secondary-sales-agent/dashboard')}>
-                <span className="browse-icon">💼</span>
-                <div className="browse-info">
-                  <span className="browse-label">Sales Agent</span>
-                  <span className="browse-desc">Property sales dashboard</span>
-                </div>
-              </button>
-              <button className="browse-as-btn employee" onClick={() => navigate('/team-leader/dashboard')}>
-                <span className="browse-icon">👔</span>
-                <div className="browse-info">
-                  <span className="browse-label">Team Leader</span>
-                  <span className="browse-desc">Team management dashboard</span>
-                </div>
-              </button>
-              <button className="browse-as-btn employee" onClick={() => navigate('/leasing-agent/contracts')}>
-                <span className="browse-icon">📜</span>
-                <div className="browse-info">
-                  <span className="browse-label">Contract Management</span>
-                  <span className="browse-desc">Ejari contracts and signing</span>
-                </div>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="quick-actions">
-          <h2>Quick Actions</h2>
-          <div className="actions-grid">
-            <button className="action-btn secret" onClick={() => navigate('/owner/business-model')}>
-              <span className="action-icon">📋</span>
-              <span>Business Model</span>
+      <div className="dashboard-tabs">
+        <div className="tabs-container">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span className="tab-icon">{tab.icon}</span>
+              <span className="tab-label">{tab.label}</span>
             </button>
-            <button className="action-btn" onClick={() => navigate('/owner/agents')}>
-              <span className="action-icon">👥</span>
-              <span>Manage Agents</span>
-            </button>
-            <button className="action-btn" onClick={() => navigate('/owner/properties')}>
-              <span className="action-icon">🏠</span>
-              <span>All Properties</span>
-            </button>
-            <button className="action-btn" onClick={() => navigate('/owner/reports')}>
-              <span className="action-icon">📊</span>
-              <span>Reports</span>
-            </button>
-            <button className="action-btn" onClick={() => navigate('/owner/settings')}>
-              <span className="action-icon">⚙️</span>
-              <span>Settings</span>
-            </button>
-            <button className="action-btn system-health" onClick={() => navigate('/owner/system-health')}>
-              <span className="action-icon">🩺</span>
-              <span>System Health</span>
-            </button>
-          </div>
+          ))}
         </div>
+      </div>
 
-        <div className="company-info">
-          <h2>Company Information</h2>
-          <div className="info-cards">
-            <div className="info-card">
-              <h3>White Caves Real Estate LLC</h3>
-              <p><strong>Address:</strong> Office D-72, El-Shaye-4, Port Saeed, Dubai</p>
-              <p><strong>Phone:</strong> +971 56 361 6136</p>
-              <p><strong>Mobile:</strong> +971 56 361 6136</p>
-            </div>
-            <div className="info-card license">
-              <h3>License Information</h3>
-              <p><strong>RERA Registered:</strong> Yes</p>
-              <p><strong>DLD Licensed:</strong> Active</p>
-              <p><strong>Established:</strong> 2009</p>
-            </div>
-          </div>
-        </div>
+      <div className="dashboard-content">
+        {renderTabContent()}
+      </div>
 
-        <ProductivityTools />
-        
-        <FeatureExplorer />
+      <div className="dashboard-footer">
+        <p>White Caves Real Estate LLC © {new Date().getFullYear()} | Office D-72, El-Shaye-4, Port Saeed, Dubai | +971 56 361 6136</p>
       </div>
     </div>
   );

@@ -13,6 +13,7 @@ import * as googleCalendar from './lib/googleCalendar.js';
 import chatbotService from './services/ChatbotService.js';
 import uaePassRoutes from './routes/uaepass.routes.js';
 import webauthnRoutes from './routes/webauthn.routes.js';
+import dashboardRoutes from './routes/dashboard.routes.js';
 
 let firebaseInitialized = false;
 try {
@@ -46,6 +47,7 @@ app.use(express.json({ limit: '50mb' }));
 
 app.use('/api/auth/uaepass', uaePassRoutes);
 app.use('/api/auth/webauthn', webauthnRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Serve static files from the dist folder in production
 const distPath = path.join(__dirname, '..', 'dist');
