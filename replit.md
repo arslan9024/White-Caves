@@ -65,3 +65,59 @@ Preferred communication style: Simple, everyday language.
 - **Google Drive API**: Storing signed tenancy contracts and documents.
 - **WhatsApp Business API**: Customer support and chatbot integration.
 - **Matterport**: Virtual tour integration.
+
+## Recent Changes (January 2026)
+
+### Dashboard Design Overhaul (Phase 1-4 Complete)
+- **AssistantNavSidebar Component**: Fixed-position left sidebar (280px expanded, 72px collapsed) with:
+  - Hierarchical navigation organized into 4 sections: Dashboard, AI Assistants, Management, Integrations, System
+  - 8 department groups with color coding: Communications (#25D366), Operations (#3B82F6), Sales (#10B981), Finance (#8B5CF6), Marketing (#F59E0B), Executive (#DC2626), Compliance (#6366F1), Technology (#22C55E)
+  - Collapsible departments with smooth animations
+  - Notification badges per assistant
+  - Active state highlighting with left-border accent
+
+- **DashboardHeader Component**: New header with global search (Ctrl+K), theme toggle, notifications dropdown, user profile menu
+
+- **Navigation Coverage**:
+  - Dashboard: Overview, AI Command, AI Hub
+  - AI Assistants: 14 assistants organized by 8 departments
+  - Management: Users, Properties, Agents, Leads, Contracts, Analytics
+  - Integrations: AI Settings, WhatsApp, UAE Pass
+  - System: Features, Settings
+
+- **Responsive Design**: Desktop (>1024px) full sidebar, Tablet (768px-1024px) compact mode, Mobile (<768px) overlay
+
+- **SkeletonLoader Components**: Loading skeletons for Text, Circle, Card, StatCard, Table, Dashboard, and EmptyState
+
+### AI Assistants Inventory (14 Total)
+| ID | Name | Role | Department |
+|----|------|------|------------|
+| linda | Linda | WhatsApp CRM Manager | Communications |
+| nina | Nina | WhatsApp Bot Developer | Communications |
+| mary | Mary | Inventory CRM Manager | Operations |
+| nancy | Nancy | HR Manager | Operations |
+| daisy | Daisy | Leasing Manager | Operations |
+| clara | Clara | Leads CRM Manager | Sales |
+| sophia | Sophia | Sales Pipeline Manager | Sales |
+| theodora | Theodora | Finance Director | Finance |
+| olivia | Olivia | Marketing & Automation Manager | Marketing |
+| zoe | Zoe | Executive Assistant & Strategic Intelligence | Executive |
+| laila | Laila | Compliance Officer | Compliance |
+| aurora | Aurora | CTO & Systems Architect | Technology |
+| hazel | Hazel | Elite Frontend Engineer | Technology |
+| willow | Willow | Elite Backend Engineer | Technology |
+
+### Technology Stack
+- **Frontend**: React 18, Redux Toolkit, Vite 7.3, React Router v6, Framer Motion, Lucide Icons, CSS Modules
+- **Backend**: Express.js, Node.js 20, Mongoose ODM, JWT Auth, RESTful API
+- **Database**: MongoDB Atlas, Firebase Auth, PostgreSQL (Neon)
+- **Integrations**: Stripe, WhatsApp Business API, Google Calendar/Drive/Maps, Vercel Speed Insights, GitHub API
+- **DevOps**: Replit, Nix, Git, ESLint, Vitest
+
+### Project Statistics
+- Total AI Assistants: 14
+- Departments: 8
+- React Components: 47+
+- API Endpoints: 45+
+- DAMAC Inventory Units: 9,378+
+- Build Size: ~8MB (main) + code-split chunks

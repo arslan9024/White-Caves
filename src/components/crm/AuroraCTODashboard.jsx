@@ -37,35 +37,40 @@ const PLATFORM_MODULES = [
     { name: 'Job Posting System', description: 'HR multi-platform recruitment', status: 'production' }
   ]},
   { category: 'AI & Automation', modules: [
-    { name: 'AI Assistants (14)', description: 'Department-organized CRM bots', status: 'production' },
+    { name: 'AI Assistants (14)', description: 'Department-organized CRM bots with sidebar navigation', status: 'production' },
     { name: 'WhatsApp Integration', description: 'Business API + Chatbot', status: 'production' },
     { name: 'Lead Scoring', description: 'AI-powered qualification', status: 'production' },
     { name: 'Smart Assignment', description: 'Auto-assign leads to agents', status: 'production' },
     { name: 'Agent Task Assignment', description: 'Linda agent routing system', status: 'production' },
     { name: 'Bot Session Manager', description: 'QR code session management', status: 'production' },
     { name: 'Olivia Automation', description: 'Property sync + market intelligence', status: 'production' },
-    { name: 'Website Monitoring', description: 'Bayut, Property Finder, Dubizzle', status: 'production' }
+    { name: 'Website Monitoring', description: 'Bayut, Property Finder, Dubizzle', status: 'production' },
+    { name: 'Zoe Executive Inbox', description: 'AI strategic suggestions pipeline', status: 'production' }
   ]},
   { category: 'Data & Analytics', modules: [
     { name: 'Market Analytics', description: 'KPIs and trends', status: 'production' },
     { name: 'Agent Performance', description: 'Conversion tracking', status: 'production' },
     { name: 'DAMAC Inventory', description: '9,378+ units database', status: 'production' },
-    { name: 'Data Tools Suite', description: 'OCR, scraping, import', status: 'production' }
+    { name: 'Data Tools Suite', description: 'OCR, scraping, import', status: 'production' },
+    { name: 'Vercel Speed Insights', description: 'Core Web Vitals tracking', status: 'production' }
   ]},
   { category: 'User Experience', modules: [
     { name: 'Role-Based Dashboards', description: '24 industry roles', status: 'production' },
-    { name: 'Dark/Light Themes', description: 'Full theme support', status: 'production' },
-    { name: 'Mobile Responsive', description: 'All device sizes', status: 'production' },
-    { name: 'Interactive Maps', description: 'Dubai SVG + Google Maps', status: 'production' }
+    { name: 'Dark/Light Themes', description: 'Full theme support with system preference', status: 'production' },
+    { name: 'Mobile Responsive', description: 'All device sizes with sidebar collapse', status: 'production' },
+    { name: 'Interactive Maps', description: 'Dubai SVG + Google Maps', status: 'production' },
+    { name: 'Sidebar Navigation', description: '280px expanded, 72px collapsed, hierarchical', status: 'production' },
+    { name: 'Skeleton Loaders', description: 'Loading states for all content types', status: 'production' }
   ]}
 ];
 
 const TECH_STACK = {
-  frontend: ['React 18', 'Redux Toolkit', 'Vite', 'React Router v6', 'Framer Motion', 'Lucide Icons'],
-  backend: ['Express.js', 'Node.js', 'Mongoose ODM', 'JWT Auth'],
-  database: ['MongoDB Atlas', 'Firebase Auth'],
-  integrations: ['Stripe', 'WhatsApp Business API', 'Google Calendar', 'Google Drive', 'Google Maps', 'Vercel Analytics'],
-  devops: ['Replit', 'Nix', 'Git', 'ESLint']
+  frontend: ['React 18', 'Redux Toolkit', 'Vite 7.3', 'React Router v6', 'Framer Motion', 'Lucide Icons', 'CSS Modules'],
+  backend: ['Express.js', 'Node.js 20', 'Mongoose ODM', 'JWT Auth', 'RESTful API'],
+  database: ['MongoDB Atlas', 'Firebase Auth', 'PostgreSQL (Neon)'],
+  integrations: ['Stripe', 'WhatsApp Business API', 'Google Calendar', 'Google Drive', 'Google Maps', 'Vercel Speed Insights', 'GitHub API'],
+  devops: ['Replit', 'Nix', 'Git', 'ESLint', 'Vitest'],
+  uiPatterns: ['Sidebar Navigation (280px/72px)', 'Dark/Light Theme', 'Responsive Breakpoints (1024px/768px)', 'Lazy Loading', 'Code Splitting']
 };
 
 const SYSTEM_COMPONENTS = [
