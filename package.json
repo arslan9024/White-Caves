@@ -5,7 +5,7 @@
   "description": "White Caves Real Estate - Dubai's Premier Luxury Property Platform",
   "homepage": ".",
   "engines": {
-    "node": "24.x",
+    "node": ">=20.x",
     "npm": ">=10.0.0"
   },
   "scripts": {
@@ -14,9 +14,11 @@
     "client": "vite",
     "dev:all": "concurrently \"npm run server\" \"npm run client\"",
     "build": "vite build",
-    "build:vercel": "vite build",
+    "build:vercel": "vite build && npm run build:api",
+    "build:api": "echo 'API ready for serverless'",
     "preview": "vite preview",
     "start": "NODE_ENV=production node server/index.js",
+    "vercel-build": "vite build",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
