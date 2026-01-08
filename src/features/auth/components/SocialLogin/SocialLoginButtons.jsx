@@ -3,6 +3,7 @@ import GoogleLoginButton from './GoogleLoginButton';
 import FacebookLoginButton from './FacebookLoginButton';
 import AppleLoginButton from './AppleLoginButton';
 import LinkedInLoginButton from './LinkedInLoginButton';
+import UAEPassLoginButton from './UAEPassLoginButton';
 import './SocialLogin.css';
 
 const SocialLoginButtons = ({ 
@@ -10,6 +11,7 @@ const SocialLoginButtons = ({
   onError, 
   disabled = false,
   showLinkedIn = false,
+  showUAEPass = true,
   layout = 'vertical'
 }) => {
   return (
@@ -17,6 +19,14 @@ const SocialLoginButtons = ({
       <div className="social-login-header">
         <h3>Quick sign in with</h3>
       </div>
+      
+      {showUAEPass && (
+        <UAEPassLoginButton
+          onSuccess={onSuccess}
+          onError={onError}
+          disabled={disabled}
+        />
+      )}
       
       <GoogleLoginButton
         onSuccess={onSuccess}

@@ -11,6 +11,7 @@ import { connectDB, Contract, SignatureToken, WhatsAppMessage, WhatsAppChatbotRu
 import WhatsAppSession from './models/WhatsAppSession.js';
 import * as googleCalendar from './lib/googleCalendar.js';
 import chatbotService from './services/ChatbotService.js';
+import uaePassRoutes from './routes/uaepass.routes.js';
 
 let firebaseInitialized = false;
 try {
@@ -41,6 +42,8 @@ const PORT = process.env.PORT || (isProduction ? 5000 : 3000);
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
+
+app.use('/api/auth/uaepass', uaePassRoutes);
 
 // Serve static files from the dist folder in production
 const distPath = path.join(__dirname, '..', 'dist');

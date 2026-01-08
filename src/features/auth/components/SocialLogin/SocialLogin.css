@@ -115,6 +115,21 @@
   fill: #ffffff;
 }
 
+.uaepass-btn {
+  background: #1B4D3E;
+  border-color: #1B4D3E;
+  color: #ffffff;
+}
+
+.uaepass-btn:hover:not(:disabled) {
+  background: #143D32;
+  border-color: #143D32;
+}
+
+.uaepass-btn .social-icon {
+  background: transparent;
+}
+
 .social-divider {
   display: flex;
   align-items: center;

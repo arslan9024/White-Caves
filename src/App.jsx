@@ -85,6 +85,7 @@ import WhatsAppDashboardPage from './pages/owner/WhatsAppDashboardPage';
 import WhatsAppChatbotPage from './pages/owner/WhatsAppChatbotPage';
 import WhatsAppAnalyticsPage from './pages/owner/WhatsAppAnalyticsPage';
 import WhatsAppSettingsPage from './pages/owner/WhatsAppSettingsPage';
+import UAEPassSuccessPage from './pages/auth/UAEPassSuccessPage';
 
 function App() {
   const dispatch = useDispatch();
@@ -130,6 +131,8 @@ function App() {
         <Route path="/careers" element={<CareersPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/signin" element={user ? <Navigate to="/select-role" replace /> : <SignInPage />} />
+        <Route path="/auth/signin" element={<Navigate to="/signin" replace />} />
+        <Route path="/auth/uaepass-success" element={<UAEPassSuccessPage />} />
         <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to="/signin" replace />} />
         <Route path="/select-role" element={
           user ? <RoleGateway user={user} onRoleSelect={handleRoleSelect} /> : <Navigate to="/signin" replace />
