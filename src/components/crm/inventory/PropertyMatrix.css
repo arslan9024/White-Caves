@@ -1,0 +1,243 @@
+.property-matrix {
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.matrix-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.matrix-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.matrix-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  flex: 1;
+  max-width: 400px;
+}
+
+.matrix-search input {
+  border: none;
+  background: transparent;
+  flex: 1;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.matrix-search input:focus {
+  outline: none;
+}
+
+.matrix-table-wrapper {
+  overflow-x: auto;
+}
+
+.matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.matrix-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.matrix-table th:hover {
+  color: var(--text-primary);
+}
+
+.matrix-table th svg {
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+.matrix-table td {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color);
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.matrix-table tr:hover {
+  background: var(--bg-secondary);
+}
+
+.matrix-table tr.multi-owner-row {
+  background: rgba(245, 158, 11, 0.05);
+}
+
+.matrix-table tr.multi-owner-row:hover {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.pnumber-cell {
+  font-weight: 600;
+  font-family: monospace;
+  color: var(--primary);
+}
+
+.cluster-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.area-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+}
+
+.owners-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.owner-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.owner-badge:hover {
+  border-color: var(--primary);
+  background: rgba(220, 38, 38, 0.05);
+}
+
+.owner-badge.multi-phone {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.multi-phone-icon {
+  color: #3b82f6;
+}
+
+.multi-owner-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: #f59e0b;
+  color: white;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-badge.status-rented {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.status-badge.status-available {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+.status-badge.status-unknown {
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+}
+
+.view-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.matrix-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.matrix-pagination button {
+  padding: 8px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.matrix-pagination button:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.matrix-pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.matrix-pagination span {
+  color: var(--text-secondary);
+  font-size: 14px;
+}

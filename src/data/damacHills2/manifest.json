@@ -1,0 +1,345 @@
+{
+  "sheets": [
+    {
+      "id": "sheet1",
+      "name": "Sheet1",
+      "cluster": null,
+      "propertyCount": 10654,
+      "isFiltered": false
+    },
+    {
+      "id": "sheet45",
+      "name": "Sheet45",
+      "cluster": null,
+      "propertyCount": 458,
+      "isFiltered": false
+    },
+    {
+      "id": "r2mr2_mb_all_brown_clusters",
+      "name": "R2MR2-MB ALL BROWN CLUSTERS",
+      "cluster": null,
+      "propertyCount": 127,
+      "isFiltered": false
+    },
+    {
+      "id": "aster_r2mr2_mb",
+      "name": "ASTER R2MR2-MB",
+      "cluster": "ASTER",
+      "propertyCount": 110,
+      "isFiltered": true
+    },
+    {
+      "id": "r2m1_all_clusters",
+      "name": "R2M1 ALL CLUSTERS",
+      "cluster": null,
+      "propertyCount": 115,
+      "isFiltered": false
+    },
+    {
+      "id": "juniper_r2mr2_mb",
+      "name": "JUNIPER R2MR2-MB",
+      "cluster": "JUNIPER",
+      "propertyCount": 35,
+      "isFiltered": true
+    },
+    {
+      "id": "coursetia_r2mr2_mb",
+      "name": "COURSETIA R2MR2-MB",
+      "cluster": "COURSETIA",
+      "propertyCount": 33,
+      "isFiltered": true
+    },
+    {
+      "id": "claret_r2mr2_mb",
+      "name": "CLARET R2MR2-MB",
+      "cluster": "CLARET",
+      "propertyCount": 30,
+      "isFiltered": true
+    },
+    {
+      "id": "r2_m_zinnia",
+      "name": "R2-M Zinnia",
+      "cluster": "ZINNIA",
+      "propertyCount": 55,
+      "isFiltered": true
+    },
+    {
+      "id": "corner_aqa",
+      "name": "CORNER AQA",
+      "cluster": null,
+      "propertyCount": 74,
+      "isFiltered": false
+    },
+    {
+      "id": "sheet36",
+      "name": "Sheet36",
+      "cluster": null,
+      "propertyCount": 1146,
+      "isFiltered": false
+    },
+    {
+      "id": "copy_of_sheet36",
+      "name": "Copy of Sheet36",
+      "cluster": null,
+      "propertyCount": 695,
+      "isFiltered": false
+    },
+    {
+      "id": "sheet32",
+      "name": "Sheet32",
+      "cluster": null,
+      "propertyCount": 33,
+      "isFiltered": false
+    },
+    {
+      "id": "odora_r2mr2_mb",
+      "name": "Odora R2MR2-MB",
+      "cluster": "ODORA",
+      "propertyCount": 57,
+      "isFiltered": true
+    },
+    {
+      "id": "sheet34",
+      "name": "Sheet34",
+      "cluster": null,
+      "propertyCount": 135,
+      "isFiltered": false
+    },
+    {
+      "id": "victoria",
+      "name": "VICTORIA",
+      "cluster": "VICTORIA",
+      "propertyCount": 287,
+      "isFiltered": true
+    },
+    {
+      "id": "odora_all_1",
+      "name": "ODORA ALL 1",
+      "cluster": "ODORA",
+      "propertyCount": 85,
+      "isFiltered": true
+    },
+    {
+      "id": "r2_em_jnp",
+      "name": "R2-EM JNP",
+      "cluster": null,
+      "propertyCount": 106,
+      "isFiltered": false
+    },
+    {
+      "id": "basswood_all",
+      "name": "BASSWOOD ALL",
+      "cluster": "BASSWOOD",
+      "propertyCount": 344,
+      "isFiltered": true
+    },
+    {
+      "id": "amargo_all",
+      "name": "AMARGO ALL",
+      "cluster": "AMARGO",
+      "propertyCount": 142,
+      "isFiltered": true
+    },
+    {
+      "id": "mimosa_all",
+      "name": "MIMOSA ALL",
+      "cluster": "MIMOSA",
+      "propertyCount": 299,
+      "isFiltered": true
+    },
+    {
+      "id": "avencia_all",
+      "name": "AVENCIA ALL",
+      "cluster": "AVENCIA",
+      "propertyCount": 257,
+      "isFiltered": true
+    },
+    {
+      "id": "aster_all",
+      "name": "ASTER ALL",
+      "cluster": "ASTER",
+      "propertyCount": 346,
+      "isFiltered": true
+    },
+    {
+      "id": "r2m1",
+      "name": "R2M1",
+      "cluster": null,
+      "propertyCount": 200,
+      "isFiltered": false
+    },
+    {
+      "id": "odora_all",
+      "name": "ODORA ALL",
+      "cluster": "ODORA",
+      "propertyCount": 230,
+      "isFiltered": true
+    },
+    {
+      "id": "jnp_all",
+      "name": "JNP ALL",
+      "cluster": null,
+      "propertyCount": 185,
+      "isFiltered": false
+    },
+    {
+      "id": "aqa_all",
+      "name": "AQA ALL",
+      "cluster": null,
+      "propertyCount": 191,
+      "isFiltered": false
+    },
+    {
+      "id": "coursetia_all",
+      "name": "COURSETIA ALL",
+      "cluster": "COURSETIA",
+      "propertyCount": 148,
+      "isFiltered": true
+    },
+    {
+      "id": "janusia_all",
+      "name": "JANUSIA ALL",
+      "cluster": "JANUSIA",
+      "propertyCount": 198,
+      "isFiltered": true
+    },
+    {
+      "id": "_albizia_all",
+      "name": " ALBIZIA ALL",
+      "cluster": "ALBIZIA",
+      "propertyCount": 555,
+      "isFiltered": true
+    },
+    {
+      "id": "sym_all",
+      "name": "SYM ALL",
+      "cluster": "SYM",
+      "propertyCount": 171,
+      "isFiltered": true
+    },
+    {
+      "id": "pcf_r2m14",
+      "name": "PCF R2M14",
+      "cluster": null,
+      "propertyCount": 213,
+      "isFiltered": false
+    },
+    {
+      "id": "san_r2m14",
+      "name": "SAN R2M14",
+      "cluster": null,
+      "propertyCount": 71,
+      "isFiltered": false
+    },
+    {
+      "id": "sheet9",
+      "name": "Sheet9",
+      "cluster": null,
+      "propertyCount": 762,
+      "isFiltered": false
+    },
+    {
+      "id": "r2_em_brown_clusters",
+      "name": "R2-EM BROWN CLUSTERS",
+      "cluster": null,
+      "propertyCount": 560,
+      "isFiltered": false
+    },
+    {
+      "id": "janusia__r2_m14_",
+      "name": "Janusia (R2-M14)",
+      "cluster": "JANUSIA",
+      "propertyCount": 216,
+      "isFiltered": true
+    },
+    {
+      "id": "vardon",
+      "name": "Vardon",
+      "cluster": null,
+      "propertyCount": 780,
+      "isFiltered": false
+    },
+    {
+      "id": "albizia",
+      "name": "Albizia",
+      "cluster": "ALBIZIA",
+      "propertyCount": 669,
+      "isFiltered": true
+    },
+    {
+      "id": "claret",
+      "name": "Claret",
+      "cluster": "CLARET",
+      "propertyCount": 343,
+      "isFiltered": true
+    },
+    {
+      "id": "sheet3",
+      "name": "Sheet3",
+      "cluster": null,
+      "propertyCount": 74,
+      "isFiltered": false
+    },
+    {
+      "id": "janusia",
+      "name": "Janusia",
+      "cluster": "JANUSIA",
+      "propertyCount": 541,
+      "isFiltered": true
+    },
+    {
+      "id": "all_khalid_d2",
+      "name": "All Khalid D2",
+      "cluster": null,
+      "propertyCount": 177,
+      "isFiltered": false
+    },
+    {
+      "id": "projectsind2",
+      "name": "ProjectsInD2",
+      "cluster": null,
+      "propertyCount": 29,
+      "isFiltered": false
+    }
+  ],
+  "clusters": [
+    ".",
+    "CLARET",
+    "PRIMROSE",
+    "JUNIPER",
+    "COURSETIA",
+    "ASTER",
+    "ZINNIA",
+    "ODORA",
+    "SYCAMORE",
+    "TRIXIS",
+    "AMAZONIA",
+    "CENTAURY",
+    "ACUNA",
+    "JANUSIA",
+    "PACIFICA",
+    "SANCTNARY",
+    "VIRIDIS",
+    "MULBERRY",
+    "HAWTHORN",
+    "NAVITAS",
+    "VARDON",
+    "ALBIZIA",
+    "BASSWOOD",
+    "MIMOSA",
+    "AMAZONIA-EX",
+    "AMARGO",
+    "AVENCIA",
+    "VICTORIA",
+    "AVENCIA-2",
+    "AQUILEGIA"
+  ],
+  "stats": {
+    "totalProperties": 9206,
+    "totalOwners": 8768,
+    "multiOwnerProperties": 1170,
+    "ownersWithMultipleProperties": 861,
+    "ownersWithMultiplePhones": 3285
+  },
+  "generatedAt": "2026-01-08T13:04:12.480Z"
+}

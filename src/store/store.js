@@ -7,6 +7,7 @@ import contentReducer from './contentSlice';
 import authReducer from './authSlice';
 import analyticsReducer from './analyticsSlice';
 import featuresReducer from './featuresSlice';
+import inventoryReducer from './slices/inventorySlice';
 
 export const store = configureStore({
   reducer: {
@@ -17,7 +18,8 @@ export const store = configureStore({
     content: contentReducer,
     auth: authReducer,
     analytics: analyticsReducer,
-    features: featuresReducer
+    features: featuresReducer,
+    inventory: inventoryReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
