@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   DollarSign, TrendingUp, FileText, CreditCard, Receipt,
   ArrowUp, ArrowDown, Search, Filter, Download, Calendar,
-  CheckCircle, Clock, AlertCircle, PieChart, BarChart3
+  CheckCircle, Clock, AlertCircle, PieChart, BarChart3, Send, MessageSquare
 } from 'lucide-react';
+import { PaymentInstructionDeck } from './shared';
 import './AssistantDashboard.css';
 
 const INVOICES = [
@@ -23,6 +24,12 @@ const EXPENSES = [
 
 const TheodoraFinanceCRM = () => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [generatedMessage, setGeneratedMessage] = useState('');
+  
+  const handleGeneratePaymentMessage = useCallback((message, method) => {
+    setGeneratedMessage(message);
+  }, []);
 
   return (
     <div className="assistant-dashboard theodora">
@@ -84,7 +91,7 @@ const TheodoraFinanceCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['overview', 'invoices', 'expenses', 'reports'].map(tab => (
+        {['overview', 'invoices', 'payments', 'expenses', 'reports'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -147,6 +154,82 @@ const TheodoraFinanceCRM = () => {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {activeTab === 'payments' && (
+          <div className="payments-view">
+            <h3>Payment Message Generator</h3>
+            <p className="section-desc">Generate payment instructions for clients with QR codes, cheque details, or bank transfer information.</p>
+            
+            <div className="payment-form">
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Select Invoice</label>
+                  <select 
+                    value={selectedInvoice?.id || ''} 
+                    onChange={(e) => setSelectedInvoice(INVOICES.find(inv => inv.id === e.target.value))}
+                  >
+                    <option value="">Choose an invoice...</option>
+                    {INVOICES.filter(inv => inv.status !== 'paid').map(inv => (
+                      <option key={inv.id} value={inv.id}>
+                        {inv.id} - {inv.client} - AED {inv.amount.toLocaleString()}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              
+              {selectedInvoice && (
+                <div className="selected-invoice-summary">
+                  <div className="invoice-detail">
+                    <span className="label">Client:</span>
+                    <span className="value">{selectedInvoice.client}</span>
+                  </div>
+                  <div className="invoice-detail">
+                    <span className="label">Property:</span>
+                    <span className="value">{selectedInvoice.property}</span>
+                  </div>
+                  <div className="invoice-detail">
+                    <span className="label">Amount:</span>
+                    <span className="value highlight">AED {selectedInvoice.amount.toLocaleString()}</span>
+                  </div>
+                  <div className="invoice-detail">
+                    <span className="label">Due Date:</span>
+                    <span className="value">{selectedInvoice.dueDate}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {selectedInvoice && (
+              <PaymentInstructionDeck
+                amount={selectedInvoice.amount}
+                reference={selectedInvoice.id}
+                clientName={selectedInvoice.client}
+                invoiceId={selectedInvoice.id}
+                onGenerateMessage={handleGeneratePaymentMessage}
+                showMethodSelector={true}
+              />
+            )}
+            
+            {generatedMessage && (
+              <div className="generated-message-preview">
+                <div className="preview-header">
+                  <MessageSquare size={16} />
+                  <h4>Generated Message Preview</h4>
+                </div>
+                <pre className="message-content">{generatedMessage}</pre>
+                <div className="message-actions">
+                  <button className="action-btn primary">
+                    <Send size={14} /> Send via WhatsApp
+                  </button>
+                  <button className="action-btn secondary">
+                    <FileText size={14} /> Send via Email
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

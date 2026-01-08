@@ -95,13 +95,13 @@ Preferred communication style: Simple, everyday language.
 - **AI CRM Dashboard Components** (All 12 assistants now have full dashboard implementations):
     - `LindaWhatsAppCRM.jsx` - WhatsApp conversation management, agent monitoring
     - `MaryInventoryCRM.jsx` - DAMAC Hills 2 inventory with data tools
-    - `ClaraLeadsCRM.jsx` - Lead pipeline and qualification workflows
-    - `NinaWhatsAppBotCRM.jsx` - Bot development and session management
-    - `NancyHRCRM.jsx` - Employee directory, recruitment, performance
+    - `ClaraLeadsCRM.jsx` - Lead pipeline with DualCategoryTabStrip for Buyers (Sale) vs Tenants (Rent)
+    - `NinaWhatsAppBotCRM.jsx` - Bot development, session management with BotSessionManager
+    - `NancyHRCRM.jsx` - Employee directory, recruitment, performance, JobPostComposer
     - `SophiaSalesCRM.jsx` - Sales pipeline, deal tracking, forecasting
     - `DaisyLeasingCRM.jsx` - Lease management, tenant communications, maintenance
-    - `TheodoraFinanceCRM.jsx` - Invoice management, expenses, financial reports
-    - `OliviaMarketingCRM.jsx` - Campaign management, social media, listings
+    - `TheodoraFinanceCRM.jsx` - Invoice management, expenses, PaymentInstructionDeck
+    - `OliviaMarketingCRM.jsx` - Campaign management, social media, PlatformPublisherForm
     - `ZoeExecutiveCRM.jsx` - Executive calendar, tasks, team management
     - `LailaComplianceCRM.jsx` - KYC verification, AML monitoring, contracts
     - `AuroraCTODashboard.jsx` - System health, deployments, API performance
@@ -126,7 +126,22 @@ Preferred communication style: Simple, everyday language.
     - `AssistantSidebar.jsx` - 25% width sidebar with favorites and quick actions
     - `UniversalAssistantLayout.jsx` - Layout shell with error boundaries and loading states
     - `AIDropdownSelector.jsx` - Smart dropdown with search, filters, favorites, and recent
+    - `NotificationBadge.jsx` - Red badge with notification count and animations
+    - `StatusIndicator.jsx` - Status indicators with color-coded icons
+    - `PersistentAssistantSidebar.jsx` - Right-aligned activity sidebar with notifications
+    - `PaymentInstructionDeck.jsx` - Payment method selector with QR code, cheque, and bank transfer templates
+    - `DualCategoryTabStrip.jsx` - Category filter tabs for Rent vs Sale leads
+    - `AssignmentDropdown.jsx` - Task/agent assignment dropdown selector
+    - `PropertyMediaGallery.jsx` - Property image gallery with thumbnail navigation
+    - `BotSessionManager.jsx` - WhatsApp bot session create/delete/refresh with QR codes
+    - `PlatformPublisherForm.jsx` - Multi-portal property publishing (Bayut, Property Finder, Dubizzle)
+    - `JobPostComposer.jsx` - Job posting form with validation, preview, and multi-platform publishing
     - `SharedComponents.css` - Unified styling for all shared components
+    - `SidebarComponents.css` - Sidebar-specific styles
+    - `PaymentComponents.css` - Payment instruction deck styles
+    - `SessionComponents.css` - Bot session manager styles
+    - `PublisherComponents.css` - Property publisher styles
+    - `JobComponents.css` - Job composer styles with form validation and toast notifications
 
 ## Technical Architecture
 

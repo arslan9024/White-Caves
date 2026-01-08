@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { 
   Megaphone, TrendingUp, Eye, Share2, Heart, MessageCircle,
   ArrowUp, ArrowDown, Search, Plus, Calendar, BarChart3,
-  Instagram, Facebook, Youtube, Mail, Target, Users
+  Instagram, Facebook, Youtube, Mail, Target, Users, Globe
 } from 'lucide-react';
+import { PlatformPublisherForm } from './shared';
 import './AssistantDashboard.css';
 
 const CAMPAIGNS = [
@@ -89,7 +90,7 @@ const OliviaMarketingCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['campaigns', 'social', 'listings', 'analytics'].map(tab => (
+        {['campaigns', 'social', 'listings', 'publish', 'analytics'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -183,6 +184,15 @@ const OliviaMarketingCRM = () => {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {activeTab === 'publish' && (
+          <div className="publish-view">
+            <PlatformPublisherForm 
+              onPublish={(data, platforms) => console.log('Publishing to:', platforms, data)}
+              onSaveDraft={() => console.log('Saved as draft')}
+            />
           </div>
         )}
 

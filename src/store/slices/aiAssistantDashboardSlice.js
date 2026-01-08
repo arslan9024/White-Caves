@@ -426,6 +426,58 @@ const generateActivities = () => {
   ];
 };
 
+const generateNotifications = () => {
+  const now = Date.now();
+  return {
+    linda: [
+      { id: 'n1', type: 'lead', message: 'New lead from WhatsApp', severity: 'info', isRead: false, timestamp: new Date(now - 120000).toISOString() },
+      { id: 'n2', type: 'task', message: 'Agent quota exceeded', severity: 'warning', isRead: false, timestamp: new Date(now - 300000).toISOString() }
+    ],
+    clara: [
+      { id: 'n3', type: 'lead', message: 'Lead requires follow-up', severity: 'warning', isRead: false, timestamp: new Date(now - 180000).toISOString() }
+    ],
+    theodora: [
+      { id: 'n4', type: 'payment', message: 'Invoice overdue', severity: 'critical', isRead: false, timestamp: new Date(now - 240000).toISOString() }
+    ],
+    mary: [],
+    nina: [
+      { id: 'n5', type: 'bot', message: 'Bot session expired', severity: 'warning', isRead: false, timestamp: new Date(now - 360000).toISOString() }
+    ],
+    nancy: [],
+    sophia: [
+      { id: 'n6', type: 'deal', message: 'Deal awaiting approval', severity: 'info', isRead: false, timestamp: new Date(now - 420000).toISOString() }
+    ],
+    daisy: [],
+    olivia: [],
+    zoe: [
+      { id: 'n7', type: 'meeting', message: 'Meeting in 30 minutes', severity: 'info', isRead: false, timestamp: new Date(now - 60000).toISOString() }
+    ],
+    laila: [],
+    aurora: []
+  };
+};
+
+const generateTasks = () => ({
+  linda: [
+    { id: 't1', title: 'Review unassigned conversations', priority: 'high', status: 'pending', assignedTo: null, dueDate: new Date().toISOString() }
+  ],
+  clara: [
+    { id: 't2', title: 'Follow up with hot leads', priority: 'high', status: 'in_progress', assignedTo: 'agent_1', dueDate: new Date().toISOString() }
+  ],
+  theodora: [
+    { id: 't3', title: 'Process pending invoices', priority: 'medium', status: 'pending', assignedTo: null, dueDate: new Date().toISOString() }
+  ],
+  mary: [],
+  nina: [],
+  nancy: [],
+  sophia: [],
+  daisy: [],
+  olivia: [],
+  zoe: [],
+  laila: [],
+  aurora: []
+});
+
 const getInitialState = () => ({
   allAssistants: {
     byId: AI_ASSISTANTS_REGISTRY,
@@ -444,6 +496,24 @@ const getInitialState = () => ({
       searchQuery: ''
     },
     dropdownOpen: false
+  },
+  
+  sidebar: {
+    isOpen: true,
+    isCollapsed: false,
+    activeAssistantId: null,
+    position: 'right'
+  },
+  
+  notifications: {
+    byAssistantId: generateNotifications(),
+    globalUnreadCount: 0,
+    lastFetched: null
+  },
+  
+  tasks: {
+    byAssistantId: generateTasks(),
+    activeTasksCount: 0
   },
   
   assistantPerformance: {
@@ -473,7 +543,6 @@ const getInitialState = () => ({
     isConnected: false
   },
   
-  notifications: [],
   initialized: true
 });
 
@@ -605,6 +674,120 @@ const aiAssistantDashboardSlice = createSlice({
     setConnectionStatus: (state, action) => {
       state.liveUpdates.isConnected = action.payload;
       state.liveUpdates.lastUpdate = new Date().toISOString();
+    },
+    
+    toggleSidebar: (state) => {
+      state.sidebar.isOpen = !state.sidebar.isOpen;
+    },
+    
+    collapseSidebar: (state, action) => {
+      state.sidebar.isCollapsed = action.payload;
+    },
+    
+    setSidebarActiveAssistant: (state, action) => {
+      state.sidebar.activeAssistantId = action.payload;
+    },
+    
+    addNotification: (state, action) => {
+      const { assistantId, notification } = action.payload;
+      if (!state.notifications.byAssistantId[assistantId]) {
+        state.notifications.byAssistantId[assistantId] = [];
+      }
+      state.notifications.byAssistantId[assistantId].unshift({
+        id: `n${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        isRead: false,
+        ...notification
+      });
+      state.notifications.globalUnreadCount += 1;
+    },
+    
+    markNotificationRead: (state, action) => {
+      const { assistantId, notificationId } = action.payload;
+      const notifications = state.notifications.byAssistantId[assistantId];
+      if (notifications) {
+        const notification = notifications.find(n => n.id === notificationId);
+        if (notification && !notification.isRead) {
+          notification.isRead = true;
+          state.notifications.globalUnreadCount = Math.max(0, state.notifications.globalUnreadCount - 1);
+        }
+      }
+    },
+    
+    markAllNotificationsRead: (state, action) => {
+      const assistantId = action.payload;
+      const notifications = state.notifications.byAssistantId[assistantId];
+      if (notifications) {
+        const unreadCount = notifications.filter(n => !n.isRead).length;
+        notifications.forEach(n => { n.isRead = true; });
+        state.notifications.globalUnreadCount = Math.max(0, state.notifications.globalUnreadCount - unreadCount);
+      }
+    },
+    
+    clearNotifications: (state, action) => {
+      const assistantId = action.payload;
+      state.notifications.byAssistantId[assistantId] = [];
+    },
+    
+    addTask: (state, action) => {
+      const { assistantId, task } = action.payload;
+      if (!state.tasks.byAssistantId[assistantId]) {
+        state.tasks.byAssistantId[assistantId] = [];
+      }
+      state.tasks.byAssistantId[assistantId].push({
+        id: `t${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        status: 'pending',
+        ...task
+      });
+      state.tasks.activeTasksCount += 1;
+    },
+    
+    updateTaskStatus: (state, action) => {
+      const { assistantId, taskId, status } = action.payload;
+      const tasks = state.tasks.byAssistantId[assistantId];
+      if (tasks) {
+        const task = tasks.find(t => t.id === taskId);
+        if (task) {
+          const wasActive = task.status !== 'completed';
+          task.status = status;
+          if (status === 'completed' && wasActive) {
+            state.tasks.activeTasksCount = Math.max(0, state.tasks.activeTasksCount - 1);
+          }
+        }
+      }
+    },
+    
+    assignTask: (state, action) => {
+      const { assistantId, taskId, agentId } = action.payload;
+      const tasks = state.tasks.byAssistantId[assistantId];
+      if (tasks) {
+        const task = tasks.find(t => t.id === taskId);
+        if (task) {
+          task.assignedTo = agentId;
+          task.status = 'assigned';
+        }
+      }
+    },
+    
+    triggerUserAction: (state, action) => {
+      const { actionType, sourceAssistant, targetAssistants, data } = action.payload;
+      targetAssistants.forEach(targetId => {
+        if (!state.notifications.byAssistantId[targetId]) {
+          state.notifications.byAssistantId[targetId] = [];
+        }
+        state.notifications.byAssistantId[targetId].unshift({
+          id: `n${Date.now()}_${targetId}`,
+          type: actionType,
+          message: `Action from ${sourceAssistant}: ${data.message || actionType}`,
+          severity: data.severity || 'info',
+          isRead: false,
+          timestamp: new Date().toISOString(),
+          sourceAssistant,
+          data
+        });
+        state.notifications.globalUnreadCount += 1;
+      });
     }
   },
   extraReducers: (builder) => {
@@ -644,7 +827,18 @@ export const {
   addAlert,
   dismissAlert,
   updateOwnerPreferences,
-  setConnectionStatus
+  setConnectionStatus,
+  toggleSidebar,
+  collapseSidebar,
+  setSidebarActiveAssistant,
+  addNotification,
+  markNotificationRead,
+  markAllNotificationsRead,
+  clearNotifications,
+  addTask,
+  updateTaskStatus,
+  assignTask,
+  triggerUserAction
 } = aiAssistantDashboardSlice.actions;
 
 const selectAssistantsState = (state) => state.aiAssistantDashboard?.allAssistants?.byId || {};
@@ -713,6 +907,47 @@ export const selectActiveAssistantsCount = createSelector(
   [selectAllAssistantsArray],
   (assistants) => assistants.filter(a => a.metrics.systemHealth === 'optimal').length
 );
+
+export const selectSidebar = (state) => state.aiAssistantDashboard?.sidebar;
+export const selectNotifications = (state) => state.aiAssistantDashboard?.notifications;
+export const selectTasks = (state) => state.aiAssistantDashboard?.tasks;
+
+export const selectNotificationsByAssistant = (assistantId) => (state) => 
+  state.aiAssistantDashboard?.notifications?.byAssistantId?.[assistantId] || [];
+
+export const selectUnreadCountByAssistant = (assistantId) => (state) => {
+  const notifications = state.aiAssistantDashboard?.notifications?.byAssistantId?.[assistantId] || [];
+  return notifications.filter(n => !n.isRead).length;
+};
+
+export const selectTasksByAssistant = (assistantId) => (state) => 
+  state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] || [];
+
+export const selectGlobalUnreadCount = (state) => 
+  state.aiAssistantDashboard?.notifications?.globalUnreadCount || 0;
+
+export const selectAllUnreadCounts = createSelector(
+  [selectNotifications, selectAllIds],
+  (notifications, allIds) => {
+    const counts = {};
+    allIds.forEach(id => {
+      const assistantNotifications = notifications?.byAssistantId?.[id] || [];
+      counts[id] = assistantNotifications.filter(n => !n.isRead).length;
+    });
+    return counts;
+  }
+);
+
+export const selectAssistantStatus = (assistantId) => (state) => {
+  const assistant = state.aiAssistantDashboard?.allAssistants?.byId?.[assistantId];
+  const tasks = state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] || [];
+  const activeTasks = tasks.filter(t => t.status !== 'completed').length;
+  
+  if (!assistant) return 'offline';
+  if (activeTasks > 0) return 'busy';
+  if (assistant.metrics?.systemHealth === 'optimal') return 'active';
+  return 'idle';
+};
 
 export { DEPARTMENT_COLORS };
 

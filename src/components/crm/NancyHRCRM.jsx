@@ -3,9 +3,10 @@ import {
   Bot, Users, Briefcase, Calendar, Award, Clock, FileText,
   Search, Plus, Edit, Trash2, Eye, Mail, Phone, MapPin,
   ChevronDown, Filter, Download, Upload, CheckCircle, XCircle,
-  Building, GraduationCap, DollarSign, Star, UserPlus, Send, Zap
+  Building, GraduationCap, DollarSign, Star, UserPlus, Send, Zap, PenTool
 } from 'lucide-react';
 import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
+import { JobPostComposer } from './shared';
 import { NANCY_FEATURES } from './data/assistantFeatures';
 import './NancyHRCRM.css';
 
@@ -342,6 +343,13 @@ export default function NancyHRCRM() {
         >
           <Award size={16} />
           Performance
+        </button>
+        <button 
+          className={`nancy-tab ${activeTab === 'post-job' ? 'active' : ''}`}
+          onClick={() => setActiveTab('post-job')}
+        >
+          <PenTool size={16} />
+          Post Job
         </button>
         <button 
           className={`nancy-tab ${activeTab === 'features' ? 'active' : ''}`}
@@ -764,6 +772,15 @@ export default function NancyHRCRM() {
             accentColor="#ec4899"
             categories={['Workforce Management', 'Talent Acquisition', 'Performance', 'Analytics', 'Integrations']}
           />
+        )}
+
+        {activeTab === 'post-job' && (
+          <div className="post-job-view">
+            <JobPostComposer
+              onPublish={(data, platforms) => console.log('Publishing job to:', platforms, data)}
+              onSaveDraft={() => console.log('Job saved as draft')}
+            />
+          </div>
         )}
       </div>
 

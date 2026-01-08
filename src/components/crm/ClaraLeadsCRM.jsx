@@ -4,10 +4,11 @@ import {
   Eye, Phone, Mail, MessageCircle, Calendar, Tag, Star,
   ChevronDown, ChevronUp, Download, Upload, RefreshCw, Bot,
   UserPlus, TrendingUp, Clock, CheckCircle, XCircle, AlertCircle,
-  DollarSign, Home, MapPin, Briefcase, Zap
+  DollarSign, Home, MapPin, Briefcase, Zap, Building2, Key
 } from 'lucide-react';
 import FullScreenDetailModal from '../../shared/components/ui/FullScreenDetailModal';
 import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
+import { DualCategoryTabStrip } from './shared';
 import { CLARA_FEATURES } from './data/assistantFeatures';
 import './ClaraLeadsCRM.css';
 
@@ -317,12 +318,19 @@ const LeadForm = ({ lead, onSave, onCancel }) => {
   );
 };
 
+const INTEREST_CATEGORIES = [
+  { id: 'all', label: 'All Leads', icon: Users },
+  { id: 'buy', label: 'Buyers (Sale)', icon: Building2 },
+  { id: 'rent', label: 'Tenants (Rent)', icon: Key }
+];
+
 const ClaraLeadsCRM = () => {
   const [leads, setLeads] = useState(DUMMY_LEADS);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterStage, setFilterStage] = useState('all');
   const [filterSource, setFilterSource] = useState('all');
+  const [interestCategory, setInterestCategory] = useState('all');
   const [sortBy, setSortBy] = useState('score');
   const [sortOrder, setSortOrder] = useState('desc');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -338,7 +346,15 @@ const ClaraLeadsCRM = () => {
     warm: leads.filter(l => l.status === 'warm').length,
     cold: leads.filter(l => l.status === 'cold').length,
     unassigned: leads.filter(l => !l.assignedAgent).length,
-    avgScore: Math.round(leads.reduce((acc, l) => acc + l.score, 0) / leads.length) || 0
+    avgScore: Math.round(leads.reduce((acc, l) => acc + l.score, 0) / leads.length) || 0,
+    buyers: leads.filter(l => l.interest?.type === 'buy').length,
+    renters: leads.filter(l => l.interest?.type === 'rent').length
+  }), [leads]);
+
+  const categoryCounts = useMemo(() => ({
+    all: leads.length,
+    buy: leads.filter(l => l.interest?.type === 'buy').length,
+    rent: leads.filter(l => l.interest?.type === 'rent').length
   }), [leads]);
 
   const filteredLeads = useMemo(() => {
@@ -350,7 +366,8 @@ const ClaraLeadsCRM = () => {
         const matchesStatus = filterStatus === 'all' || l.status === filterStatus;
         const matchesStage = filterStage === 'all' || l.stage === filterStage;
         const matchesSource = filterSource === 'all' || l.source === filterSource;
-        return matchesSearch && matchesStatus && matchesStage && matchesSource;
+        const matchesInterest = interestCategory === 'all' || l.interest?.type === interestCategory;
+        return matchesSearch && matchesStatus && matchesStage && matchesSource && matchesInterest;
       })
       .sort((a, b) => {
         const aVal = a[sortBy];
@@ -360,7 +377,7 @@ const ClaraLeadsCRM = () => {
         }
         return aVal < bVal ? 1 : -1;
       });
-  }, [leads, searchQuery, filterStatus, filterStage, filterSource, sortBy, sortOrder]);
+  }, [leads, searchQuery, filterStatus, filterStage, filterSource, interestCategory, sortBy, sortOrder]);
 
   const handleAddLead = (lead) => {
     setLeads(prev => [...prev, lead]);
@@ -485,6 +502,17 @@ const ClaraLeadsCRM = () => {
             <span className="stat-label">Avg Score</span>
           </div>
         </div>
+      </div>
+
+      {/* Interest Type Category Filter */}
+      <div className="interest-category-filter">
+        <DualCategoryTabStrip
+          categories={INTEREST_CATEGORIES}
+          activeCategory={interestCategory}
+          onCategoryChange={setInterestCategory}
+          counts={categoryCounts}
+          colorScheme="red"
+        />
       </div>
 
       {/* Filters */}

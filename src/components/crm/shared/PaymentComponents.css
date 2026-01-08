@@ -1,0 +1,352 @@
+.payment-instruction-deck {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.deck-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.deck-header:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.deck-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #fff;
+}
+
+.deck-title h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.expand-btn {
+  background: transparent;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.deck-content {
+  padding: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.payment-method-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.method-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #94A3B8;
+}
+
+.method-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.method-btn.active {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: #F59E0B;
+  color: #F59E0B;
+}
+
+.method-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.method-desc {
+  font-size: 0.6875rem;
+  opacity: 0.7;
+  text-align: center;
+}
+
+.qr-code-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 10px;
+}
+
+.qr-code-wrapper {
+  padding: 1rem;
+  background: #fff;
+  border-radius: 12px;
+}
+
+.qr-code-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: #1E293B;
+}
+
+.qr-hint {
+  font-size: 0.75rem;
+  color: #64748B;
+}
+
+.qr-details {
+  text-align: center;
+  color: #94A3B8;
+}
+
+.qr-amount, .qr-reference {
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+}
+
+.qr-amount strong, .qr-reference strong {
+  color: #fff;
+}
+
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  margin-top: 0.75rem;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 6px;
+  color: #3B82F6;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.cheque-instructions {
+  padding: 1rem;
+}
+
+.instruction-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.instruction-card h4 {
+  color: #fff;
+  font-size: 0.9375rem;
+  margin: 0 0 1rem 0;
+}
+
+.instruction-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #94A3B8;
+  font-size: 0.875rem;
+  line-height: 1.8;
+}
+
+.instruction-list strong {
+  color: #fff;
+}
+
+.warning-note {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 6px;
+  color: #F59E0B;
+  font-size: 0.8125rem;
+}
+
+.delivery-info {
+  color: #94A3B8;
+  font-size: 0.875rem;
+}
+
+.delivery-info h5 {
+  color: #fff;
+  font-size: 0.875rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.delivery-info ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  line-height: 1.6;
+}
+
+.bank-transfer-details {
+  padding: 1rem;
+}
+
+.bank-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1rem;
+  color: #F59E0B;
+}
+
+.bank-header h4 {
+  margin: 0;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.bank-header p {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #64748B;
+}
+
+.details-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  padding: 0.625rem 0.75rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 6px;
+}
+
+.detail-row.highlight {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.detail-label {
+  flex: 0 0 120px;
+  color: #64748B;
+  font-size: 0.8125rem;
+}
+
+.detail-value {
+  flex: 1;
+  color: #fff;
+  font-size: 0.875rem;
+  font-family: 'Monaco', 'Menlo', monospace;
+}
+
+.copy-icon {
+  background: transparent;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.copy-icon:hover {
+  color: #3B82F6;
+}
+
+.transfer-note {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 6px;
+  color: #94A3B8;
+  font-size: 0.8125rem;
+}
+
+.deck-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn.primary {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  border: none;
+  color: #000;
+}
+
+.action-btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.action-btn.secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94A3B8;
+}
+
+.action-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .payment-method-selector {
+    grid-template-columns: 1fr;
+  }
+  
+  .deck-actions {
+    flex-direction: column;
+  }
+  
+  .detail-label {
+    flex: 0 0 100px;
+    font-size: 0.75rem;
+  }
+  
+  .detail-value {
+    font-size: 0.8125rem;
+  }
+}

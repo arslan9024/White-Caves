@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   Bot, MessageSquare, Code, Terminal, Play, Pause, RefreshCw, 
   Settings, Users, Phone, CheckCircle, XCircle, Clock, Zap,
   FileCode, Folder, ChevronRight, ChevronDown, Copy, Download,
-  AlertTriangle, Activity, Send, QrCode, Smartphone, Wifi, Star
+  AlertTriangle, Activity, Send, QrCode, Smartphone, Wifi, Star, Plus
 } from 'lucide-react';
 import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
+import { BotSessionManager } from './shared';
 import { NINA_FEATURES } from './data/assistantFeatures';
 import './NinaWhatsAppBotCRM.css';
 
@@ -97,12 +98,61 @@ const TERMINAL_LOGS = [
 export default function NinaWhatsAppBotCRM() {
   const [bots, setBots] = useState(DUMMY_BOTS);
   const [selectedBot, setSelectedBot] = useState(DUMMY_BOTS[0]);
-  const [activeTab, setActiveTab] = useState('bots');
+  const [activeTab, setActiveTab] = useState('sessions');
   const [ninaActive, setNinaActive] = useState(true);
   const [terminalLogs, setTerminalLogs] = useState(TERMINAL_LOGS);
   const [codeModules, setCodeModules] = useState(CODE_MODULES);
   const [terminalInput, setTerminalInput] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
+  
+  const handleCreateBot = useCallback((newBot) => {
+    const bot = {
+      id: `bot-${Date.now()}`,
+      name: newBot.name,
+      number: newBot.number,
+      status: 'pending',
+      qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=WhatsAppNewSession',
+      messagesProcessed: 0,
+      responseRate: 0,
+      avgResponseTime: '-',
+      lastActive: 'Never',
+      uptime: '0%',
+      features: []
+    };
+    setBots(prev => [...prev, bot]);
+    
+    const log = {
+      time: new Date().toLocaleTimeString('en-US', { hour12: false }),
+      type: 'info',
+      message: `Created new bot session: ${newBot.name} (${newBot.number})`
+    };
+    setTerminalLogs(prev => [...prev, log]);
+  }, []);
+  
+  const handleDeleteBot = useCallback((botId) => {
+    const bot = bots.find(b => b.id === botId);
+    setBots(prev => prev.filter(b => b.id !== botId));
+    
+    const log = {
+      time: new Date().toLocaleTimeString('en-US', { hour12: false }),
+      type: 'warning',
+      message: `Deleted bot session: ${bot?.name || botId}`
+    };
+    setTerminalLogs(prev => [...prev, log]);
+  }, [bots]);
+  
+  const handleRefreshSession = useCallback((botId) => {
+    setBots(prev => prev.map(bot => 
+      bot.id === botId ? { ...bot, status: 'pending', qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=WhatsAppReconnect' } : bot
+    ));
+    
+    const log = {
+      time: new Date().toLocaleTimeString('en-US', { hour12: false }),
+      type: 'info',
+      message: `Refreshing bot session... Scan QR code to reconnect.`
+    };
+    setTerminalLogs(prev => [...prev, log]);
+  }, []);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -201,11 +251,18 @@ export default function NinaWhatsAppBotCRM() {
 
       <div className="nina-tabs">
         <button 
+          className={`nina-tab ${activeTab === 'sessions' ? 'active' : ''}`}
+          onClick={() => setActiveTab('sessions')}
+        >
+          <QrCode size={16} />
+          Session Manager
+        </button>
+        <button 
           className={`nina-tab ${activeTab === 'bots' ? 'active' : ''}`}
           onClick={() => setActiveTab('bots')}
         >
           <Smartphone size={16} />
-          Bot Sessions
+          Bot Status
         </button>
         <button 
           className={`nina-tab ${activeTab === 'terminal' ? 'active' : ''}`}
@@ -238,6 +295,19 @@ export default function NinaWhatsAppBotCRM() {
       </div>
 
       <div className="nina-content">
+        {activeTab === 'sessions' && (
+          <div className="sessions-view">
+            <BotSessionManager
+              bots={bots}
+              selectedBotId={selectedBot?.id}
+              onCreateBot={handleCreateBot}
+              onDeleteBot={handleDeleteBot}
+              onRefreshSession={handleRefreshSession}
+              onSelectBot={(id) => setSelectedBot(bots.find(b => b.id === id))}
+            />
+          </div>
+        )}
+
         {activeTab === 'bots' && (
           <div className="bots-view">
             <div className="bots-grid">
