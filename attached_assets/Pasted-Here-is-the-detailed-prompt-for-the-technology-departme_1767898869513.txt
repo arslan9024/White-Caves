@@ -1,0 +1,81 @@
+Here is the detailed prompt for the technology department AI assistants and Zoe to execute a focused, design-only overhaul of the main dashboard.
+
+---
+
+**PROJECT PROMPT: Dashboard Design Overhaul & Sidebar Transformation**
+
+**Objective:** Perform a **strictly visual and UX-focused redesign** of the main Owner Dashboard. **All existing features, data logic, and backend functionalities must be preserved 100%.** The primary goal is to transform the current interface—specifically turning the outdated array/list of 14 AI assistants into a modern, sleek **left-side navigation sidebar**—to meet new design standards for clarity, professionalism, and ease of use.
+
+**Core Team & Roles:**
+*   **Aurora (System Architect & Lead):** Oversees the entire redesign, ensures component architecture is maintainable, and guarantees zero regression in functionality.
+*   **Hazel (Lead Frontend Designer/Developer):** Executes all visual design, builds the new sidebar and supporting UI components, and implements the new design system.
+*   **Willow (Backend & State Specialist):** Optimizes the data flow and state management for the new sidebar component, ensuring performance is equal to or better than before.
+*   **Zoe (Executive Stakeholder & UX Approver):** Defines the "feel" and professional standards for the new dashboard, tests the final user experience, and approves the redesign against business needs.
+
+### 🎨 **Core Design Directive: The Assistant Sidebar**
+**Problem:** The current display of 14 AI assistants (as tiles, cards, or a list) is visually cluttered and inefficient.
+**Solution:** Replace it with a permanent, hierarchical **Vertical Navigation Sidebar** on the left side of the dashboard.
+
+**Specifications for the New Sidebar (`AssistantNavSidebar.jsx`):**
+1.  **Position & Layout:** Fixed-position sidebar on the **left**, occupying ~20% of the viewport width on desktop. Collapsible to an icon-only state.
+2.  **Visual Hierarchy:**
+    *   **Company Logo/Identifier** at the top.
+    *   **Main Section: "AI Command"** with a list of all 14 assistants.
+    *   Each assistant is represented by a **clean icon + name**.
+    *   Use subtle color coding or badges to indicate department (e.g., Sales, Ops, Tech).
+3.  **Interactive States:**
+    *   **Hover:** Subtle background highlight.
+    *   **Selected:** A distinct left-border highlight and bolded text to show the active assistant.
+    *   **Notification Badge:** A small, discreet badge (e.g., red dot or number) on an assistant's icon to indicate pending alerts or actions.
+4.  **Functionality Preservation:** Clicking an assistant must trigger the **exact same Redux action/state update** that currently loads that assistant's dashboard. No logic changes.
+
+### 📐 **Supporting Design Updates**
+The redesign must also uplift the surrounding dashboard to match the new sidebar's standard.
+
+*   **1. Header/Top Bar Redesign:**
+    *   Location for global search, user profile, and system-wide notifications.
+    *   Clean, minimal design with proper spacing.
+
+*   **2. Main Content Area Refinement:**
+    *   **Card & Panel Consistency:** Audit all `StatCard`, `DataTable`, and other container components used across different assistants. Enforce a **single, unified visual style** (border-radius, shadow, padding).
+    *   **Typography Scale:** Implement a consistent scale for headers, body text, and labels.
+    *   **Color Palette:** Apply a refined, professional color palette. Use color primarily for meaning (status, department) rather than decoration.
+
+*   **3. Loading & Empty States:**
+    *   Design elegant, branded skeleton loaders and "no data" illustrations that fit the new aesthetic.
+
+### 🔧 **Technical Implementation Plan (Phased)**
+
+**Phase 1: Audit & Design System (Aurora + Hazel + Zoe)**
+1.  **Aurora** maps every UI component currently used in the dashboard.
+2.  **Hazel** creates a **Design System Figma/Storybook** with the new sidebar, color palette, typography, and component styles.
+3.  **Zoe** reviews and approves the visual direction, ensuring it meets the "new standard" for professionalism.
+
+**Phase 2: Build Core UI Library (Hazel + Willow)**
+1.  **Hazel** builds the new React components in isolation:
+    *   `AssistantNavSidebar.jsx` (The new left sidebar)
+    *   `DashboardHeader.jsx`
+    *   Refactored `StatCard.jsx`, `DataPanel.jsx` with new styles.
+2.  **Willow** creates a new Redux slice or extends an existing one to manage the sidebar's UI state (e.g., `collapsed`, `selectedAssistantId`), ensuring it's performant.
+
+**Phase 3: Integration & Replacement (Aurora + Hazel)**
+1.  **Aurora** oversees the replacement of the old dashboard layout in `OwnerDashboard.jsx` with the new structure (New Sidebar + Header + Updated Main Content Area).
+2.  **Hazel** integrates the new components, applying new CSS/theme variables globally to the dashboard view. **CRITICAL:** This step must not touch any logic in the main content area's render functions.
+
+**Phase 4: Testing & Polish (All)**
+1.  **Willow** writes integration tests to verify that clicking each sidebar item correctly loads the corresponding assistant's full dashboard with all data.
+2.  **Hazel** performs cross-browser and responsive testing.
+3.  **Zoe** conducts a final user-acceptance test, verifying that all original features work and the new design improves usability.
+
+### 🚨 **Strict Governance Rules**
+*   **NO Feature Changes:** Do not add, remove, or alter any business features, data calculations, or permission logic.
+*   **Data Flow Preservation:** The Redux state for `aiAssistants`, `selectedAssistant`, and all data-fetching thunks must remain **unchanged in logic**. Only update how the state is *visualized*.
+*   **One-Way Styling:** New styles must be scoped to the dashboard components. Avoid global CSS overrides that could affect other parts of the application.
+
+### ✅ **Final Deliverables**
+1.  A fully redesigned `OwnerDashboard.jsx` with a new left sidebar.
+2.  A reusable `AssistantNavSidebar.jsx` component.
+3.  An updated, consistent set of styled UI components (Cards, Tables, Headers).
+4.  Zero open bugs related to lost functionality or broken data displays.
+
+This prompt ensures a disciplined, design-only transformation that elevates the user experience while keeping the powerful backend system perfectly intact.

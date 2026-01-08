@@ -984,3 +984,97 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* ==========================================
+   NEW SIDEBAR LAYOUT STYLES
+   ========================================== */
+
+.owner-dashboard-page.with-sidebar {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-primary);
+}
+
+.owner-dashboard-page.with-sidebar .dashboard-main {
+  flex: 1;
+  margin-left: 280px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.owner-dashboard-page.with-sidebar.sidebar-collapsed .dashboard-main {
+  margin-left: 72px;
+}
+
+.owner-dashboard-page.with-sidebar .dashboard-content {
+  flex: 1;
+  padding: 24px 32px;
+  overflow-y: auto;
+  background: var(--bg-secondary);
+}
+
+.owner-dashboard-page.with-sidebar .dashboard-footer {
+  padding: 16px 32px;
+  background: rgba(15, 15, 26, 0.6);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  text-align: center;
+}
+
+.owner-dashboard-page.with-sidebar .dashboard-footer p {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  margin: 0;
+}
+
+[data-theme="light"] .owner-dashboard-page.with-sidebar .dashboard-content {
+  background: #f9fafb;
+}
+
+[data-theme="light"] .owner-dashboard-page.with-sidebar .dashboard-footer {
+  background: rgba(255, 255, 255, 0.9);
+  border-top-color: #e5e7eb;
+}
+
+[data-theme="light"] .owner-dashboard-page.with-sidebar .dashboard-footer p {
+  color: #6b7280;
+}
+
+.mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 99;
+}
+
+@media (max-width: 1024px) {
+  .owner-dashboard-page.with-sidebar .dashboard-main {
+    margin-left: 72px;
+  }
+  
+  .owner-dashboard-page.with-sidebar .dashboard-content {
+    padding: 20px;
+  }
+  
+  .owner-dashboard-page.with-sidebar .dashboard-footer {
+    padding: 16px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .owner-dashboard-page.with-sidebar .dashboard-main {
+    margin-left: 0;
+  }
+  
+  .owner-dashboard-page.with-sidebar .dashboard-content {
+    padding: 16px;
+  }
+  
+  .mobile-overlay {
+    display: block;
+  }
+}

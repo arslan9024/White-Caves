@@ -1,6 +1,8 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import AssistantNavSidebar from '../../components/dashboard/AssistantNavSidebar';
+import DashboardHeader from '../../components/dashboard/DashboardHeader';
 import OverviewTab from '../../components/owner/tabs/OverviewTab';
 import PropertiesTab from '../../components/owner/tabs/PropertiesTab';
 import AgentsTab from '../../components/owner/tabs/AgentsTab';
@@ -13,7 +15,6 @@ import UAEPassTab from '../../components/owner/tabs/UAEPassTab';
 import SettingsTab from '../../components/owner/tabs/SettingsTab';
 import UsersTab from '../../components/owner/tabs/UsersTab';
 import FeatureExplorer from '../../components/owner/FeatureExplorer';
-import RoleSelectorDropdown from '../../shared/components/ui/RoleSelectorDropdown';
 import '../../shared/styles/theme.css';
 import './OwnerDashboardPage.css';
 
@@ -43,47 +44,20 @@ const CRMLoadingFallback = () => (
 
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
 
-const AI_ASSISTANTS = [
-  { id: 'linda', name: 'Linda', desc: 'WhatsApp CRM', icon: '💬', color: '#25D366', department: 'communications' },
-  { id: 'mary', name: 'Mary', desc: 'Inventory CRM', icon: '🏢', color: '#3B82F6', department: 'operations' },
-  { id: 'clara', name: 'Clara', desc: 'Leads CRM', icon: '🎯', color: '#EF4444', department: 'sales' },
-  { id: 'nina', name: 'Nina', desc: 'Bot Developer', icon: '🤖', color: '#06B6D4', department: 'communications' },
-  { id: 'nancy', name: 'Nancy', desc: 'HR Manager', icon: '👩‍💼', color: '#F97316', department: 'operations' },
-  { id: 'sophia', name: 'Sophia', desc: 'Sales Pipeline', icon: '📊', color: '#8B5CF6', department: 'sales' },
-  { id: 'daisy', name: 'Daisy', desc: 'Leasing', icon: '🏠', color: '#14B8A6', department: 'operations' },
-  { id: 'theodora', name: 'Theodora', desc: 'Finance', icon: '💰', color: '#EC4899', department: 'finance' },
-  { id: 'olivia', name: 'Olivia', desc: 'Marketing', icon: '📣', color: '#4FACFE', department: 'marketing' },
-  { id: 'zoe', name: 'Zoe', desc: 'Executive', icon: '👔', color: '#43E97B', department: 'executive' },
-  { id: 'laila', name: 'Laila', desc: 'Compliance', icon: '🛡️', color: '#6366F1', department: 'compliance' },
-  { id: 'aurora', name: 'Aurora', desc: 'CTO', icon: '🖥️', color: '#0EA5E9', department: 'technology' },
-  { id: 'hazel', name: 'Hazel', desc: 'Frontend', icon: '🎨', color: '#F472B6', department: 'technology' },
-  { id: 'willow', name: 'Willow', desc: 'Backend', icon: '⚙️', color: '#22C55E', department: 'technology' }
-];
-
-const TABS = [
-  { id: 'overview', label: 'Overview', icon: '📊' },
-  { id: 'ai-command', label: 'AI Command', icon: '🎛️' },
-  { id: 'ai-hub', label: 'AI Hub', icon: '🧠' },
-  { id: 'users', label: 'Users', icon: '👤' },
-  { id: 'properties', label: 'Properties', icon: '🏠' },
-  { id: 'agents', label: 'Agents', icon: '👥' },
-  { id: 'leads', label: 'Leads', icon: '🎯' },
-  { id: 'contracts', label: 'Contracts', icon: '📜' },
-  { id: 'analytics', label: 'Analytics', icon: '📈' },
-  { id: 'chatbot', label: 'AI Settings', icon: '⚙️' },
-  { id: 'whatsapp', label: 'WhatsApp', icon: '📱' },
-  { id: 'uaepass', label: 'UAE Pass', icon: '🆔' },
-  { id: 'features', label: 'Features', icon: '⭐' },
-  { id: 'settings', label: 'Settings', icon: '🔧' },
-];
-
 export default function OwnerDashboardPage() {
   const navigate = useNavigate();
   const user = useSelector(state => state.user.currentUser);
+  const notifications = useSelector(state => state.aiAssistantDashboard?.notifications?.byAssistantId || {});
+  
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(false);
   const [dashboardData, setDashboardData] = useState({});
   const [selectedRole, setSelectedRole] = useState('company_owner');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    return document.documentElement.getAttribute('data-theme') || 'dark';
+  });
 
   useEffect(() => {
     if (!user || user.email !== OWNER_EMAIL) {
@@ -114,7 +88,12 @@ export default function OwnerDashboardPage() {
 
   const handleRoleChange = (role) => {
     setSelectedRole(role.id);
-    console.log('Role changed to:', role.name);
+  };
+
+  const handleThemeToggle = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
   };
 
   const handleQuickAction = (action) => {
@@ -170,7 +149,6 @@ export default function OwnerDashboardPage() {
   };
 
   const handleTabAction = (action, id) => {
-    console.log('Tab action:', action, id);
     switch(action) {
       case 'addProperty':
         navigate('/properties/add');
@@ -323,6 +301,11 @@ export default function OwnerDashboardPage() {
     setActiveTab(assistantId);
   };
 
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    setMobileMenuOpen(false);
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'overview':
@@ -387,64 +370,40 @@ export default function OwnerDashboardPage() {
   };
 
   return (
-    <div className="owner-dashboard-page">
-      <div className="dashboard-header">
-        <div className="header-content">
-          <div className="header-title">
-            <h1>Executive Dashboard</h1>
-            <p>White Caves Real Estate LLC - Control Center</p>
-          </div>
-          <div className="header-role-selector">
-            <RoleSelectorDropdown 
-              currentRole={selectedRole}
-              onRoleChange={handleRoleChange}
-            />
-          </div>
+    <div className={`owner-dashboard-page with-sidebar ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+      <AssistantNavSidebar
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        notifications={notifications}
+      />
+      
+      <div className="dashboard-main">
+        <DashboardHeader
+          title="Executive Dashboard"
+          subtitle="White Caves Real Estate LLC"
+          currentRole={selectedRole}
+          onRoleChange={handleRoleChange}
+          onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
+          theme={theme}
+          onThemeToggle={handleThemeToggle}
+          notifications={[]}
+          user={user}
+        />
+
+        <div className="dashboard-content">
+          {renderTabContent()}
+        </div>
+
+        <div className="dashboard-footer">
+          <p>White Caves Real Estate LLC © {new Date().getFullYear()} | Office D-72, El-Shaye-4, Port Saeed, Dubai | +971 56 361 6136</p>
         </div>
       </div>
 
-      <div className="ai-assistants-bar">
-        <div className="ai-bar-title">AI Assistants <span className="ai-count">{AI_ASSISTANTS.length}</span></div>
-        <div className="ai-buttons">
-          {AI_ASSISTANTS.map(assistant => (
-            <button
-              key={assistant.id}
-              className={`ai-btn ${assistant.id} ${activeTab === assistant.id ? 'active' : ''}`}
-              onClick={() => setActiveTab(assistant.id)}
-              style={{ '--assistant-color': assistant.color }}
-            >
-              <span className="ai-icon">{assistant.icon}</span>
-              <div className="ai-info">
-                <span className="ai-name">{assistant.name}</span>
-                <span className="ai-desc">{assistant.desc}</span>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="dashboard-tabs">
-        <div className="tabs-container">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              <span className="tab-icon">{tab.icon}</span>
-              <span className="tab-label">{tab.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="dashboard-content">
-        {renderTabContent()}
-      </div>
-
-      <div className="dashboard-footer">
-        <p>White Caves Real Estate LLC © {new Date().getFullYear()} | Office D-72, El-Shaye-4, Port Saeed, Dubai | +971 56 361 6136</p>
-      </div>
+      {mobileMenuOpen && (
+        <div className="mobile-overlay" onClick={() => setMobileMenuOpen(false)} />
+      )}
     </div>
   );
 }

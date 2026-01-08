@@ -13,7 +13,6 @@ Preferred communication style: Simple, everyday language.
 - **UI/UX**: Custom React components with CSS modules, featuring a premium dark mode, glassmorphism styling, mobile responsiveness, interactive elements (calculators, advanced search, property comparison, interactive SVG Dubai map), and full-screen galleries. Role-based routing is implemented.
 - **Theming**: Consistent brand theme with a Red and White color scheme, Montserrat/Open Sans typography, and comprehensive light/dark theme support.
 - **Layouts**: `AppLayout` and `RolePageLayout` for consistent page and dashboard wrappers.
-- **Content Management**: Redux slices for navigation, dashboard state, and dynamic content.
 - **SEO Optimization**: Comprehensive meta tags, structured data, and performance optimizations.
 
 ### Backend
@@ -26,8 +25,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Authentication & Authorization
 - **Authentication**: Firebase Authentication (social logins, email/password, phone/SMS OTP) and WebAuthn/Passkeys for biometric authentication.
-- **Role-Based Access Control**: Multi-role system (`BUYER`, `SELLER`, `LANDLORD`, `TENANT`, `AGENT`, `ADMIN`) with `isSuperUser` and `isDecisionMaker` flags, supported by a comprehensive permission system.
-- **Workflow**: Admin interface for managing pending role requests.
+- **Role-Based Access Control**: Multi-role system (`BUYER`, `SELLER`, `LANDLORD`, `TENANT`, `AGENT`, `ADMIN`) with `isSuperUser` and `isDecisionMaker` flags, supported by a comprehensive permission system. Admin interface for managing pending role requests.
 - **Session Management**: Enhanced session tracking with device/browser detection, timeout, token refresh, and activity monitoring.
 
 ### Key Features & Design Decisions
@@ -49,100 +47,14 @@ Preferred communication style: Simple, everyday language.
 - **Executive Suggestions Redux State**: Centralized suggestion pipeline with structured format including fromAssistant, department, priority, type (process_improvement/new_opportunity/risk_alert/cost_saving), analysis, dataPoints, projectedImpact, and confidence score.
 - **AI Command Center**: Unified dashboard entry point with an AIDropdownSelector for selecting assistants, quick stats bar, lazy-loaded assistant dashboards, and an activity sidebar.
 - **Shared Component Library**: Reusable UI components ensuring design consistency across all dashboards and features.
-
-## AI Assistants Inventory (14 Total)
-
-| Assistant | Role | Department | Key Features |
-|-----------|------|------------|--------------|
-| Linda | WhatsApp CRM Manager | Communications | 23+ Agent Management, Conversation Routing, Lead Pre-qualification |
-| Mary | Inventory CRM Manager | Operations | DAMAC Hills 2 Inventory (9,378+ units), S3 Asset Fetcher, OCR Extractor |
-| Clara | Leads CRM Manager | Sales | Lead Pipeline, Qualification Workflows, Lead Scoring, Auto-Assignment |
-| Nina | WhatsApp Bot Developer | Communications | Bot Flow Design, Session Management, Template Builder |
-| Nancy | HR Manager | Operations | Employee Directory, Recruitment Pipeline, Performance Tracking |
-| Sophia | Sales Pipeline Manager | Sales | Deal Tracking, Pipeline Visualization, Sales Forecasting |
-| Daisy | Leasing Manager | Operations | Lease Management, Tenant Communications, Ejari Integration |
-| Theodora | Finance Director | Finance | Invoice Management, Payment Tracking, Budget Analysis |
-| Olivia | Marketing & Automation Manager | Marketing | Property Sync, Market Intelligence, Website Monitoring, Multi-Portal Publishing |
-| Zoe | Executive Assistant & Strategic Intelligence | Executive | Suggestion Inbox, Priority Alerts, Cross-Department Intelligence, Calendar Management |
-| Laila | Compliance Officer | Compliance | KYC Verification, AML Monitoring, RERA Compliance |
-| Aurora | CTO & Systems Architect | Technology | System Monitoring, Documentation, Architecture Planning, Team Coordination |
-| Hazel | Elite Frontend Engineer | Technology | Component Library (47+), Design System, Accessibility Audits (AAA), UI Performance |
-| Willow | Elite Backend Engineer | Technology | API Development (45+), Database Optimization, Caching, WebSocket Real-time |
-
-## Redux State Structure
-
-### Executive Suggestions State
-```javascript
-executiveSuggestions: {
-  inbox: [{
-    id: string,
-    fromAssistant: string,
-    assistantDepartment: string,
-    priority: 'low' | 'medium' | 'high' | 'critical',
-    type: 'process_improvement' | 'new_opportunity' | 'risk_alert' | 'cost_saving',
-    title: string,
-    analysis: string,
-    dataPoints: string[],
-    projectedImpact: string,
-    confidence: number,
-    timestamp: string,
-    status: 'unreviewed' | 'acknowledged' | 'escalated' | 'archived'
-  }],
-  filters: { priority, department, status }
-}
-```
-
-### Confidential Vault State
-```javascript
-confidentialVault: {
-  documents: [{ id, name, category, accessLevel, createdAt, accessLog, meta }],
-  accessRequests: [{ id, documentId, requesterId, reason, status, requestedAt, reviewedBy, reviewedAt }],
-  permissions: { 'zoe': ['admin', 'view', 'request'], ... },
-  vaultStats: { totalDocuments, pendingRequests, recentAccesses }
-}
-```
-
-### Lead Management Hub State
-```javascript
-leadManagementHub: {
-  incomingLeads: [{ id, source, rawData, receivedAt, initialIntent }],
-  processedLeads: { 'lead_id': { status, assignedIntent, qualificationScore, structuredData, routedTo } },
-  specialistPipelines: {
-    sophia: { leadIds: [], pipelineStages: ['New', 'Contacted', 'Viewed', 'Negotiation', 'Closed'] },
-    daisy: { leadIds: [], pipelineStages: ['New', 'Tour Scheduled', 'Application', 'Approved', 'Lease Signed'] }
-  },
-  funnelMetrics: { totalIncoming, rentVsSaleRatio, avgQualificationTime, conversionRate },
-  leadScoringRules: { urgencyWeight, budgetWeight, engagementWeight, sourceWeight }
-}
-```
-
-### Compliance Engine State
-```javascript
-complianceEngine: {
-  kycProfiles: {},
-  amlMonitor: { flaggedTransactions: [], watchlistMatches: [], investigationQueue: [] },
-  auditLog: [],
-  complianceMetrics: { totalProfiles, pendingReview, approvedThisMonth, riskScore }
-}
-```
-
-### Olivia Automation State
-```javascript
-oliviaAutomation: {
-  syncSchedule: 'daily' | '3days' | '5days' | 'weekly',
-  lastPropertySync: timestamp,
-  lastMarketResearch: timestamp,
-  activeMonitoring: boolean,
-  activityLog: [],
-  monitoredSites: [{ name, status, lastCheck, dataPoints }],
-  coordination: { maryConnected, inventoryAccess }
-}
-```
+- **Confidential Vault System**: Redux state with dual-approval access request workflow (AI + human), document management, and vault statistics.
+- **Lead Management Hub**: Redux state with lead pipeline, qualification engine, specialist routing, funnel metrics, and lead scoring rules.
+- **Compliance Engine**: KYC profile tracking, AML monitoring with flagged transactions and investigation queue, and an immutable audit log.
 
 ## External Dependencies
 
 - **Stripe**: Payment processing.
-- **Mashreq NEOBiz**: Primary bank account for transfers and digital payments (Account: 019101501006, IBAN: AE960330000019101501006).
+- **Mashreq NEOBiz**: Primary bank account for transfers and digital payments.
 - **Aani Payment System**: QR code-based digital payment solution for UAE bank apps.
 - **Google Calendar API**: Appointment scheduling and reminders.
 - **Google Maps API**: Property location visualization.
@@ -153,28 +65,3 @@ oliviaAutomation: {
 - **Google Drive API**: Storing signed tenancy contracts and documents.
 - **WhatsApp Business API**: Customer support and chatbot integration.
 - **Matterport**: Virtual tour integration.
-
-## Recent Changes (January 2026)
-- **Elite AI Command Center Upgrade**: Expanded from 12 to 14 AI assistants with addition of Hazel (Frontend) and Willow (Backend)
-- **Hazel Frontend Engineer CRM**: Component library management (47+ components), design system tokens, accessibility audits (AAA compliance), Lighthouse performance tracking, responsive design oversight
-- **Willow Backend Engineer CRM**: API endpoint monitoring (45+ endpoints), database optimization metrics, caching strategies, security checks, real-time connection management
-- **Technology Department Expansion**: Aurora now coordinates with Hazel and Willow for comprehensive tech stack management
-- **Confidential Vault System**: Added Redux state with dual-approval access request workflow (AI + human), document management, and vault statistics
-- **Lead Management Hub**: Created Redux state with lead pipeline, qualification engine, specialist routing (Sophia for sales, Daisy for rentals), funnel metrics, and lead scoring rules
-- **Compliance Engine**: Added KYC profile tracking, AML monitoring with flagged transactions and investigation queue, immutable audit log (max 100 entries)
-- **Zoe Dashboard Enhancement**: Added secondary stats row showing Compliance Health (KYC profiles, pending reviews), Lead Funnel (total leads, conversion rate), Vault status (documents, pending requests), and Rent vs Sale ratio
-- **Owner Dashboard Lazy Loading**: Refactored OwnerDashboardPage with React.lazy() and Suspense for all 14 CRM components
-- **CRM Loading Fallback**: Added glassmorphism-styled loading component with spinner animation
-- **Redux Actions**: Added requestVaultAccess, approveVaultRequest, denyVaultRequest, addIncomingLead, qualifyLead, routeLeadToSpecialist, updateLeadPipelineStage, addComplianceAuditLog, flagTransaction
-- **Redux Selectors**: Added selectConfidentialVault, selectVaultPendingRequests, selectLeadManagementHub, selectLeadFunnelMetrics, selectComplianceEngine, selectComplianceMetrics
-- Added Executive Suggestions Redux state with priority filtering and department categorization
-- Created WeeklyResearchModule shared component for automated intelligence gathering
-- Upgraded Zoe's Executive Dashboard with Suggestion Inbox and Priority Alerts
-- Enhanced Olivia's automation with Redux-integrated property sync and market intelligence
-
-## Implementation Guidelines
-- All AI assistants should use the WeeklyResearchModule for automated research
-- Strategic suggestions flow from assistants to Zoe via Redux executiveSuggestions.inbox
-- Olivia coordinates with Mary's inventory via selectInventoryStats selector
-- Use priority levels (critical > high > medium > low) for suggestion sorting
-- Confidence scores should be 0-1 range representing AI certainty
