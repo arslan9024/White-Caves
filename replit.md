@@ -69,13 +69,7 @@ Preferred communication style: Simple, everyday language.
   - `PropertyImageSlider` (`src/shared/components/property/PropertyImageSlider.jsx`): Image carousel with navigation arrows, dot indicators, fullscreen gallery mode, keyboard navigation, thumbnail strip, and action buttons (favorite, share, expand).
   - `PropertyDetailModal` (`src/shared/components/property/PropertyDetailModal.jsx`): Comprehensive property detail view with tabbed interface (Overview, Amenities, Location, Floor Plan), image gallery, property specs, contact options (WhatsApp, Call, Email), agent card, and viewing scheduler.
 - **Enhanced Properties Page**: Updated properties listing (`src/pages/PropertiesPage.jsx`) with sticky search bar, purpose tabs (Buy/Rent), location and type dropdowns, advanced filter panel, grid/list view toggle, 12 sample properties with multiple images, and property favorites integration with Redux.
-- **Future Home Visualizer**: Interactive SVG-based home visualization component (`src/components/homepage/Hero/FutureHomeVisualizer.jsx`) replacing the static "Luxury Home" text. Features include:
-  - Colorable sections: Walls, Roof, Trim/Accents, Door with smooth animated transitions
-  - Color palette selector with 6-8 colors per section
-  - Pre-set themes: Modern White, Earthy Tones, Coastal, Mediterranean
-  - Environment toggle: Day, Sunset, Night lighting
-  - Floating animation effect with framer-motion
-  - Responsive design with expand/minimize mode
+- **Universal Connection Status**: Auto-hiding connection indicator (`src/components/layout/UniversalComponents.jsx`) in bottom-left corner showing online/offline status with smooth fade animations. Shows on page load and status changes, auto-hides after 3 seconds, reappears on hover.
 - **AI CRM Assistants**: Five specialized AI-powered CRM systems integrated into the Owner Dashboard:
   - **Linda (WhatsApp CRM)**: `src/components/crm/LindaWhatsAppCRM.jsx` - Conversation management, AI insights, lead scoring, quick replies, real-time chat interface, and lead pre-qualification.
   - **Mary (Inventory CRM)**: `src/components/crm/MaryInventoryCRM.jsx` - Full CRUD operations for property management with comprehensive filtering system. Features include:

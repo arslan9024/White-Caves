@@ -6,6 +6,24 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.universal-time-display.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.universal-time-display.hidden {
+  opacity: 0;
+  transform: translateX(-20px);
+  pointer-events: none;
+}
+
+.universal-time-display:hover {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
 }
 
 .connection-status {
@@ -20,6 +38,7 @@
   letter-spacing: 0.5px;
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
+  cursor: default;
 }
 
 .connection-status::before {
