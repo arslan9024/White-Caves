@@ -19,7 +19,7 @@ const AI_ASSISTANTS_REGISTRY = [
   { id: 'sophia', name: 'Sophia', title: 'Sales Pipeline Manager', department: 'Sales', status: 'active', features: ['Deal Tracking', 'Pipeline Visualization', 'Agent Performance', 'Sales Forecasting', 'Commission Calculator'], connections: ['Clara', 'Mary', 'Theodora'] },
   { id: 'daisy', name: 'Daisy', title: 'Leasing Manager', department: 'Operations', status: 'active', features: ['Lease Management', 'Tenant Communications', 'Maintenance Requests', 'Renewal Tracking', 'Ejari Integration'], connections: ['Mary', 'Laila', 'Theodora'] },
   { id: 'theodora', name: 'Theodora', title: 'Finance Director', department: 'Finance', status: 'active', features: ['Invoice Management', 'Payment Tracking', 'Expense Reports', 'P&L Statements', 'Budget Analysis'], connections: ['Sophia', 'Daisy', 'Aurora'] },
-  { id: 'olivia', name: 'Olivia', title: 'Marketing Manager', department: 'Marketing', status: 'active', features: ['Campaign Management', 'Social Media Analytics', 'Listing Optimization', 'Lead Generation', 'Content Calendar'], connections: ['Clara', 'Linda'] },
+  { id: 'olivia', name: 'Olivia', title: 'Marketing & Automation Manager', department: 'Marketing', status: 'active', features: ['Automated Property Sync', 'Mary Inventory Coordination', 'Market Intelligence', 'Website Monitoring (Bayut, PF, Dubizzle)', 'Campaign Management', 'Social Media Analytics', 'Multi-Portal Publishing'], connections: ['Mary', 'Clara', 'Linda'] },
   { id: 'zoe', name: 'Zoe', title: 'Executive Assistant', department: 'Executive', status: 'active', features: ['Calendar Management', 'Meeting Scheduling', 'Task Delegation', 'Executive Briefings', 'Priority Management'], connections: ['Nancy', 'Aurora'] },
   { id: 'laila', name: 'Laila', title: 'Compliance Officer', department: 'Compliance', status: 'active', features: ['KYC Verification', 'AML Monitoring', 'Contract Reviews', 'RERA Compliance', 'Document Validation'], connections: ['Daisy', 'Theodora'] },
   { id: 'aurora', name: 'Aurora', title: 'CTO & Systems Architect', department: 'Technology', status: 'active', features: ['System Monitoring', 'Technical Documentation', 'Architecture Planning', 'API Management', 'Deployment Pipeline'], connections: ['All Assistants'] }
@@ -40,7 +40,9 @@ const PLATFORM_MODULES = [
     { name: 'Lead Scoring', description: 'AI-powered qualification', status: 'production' },
     { name: 'Smart Assignment', description: 'Auto-assign leads to agents', status: 'production' },
     { name: 'Agent Task Assignment', description: 'Linda agent routing system', status: 'production' },
-    { name: 'Bot Session Manager', description: 'QR code session management', status: 'production' }
+    { name: 'Bot Session Manager', description: 'QR code session management', status: 'production' },
+    { name: 'Olivia Automation', description: 'Property sync + market intelligence', status: 'production' },
+    { name: 'Website Monitoring', description: 'Bayut, Property Finder, Dubizzle', status: 'production' }
   ]},
   { category: 'Data & Analytics', modules: [
     { name: 'Market Analytics', description: 'KPIs and trends', status: 'production' },

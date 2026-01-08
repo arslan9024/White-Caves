@@ -1,0 +1,135 @@
+**Collaborative Planning Session: Crafting the Perfect Olivia Upgrade Prompt**
+
+**Observation:** Olivia currently has an incomplete dashboard. We need to upgrade her with two automated functionalities while maintaining project architecture.
+
+**Key Insights from Project Analysis:**
+1. Olivia exists in the AI registry but lacks functional dashboard
+2. Project has inventory management via Mary
+3. Homepage has properties component
+4. Market insights component exists in main website
+5. Need scheduling capabilities for automated tasks
+
+**Strategic Approach:**
+- First: Complete Olivia's basic dashboard structure
+- Second: Implement automated functionalities
+- Third: Coordinate with existing systems
+- Fourth: Schedule regular updates
+
+**Final Optimized Prompt for Replit Agent:**
+
+**Olivia - Real Estate Intelligence & Automation Assistant**
+
+**Phase 1: Dashboard Foundation**
+Complete Olivia's dashboard with:
+1. Main navigation sidebar with real estate-specific features
+2. Data view container displaying current property analytics
+3. Integration with existing project design system
+
+**Phase 2: Automated Property Availability Sync**
+Implement functionality where Olivia:
+1. **Inventory Coordination**: 
+   - Connect with Mary's inventory management system
+   - Access real-time inventory data via shared Redux state
+   - Map available units to property listings
+
+2. **Homepage Property Updates**:
+   - Create automated process that runs daily
+   - Filter properties with available units from Mary's inventory
+   - Mark properties as "sold out" when inventory reaches zero
+   - Update main homepage properties component via Redux dispatch
+
+3. **Availability Display**:
+   - Add "Available Units" count to each property card
+   - Implement "Sold Out" badge for properties with zero inventory
+   - Create real-time sync indicator showing last update time
+
+**Phase 3: Market Intelligence Gathering**
+Implement automated market research functionality:
+1. **Website Monitoring Setup**:
+   - Configure scheduled tasks (every 3 days as default, configurable)
+   - Target top Dubai real estate websites: Bayut, Property Finder, Dubizzle
+   - Use ethical data collection methods (APIs preferred, respect robots.txt)
+
+2. **Content Analysis Engine**:
+   - Analyze property price trends across different areas
+   - Track new project launches and completion timelines
+   - Monitor rental yield changes and occupancy rates
+   - Identify emerging neighborhoods and market hotspots
+
+3. **Insights Dashboard Updates**:
+   - Process collected data into actionable insights
+   - Update "Dubai Market Insights" component with latest findings
+   - Generate visual charts for price trends, supply-demand ratios
+   - Add executive summary for quick viewer consumption
+
+**Phase 4: Automation Controls & Monitoring**
+Add to Olivia's dashboard:
+1. **Schedule Management Panel**:
+   - Toggle for automatic sync (on/off)
+   - Frequency selector (daily, 3 days, 5 days, weekly)
+   - Manual trigger button for immediate updates
+
+2. **Activity Log**:
+   - Record all automated actions
+   - Show success/failure status for each sync
+   - Display timestamp and data points collected
+
+3. **Coordination Status**:
+   - Connection status with Mary's inventory
+   - Last successful property sync time
+   - Website monitoring health indicators
+
+**Phase 5: Integration Requirements**
+1. **Redux State Additions**:
+   ```
+   oliviaAutomation: {
+     syncSchedule: '3days',
+     lastPropertySync: timestamp,
+     lastMarketResearch: timestamp,
+     activeMonitoring: true,
+     insightsData: {},
+     coordination: {
+       maryConnected: boolean,
+       inventoryAccess: boolean
+     }
+   }
+   ```
+
+2. **Component Reuse Strategy**:
+   - Extend existing PropertyCard component for availability badges
+   - Use shared DataTable component for market insights
+   - Implement with existing notification system for status updates
+
+3. **Performance Considerations**:
+   - Cache market insights data for 24 hours
+   - Implement debounced updates to homepage
+   - Add loading states during data collection
+
+**Phase 6: Documentation & Testing**
+1. **Aurora Updates**:
+   - Document Olivia's new automated capabilities
+   - Add API endpoint documentation for data collection
+   - Include setup instructions for website monitoring
+
+2. **Testing Requirements**:
+   - Unit tests for inventory matching logic
+   - Integration tests with Mary's inventory system
+   - Schedule reliability testing
+   - Error handling for website monitoring failures
+
+**Implementation Priority:**
+1. Complete basic dashboard structure (2 hours)
+2. Implement inventory coordination with Mary (3 hours)
+3. Build homepage sync functionality (2 hours)
+4. Develop market research engine (4 hours)
+5. Add scheduling and controls (2 hours)
+6. Testing and documentation (2 hours)
+
+**Success Metrics:**
+- Daily automated property availability updates
+- 3-day market insights refresh cycle
+- Zero manual intervention for routine tasks
+- Seamless coordination with existing Mary inventory
+- Responsive market insights component with current data
+
+Execute Olivia's upgrade following these phases, ensuring each component integrates with existing project architecture. Maintain backward compatibility and document all changes in Aurora.

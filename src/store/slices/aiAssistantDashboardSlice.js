@@ -543,6 +543,32 @@ const getInitialState = () => ({
     isConnected: false
   },
   
+  oliviaAutomation: {
+    syncSchedule: '3days',
+    lastPropertySync: null,
+    lastMarketResearch: null,
+    activeMonitoring: true,
+    insightsData: {
+      priceIndex: 152.3,
+      priceChange: 2.4,
+      avgRentalYield: 6.8,
+      supplyDemandRatio: 0.78,
+      hotspots: ['Dubai Hills', 'DAMAC Hills 2', 'Palm Jumeirah'],
+      lastUpdated: new Date().toISOString()
+    },
+    coordination: {
+      maryConnected: true,
+      inventoryAccess: true,
+      lastInventoryFetch: null
+    },
+    monitoredSites: [
+      { name: 'Bayut', status: 'healthy', lastCheck: null },
+      { name: 'Property Finder', status: 'healthy', lastCheck: null },
+      { name: 'Dubizzle', status: 'healthy', lastCheck: null }
+    ],
+    activityLog: []
+  },
+  
   initialized: true
 });
 
@@ -788,6 +814,59 @@ const aiAssistantDashboardSlice = createSlice({
         });
         state.notifications.globalUnreadCount += 1;
       });
+    },
+
+    updateOliviaSyncSchedule: (state, action) => {
+      state.oliviaAutomation.syncSchedule = action.payload;
+    },
+
+    toggleOliviaMonitoring: (state) => {
+      state.oliviaAutomation.activeMonitoring = !state.oliviaAutomation.activeMonitoring;
+    },
+
+    updateOliviaPropertySync: (state) => {
+      state.oliviaAutomation.lastPropertySync = new Date().toISOString();
+    },
+
+    updateOliviaMarketResearch: (state) => {
+      state.oliviaAutomation.lastMarketResearch = new Date().toISOString();
+    },
+
+    updateOliviaInsights: (state, action) => {
+      state.oliviaAutomation.insightsData = {
+        ...state.oliviaAutomation.insightsData,
+        ...action.payload,
+        lastUpdated: new Date().toISOString()
+      };
+    },
+
+    updateOliviaCoordination: (state, action) => {
+      state.oliviaAutomation.coordination = {
+        ...state.oliviaAutomation.coordination,
+        ...action.payload
+      };
+    },
+
+    updateOliviaSiteStatus: (state, action) => {
+      const { siteName, status, dataPoints } = action.payload;
+      const site = state.oliviaAutomation.monitoredSites.find(s => s.name === siteName);
+      if (site) {
+        site.status = status;
+        site.lastCheck = new Date().toISOString();
+        if (dataPoints !== undefined) site.dataPoints = dataPoints;
+      }
+    },
+
+    addOliviaActivity: (state, action) => {
+      const activity = {
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        ...action.payload
+      };
+      state.oliviaAutomation.activityLog.unshift(activity);
+      if (state.oliviaAutomation.activityLog.length > 50) {
+        state.oliviaAutomation.activityLog.pop();
+      }
     }
   },
   extraReducers: (builder) => {
@@ -838,7 +917,15 @@ export const {
   addTask,
   updateTaskStatus,
   assignTask,
-  triggerUserAction
+  triggerUserAction,
+  updateOliviaSyncSchedule,
+  toggleOliviaMonitoring,
+  updateOliviaPropertySync,
+  updateOliviaMarketResearch,
+  updateOliviaInsights,
+  updateOliviaCoordination,
+  updateOliviaSiteStatus,
+  addOliviaActivity
 } = aiAssistantDashboardSlice.actions;
 
 const selectAssistantsState = (state) => state.aiAssistantDashboard?.allAssistants?.byId || {};
@@ -925,6 +1012,9 @@ export const selectTasksByAssistant = (assistantId) => (state) =>
 
 export const selectGlobalUnreadCount = (state) => 
   state.aiAssistantDashboard?.notifications?.globalUnreadCount || 0;
+
+export const selectOliviaAutomation = (state) => 
+  state.aiAssistantDashboard?.oliviaAutomation || {};
 
 export const selectAllUnreadCounts = createSelector(
   [selectNotifications, selectAllIds],

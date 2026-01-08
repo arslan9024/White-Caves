@@ -11,7 +11,7 @@ export { default as AssistantFeatureMatrix } from './AssistantFeatureMatrix';
 export { default as NotificationBadge } from './NotificationBadge';
 export { default as StatusIndicator } from './StatusIndicator';
 export { default as PersistentAssistantSidebar } from './PersistentAssistantSidebar';
-export { default as PaymentInstructionDeck, PaymentMethodSelector, BankTransferDetails, BANK_DETAILS } from './PaymentInstructionDeck';
+export { default as PaymentInstructionDeck, PaymentMethodSelector, BankTransferDetails } from './PaymentInstructionDeck';
 export { default as DualCategoryTabStrip } from './DualCategoryTabStrip';
 export { default as AssignmentDropdown } from './AssignmentDropdown';
 export { default as PropertyMediaGallery, PropertySpecsGrid, PropertyDetailContainer } from './PropertyMediaGallery';
