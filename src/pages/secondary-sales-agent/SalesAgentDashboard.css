@@ -6,6 +6,31 @@
   background: rgba(139, 92, 246, 0.2);
 }
 
+.deal-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--bg-hover);
+  border-radius: 10px;
+}
+
+.deal-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.deal-property {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.deal-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
 .leads-list,
 .deals-list {
   display: flex;

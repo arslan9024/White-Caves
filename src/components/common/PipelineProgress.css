@@ -1,0 +1,238 @@
+.pipeline-progress {
+  display: flex;
+  gap: 0;
+}
+
+.pipeline-progress.horizontal {
+  flex-direction: row;
+}
+
+.pipeline-progress.vertical {
+  flex-direction: column;
+}
+
+.pipeline-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+}
+
+.pipeline-progress.vertical .pipeline-stage {
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.stage-indicator {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.pipeline-progress.vertical .stage-indicator {
+  flex-direction: column;
+  width: auto;
+  height: 100%;
+}
+
+.stage-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.pipeline-stage.completed .stage-dot {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.pipeline-stage.current .stage-dot {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.2);
+}
+
+.stage-line {
+  flex: 1;
+  height: 2px;
+  background: var(--border-color);
+}
+
+.pipeline-progress.vertical .stage-line {
+  width: 2px;
+  height: 100%;
+  min-height: 30px;
+}
+
+.pipeline-stage.completed .stage-line {
+  background: var(--color-primary);
+}
+
+.stage-content {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.pipeline-progress.vertical .stage-content {
+  margin-top: 0;
+  margin-left: 1rem;
+  text-align: left;
+}
+
+.stage-name {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.pipeline-stage.current .stage-name {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.stage-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: var(--color-primary);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 10px;
+  margin-left: 0.5rem;
+}
+
+.stage-value {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.pipeline-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.pipeline-column {
+  background: var(--bg-hover);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.column-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.column-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  background: var(--color-primary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 50%;
+}
+
+.column-value {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.column-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pipeline-item {
+  padding: 0.75rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.item-name {
+  display: block;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.item-value {
+  font-size: 0.8rem;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.deal-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), #f59e0b);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-stage {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  .pipeline-progress.horizontal {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .pipeline-board {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
