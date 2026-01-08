@@ -4,7 +4,7 @@ import {
   Users, Briefcase, Calendar, Award, FileText, UserPlus,
   MessageCircle, Phone, Star, Tag, Filter, Archive,
   Building2, MapPin, DollarSign, TrendingUp, CheckCircle,
-  Search, Clock, Send, Shield, Database, Globe, Settings
+  Search, Clock, Send, Shield, Database, Globe, Settings, Eye, AlertCircle
 } from 'lucide-react';
 
 export const NINA_FEATURES = [
