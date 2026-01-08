@@ -13,16 +13,13 @@ import {
 import './PropertyMatrix.css';
 
 const COLUMNS = [
-  { key: 'pNumber', label: 'P-Number', sortable: true },
-  { key: 'plotNumber', label: 'Plot No', sortable: true },
+  { key: 'unitNumber', label: 'Unit', sortable: true },
+  { key: 'project', label: 'Project', sortable: true },
   { key: 'cluster', label: 'Cluster', sortable: true },
-  { key: 'layout', label: 'Layout', sortable: true },
-  { key: 'view', label: 'View', sortable: true },
+  { key: 'owners', label: 'Owner', sortable: false },
   { key: 'status', label: 'Status', sortable: true },
-  { key: 'floor', label: 'Floor', sortable: true },
-  { key: 'rooms', label: 'Rooms', sortable: true },
-  { key: 'askingPrice', label: 'Price', sortable: true, format: 'currency' },
-  { key: 'owners', label: 'Owners', sortable: false }
+  { key: 'view', label: 'View', sortable: true },
+  { key: 'layout', label: 'Layout', sortable: true }
 ];
 
 const formatValue = (value, format) => {
@@ -44,7 +41,7 @@ const PropertyMatrix = ({ onPropertySelect, onOwnerSelect }) => {
   const owners = useSelector(selectOwners);
   const filters = useSelector(selectFilters);
   
-  const [sortBy, setSortBy] = useState('pNumber');
+  const [sortBy, setSortBy] = useState('unitNumber');
   const [sortOrder, setSortOrder] = useState('asc');
   const [page, setPage] = useState(1);
   const [visibleColumns, setVisibleColumns] = useState(COLUMNS.map(c => c.key));
@@ -95,8 +92,11 @@ const PropertyMatrix = ({ onPropertySelect, onOwnerSelect }) => {
     const value = property[column.key];
     
     switch (column.key) {
-      case 'pNumber':
-        return <span className="pnumber-cell">{value}</span>;
+      case 'unitNumber':
+        return <span className="unit-cell">{value || '-'}</span>;
+      
+      case 'project':
+        return <span className="project-cell">{value || '-'}</span>;
       
       case 'cluster':
         return <span className="cluster-badge">{value || '-'}</span>;
@@ -113,9 +113,6 @@ const PropertyMatrix = ({ onPropertySelect, onOwnerSelect }) => {
             {value || 'Unknown'}
           </span>
         );
-      
-      case 'askingPrice':
-        return formatValue(value, 'currency');
       
       case 'owners':
         return (

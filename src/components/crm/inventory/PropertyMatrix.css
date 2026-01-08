@@ -242,6 +242,16 @@
   font-size: 14px;
 }
 
+.unit-cell {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.project-cell {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
 .layout-badge,
 .view-badge {
   display: inline-block;
