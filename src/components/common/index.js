@@ -18,3 +18,4 @@ export {
   FeatureGate, 
   withPermission 
 } from './RequirePermission';
+export { StatusProvider, useStatus } from './StatusNotification';

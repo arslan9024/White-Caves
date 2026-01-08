@@ -10,8 +10,10 @@ import {
 import './BiometricLogin.css';
 
 const BiometricSetup = () => {
-  const user = useSelector(state => state.auth.user);
-  const token = useSelector(state => state.auth.token);
+  const currentUser = useSelector(state => state.user?.currentUser);
+  const authUser = useSelector(state => state.auth?.user);
+  const token = useSelector(state => state.auth?.token);
+  const user = currentUser || authUser;
   const [available, setAvailable] = useState(false);
   const [credentials, setCredentials] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -36,26 +38,36 @@ const BiometricSetup = () => {
     setMessage(null);
 
     try {
-      const result = await registerBiometric(
-        user.uid || user.email,
-        user.email,
-        user.displayName || user.email
-      );
+      const userId = user.uid || user.id || user.email;
+      const userEmail = user.email;
+      const userName = user.displayName || user.name || user.email;
+      
+      console.log('Registering biometric for:', { userId, userEmail, userName });
+      
+      const result = await registerBiometric(userId, userEmail, userName);
 
       if (result.success) {
-        saveBiometricSession(user, token);
+        const sessionUser = {
+          uid: userId,
+          email: userEmail,
+          displayName: userName,
+          photoURL: user.photoURL || user.photo,
+        };
+        saveBiometricSession(sessionUser, token);
         setCredentials(getBiometricCredentials());
         setMessage({ type: 'success', text: 'Biometric login enabled successfully!' });
       }
     } catch (error) {
-      setMessage({ type: 'error', text: error.message });
+      console.error('Biometric setup error:', error);
+      setMessage({ type: 'error', text: error.message || 'Failed to enable biometric login' });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRemove = (credentialId) => {
-    removeCredential(credentialId);
+  const handleRemove = async (credentialId) => {
+    const userId = user?.uid || user?.id || user?.email;
+    await removeCredential(credentialId, userId);
     setCredentials(getBiometricCredentials());
     setMessage({ type: 'success', text: 'Biometric credential removed' });
   };

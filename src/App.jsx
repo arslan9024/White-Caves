@@ -87,6 +87,7 @@ import WhatsAppAnalyticsPage from './pages/owner/WhatsAppAnalyticsPage';
 import WhatsAppSettingsPage from './pages/owner/WhatsAppSettingsPage';
 import UAEPassSuccessPage from './pages/auth/UAEPassSuccessPage';
 import { BiometricPrompt } from './features/auth/components/BiometricLogin';
+import { StatusProvider } from './components/common/StatusNotification';
 
 function App() {
   const dispatch = useDispatch();
@@ -121,6 +122,7 @@ function App() {
   };
 
   return (
+  <StatusProvider>
   <LanguageProvider>
     <BrowserRouter>
       <UniversalComponents />
@@ -263,6 +265,7 @@ function App() {
       </Routes>
     </BrowserRouter>
   </LanguageProvider>
+  </StatusProvider>
   );
 }
 
