@@ -3,8 +3,10 @@ import {
   Bot, MessageSquare, Code, Terminal, Play, Pause, RefreshCw, 
   Settings, Users, Phone, CheckCircle, XCircle, Clock, Zap,
   FileCode, Folder, ChevronRight, ChevronDown, Copy, Download,
-  AlertTriangle, Activity, Send, QrCode, Smartphone, Wifi
+  AlertTriangle, Activity, Send, QrCode, Smartphone, Wifi, Star
 } from 'lucide-react';
+import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
+import { NINA_FEATURES } from './data/assistantFeatures';
 import './NinaWhatsAppBotCRM.css';
 
 const DUMMY_BOTS = [
@@ -225,6 +227,13 @@ export default function NinaWhatsAppBotCRM() {
         >
           <Activity size={16} />
           Analytics
+        </button>
+        <button 
+          className={`nina-tab ${activeTab === 'features' ? 'active' : ''}`}
+          onClick={() => setActiveTab('features')}
+        >
+          <Star size={16} />
+          Features ({NINA_FEATURES.length})
         </button>
       </div>
 
@@ -548,6 +557,15 @@ export const initializeBot = async (agentNumber) => {
               </div>
             </div>
           </div>
+        )}
+
+        {activeTab === 'features' && (
+          <AssistantFeatureMatrix 
+            features={NINA_FEATURES}
+            title="Nina's Programmed Capabilities"
+            accentColor="#7c3aed"
+            categories={['Bot Management', 'Development Tools', 'Analytics', 'Automation', 'AI Features', 'Integrations', 'Core System', 'Monitoring', 'Communication', 'Security']}
+          />
         )}
       </div>
     </div>

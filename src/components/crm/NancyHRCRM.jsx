@@ -3,8 +3,10 @@ import {
   Bot, Users, Briefcase, Calendar, Award, Clock, FileText,
   Search, Plus, Edit, Trash2, Eye, Mail, Phone, MapPin,
   ChevronDown, Filter, Download, Upload, CheckCircle, XCircle,
-  Building, GraduationCap, DollarSign, Star, UserPlus, Send
+  Building, GraduationCap, DollarSign, Star, UserPlus, Send, Zap
 } from 'lucide-react';
+import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
+import { NANCY_FEATURES } from './data/assistantFeatures';
 import './NancyHRCRM.css';
 
 const DUMMY_EMPLOYEES = [
@@ -340,6 +342,13 @@ export default function NancyHRCRM() {
         >
           <Award size={16} />
           Performance
+        </button>
+        <button 
+          className={`nancy-tab ${activeTab === 'features' ? 'active' : ''}`}
+          onClick={() => setActiveTab('features')}
+        >
+          <Zap size={16} />
+          Features ({NANCY_FEATURES.length})
         </button>
       </div>
 
@@ -746,6 +755,15 @@ export default function NancyHRCRM() {
               ))}
             </div>
           </div>
+        )}
+
+        {activeTab === 'features' && (
+          <AssistantFeatureMatrix 
+            features={NANCY_FEATURES}
+            title="Nancy's HR Management Capabilities"
+            accentColor="#ec4899"
+            categories={['Workforce Management', 'Talent Acquisition', 'Performance', 'Analytics', 'Integrations']}
+          />
         )}
       </div>
 

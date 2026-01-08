@@ -4,9 +4,11 @@ import {
   Eye, Phone, Mail, MessageCircle, Calendar, Tag, Star,
   ChevronDown, ChevronUp, Download, Upload, RefreshCw, Bot,
   UserPlus, TrendingUp, Clock, CheckCircle, XCircle, AlertCircle,
-  DollarSign, Home, MapPin, Briefcase
+  DollarSign, Home, MapPin, Briefcase, Zap
 } from 'lucide-react';
 import FullScreenDetailModal from '../../shared/components/ui/FullScreenDetailModal';
+import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
+import { CLARA_FEATURES } from './data/assistantFeatures';
 import './ClaraLeadsCRM.css';
 
 const DUMMY_LEADS = [
@@ -324,6 +326,7 @@ const ClaraLeadsCRM = () => {
   const [sortBy, setSortBy] = useState('score');
   const [sortOrder, setSortOrder] = useState('desc');
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showFeatures, setShowFeatures] = useState(false);
   const [editLead, setEditLead] = useState(null);
   const [selectedLead, setSelectedLead] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -422,11 +425,28 @@ const ClaraLeadsCRM = () => {
         <div className="clara-actions">
           <button className="clara-action-btn"><Upload size={18} /> Import</button>
           <button className="clara-action-btn"><Download size={18} /> Export</button>
+          <button 
+            className={`clara-action-btn features ${showFeatures ? 'active' : ''}`}
+            onClick={() => setShowFeatures(!showFeatures)}
+          >
+            <Zap size={18} /> Features ({CLARA_FEATURES.length})
+          </button>
           <button className="clara-action-btn primary" onClick={() => setShowAddForm(true)}>
             <UserPlus size={18} /> Add Lead
           </button>
         </div>
       </div>
+
+      {showFeatures && (
+        <div className="clara-features-panel">
+          <AssistantFeatureMatrix 
+            features={CLARA_FEATURES}
+            title="Clara's Lead Management Capabilities"
+            accentColor="#ec4899"
+            categories={['Lead Management', 'AI Features', 'Communication', 'Task Management', 'Analytics', 'Team Management', 'Display', 'Compliance']}
+          />
+        </div>
+      )}
 
       {/* Stats */}
       <div className="leads-stats">

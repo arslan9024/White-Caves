@@ -730,3 +730,21 @@
     flex-direction: column;
   }
 }
+
+/* Features Panel */
+.mary-features-panel {
+  padding: 16px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.mary-action-btn.features {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.mary-action-btn.features:hover,
+.mary-action-btn.features.active {
+  background: rgba(255, 255, 255, 0.25);
+}
+

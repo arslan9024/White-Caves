@@ -2,8 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   MessageCircle, Send, Phone, Video, MoreVertical, Search, 
   Paperclip, Smile, Mic, Check, CheckCheck, Clock, Bot, 
-  User, Star, Tag, Filter, RefreshCw, Download, Archive
+  User, Star, Tag, Filter, RefreshCw, Download, Archive, Zap
 } from 'lucide-react';
+import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
+import { LINDA_FEATURES } from './data/assistantFeatures';
 import './LindaWhatsAppCRM.css';
 
 const DUMMY_CONVERSATIONS = [
@@ -86,6 +88,7 @@ const LindaWhatsAppCRM = () => {
   const [filterPriority, setFilterPriority] = useState('all');
   const [showQuickReplies, setShowQuickReplies] = useState(false);
   const [lindaActive, setLindaActive] = useState(true);
+  const [showFeatures, setShowFeatures] = useState(false);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -195,8 +198,26 @@ const LindaWhatsAppCRM = () => {
           <button className="linda-action-btn">
             <Download size={18} />
           </button>
+          <button 
+            className={`linda-action-btn features ${showFeatures ? 'active' : ''}`}
+            onClick={() => setShowFeatures(!showFeatures)}
+          >
+            <Zap size={18} />
+            <span>Features ({LINDA_FEATURES.length})</span>
+          </button>
         </div>
       </div>
+
+      {showFeatures && (
+        <div className="linda-features-panel">
+          <AssistantFeatureMatrix 
+            features={LINDA_FEATURES}
+            title="Linda's WhatsApp CRM Capabilities"
+            accentColor="#25d366"
+            categories={['Communication', 'AI Features', 'Automation', 'CRM', 'Organization']}
+          />
+        </div>
+      )}
 
       <div className="linda-main">
         {/* Conversations List */}

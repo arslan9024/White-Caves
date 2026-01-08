@@ -3,9 +3,11 @@ import {
   Building2, Plus, Search, Filter, MoreVertical, Edit2, Trash2, 
   Eye, MapPin, Bed, Bath, Square, DollarSign, Calendar, Tag,
   ChevronDown, ChevronUp, Download, Upload, RefreshCw, Bot,
-  Home, TrendingUp, AlertCircle, CheckCircle, XCircle, Clock
+  Home, TrendingUp, AlertCircle, CheckCircle, XCircle, Clock, Star
 } from 'lucide-react';
 import FullScreenDetailModal from '../../shared/components/ui/FullScreenDetailModal';
+import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
+import { MARY_FEATURES } from './data/assistantFeatures';
 import './MaryInventoryCRM.css';
 
 const DUMMY_INVENTORY = [
@@ -336,6 +338,7 @@ const MaryInventoryCRM = () => {
   const [sortBy, setSortBy] = useState('updatedAt');
   const [sortOrder, setSortOrder] = useState('desc');
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showFeatures, setShowFeatures] = useState(false);
   const [editProperty, setEditProperty] = useState(null);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -428,11 +431,28 @@ const MaryInventoryCRM = () => {
         <div className="mary-actions">
           <button className="mary-action-btn"><Upload size={18} /> Import</button>
           <button className="mary-action-btn"><Download size={18} /> Export</button>
+          <button 
+            className={`mary-action-btn features ${showFeatures ? 'active' : ''}`}
+            onClick={() => setShowFeatures(!showFeatures)}
+          >
+            <Star size={18} /> Features ({MARY_FEATURES.length})
+          </button>
           <button className="mary-action-btn primary" onClick={() => setShowAddForm(true)}>
             <Plus size={18} /> Add Property
           </button>
         </div>
       </div>
+
+      {showFeatures && (
+        <div className="mary-features-panel">
+          <AssistantFeatureMatrix 
+            features={MARY_FEATURES}
+            title="Mary's Inventory Management Capabilities"
+            accentColor="#f59e0b"
+            categories={['Inventory Management', 'Search & Filter', 'Display', 'Compliance', 'Team Management', 'Analytics', 'Data Management', 'AI Features']}
+          />
+        </div>
+      )}
 
       {/* Stats */}
       <div className="inventory-stats">
