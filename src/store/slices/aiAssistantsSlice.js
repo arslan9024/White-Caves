@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit';
 
 const AI_ASSISTANTS = {
   linda: {
@@ -255,7 +255,13 @@ export const {
   clearNotifications
 } = aiAssistantsSlice.actions;
 
-export const selectAllAssistants = (state) => Object.values(state.aiAssistants.assistants);
+const selectAssistantsState = (state) => state.aiAssistants.assistants;
+
+export const selectAllAssistants = createSelector(
+  [selectAssistantsState],
+  (assistants) => Object.values(assistants)
+);
+
 export const selectAssistantById = (id) => (state) => state.aiAssistants.assistants[id];
 export const selectActiveAssistant = (state) => state.aiAssistants.activeAssistant;
 export const selectFeatureMap = (state) => state.aiAssistants.featureMap;
@@ -263,6 +269,10 @@ export const selectActivities = (state) => state.aiAssistants.activities;
 export const selectStats = (state) => state.aiAssistants.stats;
 export const selectAssistantStats = (id) => (state) => state.aiAssistants.stats[id];
 export const selectNotifications = (state) => state.aiAssistants.notifications;
-export const selectUnreadCount = (state) => state.aiAssistants.notifications.filter(n => !n.read).length;
+
+export const selectUnreadCount = createSelector(
+  [selectNotifications],
+  (notifications) => notifications.filter(n => !n.read).length
+);
 
 export default aiAssistantsSlice.reducer;
