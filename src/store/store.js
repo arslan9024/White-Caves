@@ -6,6 +6,7 @@ import dashboardReducer from './dashboardSlice';
 import contentReducer from './contentSlice';
 import authReducer from './authSlice';
 import analyticsReducer from './analyticsSlice';
+import featuresReducer from './featuresSlice';
 
 export const store = configureStore({
   reducer: {
@@ -15,7 +16,8 @@ export const store = configureStore({
     dashboard: dashboardReducer,
     content: contentReducer,
     auth: authReducer,
-    analytics: analyticsReducer
+    analytics: analyticsReducer,
+    features: featuresReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
