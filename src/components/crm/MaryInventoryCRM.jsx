@@ -1,14 +1,226 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Building2, Plus, Search, Filter, MoreVertical, Edit2, Trash2, 
   Eye, MapPin, Bed, Bath, Square, DollarSign, Calendar, Tag,
   ChevronDown, ChevronUp, Download, Upload, RefreshCw, Bot,
-  Home, TrendingUp, AlertCircle, CheckCircle, XCircle, Clock, Star
+  Home, TrendingUp, AlertCircle, CheckCircle, XCircle, Clock, Star,
+  FileSpreadsheet, X, Check, Loader2, MapPinned
 } from 'lucide-react';
 import FullScreenDetailModal from '../../shared/components/ui/FullScreenDetailModal';
 import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
 import { MARY_FEATURES } from './data/assistantFeatures';
 import './MaryInventoryCRM.css';
+
+const ImportModal = ({ isOpen, onClose, onImportComplete }) => {
+  const [step, setStep] = useState(1);
+  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [sessionData, setSessionData] = useState(null);
+  const [selectedSheet, setSelectedSheet] = useState('');
+  const [importAllSheets, setImportAllSheets] = useState(true);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const handleFileSelect = async (e) => {
+    const selectedFile = e.target.files[0];
+    if (!selectedFile) return;
+    
+    setFile(selectedFile);
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('previewLimit', '50');
+      
+      const response = await fetch('/api/inventory/import/upload', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        setSessionData(data.data);
+        setSelectedSheet(data.data.sheetNames[0] || '');
+        setStep(2);
+      } else {
+        setError(data.message || 'Failed to parse file');
+      }
+    } catch (err) {
+      setError('Failed to upload file: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleImport = async (dryRun = false) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch(`/api/inventory/import/execute/${sessionData.sessionId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sheetName: selectedSheet,
+          importAllSheets,
+          dryRun
+        })
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        setResult(data.data);
+        if (!dryRun) {
+          setStep(3);
+          if (onImportComplete) onImportComplete();
+        }
+      } else {
+        setError(data.message || 'Import failed');
+      }
+    } catch (err) {
+      setError('Import failed: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetModal = () => {
+    setStep(1);
+    setFile(null);
+    setSessionData(null);
+    setSelectedSheet('');
+    setResult(null);
+    setError(null);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="import-modal-overlay" onClick={() => { resetModal(); onClose(); }}>
+      <div className="import-modal" onClick={e => e.stopPropagation()}>
+        <div className="import-modal-header">
+          <h2><FileSpreadsheet size={24} /> Import Properties from Excel</h2>
+          <button className="close-btn" onClick={() => { resetModal(); onClose(); }}>
+            <X size={20} />
+          </button>
+        </div>
+        
+        <div className="import-steps">
+          <div className={`step ${step >= 1 ? 'active' : ''} ${step > 1 ? 'completed' : ''}`}>
+            <span className="step-number">1</span>
+            <span>Upload File</span>
+          </div>
+          <div className={`step ${step >= 2 ? 'active' : ''} ${step > 2 ? 'completed' : ''}`}>
+            <span className="step-number">2</span>
+            <span>Preview & Configure</span>
+          </div>
+          <div className={`step ${step >= 3 ? 'active' : ''}`}>
+            <span className="step-number">3</span>
+            <span>Complete</span>
+          </div>
+        </div>
+
+        <div className="import-modal-content">
+          {error && <div className="import-error"><AlertCircle size={16} /> {error}</div>}
+          
+          {step === 1 && (
+            <div className="upload-section">
+              <input 
+                ref={fileInputRef}
+                type="file" 
+                accept=".xlsx,.xls,.csv"
+                onChange={handleFileSelect}
+                style={{ display: 'none' }}
+              />
+              <div 
+                className="upload-dropzone"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {loading ? (
+                  <><Loader2 className="spin" size={32} /> Processing file...</>
+                ) : (
+                  <>
+                    <Upload size={48} />
+                    <p>Click to select Excel file or drag and drop</p>
+                    <span>Supports .xlsx, .xls, .csv</span>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {step === 2 && sessionData && (
+            <div className="preview-section">
+              <div className="import-info">
+                <p><strong>File:</strong> {file?.name}</p>
+                <p><strong>Total Rows:</strong> {sessionData.totalRows}</p>
+                <p><strong>Sheets:</strong> {sessionData.sheetNames.length}</p>
+              </div>
+              
+              <div className="sheet-selection">
+                <label>
+                  <input 
+                    type="checkbox"
+                    checked={importAllSheets}
+                    onChange={(e) => setImportAllSheets(e.target.checked)}
+                  />
+                  Import all sheets ({sessionData.sheetNames.length} sheets)
+                </label>
+                
+                {!importAllSheets && (
+                  <select 
+                    value={selectedSheet} 
+                    onChange={(e) => setSelectedSheet(e.target.value)}
+                  >
+                    {sessionData.sheetNames.map(sheet => (
+                      <option key={sheet} value={sheet}>{sheet}</option>
+                    ))}
+                  </select>
+                )}
+              </div>
+
+              {result && (
+                <div className="preview-result">
+                  <h4>Preview Results</h4>
+                  <p>Properties to create: {result.propertiesCreated}</p>
+                  <p>Duplicates found: {result.duplicatesFound}</p>
+                </div>
+              )}
+
+              <div className="import-actions">
+                <button onClick={() => handleImport(true)} disabled={loading}>
+                  {loading ? <Loader2 className="spin" size={16} /> : <Eye size={16} />} Preview
+                </button>
+                <button className="primary" onClick={() => handleImport(false)} disabled={loading}>
+                  {loading ? <Loader2 className="spin" size={16} /> : <Check size={16} />} Import Now
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 3 && result && (
+            <div className="complete-section">
+              <CheckCircle size={64} color="#22c55e" />
+              <h3>Import Complete!</h3>
+              <div className="import-summary">
+                <p><strong>{result.propertiesCreated}</strong> properties created</p>
+                <p><strong>{result.propertiesUpdated || 0}</strong> properties updated</p>
+                <p><strong>{result.ownersCreated}</strong> owners created</p>
+                <p><strong>{result.duplicatesFound}</strong> duplicates merged</p>
+              </div>
+              <button className="primary" onClick={() => { resetModal(); onClose(); }}>
+                Done
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const DUMMY_INVENTORY = [
   {
@@ -335,21 +547,109 @@ const MaryInventoryCRM = () => {
   const [filterType, setFilterType] = useState('all');
   const [filterPurpose, setFilterPurpose] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [filterArea, setFilterArea] = useState('all');
   const [sortBy, setSortBy] = useState('updatedAt');
   const [sortOrder, setSortOrder] = useState('desc');
   const [showAddForm, setShowAddForm] = useState(false);
   const [showFeatures, setShowFeatures] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [editProperty, setEditProperty] = useState(null);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [areas, setAreas] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [useApiData, setUseApiData] = useState(false);
+
+  useEffect(() => {
+    fetchAreas();
+    fetchInventory();
+  }, []);
+
+  const fetchAreas = async () => {
+    try {
+      const response = await fetch('/api/inventory/properties/areas');
+      const data = await response.json();
+      if (data.success && data.data.length > 0) {
+        setAreas(data.data);
+      }
+    } catch (err) {
+      console.log('Using dummy data - API not available');
+    }
+  };
+
+  const [apiAvailable, setApiAvailable] = useState(null);
+
+  const fetchInventory = async () => {
+    if (apiAvailable === false) return;
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (filterArea !== 'all') params.append('area', filterArea);
+      if (filterStatus !== 'all') params.append('status', filterStatus);
+      if (searchQuery) params.append('search', searchQuery);
+      
+      const response = await fetch(`/api/inventory/properties?${params}`);
+      if (!response.ok) throw new Error('API not available');
+      
+      const data = await response.json();
+      if (data.success) {
+        setApiAvailable(true);
+        if (data.data.length > 0) {
+          const formattedData = data.data.map(p => ({
+            id: p._id,
+            title: `${p.rooms || 0}BR ${p.propertyType || 'Property'} - ${p.area}`,
+            type: p.propertyType || 'villa',
+            purpose: p.purpose || 'rent',
+            price: p.askingPrice || 0,
+            location: { area: p.area, emirate: 'Dubai', address: p.project || '' },
+            specs: { 
+              bedrooms: p.rooms || 0, 
+              bathrooms: Math.ceil((p.rooms || 1) / 2), 
+              area: p.actualArea || 0, 
+              parking: 1, 
+              built: 2020 
+            },
+            status: p.status || 'available',
+            featured: p.featured || false,
+            agent: p.agent || { name: 'Unassigned', id: null },
+            images: p.images || [],
+            views: p.views || 0,
+            inquiries: p.inquiries || 0,
+            dldNumber: p.municipalityNo || '',
+            pNumber: p.pNumber,
+            ownerName: p.primaryOwner?.name || 'Unknown',
+            createdAt: p.createdAt,
+            updatedAt: p.updatedAt
+          }));
+          setInventory(formattedData);
+          setUseApiData(true);
+        }
+      }
+    } catch (err) {
+      console.log('Using dummy data - API not available');
+      setApiAvailable(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchInventory();
+  }, []);
+
+  useEffect(() => {
+    if (useApiData && apiAvailable) {
+      fetchInventory();
+    }
+  }, [filterArea, filterStatus]);
 
   const stats = useMemo(() => ({
     total: inventory.length,
     available: inventory.filter(p => p.status === 'available').length,
     forSale: inventory.filter(p => p.purpose === 'sale').length,
     forRent: inventory.filter(p => p.purpose === 'rent').length,
-    totalValue: inventory.filter(p => p.purpose === 'sale').reduce((acc, p) => acc + p.price, 0),
-    avgPrice: Math.round(inventory.filter(p => p.purpose === 'sale').reduce((acc, p) => acc + p.price, 0) / inventory.filter(p => p.purpose === 'sale').length) || 0
+    totalValue: inventory.filter(p => p.purpose === 'sale').reduce((acc, p) => acc + (p.price || 0), 0),
+    avgPrice: Math.round(inventory.filter(p => p.purpose === 'sale').reduce((acc, p) => acc + (p.price || 0), 0) / inventory.filter(p => p.purpose === 'sale').length) || 0
   }), [inventory]);
 
   const filteredInventory = useMemo(() => {
@@ -429,7 +729,9 @@ const MaryInventoryCRM = () => {
           </div>
         </div>
         <div className="mary-actions">
-          <button className="mary-action-btn"><Upload size={18} /> Import</button>
+          <button className="mary-action-btn" onClick={() => setShowImportModal(true)}>
+            <Upload size={18} /> Import
+          </button>
           <button className="mary-action-btn"><Download size={18} /> Export</button>
           <button 
             className={`mary-action-btn features ${showFeatures ? 'active' : ''}`}
@@ -505,6 +807,25 @@ const MaryInventoryCRM = () => {
           />
         </div>
         <div className="filter-group">
+          <div className="area-filter">
+            <MapPinned size={16} />
+            <select value={filterArea} onChange={(e) => setFilterArea(e.target.value)}>
+              <option value="all">All Areas</option>
+              {areas.map(area => (
+                <option key={area} value={area}>{area}</option>
+              ))}
+              {areas.length === 0 && (
+                <>
+                  <option value="DAMAC Hills 2">DAMAC Hills 2</option>
+                  <option value="Dubai Marina">Dubai Marina</option>
+                  <option value="Business Bay">Business Bay</option>
+                  <option value="Arabian Ranches">Arabian Ranches</option>
+                  <option value="Dubai Hills Estate">Dubai Hills Estate</option>
+                  <option value="Jumeirah Village Circle">JVC</option>
+                </>
+              )}
+            </select>
+          </div>
           <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
             <option value="all">All Types</option>
             <option value="apartment">Apartment</option>
@@ -536,6 +857,7 @@ const MaryInventoryCRM = () => {
           >
             {sortOrder === 'asc' ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           </button>
+          {loading && <Loader2 className="spin" size={18} />}
         </div>
       </div>
 
@@ -718,6 +1040,15 @@ const MaryInventoryCRM = () => {
           { label: 'Edit Property', onClick: () => { setShowDetailModal(false); setEditProperty(selectedProperty); } },
           { label: 'View Inquiries', primary: true, onClick: () => console.log('View inquiries') }
         ]}
+      />
+
+      <ImportModal 
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        onImportComplete={() => {
+          fetchInventory();
+          fetchAreas();
+        }}
       />
     </div>
   );
