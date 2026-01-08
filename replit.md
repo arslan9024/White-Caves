@@ -24,6 +24,9 @@ Preferred communication style: Simple, everyday language.
 
 ### Authentication & Authorization
 - **Provider**: Firebase Authentication (Google, Facebook, Apple, Email/Password, Phone/SMS OTP).
+- **Biometric Authentication**: WebAuthn/Passkeys support for Face ID and Touch ID login via `src/services/webAuthnService.js` and `server/routes/webauthn.routes.js`.
+- **Persistent Sessions**: Firebase `browserLocalPersistence` for Remember Me functionality.
+- **Biometric Components**: `BiometricLoginButton` (sign-in page), `BiometricSetup` (profile security tab), `BiometricReminder` (dashboard banner), `BiometricPrompt` (post-login modal).
 - **Role-Based Access Control**: Multi-role system (`BUYER`, `SELLER`, `LANDLORD`, `TENANT`, `AGENT`, `ADMIN`) with `isSuperUser` and `isDecisionMaker` flags.
 
 ### Key Features & Design Decisions
