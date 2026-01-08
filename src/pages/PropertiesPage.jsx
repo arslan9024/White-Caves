@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
+import { addToFavorites, removeFromFavorites, selectFavorites } from '../store/dashboardSlice';
 import AppLayout from '../components/layout/AppLayout';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
+import { PropertyImageSlider, PropertyDetailModal } from '../shared/components/property';
+import { Search, SlidersHorizontal, Grid, List, MapPin, Bed, Bath, Maximize, X, ChevronDown } from 'lucide-react';
 import './PropertiesPage.css';
 
-const sampleProperties = [
+const SAMPLE_PROPERTIES = [
   {
     id: 1,
     title: "Beachfront Villa with Private Pool",
@@ -17,9 +20,16 @@ const sampleProperties = [
     baths: 7,
     sqft: 12000,
     price: 45000000,
+    images: [
+      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800",
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800"
+    ],
     image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800",
     amenities: ["Pool", "Beach Access", "Parking", "Security", "Garden", "Gym"],
-    featured: true
+    featured: true,
+    yearBuilt: 2022
   },
   {
     id: 2,
@@ -31,9 +41,15 @@ const sampleProperties = [
     baths: 5,
     sqft: 6500,
     price: 35000000,
+    images: [
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800",
+      "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?w=800"
+    ],
     image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800",
     amenities: ["Gym", "Parking", "Concierge", "Pool", "Security"],
-    featured: true
+    featured: true,
+    yearBuilt: 2021
   },
   {
     id: 3,
@@ -45,9 +61,15 @@ const sampleProperties = [
     baths: 9,
     sqft: 15000,
     price: 65000000,
+    images: [
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800",
+      "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800",
+      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800"
+    ],
     image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800",
     amenities: ["Pool", "Garden", "Security", "Parking", "Gym", "Cinema"],
-    featured: true
+    featured: true,
+    yearBuilt: 2020
   },
   {
     id: 4,
@@ -60,8 +82,14 @@ const sampleProperties = [
     sqft: 3200,
     price: 250000,
     priceType: "yearly",
+    images: [
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800",
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800",
+      "https://images.unsplash.com/photo-1560185007-cde436f6a4d0?w=800"
+    ],
     image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800",
-    amenities: ["Pool", "Gym", "Parking", "Concierge", "Security"]
+    amenities: ["Pool", "Gym", "Parking", "Concierge", "Security"],
+    yearBuilt: 2019
   },
   {
     id: 5,
@@ -73,8 +101,14 @@ const sampleProperties = [
     baths: 6,
     sqft: 8500,
     price: 18000000,
+    images: [
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800",
+      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800",
+      "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=800"
+    ],
     image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800",
-    amenities: ["Pool", "Garden", "Parking", "Security"]
+    amenities: ["Pool", "Garden", "Parking", "Security"],
+    yearBuilt: 2021
   },
   {
     id: 6,
@@ -87,8 +121,13 @@ const sampleProperties = [
     sqft: 4500,
     price: 180000,
     priceType: "yearly",
+    images: [
+      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800",
+      "https://images.unsplash.com/photo-1600566752734-2a0cd44d0c36?w=800"
+    ],
     image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800",
-    amenities: ["Pool", "Parking", "Garden", "Security"]
+    amenities: ["Pool", "Parking", "Garden", "Security"],
+    yearBuilt: 2020
   },
   {
     id: 7,
@@ -100,8 +139,13 @@ const sampleProperties = [
     baths: 6,
     sqft: 8000,
     price: 28000000,
+    images: [
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800"
+    ],
     image: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800",
-    amenities: ["Pool", "Gym", "Concierge", "Parking", "Security"]
+    amenities: ["Pool", "Gym", "Concierge", "Parking", "Security"],
+    yearBuilt: 2023
   },
   {
     id: 8,
@@ -114,31 +158,117 @@ const sampleProperties = [
     sqft: 1800,
     price: 150000,
     priceType: "yearly",
+    images: [
+      "https://images.unsplash.com/photo-1600573472592-401b489a3cdc?w=800",
+      "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=800"
+    ],
     image: "https://images.unsplash.com/photo-1600573472592-401b489a3cdc?w=800",
-    amenities: ["Pool", "Beach Access", "Gym", "Parking"]
+    amenities: ["Pool", "Beach Access", "Gym", "Parking"],
+    yearBuilt: 2018
+  },
+  {
+    id: 9,
+    title: "Contemporary Duplex",
+    location: "DIFC",
+    type: "Apartment",
+    purpose: "buy",
+    beds: 3,
+    baths: 4,
+    sqft: 4200,
+    price: 12000000,
+    images: [
+      "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?w=800",
+      "https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=800"
+    ],
+    image: "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?w=800",
+    amenities: ["Gym", "Parking", "Concierge", "Security"],
+    yearBuilt: 2022
+  },
+  {
+    id: 10,
+    title: "Signature Villa",
+    location: "Palm Jumeirah",
+    type: "Villa",
+    purpose: "rent",
+    beds: 6,
+    baths: 7,
+    sqft: 10000,
+    price: 850000,
+    priceType: "yearly",
+    images: [
+      "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=800",
+      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800"
+    ],
+    image: "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=800",
+    amenities: ["Pool", "Beach Access", "Garden", "Parking", "Security", "Gym"],
+    featured: true,
+    yearBuilt: 2021
+  },
+  {
+    id: 11,
+    title: "Studio with Sea View",
+    location: "Dubai Marina",
+    type: "Apartment",
+    purpose: "rent",
+    beds: 0,
+    baths: 1,
+    sqft: 650,
+    price: 65000,
+    priceType: "yearly",
+    images: [
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800"
+    ],
+    image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800",
+    amenities: ["Pool", "Gym", "Parking"],
+    yearBuilt: 2019
+  },
+  {
+    id: 12,
+    title: "Family Home in Green Community",
+    location: "Dubai Hills",
+    type: "Villa",
+    purpose: "buy",
+    beds: 5,
+    baths: 6,
+    sqft: 7500,
+    price: 9500000,
+    images: [
+      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800",
+      "https://images.unsplash.com/photo-1600566752734-2a0cd44d0c36?w=800"
+    ],
+    image: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800",
+    amenities: ["Pool", "Garden", "Parking", "Security", "Gym"],
+    yearBuilt: 2022
   }
 ];
 
+const LOCATIONS = ['All Locations', 'Palm Jumeirah', 'Downtown Dubai', 'Emirates Hills', 'Dubai Marina', 'Arabian Ranches', 'Business Bay', 'JBR', 'Jumeirah Village Circle', 'DIFC', 'Dubai Hills'];
+const PROPERTY_TYPES = ['All Types', 'Villa', 'Apartment', 'Penthouse', 'Townhouse'];
+
 export default function PropertiesPage() {
-  const user = useSelector(state => state.user.currentUser);
+  const dispatch = useDispatch();
+  const favorites = useSelector(selectFavorites);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [properties, setProperties] = useState(sampleProperties);
-  const [filteredProperties, setFilteredProperties] = useState(sampleProperties);
+  const [properties] = useState(SAMPLE_PROPERTIES);
+  const [filteredProperties, setFilteredProperties] = useState(SAMPLE_PROPERTIES);
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [viewMode, setViewMode] = useState('grid');
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   
   const [filters, setFilters] = useState({
     purpose: searchParams.get('type') || 'all',
-    propertyType: 'all',
-    location: 'all',
+    propertyType: 'All Types',
+    location: 'All Locations',
     priceMin: '',
     priceMax: '',
-    beds: 'all',
+    beds: 'any',
+    baths: 'any',
+    sqftMin: '',
+    sqftMax: '',
     sortBy: 'featured'
   });
 
   const [searchQuery, setSearchQuery] = useState('');
-
-  const locations = ['Palm Jumeirah', 'Downtown Dubai', 'Emirates Hills', 'Dubai Marina', 'Arabian Ranches', 'Business Bay', 'JBR', 'Jumeirah Village Circle'];
-  const propertyTypes = ['Villa', 'Apartment', 'Penthouse', 'Townhouse'];
 
   useEffect(() => {
     let result = [...properties];
@@ -146,20 +276,29 @@ export default function PropertiesPage() {
     if (filters.purpose !== 'all') {
       result = result.filter(p => p.purpose === filters.purpose);
     }
-    if (filters.propertyType !== 'all') {
+    if (filters.propertyType !== 'All Types') {
       result = result.filter(p => p.type === filters.propertyType);
     }
-    if (filters.location !== 'all') {
+    if (filters.location !== 'All Locations') {
       result = result.filter(p => p.location === filters.location);
     }
-    if (filters.beds !== 'all') {
+    if (filters.beds !== 'any') {
       result = result.filter(p => p.beds >= parseInt(filters.beds));
+    }
+    if (filters.baths !== 'any') {
+      result = result.filter(p => p.baths >= parseInt(filters.baths));
     }
     if (filters.priceMin) {
       result = result.filter(p => p.price >= parseInt(filters.priceMin));
     }
     if (filters.priceMax) {
       result = result.filter(p => p.price <= parseInt(filters.priceMax));
+    }
+    if (filters.sqftMin) {
+      result = result.filter(p => p.sqft >= parseInt(filters.sqftMin));
+    }
+    if (filters.sqftMax) {
+      result = result.filter(p => p.sqft <= parseInt(filters.sqftMax));
     }
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
@@ -179,6 +318,9 @@ export default function PropertiesPage() {
         break;
       case 'newest':
         result.sort((a, b) => b.id - a.id);
+        break;
+      case 'sqft':
+        result.sort((a, b) => b.sqft - a.sqft);
         break;
       case 'featured':
       default:
@@ -202,48 +344,75 @@ export default function PropertiesPage() {
   const clearFilters = () => {
     setFilters({
       purpose: 'all',
-      propertyType: 'all',
-      location: 'all',
+      propertyType: 'All Types',
+      location: 'All Locations',
       priceMin: '',
       priceMax: '',
-      beds: 'all',
+      beds: 'any',
+      baths: 'any',
+      sqftMin: '',
+      sqftMax: '',
       sortBy: 'featured'
     });
     setSearchQuery('');
   };
 
+  const toggleFavorite = (property) => {
+    const isFav = favorites.some(f => f.id === property.id);
+    if (isFav) {
+      dispatch(removeFromFavorites(property.id));
+    } else {
+      dispatch(addToFavorites({ 
+        id: property.id, 
+        title: property.title, 
+        location: property.location, 
+        price: formatPrice(property.price, property.priceType), 
+        image: property.image 
+      }));
+    }
+  };
+
+  const isFavorite = (propertyId) => favorites.some(f => f.id === propertyId);
+
+  const activeFiltersCount = Object.entries(filters).filter(([key, value]) => {
+    if (key === 'purpose' && value !== 'all') return true;
+    if (key === 'propertyType' && value !== 'All Types') return true;
+    if (key === 'location' && value !== 'All Locations') return true;
+    if (key === 'beds' && value !== 'any') return true;
+    if (key === 'baths' && value !== 'any') return true;
+    if ((key === 'priceMin' || key === 'priceMax' || key === 'sqftMin' || key === 'sqftMax') && value) return true;
+    return false;
+  }).length;
+
   return (
     <AppLayout>
       <div className="properties-page">
         <section className="properties-hero">
-        <div className="hero-overlay"></div>
-        <div className="hero-content">
-          <h1>Find Your Perfect Property</h1>
-          <p>Browse Dubai's finest luxury real estate collection</p>
-        </div>
-      </section>
-
-      <div className="properties-container">
-        <aside className="filters-sidebar">
-          <div className="filters-header">
-            <h3>Filters</h3>
-            <button className="clear-btn" onClick={clearFilters}>Clear All</button>
+          <div className="hero-overlay"></div>
+          <div className="hero-content">
+            <h1>Find Your Perfect Property</h1>
+            <p>Browse Dubai's finest luxury real estate collection</p>
           </div>
+        </section>
 
-          <div className="filter-group">
-            <label>Search</label>
+        <div className="search-filter-bar">
+          <div className="search-wrapper">
+            <Search size={20} />
             <input
               type="text"
-              placeholder="Search properties..."
+              placeholder="Search by location, property name, or type..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
             />
+            {searchQuery && (
+              <button className="clear-search" onClick={() => setSearchQuery('')}>
+                <X size={16} />
+              </button>
+            )}
           </div>
 
-          <div className="filter-group">
-            <label>Purpose</label>
-            <div className="purpose-toggle">
+          <div className="quick-filters">
+            <div className="purpose-tabs">
               <button
                 className={filters.purpose === 'all' ? 'active' : ''}
                 onClick={() => handleFilterChange('purpose', 'all')}
@@ -257,119 +426,200 @@ export default function PropertiesPage() {
                 onClick={() => handleFilterChange('purpose', 'rent')}
               >Rent</button>
             </div>
-          </div>
 
-          <div className="filter-group">
-            <label>Property Type</label>
-            <select
-              value={filters.propertyType}
-              onChange={(e) => handleFilterChange('propertyType', e.target.value)}
-            >
-              <option value="all">All Types</option>
-              {propertyTypes.map(type => (
-                <option key={type} value={type}>{type}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="filter-group">
-            <label>Location</label>
             <select
               value={filters.location}
               onChange={(e) => handleFilterChange('location', e.target.value)}
+              className="filter-select"
             >
-              <option value="all">All Locations</option>
-              {locations.map(loc => (
+              {LOCATIONS.map(loc => (
                 <option key={loc} value={loc}>{loc}</option>
               ))}
             </select>
-          </div>
 
-          <div className="filter-group">
-            <label>Bedrooms</label>
+            <select
+              value={filters.propertyType}
+              onChange={(e) => handleFilterChange('propertyType', e.target.value)}
+              className="filter-select"
+            >
+              {PROPERTY_TYPES.map(type => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
+
             <select
               value={filters.beds}
               onChange={(e) => handleFilterChange('beds', e.target.value)}
+              className="filter-select beds"
             >
-              <option value="all">Any</option>
+              <option value="any">Beds</option>
+              <option value="0">Studio</option>
               <option value="1">1+</option>
               <option value="2">2+</option>
               <option value="3">3+</option>
               <option value="4">4+</option>
               <option value="5">5+</option>
             </select>
-          </div>
 
-          <div className="filter-group">
-            <label>Price Range (AED)</label>
-            <div className="price-inputs">
-              <input
-                type="number"
-                placeholder="Min"
-                value={filters.priceMin}
-                onChange={(e) => handleFilterChange('priceMin', e.target.value)}
-              />
-              <span>-</span>
-              <input
-                type="number"
-                placeholder="Max"
-                value={filters.priceMax}
-                onChange={(e) => handleFilterChange('priceMax', e.target.value)}
-              />
+            <button 
+              className={`advanced-filter-btn ${showAdvancedFilters ? 'active' : ''}`}
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            >
+              <SlidersHorizontal size={18} />
+              Filters
+              {activeFiltersCount > 0 && <span className="filter-count">{activeFiltersCount}</span>}
+            </button>
+          </div>
+        </div>
+
+        {showAdvancedFilters && (
+          <div className="advanced-filters-panel">
+            <div className="filter-grid">
+              <div className="filter-group">
+                <label>Price Range (AED)</label>
+                <div className="range-inputs">
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    value={filters.priceMin}
+                    onChange={(e) => handleFilterChange('priceMin', e.target.value)}
+                  />
+                  <span>-</span>
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={filters.priceMax}
+                    onChange={(e) => handleFilterChange('priceMax', e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="filter-group">
+                <label>Area (sq.ft)</label>
+                <div className="range-inputs">
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    value={filters.sqftMin}
+                    onChange={(e) => handleFilterChange('sqftMin', e.target.value)}
+                  />
+                  <span>-</span>
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={filters.sqftMax}
+                    onChange={(e) => handleFilterChange('sqftMax', e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="filter-group">
+                <label>Bathrooms</label>
+                <select
+                  value={filters.baths}
+                  onChange={(e) => handleFilterChange('baths', e.target.value)}
+                >
+                  <option value="any">Any</option>
+                  <option value="1">1+</option>
+                  <option value="2">2+</option>
+                  <option value="3">3+</option>
+                  <option value="4">4+</option>
+                </select>
+              </div>
+            </div>
+            
+            <div className="filter-actions">
+              <button className="clear-filters-btn" onClick={clearFilters}>Clear All Filters</button>
             </div>
           </div>
-        </aside>
+        )}
 
-        <main className="properties-main">
+        <div className="properties-container">
           <div className="results-header">
-            <p className="results-count">{filteredProperties.length} properties found</p>
-            <div className="sort-wrapper">
-              <label>Sort by:</label>
+            <p className="results-count">
+              <strong>{filteredProperties.length}</strong> properties found
+            </p>
+            <div className="results-controls">
+              <div className="view-toggle">
+                <button 
+                  className={viewMode === 'grid' ? 'active' : ''} 
+                  onClick={() => setViewMode('grid')}
+                  title="Grid view"
+                >
+                  <Grid size={18} />
+                </button>
+                <button 
+                  className={viewMode === 'list' ? 'active' : ''} 
+                  onClick={() => setViewMode('list')}
+                  title="List view"
+                >
+                  <List size={18} />
+                </button>
+              </div>
               <select
                 value={filters.sortBy}
                 onChange={(e) => handleFilterChange('sortBy', e.target.value)}
+                className="sort-select"
               >
                 <option value="featured">Featured</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
                 <option value="newest">Newest</option>
+                <option value="sqft">Largest</option>
               </select>
             </div>
           </div>
 
-          <div className="properties-grid">
+          <div className={`properties-grid ${viewMode}`}>
             {filteredProperties.map(property => (
-              <div key={property.id} className="property-card">
-                <div className="property-image">
-                  <img src={property.image} alt={property.title} loading="lazy" />
-                  {property.featured && <span className="featured-badge">Featured</span>}
-                  <span className={`purpose-badge ${property.purpose}`}>
-                    {property.purpose === 'buy' ? 'For Sale' : 'For Rent'}
-                  </span>
-                </div>
-                <div className="property-content">
-                  <h3>{property.title}</h3>
-                  <p className="property-location">{property.location}</p>
-                  <div className="property-specs">
-                    <span>{property.beds} Beds</span>
-                    <span>{property.baths} Baths</span>
-                    <span>{property.sqft.toLocaleString()} sqft</span>
+              <div key={property.id} className="property-card-enhanced">
+                <div className="card-image-wrapper" onClick={() => setSelectedProperty(property)}>
+                  <PropertyImageSlider 
+                    images={property.images}
+                    title={property.title}
+                    onFavorite={() => toggleFavorite(property)}
+                    isFavorite={isFavorite(property.id)}
+                    aspectRatio="4/3"
+                  />
+                  <div className="card-badges">
+                    {property.featured && <span className="badge featured">Featured</span>}
+                    <span className={`badge purpose ${property.purpose}`}>
+                      {property.purpose === 'buy' ? 'For Sale' : 'For Rent'}
+                    </span>
                   </div>
-                  <div className="property-amenities">
+                </div>
+                
+                <div className="card-content" onClick={() => setSelectedProperty(property)}>
+                  <div className="card-type">{property.type}</div>
+                  <h3 className="card-title">{property.title}</h3>
+                  <p className="card-location">
+                    <MapPin size={14} />
+                    {property.location}
+                  </p>
+                  
+                  <div className="card-specs">
+                    <span><Bed size={16} /> {property.beds === 0 ? 'Studio' : `${property.beds} Beds`}</span>
+                    <span><Bath size={16} /> {property.baths} Baths</span>
+                    <span><Maximize size={16} /> {property.sqft.toLocaleString()} sqft</span>
+                  </div>
+                  
+                  <div className="card-amenities">
                     {property.amenities.slice(0, 3).map((amenity, i) => (
-                      <span key={i} className="amenity-tag">{amenity}</span>
+                      <span key={i} className="amenity-chip">{amenity}</span>
                     ))}
                     {property.amenities.length > 3 && (
-                      <span className="amenity-tag">+{property.amenities.length - 3}</span>
+                      <span className="amenity-chip more">+{property.amenities.length - 3}</span>
                     )}
                   </div>
-                  <div className="property-footer">
-                    <span className="property-price">
+                  
+                  <div className="card-footer">
+                    <span className="card-price">
                       {formatPrice(property.price, property.priceType)}
                     </span>
-                    <Link to={`/property/${property.id}`} className="view-btn">
+                    <button className="view-details-btn">
                       View Details
-                    </Link>
+                      <ChevronDown size={16} className="rotated" />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -378,17 +628,27 @@ export default function PropertiesPage() {
 
           {filteredProperties.length === 0 && (
             <div className="no-results">
-              <h3>No properties found</h3>
-              <p>Try adjusting your filters or search query</p>
-              <button onClick={clearFilters}>Clear Filters</button>
+              <div className="no-results-content">
+                <h3>No properties found</h3>
+                <p>Try adjusting your filters or search query</p>
+                <button onClick={clearFilters}>Clear Filters</button>
+              </div>
             </div>
           )}
-        </main>
-      </div>
+        </div>
 
         <Footer />
         <WhatsAppButton />
       </div>
+
+      {selectedProperty && (
+        <PropertyDetailModal
+          property={selectedProperty}
+          onClose={() => setSelectedProperty(null)}
+          onFavorite={() => toggleFavorite(selectedProperty)}
+          isFavorite={isFavorite(selectedProperty.id)}
+        />
+      )}
     </AppLayout>
   );
 }

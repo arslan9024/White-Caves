@@ -11,6 +11,7 @@ import ChatbotTab from '../../components/owner/tabs/ChatbotTab';
 import WhatsAppTab from '../../components/owner/tabs/WhatsAppTab';
 import UAEPassTab from '../../components/owner/tabs/UAEPassTab';
 import SettingsTab from '../../components/owner/tabs/SettingsTab';
+import UsersTab from '../../components/owner/tabs/UsersTab';
 import FeatureExplorer from '../../components/owner/FeatureExplorer';
 import RoleSelectorDropdown from '../../shared/components/ui/RoleSelectorDropdown';
 import LindaWhatsAppCRM from '../../components/crm/LindaWhatsAppCRM';
@@ -23,6 +24,7 @@ const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
 
 const TABS = [
   { id: 'overview', label: 'Overview', icon: '📊' },
+  { id: 'users', label: 'Users', icon: '👤' },
   { id: 'properties', label: 'Properties', icon: '🏠' },
   { id: 'agents', label: 'Agents', icon: '👥' },
   { id: 'leads', label: 'Leads', icon: '🎯' },
@@ -284,6 +286,8 @@ export default function OwnerDashboardPage() {
     switch (activeTab) {
       case 'overview':
         return <OverviewTab data={dashboardData} loading={loading} onQuickAction={handleQuickAction} />;
+      case 'users':
+        return <UsersTab onAction={handleTabAction} />;
       case 'properties':
         return <PropertiesTab data={dashboardData} loading={loading} onAction={handleTabAction} />;
       case 'agents':
