@@ -94,7 +94,7 @@ const UAEPassSuccessPage = () => {
                 <div className="uaepass-success-icon">
                   <svg viewBox="0 0 50 50" width="60" height="60">
                     <circle cx="25" cy="25" r="23" fill="#1B4D3E"/>
-                    <path fill="#FFFFFF" d="M20 25L23 28L30 21" stroke="#FFFFFF" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M20 25L23 28L30 21" stroke="#FFFFFF" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </div>
                 <h2>Identity Verified</h2>

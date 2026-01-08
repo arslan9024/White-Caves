@@ -63,6 +63,10 @@ export const authSlice = createSlice({
       state.loading = true;
       state.error = null;
     },
+    loginFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
     loginSuccess: (state, action) => {
       const { user, token, refreshToken, provider, rememberMe } = action.payload;
       const sessionId = generateSessionId();
@@ -198,6 +202,7 @@ export const {
   setError,
   clearError,
   loginStart,
+  loginFailure,
   loginSuccess,
   logout,
   logoutAllSessions,
