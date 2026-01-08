@@ -30,13 +30,17 @@ const PLATFORM_MODULES = [
     { name: 'Property Management', description: 'Listings, search, comparison tools', status: 'production' },
     { name: 'Transaction Pipeline', description: 'Sales and rental workflows', status: 'production' },
     { name: 'Tenancy Agreements', description: 'Ejari-compliant contracts', status: 'production' },
-    { name: 'Payment Processing', description: 'Stripe integration', status: 'production' }
+    { name: 'Payment Processing', description: 'Stripe + Mashreq NEOBiz + Aani QR', status: 'production' },
+    { name: 'Multi-Portal Publishing', description: 'Bayut, Property Finder, Dubizzle', status: 'production' },
+    { name: 'Job Posting System', description: 'HR multi-platform recruitment', status: 'production' }
   ]},
   { category: 'AI & Automation', modules: [
     { name: 'AI Assistants (12)', description: 'Department-organized CRM bots', status: 'production' },
     { name: 'WhatsApp Integration', description: 'Business API + Chatbot', status: 'production' },
-    { name: 'Lead Scoring', description: 'AI-powered qualification', status: 'beta' },
-    { name: 'Smart Assignment', description: 'Auto-assign leads to agents', status: 'beta' }
+    { name: 'Lead Scoring', description: 'AI-powered qualification', status: 'production' },
+    { name: 'Smart Assignment', description: 'Auto-assign leads to agents', status: 'production' },
+    { name: 'Agent Task Assignment', description: 'Linda agent routing system', status: 'production' },
+    { name: 'Bot Session Manager', description: 'QR code session management', status: 'production' }
   ]},
   { category: 'Data & Analytics', modules: [
     { name: 'Market Analytics', description: 'KPIs and trends', status: 'production' },

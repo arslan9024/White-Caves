@@ -301,4 +301,4 @@ const PaymentInstructionDeck = memo(({
 PaymentInstructionDeck.displayName = 'PaymentInstructionDeck';
 export default PaymentInstructionDeck;
 
-export { PaymentMethodSelector, QRCodeDisplay, ChequeInstructions, BankTransferDetails, BANK_DETAILS };
+export { PaymentMethodSelector, QRCodeDisplay, ChequeInstructions, BankTransferDetails };

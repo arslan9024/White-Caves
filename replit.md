@@ -172,6 +172,8 @@ Preferred communication style: Simple, everyday language.
 ## External Dependencies
 
 - **Stripe**: Payment processing.
+- **Mashreq NEOBiz**: Primary bank account for transfers and digital payments (Account: 019101501006, IBAN: AE960330000019101501006).
+- **Aani Payment System**: QR code-based digital payment solution for UAE bank apps.
 - **Google Calendar API**: Appointment scheduling and reminders.
 - **Google Maps API**: Property location visualization.
 - **Firebase**: User authentication.
@@ -181,3 +183,10 @@ Preferred communication style: Simple, everyday language.
 - **Google Drive API**: Storing signed tenancy contracts and documents.
 - **WhatsApp Business API**: Customer support and chatbot integration.
 - **Matterport**: Virtual tour integration.
+
+## Recent Changes (January 2026)
+
+- **Payment System Update**: Updated Theodora's PaymentInstructionDeck with real Mashreq NEOBiz bank details and Aani QR code for digital payments.
+- **Linda Agent Assignment**: Added agent assignment dropdown to Linda's WhatsApp CRM for routing conversations to active agents.
+- **Aurora Documentation Update**: Updated platform modules to reflect new features (Multi-Portal Publishing, Job Posting System, Agent Task Assignment, Bot Session Manager).
+- **Build Verified**: Production build completed successfully with all 2458 modules transformed.
