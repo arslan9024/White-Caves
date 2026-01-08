@@ -1,5 +1,5 @@
 run = "npm run dev"
-modules = ["python-3.11", "nodejs-18"]
+modules = ["python-3.11", "nodejs-24"]
 hidden = [".config", "package-lock.json"]
 entrypoint = "index.html"
 
