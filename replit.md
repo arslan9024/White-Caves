@@ -37,6 +37,12 @@ Preferred communication style: Simple, everyday language.
 - **RoleSwitcher Component**: Dropdown component (`src/components/common/RoleSwitcher.jsx`) allowing users to switch between their available roles with descriptions and icons. Automatically navigates to the new role's dashboard.
 - **Navigation Redux Slice**: Enhanced `navigationSlice.js` managing theme, online status, menus, currentModule, currentSubModule, and sidebar state with Redux Toolkit.
 - **Dashboard Redux Slice**: Centralized `dashboardSlice.js` managing activeTabs (keyed by dashboard), filters, metrics per role, loading states, favorites, recentlyViewed, and notifications with Redux Toolkit.
+- **Content Redux Slice**: Dynamic content management (`src/store/contentSlice.js`) providing featured properties, rental properties, hero slides, neighborhoods, services, testimonials, and slider settings from Redux state.
+- **Permission System**: Comprehensive role-based access control (`src/utils/permissions.js`) with role matrices, permission constants (22 permissions), role hierarchy, and helper functions for authorization checks.
+- **usePermissions Hook**: React hook (`src/hooks/usePermissions.js`) providing easy access to permission checks, role detection, and authorization helpers in components.
+- **RequirePermission Component**: Wrapper components (`src/components/common/RequirePermission.jsx`) including RequirePermission, OwnerOnly, RoleOnly, AgentOnly, FeatureGate, and withPermission HOC for conditional rendering based on user permissions.
+- **ContentSlider Component**: Responsive slider component (`src/components/common/ContentSlider.jsx`) with touch/drag support, auto-play, responsive slides-per-view, and customizable rendering for dynamic content display.
+- **Owner-Exclusive Features**: Company owner role separated from main navigation; owner-only access to WhatsApp Business dashboard, system health, user management, and global settings through dedicated OWNER_MENU configuration.
 - **Transaction Timeline System**: Comprehensive TenancyTimeline and SaleTimeline MongoDB models with document tracking, stage progression (16 tenancy stages, 14 sale stages), and verification workflows. API routes at `/api/timelines`.
 - **Ejari Unified Tenancy Contract System**: Compliant contract generation, secure digital signature workflows, and status tracking.
 - **Brand Theme**: Red and White color scheme, Montserrat/Open Sans typography, consistent design system with CSS variables, and comprehensive light/dark theme support.
