@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from '../../store/userSlice';
 import { auth } from '../../config/firebase';
 import { signOut } from 'firebase/auth';
+import { BiometricSetup } from '../../features/auth/components/BiometricLogin';
 import './AuthPages.css';
 
 export default function ProfilePage() {
@@ -260,6 +261,8 @@ export default function ProfilePage() {
               <p className="section-subtitle">Manage your account security</p>
 
               <div className="security-cards">
+                <BiometricSetup />
+
                 <div className="info-card">
                   <h3>Change Password</h3>
                   <div className="settings-form">

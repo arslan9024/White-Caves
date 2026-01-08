@@ -86,6 +86,7 @@ import WhatsAppChatbotPage from './pages/owner/WhatsAppChatbotPage';
 import WhatsAppAnalyticsPage from './pages/owner/WhatsAppAnalyticsPage';
 import WhatsAppSettingsPage from './pages/owner/WhatsAppSettingsPage';
 import UAEPassSuccessPage from './pages/auth/UAEPassSuccessPage';
+import { BiometricPrompt } from './features/auth/components/BiometricLogin';
 
 function App() {
   const dispatch = useDispatch();
@@ -123,6 +124,7 @@ function App() {
   <LanguageProvider>
     <BrowserRouter>
       <UniversalComponents />
+      {user && <BiometricPrompt />}
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/properties" element={<PropertiesPage />} />

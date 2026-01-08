@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setActiveRole } from '../../store/navigationSlice';
 import { UniversalNav } from '../common';
+import { BiometricReminder } from '../../features/auth/components/BiometricLogin';
 import './AppLayout.css';
 
 const ROLE_PATHS = ['buyer', 'seller', 'landlord', 'tenant', 'leasing-agent', 'secondary-sales-agent', 'owner'];
@@ -28,6 +29,7 @@ export default function AppLayout({
     <div className="app-layout">
       {showNav && <UniversalNav {...navProps} />}
       <main className={`app-main ${showNav ? 'with-nav' : ''}`}>
+        <BiometricReminder />
         {children}
       </main>
     </div>

@@ -211,3 +211,298 @@
     width: 100%;
   }
 }
+
+.biometric-message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.biometric-message.success {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.biometric-message.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.biometric-reminder-banner {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(185, 28, 28, 0.05) 100%);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.biometric-reminder-banner .reminder-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.biometric-reminder-banner .reminder-icon-large {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--primary-color, #DC2626) 0%, #B91C1C 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.biometric-reminder-banner .reminder-text-content {
+  flex: 1;
+  min-width: 200px;
+}
+
+.biometric-reminder-banner .reminder-text-content h4 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+}
+
+.biometric-reminder-banner .reminder-text-content p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.biometric-reminder-banner .reminder-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.biometric-reminder-compact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.15);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.biometric-reminder-compact .reminder-icon {
+  font-size: 16px;
+}
+
+.biometric-reminder-compact .reminder-text {
+  flex: 1;
+  color: var(--text-primary, #1f2937);
+}
+
+.biometric-reminder-compact .reminder-link {
+  color: var(--primary-color, #DC2626);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.biometric-reminder-compact .reminder-link:hover {
+  text-decoration: underline;
+}
+
+.biometric-reminder-compact .reminder-dismiss {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: var(--text-secondary, #6b7280);
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.biometric-reminder-compact .reminder-dismiss:hover {
+  color: var(--text-primary, #1f2937);
+}
+
+.biometric-prompt-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.biometric-prompt-modal {
+  background: var(--bg-primary, #ffffff);
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.biometric-prompt-modal .prompt-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--bg-tertiary, #f3f4f6);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary, #6b7280);
+  transition: all 0.2s ease;
+}
+
+.biometric-prompt-modal .prompt-close:hover {
+  background: var(--bg-secondary, #e5e7eb);
+  color: var(--text-primary, #1f2937);
+}
+
+.biometric-prompt-modal .prompt-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--primary-color, #DC2626) 0%, #B91C1C 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin: 0 auto 20px;
+}
+
+.biometric-prompt-modal h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary, #1f2937);
+}
+
+.biometric-prompt-modal > p {
+  margin: 0 0 24px;
+  font-size: 15px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.biometric-prompt-modal .prompt-message {
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.biometric-prompt-modal .prompt-message.success {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.biometric-prompt-modal .prompt-message.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.biometric-prompt-modal .prompt-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.biometric-prompt-modal .prompt-actions .btn {
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.biometric-prompt-modal .prompt-actions .btn-primary {
+  background: linear-gradient(135deg, var(--primary-color, #DC2626) 0%, #B91C1C 100%);
+  color: white;
+}
+
+.biometric-prompt-modal .prompt-actions .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.biometric-prompt-modal .prompt-actions .btn-secondary {
+  background: var(--bg-tertiary, #f3f4f6);
+  color: var(--text-primary, #1f2937);
+}
+
+.biometric-prompt-modal .prompt-actions .btn-secondary:hover {
+  background: var(--bg-secondary, #e5e7eb);
+}
+
+.biometric-prompt-modal .prompt-actions .btn-ghost {
+  background: transparent;
+  color: var(--text-secondary, #6b7280);
+}
+
+.biometric-prompt-modal .prompt-actions .btn-ghost:hover {
+  color: var(--text-primary, #1f2937);
+}
+
+.biometric-prompt-modal .prompt-hint {
+  margin: 20px 0 0;
+  font-size: 12px;
+  color: var(--text-muted, #9ca3af);
+}
+
+[data-theme="dark"] .biometric-prompt-modal {
+  background: var(--bg-primary, #1f2937);
+}
+
+[data-theme="dark"] .biometric-reminder-banner {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(185, 28, 28, 0.1) 100%);
+}
+
+[data-theme="dark"] .biometric-reminder-compact {
+  background: rgba(220, 38, 38, 0.12);
+}
+
+@media (max-width: 480px) {
+  .biometric-prompt-modal {
+    padding: 24px 20px;
+  }
+  
+  .biometric-reminder-banner .reminder-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .biometric-reminder-banner .reminder-actions {
+    width: 100%;
+    justify-content: center;
+  }
+}
