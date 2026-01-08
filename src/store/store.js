@@ -5,6 +5,7 @@ import userReducer from './userSlice';
 import navigationReducer from './navigationSlice';
 import dashboardReducer from './dashboardSlice';
 import contentReducer from './contentSlice';
+import authReducer from './authSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,7 +13,8 @@ export const store = configureStore({
     user: userReducer,
     navigation: navigationReducer,
     dashboard: dashboardReducer,
-    content: contentReducer
+    content: contentReducer,
+    auth: authReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

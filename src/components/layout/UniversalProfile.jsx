@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from '../../store/userSlice';
-import { setActiveRole, closeAllMenus } from '../../store/navigationSlice';
+import { setActiveRole, closeAllMenus, setTheme } from '../../store/navigationSlice';
 import { auth } from '../../config/firebase';
 import { signOut } from 'firebase/auth';
 import './UniversalProfile.css';
@@ -11,7 +11,12 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector(state => state.user.currentUser);
-  const { activeRole } = useSelector(state => state.navigation);
+  const { activeRole, theme } = useSelector(state => state.navigation);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    dispatch(setTheme(newTheme));
+  };
   
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -130,6 +135,14 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
           </div>
 
           <div className="profile-dropdown-divider"></div>
+
+          <button 
+            className="profile-dropdown-item theme-toggle-item"
+            onClick={toggleTheme}
+          >
+            <span className="dropdown-icon">{theme === 'dark' ? '☀️' : '🌙'}</span>
+            {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+          </button>
 
           <Link 
             to="/profile" 

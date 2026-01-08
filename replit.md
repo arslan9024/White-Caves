@@ -27,8 +27,8 @@ Preferred communication style: Simple, everyday language.
 - **Role-Based Access Control**: Multi-role system (`BUYER`, `SELLER`, `LANDLORD`, `TENANT`, `AGENT`, `ADMIN`) with `isSuperUser` and `isDecisionMaker` flags.
 
 ### Key Features & Design Decisions
-- **UniversalNav Component**: Single reusable navigation component (`src/components/common/UniversalNav.jsx`) used across the entire project for both public pages and role-based dashboards. Features: logo, configurable nav links, role dropdown menus, WhatsApp menu (owner), theme toggle, and UniversalProfile integration. Time and online status moved to dashboard-specific UserStatusBar components.
-- **Universal Profile Component**: Reusable `UniversalProfile` component (`src/components/layout/UniversalProfile.jsx`) integrated into UniversalNav on the top right. Shows Sign In button when not authenticated, user avatar with dropdown menu (Profile, Switch Role, Dashboard, Sign Out) when authenticated.
+- **UniversalNav Component**: Single reusable navigation component (`src/components/common/UniversalNav.jsx`) used across the entire project for both public pages and role-based dashboards. Features: logo, configurable nav links, role dropdown menus, and UniversalProfile integration. Time and online status moved to dashboard-specific UserStatusBar components. Theme toggle moved to profile dropdown for cleaner navbar.
+- **Universal Profile Component**: Reusable `UniversalProfile` component (`src/components/layout/UniversalProfile.jsx`) integrated into UniversalNav on the top right. Shows Sign In button when not authenticated, user avatar with dropdown menu (Theme Toggle, Profile, Switch Role, Dashboard, Sign Out) when authenticated.
 - **AppLayout Wrapper**: Universal page wrapper (`src/components/layout/AppLayout.jsx`) that auto-detects active role from URL path and renders UniversalNav. All pages (public and dashboards) use this wrapper for consistent navigation.
 - **Reusable Component Library**: Centralized component library in `src/components/common/` with StatCard, TabbedPanel, DataCard, QuickLinks, PageHeader, LeadCard, PropertyCard, PipelineProgress, and UniversalNav components. Exported via `src/components/common/index.js` for clean imports.
 - **Shared UI Component Library**: New atomic UI components in `src/shared/components/ui/` including Button, Card, Input, Select, Modal, Badge, and Icon - all with CSS styling, dark mode support, and responsive design.
@@ -59,7 +59,8 @@ Preferred communication style: Simple, everyday language.
 - **Advanced Tools**: Smart Rent vs. Buy Calculator (Dubai-specific), Off-Plan Property Tracker, AI Neighborhood Analyzer, and Virtual Tour Gallery (Matterport integration).
 - **Interactive Mapping**: Enhanced SVG-based Dubai map with custom, color-coded markers, property previews, and filtering.
 - **SEO Optimization**: Comprehensive meta tags, Open Graph, Twitter Cards, structured data (JSON-LD), sitemap, robots.txt, and performance optimizations.
-- **Session Management**: Stores user preferences, search history, favorites, recently viewed properties, and form data autofill.
+- **Session Management**: Enhanced `authSlice.js` with multi-session tracking, device/browser detection, session timeout, token refresh, and activity monitoring. Stores user preferences, search history, favorites, recently viewed properties, and form data autofill.
+- **Social-First Authentication**: SignInPage (`src/pages/auth/SignInPage.jsx`) restructured with social login (Google, Facebook, Apple) as PRIMARY method displayed prominently at top, with Email/Phone as secondary options in tabs below.
 - **AI-Powered Automation**: Includes enhanced property schema with UAE-specific fields, Arabic/English bilingual support with RTL CSS, an AI Chatbot Service for intent classification and entity extraction, and an AI Agent Assignment Engine using a weighted scoring algorithm.
 - **Google Calendar Integration**: For property viewing event creation, follow-up tasks, and meeting invitations.
 - **Market Analytics Dashboard**: Provides KPIs, transaction breakdowns, lead source visualization, and agent performance leaderboards.

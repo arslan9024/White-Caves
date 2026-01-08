@@ -5,10 +5,7 @@ import {
   setOnlineStatus,
   updateCurrentTime,
   toggleRoleMenu,
-  closeRoleMenu,
-  toggleWhatsappMenu,
-  closeWhatsappMenu,
-  setTheme
+  closeRoleMenu
 } from '../../store/navigationSlice';
 import UniversalProfile from '../layout/UniversalProfile';
 import './UniversalNav.css';
@@ -141,14 +138,11 @@ export default function UniversalNav({
     isOnline, 
     currentTime, 
     roleMenuOpen, 
-    whatsappMenuOpen,
-    activeRole,
-    theme
+    activeRole
   } = useSelector(state => state.navigation);
   
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const menuRef = useRef(null);
-  const whatsappRef = useRef(null);
 
   const menu = activeRole ? ROLE_MENUS[activeRole] : null;
 
@@ -177,9 +171,6 @@ export default function UniversalNav({
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         dispatch(closeRoleMenu());
       }
-      if (whatsappRef.current && !whatsappRef.current.contains(event.target)) {
-        dispatch(closeWhatsappMenu());
-      }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -202,11 +193,6 @@ export default function UniversalNav({
       minute: '2-digit',
       hour12: true 
     });
-  };
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    dispatch(setTheme(newTheme));
   };
 
   return (
@@ -288,14 +274,6 @@ export default function UniversalNav({
               <span className="time">{formatTime(currentDateTime)}</span>
             </div>
           )}
-
-          <button 
-            className="theme-toggle"
-            onClick={toggleTheme}
-            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-          >
-            {theme === 'dark' ? '☀️' : '🌙'}
-          </button>
 
           <UniversalProfile variant="compact" />
         </div>
