@@ -8,6 +8,7 @@ import authReducer from './authSlice';
 import analyticsReducer from './analyticsSlice';
 import featuresReducer from './featuresSlice';
 import inventoryReducer from './slices/inventorySlice';
+import aiAssistantsReducer from './slices/aiAssistantsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -19,7 +20,8 @@ export const store = configureStore({
     auth: authReducer,
     analytics: analyticsReducer,
     features: featuresReducer,
-    inventory: inventoryReducer
+    inventory: inventoryReducer,
+    aiAssistants: aiAssistantsReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

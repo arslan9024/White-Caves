@@ -19,6 +19,7 @@ import MaryInventoryCRM from '../../components/crm/MaryInventoryCRM';
 import ClaraLeadsCRM from '../../components/crm/ClaraLeadsCRM';
 import NinaWhatsAppBotCRM from '../../components/crm/NinaWhatsAppBotCRM';
 import NancyHRCRM from '../../components/crm/NancyHRCRM';
+import AIAssistantHub from '../../components/crm/AIAssistantHub';
 import '../../shared/styles/theme.css';
 import './OwnerDashboardPage.css';
 
@@ -26,6 +27,7 @@ const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
 
 const TABS = [
   { id: 'overview', label: 'Overview', icon: '📊' },
+  { id: 'ai-hub', label: 'AI Hub', icon: '🧠' },
   { id: 'users', label: 'Users', icon: '👤' },
   { id: 'properties', label: 'Properties', icon: '🏠' },
   { id: 'agents', label: 'Agents', icon: '👥' },
@@ -286,10 +288,16 @@ export default function OwnerDashboardPage() {
     }
   };
 
+  const handleSelectAssistant = (assistantId) => {
+    setActiveTab(assistantId);
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'overview':
         return <OverviewTab data={dashboardData} loading={loading} onQuickAction={handleQuickAction} />;
+      case 'ai-hub':
+        return <AIAssistantHub onSelectAssistant={handleSelectAssistant} />;
       case 'users':
         return <UsersTab onAction={handleTabAction} />;
       case 'properties':

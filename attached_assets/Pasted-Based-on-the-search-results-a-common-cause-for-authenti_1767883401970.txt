@@ -1,0 +1,1721 @@
+Based on the search results, a common cause for authentication working in development but failing during deployment (build) is the misconfiguration of environment secrets . Replit Auth, the platform's built-in solution, handles authentication securely , but secrets like API keys or database URLs must be correctly set for the production environment.
+Here is a guide and the specific prompt addition you requested.
+🔍 First, Try This Quick Troubleshooting
+Before you update your main prompt, check these common issues :
+Check "Advanced Settings": In your project's publishing tab, click "Advanced Settings" and ensure all necessary secrets (especially for authentication and databases) are included for deployment.
+Verify Secret Values: Ensure none of your deployment secrets are accidentally pointing to development resources (like a test database URL). They should point to production services.
+Restart & Deploy: Sometimes, a simple workspace restart using the command kill 1 in the shell can resolve loading issues . Then try deploying again.
+Check for Outages: Visit status.replit.com to see if there is a known platform issue affecting deployments .
+📝 Updated Instructions for Your Replit AI Prompt
+Add the following section to the end of your previous, comprehensive prompt. It instructs the AI to implement a robust, deployment-ready authentication system.
+6. Fix Authentication for Build and Deployment
+Primary Objective: Ensure the Replit Auth implementation works flawlessly in both the development environment and the published (production) application. The build process must not fail, and users must be able to authenticate after deployment.
+Core Requirement: Implement Replit Auth for enterprise-grade, secure user login and role management. The system must support multiple login providers (Email, Google) as configured in the Auth pane .
+Critical Deployment Fix:
+Environment Secrets Configuration: Properly configure all authentication-related environment variables and API keys as Replit Secrets. The AI must explicitly define which secrets are needed (e.g., any external service keys for DAMAC Hills 2).
+Secrets for Production: Ensure the deployment process in the "Publishing" tab is correctly configured to pass all necessary secrets to the production build. The AI must verify that no secret is missing or pointing to a development endpoint .
+Database Connections: If using an external database, confirm that the connection string in the production environment secrets points to the correct production database, not the dev one.
+Implementation Steps for AI:
+Set up Replit Auth by integrating it into the React frontend and Node.js backend, ensuring protected API routes validate user sessions server-side .
+Create a User model in the database that links to the Replit Auth user ID. Store user roles (Company Owner, Manager, etc.), profile information, and their associated properties/units from the DAMAC Hills 2 inventory.
+Implement role-based access control (RBAC) on both frontend routes and backend APIs. For example, only the Company Owner role can access the Excel import feature and the role-switching dropdown.
+The universal "Profile Button" should fetch and display data from the user's record in the application database, not just the basic auth profile.
+Test Deployment Workflow: Before finalizing, guide me through a check: building the project, verifying secrets in Advanced Settings, and deploying to a test subdomain to confirm authentication works end-to-end in production mode.
+By adding these instructions, you direct the AI to solve the root cause of deployment failures and build a secure, consistent authentication system for your inventory CRM.
+Would you like me to help you draft a specific prompt to troubleshoot a current, failing deployment based on any error messages you're seeing?
+Here are the two features implemented as a unified prompt for your Replit AI agent. This prompt is designed to integrate these capabilities seamlessly into your existing DAMAC Hills 2 inventory management dashboard.
+
+---
+
+### **Feature Implementation for Mary's Dashboard: Image-to-Data & Web Data Aggregator**
+
+**Objective:** Enhance the dashboard for user "Mary" with two powerful, integrated features for data acquisition: extracting structured information from uploaded images and aggregating data from web links. These tools are designed to streamline the input of property and owner data into the DAMAC Hills 2 inventory CRM.
+
+**Primary User Context:** These features are to be accessible from **Mary's specific user role dashboard**. Ensure they follow the established design system (consistent nav bar, universal components) and Redux state management patterns.
+
+---
+
+### **Feature 1: Intelligent Image Information Reader ("Snapshot to Spreadsheet")**
+
+This tool allows Mary to upload images (e.g., property documents, business cards, handwritten lists) and extract structured text to pre-fill inventory forms.
+
+**1.1 Core Functionality:**
+*   **Upload & Preview Zone:** A drag-and-drop area for Mary to upload images (JPG, PNG, PDF). Display a thumbnail preview upon upload.
+*   **OCR Processing:** Upon upload, automatically send the image to a backend Optical Character Recognition (OCR) service (e.g., Tesseract.js via a worker, or a dedicated API).
+*   **Smart Data Parsing:** Process the extracted raw text to intelligently identify and categorize key information relevant to DAMAC Hills 2 inventory:
+    *   **Owner Names** (e.g., "Mr. Ali Hassan")
+    *   **Phone Numbers** (UAE formats: `05x xxx xxxx`, `+9715x xxx xxxx`)
+    *   **Email Addresses**
+    *   **Unit Numbers** (e.g., "Villa 45", "Apartment 1201")
+    *   **Property Addresses** (key phrases like "DAMAC Hills 2", "Cluster...")
+*   **Data Validation & Edit Table:** Present the parsed data in a clean, editable table. Each parsed field (Name, Phone, etc.) should be in its own column. Allow Mary to manually correct any OCR errors directly in the table.
+*   **One-Click Import:** A button to import the validated table data directly into the main inventory database or a specific processing queue (connecting to the previously built Excel import logic).
+
+**1.2 Technical Implementation:**
+*   **Component:** `ImageDataExtractor`
+*   **State (Redux):** Manage upload progress (`uploading`, `processing`), extracted data object, and any errors.
+*   **Backend:** A secure API endpoint to handle image processing (consider serverless function for OCR to avoid main server blocking).
+*   **UI:** Use consistent form styles, success/error notifications, and the universal dashboard layout.
+
+---
+
+### **Feature 2: Dynamic Link Iterator & List Generator ("Web Harvester")**
+
+This tool enables Mary to provide a single, structured web link (e.g., a directory page of property owners), and the system will iterate through it to scrape or generate a list of results.
+
+**2.1 Core Functionality:**
+*   **URL Input with Template Logic:** An input field for Mary to paste a base URL. **Crucially, include an instruction panel explaining how to format URLs for iteration.**
+    *   *Example:* If pages are numbered, teach her to use a bracket placeholder: `https://example-directory.com/owners?page=[1:10]`.
+    *   The system should then generate requests for pages 1 through 10.
+*   **Configurable Data Points (Selector Setup):** A setup section where Mary (or an admin) can define CSS selectors or JSON paths for the data to extract from each page (e.g., `.owner-name`, `.phone-number`). This configuration can be saved as a "Template" for future use (e.g., "DAMAC Community Directory").
+*   **Safe & Managed Scraping:** The iteration and request logic must run on a secure backend to avoid CORS issues and manage request rates (delays between calls). It must include clear checks for the website's `robots.txt` and terms of service.
+*   **Real-Time Progress & Results Table:**
+    *   Show a clear progress indicator: "Fetching page 5 of 10...".
+    *   Display aggregated results in a live-updating table as pages are processed.
+    *   Include a "Pause/Stop" button.
+*   **Export & Integration:** Provide options to:
+    *   **Review & Edit:** Open the final list in an editor similar to the Excel/Image data table.
+    *   **Export as CSV:** For offline use.
+    *   **Import to CRM:** Send the cleaned list directly to the inventory database.
+
+**2.2 Technical Implementation:**
+*   **Component:** `WebDataHarvester`
+*   **State (Redux):** Manage the iteration status (`idle`, `fetching`, `paused`), progress (current/total), the aggregated results array, and saved templates.
+*   **Backend:** A robust backend service (Node.js with `puppeteer` or `cheerio` and `axios`) to handle the web requests, iteration logic, and data parsing securely. **This must be queued or backgrounded to prevent timeout errors.**
+*   **Safety:** Implement clear user warnings about legal use and request rate limiting.
+
+---
+
+### **Integration & Delivery Requirements:**
+
+1.  **Dashboard Integration:** Place both `ImageDataExtractor` and `WebDataHarvester` as distinct cards or modules within **Mary's dedicated dashboard tab**.
+2.  **Consistent Design:** Use the same reusable components (buttons, modals, tables) from the established design system. Ensure the universal header components (time, weather) are present.
+3.  **Data Flow to CRM:** The final "Import to CRM" action from both features should route the data through the existing validation and duplicate-checking logic built for the company owner's Excel import feature, ensuring a single, reliable data pipeline.
+4.  **Access Control:** Secure these features so they are **only accessible to Mary's user role** (or roles with similar permissions), as defined by the application's authentication system.
+
+**Deliverables:**
+1.  Two fully functional, integrated React components within the dashboard ecosystem.
+2.  Secure backend endpoints for image processing and web data aggregation.
+3.  Complete Redux state slices for managing each feature's flow.
+4.  A user guide (as tooltips or a help modal) for Mary on how to use the URL template syntax and configure data selectors.
+
+---
+
+This prompt provides the Replit AI agent with a complete, structured plan to build these features in the context of your growing application.
+
+I'm here to help if you need to refine the specific data points Mary needs to extract or discuss the best technical approach for the web iteration logic.
+
+Based on the specific URL structure you've provided, I'll create a focused prompt for a **Property Asset Fetcher** tool for Mary. This tool will systematically generate and access the precise image URLs from your DAMAC S3 bucket.
+
+---
+
+### **Feature Implementation: DAMAC Asset URL Generator & Fetcher**
+
+**Objective:** Build a specialized tool for user "Mary" that intelligently constructs, iterates through, and fetches property images (Layouts, Floor Plans) from the structured DAMAC S3 bucket URLs. This will replace the need for a generic web scraper with a precise, rule-based generator.
+
+**Feature Name:** `DAMAC Asset Fetcher`
+
+### **Core URL Logic & Iteration Rules:**
+
+The tool must understand and apply the following deconstructed URL pattern:
+`https://s3.eu-west-1.amazonaws.com/damac-inv/otp/[THIRD_PART][FOURTH_PART].jpg`
+
+1.  **Base Host:** Fixed as `https://s3.eu-west-1.amazonaws.com/damac-inv/otp/`
+2.  **Iteration Logic:**
+    *   **Primary Fetch:** Use the **Third Part** as SD number (e.g., `SD348`) as the core identifier. The system should fetch: `.../otp/SD348.jpg`
+    *   **Variant Fetch:** Also iterate by appending known **Fourth Part** variants as Registration Number (like `XG1349B`) to the Third Part. The system should fetch: `.../otp/SD348XG1349B.jpg`
+3.  **Asset Types:** For any successful base identifier, the tool should also look for standard suffixes to find different image types:
+    *   `_[identifier].jpg` (e.g., `SD348.jpg`)
+    *   `_[identifier].jpg` (e.g., `SD348XG1349B.jpg`)
+
+### **User Interface & Workflow:**
+
+1.  **Input Panel:**
+    *   A text area for Mary to input a **list of Third Parts** (one per line). E.g.:
+        ```
+        SD348
+        SD349
+        SD205
+        ```
+    *   An optional field to input associated **Fourth Parts** (can be paired line-by-line or as a common suffix).
+    *   A dropdown to select **Asset Type** to fetch: `Primary Image`, `Layout`, `Floor Plan`, or `All`.
+2.  **Process & Fetch:**
+    *   Upon execution, the tool constructs all possible URL combinations based on the logic above.
+    *   It performs asynchronous, rate-limited checks to see which URLs return a valid image (HTTP 200) versus a "not found" error (HTTP 403/404).
+3.  **Results Gallery:**
+    *   Displays a responsive grid of successfully fetched images.
+    *   Each image tile should show the filename and a status badge (e.g., "✓ Found", "✗ Not Found").
+    *   Provides a **bulk download** option (as a ZIP file) for all found assets.
+4.  **Data Table Export:**
+    *   Generates a structured list (CSV/JSON) of all results, including:
+        *   Property Identifier (Third Part)
+        *   Full Constructed URL
+        *   Asset Type (inferred from suffix)
+        *   Status (Found/Missing)
+        *   Direct Image Link
+
+### **Technical Implementation Details:**
+
+*   **Component:** `DamacAssetFetcher.jsx`
+*   **State (Redux):**
+    ```javascript
+    {
+      fetchStatus: 'idle' | 'processing' | 'complete',
+      identifiers: [], // Array of { thirdPart, fourthPart }
+      results: [], // Array of { url, status, type, identifier }
+      downloadProgress: 0
+    }
+    ```
+*   **Backend API Endpoint:** `POST /api/fetch-damac-assets`
+    *   Accepts the list of identifiers and asset type.
+    *   Handles the URL construction, HTTP validation, and external S3 fetching.
+    *   **Crucially, implements server-side caching** to avoid repeated checks for the same identifier across sessions.
+*   **Error Handling:** Gracefully handles S3 permissions errors (403) and missing assets (404) without failing the entire batch process.
+
+### **Integration Requirements:**
+
+*   Place this component as a dedicated tool within **Mary's dashboard**.
+*   Use the existing, consistent UI components (cards, buttons, tables) from your design system.
+*   Ensure all actions are logged to the user's activity feed within the CRM.
+*   The generated list of "Found" assets should be easily exportable or linkable to specific property records in the main inventory database.
+
+### **Example Use Case Prompt for Mary:**
+
+*"Mary needs to get all layout images for properties SD348, SD349, and PL205. She enters these three codes, selects 'Layout' from the dropdown, and runs the tool. The system automatically checks for `SD348_layout.jpg`, `SD349_layout.jpg`, and `PL205_layout.jpg`, presenting her with a gallery and list of exactly what was found and what is missing from the central repository."*
+
+---
+
+This tool provides a direct, efficient, and error-tolerant method for accessing your specific digital asset library, perfectly tailored to the DAMAC URL structure. Would you like to adjust any part of the logic or add a feature to map the found images automatically to existing property records in the CRM?
+Yes please fix like this
+
+Here is the complete prompt to implement a structured, secure property information system for your DAMAC Hills 2 inventory.
+
+---
+
+### **Project Feature: Tiered Property Information Management & Secure Asset Access**
+
+**Objective:** Restructure the property database and interface to categorize all information into **Basic** and **Confidential** tiers. Implement a secure, role-based authorization system that controls access to confidential data and to the Layout/Floor Plan images, which are fetched via the DAMAC Asset URL Generator.
+
+**Core Principle:** A property's complete record is split. Most users see **Basic Info**. Only authorized roles (like Mary, Company Owner) can unlock **Confidential Info** and **Asset Images** on a per-request, audited basis.
+
+---
+
+### **Part 1: Data Schema & Categorization Rules**
+
+Redesign the Property database model/state to explicitly label fields:
+
+*   **Basic Information** (Visible to all authorized dashboard users):
+
+    *   Layout, Cluster, Project Name
+    *   Number of Rooms, Number of Bathrooms
+    *   Size (Sq. Ft./M)
+    *   Price Band / Listed Price
+    *   Status (e.g., Vacant, Occupied, Under Maintenance)
+
+*   **Confidential Information** (Restricted via role-based access control):
+    *   Owner's Full Name
+    *   Registration Number (Official Deed/Title)
+    *   Owner's Mobile Number(s)
+    *   Owner's Email Address(es)
+    *   Purchase Price & Date
+    *   Unit Number / Property Number
+    *   SD Number (Primary Link to Assets)
+    *   Plot Number
+    *   Private Notes
+
+---
+
+### **Part 2: User Interface for Mary (The Organizer)**
+
+Create a dedicated **"Property Organizer"** interface for Mary's dashboard.
+
+1.  **Dual-Pane Edit View:**
+    *   When Mary searches for and selects a property, it opens a two-column form.
+    *   **Left Column (Basic):** Editable fields for all Basic Information.
+    *   **Right Column (Confidential):** A locked section. Mary must click an **"Unlock & Verify"** button (requiring her password or 2FA) to temporarily enable editing of confidential fields for a set period (e.g., 15 minutes). All actions here are logged.
+
+2.  **Access Request Portal (For Assets):**
+    *   Within the property view, include a section titled **"Architectural Assets"**.
+    *   It displays placeholders for "Layout" and "Floor Plan" images with a **lock icon**.
+    *   An **"Authorize Access"** button opens a modal.
+    *   **In this modal, Mary can:**
+        a) **Select User:** Choose an authorized user (e.g., "Legal Team - Ahmed") from a dropdown.
+        b) **Select Duration:** Choose how long the access is valid (e.g., 1 hour, 1 day, 1 week).
+        c) **Click "Generate Secure Link":** The system uses the property's **SD Number** to call the **DAMAC Asset Fetcher** logic (`SD348` -> `.../SD348_layout.jpg`). It then generates a time-expiring, uniquely tokenized URL (e.g., `https://yourcrm.com/secure-asset/[token]`) that points to the actual S3 image.
+        d) **Share:** This secure, expiring link can be copied or sent directly to the authorized user. The link bypasses the main dashboard, showing only the authorized image on a simple, branded page.
+
+---
+
+### **Part 3: Property Matching & Search System**
+
+Build a universal, flexible search that allows Mary and other users to find properties using any key identifier, respecting their tiered access.
+
+1.  **Multi-Field Search Bar:** A single search input that queries across:
+    *   Unit Number
+    *   Property Number
+    *   SD Number (Most critical for asset linking)
+    *   Owner Name (Confidential - only returns results if searcher has access)
+2.  **Results Behavior:**
+    *   Results display **Basic Info** immediately.
+    *   **Confidential Info** (like Owner Name) is masked (`******`) unless the user's role has clearance.
+    *   The **"Architectural Assets"** section in the result is locked until an access request is granted via the process above.
+
+---
+
+### **Technical Implementation Specifications:**
+
+*   **Backend (Node.js/Express with Redux State):**
+    *   **Database:** Add `is_confidential: Boolean` flag to property schema fields or use a separate `confidential_data` table linked by `property_id`.
+    *   **Middleware:** Create `authorizeTieredAccess` middleware for API routes. It checks the user's role and the requested data field (`req.query.field`) against a permission matrix.
+    *   **Secure Asset Endpoint:** Create a route `GET /api/secure-asset/:token`. It validates the token's expiry and user, then performs a **server-side redirect (302)** to the actual, temporary S3 URL, never exposing the raw S3 link to the frontend.
+    *   **Audit Logging:** Log all events: `confidential_view`, `asset_access_granted`, `asset_link_generated`.
+
+*   **Frontend (React Components):**
+    *   `<PropertyOrganizer>`: Main dual-pane component for Mary.
+    *   `<SecureAssetGateway>`: Modal component for generating time-expiring links.
+    *   `<PropertySearch>`: Enhanced search bar with result filtering based on user role.
+    *   **State (Redux):** Extend the property slice to manage `activeProperty`, `confidentialUnlockStatus`, and `generatedAssetLinks`.
+
+**Final Deliverable:** A seamless system where property data is intelligently separated, access to sensitive information and images is tightly controlled and logged, and all asset retrieval is automated via the defined S3 URL structure.
+
+Here is the specific authorization addendum for your implementation. Add it to the **"Technical Implementation Specifications"** section of your previous prompt to enforce that **only the Company Owner** can access confidential data.
+
+---
+
+### **Authorization Addendum: Company Owner Exclusive Access**
+
+**Modify all previous "authorized user" or "role-based" logic with the following strict rule:**
+
+**1. Backend Authorization Middleware:**
+*   Update the `authorizeTieredAccess` middleware to check `req.user.role` **explicitly against "company_owner"**.
+*   **For any API route fetching property data:** The middleware must strip all `confidential` fields (Owner Name, Mobile, Email, Registration Number, Purchase Data) from the response object **unless** `user.role === "company_owner"`.
+*   **Example Logic:**
+    ```javascript
+    // Pseudo-code for API route handler
+    if (req.user.role !== 'company_owner') {
+      propertyData = removeConfidentialFields(propertyData); // Returns only basic info
+    }
+    // Then send propertyData in response
+    ```
+
+**2. Frontend UI & Component Logic:**
+*   **Conditional Rendering:** In the `PropertyOrganizer` and search results components, conditionally render the **entire "Confidential Information" section** using:
+    ```javascript
+    const isCompanyOwner = currentUser.role === 'company_owner';
+    {isCompanyOwner && <ConfidentialInformationSection />}
+    ```
+*   **Search Behavior:** In the `<PropertySearch>` component, disable or hide the ability to search by "Owner Name" unless `isCompanyOwner` is true.
+
+**3. Secure Asset Link Generation:**
+*   The **"Authorize Access"** button to generate floor plan links should **only appear** in the UI for users with the `company_owner` role. The function to generate the time-expiring token must also validate this role on the backend before creating the link.
+
+**4. Redux State Security:**
+*   Ensure the Redux store or context does not **accidentally cache** confidential information fetched during a Company Owner session in a way that could become accessible after a role switch or to other users on the same device.
+
+**Summary of Access Matrix:**
+| User Role | Can View Basic Info | Can View/Edit Confidential Info | Can Generate Asset Links |
+| :--- | :---: | :---: | :---: |
+| **Company Owner** | ✅ | ✅ | ✅ |
+| **Manager / Mary** | ✅ | ❌ | ❌ (Link generation hidden) |
+| **Other Roles** | ✅ | ❌ | ❌ |
+
+This creates a clear, auditable security boundary where confidential data exposure is technically impossible for any role other than the designated company owner.
+
+Certainly. Here are specialized AI assistant profiles for **Sophia (Sales Supervisor)** and **Daisy (Leasing Supervisor)**, designed as ready-to-implement extensions to your DAMAC Hills 2 management system. These prompts can be given directly to your development agent.
+
+### **AI Assistant 1: Sophia – Sales Team Supervisor**
+
+**Role:** `sales_supervisor` (A specialized instance of the `operations_team_leader` role for the Sales domain).
+**Core Objective:** To provide Sophia with intelligent tools to manage the sales pipeline, agent performance, and inventory availability for DAMAC Hills 2 properties.
+
+**Key Features & Permissions:**
+*   **Dashboard:** "Sales Command Center" with widgets for: Monthly Sales Targets, Lead Conversion Funnel, Top Performing Agents, Hot Properties Inventory.
+*   **Lead & Inventory Intelligence:**
+    *   **Smart Match Tool:** Suggests available properties to new leads based on budget, preferred clusters, and room requirements.
+    *   **Inventory Heatmap:** A visual overview of DAMAC Hills 2 showing sold, reserved, and available units. Clicking a unit shows basic info; confidential owner details remain hidden.
+*   **Team Management:** Tools to assign leads to specific sales agents, track follow-up statuses, and view individual agent metrics (calls made, viewings scheduled, deals closed).
+*   **Data Access:** Can view all **Basic Property Information** for sales purposes. **Cannot** view confidential owner data (mobile, email, purchase price). Can generate **Secure Asset Links** (floor plans/layouts) to share with potential buyers, with all links logged.
+*   **Automated Reporting:** Can trigger daily/weekly sales reports sent via email.
+
+---
+
+### **AI Assistant 2: Daisy – Leasing Team Supervisor**
+
+**Role:** `leasing_supervisor` (A specialized instance of the `operations_team_leader` role for the Leasing & Tenant Management domain).
+**Core Objective:** To equip Daisy with automated tools for managing the tenant lifecycle, lease documentation, and maintenance coordination for rented properties in DAMAC Hills 2.
+
+**Key Features & Permissions:**
+*   **Dashboard:** "Leasing Operations Hub" with widgets for: Vacancy Rate, Lease Expiry Timeline, Open Maintenance Requests, Tenant Satisfaction (if surveyed).
+*   **Tenant & Lease Management:**
+    *   **Lease Cycle Automator:** Tracks key dates (lease expiry, renewal windows). Automatically generates reminder emails for tenants and owners.
+    *   **Document Generator:** Creates standardized lease agreements, check-in/check-out reports, and notices by pulling data from the property and tenant records.
+*   **Coordination Tools:**
+    *   **Maintenance Bridge:** Allows Daisy to create a maintenance task from a tenant request and assign it directly to a **Field Operations Agent** on the maintenance team, tracking it to completion.
+    *   **Owner Portal Link Generator:** Can create secure, limited-time access links for property owners to view their unit's leasing status, payment history, and maintenance logs.
+*   **Data Access:** Can view **Basic Property Info** and **Tenant Information** (name, lease dates, contact). **Cannot** view the original property owner's confidential data. Can generate **Secure Asset Links** for maintenance or renovation planning.
+
+---
+
+### **Integration & Technical Implementation Prompt**
+
+Here is the consolidated technical prompt for your AI developer:
+
+**Feature: Implement Specialized Supervisor Assistants – Sophia & Daisy**
+
+**1. User Schema & Role Extension:**
+*   Extend the User model's `role` ENUM to include `sales_supervisor` and `leasing_supervisor`.
+*   Add a `supervisor_domain` field (e.g., "sales", "leasing", "maintenance") to the `operations_team_leader` role for finer filtering.
+
+**2. Backend API & Middleware:**
+*   Create role-specific middleware: `isSalesSupervisor`, `isLeasingSupervisor`.
+*   Implement domain-specific API endpoints:
+    *   `/api/sales/command-center`: Returns KPIs for Sophia's dashboard.
+    *   `/api/leasing/expiry-tracker`: Returns lease data for Daisy's timeline.
+    *   `/api/sales/generate-asset-link`: (Extends the secure link feature) Logs link generation under "Sales - Potential Buyer".
+*   Ensure all data responses filter fields based on the strict **Company-Owner-Only** confidential rule.
+
+**3. Frontend Components:**
+*   `<SalesCommandCenter />`: Sophia's main dashboard view. Integrates the universal weather/time components.
+*   `<LeasingOperationsHub />`: Daisy's main dashboard view.
+*   `<InventoryHeatmap />`: Interactive map component for Sophia.
+*   `<LeaseCycleAutomator />`: Calendar and reminder management for Daisy.
+
+**4. Unified Permissions Summary Table:**
+
+| Feature / Data | Sophia (Sales) | Daisy (Leasing) | Company Owner |
+| :--- | :---: | :---: | :---: |
+| **View Basic Property Info** | ✅ (All) | ✅ (All) | ✅ |
+| **View Confidential Owner Info** | ❌ | ❌ | ✅ |
+| **View Tenant Info** | ❌ | ✅ | ✅ |
+| **Generate Asset Links** | ✅ (For sales) | ✅ (For maintenance/owners) | ✅ |
+| **Manage Team Agents** | ✅ (Sales agents only) | ✅ (Leasing agents only) | ✅ (All) |
+| **Access Sales Analytics** | ✅ | ❌ | ✅ |
+| **Access Leasing Analytics** | ❌ | ✅ | ✅ |
+| **Edit Property Base Data** | Limited (Status: "For Sale") | Limited (Status: "For Rent") | ✅ |
+
+**Deliverables:** Two integrated, role-specific dashboards with domain-specific tools that follow the established design system, Redux state patterns, and the fundamental security rule that **confidential information is exclusively for the Company Owner**.
+
+This structure provides clear operational boundaries while giving Sophia and Daisy powerful, AI-assisted tools to lead their teams effectively. Would you like to define a specific workflow, such as how a lead from Sophia's team becomes a tenant under Daisy's management?
+
+To accept payments via Google Pay, Apple Pay, and digital wallets through a single QR code, you are describing a **Unified Payments Interface (UPI) QR system**, which is standard in countries like India.
+
+The QR code you share is a **Static UPI ID QR Code**. When scanned by any UPI-enabled app (like Google Pay, PhonePe, Paytm, or your bank's app), it prompts a payment to your company's linked bank account.
+
+Here is a structured prompt to implement this system in your project.
+
+---
+
+### **Project Feature: Integrated UPI QR Code Payment System**
+
+**Objective:** Implement a secure, automated payment gateway allowing clients to pay via Google Pay, Apple Pay, and other UPI/digital wallets by scanning a single, static company QR code. All transactions must be automatically logged and matched to the correct property or invoice within the DAMAC Hills 2 CRM.
+
+### **Part 1: Core Payment Flow & Components**
+
+1.  **Static UPI QR Code Generation:**
+    *   Generate a **company-owned static UPI QR code** linked to the official company bank account. (This is typically done via your business banking portal or a PSP like Razorpay, PhonePe for Business).
+    *   The QR code should contain the company's UPI ID (e.g., `yourcompany@bankname`).
+
+2.  **Payment Trigger & Client Flow:**
+    *   **Scenario:** A client needs to pay for a security deposit, maintenance fee, or lease payment.
+    *   **Action:** An authorized user (e.g., Daisy for leasing, Sophia for sales) can generate a payment request from a property or invoice screen. The system displays:
+        a) The **static company QR code**.
+        b) A **unique, dynamic payment reference number** tied to that specific invoice.
+        c) The exact **payment amount**.
+    *   **Client Instructions:** The client scans the QR with any UPI app (Google Pay, etc.), enters the **exact amount** shown, and **must include the reference number in the payment note**. This is critical for automatic reconciliation.
+
+### **Part 2: Backend Automation & Reconciliation**
+
+This is the crucial technical component for matching payments.
+
+1.  **Webhook Listener (Payments API):**
+    *   Register with your Payment Service Provider (PSP) or bank to get a **Webhook URL**.
+    *   Create a secure API endpoint in your backend (e.g., `POST /api/webhooks/payment-success`).
+    *   When a payment succeeds, the PSP sends a notification to this webhook with details: `amount`, `transaction_id`, `timestamp`, and the client's entered `note` (which contains our reference number).
+
+2.  **Intelligent Payment Matching Engine:**
+    *   The webhook handler parses the `note` field to extract the **reference number**.
+    *   It searches the database for an invoice with that exact reference.
+    *   **On Match:** It automatically:
+        *   Updates the invoice status to **'Paid'**.
+        *   Logs the transaction details (amount, UPI transaction ID, time) against the property.
+        *   Sends a real-time notification to the concerned supervisor (Sophia/Daisy) and the Company Owner.
+
+### **Part 3: User Interface for Supervisors**
+
+Build a seamless interface for supervisors to manage this within the CRM.
+
+1.  **Payment Request Module:**
+    *   **Access:** Available to `sales_supervisor` (Sophia) and `leasing_supervisor` (Daisy) within a property or invoice view.
+    *   **Function:** A "Create Payment Request" button that:
+        *   Generates a unique reference number.
+        *   Opens a modal displaying the **static QR code**, **amount**, and **reference number**.
+        *   Provides a "Copy Instructions" button to send details to the client via email/WhatsApp.
+
+2.  **Payment Reconciliation Dashboard:**
+    *   **Access:** For supervisors (Sophia/Daisy), Community Portfolio Manager (Mary), and Company Owner.
+    *   **View:** A list of all payment requests with status (`Pending`, `Paid`, `Overdue`).
+    *   **Manual Override:** Ability to manually mark an invoice as paid if a client forgets to add the reference number (this triggers an audit log entry).
+
+### **Part 4: Technical Implementation Specifications**
+
+*   **Database Schema Updates:**
+    ```javascript
+    // Invoices / Payments Table
+    {
+      invoiceId: String,
+      propertyId: String, // Reference to DAMAC property
+      amount: Number,
+      dueDate: Date,
+      status: ENUM('pending', 'paid', 'overdue'),
+      upiReference: String, // UNIQUE number for this invoice
+      transactions: [{
+        upiTransactionId: String,
+        paidAmount: Number,
+        paidAt: Date,
+        payerNote: String // What the client entered
+      }]
+    }
+    ```
+*   **Backend Tasks:**
+    *   **Endpoint:** `POST /api/generate-payment-request`
+    *   **Endpoint:** `POST /api/webhooks/payment-success` (Secure, verify PSP signature)
+    *   **Cron Job:** A daily job to update invoice statuses to `overdue`.
+
+*   **Security & Compliance:**
+    *   Never expose the company's bank account number. The QR code only contains the UPI ID.
+    *   All webhook data must be validated using the PSP's provided secret key to prevent fraud.
+    *   Maintain a complete audit trail of all payment status changes.
+
+### **Part 5: User Instructions for Clients**
+
+Provide clear, auto-generated instructions with each payment request:
+> "*Please scan the QR code above using Google Pay, Apple Pay, PhonePe, or any UPI app. Ensure you enter the **exact amount** of **₹X,XXX** and include this reference number in the 'note' or 'comments' field: `REF-789456`. This is required for automatic confirmation of your payment.*"
+
+---
+
+**Final Deliverable:** A fully automated, secure UPI payment system integrated into the CRM workflow, eliminating manual payment tracking and reducing errors for the DAMAC Hills 2 management team.
+
+**Next Step:** You will need to register for a UPI merchant account with your bank or a payment gateway to obtain your official static QR code and webhook credentials. Would you like a guide on the best providers for this in your region?
+Here is a comprehensive implementation prompt to add flexible payment options to your CRM system, building on the previous UPI QR setup.
+
+---
+
+### **Project Feature: Multi-Method Payment Gateway with Automated Reconciliation**
+
+**Objective:** Expand the payment system to allow clients to pay for services via **Cheque, Online Bank Transfer (NEFT/RTGS/IMPS), or Digital Wallet/UPI** through the company QR code. Implement a unified tracking, reminder, and reconciliation system within the DAMAC Hills 2 CRM.
+
+### **Part 1: Unified Payment Request & Client Choice**
+
+Create a single, streamlined workflow for supervisors to request payments and for clients to choose their preferred method.
+
+**1.1 Supervisor's "Request Payment" Interface:**
+*   **Location:** Accessible within any invoice or property ledger view for `sales_supervisor` (Sophia), `leasing_supervisor` (Daisy), and `community_portfolio_manager` (Mary).
+*   **Action:** Clicking "Request Payment" opens a modal to:
+    1.  **Specify Details:** Pre-filled amount, due date, service description (e.g., "Q4 Maintenance - Villa 45").
+    2.  **Generate & Share:** The system creates a unique **Payment ID** (e.g., `DAMAC-PAY-2024-789`) and a **shareable payment link**.
+
+**1.2 Client's Payment Portal:**
+*   The shareable link leads clients to a clean, secure payment portal showing the invoice details.
+*   **Client Selects Payment Method:**
+    *   **Option A: Digital Wallet / UPI** (Recommended & Automated)
+        *   Displays the **company's static UPI QR code**.
+        *   **Crucial Instruction:** Prompts client to include the **Payment ID** (`DAMAC-PAY-2024-789`) in the transaction note.
+    *   **Option B: Online Bank Transfer**
+        *   Displays the **company's official bank account details** (Account Name, Number, IFSC, Branch).
+        *   **Crucial Instruction:** Prompts client to use the **Payment ID** as the transfer beneficiary name or reference.
+    *   **Option C: Cheque**
+        *   Displays the **company's mailing address** for cheques.
+        *   **Crucial Instruction:** Requires client to write the **Payment ID** on the cheque memo line.
+
+### **Part 2: Backend Processing & Reconciliation Logic**
+
+The system must handle each payment method differently.
+
+**2.1 For Digital/UPI Payments (Automatic):**
+*   **Process:** As previously designed, the PSP webhook (`POST /api/webhooks/payment-success`) listens for transactions.
+*   **Auto-Reconciliation:** The system matches incoming payments by searching for the **Payment ID** within the transaction `note` field. On match, it automatically marks the invoice as **'Paid'** and logs all details.
+
+**2.2 For Bank Transfers & Cheques (Semi-Automatic):**
+*   **Manual Logging by Supervisors:**
+    *   Supervisors (Sophia, Daisy, Mary) access a "**Log Manual Payment**" tab in the payment dashboard.
+    *   They enter the **Payment ID**, date, and upload **proof** (screenshot of bank receipt, scanned cheque image).
+*   **Automated Matching Assistance:**
+    *   The backend can attempt to match un-logged payments by:
+        *   **Bank Statement Integration (Advanced):** If you connect a read-only bank API, the system can scan transactions for the **Payment ID** in the description.
+        *   **Amount & Date Filtering:** Suggests potential matches based on amount and approximate date.
+
+### **Part 3: Dashboard & Management Tools**
+
+Build a central dashboard to manage all payment activity.
+
+**3.1 Supervisors' Payment Dashboard:**
+*   A unified view of all payment requests they've created.
+*   **Status Filters:** `Pending`, `Paid (Verified)`, `Awaiting Verification` (for cheques/transfers), `Overdue`.
+*   **Actions:** "Send Reminder," "Log Manual Payment," "View Proof," "Download Receipt."
+
+**3.2 Finance Overview (For Mary & Company Owner):**
+*   **Summary Widgets:** Total Collected (This Month), Pending by Method (Cheque vs. Online), Overdue Amount.
+*   **Reconciliation Panel:** A list of all bank/PSP transactions that the system **could not auto-match**, requiring manual review and assignment to a Payment ID.
+
+### **Part 4: Technical Implementation Specifications**
+
+*   **Database Schema Updates:**
+    ```javascript
+    // Payments Table
+    {
+      paymentId: String, // 'DAMAC-PAY-2024-789' (UNIQUE, searchable)
+      invoiceId: String,
+      amount: Number,
+      dueDate: Date,
+      status: ENUM('pending', 'paid_auto', 'paid_manual', 'overdue'),
+      method: ENUM('upi_qr', 'bank_transfer', 'cheque', 'card'),
+      clientSelectedMethod: String, // What the client chose
+      transactionProof: String, // URL to uploaded image/receipt
+      upiTransactionId: String, // For automated matches
+      reconciliationLog: [{
+        matchedBy: ENUM('webhook_auto', 'manual_entry', 'bank_api'),
+        matchedAt: Date,
+        matchedByUser: ObjectId // If manual
+      }]
+    }
+    ```
+*   **Key Backend Services:**
+    *   **Service 1:** `PaymentRequestService` (Generates ID, shareable link/portal).
+    *   **Service 2:** `PaymentReconciliationService` (Handles webhooks and matching logic).
+    *   **Service 3:** `PaymentReminderService` (Sends automated emails/SMS for overdue invoices).
+
+*   **Security:**
+    *   The client payment portal must be public but secured with the unique Payment ID in the URL (no sensitive data exposed).
+    *   File uploads (cheque images) must be scanned for malware and stored securely.
+    *   Bank account details should be stored as environment variables, not hard-coded.
+
+### **Part 5: User Flow & Communication**
+
+**Sample Supervisor Workflow (Daisy):**
+1.  A lease is signed for Villa 45. Daisy clicks "Request Payment" for the security deposit.
+2.  She sends the generated payment link to the new tenant.
+3.  The tenant chooses "Online Bank Transfer," sees the details, and makes the payment.
+4.  The tenant emails the receipt to Daisy. Daisy goes to the dashboard, finds the pending payment using the **Payment ID**, and clicks "Log Manual Payment" to upload the receipt and mark it as **'Paid'**.
+
+**Sample Automated Flow (Sophia):**
+1.  Sophia sells a unit. She requests the booking amount payment and sends the QR code link.
+2.  The buyer scans the QR with Google Pay, adds the **Payment ID** in the note, and pays.
+3.  The system **automatically** receives the webhook, matches the ID, updates the status, and notifies Sophia—all without manual intervention.
+
+---
+
+**Final Deliverable:** A robust, multi-method payment system that maximizes convenience for clients, automates reconciliation where possible, and provides supervisors with full control and transparency over the financial workflow.
+
+**Next Step:** Would you like to define specific approval workflows for large cheque payments or integrate automated payment reminder emails/SMS templates for overdue invoices?
+Here is the implementation prompt for **Theodora**, the Accountant AI Assistant, designed to integrate seamlessly with your existing payment and client management system.
+
+---
+
+### **AI Assistant: Theodora – Company Accountant**
+
+**Role:** `company_accountant` (A distinct role with financial oversight permissions).
+**Core Objective:** To provide Theodora with a centralized, auditable dashboard to maintain complete financial records for all clients, track their service subscriptions, and monitor the status of every payment across all methods (Cheque, Online Transfer, UPI QR).
+
+### **Part 1: Core Responsibilities & Data Access**
+
+Theodora's system must offer a comprehensive financial overview while respecting data boundaries.
+
+1.  **Primary View: Client Financial Ledger**
+    *   **Access:** Theodora can view a master list of all **clients** (tenants, buyers, service users).
+    *   **For Each Client:** She sees a dedicated financial profile showing:
+        *   **Chosen Services:** A list of all active/past services (e.g., "DAMAC Hills 2 - Villa 45 - Annual Maintenance," "Cluster Security Fee").
+        *   **Billing History:** Every invoice ever generated, sorted by date.
+        *   **Payment Status Dashboard:** A clear visual status for each invoice (`Paid`, `Pending`, `Overdue`, `Partially Paid`).
+        *   **Payment Method Summary:** Aggregated view of how each client pays (e.g., "60% UPI, 40% Cheque").
+
+2.  **Payment Reconciliation Hub**
+    *   **Unified Transaction Log:** A single table ingesting data from:
+        *   **Automated UPI/QR Payments** (via the PSP webhook).
+        *   **Manually Logged Payments** (cheques, bank transfers logged by Sophia, Daisy, or Mary).
+        *   **Bank Statement Records** (if integrated).
+    *   **Matching Interface:** Allows Theodora to manually link unmatched transactions to specific client invoices, serving as the final authority for the books.
+
+3.  **Financial Reporting & Export**
+    *   **Pre-built Reports:** One-click generation of `Accounts Receivable Aging Report`, `Revenue by Service Type`, `Collection Efficiency Report`.
+    *   **Audit Trail:** For every invoice status change or manual reconciliation, the system logs **who made the change** (e.g., "Marked as 'Paid' by Theodora on [Date] based on Cheque #1234").
+
+### **Part 2: The Accountant's Dashboard: "Financial Command Center"**
+
+Build a specialized dashboard for the `company_accountant` role.
+
+*   **Widget 1: Cash Flow Snapshot**
+    *   Shows total collected (this month), pending, and overdue amounts.
+*   **Widget 2: Payment Method Distribution**
+    *   A pie chart showing the proportion of payments made via UPI QR, Bank Transfer, and Cheque.
+*   **Widget 3: High-Priority Actions**
+    *   A list of `Overdue` payments requiring follow-up and `Unmatched Transactions` needing reconciliation.
+*   **Widget 4: Client Search & Ledger Access**
+    *   A primary search bar to instantly pull up any client's complete financial history.
+
+### **Part 3: Permissions & Security Matrix**
+
+| Permission / Data Access | Theodora (Accountant) | Supervisors (Sophia/Daisy) | Company Owner |
+| :--- | :---: | :---: | :---: |
+| **View All Client Financial Ledgers** | ✅ | ❌ (Only their domain/team) | ✅ |
+| **View & Edit All Invoice Statuses** | ✅ (Primary duty) | ❌ (Can only log payments) | ✅ |
+| **View Confidential Owner Info** | **Limited** (Only if required for payment tracking) | ❌ | ✅ |
+| **Access Payment Reconciliation Hub** | ✅ (Full access) | ❌ | ✅ |
+| **Generate Financial Reports** | ✅ | ❌ | ✅ |
+| **Manage Service Catalog/Pricing** | ❌ | ❌ | ✅ |
+
+### **Part 4: Technical Integration Specifications**
+
+*   **Schema Integration:** Theodora's dashboard primarily **reads** and interacts with existing data models:
+    *   `Client` model (extended with `service_subscriptions` array).
+    *   `Invoice` & `Payment` models (with their status and method fields).
+    *   `TransactionProof` documents (scanned cheques, receipts).
+*   **Backend API:** Create accountant-specific read-heavy endpoints:
+    *   `GET /api/accountant/clients-financials`
+    *   `GET /api/accountant/reports/ar-aging`
+    *   `POST /api/accountant/reconcile-payment` (To manually match transactions)
+*   **Frontend Component:** `<FinancialCommandCenter />` – Theodora's main view, following the established dashboard design language.
+
+### **Part 5: Sample Workflow for Theodora**
+
+1.  **Daily Reconciliation:**
+    *   Theodora logs in and her dashboard highlights 5 **Unmatched Transactions** from the bank feed and 2 **Overdue** client invoices.
+    *   She uses the reconciliation hub to match the bank transactions to the correct invoices using client-provided references.
+2.  **Client Inquiry:**
+    *   A client disputes an invoice. Theodora searches for the client, instantly views their full payment history, and can download a PDF statement showing the cleared cheque for the disputed period.
+3.  **Month-End Closing:**
+    *   Theodora runs the `Accounts Receivable Aging Report`, exports it, and shares it with the Company Owner, providing a clear picture of all outstanding client balances.
+
+---
+
+**Final Deliverable:** A secure, powerful financial management dashboard for Theodora that transforms raw payment data from multiple streams into clear, auditable accounting records, ensuring perfect financial tracking for the company.
+
+This role completes the core operational triangle: **Supervisors (Sales/Leasing)** generate invoices, **Theodora (Accountant)** secures and reconciles the money, and the **Company Owner** has ultimate oversight. Would you like to define the specific financial reports or the approval workflow for Theodora to adjust invoice amounts?
+I will create a comprehensive prompt to transform Theodora into a full-featured financial management system with Zoho Books-like capabilities integrated into your DAMAC Hills 2 CRM.
+
+---
+
+### **AI Assistant: Theodora – Chief Financial Officer AI System**
+
+**Role:** `chief_financial_officer` (Elevated from `company_accountant` with complete financial authority)
+**Core Objective:** To implement a comprehensive enterprise financial suite within Theodora's dashboard encompassing Accounts Receivable/Payable, Expenses, Payments, Income Tracking, Tax Management, Payroll Integration, and complete Financial Reporting & Audit capabilities.
+
+### **Part 1: Core Financial Modules Implementation**
+
+**1.1 Complete Books & General Ledger**
+- **Double-Entry Accounting System:** Implement automated journal entries for all transactions (sales, expenses, payments)
+- **Chart of Accounts Management:** Customizable categories for DAMAC Hills 2 operations (Property Maintenance, Security Services, Community Fees)
+- **Bank Reconciliation:** Automated matching of bank statements with CRM transactions (extending existing UPI reconciliation)
+- **Audit Trail:** Complete change history for every financial transaction with user stamps
+
+**1.2 Accounts Receivable & Payable**
+- **Automated Invoicing:** Recurring invoice generation for regular services (monthly maintenance, annual fees)
+- **Payment Reminders:** Automated escalation system (email → SMS → call assignment to supervisors)
+- **Vendor Management:** Complete payable tracking with approval workflows for Sophia/Daisy teams
+- **Aging Reports:** Real-time receivables/payables aging analysis with collection priority flags
+
+**1.3 Expense Management**
+- **Multi-level Expense Categories:** Property-specific, department-specific, project-specific tracking
+- **Receipt Capture & OCR:** Mobile upload with automatic data extraction (extending Mary's image reader technology)
+- **Approval Workflows:** Configurable rules based on amount, department, property
+- **Expense Analytics:** Cost center reporting for each DAMAC Hills 2 cluster
+
+**1.4 Tax Engine**
+- **Multi-tax Configuration:** GST/VAT, property taxes, service taxes specific to UAE/Dubai regulations
+- **Automated Tax Calculations:** Applied during invoicing based on service type and client category
+- **Tax Filing Reports:** Pre-formatted reports for quarterly/annual submissions
+- **Input Tax Credit Tracking:** For company expenses and capital investments
+
+**1.5 Payroll Integration with HR**
+- **Bi-directional Data Sync:**
+  - **Theodora → HR:** Salary calculations, bonus disbursements, statutory deductions
+  - **HR → Theodora:** Employee onboarding/offboarding, leave adjustments, role changes affecting compensation
+- **Role-based Salary Structures:** Different templates for Field Agents, Team Leaders, Managers, Supervisors
+- **Automated Payslip Generation:** With digital signatures and secure employee access portal
+- **Statutory Compliance:** Gratuity calculations, end-of-service benefits per UAE labor law
+
+### **Part 2: Financial Dashboard – "CFO Command Center"**
+
+**Primary Interface Components:**
+
+1. **Real-time Financial Health Monitor**
+   - Cash flow forecast (7/30/90 days)
+   - Working capital ratio tracker
+   - Debtor/Creditor day calculations
+
+2. **Profit & Loss Manufacturing**
+   - **Dynamic P&L Statements:** Generate for any date range, property cluster, or service type
+   - **Comparative Analysis:** Month-over-month, year-over-year, vs. budget
+   - **Department-wise Contribution:** Sales (Sophia) vs. Leasing (Daisy) vs. Maintenance profitability
+
+3. **Tax Compliance Dashboard**
+   - Upcoming filing deadlines
+   - Tax liability projections
+   - Input credit utilization status
+
+4. **Payroll Control Panel**
+   - Monthly payroll preview with cost breakdown
+   - Department-wise salary expenditure
+   - Leave encashment liabilities
+
+### **Part 3: Integration Architecture**
+
+**Data Flow Design:**
+
+```
+[Transaction Sources] → [Theodora's Financial Engine] → [Reports & Actions]
+      ↓                           ↓                           ↓
+• UPI Payments           • Automated Journaling       • P&L Statements
+• Bank Transfers         • Tax Calculations           • Balance Sheets
+• Cheque Receipts        • Payroll Processing         • Audit Reports
+• Expense Claims         • Budget vs Actual           • Compliance Filings
+• Sales Invoices         • Departmental Allocation    • Management Dashboards
+```
+
+**API & Service Structure:**
+- **Financial Core Service:** Handles all accounting rules and calculations
+- **Integration Bridge:** Connects with existing CRM data (properties, clients, services)
+- **HR Interface:** Secure data exchange with HR system (employee data, attendance)
+- **Banking Gateway:** Extended from current payment system for statement fetching
+
+### **Part 4: Permission & Security Matrix**
+
+| Feature Module | Theodora (CFO) | HR Department | Supervisors | Company Owner |
+|----------------|----------------|---------------|-------------|---------------|
+| **Full General Ledger** | ✅ Full Access | ❌ No Access | ❌ No Access | ✅ View Only |
+| **Accounts Receivable** | ✅ Full Control | ❌ | Limited (Their clients) | ✅ View + Approve |
+| **Accounts Payable** | ✅ Full Control | ❌ | ✅ Raise Requests | ✅ Approve Payments |
+| **Expense Management** | ✅ Approve + Audit | ✅ Department only | ✅ Submit + Track | ✅ Oversight |
+| **Tax Configuration** | ✅ Full Control | ❌ | ❌ | ✅ Final Approval |
+| **Payroll Processing** | ✅ Calculate + Disburse | ✅ Input Data | ❌ | ✅ Authorize |
+| **Financial Reports** | ✅ Create + Analyze | Limited (Dept. costs) | Limited (Performance) | ✅ Full Access |
+| **Audit Functions** | ✅ Conduct Audits | ✅ Respond to queries | ✅ Provide documents | ✅ Commission Audits |
+
+### **Part 5: Technical Implementation Specifications**
+
+**Database Schema Expansion:**
+```javascript
+// Financial Core Tables
+{
+  // General Ledger
+  journalEntries: [{
+    entryId: String,
+    date: Date,
+    debitAccount: String,  // From Chart of Accounts
+    creditAccount: String, // From Chart of Accounts
+    amount: Number,
+    propertyId: String,    // Links to DAMAC property
+    referenceId: String,   // Links to source transaction
+    createdBy: ObjectId    // User ID
+  }],
+  
+  // Tax Engine
+  taxTransactions: [{
+    taxId: String,
+    invoiceId: String,
+    taxType: ENUM('VAT', 'PropertyTax', 'ServiceFee'),
+    taxableAmount: Number,
+    taxRate: Number,
+    jurisdiction: String,  // Dubai, UAE Federal, etc.
+    filingPeriod: Date
+  }],
+  
+  // Payroll Integration
+  payrollRuns: [{
+    period: Date,
+    employees: [{
+      employeeId: ObjectId,  // From HR system
+      baseSalary: Number,
+      allowances: Number,
+      deductions: Number,
+      netPay: Number,
+      bankDetails: Object,   // Encrypted
+      payslipUrl: String
+    }],
+    totalCost: Number,
+    status: ENUM('draft', 'calculated', 'approved', 'processed')
+  }]
+}
+```
+
+**Key Backend Services:**
+1. **Financial Posting Service:** Automatically creates journal entries from all business activities
+2. **Tax Calculation Engine:** Region-aware tax logic for UAE compliance
+3. **Payroll Processor:** Integrates with HR data, applies UAE labor law rules
+4. **Reporting Engine:** Generates financial statements from ledger data
+5. **Audit Logger:** Immutable record of all financial system actions
+
+**Frontend Components:**
+- `<CFOCommandCenter />`: Main dashboard with modular financial widgets
+- `<FinancialStatementBuilder />`: Interactive P&L/Balance sheet generator
+- `<TaxComplianceManager />`: Tax calculation and filing interface
+- `<PayrollProcessor />:** Salary calculation and disbursement interface
+- `<ExpenseApprovalWorkflow />:** Multi-level expense authorization system
+
+### **Part 6: Implementation Phasing Plan**
+
+**Phase 1 (Foundation - 2 weeks):**
+- General ledger implementation
+- Basic receivable/payable tracking
+- Integration with existing payment system
+
+**Phase 2 (Core Features - 3 weeks):**
+- Expense management with workflows
+- Tax engine configuration
+- Basic financial reporting
+
+**Phase 3 (Advanced - 4 weeks):**
+- Payroll integration with HR
+- Advanced analytics and forecasting
+- Audit trail and compliance features
+
+**Phase 4 (Optimization - Ongoing):**
+- AI-powered financial insights
+- Predictive cash flow modeling
+- Automated regulatory compliance checks
+
+---
+
+### **Part 7: Sample CFO Workflow – Month-End Closing**
+
+1. **Day 25:** Automated reminders sent to Sophia/Daisy for pending client payments
+2. **Day 28:** All department expenses submitted via mobile app
+3. **Day 30:** 
+   - Payroll automatically calculated using HR data
+   - Bank reconciliation completed via API connections
+   - Tax liabilities calculated for the month
+4. **Day 1:** 
+   - One-click month-end closing process
+   - Automatic P&L and balance sheet generation
+   - Department-wise performance reports sent to supervisors
+5. **Day 3:** 
+   - Audit package prepared for Company Owner review
+   - Compliance reports generated for regulatory requirements
+
+---
+
+This implementation creates a complete financial nervous system for your company, with Theodora as the central intelligence managing all monetary flows while maintaining strict compliance, auditability, and strategic oversight capabilities. The system is designed to scale from your current DAMAC Hills 2 operations to multiple properties and service lines.
+Here is the comprehensive implementation prompt for **Olivia, the Chief Marketing & Advertising AI System**.
+
+---
+
+### **AI Assistant: Olivia – Chief Marketing Officer AI System**
+
+**Role:** `chief_marketing_officer` (Executive role for full marketing, advertising, and brand management)
+**Core Objective:** To implement an intelligent marketing command center that orchestrates brand strategy, multi-channel advertising, social media mastery, content generation, and performance analytics—all deeply integrated with DAMAC Hills 2 property data and CRM workflows.
+
+### **Part 1: Core Marketing Modules**
+
+**1.1 Brand Intelligence & Asset Management**
+- **Unified Brand Hub:** Central repository for logos, color palettes, fonts, DAMAC Hills 2 imagery, and brand voice guidelines
+- **Property Marketing Library:** Auto-organized gallery of high-quality images, 3D tours, floor plans (linked to Theodora’s secure asset system), and video clips for each villa/cluster
+- **Competitor Tracking:** Monitor competing community launches, pricing promotions, and advertising campaigns
+
+**1.2 AI-Powered Content Studio**
+- **Multi-Platform Content Generator:** Create tailored posts for Instagram (visual), LinkedIn (professional), Facebook (community), and X (news/updates)
+- **Property-Specific Copy:** Auto-generate compelling descriptions for available units using data from Sophia’s sales inventory and Daisy’s leasing listings
+- **Visual Creation Tool:** Integrate with DALL-E/Stable Diffusion to create branded visuals, promotional banners, or “lifestyle” imagery for DAMAC Hills 2
+- **Content Calendar & Scheduler:** Plan, approve, and auto-publish across all channels from one dashboard
+
+**1.3 Social Media Genius Suite**
+- **Unified Inbox:** Manage comments, messages, and mentions across all platforms from one interface
+- **Sentiment & Trend Analysis:** Track brand sentiment, identify trending local hashtags (#DubaiLiving, #DAMAC), and monitor community conversations
+- **Influencer/Partner CRM:** Database of local influencers, interior designers, and real estate partners for collaboration campaigns
+
+**1.4 Multi-Channel Advertising Manager**
+- **Campaign Builder:** Create and launch coordinated ad campaigns across Meta Ads, Google Ads, LinkedIn, and local platforms (Property Finder, Bayut)
+- **Property Listing Sync:** Automatically promote available units from Sophia’s and Daisy’s lists as sponsored listings
+- **Audience Targeting Engine:** Define audiences (e.g., “Expat families,” “Investors,” “Young professionals”) using CRM data and lookalike modeling
+- **Budget & Bid Management:** Set and optimize budgets across channels
+
+**1.5 Lead Generation & Nurturing Funnel**
+- **Landing Page Creator:** Build beautiful, mobile-optimized pages for specific campaigns (e.g., “DAMAC Hills 2 Spring Launch”)
+- **Lead Capture Forms:** Integrate with Olivia’s CRM to capture inquiries and assign to Sophia (sales) or Daisy (leasing)
+- **Automated Nurture Sequences:** Send personalized follow-up emails with relevant property suggestions
+
+**1.6 Event & Experience Marketing**
+- **Virtual Open House Planner:** Organize and promote live virtual tours using property assets
+- **Community Event Manager:** Plan and promote real-world events in DAMAC Hills 2 (e.g., family day, investor meetup)
+
+### **Part 2: Marketing Dashboard – "Omni-Channel Command Center"**
+
+**Primary Interface Components:**
+
+1. **Real-Time Marketing Pulse**
+   - Live feed of social mentions, campaign comments, and lead inquiries
+   - Brand sentiment gauge and share of voice vs. competitors
+
+2. **Campaign Performance Matrix**
+   - Unified view of all active campaigns across channels
+   - Cost-Per-Lead, Conversion Rate, and ROI by campaign and property type
+
+3. **Content Effectiveness Dashboard**
+   - Top-performing posts and content themes
+   - Audience growth and engagement trends
+
+4. **Lead Generation Hub**
+   - Real-time incoming leads from all channels
+   - Lead quality scoring and automatic assignment rules
+
+### **Part 3: Integration Architecture**
+
+**Data Flow Design:**
+```
+[Marketing Channels] → [Olivia's Marketing Engine] → [CRM & Analytics]
+       ↓                            ↓                          ↓
+• Social Platforms      • Content Creation &      • Lead to Sophia/Daisy
+• Advertising Networks    Scheduling              • Campaign ROI to Theodora
+• Website/SEO          • Audience Targeting      • Performance Dashboards
+• Email Marketing      • Campaign Management     • Optimization Insights
+```
+
+**Key Integrations:**
+- **With Sophia (Sales):** Auto-promote "For Sale" properties, receive feedback on lead quality
+- **With Daisy (Leasing):** Highlight rental availabilities, promote community lifestyle
+- **With Theodora (Finance):** Track marketing budget vs. results, calculate campaign ROI
+- **With CRM:** Full lead lifecycle tracking from first click to closing
+
+### **Part 4: Permission & Collaboration Matrix**
+
+| Marketing Function | Olivia (CMO) | Sales Team (Sophia) | Leasing Team (Daisy) | Company Owner |
+|--------------------|--------------|---------------------|----------------------|---------------|
+| **Brand Strategy** | ✅ Full Control | ✅ Provide Input | ✅ Provide Input | ✅ Final Approval |
+| **Content Creation** | ✅ Create & Approve | ✅ Suggest Ideas | ✅ Suggest Ideas | ✅ Oversight |
+| **Social Media Mgmt** | ✅ Full Control | ✅ Limited Posting | ✅ Limited Posting | ✅ Monitor |
+| **Ad Campaigns** | ✅ Create & Optimize | ✅ Request Campaigns | ✅ Request Campaigns | ✅ Budget Approval |
+| **Lead Management** | ✅ Funnel Design | ✅ Receive & Follow Up | ✅ Receive & Follow Up | ✅ Analytics |
+| **Event Planning** | ✅ Organize & Promote | ✅ Participate | ✅ Participate | ✅ Host |
+| **Budget Management** | ✅ Plan & Allocate | ❌ | ❌ | ✅ Approve |
+| **Performance Analytics** | ✅ Analyze & Report | ✅ Team Performance | ✅ Team Performance | ✅ Full Access |
+
+### **Part 5: Technical Implementation Specifications**
+
+**Database Schema Expansion:**
+```javascript
+// Marketing Core Tables
+{
+  // Campaign Management
+  marketingCampaigns: [{
+    campaignId: String,
+    name: String,
+    channels: Array, // ['instagram', 'facebook_ads', 'property_finder']
+    targetAudience: String, // 'investors', 'families', 'professionals'
+    budget: Number,
+    properties: Array, // Linked DAMAC Hills 2 properties
+    status: ENUM('draft', 'active', 'paused', 'completed'),
+    metrics: {
+      impressions: Number,
+      engagements: Number,
+      leads: Number,
+      costPerLead: Number,
+      conversions: Number
+    }
+  }],
+  
+  // Content Calendar
+  contentSchedule: [{
+    contentId: String,
+    platform: ENUM('instagram', 'linkedin', 'facebook', 'twitter'),
+    type: ENUM('post', 'story', 'video', 'carousel'),
+    caption: String,
+    mediaAssets: Array, // Links to property images/videos
+    scheduledTime: Date,
+    status: ENUM('scheduled', 'published', 'failed'),
+    performance: {
+      likes: Number,
+      comments: Number,
+      shares: Number,
+      reach: Number
+    }
+  }],
+  
+  // Lead Tracking
+  marketingLeads: [{
+    leadId: String,
+    source: String, // 'instagram_ad', 'google_search', 'referral'
+    campaignId: String,
+    contactInfo: Object,
+    assignedTo: ObjectId, // Sophia or Daisy's team member
+    status: ENUM('new', 'contacted', 'qualified', 'converted', 'lost'),
+    propertyInterest: Array // Specific DAMAC properties
+  }]
+}
+```
+
+**Key Backend Services:**
+1. **Content Management Service:** Handles creation, scheduling, and publishing
+2. **Social Listening Service:** Monitors brand mentions and trends
+3. **Ad Platform Integrations:** Manages API connections to ad networks
+4. **Analytics Engine:** Processes marketing performance data
+5. **Lead Routing Service:** Intelligently assigns leads to sales/leasing
+
+**Frontend Components:**
+- `<MarketingCommandCenter />`: Main dashboard with real-time marketing pulse
+- `<ContentStudio />`: AI-assisted content creation interface
+- `<CampaignManager />`: End-to-end campaign creation and monitoring
+- `<SocialListeningHub />`: Real-time social media monitoring
+- `<LeadOrchestrator />`: Lead tracking and assignment interface
+
+### **Part 6: Sample Marketing Campaign – "DAMAC Hills 2 Lifestyle Launch"**
+
+**Phase 1: Strategy & Setup (Olivia)**
+- Define target audience: "Expat families seeking community living"
+- Set campaign budget and channels
+- Gather premium assets from property library
+
+**Phase 2: Content Creation (Olivia + AI)**
+- Generate 2-week content calendar
+- Create video tour of community facilities
+- Design carousel posts highlighting different villa types
+
+**Phase 3: Launch & Management (Olivia)**
+- Schedule social media posts
+- Launch targeted Facebook/Instagram ads
+- Set up Google Ads for "family villas in Dubai"
+
+**Phase 4: Lead Handling (Integrated)**
+- Inquiries auto-routed to Sophia for sales, Daisy for rentals
+- Automated follow-up sequence for downloaded brochures
+- Performance tracking in real-time dashboard
+
+**Phase 5: Analysis & Optimization (Olivia + Theodora)**
+- Calculate campaign ROI
+- Identify best-performing content
+- Adjust strategy for next campaign
+
+### **Part 7: Unique Features for Property Marketing**
+
+1. **Virtual Staging Assistant**
+   - AI-powered room visualization with different furniture styles
+   - "See your family here" lifestyle imagery generation
+
+2. **Seasonal Campaign Templates**
+   - Pre-built campaigns for Ramadan, Dubai Shopping Festival, school holidays
+   - Automated promotional calendars
+
+3. **Community Storytelling Engine**
+   - Resident testimonial collection (with approval workflows)
+   - "Day in the life at DAMAC Hills 2" content series
+
+4. **Competitive Response System**
+   - Alerts when competitors launch promotions
+   - Suggested counter-campaign templates
+
+---
+
+### **Part 8: Implementation Roadmap**
+
+**Month 1: Foundation**
+- Brand asset library setup
+- Basic social media management
+- Integration with existing property data
+
+**Month 2: Automation**
+- Content calendar and scheduler
+- Lead capture and routing
+- Basic analytics dashboard
+
+**Month 3: Intelligence**
+- AI content generation
+- Advanced campaign management
+- Competitor tracking
+
+**Month 4: Optimization**
+- Predictive analytics
+- Automated optimization rules
+- Full ROI tracking integration with Theodora
+
+---
+
+This transforms Olivia from a social media manager into a full-scale marketing intelligence system that can attract qualified leads, build brand prestige for DAMAC Hills 2, and provide measurable business impact—all while maintaining a consistent, luxurious brand image. The system learns and improves over time, becoming smarter about what content and channels work best for your specific property portfolio.
+# AI Assistant: Zoe – Managing Director AI System
+
+**Role:** `managing_director` (Executive leadership role with oversight of all business operations)
+**Core Objective:** To implement an intelligent executive command center that provides strategic oversight, predictive analytics, performance monitoring, and decision support across all company functions—integrating data from Theodora (Finance), Olivia (Marketing), Sophia (Sales), Daisy (Leasing), Mary (Operations), and the DAMAC Hills 2 CRM.
+
+## Part 1: Core Executive Intelligence Modules
+
+### 1.1 Strategic Dashboard & Business Health Monitor
+- **Unified Business Pulse:** Real-time aggregation of 50+ KPIs across all departments in a single executive view
+- **Performance Heatmaps:** Visual representation of strengths/weaknesses across properties, teams, and services
+- **Early Warning System:** AI-driven alerts for potential issues before they become critical (e.g., "Occupancy in Cluster B trending 15% below target")
+
+### 1.2 Predictive Analytics & Forecasting Engine
+- **Revenue Projections:** 30/60/90-day forecasts using historical data, seasonality, and market trends
+- **Resource Optimization:** Predictive staffing and budget allocation based on projected demand
+- **Risk Assessment:** Automated risk scoring for properties, tenants, and business initiatives
+
+### 1.3 Decision Support & Scenario Planning
+- **What-If Analysis Tool:** Model business impacts of potential decisions (e.g., "If we increase maintenance fees by 10%, what's the predicted churn?")
+- **Opportunity Radar:** Identifies untapped revenue streams and optimization opportunities
+- **Competitive Intelligence:** Aggregated market analysis with strategic recommendations
+
+### 1.4 Learning & Knowledge Management System
+- **Business Pattern Recognition:** Identifies what's working/not working across the organization
+- **Best Practice Repository:** Documents and shares successful strategies across teams
+- **Executive Briefings:** Automated daily/weekly/monthly summaries tailored to Zoe's priorities
+
+### 1.5 Stakeholder Communication & Reporting
+- **Automated Board Reporting:** Generates investor-ready reports with insights and recommendations
+- **Team Performance Reviews:** Prepares data-driven performance assessments for department heads
+- **Regulatory Compliance Monitor:** Tracks and ensures adherence to all relevant regulations
+
+## Part 2: Executive Dashboard – "Strategic Command Center"
+
+### Primary Interface Components:
+
+**1. Executive Summary Wall**
+- Daily business health score (0-100)
+- Top 3 priorities for the day/week
+- Critical alerts requiring immediate attention
+- Milestone tracker for strategic initiatives
+
+**2. Department Performance Matrix**
+```
+| Department | Metric            | Current | Target | Trend | Status  |
+|------------|-------------------|---------|--------|-------|---------|
+| Sales      | Conversion Rate   | 24%     | 30%    | ↗️    | Attention|
+| Leasing    | Vacancy Rate      | 8%      | 5%     | ↘️    | Good    |
+| Finance    | Cash Flow         | +AED 2M | +AED 3M| →     | Monitor |
+| Marketing  | Cost per Lead     | AED 150 | AED 100| ↗️    | Action  |
+```
+
+**3. Strategic Initiative Tracker**
+- Visual progress on key business goals
+- Resource allocation vs. progress
+- Bottleneck identification and resolution suggestions
+
+**4. Market Intelligence Hub**
+- Real estate market trends in Dubai
+- Competitor activity analysis
+- Economic indicators affecting DAMAC Hills 2
+
+## Part 3: Integration Architecture
+
+### Data Integration Framework:
+```
+[All Department Systems] → [Zoe's Intelligence Engine] → [Strategic Insights]
+       ↓                              ↓                           ↓
+• Financial Data (Theodora)    • Pattern Recognition      • Executive Decisions
+• Marketing Metrics (Olivia)    • Predictive Modeling      • Strategic Direction
+• Sales Pipeline (Sophia)       • Correlation Analysis     • Resource Allocation
+• Leasing Operations (Daisy)    • Anomaly Detection        • Risk Mitigation
+• Property Data (Mary)          • Optimization Algorithms  • Growth Strategies
+• External Market Data          • Learning System          • Competitive Advantage
+```
+
+### Intelligence Processing Layers:
+1. **Data Aggregation Layer:** Pulls clean, normalized data from all sources
+2. **Analytics Layer:** Applies statistical models and machine learning algorithms
+3. **Insight Generation Layer:** Translates data into actionable business insights
+4. **Recommendation Layer:** Suggests specific actions with expected outcomes
+5. **Learning Layer:** Improves recommendations based on historical outcomes
+
+## Part 4: Permission & Access Matrix
+
+| Executive Function | Zoe (MD) | Department Heads | Company Owner |
+|-------------------|----------|------------------|---------------|
+| **Full Business Overview** | ✅ Complete | ✅ Their Department Only | ✅ Complete |
+| **Cross-Department Analytics** | ✅ Full Access | ❌ | ✅ Full Access |
+| **Strategic Decision Support** | ✅ Create & Analyze | ✅ Input & Feedback | ✅ Final Approval |
+| **Performance Reviews** | ✅ Prepare & Conduct | ✅ Participate | ✅ Oversight |
+| **Resource Allocation** | ✅ Recommend | ✅ Request | ✅ Approve |
+| **Risk Management** | ✅ Identify & Mitigate | ✅ Report Issues | ✅ Final Authority |
+| **Strategic Planning** | ✅ Lead & Facilitate | ✅ Contribute | ✅ Approve |
+| **Learning System** | ✅ Full Control | ✅ Contribute Data | ✅ Oversight |
+
+## Part 5: Technical Implementation Specifications
+
+### Database Schema for Executive Intelligence:
+```javascript
+// Executive Intelligence Core
+{
+  // Business Intelligence Layer
+  businessMetrics: [{
+    metricId: String,
+    category: ENUM('financial', 'operational', 'customer', 'market'),
+    department: String, // 'sales', 'leasing', 'finance', 'marketing'
+    currentValue: Number,
+    targetValue: Number,
+    trend: ENUM('improving', 'declining', 'stable'),
+    priority: Number, // 1-10
+    lastUpdated: Date,
+    dataSource: String // Which system provides this data
+  }],
+  
+  // Decision Support System
+  strategicDecisions: [{
+    decisionId: String,
+    type: ENUM('opportunity', 'risk_mitigation', 'optimization'),
+    description: String,
+    analysis: {
+      problemStatement: String,
+      dataSources: Array,
+      alternativesConsidered: Array,
+      recommendedAction: String,
+      expectedOutcome: String,
+      confidenceLevel: Number // 0-100%
+    },
+    implementation: {
+      timeline: Object,
+      resourcesNeeded: Array,
+      departmentsInvolved: Array,
+      successMetrics: Array
+    },
+    outcome: {
+      actualResult: String,
+      lessonsLearned: String,
+      addedToKnowledgeBase: Boolean
+    }
+  }],
+  
+  // Learning System
+  businessPatterns: [{
+    patternId: String,
+    description: String,
+    conditions: Object, // When this pattern occurs
+    outcome: Object, // What typically happens
+    confidence: Number,
+    recommendations: Array,
+    exampleCases: Array // Links to past instances
+  }]
+}
+```
+
+### Key AI/ML Services:
+1. **Predictive Analytics Service:** Time-series forecasting and trend analysis
+2. **Pattern Recognition Engine:** Identifies business patterns and correlations
+3. **Anomaly Detection System:** Flags unusual events requiring attention
+4. **Optimization Algorithm:** Suggests improvements to business processes
+5. **Natural Language Reporting:** Generates executive summaries from data
+
+### Frontend Executive Components:
+- `<StrategicCommandCenter />:` Main executive dashboard with customizable views
+- `<DecisionSupportStudio />:` Interactive tool for scenario analysis
+- `<PerformanceWarRoom />:` Deep dive into any business area
+- `<MarketIntelligenceHub />:` External data and competitive analysis
+- `<LearningLab />:` Review and improve the AI's business understanding
+
+## Part 6: Sample Executive Workflow – Quarterly Business Review
+
+### Week 1: Data Aggregation & Analysis
+- Zoe automatically pulls Q3 data from all departments
+- AI identifies key patterns: "Marketing costs up 15% but lead quality down 20%"
+- Prepares comparative analysis vs. competitors and market benchmarks
+
+### Week 2: Insight Generation
+- Generates department-specific report cards
+- Identifies 3 major opportunities and 2 critical risks
+- Creates "What-If" scenarios for strategic options
+
+### Week 3: Strategy Session Preparation
+- Prepares presentation for department heads
+- Develops recommended strategic initiatives for Q4
+- Creates individual briefing packages for each department
+
+### Week 4: Execution & Monitoring
+- Tracks implementation of Q4 initiatives
+- Sets up monitoring dashboards for new KPIs
+- Begins learning cycle for next quarter's improvements
+
+## Part 7: Unique Executive Capabilities
+
+### 1. Strategic Foresight Engine
+- Predicts market shifts 6-12 months in advance
+- Identifies emerging opportunities in Dubai real estate
+- Recommends timing for major business moves
+
+### 2. Leadership Development Module
+- Tracks leadership effectiveness across the organization
+- Suggests training and development opportunities
+- Identifies high-potential team members
+
+### 3. Innovation Radar
+- Scans for new technologies relevant to property management
+- Identifies process improvement opportunities
+- Tracks innovation implementation and ROI
+
+### 4. Stakeholder Sentiment Analysis
+- Monitors satisfaction across customers, employees, and partners
+- Identifies potential issues in stakeholder relationships
+- Recommends engagement strategies
+
+## Part 8: Implementation Roadmap
+
+### Phase 1: Foundation (Month 1-2)
+- Data integration from all existing systems
+- Basic executive dashboard implementation
+- Automated reporting system
+
+### Phase 2: Intelligence (Month 3-4)
+- Predictive analytics implementation
+- Pattern recognition system
+- Decision support tools
+
+### Phase 3: Optimization (Month 5-6)
+- Machine learning model refinement
+- Advanced scenario planning
+- Automated learning system
+
+### Phase 4: Mastery (Month 7+)
+- Strategic foresight capabilities
+- Innovation management
+- Leadership development integration
+
+## Part 9: Success Metrics for Zoe
+
+### Quantitative Metrics:
+- Decision quality improvement (measured by outcomes)
+- Time saved on reporting and analysis
+- Early identification of opportunities/risks
+- Improvement in overall business KPIs
+
+### Qualitative Benefits:
+- Enhanced strategic clarity
+- Reduced executive cognitive load
+- Improved cross-department alignment
+- Faster, data-driven decision making
+
+---
+
+This transforms Zoe from a simple reporting tool into a true strategic partner for the Managing Director—providing not just data, but wisdom, foresight, and actionable intelligence to drive the business forward. The system learns and adapts, becoming increasingly valuable as it understands the business context and the Managing Director's decision-making patterns.
+# AI Assistant: Laila – Chief Compliance Officer AI System
+
+**Role:** `chief_compliance_officer` (Specialized role for regulatory compliance, FTA, AML, and legal adherence)
+**Core Objective:** To implement an intelligent compliance management system that monitors, maintains, and ensures full regulatory compliance across all business operations—integrating with Theodora's financial systems, property transactions, and UAE regulatory frameworks for DAMAC Hills 2 operations.
+
+## Part 1: Core Compliance Modules
+
+### 1.1 Regulatory Intelligence & Monitoring System
+- **Dynamic Regulation Tracker:** Real-time monitoring of FTA, AML, DLD (Dubai Land Department), and RERA updates
+- **Regulatory Change Alerts:** Automated notifications when laws affecting property management change
+- **Jurisdiction Mapping:** Specific compliance requirements for Dubai vs. UAE federal regulations
+
+### 1.2 FTA (Federal Tax Authority) Compliance Engine
+- **VAT Compliance Automation:**
+  - Automated VAT calculations on all transactions (rentals, sales, services)
+  - Input/Output tax tracking and reconciliation
+  - Tax return preparation and submission scheduling
+  - Electronic filing integration with FTA portal
+  
+- **Corporate Tax Management:**
+  - Taxable income calculations specific to property management
+  - Transfer pricing documentation for inter-company transactions
+  - Tax group compliance (if applicable)
+  - Tax incentive tracking for qualifying activities
+
+### 1.3 AML (Anti-Money Laundering) & KYC Framework
+- **Customer Due Diligence (CDD):**
+  - Automated risk scoring for all clients (buyers, tenants, vendors)
+  - Enhanced Due Diligence (EDD) for high-value transactions (>AED 55,000)
+  - Beneficial ownership identification for corporate clients
+  - PEP (Politically Exposed Persons) screening and monitoring
+  
+- **Transaction Monitoring:**
+  - Real-time monitoring of all financial transactions
+  - Suspicious Activity Pattern recognition
+  - Automated STR (Suspicious Transaction Report) generation
+  - Cash transaction tracking (for payments >AED 55,000)
+
+### 1.4 Real Estate Specific Compliance
+- **DLD/RERA Compliance:**
+  - Ejari registration automation for all leases
+  - Trust Account compliance for security deposits
+  - Property management regulations adherence
+  - Owner association regulations for DAMAC Hills 2
+  
+- **Tenancy Law Adherence:**
+  - Rent increase calculator within RERA limits
+  - Eviction process compliance tracking
+  - Security deposit release compliance
+  - Maintenance responsibility mapping
+
+### 1.5 Document Management & Audit Trail
+- **Compliance Documentation Repository:**
+  - Centralized storage for all compliance documents
+  - Version control for policies and procedures
+  - Automated retention scheduling (5+ years for AML records)
+  
+- **Audit Trail System:**
+  - Immutable log of all compliance actions
+  - User action tracking with timestamps
+  - Change history for all compliance records
+
+## Part 2: Compliance Dashboard – "Regulatory Command Center"
+
+### Primary Interface Components:
+
+**1. Compliance Health Monitor**
+- Real-time compliance status across all regulatory areas
+- Risk heat map showing areas needing attention
+- Upcoming deadline tracker for submissions and renewals
+
+**2. FTA Compliance Dashboard**
+```
+| VAT Component        | Status   | Last Filing | Next Due    | Amount      |
+|----------------------|----------|-------------|-------------|-------------|
+| Output VAT           | ✅ Filed | 30-Nov-2023 | 31-Jan-2024 | AED 287,500 |
+| Input VAT Recovery   | ⚠️ Pending| 30-Nov-2023 | 31-Jan-2024 | AED 89,200  |
+| Corporate Tax Prep   | ✅ Ready | N/A         | 30-Jun-2024 | AED 1.2M    |
+| Tax Audit Readiness  | 🟢 Green | Ongoing     | N/A         | N/A         |
+```
+
+**3. AML Monitoring Panel**
+- Active CDD/EDD cases
+- Suspicious transaction alerts
+- PEP and sanctions screening results
+- STR filing status and history
+
+**4. Regulatory Change Log**
+- Recent regulatory updates affecting business
+- Impact assessment for each change
+- Action items required for compliance
+
+## Part 3: Integration Architecture
+
+### Compliance Data Integration:
+```
+[Business Operations] → [Laila's Compliance Engine] → [Regulatory Reporting]
+       ↓                          ↓                           ↓
+• Financial Transactions   • Risk Assessment &        • FTA Returns
+  (Theodora)                 Monitoring               • AML Reports
+• Property Transactions    • Compliance Validation    • DLD Submissions
+  (Sophia/Daisy)           • Documentation            • Regulatory Filings
+• Client Data              • Audit Trail Creation     • Compliance Certificates
+  (All Systems)            • Training Management      • Audit Responses
+```
+
+### Key Regulatory Integrations:
+1. **FTA Portal Integration:** Direct API connection for VAT and corporate tax filings
+2. **AML/CFT Reporting System:** Integration with UAE's goAML platform
+3. **DLD Electronic Systems:** Ejari and other property registration systems
+4. **Commercial Licensing:** Integration with DED (Department of Economic Development)
+
+## Part 4: Compliance Workflow Automation
+
+### 1. New Client Onboarding Workflow:
+```
+1. Client Application → 2. Automated KYC Check → 3. Risk Scoring → 4. Document Collection
+       ↓                      ↓                       ↓               ↓
+[Property System]      [AML Database Screening] [Risk Category]  [Digital Signature]
+       5. Compliance Approval → 6. System Integration → 7. Ongoing Monitoring
+```
+
+### 2. Transaction Compliance Check:
+```
+1. Transaction Initiated → 2. AML Screening → 3. Threshold Check → 4. Source of Funds
+       ↓                       ↓                  ↓                  ↓
+[Sales/Leasing System]   [PEP/Sanctions]    [>AED 55k?]       [Documentation]
+       5. Compliance Clearance → 6. Transaction Processing → 7. STR Flag if Suspicious
+```
+
+### 3. VAT Compliance Cycle:
+```
+1. Invoice Generation → 2. VAT Calculation → 3. Record in Books → 4. Input VAT Claim
+       ↓                    ↓                   ↓                  ↓
+[All Systems]          [UAE VAT Rules]     [Theodora's Ledger] [Expense Tracking]
+       5. Quarterly Return Prep → 6. FTA Submission → 7. Payment/Refund Processing
+```
+
+## Part 5: Technical Implementation Specifications
+
+### Database Schema for Compliance Management:
+```javascript
+// Compliance Core Database
+{
+  // Regulatory Tracking
+  regulatoryRequirements: [{
+    regulationId: String,
+    jurisdiction: ENUM('UAE_Federal', 'Dubai', 'DIFC', 'ADGM'),
+    authority: ENUM('FTA', 'CBUAE', 'DLD', 'RERA', 'DED'),
+    requirement: String,
+    applicableTo: Array, // ['property_sales', 'leasing', 'management']
+    lastUpdated: Date,
+    complianceStatus: ENUM('compliant', 'action_required', 'non_compliant'),
+    actionItems: Array,
+    deadline: Date
+  }],
+  
+  // AML/KYC Records
+  amlRecords: [{
+    clientId: String,
+    riskCategory: ENUM('low', 'medium', 'high'),
+    kycDocuments: {
+      idProof: String,
+      addressProof: String,
+      sourceOfWealth: String,
+      beneficialOwners: Array
+    },
+    screeningResults: {
+      pepStatus: Boolean,
+      sanctionsMatch: Boolean,
+      adverseMedia: Array
+    },
+    monitoring: {
+      lastReview: Date,
+      nextReview: Date,
+      transactionHistory: Array,
+      flags: Array
+    }
+  }],
+  
+  // Tax Compliance
+  taxCompliance: [{
+    period: Date,
+    vatReturn: {
+      taxableSales: Number,
+      outputVAT: Number,
+      taxablePurchases: Number,
+      inputVAT: Number,
+      netVAT: Number,
+      filingStatus: ENUM('draft', 'filed', 'paid', 'audited'),
+      ftaReference: String
+    },
+    corporateTax: {
+      taxableIncome: Number,
+      deductions: Number,
+      taxPayable: Number,
+      filingStatus: ENUM('pending', 'filed', 'paid'),
+      transferPricingDoc: String
+    }
+  }]
+}
+```
+
+### Key AI/ML Services for Compliance:
+1. **Regulatory Change Detection:** NLP system scanning official gazettes and updates
+2. **Anomaly Detection Engine:** Identifies unusual patterns in transactions
+3. **Risk Scoring Algorithm:** Calculates client and transaction risk scores
+4. **Document Analysis:** AI verification of compliance documents
+5. **Predictive Compliance:** Anticipates regulatory changes based on trends
+
+### Frontend Compliance Components:
+- `<ComplianceCommandCenter />:` Main dashboard with regulatory health monitoring
+- `<AMLMonitoringHub />:` Real-time transaction and client monitoring
+- `<FTAManagementSuite />:` Complete tax compliance management
+- `<AuditPreparationModule />:` Tools for internal and external audits
+- `<PolicyManagementStudio />:` Compliance policy creation and distribution
+
+## Part 6: Sample Compliance Workflows
+
+### Workflow 1: High-Value Property Purchase
+```
+1. AED 3M Villa Purchase → 2. Automatic EDD Trigger → 3. Source of Funds Verification
+       ↓                        ↓                          ↓
+[Sales Contract]          [Enhanced Requirements]     [Bank Statements]
+       4. PEP Screening → 5. Beneficial Owner Disclosure → 6. Compliance Approval
+           ↓                          ↓                          ↓
+     [Watchlist Check]       [Corporate Structure]        [Laila's Sign-off]
+```
+
+### Workflow 2: Quarterly VAT Compliance
+```
+1. Quarter End → 2. Auto-data Aggregation → 3. VAT Calculation → 4. Return Preparation
+     ↓                ↓                      ↓                  ↓
+[System Trigger] [All Transactions]     [UAE VAT Rules]   [FTA Template]
+       5. Internal Review → 6. FTA Submission → 7. Payment Processing → 8. Record Keeping
+           ↓                  ↓                  ↓                  ↓
+     [Laila's Approval] [Electronic Filing] [Bank Transfer]  [5-year Storage]
+```
+
+### Workflow 3: Regulatory Change Implementation
+```
+1. New Regulation Published → 2. Impact Analysis → 3. Gap Assessment
+           ↓                          ↓                  ↓
+     [Govt Gazette]            [Business Process Map] [Current State]
+       4. Action Plan → 5. Policy Updates → 6. Training → 7. Implementation
+           ↓                  ↓                  ↓            ↓
+     [Task Assignment]   [Document Revision] [Staff Training] [System Changes]
+       8. Monitoring → 9. Compliance Verification → 10. Audit Trail
+           ↓                          ↓                  ↓
+     [Ongoing Checks]          [Internal Audit]      [Documentation]
+```
+
+## Part 7: Integration with Other AI Assistants
+
+### With Theodora (Finance):
+- **Data Flow:** Financial transactions → AML screening → Compliance clearance
+- **Shared Functions:** Tax calculations, audit trails, financial reporting
+- **Compliance Checks:** All payments screened, VAT compliance coordinated
+
+### With Sophia & Daisy (Sales/Leasing):
+- **Integration Points:** Client onboarding, transaction processing, contract compliance
+- **Compliance Gates:** KYC before contract signing, AML checks before payments
+- **Regulatory Adherence:** Tenancy law compliance, DLD requirements
+
+### With Zoe (Managing Director):
+- **Reporting:** Compliance status reports, risk assessments, regulatory updates
+- **Decision Support:** Compliance implications of business decisions
+- **Strategic Input:** Regulatory constraints and opportunities
+
+### With Mary (Operations):
+- **Property Compliance:** Building regulations, safety standards, community rules
+- **Operational Integration:** Compliance in daily operations and maintenance
+
+## Part 8: UAE-Specific Compliance Requirements
+
+### 1. AML/CFT Requirements (CBUAE Regulations):
+- Mandatory reporting thresholds and timelines
+- Record keeping requirements (5+ years)
+- Staff training requirements
+- Internal controls and independent audit requirements
+
+### 2. FTA Requirements:
+- VAT registration threshold (AED 375,000)
+- Tax invoice requirements
+- Tax return filing deadlines
+- Electronic filing mandates
+
+### 3. Real Estate Specific:
+- DLD broker registration requirements
+- RERA property management regulations
+- Escrow account requirements for off-plan sales
+- Owners association management regulations
+
+## Part 9: Implementation Roadmap
+
+### Phase 1: Foundation (Months 1-2)
+- Basic compliance framework setup
+- Document management system
+- Integration with existing financial systems
+- Initial policy development
+
+### Phase 2: Automation (Months 3-4)
+- Automated AML screening
+- VAT compliance automation
+- Regulatory tracking system
+- Basic reporting capabilities
+
+### Phase 3: Intelligence (Months 5-6)
+- AI-powered risk scoring
+- Predictive compliance monitoring
+- Advanced reporting and analytics
+- Integration with government portals
+
+### Phase 4: Mastery (Months 7+)
+- Full regulatory intelligence
+- Predictive regulatory change anticipation
+- Advanced audit capabilities
+- Continuous improvement system
+
+## Part 10: Compliance Metrics & Reporting
+
+### Key Performance Indicators:
+- **Compliance Rate:** Percentage of requirements fully met
+- **Inspection Readiness:** Audit preparation status
+- **Training Completion:** Staff compliance training percentages
+- **Report Timeliness:** Regulatory submission deadlines met
+- **Incident Response:** Time to resolve compliance issues
+
+### Mandatory Reports Generated:
+1. **Monthly Compliance Status Report**
+2. **Quarterly AML/CFT Report**
+3. **VAT Returns (Quarterly)**
+4. **Annual Corporate Tax Return**
+5. **Regulatory Change Impact Reports**
+6. **Internal Audit Findings**
+7. **Training Compliance Reports**
+
+---
+
+This transforms Laila from a simple compliance tracker into an intelligent regulatory intelligence system that not only ensures current compliance but anticipates future requirements, integrates seamlessly with all business operations, and provides the peace of mind that comes with knowing your DAMAC Hills 2 operations are fully compliant with UAE regulations. The system continuously learns and adapts to the evolving regulatory landscape, making it an indispensable asset for risk management and sustainable business growth.
+
