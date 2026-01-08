@@ -2,12 +2,16 @@ import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setActiveRole } from '../../store/navigationSlice';
-import TopNavBar from './TopNavBar';
+import { UniversalNav } from '../common';
 import './AppLayout.css';
 
 const ROLE_PATHS = ['buyer', 'seller', 'landlord', 'tenant', 'leasing-agent', 'secondary-sales-agent', 'owner'];
 
-export default function AppLayout({ children, showNav = true }) {
+export default function AppLayout({ 
+  children, 
+  showNav = true,
+  navProps = {}
+}) {
   const location = useLocation();
   const dispatch = useDispatch();
 
@@ -22,7 +26,7 @@ export default function AppLayout({ children, showNav = true }) {
 
   return (
     <div className="app-layout">
-      {showNav && <TopNavBar />}
+      {showNav && <UniversalNav {...navProps} />}
       <main className={`app-main ${showNav ? 'with-nav' : ''}`}>
         {children}
       </main>

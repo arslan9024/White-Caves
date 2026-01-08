@@ -6,3 +6,4 @@ export { default as PageHeader, ActionButton } from './PageHeader';
 export { default as LeadCard, LeadListItem, LeadScoreBadge, LeadStatusBadge } from './LeadCard';
 export { default as PropertyCard, PropertyCardGrid, PropertyListItem, PropertyStatusBadge } from './PropertyCard';
 export { default as PipelineProgress, PipelineBoard, DealProgressBar } from './PipelineProgress';
+export { default as UniversalNav, ROLE_MENUS, DEFAULT_NAV_LINKS } from './UniversalNav';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import MegaNav from '../components/MegaNav';
+import AppLayout from '../components/layout/AppLayout';
 import './CareersPage.css';
 
 const jobPositions = [
@@ -156,10 +156,9 @@ export default function CareersPage() {
   };
 
   return (
-    <div className="careers-page">
-      <MegaNav />
-      
-      <section className="careers-hero">
+    <AppLayout>
+      <div className="careers-page">
+        <section className="careers-hero">
         <div className="careers-hero-overlay"></div>
         <div className="careers-hero-content">
           <h1>Build Your Career with White Caves</h1>
@@ -446,16 +445,17 @@ export default function CareersPage() {
         </div>
       </section>
 
-      <footer className="careers-footer">
-        <div className="careers-container">
-          <p>&copy; 2024 White Caves Real Estate LLC. All rights reserved.</p>
-          <div className="footer-links">
-            <Link to="/">Home</Link>
-            <Link to="/services">Services</Link>
-            <Link to="/signin">Sign In</Link>
+        <footer className="careers-footer">
+          <div className="careers-container">
+            <p>&copy; 2024 White Caves Real Estate LLC. All rights reserved.</p>
+            <div className="footer-links">
+              <Link to="/">Home</Link>
+              <Link to="/services">Services</Link>
+              <Link to="/signin">Sign In</Link>
+            </div>
           </div>
-        </div>
-      </footer>
-    </div>
+        </footer>
+      </div>
+    </AppLayout>
   );
 }

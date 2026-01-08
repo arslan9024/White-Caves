@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import MegaNav from '../components/MegaNav';
+import AppLayout from '../components/layout/AppLayout';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
 import './ServicesPage.css';
@@ -81,10 +81,9 @@ export default function ServicesPage() {
   ];
 
   return (
-    <div className="services-page">
-      <MegaNav user={user} />
-
-      <section className="services-hero">
+    <AppLayout>
+      <div className="services-page">
+        <section className="services-hero">
         <div className="hero-overlay"></div>
         <div className="hero-content">
           <h1>Premium Real Estate Services in Dubai</h1>
@@ -446,8 +445,9 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <Footer />
-      <WhatsAppButton />
-    </div>
+        <Footer />
+        <WhatsAppButton />
+      </div>
+    </AppLayout>
   );
 }

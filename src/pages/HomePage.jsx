@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setProperties } from '../store/propertySlice';
-import MegaNav from '../components/MegaNav';
+import AppLayout from '../components/layout/AppLayout';
 import Footer from '../components/Footer';
 import ClickToChat from '../components/ClickToChat';
 import Hero from '../components/homepage/Hero';
@@ -73,102 +73,70 @@ export default function HomePage() {
         amenities: ["Pool", "Garden", "Security", "Parking", "Gym", "Cinema"],
         location: "Emirates Hills",
         type: "Villa",
-        description: "Magnificent Mediterranean-inspired mansion on the prestigious Emirates Hills golf course."
+        description: "Magnificent mansion with lush gardens and golf course views in the most exclusive community."
       },
       {
         id: 4,
-        title: "Waterfront Apartment - Dubai Marina",
+        title: "Marina Skyline Apartment - Dubai Marina",
         beds: 3,
         baths: 4,
         sqft: 3200,
         price: 8500000,
-        amenities: ["Pool", "Gym", "Parking", "Concierge", "Security"],
+        amenities: ["Pool", "Gym", "Parking", "Security", "Concierge"],
         location: "Dubai Marina",
         type: "Apartment",
-        description: "Elegant waterfront apartment with stunning marina views."
+        description: "Contemporary living space with stunning marina and sea views."
       },
       {
         id: 5,
-        title: "Modern Villa with Golf Course Views - Arabian Ranches",
+        title: "Signature Villa - Palm Jumeirah",
         beds: 5,
         baths: 6,
         sqft: 8500,
-        price: 18000000,
-        amenities: ["Pool", "Garden", "Parking", "Security"],
-        location: "Arabian Ranches",
+        price: 28000000,
+        amenities: ["Pool", "Beach Access", "Parking", "Security", "Garden"],
+        location: "Palm Jumeirah",
         type: "Villa",
-        description: "Contemporary villa overlooking the championship golf course in Arabian Ranches."
+        description: "Exclusive signature villa with private beach access and infinity pool."
       },
       {
         id: 6,
-        title: "Luxury Townhouse - Jumeirah Village Circle",
+        title: "Sky Collection Duplex - DIFC",
         beds: 4,
         baths: 5,
-        sqft: 4500,
-        price: 6500000,
-        amenities: ["Pool", "Parking", "Garden", "Security"],
-        location: "Jumeirah Village Circle",
-        type: "Townhouse",
-        description: "Spacious townhouse in the heart of JVC."
+        sqft: 5200,
+        price: 22000000,
+        amenities: ["Pool", "Gym", "Concierge", "Parking", "Security"],
+        location: "DIFC",
+        type: "Penthouse",
+        description: "Stunning duplex penthouse in the heart of Dubai's financial district."
       }
     ]));
   }, [dispatch]);
 
   return (
-    <div className="homepage">
-      <MegaNav user={user} />
-      
-      <Hero />
-      
-      <OnboardingGateway />
-      
-      <Features />
-      
-      <Locations />
-      
-      <section className="section-wrapper" id="map">
-        <InteractiveMap onPropertySelect={(property) => handlePropertyClick(property.id)} />
-      </section>
-
-      <section className="section-wrapper" id="compare">
+    <AppLayout>
+      <div className="home-page">
+        <Hero onPropertyClick={handlePropertyClick} />
+        <Features />
+        <DubaiMap onLocationClick={handlePropertyClick} />
+        <Locations />
+        <InteractiveMap />
         <PropertyComparison />
-      </section>
-
-      <section className="section-wrapper" id="offplan">
-        <OffPlanTracker />
-      </section>
-
-      <section className="section-wrapper" id="neighborhood">
-        <NeighborhoodAnalyzer />
-      </section>
-
-      <section className="section-wrapper" id="calculator">
         <RentVsBuyCalculator />
-      </section>
-
-      <section className="section-wrapper" id="virtual-tours">
+        <OffPlanTracker />
+        <NeighborhoodAnalyzer />
         <VirtualTourGallery />
-      </section>
-
-      <section className="section-wrapper" id="dubai-map">
-        <DubaiMap onPropertySelect={(property) => handlePropertyClick(property.id)} />
-      </section>
-
-      <Testimonials />
-
-      <Team />
-      
-      <CompanyProfile />
-      
-      <BlogSection />
-      
-      <ContactCTA />
-      
-      <NewsletterSubscription />
-      
-      <Footer />
-      
-      <ClickToChat />
-    </div>
+        <CompanyProfile />
+        <Team />
+        <Testimonials />
+        <BlogSection />
+        <NewsletterSubscription />
+        <ContactCTA />
+        <OnboardingGateway />
+        <ClickToChat />
+        <Footer />
+      </div>
+    </AppLayout>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useSearchParams, Link } from 'react-router-dom';
-import MegaNav from '../components/MegaNav';
+import AppLayout from '../components/layout/AppLayout';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
 import './PropertiesPage.css';
@@ -213,10 +213,9 @@ export default function PropertiesPage() {
   };
 
   return (
-    <div className="properties-page">
-      <MegaNav user={user} />
-      
-      <section className="properties-hero">
+    <AppLayout>
+      <div className="properties-page">
+        <section className="properties-hero">
         <div className="hero-overlay"></div>
         <div className="hero-content">
           <h1>Find Your Perfect Property</h1>
@@ -387,8 +386,9 @@ export default function PropertiesPage() {
         </main>
       </div>
 
-      <Footer />
-      <WhatsAppButton />
-    </div>
+        <Footer />
+        <WhatsAppButton />
+      </div>
+    </AppLayout>
   );
 }

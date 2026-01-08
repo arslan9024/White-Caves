@@ -1,13 +1,11 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import MegaNav from '../components/MegaNav';
+import AppLayout from '../components/layout/AppLayout';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
 import './AboutPage.css';
 
 export default function AboutPage() {
-  const user = useSelector(state => state.user.currentUser);
 
   const teamMembers = [
     {
@@ -53,10 +51,9 @@ export default function AboutPage() {
   ];
 
   return (
-    <div className="about-page">
-      <MegaNav user={user} />
-
-      <section className="about-hero">
+    <AppLayout>
+      <div className="about-page">
+        <section className="about-hero">
         <div className="hero-overlay"></div>
         <div className="hero-content">
           <h1>About White Caves</h1>
@@ -206,8 +203,9 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <Footer />
-      <WhatsAppButton />
-    </div>
+        <Footer />
+        <WhatsAppButton />
+      </div>
+    </AppLayout>
   );
 }
