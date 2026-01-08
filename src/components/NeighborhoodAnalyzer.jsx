@@ -243,11 +243,11 @@ const NeighborhoodAnalyzer = () => {
 
       <div className="analyzer-content">
         <div className="area-hero" style={{ backgroundImage: `url(${area.image})` }}>
-          <div className="hero-overlay">
-            <div className="hero-content">
+          <div className="na-hero-overlay">
+            <div className="na-hero-content">
               <h3>{area.name}</h3>
               <p>{area.description}</p>
-              <div className="hero-badges">
+              <div className="na-hero-badges">
                 <span className={`score-badge ${getScoreColor(area.score)}`}>
                   Score: {area.score}/100
                 </span>

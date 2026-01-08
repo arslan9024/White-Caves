@@ -48,7 +48,7 @@ Preferred communication style: Simple, everyday language.
 - **usePermissions Hook**: React hook (`src/hooks/usePermissions.js`) providing easy access to permission checks, role detection, and authorization helpers in components.
 - **RequirePermission Component**: Wrapper components (`src/components/common/RequirePermission.jsx`) including RequirePermission, OwnerOnly, RoleOnly, AgentOnly, FeatureGate, and withPermission HOC for conditional rendering based on user permissions.
 - **ContentSlider Component**: Responsive slider component (`src/components/common/ContentSlider.jsx`) with touch/drag support, auto-play, responsive slides-per-view, and customizable rendering for dynamic content display.
-- **Owner-Exclusive Features**: Company owner role separated from main navigation; owner-only access to WhatsApp Business dashboard, system health, user management, and global settings through dedicated OWNER_MENU configuration.
+- **Owner-Exclusive Features**: Company owner role completely separated from main navigation; owner-only access to WhatsApp Business dashboard, system health, user management, and global settings through the Owner Dashboard SubNavBar (not visible in main navbar).
 - **Transaction Timeline System**: Comprehensive TenancyTimeline and SaleTimeline MongoDB models with document tracking, stage progression (16 tenancy stages, 14 sale stages), and verification workflows. API routes at `/api/timelines`.
 - **Ejari Unified Tenancy Contract System**: Compliant contract generation, secure digital signature workflows, and status tracking.
 - **Brand Theme**: Red and White color scheme, Montserrat/Open Sans typography, consistent design system with CSS variables, and comprehensive light/dark theme support.

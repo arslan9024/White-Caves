@@ -64,7 +64,7 @@
   margin-bottom: var(--spacing-lg, 2rem);
 }
 
-.area-hero .hero-overlay {
+.area-hero .na-hero-overlay {
   height: 100%;
   background: linear-gradient(to right, rgba(26,54,93,0.9) 0%, rgba(26,54,93,0.6) 50%, transparent 100%);
   display: flex;
@@ -72,24 +72,24 @@
   padding: 0 var(--spacing-xl, 3rem);
 }
 
-.hero-content {
+.na-hero-content {
   max-width: 500px;
   color: var(--text-on-primary, #ffffff);
 }
 
-.hero-content h3 {
+.na-hero-content h3 {
   font-family: var(--font-heading, 'Montserrat', sans-serif);
   font-size: 2.5rem;
   margin-bottom: 1rem;
 }
 
-.hero-content p {
+.na-hero-content p {
   font-size: 1rem;
   opacity: 0.95;
   margin-bottom: 1.5rem;
 }
 
-.hero-badges {
+.na-hero-badges {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;

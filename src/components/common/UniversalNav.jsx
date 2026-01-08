@@ -243,7 +243,7 @@ export default function UniversalNav({
             ))}
           </div>
 
-          {menu && (
+          {menu && !menu.isOwnerExclusive && (
             <div className="role-dropdown" ref={menuRef}>
               <button 
                 className="role-trigger"
@@ -263,35 +263,6 @@ export default function UniversalNav({
                       to={item.path}
                       className={`dropdown-item ${location.pathname === item.path ? 'active' : ''}`}
                       onClick={() => dispatch(closeRoleMenu())}
-                    >
-                      <span className="item-icon">{item.icon}</span>
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {menu?.whatsapp && (
-            <div className="whatsapp-dropdown" ref={whatsappRef}>
-              <button 
-                className="whatsapp-trigger"
-                onClick={() => dispatch(toggleWhatsappMenu())}
-              >
-                <span className="wa-icon">💬</span>
-                <span>WhatsApp</span>
-                <span className="dropdown-arrow">{whatsappMenuOpen ? '▲' : '▼'}</span>
-              </button>
-              
-              {whatsappMenuOpen && (
-                <div className="dropdown-menu whatsapp-menu">
-                  {menu.whatsapp.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      className={`dropdown-item ${location.pathname === item.path ? 'active' : ''}`}
-                      onClick={() => dispatch(closeWhatsappMenu())}
                     >
                       <span className="item-icon">{item.icon}</span>
                       {item.label}
