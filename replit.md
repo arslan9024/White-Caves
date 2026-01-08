@@ -48,6 +48,7 @@ Preferred communication style: Simple, everyday language.
 - **WhatsApp Business Integration**: Session management, QR code generation, Meta Business OAuth, and an AI Chatbot for customer support and lead scoring.
 - **Chatbot Training Data Module**: Comprehensive bilingual training data for the AI chatbot.
 - **Platform Features Explorer**: Owner-exclusive Feature Explorer component with Redux state management displaying all 33 implemented platform features. Features organized into 10 categories (Authentication, User Management, Property, Transactions, Communication, Analytics, Integrations, UI Components, Tools, System) with search, category filtering, grid view, and detailed feature panels showing implementation dates, source files, and capabilities.
+- **Enhanced Owner Dashboard**: Comprehensive tabbed dashboard with 11 sections (Overview, Properties, Agents, Leads, Contracts, Analytics, AI Chatbot, WhatsApp, UAE Pass, Features, Settings). Features sticky tab navigation, real-time statistics, quick actions, data tables with filtering/search, agent performance cards, lead management, contract/Ejari tracking, analytics charts, chatbot stats, WhatsApp Business integration, UAE Pass user management, and system settings with feature toggles. Backend API at `/api/dashboard/owner/summary` serves mock data ready for real database integration.
 
 ## External Dependencies
 
