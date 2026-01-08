@@ -165,7 +165,10 @@ export const selectUniqueStatuses = createSelector(
 
 export const selectFilterOptions = createSelector(
   [selectManifest],
-  (manifest) => manifest.filterOptions || {}
+  (manifest) => ({
+    ...manifest.filterOptions,
+    clusters: manifest.clusters || []
+  })
 );
 
 export const selectActiveFiltersCount = createSelector(
@@ -202,6 +205,24 @@ export const selectFilteredProperties = createSelector(
       }
       
       if (filters.showMultiOwner && (!property.owners || property.owners.length <= 1)) return false;
+      
+      if (filters.showMultiPhone) {
+        const hasOwnerWithMultiPhone = property.owners?.some(oid => {
+          const owner = owners.byId[oid];
+          if (!owner) return false;
+          const phones = owner.contacts?.filter(c => ['mobile', 'phone', 'secondaryMobile'].includes(c.type)) || [];
+          return phones.length > 1;
+        });
+        if (!hasOwnerWithMultiPhone) return false;
+      }
+      
+      if (filters.showMultiProperty) {
+        const hasOwnerWithMultiProps = property.owners?.some(oid => {
+          const owner = owners.byId[oid];
+          return owner?.properties?.length > 1;
+        });
+        if (!hasOwnerWithMultiProps) return false;
+      }
       
       return true;
     });

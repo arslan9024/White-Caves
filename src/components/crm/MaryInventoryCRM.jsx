@@ -98,10 +98,7 @@ const MaryInventoryCRM = () => {
     return property.owners.map(ownerId => owners.byId?.[ownerId]).filter(Boolean);
   };
 
-  const enrichedFilterOptions = {
-    ...filterOptions,
-    clusters: filterOptions.clusters || stats.clusters || []
-  };
+  const enrichedFilterOptions = filterOptions;
 
   return (
     <div className="mary-crm-container">
