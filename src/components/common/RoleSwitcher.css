@@ -1,0 +1,201 @@
+.role-switcher {
+  position: relative;
+}
+
+.role-switcher-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-secondary, #f8f9fa);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--text-primary, #1f2937);
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.role-switcher-toggle:hover {
+  background: var(--hover-bg, rgba(0, 0, 0, 0.05));
+  border-color: var(--primary-color, #DC2626);
+}
+
+.role-switcher-toggle.compact {
+  padding: 0.5rem;
+}
+
+.role-switcher-toggle.compact .current-role-label {
+  display: none;
+}
+
+[data-theme="dark"] .role-switcher-toggle {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+[data-theme="dark"] .role-switcher-toggle:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.current-role-icon {
+  font-size: 1.1rem;
+}
+
+.current-role-label {
+  font-weight: 500;
+}
+
+.dropdown-arrow {
+  font-size: 0.65rem;
+  transition: transform 0.2s ease;
+  opacity: 0.6;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.role-switcher-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 280px;
+  background: var(--bg-secondary, #fff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  overflow: hidden;
+  animation: dropdownSlide 0.2s ease;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+[data-theme="dark"] .role-switcher-dropdown {
+  background: #1f2937;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.dropdown-header {
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary, #6b7280);
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+
+[data-theme="dark"] .dropdown-header {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.role-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.role-option:hover {
+  background: var(--hover-bg, rgba(0, 0, 0, 0.05));
+}
+
+[data-theme="dark"] .role-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.role-option.active {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+[data-theme="dark"] .role-option.active {
+  background: rgba(220, 38, 38, 0.2);
+}
+
+.role-icon {
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary, #f3f4f6);
+  border-radius: 10px;
+}
+
+[data-theme="dark"] .role-icon {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.role-option.active .role-icon {
+  background: var(--primary-color, #DC2626);
+}
+
+.role-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.role-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary, #1f2937);
+}
+
+[data-theme="dark"] .role-label {
+  color: #fff;
+}
+
+.role-description {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #6b7280);
+}
+
+.role-check {
+  color: var(--primary-color, #DC2626);
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .role-switcher-dropdown {
+    position: fixed;
+    top: auto;
+    bottom: 70px;
+    left: 1rem;
+    right: 1rem;
+    min-width: auto;
+  }
+  
+  .role-switcher-toggle {
+    padding: 0.5rem;
+  }
+  
+  .current-role-label {
+    display: none;
+  }
+}

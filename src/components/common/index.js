@@ -7,3 +7,5 @@ export { default as LeadCard, LeadListItem, LeadScoreBadge, LeadStatusBadge } fr
 export { default as PropertyCard, PropertyCardGrid, PropertyListItem, PropertyStatusBadge } from './PropertyCard';
 export { default as PipelineProgress, PipelineBoard, DealProgressBar } from './PipelineProgress';
 export { default as UniversalNav, ROLE_MENUS, DEFAULT_NAV_LINKS } from './UniversalNav';
+export { default as SubNavBar } from './SubNavBar';
+export { default as RoleSwitcher } from './RoleSwitcher';

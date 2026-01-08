@@ -12,6 +12,9 @@ const initialState = {
   language: localStorage.getItem('language') || 'en',
   notifications: [],
   unreadNotifications: 0,
+  currentModule: null,
+  currentSubModule: null,
+  sidebarCollapsed: false,
 };
 
 const navigationSlice = createSlice({
@@ -88,6 +91,18 @@ const navigationSlice = createSlice({
       state.notifications = [];
       state.unreadNotifications = 0;
     },
+    setCurrentModule: (state, action) => {
+      state.currentModule = action.payload;
+    },
+    setCurrentSubModule: (state, action) => {
+      state.currentSubModule = action.payload;
+    },
+    toggleSidebar: (state) => {
+      state.sidebarCollapsed = !state.sidebarCollapsed;
+    },
+    setSidebarCollapsed: (state, action) => {
+      state.sidebarCollapsed = action.payload;
+    },
   },
 });
 
@@ -109,6 +124,10 @@ export const {
   addNotification,
   markNotificationsRead,
   clearNotifications,
+  setCurrentModule,
+  setCurrentSubModule,
+  toggleSidebar,
+  setSidebarCollapsed,
 } = navigationSlice.actions;
 
 export default navigationSlice.reducer;
