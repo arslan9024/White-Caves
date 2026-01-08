@@ -11,9 +11,9 @@ const SubNavBar = ({ moduleId, onSubModuleChange }) => {
     activeRole: state.navigation.activeRole
   }));
 
-  const role = activeRole || moduleId;
-  const subNavItems = getSubNavItems(role, moduleId);
-  const currentModule = getModuleById(moduleId);
+  const role = moduleId || activeRole;
+  const subNavItems = getSubNavItems(role, role);
+  const currentModule = getModuleById(role);
 
   const handleSubModuleClick = (subModule) => {
     dispatch(setCurrentSubModule(subModule.id));

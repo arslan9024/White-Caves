@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { PageHeader, ActionButton, SubNavBar } from '../common';
-import { setCurrentModule, setCurrentSubModule } from '../../store/navigationSlice';
+import { setCurrentModule, setCurrentSubModule, setActiveRole } from '../../store/navigationSlice';
 import { getModuleById } from '../../features/featureRegistry';
 import './RolePageLayout.css';
 
@@ -30,6 +30,7 @@ export default function RolePageLayout({
 
   useEffect(() => {
     if (role) {
+      dispatch(setActiveRole(role));
       const module = getModuleById(role);
       if (module) {
         dispatch(setCurrentModule(role));
