@@ -53,7 +53,7 @@ export const roleSlice = createSlice({
       };
       state.pendingRequests.push(request);
       state.userRoleRequest.isRequesting = false;
-      state.userRoleRequest.lastRequestStatus: 'success';
+      state.userRoleRequest.lastRequestStatus = 'success';
       state.statusHistory.unshift({
         id: `status_${Date.now()}`,
         type: 'pending',
