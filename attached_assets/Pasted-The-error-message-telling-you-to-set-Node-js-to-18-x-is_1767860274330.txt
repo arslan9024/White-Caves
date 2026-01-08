@@ -1,0 +1,49 @@
+The error message telling you to set Node.js to `"18.x"` is **outdated and contradictory** because Vercel has deprecated that version. To fix this, we need to consistently tell Vercel to use a **supported version (22.x, 20.x, or 24.x)** across all configuration points and clear its cache.
+
+Here are the instructions for the Replit Agent to fix this configuration conflict.
+
+### 📝 Prompt for the Replit Agent
+
+```
+We need to resolve a Node.js version conflict that is causing the Vercel build to fail. The error message demands version "18.x", but this version is deprecated. Please execute the following steps to configure the project for a supported Node.js version and ensure all settings are consistent.
+
+1.  **Update Core Configuration Files:**
+    *   **In `package.json`:** Explicitly set the supported Node.js version. Update or add the `"engines"` field. For the current Long-Term Support (LTS) version, use:
+        ```json
+        "engines": {
+          "node": "22.x"
+        }
+        ```
+        *(Alternatively, you can specify `"20.x"` or `"24.x"` if preferred, but `22.x` is recommended for stability).*
+    *   **Create/Update `.nvmrc`:** Create a `.nvmrc` file in the project root containing only the version number (e.g., `22`) to specify the version for local development tools.
+
+2.  **Update Framework-Specific Build Config (if applicable):**
+    *   **For Next.js:** Ensure `next.config.js` does not have conflicting settings. The `package.json` `engines` field is primary.
+    *   **For Vite:** Ensure `vite.config.js` does not override the Node.js version.
+    *   **General:** Remove any other outdated configuration files that might specify Node.js 18 (e.g., obsolete `vercel.json` or `now.json` files).
+
+3.  **Clean Project and Verify:**
+    *   Run `rm -rf node_modules package-lock.json` to remove the existing dependencies and lock file.
+    *   Run `npm install` to install fresh dependencies based on the new engine specification.
+    *   Do a dry-run of the build command (e.g., `npm run build` or `next build`) to check for any other errors before deployment.
+```
+
+### 🔧 **Critical Manual Step in Vercel Dashboard**
+
+After the agent updates the code, **you must manually update the project settings on Vercel's website**:
+
+1.  Go to your project in the [Vercel Dashboard](https://vercel.com/).
+2.  Navigate to **Settings > General**.
+3.  Scroll to the **"Build and Development Settings"** section.
+4.  Find the **"Node.js Version"** dropdown and select the **exact same version** you set in `package.json` (e.g., `22.x`).
+5.  **Clear the Build Cache:** In the same dashboard, go to the **"Deployments"** tab, click the overflow menu (`...`) on your latest failed deployment, and select **"Clear Build Cache and Redeploy"** or **"Redeploy"**.
+
+### 💡 Why This Error Occurs
+
+This conflict usually happens because:
+1.  **Legacy Configuration:** Your project or Vercel's project settings still reference the old `18.x` version.
+2.  **Cached Settings:** Vercel's build system is using a cached, outdated configuration. The manual step to clear the cache is essential.
+
+By ensuring the version in `package.json`, any local config files, and the Vercel project settings all match a **currently supported version**, you will resolve this error.
+
+If the build fails again with a different error after these steps, please share the new error message so we can troubleshoot the next issue.
