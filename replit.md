@@ -47,6 +47,7 @@ Preferred communication style: Simple, everyday language.
 - **Market Analytics Dashboard**: Provides KPIs, transaction breakdowns, and agent performance insights.
 - **WhatsApp Business Integration**: Session management, QR code generation, Meta Business OAuth, and an AI Chatbot for customer support and lead scoring.
 - **Chatbot Training Data Module**: Comprehensive bilingual training data for the AI chatbot.
+- **Platform Features Explorer**: Owner-exclusive Feature Explorer component with Redux state management displaying all 33 implemented platform features. Features organized into 10 categories (Authentication, User Management, Property, Transactions, Communication, Analytics, Integrations, UI Components, Tools, System) with search, category filtering, grid view, and detailed feature panels showing implementation dates, source files, and capabilities.
 
 ## External Dependencies
 
