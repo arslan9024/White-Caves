@@ -1,5 +1,4 @@
 import React from 'react';
-import { usePermissions } from '../../hooks/usePermissions';
 import { hasPermission, hasAnyPermission, hasAllPermissions, canAccessFeature, isOwner } from '../../utils/permissions';
 import { useSelector } from 'react-redux';
 

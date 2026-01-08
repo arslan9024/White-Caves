@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { selectSliderSettings, updateSliderSettings } from '../../store/contentSlice';
 import './ContentSlider.css';
 
 export default function ContentSlider({
