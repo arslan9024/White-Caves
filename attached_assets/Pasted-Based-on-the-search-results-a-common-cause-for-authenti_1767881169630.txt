@@ -1,0 +1,324 @@
+Based on the search results, a common cause for authentication working in development but failing during deployment (build) is the misconfiguration of environment secrets . Replit Auth, the platform's built-in solution, handles authentication securely , but secrets like API keys or database URLs must be correctly set for the production environment.
+Here is a guide and the specific prompt addition you requested.
+🔍 First, Try This Quick Troubleshooting
+Before you update your main prompt, check these common issues :
+Check "Advanced Settings": In your project's publishing tab, click "Advanced Settings" and ensure all necessary secrets (especially for authentication and databases) are included for deployment.
+Verify Secret Values: Ensure none of your deployment secrets are accidentally pointing to development resources (like a test database URL). They should point to production services.
+Restart & Deploy: Sometimes, a simple workspace restart using the command kill 1 in the shell can resolve loading issues . Then try deploying again.
+Check for Outages: Visit status.replit.com to see if there is a known platform issue affecting deployments .
+📝 Updated Instructions for Your Replit AI Prompt
+Add the following section to the end of your previous, comprehensive prompt. It instructs the AI to implement a robust, deployment-ready authentication system.
+6. Fix Authentication for Build and Deployment
+Primary Objective: Ensure the Replit Auth implementation works flawlessly in both the development environment and the published (production) application. The build process must not fail, and users must be able to authenticate after deployment.
+Core Requirement: Implement Replit Auth for enterprise-grade, secure user login and role management. The system must support multiple login providers (Email, Google) as configured in the Auth pane .
+Critical Deployment Fix:
+Environment Secrets Configuration: Properly configure all authentication-related environment variables and API keys as Replit Secrets. The AI must explicitly define which secrets are needed (e.g., any external service keys for DAMAC Hills 2).
+Secrets for Production: Ensure the deployment process in the "Publishing" tab is correctly configured to pass all necessary secrets to the production build. The AI must verify that no secret is missing or pointing to a development endpoint .
+Database Connections: If using an external database, confirm that the connection string in the production environment secrets points to the correct production database, not the dev one.
+Implementation Steps for AI:
+Set up Replit Auth by integrating it into the React frontend and Node.js backend, ensuring protected API routes validate user sessions server-side .
+Create a User model in the database that links to the Replit Auth user ID. Store user roles (Company Owner, Manager, etc.), profile information, and their associated properties/units from the DAMAC Hills 2 inventory.
+Implement role-based access control (RBAC) on both frontend routes and backend APIs. For example, only the Company Owner role can access the Excel import feature and the role-switching dropdown.
+The universal "Profile Button" should fetch and display data from the user's record in the application database, not just the basic auth profile.
+Test Deployment Workflow: Before finalizing, guide me through a check: building the project, verifying secrets in Advanced Settings, and deploying to a test subdomain to confirm authentication works end-to-end in production mode.
+By adding these instructions, you direct the AI to solve the root cause of deployment failures and build a secure, consistent authentication system for your inventory CRM.
+Would you like me to help you draft a specific prompt to troubleshoot a current, failing deployment based on any error messages you're seeing?
+Here are the two features implemented as a unified prompt for your Replit AI agent. This prompt is designed to integrate these capabilities seamlessly into your existing DAMAC Hills 2 inventory management dashboard.
+
+---
+
+### **Feature Implementation for Mary's Dashboard: Image-to-Data & Web Data Aggregator**
+
+**Objective:** Enhance the dashboard for user "Mary" with two powerful, integrated features for data acquisition: extracting structured information from uploaded images and aggregating data from web links. These tools are designed to streamline the input of property and owner data into the DAMAC Hills 2 inventory CRM.
+
+**Primary User Context:** These features are to be accessible from **Mary's specific user role dashboard**. Ensure they follow the established design system (consistent nav bar, universal components) and Redux state management patterns.
+
+---
+
+### **Feature 1: Intelligent Image Information Reader ("Snapshot to Spreadsheet")**
+
+This tool allows Mary to upload images (e.g., property documents, business cards, handwritten lists) and extract structured text to pre-fill inventory forms.
+
+**1.1 Core Functionality:**
+*   **Upload & Preview Zone:** A drag-and-drop area for Mary to upload images (JPG, PNG, PDF). Display a thumbnail preview upon upload.
+*   **OCR Processing:** Upon upload, automatically send the image to a backend Optical Character Recognition (OCR) service (e.g., Tesseract.js via a worker, or a dedicated API).
+*   **Smart Data Parsing:** Process the extracted raw text to intelligently identify and categorize key information relevant to DAMAC Hills 2 inventory:
+    *   **Owner Names** (e.g., "Mr. Ali Hassan")
+    *   **Phone Numbers** (UAE formats: `05x xxx xxxx`, `+9715x xxx xxxx`)
+    *   **Email Addresses**
+    *   **Unit Numbers** (e.g., "Villa 45", "Apartment 1201")
+    *   **Property Addresses** (key phrases like "DAMAC Hills 2", "Cluster...")
+*   **Data Validation & Edit Table:** Present the parsed data in a clean, editable table. Each parsed field (Name, Phone, etc.) should be in its own column. Allow Mary to manually correct any OCR errors directly in the table.
+*   **One-Click Import:** A button to import the validated table data directly into the main inventory database or a specific processing queue (connecting to the previously built Excel import logic).
+
+**1.2 Technical Implementation:**
+*   **Component:** `ImageDataExtractor`
+*   **State (Redux):** Manage upload progress (`uploading`, `processing`), extracted data object, and any errors.
+*   **Backend:** A secure API endpoint to handle image processing (consider serverless function for OCR to avoid main server blocking).
+*   **UI:** Use consistent form styles, success/error notifications, and the universal dashboard layout.
+
+---
+
+### **Feature 2: Dynamic Link Iterator & List Generator ("Web Harvester")**
+
+This tool enables Mary to provide a single, structured web link (e.g., a directory page of property owners), and the system will iterate through it to scrape or generate a list of results.
+
+**2.1 Core Functionality:**
+*   **URL Input with Template Logic:** An input field for Mary to paste a base URL. **Crucially, include an instruction panel explaining how to format URLs for iteration.**
+    *   *Example:* If pages are numbered, teach her to use a bracket placeholder: `https://example-directory.com/owners?page=[1:10]`.
+    *   The system should then generate requests for pages 1 through 10.
+*   **Configurable Data Points (Selector Setup):** A setup section where Mary (or an admin) can define CSS selectors or JSON paths for the data to extract from each page (e.g., `.owner-name`, `.phone-number`). This configuration can be saved as a "Template" for future use (e.g., "DAMAC Community Directory").
+*   **Safe & Managed Scraping:** The iteration and request logic must run on a secure backend to avoid CORS issues and manage request rates (delays between calls). It must include clear checks for the website's `robots.txt` and terms of service.
+*   **Real-Time Progress & Results Table:**
+    *   Show a clear progress indicator: "Fetching page 5 of 10...".
+    *   Display aggregated results in a live-updating table as pages are processed.
+    *   Include a "Pause/Stop" button.
+*   **Export & Integration:** Provide options to:
+    *   **Review & Edit:** Open the final list in an editor similar to the Excel/Image data table.
+    *   **Export as CSV:** For offline use.
+    *   **Import to CRM:** Send the cleaned list directly to the inventory database.
+
+**2.2 Technical Implementation:**
+*   **Component:** `WebDataHarvester`
+*   **State (Redux):** Manage the iteration status (`idle`, `fetching`, `paused`), progress (current/total), the aggregated results array, and saved templates.
+*   **Backend:** A robust backend service (Node.js with `puppeteer` or `cheerio` and `axios`) to handle the web requests, iteration logic, and data parsing securely. **This must be queued or backgrounded to prevent timeout errors.**
+*   **Safety:** Implement clear user warnings about legal use and request rate limiting.
+
+---
+
+### **Integration & Delivery Requirements:**
+
+1.  **Dashboard Integration:** Place both `ImageDataExtractor` and `WebDataHarvester` as distinct cards or modules within **Mary's dedicated dashboard tab**.
+2.  **Consistent Design:** Use the same reusable components (buttons, modals, tables) from the established design system. Ensure the universal header components (time, weather) are present.
+3.  **Data Flow to CRM:** The final "Import to CRM" action from both features should route the data through the existing validation and duplicate-checking logic built for the company owner's Excel import feature, ensuring a single, reliable data pipeline.
+4.  **Access Control:** Secure these features so they are **only accessible to Mary's user role** (or roles with similar permissions), as defined by the application's authentication system.
+
+**Deliverables:**
+1.  Two fully functional, integrated React components within the dashboard ecosystem.
+2.  Secure backend endpoints for image processing and web data aggregation.
+3.  Complete Redux state slices for managing each feature's flow.
+4.  A user guide (as tooltips or a help modal) for Mary on how to use the URL template syntax and configure data selectors.
+
+---
+
+This prompt provides the Replit AI agent with a complete, structured plan to build these features in the context of your growing application.
+
+I'm here to help if you need to refine the specific data points Mary needs to extract or discuss the best technical approach for the web iteration logic.
+
+Based on the specific URL structure you've provided, I'll create a focused prompt for a **Property Asset Fetcher** tool for Mary. This tool will systematically generate and access the precise image URLs from your DAMAC S3 bucket.
+
+---
+
+### **Feature Implementation: DAMAC Asset URL Generator & Fetcher**
+
+**Objective:** Build a specialized tool for user "Mary" that intelligently constructs, iterates through, and fetches property images (Layouts, Floor Plans) from the structured DAMAC S3 bucket URLs. This will replace the need for a generic web scraper with a precise, rule-based generator.
+
+**Feature Name:** `DAMAC Asset Fetcher`
+
+### **Core URL Logic & Iteration Rules:**
+
+The tool must understand and apply the following deconstructed URL pattern:
+`https://s3.eu-west-1.amazonaws.com/damac-inv/otp/[THIRD_PART][FOURTH_PART].jpg`
+
+1.  **Base Host:** Fixed as `https://s3.eu-west-1.amazonaws.com/damac-inv/otp/`
+2.  **Iteration Logic:**
+    *   **Primary Fetch:** Use the **Third Part** as SD number (e.g., `SD348`) as the core identifier. The system should fetch: `.../otp/SD348.jpg`
+    *   **Variant Fetch:** Also iterate by appending known **Fourth Part** variants as Registration Number (like `XG1349B`) to the Third Part. The system should fetch: `.../otp/SD348XG1349B.jpg`
+3.  **Asset Types:** For any successful base identifier, the tool should also look for standard suffixes to find different image types:
+    *   `_[identifier].jpg` (e.g., `SD348.jpg`)
+    *   `_[identifier].jpg` (e.g., `SD348XG1349B.jpg`)
+
+### **User Interface & Workflow:**
+
+1.  **Input Panel:**
+    *   A text area for Mary to input a **list of Third Parts** (one per line). E.g.:
+        ```
+        SD348
+        SD349
+        SD205
+        ```
+    *   An optional field to input associated **Fourth Parts** (can be paired line-by-line or as a common suffix).
+    *   A dropdown to select **Asset Type** to fetch: `Primary Image`, `Layout`, `Floor Plan`, or `All`.
+2.  **Process & Fetch:**
+    *   Upon execution, the tool constructs all possible URL combinations based on the logic above.
+    *   It performs asynchronous, rate-limited checks to see which URLs return a valid image (HTTP 200) versus a "not found" error (HTTP 403/404).
+3.  **Results Gallery:**
+    *   Displays a responsive grid of successfully fetched images.
+    *   Each image tile should show the filename and a status badge (e.g., "✓ Found", "✗ Not Found").
+    *   Provides a **bulk download** option (as a ZIP file) for all found assets.
+4.  **Data Table Export:**
+    *   Generates a structured list (CSV/JSON) of all results, including:
+        *   Property Identifier (Third Part)
+        *   Full Constructed URL
+        *   Asset Type (inferred from suffix)
+        *   Status (Found/Missing)
+        *   Direct Image Link
+
+### **Technical Implementation Details:**
+
+*   **Component:** `DamacAssetFetcher.jsx`
+*   **State (Redux):**
+    ```javascript
+    {
+      fetchStatus: 'idle' | 'processing' | 'complete',
+      identifiers: [], // Array of { thirdPart, fourthPart }
+      results: [], // Array of { url, status, type, identifier }
+      downloadProgress: 0
+    }
+    ```
+*   **Backend API Endpoint:** `POST /api/fetch-damac-assets`
+    *   Accepts the list of identifiers and asset type.
+    *   Handles the URL construction, HTTP validation, and external S3 fetching.
+    *   **Crucially, implements server-side caching** to avoid repeated checks for the same identifier across sessions.
+*   **Error Handling:** Gracefully handles S3 permissions errors (403) and missing assets (404) without failing the entire batch process.
+
+### **Integration Requirements:**
+
+*   Place this component as a dedicated tool within **Mary's dashboard**.
+*   Use the existing, consistent UI components (cards, buttons, tables) from your design system.
+*   Ensure all actions are logged to the user's activity feed within the CRM.
+*   The generated list of "Found" assets should be easily exportable or linkable to specific property records in the main inventory database.
+
+### **Example Use Case Prompt for Mary:**
+
+*"Mary needs to get all layout images for properties SD348, SD349, and PL205. She enters these three codes, selects 'Layout' from the dropdown, and runs the tool. The system automatically checks for `SD348_layout.jpg`, `SD349_layout.jpg`, and `PL205_layout.jpg`, presenting her with a gallery and list of exactly what was found and what is missing from the central repository."*
+
+---
+
+This tool provides a direct, efficient, and error-tolerant method for accessing your specific digital asset library, perfectly tailored to the DAMAC URL structure. Would you like to adjust any part of the logic or add a feature to map the found images automatically to existing property records in the CRM?
+Yes please fix like this
+
+Here is the complete prompt to implement a structured, secure property information system for your DAMAC Hills 2 inventory.
+
+---
+
+### **Project Feature: Tiered Property Information Management & Secure Asset Access**
+
+**Objective:** Restructure the property database and interface to categorize all information into **Basic** and **Confidential** tiers. Implement a secure, role-based authorization system that controls access to confidential data and to the Layout/Floor Plan images, which are fetched via the DAMAC Asset URL Generator.
+
+**Core Principle:** A property's complete record is split. Most users see **Basic Info**. Only authorized roles (like Mary, Company Owner) can unlock **Confidential Info** and **Asset Images** on a per-request, audited basis.
+
+---
+
+### **Part 1: Data Schema & Categorization Rules**
+
+Redesign the Property database model/state to explicitly label fields:
+
+*   **Basic Information** (Visible to all authorized dashboard users):
+
+    *   Layout, Cluster, Project Name
+    *   Number of Rooms, Number of Bathrooms
+    *   Size (Sq. Ft./M)
+    *   Price Band / Listed Price
+    *   Status (e.g., Vacant, Occupied, Under Maintenance)
+
+*   **Confidential Information** (Restricted via role-based access control):
+    *   Owner's Full Name
+    *   Registration Number (Official Deed/Title)
+    *   Owner's Mobile Number(s)
+    *   Owner's Email Address(es)
+    *   Purchase Price & Date
+    *   Unit Number / Property Number
+    *   SD Number (Primary Link to Assets)
+    *   Plot Number
+    *   Private Notes
+
+---
+
+### **Part 2: User Interface for Mary (The Organizer)**
+
+Create a dedicated **"Property Organizer"** interface for Mary's dashboard.
+
+1.  **Dual-Pane Edit View:**
+    *   When Mary searches for and selects a property, it opens a two-column form.
+    *   **Left Column (Basic):** Editable fields for all Basic Information.
+    *   **Right Column (Confidential):** A locked section. Mary must click an **"Unlock & Verify"** button (requiring her password or 2FA) to temporarily enable editing of confidential fields for a set period (e.g., 15 minutes). All actions here are logged.
+
+2.  **Access Request Portal (For Assets):**
+    *   Within the property view, include a section titled **"Architectural Assets"**.
+    *   It displays placeholders for "Layout" and "Floor Plan" images with a **lock icon**.
+    *   An **"Authorize Access"** button opens a modal.
+    *   **In this modal, Mary can:**
+        a) **Select User:** Choose an authorized user (e.g., "Legal Team - Ahmed") from a dropdown.
+        b) **Select Duration:** Choose how long the access is valid (e.g., 1 hour, 1 day, 1 week).
+        c) **Click "Generate Secure Link":** The system uses the property's **SD Number** to call the **DAMAC Asset Fetcher** logic (`SD348` -> `.../SD348_layout.jpg`). It then generates a time-expiring, uniquely tokenized URL (e.g., `https://yourcrm.com/secure-asset/[token]`) that points to the actual S3 image.
+        d) **Share:** This secure, expiring link can be copied or sent directly to the authorized user. The link bypasses the main dashboard, showing only the authorized image on a simple, branded page.
+
+---
+
+### **Part 3: Property Matching & Search System**
+
+Build a universal, flexible search that allows Mary and other users to find properties using any key identifier, respecting their tiered access.
+
+1.  **Multi-Field Search Bar:** A single search input that queries across:
+    *   Unit Number
+    *   Property Number
+    *   SD Number (Most critical for asset linking)
+    *   Owner Name (Confidential - only returns results if searcher has access)
+2.  **Results Behavior:**
+    *   Results display **Basic Info** immediately.
+    *   **Confidential Info** (like Owner Name) is masked (`******`) unless the user's role has clearance.
+    *   The **"Architectural Assets"** section in the result is locked until an access request is granted via the process above.
+
+---
+
+### **Technical Implementation Specifications:**
+
+*   **Backend (Node.js/Express with Redux State):**
+    *   **Database:** Add `is_confidential: Boolean` flag to property schema fields or use a separate `confidential_data` table linked by `property_id`.
+    *   **Middleware:** Create `authorizeTieredAccess` middleware for API routes. It checks the user's role and the requested data field (`req.query.field`) against a permission matrix.
+    *   **Secure Asset Endpoint:** Create a route `GET /api/secure-asset/:token`. It validates the token's expiry and user, then performs a **server-side redirect (302)** to the actual, temporary S3 URL, never exposing the raw S3 link to the frontend.
+    *   **Audit Logging:** Log all events: `confidential_view`, `asset_access_granted`, `asset_link_generated`.
+
+*   **Frontend (React Components):**
+    *   `<PropertyOrganizer>`: Main dual-pane component for Mary.
+    *   `<SecureAssetGateway>`: Modal component for generating time-expiring links.
+    *   `<PropertySearch>`: Enhanced search bar with result filtering based on user role.
+    *   **State (Redux):** Extend the property slice to manage `activeProperty`, `confidentialUnlockStatus`, and `generatedAssetLinks`.
+
+**Final Deliverable:** A seamless system where property data is intelligently separated, access to sensitive information and images is tightly controlled and logged, and all asset retrieval is automated via the defined S3 URL structure.
+
+Here is the specific authorization addendum for your implementation. Add it to the **"Technical Implementation Specifications"** section of your previous prompt to enforce that **only the Company Owner** can access confidential data.
+
+---
+
+### **Authorization Addendum: Company Owner Exclusive Access**
+
+**Modify all previous "authorized user" or "role-based" logic with the following strict rule:**
+
+**1. Backend Authorization Middleware:**
+*   Update the `authorizeTieredAccess` middleware to check `req.user.role` **explicitly against "company_owner"**.
+*   **For any API route fetching property data:** The middleware must strip all `confidential` fields (Owner Name, Mobile, Email, Registration Number, Purchase Data) from the response object **unless** `user.role === "company_owner"`.
+*   **Example Logic:**
+    ```javascript
+    // Pseudo-code for API route handler
+    if (req.user.role !== 'company_owner') {
+      propertyData = removeConfidentialFields(propertyData); // Returns only basic info
+    }
+    // Then send propertyData in response
+    ```
+
+**2. Frontend UI & Component Logic:**
+*   **Conditional Rendering:** In the `PropertyOrganizer` and search results components, conditionally render the **entire "Confidential Information" section** using:
+    ```javascript
+    const isCompanyOwner = currentUser.role === 'company_owner';
+    {isCompanyOwner && <ConfidentialInformationSection />}
+    ```
+*   **Search Behavior:** In the `<PropertySearch>` component, disable or hide the ability to search by "Owner Name" unless `isCompanyOwner` is true.
+
+**3. Secure Asset Link Generation:**
+*   The **"Authorize Access"** button to generate floor plan links should **only appear** in the UI for users with the `company_owner` role. The function to generate the time-expiring token must also validate this role on the backend before creating the link.
+
+**4. Redux State Security:**
+*   Ensure the Redux store or context does not **accidentally cache** confidential information fetched during a Company Owner session in a way that could become accessible after a role switch or to other users on the same device.
+
+**Summary of Access Matrix:**
+| User Role | Can View Basic Info | Can View/Edit Confidential Info | Can Generate Asset Links |
+| :--- | :---: | :---: | :---: |
+| **Company Owner** | ✅ | ✅ | ✅ |
+| **Manager / Mary** | ✅ | ❌ | ❌ (Link generation hidden) |
+| **Other Roles** | ✅ | ❌ | ❌ |
+
+This creates a clear, auditable security boundary where confidential data exposure is technically impossible for any role other than the designated company owner.
+
+

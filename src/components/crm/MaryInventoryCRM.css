@@ -1168,3 +1168,90 @@
   font-size: 16px;
 }
 
+
+/* Data Tools Section */
+.data-tools-section {
+  margin: 16px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.tool-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+  overflow-x: auto;
+}
+
+.tool-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tool-tab:hover {
+  background: var(--bg-hover);
+  color: var(--tab-color, var(--text-primary));
+}
+
+.tool-tab.active {
+  background: var(--tab-color, #8b5cf6);
+  color: white;
+}
+
+.tool-tab.close {
+  margin-left: auto;
+  color: var(--text-muted);
+}
+
+.tool-tab.close:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.tool-content {
+  padding: 16px;
+}
+
+.mary-action-btn.tools {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.mary-action-btn.tools.active {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: white;
+}
+
+@media (max-width: 768px) {
+  .data-tools-section {
+    margin: 8px;
+  }
+  
+  .tool-tabs {
+    padding: 8px;
+  }
+  
+  .tool-tab {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .tool-content {
+    padding: 8px;
+  }
+}

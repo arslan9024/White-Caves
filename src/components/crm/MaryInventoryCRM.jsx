@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   Building2, Plus, Search, Download, Bot, Home, 
-  Users, Phone, XCircle, Star, MapPin, Eye
+  Users, Phone, XCircle, Star, MapPin, Eye, Image, 
+  FileImage, Globe, Wrench
 } from 'lucide-react';
 import FullScreenDetailModal from '../../shared/components/ui/FullScreenDetailModal';
 import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
@@ -13,6 +14,9 @@ import PropertyMatrix from './inventory/PropertyMatrix';
 import OwnerDetailDrawer from './inventory/OwnerDetailDrawer';
 import FilterPanel from './inventory/FilterPanel';
 import PropertyDetailsCard from './inventory/PropertyDetailsCard';
+import DamacAssetFetcher from './inventory/DamacAssetFetcher';
+import ImageDataExtractor from './inventory/ImageDataExtractor';
+import WebDataHarvester from './inventory/WebDataHarvester';
 import {
   loadInventoryData,
   selectFilteredProperties,
@@ -48,6 +52,7 @@ const MaryInventoryCRM = () => {
   const [showOwnerDrawer, setShowOwnerDrawer] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
   const [selectedCluster, setSelectedCluster] = useState('all');
+  const [activeToolTab, setActiveToolTab] = useState(null);
 
   useEffect(() => {
     dispatch(loadInventoryData());
@@ -100,6 +105,20 @@ const MaryInventoryCRM = () => {
 
   const enrichedFilterOptions = filterOptions;
 
+  const handleDataExtracted = (data) => {
+    console.log('Data extracted from images:', data);
+  };
+
+  const handleDataHarvested = (data) => {
+    console.log('Data harvested from web:', data);
+  };
+
+  const dataTools = [
+    { id: 'assets', label: 'DAMAC Assets', icon: Image, color: '#8b5cf6' },
+    { id: 'ocr', label: 'Image Scanner', icon: FileImage, color: '#f59e0b' },
+    { id: 'harvester', label: 'Web Harvester', icon: Globe, color: '#3b82f6' }
+  ];
+
   return (
     <div className="mary-crm-container">
       <div className="mary-header">
@@ -117,6 +136,12 @@ const MaryInventoryCRM = () => {
         <div className="mary-actions">
           <button className="mary-action-btn"><Download size={18} /> Export</button>
           <button 
+            className={`mary-action-btn tools ${activeToolTab ? 'active' : ''}`}
+            onClick={() => setActiveToolTab(activeToolTab ? null : 'assets')}
+          >
+            <Wrench size={18} /> Data Tools
+          </button>
+          <button 
             className={`mary-action-btn features ${showFeatures ? 'active' : ''}`}
             onClick={() => setShowFeatures(!showFeatures)}
           >
@@ -127,6 +152,38 @@ const MaryInventoryCRM = () => {
           </button>
         </div>
       </div>
+
+      {activeToolTab && (
+        <div className="data-tools-section">
+          <div className="tool-tabs">
+            {dataTools.map(tool => (
+              <button
+                key={tool.id}
+                className={`tool-tab ${activeToolTab === tool.id ? 'active' : ''}`}
+                onClick={() => setActiveToolTab(tool.id)}
+                style={{ '--tab-color': tool.color }}
+              >
+                <tool.icon size={16} />
+                {tool.label}
+              </button>
+            ))}
+            <button className="tool-tab close" onClick={() => setActiveToolTab(null)}>
+              <XCircle size={16} />
+            </button>
+          </div>
+          <div className="tool-content">
+            {activeToolTab === 'assets' && (
+              <DamacAssetFetcher selectedProperty={selectedProperty} />
+            )}
+            {activeToolTab === 'ocr' && (
+              <ImageDataExtractor onDataExtracted={handleDataExtracted} />
+            )}
+            {activeToolTab === 'harvester' && (
+              <WebDataHarvester onDataHarvested={handleDataHarvested} />
+            )}
+          </div>
+        </div>
+      )}
 
       {showFeatures && (
         <div className="mary-features-panel">
