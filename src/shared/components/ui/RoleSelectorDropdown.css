@@ -227,3 +227,34 @@
 [data-theme="dark"] .role-option.selected {
   background: rgba(220, 38, 38, 0.1);
 }
+
+/* Compact mode for header integration */
+.role-selector-container.compact {
+  width: auto;
+  max-width: none;
+}
+
+.role-selector-container.compact .role-selector-trigger {
+  padding: 6px 10px;
+  border-radius: 8px;
+  gap: 6px;
+}
+
+.role-selector-container.compact .role-icon-wrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.role-selector-container.compact .role-selector-dropdown {
+  min-width: 360px;
+  right: 0;
+  left: auto;
+}
+
+@media (max-width: 768px) {
+  .role-selector-container.compact .role-selector-dropdown {
+    min-width: 300px;
+  }
+}
+

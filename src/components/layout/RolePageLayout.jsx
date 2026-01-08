@@ -32,9 +32,7 @@ export default function RolePageLayout({
   const [showProfile, setShowProfile] = useState(false);
 
   const handleRoleChange = (selectedRole) => {
-    if (selectedRole.dashboardPath) {
-      navigate(selectedRole.dashboardPath);
-    }
+    dispatch(setActiveRole(selectedRole.id));
   };
   
   const roleClasses = {

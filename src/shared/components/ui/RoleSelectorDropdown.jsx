@@ -251,12 +251,37 @@ const REAL_ESTATE_ROLES = [
   }
 ];
 
-const RoleSelectorDropdown = ({ currentRole = 'company_owner', onRoleChange }) => {
+const ROLE_KEY_MAP = {
+  'owner': 'company_owner',
+  'leasing-agent': 'leasing_agent',
+  'secondary-sales-agent': 'sales_agent',
+  'property-manager': 'property_manager',
+  'sales-agent': 'sales_agent',
+  'admin': 'super_admin',
+  'seller': 'landlord',
+};
+
+const normalizeRoleKey = (roleKey) => {
+  if (!roleKey) return 'company_owner';
+  if (ROLE_KEY_MAP[roleKey]) return ROLE_KEY_MAP[roleKey];
+  return roleKey.replace(/-/g, '_');
+};
+
+const RoleSelectorDropdown = ({ currentRole = 'company_owner', onRoleChange, compact = false }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const normalizedRole = normalizeRoleKey(currentRole);
   const [selectedRole, setSelectedRole] = useState(
-    REAL_ESTATE_ROLES.find(r => r.id === currentRole) || REAL_ESTATE_ROLES[0]
+    REAL_ESTATE_ROLES.find(r => r.id === normalizedRole) || REAL_ESTATE_ROLES[0]
   );
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const normalized = normalizeRoleKey(currentRole);
+    const role = REAL_ESTATE_ROLES.find(r => r.id === normalized);
+    if (role && role.id !== selectedRole.id) {
+      setSelectedRole(role);
+    }
+  }, [currentRole]);
 
   const handleRoleSelect = (role) => {
     setSelectedRole(role);
@@ -270,27 +295,30 @@ const RoleSelectorDropdown = ({ currentRole = 'company_owner', onRoleChange }) =
   const IconComponent = selectedRole.icon;
 
   return (
-    <div className="role-selector-container">
+    <div className={`role-selector-container ${compact ? 'compact' : ''}`}>
       <button 
         className="role-selector-trigger"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
+        title={compact ? selectedRole.name : undefined}
       >
         <div className="role-selector-current">
           <div 
             className="role-icon-wrapper"
             style={{ backgroundColor: `${selectedRole.color}20`, color: selectedRole.color }}
           >
-            <IconComponent size={24} />
+            <IconComponent size={compact ? 18 : 24} />
           </div>
-          <div className="role-info">
-            <span className="role-name">{selectedRole.name}</span>
-            <span className="role-description">{selectedRole.description}</span>
-          </div>
+          {!compact && (
+            <div className="role-info">
+              <span className="role-name">{selectedRole.name}</span>
+              <span className="role-description">{selectedRole.description}</span>
+            </div>
+          )}
         </div>
         <ChevronDown 
           className={`chevron-icon ${isOpen ? 'rotated' : ''}`} 
-          size={20} 
+          size={compact ? 14 : 20} 
         />
       </button>
 
