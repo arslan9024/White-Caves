@@ -386,6 +386,38 @@
 .chat-actions {
   display: flex;
   gap: 8px;
+  align-items: center;
+}
+
+.agent-assign-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.agent-assign-wrapper .assignment-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 100;
+  min-width: 220px;
+}
+
+.chat-action-btn.assigned {
+  background: rgba(37, 211, 102, 0.15);
+  color: #25d366;
+  border: 1px solid rgba(37, 211, 102, 0.3);
+}
+
+.assigned-badge {
+  background: rgba(37, 211, 102, 0.1);
+  color: #25d366;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .chat-action-btn {

@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   MessageCircle, Send, Phone, Video, MoreVertical, Search, 
   Paperclip, Smile, Mic, Check, CheckCheck, Clock, Bot, 
-  User, Star, Tag, Filter, RefreshCw, Download, Archive, Zap
+  User, Star, Tag, Filter, RefreshCw, Download, Archive, Zap, UserPlus
 } from 'lucide-react';
 import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
+import { AssignmentDropdown } from './shared';
 import { LINDA_FEATURES } from './data/assistantFeatures';
+import { WHATSAPP_AGENTS } from '../../data/whatsappAgentsData';
 import './LindaWhatsAppCRM.css';
 
 const DUMMY_CONVERSATIONS = [
@@ -89,7 +91,22 @@ const LindaWhatsAppCRM = () => {
   const [showQuickReplies, setShowQuickReplies] = useState(false);
   const [lindaActive, setLindaActive] = useState(true);
   const [showFeatures, setShowFeatures] = useState(false);
+  const [showAgentAssign, setShowAgentAssign] = useState(false);
+  const [assignedAgent, setAssignedAgent] = useState(null);
   const messagesEndRef = useRef(null);
+  
+  const agentOptions = WHATSAPP_AGENTS.filter(a => a.whatsappStatus === 'active').map(agent => ({
+    id: agent.agentId,
+    label: agent.agentName,
+    sublabel: agent.agentTitle,
+    status: agent.whatsappStatus
+  }));
+  
+  const handleAgentAssign = (agentId) => {
+    const agent = WHATSAPP_AGENTS.find(a => a.agentId === agentId);
+    setAssignedAgent(agent);
+    setShowAgentAssign(false);
+  };
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -323,6 +340,27 @@ const LindaWhatsAppCRM = () => {
                   </div>
                 </div>
                 <div className="chat-actions">
+                  <div className="agent-assign-wrapper">
+                    <button 
+                      className={`chat-action-btn ${assignedAgent ? 'assigned' : ''}`}
+                      onClick={() => setShowAgentAssign(!showAgentAssign)}
+                      title={assignedAgent ? `Assigned to ${assignedAgent.agentName}` : 'Assign to agent'}
+                    >
+                      <UserPlus size={18} />
+                    </button>
+                    {showAgentAssign && (
+                      <AssignmentDropdown
+                        options={agentOptions}
+                        selected={assignedAgent?.agentId}
+                        onSelect={handleAgentAssign}
+                        placeholder="Assign to agent..."
+                        emptyMessage="No active agents available"
+                      />
+                    )}
+                    {assignedAgent && (
+                      <span className="assigned-badge">{assignedAgent.agentName}</span>
+                    )}
+                  </div>
                   <button className="chat-action-btn"><Phone size={18} /></button>
                   <button className="chat-action-btn"><Video size={18} /></button>
                   <button className="chat-action-btn"><Star size={18} /></button>
