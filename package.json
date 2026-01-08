@@ -4,6 +4,10 @@
   "type": "module",
   "description": "White Caves Real Estate - Dubai's Premier Luxury Property Platform",
   "homepage": ".",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "server": "node server/index.js",
@@ -40,7 +44,6 @@
     "@stripe/stripe-js": "^8.2.0",
     "concurrently": "^9.2.1",
     "cors": "^2.8.5",
-    "crypto": "^1.0.1",
     "express": "^5.1.0",
     "firebase": "^11.6.1",
     "firebase-admin": "^13.6.0",
