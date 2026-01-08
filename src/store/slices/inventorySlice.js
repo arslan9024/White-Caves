@@ -35,11 +35,16 @@ const initialState = {
   properties: { byId: {}, allIds: [] },
   owners: { byId: {}, allIds: [] },
   ownerships: { byPropertyId: {}, byOwnerId: {} },
-  manifest: { sheets: [], clusters: [], stats: {} },
+  manifest: { sheets: [], clusters: [], stats: {}, filterOptions: {} },
   filters: {
-    cluster: 'all',
-    status: 'all',
-    area: 'all',
+    cluster: null,
+    status: null,
+    area: null,
+    layout: null,
+    view: null,
+    floor: null,
+    rooms: null,
+    masterProject: null,
     searchQuery: '',
     showMultiOwner: false,
     showMultiPhone: false,
@@ -158,23 +163,42 @@ export const selectUniqueStatuses = createSelector(
   (properties) => [...new Set(properties.map(p => p.status).filter(Boolean))].sort()
 );
 
+export const selectFilterOptions = createSelector(
+  [selectManifest],
+  (manifest) => manifest.filterOptions || {}
+);
+
+export const selectActiveFiltersCount = createSelector(
+  [selectFilters],
+  (filters) => {
+    const filterKeys = ['cluster', 'status', 'area', 'layout', 'view', 'floor', 'rooms', 'masterProject'];
+    return filterKeys.filter(key => filters[key] !== null).length;
+  }
+);
+
 export const selectFilteredProperties = createSelector(
   [selectAllProperties, selectFilters, selectOwners],
   (properties, filters, owners) => {
     return properties.filter(property => {
-      if (filters.cluster !== 'all' && property.cluster !== filters.cluster) return false;
-      if (filters.status !== 'all' && property.status !== filters.status) return false;
-      if (filters.area !== 'all' && property.area !== filters.area) return false;
+      if (filters.cluster && property.cluster !== filters.cluster) return false;
+      if (filters.status && property.status !== filters.status) return false;
+      if (filters.area && property.area !== filters.area) return false;
+      if (filters.layout && property.layout !== filters.layout) return false;
+      if (filters.view && property.view !== filters.view) return false;
+      if (filters.floor && String(property.floor) !== filters.floor) return false;
+      if (filters.rooms && String(property.rooms) !== filters.rooms) return false;
+      if (filters.masterProject && property.masterProject !== filters.masterProject) return false;
       
       if (filters.searchQuery) {
         const query = filters.searchQuery.toLowerCase();
         const matchesPNumber = property.pNumber?.toLowerCase().includes(query);
         const matchesProject = property.project?.toLowerCase().includes(query);
+        const matchesPlot = property.plotNumber?.toLowerCase().includes(query);
         const matchesOwnerName = property.owners?.some(oid => {
           const owner = owners.byId[oid];
           return owner?.name?.toLowerCase().includes(query);
         });
-        if (!matchesPNumber && !matchesProject && !matchesOwnerName) return false;
+        if (!matchesPNumber && !matchesProject && !matchesPlot && !matchesOwnerName) return false;
       }
       
       if (filters.showMultiOwner && (!property.owners || property.owners.length <= 1)) return false;

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   Building2, MapPin, Users, Phone, Eye, ChevronUp, ChevronDown,
-  Search, Filter
+  Search, Layers, DollarSign, Hash
 } from 'lucide-react';
 import {
   selectFilteredProperties,
@@ -11,6 +11,32 @@ import {
   selectFilters
 } from '../../../store/slices/inventorySlice';
 import './PropertyMatrix.css';
+
+const COLUMNS = [
+  { key: 'pNumber', label: 'P-Number', sortable: true },
+  { key: 'plotNumber', label: 'Plot No', sortable: true },
+  { key: 'cluster', label: 'Cluster', sortable: true },
+  { key: 'layout', label: 'Layout', sortable: true },
+  { key: 'view', label: 'View', sortable: true },
+  { key: 'status', label: 'Status', sortable: true },
+  { key: 'floor', label: 'Floor', sortable: true },
+  { key: 'rooms', label: 'Rooms', sortable: true },
+  { key: 'askingPrice', label: 'Price', sortable: true, format: 'currency' },
+  { key: 'owners', label: 'Owners', sortable: false }
+];
+
+const formatValue = (value, format) => {
+  if (value === null || value === undefined || value === '' || value === '.') return '-';
+  if (format === 'currency' && typeof value === 'number' && value > 0) {
+    return new Intl.NumberFormat('en-AE', { 
+      style: 'currency', 
+      currency: 'AED',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
+  }
+  return String(value);
+};
 
 const PropertyMatrix = ({ onPropertySelect, onOwnerSelect }) => {
   const dispatch = useDispatch();
@@ -21,11 +47,20 @@ const PropertyMatrix = ({ onPropertySelect, onOwnerSelect }) => {
   const [sortBy, setSortBy] = useState('pNumber');
   const [sortOrder, setSortOrder] = useState('asc');
   const [page, setPage] = useState(1);
+  const [visibleColumns, setVisibleColumns] = useState(COLUMNS.map(c => c.key));
   const pageSize = 50;
 
   const sortedProperties = [...properties].sort((a, b) => {
-    const aVal = a[sortBy] || '';
-    const bVal = b[sortBy] || '';
+    let aVal = a[sortBy];
+    let bVal = b[sortBy];
+    
+    if (typeof aVal === 'number' && typeof bVal === 'number') {
+      return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
+    }
+    
+    aVal = String(aVal || '').toLowerCase();
+    bVal = String(bVal || '').toLowerCase();
+    
     if (sortOrder === 'asc') {
       return aVal > bVal ? 1 : -1;
     }
@@ -47,17 +82,76 @@ const PropertyMatrix = ({ onPropertySelect, onOwnerSelect }) => {
     }
   };
 
-  const getOwnerNames = (ownerIds) => {
-    return ownerIds?.map(id => owners.byId[id]?.name).filter(Boolean) || [];
-  };
-
   const hasMultipleOwners = (property) => property.owners?.length > 1;
   
   const ownerHasMultiplePhones = (ownerId) => {
     const owner = owners.byId[ownerId];
     if (!owner) return false;
-    const phones = owner.contacts?.filter(c => c.type === 'mobile' || c.type === 'phone') || [];
+    const phones = owner.contacts?.filter(c => ['mobile', 'phone', 'secondaryMobile'].includes(c.type)) || [];
     return phones.length > 1;
+  };
+
+  const renderCell = (property, column) => {
+    const value = property[column.key];
+    
+    switch (column.key) {
+      case 'pNumber':
+        return <span className="pnumber-cell">{value}</span>;
+      
+      case 'cluster':
+        return <span className="cluster-badge">{value || '-'}</span>;
+      
+      case 'layout':
+        return <span className="layout-badge">{value || '-'}</span>;
+      
+      case 'view':
+        return <span className="view-badge">{value || '-'}</span>;
+      
+      case 'status':
+        return (
+          <span className={`status-badge status-${value?.toLowerCase().replace(/\s+/g, '-')}`}>
+            {value || 'Unknown'}
+          </span>
+        );
+      
+      case 'askingPrice':
+        return formatValue(value, 'currency');
+      
+      case 'owners':
+        return (
+          <div className="owners-cell">
+            {property.owners?.slice(0, 2).map((ownerId) => {
+              const owner = owners.byId[ownerId];
+              const hasMultiPhone = ownerHasMultiplePhones(ownerId);
+              return (
+                <button
+                  key={ownerId}
+                  className={`owner-badge ${hasMultiPhone ? 'multi-phone' : ''}`}
+                  onClick={(e) => { e.stopPropagation(); onOwnerSelect?.(owner); }}
+                  title={owner?.name}
+                >
+                  <Users size={11} />
+                  <span>{owner?.name?.split(' ')[0] || 'Unknown'}</span>
+                  {hasMultiPhone && <Phone size={9} className="multi-phone-icon" />}
+                </button>
+              );
+            })}
+            {hasMultipleOwners(property) && property.owners.length > 2 && (
+              <span className="multi-owner-indicator" title={`${property.owners.length} owners total`}>
+                +{property.owners.length - 2}
+              </span>
+            )}
+          </div>
+        );
+      
+      default:
+        return formatValue(value);
+    }
+  };
+
+  const SortIcon = ({ field }) => {
+    if (sortBy !== field) return null;
+    return sortOrder === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />;
   };
 
   return (
@@ -71,7 +165,7 @@ const PropertyMatrix = ({ onPropertySelect, onOwnerSelect }) => {
           <Search size={16} />
           <input
             type="text"
-            placeholder="Search by P-Number, project, or owner..."
+            placeholder="Search P-Number, plot, project, or owner..."
             value={filters.searchQuery}
             onChange={(e) => dispatch(setFilter({ key: 'searchQuery', value: e.target.value }))}
           />
@@ -82,77 +176,34 @@ const PropertyMatrix = ({ onPropertySelect, onOwnerSelect }) => {
         <table className="matrix-table">
           <thead>
             <tr>
-              <th onClick={() => handleSort('pNumber')}>
-                P-Number {sortBy === 'pNumber' && (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
-              </th>
-              <th onClick={() => handleSort('cluster')}>
-                Cluster {sortBy === 'cluster' && (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
-              </th>
-              <th onClick={() => handleSort('area')}>
-                Area {sortBy === 'area' && (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
-              </th>
-              <th>Owners</th>
-              <th onClick={() => handleSort('status')}>
-                Status {sortBy === 'status' && (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
-              </th>
-              <th onClick={() => handleSort('rooms')}>
-                Rooms {sortBy === 'rooms' && (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
-              </th>
-              <th onClick={() => handleSort('actualArea')}>
-                Size {sortBy === 'actualArea' && (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
-              </th>
-              <th>Actions</th>
+              {COLUMNS.filter(c => visibleColumns.includes(c.key)).map(column => (
+                <th 
+                  key={column.key} 
+                  onClick={() => column.sortable && handleSort(column.key)}
+                  className={column.sortable ? 'sortable' : ''}
+                >
+                  {column.label}
+                  {column.sortable && <SortIcon field={column.key} />}
+                </th>
+              ))}
+              <th>View</th>
             </tr>
           </thead>
           <tbody>
             {paginatedProperties.map(property => (
-              <tr key={property.pNumber} className={hasMultipleOwners(property) ? 'multi-owner-row' : ''}>
+              <tr 
+                key={property.pNumber} 
+                className={hasMultipleOwners(property) ? 'multi-owner-row' : ''}
+                onClick={() => onPropertySelect?.(property)}
+              >
+                {COLUMNS.filter(c => visibleColumns.includes(c.key)).map(column => (
+                  <td key={column.key}>{renderCell(property, column)}</td>
+                ))}
                 <td>
-                  <span className="pnumber-cell">{property.pNumber}</span>
-                </td>
-                <td>
-                  <span className="cluster-badge">{property.cluster || '-'}</span>
-                </td>
-                <td>
-                  <div className="area-cell">
-                    <MapPin size={12} />
-                    {property.area || '-'}
-                  </div>
-                </td>
-                <td>
-                  <div className="owners-cell">
-                    {property.owners?.map((ownerId, idx) => {
-                      const owner = owners.byId[ownerId];
-                      const hasMultiPhone = ownerHasMultiplePhones(ownerId);
-                      return (
-                        <button
-                          key={ownerId}
-                          className={`owner-badge ${hasMultiPhone ? 'multi-phone' : ''}`}
-                          onClick={() => onOwnerSelect?.(owner)}
-                          title={owner?.name}
-                        >
-                          <Users size={12} />
-                          <span>{owner?.name?.split(' ')[0] || 'Unknown'}</span>
-                          {hasMultiPhone && <Phone size={10} className="multi-phone-icon" />}
-                        </button>
-                      );
-                    })}
-                    {hasMultipleOwners(property) && (
-                      <span className="multi-owner-indicator" title="Multiple owners">
-                        +{property.owners.length}
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td>
-                  <span className={`status-badge status-${property.status?.toLowerCase().replace(/\s+/g, '-')}`}>
-                    {property.status || 'Unknown'}
-                  </span>
-                </td>
-                <td>{property.rooms || 0}</td>
-                <td>{property.actualArea ? `${property.actualArea.toLocaleString()} sqft` : '-'}</td>
-                <td>
-                  <button className="view-btn" onClick={() => onPropertySelect?.(property)}>
+                  <button 
+                    className="view-btn" 
+                    onClick={(e) => { e.stopPropagation(); onPropertySelect?.(property); }}
+                  >
                     <Eye size={16} />
                   </button>
                 </td>
@@ -166,17 +217,52 @@ const PropertyMatrix = ({ onPropertySelect, onOwnerSelect }) => {
         <div className="matrix-pagination">
           <button 
             disabled={page === 1}
+            onClick={() => setPage(1)}
+          >
+            First
+          </button>
+          <button 
+            disabled={page === 1}
             onClick={() => setPage(p => Math.max(1, p - 1))}
           >
             Previous
           </button>
-          <span>Page {page} of {totalPages}</span>
+          <div className="page-numbers">
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (page <= 3) {
+                pageNum = i + 1;
+              } else if (page >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = page - 2 + i;
+              }
+              return (
+                <button
+                  key={pageNum}
+                  className={page === pageNum ? 'active' : ''}
+                  onClick={() => setPage(pageNum)}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+          </div>
           <button 
             disabled={page === totalPages}
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
           >
             Next
           </button>
+          <button 
+            disabled={page === totalPages}
+            onClick={() => setPage(totalPages)}
+          >
+            Last
+          </button>
+          <span className="page-info">({properties.length.toLocaleString()} total)</span>
         </div>
       )}
     </div>

@@ -1,11 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
-  Building2, Plus, Search, Filter, Edit2, Trash2, 
-  Eye, MapPin, Bed, Bath, Square, DollarSign, Calendar,
-  ChevronDown, ChevronUp, Download, Upload, RefreshCw, Bot,
-  Home, TrendingUp, AlertCircle, CheckCircle, XCircle, Clock, Star,
-  Users, Phone
+  Building2, Plus, Search, Download, Bot, Home, 
+  Users, Phone, XCircle, Star, MapPin, Eye
 } from 'lucide-react';
 import FullScreenDetailModal from '../../shared/components/ui/FullScreenDetailModal';
 import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
@@ -14,58 +11,23 @@ import DataQualityIndicators from './inventory/DataQualityIndicators';
 import ClusterBrowser from './inventory/ClusterBrowser';
 import PropertyMatrix from './inventory/PropertyMatrix';
 import OwnerDetailDrawer from './inventory/OwnerDetailDrawer';
+import FilterPanel from './inventory/FilterPanel';
+import PropertyDetailsCard from './inventory/PropertyDetailsCard';
 import {
   loadInventoryData,
   selectFilteredProperties,
   selectInventoryStats,
   selectFilters,
   selectOwners,
+  selectFilterOptions,
+  selectActiveFiltersCount,
   setFilter,
+  clearFilters,
   toggleMultiOwnerFilter,
   toggleMultiPhoneFilter,
-  toggleMultiPropertyFilter,
-  selectPropertiesByOwnerId
+  toggleMultiPropertyFilter
 } from '../../store/slices/inventorySlice';
 import './MaryInventoryCRM.css';
-
-const DUMMY_INVENTORY = [
-  {
-    id: 'WC-P001',
-    title: 'Luxury 3BR Apartment in DAMAC Hills 2',
-    type: 'apartment',
-    purpose: 'rent',
-    price: 120000,
-    location: { area: 'DAMAC Hills 2', emirate: 'Dubai', address: 'Juniper Cluster' },
-    specs: { bedrooms: 3, bathrooms: 2, area: 1850, parking: 1, built: 2022 },
-    status: 'available',
-    featured: true,
-    agent: { name: 'Ahmed Al Farsi', id: 'AGT001' },
-    images: ['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400'],
-    views: 245,
-    inquiries: 12,
-    pNumber: '23683068',
-    cluster: 'JUNIPER',
-    owners: ['salah_s_a_a_alkharji']
-  },
-  {
-    id: 'WC-P002',
-    title: 'Modern 4BR Villa - ASTER Cluster',
-    type: 'villa',
-    purpose: 'sale',
-    price: 2500000,
-    location: { area: 'DAMAC Hills 2', emirate: 'Dubai', address: 'Aster Cluster' },
-    specs: { bedrooms: 4, bathrooms: 3, area: 3200, parking: 2, built: 2021 },
-    status: 'available',
-    featured: true,
-    agent: { name: 'Sarah Johnson', id: 'AGT002' },
-    images: ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400'],
-    views: 189,
-    inquiries: 8,
-    pNumber: '23687003',
-    cluster: 'ASTER',
-    owners: ['khaled_abdullah_s_alrasheid']
-  }
-];
 
 const MaryInventoryCRM = () => {
   const dispatch = useDispatch();
@@ -73,6 +35,8 @@ const MaryInventoryCRM = () => {
   const stats = useSelector(selectInventoryStats);
   const filters = useSelector(selectFilters);
   const owners = useSelector(selectOwners);
+  const filterOptions = useSelector(selectFilterOptions);
+  const activeFiltersCount = useSelector(selectActiveFiltersCount);
   const loading = useSelector(state => state.inventory?.loading);
   
   const [showFeatures, setShowFeatures] = useState(false);
@@ -82,21 +46,12 @@ const MaryInventoryCRM = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedOwner, setSelectedOwner] = useState(null);
   const [showOwnerDrawer, setShowOwnerDrawer] = useState(false);
-  const [viewMode, setViewMode] = useState('matrix');
+  const [showFilters, setShowFilters] = useState(true);
   const [selectedCluster, setSelectedCluster] = useState('all');
 
   useEffect(() => {
     dispatch(loadInventoryData());
   }, [dispatch]);
-
-  const displayedProperties = properties.length > 0 ? properties : DUMMY_INVENTORY;
-  const displayStats = stats.totalProperties > 0 ? stats : {
-    totalProperties: DUMMY_INVENTORY.length,
-    totalOwners: 2,
-    multiOwnerProperties: 0,
-    ownersWithMultipleProperties: 0,
-    ownersWithMultiplePhones: 0
-  };
 
   const handleOwnerClick = (owner) => {
     setSelectedOwner(owner);
@@ -106,6 +61,14 @@ const MaryInventoryCRM = () => {
   const handlePropertyClick = (property) => {
     setSelectedProperty(property);
     setShowDetailModal(true);
+  };
+
+  const handleFilterChange = (key, value) => {
+    dispatch(setFilter({ key, value }));
+  };
+
+  const handleClearFilters = () => {
+    dispatch(clearFilters());
   };
 
   const handleFilterToggle = (filterKey) => {
@@ -130,6 +93,16 @@ const MaryInventoryCRM = () => {
     });
   };
 
+  const getPropertyOwners = (property) => {
+    if (!property?.owners) return [];
+    return property.owners.map(ownerId => owners.byId?.[ownerId]).filter(Boolean);
+  };
+
+  const enrichedFilterOptions = {
+    ...filterOptions,
+    clusters: filterOptions.clusters || stats.clusters || []
+  };
+
   return (
     <div className="mary-crm-container">
       <div className="mary-header">
@@ -140,7 +113,7 @@ const MaryInventoryCRM = () => {
           <div className="mary-details">
             <h2>Mary - Inventory Manager</h2>
             <span className="mary-status">
-              {loading ? 'Loading...' : `Managing ${displayedProperties.length.toLocaleString()} properties`}
+              {loading ? 'Loading...' : `Managing ${properties.length.toLocaleString()} properties`}
             </span>
           </div>
         </div>
@@ -170,37 +143,61 @@ const MaryInventoryCRM = () => {
 
       <DataQualityIndicators onFilterClick={handleFilterToggle} />
 
+      <div className="filter-toggle-row">
+        <button 
+          className={`filter-toggle-btn ${showFilters ? 'active' : ''}`}
+          onClick={() => setShowFilters(!showFilters)}
+        >
+          <Eye size={16} />
+          {showFilters ? 'Hide Filters' : 'Show Filters'}
+          {activeFiltersCount > 0 && <span className="filter-count">{activeFiltersCount}</span>}
+        </button>
+      </div>
+
+      {showFilters && (
+        <FilterPanel
+          filters={filters}
+          filterOptions={enrichedFilterOptions}
+          onFilterChange={handleFilterChange}
+          onClearFilters={handleClearFilters}
+          activeFiltersCount={activeFiltersCount}
+        />
+      )}
+
       <ClusterBrowser 
         selectedCluster={selectedCluster}
-        onClusterSelect={setSelectedCluster}
+        onClusterSelect={(cluster) => {
+          setSelectedCluster(cluster);
+          handleFilterChange('cluster', cluster === 'all' ? null : cluster);
+        }}
       />
 
       <div className="inventory-stats">
         <div className="stat-card">
           <Building2 size={24} />
           <div className="stat-content">
-            <span className="stat-value">{displayStats.totalProperties?.toLocaleString() || 0}</span>
+            <span className="stat-value">{stats.totalProperties?.toLocaleString() || 0}</span>
             <span className="stat-label">Total Properties</span>
           </div>
         </div>
         <div className="stat-card">
           <Users size={24} color="#8b5cf6" />
           <div className="stat-content">
-            <span className="stat-value">{displayStats.totalOwners?.toLocaleString() || 0}</span>
+            <span className="stat-value">{stats.totalOwners?.toLocaleString() || 0}</span>
             <span className="stat-label">Total Owners</span>
           </div>
         </div>
         <div className="stat-card warning">
           <Users size={24} color="#f59e0b" />
           <div className="stat-content">
-            <span className="stat-value">{displayStats.multiOwnerProperties?.toLocaleString() || 0}</span>
+            <span className="stat-value">{stats.multiOwnerProperties?.toLocaleString() || 0}</span>
             <span className="stat-label">Multi-Owner</span>
           </div>
         </div>
         <div className="stat-card">
           <Phone size={24} color="#3b82f6" />
           <div className="stat-content">
-            <span className="stat-value">{displayStats.ownersWithMultiplePhones?.toLocaleString() || 0}</span>
+            <span className="stat-value">{stats.ownersWithMultiplePhones?.toLocaleString() || 0}</span>
             <span className="stat-label">Multi-Phone Owners</span>
           </div>
         </div>
@@ -222,9 +219,19 @@ const MaryInventoryCRM = () => {
             Multi-Property Owners <XCircle size={14} />
           </span>
         )}
-        {filters.cluster !== 'all' && (
-          <span className="filter-tag" onClick={() => dispatch(setFilter({ key: 'cluster', value: 'all' }))}>
-            Cluster: {filters.cluster} <XCircle size={14} />
+        {filters.layout && (
+          <span className="filter-tag" onClick={() => handleFilterChange('layout', null)}>
+            Layout: {filters.layout} <XCircle size={14} />
+          </span>
+        )}
+        {filters.status && (
+          <span className="filter-tag" onClick={() => handleFilterChange('status', null)}>
+            Status: {filters.status} <XCircle size={14} />
+          </span>
+        )}
+        {filters.view && (
+          <span className="filter-tag" onClick={() => handleFilterChange('view', null)}>
+            View: {filters.view} <XCircle size={14} />
           </span>
         )}
       </div>
@@ -249,69 +256,19 @@ const MaryInventoryCRM = () => {
       <FullScreenDetailModal
         isOpen={showDetailModal}
         onClose={() => setShowDetailModal(false)}
-        title={selectedProperty?.pNumber || selectedProperty?.title}
-        subtitle={selectedProperty?.project || selectedProperty?.location?.area}
-        images={selectedProperty?.images || []}
+        title={selectedProperty?.pNumber || 'Property Details'}
+        subtitle={`${selectedProperty?.cluster || ''} - ${selectedProperty?.area || ''}`}
+        images={[]}
         tabs={[
           {
-            label: 'Overview',
+            label: 'All Details',
             icon: Home,
             content: selectedProperty && (
-              <div className="detail-overview">
-                <div className="detail-section">
-                  <h3>Property Details</h3>
-                  <div className="detail-grid">
-                    <div className="detail-item">
-                      <span className="label">P-Number</span>
-                      <span className="value">{selectedProperty.pNumber}</span>
-                    </div>
-                    <div className="detail-item">
-                      <span className="label">Cluster</span>
-                      <span className="value">{selectedProperty.cluster || '-'}</span>
-                    </div>
-                    <div className="detail-item">
-                      <span className="label">Area</span>
-                      <span className="value">{selectedProperty.area || selectedProperty.location?.area}</span>
-                    </div>
-                    <div className="detail-item">
-                      <span className="label">Status</span>
-                      <span className="value">{selectedProperty.status}</span>
-                    </div>
-                    <div className="detail-item">
-                      <span className="label">Rooms</span>
-                      <span className="value">{selectedProperty.rooms || selectedProperty.specs?.bedrooms || 0}</span>
-                    </div>
-                    <div className="detail-item">
-                      <span className="label">Size</span>
-                      <span className="value">{selectedProperty.actualArea || selectedProperty.specs?.area || 0} sqft</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="detail-section">
-                  <h3>Owners ({selectedProperty.owners?.length || 0})</h3>
-                  <div className="owners-list">
-                    {selectedProperty.owners?.map(ownerId => {
-                      const owner = owners.byId?.[ownerId];
-                      return owner ? (
-                        <div key={ownerId} className="owner-card" onClick={() => handleOwnerClick(owner)}>
-                          <Users size={20} />
-                          <div className="owner-info">
-                            <span className="owner-name">{owner.name}</span>
-                            <span className="owner-contacts">
-                              {owner.contacts?.length || 0} contact(s)
-                            </span>
-                          </div>
-                        </div>
-                      ) : (
-                        <div key={ownerId} className="owner-card">
-                          <Users size={20} />
-                          <span>{ownerId}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
+              <PropertyDetailsCard
+                property={selectedProperty}
+                owners={getPropertyOwners(selectedProperty)}
+                onOwnerClick={handleOwnerClick}
+              />
             )
           },
           {
@@ -319,11 +276,66 @@ const MaryInventoryCRM = () => {
             icon: MapPin,
             content: selectedProperty && (
               <div className="detail-location">
-                <h3>Location Details</h3>
-                <p><strong>Area:</strong> {selectedProperty.area || selectedProperty.location?.area}</p>
-                <p><strong>Project:</strong> {selectedProperty.project || selectedProperty.location?.address}</p>
-                <p><strong>Master Project:</strong> {selectedProperty.masterProject || 'Dubai Tiger Woods'}</p>
-                <p><strong>Municipality No:</strong> {selectedProperty.municipalityNo || '-'}</p>
+                <div className="detail-section">
+                  <h3>Location Details</h3>
+                  <div className="detail-grid">
+                    <div className="detail-item">
+                      <span className="label">Area</span>
+                      <span className="value">{selectedProperty.area || '-'}</span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="label">Project</span>
+                      <span className="value">{selectedProperty.project || '-'}</span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="label">Cluster</span>
+                      <span className="value">{selectedProperty.cluster || '-'}</span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="label">Master Project</span>
+                      <span className="value">{selectedProperty.masterProject || '-'}</span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="label">Building</span>
+                      <span className="value">{selectedProperty.building || '-'}</span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="label">Unit Number</span>
+                      <span className="value">{selectedProperty.unitNumber || '-'}</span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="label">Floor</span>
+                      <span className="value">{selectedProperty.floor || '-'}</span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="label">Municipality No</span>
+                      <span className="value">{selectedProperty.municipalityNo || '-'}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
+          },
+          {
+            label: 'Owners',
+            icon: Users,
+            content: selectedProperty && (
+              <div className="owners-tab">
+                <h3>Property Owners ({selectedProperty.owners?.length || 0})</h3>
+                <div className="owners-list">
+                  {getPropertyOwners(selectedProperty).map(owner => (
+                    <div key={owner.id} className="owner-card" onClick={() => handleOwnerClick(owner)}>
+                      <div className="owner-avatar">{(owner.name || 'U').charAt(0)}</div>
+                      <div className="owner-info">
+                        <span className="owner-name">{owner.name}</span>
+                        <span className="owner-contacts">
+                          {owner.contacts?.length || 0} contact(s)
+                          {owner.dateOfBirth && ` | DOB: ${owner.dateOfBirth}`}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )
           }
@@ -331,9 +343,9 @@ const MaryInventoryCRM = () => {
         actions={[
           { label: 'Edit Property', onClick: () => { setShowDetailModal(false); setEditProperty(selectedProperty); } },
           { label: 'Contact Owner', primary: true, onClick: () => {
-            const firstOwnerId = selectedProperty?.owners?.[0];
-            if (firstOwnerId && owners.byId?.[firstOwnerId]) {
-              handleOwnerClick(owners.byId[firstOwnerId]);
+            const owners = getPropertyOwners(selectedProperty);
+            if (owners.length > 0) {
+              handleOwnerClick(owners[0]);
             }
           }}
         ]}

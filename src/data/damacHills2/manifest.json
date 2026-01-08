@@ -3,23 +3,23 @@
     {
       "id": "sheet1",
       "name": "Sheet1",
-      "cluster": null,
+      "cluster": "SHEET1",
       "propertyCount": 10654,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "sheet45",
       "name": "Sheet45",
-      "cluster": null,
+      "cluster": "SHEET45",
       "propertyCount": 458,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "r2mr2_mb_all_brown_clusters",
       "name": "R2MR2-MB ALL BROWN CLUSTERS",
-      "cluster": null,
+      "cluster": "R2MR2",
       "propertyCount": 127,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "aster_r2mr2_mb",
@@ -31,9 +31,9 @@
     {
       "id": "r2m1_all_clusters",
       "name": "R2M1 ALL CLUSTERS",
-      "cluster": null,
+      "cluster": "R2M1",
       "propertyCount": 115,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "juniper_r2mr2_mb",
@@ -66,30 +66,30 @@
     {
       "id": "corner_aqa",
       "name": "CORNER AQA",
-      "cluster": null,
+      "cluster": "CORNER",
       "propertyCount": 74,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "sheet36",
       "name": "Sheet36",
-      "cluster": null,
+      "cluster": "SHEET36",
       "propertyCount": 1146,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "copy_of_sheet36",
       "name": "Copy of Sheet36",
-      "cluster": null,
+      "cluster": "COPY",
       "propertyCount": 695,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "sheet32",
       "name": "Sheet32",
-      "cluster": null,
+      "cluster": "SHEET32",
       "propertyCount": 33,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "odora_r2mr2_mb",
@@ -101,9 +101,9 @@
     {
       "id": "sheet34",
       "name": "Sheet34",
-      "cluster": null,
+      "cluster": "SHEET34",
       "propertyCount": 135,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "victoria",
@@ -122,9 +122,9 @@
     {
       "id": "r2_em_jnp",
       "name": "R2-EM JNP",
-      "cluster": null,
+      "cluster": "R2",
       "propertyCount": 106,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "basswood_all",
@@ -164,9 +164,9 @@
     {
       "id": "r2m1",
       "name": "R2M1",
-      "cluster": null,
+      "cluster": "R2M1",
       "propertyCount": 200,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "odora_all",
@@ -178,16 +178,16 @@
     {
       "id": "jnp_all",
       "name": "JNP ALL",
-      "cluster": null,
+      "cluster": "JNP",
       "propertyCount": 185,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "aqa_all",
       "name": "AQA ALL",
-      "cluster": null,
+      "cluster": "AQA",
       "propertyCount": 191,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "coursetia_all",
@@ -220,30 +220,30 @@
     {
       "id": "pcf_r2m14",
       "name": "PCF R2M14",
-      "cluster": null,
+      "cluster": "PCF",
       "propertyCount": 213,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "san_r2m14",
       "name": "SAN R2M14",
-      "cluster": null,
+      "cluster": "SAN",
       "propertyCount": 71,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "sheet9",
       "name": "Sheet9",
-      "cluster": null,
+      "cluster": "SHEET9",
       "propertyCount": 762,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "r2_em_brown_clusters",
       "name": "R2-EM BROWN CLUSTERS",
-      "cluster": null,
+      "cluster": "R2",
       "propertyCount": 560,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "janusia__r2_m14_",
@@ -255,9 +255,9 @@
     {
       "id": "vardon",
       "name": "Vardon",
-      "cluster": null,
+      "cluster": "VARDON",
       "propertyCount": 780,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "albizia",
@@ -276,9 +276,9 @@
     {
       "id": "sheet3",
       "name": "Sheet3",
-      "cluster": null,
+      "cluster": "SHEET3",
       "propertyCount": 74,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "janusia",
@@ -290,56 +290,288 @@
     {
       "id": "all_khalid_d2",
       "name": "All Khalid D2",
-      "cluster": null,
+      "cluster": "ALL",
       "propertyCount": 177,
-      "isFiltered": false
+      "isFiltered": true
     },
     {
       "id": "projectsind2",
       "name": "ProjectsInD2",
-      "cluster": null,
+      "cluster": "PROJECTSIND2",
       "propertyCount": 29,
-      "isFiltered": false
+      "isFiltered": true
     }
   ],
   "clusters": [
     ".",
-    "CLARET",
-    "PRIMROSE",
-    "JUNIPER",
-    "COURSETIA",
+    "0",
+    "ACUNA",
+    "AL",
+    "ALBIZIA",
+    "AMARGO",
+    "AMAZONIA",
+    "AQUILEGIA",
     "ASTER",
-    "ZINNIA",
+    "AVENCIA",
+    "BASSWOOD",
+    "CENTAURY",
+    "CLARET",
+    "COURSETIA",
+    "HAWTHORN",
+    "JANUSIA",
+    "JUNIPER",
+    "MIMOSA",
+    "MULBERRY",
+    "NAVITAS",
     "ODORA",
+    "PACIFICA",
+    "PRIMROSE",
+    "SANCTNARY",
     "SYCAMORE",
     "TRIXIS",
-    "AMAZONIA",
-    "CENTAURY",
-    "ACUNA",
-    "JANUSIA",
-    "PACIFICA",
-    "SANCTNARY",
-    "VIRIDIS",
-    "MULBERRY",
-    "HAWTHORN",
-    "NAVITAS",
     "VARDON",
-    "ALBIZIA",
-    "BASSWOOD",
-    "MIMOSA",
-    "AMAZONIA-EX",
-    "AMARGO",
-    "AVENCIA",
     "VICTORIA",
-    "AVENCIA-2",
-    "AQUILEGIA"
+    "VIRIDIS",
+    "ZINNIA"
   ],
-  "stats": {
-    "totalProperties": 9206,
-    "totalOwners": 8768,
-    "multiOwnerProperties": 1170,
-    "ownersWithMultipleProperties": 861,
-    "ownersWithMultiplePhones": 3285
+  "filterOptions": {
+    "layouts": [
+      "L2",
+      "L3",
+      "R2-EE",
+      "R2-EM",
+      "R2-M",
+      "R2-M1",
+      "R2-M11",
+      "R2-M14",
+      "R2-MB",
+      "R3-M",
+      "R4-EE",
+      "R4-EM",
+      "R4A-M",
+      "R4M",
+      "RC-EM",
+      "RE-E",
+      "RH-EG",
+      "RH-M",
+      "RH-M-3",
+      "RH-M4",
+      "RH-MG",
+      "RH-MT",
+      "RN-EE",
+      "RN-EM",
+      "RN-M",
+      "RR-EE",
+      "RR-EM",
+      "RR-M",
+      "RRB-M",
+      "RRT-EE",
+      "RRT-EM",
+      "RRT-M",
+      "U-AA",
+      "U-AB",
+      "U-B",
+      "U-BB",
+      "V2",
+      "V3",
+      "V5",
+      "XR2-M11",
+      "XR2-M14",
+      "XR4-M14",
+      "XU-4BB",
+      "XU-AA",
+      "XU-AB",
+      "XU-B",
+      "XU-B1",
+      "XU-BB"
+    ],
+    "statuses": [
+      "Available for Rent ",
+      "Looks Vacant ",
+      "Rented",
+      "Sale as VOT",
+      "Vacant "
+    ],
+    "views": [
+      "Back-to-Back",
+      "Half Single row",
+      "Single Row"
+    ],
+    "floors": [
+      "G",
+      "1",
+      "ROLA NEW OWNER",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "."
+    ],
+    "rooms": [
+      ".",
+      "1 B/R",
+      "2",
+      "2 B/R",
+      "3 B/R",
+      "6 B/R",
+      "971555561316",
+      "Studio"
+    ],
+    "areas": [
+      "0",
+      "Al Yufrah 2",
+      "Al Yufrah 2 ",
+      "Al Yufrah 3",
+      "Al Yufrah 4"
+    ],
+    "masterProjects": [
+      ".",
+      "Dubai Tiger Woods"
+    ]
   },
-  "generatedAt": "2026-01-08T13:04:12.480Z"
+  "stats": {
+    "totalProperties": 9378,
+    "totalOwners": 8767,
+    "multiOwnerProperties": 1170,
+    "ownersWithMultipleProperties": 863,
+    "ownersWithMultiplePhones": 1684
+  },
+  "columns": [
+    {
+      "key": "pNumber",
+      "label": "P-Number",
+      "type": "text",
+      "filterable": true
+    },
+    {
+      "key": "area",
+      "label": "Area",
+      "type": "text",
+      "filterable": true
+    },
+    {
+      "key": "project",
+      "label": "Project",
+      "type": "text",
+      "filterable": true
+    },
+    {
+      "key": "cluster",
+      "label": "Cluster",
+      "type": "dropdown",
+      "filterable": true
+    },
+    {
+      "key": "plotNumber",
+      "label": "Plot Number",
+      "type": "text",
+      "filterable": true
+    },
+    {
+      "key": "view",
+      "label": "View",
+      "type": "dropdown",
+      "filterable": true
+    },
+    {
+      "key": "building",
+      "label": "Building",
+      "type": "text",
+      "filterable": true
+    },
+    {
+      "key": "unitNumber",
+      "label": "Unit Number",
+      "type": "text",
+      "filterable": true
+    },
+    {
+      "key": "layout",
+      "label": "Layout",
+      "type": "dropdown",
+      "filterable": true
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "type": "dropdown",
+      "filterable": true
+    },
+    {
+      "key": "askingPrice",
+      "label": "Asking Price",
+      "type": "currency",
+      "filterable": true
+    },
+    {
+      "key": "sd",
+      "label": "SD",
+      "type": "text",
+      "filterable": false
+    },
+    {
+      "key": "plotNo",
+      "label": "Plot No",
+      "type": "text",
+      "filterable": false
+    },
+    {
+      "key": "registration",
+      "label": "Registration",
+      "type": "text",
+      "filterable": false
+    },
+    {
+      "key": "floor",
+      "label": "Floor",
+      "type": "dropdown",
+      "filterable": true
+    },
+    {
+      "key": "rooms",
+      "label": "Rooms",
+      "type": "dropdown",
+      "filterable": true
+    },
+    {
+      "key": "actualArea",
+      "label": "Actual Area",
+      "type": "text",
+      "filterable": true
+    },
+    {
+      "key": "municipalityNo",
+      "label": "Municipality No",
+      "type": "text",
+      "filterable": false
+    },
+    {
+      "key": "otp",
+      "label": "OTP (Dubai REST)",
+      "type": "text",
+      "filterable": false
+    },
+    {
+      "key": "dewaPremiseNumber",
+      "label": "DEWA Premise",
+      "type": "text",
+      "filterable": false
+    },
+    {
+      "key": "masterProject",
+      "label": "Master Project",
+      "type": "dropdown",
+      "filterable": true
+    }
+  ],
+  "generatedAt": "2026-01-08T13:21:04.234Z"
 }
