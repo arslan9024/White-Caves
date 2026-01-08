@@ -475,10 +475,325 @@ body.light-mode .env-name {
   margin-top: 20px;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.auto-refresh-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.auto-refresh-toggle input {
+  accent-color: #D4AF37;
+}
+
+.web-traffic-section {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 30px;
+}
+
+.web-traffic-section h2 {
+  color: white;
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+}
+
+.section-description {
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 24px;
+  font-size: 0.875rem;
+}
+
+.performance-overview {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 30px;
+  margin-bottom: 30px;
+  align-items: center;
+}
+
+.performance-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.performance-score .score-ring {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.performance-score .score-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.performance-score .score-ring circle {
+  transition: stroke-dasharray 0.5s ease;
+}
+
+.performance-score.excellent .score-ring circle:last-child {
+  stroke: #22C55E;
+}
+
+.performance-score.good .score-ring circle:last-child {
+  stroke: #84CC16;
+}
+
+.performance-score.needs-improvement .score-ring circle:last-child {
+  stroke: #F59E0B;
+}
+
+.performance-score.poor .score-ring circle:last-child {
+  stroke: #EF4444;
+}
+
+.performance-score .score-ring .score-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+}
+
+.performance-score .score-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+}
+
+.performance-score .score-status {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.performance-score .score-status.excellent {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22C55E;
+}
+
+.performance-score .score-status.good {
+  background: rgba(132, 204, 22, 0.2);
+  color: #84CC16;
+}
+
+.performance-score .score-status.needs-improvement {
+  background: rgba(245, 158, 11, 0.2);
+  color: #F59E0B;
+}
+
+.performance-score .score-status.poor {
+  background: rgba(239, 68, 68, 0.2);
+  color: #EF4444;
+}
+
+.performance-score .score-status.unknown {
+  background: rgba(150, 150, 150, 0.2);
+  color: #999;
+}
+
+.traffic-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+}
+
+.traffic-metric-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.metric-icon {
+  font-size: 1.5rem;
+}
+
+.metric-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.metric-trend {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.metric-trend.up {
+  color: #22C55E;
+}
+
+.metric-trend.down {
+  color: #EF4444;
+}
+
+.metric-trend.stable {
+  color: #999;
+}
+
+.web-vitals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.web-vital-card {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  border-left: 4px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.web-vital-card.status-healthy {
+  border-left-color: #22C55E;
+}
+
+.web-vital-card.status-warning {
+  border-left-color: #F59E0B;
+}
+
+.web-vital-card.status-error {
+  border-left-color: #EF4444;
+}
+
+.web-vital-card.status-unknown {
+  border-left-color: #666;
+}
+
+.vital-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.vital-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+}
+
+.vital-rating {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.vital-rating.good {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22C55E;
+}
+
+.vital-rating.needs-improvement {
+  background: rgba(245, 158, 11, 0.2);
+  color: #F59E0B;
+}
+
+.vital-rating.poor {
+  background: rgba(239, 68, 68, 0.2);
+  color: #EF4444;
+}
+
+.vital-rating.unknown {
+  background: rgba(150, 150, 150, 0.2);
+  color: #999;
+}
+
+.vital-value {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.vital-value .value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+}
+
+.vital-value .unit {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.vital-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 10px;
+}
+
+.vital-thresholds {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.vital-thresholds .good {
+  color: #22C55E;
+}
+
+.vital-thresholds .poor {
+  color: #EF4444;
+}
+
+.vitals-updated {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.75rem;
+  margin-top: 16px;
+  text-align: right;
+}
+
 @media (max-width: 768px) {
   .health-header {
     flex-direction: column;
     gap: 15px;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
   }
   
   .health-grid {
@@ -501,4 +816,75 @@ body.light-mode .env-name {
   .deployment-checks {
     grid-template-columns: 1fr;
   }
+  
+  .performance-overview {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  
+  .traffic-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .web-vitals-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+[data-theme="light"] .web-traffic-section {
+  background: #f9f9f9;
+  border-color: #eee;
+}
+
+[data-theme="light"] .web-traffic-section h2 {
+  color: #333;
+}
+
+[data-theme="light"] .section-description {
+  color: #666;
+}
+
+[data-theme="light"] .traffic-metric-card {
+  background: white;
+  border-color: #eee;
+}
+
+[data-theme="light"] .metric-value {
+  color: #333;
+}
+
+[data-theme="light"] .metric-label {
+  color: #888;
+}
+
+[data-theme="light"] .web-vital-card {
+  background: white;
+}
+
+[data-theme="light"] .vital-name {
+  color: #333;
+}
+
+[data-theme="light"] .vital-value .value {
+  color: #333;
+}
+
+[data-theme="light"] .vital-value .unit {
+  color: #888;
+}
+
+[data-theme="light"] .vital-label {
+  color: #888;
+}
+
+[data-theme="light"] .performance-score .score-ring .score-value {
+  color: #333;
+}
+
+[data-theme="light"] .performance-score .score-label {
+  color: #666;
+}
+
+[data-theme="light"] .vitals-updated {
+  color: #999;
 }

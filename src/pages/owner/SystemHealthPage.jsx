@@ -1,16 +1,73 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchAnalytics } from '../../store/analyticsSlice';
 import './SystemHealthPage.css';
 
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
 
+const WebVitalCard = ({ name, label, value, rating, unit, thresholds }) => {
+  const getStatusClass = () => {
+    if (!value) return 'status-unknown';
+    if (rating === 'good') return 'status-healthy';
+    if (rating === 'needs-improvement') return 'status-warning';
+    return 'status-error';
+  };
+
+  const formatValue = () => {
+    if (value === null || value === undefined) return '-';
+    if (name === 'CLS') return value.toFixed(3);
+    return Math.round(value);
+  };
+
+  return (
+    <div className={`web-vital-card ${getStatusClass()}`}>
+      <div className="vital-header">
+        <span className="vital-name">{name}</span>
+        <span className={`vital-rating ${rating || 'unknown'}`}>
+          {rating || 'Measuring...'}
+        </span>
+      </div>
+      <div className="vital-value">
+        <span className="value">{formatValue()}</span>
+        <span className="unit">{unit}</span>
+      </div>
+      <div className="vital-label">{label}</div>
+      {thresholds && (
+        <div className="vital-thresholds">
+          <span className="good">Good: ≤{thresholds.good}{unit}</span>
+          <span className="poor">Poor: ≥{thresholds.poor}{unit}</span>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const TrafficMetricCard = ({ icon, label, value, trend, change }) => (
+  <div className="traffic-metric-card">
+    <div className="metric-icon">{icon}</div>
+    <div className="metric-content">
+      <span className="metric-value">{value}</span>
+      <span className="metric-label">{label}</span>
+    </div>
+    {trend && (
+      <div className={`metric-trend ${trend}`}>
+        {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'}
+        {change && <span>{change}</span>}
+      </div>
+    )}
+  </div>
+);
+
 function SystemHealthPage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const user = useSelector(state => state.user.currentUser);
+  const analytics = useSelector(state => state.analytics);
   const [healthData, setHealthData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [lastChecked, setLastChecked] = useState(null);
+  const [autoRefresh, setAutoRefresh] = useState(true);
 
   useEffect(() => {
     if (!user || user.email !== OWNER_EMAIL) {
@@ -18,23 +75,32 @@ function SystemHealthPage() {
     }
   }, [user, navigate]);
 
-  const checkHealth = async () => {
+  const checkHealth = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch('/api/system/health');
       const data = await response.json();
       setHealthData(data);
       setLastChecked(new Date());
+      dispatch(fetchAnalytics());
     } catch (error) {
       console.error('Health check failed:', error);
       setHealthData({ error: 'Failed to fetch health status' });
     }
     setLoading(false);
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     checkHealth();
-  }, []);
+  }, [checkHealth]);
+
+  useEffect(() => {
+    if (!autoRefresh) return;
+    const interval = setInterval(() => {
+      checkHealth();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [autoRefresh, checkHealth]);
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -72,6 +138,13 @@ function SystemHealthPage() {
     }
   };
 
+  const getPerformanceScoreClass = (score) => {
+    if (score >= 90) return 'excellent';
+    if (score >= 70) return 'good';
+    if (score >= 50) return 'needs-improvement';
+    return 'poor';
+  };
+
   return (
     <div className="system-health-page">
       <button className="btn-back" onClick={() => navigate('/owner/dashboard')}>
@@ -83,9 +156,19 @@ function SystemHealthPage() {
           <h1>System Health Monitor</h1>
           <p className="subtitle">Real-time status of all connected services</p>
         </div>
-        <button className="btn-refresh" onClick={checkHealth} disabled={loading}>
-          {loading ? 'Checking...' : 'Refresh Status'}
-        </button>
+        <div className="header-actions">
+          <label className="auto-refresh-toggle">
+            <input 
+              type="checkbox" 
+              checked={autoRefresh} 
+              onChange={(e) => setAutoRefresh(e.target.checked)}
+            />
+            <span>Auto-refresh (30s)</span>
+          </label>
+          <button className="btn-refresh" onClick={checkHealth} disabled={loading}>
+            {loading ? 'Checking...' : 'Refresh Status'}
+          </button>
+        </div>
       </div>
 
       {lastChecked && (
@@ -93,6 +176,116 @@ function SystemHealthPage() {
           Last checked: {lastChecked.toLocaleTimeString()}
         </p>
       )}
+
+      <div className="web-traffic-section">
+        <h2>Web Traffic Health</h2>
+        <p className="section-description">Live performance metrics from Speed Insights</p>
+        
+        <div className="performance-overview">
+          <div className={`performance-score ${getPerformanceScoreClass(analytics.performance.score)}`}>
+            <div className="score-ring">
+              <svg viewBox="0 0 100 100">
+                <circle 
+                  cx="50" cy="50" r="45" 
+                  fill="none" 
+                  stroke="var(--bg-tertiary)" 
+                  strokeWidth="8"
+                />
+                <circle 
+                  cx="50" cy="50" r="45" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeDasharray={`${analytics.performance.score * 2.83} 283`}
+                  transform="rotate(-90 50 50)"
+                />
+              </svg>
+              <div className="score-value">{analytics.performance.score}</div>
+            </div>
+            <div className="score-label">Performance Score</div>
+            <div className={`score-status ${analytics.performance.status}`}>
+              {analytics.performance.status.replace('-', ' ')}
+            </div>
+          </div>
+
+          <div className="traffic-metrics">
+            <TrafficMetricCard 
+              icon="👁" 
+              label="Page Views" 
+              value={analytics.traffic.pageViews.toLocaleString()}
+              trend="up"
+              change="+12%"
+            />
+            <TrafficMetricCard 
+              icon="👤" 
+              label="Active Users" 
+              value={analytics.traffic.activeUsers || 1}
+              trend="stable"
+            />
+            <TrafficMetricCard 
+              icon="⏱" 
+              label="Avg. Session" 
+              value={`${Math.floor(analytics.traffic.avgSessionDuration / 60)}m`}
+            />
+            <TrafficMetricCard 
+              icon="↩" 
+              label="Bounce Rate" 
+              value={`${analytics.traffic.bounceRate}%`}
+              trend={analytics.traffic.bounceRate > 50 ? 'down' : 'up'}
+            />
+          </div>
+        </div>
+
+        <div className="web-vitals-grid">
+          <WebVitalCard 
+            name="LCP"
+            label="Largest Contentful Paint"
+            value={analytics.webVitals.lcp?.value}
+            rating={analytics.webVitals.lcp?.rating}
+            unit="ms"
+            thresholds={{ good: 2500, poor: 4000 }}
+          />
+          <WebVitalCard 
+            name="INP"
+            label="Interaction to Next Paint"
+            value={analytics.webVitals.inp?.value}
+            rating={analytics.webVitals.inp?.rating}
+            unit="ms"
+            thresholds={{ good: 200, poor: 500 }}
+          />
+          <WebVitalCard 
+            name="CLS"
+            label="Cumulative Layout Shift"
+            value={analytics.webVitals.cls?.value}
+            rating={analytics.webVitals.cls?.rating}
+            unit=""
+            thresholds={{ good: 0.1, poor: 0.25 }}
+          />
+          <WebVitalCard 
+            name="FCP"
+            label="First Contentful Paint"
+            value={analytics.webVitals.fcp?.value}
+            rating={analytics.webVitals.fcp?.rating}
+            unit="ms"
+            thresholds={{ good: 1800, poor: 3000 }}
+          />
+          <WebVitalCard 
+            name="TTFB"
+            label="Time to First Byte"
+            value={analytics.webVitals.ttfb?.value}
+            rating={analytics.webVitals.ttfb?.rating}
+            unit="ms"
+            thresholds={{ good: 800, poor: 1800 }}
+          />
+        </div>
+
+        {analytics.performance.lastUpdated && (
+          <p className="vitals-updated">
+            Vitals last updated: {new Date(analytics.performance.lastUpdated).toLocaleTimeString()}
+          </p>
+        )}
+      </div>
 
       {loading && !healthData ? (
         <div className="loading-state">

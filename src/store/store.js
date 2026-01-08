@@ -1,4 +1,3 @@
-
 import { configureStore } from '@reduxjs/toolkit';
 import propertyReducer from './propertySlice';
 import userReducer from './userSlice';
@@ -6,6 +5,7 @@ import navigationReducer from './navigationSlice';
 import dashboardReducer from './dashboardSlice';
 import contentReducer from './contentSlice';
 import authReducer from './authSlice';
+import analyticsReducer from './analyticsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,7 +14,8 @@ export const store = configureStore({
     navigation: navigationReducer,
     dashboard: dashboardReducer,
     content: contentReducer,
-    auth: authReducer
+    auth: authReducer,
+    analytics: analyticsReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
