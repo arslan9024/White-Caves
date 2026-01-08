@@ -21,7 +21,7 @@ const DEFAULT_NAV_LINKS = [
   { path: '/contact', label: 'Contact' },
 ];
 
-const ROLE_MENUS = {
+const PUBLIC_ROLE_MENUS = {
   'buyer': {
     label: 'Buyer',
     icon: '🏠',
@@ -94,28 +94,35 @@ const ROLE_MENUS = {
       { path: '/secondary-sales-agent/leads', label: 'Leads', icon: '📞' },
       { path: '/secondary-sales-agent/calendar', label: 'Calendar', icon: '📅' },
     ]
-  },
-  'owner': {
-    label: 'Owner',
-    icon: '👑',
-    color: '#ffd700',
-    items: [
-      { path: '/owner/dashboard', label: 'Dashboard', icon: '📊' },
-      { path: '/owner/business-model', label: 'Business Model', icon: '📋' },
-      { path: '/owner/client-services', label: 'Client Services', icon: '🏢' },
-      { path: '/owner/system-health', label: 'System Health', icon: '🩺' },
-      { path: '/owner/agents', label: 'Manage Agents', icon: '👥' },
-      { path: '/owner/properties', label: 'All Properties', icon: '🏠' },
-      { path: '/owner/reports', label: 'Reports', icon: '📈' },
-      { path: '/owner/settings', label: 'Settings', icon: '⚙️' },
-    ],
-    whatsapp: [
-      { path: '/owner/whatsapp', label: 'Messages', icon: '💬' },
-      { path: '/owner/whatsapp/chatbot', label: 'Chatbot', icon: '🤖' },
-      { path: '/owner/whatsapp/analytics', label: 'Analytics', icon: '📈' },
-      { path: '/owner/whatsapp/settings', label: 'Settings', icon: '⚙️' },
-    ],
   }
+};
+
+const OWNER_MENU = {
+  label: 'Owner Panel',
+  icon: '👑',
+  color: '#ffd700',
+  isOwnerExclusive: true,
+  items: [
+    { path: '/owner/dashboard', label: 'Dashboard', icon: '📊' },
+    { path: '/owner/business-model', label: 'Business Model', icon: '📋' },
+    { path: '/owner/client-services', label: 'Client Services', icon: '🏢' },
+    { path: '/owner/system-health', label: 'System Health', icon: '🩺' },
+    { path: '/owner/agents', label: 'Manage Agents', icon: '👥' },
+    { path: '/owner/properties', label: 'All Properties', icon: '🏠' },
+    { path: '/owner/reports', label: 'Reports', icon: '📈' },
+    { path: '/owner/settings', label: 'Settings', icon: '⚙️' },
+  ],
+  whatsapp: [
+    { path: '/owner/whatsapp', label: 'Messages', icon: '💬' },
+    { path: '/owner/whatsapp/chatbot', label: 'Chatbot', icon: '🤖' },
+    { path: '/owner/whatsapp/analytics', label: 'Analytics', icon: '📈' },
+    { path: '/owner/whatsapp/settings', label: 'Settings', icon: '⚙️' },
+  ],
+};
+
+const ROLE_MENUS = {
+  ...PUBLIC_ROLE_MENUS,
+  'owner': OWNER_MENU
 };
 
 export default function UniversalNav({
@@ -326,4 +333,4 @@ export default function UniversalNav({
   );
 }
 
-export { ROLE_MENUS, DEFAULT_NAV_LINKS };
+export { ROLE_MENUS, PUBLIC_ROLE_MENUS, OWNER_MENU, DEFAULT_NAV_LINKS };
