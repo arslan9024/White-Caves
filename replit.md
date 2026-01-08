@@ -61,6 +61,9 @@ Preferred communication style: Simple, everyday language.
 - **SEO Optimization**: Comprehensive meta tags, Open Graph, Twitter Cards, structured data (JSON-LD), sitemap, robots.txt, and performance optimizations.
 - **Session Management**: Enhanced `authSlice.js` with multi-session tracking, device/browser detection, session timeout, token refresh, and activity monitoring. Stores user preferences, search history, favorites, recently viewed properties, and form data autofill.
 - **Social-First Authentication**: SignInPage (`src/pages/auth/SignInPage.jsx`) restructured with social login (Google, Facebook, Apple) as PRIMARY method displayed prominently at top, with Email/Phone as secondary options in tabs below.
+- **Authentication Components**: Feature-based auth components in `src/features/auth/` with SocialLoginButtons (Google, Facebook, Apple, LinkedIn), EmailLoginForm, MobileLoginForm with OTP verification, and RoleSelectionForm. All components properly track login provider for telemetry.
+- **Role Approval Workflow**: Admin RoleApprovalQueue (`src/features/admin/components/approvals/`) fetches pending role requests on mount, uses authenticated API calls with Bearer tokens, and supports approve/reject actions with reasons.
+- **API Client**: Centralized `apiClient.js` utility with setAuthToken method for authenticated requests, error handling, and HTTP method helpers (get, post, put, delete).
 - **AI-Powered Automation**: Includes enhanced property schema with UAE-specific fields, Arabic/English bilingual support with RTL CSS, an AI Chatbot Service for intent classification and entity extraction, and an AI Agent Assignment Engine using a weighted scoring algorithm.
 - **Google Calendar Integration**: For property viewing event creation, follow-up tasks, and meeting invitations.
 - **Market Analytics Dashboard**: Provides KPIs, transaction breakdowns, lead source visualization, and agent performance leaderboards.
