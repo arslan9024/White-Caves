@@ -635,6 +635,70 @@ const getInitialState = () => ({
     ],
     activityLog: []
   },
+
+  confidentialVault: {
+    documents: [
+      { id: 'doc_001', name: 'Q4 Acquisition Strategy.pdf', category: 'strategy', accessLevel: 'executive', createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), accessLog: [], meta: { pages: 24, size: '2.4MB' } },
+      { id: 'doc_002', name: 'Investor Presentation 2026.pptx', category: 'finance', accessLevel: 'board', createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(), accessLog: [], meta: { pages: 45, size: '8.1MB' } },
+      { id: 'doc_003', name: 'HR Compensation Structure.xlsx', category: 'hr', accessLevel: 'executive', createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(), accessLog: [], meta: { pages: 1, size: '1.2MB' } }
+    ],
+    accessRequests: [],
+    permissions: {
+      'zoe': ['admin', 'view', 'request'],
+      'theodora': ['view', 'request'],
+      'nancy': ['request'],
+      'aurora': ['admin', 'view'],
+      'laila': ['view', 'request']
+    },
+    vaultStats: {
+      totalDocuments: 3,
+      pendingRequests: 0,
+      recentAccesses: 0
+    }
+  },
+
+  leadManagementHub: {
+    incomingLeads: [],
+    processedLeads: {},
+    specialistPipelines: {
+      sophia: { 
+        leadIds: [],
+        pipelineStages: ['New', 'Contacted', 'Viewed', 'Negotiation', 'Closed']
+      },
+      daisy: {
+        leadIds: [],
+        pipelineStages: ['New', 'Tour Scheduled', 'Application', 'Approved', 'Lease Signed']
+      }
+    },
+    funnelMetrics: {
+      totalIncoming: 156,
+      rentVsSaleRatio: '58:42',
+      avgQualificationTime: '1.8h',
+      conversionRate: 0.23
+    },
+    leadScoringRules: {
+      urgencyWeight: 0.3,
+      budgetWeight: 0.25,
+      engagementWeight: 0.25,
+      sourceWeight: 0.2
+    }
+  },
+
+  complianceEngine: {
+    kycProfiles: {},
+    amlMonitor: {
+      flaggedTransactions: [],
+      watchlistMatches: [],
+      investigationQueue: []
+    },
+    auditLog: [],
+    complianceMetrics: {
+      totalProfiles: 89,
+      pendingReview: 12,
+      approvedThisMonth: 34,
+      riskScore: 0.15
+    }
+  },
   
   initialized: true
 });
@@ -967,6 +1031,119 @@ const aiAssistantDashboardSlice = createSlice({
         department: 'all',
         status: 'unreviewed'
       };
+    },
+
+    requestVaultAccess: (state, action) => {
+      const { documentId, requesterId, reason } = action.payload;
+      const request = {
+        id: `req_${Date.now()}`,
+        documentId,
+        requesterId,
+        reason,
+        status: 'pending',
+        requestedAt: new Date().toISOString(),
+        reviewedBy: null,
+        reviewedAt: null
+      };
+      state.confidentialVault.accessRequests.push(request);
+      state.confidentialVault.vaultStats.pendingRequests += 1;
+    },
+
+    approveVaultRequest: (state, action) => {
+      const { requestId, approverId } = action.payload;
+      const request = state.confidentialVault.accessRequests.find(r => r.id === requestId);
+      if (request) {
+        request.status = 'approved';
+        request.reviewedBy = approverId;
+        request.reviewedAt = new Date().toISOString();
+        state.confidentialVault.vaultStats.pendingRequests = Math.max(0, state.confidentialVault.vaultStats.pendingRequests - 1);
+        state.confidentialVault.vaultStats.recentAccesses += 1;
+        const doc = state.confidentialVault.documents.find(d => d.id === request.documentId);
+        if (doc) {
+          doc.accessLog.push({ accessedBy: request.requesterId, accessedAt: new Date().toISOString() });
+        }
+      }
+    },
+
+    denyVaultRequest: (state, action) => {
+      const { requestId, approverId, reason } = action.payload;
+      const request = state.confidentialVault.accessRequests.find(r => r.id === requestId);
+      if (request) {
+        request.status = 'denied';
+        request.reviewedBy = approverId;
+        request.reviewedAt = new Date().toISOString();
+        request.denyReason = reason;
+        state.confidentialVault.vaultStats.pendingRequests = Math.max(0, state.confidentialVault.vaultStats.pendingRequests - 1);
+      }
+    },
+
+    addIncomingLead: (state, action) => {
+      const lead = {
+        id: `lead_${Date.now()}`,
+        receivedAt: new Date().toISOString(),
+        initialIntent: undefined,
+        ...action.payload
+      };
+      state.leadManagementHub.incomingLeads.push(lead);
+      state.leadManagementHub.funnelMetrics.totalIncoming += 1;
+    },
+
+    qualifyLead: (state, action) => {
+      const { leadId, assignedIntent, qualificationScore, structuredData } = action.payload;
+      const lead = state.leadManagementHub.incomingLeads.find(l => l.id === leadId);
+      if (lead) {
+        state.leadManagementHub.processedLeads[leadId] = {
+          status: 'qualified',
+          assignedIntent,
+          qualificationScore,
+          structuredData,
+          qualifiedAt: new Date().toISOString(),
+          routedTo: null,
+          routedAt: null
+        };
+      }
+    },
+
+    routeLeadToSpecialist: (state, action) => {
+      const { leadId, specialist } = action.payload;
+      const processed = state.leadManagementHub.processedLeads[leadId];
+      if (processed) {
+        processed.status = 'routed';
+        processed.routedTo = specialist;
+        processed.routedAt = new Date().toISOString();
+        state.leadManagementHub.specialistPipelines[specialist].leadIds.push(leadId);
+      }
+    },
+
+    updateLeadPipelineStage: (state, action) => {
+      const { leadId, specialist, stage } = action.payload;
+      const processed = state.leadManagementHub.processedLeads[leadId];
+      if (processed) {
+        processed.currentStage = stage;
+      }
+    },
+
+    addComplianceAuditLog: (state, action) => {
+      const entry = {
+        id: `audit_${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        ...action.payload
+      };
+      state.complianceEngine.auditLog.unshift(entry);
+      if (state.complianceEngine.auditLog.length > 100) {
+        state.complianceEngine.auditLog.pop();
+      }
+    },
+
+    flagTransaction: (state, action) => {
+      const transaction = {
+        id: `tx_${Date.now()}`,
+        flaggedAt: new Date().toISOString(),
+        status: 'pending_review',
+        ...action.payload
+      };
+      state.complianceEngine.amlMonitor.flaggedTransactions.push(transaction);
+      state.complianceEngine.amlMonitor.investigationQueue.push(transaction.id);
     }
   },
   extraReducers: (builder) => {
@@ -1029,7 +1206,16 @@ export const {
   addExecutiveSuggestion,
   updateSuggestionStatus,
   setSuggestionFilters,
-  clearSuggestionFilters
+  clearSuggestionFilters,
+  requestVaultAccess,
+  approveVaultRequest,
+  denyVaultRequest,
+  addIncomingLead,
+  qualifyLead,
+  routeLeadToSpecialist,
+  updateLeadPipelineStage,
+  addComplianceAuditLog,
+  flagTransaction
 } = aiAssistantDashboardSlice.actions;
 
 const selectAssistantsState = (state) => state.aiAssistantDashboard?.allAssistants?.byId || {};
@@ -1175,6 +1361,26 @@ export const selectAssistantStatus = (assistantId) => (state) => {
   if (assistant.metrics?.systemHealth === 'optimal') return 'active';
   return 'idle';
 };
+
+export const selectConfidentialVault = (state) => 
+  state.aiAssistantDashboard?.confidentialVault || { documents: [], accessRequests: [], permissions: {}, vaultStats: {} };
+
+export const selectVaultPendingRequests = createSelector(
+  [selectConfidentialVault],
+  (vault) => vault.accessRequests.filter(r => r.status === 'pending')
+);
+
+export const selectLeadManagementHub = (state) => 
+  state.aiAssistantDashboard?.leadManagementHub || { incomingLeads: [], processedLeads: {}, funnelMetrics: {} };
+
+export const selectLeadFunnelMetrics = (state) => 
+  state.aiAssistantDashboard?.leadManagementHub?.funnelMetrics || {};
+
+export const selectComplianceEngine = (state) => 
+  state.aiAssistantDashboard?.complianceEngine || { kycProfiles: {}, amlMonitor: {}, auditLog: [], complianceMetrics: {} };
+
+export const selectComplianceMetrics = (state) => 
+  state.aiAssistantDashboard?.complianceEngine?.complianceMetrics || {};
 
 export { DEPARTMENT_COLORS };
 

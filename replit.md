@@ -90,6 +90,40 @@ executiveSuggestions: {
 }
 ```
 
+### Confidential Vault State
+```javascript
+confidentialVault: {
+  documents: [{ id, name, category, accessLevel, createdAt, accessLog, meta }],
+  accessRequests: [{ id, documentId, requesterId, reason, status, requestedAt, reviewedBy, reviewedAt }],
+  permissions: { 'zoe': ['admin', 'view', 'request'], ... },
+  vaultStats: { totalDocuments, pendingRequests, recentAccesses }
+}
+```
+
+### Lead Management Hub State
+```javascript
+leadManagementHub: {
+  incomingLeads: [{ id, source, rawData, receivedAt, initialIntent }],
+  processedLeads: { 'lead_id': { status, assignedIntent, qualificationScore, structuredData, routedTo } },
+  specialistPipelines: {
+    sophia: { leadIds: [], pipelineStages: ['New', 'Contacted', 'Viewed', 'Negotiation', 'Closed'] },
+    daisy: { leadIds: [], pipelineStages: ['New', 'Tour Scheduled', 'Application', 'Approved', 'Lease Signed'] }
+  },
+  funnelMetrics: { totalIncoming, rentVsSaleRatio, avgQualificationTime, conversionRate },
+  leadScoringRules: { urgencyWeight, budgetWeight, engagementWeight, sourceWeight }
+}
+```
+
+### Compliance Engine State
+```javascript
+complianceEngine: {
+  kycProfiles: {},
+  amlMonitor: { flaggedTransactions: [], watchlistMatches: [], investigationQueue: [] },
+  auditLog: [],
+  complianceMetrics: { totalProfiles, pendingReview, approvedThisMonth, riskScore }
+}
+```
+
 ### Olivia Automation State
 ```javascript
 oliviaAutomation: {
@@ -119,12 +153,18 @@ oliviaAutomation: {
 - **Matterport**: Virtual tour integration.
 
 ## Recent Changes (January 2026)
+- **Confidential Vault System**: Added Redux state with dual-approval access request workflow (AI + human), document management, and vault statistics
+- **Lead Management Hub**: Created Redux state with lead pipeline, qualification engine, specialist routing (Sophia for sales, Daisy for rentals), funnel metrics, and lead scoring rules
+- **Compliance Engine**: Added KYC profile tracking, AML monitoring with flagged transactions and investigation queue, immutable audit log (max 100 entries)
+- **Zoe Dashboard Enhancement**: Added secondary stats row showing Compliance Health (KYC profiles, pending reviews), Lead Funnel (total leads, conversion rate), Vault status (documents, pending requests), and Rent vs Sale ratio
+- **Owner Dashboard Lazy Loading**: Refactored OwnerDashboardPage with React.lazy() and Suspense for all 12 CRM components, reducing main bundle by 300+ kB
+- **CRM Loading Fallback**: Added glassmorphism-styled loading component with spinner animation
+- **Redux Actions**: Added requestVaultAccess, approveVaultRequest, denyVaultRequest, addIncomingLead, qualifyLead, routeLeadToSpecialist, updateLeadPipelineStage, addComplianceAuditLog, flagTransaction
+- **Redux Selectors**: Added selectConfidentialVault, selectVaultPendingRequests, selectLeadManagementHub, selectLeadFunnelMetrics, selectComplianceEngine, selectComplianceMetrics
 - Added Executive Suggestions Redux state with priority filtering and department categorization
 - Created WeeklyResearchModule shared component for automated intelligence gathering
 - Upgraded Zoe's Executive Dashboard with Suggestion Inbox and Priority Alerts
 - Enhanced Olivia's automation with Redux-integrated property sync and market intelligence
-- Added selectors for filtered suggestions, unreviewed counts, and critical alerts
-- Updated Aurora documentation with new AI assistant features
 
 ## Implementation Guidelines
 - All AI assistants should use the WeeklyResearchModule for automated research

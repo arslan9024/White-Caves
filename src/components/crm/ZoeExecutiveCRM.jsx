@@ -14,7 +14,10 @@ import {
   selectExecutiveSuggestions,
   updateSuggestionStatus,
   setSuggestionFilters,
-  clearSuggestionFilters
+  clearSuggestionFilters,
+  selectLeadFunnelMetrics,
+  selectComplianceMetrics,
+  selectConfidentialVault
 } from '../../store/slices/aiAssistantDashboardSlice';
 import './AssistantDashboard.css';
 import './ZoeExecutiveCRM.css';
@@ -70,6 +73,9 @@ const ZoeExecutiveCRM = () => {
   const unreviewedCount = useSelector(selectUnreviewedSuggestionsCount);
   const criticalSuggestions = useSelector(selectCriticalSuggestions);
   const { filters } = useSelector(selectExecutiveSuggestions);
+  const funnelMetrics = useSelector(selectLeadFunnelMetrics);
+  const complianceMetrics = useSelector(selectComplianceMetrics);
+  const vault = useSelector(selectConfidentialVault);
 
   const handleStatusChange = useCallback((suggestionId, status) => {
     dispatch(updateSuggestionStatus({ suggestionId, status }));
@@ -165,6 +171,55 @@ const ZoeExecutiveCRM = () => {
             <span className="stat-label">AI Assistants</span>
           </div>
           <span className="stat-change positive">All online</span>
+        </div>
+      </div>
+
+      <div className="quick-stats secondary">
+        <div className="stat-card">
+          <div className="stat-icon" style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#6366F1' }}>
+            <Shield size={20} />
+          </div>
+          <div className="stat-content">
+            <span className="stat-value">{complianceMetrics.totalProfiles || 89}</span>
+            <span className="stat-label">KYC Profiles</span>
+          </div>
+          <span className={`stat-change ${complianceMetrics.pendingReview > 5 ? 'warning' : 'positive'}`}>
+            {complianceMetrics.pendingReview || 12} pending
+          </span>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon" style={{ background: 'rgba(236, 72, 153, 0.2)', color: '#EC4899' }}>
+            <TrendingUp size={20} />
+          </div>
+          <div className="stat-content">
+            <span className="stat-value">{funnelMetrics.totalIncoming || 156}</span>
+            <span className="stat-label">Lead Funnel</span>
+          </div>
+          <span className="stat-change positive">
+            {Math.round((funnelMetrics.conversionRate || 0.23) * 100)}% conversion
+          </span>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon" style={{ background: 'rgba(20, 184, 166, 0.2)', color: '#14B8A6' }}>
+            <Archive size={20} />
+          </div>
+          <div className="stat-content">
+            <span className="stat-value">{vault.vaultStats?.totalDocuments || 3}</span>
+            <span className="stat-label">Vault Documents</span>
+          </div>
+          <span className={`stat-change ${vault.vaultStats?.pendingRequests > 0 ? 'warning' : ''}`}>
+            {vault.vaultStats?.pendingRequests || 0} requests
+          </span>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon" style={{ background: 'rgba(251, 146, 60, 0.2)', color: '#FB923C' }}>
+            <Zap size={20} />
+          </div>
+          <div className="stat-content">
+            <span className="stat-value">{funnelMetrics.rentVsSaleRatio || '58:42'}</span>
+            <span className="stat-label">Rent vs Sale</span>
+          </div>
+          <span className="stat-change">Pipeline split</span>
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import OverviewTab from '../../components/owner/tabs/OverviewTab';
@@ -14,22 +14,30 @@ import SettingsTab from '../../components/owner/tabs/SettingsTab';
 import UsersTab from '../../components/owner/tabs/UsersTab';
 import FeatureExplorer from '../../components/owner/FeatureExplorer';
 import RoleSelectorDropdown from '../../shared/components/ui/RoleSelectorDropdown';
-import LindaWhatsAppCRM from '../../components/crm/LindaWhatsAppCRM';
-import MaryInventoryCRM from '../../components/crm/MaryInventoryCRM';
-import ClaraLeadsCRM from '../../components/crm/ClaraLeadsCRM';
-import NinaWhatsAppBotCRM from '../../components/crm/NinaWhatsAppBotCRM';
-import NancyHRCRM from '../../components/crm/NancyHRCRM';
-import SophiaSalesCRM from '../../components/crm/SophiaSalesCRM';
-import DaisyLeasingCRM from '../../components/crm/DaisyLeasingCRM';
-import TheodoraFinanceCRM from '../../components/crm/TheodoraFinanceCRM';
-import OliviaMarketingCRM from '../../components/crm/OliviaMarketingCRM';
-import ZoeExecutiveCRM from '../../components/crm/ZoeExecutiveCRM';
-import LailaComplianceCRM from '../../components/crm/LailaComplianceCRM';
-import AuroraCTODashboard from '../../components/crm/AuroraCTODashboard';
-import AIAssistantHub from '../../components/crm/AIAssistantHub';
-import AICommandCenter from '../../components/crm/AICommandCenter';
 import '../../shared/styles/theme.css';
 import './OwnerDashboardPage.css';
+
+const LindaWhatsAppCRM = lazy(() => import('../../components/crm/LindaWhatsAppCRM'));
+const MaryInventoryCRM = lazy(() => import('../../components/crm/MaryInventoryCRM'));
+const ClaraLeadsCRM = lazy(() => import('../../components/crm/ClaraLeadsCRM'));
+const NinaWhatsAppBotCRM = lazy(() => import('../../components/crm/NinaWhatsAppBotCRM'));
+const NancyHRCRM = lazy(() => import('../../components/crm/NancyHRCRM'));
+const SophiaSalesCRM = lazy(() => import('../../components/crm/SophiaSalesCRM'));
+const DaisyLeasingCRM = lazy(() => import('../../components/crm/DaisyLeasingCRM'));
+const TheodoraFinanceCRM = lazy(() => import('../../components/crm/TheodoraFinanceCRM'));
+const OliviaMarketingCRM = lazy(() => import('../../components/crm/OliviaMarketingCRM'));
+const ZoeExecutiveCRM = lazy(() => import('../../components/crm/ZoeExecutiveCRM'));
+const LailaComplianceCRM = lazy(() => import('../../components/crm/LailaComplianceCRM'));
+const AuroraCTODashboard = lazy(() => import('../../components/crm/AuroraCTODashboard'));
+const AIAssistantHub = lazy(() => import('../../components/crm/AIAssistantHub'));
+const AICommandCenter = lazy(() => import('../../components/crm/AICommandCenter'));
+
+const CRMLoadingFallback = () => (
+  <div className="crm-loading-fallback">
+    <div className="loading-spinner"></div>
+    <p>Loading Assistant...</p>
+  </div>
+);
 
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
 
@@ -316,9 +324,9 @@ export default function OwnerDashboardPage() {
       case 'overview':
         return <OverviewTab data={dashboardData} loading={loading} onQuickAction={handleQuickAction} />;
       case 'ai-command':
-        return <AICommandCenter />;
+        return <Suspense fallback={<CRMLoadingFallback />}><AICommandCenter /></Suspense>;
       case 'ai-hub':
-        return <AIAssistantHub onSelectAssistant={handleSelectAssistant} />;
+        return <Suspense fallback={<CRMLoadingFallback />}><AIAssistantHub onSelectAssistant={handleSelectAssistant} /></Suspense>;
       case 'users':
         return <UsersTab onAction={handleTabAction} />;
       case 'properties':
@@ -332,29 +340,29 @@ export default function OwnerDashboardPage() {
       case 'analytics':
         return <AnalyticsTab data={dashboardData} loading={loading} />;
       case 'linda':
-        return <LindaWhatsAppCRM />;
+        return <Suspense fallback={<CRMLoadingFallback />}><LindaWhatsAppCRM /></Suspense>;
       case 'mary':
-        return <MaryInventoryCRM />;
+        return <Suspense fallback={<CRMLoadingFallback />}><MaryInventoryCRM /></Suspense>;
       case 'clara':
-        return <ClaraLeadsCRM />;
+        return <Suspense fallback={<CRMLoadingFallback />}><ClaraLeadsCRM /></Suspense>;
       case 'nina':
-        return <NinaWhatsAppBotCRM />;
+        return <Suspense fallback={<CRMLoadingFallback />}><NinaWhatsAppBotCRM /></Suspense>;
       case 'nancy':
-        return <NancyHRCRM />;
+        return <Suspense fallback={<CRMLoadingFallback />}><NancyHRCRM /></Suspense>;
       case 'sophia':
-        return <SophiaSalesCRM />;
+        return <Suspense fallback={<CRMLoadingFallback />}><SophiaSalesCRM /></Suspense>;
       case 'daisy':
-        return <DaisyLeasingCRM />;
+        return <Suspense fallback={<CRMLoadingFallback />}><DaisyLeasingCRM /></Suspense>;
       case 'theodora':
-        return <TheodoraFinanceCRM />;
+        return <Suspense fallback={<CRMLoadingFallback />}><TheodoraFinanceCRM /></Suspense>;
       case 'olivia':
-        return <OliviaMarketingCRM />;
+        return <Suspense fallback={<CRMLoadingFallback />}><OliviaMarketingCRM /></Suspense>;
       case 'zoe':
-        return <ZoeExecutiveCRM />;
+        return <Suspense fallback={<CRMLoadingFallback />}><ZoeExecutiveCRM /></Suspense>;
       case 'laila':
-        return <LailaComplianceCRM />;
+        return <Suspense fallback={<CRMLoadingFallback />}><LailaComplianceCRM /></Suspense>;
       case 'aurora':
-        return <AuroraCTODashboard />;
+        return <Suspense fallback={<CRMLoadingFallback />}><AuroraCTODashboard /></Suspense>;
       case 'chatbot':
         return <ChatbotTab data={dashboardData} loading={loading} onAction={handleTabAction} />;
       case 'whatsapp':
