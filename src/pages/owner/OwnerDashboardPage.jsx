@@ -17,6 +17,8 @@ import RoleSelectorDropdown from '../../shared/components/ui/RoleSelectorDropdow
 import LindaWhatsAppCRM from '../../components/crm/LindaWhatsAppCRM';
 import MaryInventoryCRM from '../../components/crm/MaryInventoryCRM';
 import ClaraLeadsCRM from '../../components/crm/ClaraLeadsCRM';
+import NinaWhatsAppBotCRM from '../../components/crm/NinaWhatsAppBotCRM';
+import NancyHRCRM from '../../components/crm/NancyHRCRM';
 import '../../shared/styles/theme.css';
 import './OwnerDashboardPage.css';
 
@@ -33,11 +35,13 @@ const TABS = [
   { id: 'linda', label: 'Linda AI', icon: '💬' },
   { id: 'mary', label: 'Mary AI', icon: '🏢' },
   { id: 'clara', label: 'Clara AI', icon: '👤' },
-  { id: 'chatbot', label: 'AI Settings', icon: '🤖' },
+  { id: 'nina', label: 'Nina AI', icon: '🤖' },
+  { id: 'nancy', label: 'Nancy AI', icon: '👩‍💼' },
+  { id: 'chatbot', label: 'AI Settings', icon: '⚙️' },
   { id: 'whatsapp', label: 'WhatsApp', icon: '📱' },
   { id: 'uaepass', label: 'UAE Pass', icon: '🆔' },
   { id: 'features', label: 'Features', icon: '⭐' },
-  { id: 'settings', label: 'Settings', icon: '⚙️' },
+  { id: 'settings', label: 'Settings', icon: '🔧' },
 ];
 
 export default function OwnerDashboardPage() {
@@ -304,6 +308,10 @@ export default function OwnerDashboardPage() {
         return <MaryInventoryCRM />;
       case 'clara':
         return <ClaraLeadsCRM />;
+      case 'nina':
+        return <NinaWhatsAppBotCRM />;
+      case 'nancy':
+        return <NancyHRCRM />;
       case 'chatbot':
         return <ChatbotTab data={dashboardData} loading={loading} onAction={handleTabAction} />;
       case 'whatsapp':
@@ -369,12 +377,32 @@ export default function OwnerDashboardPage() {
               <span className="ai-desc">Leads CRM</span>
             </div>
           </button>
+          <button 
+            className={`ai-btn nina ${activeTab === 'nina' ? 'active' : ''}`}
+            onClick={() => setActiveTab('nina')}
+          >
+            <span className="ai-icon">🤖</span>
+            <div className="ai-info">
+              <span className="ai-name">Nina</span>
+              <span className="ai-desc">Bot Developer</span>
+            </div>
+          </button>
+          <button 
+            className={`ai-btn nancy ${activeTab === 'nancy' ? 'active' : ''}`}
+            onClick={() => setActiveTab('nancy')}
+          >
+            <span className="ai-icon">👩‍💼</span>
+            <div className="ai-info">
+              <span className="ai-name">Nancy</span>
+              <span className="ai-desc">HR Manager</span>
+            </div>
+          </button>
         </div>
       </div>
 
       <div className="dashboard-tabs">
         <div className="tabs-container">
-          {TABS.filter(tab => !['linda', 'mary', 'clara'].includes(tab.id)).map((tab) => (
+          {TABS.filter(tab => !['linda', 'mary', 'clara', 'nina', 'nancy'].includes(tab.id)).map((tab) => (
             <button
               key={tab.id}
               className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}

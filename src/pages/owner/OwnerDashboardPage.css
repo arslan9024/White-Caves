@@ -834,6 +834,28 @@
   box-shadow: 0 4px 20px rgba(236, 72, 153, 0.2);
 }
 
+.ai-btn.nina {
+  border-color: rgba(124, 58, 237, 0.3);
+}
+
+.ai-btn.nina:hover,
+.ai-btn.nina.active {
+  background: rgba(124, 58, 237, 0.15);
+  border-color: #7c3aed;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.2);
+}
+
+.ai-btn.nancy {
+  border-color: rgba(236, 72, 153, 0.3);
+}
+
+.ai-btn.nancy:hover,
+.ai-btn.nancy.active {
+  background: rgba(236, 72, 153, 0.15);
+  border-color: #ec4899;
+  box-shadow: 0 4px 20px rgba(236, 72, 153, 0.2);
+}
+
 .ai-icon {
   font-size: 1.5rem;
 }
@@ -908,6 +930,26 @@
 
 [data-theme="light"] .ai-btn.clara:hover,
 [data-theme="light"] .ai-btn.clara.active {
+  background: rgba(236, 72, 153, 0.08);
+  border-color: #ec4899;
+}
+
+[data-theme="light"] .ai-btn.nina {
+  border-color: rgba(124, 58, 237, 0.3);
+}
+
+[data-theme="light"] .ai-btn.nina:hover,
+[data-theme="light"] .ai-btn.nina.active {
+  background: rgba(124, 58, 237, 0.08);
+  border-color: #7c3aed;
+}
+
+[data-theme="light"] .ai-btn.nancy {
+  border-color: rgba(236, 72, 153, 0.3);
+}
+
+[data-theme="light"] .ai-btn.nancy:hover,
+[data-theme="light"] .ai-btn.nancy.active {
   background: rgba(236, 72, 153, 0.08);
   border-color: #ec4899;
 }
