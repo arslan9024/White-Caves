@@ -394,6 +394,96 @@ const AI_ASSISTANTS_REGISTRY = {
       deploymentPipeline: true,
       apiPerformance: true
     }
+  },
+  hazel: {
+    id: 'hazel',
+    name: 'Hazel',
+    title: 'Elite Frontend Engineer',
+    department: 'technology',
+    icon: 'Palette',
+    colorScheme: '#F472B6',
+    avatar: '👩‍🎨',
+    description: 'Designs and builds pixel-perfect UI components, maintains the design system, and ensures accessibility compliance across all interfaces',
+    capabilities: [
+      'component_library',
+      'design_system',
+      'responsive_design',
+      'accessibility_audit',
+      'ui_performance',
+      'animation_system',
+      'theme_management'
+    ],
+    permissions: {
+      viewableBy: ['owner', 'admin'],
+      accessibleBy: ['owner'],
+      dataAccessLevel: 'full'
+    },
+    metrics: {
+      lastActive: null,
+      tasksCompleted: 178,
+      activeUsers: 2,
+      systemHealth: 'optimal'
+    },
+    quickStats: {
+      today: {
+        value: 47,
+        label: 'Components',
+        change: 3.2
+      }
+    },
+    dashboardUrl: '/owner/dashboard?tab=hazel',
+    apiEndpoints: ['/api/frontend', '/api/components', '/api/design-system'],
+    designMetrics: {
+      componentCount: 47,
+      accessibilityScore: 98,
+      lighthouseScore: 94,
+      bundleSize: '7.9 MB'
+    }
+  },
+  willow: {
+    id: 'willow',
+    name: 'Willow',
+    title: 'Elite Backend Engineer',
+    department: 'technology',
+    icon: 'Database',
+    colorScheme: '#22C55E',
+    avatar: '👨‍💻',
+    description: 'Architects backend services, optimizes database queries, manages API performance, and ensures system reliability and scalability',
+    capabilities: [
+      'api_development',
+      'database_optimization',
+      'caching_strategies',
+      'websocket_realtime',
+      'data_pipeline',
+      'security_hardening',
+      'load_balancing'
+    ],
+    permissions: {
+      viewableBy: ['owner', 'admin'],
+      accessibleBy: ['owner'],
+      dataAccessLevel: 'full'
+    },
+    metrics: {
+      lastActive: null,
+      tasksCompleted: 156,
+      activeUsers: 2,
+      systemHealth: 'optimal'
+    },
+    quickStats: {
+      today: {
+        value: 45,
+        label: 'APIs',
+        change: 2.1
+      }
+    },
+    dashboardUrl: '/owner/dashboard?tab=willow',
+    apiEndpoints: ['/api/backend', '/api/performance', '/api/database'],
+    backendMetrics: {
+      apiCount: 45,
+      avgResponseTime: 89,
+      cacheHitRate: 94.5,
+      dbConnections: 12
+    }
   }
 };
 
@@ -453,7 +543,9 @@ const generateNotifications = () => {
       { id: 'n7', type: 'meeting', message: 'Meeting in 30 minutes', severity: 'info', isRead: false, timestamp: new Date(now - 60000).toISOString() }
     ],
     laila: [],
-    aurora: []
+    aurora: [],
+    hazel: [],
+    willow: []
   };
 };
 
@@ -475,7 +567,9 @@ const generateTasks = () => ({
   olivia: [],
   zoe: [],
   laila: [],
-  aurora: []
+  aurora: [],
+  hazel: [],
+  willow: []
 });
 
 const getInitialState = () => ({

@@ -41,8 +41,8 @@ Preferred communication style: Simple, everyday language.
 - **Chatbot Training Data Module**: Comprehensive bilingual training data for the AI chatbot.
 - **Owner Dashboard**: Comprehensive tabbed dashboard with real-time statistics, quick actions, data tables, agent performance cards, lead management, contract/Ejari tracking, analytics charts, chatbot stats, WhatsApp Business integration, UAE Pass user management, and system settings with feature toggles.
 - **Mary's Data Tools Suite**: Integrated data acquisition tools including DAMAC Asset Fetcher (S3 URL generator), Image Data Extractor (OCR-based), and Web Data Harvester (URL template iterator).
-- **AI Assistant Dashboard System**: Unified Redux state management for 12 AI assistants organized by department (Operations, Sales, Communications, Finance, Marketing, Executive, Compliance, Technology). Features include normalized state, memoized selectors, favorites, recent tracking, department filtering, search, real-time activity feed, and performance metrics.
-- **AI CRM Assistants**: 12 specialized AI-powered assistants integrated into the Owner Dashboard, each with dedicated dashboards for specific functionalities (e.g., Linda for WhatsApp CRM, Mary for Inventory CRM, Clara for Leads CRM, Olivia for Marketing Automation, Aurora for CTO operations).
+- **AI Assistant Dashboard System**: Unified Redux state management for 14 AI assistants organized by department (Operations, Sales, Communications, Finance, Marketing, Executive, Compliance, Technology). Features include normalized state, memoized selectors, favorites, recent tracking, department filtering, search, real-time activity feed, and performance metrics.
+- **AI CRM Assistants**: 14 specialized AI-powered assistants integrated into the Owner Dashboard, each with dedicated dashboards for specific functionalities (e.g., Linda for WhatsApp CRM, Mary for Inventory CRM, Clara for Leads CRM, Olivia for Marketing Automation, Aurora for CTO operations, Hazel for Frontend Engineering, Willow for Backend Engineering).
 - **Olivia Automation System**: Automated property availability sync with Mary's inventory, market intelligence gathering from Bayut/Property Finder/Dubizzle, scheduling controls, and real-time activity logging. Redux-integrated automation state with persistent controls.
 - **Zoe Executive Intelligence System**: Executive Suggestion Inbox receiving AI-powered strategic suggestions from all 12 assistants. Features priority filtering (critical/high/medium/low), department categorization, suggestion status management (unreviewed/acknowledged/escalated/archived), confidence scoring, and projected impact analysis.
 - **Weekly Research Module**: Shared component enabling all assistants to perform automated intelligence gathering on configurable schedules (weekly/bi-weekly/monthly). Generates structured suggestions for Zoe's executive review.
@@ -50,7 +50,7 @@ Preferred communication style: Simple, everyday language.
 - **AI Command Center**: Unified dashboard entry point with an AIDropdownSelector for selecting assistants, quick stats bar, lazy-loaded assistant dashboards, and an activity sidebar.
 - **Shared Component Library**: Reusable UI components ensuring design consistency across all dashboards and features.
 
-## AI Assistants Inventory (12 Total)
+## AI Assistants Inventory (14 Total)
 
 | Assistant | Role | Department | Key Features |
 |-----------|------|------------|--------------|
@@ -65,7 +65,9 @@ Preferred communication style: Simple, everyday language.
 | Olivia | Marketing & Automation Manager | Marketing | Property Sync, Market Intelligence, Website Monitoring, Multi-Portal Publishing |
 | Zoe | Executive Assistant & Strategic Intelligence | Executive | Suggestion Inbox, Priority Alerts, Cross-Department Intelligence, Calendar Management |
 | Laila | Compliance Officer | Compliance | KYC Verification, AML Monitoring, RERA Compliance |
-| Aurora | CTO & Systems Architect | Technology | System Monitoring, Documentation, Architecture Planning |
+| Aurora | CTO & Systems Architect | Technology | System Monitoring, Documentation, Architecture Planning, Team Coordination |
+| Hazel | Elite Frontend Engineer | Technology | Component Library (47+), Design System, Accessibility Audits (AAA), UI Performance |
+| Willow | Elite Backend Engineer | Technology | API Development (45+), Database Optimization, Caching, WebSocket Real-time |
 
 ## Redux State Structure
 
@@ -153,11 +155,15 @@ oliviaAutomation: {
 - **Matterport**: Virtual tour integration.
 
 ## Recent Changes (January 2026)
+- **Elite AI Command Center Upgrade**: Expanded from 12 to 14 AI assistants with addition of Hazel (Frontend) and Willow (Backend)
+- **Hazel Frontend Engineer CRM**: Component library management (47+ components), design system tokens, accessibility audits (AAA compliance), Lighthouse performance tracking, responsive design oversight
+- **Willow Backend Engineer CRM**: API endpoint monitoring (45+ endpoints), database optimization metrics, caching strategies, security checks, real-time connection management
+- **Technology Department Expansion**: Aurora now coordinates with Hazel and Willow for comprehensive tech stack management
 - **Confidential Vault System**: Added Redux state with dual-approval access request workflow (AI + human), document management, and vault statistics
 - **Lead Management Hub**: Created Redux state with lead pipeline, qualification engine, specialist routing (Sophia for sales, Daisy for rentals), funnel metrics, and lead scoring rules
 - **Compliance Engine**: Added KYC profile tracking, AML monitoring with flagged transactions and investigation queue, immutable audit log (max 100 entries)
 - **Zoe Dashboard Enhancement**: Added secondary stats row showing Compliance Health (KYC profiles, pending reviews), Lead Funnel (total leads, conversion rate), Vault status (documents, pending requests), and Rent vs Sale ratio
-- **Owner Dashboard Lazy Loading**: Refactored OwnerDashboardPage with React.lazy() and Suspense for all 12 CRM components, reducing main bundle by 300+ kB
+- **Owner Dashboard Lazy Loading**: Refactored OwnerDashboardPage with React.lazy() and Suspense for all 14 CRM components
 - **CRM Loading Fallback**: Added glassmorphism-styled loading component with spinner animation
 - **Redux Actions**: Added requestVaultAccess, approveVaultRequest, denyVaultRequest, addIncomingLead, qualifyLead, routeLeadToSpecialist, updateLeadPipelineStage, addComplianceAuditLog, flagTransaction
 - **Redux Selectors**: Added selectConfidentialVault, selectVaultPendingRequests, selectLeadManagementHub, selectLeadFunnelMetrics, selectComplianceEngine, selectComplianceMetrics

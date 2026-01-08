@@ -29,6 +29,8 @@ const OliviaMarketingCRM = lazy(() => import('../../components/crm/OliviaMarketi
 const ZoeExecutiveCRM = lazy(() => import('../../components/crm/ZoeExecutiveCRM'));
 const LailaComplianceCRM = lazy(() => import('../../components/crm/LailaComplianceCRM'));
 const AuroraCTODashboard = lazy(() => import('../../components/crm/AuroraCTODashboard'));
+const HazelFrontendCRM = lazy(() => import('../../components/crm/HazelFrontendCRM'));
+const WillowBackendCRM = lazy(() => import('../../components/crm/WillowBackendCRM'));
 const AIAssistantHub = lazy(() => import('../../components/crm/AIAssistantHub'));
 const AICommandCenter = lazy(() => import('../../components/crm/AICommandCenter'));
 
@@ -53,7 +55,9 @@ const AI_ASSISTANTS = [
   { id: 'olivia', name: 'Olivia', desc: 'Marketing', icon: '📣', color: '#4FACFE', department: 'marketing' },
   { id: 'zoe', name: 'Zoe', desc: 'Executive', icon: '👔', color: '#43E97B', department: 'executive' },
   { id: 'laila', name: 'Laila', desc: 'Compliance', icon: '🛡️', color: '#6366F1', department: 'compliance' },
-  { id: 'aurora', name: 'Aurora', desc: 'CTO', icon: '🖥️', color: '#0EA5E9', department: 'technology' }
+  { id: 'aurora', name: 'Aurora', desc: 'CTO', icon: '🖥️', color: '#0EA5E9', department: 'technology' },
+  { id: 'hazel', name: 'Hazel', desc: 'Frontend', icon: '🎨', color: '#F472B6', department: 'technology' },
+  { id: 'willow', name: 'Willow', desc: 'Backend', icon: '⚙️', color: '#22C55E', department: 'technology' }
 ];
 
 const TABS = [
@@ -363,6 +367,10 @@ export default function OwnerDashboardPage() {
         return <Suspense fallback={<CRMLoadingFallback />}><LailaComplianceCRM /></Suspense>;
       case 'aurora':
         return <Suspense fallback={<CRMLoadingFallback />}><AuroraCTODashboard /></Suspense>;
+      case 'hazel':
+        return <Suspense fallback={<CRMLoadingFallback />}><HazelFrontendCRM /></Suspense>;
+      case 'willow':
+        return <Suspense fallback={<CRMLoadingFallback />}><WillowBackendCRM /></Suspense>;
       case 'chatbot':
         return <ChatbotTab data={dashboardData} loading={loading} onAction={handleTabAction} />;
       case 'whatsapp':

@@ -22,7 +22,9 @@ const AI_ASSISTANTS_REGISTRY = [
   { id: 'olivia', name: 'Olivia', title: 'Marketing & Automation Manager', department: 'Marketing', status: 'active', features: ['Automated Property Sync', 'Mary Inventory Coordination', 'Market Intelligence', 'Website Monitoring (Bayut, PF, Dubizzle)', 'Campaign Management', 'Social Media Analytics', 'Multi-Portal Publishing'], connections: ['Mary', 'Clara', 'Linda'] },
   { id: 'zoe', name: 'Zoe', title: 'Executive Assistant & Strategic Intelligence', department: 'Executive', status: 'active', features: ['Executive Suggestion Inbox', 'AI Strategic Suggestions Pipeline', 'Priority Alerts Dashboard', 'Calendar Management', 'Meeting Scheduling', 'Task Delegation', 'Cross-Department Intelligence'], connections: ['All Assistants', 'Nancy', 'Aurora'] },
   { id: 'laila', name: 'Laila', title: 'Compliance Officer', department: 'Compliance', status: 'active', features: ['KYC Verification', 'AML Monitoring', 'Contract Reviews', 'RERA Compliance', 'Document Validation'], connections: ['Daisy', 'Theodora'] },
-  { id: 'aurora', name: 'Aurora', title: 'CTO & Systems Architect', department: 'Technology', status: 'active', features: ['System Monitoring', 'Technical Documentation', 'Architecture Planning', 'API Management', 'Deployment Pipeline'], connections: ['All Assistants'] }
+  { id: 'aurora', name: 'Aurora', title: 'CTO & Systems Architect', department: 'Technology', status: 'active', features: ['System Monitoring', 'Technical Documentation', 'Architecture Planning', 'API Management', 'Deployment Pipeline'], connections: ['All Assistants', 'Hazel', 'Willow'] },
+  { id: 'hazel', name: 'Hazel', title: 'Elite Frontend Engineer', department: 'Technology', status: 'active', features: ['Component Library (47+)', 'Design System Management', 'Accessibility Audits (AAA)', 'UI Performance Optimization', 'Theme System', 'Responsive Design'], connections: ['Aurora', 'Willow'] },
+  { id: 'willow', name: 'Willow', title: 'Elite Backend Engineer', department: 'Technology', status: 'active', features: ['API Development (45+ endpoints)', 'Database Optimization', 'Caching Strategies', 'WebSocket Real-time', 'Security Hardening', 'Load Balancing'], connections: ['Aurora', 'Hazel'] }
 ];
 
 const PLATFORM_MODULES = [
@@ -35,7 +37,7 @@ const PLATFORM_MODULES = [
     { name: 'Job Posting System', description: 'HR multi-platform recruitment', status: 'production' }
   ]},
   { category: 'AI & Automation', modules: [
-    { name: 'AI Assistants (12)', description: 'Department-organized CRM bots', status: 'production' },
+    { name: 'AI Assistants (14)', description: 'Department-organized CRM bots', status: 'production' },
     { name: 'WhatsApp Integration', description: 'Business API + Chatbot', status: 'production' },
     { name: 'Lead Scoring', description: 'AI-powered qualification', status: 'production' },
     { name: 'Smart Assignment', description: 'Auto-assign leads to agents', status: 'production' },
