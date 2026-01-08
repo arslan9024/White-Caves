@@ -111,6 +111,48 @@ Preferred communication style: Simple, everyday language.
     - Pipeline stages, tables, and card layouts
     - Dark theme with glassmorphism effects
     - Responsive mobile layout
+- **AI Command Center** (`src/components/crm/AICommandCenter.jsx`): Unified dashboard entry point with:
+    - AIDropdownSelector for selecting assistants with department filtering and favorites
+    - Quick stats bar showing active assistants, system health, active tasks, and alerts
+    - Lazy-loaded assistant dashboards for optimized performance
+    - Activity sidebar with real-time updates from all assistants
+    - View toggle (grid/list) for layout preferences
+- **Shared Component Library** (`src/components/crm/shared/`): Reusable UI components for design consistency:
+    - `StatCard.jsx` - Stats display with trend indicators and color theming
+    - `TabPanel.jsx` - Tab navigation with slot-based content and badges
+    - `ActivityTimeline.jsx` - Timeline with status icons and timestamps
+    - `BigTileCard.jsx` - Large feature cards with status and actions
+    - `DataGridView.jsx` - Sortable/filterable data tables with pagination
+    - `AssistantSidebar.jsx` - 25% width sidebar with favorites and quick actions
+    - `UniversalAssistantLayout.jsx` - Layout shell with error boundaries and loading states
+    - `AIDropdownSelector.jsx` - Smart dropdown with search, filters, favorites, and recent
+    - `SharedComponents.css` - Unified styling for all shared components
+
+## Technical Architecture
+
+### Redux State Management (Consolidated)
+- **Single Source of Truth**: `aiAssistantDashboardSlice.js` manages all 12 AI assistants
+- **State Structure**:
+  - `allAssistants.byId` - Normalized assistant registry with capabilities and metrics
+  - `allAssistants.allIds` - Array of assistant IDs for iteration
+  - `ui.selectedAssistant` - Currently selected assistant ID
+  - `ui.filters` - Department, status, and search filters
+  - `favorites` - Array of favorited assistant IDs
+  - `recent` - Recently accessed assistants (max 5)
+  - `assistantPerformance` - System health, alerts, and activity feed
+- **Memoized Selectors**: `selectAllAssistantsArray`, `selectFilteredAssistants`, `selectCurrentAssistant`
+
+### Department Organization
+| Department | Assistants | Color |
+|------------|-----------|-------|
+| Operations | Mary, Nancy, Daisy | Purple |
+| Sales | Clara, Sophia | Red |
+| Communications | Linda, Nina | Green |
+| Finance | Theodora | Pink |
+| Marketing | Olivia | Blue |
+| Executive | Zoe | Teal |
+| Compliance | Laila | Indigo |
+| Technology | Aurora | Cyan |
 
 ## External Dependencies
 

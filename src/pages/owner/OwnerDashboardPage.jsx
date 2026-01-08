@@ -27,6 +27,7 @@ import ZoeExecutiveCRM from '../../components/crm/ZoeExecutiveCRM';
 import LailaComplianceCRM from '../../components/crm/LailaComplianceCRM';
 import AuroraCTODashboard from '../../components/crm/AuroraCTODashboard';
 import AIAssistantHub from '../../components/crm/AIAssistantHub';
+import AICommandCenter from '../../components/crm/AICommandCenter';
 import '../../shared/styles/theme.css';
 import './OwnerDashboardPage.css';
 
@@ -49,6 +50,7 @@ const AI_ASSISTANTS = [
 
 const TABS = [
   { id: 'overview', label: 'Overview', icon: '📊' },
+  { id: 'ai-command', label: 'AI Command', icon: '🎛️' },
   { id: 'ai-hub', label: 'AI Hub', icon: '🧠' },
   { id: 'users', label: 'Users', icon: '👤' },
   { id: 'properties', label: 'Properties', icon: '🏠' },
@@ -313,6 +315,8 @@ export default function OwnerDashboardPage() {
     switch (activeTab) {
       case 'overview':
         return <OverviewTab data={dashboardData} loading={loading} onQuickAction={handleQuickAction} />;
+      case 'ai-command':
+        return <AICommandCenter />;
       case 'ai-hub':
         return <AIAssistantHub onSelectAssistant={handleSelectAssistant} />;
       case 'users':
