@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { PageHeader, ActionButton, SubNavBar } from '../common';
+import { SubNavBar } from '../common';
 import { setCurrentModule, setCurrentSubModule, setActiveRole } from '../../store/navigationSlice';
 import { getModuleById } from '../../features/featureRegistry';
+import { DashboardHeader } from '../../shared/components/dashboard';
 import './RolePageLayout.css';
 
 export default function RolePageLayout({
@@ -14,6 +15,8 @@ export default function RolePageLayout({
   children,
   className = '',
   showSubNav = true,
+  showStatusBar = true,
+  statusBarProps = {},
   onSubModuleChange
 }) {
   const dispatch = useDispatch();
@@ -45,11 +48,13 @@ export default function RolePageLayout({
     <div className={`role-page-layout ${roleClasses[role] || ''} ${className}`}>
       {showSubNav && <SubNavBar moduleId={role} onSubModuleChange={onSubModuleChange} />}
       <div className="role-page-container">
-        <PageHeader
+        <DashboardHeader
           title={title}
           subtitle={subtitle}
           breadcrumbs={breadcrumbs}
           actions={actions}
+          showStatusBar={showStatusBar}
+          statusBarProps={statusBarProps}
         />
         <div className="role-page-content">
           {children}
@@ -59,4 +64,3 @@ export default function RolePageLayout({
   );
 }
 
-export { ActionButton };

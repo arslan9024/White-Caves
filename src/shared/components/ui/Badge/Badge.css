@@ -1,0 +1,86 @@
+.wc-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.wc-badge--default {
+  background: var(--bg-secondary, #F3F4F6);
+  color: var(--text-primary, #1F2937);
+}
+
+.wc-badge--primary {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--primary-red, #DC2626);
+}
+
+.wc-badge--success {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
+
+.wc-badge--warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: #D97706;
+}
+
+.wc-badge--danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #DC2626;
+}
+
+.wc-badge--info {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563EB;
+}
+
+.wc-badge--small {
+  padding: 0.125rem 0.5rem;
+  font-size: 0.625rem;
+}
+
+.wc-badge--medium {
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+}
+
+.wc-badge--large {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.wc-badge--rounded {
+  border-radius: 100px;
+}
+
+.wc-badge--dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.wc-badge--dot.wc-badge--success {
+  background: #10B981;
+}
+
+.wc-badge--dot.wc-badge--danger {
+  background: #EF4444;
+}
+
+.wc-badge--dot.wc-badge--warning {
+  background: #F59E0B;
+}
+
+.wc-badge--dot.wc-badge--info {
+  background: #3B82F6;
+}
+
+[data-theme="dark"] .wc-badge--default {
+  background: var(--bg-secondary-dark, #374151);
+  color: var(--text-primary-dark, #F9FAFB);
+}

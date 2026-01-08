@@ -1,0 +1,92 @@
+.wc-property-list {
+  width: 100%;
+}
+
+.wc-property-list__controls {
+  margin-bottom: 1rem;
+}
+
+.wc-property-list__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  background: var(--bg-secondary, #F9FAFB);
+  border-radius: 12px;
+  border: 2px dashed var(--border-color, #E5E7EB);
+}
+
+.wc-property-list__empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.wc-property-list__empty-message {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-muted, #6B7280);
+}
+
+.wc-property-list__skeleton {
+  background: var(--card-bg, #FFFFFF);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color, #E5E7EB);
+}
+
+.wc-property-list__skeleton-image {
+  aspect-ratio: 16/10;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+.wc-property-list__skeleton-content {
+  padding: 1.25rem;
+}
+
+.wc-property-list__skeleton-line {
+  height: 1rem;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+}
+
+.wc-property-list__skeleton-line--price {
+  width: 40%;
+  height: 1.5rem;
+}
+
+.wc-property-list__skeleton-line--title {
+  width: 80%;
+}
+
+.wc-property-list__skeleton-line--location {
+  width: 60%;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+[data-theme="dark"] .wc-property-list__empty {
+  background: var(--bg-secondary-dark, #1F2937);
+  border-color: var(--border-color-dark, #374151);
+}
+
+[data-theme="dark"] .wc-property-list__skeleton {
+  background: var(--card-bg-dark, #1F2937);
+  border-color: var(--border-color-dark, #374151);
+}
+
+[data-theme="dark"] .wc-property-list__skeleton-image,
+[data-theme="dark"] .wc-property-list__skeleton-line {
+  background: linear-gradient(90deg, #374151 25%, #4B5563 50%, #374151 75%);
+  background-size: 200% 100%;
+}

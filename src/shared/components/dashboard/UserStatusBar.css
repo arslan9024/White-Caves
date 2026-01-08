@@ -1,0 +1,132 @@
+.wc-status-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--card-bg, #FFFFFF);
+  border-radius: 12px;
+  border: 1px solid var(--border-color, #E5E7EB);
+}
+
+@media (min-width: 768px) {
+  .wc-status-bar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.wc-status-bar--compact {
+  padding: 0.75rem 1rem;
+  flex-direction: row;
+  align-items: center;
+}
+
+.wc-status-bar__greeting {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+}
+
+.wc-status-bar__greeting-text {
+  font-size: 0.875rem;
+  color: var(--text-muted, #6B7280);
+}
+
+.wc-status-bar__greeting-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #1F2937);
+}
+
+.wc-status-bar--compact .wc-status-bar__greeting-text {
+  font-size: 0.75rem;
+}
+
+.wc-status-bar--compact .wc-status-bar__greeting-name {
+  font-size: 0.875rem;
+}
+
+.wc-status-bar__info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.wc-status-bar__online {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.wc-status-bar__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.wc-status-bar__dot--online {
+  background: #10B981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.wc-status-bar__dot--offline {
+  background: #EF4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+  animation: none;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.wc-status-bar__online-text {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted, #6B7280);
+}
+
+.wc-status-bar__datetime {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.125rem;
+}
+
+.wc-status-bar--compact .wc-status-bar__datetime {
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+.wc-status-bar__time {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-red, #DC2626);
+  font-family: 'Montserrat', sans-serif;
+}
+
+.wc-status-bar--compact .wc-status-bar__time {
+  font-size: 0.875rem;
+}
+
+.wc-status-bar__date {
+  font-size: 0.75rem;
+  color: var(--text-muted, #6B7280);
+}
+
+[data-theme="dark"] .wc-status-bar {
+  background: var(--card-bg-dark, #1F2937);
+  border-color: var(--border-color-dark, #374151);
+}
+
+[data-theme="dark"] .wc-status-bar__greeting-name {
+  color: var(--text-primary-dark, #F9FAFB);
+}
+
+@media (max-width: 767px) {
+  .wc-status-bar__datetime {
+    align-items: flex-start;
+  }
+}

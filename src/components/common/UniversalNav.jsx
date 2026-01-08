@@ -128,8 +128,8 @@ const ROLE_MENUS = {
 export default function UniversalNav({
   variant = 'default',
   navLinks = DEFAULT_NAV_LINKS,
-  showDateTime = true,
-  showOnlineStatus = true,
+  showDateTime = false,
+  showOnlineStatus = false,
   logoPath = '/company-logo.jpg',
   logoText = 'White Caves',
   className = ''

@@ -1,0 +1,315 @@
+# Complete Instructions for Replit Agent
+
+## Project Refactoring Instructions:
+
+### 1. CONVERT ALL HTML ELEMENTS TO REACT FUNCTIONAL COMPONENTS
+**Objective:** Replace all raw HTML elements with reusable React functional components.
+
+**Instructions:**
+1. **Create Component Library:**
+   - Convert all `<div>`, `<span>`, `<button>`, `<input>`, `<select>` elements to React components
+   - Create atomic components: `Button`, `Card`, `Input`, `Select`, `Modal`, `Badge`, `Icon`
+   - Create compound components: `FormGroup`, `DataTable`, `StatCard`, `Chart`
+   - Create layout components: `Container`, `Grid`, `Flex`, `Section`
+
+2. **Component Structure:**
+   ```
+   src/shared/components/
+   ├── ui/               # Atomic components
+   │   ├── Button/
+   │   │   ├── Button.tsx
+   │   │   ├── Button.css
+   │   │   └── index.ts
+   │   ├── Card/
+   │   ├── Input/
+   │   └── ...
+   ├── layout/           # Layout components
+   ├── forms/           # Form components
+   ├── data/            # Data display components
+   └── navigation/      # Navigation components
+   ```
+
+3. **Props Interface:**
+   - Each component must have TypeScript interfaces
+   - Use `React.FC<ComponentProps>` pattern
+   - Include proper default props and prop validation
+
+### 2. REMOVE SPECIFIC MODULES FROM MAIN NAVBAR
+**Objective:** Remove owner-specific features from general top navbar and reposition under owner dashboard.
+
+**Instructions:**
+1. **Identify and Remove from Main Navbar:**
+   - Remove these items from `TopNavBar.tsx`:
+     - WhatsApp Business Account link/menu
+     - Company Owner Menu
+     - Health System
+     - Business Model features
+     - Owner-specific features
+
+2. **Create Owner Dashboard Sub-Components:**
+   ```
+   src/features/owner/
+   ├── components/
+   │   ├── OwnerDashboard.tsx
+   │   ├── WhatsAppBusiness/
+   │   │   ├── WhatsAppBusinessPanel.tsx
+   │   │   └── WhatsAppMetrics.tsx
+   │   ├── CompanyManagement/
+   │   │   ├── CompanySettings.tsx
+   │   │   └── OwnerMenu.tsx
+   │   ├── HealthSystem/
+   │   │   ├── HealthDashboard.tsx
+   │   │   └── SystemHealth.tsx
+   │   └── BusinessModel/
+   │       ├── ModelConfig.tsx
+   │       └── RevenueModels.tsx
+   ├── slices/
+   │   └── ownerSlice.ts
+   └── services/
+       └── ownerService.ts
+   ```
+
+3. **Conditional Rendering Logic:**
+   - These components should ONLY render when `userRole === 'owner'`
+   - Use Redux selector to check role
+   - Implement feature flags in Redux store
+
+### 3. RELOCATE TIME & ONLINE STATUS
+**Objective:** Move time and online status from main navbar to user-specific dashboard areas.
+
+**Instructions:**
+1. **Remove from Main Navbar:**
+   - Remove time display component from `TopNavBar.tsx`
+   - Remove online status indicator from `TopNavBar.tsx`
+
+2. **Create Dashboard-Specific Components:**
+   ```
+   src/shared/components/dashboard/
+   ├── DashboardHeader/
+   │   ├── UserStatusBar.tsx      # Time + Online status
+   │   └── DashboardQuickActions.tsx
+   └── RoleSpecific/
+       ├── BuyerStatus.tsx
+       ├── SellerStatus.tsx
+       ├── LandlordStatus.tsx
+       └── AgentStatus.tsx
+   ```
+
+3. **Position in Dashboards:**
+   - Place in dashboard header area (not main navbar)
+   - Position as first item in sub-navbar or dashboard toolbar
+   - Make responsive: hide on mobile, show on desktop
+
+### 4. FIX DESIGN & RESPONSIVE ISSUES
+**Objective:** Fix all CSS issues and ensure proper responsive behavior.
+
+**Instructions:**
+1. **CSS Architecture:**
+   - Use CSS Grid and Flexbox for layouts
+   - Implement responsive breakpoints:
+     ```css
+     /* Mobile first approach */
+     .container {
+       display: flex;
+       flex-direction: column;
+     }
+     
+     @media (min-width: 768px) {
+       .container {
+         flex-direction: row;
+       }
+     }
+     ```
+
+2. **Fix Component Positioning:**
+   - Use CSS Grid for dashboard layouts
+   - Implement auto-sizing with `fr` units
+   - Fix overlapping elements with proper z-index
+
+3. **Device-Specific Fixes:**
+   - Mobile (0-767px): Stack components vertically
+   - Tablet (768-1199px): 2-column grid
+   - Desktop (1200px+): 3-4 column grid
+
+4. **Component Auto-Sizing:**
+   - Use `flex: 1` for equal distribution
+   - Use `minmax()` for grid items
+   - Implement fluid typography with `clamp()`
+
+### 5. CREATE REUSABLE ROLE-BASED COMPONENTS
+**Objective:** Build reusable components for properties, services, and features for all user roles.
+
+**Instructions:**
+1. **Property Components:**
+   ```
+   src/shared/components/properties/
+   ├── PropertyCard/
+   │   ├── PropertyCard.tsx          # Base card
+   │   ├── PropertyCardCompact.tsx   # Compact view
+   │   ├── PropertyCardDetailed.tsx  # Detailed view
+   │   └── PropertyCardGrid.tsx      # Grid view
+   ├── PropertyList/
+   │   ├── PropertyListView.tsx
+   │   └── PropertyGridview.tsx
+   ├── PropertyFilters/
+   │   ├── FilterSidebar.tsx
+   │   └── QuickFilters.tsx
+   └── PropertyActions/
+       ├── SaveProperty.tsx
+       └── ContactAgent.tsx
+   ```
+
+2. **Service Components:**
+   ```
+   src/shared/components/services/
+   ├── ServiceCard/
+   │   ├── ServiceCard.tsx
+   │   └── ServiceCardHorizontal.tsx
+   ├── ServiceList/
+   │   ├── ServiceGrid.tsx
+   │   └── ServiceCarousel.tsx
+   ├── ServiceBooking/
+   │   ├── BookingForm.tsx
+   │   └── BookingCalendar.tsx
+   └── ServiceReviews/
+       ├── ReviewCard.tsx
+       └── RatingDisplay.tsx
+   ```
+
+3. **Role-Specific Dashboard Components:**
+   ```
+   src/features/dashboard/components/roleSpecific/
+   ├── buyer/
+   │   ├── BuyerPropertyGrid.tsx
+   │   ├── SavedProperties.tsx
+   │   └── ViewingSchedule.tsx
+   ├── seller/
+   │   ├── ListingManager.tsx
+   │   ├── InquiryList.tsx
+   │   └── MarketInsights.tsx
+   ├── landlord/
+   │   ├── TenantList.tsx
+   │   ├── MaintenanceRequests.tsx
+   │   └── RentCollection.tsx
+   ├── agent/
+   │   ├── LeadPipeline.tsx
+   │   ├── CommissionTracker.tsx
+   │   └── AppointmentCalendar.tsx
+   └── admin/
+       ├── UserManagement.tsx
+       ├── AnalyticsDashboard.tsx
+       └── SystemSettings.tsx
+   ```
+
+4. **Redux Integration Pattern:**
+   ```typescript
+   // Example: PropertyCard with Redux
+   interface PropertyCardProps {
+     propertyId: string;
+     viewMode: 'grid' | 'list' | 'compact';
+     showActions: boolean;
+   }
+   
+   const PropertyCard: React.FC<PropertyCardProps> = ({ propertyId, viewMode, showActions }) => {
+     const dispatch = useDispatch();
+     const property = useSelector((state: RootState) => 
+       selectPropertyById(state, propertyId)
+     );
+     const userRole = useSelector((state: RootState) => state.ui.currentRole);
+     
+     const handleSave = () => {
+       dispatch(toggleSaveProperty(propertyId));
+     };
+     
+     return (
+       <Card viewMode={viewMode}>
+         <PropertyImage src={property.image} />
+         <PropertyDetails>
+           <Price price={property.price} />
+           <Location location={property.location} />
+           <Features 
+             bedrooms={property.bedrooms}
+             bathrooms={property.bathrooms}
+             area={property.area}
+           />
+         </PropertyDetails>
+         {showActions && (
+           <PropertyActions role={userRole}>
+             <Button onClick={handleSave}>Save</Button>
+             <Button variant="primary">Contact</Button>
+           </PropertyActions>
+         )}
+       </Card>
+     );
+   };
+   ```
+
+5. **Dynamic Role-Based Rendering:**
+   ```typescript
+   // Role-based component selector
+   const RoleBasedView: React.FC = () => {
+     const userRole = useSelector((state: RootState) => state.ui.currentRole);
+     
+     const componentMap = {
+       buyer: BuyerDashboardView,
+       seller: SellerDashboardView,
+       landlord: LandlordDashboardView,
+       agent_sales: SalesAgentView,
+       agent_leasing: LeasingAgentView,
+       admin: AdminDashboardView,
+     };
+     
+     const Component = componentMap[userRole] || DefaultView;
+     
+     return <Component />;
+   };
+   ```
+
+## Implementation Priorities:
+
+### PHASE 1: Component Refactoring (2-3 hours)
+1. Create all atomic UI components
+2. Convert existing HTML to React components
+3. Fix CSS positioning issues
+
+### PHASE 2: Navbar Cleanup (1 hour)
+1. Remove specified modules from main navbar
+2. Create owner dashboard structure
+3. Relocate time/online status
+
+### PHASE 3: Responsive Design Fixes (2 hours)
+1. Fix all CSS issues
+2. Implement proper grid layouts
+3. Test on all device sizes
+
+### PHASE 4: Reusable Components (3-4 hours)
+1. Build property components
+2. Build service components
+3. Create role-specific dashboard components
+4. Integrate Redux with all components
+
+### PHASE 5: Testing & Polish (1-2 hours)
+1. Test all role-based views
+2. Verify responsive behavior
+3. Fix any remaining issues
+
+## Key Requirements for Replit Agent:
+
+1. **Use Functional Components Only:** No class components
+2. **TypeScript Everywhere:** All components must have proper types
+3. **Redux Integration:** All state changes through Redux actions
+4. **Responsive Design:** Mobile-first approach
+5. **Reusable Patterns:** Create composable components
+6. **Clean Architecture:** Follow feature-based folder structure
+7. **Performance:** Use React.memo, useCallback, useMemo where appropriate
+8. **Accessibility:** Include ARIA labels, keyboard navigation
+
+## Expected Outcome:
+- Clean main navbar with only general features
+- Owner-specific features moved to owner dashboard
+- Time/online status in appropriate dashboard areas
+- Fully responsive design that works on all devices
+- Reusable components for all property and service features
+- Role-based dashboard components using Redux state
+
+The agent should implement these changes incrementally, testing each phase before moving to the next. All existing functionality should be preserved while improving code organization and user experience.

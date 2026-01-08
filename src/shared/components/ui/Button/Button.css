@@ -1,0 +1,125 @@
+.wc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.wc-btn:focus {
+  outline: 2px solid var(--primary-red, #DC2626);
+  outline-offset: 2px;
+}
+
+.wc-btn--primary {
+  background: var(--primary-red, #DC2626);
+  color: #FFFFFF;
+}
+
+.wc-btn--primary:hover:not(:disabled) {
+  background: #B91C1C;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.wc-btn--secondary {
+  background: transparent;
+  color: var(--primary-red, #DC2626);
+  border: 2px solid var(--primary-red, #DC2626);
+}
+
+.wc-btn--secondary:hover:not(:disabled) {
+  background: var(--primary-red, #DC2626);
+  color: #FFFFFF;
+}
+
+.wc-btn--ghost {
+  background: transparent;
+  color: var(--text-primary, #1F2937);
+}
+
+.wc-btn--ghost:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--primary-red, #DC2626);
+}
+
+.wc-btn--danger {
+  background: #EF4444;
+  color: #FFFFFF;
+}
+
+.wc-btn--danger:hover:not(:disabled) {
+  background: #DC2626;
+}
+
+.wc-btn--success {
+  background: #10B981;
+  color: #FFFFFF;
+}
+
+.wc-btn--success:hover:not(:disabled) {
+  background: #059669;
+}
+
+.wc-btn--small {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.wc-btn--medium {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+.wc-btn--large {
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+}
+
+.wc-btn--full-width {
+  width: 100%;
+}
+
+.wc-btn--disabled,
+.wc-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.wc-btn--loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.wc-btn__spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: btn-spin 0.75s linear infinite;
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+.wc-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.1em;
+}
+
+.wc-btn__text {
+  display: inline-flex;
+  align-items: center;
+}
