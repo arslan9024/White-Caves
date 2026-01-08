@@ -1,0 +1,355 @@
+/* ==========================================
+   WHITE CAVES - DYNAMIC THEME SYSTEM
+   ==========================================
+   CSS Variables for Light and Dark themes
+   with proper color contrast for accessibility
+   ========================================== */
+
+:root {
+  /* Primary Brand Colors */
+  --primary-color: #dc2626;
+  --primary-hover: #b91c1c;
+  --primary-light: #fef2f2;
+  --primary-dark: #991b1b;
+  
+  /* Secondary Colors */
+  --secondary-color: #1f2937;
+  --secondary-hover: #374151;
+  
+  /* Accent Colors */
+  --accent-gold: #f59e0b;
+  --accent-green: #10b981;
+  --accent-blue: #3b82f6;
+  --accent-purple: #8b5cf6;
+  --accent-pink: #ec4899;
+  --accent-cyan: #06b6d4;
+  
+  /* Status Colors */
+  --success-color: #22c55e;
+  --success-bg: #dcfce7;
+  --success-border: #86efac;
+  
+  --warning-color: #f59e0b;
+  --warning-bg: #fef3c7;
+  --warning-border: #fcd34d;
+  
+  --error-color: #ef4444;
+  --error-bg: #fee2e2;
+  --error-border: #fca5a5;
+  
+  --info-color: #3b82f6;
+  --info-bg: #dbeafe;
+  --info-border: #93c5fd;
+}
+
+/* ==========================================
+   LIGHT THEME (Default)
+   ========================================== */
+[data-theme="light"], :root {
+  /* Backgrounds */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+  --bg-card: #ffffff;
+  --bg-hover: #f3f4f6;
+  --bg-active: #e5e7eb;
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+  --bg-glass: rgba(255, 255, 255, 0.8);
+  
+  /* Text Colors - High Contrast */
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-tertiary: #6b7280;
+  --text-muted: #9ca3af;
+  --text-inverse: #ffffff;
+  --text-link: #dc2626;
+  --text-link-hover: #b91c1c;
+  
+  /* Border Colors */
+  --border-color: #e5e7eb;
+  --border-light: #f3f4f6;
+  --border-dark: #d1d5db;
+  --border-focus: #dc2626;
+  
+  /* Shadow Colors */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 20px rgba(220, 38, 38, 0.3);
+  
+  /* Input Colors */
+  --input-bg: #ffffff;
+  --input-border: #d1d5db;
+  --input-focus-border: #dc2626;
+  --input-placeholder: #9ca3af;
+  
+  /* Table Colors */
+  --table-header-bg: #f9fafb;
+  --table-row-hover: #f3f4f6;
+  --table-border: #e5e7eb;
+  
+  /* Sidebar/Nav Colors */
+  --nav-bg: #ffffff;
+  --nav-text: #374151;
+  --nav-text-active: #dc2626;
+  --nav-bg-active: #fef2f2;
+  
+  /* Badge/Tag Colors */
+  --badge-bg: #f3f4f6;
+  --badge-text: #374151;
+  
+  /* Chart Colors */
+  --chart-grid: #e5e7eb;
+  --chart-axis: #6b7280;
+}
+
+/* ==========================================
+   DARK THEME
+   ========================================== */
+[data-theme="dark"] {
+  /* Backgrounds */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-card: #1e293b;
+  --bg-hover: #334155;
+  --bg-active: #475569;
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+  --bg-glass: rgba(30, 41, 59, 0.9);
+  
+  /* Text Colors - High Contrast for Dark Mode */
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --text-muted: #64748b;
+  --text-inverse: #0f172a;
+  --text-link: #f87171;
+  --text-link-hover: #fca5a5;
+  
+  /* Border Colors */
+  --border-color: #334155;
+  --border-light: #475569;
+  --border-dark: #1e293b;
+  --border-focus: #f87171;
+  
+  /* Shadow Colors */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 20px rgba(248, 113, 113, 0.4);
+  
+  /* Input Colors */
+  --input-bg: #1e293b;
+  --input-border: #475569;
+  --input-focus-border: #f87171;
+  --input-placeholder: #64748b;
+  
+  /* Table Colors */
+  --table-header-bg: #1e293b;
+  --table-row-hover: #334155;
+  --table-border: #334155;
+  
+  /* Sidebar/Nav Colors */
+  --nav-bg: #1e293b;
+  --nav-text: #cbd5e1;
+  --nav-text-active: #f87171;
+  --nav-bg-active: rgba(248, 113, 113, 0.1);
+  
+  /* Badge/Tag Colors */
+  --badge-bg: #334155;
+  --badge-text: #e2e8f0;
+  
+  /* Chart Colors */
+  --chart-grid: #334155;
+  --chart-axis: #94a3b8;
+  
+  /* Status Colors - Adjusted for Dark */
+  --success-bg: rgba(34, 197, 94, 0.15);
+  --success-border: rgba(34, 197, 94, 0.3);
+  
+  --warning-bg: rgba(245, 158, 11, 0.15);
+  --warning-border: rgba(245, 158, 11, 0.3);
+  
+  --error-bg: rgba(239, 68, 68, 0.15);
+  --error-border: rgba(239, 68, 68, 0.3);
+  
+  --info-bg: rgba(59, 130, 246, 0.15);
+  --info-border: rgba(59, 130, 246, 0.3);
+}
+
+/* ==========================================
+   COMMON COMPONENT STYLES
+   ========================================== */
+
+/* Cards */
+.theme-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  transition: all 0.2s ease;
+}
+
+.theme-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-light);
+}
+
+/* Buttons */
+.theme-btn-primary {
+  background: var(--primary-color);
+  color: var(--text-inverse);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.theme-btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-btn-secondary:hover {
+  background: var(--bg-hover);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+/* Inputs */
+.theme-input {
+  background: var(--input-bg);
+  border: 2px solid var(--input-border);
+  color: var(--text-primary);
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.theme-input::placeholder {
+  color: var(--input-placeholder);
+}
+
+.theme-input:focus {
+  outline: none;
+  border-color: var(--input-focus-border);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* Tables */
+.theme-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.theme-table th {
+  background: var(--table-header-bg);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-align: left;
+  padding: 14px 16px;
+  border-bottom: 2px solid var(--table-border);
+}
+
+.theme-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--table-border);
+  color: var(--text-primary);
+}
+
+.theme-table tr:hover td {
+  background: var(--table-row-hover);
+}
+
+/* Badges/Tags */
+.theme-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--badge-bg);
+  color: var(--badge-text);
+}
+
+.theme-badge-success {
+  background: var(--success-bg);
+  color: var(--success-color);
+  border: 1px solid var(--success-border);
+}
+
+.theme-badge-warning {
+  background: var(--warning-bg);
+  color: var(--warning-color);
+  border: 1px solid var(--warning-border);
+}
+
+.theme-badge-error {
+  background: var(--error-bg);
+  color: var(--error-color);
+  border: 1px solid var(--error-border);
+}
+
+.theme-badge-info {
+  background: var(--info-bg);
+  color: var(--info-color);
+  border: 1px solid var(--info-border);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Selection */
+::selection {
+  background: var(--primary-color);
+  color: var(--text-inverse);
+}
+
+/* Focus Ring */
+:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Transitions */
+.theme-transition {
+  transition: background-color 0.3s ease, 
+              color 0.3s ease, 
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+}

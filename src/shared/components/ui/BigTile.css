@@ -1,0 +1,228 @@
+.big-tile {
+  position: relative;
+  background: var(--bg-card, #ffffff);
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 20px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.big-tile:hover {
+  border-color: var(--tile-color);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.big-tile-active {
+  border-color: var(--tile-color);
+  box-shadow: 0 0 0 3px rgba(var(--tile-color), 0.2);
+}
+
+/* Size Variants */
+.big-tile-small {
+  padding: 16px;
+}
+
+.big-tile-small .tile-title {
+  font-size: 14px;
+}
+
+.big-tile-small .tile-icon-container {
+  width: 40px;
+  height: 40px;
+}
+
+.big-tile-medium {
+  padding: 24px;
+}
+
+.big-tile-large {
+  padding: 32px;
+}
+
+.big-tile-large .tile-title {
+  font-size: 20px;
+}
+
+.big-tile-large .tile-icon-container {
+  width: 64px;
+  height: 64px;
+}
+
+/* Badge */
+.tile-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Header */
+.tile-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.tile-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.big-tile:hover .tile-icon-container {
+  transform: scale(1.1);
+}
+
+.tile-title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.tile-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary, #1f2937);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.tile-subtitle {
+  font-size: 12px;
+  color: var(--text-tertiary, #9ca3af);
+  font-weight: 500;
+}
+
+/* Description */
+.tile-description {
+  font-size: 13px;
+  color: var(--text-secondary, #6b7280);
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+}
+
+/* Stats */
+.tile-stats {
+  display: flex;
+  gap: 24px;
+  padding: 16px 0;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  margin-bottom: 16px;
+}
+
+.tile-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-tertiary, #9ca3af);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Content */
+.tile-content {
+  margin: 16px 0;
+}
+
+/* Footer */
+.tile-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.tile-learn-more {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary, #6b7280);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tile-learn-more:hover {
+  background: var(--bg-hover, #f3f4f6);
+  border-color: var(--tile-color);
+  color: var(--tile-color);
+}
+
+.tile-arrow {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary, #f9fafb);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.big-tile:hover .tile-arrow {
+  background: var(--tile-color);
+  color: white !important;
+  transform: translateX(4px);
+}
+
+/* Glow Effect */
+.tile-glow {
+  position: absolute;
+  bottom: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.big-tile:hover .tile-glow {
+  opacity: 1;
+}
+
+/* Dark Theme */
+[data-theme="dark"] .big-tile {
+  background: var(--bg-card, #1e293b);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .big-tile:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .tile-arrow {
+  background: var(--bg-tertiary, #334155);
+}

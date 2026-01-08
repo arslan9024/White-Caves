@@ -12,6 +12,11 @@ import WhatsAppTab from '../../components/owner/tabs/WhatsAppTab';
 import UAEPassTab from '../../components/owner/tabs/UAEPassTab';
 import SettingsTab from '../../components/owner/tabs/SettingsTab';
 import FeatureExplorer from '../../components/owner/FeatureExplorer';
+import RoleSelectorDropdown from '../../shared/components/ui/RoleSelectorDropdown';
+import LindaWhatsAppCRM from '../../components/crm/LindaWhatsAppCRM';
+import MaryInventoryCRM from '../../components/crm/MaryInventoryCRM';
+import ClaraLeadsCRM from '../../components/crm/ClaraLeadsCRM';
+import '../../shared/styles/theme.css';
 import './OwnerDashboardPage.css';
 
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
@@ -23,8 +28,11 @@ const TABS = [
   { id: 'leads', label: 'Leads', icon: '🎯' },
   { id: 'contracts', label: 'Contracts', icon: '📜' },
   { id: 'analytics', label: 'Analytics', icon: '📈' },
-  { id: 'chatbot', label: 'AI Chatbot', icon: '🤖' },
-  { id: 'whatsapp', label: 'WhatsApp', icon: '💬' },
+  { id: 'linda', label: 'Linda AI', icon: '💬' },
+  { id: 'mary', label: 'Mary AI', icon: '🏢' },
+  { id: 'clara', label: 'Clara AI', icon: '👤' },
+  { id: 'chatbot', label: 'AI Settings', icon: '🤖' },
+  { id: 'whatsapp', label: 'WhatsApp', icon: '📱' },
   { id: 'uaepass', label: 'UAE Pass', icon: '🆔' },
   { id: 'features', label: 'Features', icon: '⭐' },
   { id: 'settings', label: 'Settings', icon: '⚙️' },
@@ -36,6 +44,7 @@ export default function OwnerDashboardPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(false);
   const [dashboardData, setDashboardData] = useState({});
+  const [selectedRole, setSelectedRole] = useState('company_owner');
 
   useEffect(() => {
     if (!user || user.email !== OWNER_EMAIL) {
@@ -64,6 +73,11 @@ export default function OwnerDashboardPage() {
     }
   };
 
+  const handleRoleChange = (role) => {
+    setSelectedRole(role.id);
+    console.log('Role changed to:', role.name);
+  };
+
   const handleQuickAction = (action) => {
     switch(action) {
       case 'addProperty':
@@ -83,6 +97,15 @@ export default function OwnerDashboardPage() {
         break;
       case 'viewUaePassUsers':
         setActiveTab('uaepass');
+        break;
+      case 'openLinda':
+        setActiveTab('linda');
+        break;
+      case 'openMary':
+        setActiveTab('mary');
+        break;
+      case 'openClara':
+        setActiveTab('clara');
         break;
       default:
         break;
@@ -271,6 +294,12 @@ export default function OwnerDashboardPage() {
         return <ContractsTab data={dashboardData} loading={loading} onAction={handleTabAction} />;
       case 'analytics':
         return <AnalyticsTab data={dashboardData} loading={loading} />;
+      case 'linda':
+        return <LindaWhatsAppCRM />;
+      case 'mary':
+        return <MaryInventoryCRM />;
+      case 'clara':
+        return <ClaraLeadsCRM />;
       case 'chatbot':
         return <ChatbotTab data={dashboardData} loading={loading} onAction={handleTabAction} />;
       case 'whatsapp':
@@ -291,19 +320,57 @@ export default function OwnerDashboardPage() {
       <div className="dashboard-header">
         <div className="header-content">
           <div className="header-title">
-            <h1>Owner Dashboard</h1>
-            <p>White Caves Real Estate LLC - Executive Control Center</p>
+            <h1>Executive Dashboard</h1>
+            <p>White Caves Real Estate LLC - Control Center</p>
           </div>
-          <div className="header-badge">
-            <span className="badge-crown">👑</span>
-            <span className="badge-text">Company Owner</span>
+          <div className="header-role-selector">
+            <RoleSelectorDropdown 
+              currentRole={selectedRole}
+              onRoleChange={handleRoleChange}
+            />
           </div>
+        </div>
+      </div>
+
+      <div className="ai-assistants-bar">
+        <div className="ai-bar-title">AI Assistants</div>
+        <div className="ai-buttons">
+          <button 
+            className={`ai-btn linda ${activeTab === 'linda' ? 'active' : ''}`}
+            onClick={() => setActiveTab('linda')}
+          >
+            <span className="ai-icon">💬</span>
+            <div className="ai-info">
+              <span className="ai-name">Linda</span>
+              <span className="ai-desc">WhatsApp CRM</span>
+            </div>
+          </button>
+          <button 
+            className={`ai-btn mary ${activeTab === 'mary' ? 'active' : ''}`}
+            onClick={() => setActiveTab('mary')}
+          >
+            <span className="ai-icon">🏢</span>
+            <div className="ai-info">
+              <span className="ai-name">Mary</span>
+              <span className="ai-desc">Inventory CRM</span>
+            </div>
+          </button>
+          <button 
+            className={`ai-btn clara ${activeTab === 'clara' ? 'active' : ''}`}
+            onClick={() => setActiveTab('clara')}
+          >
+            <span className="ai-icon">👤</span>
+            <div className="ai-info">
+              <span className="ai-name">Clara</span>
+              <span className="ai-desc">Leads CRM</span>
+            </div>
+          </button>
         </div>
       </div>
 
       <div className="dashboard-tabs">
         <div className="tabs-container">
-          {TABS.map((tab) => (
+          {TABS.filter(tab => !['linda', 'mary', 'clara'].includes(tab.id)).map((tab) => (
             <button
               key={tab.id}
               className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
