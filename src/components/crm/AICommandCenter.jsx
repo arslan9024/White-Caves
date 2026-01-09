@@ -29,6 +29,18 @@ const OliviaMarketingCRM = lazy(() => import('./OliviaMarketingCRM'));
 const ZoeExecutiveCRM = lazy(() => import('./ZoeExecutiveCRM'));
 const LailaComplianceCRM = lazy(() => import('./LailaComplianceCRM'));
 const AuroraCTODashboard = lazy(() => import('./AuroraCTODashboard'));
+const HazelFrontendCRM = lazy(() => import('./HazelFrontendCRM'));
+const WillowBackendCRM = lazy(() => import('./WillowBackendCRM'));
+const EvangelineLegalCRM = lazy(() => import('./EvangelineLegalCRM'));
+const SentinelPropertyCRM = lazy(() => import('./SentinelPropertyCRM'));
+const HunterProspectingCRM = lazy(() => import('./HunterProspectingCRM'));
+const HenryAuditCRM = lazy(() => import('./HenryAuditCRM'));
+const CipherMarketCRM = lazy(() => import('./CipherMarketCRM'));
+const AtlasProjectsCRM = lazy(() => import('./AtlasProjectsCRM'));
+const VestaHandoverCRM = lazy(() => import('./VestaHandoverCRM'));
+const JunoCommunity = lazy(() => import('./JunoCommunity'));
+const KairosLuxuryCRM = lazy(() => import('./KairosLuxuryCRM'));
+const MavenInvestmentCRM = lazy(() => import('./MavenInvestmentCRM'));
 
 const ASSISTANT_COMPONENTS = {
   linda: LindaWhatsAppCRM,
@@ -42,7 +54,19 @@ const ASSISTANT_COMPONENTS = {
   olivia: OliviaMarketingCRM,
   zoe: ZoeExecutiveCRM,
   laila: LailaComplianceCRM,
-  aurora: AuroraCTODashboard
+  aurora: AuroraCTODashboard,
+  hazel: HazelFrontendCRM,
+  willow: WillowBackendCRM,
+  evangeline: EvangelineLegalCRM,
+  sentinel: SentinelPropertyCRM,
+  hunter: HunterProspectingCRM,
+  henry: HenryAuditCRM,
+  cipher: CipherMarketCRM,
+  atlas: AtlasProjectsCRM,
+  vesta: VestaHandoverCRM,
+  juno: JunoCommunity,
+  kairos: KairosLuxuryCRM,
+  maven: MavenInvestmentCRM
 };
 
 const LoadingSpinner = memo(() => (
