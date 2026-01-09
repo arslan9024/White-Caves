@@ -15,7 +15,7 @@ export const PUBLIC_NAV = {
     { label: 'Home', path: '/', icon: '🏠' },
     { label: 'Properties', path: '/properties', icon: '🏢' },
     { label: 'Services', path: '/services', icon: '⚙️' },
-    { label: 'Careers', path: '/careers', icon: '💼' },
+    { label: 'About', path: '/about', icon: 'ℹ️' },
     { label: 'Contact', path: '/contact', icon: '📞' }
   ],
   buy: [

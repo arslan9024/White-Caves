@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Menu, X, ChevronDown, Home, Building2, Settings, Briefcase, Phone, LogIn } from 'lucide-react';
+import { Menu, X, ChevronDown, Home, Building2, Settings, Info, Phone, LogIn } from 'lucide-react';
 import { PUBLIC_NAV } from '../../../config/navigation';
 import './MainNavBar.css';
 
@@ -13,7 +13,7 @@ const MainNavBar = () => {
     '🏠': Home,
     '🏢': Building2,
     '⚙️': Settings,
-    '💼': Briefcase,
+    'ℹ️': Info,
     '📞': Phone
   };
 
