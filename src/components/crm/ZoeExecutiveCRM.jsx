@@ -1,13 +1,18 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   Briefcase, Calendar, Clock, CheckCircle, Users,
   Video, Phone, Mail, FileText, AlertCircle, Bell,
   ArrowUp, ArrowDown, Plus, Search, MapPin, Star,
   Filter, Inbox, TrendingUp, AlertTriangle, Lightbulb,
-  DollarSign, Shield, Archive, Eye, ChevronRight, Zap
+  DollarSign, Shield, Archive, Eye, ChevronRight, Zap,
+  Building2, Network, Workflow, Bot, ChevronDown, Play
 } from 'lucide-react';
 import { AssistantDocsTab } from './shared';
+import { FlowchartViewer } from './index';
+import { EXECUTIVES, DIRECTORS, DEPARTMENTS_CONFIG } from '../../data/organization/orgStructure';
+import { EMPLOYEES, WHATSAPP_AGENTS } from '../../data/organization/employees';
+import { COMPANY_SERVICES, getAllServices, getServiceStats } from '../../data/services/companyServices';
 import {
   selectFilteredSuggestions,
   selectUnreviewedSuggestionsCount,
@@ -225,7 +230,7 @@ const ZoeExecutiveCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['suggestions', 'calendar', 'tasks', 'executives', 'reports', 'docs'].map(tab => (
+        {['suggestions', 'organization', 'departments', 'services', 'calendar', 'tasks', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -235,6 +240,9 @@ const ZoeExecutiveCRM = () => {
             {tab === 'suggestions' && unreviewedCount > 0 && (
               <span className="tab-badge">{unreviewedCount}</span>
             )}
+            {tab === 'organization' && <Network size={14} />}
+            {tab === 'departments' && <Building2 size={14} />}
+            {tab === 'services' && <Workflow size={14} />}
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
@@ -546,6 +554,153 @@ const ZoeExecutiveCRM = () => {
                 <p>KYC/AML and regulatory compliance overview</p>
                 <button className="action-btn secondary">Review Status</button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'organization' && (
+          <div className="organization-view">
+            <div className="org-header">
+              <h3><Network size={18} /> Organization Chart</h3>
+              <div className="org-stats">
+                <span className="org-stat"><Users size={14} /> {EXECUTIVES.length} Executives</span>
+                <span className="org-stat"><Building2 size={14} /> {DIRECTORS.length} Directors</span>
+                <span className="org-stat"><Users size={14} /> {EMPLOYEES.length} Staff</span>
+                <span className="org-stat"><Bot size={14} /> 24 AI Assistants</span>
+              </div>
+            </div>
+            
+            <div className="org-section">
+              <h4>Executive Team</h4>
+              <div className="org-cards">
+                {EXECUTIVES.map(exec => (
+                  <div key={exec.id} className="org-card executive">
+                    <img src={exec.photo} alt={exec.name} className="org-avatar" />
+                    <div className="org-info">
+                      <h5>{exec.name}</h5>
+                      <p className="org-role">{exec.role}</p>
+                      <p className="org-bio">{exec.bio?.slice(0, 80)}...</p>
+                    </div>
+                    <div className={`org-status ${exec.status}`}>
+                      <span className="status-dot"></span>
+                      {exec.status?.replace('_', ' ')}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="org-section">
+              <h4>Department Directors</h4>
+              <div className="org-cards directors">
+                {DIRECTORS.map(dir => (
+                  <div key={dir.id} className="org-card director">
+                    <img src={dir.photo} alt={dir.name} className="org-avatar small" />
+                    <div className="org-info">
+                      <h5>{dir.name}</h5>
+                      <p className="org-role">{dir.role}</p>
+                      <span className="team-size"><Users size={12} /> {dir.teamSize} team members</span>
+                    </div>
+                    <div className="org-assistants">
+                      {dir.assignedAssistants?.slice(0, 3).map(a => (
+                        <span key={a} className="assistant-chip">{a}</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'departments' && (
+          <div className="departments-view">
+            <div className="view-header">
+              <h3><Building2 size={18} /> Department Overview</h3>
+              <span className="dept-count">{Object.keys(DEPARTMENTS_CONFIG).length} Departments</span>
+            </div>
+            <div className="departments-grid">
+              {Object.values(DEPARTMENTS_CONFIG).map(dept => (
+                <div key={dept.id} className="department-card" style={{ borderLeftColor: dept.color }}>
+                  <div className="dept-header">
+                    <div className="dept-icon" style={{ backgroundColor: `${dept.color}20`, color: dept.color }}>
+                      <Building2 size={20} />
+                    </div>
+                    <div className="dept-title">
+                      <h4>{dept.name}</h4>
+                      <p>{dept.description}</p>
+                    </div>
+                  </div>
+                  <div className="dept-kpis">
+                    {Object.entries(dept.kpis || {}).slice(0, 3).map(([key, value]) => (
+                      <div key={key} className="kpi-item">
+                        <span className="kpi-value">{typeof value === 'number' ? value.toLocaleString() : value}</span>
+                        <span className="kpi-label">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="dept-assistants">
+                    <span className="assistants-label"><Bot size={12} /> AI Assistants:</span>
+                    <div className="assistants-list">
+                      {dept.assistants?.map(a => (
+                        <span key={a} className="assistant-tag" style={{ backgroundColor: `${dept.color}20`, color: dept.color }}>{a}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'services' && (
+          <div className="services-view">
+            <div className="view-header">
+              <h3><Workflow size={18} /> Company Services</h3>
+              <div className="services-stats">
+                <span>{getServiceStats().total} Services</span>
+                <span>|</span>
+                <span>{getServiceStats().totalMonthlyVolume.toLocaleString()} Monthly Volume</span>
+              </div>
+            </div>
+            <div className="services-categories">
+              {Object.entries(COMPANY_SERVICES).map(([category, services]) => (
+                <div key={category} className="service-category">
+                  <div className="category-header">
+                    <h4>{category.charAt(0).toUpperCase() + category.slice(1)}</h4>
+                    <span className="service-count">{services.length} services</span>
+                  </div>
+                  <div className="services-grid">
+                    {services.slice(0, 4).map(service => (
+                      <div key={service.id} className="service-card">
+                        <div className="service-header">
+                          <span className="service-icon">{service.icon}</span>
+                          <div className="service-info">
+                            <h5>{service.name}</h5>
+                            <p>{service.description?.slice(0, 60)}...</p>
+                          </div>
+                        </div>
+                        <div className="service-meta">
+                          <span className="service-stat"><Clock size={12} /> {service.avgDuration}</span>
+                          <span className="service-stat"><TrendingUp size={12} /> {service.monthlyVolume}/mo</span>
+                        </div>
+                        <div className="service-workflow">
+                          <span className="workflow-label">Workflow:</span>
+                          <div className="workflow-stages">
+                            {service.stages?.slice(0, 4).map((stage, idx) => (
+                              <span key={stage.id} className="stage-chip">
+                                {stage.icon} {stage.name}
+                                {idx < Math.min(service.stages.length - 1, 3) && <ChevronRight size={10} />}
+                              </span>
+                            ))}
+                            {service.stages?.length > 4 && <span className="more">+{service.stages.length - 4}</span>}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}

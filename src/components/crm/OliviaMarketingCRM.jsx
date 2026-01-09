@@ -1,15 +1,17 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   Megaphone, TrendingUp, Eye, Share2, Heart, MessageCircle,
   ArrowUp, ArrowDown, Search, Plus, Calendar, BarChart3,
   Instagram, Facebook, Youtube, Mail, Target, Users, Globe,
   RefreshCw, Settings, Clock, CheckCircle, AlertCircle, XCircle,
-  Database, Zap, Activity, Play, Pause, Link2, Building2
+  Database, Zap, Activity, Play, Pause, Link2, Building2,
+  Star, Home, Trophy, Sparkles
 } from 'lucide-react';
 import { PlatformPublisherForm, AssistantDocsTab } from './shared';
 import { 
-  selectInventoryStats 
+  selectInventoryStats,
+  selectAllProperties
 } from '../../store/slices/inventorySlice';
 import {
   selectOliviaAutomation,
@@ -19,6 +21,14 @@ import {
   updateOliviaMarketResearch,
   addOliviaActivity
 } from '../../store/slices/aiAssistantDashboardSlice';
+import {
+  setFeaturedProperties,
+  selectFeaturedProperties,
+  selectSelectionCriteria,
+  selectLastUpdated,
+  scoreProperty,
+  selectTopProperties
+} from '../../store/slices/featuredSlice';
 import './AssistantDashboard.css';
 import './OliviaMarketingCRM.css';
 
@@ -72,11 +82,51 @@ const MONITORED_SITES_DEFAULT = [
   { name: 'Dubizzle', status: 'degraded', lastCheck: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(), dataPoints: 650 }
 ];
 
+const SAMPLE_PROPERTIES = [
+  { id: 'P001', name: 'Luxury Villa - DAMAC Hills 2', type: 'Villa', bedrooms: 5, price: 4500000, inquiries: 45, views: 2340, qualityScore: 95, isNew: true, image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=300' },
+  { id: 'P002', name: 'Modern Townhouse - DAMAC Lagoons', type: 'Townhouse', bedrooms: 4, price: 2800000, inquiries: 38, views: 1890, qualityScore: 88, isNew: true, image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300' },
+  { id: 'P003', name: 'Penthouse - Downtown Dubai', type: 'Penthouse', bedrooms: 3, price: 8500000, inquiries: 22, views: 3450, qualityScore: 98, isNew: false, image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=300' },
+  { id: 'P004', name: 'Studio Apartment - JVC', type: 'Apartment', bedrooms: 0, price: 650000, inquiries: 67, views: 4200, qualityScore: 72, isNew: true, image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=300' },
+  { id: 'P005', name: 'Family Villa - Emirates Hills', type: 'Villa', bedrooms: 6, price: 15000000, inquiries: 12, views: 890, qualityScore: 99, isNew: false, image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=300' },
+  { id: 'P006', name: '2BR Apartment - Dubai Marina', type: 'Apartment', bedrooms: 2, price: 1800000, inquiries: 55, views: 3100, qualityScore: 85, isNew: true, image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300' },
+  { id: 'P007', name: 'Duplex - Business Bay', type: 'Duplex', bedrooms: 4, price: 3200000, inquiries: 28, views: 1560, qualityScore: 82, isNew: false, image: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=300' },
+  { id: 'P008', name: 'Beachfront Villa - Palm Jumeirah', type: 'Villa', bedrooms: 5, price: 22000000, inquiries: 8, views: 650, qualityScore: 100, isNew: false, image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300' },
+  { id: 'P009', name: '1BR Apartment - DAMAC Hills 2', type: 'Apartment', bedrooms: 1, price: 780000, inquiries: 72, views: 5200, qualityScore: 78, isNew: true, image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=300' },
+  { id: 'P010', name: 'Golf View Villa - Jumeirah Golf', type: 'Villa', bedrooms: 4, price: 6800000, inquiries: 18, views: 1120, qualityScore: 92, isNew: false, image: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=300' },
+  { id: 'P011', name: '3BR Townhouse - Arabian Ranches', type: 'Townhouse', bedrooms: 3, price: 2100000, inquiries: 42, views: 2800, qualityScore: 86, isNew: true, image: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=300' },
+  { id: 'P012', name: 'Luxury Penthouse - DIFC', type: 'Penthouse', bedrooms: 4, price: 12500000, inquiries: 15, views: 980, qualityScore: 97, isNew: false, image: 'https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=300' }
+];
+
 const OliviaMarketingCRM = () => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('automation');
+  const [isSelectingFeatured, setIsSelectingFeatured] = useState(false);
   const inventoryStats = useSelector(selectInventoryStats);
   const oliviaAutomation = useSelector(selectOliviaAutomation);
+  const featuredProperties = useSelector(selectFeaturedProperties);
+  const selectionCriteria = useSelector(selectSelectionCriteria);
+  const featuredLastUpdated = useSelector(selectLastUpdated);
+  
+  const scoredProperties = useMemo(() => {
+    return SAMPLE_PROPERTIES.map(p => ({
+      ...p,
+      score: scoreProperty(p, selectionCriteria)
+    })).sort((a, b) => b.score - a.score);
+  }, [selectionCriteria]);
+  
+  const handleRunDailySelection = useCallback(() => {
+    setIsSelectingFeatured(true);
+    setTimeout(() => {
+      const top10 = scoredProperties.slice(0, 10);
+      dispatch(setFeaturedProperties(top10));
+      dispatch(addOliviaActivity({
+        action: 'Featured Properties Selection',
+        status: 'success',
+        details: `Selected top 10 properties using scoring algorithm. Pushed to HomePage.`
+      }));
+      setIsSelectingFeatured(false);
+    }, 1500);
+  }, [dispatch, scoredProperties]);
   
   const syncSchedule = oliviaAutomation.syncSchedule || '3days';
   const activeMonitoring = oliviaAutomation.activeMonitoring !== false;
@@ -210,13 +260,14 @@ const OliviaMarketingCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['automation', 'insights', 'campaigns', 'social', 'listings', 'publish', 'docs'].map(tab => (
+        {['automation', 'featured', 'insights', 'campaigns', 'social', 'listings', 'publish', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
             {tab === 'automation' && <Zap size={14} />}
+            {tab === 'featured' && <Star size={14} />}
             {tab === 'insights' && <BarChart3 size={14} />}
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
@@ -337,6 +388,127 @@ const OliviaMarketingCRM = () => {
                       </div>
                     ))}
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'featured' && (
+          <div className="featured-view">
+            <div className="featured-header">
+              <div className="header-info">
+                <h3><Star size={20} /> Featured Properties Manager</h3>
+                <p>Select top 10 properties using Olivia's scoring algorithm to display on the HomePage</p>
+              </div>
+              <div className="header-actions">
+                <button 
+                  className={`action-btn primary ${isSelectingFeatured ? 'loading' : ''}`}
+                  onClick={handleRunDailySelection}
+                  disabled={isSelectingFeatured}
+                >
+                  {isSelectingFeatured ? (
+                    <><RefreshCw size={14} className="spinning" /> Selecting...</>
+                  ) : (
+                    <><Sparkles size={14} /> Run Daily Selection</>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="scoring-formula">
+              <div className="formula-header">
+                <Trophy size={18} />
+                <span>Scoring Algorithm</span>
+              </div>
+              <div className="formula-content">
+                <code>Score = (Inquiries × {selectionCriteria.inquiryWeight}) + (Views × {selectionCriteria.viewWeight}) + (Quality × {selectionCriteria.qualityWeight}) + (New Listing × {selectionCriteria.newListingBonus})</code>
+              </div>
+              {featuredLastUpdated && (
+                <div className="last-selection">
+                  <Clock size={14} /> Last selection: {formatTimeAgo(featuredLastUpdated)}
+                </div>
+              )}
+            </div>
+
+            <div className="featured-status">
+              <div className="status-card">
+                <Home size={20} />
+                <div className="status-info">
+                  <span className="status-value">{featuredProperties.length}</span>
+                  <span className="status-label">Featured on HomePage</span>
+                </div>
+              </div>
+              <div className="status-card">
+                <Database size={20} />
+                <div className="status-info">
+                  <span className="status-value">{SAMPLE_PROPERTIES.length}</span>
+                  <span className="status-label">Properties in Pool</span>
+                </div>
+              </div>
+              <div className="status-card">
+                <Link2 size={20} />
+                <div className="status-info">
+                  <span className="status-value">Mary</span>
+                  <span className="status-label">Inventory Source</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="scored-properties">
+              <h4>Property Rankings (By Score)</h4>
+              <div className="properties-table">
+                <div className="table-header">
+                  <span className="col-rank">Rank</span>
+                  <span className="col-property">Property</span>
+                  <span className="col-stats">Inquiries</span>
+                  <span className="col-stats">Views</span>
+                  <span className="col-stats">Quality</span>
+                  <span className="col-new">New</span>
+                  <span className="col-score">Score</span>
+                  <span className="col-status">Status</span>
+                </div>
+                <div className="table-body">
+                  {scoredProperties.map((property, index) => {
+                    const isFeatured = featuredProperties.some(fp => fp.id === property.id);
+                    const isTop10 = index < 10;
+                    return (
+                      <div key={property.id} className={`table-row ${isTop10 ? 'top10' : ''} ${isFeatured ? 'featured' : ''}`}>
+                        <span className="col-rank">
+                          {index < 3 ? (
+                            <span className={`rank-badge rank-${index + 1}`}>{index + 1}</span>
+                          ) : (
+                            <span className="rank-number">{index + 1}</span>
+                          )}
+                        </span>
+                        <span className="col-property">
+                          <img src={property.image} alt={property.name} className="property-thumb" />
+                          <div className="property-details">
+                            <span className="property-name">{property.name}</span>
+                            <span className="property-meta">{property.type} • {property.bedrooms} BR • AED {(property.price / 1000000).toFixed(1)}M</span>
+                          </div>
+                        </span>
+                        <span className="col-stats">{property.inquiries}</span>
+                        <span className="col-stats">{property.views.toLocaleString()}</span>
+                        <span className="col-stats">{property.qualityScore}</span>
+                        <span className="col-new">
+                          {property.isNew ? <CheckCircle size={14} className="new-check" /> : '-'}
+                        </span>
+                        <span className="col-score">
+                          <span className="score-badge">{property.score.toFixed(1)}</span>
+                        </span>
+                        <span className="col-status">
+                          {isFeatured ? (
+                            <span className="status-badge featured"><Star size={12} /> Featured</span>
+                          ) : isTop10 ? (
+                            <span className="status-badge eligible">Eligible</span>
+                          ) : (
+                            <span className="status-badge">-</span>
+                          )}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
