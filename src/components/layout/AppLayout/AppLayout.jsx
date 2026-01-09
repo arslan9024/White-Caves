@@ -15,7 +15,7 @@ const SIDEBAR_COLLAPSED = 70;
 const STORAGE_KEY = 'wc-sidebar-width';
 const COLLAPSED_KEY = 'wc-sidebar-collapsed';
 
-const DashboardAppLayout = ({ children, user, onLogout }) => {
+const DashboardAppLayout = ({ children, user, onLogout, userRole = 'owner' }) => {
   const dispatch = useDispatch();
   const resizeRef = useRef(null);
   const isResizing = useRef(false);
@@ -133,6 +133,7 @@ const DashboardAppLayout = ({ children, user, onLogout }) => {
             onAssistantSelect={handleAssistantSelect}
             activeAssistant={activeAssistant}
             isCollapsed={isCollapsed}
+            userRole={userRole}
           />
           
           {!isMobile && !isCollapsed && (

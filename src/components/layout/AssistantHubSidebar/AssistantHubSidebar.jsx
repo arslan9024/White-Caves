@@ -24,7 +24,8 @@ const AssistantHubSidebar = ({
   onClose,
   onAssistantSelect,
   activeAssistant,
-  isCollapsed = false
+  isCollapsed = false,
+  userRole = 'owner'
 }) => {
   const dispatch = useDispatch();
   const searchQuery = useSelector(state => state.app?.sidebarSearchQuery || '');
@@ -47,15 +48,23 @@ const AssistantHubSidebar = ({
 
   const allAssistants = useMemo(() => getAllAssistants(), []);
 
+  const roleFilteredAssistants = useMemo(() => {
+    if (userRole === 'owner') return allAssistants;
+    return allAssistants.filter(a => {
+      const viewableBy = a.permissions?.viewableBy || ['owner'];
+      return viewableBy.includes(userRole) || viewableBy.includes('all');
+    });
+  }, [allAssistants, userRole]);
+
   const filteredAssistants = useMemo(() => {
-    if (!searchQuery) return allAssistants;
+    if (!searchQuery) return roleFilteredAssistants;
     const query = searchQuery.toLowerCase();
-    return allAssistants.filter(a => 
+    return roleFilteredAssistants.filter(a => 
       a.name.toLowerCase().includes(query) ||
       a.title.toLowerCase().includes(query) ||
       a.department.toLowerCase().includes(query)
     );
-  }, [allAssistants, searchQuery]);
+  }, [roleFilteredAssistants, searchQuery]);
 
   const assistantsByDepartment = useMemo(() => {
     const grouped = {};
