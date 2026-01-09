@@ -1,6 +1,6 @@
 # White Caves Real Estate LLC
 
-**Luxury Real Estate Platform - Dubai, UAE**
+**Our Real Estate Platform - Dubai, UAE**
 
 White Caves Real Estate LLC is a comprehensive digital platform specializing in the Dubai luxury real estate market. Our platform provides end-to-end solutions for property sales, rentals, and management with AI-powered automation.
 
@@ -11,8 +11,8 @@ White Caves Real Estate LLC is a comprehensive digital platform specializing in 
 **White Caves Real Estate LLC**
 - **Location**: Dubai, United Arab Emirates
 - **Contact**: +971 56 361 6136
-- **Email**: info@whitecavesrealestate.com
-- **Website**: whitecavesrealestate.com
+- **Email**: admin@whitecaves.com
+- **Website**: www.whitecave.com
 
 ---
 
