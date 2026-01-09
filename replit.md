@@ -64,8 +64,9 @@ Preferred communication style: Simple, everyday language.
 - **Organization Data Infrastructure**: Complete org structure with 4 executives, 10 directors, 10 departments with KPIs, 20+ staff employees, and 23 WhatsApp agents.
 - **Company Services Registry**: 35 services across 6 categories (Property, Financial, Legal, Operations, Marketing, Technology) with workflow stages and assigned AI assistants.
 - **Aurora Project Documentation**: Version history, feature registry (50+ features), 4-phase roadmap with milestones, and release changelog.
-- **Zoe Executive Visibility**: Organization tab (org chart), Departments tab (10 cards with live KPIs), Services tab (35 services with workflow stages).
-- **Reusable CRM Components**: StatsBar, DataTable (sortable/searchable), ActionButton (loading states), ActivityFeed, StatusBadge, FlowchartViewer.
+- **Zoe Executive Visibility**: Organization tab (org chart), Departments tab (10 cards with live KPIs), Services tab (35 services with workflow stages), Demo tab (interactive service workflow simulation).
+- **ServiceDemoMode Component**: Interactive end-to-end service workflow demonstration with category navigation, FlowchartViewer visualization, play/pause/step/reset controls, activity logging, and assigned AI assistant display. Integrated into Zoe's executive dashboard.
+- **Reusable CRM Components**: StatsBar, DataTable (sortable/searchable), ActionButton (loading states), ActivityFeed, StatusBadge, FlowchartViewer, ServiceDemoMode.
 
 ## External Dependencies
 
