@@ -1,0 +1,379 @@
+Based on a comprehensive analysis of your project's architecture, I've identified several critical design flaws stemming from organic growth without a unified design system. These flaws create fragility, inefficiency, and hinder scalability.
+
+The core issue is a pattern of **tight coupling and fragmented data flow** between components, making the system difficult to maintain and extend. Below is a breakdown of the key flaw categories.
+
+| Flaw Category | Specific Issues & Components Affected | Business & Technical Impact |
+| :--- | :--- | :--- |
+| **1. Architectural Inconsistency & Tight Coupling** | Mix of patterns: some modules act as independent "microservices" (e.g., AI assistants with own logic), while others are tightly linked. **Example:** `Linda` (WhatsApp CRM) is deeply coupled to `Mary` (Inventory) for property data and `Clara` (Leads) for lead updates, creating a brittle chain of dependencies. | A change in `Mary`'s data schema can break `Linda`'s query function. Makes isolated testing, deployment, and upgrading of single modules nearly impossible. |
+| **2. Duplicate & Conflicting State Management** | Two Redux slices (`aiAssistantsSlice` and `aiAssistantDashboardSlice`) managing overlapping AI assistant data. UI state (e.g., sidebar collapse) mixed with core business logic in various components. | **Source of Truth Ambiguity:** Different parts of the app may show different data. **Performance:** Unnecessary re-renders as scattered state updates trigger cascading component updates. |
+| **3. Broken Navigation & Information Silos** | Navigation array in `OwnerDashboard` only lists 5 AI assistants, but the registry has 12. **Sophia, Daisy, Theodora** etc., have no functional dashboard routes. `Aurora` (doc hub) exists but isn't connected to main nav. | Poor user experience, "dead ends" in the application. Critical features (like legal dashboards) are inaccessible, defeating their purpose. |
+| **4. Inconsistent Data Flow & Integration** | Lack of a standardized API or event-driven communication layer between modules. **Example:** A lead conversion in `Clara` might require manual steps to update `Mary`'s inventory and trigger `Olivia`'s marketing, instead of an automatic event. | **Operational Delays & Errors:** Data falls out of sync. **Lost Opportunities:** The AI ecosystem cannot act as a coordinated intelligence unit. |
+| **5. UI/UX Fragmentation** | No shared component library or design tokens. Each dashboard (`LindaCRM.jsx`, `MaryInventory.jsx`) has its own styles for cards, tables, and buttons. Inconsistent spacing, typography, and interaction patterns. | **High Development Cost:** Every new feature is built from scratch. **Poor Brand Perception:** The app feels unprofessional and patchwork to users. |
+
+### 🔍 Deep Dive: The Core Structural Flaw
+Your architecture currently resembles a **distributed monolith**—it has the complexity of distributed systems (many separate modules) but the brittleness of a monolith due to tight, point-to-point couplings.
+
+```mermaid
+flowchart
+    subgraph Current[Current Problematic Architecture]
+        direction LR
+        Client[Client Action] --> Linda
+        Linda --> Mary
+        Linda --> Clara
+        Clara --> Theodora
+        Mary --> Olivia
+        Theodora --> Laila
+        %% Highlighting a specific tangled flow
+        linkStyle 0,1,2,3,4,5 stroke:red,stroke-width:3px
+    end
+
+    subgraph Proposed[Proposed Event-Driven Architecture]
+        direction TB
+        NewClient[Client Action] --> EventBus[(Central Event Bus)]
+        EventBus --> Linda2[Linda]
+        EventBus --> Clara2[Clara]
+        EventBus --> Mary2[Mary]
+        EventBus --> Theodora2[Theodora]
+        EventBus --> Laila2[Laila]
+        EventBus --> Olivia2[Olivia]
+    end
+```
+
+The diagram above contrasts the current tangled web of dependencies with a cleaner, proposed **event-driven architecture**. In the new model, modules communicate by emitting and listening to events (e.g., `PROPERTY_STATUS_UPDATED`, `NEW_LEAD_QUALIFIED`) without needing direct knowledge of each other.
+
+### 🛠️ Recommended Refactoring Strategy
+Address these flaws with a phased, disciplined approach:
+
+1.  **Phase 1: Establish Foundations (Critical)**
+    *   **Create a Shared Component Library & Design System:** This is the single most important fix for UI consistency. Task **Hazel** and **Aurora** to build a library of reusable components (`<DataGrid>`, `<StatCard>`, `<PrimaryButton>`) with defined tokens for color, spacing, and typography.
+    *   **Consolidate State Management:** Merge duplicate Redux slices. Establish clear rules: core business data in Redux, local UI state in React `useState` or context.
+    *   **Fix Navigation:** Implement a single source of truth for navigation routes, ensuring all 12+ assistants and key modules like `Aurora` are accessible.
+
+2.  **Phase 2: Decouple and Define Contracts**
+    *   **Define Module Interfaces:** For each AI module (Linda, Mary, Clara, etc.), explicitly document its **public API**—what data it consumes and what events or data it emits.
+    *   **Implement a Central Event Bus:** Introduce a lightweight eventing system (Redux middleware or a dedicated library). Start by refactoring one key workflow (e.g., Lead-to-Inventory update) to use events instead of direct function calls.
+
+3.  **Phase 3: Refactor and Incremental Rewrite**
+    *   **Refactor Most Critical Path:** Target the highest-value, most broken workflow (e.g., the sales transaction process from `Clara` to `Theodora` to `Laila`). Rewrite it using the new shared components and event-driven logic.
+    *   **Establish Governance:** Enforce that all new development must use the shared library and communicate via defined APIs/events.
+
+By following this strategy, you will transition from a **fragile, coupled system** to a **resilient, composable platform**. This will drastically reduce bugs, speed up feature development, and allow your AI assistants to truly collaborate.
+
+Would you like to drill down into the specific technical design for the **Shared Component Library** or the **Event Bus implementation** as a next step?
+Your synthesis is **excellent**. You've designed a robust governance and operational framework for Aurora. This directly addresses the core issue of **organic growth without a unified system**. Your prompt effectively makes Aurora the guardian of the technical standards we need.
+
+To make this operational, Aurora requires three critical **context sources** to act as the "single source of truth." Let's connect your framework to our refactoring phases.
+
+### 🧠 Operationalizing Aurora: The Three Required Context Sources
+For Aurora's protocols ("Documentation First," "Holistic Analysis") to work, it needs real-time access to:
+
+1.  **Codebase & Architecture Context**: Direct integration with your repository (via Cursor, GitHub Copilot, or a CLI tool) to analyze current code, the new `assistantRegistry`, and the **shared component library**.
+2.  **Decision & State Context**: Access to the living `ADRs.md` and the **project board**. The board's `Component` and `Aurora Review` fields are her primary tools for enforcing consistency.
+3.  **Runtime/Integration Context (Future State)**: Once implemented, awareness of the **event bus** and the published **module APIs** will allow her to analyze cross-module workflows.
+
+### 📋 Implementation Plan: Integrating Aurora with the Refactoring
+Here is how to deploy Aurora in sync with our three-phase technical plan.
+
+| Phase | Aurora's Primary Mission (Aligned with Your Prompt) | Key Tools & Context to Enable Her |
+| :--- | :--- | :--- |
+| **Phase 1: Foundations** | **Enforce New Standards.** Audit all new code for adherence to the shared component library and the centralized `assistantRegistry`. | 1. Grant access to the component library Storybook. <br> 2. Pin the `assistantRegistry.js` and new Redux slice in her context. <br> 3. Task her to review all PRs tagged with `Component: Frontend`. |
+| **Phase 2: Architectural Pivot** | **Govern Contracts.** Ensure new module APIs are documented and that the event bus is used instead of direct calls. | 1. Provide the `eventBusMiddleware.js` API. <br> 2. Mandate that all new module `API.md` files are committed. <br> 3. Use her to draft Event Flow diagrams for core processes. |
+| **Phase 3: Incremental Refactor** | **Oversee the Blueprint.** Guide the refactor of the "Lead-to-Deal" workflow using the new patterns, ensuring it becomes the model. | 1. Give her the workflow map. <br> 2. Have her generate test cases for the new event-driven flow. <br> 3. Enforce the **PR checklist** via the project board's `Aurora Review` field. |
+
+### 🚀 Immediate Next Steps: Your Week 1-2 Action Plan
+1.  **Set Up the Command Center (This Week)**:
+    *   Create the **GitHub Project** with your specified fields (`Status`, `Priority`, `Component`, `Aurora Review`).
+    *   Initialize the **monorepo for the shared component library** and the central `assistantRegistry.js` file. These are Aurora's first "sources of truth."
+2.  **Formalize Aurora's Access (Next Week)**:
+    *   **If using Cursor**: Input your **Core AI System Prompt** into Cursor's `Project Guidelines` and `Custom Commands`. Upload the `assistantRegistry.js` and the component library's `tokens.config.js` as context files.
+    *   **Create the `ADRs.md` File**: Start it with our first decision: *"ADR-001: Implement a Centralized Assistant Registry and Event-Driven Communication to Decouple Modules."*
+3.  **Launch the First Governed Task**:
+    *   On the project board, create a task: **"Refactor Navigation to use Assistant Registry."** Tag it `Component: Frontend`, `Priority: High`.
+    *   Use Aurora (with her new context) to generate the code change: *"Based on the new registry in `./src/assistantRegistry.js`, refactor the `OwnerDashboard` navigation component to dynamically map over all enabled assistants."*
+
+Your design for Aurora is not just a prompt; it's the **specification for your project's central nervous system**. By methodically giving her the context and authority outlined above, you systematically eliminate the conditions that caused the inconsistencies.
+
+To proceed, **which context source should we build first?** The **component library monorepo** (for UI consistency) or the **GitHub Project with automation** (for process consistency)? The first will define her technical authority; the second will define her operational authority.
+Excellent question. The decisive first step is to **build the GitHub Project with automation**. This is your **foundational control layer**. Establishing Aurora's operational authority *before* her technical authority is crucial for sustainable success.
+
+Here’s your **Day 1 Action Plan** to launch Aurora's command center.
+
+### 🎯 Why the Project Board First?
+You are not just building software; you are instilling a new **culture of governance**. The project board:
+1.  **Creates Process Before Code**: It defines *how* work is tracked, reviewed, and approved, preventing the new component library from being ignored or misused.
+2.  **Gives Aurora Immediate Operational Power**: With the `Aurora Review` field and automation, she has a formal, visible role in every task from the start.
+3.  **Provides Critical Visibility**: It turns your "distributed monolith" chaos into a structured backlog, allowing you to prioritize the component library work effectively.
+
+### 🚀 Day 1: Launch Aurora's Command Center (60-Minute Sprint)
+Follow this sequence to establish operational control.
+
+**Step 1: Create & Configure the GitHub Project**
+1.  In your repository, go to the "Projects" tab and create a **new project** with the **Table** layout. Name it `Aurora Command Center`.
+2.  **Add the custom fields** exactly as you defined them:
+    *   `Status` (Single select: `Backlog`, `In Progress`, `Review`, `Done`)
+    *   `Priority` (Single select: `Low`, `Medium`, `High`, `Critical`)
+    *   `Component` (Single select: `Frontend`, `Backend`, `Database`, `DevOps`, `Architecture`)
+    *   `Aurora Review` (Status: `Pending`, `Approved`, `Changes Requested`)
+
+**Step 2: Implement Foundational Automation**
+In the project's "Workflow" settings, add these two rules:
+*   **Rule 1 (On PR Link):** `When a pull request is linked` → `Set status to "Review"`.
+*   **Rule 2 (On Status Done):** `When status is set to "Done"` → `Move item to "Closed" column after 7 days`.
+This creates the core review cycle without manual updates.
+
+**Step 3: Seed the Board & Formalize the First ADR**
+1.  Create the first **three tasks** as "Draft" issues and add them to the board:
+    *   `[Critical] Create Shared Component Library Monorepo`
+    *   `[High] Refactor Navigation to Use Central Assistant Registry`
+    *   `[Medium] Draft ADR-001: Event-Driven Architecture Decision`
+2.  **Create `ADRs.md`** in your repo root. Log the first decision:
+    ```markdown
+    # Architecture Decision Record: ADR-001
+
+    ## Title: Implement Centralized Registry and Event-Driven Communication
+    **Status:** Proposed | **Date:** [Today's Date]
+
+    **Context:** The application has grown organically with tightly coupled modules (a distributed monolith), leading to fragility and inconsistency.
+
+    **Decision:** We will decouple the system by: 1) A single source of truth for modules (`assistantRegistry.js`), and 2) An event-driven communication layer (Redux event bus) to replace direct function calls.
+
+    **Consequences:**
+    - **Positive:** Enables independent development, testing, and deployment of modules. Improves system resilience and scalability.
+    - **Negative:** Introduces initial complexity of event handling and requires disciplined adherence to the new pattern.
+    ```
+
+### 📈 What This Achieves Immediately
+By the end of Day 1, you will have:
+*   **A Single Source of Truth for Work:** All tasks are now visible, categorized, and prioritized in one place.
+*   **Aurora's Role Formalized:** The `Aurora Review` field and auto-PR rule give her a mandated gatekeeping role.
+*   **Decision Trail Started:** `ADR-001` documents the "why" behind the upcoming major refactor, a critical reference for all future work.
+*   **Clarity for Next Sprint:** The board clearly shows that the **Component Library** is the next critical technical task.
+
+### ✅ Next Steps After Day 1
+With the command center active:
+1.  **Assign** the component library task and use the board to track its subtasks (setup monorepo, build Button, build Card, etc.).
+2.  **Configure Cursor** with your Aurora prompt and **upload `ADRs.md` and the project board's URL** as her first context files. Her first instruction: "Always check the Aurora Command Center project board for current priorities and context."
+3.  **Begin work on the `assistantRegistry.js`**, using the board's `Aurora Review` process for the resulting pull request.
+
+This approach ensures that when you build the component library—your **primary technical source of truth**—it is developed within a governed process that guarantees its adoption and consistency.
+Excellent technical specification. This is the **concrete business application** that must be built atop the architecture we've been analyzing. The critical insight is this: attempting to implement your RBAC, multi-company dashboards, and complex workflows **on the current distributed monolith will fail**. It will multiply the coupling and inconsistency problems.
+
+Here is the analysis connecting your functional spec to our architectural blueprint, showing **why the refactor is now a business imperative**.
+
+### 🚨 Why Your Spec Demands the New Architecture
+Your requirements introduce **system-wide complexity** that the current tangled design cannot support.
+
+| Your Requirement | Problem in Current Architecture | Consequence |
+| :--- | :--- | :--- |
+| **Multi-Company RBAC** | Permission logic would be scattered and duplicated across `Linda` (CRM), `Mary` (Inventory), `Clara` (Leads). | A new user role would require changes in 5+ places, leading to security holes and inconsistent rules. |
+| **Global Admin Search** | Would require direct, point-to-point queries to every module's database. | Cripplingly slow, impossible to maintain, and breaks if any module's schema changes. |
+| **Unified Activity Log** | No central event system to capture "listing created," "contract signed" across modules. | Cannot be built without creating more brittle dependencies between modules. |
+| **Agent/Client Dashboards** | Each dashboard (`SalesAgentView`, `TenantView`) would become a new, tightly coupled "micro-module." | Exponentially increases the tangled web, making the system un-governable. |
+
+### ✅ How the New Architecture Enables Your Spec
+Our phased refactoring directly creates the foundation for your features. **Aurora's role is to govern this build.**
+
+| Our Architectural Phase | Enables Your Specification By... | First Deliverable for Your Spec |
+| :--- | :--- | :--- |
+| **1. Foundations**<br>(Shared Lib, State, Registry) | Providing the consistent UI components (`<DataGrid>`, `<Badge>`) and single user/role state needed for all dashboards. | A **PermissionBadge** component and a normalized `usersSlice` in Redux. |
+| **2. Architectural Pivot**<br>(Event Bus, APIs) | Creating the pipes for system-wide events (`USER_ROLE_CHANGED`, `PROPERTY_LISTED`) that the Admin Dashboard and Activity Log need. | The **event bus** and the `emitEvent('PROPERTY_VIEWED', {user, id})` call for your property slider. |
+| **3. Incremental Refactor** | Allowing you to build the **Company Owner Admin Dashboard** as a new, decoupled module that listens to events from all others. | The "Global Search" as an event-powered service that queries a centralized index, not individual modules. |
+
+### 🗺️ Integrated Roadmap: Spec + Architecture
+Here is your updated implementation plan, merging business features with technical overhaul.
+
+**Phase 1: Foundational Data & Governance (Weeks 1-2)**
+*   **Aurora's Task:** Generate the **database schema** for your RBAC, linking Users to Companies to Roles. Create the dummy data scripts.
+*   **Technical Work:** Build the **shared component library** starting with the core property `Card`, `Badge`, and **Image Slider** you specified. Implement the central `assistantRegistry`.
+*   **Outcome:** A stable foundation of clean data and UI components to build upon.
+
+**Phase 2: Core Listings & Event-Driven Core (Weeks 3-5)**
+*   **Aurora's Task:** Oversee the build of the property listing pages using the new library. Draft the **Event Catalog** (e.g., `LISTING_CREATED`, `INQUIRY_SUBMITTED`).
+*   **Technical Work:** Implement the **event bus**. Refactor the property submission flow (likely involving `Mary`/`Clara`) to use events. Build the **tabbed property detail page**.
+*   **Outcome:** The core user journey is live, decoupled, and emitting the events needed for advanced features.
+
+**Phase 3: Dashboards & Admin Control (Weeks 6-8)**
+*   **Aurora's Task:** Design the **Company Owner Dashboard** widgets, ensuring they consume data only via the event bus or defined APIs.
+*   **Technical Work:** Build the `/admin` dashboard as a new module. Implement the **Global Search** as an event-aware service. Connect the **Activity Log** to the event stream.
+*   **Outcome:** The Company Owner has powerful, real-time control without creating fragile backend dependencies.
+
+### 🚀 Immediate Next Step: The Pilot Feature
+You asked for a specific component. Do not build the slider in isolation. Instead, build the **Property Card** as the **pilot for the entire new system**.
+
+1.  **Create it in the new Shared Component Library** (`/ui-components/src/PropertyCard.tsx`).
+2.  **Use Design Tokens** for color, spacing, and typography.
+3.  **Make it consume data via a clear Prop interface**, not a direct module link.
+4.  **Task Aurora** with generating the initial code for this component, enforcing these standards via the **GitHub Project board** you set up.
+
+This single component becomes the blueprint for all future UI work and proves the value of the new architecture.
+
+**To proceed, which is the higher business priority?**
+1.  **Getting the public property listings page live** with the new UI (focusing on Phase 2).
+2.  **Empowering the Company Owner** with the admin dashboard (focusing on Phase 3).
+
+Your choice will determine where we direct the first refactoring sprint after the foundational library is built.
+
+Excellent. We are now at the **execution phase**. The UI is broken, and you need a precise prompt to orchestrate your AI team (Zoe for UI, Aurora for Architecture) to fix it *while building toward* the consistent design system we planned.
+
+Here is the integrated Replit Agent prompt. It treats the visual breakdown as a symptom of the underlying architectural issue and tasks the team with a coordinated fix.
+
+### 🤖 **Replit Agent Prompt: "Project Phoenix - UI Triage & Design System Foundation"**
+
+**Core Mission:** You are the **Project Lead** for White Caves Real Estate LLC's MERN stack application, currently deployed on Vercel with critical, inconsistent UI bugs (overlapping elements, hidden components, broken layouts). Your immediate goal is to triage and fix these visual issues. Your strategic goal is to use this crisis to lay the foundation for a permanent, scalable **Design System**. You will coordinate specialists **Zoe** (UI/Design Engineer) and **Aurora** (CTO/Systems Architect), ensuring all work is documented in the **GitHub Project Board** (`Aurora Command Center`).
+
+**Part 1: Triage & Immediate Stabilization (Zoe's Priority)**
+**Instruction to Zoe:** "Zoe, perform a systematic UI audit and emergency fix. Follow this exact sequence and log each step in a GitHub Issue titled 'UI Triage Audit - [Date]'."
+
+1.  **Diagnose Root Causes (First 1 hour):**
+    *   **CSS Reset/Audit:** Check for missing or conflicting CSS resets (e.g., `margin: 0; padding: 0; box-sizing: border-box;`). Use browser DevTools to inspect computed styles on broken components.
+    *   **Layout Engine Inspection:** Identify if the issue is with **Flexbox** (incorrect `flex`, `wrap`, `shrink/grow`), **CSS Grid** (misaligned tracks), or absolute/fixed positioning causing overlaps.
+    *   **Z-Index & Stacking Context:** Map the `z-index` wars. Create a simple log of components with `position: absolute/relative/fixed` and their `z-index` values.
+    *   **Viewport & Responsive Units:** Check for misuse of `vw/vh` causing overflow, or fixed `px` values breaking responsiveness.
+
+2.  **Implement Universal Fixes (Next 2 hours):**
+    *   **Enforce a CSS Reset:** If missing, inject a modern reset (like `Josh Comeau's Custom CSS Reset` or `modern-normalize`) into the global `index.css`.
+    *   **Establish a Core Layout Utility Class:** Create a small set of global utility classes in `src/styles/utilities.css` for common issues:
+        ```css
+        .fix-overflow { overflow: hidden; }
+        .clear-float { clear: both; }
+        .z-index-nav { z-index: 1000; }
+        .z-index-modal { z-index: 2000; }
+        .min-h-screen { min-height: 100vh; }
+        ```
+    *   **Fix One Critical Page:** Choose the most important public page (e.g., Property Listings). Isolate its main container and ensure it uses a reliable layout model (e.g., Flexbox with `flex-direction: column` for stacking).
+
+**Part 2: Architectural Foundation & Governance (Aurora's Priority)**
+**Instruction to Aurora:** "Aurora, your CTO protocols are active. Oversee Zoe's work and use this triage to initiate the permanent Design System. Prevent future inconsistency."
+
+1.  **Create Design Tokens (The Single Source of Truth):**
+    *   Direct Zoe to create `src/styles/design-tokens.js` (or `:root` in CSS). This file must define:
+        ```css
+        :root {
+          /* Color Palette */
+          --color-primary: #007bff; /* Brand Blue */
+          --color-secondary: #6c757d;
+          --color-success: #28a745;
+          --color-background: #f8f9fa;
+          --color-surface: #ffffff;
+          --color-text: #212529;
+
+          /* Spacing Scale */
+          --space-unit: 0.25rem;
+          --space-1: calc(1 * var(--space-unit)); /* 4px */
+          --space-2: calc(2 * var(--space-unit)); /* 8px */
+          --space-4: calc(4 * var(--space-unit)); /* 16px */
+
+          /* Typography */
+          --font-family-sans: 'Segoe UI', system-ui, sans-serif;
+          --font-size-base: 1rem;
+          --line-height-tight: 1.25;
+
+          /* Layout */
+          --max-container-width: 1200px;
+          --border-radius: 0.375rem;
+        }
+        ```
+    *   **Mandate:** All new CSS must use these tokens (e.g., `color: var(--color-primary); margin: var(--space-4);`).
+
+2.  **Initialize the Shared Component Library (First Brick):**
+    *   Create the first atomic component: `Button`. It must:
+        *   Live in `src/components/ui/Button/Button.jsx`.
+        *   Use only the design tokens for styling.
+        *   Accept `variant` props (primary, secondary).
+        *   Be documented in a `README.md` within its folder.
+    *   **Log this as ADR-002:** "We adopt a Design Token and Atomic Component methodology to ensure visual consistency."
+
+**Part 3: Coordination & Records Protocol**
+*   **Daily Sync Format:** All agents must summarize work in the **GitHub Project Board** under the relevant task (e.g., "Fix Property Card Overlap," "Create Design Tokens").
+    *   **Format:** `[Agent Name] - [Date]: [Action Taken]. [Link to File/Commit]. [Next Step].`
+*   **Update the `assistantRegistry.js`:** Ensure `Zoe` and `Aurora` are registered with their roles: `{ id: 'zoe', role: 'UI_Engineer', scope: 'design-system' }`.
+*   **Vercel Preview:** Each significant fix must be committed, pushed, and verified on the **Vercel Preview Deployment** before merging to main.
+
+**Success Metrics:**
+1.  **Within 4 hours:** No critical overlapping/hiding elements on the main public page.
+2.  **Within 24 hours:** `design-tokens.js` is created and used in at least 3 components.
+3.  **Within 48 hours:** The first shared UI component (`Button`) is built, documented, and used in one page.
+
+---
+
+### 🚀 **Your Immediate Action Items**
+1.  **Copy the entire prompt above** and provide it to your **Replit Agent**.
+2.  **Ensure your GitHub Project Board** (`Aurora Command Center`) is active and has these columns: `Triage Backlog`, `In Progress (UI)`, `In Progress (Arch)`, `Review`, `Done`.
+3.  **Create the first three tasks** on the board:
+    *   `[Critical] Triage and fix component overlap on main listing page.` (Assignee: Zoe)
+    *   `[High] Create Design Tokens and global CSS reset.` (Assignee: Zoe, Reviewer: Aurora)
+    *   `[High] Build and document shared Button component.` (Assignee: Zoe, Reviewer: Aurora)
+
+This prompt transforms a crisis into a foundation-laying project. It forces the team to work together with defined roles, creating the **Design System** as the solution to the visual bugs, not just a patch.
+
+**Would you like me to elaborate on the specific CSS reset code or the exact structure of the `Button` component for the team?**
+
+To upgrade your AI assistants to a modern, powerful standard, we need to move them from simple chat interfaces to **autonomous, specialized agents** integrated into your new event-driven platform. This upgrade is the "smart layer" of your application.
+
+Here is a strategic plan to modernize each assistant, structured by their business function, and integrated into the governance system we've established.
+
+### 🎯 Modernization Strategy: From Tools to Integrated Agents
+The goal is to evolve each assistant to have **specialized intelligence, proactive capabilities, and system-wide awareness** via the event bus.
+
+### 🤖 AI Assistant Modernization Blueprint
+Below is the upgrade plan for each core assistant. "Phase 1" capabilities can be built immediately; "Phase 2" leverages the future event-driven architecture.
+
+| Assistant (Core Domain) | Modern Role & Intelligence Upgrade | Key Modern Features & Functions (Phase 1 → Phase 2) |
+| :--- | :--- | :--- |
+| **Aurora (CTO/Architect)** | **AI Systems Architect & DevSecOps Lead** | **1. Code Analysis:** PR review via GitHub app, security vulnerability scanning.<br>**2. Architecture Governance:** Auto-generates/updates ADRs from decisions.<br>**3. Performance Monitor:** Analyzes Vercel logs, suggests optimizations. |
+| **Linda (CRM/WhatsApp)** | **Proactive Relationship Orchestrator** | **1. Omnichannel Inbox:** Unifies WhatsApp, email, portal inquiries.<br>**2. Smart Follow-ups:** Suggests follow-ups based on lead activity.<br>**3. Deal Radar:** Listens for `DEAL_STALLED` events, suggests interventions. |
+| **Mary (Inventory/Listings)** | **Dynamic Inventory & Market Intelligence Agent** | **1. Automated Listings:** Generates draft listings from property data.<br>**2. Price Intelligence:** Suggests price adjustments using market comps.<br>**3. Virtual Staging:** Integrates with AI imaging APIs for virtual furniture. |
+| **Clara (Leads & Qualifying)** | **Predictive Lead Scoring & Routing Agent** | **1. Lead Scoring:** Auto-scores leads based on source, budget, engagement.<br>**2. Smart Routing:** Routes high-intent leads via `HIGH_VALUE_LEAD` event.<br>**3. Profile Enrichment:** Uses APIs to enrich lead data from phone/email. |
+| **Sophia (Sales Transactions)** | **Intelligent Sales Facilitator & Negotiator** | **1. Document Pre-Fill:** Auto-fills contract templates with deal data.<br>**2. Negotiation Playbook:** Suggests counter-offer terms.<br>**3. Timeline Tracker:** Monivers transaction milestones, alerts on delays. |
+| **Theodora (Legal & Compliance)** | **Regulatory Compliance Sentinel** | **1. Clause Library:** Maintains a smart repository of approved clauses.<br>**2. Document Audit:** Reviews uploaded contracts for missing clauses.<br>**3. Regulation Tracker:** Flags new RERA/ Dubai Land Dept updates. |
+| **Olivia (Marketing & Promotion)** | **AI Content Strategist & Campaign Manager** | **1. Content Calendar:** Plans and drafts social/blog posts.<br>**2. Ad Copy Generator:** Creates targeted ad variants for listings.<br>**3. Campaign Analyst:** Tracks `PROPERTY_VIEWED` events, measures campaign ROI. |
+| **Daisy (Virtual Tours & Media)** | **Immersive Experience Architect** | **1. Tour Analytics:** Tracks hotspots in virtual tours.<br>**2. Media Optimizer:** Auto-tags, crops, and optimizes listing images.<br>**3. 3D Flow Generator:** Suggests optimal paths for 3D tours. |
+
+### 🧩 The "Integration Layer": Making Assistants Collaborate
+Their power multiplies when they communicate via the **event bus**. For example:
+1.  **A `PROPERTY_LISTED` event** from `Mary` triggers:
+    *   `Olivia` to draft a social media post.
+    *   `Daisy` to check image quality.
+    *   `Aurora` to log a new asset in the system.
+2.  **A `LEAD_CONTACTED` event** from `Linda` triggers:
+    *   `Clara` to score and prioritize the lead.
+    *   `Sophia` to prepare a template viewing agreement.
+
+### 🛠️ Implementation Sequence & Agent Governance
+This upgrade must be managed as a disciplined project by `Aurora`.
+
+**Phase 1: Foundational Upgrades (Next 4 Weeks)**
+*   **Sprint 1:** **Upgrade `Aurora` & Establish Governance.**
+    *   Task: Implement Aurora's PR review function via a GitHub App.
+    *   Outcome: All subsequent assistant upgrades are reviewed via this process.
+*   **Sprint 2:** **Upgrade `Linda` (CRM) & `Clara` (Leads).**
+    *   Task: Build their unified inbox and lead scoring model.
+    *   Outcome: The core lead management loop is modernized.
+*   **Sprint 3:** **Upgrade `Mary` (Inventory) & `Olivia` (Marketing).**
+    *   Task: Connect listing creation to automated social draft generation.
+    *   Outcome: Listing launch becomes a faster, coordinated workflow.
+
+**Phase 2: Advanced Integration & Automation (Following the Core Architecture)**
+*   **Sprint 4+:** Roll out the **event bus**. Refactor the first two upgraded assistants (`Linda`, `Clara`) to emit and consume events.
+*   **Continuous:** With each new feature in the main app (e.g., new contract module), task the relevant assistant (`Sophia`, `Theodora`) with developing a parallel intelligent feature.
+
+### 📋 Protocol for Assistant Development & Records
+**Instruction for Aurora's Team:** "All assistant upgrades must follow this protocol and be tracked in the `Aurora Command Center` GitHub Project."
+
+1.  **Feature Card:** Each new AI capability is a **Project Task** with fields: `Assistant`, `Feature`, `Status`, `Depends on (Event/API)`.
+2.  **Specification Doc:** Before coding, create a brief `SPEC.md` in the assistant's directory describing the feature, its triggers, and its outputs.
+3.  **Integration Test:** The feature must be tested with a mock event (e.g., `MOCK_LEAD_CREATED`) to verify it interacts correctly with the system.
+4.  **Update Registry:** The `assistantRegistry.js` must be updated with the assistant's new `capabilities: []` array.
+
+### 🚀 Your Immediate Next Steps
+1.  **Prioritize:** On your **GitHub Project Board**, create a new **"AI Assistant Modernization"** view.
+2.  **First Task:** Add the first card: **"[Sprint 1] Upgrade Aurora with GitHub PR Review & ADR Logging."**
+3.  **Provide Context:** Give your development agents (in Replit or Cursor) access to this blueprint and the project board. Their directive: "Implement upgrades in the sequence and manner defined in the project board, following Aurora's governance."
+
+By following this plan, you systematically transform your assistants into a **coordinated AI team** that actively drives your business processes, making your platform significantly more intelligent and efficient.
+
+**Would you like the detailed specification for the first upgrade: "Implementing Aurora's GitHub App for PR Review"?**
+
+
+
+
