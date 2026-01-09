@@ -202,12 +202,16 @@ const AssistantHubSidebar = ({
                           <div className="assistant-icon" style={{ background: `${assistant.color}20` }}>
                             <Icon size={18} style={{ color: assistant.color }} />
                           </div>
-                          <button 
+                          <span 
                             className={`favorite-btn ${isFavorite ? 'active' : ''}`}
                             onClick={(e) => handleFavoriteToggle(e, assistant.id)}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleFavoriteToggle(e, assistant.id); } }}
+                            role="button"
+                            tabIndex={0}
+                            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                           >
                             <Star size={14} fill={isFavorite ? 'currentColor' : 'none'} />
-                          </button>
+                          </span>
                         </div>
                         
                         <div className="card-content">
