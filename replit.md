@@ -11,9 +11,14 @@ Preferred communication style: Simple, everyday language.
 ### Frontend
 - **Framework**: React 18 with Vite, utilizing Redux Toolkit for state management.
 - **UI/UX**: Custom React components with CSS modules, featuring a premium dark mode, glassmorphism styling, mobile responsiveness, interactive elements (calculators, advanced search, property comparison, interactive SVG Dubai map), and full-screen galleries. Role-based routing is implemented.
-- **Theming**: Consistent brand theme with a Red and White color scheme, Montserrat/Open Sans typography, and comprehensive light/dark theme support.
+- **Theming**: Consistent brand theme with a Red and White color scheme (#D32F2F primary, white backgrounds), Montserrat/Open Sans typography, and comprehensive light/dark theme support.
 - **Design System**: Complete UI component library with Button, Input, Card, and Badge components featuring variants, sizes, states, and theme support, managed by an enhanced design token system for programmatic access to styles.
 - **SEO Optimization**: Comprehensive meta tags, structured data, and performance optimizations.
+- **Two-Tier Navigation System (Project Crimson)**:
+  - **MainNavBar (Public)**: For website visitors - logo, public nav links (Home/Properties/Services/About/Contact), Buy/Rent/Sell dropdowns, Sign In button. No search, theme toggle, notifications, or profile.
+  - **DashboardHeader (Internal)**: For authenticated company users - logo, Dashboard tabs (Dashboard/AI Command/AI Hub), search bar with Cmd+K shortcut, theme toggle, notifications bell, user profile dropdown.
+  - **CrimsonSidebar**: 40% screen width (resizable 25-50%), drag-to-resize with localStorage persistence, user profile section, ZOE Executive AI command hub, AI assistants grouped by department, management/integration/system nav sections.
+  - **DashboardShell**: Layout wrapper using DashboardHeader and CrimsonSidebar with dynamic margin based on sidebar width.
 
 ### Backend
 - **Framework**: Express.js, providing a RESTful API with organized routes.
