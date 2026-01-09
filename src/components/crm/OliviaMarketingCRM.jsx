@@ -422,7 +422,7 @@ const OliviaMarketingCRM = () => {
                 <span>Scoring Algorithm</span>
               </div>
               <div className="formula-content">
-                <code>Score = (Inquiries × {selectionCriteria.inquiryWeight}) + (Views × {selectionCriteria.viewWeight}) + (Quality × {selectionCriteria.qualityWeight}) + (New Listing × {selectionCriteria.newListingBonus})</code>
+                <code>Score = (Inquiries × {selectionCriteria.inquiriesWeight}) + (Views × {selectionCriteria.viewsWeight}) + (Quality × {selectionCriteria.qualityWeight}) + (New Listing × {selectionCriteria.isNewBonus})</code>
               </div>
               {featuredLastUpdated && (
                 <div className="last-selection">

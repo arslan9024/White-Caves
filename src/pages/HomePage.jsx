@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import ClickToChat from '../components/ClickToChat';
 import Hero from '../components/homepage/Hero';
 import Features from '../components/homepage/Features';
+import FeaturedProperties from '../components/homepage/FeaturedProperties';
 import Locations from '../components/homepage/Locations';
 import Team from '../components/homepage/Team';
 import Testimonials from '../components/homepage/Testimonials';
@@ -119,6 +120,7 @@ export default function HomePage() {
       <div className="home-page">
         <Hero onPropertyClick={handlePropertyClick} />
         <Features />
+        <FeaturedProperties />
         <DubaiMap onLocationClick={handlePropertyClick} />
         <Locations />
         <InteractiveMap />
