@@ -1,0 +1,1633 @@
+Current Issues Identified
+1. Duplicate Redux State Management (Critical)
+Found two overlapping slices: aiAssistantsSlice.js (only 5 assistants) and aiAssistantDashboardSlice.js (14 assistants)
+Only the dashboard slice is connected to the store - the other is orphaned code
+2. Architecture Gaps
+No centralized assistant registry (currently duplicated in sidebar component and Redux)
+No event-driven communication between modules
+Tight coupling between assistants (Linda → Mary → Clara dependencies)
+3. Missing Critical Systems (from attached files)
+Security & RBAC enhancement needed
+Audit trail & activity logging
+New AI assistants: Evangeline (Legal), Sentinel (Property Monitoring), Hunter (Prospecting)
+Unified notification center
+Design tokens & shared component library
+4. Code Cleanup Needed
+Remove orphaned aiAssistantsSlice.js
+Consolidate assistant registry to single source of truth
+Recommended Upgrade Plan
+I'll structure this into phases based on priority:
+Phase 1 - Foundation & Cleanup:
+Remove duplicate Redux slice
+Create centralized assistantRegistry.js as single source of truth
+Establish design tokens system
+Fix any auth/build issues
+Phase 2 - State Consolidation:
+Merge overlapping state patterns
+Implement proper event bus middleware
+Add audit logging
+Phase 3 - New AI Assistants:
+Add Evangeline (Legal AI)
+Add Sentinel (Property Monitoring)
+Add Hunter (Prospecting)
+Phase 4 - Documentation & Testing:
+Update Aurora with new architecture
+Update replit.md with assistant inventory
+Run build/deploy verification
+Would you like me to proceed with this comprehensive upgrade plan? I can create a detailed task list for implementation.
+Here is the production-ready code to start your UI refactoring. Implement these in order.
+
+### 1. CSS Reset (`src/styles/reset.css`)
+Create this file and import it at the top of your main `index.js` or `App.js`.
+
+```css
+/* Modern CSS Reset (based on Josh Comeau's custom reset) */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-size-adjust: 100%;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  font-family: var(--font-family-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  background-color: var(--color-background, #f8f9fa);
+  color: var(--color-text, #212529);
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input, button, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+  font-weight: normal;
+}
+
+/* Remove list styles on ul, ol elements */
+ul, ol {
+  list-style: none;
+}
+
+/* Remove default table spacing */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* Ensure consistent focus styles */
+:focus-visible {
+  outline: 2px solid var(--color-primary, #007bff);
+  outline-offset: 2px;
+}
+
+/* Remove animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+### 2. Design Tokens (`src/styles/design-tokens.js`)
+Create this file to establish your single source of truth for styling.
+
+```javascript
+/**
+ * White Caves Real Estate Design Tokens
+ * Single source of truth for all visual design values
+ * Usage: `color: ${tokens.colors.primary};` or CSS custom properties
+ */
+
+export const tokens = {
+  // Color Palette
+  colors: {
+    // Primary Brand Colors
+    primary: '#007bff',
+    primaryDark: '#0056b3',
+    primaryLight: '#e6f2ff',
+    
+    // Neutral Colors
+    background: '#f8f9fa',
+    surface: '#ffffff',
+    surfaceHover: '#f5f5f5',
+    border: '#dee2e6',
+    
+    // Text Colors
+    text: '#212529',
+    textSecondary: '#6c757d',
+    textInverse: '#ffffff',
+    
+    // Semantic Colors
+    success: '#28a745',
+    warning: '#ffc107',
+    error: '#dc3545',
+    info: '#17a2b8',
+  },
+  
+  // Spacing Scale (based on 4px unit)
+  spacing: {
+    unit: 4, // 4px base unit
+    0: '0',
+    1: '0.25rem',  // 4px
+    2: '0.5rem',   // 8px
+    3: '0.75rem',  // 12px
+    4: '1rem',     // 16px
+    6: '1.5rem',   // 24px
+    8: '2rem',     // 32px
+    12: '3rem',    // 48px
+    16: '4rem',    // 64px
+  },
+  
+  // Typography
+  typography: {
+    fontFamily: {
+      sans: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      mono: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace",
+    },
+    fontSize: {
+      xs: '0.75rem',   // 12px
+      sm: '0.875rem',  // 14px
+      base: '1rem',    // 16px
+      lg: '1.125rem',  // 18px
+      xl: '1.25rem',   // 20px
+      '2xl': '1.5rem', // 24px
+      '3xl': '1.875rem', // 30px
+      '4xl': '2.25rem',  // 36px
+    },
+    fontWeight: {
+      normal: 400,
+      medium: 500,
+      semibold: 600,
+      bold: 700,
+    },
+    lineHeight: {
+      tight: 1.25,
+      normal: 1.5,
+      relaxed: 1.75,
+    },
+  },
+  
+  // Border Radius
+  borderRadius: {
+    none: '0',
+    sm: '0.125rem',  // 2px
+    default: '0.375rem', // 6px
+    lg: '0.5rem',    // 8px
+    xl: '0.75rem',   // 12px
+    full: '9999px',
+  },
+  
+  // Shadows
+  shadows: {
+    sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+    default: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+  },
+  
+  // Z-index scale
+  zIndex: {
+    base: 0,
+    dropdown: 100,
+    sticky: 200,
+    modalBackdrop: 300,
+    modal: 400,
+    popover: 500,
+    tooltip: 600,
+    toast: 700,
+  },
+  
+  // Breakpoints (mobile-first)
+  breakpoints: {
+    sm: '640px',
+    md: '768px',
+    lg: '1024px',
+    xl: '1280px',
+    '2xl': '1536px',
+  },
+};
+
+// Export as CSS custom properties for global use
+export function createGlobalStyles() {
+  const styleSheet = document.createElement('style');
+  let cssVariables = ':root {\n';
+  
+  // Convert tokens to CSS custom properties
+  function flattenTokens(obj, prefix = '') {
+    for (const [key, value] of Object.entries(obj)) {
+      const newPrefix = prefix ? `${prefix}-${key}` : `--${key}`;
+      
+      if (typeof value === 'object' && !Array.isArray(value)) {
+        flattenTokens(value, newPrefix);
+      } else {
+        cssVariables += `  ${newPrefix}: ${value};\n`;
+      }
+    }
+  }
+  
+  flattenTokens(tokens);
+  cssVariables += '}';
+  styleSheet.textContent = cssVariables;
+  
+  return styleSheet;
+}
+
+// Helper function to use in styled-components or emotion
+export function token(path) {
+  const keys = path.split('.');
+  let result = tokens;
+  
+  for (const key of keys) {
+    if (result[key] === undefined) {
+      console.warn(`Design token "${path}" not found`);
+      return '';
+    }
+    result = result[key];
+  }
+  
+  return result;
+}
+```
+
+### 3. Button Component (`src/components/ui/Button/Button.jsx`)
+Create this as your first foundational UI component.
+
+```jsx
+import React from 'react';
+import PropTypes from 'prop-types';
+import { tokens } from '../../../styles/design-tokens';
+
+/**
+ * White Caves Design System - Button Component
+ * A foundational button component with multiple variants and states
+ * 
+ * @component
+ * @example
+ * <Button variant="primary" size="md">Click me</Button>
+ * <Button variant="outline" size="sm" isLoading>Loading...</Button>
+ */
+const Button = React.forwardRef(({
+  children,
+  variant = 'primary',
+  size = 'md',
+  isLoading = false,
+  disabled = false,
+  fullWidth = false,
+  type = 'button',
+  onClick,
+  className = '',
+  leftIcon,
+  rightIcon,
+  ...props
+}, ref) => {
+  // Base styles that apply to all buttons
+  const baseStyles = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: tokens.typography.fontWeight.medium,
+    fontFamily: tokens.typography.fontFamily.sans,
+    lineHeight: tokens.typography.lineHeight.tight,
+    border: '1px solid transparent',
+    borderRadius: tokens.borderRadius.default,
+    transition: 'all 150ms ease-in-out',
+    outline: 'none',
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    opacity: disabled ? 0.6 : 1,
+    width: fullWidth ? '100%' : 'auto',
+    position: 'relative',
+    userSelect: 'none',
+  };
+
+  // Size variations
+  const sizeStyles = {
+    xs: {
+      padding: `${tokens.spacing[1]} ${tokens.spacing[2]}`,
+      fontSize: tokens.typography.fontSize.xs,
+      gap: tokens.spacing[1],
+    },
+    sm: {
+      padding: `${tokens.spacing[2]} ${tokens.spacing[3]}`,
+      fontSize: tokens.typography.fontSize.sm,
+      gap: tokens.spacing[2],
+    },
+    md: {
+      padding: `${tokens.spacing[2]} ${tokens.spacing[4]}`,
+      fontSize: tokens.typography.fontSize.base,
+      gap: tokens.spacing[2],
+    },
+    lg: {
+      padding: `${tokens.spacing[3]} ${tokens.spacing[6]}`,
+      fontSize: tokens.typography.fontSize.lg,
+      gap: tokens.spacing[3],
+    },
+  };
+
+  // Variant styles
+  const variantStyles = {
+    primary: {
+      backgroundColor: tokens.colors.primary,
+      color: tokens.colors.textInverse,
+      borderColor: tokens.colors.primary,
+    },
+    secondary: {
+      backgroundColor: tokens.colors.surface,
+      color: tokens.colors.text,
+      borderColor: tokens.colors.border,
+    },
+    outline: {
+      backgroundColor: 'transparent',
+      color: tokens.colors.primary,
+      borderColor: tokens.colors.primary,
+    },
+    ghost: {
+      backgroundColor: 'transparent',
+      color: tokens.colors.text,
+      borderColor: 'transparent',
+    },
+    danger: {
+      backgroundColor: tokens.colors.error,
+      color: tokens.colors.textInverse,
+      borderColor: tokens.colors.error,
+    },
+    success: {
+      backgroundColor: tokens.colors.success,
+      color: tokens.colors.textInverse,
+      borderColor: tokens.colors.success,
+    },
+  };
+
+  // Hover states
+  const hoverStyles = {
+    primary: {
+      '&:hover:not(:disabled)': {
+        backgroundColor: tokens.colors.primaryDark,
+        transform: 'translateY(-1px)',
+        boxShadow: tokens.shadows.default,
+      },
+    },
+    secondary: {
+      '&:hover:not(:disabled)': {
+        backgroundColor: tokens.colors.surfaceHover,
+        transform: 'translateY(-1px)',
+        boxShadow: tokens.shadows.sm,
+      },
+    },
+    outline: {
+      '&:hover:not(:disabled)': {
+        backgroundColor: tokens.colors.primaryLight,
+        transform: 'translateY(-1px)',
+      },
+    },
+    ghost: {
+      '&:hover:not(:disabled)': {
+        backgroundColor: tokens.colors.surfaceHover,
+        transform: 'translateY(-1px)',
+      },
+    },
+    danger: {
+      '&:hover:not(:disabled)': {
+        backgroundColor: '#c53030',
+        transform: 'translateY(-1px)',
+        boxShadow: tokens.shadows.default,
+      },
+    },
+    success: {
+      '&:hover:not(:disabled)': {
+        backgroundColor: '#1f9d55',
+        transform: 'translateY(-1px)',
+        boxShadow: tokens.shadows.default,
+      },
+    },
+  };
+
+  // Focus styles for accessibility
+  const focusStyles = {
+    '&:focus-visible': {
+      outline: `2px solid ${tokens.colors.primary}`,
+      outlineOffset: '2px',
+      boxShadow: `0 0 0 3px ${tokens.colors.primaryLight}`,
+    },
+  };
+
+  // Active state
+  const activeStyles = {
+    '&:active:not(:disabled)': {
+      transform: 'translateY(0)',
+    },
+  };
+
+  // Combine all styles
+  const buttonStyles = {
+    ...baseStyles,
+    ...sizeStyles[size],
+    ...variantStyles[variant],
+    ...hoverStyles[variant],
+    ...focusStyles,
+    ...activeStyles,
+  };
+
+  const handleClick = (e) => {
+    if (!disabled && !isLoading && onClick) {
+      onClick(e);
+    }
+  };
+
+  return (
+    <button
+      ref={ref}
+      type={type}
+      style={buttonStyles}
+      className={`whitecaves-button ${className}`}
+      disabled={disabled || isLoading}
+      onClick={handleClick}
+      aria-busy={isLoading}
+      {...props}
+    >
+      {isLoading && (
+        <span 
+          style={{ 
+            marginRight: tokens.spacing[2],
+            animation: 'spin 1s linear infinite',
+            width: '1em',
+            height: '1em',
+            border: `2px solid currentColor`,
+            borderTopColor: 'transparent',
+            borderRadius: '50%',
+            display: 'inline-block',
+          }}
+          aria-hidden="true"
+        />
+      )}
+      
+      {!isLoading && leftIcon && (
+        <span style={{ marginRight: tokens.spacing[2] }} aria-hidden="true">
+          {leftIcon}
+        </span>
+      )}
+      
+      <span style={{ opacity: isLoading ? 0.7 : 1 }}>
+        {children}
+      </span>
+      
+      {!isLoading && rightIcon && (
+        <span style={{ marginLeft: tokens.spacing[2] }} aria-hidden="true">
+          {rightIcon}
+        </span>
+      )}
+    </button>
+  );
+});
+
+Button.propTypes = {
+  /** Button content */
+  children: PropTypes.node.isRequired,
+  /** Visual style variant */
+  variant: PropTypes.oneOf(['primary', 'secondary', 'outline', 'ghost', 'danger', 'success']),
+  /** Size of the button */
+  size: PropTypes.oneOf(['xs', 'sm', 'md', 'lg']),
+  /** Shows loading spinner and disables button */
+  isLoading: PropTypes.bool,
+  /** Disables the button */
+  disabled: PropTypes.bool,
+  /** Makes button full width */
+  fullWidth: PropTypes.bool,
+  /** HTML button type */
+  type: PropTypes.oneOf(['button', 'submit', 'reset']),
+  /** Click handler */
+  onClick: PropTypes.func,
+  /** Additional CSS class */
+  className: PropTypes.string,
+  /** Icon to display on the left */
+  leftIcon: PropTypes.node,
+  /** Icon to display on the right */
+  rightIcon: PropTypes.node,
+};
+
+Button.displayName = 'Button';
+
+export default Button;
+```
+
+### 4. Button Storybook Documentation (`src/components/ui/Button/Button.stories.jsx`)
+Create this to document your component in Storybook.
+
+```jsx
+import React from 'react';
+import Button from './Button';
+
+export default {
+  title: 'Design System/Button',
+  component: Button,
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['primary', 'secondary', 'outline', 'ghost', 'danger', 'success'],
+    },
+    size: {
+      control: 'select',
+      options: ['xs', 'sm', 'md', 'lg'],
+    },
+    onClick: { action: 'clicked' },
+  },
+};
+
+const Template = (args) => <Button {...args} />;
+
+export const Primary = Template.bind({});
+Primary.args = {
+  variant: 'primary',
+  children: 'Primary Button',
+};
+
+export const Secondary = Template.bind({});
+Secondary.args = {
+  variant: 'secondary',
+  children: 'Secondary Button',
+};
+
+export const Outline = Template.bind({});
+Outline.args = {
+  variant: 'outline',
+  children: 'Outline Button',
+};
+
+export const Loading = Template.bind({});
+Loading.args = {
+  variant: 'primary',
+  children: 'Loading Button',
+  isLoading: true,
+};
+
+export const Disabled = Template.bind({});
+Disabled.args = {
+  variant: 'primary',
+  children: 'Disabled Button',
+  disabled: true,
+};
+
+export const FullWidth = Template.bind({});
+FullWidth.args = {
+  variant: 'primary',
+  children: 'Full Width Button',
+  fullWidth: true,
+};
+
+export const WithIcons = () => (
+  <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+    <Button leftIcon={<span>←</span>}>Back</Button>
+    <Button rightIcon={<span>→</span>}>Next</Button>
+    <Button leftIcon={<span>★</span>} rightIcon={<span>→</span>}>
+      Star & Go
+    </Button>
+  </div>
+);
+
+export const AllVariants = () => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+    {['primary', 'secondary', 'outline', 'ghost', 'danger', 'success'].map((variant) => (
+      <div key={variant} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+        {['xs', 'sm', 'md', 'lg'].map((size) => (
+          <Button
+            key={`${variant}-${size}`}
+            variant={variant}
+            size={size}
+          >
+            {variant} {size}
+          </Button>
+        ))}
+      </div>
+    ))}
+  </div>
+);
+```
+
+### 5. CSS Animation for Loading Spinner
+Add this to your global CSS for the loading animation.
+
+```css
+/* Add to your main CSS file */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Global button styles */
+.whitecaves-button {
+  /* Base button styles are already in the component */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .whitecaves-button {
+    /* Mobile-specific button adjustments */
+  }
+}
+```
+
+### 🚀 **Implementation Instructions**
+
+1. **Create the files in this order:**
+   - `src/styles/reset.css` (import first)
+   - `src/styles/design-tokens.js`
+   - `src/components/ui/Button/Button.jsx`
+   - `src/components/ui/Button/Button.stories.jsx` (if using Storybook)
+
+2. **Update your main entry file:**
+   ```javascript
+   // In src/index.js or similar
+   import './styles/reset.css';
+   import { createGlobalStyles } from './styles/design-tokens';
+   
+   // Inject CSS variables
+   const globalStyles = createGlobalStyles();
+   document.head.appendChild(globalStyles);
+   ```
+
+3. **Test the button immediately:**
+   ```jsx
+   // In any component
+   import Button from './components/ui/Button/Button';
+   
+   // Use it
+   <Button variant="primary" onClick={() => console.log('clicked')}>
+     List Property
+   </Button>
+   ```
+
+### 📋 **Aurora Command Center Tickets**
+
+Create these tickets for Zoe:
+- `[Critical] Implement CSS reset and global styles`
+- `[High] Create design tokens system`
+- `[High] Build Button component foundation`
+- `[Medium] Document Button in Storybook`
+
+This foundation will solve your overlapping element issues and establish a scalable system. The next components to build are `Card`, `Input`, and `Navigation`.
+I'll help you consolidate the profile inconsistencies and fix the sidebar design. Let me analyze the problem and provide a complete solution.
+
+## 🎯 **Analysis: The Profile Fragmentation Problem**
+
+You have **three separate profile components** causing visual and functional inconsistency:
+1. **Main Navbar Profile** (top-right, minimal)
+2. **Dashboard Profile** (dashboard-specific, different styling)
+3. **Sidebar Profile** (poor design, inconsistent data)
+
+This creates:
+- **Visual confusion** for users
+- **Duplicate code** and maintenance headaches
+- **Inconsistent user experience**
+- **Wasted screen space**
+
+## 🏗️ **Solution: Unified Profile Architecture**
+
+### **Phase 1: Create Single Profile Source Component**
+Create `src/components/layout/UnifiedProfile.jsx`:
+
+```jsx
+import React, { useState } from 'react';
+import { tokens } from '../../styles/design-tokens';
+import Button from '../ui/Button/Button';
+
+/**
+ * Unified Profile Component - Single source for all profile displays
+ * Used in: Sidebar (expanded), Navbar (collapsed), Dashboard (summary)
+ */
+const UnifiedProfile = ({ 
+  variant = 'sidebar', // 'sidebar' | 'navbar' | 'dashboard'
+  user = null,
+  onLogout,
+  onSettings,
+  className = ''
+}) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
+  // Default user data if none provided
+  const userData = user || {
+    name: 'Alex Morgan',
+    email: 'alex@whitecaves.com',
+    avatar: 'https://ui-avatars.com/api/?name=Alex+Morgan&background=007bff&color=fff',
+    role: 'Company Owner',
+    company: 'White Caves Real Estate',
+    notifications: 3,
+    lastActive: '2 hours ago'
+  };
+
+  // Variant-specific configurations
+  const variants = {
+    sidebar: {
+      containerStyle: {
+        padding: tokens.spacing[4],
+        borderBottom: `1px solid ${tokens.colors.border}`,
+        backgroundColor: tokens.colors.surface,
+        width: '100%',
+      },
+      showCompany: true,
+      showNotifications: true,
+      showLastActive: true,
+      expanded: true
+    },
+    navbar: {
+      containerStyle: {
+        padding: tokens.spacing[2],
+        backgroundColor: 'transparent',
+        width: 'auto',
+      },
+      showCompany: false,
+      showNotifications: true,
+      showLastActive: false,
+      expanded: false
+    },
+    dashboard: {
+      containerStyle: {
+        padding: tokens.spacing[3],
+        borderRadius: tokens.borderRadius.lg,
+        backgroundColor: tokens.colors.surface,
+        boxShadow: tokens.shadows.sm,
+        width: '100%',
+        marginBottom: tokens.spacing[4]
+      },
+      showCompany: true,
+      showNotifications: false,
+      showLastActive: true,
+      expanded: true
+    }
+  };
+
+  const config = variants[variant];
+  const isExpanded = config.expanded;
+
+  return (
+    <div 
+      className={`unified-profile variant-${variant} ${className}`}
+      style={config.containerStyle}
+      onClick={() => variant === 'navbar' && setIsDropdownOpen(!isDropdownOpen)}
+    >
+      {/* Profile Header - Always Visible */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: tokens.spacing[3],
+        cursor: variant === 'navbar' ? 'pointer' : 'default'
+      }}>
+        {/* Avatar */}
+        <div style={{
+          position: 'relative',
+          flexShrink: 0
+        }}>
+          <img 
+            src={userData.avatar}
+            alt={userData.name}
+            style={{
+              width: isExpanded ? '48px' : '36px',
+              height: isExpanded ? '48px' : '36px',
+              borderRadius: tokens.borderRadius.full,
+              border: `2px solid ${tokens.colors.primaryLight}`,
+              objectFit: 'cover'
+            }}
+          />
+          {config.showNotifications && userData.notifications > 0 && (
+            <span style={{
+              position: 'absolute',
+              top: '-4px',
+              right: '-4px',
+              backgroundColor: tokens.colors.error,
+              color: tokens.colors.textInverse,
+              borderRadius: tokens.borderRadius.full,
+              width: '20px',
+              height: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: tokens.typography.fontSize.xs,
+              fontWeight: tokens.typography.fontWeight.bold,
+              border: `2px solid ${tokens.colors.surface}`
+            }}>
+              {userData.notifications}
+            </span>
+          )}
+        </div>
+
+        {/* User Info (Visible in expanded variants) */}
+        {isExpanded && (
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h3 style={{
+              margin: 0,
+              fontSize: tokens.typography.fontSize.lg,
+              fontWeight: tokens.typography.fontWeight.semibold,
+              color: tokens.colors.text,
+              lineHeight: tokens.typography.lineHeight.tight,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}>
+              {userData.name}
+            </h3>
+            
+            <p style={{
+              margin: `${tokens.spacing[1]} 0 0 0`,
+              fontSize: tokens.typography.fontSize.sm,
+              color: tokens.colors.textSecondary,
+              lineHeight: tokens.typography.lineHeight.tight,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}>
+              {userData.email}
+            </p>
+
+            {config.showCompany && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: tokens.spacing[1],
+                marginTop: tokens.spacing[1]
+              }}>
+                <span style={{
+                  fontSize: tokens.typography.fontSize.xs,
+                  color: tokens.colors.primary,
+                  backgroundColor: tokens.colors.primaryLight,
+                  padding: `${tokens.spacing[1]} ${tokens.spacing[2]}`,
+                  borderRadius: tokens.borderRadius.sm,
+                  fontWeight: tokens.typography.fontWeight.medium
+                }}>
+                  {userData.role}
+                </span>
+                <span style={{
+                  fontSize: tokens.typography.fontSize.xs,
+                  color: tokens.colors.textSecondary,
+                }}>
+                  • {userData.company}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Navbar-only dropdown indicator */}
+        {variant === 'navbar' && (
+          <span style={{
+            transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0)',
+            transition: 'transform 0.2s',
+            fontSize: '12px',
+            color: tokens.colors.textSecondary
+          }}>
+            ▼
+          </span>
+        )}
+      </div>
+
+      {/* Expanded Content for Sidebar & Dashboard */}
+      {isExpanded && (
+        <div style={{
+          marginTop: tokens.spacing[4],
+          borderTop: `1px solid ${tokens.colors.border}`,
+          paddingTop: tokens.spacing[3]
+        }}>
+          {/* Quick Stats (Dashboard variant only) */}
+          {variant === 'dashboard' && (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: tokens.spacing[2],
+              marginBottom: tokens.spacing[3]
+            }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{
+                  fontSize: tokens.typography.fontSize['2xl'],
+                  fontWeight: tokens.typography.fontWeight.bold,
+                  color: tokens.colors.primary
+                }}>12</div>
+                <div style={{
+                  fontSize: tokens.typography.fontSize.xs,
+                  color: tokens.colors.textSecondary
+                }}>Listings</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{
+                  fontSize: tokens.typography.fontSize['2xl'],
+                  fontWeight: tokens.typography.fontWeight.bold,
+                  color: tokens.colors.success
+                }}>8</div>
+                <div style={{
+                  fontSize: tokens.typography.fontSize.xs,
+                  color: tokens.colors.textSecondary
+                }}>Active</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{
+                  fontSize: tokens.typography.fontSize['2xl'],
+                  fontWeight: tokens.typography.fontWeight.bold,
+                  color: tokens.colors.warning
+                }}>4</div>
+                <div style={{
+                  fontSize: tokens.typography.fontSize.xs,
+                  color: tokens.colors.textSecondary
+                }}>Pending</div>
+              </div>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: tokens.spacing[2]
+          }}>
+            <Button
+              variant="ghost"
+              size="sm"
+              fullWidth
+              leftIcon={<span>⚙️</span>}
+              onClick={onSettings}
+            >
+              Account Settings
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              fullWidth
+              leftIcon={<span>👥</span>}
+            >
+              Switch Company
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              fullWidth
+              leftIcon={<span>🆘</span>}
+            >
+              Help & Support
+            </Button>
+
+            <div style={{ marginTop: tokens.spacing[3] }}>
+              <Button
+                variant="outline"
+                size="sm"
+                fullWidth
+                onClick={onLogout}
+              >
+                Sign Out
+              </Button>
+            </div>
+          </div>
+
+          {/* Last Active (Sidebar only) */}
+          {config.showLastActive && variant === 'sidebar' && (
+            <div style={{
+              marginTop: tokens.spacing[4],
+              paddingTop: tokens.spacing[3],
+              borderTop: `1px solid ${tokens.colors.border}`,
+              fontSize: tokens.typography.fontSize.xs,
+              color: tokens.colors.textSecondary,
+              textAlign: 'center'
+            }}>
+              Last active: {userData.lastActive}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Navbar Dropdown (When clicked) */}
+      {variant === 'navbar' && isDropdownOpen && (
+        <div style={{
+          position: 'absolute',
+          top: '100%',
+          right: 0,
+          marginTop: tokens.spacing[1],
+          backgroundColor: tokens.colors.surface,
+          borderRadius: tokens.borderRadius.default,
+          boxShadow: tokens.shadows.lg,
+          border: `1px solid ${tokens.colors.border}`,
+          minWidth: '240px',
+          zIndex: tokens.zIndex.dropdown,
+          padding: tokens.spacing[2]
+        }}>
+          <div style={{ padding: tokens.spacing[2] }}>
+            <div style={{ fontWeight: '600', marginBottom: tokens.spacing[1] }}>
+              {userData.name}
+            </div>
+            <div style={{ fontSize: '12px', color: tokens.colors.textSecondary }}>
+              {userData.email}
+            </div>
+          </div>
+          <div style={{ borderTop: `1px solid ${tokens.colors.border}`, margin: `${tokens.spacing[2]} 0` }} />
+          <button style={{
+            width: '100%',
+            textAlign: 'left',
+            padding: `${tokens.spacing[2]} ${tokens.spacing[3]}`,
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '14px',
+            color: tokens.colors.text,
+            borderRadius: tokens.borderRadius.sm,
+            '&:hover': {
+              backgroundColor: tokens.colors.surfaceHover
+            }
+          }}>
+            View Profile
+          </button>
+          <button style={{
+            width: '100%',
+            textAlign: 'left',
+            padding: `${tokens.spacing[2]} ${tokens.spacing[3]}`,
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '14px',
+            color: tokens.colors.text,
+            borderRadius: tokens.borderRadius.sm
+          }}>
+            Account Settings
+          </button>
+          <div style={{ borderTop: `1px solid ${tokens.colors.border}`, margin: `${tokens.spacing[2]} 0` }} />
+          <button 
+            onClick={onLogout}
+            style={{
+              width: '100%',
+              textAlign: 'left',
+              padding: `${tokens.spacing[2]} ${tokens.spacing[3]}`,
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '14px',
+              color: tokens.colors.error,
+              borderRadius: tokens.borderRadius.sm
+            }}
+          >
+            Sign Out
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default UnifiedProfile;
+```
+
+### **Phase 2: Enhanced Sidebar Design**
+Create `src/components/layout/ModernSidebar.jsx`:
+
+```jsx
+import React, { useState } from 'react';
+import { tokens } from '../../styles/design-tokens';
+import UnifiedProfile from './UnifiedProfile';
+import Button from '../ui/Button/Button';
+
+/**
+ * Modern Sidebar with consolidated profile and improved design
+ */
+const ModernSidebar = ({ 
+  user,
+  navigationItems = [],
+  activePath,
+  onNavigate,
+  collapsed = false,
+  onToggleCollapse
+}) => {
+  // Default navigation if none provided
+  const defaultNavItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: '📊', path: '/dashboard' },
+    { id: 'properties', label: 'Properties', icon: '🏠', path: '/properties' },
+    { id: 'leads', label: 'Leads', icon: '📈', path: '/leads' },
+    { id: 'agents', label: 'Agents', icon: '👥', path: '/agents' },
+    { id: 'reports', label: 'Reports', icon: '📋', path: '/reports' },
+    { id: 'ai-assistants', label: 'AI Assistants', icon: '🤖', path: '/ai-assistants' },
+    { id: 'messages', label: 'Messages', icon: '💬', path: '/messages', badge: 3 },
+    { id: 'calendar', label: 'Calendar', icon: '📅', path: '/calendar' },
+    { id: 'documents', label: 'Documents', icon: '📄', path: '/documents' },
+    { id: 'settings', label: 'Settings', icon: '⚙️', path: '/settings' }
+  ];
+
+  const navItems = navigationItems.length > 0 ? navigationItems : defaultNavItems;
+  const [searchQuery, setSearchQuery] = useState('');
+
+  return (
+    <aside style={{
+      width: collapsed ? '72px' : '280px',
+      height: '100vh',
+      backgroundColor: tokens.colors.surface,
+      borderRight: `1px solid ${tokens.colors.border}`,
+      display: 'flex',
+      flexDirection: 'column',
+      transition: 'width 0.3s ease',
+      position: 'fixed',
+      left: 0,
+      top: 0,
+      zIndex: tokens.zIndex.sticky
+    }}>
+      {/* Unified Profile Section */}
+      {!collapsed ? (
+        <UnifiedProfile 
+          variant="sidebar"
+          user={user}
+          onLogout={() => console.log('Logout')}
+          onSettings={() => console.log('Settings')}
+        />
+      ) : (
+        <div style={{
+          padding: tokens.spacing[3],
+          borderBottom: `1px solid ${tokens.colors.border}`,
+          textAlign: 'center'
+        }}>
+          <img 
+            src={user?.avatar || 'https://ui-avatars.com/api/?name=WC&background=007bff&color=fff'}
+            alt="Company Logo"
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: tokens.borderRadius.default
+            }}
+          />
+        </div>
+      )}
+
+      {/* Search Bar (Collapsed shows icon only) */}
+      <div style={{
+        padding: collapsed ? tokens.spacing[3] : `${tokens.spacing[3]} ${tokens.spacing[4]}`,
+        borderBottom: `1px solid ${tokens.colors.border}`
+      }}>
+        {collapsed ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onToggleCollapse && onToggleCollapse()}
+            style={{ width: '100%', justifyContent: 'center' }}
+          >
+            🔍
+          </Button>
+        ) : (
+          <div style={{ position: 'relative' }}>
+            <input
+              type="text"
+              placeholder="Search menu..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: `${tokens.spacing[2]} ${tokens.spacing[3]} ${tokens.spacing[2]} 36px`,
+                border: `1px solid ${tokens.colors.border}`,
+                borderRadius: tokens.borderRadius.default,
+                fontSize: tokens.typography.fontSize.sm,
+                backgroundColor: tokens.colors.background,
+                color: tokens.colors.text,
+                '&:focus': {
+                  outline: 'none',
+                  borderColor: tokens.colors.primary,
+                  boxShadow: `0 0 0 3px ${tokens.colors.primaryLight}`
+                }
+              }}
+            />
+            <span style={{
+              position: 'absolute',
+              left: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: tokens.colors.textSecondary,
+              fontSize: '14px'
+            }}>
+              🔍
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Navigation Items */}
+      <nav style={{
+        flex: 1,
+        overflowY: 'auto',
+        padding: collapsed ? tokens.spacing[2] : `${tokens.spacing[3]} ${tokens.spacing[2]}`,
+        '&::-webkit-scrollbar': {
+          width: '4px'
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: tokens.colors.border,
+          borderRadius: tokens.borderRadius.full
+        }
+      }}>
+        {navItems
+          .filter(item => 
+            !searchQuery || 
+            item.label.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+          .map((item) => (
+            <button
+              key={item.id}
+              onClick={() => onNavigate && onNavigate(item.path)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                width: '100%',
+                padding: collapsed ? tokens.spacing[2] : `${tokens.spacing[2]} ${tokens.spacing[3]}`,
+                marginBottom: '2px',
+                border: 'none',
+                background: activePath === item.path ? tokens.colors.primaryLight : 'transparent',
+                color: activePath === item.path ? tokens.colors.primary : tokens.colors.text,
+                borderRadius: tokens.borderRadius.default,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                textAlign: collapsed ? 'center' : 'left',
+                justifyContent: collapsed ? 'center' : 'flex-start',
+                '&:hover': {
+                  backgroundColor: activePath === item.path ? tokens.colors.primaryLight : tokens.colors.surfaceHover,
+                  transform: 'translateX(2px)'
+                }
+              }}
+            >
+              <span style={{
+                fontSize: '18px',
+                marginRight: collapsed ? 0 : tokens.spacing[3],
+                opacity: 0.9
+              }}>
+                {item.icon}
+              </span>
+              
+              {!collapsed && (
+                <>
+                  <span style={{
+                    flex: 1,
+                    fontSize: tokens.typography.fontSize.sm,
+                    fontWeight: activePath === item.path 
+                      ? tokens.typography.fontWeight.semibold 
+                      : tokens.typography.fontWeight.normal
+                  }}>
+                    {item.label}
+                  </span>
+                  
+                  {item.badge && (
+                    <span style={{
+                      backgroundColor: tokens.colors.primary,
+                      color: tokens.colors.textInverse,
+                      borderRadius: tokens.borderRadius.full,
+                      fontSize: tokens.typography.fontSize.xs,
+                      padding: '2px 6px',
+                      minWidth: '20px',
+                      textAlign: 'center',
+                      fontWeight: tokens.typography.fontWeight.bold
+                    }}>
+                      {item.badge}
+                    </span>
+                  )}
+                </>
+              )}
+            </button>
+          ))}
+      </nav>
+
+      {/* Bottom Actions */}
+      <div style={{
+        borderTop: `1px solid ${tokens.colors.border}`,
+        padding: tokens.spacing[3]
+      }}>
+        {!collapsed ? (
+          <>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: tokens.spacing[3]
+            }}>
+              <span style={{
+                fontSize: tokens.typography.fontSize.xs,
+                color: tokens.colors.textSecondary
+              }}>
+                Quick Actions
+              </span>
+              <Button
+                variant="ghost"
+                size="xs"
+                onClick={() => onToggleCollapse && onToggleCollapse()}
+              >
+                ← Collapse
+              </Button>
+            </div>
+            
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: tokens.spacing[2]
+            }}>
+              <Button variant="primary" size="sm">
+                + Listing
+              </Button>
+              <Button variant="outline" size="sm">
+                Report
+              </Button>
+            </div>
+          </>
+        ) : (
+          <div style={{ textAlign: 'center' }}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onToggleCollapse && onToggleCollapse()}
+              style={{ width: '100%', justifyContent: 'center' }}
+            >
+              →
+            </Button>
+          </div>
+        )}
+        
+        {/* Company Info */}
+        {!collapsed && (
+          <div style={{
+            marginTop: tokens.spacing[4],
+            paddingTop: tokens.spacing[3],
+            borderTop: `1px solid ${tokens.colors.border}`,
+            textAlign: 'center'
+          }}>
+            <div style={{
+              fontSize: tokens.typography.fontSize.xs,
+              color: tokens.colors.textSecondary,
+              marginBottom: tokens.spacing[1]
+            }}>
+              White Caves Real Estate LLC
+            </div>
+            <div style={{
+              fontSize: tokens.typography.fontSize.xs,
+              color: tokens.colors.textSecondary,
+              opacity: 0.7
+            }}>
+              © 2024 • Dubai
+            </div>
+          </div>
+        )}
+      </div>
+    </aside>
+  );
+};
+
+export default ModernSidebar;
+```
+
+### **Phase 3: Implementation Plan**
+
+#### **Step 1: Remove Old Profile Components**
+1. Delete or disable the old profile components in:
+   - `Navbar.jsx` (remove profile section)
+   - `DashboardHeader.jsx` (remove profile section)
+   - `OldSidebar.jsx` (remove profile section)
+
+#### **Step 2: Update Main Layout**
+Update your `App.jsx` or main layout:
+
+```jsx
+// Main Layout Structure
+const AppLayout = () => {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const user = useUser(); // Your user hook
+
+  return (
+    <div style={{
+      display: 'flex',
+      minHeight: '100vh',
+      backgroundColor: tokens.colors.background
+    }}>
+      {/* Modern Sidebar with Unified Profile */}
+      <ModernSidebar 
+        user={user}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        onNavigate={(path) => navigate(path)}
+      />
+
+      {/* Main Content */}
+      <main style={{
+        flex: 1,
+        marginLeft: sidebarCollapsed ? '72px' : '280px',
+        transition: 'margin-left 0.3s ease',
+        minHeight: '100vh'
+      }}>
+        {/* Top Navbar with Compact Profile */}
+        <header style={{
+          height: '64px',
+          backgroundColor: tokens.colors.surface,
+          borderBottom: `1px solid ${tokens.colors.border}`,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: `0 ${tokens.spacing[6]}`,
+          position: 'sticky',
+          top: 0,
+          zIndex: tokens.zIndex.sticky
+        }}>
+          <div style={{ flex: 1 }}>
+            {/* Breadcrumbs or page title */}
+          </div>
+          
+          {/* Unified Profile in Navbar */}
+          <div style={{ position: 'relative' }}>
+            <UnifiedProfile 
+              variant="navbar"
+              user={user}
+              onLogout={() => handleLogout()}
+            />
+          </div>
+        </header>
+
+        {/* Page Content */}
+        <div style={{ padding: tokens.spacing[6] }}>
+          {/* Dashboard-specific profile summary */}
+          {isDashboardPage && (
+            <UnifiedProfile 
+              variant="dashboard"
+              user={user}
+            />
+          )}
+          
+          {/* Your page content */}
+          <Outlet /> {/* or your page content */}
+        </div>
+      </main>
+    </div>
+  );
+};
+```
+
+#### **Step 3: CSS Variables for Sidebar**
+Add to your global CSS:
+
+```css
+/* Sidebar specific styles */
+.sidebar-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Unified Profile states */
+.unified-profile {
+  transition: all 0.2s ease;
+}
+
+.unified-profile.variant-navbar:hover {
+  opacity: 0.9;
+}
+
+.unified-profile.variant-dashboard {
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive sidebar */
+@media (max-width: 1024px) {
+  .modern-sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .modern-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+  
+  main {
+    margin-left: 0 !important;
+  }
+}
+```
+
+### **Phase 4: Design Consistency Checklist**
+
+#### **Fixed Issues:**
+✅ **Single Profile Source** - One component, three variants  
+✅ **Consistent Typography** - Uses design tokens  
+✅ **Unified Color Scheme** - Primary/border/background consistency  
+✅ **Responsive Design** - Collapsible sidebar for mobile  
+✅ **Accessible Interactions** - Proper focus states, ARIA labels  
+✅ **Performance** - No duplicate user data fetching  
+
+#### **Visual Improvements:**
+1. **Hierarchy** - Clear visual hierarchy in sidebar
+2. **Spacing** - Consistent padding/margins using token scale
+3. **Icons** - Cohesive icon set (replace emojis with SVG later)
+4. **States** - Consistent hover/focus/active states
+5. **Animation** - Smooth transitions for sidebar collapse
+
+### **Phase 5: Migration Tasks for Zoe**
+
+Create these tickets in Aurora Command Center:
+
+1. `[Critical] Create UnifiedProfile component`
+2. `[Critical] Replace all profile instances with UnifiedProfile`
+3. `[High] Implement ModernSidebar component`
+4. `[High] Update main layout structure`
+5. `[Medium] Add responsive sidebar behavior`
+6. `[Medium] Test all profile variants`
+7. `[Low] Replace emoji icons with SVG icons`
+
+### **Expected Results:**
+1. **100% profile consistency** across all views
+2. **50% less code** for profile-related components
+3. **Better user experience** with intuitive navigation
+4. **Easier maintenance** with single source of truth
+5. **Professional appearance** for your real estate platform
+
+The key insight is that by creating one authoritative `UnifiedProfile` component, you eliminate inconsistency at the source. All profile displays throughout your app will now share the same data, styling, and behavior.
+Based on our extensive discussions about your White Caves Real Estate platform, here are my strategic suggestions to ensure your project transitions from a complex prototype to a scalable, market-ready business.
+
+### 🎯 **Strategic Priority: Focus on "Product-Market Fit" Over "Feature Completeness"**
+Your greatest risk is building an over-engineered system that doesn't solve a core, urgent problem for a specific customer. You have a visionary platform with many AI agents, but you must validate which feature delivers the most value **quickly**.
+
+**Suggestion:** Define a **90-Day "Must-Have" Goal**. For example:
+> "Within 90 days, a real estate agent in Dubai must be able to list a property, manage inquiries via WhatsApp (`Linda`), and close a simple deal faster than using WhatsApp + spreadsheets."
+
+Every architectural decision and UI refactor in the next quarter should be judged against enabling this single, measurable outcome.
+
+### 🧩 **Tactical Suggestions Across Key Areas**
+
+#### 1. **Technical Architecture: Build the "Highway" Before More "Cars"**
+You're adding new AI assistants (`Evangeline`, `Sentinel`, `Hunter`), but the underlying infrastructure (event bus, design system, RBAC) is not ready. This is like adding luxury cars to a city with no roads.
+
+- **Immediate Action:** **Freeze new feature development for 2 sprints.** Use this time exclusively to complete **Phase 1 (Foundation)** from our plan: the centralized `assistantRegistry`, the shared component library (`Button`, `Card`, `Nav`), and the CSS reset. This will immediately stop UI inconsistencies and set a clean baseline.
+- **Governance:** Make **Aurora** the gatekeeper. No PR should be merged that doesn't use the new design tokens or that creates new direct dependencies between modules.
+
+#### 2. **Business Model: Find Your First Paying Customer Segment**
+"Real Estate in Dubai" is too broad. You need to identify which user segment has the most pain point your platform uniquely solves.
+
+- **Suggestion:** Target **Small-to-Medium Property Management Companies** (managing 50-200 units). They need coordination (agent/tenant/owner) but can't afford custom enterprise software. Your AI assistants (`Mary` for inventory, `Linda` for tenant CRM) directly address their operational chaos.
+- **Validation:** Before building the complex Company Owner Dashboard, manually create a "demo" dashboard for **3 such companies**. Use dummy data but real UI. Get their feedback on one question: *"Would this save your team 10+ hours per week?"* Their answer dictates your priority.
+
+#### 3. **UI/UX & Design: Solve One Page Perfectly**
+You have overlapping elements and broken layouts. Trying to fix all pages at once is overwhelming.
+
+- **Suggestion:** Apply the **"Lighthouse Page"** strategy. Choose **ONE** critical page—likely the **Property Listing Detail Page**. Task **Zoe and the team** with making this single page flawless: perfect images, clear CTAs, no layout bugs, and fully responsive. Use this page as the quality benchmark for all future work. This creates a tangible win and a visual template.
+
+#### 4. **AI Assistants: From "Demo" to "Workflow"**
+Your AI assistants are clever concepts, but their value multiplies when they work together on a single workflow.
+
+- **Suggestion:** Define and automate **one core user journey** end-to-end. For example, the **"Tenant Move-Out" workflow**:
+    1.  Tenant submits notice → `Linda` (CRM) acknowledges and alerts `Mary` (Inventory).
+    2.  `Mary` schedules inspection → `Sentinel` (Monitoring) creates a check-list.
+    3.  After inspection, `Mary` updates property status → `Olivia` (Marketing) drafts a re-listing ad.
+- **Outcome:** This demonstrates your platform's unique orchestration power, not just isolated AI features.
+
+#### 5. **Team & Process: Implement the "Aurora Command Center" for Real**
+You have a great plan for governance (GitHub Project, ADRs), but it must be non-negotiable.
+
+- **Immediate Action:** **In your next team stand-up (or your own planning), use only the Aurora Command Center project board.** Create the first three tickets:
+    1.  `[Critical] Fix Property Detail Page UI using new Design Tokens.`
+    2.  `[Critical] Connect Linda (CRM) and Mary (Inventory) via the new Event Bus (POC).`
+    3.  `[High] Document the "Tenant Move-Out" workflow for sales demos.`
+- **Measure:** Track **Cycle Time** (how long a ticket takes from "In Progress" to "Done"). Your refactor is successful if this time decreases over the next month.
+
+### 💡 **Recommended Quick Wins for Momentum**
+1.  **Fix the Navigation & Sidebar in 48 Hours:** A unified, professional navigation is the most visible sign of quality. Use the `ModernSidebar` component I provided.
+2.  **Create a "Platform Status" Dashboard:** A simple public page at `status.whitecaves.com` showing system health (inspired by `Aurora`'s monitoring role). This builds trust.
+3.  **Write a "Why We're Refactoring" Blog Post:** Document your journey from a "distributed monolith" to a "coordinated AI platform" on a company blog. This attracts technical talent and sets expectations.
+
+### 🚨 **What to Avoid**
+- **Avoid** building the complex **Company Owner Dashboard** before making the **Agent Dashboard** incredibly valuable for daily work.
+- **Avoid** adding more AI assistants (`Hunter`, `Evangeline`) before the existing ones (`Linda`, `Mary`, `Clara`) reliably complete a single workflow together.
+- **Avoid** major database schema changes until the event bus is live, as events can help decouple data dependencies.
+
+### 📈 **Success Metrics for the Next 30 Days**
+Don't just track code commits. Track business progress:
+1.  **UI Consistency:** 100% of new UI code uses the shared component library.
+2.  **Architecture:** The **Event Bus** emits its first real event (e.g., `PROPERTY_VIEWED`).
+3.  **User Value:** You have a **5-minute demo** (using the "Lighthouse Page" and one automated workflow) that clearly shows time savings for an agent.
+
+Your vision is powerful. The key now is **relentless focus**. Build the minimum viable platform for the maximum viable outcome.
+
+**What is the single biggest obstacle your team is facing this week?** Is it the visual UI bugs, setting up the event bus, or something else? Knowing this will help prioritize the next step.
+

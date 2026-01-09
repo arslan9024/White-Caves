@@ -1,0 +1,638 @@
+I've synthesized all our discussions into a **comprehensive master plan** for your Replit AI agent. This plan coordinates all assistants, addresses every issue you've raised, and provides step-by-step execution instructions without time pressure concerns.
+
+## 🏗️ **Master Execution Plan for Replit AI Agent**
+
+### **Core Coordination Protocol**
+**Instruction to Replit AI:** "You are the **Project Coordinator** for White Caves Real Estate LLC. Your role is to execute this master plan by delegating tasks to specialized AI assistants (Zoe, Aurora, etc.) while maintaining centralized governance through the Aurora Command Center GitHub Project."
+
+```mermaid
+flowchart TD
+    A[Replit AI Agent<br>Project Coordinator] --> B[Aurora Command Center<br>GitHub Project]
+    
+    A --> C{Zoe<br>UI/Design Engineer}
+    A --> D{Aurora<br>CTO/Architect}
+    A --> E{Linda<br>CRM Specialist}
+    A --> F{Mary<br>Inventory Specialist}
+    
+    C --> G[Phase 1: Design System]
+    D --> H[Phase 2: Architecture]
+    E --> I[Phase 3: Workflow Automation]
+    F --> I
+    
+    G --> J[Shared Component Library]
+    H --> K[Event Bus & Registry]
+    I --> L[Lead-to-Deal Automation]
+    
+    J --> M[Consistent UI Across Platform]
+    K --> M
+    L --> M
+    
+    M --> N[Professional, Scalable Platform]
+```
+
+### **Phase 1: Foundation (Weeks 1-2) - "The Clean Slate"**
+**Goal:** Eliminate inconsistencies at the root.
+
+#### **Task 1.1: Create Aurora Command Center**
+```bash
+# Execute these commands in sequence
+1. git checkout -b feature/aurora-command-center
+2. Create GitHub Project "Aurora Command Center" with columns: 
+   - Backlog | In Progress | Review | Done
+3. Add custom fields: Priority, Component, Aurora Review
+4. Set automation: PR linked → Status: Review
+```
+
+#### **Task 1.2: Centralized Assistant Registry**
+```javascript
+// File: /src/core/assistantRegistry.js
+// Create this single source of truth with ALL assistants
+export const assistantRegistry = [
+  {
+    id: 'aurora',
+    name: 'Aurora',
+    role: 'CTO & Systems Architect',
+    route: '/admin/aurora',
+    component: 'AuroraCTO',
+    permissions: ['owner'],
+    status: 'active',
+    dependencies: [],
+    description: 'Oversees architecture and code quality'
+  },
+  {
+    id: 'zoe',
+    name: 'Zoe',
+    role: 'UI/Design Engineer',
+    route: '/ui/design-system',
+    component: 'ZoeDesign',
+    permissions: ['owner', 'admin'],
+    status: 'active',
+    dependencies: [],
+    description: 'Manages design system and UI consistency'
+  },
+  // Add all 14+ assistants with consistent structure
+  // Include: Linda, Mary, Clara, Sophia, Theodora, 
+  // Laila, Olivia, Daisy, Evangeline, Sentinel, Hunter
+];
+
+// File: /src/core/assistantService.js
+// Create service to manage assistant lifecycle
+export class AssistantService {
+  static getAll() { return assistantRegistry; }
+  static getById(id) { /* ... */ }
+  static getByRole(role) { /* ... */ }
+  static enableAssistant(id) { /* ... */ }
+}
+```
+
+#### **Task 1.3: Design System Implementation**
+**Delegate to Zoe:**
+1. **Create `/src/styles/reset.css`** (use provided code)
+2. **Create `/src/styles/design-tokens.js`** (use provided code)
+3. **Build Core Components** in this order:
+   - `Button` (already provided)
+   - `Card` (PropertyCard, AgentCard, DashboardCard)
+   - `Input` (with validation states)
+   - `Navigation` (TopNav, SideNav, Breadcrumbs)
+   - `Modal` & `Toast` notifications
+4. **Setup Storybook** for documentation
+5. **Create `/src/components/layout/ModernSidebar.jsx`** (use provided code)
+6. **Create `/src/components/layout/UnifiedProfile.jsx`** (use provided code)
+
+### **Phase 2: Architecture & State (Weeks 3-4) - "The Nervous System"**
+**Goal:** Implement event-driven communication and clean state management.
+
+#### **Task 2.1: Event Bus Implementation**
+**Delegate to Aurora:**
+```javascript
+// File: /src/core/eventBus/EventBus.js
+class EventBus {
+  constructor() {
+    this.listeners = new Map();
+    this.history = [];
+  }
+  
+  emit(eventType, payload, source = 'system') {
+    const event = { 
+      id: uuid(), 
+      type: eventType, 
+      payload, 
+      source, 
+      timestamp: new Date() 
+    };
+    
+    // Store in history for audit trail
+    this.history.push(event);
+    
+    // Notify listeners
+    (this.listeners.get(eventType) || []).forEach(listener => listener(event));
+    
+    // Also emit to Redux for state updates
+    store.dispatch({ type: 'EVENT_BUS/EVENT', payload: event });
+  }
+  
+  subscribe(eventType, listener) { /* ... */ }
+  unsubscribe(eventType, listener) { /* ... */ }
+  
+  getHistory(filters) { /* ... */ }
+}
+
+// File: /src/core/eventBus/eventTypes.js
+export const EVENT_TYPES = {
+  // Property Events
+  PROPERTY_CREATED: 'property.created',
+  PROPERTY_UPDATED: 'property.updated',
+  PROPERTY_STATUS_CHANGED: 'property.status_changed',
+  
+  // Lead Events
+  LEAD_CREATED: 'lead.created',
+  LEAD_QUALIFIED: 'lead.qualified',
+  LEAD_CONVERTED: 'lead.converted',
+  
+  // User Events
+  USER_LOGGED_IN: 'user.logged_in',
+  USER_PERMISSION_CHANGED: 'user.permission_changed',
+  
+  // AI Assistant Events
+  ASSISTANT_TRIGGERED: 'assistant.triggered',
+  ASSISTANT_COMPLETED: 'assistant.completed',
+  
+  // Notification Events
+  NOTIFICATION_SENT: 'notification.sent',
+  NOTIFICATION_READ: 'notification.read',
+};
+
+// File: /src/core/eventBus/middleware.js
+// Redux middleware to integrate EventBus with Redux
+export const eventBusMiddleware = store => next => action => {
+  // Intercept certain actions to emit events
+  if (action.type === 'properties/addProperty') {
+    eventBus.emit(EVENT_TYPES.PROPERTY_CREATED, action.payload, 'redux');
+  }
+  
+  return next(action);
+};
+```
+
+#### **Task 2.2: Unified State Management**
+**Delegate to Aurora:**
+1. **Remove duplicate `aiAssistantsSlice.js`**
+2. **Refactor `aiAssistantDashboardSlice.js`** to use normalized state:
+```javascript
+// Updated slice structure
+const initialState = {
+  // Normalized assistants data
+  assistants: {
+    entities: {}, // { 'aurora': {id, name, config, status} }
+    ids: [], // ['aurora', 'zoe', ...]
+  },
+  
+  // Active workflows
+  workflows: {
+    active: [],
+    history: [],
+  },
+  
+  // UI state
+  ui: {
+    selectedAssistant: null,
+    viewMode: 'grid',
+    filters: {},
+  },
+  
+  // Event history (linked to EventBus)
+  events: [],
+  
+  // Performance metrics
+  metrics: {
+    responseTimes: {},
+    errorRates: {},
+    usageStats: {},
+  },
+};
+```
+
+#### **Task 2.3: RBAC & Security Layer**
+```javascript
+// File: /src/core/auth/PermissionService.js
+export class PermissionService {
+  static ROLES = {
+    OWNER: 'owner',
+    COMPANY_ADMIN: 'company_admin',
+    PROPERTY_MANAGER: 'property_manager',
+    SALES_AGENT: 'sales_agent',
+    LEASING_AGENT: 'leasing_agent',
+    TENANT: 'tenant',
+    BUYER: 'buyer',
+    INVESTOR: 'investor',
+  };
+
+  static PERMISSIONS = {
+    // Property permissions
+    VIEW_PROPERTY: 'view_property',
+    CREATE_PROPERTY: 'create_property',
+    EDIT_PROPERTY: 'edit_property',
+    DELETE_PROPERTY: 'delete_property',
+    
+    // Lead permissions
+    VIEW_LEAD: 'view_lead',
+    EDIT_LEAD: 'edit_lead',
+    ASSIGN_LEAD: 'assign_lead',
+    
+    // Admin permissions
+    VIEW_AUDIT_LOG: 'view_audit_log',
+    MANAGE_USERS: 'manage_users',
+    VIEW_ANALYTICS: 'view_analytics',
+  };
+
+  static can(user, permission, resource = null) {
+    const rolePermissions = this.getRolePermissions(user.role);
+    return rolePermissions.includes(permission);
+  }
+  
+  static getRolePermissions(role) {
+    const matrix = {
+      [this.ROLES.OWNER]: Object.values(this.PERMISSIONS),
+      [this.ROLES.COMPANY_ADMIN]: [
+        this.PERMISSIONS.VIEW_PROPERTY,
+        this.PERMISSIONS.CREATE_PROPERTY,
+        this.PERMISSIONS.EDIT_PROPERTY,
+        this.PERMISSIONS.VIEW_LEAD,
+        this.PERMISSIONS.EDIT_LEAD,
+        this.PERMISSIONS.ASSIGN_LEAD,
+        this.PERMISSIONS.MANAGE_USERS,
+      ],
+      // Define for all roles
+    };
+    
+    return matrix[role] || [];
+  }
+}
+
+// File: /src/hooks/usePermission.js
+export const usePermission = (permission, resource) => {
+  const { user } = useAuth();
+  return PermissionService.can(user, permission, resource);
+};
+```
+
+### **Phase 3: AI Assistant Integration (Weeks 5-6) - "The Orchestra"**
+**Goal:** Make assistants work together through events.
+
+#### **Task 3.1: Define Assistant Workflows**
+**Create workflow definitions for key business processes:**
+
+```yaml
+# File: /src/workflows/lead-to-deal.yaml
+workflow:
+  name: "Lead to Deal Conversion"
+  description: "Complete process from lead capture to deal closure"
+  triggers:
+    - event: "lead.qualified"
+      conditions: "lead.score > 80"
+  
+  steps:
+    - name: "Property Matching"
+      assistant: "Mary"
+      action: "findMatchingProperties"
+      input: "${lead.requirements}"
+      output: "matchingProperties"
+    
+    - name: "Schedule Viewing"
+      assistant: "Linda"
+      action: "scheduleViewing"
+      input: "${lead.contactInfo}, ${matchingProperties}"
+      conditions: "lead.preferredDate"
+    
+    - name: "Generate Proposal"
+      assistant: "Sophia"
+      action: "generateProposal"
+      input: "${matchingProperties[0]}, ${lead.details}"
+      output: "proposalDocument"
+    
+    - name: "Legal Review"
+      assistant: "Theodora"
+      action: "reviewContract"
+      input: "${proposalDocument}"
+      conditions: "proposalDocument.value > 1000000"
+    
+    - name: "Payment Processing"
+      assistant: "Laila"
+      action: "processPayment"
+      input: "${proposalDocument.finalAmount}"
+      conditions: "contract.signed"
+  
+  completion:
+    event: "deal.closed"
+    data: "${workflow.output}"
+```
+
+#### **Task 3.2: Implement New AI Assistants**
+**Delegate implementation to relevant specialists:**
+
+1. **Evangeline (Legal AI):**
+   ```javascript
+   // File: /src/assistants/evangeline/LegalAssistant.js
+   class LegalAssistant {
+     async reviewContract(contractText) {
+       // Integrate with legal API or use rules engine
+       const issues = await this.analyzeClauses(contractText);
+       const suggestions = this.generateSuggestions(issues);
+       
+       eventBus.emit('contract.reviewed', { 
+         contractId, 
+         issues, 
+         suggestions 
+       });
+       
+       return { issues, suggestions };
+     }
+     
+     async checkCompliance(transaction, jurisdiction = 'dubai') {
+       // Check RERA compliance, Dubai Land Department regulations
+       const complianceReport = await this.fetchRegulations(jurisdiction);
+       return this.validateCompliance(transaction, complianceReport);
+     }
+   }
+   ```
+
+2. **Sentinel (Property Monitoring):**
+   ```javascript
+   // File: /src/assistants/sentinel/PropertyMonitor.js
+   class PropertyMonitor {
+     constructor() {
+       // Subscribe to property events
+       eventBus.subscribe('property.status_changed', this.onStatusChange);
+       eventBus.subscribe('maintenance.requested', this.onMaintenanceRequest);
+     }
+     
+     async predictMaintenance(propertyId) {
+       // Use ML to predict maintenance needs
+       const prediction = await this.analyzeHistoricalData(propertyId);
+       
+       if (prediction.urgency === 'high') {
+         eventBus.emit('maintenance.alert', {
+           propertyId,
+           issue: prediction.issue,
+           estimatedCost: prediction.cost,
+           recommendedAction: prediction.action
+         });
+       }
+     }
+   }
+   ```
+
+3. **Hunter (Prospecting AI):**
+   ```javascript
+   // File: /src/assistants/hunter/Prospector.js
+   class Prospector {
+     async findPotentialLeads(criteria) {
+       // Integrate with:
+       // 1. Property portal APIs (Bayut, PropertyFinder)
+       // 2. Social media listening
+       // 3. Market trend analysis
+       
+       const leads = await this.scrapePortals(criteria);
+       const enrichedLeads = await this.enrichWithSocialData(leads);
+       const scoredLeads = this.scoreLeads(enrichedLeads);
+       
+       scoredLeads.forEach(lead => {
+         if (lead.score > 70) {
+           eventBus.emit('lead.discovered', lead);
+         }
+       });
+     }
+   }
+   ```
+
+### **Phase 4: UI Unification & Polish (Weeks 7-8) - "The Finish Line"**
+**Goal:** Apply consistent design across all pages.
+
+#### **Task 4.1: Page-by-Page Refactoring**
+**Delegate to Zoe with this priority order:**
+
+1. **Property Listing Detail Page** (Lighthouse Page)
+2. **Dashboard Overview** (All user roles)
+3. **Property Management Interface**
+4. **Lead Management Interface**
+5. **Contract & Document Management**
+6. **Analytics & Reporting**
+7. **Admin & Settings**
+
+**Refactoring Template for Each Page:**
+```javascript
+// 1. Import design tokens and shared components
+import { tokens } from '../../styles/design-tokens';
+import { Card, Button, DataGrid } from '../../components/ui';
+
+// 2. Use CSS Grid/Flexbox with token-based spacing
+const pageStyles = {
+  container: {
+    display: 'grid',
+    gridTemplateColumns: '1fr',
+    gap: tokens.spacing[6],
+    padding: tokens.spacing[6],
+    maxWidth: tokens.breakpoints.xl,
+    margin: '0 auto',
+  },
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: tokens.spacing[4],
+  },
+  // ...
+};
+
+// 3. Replace all inline styles with design token references
+// 4. Ensure responsive design for all breakpoints
+// 5. Add loading states and error boundaries
+// 6. Implement proper accessibility (ARIA labels, keyboard nav)
+```
+
+#### **Task 4.2: Unified Notification Center**
+```javascript
+// File: /src/components/notifications/NotificationCenter.jsx
+const NotificationCenter = () => {
+  const [notifications, setNotifications] = useState([]);
+  
+  useEffect(() => {
+    // Subscribe to ALL assistant events
+    const subscriptions = [
+      eventBus.subscribe('lead.*', (event) => addNotification(event)),
+      eventBus.subscribe('property.*', (event) => addNotification(event)),
+      eventBus.subscribe('contract.*', (event) => addNotification(event)),
+      eventBus.subscribe('assistant.*', (event) => addNotification(event)),
+    ];
+    
+    return () => subscriptions.forEach(unsub => unsub());
+  }, []);
+  
+  const addNotification = (event) => {
+    const notification = {
+      id: event.id,
+      type: this.categorizeEvent(event.type),
+      title: this.getNotificationTitle(event),
+      message: this.getNotificationMessage(event),
+      source: event.source,
+      timestamp: event.timestamp,
+      priority: this.calculatePriority(event),
+      actions: this.getAvailableActions(event),
+    };
+    
+    setNotifications(prev => [notification, ...prev].slice(0, 50));
+  };
+  
+  // Render grouped by type, with filters and mark-as-read
+};
+```
+
+### **Phase 5: Testing & Deployment (Week 9) - "Go Live"**
+
+#### **Task 5.1: Comprehensive Testing**
+```bash
+# Create test suite
+1. Unit Tests for all shared components
+2. Integration Tests for workflows
+3. End-to-End Tests for key user journeys
+4. Performance Tests (Lighthouse scores)
+5. Accessibility Tests (WCAG compliance)
+
+# Test commands
+npm run test:unit    # Component tests
+npm run test:integration  # Workflow tests  
+npm run test:e2e     # User journey tests
+npm run test:perf    # Performance tests
+npm run test:a11y    # Accessibility tests
+```
+
+#### **Task 5.2: Deployment Pipeline**
+```yaml
+# File: .github/workflows/deploy.yml
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install Dependencies
+      run: npm ci
+      
+    - name: Run Tests
+      run: npm run test:all
+      
+    - name: Build
+      run: npm run build
+      
+    - name: Deploy to Vercel
+      uses: amondnet/vercel-action@v20
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.ORG_ID}}
+        vercel-project-id: ${{ secrets.PROJECT_ID}}
+```
+
+### **Daily Execution Protocol for Replit AI**
+
+**Each day, execute this sequence:**
+
+1. **Morning Check (9:00 AM):**
+   ```bash
+   git pull origin main
+   npm install
+   npm run test:unit
+   Check Aurora Command Center for new tickets
+   ```
+
+2. **Task Execution (9:30 AM - 12:00 PM):**
+   - Pick 1-2 HIGH priority tickets
+   - Implement with tests
+   - Create PR with description linking to ticket
+
+3. **Afternoon Integration (1:00 PM - 4:00 PM):**
+   ```bash
+   # Review and merge morning PRs
+   npm run test:integration
+   # Deploy to staging if all tests pass
+   vercel --prod
+   ```
+
+4. **Evening Documentation (4:00 PM - 5:00 PM):**
+   - Update `replit.md` with progress
+   - Document any architectural decisions in ADRs
+   - Plan next day's tasks
+
+### **Success Metrics Dashboard**
+Create a dashboard to track progress:
+
+```javascript
+// File: /src/components/admin/ProjectMetrics.jsx
+const metrics = {
+  // Technical Metrics
+  codeCoverage: '85%',  // Target: >80%
+  testPassRate: '100%', // Target: 100%
+  buildSuccessRate: '100%', // Target: >95%
+  pageLoadTime: '2.1s', // Target: <3s
+  
+  // Business Metrics
+  activeUsers: '0 → Target: 50',
+  propertyListings: '0 → Target: 100',
+  leadsGenerated: '0 → Target: 200',
+  dealsClosed: '0 → Target: 20',
+  
+  // AI Assistant Metrics
+  assistantUsage: {
+    linda: { calls: 0, successRate: '0%' },
+    mary: { calls: 0, successRate: '0%' },
+    clara: { calls: 0, successRate: '0%' },
+    aurora: { calls: 0, successRate: '0%' },
+  },
+  
+  // UI Consistency Score (automated audit)
+  designConsistency: '65% → Target: 95%',
+};
+```
+
+### **Contingency Plan**
+If any phase runs into issues:
+
+1. **Rollback Strategy:**
+   ```bash
+   # Create restore points before each major change
+   git tag phase1-complete
+   git tag phase2-complete
+   # Easy rollback: git reset --hard phase1-complete
+   ```
+
+2. **Alternative Approaches:**
+   - If EventBus is complex, start with a simpler Redux middleware
+   - If new AI assistants are delayed, focus on existing ones
+   - If design system takes time, use a UI library temporarily (Mantine/Chakra)
+
+### **Final Deliverables Checklist**
+- [ ] Aurora Command Center fully operational
+- [ ] Design tokens and shared component library
+- [ ] Centralized assistant registry
+- [ ] Event-driven communication layer
+- [ ] RBAC security system
+- [ ] All 14+ AI assistants integrated
+- [ ] Unified notification center
+- [ ] Consistent UI across all pages
+- [ ] Automated testing suite
+- [ ] Deployment pipeline to Vercel
+- [ ] Documentation complete
+- [ ] Performance optimized
+- [ ] Analytics dashboard
+
+**This plan is designed for systematic execution by your Replit AI agent. Each task is atomic, testable, and builds upon previous work. The key is consistent daily progress with proper governance through the Aurora Command Center.**
+
+**Ready to begin execution?** Start with Phase 1, Task 1.1 (Create Aurora Command Center) and proceed sequentially through the plan.

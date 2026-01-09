@@ -1,0 +1,204 @@
+Based on your AI-powered real estate platform, here is a detailed feature set for three core assistants and a unified system to track all activity. For each assistant, you'll find **10 specific features** and a corresponding **dummy JSON file** that shows the data structure needed to power those features.
+
+### 🤖 **Linda (Intelligent Communications Hub)**
+Manages all client conversations, acting as the central nervous system for engagement.
+
+**Top 10 Features:**
+1.  **Multilingual Intent Recognition:** Instantly detects language and core intent (inquiry, complaint, viewing request) from messages.
+2.  **AI-Powered Smart Replies:** Suggests contextual, personalized response options to agents in real-time.
+3.  **Automated Lead Scoring & Routing:** Scores leads based on conversation quality and routes high-potential leads to top agents.
+4.  **Sentiment Analysis & Alerting:** Monitors chat sentiment and alerts managers to frustrated clients for immediate intervention.
+5.  **Viewing & Meeting Scheduler:** Integrates with agent calendars to allow clients to book viewings directly via chat.
+6.  **Property Matchmaker:** Analyzes client requirements from conversation and fetches matching listings from Mary's inventory.
+7.  **Document Collection Assistant:** Guides clients through uploading required documents (passport, visa) via chat with validation.
+8.  **Payment Link Generator:** Creates and sends secure payment links for booking deposits or fees within the chat thread.
+9.  **24/7 FAQ Automaton:** Answers common questions about areas, fees, or process instantly, at any time.
+10. **Conversation Summary Generator:** Produces a concise summary post-chat for the CRM, including next steps.
+
+**Dummy JSON - `linda_conversation.json`:**
+```json
+{
+  "session_id": "conv_ld_20231027_001",
+  "client": {
+    "client_id": "client_ua001",
+    "name": "Fatima Al Zahra",
+    "preferred_language": "ar",
+    "phone": "+971501234567"
+  },
+  "channel": "whatsapp_business",
+  "agent_assigned": "agent_sara",
+  "messages": [
+    {
+      "timestamp": "2023-10-27T10:15:00Z",
+      "sender": "client",
+      "content": "Hello, looking for a 2BR apartment for rent in Dubai Marina.",
+      "detected_intent": "rental_inquiry",
+      "detected_language": "ar",
+      "sentiment_score": 0.7
+    },
+    {
+      "timestamp": "2023-10-27T10:15:05Z",
+      "sender": "linda_ai",
+      "content": "أهلا وسهلا فاطمة! I have found 3 suitable 2BR apartments in Dubai Marina. Should I send you the links?",
+      "type": "smart_reply_used",
+      "matched_properties": ["prop_dm_201", "prop_dm_205", "prop_dm_210"]
+    }
+  ],
+  "summary": {
+    "lead_score": 85,
+    "next_action": "send_listing_links_and_schedule_viewing",
+    "required_documents": ["passport_copy", "visa_page"]
+  }
+}
+```
+
+### 🛠️ **Nina (Proactive Support & Operations)**
+Handles all post-sale and tenant-related interactions, focusing on retention and satisfaction.
+
+**Top 10 Features:**
+1.  **Predictive Maintenance Alerts:** Analyzes property age and prior issues to schedule preventative maintenance.
+2.  **Automated Ticket Creation & Routing:** Creates support tickets from chat, email, or voice, routing them to the correct vendor.
+3.  **Digital Move-In/Move-Out Checklists:** Guides tenants through inspections via a digital checklist with photo uploads.
+4.  **Vendor Performance Tracker:** Rates and logs vendor response times, quality, and costs.
+5.  **Rent Renewal Predictor:** Identifies tenants likely to renew or leave, prompting early action.
+6.  **Utility Management Assistant:** Helps tenants set up/move DEWA, internet, and alerts about due bills.
+7.  **Community Rulebook FAQ:** Instant answers on building rules, parking, pet policies.
+8.  **Emergency Protocol Guide:** Provides immediate steps and contacts for emergencies (leak, power outage).
+9.  **Satisfaction Survey Automator:** Sends and collects feedback after issue resolution or lease renewal.
+10. **Maintenance History Log:** Maintains a complete, searchable history of all work done on a property.
+
+**Dummy JSON - `nina_support_ticket.json`:**
+```json
+{
+  "ticket_id": "ticket_nina_20231028_452",
+  "property_id": "prop_dm_205",
+  "tenant_id": "tenant_zk002",
+  "reported_by": "tenant",
+  "issue_category": "maintenance",
+  "issue_subcategory": "plumbing",
+  "description": "Water leak under kitchen sink. Minor puddle.",
+  "urgency": "medium",
+  "created_at": "2023-10-28T14:30:00Z",
+  "status_log": [
+    {
+      "status": "created",
+      "timestamp": "2023-10-28T14:30:00Z",
+      "actor": "nina_ai"
+    },
+    {
+      "status": "assigned",
+      "timestamp": "2023-10-28T14:35:00Z",
+      "actor": "ops_manager",
+      "assigned_to": "vendor_aquafix"
+    }
+  ],
+  "predicted_issue": "loose_pipe_connection",
+  "suggested_vendor": "vendor_aquafix",
+  "estimated_cost_aed": 250,
+  "tenant_communication_log": [
+    "Confirmation sent to tenant at 14:31.",
+    "Vendor ETA shared with tenant at 14:40."
+  ]
+}
+```
+
+### 📢 **Olivia (Data-Driven Marketing Engine)**
+Drives lead generation and market presence through intelligent campaigns.
+
+**Top 10 Features:**
+1.  **Automated Multi-Platform Listing:** Syndicates listings to Property Finder, Bayut, Dubizzle with formatted descriptions.
+2.  **Competitor Price Monitoring:** Tracks asking prices for similar properties in the same building/area.
+3.  **Lead Source Performance Dashboard:** Shows ROI per channel (Facebook, Google, referrals).
+4.  **Personalized Email Campaign Engine:** Sends tailored property suggestions to leads based on their search history.
+5.  **Social Media Content Scheduler:** Creates and schedules posts with optimal timing for engagement.
+6.  **Virtual Tour Integration Hub:** Manages links and analytics for 3D Matterport tours.
+7.  **Market Trend Report Generator:** Creates monthly reports on price/sqft and demand per community for Zoe.
+8.  **Ad Copy A/B Tester:** Tests different headlines and images to optimize click-through rates.
+9.  **High-Value Lead Nurture Workflow:** Automates a sequence of contacts for leads with high budgets.
+10. **Campaign ROI Calculator:** Tracks ad spend directly to closed deals and calculates precise ROI.
+
+**Dummy JSON - `olivia_campaign.json`:**
+```json
+{
+  "campaign_id": "camp_ol_2023_q4_palm",
+  "name": "Q4 Luxury Push - Palm Jumeirah Villas",
+  "target_properties": ["prop_pj_villa12", "prop_pj_villa18"],
+  "channels": [
+    {
+      "name": "property_finder_premium",
+      "budget_aed": 5000,
+      "clicks": 1200,
+      "leads_generated": 45
+    },
+    {
+      "name": "instagram_ads",
+      "budget_aed": 3000,
+      "impressions": 150000,
+      "profile_visits": 3200
+    }
+  ],
+  "performance": {
+    "total_leads": 52,
+    "cost_per_lead_aed": 153.8,
+    "leads_to_viewing_rate": "38%",
+    "viewing_to_offer_rate": "15%",
+    "estimated_roi": 350
+  },
+  "content_assets": {
+    "primary_images": ["villa12_pool.jpg", "villa18_view.jpg"],
+    "virtual_tour_links": ["https://my.matterport.com/show/..."]
+  },
+  "competitor_benchmark": {
+    "avg_price_per_sqft_competitor": 1250,
+    "our_price_per_sqft": 1290,
+    "differentiating_factor": "full_smart_home_automation"
+  }
+}
+```
+
+### ⏳ **The Unified Timeline & Event History System**
+For all AI assistants to work in concert, you need a central log where every significant action is recorded. This is the single source of truth for "what happened" in your company.
+
+**Core Concept:** Any module (Linda, Mary, a human agent) can **emit an event** to this central timeline. Any other module can **listen for relevant events** to trigger their own actions.
+
+**Dummy JSON - `unified_timeline_event.json`:**
+```json
+{
+  "event_id": "event_20231029_084511_abc123",
+  "timestamp": "2023-10-29T08:45:11Z",
+  "event_type": "PROPERTY_STATUS_UPDATED",
+  "initiated_by": {
+    "entity_type": "ai_assistant",
+    "entity_id": "mary_inventory"
+  },
+  "related_entities": [
+    {"type": "property", "id": "prop_dm_205"},
+    {"type": "client", "id": "client_ua001"},
+    {"type": "contract", "id": "lease_2023001"}
+  ],
+  "payload": {
+    "old_status": "available_for_rent",
+    "new_status": "under_offer",
+    "notes": "Offer accepted via agent Sara. Security deposit received."
+  },
+  "downstream_actions_triggered": [
+    {
+      "assistant": "linda",
+      "action": "send_offer_accepted_confirmation",
+      "status": "completed"
+    },
+    {
+      "assistant": "olivia",
+      "action": "mark_property_as_pending_on_portals",
+      "status": "pending"
+    }
+  ]
+}
+```
+
+**How the Unified Timeline Works:**
+1.  **Event Creation:** When Mary updates a property's status, her module creates a `PROPERTY_STATUS_UPDATED` event and posts it to the central timeline.
+2.  **Event Notification:** The timeline system notifies all subscribers. Linda is subscribed to know when to communicate with clients. Olivia is subscribed to know when to update listings.
+3.  **Automated Action:** Linda and Olivia automatically execute their tasks (send confirmation, update portals) because the event tells them everything they need to know (`property_id`, `client_id`, `new_status`).
+
+This architecture is what makes your platform intelligent. It moves from isolated tools to a responsive organism where one action automatically triggers the next correct step across your entire business. To build this, you would start by defining the core `event_type` enums (e.g., `LEAD_CREATED`, `CONTRACT_SIGNED`, `PAYMENT_RECEIVED`) and then build the central event dispatcher and logger.

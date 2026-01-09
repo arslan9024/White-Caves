@@ -1,0 +1,154 @@
+Excellent. This defines the complete **operational hierarchy and workflow** for your AI-powered real estate company. Let's synthesize this into a coherent, integrated model with clear roles, data flow, and a visual system for task and performance management.
+
+Here is the consolidated plan, featuring a new **Unified Task Intelligence Dashboard** and a **Performance Scoring Engine**.
+
+### 🏢 **Operational Hierarchy & AI Command Structure**
+```mermaid
+flowchart TD
+    subgraph GenLayer[Lead Generation Layer]
+        Linda[Linda - Intelligent Comms]
+        Olivia[Olivia - Marketing & Social]
+    end
+
+    subgraph CommandLayer[AI Command & Oversight Layer]
+        Zoe[Zoe - AI Command Center]
+        Aurora[Aurora - System Design]
+    end
+
+    subgraph OpsLayer[Human Operations Layer]
+        OpsMgmt[Operations Management Team]
+        DeptHead[Department Heads]
+    end
+
+    subgraph SupportLayer[AI Support & Records Layer]
+        Theodora[Theodora - Payments]
+        Henry[Henry - Record Keeper]
+    end
+
+    GenLayer -- Feeds Raw Leads --> CommandLayer
+    Zoe -- Oversees & Analyzes --> Aurora
+    Aurora -- Provides Tools to --> OpsMgmt
+    OpsMgmt -- Assigns Tasks & Manages --> Staff[Company Staff/Agents]
+    Staff -- Request Payment Steps --> Theodora
+    OpsMgmt & Staff -- Log All Actions --> Henry
+    
+    DeptHead -- Uses Performance Data from Henry --> Prizedec[Monthly Top Performer Prize]
+```
+
+### 🎯 **Aurora's Unified Component: "The Operations Intelligence Dashboard"**
+This is the central panel for human operations managers to oversee the success/failure/redirection of all tasks. Aurora will design this as a single, reusable component (`TaskLifecycleMonitor.jsx`).
+
+**Core Features:**
+1.  **Real-Time Task Pipeline:** Kanban-style view (To-Do, In Progress, Awaiting Payment, Completed, Stalled) of all assigned tasks.
+2.  **Task Success/Failure Analytics:** Automatically calculates success rate per task type, agent, and lead source.
+3.  **One-Click Redirection & Reassignment:** Drag-and-drop tasks between agents or departments. Each redirection is logged with a reason, sent to **Henry**.
+4.  **Root Cause Analysis Module:** Tags failure reasons (e.g., "Client Unresponsive," "Funding Failed," "Property Unavailable") to identify process bottlenecks.
+5.  **Integrated Communication Panel:** Directly message the assigned staff member via **Linda's** API from within the task card.
+6.  **Payment Gateway Trigger:** A "Request Payment" button that automatically creates an invoice via **Theodora** and sends it to the client.
+7.  **Automated SLA Tracker:** Visual countdown for time-sensitive tasks (e.g., "Offer Response Due in 6h").
+8.  **Performance Preview:** Shows key stats (tasks completed, avg. time) for each staff member inline, aiding reassignment decisions.
+
+### 📊 **Performance Calculation Engine for Department Heads**
+Department heads will use a **standardized scoring formula** fed by data from **Henry's** immutable logs. This eliminates bias and automates the "Top Performer" selection.
+
+**Sample Performance Metric Formula (for a Sales Agent):**
+```
+Total_Score = 
+  (Number of Deals Closed * 50 pts) +
+  (Total Deal Value in AED / 100,000 * 5 pts) +
+  (Average Client Satisfaction Score * 20 pts) +
+  (Tasks Completed on Time * 2 pts) -
+  (Tasks Escalated or Redirected * 10 pts)
+```
+The department head's dashboard, designed by **Aurora**, will rank all staff by this score each month.
+
+### 📁 **Dummy JSON Files for Key Functions**
+
+**1. Unified Task Object (Used in Aurora's Dashboard)**
+```json
+{
+  "task_id": "task_sale_20241105_001",
+  "title": "Close sale for PROP-DM-205",
+  "description": "Client Ahmed is ready to proceed. Finalize MOU and collect deposit.",
+  "lead_source": "linda", // or "olivia"
+  "status": "in_progress",
+  "priority": "high",
+  "assigned_to": {
+    "staff_id": "agent_sara",
+    "department": "sales"
+  },
+  "created_at": "2024-11-05T09:00:00Z",
+  "due_by": "2024-11-07T18:00:00Z",
+  "current_stage": "awaiting_mou_signature",
+  "history": [
+    {
+      "timestamp": "2024-11-05T09:00:00Z",
+      "event": "created",
+      "by": "ops_manager_john"
+    },
+    {
+      "timestamp": "2024-11-05T09:05:00Z",
+      "event": "assigned",
+      "to": "agent_sara",
+      "by": "ops_manager_john"
+    }
+  ],
+  "related_entities": {
+    "property_id": "prop_dm_205",
+    "client_id": "client_ahmed_001",
+    "lead_id": "lead_20241104_ld_015"
+  },
+  "payment_context": {
+    "required": true,
+    "type": "booking_deposit",
+    "amount_aed": 50000,
+    "theodora_invoice_id": null // Populated when triggered
+  },
+  "kpis": {
+    "success_criteria": ["mou_signed", "deposit_received"],
+    "failure_risk": "low",
+    "estimated_value_aed": 120000
+  }
+}
+```
+
+**2. Performance Log Entry (For Henry, fed to Dept Heads)**
+```json
+{
+  "performance_log_id": "perf_agent_sara_202411",
+  "staff_id": "agent_sara",
+  "department": "sales",
+  "period": "2024-11",
+  "metrics": {
+    "tasks_assigned": 15,
+    "tasks_completed_successfully": 14,
+    "tasks_redirected": 1,
+    "total_deals_closed": 5,
+    "total_deal_value_aed": 6250000,
+    "avg_client_satisfaction_score": 4.7,
+    "avg_task_completion_time_hours": 48
+  },
+  "calculated_score": 892,
+  "ranking": 1,
+  "qualifies_for_prize": true,
+  "breakdown": {
+    "deal_points": 250,
+    "value_points": 312.5,
+    "satisfaction_points": 94,
+    "completion_points": 28,
+    "redirection_penalty": -10
+  }
+}
+```
+
+### 🔄 **Integrated Workflow Example: From Lead to Prize**
+1.  **Lead Capture:** **Olivia** generates a lead from Instagram, creating a `new_lead` event.
+2.  **Command Center Analysis:** **Zoe** analyzes the lead quality and recommends it to the Operations dashboard.
+3.  **Task Creation & Assignment:** An Operations Manager uses **Aurora's dashboard** to create a "Qualify Lead" task and assigns it to **Agent Sara**.
+4.  **Task Execution:** Sara contacts the client via **Linda**. She qualifies them, books a viewing, and eventually closes a sale.
+5.  **Payment Integration:** At the "collect deposit" stage, Sara clicks **"Request Payment"** in the task. **Theodora** generates an invoice, and upon payment, updates the task status.
+6.  **Immutable Logging:** Every step (assignment, client call, viewing scheduled, payment received) is emitted as an event and recorded by **Henry**.
+7.  **Performance Calculation:** At month's end, the Sales Department Head's dashboard queries **Henry** for all events related to Sara, runs the scoring formula, and identifies her as the top performer.
+8.  **Prize Awarded:** The system flags Sara as the winner, automating the prize notification and process.
+
+This model creates a transparent, data-driven, and highly efficient loop from marketing to reward, powered by your unified AI ecosystem. Would you like to refine the **specific KPIs in the performance formula** or delve into the **UI design for the Task Redirection interface**?
