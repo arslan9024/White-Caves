@@ -1,7 +1,7 @@
 .assistant-hub-sidebar {
   grid-area: sidebar;
-  width: 280px;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background: var(--sidebar-bg, #ffffff);
   border-right: 1px solid var(--border-color, #e2e8f0);
   display: flex;

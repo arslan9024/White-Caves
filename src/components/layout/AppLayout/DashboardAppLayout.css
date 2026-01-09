@@ -1,40 +1,87 @@
-.dashboard-app-layout {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  grid-template-rows: 70px 1fr;
+.dashboard-app-wrapper {
+  display: flex;
+  flex-direction: column;
   height: 100vh;
-  grid-template-areas:
-    "sidebar header"
-    "sidebar main";
-  background: var(--bg-primary, #f8fafc);
   overflow: hidden;
+}
+
+.dashboard-app-wrapper > .public-navbar {
+  flex-shrink: 0;
+}
+
+.dashboard-app-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  background: var(--bg-primary, #f8fafc);
 }
 
 [data-theme="dark"] .dashboard-app-layout {
   background: var(--bg-primary, #0f172a);
 }
 
-.dashboard-app-layout.sidebar-closed {
-  grid-template-columns: 0 1fr;
+.sidebar-container {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  transition: width 0.2s ease;
 }
 
-.dashboard-app-layout.tablet {
-  grid-template-columns: 70px 1fr;
+.sidebar-container .assistant-hub-sidebar {
+  width: 100%;
+  height: 100%;
 }
 
-.dashboard-app-layout.mobile {
-  grid-template-columns: 1fr;
-  grid-template-areas:
-    "header"
-    "main";
+.sidebar-resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: col-resize;
+  background: transparent;
+  z-index: 10;
+  transition: background 0.2s;
+}
+
+.sidebar-resize-handle:hover,
+.sidebar-resize-handle:active {
+  background: rgba(211, 47, 47, 0.1);
+}
+
+.sidebar-resize-handle svg {
+  color: var(--text-tertiary, #94a3b8);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.sidebar-resize-handle:hover svg,
+.sidebar-resize-handle:active svg {
+  opacity: 1;
+  color: #D32F2F;
+}
+
+.dashboard-app-layout.sidebar-closed .sidebar-container {
+  width: 0 !important;
+}
+
+.dashboard-app-layout.collapsed .sidebar-container {
+  width: 70px !important;
 }
 
 .dashboard-app-main {
-  display: contents;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .dashboard-main-grid-area {
-  grid-area: main;
+  flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 0;
@@ -58,21 +105,30 @@
 }
 
 @media (max-width: 1024px) {
-  .dashboard-app-layout {
-    grid-template-columns: 70px 1fr;
-  }
-  
-  .dashboard-app-layout.sidebar-open {
-    grid-template-columns: 280px 1fr;
+  .sidebar-resize-handle {
+    display: none;
   }
 }
 
 @media (max-width: 768px) {
   .dashboard-app-layout {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "header"
-      "main";
+    flex-direction: column;
+  }
+
+  .sidebar-container {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    bottom: 0;
+    width: 280px !important;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 100;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .dashboard-app-layout.sidebar-open .sidebar-container {
+    transform: translateX(0);
   }
 
   .dashboard-main-grid-area {
