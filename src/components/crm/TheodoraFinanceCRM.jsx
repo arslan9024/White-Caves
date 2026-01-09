@@ -4,7 +4,7 @@ import {
   ArrowUp, ArrowDown, Search, Filter, Download, Calendar,
   CheckCircle, Clock, AlertCircle, PieChart, BarChart3, Send, MessageSquare
 } from 'lucide-react';
-import { PaymentInstructionDeck } from './shared';
+import { PaymentInstructionDeck, AssistantDocsTab } from './shared';
 import './AssistantDashboard.css';
 
 const INVOICES = [
@@ -91,7 +91,7 @@ const TheodoraFinanceCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['overview', 'invoices', 'payments', 'expenses', 'reports'].map(tab => (
+        {['overview', 'invoices', 'payments', 'expenses', 'reports', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -279,6 +279,8 @@ const TheodoraFinanceCRM = () => {
             </div>
           </div>
         )}
+
+        {activeTab === 'docs' && <AssistantDocsTab assistantId="theodora" />}
       </div>
     </div>
   );

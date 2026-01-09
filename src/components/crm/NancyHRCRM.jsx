@@ -6,7 +6,7 @@ import {
   Building, GraduationCap, DollarSign, Star, UserPlus, Send, Zap, PenTool
 } from 'lucide-react';
 import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
-import { JobPostComposer } from './shared';
+import { JobPostComposer, AssistantDocsTab } from './shared';
 import { NANCY_FEATURES } from './data/assistantFeatures';
 import './NancyHRCRM.css';
 

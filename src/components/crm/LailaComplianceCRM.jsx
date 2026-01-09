@@ -4,6 +4,7 @@ import {
   Search, Filter, Eye, Download, XCircle, User,
   ArrowUp, ArrowDown, AlertCircle, Lock, Unlock
 } from 'lucide-react';
+import { AssistantDocsTab } from './shared';
 import './AssistantDashboard.css';
 
 const KYC_VERIFICATIONS = [
@@ -88,7 +89,7 @@ const LailaComplianceCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['kyc', 'contracts', 'aml', 'regulations'].map(tab => (
+        {['kyc', 'contracts', 'aml', 'regulations', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -206,6 +207,8 @@ const LailaComplianceCRM = () => {
             </div>
           </div>
         )}
+
+        {activeTab === 'docs' && <AssistantDocsTab assistantId="laila" />}
       </div>
     </div>
   );

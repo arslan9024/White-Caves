@@ -5,6 +5,7 @@ import {
   BarChart3, TrendingUp, CheckCircle, AlertTriangle,
   RefreshCw, Package, FileCode, Cpu, Settings
 } from 'lucide-react';
+import { AssistantDocsTab } from './shared';
 import './AssistantDashboard.css';
 
 const COMPONENT_LIBRARY = [
@@ -111,7 +112,7 @@ const HazelFrontendCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['overview', 'components', 'design-system', 'performance', 'accessibility'].map(tab => (
+        {['overview', 'components', 'design-system', 'performance', 'accessibility', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -263,6 +264,8 @@ const HazelFrontendCRM = () => {
             </div>
           </div>
         )}
+
+        {activeTab === 'docs' && <AssistantDocsTab assistantId="hazel" />}
       </div>
     </div>
   );

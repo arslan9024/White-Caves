@@ -4,6 +4,7 @@ import {
   Phone, Mail, Calendar, Clock, CheckCircle, AlertCircle,
   ArrowUp, ArrowDown, Filter, Search, Plus, Eye
 } from 'lucide-react';
+import { AssistantDocsTab } from './shared';
 import './AssistantDashboard.css';
 
 const PIPELINE_STAGES = [
@@ -94,7 +95,7 @@ const SophiaSalesCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['pipeline', 'deals', 'agents', 'forecasting'].map(tab => (
+        {['pipeline', 'deals', 'agents', 'forecasting', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -221,6 +222,8 @@ const SophiaSalesCRM = () => {
             </div>
           </div>
         )}
+
+        {activeTab === 'docs' && <AssistantDocsTab assistantId="sophia" />}
       </div>
     </div>
   );

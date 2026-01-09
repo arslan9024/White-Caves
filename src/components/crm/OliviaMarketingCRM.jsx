@@ -7,7 +7,7 @@ import {
   RefreshCw, Settings, Clock, CheckCircle, AlertCircle, XCircle,
   Database, Zap, Activity, Play, Pause, Link2, Building2
 } from 'lucide-react';
-import { PlatformPublisherForm } from './shared';
+import { PlatformPublisherForm, AssistantDocsTab } from './shared';
 import { 
   selectInventoryStats 
 } from '../../store/slices/inventorySlice';
@@ -210,7 +210,7 @@ const OliviaMarketingCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['automation', 'insights', 'campaigns', 'social', 'listings', 'publish'].map(tab => (
+        {['automation', 'insights', 'campaigns', 'social', 'listings', 'publish', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -528,6 +528,8 @@ const OliviaMarketingCRM = () => {
             />
           </div>
         )}
+
+        {activeTab === 'docs' && <AssistantDocsTab assistantId="olivia" />}
       </div>
     </div>
   );

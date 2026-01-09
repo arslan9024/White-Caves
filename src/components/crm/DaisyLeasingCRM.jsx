@@ -4,6 +4,7 @@ import {
   Search, Plus, Filter, CheckCircle, AlertCircle,
   ArrowUp, ArrowDown, Phone, Mail, MapPin, DollarSign
 } from 'lucide-react';
+import { AssistantDocsTab } from './shared';
 import './AssistantDashboard.css';
 
 const ACTIVE_LEASES = [
@@ -89,7 +90,7 @@ const DaisyLeasingCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['leases', 'inquiries', 'maintenance', 'renewals'].map(tab => (
+        {['leases', 'inquiries', 'maintenance', 'renewals', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -205,6 +206,8 @@ const DaisyLeasingCRM = () => {
             </div>
           </div>
         )}
+
+        {activeTab === 'docs' && <AssistantDocsTab assistantId="daisy" />}
       </div>
     </div>
   );

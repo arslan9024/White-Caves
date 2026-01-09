@@ -7,9 +7,12 @@ import {
 import { getAssistantDocs } from '../../../config/assistantDocs';
 import './AssistantDocsTab.css';
 
-const AssistantDocsTab = ({ assistantId, assistantName, assistantColor }) => {
+const AssistantDocsTab = ({ assistantId, assistantName: propName, assistantColor: propColor }) => {
   const [expandedSection, setExpandedSection] = useState('features');
   const docs = getAssistantDocs(assistantId);
+  
+  const assistantName = propName || docs?.name || assistantId;
+  const assistantColor = propColor || docs?.color || '#8B5CF6';
 
   if (!docs) {
     return (

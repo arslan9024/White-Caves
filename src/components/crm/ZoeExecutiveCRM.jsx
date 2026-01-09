@@ -7,6 +7,7 @@ import {
   Filter, Inbox, TrendingUp, AlertTriangle, Lightbulb,
   DollarSign, Shield, Archive, Eye, ChevronRight, Zap
 } from 'lucide-react';
+import { AssistantDocsTab } from './shared';
 import {
   selectFilteredSuggestions,
   selectUnreviewedSuggestionsCount,
@@ -224,7 +225,7 @@ const ZoeExecutiveCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['suggestions', 'calendar', 'tasks', 'executives', 'reports'].map(tab => (
+        {['suggestions', 'calendar', 'tasks', 'executives', 'reports', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -548,6 +549,8 @@ const ZoeExecutiveCRM = () => {
             </div>
           </div>
         )}
+
+        {activeTab === 'docs' && <AssistantDocsTab assistantId="zoe" />}
       </div>
     </div>
   );

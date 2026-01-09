@@ -5,6 +5,7 @@ import {
   AlertTriangle, Clock, RefreshCw, Box, Code, Cpu,
   HardDrive, Network, Lock, GitBranch, Terminal
 } from 'lucide-react';
+import { AssistantDocsTab } from './shared';
 import './AssistantDashboard.css';
 
 const API_ENDPOINTS = [
@@ -119,7 +120,7 @@ const WillowBackendCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['overview', 'apis', 'database', 'caching', 'security', 'realtime'].map(tab => (
+        {['overview', 'apis', 'database', 'caching', 'security', 'realtime', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -338,6 +339,8 @@ const WillowBackendCRM = () => {
             </div>
           </div>
         )}
+
+        {activeTab === 'docs' && <AssistantDocsTab assistantId="willow" />}
       </div>
     </div>
   );
