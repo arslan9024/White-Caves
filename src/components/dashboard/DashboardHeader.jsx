@@ -1,25 +1,28 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { 
   Search, Bell, User, Moon, Sun, Menu, LogOut, 
   Settings, HelpCircle, ChevronDown, LayoutDashboard,
-  Command, Layers, CreditCard
+  CreditCard, Bot, MessageSquare, Building2, Target, Users, TrendingUp,
+  Home, Wallet, Megaphone, Shield, Server, Palette, Database,
+  Scale, Eye, Zap, Activity, Clock, Command, FileText, BarChart3,
+  Lightbulb, Code, Wrench, Crown, PieChart, Map, Star, Heart, Send
 } from 'lucide-react';
 import { setTheme } from '../../store/navigationSlice';
+import { setMainViewContent } from '../../store/appSlice';
 import './DashboardHeader.css';
 
-const DASHBOARD_TABS = [
-  { id: 'overview', title: 'Dashboard', icon: LayoutDashboard },
-  { id: 'ai-command', title: 'AI Command', icon: Command },
-  { id: 'ai-hub', title: 'AI Hub', icon: Layers }
-];
+const ICON_MAP = {
+  LayoutDashboard, Lightbulb, BarChart3, FileText, MessageSquare, Users, 
+  Bot, Building2, Database, Target, Star, Heart, TrendingUp, Home,
+  Wallet, CreditCard, Shield, Megaphone, Eye, Wrench, Clock, Code,
+  Crown, PieChart, Map, Send, Activity, Server, Palette, Scale, Zap, Command
+};
 
 const DashboardHeader = ({ 
-  title = 'Executive Dashboard',
-  subtitle = 'White Caves Real Estate LLC',
-  activeTab = 'overview',
-  onTabChange,
+  activeAssistant,
+  onFeatureSelect,
   onMenuToggle,
   notifications = [],
   user = null,
@@ -33,11 +36,29 @@ const DashboardHeader = ({
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [activeFeature, setActiveFeature] = useState(null);
 
   const notifRef = useRef(null);
   const userMenuRef = useRef(null);
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
+
+  const features = useMemo(() => {
+    if (!activeAssistant?.features) return [];
+    return activeAssistant.features;
+  }, [activeAssistant]);
+
+  useEffect(() => {
+    if (features.length > 0 && !activeFeature) {
+      setActiveFeature(features[0].id);
+    }
+  }, [features, activeFeature]);
+
+  useEffect(() => {
+    if (activeAssistant) {
+      setActiveFeature(activeAssistant.features?.[0]?.id || null);
+    }
+  }, [activeAssistant?.id]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -68,6 +89,15 @@ const DashboardHeader = ({
     dispatch(setTheme(newTheme));
   };
 
+  const handleFeatureClick = (feature) => {
+    setActiveFeature(feature.id);
+    dispatch(setMainViewContent({
+      component: feature.component,
+      props: { assistantId: activeAssistant?.id }
+    }));
+    onFeatureSelect?.(feature);
+  };
+
   const getUserInitials = () => {
     if (!user) return 'WC';
     if (user.displayName) {
@@ -86,7 +116,7 @@ const DashboardHeader = ({
         navigate('/profile');
         break;
       case 'settings':
-        onTabChange?.('settings');
+        navigate('/settings');
         break;
       case 'billing':
         navigate('/billing');
@@ -102,34 +132,41 @@ const DashboardHeader = ({
     }
   };
 
+  const getFeatureIcon = (iconName) => {
+    return ICON_MAP[iconName] || LayoutDashboard;
+  };
+
   return (
     <header className="dashboard-header-crimson">
       <div className="header-left">
         <button className="mobile-menu-btn" onClick={onMenuToggle}>
           <Menu size={20} />
         </button>
-        
-        <div className="header-logo">
-          <div className="logo-icon">
-            <span>W</span>
+
+        {activeAssistant && (
+          <div className="active-assistant-context">
+            <div 
+              className="assistant-badge"
+              style={{ background: `${activeAssistant.color}20`, color: activeAssistant.color }}
+            >
+              <Bot size={16} />
+              <span>{activeAssistant.name}</span>
+            </div>
           </div>
-          <div className="logo-text">
-            <span className="logo-title">White Caves</span>
-            <span className="logo-subtitle">AI Command Center</span>
-          </div>
-        </div>
+        )}
 
         <div className="header-tabs">
-          {DASHBOARD_TABS.map(tab => {
-            const Icon = tab.icon;
+          {features.map(feature => {
+            const Icon = getFeatureIcon(feature.icon);
             return (
               <button
-                key={tab.id}
-                className={`header-tab ${activeTab === tab.id ? 'active' : ''}`}
-                onClick={() => onTabChange?.(tab.id)}
+                key={feature.id}
+                className={`header-tab ${activeFeature === feature.id ? 'active' : ''}`}
+                onClick={() => handleFeatureClick(feature)}
+                style={{ '--tab-color': activeAssistant?.color || '#D32F2F' }}
               >
                 <Icon size={18} />
-                <span>{tab.title}</span>
+                <span>{feature.label}</span>
               </button>
             );
           })}
@@ -142,7 +179,7 @@ const DashboardHeader = ({
           <input
             type="text"
             className="dashboard-search-input"
-            placeholder="Search assistants, properties, leads..."
+            placeholder={`Search ${activeAssistant?.name || 'assistants'}...`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => setSearchFocused(true)}

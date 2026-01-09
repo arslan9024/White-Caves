@@ -1,52 +1,8 @@
 .dashboard-shell {
   min-height: 100vh;
-  background: #F5F5F5;
+  background: var(--bg-primary, #f8fafc);
 }
 
-.dashboard-shell[data-theme="dark"] {
-  background: #0F0F1A;
-}
-
-.dashboard-main {
-  margin-top: 64px;
-  min-height: calc(100vh - 64px);
-  transition: margin-left 0.1s ease;
-}
-
-.dashboard-content {
-  padding: 24px;
-  max-width: 100%;
-}
-
-.mobile-overlay {
-  position: fixed;
-  top: 64px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 80;
-  backdrop-filter: blur(4px);
-}
-
-@media (max-width: 1280px) {
-  .dashboard-content {
-    padding: 20px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .dashboard-main {
-    margin-left: 0 !important;
-  }
-
-  .dashboard-content {
-    padding: 16px;
-  }
-}
-
-@media (max-width: 768px) {
-  .dashboard-content {
-    padding: 12px;
-  }
+[data-theme="dark"] .dashboard-shell {
+  background: var(--bg-primary, #0f172a);
 }

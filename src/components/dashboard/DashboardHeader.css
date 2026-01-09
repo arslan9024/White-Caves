@@ -12,10 +12,15 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
+.dashboard-header-crimson {
+  grid-area: header;
+  height: 70px;
+}
+
 .header-left {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
 }
 
 .mobile-menu-btn {
@@ -37,54 +42,26 @@
   color: #212121;
 }
 
-.header-logo {
+.active-assistant-context {
   display: flex;
   align-items: center;
-  gap: 12px;
 }
 
-.logo-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #D32F2F 0%, #B71C1C 100%);
+.assistant-badge {
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.logo-icon span {
-  font-size: 20px;
-  font-weight: 800;
-  color: white;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.logo-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.logo-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #212121;
-  line-height: 1.2;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.logo-subtitle {
-  font-size: 11px;
-  color: #757575;
-  font-weight: 500;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .header-tabs {
   display: flex;
   align-items: center;
   gap: 4px;
-  margin-left: 16px;
+  margin-left: 8px;
   padding-left: 16px;
   border-left: 1px solid #E0E0E0;
 }
@@ -111,12 +88,12 @@
 }
 
 .header-tab.active {
-  background: #FFEBEE;
-  color: #D32F2F;
+  background: color-mix(in srgb, var(--tab-color, #D32F2F) 10%, transparent);
+  color: var(--tab-color, #D32F2F);
 }
 
 .header-tab.active svg {
-  color: #D32F2F;
+  color: var(--tab-color, #D32F2F);
 }
 
 .header-center {

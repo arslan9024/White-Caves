@@ -1,0 +1,81 @@
+.dashboard-app-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  grid-template-rows: 70px 1fr;
+  height: 100vh;
+  grid-template-areas:
+    "sidebar header"
+    "sidebar main";
+  background: var(--bg-primary, #f8fafc);
+  overflow: hidden;
+}
+
+[data-theme="dark"] .dashboard-app-layout {
+  background: var(--bg-primary, #0f172a);
+}
+
+.dashboard-app-layout.sidebar-closed {
+  grid-template-columns: 0 1fr;
+}
+
+.dashboard-app-layout.tablet {
+  grid-template-columns: 70px 1fr;
+}
+
+.dashboard-app-layout.mobile {
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "header"
+    "main";
+}
+
+.dashboard-app-main {
+  display: contents;
+}
+
+.dashboard-main-grid-area {
+  grid-area: main;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  padding: 24px;
+  background: var(--bg-secondary, #f1f5f9);
+}
+
+[data-theme="dark"] .dashboard-main-grid-area {
+  background: var(--bg-secondary, #1e293b);
+}
+
+.dashboard-sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  backdrop-filter: blur(2px);
+}
+
+@media (max-width: 1024px) {
+  .dashboard-app-layout {
+    grid-template-columns: 70px 1fr;
+  }
+  
+  .dashboard-app-layout.sidebar-open {
+    grid-template-columns: 280px 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-app-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "header"
+      "main";
+  }
+
+  .dashboard-main-grid-area {
+    padding: 16px;
+  }
+}

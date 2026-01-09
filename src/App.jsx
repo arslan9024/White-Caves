@@ -227,42 +227,42 @@ function App() {
         
         <Route path="/owner/dashboard" element={
           <ProtectedRoute allowedRoles={['owner']}>
-            <AppLayout><OwnerDashboardPage /></AppLayout>
+            <OwnerDashboardPage />
           </ProtectedRoute>
         } />
         <Route path="/owner/business-model" element={
           <ProtectedRoute allowedRoles={['owner']}>
-            <AppLayout><BusinessModelPage /></AppLayout>
+            <BusinessModelPage />
           </ProtectedRoute>
         } />
         <Route path="/owner/client-services" element={
           <ProtectedRoute allowedRoles={['owner']}>
-            <AppLayout><ClientServicesPage /></AppLayout>
+            <ClientServicesPage />
           </ProtectedRoute>
         } />
         <Route path="/owner/system-health" element={
           <ProtectedRoute allowedRoles={['owner']}>
-            <AppLayout><SystemHealthPage /></AppLayout>
+            <SystemHealthPage />
           </ProtectedRoute>
         } />
         <Route path="/owner/whatsapp" element={
           <ProtectedRoute allowedRoles={['owner']}>
-            <AppLayout><WhatsAppDashboardPage /></AppLayout>
+            <WhatsAppDashboardPage />
           </ProtectedRoute>
         } />
         <Route path="/owner/whatsapp/chatbot" element={
           <ProtectedRoute allowedRoles={['owner']}>
-            <AppLayout><WhatsAppChatbotPage /></AppLayout>
+            <WhatsAppChatbotPage />
           </ProtectedRoute>
         } />
         <Route path="/owner/whatsapp/analytics" element={
           <ProtectedRoute allowedRoles={['owner']}>
-            <AppLayout><WhatsAppAnalyticsPage /></AppLayout>
+            <WhatsAppAnalyticsPage />
           </ProtectedRoute>
         } />
         <Route path="/owner/whatsapp/settings" element={
           <ProtectedRoute allowedRoles={['owner']}>
-            <AppLayout><WhatsAppSettingsPage /></AppLayout>
+            <WhatsAppSettingsPage />
           </ProtectedRoute>
         } />
         

@@ -9,6 +9,7 @@ import analyticsReducer from './analyticsSlice';
 import featuresReducer from './featuresSlice';
 import inventoryReducer from './slices/inventorySlice';
 import aiAssistantDashboardReducer from './slices/aiAssistantDashboardSlice';
+import appReducer from './appSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 
 export const store = configureStore({
@@ -22,7 +23,8 @@ export const store = configureStore({
     analytics: analyticsReducer,
     features: featuresReducer,
     inventory: inventoryReducer,
-    aiAssistantDashboard: aiAssistantDashboardReducer
+    aiAssistantDashboard: aiAssistantDashboardReducer,
+    app: appReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
