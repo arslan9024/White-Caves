@@ -1,48 +1,9 @@
-import React, { Suspense, lazy, useMemo } from 'react';
-import { LayoutDashboard, Bot, BarChart3, FileText, Loader } from 'lucide-react';
+import React from 'react';
+import { LayoutDashboard, Bot, BarChart3, FileText } from 'lucide-react';
 import './MainGridView.css';
 
-const CRM_COMPONENTS = {
-  zoe: lazy(() => import('../../crm/ZoeExecutiveCRM')),
-  mary: lazy(() => import('../../crm/MaryInventoryCRM')),
-  linda: lazy(() => import('../../crm/LindaWhatsAppCRM')),
-  clara: lazy(() => import('../../crm/ClaraLeadsCRM')),
-  nina: lazy(() => import('../../crm/NinaWhatsAppBotCRM')),
-  nancy: lazy(() => import('../../crm/NancyHRCRM')),
-  sophia: lazy(() => import('../../crm/SophiaSalesCRM')),
-  daisy: lazy(() => import('../../crm/DaisyLeasingCRM')),
-  theodora: lazy(() => import('../../crm/TheodoraFinanceCRM')),
-  olivia: lazy(() => import('../../crm/OliviaMarketingCRM')),
-  laila: lazy(() => import('../../crm/LailaComplianceCRM')),
-  aurora: lazy(() => import('../../crm/AuroraCTODashboard')),
-  hazel: lazy(() => import('../../crm/HazelFrontendCRM')),
-  willow: lazy(() => import('../../crm/WillowBackendCRM')),
-  evangeline: lazy(() => import('../../crm/EvangelineLegalCRM')),
-  sentinel: lazy(() => import('../../crm/SentinelPropertyCRM')),
-  hunter: lazy(() => import('../../crm/HunterLeadCRM')),
-  henry: lazy(() => import('../../crm/HenryAuditCRM')),
-  cipher: lazy(() => import('../../crm/CipherMarketCRM')),
-  atlas: lazy(() => import('../../crm/AtlasDevelopmentCRM')),
-  vesta: lazy(() => import('../../crm/VestaHandoverCRM')),
-  juno: lazy(() => import('../../crm/JunoCommunityCRM')),
-  kairos: lazy(() => import('../../crm/KairosLuxuryCRM')),
-  maven: lazy(() => import('../../crm/MavenInvestmentCRM'))
-};
-
-const LoadingFallback = () => (
-  <div className="crm-loading">
-    <Loader size={40} className="spinning" />
-    <span>Loading dashboard...</span>
-  </div>
-);
-
 const MainGridView = ({ content, activeAssistant, children }) => {
-  const CRMComponent = useMemo(() => {
-    if (!activeAssistant?.id) return null;
-    return CRM_COMPONENTS[activeAssistant.id] || null;
-  }, [activeAssistant?.id]);
-
-  const renderContent = () => {
+  const renderPlaceholder = () => {
     if (!activeAssistant) {
       return (
         <div className="main-grid-placeholder">
@@ -72,18 +33,6 @@ const MainGridView = ({ content, activeAssistant, children }) => {
       );
     }
 
-    if (children) {
-      return children;
-    }
-
-    if (CRMComponent) {
-      return (
-        <Suspense fallback={<LoadingFallback />}>
-          <CRMComponent assistant={activeAssistant} />
-        </Suspense>
-      );
-    }
-
     return (
       <div className="main-grid-content">
         <div className="content-header">
@@ -102,23 +51,25 @@ const MainGridView = ({ content, activeAssistant, children }) => {
         </div>
 
         <div className="content-body">
-          <div className="component-placeholder">
-            <div className="placeholder-card">
-              <h3>{content?.component || 'Dashboard'}</h3>
-              <p>
-                This is where the <strong>{content?.component || 'Dashboard'}</strong> component 
-                for <strong>{activeAssistant.name}</strong> would render.
-              </p>
-              <div className="capabilities">
-                <h4>Capabilities:</h4>
-                <ul>
-                  {activeAssistant.capabilities?.slice(0, 5).map((cap, index) => (
-                    <li key={index}>{cap.replace(/_/g, ' ')}</li>
-                  ))}
-                </ul>
+          {children || (
+            <div className="component-placeholder">
+              <div className="placeholder-card">
+                <h3>{content?.component || 'Dashboard'}</h3>
+                <p>
+                  This is where the <strong>{content?.component || 'Dashboard'}</strong> component 
+                  for <strong>{activeAssistant.name}</strong> would render.
+                </p>
+                <div className="capabilities">
+                  <h4>Capabilities:</h4>
+                  <ul>
+                    {activeAssistant.capabilities?.slice(0, 5).map((cap, index) => (
+                      <li key={index}>{cap.replace(/_/g, ' ')}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     );
@@ -126,7 +77,7 @@ const MainGridView = ({ content, activeAssistant, children }) => {
 
   return (
     <div className="main-grid-view">
-      {renderContent()}
+      {renderPlaceholder()}
     </div>
   );
 };
