@@ -15,13 +15,14 @@ Preferred communication style: Simple, everyday language.
 - **Design System**: Complete UI component library with Button, Input, Card, and Badge components featuring variants, sizes, states, and theme support, managed by an enhanced design token system for programmatic access to styles.
 - **SEO Optimization**: Comprehensive meta tags, structured data, and performance optimizations.
 - **Three-Tier Navigation System**:
-  - **MainNavBar (Public)**: For website visitors - logo, public nav links (Home/Properties/Services/About/Contact), Buy/Rent/Sell dropdowns, Sign In button. No search, theme toggle, notifications, or profile.
-  - **DashboardHeader (Internal)**: For authenticated users - displays active assistant badge, dynamic feature tabs based on selected assistant, search bar with Cmd+K shortcut, theme toggle, notifications bell, user profile dropdown. No logo (handled by MainNavBar).
-  - **AssistantHubSidebar**: Fixed 280px width sidebar exclusively for 24 AI assistants organized by 10 departments. Features card-style items with name, status indicator, description, favorite toggle, and notification badges. Includes search, department filtering, and localStorage persistence for favorites.
-  - **DashboardAppLayout**: CSS Grid layout (280px sidebar | 70px header | main grid) with responsive breakpoints (tablet: 70px collapsed, mobile: overlay with hamburger menu).
+  - **MainNavBar (Universal)**: Consistent across entire project - logo, public nav links (Home/Properties/Services/About/Contact), role-based nav items for authenticated users, theme toggle, notifications bell, user profile dropdown with Sign In button for guests.
+  - **DashboardFeatureBar (Dashboard Only)**: Active assistant badge, dynamic feature tabs based on selected assistant, search bar with Cmd+K keyboard shortcut.
+  - **AssistantHubSidebar**: Collapsible (70px icon-only / 280px expanded) and resizable (200px-400px with drag handle) sidebar for 24 AI assistants organized by 10 departments. Features card-style items with name, status indicator, description, favorite toggle, and notification badges. Includes search, department filtering, and localStorage persistence for collapse state, width, and favorites. Mobile overlay support with hamburger menu toggle.
+  - **DashboardAppLayout**: Flexbox layout integrating MainNavBar, AssistantHubSidebar, and DashboardFeatureBar with responsive breakpoints (tablet: collapsed sidebar, mobile: overlay with hamburger menu).
   - **DashboardShell**: Layout wrapper using DashboardAppLayout for authenticated dashboard pages.
-  - **MainGridView**: Universal content container that renders assistant-specific components based on activeAssistant selection and feature tabs.
-  - **CSS Namespacing**: Dashboard layout uses `.dashboard-app-layout` prefix to prevent CSS collision with public `.app-layout` used by HomePage.
+  - **MainGridView**: Universal content container with lazy loading for all 24 CRM components based on activeAssistant selection and feature tabs.
+  - **CSS Namespacing**: Dashboard layout uses `.dashboard-app-layout` prefix to prevent CSS collision with public pages.
+  - **Role-Based Assistant Access**: 8 roles (owner, admin, sales_agent, leasing_agent, property_manager, finance, compliance, technology) with specific assistant permissions defined in rolePermissions.js.
 
 ### Backend
 - **Framework**: Express.js, providing a RESTful API with organized routes.
@@ -47,7 +48,7 @@ Preferred communication style: Simple, everyday language.
 - **Chatbot Training Data Module**: Comprehensive bilingual training data for the AI chatbot.
 - **Owner Dashboard**: Comprehensive tabbed dashboard with real-time statistics, quick actions, data tables, agent performance cards, lead management, contract/Ejari tracking, analytics charts, chatbot stats, WhatsApp Business integration, UAE Pass user management, and system settings with feature toggles.
 - **Mary's Data Tools Suite**: Integrated data acquisition tools including DAMAC Asset Fetcher (S3 URL generator), Image Data Extractor (OCR-based), and Web Data Harvester (URL template iterator).
-- **AI Assistant Dashboard System**: Unified Redux state management for 24 AI assistants organized by department (Operations, Sales, Communications, Finance, Marketing, Executive, Compliance, Technology, Intelligence, Legal). Features include normalized state, memoized selectors, favorites, recent tracking, department filtering, search, real-time activity feed, performance metrics, and event-driven communication via Redux middleware.
+- **AI Assistant Dashboard System**: Unified Redux state management for 24 AI assistants organized by department (Operations, Sales, Communications, Finance, Marketing, Executive, Compliance, Technology, Intelligence, Legal). Features include normalized state, memoized selectors, favorites, recent tracking, department filtering, search, real-time activity feed, performance metrics, and event-driven communication via Redux middleware. All 24 CRM dashboards are implemented: Zoe (Executive), Mary (Inventory), Linda (WhatsApp), Clara (Leads), Nina (Bot), Nancy (HR), Sophia (Sales), Daisy (Leasing), Theodora (Finance), Olivia (Marketing), Laila (Compliance), Aurora (CTO), Hazel (Frontend), Willow (Backend), Evangeline (Legal), Sentinel (Property Monitoring), Hunter (Lead Qualification), Henry (Audit), Cipher (Market Intelligence), Atlas (Development), Vesta (Handover), Juno (Community), Kairos (Luxury), Maven (Investment).
 - **Centralized Assistant Registry**: Single source of truth for all AI assistants with department configuration, capabilities, permissions, and data flow definitions.
 - **Event Bus Middleware**: Redux middleware enabling event-driven communication between assistants with automated routing and audit trail logging.
 - **UnifiedProfile Component**: Consistent user profile component with 3 variants (navbar, sidebar, dashboard) and ProfileContext for state management.

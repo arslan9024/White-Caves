@@ -23,6 +23,7 @@ const getDefaultAssistant = () => {
 
 const initialState = {
   activeAssistant: getDefaultAssistant(),
+  activeFeature: 'dashboard',
   mainViewContent: {
     component: 'ExecutiveDashboard',
     props: {}
@@ -88,6 +89,9 @@ const appSlice = createSlice({
     clearAssistantNotifications: (state, action) => {
       const assistantId = action.payload;
       state.notifications[assistantId] = [];
+    },
+    setActiveFeature: (state, action) => {
+      state.activeFeature = action.payload;
     }
   }
 });
@@ -99,7 +103,8 @@ export const {
   toggleFavoriteAssistant,
   setAssistantStatus,
   addAssistantNotification,
-  clearAssistantNotifications
+  clearAssistantNotifications,
+  setActiveFeature
 } = appSlice.actions;
 
 export default appSlice.reducer;

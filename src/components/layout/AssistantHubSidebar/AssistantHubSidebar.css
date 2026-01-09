@@ -218,6 +218,11 @@
   cursor: pointer;
   transition: all 0.2s;
   text-align: left;
+  outline: none;
+}
+
+.assistant-card:focus-visible {
+  box-shadow: 0 0 0 2px var(--assistant-color, #D32F2F);
 }
 
 [data-theme="dark"] .assistant-card {
@@ -381,6 +386,118 @@
   letter-spacing: 0.5px;
 }
 
+.collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--btn-bg, #f1f5f9);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text-secondary, #64748b);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.collapse-btn:hover {
+  background: var(--hover-bg, #e2e8f0);
+  color: var(--text-primary, #1e293b);
+}
+
+[data-theme="dark"] .collapse-btn {
+  background: var(--btn-bg, #334155);
+  border-color: var(--border-color, #475569);
+  color: var(--text-secondary, #94a3b8);
+}
+
+[data-theme="dark"] .collapse-btn:hover {
+  background: var(--hover-bg, #475569);
+  color: var(--text-primary, #f8fafc);
+}
+
+.collapsed .sidebar-header {
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.collapsed .collapse-btn {
+  width: 36px;
+  height: 36px;
+}
+
+.collapsed-assistants {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.collapsed-assistant-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.collapsed-assistant-btn:hover {
+  background: var(--hover-bg, #f1f5f9);
+  border-color: var(--assistant-color, #D32F2F);
+}
+
+.collapsed-assistant-btn.active {
+  background: linear-gradient(135deg, var(--assistant-color, #D32F2F)15, var(--assistant-color, #D32F2F)08);
+  border-color: var(--assistant-color, #D32F2F);
+}
+
+[data-theme="dark"] .collapsed-assistant-btn:hover {
+  background: var(--hover-bg, #334155);
+}
+
+.resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
+  background: transparent;
+  cursor: col-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10;
+}
+
+.resize-handle:hover,
+.resizing .resize-handle {
+  background: rgba(211, 47, 47, 0.1);
+}
+
+.resize-handle svg {
+  opacity: 0;
+  color: #D32F2F;
+  transition: opacity 0.2s;
+}
+
+.resize-handle:hover svg,
+.resizing .resize-handle svg {
+  opacity: 1;
+}
+
+.assistant-hub-sidebar.resizing {
+  user-select: none;
+}
+
 @media (max-width: 768px) {
   .assistant-hub-sidebar {
     position: fixed;
@@ -398,5 +515,9 @@
 
   .close-btn.mobile-only {
     display: flex;
+  }
+
+  .resize-handle {
+    display: none;
   }
 }

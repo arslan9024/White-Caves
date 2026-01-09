@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Menu } from 'lucide-react';
-import DashboardHeader from '../../dashboard/DashboardHeader';
+import MainNavBar from '../MainNavBar/MainNavBar';
+import DashboardFeatureBar from '../../dashboard/DashboardFeatureBar/DashboardFeatureBar';
 import AssistantHubSidebar from '../AssistantHubSidebar/AssistantHubSidebar';
 import MainGridView from '../../dashboard/MainGridView/MainGridView';
 import { setActiveAssistant, setMainViewContent } from '../../../store/appSlice';
@@ -9,9 +10,9 @@ import './DashboardAppLayout.css';
 
 const DashboardAppLayout = ({ children, user, onLogout }) => {
   const dispatch = useDispatch();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isTablet, setIsTablet] = useState(window.innerWidth >= 768 && window.innerWidth < 1024);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   
   const activeAssistant = useSelector(state => state.app?.activeAssistant);
   const mainViewContent = useSelector(state => state.app?.mainViewContent);
@@ -22,10 +23,8 @@ const DashboardAppLayout = ({ children, user, onLogout }) => {
       setIsMobile(width < 768);
       setIsTablet(width >= 768 && width < 1024);
       
-      if (width < 768) {
-        setSidebarOpen(false);
-      } else {
-        setSidebarOpen(true);
+      if (width >= 768) {
+        setMobileSidebarOpen(false);
       }
     };
 
@@ -37,7 +36,7 @@ const DashboardAppLayout = ({ children, user, onLogout }) => {
   const handleAssistantSelect = (assistant) => {
     dispatch(setActiveAssistant(assistant));
     if (isMobile) {
-      setSidebarOpen(false);
+      setMobileSidebarOpen(false);
     }
   };
 
@@ -48,41 +47,43 @@ const DashboardAppLayout = ({ children, user, onLogout }) => {
     }));
   };
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
+  const toggleMobileSidebar = () => {
+    setMobileSidebarOpen(!mobileSidebarOpen);
   };
 
   return (
-    <div className={`dashboard-app-layout ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'} ${isTablet ? 'tablet' : ''} ${isMobile ? 'mobile' : ''}`}>
-      <AssistantHubSidebar 
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        onAssistantSelect={handleAssistantSelect}
-        activeAssistant={activeAssistant}
-        isCollapsed={isTablet && !isMobile}
-      />
+    <div className={`dashboard-app-layout ${isMobile ? 'mobile' : ''} ${isTablet ? 'tablet' : ''}`}>
+      <MainNavBar />
       
-      <div className="dashboard-app-main">
-        <DashboardHeader 
+      <div className="dashboard-content-wrapper">
+        <AssistantHubSidebar 
+          onAssistantSelect={handleAssistantSelect}
           activeAssistant={activeAssistant}
-          onFeatureSelect={handleFeatureSelect}
-          onMenuToggle={toggleSidebar}
-          user={user}
-          onLogout={onLogout}
+          isMobileOpen={mobileSidebarOpen}
         />
         
-        <main className="dashboard-main-grid-area">
-          <MainGridView 
-            content={mainViewContent}
-            activeAssistant={activeAssistant}
-          >
-            {children}
-          </MainGridView>
-        </main>
+        <div className="dashboard-main-section">
+          <DashboardFeatureBar />
+          
+          <main className="dashboard-main-grid-area">
+            <MainGridView 
+              content={mainViewContent}
+              activeAssistant={activeAssistant}
+            >
+              {children}
+            </MainGridView>
+          </main>
+        </div>
       </div>
 
-      {isMobile && sidebarOpen && (
-        <div className="dashboard-sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+      {isMobile && (
+        <button className="mobile-menu-toggle" onClick={toggleMobileSidebar}>
+          <Menu size={24} />
+        </button>
+      )}
+
+      {isMobile && mobileSidebarOpen && (
+        <div className="dashboard-sidebar-overlay" onClick={() => setMobileSidebarOpen(false)} />
       )}
     </div>
   );
