@@ -71,7 +71,10 @@ const DashboardAppLayout = ({ children, user, onLogout }) => {
 
   const handleMouseMove = useCallback((e) => {
     if (!isResizing.current) return;
-    const newWidth = Math.max(SIDEBAR_MIN, Math.min(SIDEBAR_MAX, e.clientX));
+    const sidebarContainer = document.querySelector('.sidebar-container');
+    if (!sidebarContainer) return;
+    const sidebarLeft = sidebarContainer.getBoundingClientRect().left;
+    const newWidth = Math.max(SIDEBAR_MIN, Math.min(SIDEBAR_MAX, e.clientX - sidebarLeft));
     setSidebarWidth(newWidth);
     setIsCollapsed(false);
   }, []);
