@@ -1,0 +1,139 @@
+Here's a comprehensive redesign plan for your Replit agent to implement, creating a clear three-tier application structure with responsive, well-sized components.
+
+### **PROJECT: THREE-TIER APPLICATION REDESIGN & ARCHITECTURE**
+
+**OBJECTIVE:** Redesign the application into three distinct, purpose-built environments: 1) a public marketing **Homepage**, 2) an authenticated **CRM Dashboard** for internal operations, and 3) a dedicated **AI Assistant Sidebar** as the central control hub. Implement a responsive grid where all features display results in a unified main container.
+
+---
+
+### **TIER 1: PUBLIC HOMEPAGE (`/`)**
+
+**Purpose:** Market your company's software/services to the world. This is a completely separate experience from the logged-in app.
+
+**Key Components & Rules:**
+*   **Standalone Component:** A dedicated `Homepage.jsx` with its own layout, styling, and public navigation (`MainNavbar`).
+*   **Content:** Hero section, value proposition, features, testimonials, call-to-action for signup/login.
+*   **Critical Rule:** **Must not contain any CRM or AI Assistant UI elements.** It should link to `/login` or `/signup`. Upon successful authentication, the user is redirected **away from this page** to the CRM Dashboard.
+
+---
+
+### **TIER 2: AUTHENTICATED CRM DASHBOARD (`/app/*`)**
+
+This is the main application workspace after login, built with a clear, responsive layout.
+
+**1. Core Layout Structure (`AppLayout.jsx`):**
+A responsive CSS Grid that defines the entire app's skeleton.
+
+```css
+/* Base Layout Grid */
+.app-layout {
+  display: grid;
+  grid-template-columns: auto 1fr; /* Sidebar | Main Content */
+  grid-template-rows: auto 1fr;    /* Header | Grid View */
+  height: 100vh;
+  grid-template-areas:
+    "sidebar header"
+    "sidebar main";
+}
+
+@media (max-width: 768px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "header"
+      "main";
+    /* Sidebar becomes a mobile overlay */
+  }
+}
+```
+
+**2. Component Placement & Responsibilities:**
+
+| Area | Component | Purpose & Content |
+| :--- | :--- | :--- |
+| **`header`** | `DashboardHeader.jsx` | Contains context-aware tabs/buttons for the **active** AI assistant (e.g., "Nina: Run Script", "Nancy: Generate Report"). Also has user menu & notifications. |
+| **`sidebar`** | `AssistantHubSidebar.jsx` | **Home for ALL AI Assistants.** A vertical list of available assistants (Zoe, Nina, Nancy, Aurora, etc.). Each item shows name, status (Online/Offline), and a brief description. |
+| **`main`** | `MainGridView.jsx` | **Universal Results Container.** A flexible grid/container that displays the output from ANY assistant or CRM feature (data tables, charts, code terminals, HR records). |
+
+---
+
+### **TIER 3: AI ASSISTANT HUB (THE SIDEBAR)**
+
+**Core Concept:** The sidebar is not just navigation; it's the **launchpad and status center** for all AI capabilities.
+
+**Implementation of `AssistantHubSidebar.jsx`:**
+*   **Data Source:** Populated from a central configuration file (`src/config/assistants.js`).
+*   **Visual Design:** Each assistant has a card-like appearance within the sidebar for clear distinction.
+*   **Interaction:** Clicking an assistant does two things:
+    1.  **Sets Active Context:** Dispatches a Redux action (`setActiveAssistant`) to update the application state.
+    2.  **Updates the Header:** The `DashboardHeader` component subscribes to this state and dynamically populates its tabs with features specific to the selected assistant (e.g., for "Nina," show "Code Editor," "Terminal," "Deploy").
+*   **Responsive Behavior:** On desktop, it's permanently visible as a **medium-width column** (~280px). On mobile, it toggles as a full-screen overlay.
+
+---
+
+### **STATE MANAGEMENT & DATA FLOW (Redux)**
+
+**State Shape (`appSlice` or `uiSlice`):**
+```javascript
+{
+  activeAssistant: {
+    id: 'nina',
+    name: 'Nina',
+    // Features/tabs for the header
+    features: ['Code Editor', 'Terminal', 'Debug Logs']
+  },
+  mainViewContent: {
+    component: 'DataTable', // or 'CodeOutput', 'Chart'
+    props: { data: [...] }  // Data to render in the MainGridView
+  }
+}
+```
+
+**How It Works:**
+1.  User clicks "Nina" in the **Sidebar**.
+2.  Action `setActiveAssistant('nina')` is dispatched.
+3.  **Sidebar** highlights Nina's card.
+4.  **DashboardHeader** receives the new state and renders buttons for ['Code Editor', 'Terminal', 'Debug Logs'].
+5.  User clicks "Terminal" in the **Header**.
+6.  Action `setMainView('Terminal', { sessionId: 'xyz' })` is dispatched.
+7.  **MainGridView** receives the new state, unmounts the previous component, and renders the `Terminal` component with the provided props.
+
+---
+
+### **RESPONSIVE & SIZING SPECIFICS**
+
+To ensure items are "sized well for view," implement these concrete rules:
+
+1.  **Main Grid View Container:**
+    *   Use CSS `min-height: 400px` and `width: 100%`.
+    *   Internal components (tables, terminals) should use relative units (`%`, `vw/vh`) or CSS `flex/grow` to fill this container elegantly.
+2.  **Header & Sidebar Items:**
+    *   Use `min-width` and `padding` to ensure touch targets are at least 44x44px on mobile.
+    *   Text should use `clamp()` for responsive font sizing (e.g., `font-size: clamp(0.875rem, 2vw, 1rem);`).
+3.  **Overall Grid Breakpoints:**
+    *   **Desktop (> 1024px):** Sidebar (280px), Header (70px), Main Grid (flexible).
+    *   **Tablet (768px - 1024px):** Sidebar can collapse to icons-only (70px).
+    *   **Mobile (< 768px):** Sidebar hidden, accessible via menu button in header. Header becomes a top bar, Main Grid uses 100% width.
+
+### **DELIVERABLES & IMPLEMENTATION ORDER**
+
+1.  **Phase 1: Core Layout & State**
+    *   Create the `AppLayout` with CSS Grid.
+    *   Build stub components: `DashboardHeader`, `AssistantHubSidebar`, `MainGridView`.
+    *   Implement the Redux slice for managing `activeAssistant` and `mainViewContent`.
+
+2.  **Phase 2: Assistant Hub & Dynamic Header**
+    *   Create `assistants.js` config file.
+    *   Flesh out `AssistantHubSidebar` to read from config and dispatch actions.
+    *   Make `DashboardHeader` dynamically render based on `activeAssistant`.
+
+3.  **Phase 3: Main Grid View & Component Library**
+    *   Build reusable components for the main view: `DataTableContainer`, `CodeTerminal`, `ChartContainer`.
+    *   Connect feature buttons in the Header to dispatch actions that load these components into the `MainGridView`.
+
+4.  **Phase 4: Polish & Responsive Behavior**
+    *   Implement mobile sidebar toggle.
+    *   Apply final responsive sizing and spacing rules.
+    *   Integrate with the existing Public Homepage and auth flow.
+
+This plan creates a scalable, intuitive architecture where the **Sidebar selects the tool**, the **Header selects the specific function**, and the **Main Grid consistently displays the output**, resulting in a professional and manageable interface.
