@@ -5,37 +5,36 @@ import {
   Bot, Users, TrendingUp, Home, Wallet, Megaphone, Briefcase,
   Shield, Server, Palette, Database, LayoutDashboard, Settings,
   FileText, BarChart3, Users2, Smartphone, CreditCard, Star,
-  Command, ChevronDown, ChevronUp, Layers
+  Command, ChevronDown, ChevronUp, Layers, Scale, Eye, Search
 } from 'lucide-react';
+import { 
+  DEPARTMENTS, 
+  AI_ASSISTANTS as REGISTRY_ASSISTANTS,
+  getAssistantsByDepartment,
+  getDepartmentOrder,
+  getAllAssistants
+} from '../../config/assistantRegistry';
 import './AssistantNavSidebar.css';
 
-const DEPARTMENT_CONFIG = {
-  communications: { label: 'Communications', color: '#25D366', icon: MessageSquare },
-  operations: { label: 'Operations', color: '#3B82F6', icon: Building2 },
-  sales: { label: 'Sales', color: '#8B5CF6', icon: TrendingUp },
-  finance: { label: 'Finance', color: '#EC4899', icon: Wallet },
-  marketing: { label: 'Marketing', color: '#4FACFE', icon: Megaphone },
-  executive: { label: 'Executive', color: '#43E97B', icon: Briefcase },
-  compliance: { label: 'Compliance', color: '#6366F1', icon: Shield },
-  technology: { label: 'Technology', color: '#0EA5E9', icon: Server }
+const ICON_MAP = {
+  MessageSquare, Building2, Target, Bot, Users, TrendingUp, Home,
+  Wallet, Megaphone, Briefcase, Shield, Server, Palette, Database,
+  Scale, Eye, Search, Users2, Settings
 };
 
-const ASSISTANT_ICONS = {
-  linda: MessageSquare,
-  mary: Building2,
-  clara: Target,
-  nina: Bot,
-  nancy: Users,
-  sophia: TrendingUp,
-  daisy: Home,
-  theodora: Wallet,
-  olivia: Megaphone,
-  zoe: Briefcase,
-  laila: Shield,
-  aurora: Server,
-  hazel: Palette,
-  willow: Database
-};
+const DEPARTMENT_CONFIG = Object.entries(DEPARTMENTS).reduce((acc, [key, dept]) => {
+  acc[key] = { 
+    label: dept.label, 
+    color: dept.color, 
+    icon: ICON_MAP[dept.icon] || Building2 
+  };
+  return acc;
+}, {});
+
+const ASSISTANT_ICONS = Object.entries(REGISTRY_ASSISTANTS).reduce((acc, [key, assistant]) => {
+  acc[key] = ICON_MAP[assistant.icon] || Building2;
+  return acc;
+}, {});
 
 const DASHBOARD_TABS = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -63,22 +62,13 @@ const SYSTEM_TABS = [
   { id: 'settings', label: 'Settings', icon: Settings }
 ];
 
-const AI_ASSISTANTS = [
-  { id: 'linda', name: 'Linda', desc: 'WhatsApp CRM', color: '#25D366', department: 'communications' },
-  { id: 'mary', name: 'Mary', desc: 'Inventory CRM', color: '#3B82F6', department: 'operations' },
-  { id: 'clara', name: 'Clara', desc: 'Leads CRM', color: '#EF4444', department: 'sales' },
-  { id: 'nina', name: 'Nina', desc: 'Bot Developer', color: '#06B6D4', department: 'communications' },
-  { id: 'nancy', name: 'Nancy', desc: 'HR Manager', color: '#F97316', department: 'operations' },
-  { id: 'sophia', name: 'Sophia', desc: 'Sales Pipeline', color: '#8B5CF6', department: 'sales' },
-  { id: 'daisy', name: 'Daisy', desc: 'Leasing', color: '#14B8A6', department: 'operations' },
-  { id: 'theodora', name: 'Theodora', desc: 'Finance', color: '#EC4899', department: 'finance' },
-  { id: 'olivia', name: 'Olivia', desc: 'Marketing', color: '#4FACFE', department: 'marketing' },
-  { id: 'zoe', name: 'Zoe', desc: 'Executive', color: '#43E97B', department: 'executive' },
-  { id: 'laila', name: 'Laila', desc: 'Compliance', color: '#6366F1', department: 'compliance' },
-  { id: 'aurora', name: 'Aurora', desc: 'CTO', color: '#0EA5E9', department: 'technology' },
-  { id: 'hazel', name: 'Hazel', desc: 'Frontend', color: '#F472B6', department: 'technology' },
-  { id: 'willow', name: 'Willow', desc: 'Backend', color: '#22C55E', department: 'technology' }
-];
+const AI_ASSISTANTS = getAllAssistants().map(a => ({
+  id: a.id,
+  name: a.name,
+  desc: a.title.replace(' Manager', '').replace(' Engineer', '').replace(' & ', '/'),
+  color: a.color,
+  department: a.department
+}));
 
 const AssistantNavSidebar = ({ 
   activeTab, 
@@ -95,6 +85,7 @@ const AssistantNavSidebar = ({
     marketing: true,
     executive: true,
     compliance: true,
+    legal: true,
     technology: true
   });
 

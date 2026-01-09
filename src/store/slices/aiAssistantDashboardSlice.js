@@ -484,6 +484,120 @@ const AI_ASSISTANTS_REGISTRY = {
       cacheHitRate: 94.5,
       dbConnections: 12
     }
+  },
+  evangeline: {
+    id: 'evangeline',
+    name: 'Evangeline',
+    title: 'Legal Risk Analyst',
+    department: 'legal',
+    icon: 'Scale',
+    colorScheme: '#DC2626',
+    avatar: '👩‍⚖️',
+    description: 'Proactively identifies, documents, and helps resolve legal issues. Monitors contracts, regulations, and transaction compliance',
+    capabilities: [
+      'legal_risk_analysis',
+      'contract_monitoring',
+      'regulatory_tracking',
+      'dispute_prevention',
+      'best_practices_library',
+      'due_diligence'
+    ],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'legal_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'full'
+    },
+    metrics: {
+      lastActive: null,
+      tasksCompleted: 45,
+      activeUsers: 2,
+      systemHealth: 'optimal'
+    },
+    quickStats: {
+      today: {
+        value: 12,
+        label: 'Reviews',
+        change: 3.5
+      }
+    },
+    dashboardUrl: '/owner/dashboard?tab=evangeline',
+    apiEndpoints: ['/api/legal', '/api/risks', '/api/contracts']
+  },
+  sentinel: {
+    id: 'sentinel',
+    name: 'Sentinel',
+    title: 'Property Monitoring AI',
+    department: 'operations',
+    icon: 'Eye',
+    colorScheme: '#7C3AED',
+    avatar: '🛡️',
+    description: 'IoT integration for property condition monitoring, predictive maintenance scheduling, and emergency response coordination',
+    capabilities: [
+      'iot_monitoring',
+      'predictive_maintenance',
+      'inspection_scheduling',
+      'vendor_management',
+      'emergency_response',
+      'property_health_tracking'
+    ],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'operations_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'departmental'
+    },
+    metrics: {
+      lastActive: null,
+      tasksCompleted: 89,
+      activeUsers: 3,
+      systemHealth: 'optimal'
+    },
+    quickStats: {
+      today: {
+        value: 156,
+        label: 'Properties',
+        change: 0
+      }
+    },
+    dashboardUrl: '/owner/dashboard?tab=sentinel',
+    apiEndpoints: ['/api/monitoring', '/api/maintenance', '/api/inspections']
+  },
+  hunter: {
+    id: 'hunter',
+    name: 'Hunter',
+    title: 'Lead Prospecting AI',
+    department: 'sales',
+    icon: 'Search',
+    colorScheme: '#0D9488',
+    avatar: '🎯',
+    description: 'Scrapes and analyzes potential client databases, identifies property buying/selling patterns, and manages automated outreach',
+    capabilities: [
+      'prospect_analysis',
+      'market_scanning',
+      'pattern_detection',
+      'outreach_automation',
+      'lead_enrichment',
+      'competitor_tracking'
+    ],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'sales_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'departmental'
+    },
+    metrics: {
+      lastActive: null,
+      tasksCompleted: 67,
+      activeUsers: 2,
+      systemHealth: 'optimal'
+    },
+    quickStats: {
+      today: {
+        value: 34,
+        label: 'Prospects',
+        change: 8.2
+      }
+    },
+    dashboardUrl: '/owner/dashboard?tab=hunter',
+    apiEndpoints: ['/api/prospecting', '/api/outreach', '/api/enrichment']
   }
 };
 
@@ -495,7 +609,8 @@ const DEPARTMENT_COLORS = {
   compliance: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
   communications: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
   sales: 'linear-gradient(135deg, #8B5CF6 0%, #D946EF 100%)',
-  technology: 'linear-gradient(135deg, #0EA5E9 0%, #06B6D4 100%)'
+  technology: 'linear-gradient(135deg, #0EA5E9 0%, #06B6D4 100%)',
+  legal: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)'
 };
 
 const generateActivities = () => {

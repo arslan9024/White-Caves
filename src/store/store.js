@@ -9,6 +9,7 @@ import analyticsReducer from './analyticsSlice';
 import featuresReducer from './featuresSlice';
 import inventoryReducer from './slices/inventorySlice';
 import aiAssistantDashboardReducer from './slices/aiAssistantDashboardSlice';
+import eventBusMiddleware from './middleware/eventBusMiddleware';
 
 export const store = configureStore({
   reducer: {
@@ -26,5 +27,5 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false
-    })
+    }).concat(eventBusMiddleware)
 });

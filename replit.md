@@ -39,8 +39,11 @@ Preferred communication style: Simple, everyday language.
 - **Chatbot Training Data Module**: Comprehensive bilingual training data for the AI chatbot.
 - **Owner Dashboard**: Comprehensive tabbed dashboard with real-time statistics, quick actions, data tables, agent performance cards, lead management, contract/Ejari tracking, analytics charts, chatbot stats, WhatsApp Business integration, UAE Pass user management, and system settings with feature toggles.
 - **Mary's Data Tools Suite**: Integrated data acquisition tools including DAMAC Asset Fetcher (S3 URL generator), Image Data Extractor (OCR-based), and Web Data Harvester (URL template iterator).
-- **AI Assistant Dashboard System**: Unified Redux state management for 14 AI assistants organized by department (Operations, Sales, Communications, Finance, Marketing, Executive, Compliance, Technology). Features include normalized state, memoized selectors, favorites, recent tracking, department filtering, search, real-time activity feed, and performance metrics.
-- **AI CRM Assistants**: 14 specialized AI-powered assistants integrated into the Owner Dashboard, each with dedicated dashboards for specific functionalities (e.g., Linda for WhatsApp CRM, Mary for Inventory CRM, Clara for Leads CRM, Olivia for Marketing Automation, Aurora for CTO operations, Hazel for Frontend Engineering, Willow for Backend Engineering).
+- **AI Assistant Dashboard System**: Unified Redux state management for 17 AI assistants organized by department (Operations, Sales, Communications, Finance, Marketing, Executive, Compliance, Technology, Legal). Features include normalized state, memoized selectors, favorites, recent tracking, department filtering, search, real-time activity feed, performance metrics, and event-driven communication via Redux middleware.
+- **AI CRM Assistants**: 17 specialized AI-powered assistants integrated into the Owner Dashboard, each with dedicated dashboards for specific functionalities (e.g., Linda for WhatsApp CRM, Mary for Inventory CRM, Clara for Leads CRM, Olivia for Marketing Automation, Aurora for CTO operations, Hazel for Frontend Engineering, Willow for Backend Engineering, Evangeline for Legal Risk, Sentinel for Property Monitoring, Hunter for Lead Prospecting).
+- **Centralized Assistant Registry**: Single source of truth (`src/config/assistantRegistry.js`) for all 17 AI assistants with department configuration, capabilities, permissions, and data flow definitions.
+- **Event Bus Middleware**: Redux middleware (`src/store/middleware/eventBusMiddleware.js`) enabling event-driven communication between assistants with 25 event types, automated routing, and audit trail logging (max 1000 entries).
+- **Design Tokens System**: CSS custom properties (`src/styles/design-tokens.css`) for consistent theming including colors, spacing, typography, shadows, transitions, and dark mode support.
 - **Olivia Automation System**: Automated property availability sync with Mary's inventory, market intelligence gathering from Bayut/Property Finder/Dubizzle, scheduling controls, and real-time activity logging. Redux-integrated automation state with persistent controls.
 - **Zoe Executive Intelligence System**: Executive Suggestion Inbox receiving AI-powered strategic suggestions from all 12 assistants. Features priority filtering (critical/high/medium/low), department categorization, suggestion status management (unreviewed/acknowledged/escalated/archived), confidence scoring, and projected impact analysis.
 - **Weekly Research Module**: Shared component enabling all assistants to perform automated intelligence gathering on configurable schedules (weekly/bi-weekly/monthly). Generates structured suggestions for Zoe's executive review.
@@ -71,7 +74,7 @@ Preferred communication style: Simple, everyday language.
 ### Dashboard Design Overhaul (Phase 1-4 Complete)
 - **AssistantNavSidebar Component**: Fixed-position left sidebar (280px expanded, 72px collapsed) with:
   - Hierarchical navigation organized into 4 sections: Dashboard, AI Assistants, Management, Integrations, System
-  - 8 department groups with color coding: Communications (#25D366), Operations (#3B82F6), Sales (#10B981), Finance (#8B5CF6), Marketing (#F59E0B), Executive (#DC2626), Compliance (#6366F1), Technology (#22C55E)
+  - 9 department groups with color coding: Communications (#25D366), Operations (#3B82F6), Sales (#8B5CF6), Finance (#F59E0B), Marketing (#EC4899), Executive (#10B981), Compliance (#6366F1), Legal (#DC2626), Technology (#0EA5E9)
   - Collapsible departments with smooth animations
   - Notification badges per assistant
   - Active state highlighting with left-border accent
@@ -80,7 +83,7 @@ Preferred communication style: Simple, everyday language.
 
 - **Navigation Coverage**:
   - Dashboard: Overview, AI Command, AI Hub
-  - AI Assistants: 14 assistants organized by 8 departments
+  - AI Assistants: 17 assistants organized by 9 departments
   - Management: Users, Properties, Agents, Leads, Contracts, Analytics
   - Integrations: AI Settings, WhatsApp, UAE Pass
   - System: Features, Settings
@@ -89,7 +92,7 @@ Preferred communication style: Simple, everyday language.
 
 - **SkeletonLoader Components**: Loading skeletons for Text, Circle, Card, StatCard, Table, Dashboard, and EmptyState
 
-### AI Assistants Inventory (14 Total)
+### AI Assistants Inventory (17 Total)
 | ID | Name | Role | Department |
 |----|------|------|------------|
 | linda | Linda | WhatsApp CRM Manager | Communications |
@@ -97,12 +100,15 @@ Preferred communication style: Simple, everyday language.
 | mary | Mary | Inventory CRM Manager | Operations |
 | nancy | Nancy | HR Manager | Operations |
 | daisy | Daisy | Leasing Manager | Operations |
+| sentinel | Sentinel | Property Monitoring AI | Operations |
 | clara | Clara | Leads CRM Manager | Sales |
 | sophia | Sophia | Sales Pipeline Manager | Sales |
+| hunter | Hunter | Lead Prospecting AI | Sales |
 | theodora | Theodora | Finance Director | Finance |
 | olivia | Olivia | Marketing & Automation Manager | Marketing |
 | zoe | Zoe | Executive Assistant & Strategic Intelligence | Executive |
 | laila | Laila | Compliance Officer | Compliance |
+| evangeline | Evangeline | Legal Risk Analyst | Legal |
 | aurora | Aurora | CTO & Systems Architect | Technology |
 | hazel | Hazel | Elite Frontend Engineer | Technology |
 | willow | Willow | Elite Backend Engineer | Technology |
