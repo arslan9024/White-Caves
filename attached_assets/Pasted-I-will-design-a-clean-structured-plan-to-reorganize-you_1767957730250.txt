@@ -1,0 +1,116 @@
+I will design a clean, structured plan to reorganize your CRM's navigation by separating general application features from AI-specific dashboard tools. This follows modern SaaS application patterns where global controls live in a persistent top bar, while workspace content remains context-specific.
+
+## 📐 **Information Architecture & Layout Reorganization Plan**
+
+### **1. New Application Layout Structure**
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  MAIN NAVIGATION BAR (Persistent - App Level)                       │
+│  [Logo]  |  Search Component  |  Notifications  |  Theme Toggle  |  │
+│  Company Owner Dropdown (Profile, Settings, Logout)                 │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  AI ASSISTANT CONTEXT BAR (Dynamic - Changes per AI)                │
+│  [Aurora - CTO]  [Tab1]  [Tab2]  [Tab3]  [Tab4]                    │
+│                                                                     │
+│  DASHBOARD CONTENT AREA (AI-Specific Tools & Data)                  │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │                                                             │   │
+│  │  Charts, Metrics, AI Tools specific to active assistant     │   │
+│  │                                                             │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### **2. Main Navigation Bar Specifications**
+
+**Position & Behavior:** Fixed to top of window, always visible, 64px height.
+
+**Left Section (Brand & Primary Navigation):**
+- Company Logo/Name (click returns to home dashboard)
+- **Search Component:** Global search across properties, contacts, deals, documents
+- **AI Assistant Selector:** Dropdown to switch between Aurora (CTO), Sales AI, Support AI, etc.
+
+**Right Section (User & App Controls):**
+- **Theme Toggle:** Light/Dark/System preference switch (icon only)
+- **Notifications Bell:** Badge for unread count, dropdown panel for alerts
+- **Company Owner Profile:**
+  - Avatar/Initials (dropdown trigger)
+  - Dropdown contains: Profile, Account Settings, Billing, Team Management, Logout
+
+**Design Principles:**
+- Use subtle backgrounds (e.g., `--background-paper` elevation 1)
+- Icons with text labels on hover for learnability
+- Consistent spacing (16px between items)
+- Mobile-responsive collapse into hamburger menu
+
+### **3. AI Assistant Dashboard Area Structure**
+
+**AI Context Header:**
+- Display active AI assistant's name and role (e.g., "Aurora - Chief Technology Officer")
+- Assistant-specific quick actions (e.g., "Generate Report", "Analyze Performance")
+- Assistant status/availability indicator
+
+**Sub-Navigation/Tabs System:**
+- **Tab Design:** Contained or underlined tabs, clearly separated from main nav
+- **Tab Content:** Dynamically changes based on selected AI assistant
+- **Examples by Assistant:**
+
+| AI Assistant | Example Tabs | Purpose |
+|-------------|--------------|---------|
+| **Aurora (CTO)** | System Health, Code Review, DevOps, Security, Documentation | Technical oversight |
+| **Sales AI** | Lead Pipeline, Performance Forecast, Communication Templates, Deal Analysis | Sales optimization |
+| **Support AI** | Ticket Dashboard, Response Assistant, Knowledge Base, Customer Sentiment | Customer service |
+| **Marketing AI** | Campaign Analytics, Content Calendar, Lead Scoring, ROI Calculator | Marketing operations |
+
+### **4. Dashboard Content Zone Principles**
+
+**For Aurora's Dashboard (Example):**
+- **System Health Tab:** Server status, API latency charts, error rate monitoring
+- **Code Review Tab:** Pull request queue, code quality metrics, deployment status
+- **DevOps Tab:** Resource utilization, CI/CD pipeline visualization, backup status
+- **Security Tab:** Vulnerability alerts, access logs, compliance checklist
+
+**Content Design Rules:**
+- No repeat of main nav components (search, profile, theme toggle, notifications)
+- Full-width utilization of remaining space
+- Consistent card-based layout for metrics
+- AI-specific action buttons prominently placed
+- Real-time data with manual refresh options
+
+### **5. Implementation Phases**
+
+**Phase 1: Information Architecture (Week 1-2)**
+- Map all existing dashboard features to new structure
+- Define tab structures for each AI assistant
+- Create wireframes for main nav and 2 key AI dashboards
+
+**Phase 2: UI Component Library (Week 2-3)**
+- Build reusable main nav component
+- Create tab system with dynamic content loading
+- Design metric cards and AI-specific widgets
+- Ensure responsive breakpoints
+
+**Phase 3: AI Context Integration (Week 3-4)**
+- Implement assistant-switching logic
+- Connect each AI's tabs to relevant backend data
+- Add persistent state (remember last used tab per AI)
+- Implement permission-based tab visibility
+
+**Phase 4: User Testing & Refinement (Week 5)**
+- Conduct usability tests with real estate team
+- Gather feedback on tab labeling and feature discoverability
+- Optimize mobile experience
+- Document navigation patterns for new users
+
+### **6. Success Metrics**
+- **Reduced Click Depth:** Access to general features from anywhere in app
+- **Context Preservation:** Users don't lose AI workspace when checking notifications
+- **Learnability:** New users understand separation between app and AI tools
+- **Performance:** Main nav loads independently of dashboard content
+
+This structure creates a scalable foundation where adding new AI assistants simply requires defining their tab set and connecting to relevant data sources, without redesigning the core navigation.
+
+**To move forward with this plan:** Start by inventorying all features currently in your dashboard and categorizing them as either "General App" (to main nav) or "AI-Specific" (to dashboard tabs). This will clarify the scope before any UI work begins.

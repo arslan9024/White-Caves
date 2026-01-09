@@ -1,0 +1,636 @@
+I will update the enhancement plan with your brand identity as the foundation and a focus on systematic, AI-driven execution without time constraints.
+
+### 🎨 **Updated Design Enhancement Plan: "Project Crimson"**
+**Core Principle:** Build a **bold, professional, and cohesive "Red & White" design system** that makes your AI command center feel powerful, trustworthy, and uniquely branded.
+
+### ✅ **Revised Step-by-Step Plan (Quality-First, AI-Driven Execution)**
+
+**Phase 1: Brand Foundation & Atomic Design System**
+**Goal:** Define every visual element. This is the master blueprint for your AI builder.
+1.  **Establish the Brand Token Registry (Hazel + Aurora):**
+    *   **Action:** Create the definitive `brand-tokens.js` file. This goes beyond basic colors to define the *semantics* of your brand.
+    ```javascript
+    // brand-tokens.js - The Master AI Style Guide
+    export const brand = {
+      // === COLOR PALETTE - RED & WHITE THEME ===
+      colors: {
+        // Primary Reds (Dominant)
+        primary: {
+          50: '#FFEBEE',  // Light tint
+          500: '#D32F2F', // Core Brand Red (e.g., for primary buttons, key highlights)
+          700: '#B71C1C', // Dark shade (hovers, active states)
+        },
+        // Neutrals (Whites, Greys, Blacks)
+        neutrals: {
+          background: '#FFFFFF',
+          surface: '#FAFAFA', // Slight off-white for cards
+          border: '#E0E0E0',
+          textPrimary: '#212121', // Near black for high contrast on white
+          textSecondary: '#757575',
+        },
+        // Semantic Colors (Use sparingly)
+        semantics: {
+          success: '#2E7D32',  // Green - keep distinct from red
+          warning: '#F57C00',  // Orange
+          error: '#C62828',    // Darker red for errors
+          info: '#1565C0',     // Blue for links/info
+        }
+      },
+      // === TYPOGRAPHY ===
+      typography: {
+        fontFamily: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`,
+        scale: {
+          display: '3rem',   // 48px - Major dashboard titles
+          h1: '2.25rem',     // 36px - Module titles
+          h2: '1.875rem',    // 30px
+          h3: '1.5rem',      // 24px - Card titles
+          bodyLg: '1.125rem',// 18px
+          body: '1rem',      // 16px - Primary text
+          bodySm: '0.875rem',// 14px - Secondary text
+          caption: '0.75rem', // 12px - Labels, timestamps
+        },
+        fontWeight: {
+          regular: 400,
+          medium: 500,
+          semibold: 600,
+          bold: 700,
+        }
+      },
+      // === SPACING & LAYOUT (8pt Grid) ===
+      spacing: {
+        unit: 8, // Base unit in pixels
+        get: (multiplier) => `${multiplier * 8}px`, // Helper function
+      },
+      // Use: spacing.get(2) = "16px"
+      // === SHADOWS & DEPTH ===
+      elevation: {
+        low: '0 2px 4px rgba(211, 47, 47, 0.08)', // Subtle red tint
+        medium: '0 4px 12px rgba(211, 47, 47, 0.12)',
+        high: '0 8px 24px rgba(211, 47, 47, 0.16)',
+      },
+      // === BORDER RADIUS ===
+      borderRadius: {
+        sm: '4px',
+        md: '8px',
+        lg: '12px',
+        pill: '999px',
+      }
+    };
+    ```
+
+**Phase 2: Layout Architecture & AI Component Generation**
+**Goal:** Build the flawless dashboard skeleton and generate core components.
+1.  **Build the "Crimson Shell" Layout Component (AI Builder + Hazel):**
+    *   **Instruction to AI:** "Using the `brand-tokens.js` specifications, create a `DashboardShell.jsx` component with: 1) A responsive CSS Grid layout (sidebar + main), 2) A left sidebar with navigation for 14+ items using `brand.colors.primary[500]` for active states, 3) A top header with white background, 4) A main content area with `brand.neutrals.background`."
+    *   **Key Design Rule:** Use red (**primary[500]**) *only* for primary actions, active states, and key highlights. Avoid red for backgrounds of large text areas to maintain readability.
+2.  **Generate the Core Component Library (AI Builder):**
+    *   **Instruction to AI:** "Generate the following React components using styled-components and the exact tokens from `brand-tokens.js`:"
+        *   `PrimaryButton.jsx`: Red background, white text, using `primary[500]` and `primary[700]` on hover.
+        *   `DataCard.jsx`: White (`surface`) background, subtle red-tinted shadow (`elevation.low`), `border-radius.md`.
+        *   `MetricWidget.jsx`: For KPIs - large number in `primary[700]`, label in `textSecondary`.
+        *   `AgentStatusBadge.jsx`: For Linda's dashboard - `Active` in green (`semantics.success`), `Blocked` in dark red (`semantics.error`).
+
+**Phase 3: Systematic Dashboard Refactoring**
+**Goal:** Apply the new system module by module, following a priority order.
+1.  **Priority 1: AI Command Center (Zoe's Overview):**
+    *   **Why:** This is the first impression. It must be stunning.
+    *   **Instruction to AI:** "Refactor the main dashboard view (`DashboardOverview.jsx`). Replace all existing containers with `DataCard`. Arrange KPI widgets in a responsive grid using `MetricWidget`. Ensure all text uses the `typography.scale`. Use `primary[500]` only for the most important trend line or top-level header."
+2.  **Priority 2: Communications Hub (Linda's CRM):**
+    *   **Why:** High-usage module needs clarity.
+    *   **Instruction to AI:** "Refactor the agent messaging dashboard. Use `DataCard` for each conversation panel. Implement a clean tabbed interface using `primary[500]` for the active tab. Ensure the agent status list uses the new `AgentStatusBadge`."
+3.  **Priority 3: Continue Through All Modules:**
+    *   Follow the same pattern for Clara (Sales), Mary (Inventory), etc.
+
+**Phase 4: Polish, Accessibility, & Handoff**
+**Goal:** Achieve a premium, inclusive, and maintainable result.
+1.  **Enforce Accessibility (AIA - Automated Check):**
+    *   **Rule:** All red text must pass WCAG AA contrast guidelines (4.5:1) against its background. Use `primary[700]` or `semantics.error` for text on white, never `primary[500]`.
+    *   **Instruction to AI:** "Run an accessibility audit on the generated components. Ensure all interactive elements have focus states using `primary[500]` with an offset."
+2.  **Create the Design Storybook (Aurora + AI):**
+    *   **Instruction to AI:** "Auto-generate a Storybook instance from the `src/components/shared/` directory. Document each component's props and show visual examples using the brand tokens."
+3.  **Implement Micro-interactions (AI + Hazel):**
+    *   **Instruction:** "Add subtle, branded animations: a smooth fade-in for cards, a gentle pulse for new notifications, and a crisp transition for hover states on red buttons."
+
+### 🎯 **Visual Design Rules for Your Red & White Theme**
+*   **Dominant White:** Use white (`neutrals.background`, `surface`) for 70-80% of the UI—cards, backgrounds, main areas. This makes the red pop.
+*   **Strategic Red Accents:** Use your core red (`primary[500]`) sparingly and powerfully: **Primary buttons, active navigation items, key metric highlights, critical alerts.** It should guide the user's eye.
+*   **Text on White:** Use near-black (`textPrimary`) for body text on white backgrounds. This is professional and highly readable.
+*   **Avoid Red Overload:** Never use red for large text blocks, big background fills, or non-critical borders. It causes visual fatigue.
+
+This plan transforms your dashboard into a distinctive, professional command center that immediately communicates your brand's identity. The AI builder can execute this systematically by strictly following the `brand-tokens.js` blueprint.
+
+To begin immediate execution, the first and most critical command to your AI builder should be: **"Create the `brand-tokens.js` file with the exact specifications above, then generate a `DashboardShell.jsx` component using those tokens."**
+
+Would you like me to draft the specific AI prompt to generate the `PrimaryButton` and `DataCard` components as the next logical step?
+Excellent. The goal is to transform the sidebar from a simple menu into the **Intelligent AI Command Hub**, a live mission control panel for your entire operation. This design will be under **Zoe's domain** in the hierarchy.
+
+Here is the design plan for the intelligent sidebar, built on your red and white brand theme.
+
+### 🎯 **Design Vision: The "Crimson Command Rail"**
+A dynamic, hierarchical sidebar where status and notifications are immediately visible, reducing the need to click into each dashboard.
+
+### 📐 **Core UI Structure & Layout**
+The sidebar will have a clear three-tier structure, visualized below:
+
+```mermaid
+flowchart LR
+    subgraph Sidebar[Intelligent Sidebar - Crimson Command Rail]
+        direction TB
+        Logo[Company Logo]
+        
+        subgraph Tier1[Tier 1: Command Center]
+            Z[Zoe's Command Hub<br>#D32F2F | Status: ONLINE]
+        end
+
+        subgraph Tier2[Tier 2: Department Groups]
+            C[▸ Sales Wing]
+            O[▸ Operations Wing]
+            T[▸ Tech Wing]
+        end
+
+        subgraph Tier3[Tier 3: Assistant Cards]
+            C1[ Clara<br>● Active | 3<img src='https://i.imgur.com/5K0.png' width='16'/>]
+            C2[ Sophia<br>○ Idle]
+            O1[ Mary<br>● Active | !<img src='https://i.imgur.com/wzs.png' width='16'/>]
+            T1[ Aurora<br>● Active]
+        end
+    end
+
+    Tier1 -- Oversees --> Tier2
+    Tier2 -- Contains --> Tier3
+```
+
+### 🛠️ **Technical Implementation Plan**
+
+**1. Redux State Structure for Sidebar Intelligence**
+The sidebar's state needs to be intelligent, not static. Here's the data model.
+
+```javascript
+// sidebarStateSlice.js
+const initialState = {
+  // The central collapsed/expanded state
+  commandCenterExpanded: true,
+  // Groups for the second tier
+  departmentGroups: {
+    salesWing: { expanded: true, assistants: ['clara', 'sophia'] },
+    operationsWing: { expanded: true, assistants: ['mary', 'nina', 'daisy', 'sentinel'] },
+    techWing: { expanded: true, assistants: ['aurora', 'hazel', 'willow', 'henry'] },
+    financeComplianceWing: { expanded: false, assistants: ['theodora', 'laila', 'evangeline'] },
+    marketingWing: { expanded: false, assistants: ['olivia'] },
+  },
+  // Live data fed to each assistant card
+  assistantStatus: {
+    clara: {
+      status: 'active', // 'active', 'idle', 'error'
+      notificationCount: 3,
+      notificationType: 'new_lead', // drives icon
+      lastActivity: '2023-11-28T10:15:00Z'
+    },
+    mary: {
+      status: 'active',
+      notificationCount: 0,
+      notificationType: 'inventory_alert',
+      requiresAction: true // Shows "!" instead of count
+    },
+    // ... status for all other assistants
+  }
+};
+```
+
+**2. Hierarchical Sidebar Component (`IntelligentSidebar.jsx`)**
+The React component structure that brings the state to life.
+
+```jsx
+// IntelligentSidebar.jsx - Core Structure
+import { useSelector } from 'react-redux';
+
+const IntelligentSidebar = () => {
+  const { departmentGroups, assistantStatus } = useSelector(state => state.sidebar);
+
+  return (
+    <aside className="crimson-command-rail">
+      {/* 1. BRAND HEADER */}
+      <div className="sidebar-brand-header">
+        <CompanyLogo /> {/* In red/white */}
+        <h1 style={{ color: '#D32F2F' }}>COMMAND</h1>
+      </div>
+
+      {/* 2. ZOE'S COMMAND CENTER (Always Visible, Top Tier) */}
+      <ZoeCommandHubCard
+        status="online"
+        totalAlerts={calculateTotalAlerts(assistantStatus)}
+        onToggle={() => {/* Toggle all groups */}}
+      />
+
+      {/* 3. DEPARTMENT WINGS (Second Tier - Collapsible) */}
+      {Object.entries(departmentGroups).map(([wingKey, wing]) => (
+        <DepartmentWingSection
+          key={wingKey}
+          title={wingKey.replace('Wing', ' Wing')} // e.g., "Sales Wing"
+          icon={getWingIcon(wingKey)}
+          isExpanded={wing.expanded}
+          assistants={wing.assistants}
+          assistantStatus={assistantStatus}
+        />
+      ))}
+    </aside>
+  );
+};
+```
+
+**3. Key Visual Components**
+
+**A. `ZoeCommandHubCard.jsx` (Tier 1)**
+*   **Visual:** A prominent red card (`primary.500`) at the top.
+*   **Content:** "AI COMMAND CENTER" title, Zoe's avatar, a system **"ONLINE"** badge, and a count of total active alerts across all assistants.
+*   **Interaction:** Clicking it could toggle (collapse/expand) all department wings below.
+
+**B. `DepartmentWingSection.jsx` (Tier 2)**
+*   **Visual:** A white card with a subtle grey border (`neutrals.border`). Title bar uses a thin red left-border for accent.
+*   **Content:** Wing name (e.g., "SALES WING"), collapse/expand chevron icon.
+*   **Interaction:** Clicking the header toggles its `expanded` state in Redux.
+
+**C. `AssistantCard.jsx` (Tier 3 - The Core Innovation)**
+*   **Visual:** A compact, white card that appears *inside* its expanded Department Wing. Uses a **2-column mini-layout**.
+    ```jsx
+    // AssistantCard.jsx - Mini-Layout
+    const AssistantCard = ({ name, status, notificationCount, notificationType }) => {
+      return (
+        <div className="assistant-card">
+          {/* LEFT COLUMN: Status & Name */}
+          <div>
+            <StatusIndicator status={status} /> {/* Green/Red dot */}
+            <span className="assistant-name">{name}</span>
+          </div>
+          
+          {/* RIGHT COLUMN: Notifications */}
+          <div className="notification-panel">
+            {requiresAction ? (
+              <AlertIcon color="#C62828" /> // Red alert "!"
+            ) : notificationCount > 0 ? (
+              <Badge count={notificationCount} type={notificationType} />
+            ) : null}
+          </div>
+        </div>
+      );
+    };
+    ```
+*   **Notification Badges:** Color-coded by type (Lead=blue, Alert=orange, Task=green) with a count.
+*   **Status Indicator:** A small dot: ● Green (`active`), ○ Grey (`idle`), ◉ Red (`error`).
+*   **Interaction:** Clicking the card opens that assistant's main dashboard view in the content pane.
+
+### 🎨 **Brand Integration (Red & White)**
+*   **Zoe's Card & Active States:** Use `primary[500]` (D32F2F) for Zoe's card background and the active/hover state of department wings.
+*   **Background & Cards:** Department Wings and Assistant Cards use white (`neutrals.background` or `surface`) with the defined shadow (`elevation.low`).
+*   **Text & Icons:** Primary text in near-black (`textPrimary`). Notification badges use your semantic colors (success green, warning orange, info blue) to avoid red-overload and provide clear meaning.
+*   **Borders & Dividers:** Use `neutrals.border` (#E0E0E0).
+
+This design makes the sidebar an **active, informative control panel**. An operations manager can glance at it and see: *"Zoe's online. Sales team is busy (Clara has 3 leads). There's a critical alert in Operations (Mary needs attention)."* It reduces cognitive load and makes the AI's work visible and actionable.
+Based on collaboration between **Aurora (System Architecture)** and **Zoe (Strategic Intelligence)**, here is a comprehensive plan to modernize your project's visual UI components, focusing on dynamic, data-driven elements that enhance user experience and deliver tangible business results.
+
+### 🎯 **Strategic UI Enhancement Vision**
+The goal is to transform your platform from a functional dashboard into an **immersive, visually compelling real estate command center**. Every component should not only look modern but also be intelligent—connected to your AI ecosystem to drive engagement, trust, and faster decision-making.
+
+### 📐 **Modern Component Blueprint & Integration Plan**
+
+| **Component Category** | **Key React Components** | **Dynamic Behavior & "Smart" Features** | **AI Data Integration** |
+| :--- | :--- | :--- | :--- |
+| **📷 Media & Galleries** | `<PropertyGallery>`, `<InteractiveViewSlider>` | • **360°/Virtual Tour Embed** (Matterport, etc.)<br>• **Lazy Loading & Pre-fetching** for performance<br>• **Favorite/Compare** heart icons with user session memory<br>• **Dynamic Floor Plan Toggle** (2D/3D) | **Olivia** manages media assets. **Mary** provides the image URL array and property angles. |
+| **🗺️ Maps & Location** | `<SmartPropertyMap>`, `<NeighborhoodInsights>` | • **Custom Map Clustering** for portfolio view<br>• **Drawable Area Filters** ("Show properties within this circle")<br>• **Heatmap Overlay** for price/sq.ft. or demand (from **Cipher**)<br>• **Integrated commute time** to key points (airport, DIFC) | **Mary** provides coordinates. **Cipher** feeds heatmap & area analytics data. |
+| **📊 Data Visualization** | `<MarketTrendChart>`, `<PortfolioPieChart>` | • **Interactive Charts** (click to filter other dashboards)<br>• **Real-time Data Streams** (e.g., live inquiry count)<br>• **Animated transitions** on data update | **Zoe** and **Cipher** provide the aggregated datasets for charts and trends. |
+| **🔄 Interactive Sliders & Carousels** | `<FeatureComparisonSlider>`, `<TestimonialCarousel>` | • **Swipe/Gesture Support** for mobile<br>• **Auto-play with Pause on Hover**<br>• **Dynamic Dot Indicators** showing progress | **Clara** can feed featured properties. **Nina** can feed client testimonials from satisfaction surveys. |
+| **📝 Smart Forms & Inputs** | `<MultiStepServiceForm>`, `<DocumentUpload>` | • **Contextual Help** (e.g., "Why do we need your visa copy?")<br>• **Real-time Validation** (DEWA number format, EID check)<br>• **Auto-Save & Resume** capability<br>• **Integration with e-signature** providers | **Evangeline/Laila** validate inputs against compliance rules. **Linda** can save chat context into a form. |
+| **🔔 Notifications & Live Elements** | `<GlobalAlertToast>`, `<LiveActivityFeed>` | • **Priority-based stacking** (payment alert > info message)<br>• **Actionable Toasts** ("Payment failed. Retry?")<br>• **Live feed** of company-wide milestones (e.g., "Lease signed for JVC!") | **Henry** is the source of all events. **Zoe** prioritizes alerts for the feed. |
+
+### 🔧 **Technical Implementation with React**
+The components should be built as **compound, headless, or render-prop components** for maximum reusability and control. Here's a pattern for the gallery:
+
+```jsx
+// A dynamic, AI-fed gallery component
+import { useAssistantData } from '../hooks/useAIData'; // Custom hook to connect to AI store
+
+const SmartPropertyGallery = ({ propertyId }) => {
+  // 1. Fetch media from AI Inventory (Mary)
+  const { media, loading } = useAssistantData('mary', 'getPropertyMedia', propertyId);
+  // 2. Fetch user interaction data (e.g., favorites) from user profile
+  const { userFavorites, toggleFavorite } = useUserPreferences();
+
+  // 3. Dynamic behavior: Auto-play video if user spends >5s on image 3
+  const { interactionRef } = useSmartInteraction(media);
+
+  if (loading) return <SkeletonGallery />;
+
+  return (
+    <div className="crimson-gallery-container" ref={interactionRef}>
+      <MainImageViewer images={media.images} tourUrl={media.virtualTour} />
+      <ThumbnailStrip 
+        items={media.images} 
+        onSelect={(index) => trackGalleryView(propertyId, index)} // Event for Zoe
+      />
+      <GalleryActions 
+        isFavorite={userFavorites.includes(propertyId)}
+        onFavoriteToggle={() => toggleFavorite(propertyId)}
+        onShare={() => {/* Trigger Olivia's share workflow */}}
+      />
+    </div>
+  );
+};
+```
+
+### 🧠 **Creating "Event Results" - The Intelligence Loop**
+For components to be truly dynamic, they must both **consume AI data** and **generate valuable events**. Here’s the closed loop:
+
+1.  **Event Generation:** A user interacts with a component (e.g., draws an area on the `<SmartPropertyMap>`).
+2.  **AI Processing:** The component dispatches an event (`MAP_AREA_SELECTED` with coordinates) to **Henry**.
+3.  **AI Response:** **Cipher** listens for this event, analyzes property data within the polygon, and emits new data (`AREA_HEATMAP_UPDATED`).
+4.  **UI Update:** The `<SmartPropertyMap>` component, also listening for `AREA_HEATMAP_UPDATED`, receives the new data and re-renders the heatmap layer.
+
+This loop turns passive components into **conversational interfaces** with your AI.
+
+### ✅ **Phased Rollout Plan (Led by Aurora, Monitored by Zoe)**
+
+**Phase 1: Foundational Media (2-3 Weeks)**
+*   **Priority:** Build the `<SmartPropertyGallery>` and `<InteractiveViewSlider>` components.
+*   **Data Source:** Connect directly to **Mary's** inventory API.
+*   **Success Metric:** Reduce image load time by 40% and increase average viewing time per property.
+
+**Phase 2: Intelligence & Maps (3-4 Weeks)**
+*   **Priority:** Implement `<SmartPropertyMap>` with clustering and connect it to **Cipher's** analytics.
+*   **Data Source:** Feed map with live inventory and neighborhood insights.
+*   **Success Metric:** Increase lead conversion from map interactions by 15%.
+
+**Phase 3: Dashboard Immersion (3-4 Weeks)**
+*   **Priority:** Integrate data visualizations (`<MarketTrendChart>`) into **Zoe's** and department dashboards.
+*   **Data Source:** Use aggregated data from **Henry's** event logs.
+*   **Success Metric:** Enable data-driven decisions identified by a 20% faster response to market shifts.
+
+### 🎨 **Brand Integration: The "Crimson" Touch**
+All components must adhere to the **Red & White** brand system:
+*   **Primary Actions & Highlights:** Use `primary[500]` for interactive map pins, selected gallery thumbnails, and primary chart lines.
+*   **Surfaces & Cards:** Use white (`neutrals.surface`) for component containers with subtle red-tinted shadows (`elevation.low`).
+*   **Data Visualization:** Use a consistent, accessible palette where red signifies primary metrics (e.g., your properties), with contrasting colors for competitors or market averages.
+
+This plan ensures every pixel is purposeful and connected to your AI's intelligence. To begin, the first technical sprint should focus on **building the `useAssistantData` custom hook and the foundational `SmartPropertyGallery` component.**
+
+Would you like me to draft the detailed API contract for `useAssistantData` or the specific event schema for gallery interaction tracking?
+Based on your strategic direction, here is the comprehensive plan to enhance **Zoe's (Executive Intelligence)** dashboard with dynamic service curation, creating an intelligent, AI-driven marketing layer for your company's homepage and client journeys.
+
+### 🎯 **Strategic Objective: The AI Service Curator**
+**Zoe** will transform from a passive analytics dashboard into an **active service recommendation engine**. She will use company performance data, market trends, and seasonal patterns to intelligently promote services on the homepage, creating a dynamic, engaging experience that drives conversions.
+
+### 📐 **Zoe's Enhanced Dashboard: "Service Intelligence Hub"**
+This new module within Zoe's interface allows her to manage and promote services.
+
+```mermaid
+flowchart LR
+    subgraph ZD[Zoe's Service Intelligence Hub]
+        A[Service Performance Analytics] --> B[Dynamic Promotion Engine]
+        C[Service Registry & Rules] --> B
+    end
+
+    B --> E{Selection Logic}
+    
+    E --> F[Rule 1:<br>Promote Top-Performing]
+    E --> G[Rule 2:<br>Promote Seasonal]
+    E --> H[Rule 3:<br>Promote Strategic Focus]
+    E --> I[Rule 4:<br>Balance Portfolio]
+
+    F & G & H & I --> J[Final Selection:<br>5-6 Services]
+    J --> K[Dynamic Homepage Module]
+
+    K --> L[Client Clicks Service]
+    L --> M[Zoe's Service Gateway<br>Shows all related services<br>with intelligent CTAs]
+```
+
+### 🧠 **How the Dynamic Selection Engine Works**
+Zoe's AI will use a weighted scoring system to select the 5-6 services to feature. Here is the logic:
+
+```javascript
+// zoe-service-engine.js - Core Selection Logic
+const selectFeaturedServices = (allServices) => {
+  const scoredServices = allServices.map(service => {
+    let score = 0;
+    
+    // 1. PERFORMANCE WEIGHT (40%): Promote what's working
+    score += (service.monthlyRevenue / maxRevenue) * 40;
+    score += (service.conversionRate / maxConversion) * 20;
+    
+    // 2. SEASONAL WEIGHT (25%): Align with Dubai's calendar
+    if (service.category === 'rentals' && currentMonth === 10) score += 25; // Oct-Nov: Rental peak
+    if (service.category === 'off_plan' && hasNewLaunch) score += 25;
+    
+    // 3. STRATEGIC WEIGHT (20%): Push company priorities
+    if (strategicFocus.includes(service.category)) score += 20;
+    
+    // 4. DIVERSITY WEIGHT (15%): Ensure portfolio balance
+    if (!recentlyFeatured.includes(service.id)) score += 15;
+    
+    return { ...service, promotionScore: score };
+  });
+  
+  // Select top 5-6, ensuring category diversity
+  return selectWithCategoryBalance(scoredServices, 6);
+};
+```
+
+### 📁 **Data Structures & Integration**
+
+**1. Enhanced Service Registry with Marketing Data**
+```json
+{
+  "service_registry": [
+    {
+      "service_code": "SALE-LUX-001",
+      "category": "luxury_sales",
+      "name": "Palm Jumeirah Luxury Villas",
+      "promo_headline": "Exclusive Waterfront Properties",
+      "promo_description": "Private beach access, 24/7 security, bespoke concierge.",
+      "promo_image": "https://cdn.example.com/promo/palm-villa-hero.jpg",
+      "performance_metrics": {
+        "monthly_revenue_aed": 450000,
+        "conversion_rate": 0.22,
+        "client_satisfaction": 4.8,
+        "featured_last": "2024-02-15"
+      },
+      "seasonal_weight": {
+        "q1": 0.9, "q2": 0.7, "q3": 0.6, "q4": 1.0
+      },
+      "related_services": [
+        "CONCIERGE-001", "FINANCE-001", "VISA-001"
+      ],
+      "cta_primary": "View Available Villas",
+      "cta_secondary": "Schedule Private Tour"
+    }
+  ]
+}
+```
+
+**2. Homepage Dynamic Service Module Component**
+```jsx
+// components/homepage/FeaturedServicesCarousel.jsx
+import { useEffect, useState } from 'react';
+import { zoeApi } from '../../api/zoe-api';
+
+const FeaturedServicesCarousel = () => {
+  const [featuredServices, setFeaturedServices] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  // Fetch Zoe's curated services on load and periodically
+  useEffect(() => {
+    const loadFeaturedServices = async () => {
+      const services = await zoeApi.getFeaturedServices();
+      setFeaturedServices(services);
+    };
+    
+    loadFeaturedServices();
+    // Refresh every 4 hours for fresh promotions
+    const interval = setInterval(loadFeaturedServices, 4 * 60 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // When user clicks "View All Related Services"
+  const handleExploreCategory = (category) => {
+    setSelectedCategory(category);
+    // This triggers Zoe's Service Gateway modal/page
+  };
+
+  return (
+    <section className="crimson-services-showcase">
+      <header>
+        <h2>Our Premier <span style={{color: '#D32F2F'}}>Dubai Real Estate</span> Services</h2>
+        <p>Curated by our AI Intelligence for your optimal investment journey</p>
+      </header>
+      
+      <div className="services-grid">
+        {featuredServices.map(service => (
+          <ServiceCard 
+            key={service.service_code}
+            service={service}
+            onExplore={() => handleExploreCategory(service.category)}
+          />
+        ))}
+      </div>
+      
+      {/* Zoe's Service Gateway - appears when category selected */}
+      {selectedCategory && (
+        <ServiceGateway 
+          category={selectedCategory}
+          onClose={() => setSelectedCategory(null)}
+        />
+      )}
+    </section>
+  );
+};
+```
+
+**3. Zoe's Service Gateway Component**
+```jsx
+// components/service-discovery/ServiceGateway.jsx
+const ServiceGateway = ({ category, onClose }) => {
+  const [gatewayServices, setGatewayServices] = useState([]);
+  const [clientProfile, setClientProfile] = useState(null);
+
+  // When gateway opens, Zoe does 3 things:
+  useEffect(() => {
+    // 1. Fetch all services in this category
+    const categoryServices = fetchServicesByCategory(category);
+    
+    // 2. If client is logged in, fetch their profile for personalization
+    const profile = fetchClientProfile(); // Optional - from Linda's data
+    
+    // 3. Apply intelligent sorting based on:
+    //    - Client profile (if available)
+    //    - Service performance
+    //    - Logical journey (e.g., buying comes before financing)
+    const sortedServices = zoeSortServices(categoryServices, profile);
+    
+    setGatewayServices(sortedServices);
+    setClientProfile(profile);
+  }, [category]);
+
+  return (
+    <div className="service-gateway-overlay">
+      <div className="service-gateway-container">
+        <button className="close-button" onClick={onClose}>×</button>
+        
+        <header>
+          <h2>Your Complete <span style={{color: '#D32F2F'}}>{category.replace('_', ' ')}</span> Journey</h2>
+          {clientProfile && (
+            <p className="personalized-badge">
+              ✨ Personalized for {clientProfile.name}'s investment goals
+            </p>
+          )}
+        </header>
+        
+        <div className="service-journey-map">
+          {gatewayServices.map((service, index) => (
+            <JourneyStep 
+              key={service.service_code}
+              service={service}
+              stepNumber={index + 1}
+              isRecommended={service.isRecommended}
+            />
+          ))}
+        </div>
+        
+        <div className="gateway-actions">
+          <button className="cta-primary">Speak with Our AI Assistant</button>
+          <button className="cta-secondary">Download Complete Guide PDF</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+### 🔄 **Integration with Your AI Ecosystem**
+1. **Data Flow:**
+   - **Mary/Clara/Theodora** provide service performance metrics to Zoe
+   - **Cipher** provides market data for seasonal weighting
+   - **Linda** provides anonymized client behavior data for personalization
+   - **Henry** logs all service impressions and clicks for ROI analysis
+
+2. **Event-Driven Updates:**
+   ```javascript
+   // When service performance changes, Zoe recalculates
+   henry.listen('SERVICE_PERFORMANCE_UPDATED', (event) => {
+     zoe.recalculateFeaturedServices();
+   });
+   
+   // When market trend shifts (from Cipher)
+   henry.listen('MARKET_TREND_SHIFT', (event) => {
+     zoe.adjustSeasonalWeights(event.trendData);
+   });
+   ```
+
+### 🚀 **Implementation Phases**
+**Phase 1: Zoe's Service Intelligence Dashboard (2-3 Weeks)**
+- Build the backend scoring engine and dashboard UI
+- Connect to existing service registry and performance data
+- Manual "featured services" override capability for campaigns
+
+**Phase 2: Dynamic Homepage Module (1-2 Weeks)**
+- Create responsive service cards and carousel
+- Implement periodic refresh from Zoe's API
+- Add click tracking for analytics
+
+**Phase 3: Intelligent Service Gateway (2-3 Weeks)**
+- Build the journey-based service discovery interface
+- Add client personalization (initially basic, then with Linda's data)
+- Create downloadable guides and CTA integration
+
+**Phase 4: Optimization & Learning (Ongoing)**
+- A/B test different service combinations
+- Let Zoe auto-optimize based on conversion data
+- Add predictive "next best service" recommendations
+
+### 📊 **Expected Business Outcomes**
+1. **Increased Service Discovery:** Clients see 5-6 relevant services instead of overwhelming full list
+2. **Higher Conversion Rates:** Strategic promotion of high-performing/seasonal services
+3. **Cross-Selling:** Gateway shows complete service journeys, increasing average ticket size
+4. **Market Responsiveness:** Homepage automatically adjusts to Dubai's real estate cycles
+
+This system makes Zoe the **ultimate marketer and client guide**, using your company's own performance data to intelligently promote services. The dynamic nature showcases your tech sophistication while driving tangible business results.
+
+Would you like to refine the scoring algorithm weights or design the specific Service Card component next?
+
