@@ -1,0 +1,73 @@
+{
+  "vipClients": [
+    {
+      "id": "vip-1",
+      "name": "Sheikh Abdullah Al Maktoum",
+      "tier": "platinum",
+      "properties": 5,
+      "totalValue": 45000000,
+      "preferences": ["Waterfront", "Golf Course", "Branded Residences"],
+      "lastContact": "2026-01-08",
+      "concierge": "Ahmed Hassan"
+    },
+    {
+      "id": "vip-2",
+      "name": "Mr. Chen Wei",
+      "tier": "gold",
+      "properties": 2,
+      "totalValue": 12000000,
+      "preferences": ["Investment Properties", "High ROI"],
+      "lastContact": "2026-01-09",
+      "concierge": "John Smith"
+    },
+    {
+      "id": "vip-3",
+      "name": "Dr. Marcus Weber",
+      "tier": "gold",
+      "properties": 3,
+      "totalValue": 18000000,
+      "preferences": ["Privacy", "Smart Home", "Sustainable"],
+      "lastContact": "2026-01-05",
+      "concierge": "Maria Garcia"
+    }
+  ],
+  "conciergeServices": [
+    { "id": "cs-1", "service": "Interior Design Consultation", "client": "Sheikh Abdullah", "status": "in_progress", "provider": "DAMAC Interiors" },
+    { "id": "cs-2", "service": "Relocation Assistance", "client": "Mr. Chen Wei", "status": "scheduled", "provider": "Crown Relocations" },
+    { "id": "cs-3", "service": "Golden Visa Processing", "client": "Dr. Marcus Weber", "status": "completed", "provider": "In-house" }
+  ],
+  "exclusiveListings": [
+    {
+      "id": "excl-1",
+      "property": "Palm Jumeirah Signature Villa",
+      "price": 85000000,
+      "type": "Ultra Luxury",
+      "bedrooms": 7,
+      "features": ["Private Beach", "Infinity Pool", "Staff Quarters"],
+      "availability": "exclusive"
+    },
+    {
+      "id": "excl-2",
+      "property": "Burj Khalifa Penthouse",
+      "price": 120000000,
+      "type": "Ultra Luxury",
+      "bedrooms": 5,
+      "features": ["360° Views", "Private Elevator", "Helipad Access"],
+      "availability": "exclusive"
+    }
+  ],
+  "partnerNetwork": [
+    { "name": "DAMAC Interiors", "category": "Interior Design", "rating": 4.8, "projects": 45 },
+    { "name": "Crown Relocations", "category": "Moving Services", "rating": 4.7, "projects": 23 },
+    { "name": "Virtuzone", "category": "Business Setup", "rating": 4.6, "projects": 34 },
+    { "name": "Hildon & Associates", "category": "Legal Services", "rating": 4.9, "projects": 56 }
+  ],
+  "stats": {
+    "vipClients": 45,
+    "platinumTier": 8,
+    "goldTier": 15,
+    "silverTier": 22,
+    "servicesArranged": 156,
+    "satisfactionRate": 98.5
+  }
+}

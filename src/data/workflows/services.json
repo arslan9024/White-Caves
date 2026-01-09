@@ -1,0 +1,81 @@
+{
+  "name": "Services Workflow",
+  "description": "Complete workflow for appointments, tenancy management, and maintenance services",
+  "types": {
+    "appointment": {
+      "name": "Property Viewing Appointment",
+      "stages": [
+        { "id": "request", "name": "Request Received", "order": 1 },
+        { "id": "scheduling", "name": "Scheduling", "order": 2 },
+        { "id": "confirmation", "name": "Confirmation Sent", "order": 3 },
+        { "id": "reminder", "name": "Reminder Sent", "order": 4 },
+        { "id": "completed", "name": "Viewing Completed", "order": 5 },
+        { "id": "followup", "name": "Follow-up", "order": 6 }
+      ]
+    },
+    "tenancy": {
+      "name": "Tenancy Management",
+      "stages": [
+        { "id": "application", "name": "Application Received", "order": 1 },
+        { "id": "verification", "name": "Document Verification", "order": 2 },
+        { "id": "approval", "name": "Landlord Approval", "order": 3 },
+        { "id": "contract", "name": "Contract Signing", "order": 4 },
+        { "id": "payment", "name": "Payment Collection", "order": 5 },
+        { "id": "ejari", "name": "Ejari Registration", "order": 6 },
+        { "id": "handover", "name": "Key Handover", "order": 7 },
+        { "id": "active", "name": "Active Tenancy", "order": 8 }
+      ]
+    },
+    "maintenance": {
+      "name": "Maintenance Request",
+      "stages": [
+        { "id": "reported", "name": "Issue Reported", "order": 1 },
+        { "id": "assessment", "name": "Assessment", "order": 2 },
+        { "id": "quotation", "name": "Quotation", "order": 3 },
+        { "id": "approval", "name": "Owner Approval", "order": 4 },
+        { "id": "scheduled", "name": "Work Scheduled", "order": 5 },
+        { "id": "inprogress", "name": "In Progress", "order": 6 },
+        { "id": "completed", "name": "Completed", "order": 7 },
+        { "id": "verified", "name": "Tenant Verified", "order": 8 }
+      ]
+    }
+  },
+  "activeServices": [
+    {
+      "id": "svc-1",
+      "type": "appointment",
+      "property": "VH-A-101",
+      "client": "Abdullah Al Maktoum",
+      "currentStage": "confirmation",
+      "scheduledDate": "2026-01-10",
+      "scheduledTime": "10:00 AM",
+      "agent": "Ahmed Hassan"
+    },
+    {
+      "id": "svc-2",
+      "type": "tenancy",
+      "property": "AM-B-205",
+      "client": "Sarah Williams",
+      "currentStage": "ejari",
+      "progress": 75,
+      "startDate": "2026-01-15"
+    },
+    {
+      "id": "svc-3",
+      "type": "maintenance",
+      "property": "TU-D-418",
+      "client": "John Smith",
+      "issue": "AC not cooling properly",
+      "currentStage": "scheduled",
+      "scheduledDate": "2026-01-11",
+      "contractor": "Cool Tech Services"
+    }
+  ],
+  "stats": {
+    "appointmentsThisWeek": 23,
+    "activeTenancies": 156,
+    "pendingMaintenance": 12,
+    "avgResponseTime": "2.5 hours",
+    "satisfactionRate": 94.5
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "transactions": [
+    {
+      "id": "txn-1",
+      "type": "income",
+      "category": "property_sale",
+      "description": "Sale commission - VH-A-101",
+      "amount": 105000,
+      "date": "2026-01-08",
+      "status": "completed",
+      "reference": "INV-2026-001"
+    },
+    {
+      "id": "txn-2",
+      "type": "income",
+      "category": "rental",
+      "description": "Annual rent - AM-B-205",
+      "amount": 95000,
+      "date": "2026-01-05",
+      "status": "completed",
+      "reference": "INV-2026-002"
+    },
+    {
+      "id": "txn-3",
+      "type": "expense",
+      "category": "marketing",
+      "description": "Digital marketing campaign",
+      "amount": 25000,
+      "date": "2026-01-07",
+      "status": "completed",
+      "reference": "EXP-2026-015"
+    },
+    {
+      "id": "txn-4",
+      "type": "income",
+      "category": "commission",
+      "description": "Referral commission",
+      "amount": 15000,
+      "date": "2026-01-09",
+      "status": "pending",
+      "reference": "INV-2026-003"
+    }
+  ],
+  "invoices": [
+    {
+      "id": "inv-1",
+      "number": "INV-2026-001",
+      "client": "Mohammed Al Rashid",
+      "amount": 105000,
+      "dueDate": "2026-01-15",
+      "status": "paid",
+      "property": "VH-A-101"
+    },
+    {
+      "id": "inv-2",
+      "number": "INV-2026-002",
+      "client": "Sarah Williams",
+      "amount": 95000,
+      "dueDate": "2026-01-20",
+      "status": "overdue",
+      "property": "AM-B-205"
+    },
+    {
+      "id": "inv-3",
+      "number": "INV-2026-003",
+      "client": "Ahmed Khalil",
+      "amount": 15000,
+      "dueDate": "2026-01-25",
+      "status": "pending",
+      "property": "Referral"
+    }
+  ],
+  "accounts": [
+    { "name": "Operating Account", "balance": 2500000, "currency": "AED", "bank": "Mashreq NEOBiz" },
+    { "name": "Escrow Account", "balance": 8500000, "currency": "AED", "bank": "Emirates NBD" },
+    { "name": "Commission Reserve", "balance": 750000, "currency": "AED", "bank": "Mashreq NEOBiz" }
+  ],
+  "budget": {
+    "marketing": { "allocated": 500000, "spent": 325000, "remaining": 175000 },
+    "operations": { "allocated": 300000, "spent": 180000, "remaining": 120000 },
+    "technology": { "allocated": 200000, "spent": 145000, "remaining": 55000 },
+    "salaries": { "allocated": 1200000, "spent": 1000000, "remaining": 200000 }
+  },
+  "stats": {
+    "totalRevenue": 12500000,
+    "totalExpenses": 3200000,
+    "netProfit": 9300000,
+    "profitMargin": 74.4,
+    "outstandingReceivables": 450000,
+    "cashFlow": "positive"
+  }
+}

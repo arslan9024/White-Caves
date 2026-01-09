@@ -1,0 +1,105 @@
+{
+  "conversations": [
+    {
+      "id": "conv-1",
+      "contact": {
+        "name": "Mohammed Al Rashid",
+        "phone": "+971501234567",
+        "avatar": "https://i.pravatar.cc/150?img=11",
+        "status": "online"
+      },
+      "lastMessage": "I am interested in the Marina apartment",
+      "unread": 3,
+      "time": "2 min ago",
+      "priority": "hot",
+      "tags": ["buyer", "luxury"],
+      "assignedAgent": null,
+      "messages": [
+        { "id": 1, "type": "received", "text": "Hello, I saw your property listing", "time": "10:30 AM", "status": "read" },
+        { "id": 2, "type": "sent", "text": "Hi Mohammed! Which property are you interested in?", "time": "10:32 AM", "status": "read" },
+        { "id": 3, "type": "received", "text": "The 3BR apartment in Dubai Marina", "time": "10:33 AM", "status": "read" },
+        { "id": 4, "type": "received", "text": "What is the asking price?", "time": "10:33 AM", "status": "read" },
+        { "id": 5, "type": "ai", "text": "Linda AI: This lead shows high buying intent. Recommend scheduling a viewing within 24 hours.", "time": "10:34 AM" },
+        { "id": 6, "type": "received", "text": "I am interested in the Marina apartment", "time": "10:35 AM", "status": "delivered" }
+      ]
+    },
+    {
+      "id": "conv-2",
+      "contact": {
+        "name": "Sarah Williams",
+        "phone": "+971502345678",
+        "avatar": "https://i.pravatar.cc/150?img=5",
+        "status": "offline"
+      },
+      "lastMessage": "Can we schedule a viewing?",
+      "unread": 0,
+      "time": "1 hour ago",
+      "priority": "warm",
+      "tags": ["tenant", "family"],
+      "assignedAgent": null,
+      "messages": [
+        { "id": 1, "type": "received", "text": "Hi, I need a 2BR apartment for rent", "time": "9:00 AM", "status": "read" },
+        { "id": 2, "type": "sent", "text": "Hello Sarah! We have several options. What is your budget?", "time": "9:05 AM", "status": "read" },
+        { "id": 3, "type": "received", "text": "Around 80-100k per year", "time": "9:10 AM", "status": "read" },
+        { "id": 4, "type": "received", "text": "Can we schedule a viewing?", "time": "9:15 AM", "status": "read" }
+      ]
+    },
+    {
+      "id": "conv-3",
+      "contact": {
+        "name": "Ahmad Khalil",
+        "phone": "+971503456789",
+        "avatar": "https://i.pravatar.cc/150?img=12",
+        "status": "away"
+      },
+      "lastMessage": "Thank you, will get back to you",
+      "unread": 0,
+      "time": "3 hours ago",
+      "priority": "cold",
+      "tags": ["investor"],
+      "assignedAgent": null,
+      "messages": [
+        { "id": 1, "type": "received", "text": "Looking for investment properties", "time": "7:00 AM", "status": "read" },
+        { "id": 2, "type": "sent", "text": "We have great ROI properties in Business Bay", "time": "7:30 AM", "status": "read" },
+        { "id": 3, "type": "received", "text": "Thank you, will get back to you", "time": "8:00 AM", "status": "read" }
+      ]
+    }
+  ],
+  "agents": [
+    { "id": "agent-1", "name": "Ahmed Hassan", "title": "Senior Sales Agent", "phone": "+971501111111", "status": "active", "conversations": 12, "responseTime": "2m" },
+    { "id": "agent-2", "name": "Fatima Al-Sayed", "title": "Leasing Specialist", "phone": "+971502222222", "status": "active", "conversations": 8, "responseTime": "5m" },
+    { "id": "agent-3", "name": "John Smith", "title": "Sales Executive", "phone": "+971503333333", "status": "busy", "conversations": 15, "responseTime": "3m" },
+    { "id": "agent-4", "name": "Maria Garcia", "title": "Client Relations", "phone": "+971504444444", "status": "away", "conversations": 6, "responseTime": "8m" },
+    { "id": "agent-5", "name": "Omar Khalil", "title": "Property Consultant", "phone": "+971505555555", "status": "active", "conversations": 10, "responseTime": "4m" }
+  ],
+  "broadcasts": [
+    { "id": "bc-1", "name": "New Year Offers 2026", "status": "sent", "recipients": 1250, "delivered": 1180, "read": 890, "sentAt": "2026-01-01T10:00:00Z" },
+    { "id": "bc-2", "name": "DAMAC Hills 2 Launch", "status": "scheduled", "recipients": 2500, "scheduledFor": "2026-01-15T09:00:00Z" },
+    { "id": "bc-3", "name": "Ramadan Promotions", "status": "draft", "recipients": 0 }
+  ],
+  "templates": [
+    { "id": "tpl-1", "name": "Welcome Message", "category": "greeting", "status": "approved", "text": "Welcome to White Caves! How can we assist you today?" },
+    { "id": "tpl-2", "name": "Property Details", "category": "property", "status": "approved", "text": "Here are the details for {{property_name}}:\n- Price: {{price}}\n- Size: {{size}}\n- Location: {{location}}" },
+    { "id": "tpl-3", "name": "Viewing Confirmation", "category": "appointment", "status": "approved", "text": "Your viewing is confirmed for {{date}} at {{time}}. Our agent {{agent_name}} will meet you at the property." },
+    { "id": "tpl-4", "name": "Follow Up", "category": "follow_up", "status": "pending", "text": "Hi {{name}}, just following up on your property inquiry. Would you like to schedule a viewing?" }
+  ],
+  "analytics": {
+    "totalConversations": 1247,
+    "activeConversations": 89,
+    "avgResponseTime": "3.5m",
+    "leadConversionRate": 24.5,
+    "messagesThisWeek": 4523,
+    "topAgents": [
+      { "name": "Ahmed Hassan", "score": 95 },
+      { "name": "John Smith", "score": 89 },
+      { "name": "Omar Khalil", "score": 85 }
+    ]
+  },
+  "quickReplies": [
+    { "id": 1, "text": "Thank you for your interest! How can I help you today?" },
+    { "id": 2, "text": "Would you like to schedule a property viewing?" },
+    { "id": 3, "text": "I will send you more details about this property." },
+    { "id": 4, "text": "What is your preferred budget range?" },
+    { "id": 5, "text": "Our office hours are 9 AM to 6 PM, Sunday to Thursday." }
+  ]
+}

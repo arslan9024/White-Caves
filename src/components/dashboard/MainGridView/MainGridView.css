@@ -225,6 +225,26 @@
   color: var(--text-primary, #f8fafc);
 }
 
+.main-grid-loading {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--text-secondary, #64748b);
+}
+
+.main-grid-loading .spinner {
+  animation: spin 1s linear infinite;
+  color: #D32F2F;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 @media (max-width: 768px) {
   .quick-stats {
     flex-direction: column;

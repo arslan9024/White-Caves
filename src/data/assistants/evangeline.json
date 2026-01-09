@@ -1,0 +1,70 @@
+{
+  "legalRisks": [
+    {
+      "id": "risk-1",
+      "title": "Pending Contract Dispute",
+      "client": "Al-Futtaim Holdings",
+      "severity": "high",
+      "status": "investigating",
+      "description": "Dispute over delay penalties in handover contract",
+      "exposure": 2500000,
+      "createdAt": "2026-01-05"
+    },
+    {
+      "id": "risk-2",
+      "title": "Trademark Infringement Claim",
+      "client": "N/A",
+      "severity": "medium",
+      "status": "resolved",
+      "description": "Similar brand name usage by competitor",
+      "exposure": 150000,
+      "createdAt": "2025-12-20"
+    }
+  ],
+  "contracts": [
+    {
+      "id": "cont-1",
+      "type": "Sale Agreement",
+      "parties": ["White Caves", "Mohammed Al Rashid"],
+      "property": "VH-A-101",
+      "value": 3500000,
+      "status": "pending_review",
+      "dueDate": "2026-01-15"
+    },
+    {
+      "id": "cont-2",
+      "type": "Tenancy Agreement",
+      "parties": ["Property Owner", "Sarah Williams"],
+      "property": "AM-B-205",
+      "value": 95000,
+      "status": "approved",
+      "signedDate": "2026-01-05"
+    },
+    {
+      "id": "cont-3",
+      "type": "Agency Agreement",
+      "parties": ["White Caves", "DAMAC Properties"],
+      "property": "Multiple",
+      "value": 0,
+      "status": "active",
+      "renewalDate": "2026-06-30"
+    }
+  ],
+  "regulations": [
+    { "name": "RERA Law 26", "status": "compliant", "lastAudit": "2025-11-15", "notes": "All agents registered" },
+    { "name": "DLD Registration", "status": "compliant", "lastAudit": "2025-12-01", "notes": "Brokerage license active" },
+    { "name": "AML Guidelines", "status": "compliant", "lastAudit": "2025-10-20", "notes": "KYC procedures updated" }
+  ],
+  "legalLibrary": [
+    { "category": "Templates", "documents": 45, "lastUpdated": "2026-01-08" },
+    { "category": "Regulations", "documents": 28, "lastUpdated": "2026-01-05" },
+    { "category": "Case Law", "documents": 67, "lastUpdated": "2025-12-15" },
+    { "category": "Guides", "documents": 12, "lastUpdated": "2026-01-02" }
+  ],
+  "stats": {
+    "activeContracts": 156,
+    "pendingReview": 12,
+    "openRisks": 3,
+    "complianceScore": 98.5
+  }
+}

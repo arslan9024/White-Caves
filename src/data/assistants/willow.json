@@ -1,0 +1,40 @@
+{
+  "endpoints": [
+    { "path": "/api/properties", "method": "GET", "requests": 45000, "avgLatency": "120ms", "errorRate": 0.01, "status": "healthy" },
+    { "path": "/api/properties/:id", "method": "GET", "requests": 23000, "avgLatency": "85ms", "errorRate": 0.02, "status": "healthy" },
+    { "path": "/api/leads", "method": "GET", "requests": 18000, "avgLatency": "65ms", "errorRate": 0.01, "status": "healthy" },
+    { "path": "/api/leads", "method": "POST", "requests": 5600, "avgLatency": "95ms", "errorRate": 0.03, "status": "healthy" },
+    { "path": "/api/auth/login", "method": "POST", "requests": 12000, "avgLatency": "45ms", "errorRate": 0.05, "status": "warning" },
+    { "path": "/api/conversations", "method": "GET", "requests": 34000, "avgLatency": "78ms", "errorRate": 0.01, "status": "healthy" }
+  ],
+  "database": {
+    "connections": { "active": 12, "idle": 8, "max": 50 },
+    "queries": { "total": 125000, "slow": 23, "failed": 5 },
+    "storage": { "used": "2.4GB", "available": "47.6GB", "percentage": 4.8 },
+    "tables": [
+      { "name": "properties", "rows": 9378, "size": "450MB", "indexes": 5 },
+      { "name": "leads", "rows": 847, "size": "12MB", "indexes": 3 },
+      { "name": "users", "rows": 156, "size": "2MB", "indexes": 2 },
+      { "name": "conversations", "rows": 4523, "size": "89MB", "indexes": 4 }
+    ]
+  },
+  "cache": {
+    "provider": "Redis",
+    "hitRate": 94.5,
+    "memory": { "used": "256MB", "max": "1GB" },
+    "keys": 12450,
+    "evictions": 23
+  },
+  "security": {
+    "lastScan": "2026-01-08",
+    "vulnerabilities": { "critical": 0, "high": 0, "medium": 2, "low": 5 },
+    "certificates": { "api": "valid", "expires": "2026-06-15" },
+    "rateLimit": { "enabled": true, "limit": "100/min" }
+  },
+  "stats": {
+    "uptime": "99.97%",
+    "totalRequests": 125000,
+    "avgResponseTime": "85ms",
+    "errorRate": 0.02
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "marketTrends": [
+    {
+      "id": "trend-1",
+      "area": "Dubai Marina",
+      "trend": "up",
+      "change": 15.2,
+      "avgPrice": 2150,
+      "transactions": 234,
+      "period": "Q4 2025"
+    },
+    {
+      "id": "trend-2",
+      "area": "Downtown Dubai",
+      "trend": "stable",
+      "change": 2.1,
+      "avgPrice": 2850,
+      "transactions": 189,
+      "period": "Q4 2025"
+    },
+    {
+      "id": "trend-3",
+      "area": "DAMAC Hills 2",
+      "trend": "up",
+      "change": 8.7,
+      "avgPrice": 950,
+      "transactions": 456,
+      "period": "Q4 2025"
+    },
+    {
+      "id": "trend-4",
+      "area": "Business Bay",
+      "trend": "down",
+      "change": -3.2,
+      "avgPrice": 1650,
+      "transactions": 312,
+      "period": "Q4 2025"
+    }
+  ],
+  "predictions": [
+    {
+      "id": "pred-1",
+      "area": "Dubai Marina",
+      "prediction": "Strong growth expected in luxury segment",
+      "confidence": 87,
+      "timeframe": "6 months",
+      "factors": ["Expo legacy", "Tourism recovery", "Limited supply"]
+    },
+    {
+      "id": "pred-2",
+      "area": "DAMAC Hills 2",
+      "prediction": "Continued appreciation as infrastructure develops",
+      "confidence": 82,
+      "timeframe": "12 months",
+      "factors": ["Metro extension", "New retail", "Family demand"]
+    }
+  ],
+  "competitors": [
+    { "name": "Emaar Properties", "marketShare": 18.5, "avgPrice": 2400, "strength": "Brand recognition" },
+    { "name": "DAMAC Properties", "marketShare": 12.3, "avgPrice": 1850, "strength": "Luxury portfolio" },
+    { "name": "Nakheel", "marketShare": 9.8, "avgPrice": 2100, "strength": "Waterfront locations" },
+    { "name": "Sobha Realty", "marketShare": 7.2, "avgPrice": 2600, "strength": "Quality construction" }
+  ],
+  "economicIndicators": [
+    { "indicator": "GDP Growth", "value": "4.2%", "trend": "up", "impact": "positive" },
+    { "indicator": "Tourism Arrivals", "value": "18M", "trend": "up", "impact": "positive" },
+    { "indicator": "Interest Rates", "value": "5.25%", "trend": "stable", "impact": "neutral" },
+    { "indicator": "Oil Prices", "value": "$78/bbl", "trend": "down", "impact": "slightly negative" }
+  ],
+  "stats": {
+    "marketsTracked": 24,
+    "predictionsAccuracy": 84,
+    "reportsGenerated": 156,
+    "alertsThisWeek": 12
+  }
+}

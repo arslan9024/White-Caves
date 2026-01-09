@@ -1,0 +1,68 @@
+{
+  "portfolios": [
+    {
+      "id": "port-1",
+      "client": "Gulf Investment Fund",
+      "totalValue": 125000000,
+      "properties": 12,
+      "avgYield": 7.8,
+      "appreciation": 12.5,
+      "riskLevel": "moderate"
+    },
+    {
+      "id": "port-2",
+      "client": "European Property Trust",
+      "totalValue": 45000000,
+      "properties": 5,
+      "avgYield": 6.5,
+      "appreciation": 8.2,
+      "riskLevel": "low"
+    },
+    {
+      "id": "port-3",
+      "client": "Chen Family Office",
+      "totalValue": 28000000,
+      "properties": 3,
+      "avgYield": 8.2,
+      "appreciation": 15.3,
+      "riskLevel": "high"
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "opp-1",
+      "type": "Off-Plan",
+      "project": "DAMAC Lagoons Phase 4",
+      "minInvestment": 1500000,
+      "projectedROI": 25,
+      "riskLevel": "medium",
+      "timeline": "3 years"
+    },
+    {
+      "id": "opp-2",
+      "type": "Ready",
+      "project": "Dubai Marina Tower",
+      "minInvestment": 2800000,
+      "projectedROI": 8,
+      "riskLevel": "low",
+      "timeline": "immediate"
+    }
+  ],
+  "yieldAnalysis": [
+    { "area": "Dubai Marina", "grossYield": 6.2, "netYield": 5.1, "occupancy": 92 },
+    { "area": "Downtown Dubai", "grossYield": 5.8, "netYield": 4.8, "occupancy": 95 },
+    { "area": "DAMAC Hills 2", "grossYield": 8.5, "netYield": 7.2, "occupancy": 88 },
+    { "area": "JVC", "grossYield": 9.2, "netYield": 7.8, "occupancy": 85 }
+  ],
+  "taxInsights": [
+    { "topic": "UAE Tax-Free Status", "relevance": "high", "summary": "No income tax on rental income or capital gains" },
+    { "topic": "Golden Visa Benefits", "relevance": "high", "summary": "10-year residency with AED 2M+ property" },
+    { "topic": "VAT on Commercial", "relevance": "medium", "summary": "5% VAT applies to commercial properties" }
+  ],
+  "stats": {
+    "portfoliosManaged": 23,
+    "totalAUM": 450000000,
+    "avgClientReturn": 12.5,
+    "reportsGenerated": 156
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "deals": [
+    {
+      "id": "deal-1",
+      "property": "VH-A-101 Veneto Villa",
+      "client": "Abdullah Al Maktoum",
+      "value": 3500000,
+      "stage": "negotiation",
+      "probability": 80,
+      "agent": "Ahmed Hassan",
+      "expectedClose": "2026-01-25",
+      "lastActivity": "2026-01-08"
+    },
+    {
+      "id": "deal-2",
+      "property": "CL-C-312 Cleopatra Villa",
+      "client": "Chen Wei",
+      "value": 4200000,
+      "stage": "contract",
+      "probability": 95,
+      "agent": "John Smith",
+      "expectedClose": "2026-01-15",
+      "lastActivity": "2026-01-09"
+    },
+    {
+      "id": "deal-3",
+      "property": "OL-E-520 Olympus Villa",
+      "client": "Rajesh Patel",
+      "value": 4800000,
+      "stage": "viewing",
+      "probability": 45,
+      "agent": "Omar Khalil",
+      "expectedClose": "2026-02-20",
+      "lastActivity": "2026-01-07"
+    },
+    {
+      "id": "deal-4",
+      "property": "AM-B-205 Amazonia TH",
+      "client": "Sophie Martin",
+      "value": 1650000,
+      "stage": "qualification",
+      "probability": 30,
+      "agent": "Maria Garcia",
+      "expectedClose": "2026-03-01",
+      "lastActivity": "2026-01-06"
+    }
+  ],
+  "pipeline": {
+    "qualification": { "count": 12, "value": 18500000 },
+    "viewing": { "count": 8, "value": 24000000 },
+    "negotiation": { "count": 5, "value": 17500000 },
+    "contract": { "count": 3, "value": 12600000 },
+    "closing": { "count": 2, "value": 7200000 }
+  },
+  "agents": [
+    { "id": "agent-1", "name": "Ahmed Hassan", "deals": 8, "revenue": 28500000, "target": 35000000, "commission": 855000 },
+    { "id": "agent-2", "name": "John Smith", "deals": 12, "revenue": 42000000, "target": 40000000, "commission": 1260000 },
+    { "id": "agent-3", "name": "Omar Khalil", "deals": 6, "revenue": 18000000, "target": 30000000, "commission": 540000 },
+    { "id": "agent-4", "name": "Maria Garcia", "deals": 4, "revenue": 12500000, "target": 25000000, "commission": 375000 }
+  ],
+  "targets": {
+    "monthly": { "current": 35000000, "target": 50000000, "percentage": 70 },
+    "quarterly": { "current": 98000000, "target": 150000000, "percentage": 65 },
+    "yearly": { "current": 425000000, "target": 600000000, "percentage": 71 }
+  },
+  "stats": {
+    "totalDeals": 30,
+    "totalValue": 79800000,
+    "avgDealSize": 2660000,
+    "winRate": 68,
+    "avgSalesCycle": "45 days"
+  }
+}

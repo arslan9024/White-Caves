@@ -1,0 +1,88 @@
+{
+  "projects": [
+    {
+      "id": "proj-1",
+      "name": "DAMAC Lagoons Phase 3",
+      "developer": "DAMAC Properties",
+      "location": "DAMAC Hills 2",
+      "status": "on_track",
+      "completion": 65,
+      "expectedHandover": "Q4 2026",
+      "units": 450,
+      "avgPrice": 1250000
+    },
+    {
+      "id": "proj-2",
+      "name": "Emaar Beach Vista",
+      "developer": "Emaar Properties",
+      "location": "Dubai Harbour",
+      "status": "ahead",
+      "completion": 78,
+      "expectedHandover": "Q2 2026",
+      "units": 320,
+      "avgPrice": 3500000
+    },
+    {
+      "id": "proj-3",
+      "name": "Sobha One",
+      "developer": "Sobha Realty",
+      "location": "Ras Al Khor",
+      "status": "delayed",
+      "completion": 42,
+      "expectedHandover": "Q1 2027",
+      "units": 1200,
+      "avgPrice": 2800000
+    }
+  ],
+  "developers": [
+    {
+      "id": "dev-1",
+      "name": "DAMAC Properties",
+      "rating": 4.2,
+      "projectsCompleted": 45,
+      "onTimeDelivery": 78,
+      "currentProjects": 12,
+      "specialization": "Luxury residential"
+    },
+    {
+      "id": "dev-2",
+      "name": "Emaar Properties",
+      "rating": 4.5,
+      "projectsCompleted": 120,
+      "onTimeDelivery": 85,
+      "currentProjects": 28,
+      "specialization": "Master communities"
+    },
+    {
+      "id": "dev-3",
+      "name": "Sobha Realty",
+      "rating": 4.4,
+      "projectsCompleted": 25,
+      "onTimeDelivery": 82,
+      "currentProjects": 8,
+      "specialization": "Premium construction"
+    }
+  ],
+  "feasibilityStudies": [
+    {
+      "id": "feas-1",
+      "project": "Proposed Mixed-Use Tower",
+      "location": "Business Bay",
+      "estimatedCost": 450000000,
+      "projectedROI": 18.5,
+      "riskLevel": "medium",
+      "status": "analysis"
+    }
+  ],
+  "marketGaps": [
+    { "segment": "Affordable luxury", "demand": "high", "supply": "low", "opportunity": "AED 1-2M range" },
+    { "segment": "Senior living", "demand": "medium", "supply": "very low", "opportunity": "Retirement communities" },
+    { "segment": "Student housing", "demand": "high", "supply": "medium", "opportunity": "Near education hubs" }
+  ],
+  "stats": {
+    "projectsTracked": 156,
+    "developersMonitored": 45,
+    "studiesCompleted": 23,
+    "avgAccuracy": 89
+  }
+}

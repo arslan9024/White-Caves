@@ -1,0 +1,119 @@
+{
+  "leads": [
+    {
+      "id": "lead-1",
+      "name": "Abdullah Al Maktoum",
+      "email": "abdullah@example.com",
+      "phone": "+971501234567",
+      "source": "website",
+      "status": "hot",
+      "stage": "viewing_scheduled",
+      "score": 92,
+      "interest": "buy",
+      "propertyType": "Villa",
+      "budget": { "min": 3000000, "max": 5000000 },
+      "assignedAgent": "Ahmed Hassan",
+      "createdAt": "2026-01-05",
+      "lastActivity": "2026-01-08"
+    },
+    {
+      "id": "lead-2",
+      "name": "Emma Thompson",
+      "email": "emma.t@example.com",
+      "phone": "+971502345678",
+      "source": "referral",
+      "status": "warm",
+      "stage": "initial_contact",
+      "score": 78,
+      "interest": "rent",
+      "propertyType": "Apartment",
+      "budget": { "min": 80000, "max": 120000 },
+      "assignedAgent": "Fatima Al-Sayed",
+      "createdAt": "2026-01-07",
+      "lastActivity": "2026-01-07"
+    },
+    {
+      "id": "lead-3",
+      "name": "Rajesh Patel",
+      "email": "rajesh.p@example.com",
+      "phone": "+971503456789",
+      "source": "social_media",
+      "status": "cold",
+      "stage": "new",
+      "score": 45,
+      "interest": "buy",
+      "propertyType": "Townhouse",
+      "budget": { "min": 1500000, "max": 2000000 },
+      "assignedAgent": null,
+      "createdAt": "2026-01-08",
+      "lastActivity": "2026-01-08"
+    },
+    {
+      "id": "lead-4",
+      "name": "Chen Wei",
+      "email": "chen.wei@example.com",
+      "phone": "+971504567890",
+      "source": "exhibition",
+      "status": "hot",
+      "stage": "negotiation",
+      "score": 95,
+      "interest": "buy",
+      "propertyType": "Villa",
+      "budget": { "min": 5000000, "max": 8000000 },
+      "assignedAgent": "John Smith",
+      "createdAt": "2025-12-20",
+      "lastActivity": "2026-01-09"
+    },
+    {
+      "id": "lead-5",
+      "name": "Sophie Martin",
+      "email": "sophie.m@example.com",
+      "phone": "+971505678901",
+      "source": "portal",
+      "status": "warm",
+      "stage": "qualification",
+      "score": 68,
+      "interest": "rent",
+      "propertyType": "Villa",
+      "budget": { "min": 150000, "max": 200000 },
+      "assignedAgent": "Maria Garcia",
+      "createdAt": "2026-01-06",
+      "lastActivity": "2026-01-08"
+    }
+  ],
+  "pipeline": {
+    "new": 45,
+    "initial_contact": 32,
+    "qualification": 28,
+    "viewing_scheduled": 18,
+    "viewing_completed": 12,
+    "negotiation": 8,
+    "contract": 5,
+    "closed": 3
+  },
+  "sources": [
+    { "name": "Website", "count": 234, "conversion": 28 },
+    { "name": "Referral", "count": 156, "conversion": 42 },
+    { "name": "Social Media", "count": 189, "conversion": 18 },
+    { "name": "Property Portal", "count": 312, "conversion": 22 },
+    { "name": "Exhibition", "count": 67, "conversion": 35 },
+    { "name": "Cold Call", "count": 89, "conversion": 12 }
+  ],
+  "scoringRules": [
+    { "factor": "Budget Match", "weight": 25, "description": "How well budget matches available inventory" },
+    { "factor": "Engagement Level", "weight": 20, "description": "Response rate and interaction frequency" },
+    { "factor": "Timeline", "weight": 20, "description": "Urgency and decision timeline" },
+    { "factor": "Source Quality", "weight": 15, "description": "Historical conversion by source" },
+    { "factor": "Property Match", "weight": 10, "description": "Availability of matching properties" },
+    { "factor": "Communication", "weight": 10, "description": "Quality of communication and clarity of needs" }
+  ],
+  "stats": {
+    "totalLeads": 847,
+    "hotLeads": 89,
+    "warmLeads": 234,
+    "coldLeads": 524,
+    "avgScore": 62,
+    "conversionRate": 24.5,
+    "avgTimeToClose": "32 days"
+  }
+}

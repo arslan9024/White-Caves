@@ -1,0 +1,98 @@
+{
+  "leases": [
+    {
+      "id": "lease-1",
+      "property": "AM-B-205",
+      "tenant": "Sarah Williams",
+      "startDate": "2026-01-15",
+      "endDate": "2027-01-14",
+      "rent": 95000,
+      "paymentFrequency": "quarterly",
+      "status": "active",
+      "ejariNumber": "EJ-2026-001234"
+    },
+    {
+      "id": "lease-2",
+      "property": "TU-D-418",
+      "tenant": "John Smith",
+      "startDate": "2025-06-01",
+      "endDate": "2026-05-31",
+      "rent": 72000,
+      "paymentFrequency": "annual",
+      "status": "expiring_soon",
+      "ejariNumber": "EJ-2025-005678"
+    },
+    {
+      "id": "lease-3",
+      "property": "VH-A-102",
+      "tenant": "Maria Garcia",
+      "startDate": "2025-09-01",
+      "endDate": "2026-08-31",
+      "rent": 180000,
+      "paymentFrequency": "bi-annual",
+      "status": "active",
+      "ejariNumber": "EJ-2025-009012"
+    }
+  ],
+  "inquiries": [
+    {
+      "id": "inq-1",
+      "property": "CL-C-312",
+      "prospect": "Emma Thompson",
+      "budget": { "min": 150000, "max": 200000 },
+      "moveInDate": "2026-02-01",
+      "status": "viewing_scheduled",
+      "createdAt": "2026-01-06"
+    },
+    {
+      "id": "inq-2",
+      "property": "OL-E-520",
+      "prospect": "Rajesh Patel",
+      "budget": { "min": 200000, "max": 250000 },
+      "moveInDate": "2026-03-01",
+      "status": "new",
+      "createdAt": "2026-01-08"
+    }
+  ],
+  "maintenance": [
+    {
+      "id": "maint-1",
+      "property": "TU-D-418",
+      "tenant": "John Smith",
+      "issue": "AC not cooling",
+      "priority": "high",
+      "status": "scheduled",
+      "reportedAt": "2026-01-07",
+      "scheduledFor": "2026-01-11"
+    },
+    {
+      "id": "maint-2",
+      "property": "AM-B-205",
+      "tenant": "Sarah Williams",
+      "issue": "Leaking faucet in bathroom",
+      "priority": "medium",
+      "status": "completed",
+      "reportedAt": "2026-01-03",
+      "completedAt": "2026-01-05"
+    }
+  ],
+  "renewals": [
+    {
+      "id": "ren-1",
+      "lease": "lease-2",
+      "property": "TU-D-418",
+      "tenant": "John Smith",
+      "expiryDate": "2026-05-31",
+      "proposedIncrease": 5,
+      "status": "pending_negotiation"
+    }
+  ],
+  "stats": {
+    "totalLeases": 156,
+    "activeLeases": 145,
+    "expiringThisMonth": 8,
+    "occupancyRate": 92.5,
+    "avgRent": 125000,
+    "maintenanceResolutionTime": "2.3 days"
+  }
+}

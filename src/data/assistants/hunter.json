@@ -1,0 +1,77 @@
+{
+  "prospects": [
+    {
+      "id": "pros-1",
+      "company": "Gulf Investment Holdings",
+      "contact": "Sheikh Hamdan Al Maktoum",
+      "email": "hamdan@gih.ae",
+      "phone": "+971501234567",
+      "sector": "Real Estate Investment",
+      "estimatedValue": 50000000,
+      "stage": "engaged",
+      "score": 92,
+      "lastContact": "2026-01-08",
+      "nextAction": "Portfolio presentation"
+    },
+    {
+      "id": "pros-2",
+      "company": "European Property Fund",
+      "contact": "Marcus Weber",
+      "email": "m.weber@epf.com",
+      "phone": "+491234567890",
+      "sector": "Fund Management",
+      "estimatedValue": 25000000,
+      "stage": "qualified",
+      "score": 78,
+      "lastContact": "2026-01-05",
+      "nextAction": "ROI analysis"
+    },
+    {
+      "id": "pros-3",
+      "company": "China Real Estate Group",
+      "contact": "Li Wei",
+      "email": "li.wei@creg.cn",
+      "phone": "+861234567890",
+      "sector": "Development",
+      "estimatedValue": 100000000,
+      "stage": "initial",
+      "score": 65,
+      "lastContact": "2026-01-02",
+      "nextAction": "Market overview meeting"
+    }
+  ],
+  "campaigns": [
+    {
+      "id": "camp-1",
+      "name": "Q1 2026 Investor Outreach",
+      "type": "email",
+      "status": "active",
+      "sent": 250,
+      "opened": 145,
+      "clicked": 67,
+      "replied": 23,
+      "startDate": "2026-01-05"
+    },
+    {
+      "id": "camp-2",
+      "name": "MIPIM 2026 Pre-Event",
+      "type": "multi-channel",
+      "status": "scheduled",
+      "targetAudience": 500,
+      "startDate": "2026-02-15"
+    }
+  ],
+  "marketPatterns": [
+    { "pattern": "Increased European investor interest in Dubai", "confidence": 87, "trend": "up" },
+    { "pattern": "Chinese investment slowing Q4 2025", "confidence": 72, "trend": "down" },
+    { "pattern": "GCC investors focusing on luxury segment", "confidence": 91, "trend": "up" }
+  ],
+  "stats": {
+    "totalProspects": 156,
+    "qualified": 45,
+    "engaged": 23,
+    "converted": 8,
+    "pipelineValue": 450000000,
+    "avgDealSize": 18750000
+  }
+}

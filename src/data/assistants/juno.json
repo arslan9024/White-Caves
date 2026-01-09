@@ -1,0 +1,59 @@
+{
+  "facilities": [
+    { "id": "fac-1", "name": "Swimming Pool", "location": "Veneto Cluster", "status": "operational", "lastMaintenance": "2026-01-05", "utilization": 78 },
+    { "id": "fac-2", "name": "Gym", "location": "Main Clubhouse", "status": "operational", "lastMaintenance": "2026-01-03", "utilization": 85 },
+    { "id": "fac-3", "name": "Tennis Court", "location": "Sports Complex", "status": "maintenance", "lastMaintenance": "2026-01-08", "utilization": 45 },
+    { "id": "fac-4", "name": "BBQ Area", "location": "Community Park", "status": "operational", "lastMaintenance": "2025-12-28", "utilization": 62 },
+    { "id": "fac-5", "name": "Kids Play Area", "location": "Multiple", "status": "operational", "lastMaintenance": "2026-01-02", "utilization": 90 }
+  ],
+  "iotDevices": [
+    { "category": "Lighting", "total": 450, "online": 447, "alerts": 3 },
+    { "category": "HVAC", "total": 234, "online": 234, "alerts": 0 },
+    { "category": "Security", "total": 312, "online": 310, "alerts": 2 },
+    { "category": "Water Management", "total": 89, "online": 87, "alerts": 2 }
+  ],
+  "events": [
+    {
+      "id": "evt-1",
+      "name": "Community BBQ Night",
+      "date": "2026-01-15",
+      "time": "5:00 PM",
+      "location": "Community Park",
+      "registrations": 45,
+      "capacity": 100,
+      "status": "open"
+    },
+    {
+      "id": "evt-2",
+      "name": "Kids Movie Night",
+      "date": "2026-01-18",
+      "time": "6:00 PM",
+      "location": "Clubhouse Theater",
+      "registrations": 67,
+      "capacity": 80,
+      "status": "almost_full"
+    },
+    {
+      "id": "evt-3",
+      "name": "Fitness Bootcamp",
+      "date": "2026-01-20",
+      "time": "7:00 AM",
+      "location": "Sports Complex",
+      "registrations": 23,
+      "capacity": 30,
+      "status": "open"
+    }
+  ],
+  "energy": {
+    "consumption": { "current": 12500, "previous": 13200, "change": -5.3, "unit": "kWh" },
+    "solar": { "generated": 4500, "percentage": 36, "savings": 2250 },
+    "water": { "consumption": 45000, "recycled": 12000, "unit": "liters" }
+  },
+  "stats": {
+    "totalFacilities": 24,
+    "operational": 22,
+    "maintenance": 2,
+    "residentsRegistered": 1250,
+    "eventsThisMonth": 8
+  }
+}

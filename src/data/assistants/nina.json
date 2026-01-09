@@ -1,0 +1,67 @@
+{
+  "bots": [
+    {
+      "id": "bot-1",
+      "name": "Property Inquiry Bot",
+      "status": "active",
+      "conversations": 1250,
+      "successRate": 87,
+      "avgResponseTime": "0.5s",
+      "lastUpdated": "2026-01-05"
+    },
+    {
+      "id": "bot-2",
+      "name": "Viewing Scheduler Bot",
+      "status": "active",
+      "conversations": 890,
+      "successRate": 92,
+      "avgResponseTime": "0.3s",
+      "lastUpdated": "2026-01-08"
+    },
+    {
+      "id": "bot-3",
+      "name": "FAQ Assistant",
+      "status": "testing",
+      "conversations": 45,
+      "successRate": 78,
+      "avgResponseTime": "0.4s",
+      "lastUpdated": "2026-01-09"
+    }
+  ],
+  "flows": [
+    {
+      "id": "flow-1",
+      "name": "Lead Qualification Flow",
+      "bot": "bot-1",
+      "steps": 5,
+      "completionRate": 72,
+      "status": "active"
+    },
+    {
+      "id": "flow-2",
+      "name": "Appointment Booking Flow",
+      "bot": "bot-2",
+      "steps": 4,
+      "completionRate": 85,
+      "status": "active"
+    }
+  ],
+  "sessions": [
+    { "id": "sess-1", "bot": "bot-1", "user": "+971501234567", "status": "active", "startTime": "10:30 AM", "messages": 8 },
+    { "id": "sess-2", "bot": "bot-2", "user": "+971502345678", "status": "completed", "startTime": "09:45 AM", "messages": 12 },
+    { "id": "sess-3", "bot": "bot-1", "user": "+971503456789", "status": "active", "startTime": "10:45 AM", "messages": 3 }
+  ],
+  "analytics": {
+    "totalSessions": 4523,
+    "avgDuration": "3.2m",
+    "handoffRate": 15,
+    "satisfactionScore": 4.5,
+    "topIntents": ["property_inquiry", "schedule_viewing", "price_check", "location_info"]
+  },
+  "stats": {
+    "activeBots": 2,
+    "totalConversations": 2185,
+    "automationRate": 85,
+    "costSavings": 125000
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "alerts": [
+    {
+      "id": "alert-1",
+      "type": "maintenance",
+      "property": "VH-A-101",
+      "severity": "medium",
+      "description": "Scheduled AC maintenance due",
+      "status": "active",
+      "createdAt": "2026-01-08"
+    },
+    {
+      "id": "alert-2",
+      "type": "security",
+      "property": "Multiple",
+      "severity": "low",
+      "description": "Gate access system firmware update available",
+      "status": "acknowledged",
+      "createdAt": "2026-01-07"
+    },
+    {
+      "id": "alert-3",
+      "type": "utility",
+      "property": "AM-B-205",
+      "severity": "high",
+      "description": "Water leak detected in basement",
+      "status": "resolved",
+      "createdAt": "2026-01-05",
+      "resolvedAt": "2026-01-05"
+    }
+  ],
+  "properties": [
+    { "id": "VH-A-101", "status": "healthy", "lastInspection": "2025-12-20", "nextInspection": "2026-03-20", "issues": 1 },
+    { "id": "AM-B-205", "status": "healthy", "lastInspection": "2026-01-02", "nextInspection": "2026-04-02", "issues": 0 },
+    { "id": "CL-C-312", "status": "attention", "lastInspection": "2025-11-15", "nextInspection": "2026-02-15", "issues": 3 },
+    { "id": "TU-D-418", "status": "healthy", "lastInspection": "2025-12-10", "nextInspection": "2026-03-10", "issues": 0 }
+  ],
+  "maintenance": [
+    { "id": "maint-1", "type": "AC Service", "frequency": "quarterly", "nextDue": "2026-01-15", "properties": 45 },
+    { "id": "maint-2", "type": "Pool Cleaning", "frequency": "weekly", "nextDue": "2026-01-12", "properties": 12 },
+    { "id": "maint-3", "type": "Garden Maintenance", "frequency": "bi-weekly", "nextDue": "2026-01-16", "properties": 78 },
+    { "id": "maint-4", "type": "Fire Safety Check", "frequency": "annually", "nextDue": "2026-06-01", "properties": 156 }
+  ],
+  "iotDevices": [
+    { "type": "Smart Lock", "total": 234, "online": 232, "offline": 2 },
+    { "type": "CCTV Camera", "total": 156, "online": 156, "offline": 0 },
+    { "type": "Smoke Detector", "total": 312, "online": 310, "offline": 2 },
+    { "type": "Water Sensor", "total": 89, "online": 87, "offline": 2 }
+  ],
+  "stats": {
+    "propertiesMonitored": 156,
+    "activeAlerts": 2,
+    "maintenanceDue": 5,
+    "avgResponseTime": "2.3h"
+  }
+}
