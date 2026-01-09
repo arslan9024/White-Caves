@@ -1,0 +1,125 @@
+I will conduct a comprehensive audit and restructuring plan for your project's navigation system, addressing architecture, design, and business logic from the ground up.
+
+### **Project: Complete Navigation System Audit & Refactor**
+
+**Objective:** Perform a full-stack analysis and rebuild of the main navigation (Navbar) and sidebar architecture to resolve accumulated technical debt, align with business logic, and establish a scalable, professional foundation.
+
+---
+
+### **Phase 1: Deep-Dive Audit & Analysis**
+
+**1.1 Architectural & Code Audit:**
+*   **Inventory Current State:** Map all existing Navbar & Sidebar components, their props, state flows, and dependencies on Redux/context.
+*   **Identify Anti-Patterns:** Look for prop drilling, duplicated logic, tight coupling with page components, and inconsistent styling methods (inline vs. CSS modules vs. library).
+*   **Performance Check:** Audit re-renders (using React DevTools), oversized bundles from navigation libraries, and inefficient route handling.
+
+**1.2 Design & UX Audit:**
+*   **Review Against Wireframes:** Compare current implementation with original design mockups or style guides.
+*   **Usability Heuristics:** Check for consistency, information hierarchy, mobile responsiveness, and visual clutter.
+*   **Accessibility Review:** Test keyboard navigation, screen reader labels (`aria-*`), color contrast, and focus management.
+
+**1.3 Business Logic Audit:**
+*   **Role & Permission Mapping:** Verify if the navigation structure correctly reflects user roles (Owner, Agent, Guest). Are menu items shown/hidden based on accurate permissions?
+*   **Feature-Readiness:** Does the current nav structure support planned features (Zoe AI Hub, Property Search, Aurora Registry)? Is there a logical place for them?
+*   **Workflow Analysis:** Does the navigation facilitate the core user workflows (e.g., finding a property, accessing the dashboard, managing AI assistants) or create friction?
+
+---
+
+### **Phase 2: Strategic Planning & New Architecture**
+
+**2.1 Define Core Principles:**
+*   **Single Source of Truth:** Navigation structure (items, permissions, order) should be defined in one central configuration file (e.g., `navConfig.js`).
+*   **Decoupled Logic:** Navigation components should be presentation-only. Data fetching, user roles, and permissions are injected via props/hooks.
+*   **Responsive-First:** Design for mobile viewports first, then expand for desktop.
+
+**2.2 Design the New Structure:**
+*   **Component Hierarchy Proposal:**
+    ```
+    <App>
+      <MainLayout>
+        <TopNavBar />          // Logo, primary alerts, user menu, mobile toggle
+        <AppContainer>
+          <SidebarNavigation /> // Dynamic menu based on navConfig & user role
+          <MainContent>
+            <Page />           // All your routes render here
+          </MainContent>
+        </AppContainer>
+      </MainLayout>
+    </App>
+    ```
+*   **State Management Plan:** Create a `uiSlice` in Redux Toolkit to manage sidebar collapse state, active menu item, and mobile visibility. **Do not** store static nav config here.
+
+**2.3 Create the Central Configuration:**
+*   Define a `config/navigation.js`:
+    ```javascript
+    export const navConfig = [
+      {
+        id: 'dashboard',
+        title: 'Dashboard',
+        path: '/',
+        icon: <HomeIcon />,
+        roles: ['owner', 'agent'] // Access control
+      },
+      {
+        id: 'zoe-features', // Parent for grouping
+        title: 'Zoe AI',
+        icon: <AiIcon />,
+        roles: ['owner'],
+        children: [ // Nested items for sidebar
+          { id: 'overview', title: 'Overview', path: '/zoe' },
+          { id: 'ai-hub', title: 'AI Hub', path: '/zoe/hub' },
+          { id: 'command-center', title: 'Command Center', path: '/zoe/command' }
+        ]
+      },
+      // ... Property Search, Aurora Registry, etc.
+    ];
+    ```
+
+---
+
+### **Phase 3: Implementation & Refactoring**
+
+**3.1 Build New Core Components:**
+1.  **`<TopNavBar />`**: Contains logo, search bar (if global), notifications, user profile dropdown. Includes a button to toggle the sidebar on mobile.
+2.  **`<SidebarNavigation />`**:
+    *   Receives `userRole` prop.
+    *   Maps through `navConfig`, rendering menu items the user has permission to see.
+    *   **Solves the "Half-View" Bug:** Uses CSS flexbox with `overflow-y-auto`, a defined width (e.g., `16rem`), and smooth collapsing/expanding logic tied to the Redux `uiSlice`.
+3.  **`<NavItem />`**: A reusable internal component for consistent styling of menu links and collapsible sections.
+
+**3.2 Implement Logic & Integration:**
+*   Create a custom hook `useNavigation` that reads the `navConfig`, checks permissions against the current user (from Redux `authSlice`), and returns the filtered menu tree.
+*   Integrate the new navigation into `App.js` or your main router, replacing all legacy navbar/sidebar code.
+*   Implement robust responsive behavior: sidebar hidden on mobile (overlay pattern), visible on desktop.
+
+**3.3 Styling & Polish:**
+*   Use a consistent styling method (e.g., Tailwind CSS module).
+*   Ensure active states are clear.
+*   Add smooth transitions for collapsing/expanding.
+*   Conduct a final pass for accessibility (semantic HTML, keyboard nav).
+
+---
+
+### **Phase 4: Testing & Deployment Strategy**
+
+**4.1 Testing Plan:**
+*   **Unit Tests:** Test the `useNavigation` hook's permission logic.
+*   **Component Tests:** Test `SidebarNavigation` renders correct items for different roles.
+*   **Visual Regression:** Use tools to catch unintended styling changes.
+
+**4.2 Staged Rollout:**
+1.  Build the new components in isolation (`/components/new-navigation/`).
+2.  Replace the old navigation in a single, well-reviewed pull request.
+3.  Deploy to a staging environment for UAT.
+4.  Use feature flags if a phased user rollout is needed.
+
+**Deliverables:**
+1.  **Audit Report** documenting current issues and proposed fixes.
+2.  A new, **centralized navigation configuration** file.
+3.  A suite of **new, decoupled React components** (TopNavBar, SidebarNavigation).
+4.  **Integrated Redux state** for UI control.
+5.  A **fully tested, responsive, and accessible** navigation system.
+
+This plan addresses the root cause of your issues—fragmented architecture—rather than applying surface-level fixes. The key outcome is a **scalable, maintainable navigation system** that correctly serves your business logic and provides a polished user experience.
+
+**Next Step:** Instruct your Replit Agent to begin with **Phase 1.1: Architectural & Code Audit** to gather the concrete data needed for the refactor. Would you like me to elaborate on any specific phase?

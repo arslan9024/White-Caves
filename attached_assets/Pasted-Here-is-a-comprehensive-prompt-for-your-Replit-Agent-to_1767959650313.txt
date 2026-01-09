@@ -1,0 +1,110 @@
+Here is a comprehensive prompt for your Replit Agent to implement a structured feature registry and content management system for your project.
+
+### **Project: Feature Registry & Content Management System**
+
+**Objective:** Implement a centralized system to catalog, number, and manage all features and components within the project. This system will use JSON files for structured data storage and provide a dashboard interface ("Aurora") for visibility and future update tracking.
+
+---
+
+### **Phase 1: Audit & Create the Feature Registry**
+
+1.  **Conduct a Full Project Audit:**
+    *   Recursively scan the entire project directory (focus on `src/`).
+    *   Identify and list all React components, Redux slices, API routes, utility modules, and major UI features/pages (e.g., Property Search, Zoe Features Overview, User Dashboard).
+    *   For each item, extract its name, file path, and type (Component, Slice, Route, etc.).
+
+2.  **Generate the Master Registry (`registry.json`):**
+    *   Create a unique, sequential numeric ID for each cataloged item.
+    *   **Structure the JSON for each entry:**
+        ```json
+        {
+          "id": 1001,
+          "name": "PropertySearchBar",
+          "type": "Component",
+          "path": "/src/components/search/PropertySearchBar.jsx",
+          "category": "Search",
+          "description": "Main search input with filter toggle for property listings.",
+          "dependencies": ["Redux Search Slice"],
+          "dummyDataRef": "data_search_properties.json",
+          "version": "1.0",
+          "lastUpdated": "2023-10-26"
+        }
+        ```
+    *   Save this master list as `data/registry.json`.
+
+3.  **Organize Dummy/Content Data (`data/` directory):**
+    *   Create a structured `data/` directory at the project root.
+    *   For each major feature or component requiring dummy data, create a corresponding JSON file.
+    *   **Example for Property Search (`data_search_properties.json`):**
+        ```json
+        {
+          "forComponentId": 1001,
+          "sampleResults": [
+            {"id": 1, "title": "Modern Apartment...", "price": 85000, "location": "Downtown"},
+            {"id": 2, "title": "Villa with Pool...", "price": 220000, "location": "The Springs"}
+          ],
+          "filterOptions": {
+            "propertyType": ["Apartment", "Villa", "Townhouse"],
+            "bedrooms": [1, 2, 3, "4+"]
+          }
+        }
+        ```
+    *   Link these files in the registry via the `dummyDataRef` field.
+
+---
+
+### **Phase 2: Build the "Aurora" Registry Dashboard Component**
+
+1.  **Component Structure (`AuroraRegistryViewer`):**
+    *   Create a new component at `src/components/aurora/AuroraRegistryViewer.jsx`.
+    *   **Primary Function:** Fetch, display, and allow interaction with `registry.json`.
+
+2.  **Core Features for the Component:**
+    *   **Main List View:** Display all entries from the registry in a sortable, filterable table (ID, Name, Type, Category, Last Updated).
+    *   **Detail Panel:** Clicking an entry shows all its metadata (description, path, dependencies) and a preview of its linked dummy data.
+    *   **Search & Filter:** Allow filtering by type (e.g., "Component"), category (e.g., "Search"), or free-text search.
+    *   **Update Utility:** Include a button to "Re-run Audit" which instructs the backend to re-scan and update the `registry.json`.
+
+3.  **Integrate with Redux:**
+    *   Create a new slice: `auroraRegistrySlice`.
+    *   It will manage the state of the registry data, loading status, and current filters.
+    *   Create an asynchronous thunk action to fetch the `registry.json` from the backend API.
+
+4.  **Backend API Support:**
+    *   Create an API route: `GET /api/aurora/registry`
+        *   Reads and returns the `data/registry.json` file.
+    *   Create an API route: `POST /api/aurora/audit` (Protected)
+        *   Triggers the audit process from Phase 1 and regenerates `registry.json`.
+
+---
+
+### **Phase 3: Implement the Update Workflow by ID**
+
+1.  **Reference in Development Workflow:**
+    *   The established `id` (e.g., `1001`) becomes the official reference for all future tasks, pull requests, or agent instructions.
+    *   Example instruction for Replit Agent: *"Update the search filters in component ID `1001` to include a 'Pet-Friendly' checkbox. Use the dummy data in `data_search_properties.json` to update the UI mock."*
+
+2.  **Registry Update Mechanism:**
+    *   Any script or agent task that creates a **new** component/feature must automatically:
+        1.  Generate a new sequential ID.
+        2.  Append the new entry to `registry.json`.
+        3.  Optionally, create a stub dummy data file.
+    *   The `lastUpdated` field for an entry should be revised whenever a related change is made.
+
+---
+
+### **Technical Specifications & Deliverables**
+
+**Deliverables:**
+1.  A populated `data/registry.json` file.
+2.  A set of structured dummy data JSON files in `/data/`.
+3.  A fully functional `AuroraRegistryViewer` React component integrated into the dashboard.
+4.  Supporting Redux slice (`auroraRegistrySlice`) and API routes.
+5.  Documentation on the update workflow using IDs.
+
+**Implementation Notes:**
+*   **Initial Audit:** The first audit may need to be semi-manual or run via a dedicated Node.js script created by the agent.
+*   **Data Path:** Serve the `data/` directory statically or via API for the frontend to access dummy data.
+*   **Security:** The `POST /api/aurora/audit` route should be protected by admin middleware.
+
+This system will provide the single source of truth for your project's structure, streamline content management, and enable precise, referenceable updates. Please instruct your Replit Agent to begin with **Phase 1: Audit & Create the Feature Registry**.

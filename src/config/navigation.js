@@ -1,3 +1,15 @@
+export const DASHBOARD_TABS = [
+  { id: 'overview', label: 'Dashboard', icon: 'LayoutDashboard' },
+  { id: 'ai-command', label: 'AI Command', icon: 'Command' },
+  { id: 'ai-hub', label: 'AI Hub', icon: 'Layers' }
+];
+
+export const SIDEBAR_CONFIG = {
+  defaultWidthPercent: 40,
+  minWidthPercent: 25,
+  maxWidthPercent: 50
+};
+
 export const PUBLIC_NAV = {
   main: [
     { label: 'Home', path: '/', icon: '🏠' },

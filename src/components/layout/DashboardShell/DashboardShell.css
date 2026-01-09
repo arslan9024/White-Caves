@@ -8,20 +8,14 @@
 }
 
 .dashboard-main {
-  margin-left: 280px;
   margin-top: 64px;
   min-height: calc(100vh - 64px);
-  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.sidebar-collapsed .dashboard-main {
-  margin-left: 72px;
+  transition: margin-left 0.1s ease;
 }
 
 .dashboard-content {
   padding: 24px;
-  max-width: 1600px;
-  margin: 0 auto;
+  max-width: 100%;
 }
 
 .mobile-overlay {
@@ -31,7 +25,7 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 99;
+  z-index: 80;
   backdrop-filter: blur(4px);
 }
 
@@ -43,11 +37,7 @@
 
 @media (max-width: 1024px) {
   .dashboard-main {
-    margin-left: 0;
-  }
-
-  .sidebar-collapsed .dashboard-main {
-    margin-left: 0;
+    margin-left: 0 !important;
   }
 
   .dashboard-content {

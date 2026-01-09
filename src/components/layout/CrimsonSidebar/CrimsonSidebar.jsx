@@ -1,31 +1,24 @@
-import React, { useState, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import {
-  ChevronLeft, ChevronRight, ChevronDown, ChevronUp,
+  ChevronDown, ChevronUp, GripVertical,
   MessageSquare, Building2, Target, Bot, Users, TrendingUp,
   Home, Wallet, Megaphone, Briefcase, Shield, Server, Palette,
-  Database, LayoutDashboard, Settings, FileText, BarChart3,
-  Users2, Smartphone, CreditCard, Star, Command, Layers, Scale,
-  Eye, Search, Zap, Activity, Clock
+  Database, Settings, FileText, BarChart3, Users2, Smartphone,
+  CreditCard, Star, Command, Scale, Eye, Search, Zap, Activity, Clock
 } from 'lucide-react';
 import { 
   DEPARTMENTS, 
   getAllAssistants 
 } from '../../../config/assistantRegistry';
+import { setSidebarWidth } from '../../../store/navigationSlice';
 import './CrimsonSidebar.css';
 
 const ICON_MAP = {
   MessageSquare, Building2, Target, Bot, Users, TrendingUp, Home,
   Wallet, Megaphone, Briefcase, Shield, Server, Palette, Database,
-  Scale, Eye, Search, Users2, Settings, Zap, Activity, Clock,
-  LayoutDashboard, Command, Layers
+  Scale, Eye, Search, Users2, Settings, Zap, Activity, Clock, Command
 };
-
-const DASHBOARD_TABS = [
-  { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-  { id: 'ai-command', label: 'AI Command', icon: Command },
-  { id: 'ai-hub', label: 'AI Hub', icon: Layers }
-];
 
 const MANAGEMENT_TABS = [
   { id: 'users', label: 'Users', icon: Users2 },
@@ -67,10 +60,12 @@ const DEPARTMENT_CONFIG = Object.entries(DEPARTMENTS).reduce((acc, [key, dept]) 
 const CrimsonSidebar = ({ 
   activeTab, 
   onTabChange, 
-  collapsed = false, 
-  onToggleCollapse,
-  notifications = {}
+  notifications = {},
+  user = null
 }) => {
+  const dispatch = useDispatch();
+  const sidebarWidth = useSelector(state => state.navigation?.sidebarWidth || 40);
+  
   const [expandedDepartments, setExpandedDepartments] = useState({
     communications: true,
     operations: true,
@@ -84,6 +79,9 @@ const CrimsonSidebar = ({
     intelligence: false
   });
 
+  const [isResizing, setIsResizing] = useState(false);
+  const sidebarRef = useRef(null);
+
   const assistantsByDepartment = useMemo(() => {
     const grouped = {};
     AI_ASSISTANTS.forEach(assistant => {
@@ -94,6 +92,37 @@ const CrimsonSidebar = ({
     });
     return grouped;
   }, []);
+
+  const handleMouseDown = useCallback((e) => {
+    e.preventDefault();
+    setIsResizing(true);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  }, []);
+
+  const handleMouseMove = useCallback((e) => {
+    if (!isResizing) return;
+    const newWidth = (e.clientX / window.innerWidth) * 100;
+    const clampedWidth = Math.min(Math.max(newWidth, 25), 50);
+    dispatch(setSidebarWidth(clampedWidth));
+  }, [isResizing, dispatch]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsResizing(false);
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  }, []);
+
+  useEffect(() => {
+    if (isResizing) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing, handleMouseMove, handleMouseUp]);
 
   const toggleDepartment = (dept) => {
     setExpandedDepartments(prev => ({
@@ -147,7 +176,18 @@ const CrimsonSidebar = ({
     return iconMap[assistantId] || Building2;
   };
 
-  const renderNavItem = (tab, showLabel = true) => {
+  const getUserInitials = () => {
+    if (!user) return 'WC';
+    if (user.displayName) {
+      return user.displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+    if (user.email) {
+      return user.email[0].toUpperCase();
+    }
+    return 'WC';
+  };
+
+  const renderNavItem = (tab) => {
     const Icon = tab.icon;
     const isActive = activeTab === tab.id;
     
@@ -156,48 +196,46 @@ const CrimsonSidebar = ({
         key={tab.id}
         className={`nav-item ${isActive ? 'active' : ''}`}
         onClick={() => onTabChange(tab.id)}
-        title={collapsed ? tab.label : undefined}
       >
         <Icon size={20} className="nav-icon" />
-        {showLabel && !collapsed && <span className="nav-label">{tab.label}</span>}
+        <span className="nav-label">{tab.label}</span>
       </button>
     );
   };
 
   return (
-    <aside className={`crimson-sidebar ${collapsed ? 'collapsed' : ''}`}>
-      <div className="sidebar-header">
-        <div className="sidebar-logo">
-          <div className="logo-mark">
-            <span>W</span>
-          </div>
-          {!collapsed && (
-            <div className="logo-text">
-              <span className="logo-title">White Caves</span>
-              <span className="logo-tagline">Real Estate</span>
+    <aside 
+      className={`crimson-sidebar ${isResizing ? 'resizing' : ''}`}
+      ref={sidebarRef}
+      style={{ width: `${sidebarWidth}%` }}
+    >
+      <div className="sidebar-content">
+        <div className="sidebar-user-section">
+          <div className="user-card">
+            <div className="user-avatar-large">
+              {user?.photoURL ? (
+                <img src={user.photoURL} alt={user.displayName || 'User'} />
+              ) : (
+                <span>{getUserInitials()}</span>
+              )}
             </div>
-          )}
+            <div className="user-details">
+              <span className="user-name">{user?.displayName || 'Company Owner'}</span>
+              <span className="user-email">{user?.email || 'owner@whitecaves.ae'}</span>
+            </div>
+          </div>
         </div>
-        <button 
-          className="collapse-toggle"
-          onClick={onToggleCollapse}
-          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-        </button>
-      </div>
 
-      <div 
-        className={`zoe-command-hub ${activeTab === 'zoe' ? 'active' : ''}`}
-        onClick={() => onTabChange('zoe')}
-      >
-        <div className="hub-icon">
-          <Command size={collapsed ? 20 : 24} />
-        </div>
-        {!collapsed && (
+        <div 
+          className={`zoe-command-hub ${activeTab === 'zoe' ? 'active' : ''}`}
+          onClick={() => onTabChange('zoe')}
+        >
+          <div className="hub-icon">
+            <Command size={24} />
+          </div>
           <div className="hub-content">
             <div className="hub-header">
-              <span className="hub-title">AI COMMAND</span>
+              <span className="hub-title">ZOE - EXECUTIVE AI</span>
               <span className="hub-status online">ONLINE</span>
             </div>
             <div className="hub-stats">
@@ -211,124 +249,104 @@ const CrimsonSidebar = ({
               </span>
             </div>
           </div>
-        )}
-        {collapsed && getTotalAlerts() > 0 && (
-          <span className="collapsed-badge">{getTotalAlerts()}</span>
-        )}
-      </div>
-
-      <nav className="sidebar-nav">
-        <div className="nav-section">
-          {!collapsed && <div className="section-label">Dashboard</div>}
-          <div className="nav-list">
-            {DASHBOARD_TABS.map(tab => renderNavItem(tab))}
-          </div>
         </div>
 
-        <div className="nav-section">
-          {!collapsed && (
+        <nav className="sidebar-nav">
+          <div className="nav-section">
             <div className="section-label">
               <span>AI Assistants</span>
               <span className="section-count">{AI_ASSISTANTS.length}</span>
             </div>
-          )}
-          <div className="departments-list">
-            {Object.entries(assistantsByDepartment).map(([dept, assistants]) => {
-              const deptConfig = DEPARTMENT_CONFIG[dept];
-              if (!deptConfig) return null;
-              
-              const DeptIcon = deptConfig.icon;
-              const isExpanded = expandedDepartments[dept];
-              const hasActiveAssistant = assistants.some(a => activeTab === a.id);
-              const deptNotifCount = assistants.reduce((sum, a) => sum + getNotificationCount(a.id), 0);
+            <div className="departments-list">
+              {Object.entries(assistantsByDepartment).map(([dept, assistants]) => {
+                const deptConfig = DEPARTMENT_CONFIG[dept];
+                if (!deptConfig) return null;
+                
+                const DeptIcon = deptConfig.icon;
+                const isExpanded = expandedDepartments[dept];
+                const hasActiveAssistant = assistants.some(a => activeTab === a.id);
+                const deptNotifCount = assistants.reduce((sum, a) => sum + getNotificationCount(a.id), 0);
 
-              return (
-                <div key={dept} className={`department-group ${hasActiveAssistant ? 'has-active' : ''}`}>
-                  <button
-                    className="department-header"
-                    onClick={() => !collapsed && toggleDepartment(dept)}
-                    title={collapsed ? deptConfig.label : undefined}
-                    style={{ '--dept-color': deptConfig.color }}
-                  >
-                    <div className="dept-indicator" style={{ background: deptConfig.color }} />
-                    {collapsed ? (
-                      <DeptIcon size={18} style={{ color: deptConfig.color }} />
-                    ) : (
-                      <>
-                        <span className="dept-label">{deptConfig.label}</span>
-                        <div className="dept-meta">
-                          {deptNotifCount > 0 && (
-                            <span className="dept-notif">{deptNotifCount}</span>
-                          )}
-                          <span className="dept-count">{assistants.length}</span>
-                          {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                        </div>
-                      </>
+                return (
+                  <div key={dept} className={`department-group ${hasActiveAssistant ? 'has-active' : ''}`}>
+                    <button
+                      className="department-header"
+                      onClick={() => toggleDepartment(dept)}
+                      style={{ '--dept-color': deptConfig.color }}
+                    >
+                      <div className="dept-indicator" style={{ background: deptConfig.color }} />
+                      <span className="dept-label">{deptConfig.label}</span>
+                      <div className="dept-meta">
+                        {deptNotifCount > 0 && (
+                          <span className="dept-notif">{deptNotifCount}</span>
+                        )}
+                        <span className="dept-count">{assistants.length}</span>
+                        {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      </div>
+                    </button>
+                    
+                    {isExpanded && (
+                      <ul className="assistant-list">
+                        {assistants.map(assistant => {
+                          const Icon = getAssistantIcon(assistant.id);
+                          const notifCount = getNotificationCount(assistant.id);
+                          const isActive = activeTab === assistant.id;
+                          
+                          return (
+                            <li key={assistant.id}>
+                              <button
+                                className={`assistant-item ${isActive ? 'active' : ''}`}
+                                onClick={() => onTabChange(assistant.id)}
+                                style={{ '--assistant-color': assistant.color }}
+                              >
+                                <div className="assistant-status">
+                                  <span className="status-dot online" />
+                                </div>
+                                <div className="assistant-icon">
+                                  <Icon size={16} />
+                                </div>
+                                <div className="assistant-info">
+                                  <span className="assistant-name">{assistant.name}</span>
+                                  <span className="assistant-desc">{assistant.desc}</span>
+                                </div>
+                                {notifCount > 0 && (
+                                  <span className="assistant-badge">{notifCount}</span>
+                                )}
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
                     )}
-                  </button>
-                  
-                  {!collapsed && isExpanded && (
-                    <ul className="assistant-list">
-                      {assistants.map(assistant => {
-                        const Icon = getAssistantIcon(assistant.id);
-                        const notifCount = getNotificationCount(assistant.id);
-                        const isActive = activeTab === assistant.id;
-                        
-                        return (
-                          <li key={assistant.id}>
-                            <button
-                              className={`assistant-item ${isActive ? 'active' : ''}`}
-                              onClick={() => onTabChange(assistant.id)}
-                              style={{ '--assistant-color': assistant.color }}
-                            >
-                              <div className="assistant-status">
-                                <span className="status-dot online" />
-                              </div>
-                              <div className="assistant-icon">
-                                <Icon size={16} />
-                              </div>
-                              <div className="assistant-info">
-                                <span className="assistant-name">{assistant.name}</span>
-                              </div>
-                              {notifCount > 0 && (
-                                <span className="assistant-badge">{notifCount}</span>
-                              )}
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-                </div>
-              );
-            })}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
 
-        <div className="nav-section">
-          {!collapsed && <div className="section-label">Management</div>}
-          <div className="nav-list">
-            {MANAGEMENT_TABS.map(tab => renderNavItem(tab))}
+          <div className="nav-section">
+            <div className="section-label">Management</div>
+            <div className="nav-list">
+              {MANAGEMENT_TABS.map(tab => renderNavItem(tab))}
+            </div>
           </div>
-        </div>
 
-        <div className="nav-section">
-          {!collapsed && <div className="section-label">Integrations</div>}
-          <div className="nav-list">
-            {INTEGRATION_TABS.map(tab => renderNavItem(tab))}
+          <div className="nav-section">
+            <div className="section-label">Integrations</div>
+            <div className="nav-list">
+              {INTEGRATION_TABS.map(tab => renderNavItem(tab))}
+            </div>
           </div>
-        </div>
 
-        <div className="nav-section">
-          {!collapsed && <div className="section-label">System</div>}
-          <div className="nav-list">
-            {SYSTEM_TABS.map(tab => renderNavItem(tab))}
+          <div className="nav-section">
+            <div className="section-label">System</div>
+            <div className="nav-list">
+              {SYSTEM_TABS.map(tab => renderNavItem(tab))}
+            </div>
           </div>
-        </div>
-      </nav>
+        </nav>
 
-      <div className="sidebar-footer">
-        {!collapsed && (
+        <div className="sidebar-footer">
           <div className="footer-content">
             <span className="version">v2.0.0</span>
             <span className="footer-status">
@@ -336,7 +354,14 @@ const CrimsonSidebar = ({
               All systems operational
             </span>
           </div>
-        )}
+        </div>
+      </div>
+
+      <div 
+        className="resize-handle"
+        onMouseDown={handleMouseDown}
+      >
+        <GripVertical size={12} />
       </div>
     </aside>
   );

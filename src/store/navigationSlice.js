@@ -1,5 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const getInitialSidebarWidth = () => {
+  const stored = localStorage.getItem('sidebarWidth');
+  return stored ? parseInt(stored, 10) : 40;
+};
+
 const initialState = {
   isOnline: navigator.onLine,
   currentTime: new Date().toISOString(),
@@ -15,6 +20,9 @@ const initialState = {
   currentModule: null,
   currentSubModule: null,
   sidebarCollapsed: false,
+  sidebarWidth: getInitialSidebarWidth(),
+  activeNavItem: 'overview',
+  implementationUpdates: [],
 };
 
 const navigationSlice = createSlice({
@@ -103,6 +111,23 @@ const navigationSlice = createSlice({
     setSidebarCollapsed: (state, action) => {
       state.sidebarCollapsed = action.payload;
     },
+    setSidebarWidth: (state, action) => {
+      const width = Math.min(Math.max(action.payload, 25), 50);
+      state.sidebarWidth = width;
+      localStorage.setItem('sidebarWidth', width.toString());
+    },
+    setActiveNavItem: (state, action) => {
+      state.activeNavItem = action.payload;
+    },
+    addImplementationUpdate: (state, action) => {
+      state.implementationUpdates.unshift(action.payload);
+      if (state.implementationUpdates.length > 50) {
+        state.implementationUpdates = state.implementationUpdates.slice(0, 50);
+      }
+    },
+    setImplementationUpdates: (state, action) => {
+      state.implementationUpdates = action.payload;
+    },
   },
 });
 
@@ -128,6 +153,10 @@ export const {
   setCurrentSubModule,
   toggleSidebar,
   setSidebarCollapsed,
+  setSidebarWidth,
+  setActiveNavItem,
+  addImplementationUpdate,
+  setImplementationUpdates,
 } = navigationSlice.actions;
 
 export default navigationSlice.reducer;

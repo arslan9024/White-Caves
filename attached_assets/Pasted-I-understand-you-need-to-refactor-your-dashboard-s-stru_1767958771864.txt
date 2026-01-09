@@ -1,0 +1,62 @@
+I understand you need to refactor your dashboard's structure and fix the sidebar. While I can't see your codebase, I can provide a clear, actionable plan to reorganize your components under "Zoe Features" and implement a resizable sidebar.
+
+### 🔧 Component Restructuring: Creating "Zoe Features"
+
+Based on your description, you need to group the **Overview**, **AI Hub**, and **AI Command Center** components into a logical section. Here's a recommended approach to refactor your React component structure:
+
+**1. Create a Dedicated Folder:**
+Create a new folder, e.g., `src/components/ZoeFeatures/`, to house all related components.
+
+**2. Reorganize Your Components:**
+Move the relevant component files into this new folder and update their import paths. The new structure could look like this:
+```
+src/
+├── components/
+│   ├── ZoeFeatures/
+│   │   ├── Overview/
+│   │   │   └── Overview.jsx        # Your existing Overview component
+│   │   ├── AIHub/
+│   │   │   └── AIHub.jsx           # Your existing AI Hub component
+│   │   ├── AICommandCenter/
+│   │   │   └── AICommandCenter.jsx # Your existing AI Command Center
+│   │   └── index.js                # Barrel file for cleaner imports
+```
+
+**3. Update Navigation (Sidebar):**
+In your sidebar navigation logic (likely in a file like `Sidebar.jsx`), group these items under a main "Zoe Features" menu item. This often involves using a nested list or a collapsible menu item.
+
+**Visual Representation of the New Hierarchy:**
+```
+Dashboard Sidebar
+├── Home
+├── Analytics
+└── Zoe Features (Parent Menu Item)
+    ├── Overview
+    ├── AI Hub
+    └── AI Command Center
+├── User Management
+└── Settings
+```
+
+### 🎨 Refactoring the Sidebar for Adjustable Width
+
+The issue where sidebar items are cut off is typically a CSS layout problem. Here are steps to make the sidebar user-resizable:
+
+**1. Core Approach: Use CSS with a Drag Handle**
+You can make the sidebar resizable using CSS properties and a simple drag handle.
+
+*   **Base Sidebar Styling:** Ensure your sidebar has a relative or absolute position and a **flexible initial width** (e.g., `min-width: 200px; width: 250px;`). Avoid a fixed `width`.
+*   **Resizable Property:** Add the CSS property `resize: horizontal;` to your sidebar's main container. This allows users to drag the right edge to resize, but it has limited browser support.
+*   **Better Method - Custom Drag Handle:** For a more robust solution, implement a draggable `div` handle on the sidebar's right edge. Use JavaScript (`onMouseDown`, `onMouseMove` events) to calculate the mouse movement and update the sidebar's width in state, which is then applied as an inline style.
+
+**2. Key Considerations for a Good User Experience:**
+*   **State Management:** Store the sidebar width in your app's state (like React component state or Redux) so it persists.
+*   **Minimum & Maximum Width:** Always enforce `min-width` and `max-width` in your CSS to prevent the sidebar from disappearing or becoming too wide.
+*   **Content Flexibility:** Ensure the main content area (to the right of the sidebar) uses `flex: 1` or `width: calc(100% - sidebarWidth)` so it adjusts fluidly as the sidebar resizes.
+*   **Visual Feedback:** Style the drag handle to be visually clear (e.g., change cursor to `col-resize` on hover).
+
+To help you further, I would need a bit more context:
+1.  Could you clarify what the **"Zoe Features"** section represents? Is it related to a specific AI assistant or a functional domain (like monitoring all AI tools)?
+2.  How is your current **Sidebar component structured**? Are you using a specific UI library (like Material-UI, Ant Design) or plain custom components?
+
+With answers to these, I could tailor the refactoring steps more precisely to your existing code.

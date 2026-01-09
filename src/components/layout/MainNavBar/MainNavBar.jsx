@@ -1,239 +1,186 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import {
-  Search, Bell, Moon, Sun, ChevronDown, User,
-  Settings, LogOut, HelpCircle, Shield, CreditCard
-} from 'lucide-react';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Menu, X, ChevronDown, Home, Building2, Settings, Briefcase, Phone, LogIn } from 'lucide-react';
+import { PUBLIC_NAV } from '../../../config/navigation';
 import './MainNavBar.css';
 
-const MainNavBar = ({
-  theme = 'light',
-  onThemeToggle,
-  user = null,
-  notifications = [],
-  onLogout
-}) => {
+const MainNavBar = () => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [searchFocused, setSearchFocused] = useState(false);
-  
-  const notifRef = useRef(null);
-  const profileRef = useRef(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (notifRef.current && !notifRef.current.contains(e.target)) {
-        setShowNotifications(false);
-      }
-      if (profileRef.current && !profileRef.current.contains(e.target)) {
-        setShowProfileMenu(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    const handleKeyPress = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        document.querySelector('.main-nav-search-input')?.focus();
-      }
-    };
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, []);
-
-  const getUserInitials = () => {
-    if (!user) return 'WC';
-    if (user.displayName) {
-      return user.displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-    }
-    if (user.email) {
-      return user.email[0].toUpperCase();
-    }
-    return 'WC';
+  const navIcons = {
+    '🏠': Home,
+    '🏢': Building2,
+    '⚙️': Settings,
+    '💼': Briefcase,
+    '📞': Phone
   };
 
-  const handleProfileAction = (action) => {
-    setShowProfileMenu(false);
-    switch (action) {
-      case 'profile':
-        navigate('/profile');
-        break;
-      case 'settings':
-        navigate('/settings');
-        break;
-      case 'billing':
-        navigate('/billing');
-        break;
-      case 'help':
-        window.open('https://help.whitecaves.ae', '_blank');
-        break;
-      case 'logout':
-        onLogout?.();
-        break;
-      default:
-        break;
-    }
+  const handleNavClick = (path) => {
+    navigate(path);
+    setMobileMenuOpen(false);
+    setActiveDropdown(null);
+  };
+
+  const toggleDropdown = (dropdown) => {
+    setActiveDropdown(activeDropdown === dropdown ? null : dropdown);
   };
 
   return (
-    <header className="main-nav-bar">
-      <div className="main-nav-left">
-        <div className="main-nav-logo" onClick={() => navigate('/')}>
+    <header className="public-navbar">
+      <div className="navbar-container">
+        <div className="navbar-logo" onClick={() => navigate('/')}>
           <div className="logo-icon">
-            <span className="logo-letter">W</span>
+            <span>W</span>
           </div>
           <div className="logo-text">
             <span className="logo-title">White Caves</span>
-            <span className="logo-subtitle">AI Command Center</span>
+            <span className="logo-subtitle">Luxury Real Estate</span>
           </div>
         </div>
-      </div>
 
-      <div className="main-nav-center">
-        <div className={`main-nav-search ${searchFocused ? 'focused' : ''}`}>
-          <Search size={18} className="search-icon" />
-          <input
-            type="text"
-            className="main-nav-search-input"
-            placeholder="Search assistants, properties, leads..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => setSearchFocused(true)}
-            onBlur={() => setSearchFocused(false)}
-          />
-          <div className="search-shortcut">
-            <kbd>⌘</kbd><kbd>K</kbd>
-          </div>
-        </div>
-      </div>
+        <nav className="navbar-nav">
+          {PUBLIC_NAV.main.map((item) => {
+            const Icon = navIcons[item.icon] || Home;
+            return (
+              <Link 
+                key={item.path}
+                to={item.path}
+                className="nav-link"
+              >
+                <Icon size={16} />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
 
-      <div className="main-nav-right">
-        <button
-          className="nav-icon-btn theme-toggle"
-          onClick={onThemeToggle}
-          title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-        >
-          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-        </button>
-
-        <div className="nav-dropdown-container" ref={notifRef}>
-          <button
-            className={`nav-icon-btn notifications-btn ${unreadCount > 0 ? 'has-unread' : ''}`}
-            onClick={() => setShowNotifications(!showNotifications)}
-            title="Notifications"
-          >
-            <Bell size={20} />
-            {unreadCount > 0 && (
-              <span className="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
+          <div className="nav-dropdown-wrapper">
+            <button 
+              className={`nav-link dropdown-trigger ${activeDropdown === 'buy' ? 'active' : ''}`}
+              onClick={() => toggleDropdown('buy')}
+            >
+              <Building2 size={16} />
+              <span>Buy</span>
+              <ChevronDown size={14} className={`chevron ${activeDropdown === 'buy' ? 'open' : ''}`} />
+            </button>
+            {activeDropdown === 'buy' && (
+              <div className="nav-dropdown">
+                {PUBLIC_NAV.buy.map((item) => (
+                  <button 
+                    key={item.path}
+                    className="dropdown-item"
+                    onClick={() => handleNavClick(item.path)}
+                  >
+                    <span className="item-icon">{item.icon}</span>
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </div>
             )}
-          </button>
+          </div>
 
-          {showNotifications && (
-            <div className="dropdown-menu notifications-dropdown">
-              <div className="dropdown-header">
-                <h4>Notifications</h4>
-                <button className="mark-all-read">Mark all read</button>
+          <div className="nav-dropdown-wrapper">
+            <button 
+              className={`nav-link dropdown-trigger ${activeDropdown === 'rent' ? 'active' : ''}`}
+              onClick={() => toggleDropdown('rent')}
+            >
+              <Building2 size={16} />
+              <span>Rent</span>
+              <ChevronDown size={14} className={`chevron ${activeDropdown === 'rent' ? 'open' : ''}`} />
+            </button>
+            {activeDropdown === 'rent' && (
+              <div className="nav-dropdown">
+                {PUBLIC_NAV.rent.map((item) => (
+                  <button 
+                    key={item.path}
+                    className="dropdown-item"
+                    onClick={() => handleNavClick(item.path)}
+                  >
+                    <span className="item-icon">{item.icon}</span>
+                    <span>{item.label}</span>
+                  </button>
+                ))}
               </div>
-              <div className="dropdown-content">
-                {notifications.length === 0 ? (
-                  <div className="empty-state">
-                    <Bell size={32} strokeWidth={1.5} />
-                    <p>No notifications</p>
-                  </div>
-                ) : (
-                  notifications.slice(0, 5).map((notif, idx) => (
-                    <div key={idx} className={`notification-item ${!notif.isRead ? 'unread' : ''}`}>
-                      <div className="notif-icon" style={{ background: notif.color || '#D32F2F' }}>
-                        {notif.icon || <Bell size={14} />}
-                      </div>
-                      <div className="notif-content">
-                        <p className="notif-title">{notif.title}</p>
-                        <span className="notif-time">{notif.time || 'Just now'}</span>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-              {notifications.length > 0 && (
-                <div className="dropdown-footer">
-                  <button onClick={() => navigate('/notifications')}>View all notifications</button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+            )}
+          </div>
 
-        <div className="nav-dropdown-container profile-container" ref={profileRef}>
-          <button
-            className="profile-trigger"
-            onClick={() => setShowProfileMenu(!showProfileMenu)}
+          <div className="nav-dropdown-wrapper">
+            <button 
+              className={`nav-link dropdown-trigger ${activeDropdown === 'sell' ? 'active' : ''}`}
+              onClick={() => toggleDropdown('sell')}
+            >
+              <Building2 size={16} />
+              <span>Sell</span>
+              <ChevronDown size={14} className={`chevron ${activeDropdown === 'sell' ? 'open' : ''}`} />
+            </button>
+            {activeDropdown === 'sell' && (
+              <div className="nav-dropdown">
+                {PUBLIC_NAV.sell.map((item) => (
+                  <button 
+                    key={item.path}
+                    className="dropdown-item"
+                    onClick={() => handleNavClick(item.path)}
+                  >
+                    <span className="item-icon">{item.icon}</span>
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </nav>
+
+        <div className="navbar-actions">
+          <button 
+            className="signin-btn"
+            onClick={() => navigate('/signin')}
           >
-            <div className="user-avatar">
-              {user?.photoURL ? (
-                <img src={user.photoURL} alt={user.displayName || 'User'} />
-              ) : (
-                <span>{getUserInitials()}</span>
-              )}
-            </div>
-            <div className="user-info">
-              <span className="user-name">{user?.displayName || 'Company Owner'}</span>
-              <span className="user-role">Owner</span>
-            </div>
-            <ChevronDown size={16} className={`chevron ${showProfileMenu ? 'open' : ''}`} />
+            <LogIn size={18} />
+            <span>Sign In</span>
           </button>
-
-          {showProfileMenu && (
-            <div className="dropdown-menu profile-dropdown">
-              <div className="profile-header">
-                <div className="profile-avatar">
-                  {user?.photoURL ? (
-                    <img src={user.photoURL} alt={user.displayName || 'User'} />
-                  ) : (
-                    <span>{getUserInitials()}</span>
-                  )}
-                </div>
-                <div className="profile-info">
-                  <span className="profile-name">{user?.displayName || 'Company Owner'}</span>
-                  <span className="profile-email">{user?.email || 'owner@whitecaves.ae'}</span>
-                </div>
-              </div>
-              <div className="dropdown-divider" />
-              <div className="dropdown-content">
-                <button className="dropdown-item" onClick={() => handleProfileAction('profile')}>
-                  <User size={18} />
-                  <span>My Profile</span>
-                </button>
-                <button className="dropdown-item" onClick={() => handleProfileAction('settings')}>
-                  <Settings size={18} />
-                  <span>Settings</span>
-                </button>
-                <button className="dropdown-item" onClick={() => handleProfileAction('billing')}>
-                  <CreditCard size={18} />
-                  <span>Billing</span>
-                </button>
-                <div className="dropdown-divider" />
-                <button className="dropdown-item" onClick={() => handleProfileAction('help')}>
-                  <HelpCircle size={18} />
-                  <span>Help Center</span>
-                </button>
-                <div className="dropdown-divider" />
-                <button className="dropdown-item logout" onClick={() => handleProfileAction('logout')}>
-                  <LogOut size={18} />
-                  <span>Log Out</span>
-                </button>
-              </div>
-            </div>
-          )}
         </div>
+
+        <button 
+          className="mobile-toggle"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </div>
+
+      {mobileMenuOpen && (
+        <div className="mobile-menu">
+          <nav className="mobile-nav">
+            {PUBLIC_NAV.main.map((item) => {
+              const Icon = navIcons[item.icon] || Home;
+              return (
+                <Link 
+                  key={item.path}
+                  to={item.path}
+                  className="mobile-nav-link"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Icon size={18} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+          <div className="mobile-actions">
+            <button 
+              className="mobile-signin-btn"
+              onClick={() => {
+                navigate('/signin');
+                setMobileMenuOpen(false);
+              }}
+            >
+              <LogIn size={18} />
+              <span>Sign In</span>
+            </button>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
