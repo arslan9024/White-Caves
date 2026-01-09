@@ -1,8 +1,7 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import AssistantNavSidebar from '../../components/dashboard/AssistantNavSidebar';
-import DashboardHeader from '../../components/dashboard/DashboardHeader';
+import { useSelector, useDispatch } from 'react-redux';
+import DashboardShell from '../../components/layout/DashboardShell';
 import OverviewTab from '../../components/owner/tabs/OverviewTab';
 import PropertiesTab from '../../components/owner/tabs/PropertiesTab';
 import AgentsTab from '../../components/owner/tabs/AgentsTab';
@@ -47,17 +46,10 @@ const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
 export default function OwnerDashboardPage() {
   const navigate = useNavigate();
   const user = useSelector(state => state.user.currentUser);
-  const notifications = useSelector(state => state.aiAssistantDashboard?.notifications?.byAssistantId || {});
   
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(false);
   const [dashboardData, setDashboardData] = useState({});
-  const [selectedRole, setSelectedRole] = useState('company_owner');
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [theme, setTheme] = useState(() => {
-    return document.documentElement.getAttribute('data-theme') || 'dark';
-  });
 
   useEffect(() => {
     if (!user || user.email !== OWNER_EMAIL) {
@@ -86,14 +78,8 @@ export default function OwnerDashboardPage() {
     }
   };
 
-  const handleRoleChange = (role) => {
-    setSelectedRole(role.id);
-  };
-
-  const handleThemeToggle = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
+  const handleLogout = () => {
+    navigate('/');
   };
 
   const handleQuickAction = (action) => {
@@ -303,7 +289,6 @@ export default function OwnerDashboardPage() {
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
-    setMobileMenuOpen(false);
   };
 
   const renderTabContent = () => {
@@ -370,40 +355,13 @@ export default function OwnerDashboardPage() {
   };
 
   return (
-    <div className={`owner-dashboard-page with-sidebar ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-      <AssistantNavSidebar
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        collapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        notifications={notifications}
-      />
-      
-      <div className="dashboard-main">
-        <DashboardHeader
-          title="Executive Dashboard"
-          subtitle="White Caves Real Estate LLC"
-          currentRole={selectedRole}
-          onRoleChange={handleRoleChange}
-          onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
-          theme={theme}
-          onThemeToggle={handleThemeToggle}
-          notifications={[]}
-          user={user}
-        />
-
-        <div className="dashboard-content">
-          {renderTabContent()}
-        </div>
-
-        <div className="dashboard-footer">
-          <p>White Caves Real Estate LLC © {new Date().getFullYear()} | Office D-72, El-Shaye-4, Port Saeed, Dubai | +971 56 361 6136</p>
-        </div>
-      </div>
-
-      {mobileMenuOpen && (
-        <div className="mobile-overlay" onClick={() => setMobileMenuOpen(false)} />
-      )}
-    </div>
+    <DashboardShell
+      activeTab={activeTab}
+      onTabChange={handleTabChange}
+      user={user}
+      onLogout={handleLogout}
+    >
+      {renderTabContent()}
+    </DashboardShell>
   );
 }
