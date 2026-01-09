@@ -9,7 +9,7 @@ import {
   Building2, Network, Workflow, Bot, ChevronDown, Play
 } from 'lucide-react';
 import { AssistantDocsTab } from './shared';
-import { FlowchartViewer } from './index';
+import { FlowchartViewer, ServiceDemoMode } from './index';
 import { EXECUTIVES, DIRECTORS, DEPARTMENTS_CONFIG } from '../../data/organization/orgStructure';
 import { EMPLOYEES, WHATSAPP_AGENTS } from '../../data/organization/employees';
 import { COMPANY_SERVICES, getAllServices, getServiceStats } from '../../data/services/companyServices';
@@ -230,7 +230,7 @@ const ZoeExecutiveCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['suggestions', 'organization', 'departments', 'services', 'calendar', 'tasks', 'docs'].map(tab => (
+        {['suggestions', 'organization', 'departments', 'services', 'demo', 'calendar', 'tasks', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -243,6 +243,7 @@ const ZoeExecutiveCRM = () => {
             {tab === 'organization' && <Network size={14} />}
             {tab === 'departments' && <Building2 size={14} />}
             {tab === 'services' && <Workflow size={14} />}
+            {tab === 'demo' && <Play size={14} />}
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
@@ -703,6 +704,10 @@ const ZoeExecutiveCRM = () => {
               ))}
             </div>
           </div>
+        )}
+
+        {activeTab === 'demo' && (
+          <ServiceDemoMode />
         )}
 
         {activeTab === 'docs' && <AssistantDocsTab assistantId="zoe" />}
