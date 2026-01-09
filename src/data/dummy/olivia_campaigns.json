@@ -1,0 +1,163 @@
+{
+  "campaigns": [
+    {
+      "campaign_id": "camp_ol_2026_q1_palm",
+      "name": "Q1 Luxury Push - Palm Jumeirah Villas",
+      "type": "property_launch",
+      "status": "active",
+      "target_segment": "high_net_worth_investors",
+      "target_properties": ["prop_pj_villa12", "prop_pj_villa18", "prop_pj_villa25"],
+      "start_date": "2026-01-01",
+      "end_date": "2026-03-31",
+      "channels": [
+        {
+          "name": "property_finder_premium",
+          "budget_aed": 15000,
+          "spent_aed": 8200,
+          "impressions": 125000,
+          "clicks": 3200,
+          "leads_generated": 45
+        },
+        {
+          "name": "instagram_ads",
+          "budget_aed": 10000,
+          "spent_aed": 4500,
+          "impressions": 450000,
+          "clicks": 8900,
+          "profile_visits": 3200,
+          "leads_generated": 28
+        },
+        {
+          "name": "linkedin_premium",
+          "budget_aed": 8000,
+          "spent_aed": 3800,
+          "impressions": 85000,
+          "clicks": 1200,
+          "leads_generated": 18
+        }
+      ],
+      "performance_metrics": {
+        "total_budget_aed": 33000,
+        "total_spent_aed": 16500,
+        "total_leads": 91,
+        "qualified_leads": 47,
+        "cost_per_lead_aed": 181.3,
+        "leads_to_viewing_rate": 0.38,
+        "viewing_to_offer_rate": 0.15,
+        "estimated_roi": 350
+      },
+      "content_assets": {
+        "primary_images": ["villa12_pool.jpg", "villa18_view.jpg", "villa25_interior.jpg"],
+        "virtual_tour_links": ["https://my.matterport.com/show/villa12"],
+        "video_ads": ["palm_lifestyle_30s.mp4"]
+      },
+      "audience_insights": {
+        "top_nationalities": ["UAE", "Saudi Arabia", "UK", "India", "Russia"],
+        "age_distribution": {"25-34": 15, "35-44": 40, "45-54": 35, "55+": 10},
+        "peak_engagement_times": ["19:00-21:00", "12:00-14:00"],
+        "most_engaged_content": ["virtual_tours", "floor_plans", "lifestyle_videos"]
+      },
+      "competitor_benchmark": {
+        "avg_price_per_sqft_competitor": 1250,
+        "our_price_per_sqft": 1290,
+        "differentiating_factor": "full_smart_home_automation"
+      },
+      "ai_recommendations": {
+        "suggested_budget_increase": 5000,
+        "optimal_channel_mix": {"instagram": 40, "property_finder": 35, "youtube": 25},
+        "predicted_additional_leads": 35
+      }
+    },
+    {
+      "campaign_id": "camp_ol_2026_q1_dh2",
+      "name": "DAMAC Hills 2 - Family Living",
+      "type": "inventory_promotion",
+      "status": "active",
+      "target_segment": "young_families",
+      "target_properties": ["dh2_batch_001"],
+      "start_date": "2026-01-05",
+      "end_date": "2026-02-28",
+      "channels": [
+        {
+          "name": "facebook_ads",
+          "budget_aed": 12000,
+          "spent_aed": 2800,
+          "impressions": 320000,
+          "clicks": 6400,
+          "leads_generated": 52
+        },
+        {
+          "name": "bayut_featured",
+          "budget_aed": 8000,
+          "spent_aed": 2000,
+          "impressions": 95000,
+          "clicks": 2100,
+          "leads_generated": 34
+        }
+      ],
+      "performance_metrics": {
+        "total_budget_aed": 20000,
+        "total_spent_aed": 4800,
+        "total_leads": 86,
+        "qualified_leads": 42,
+        "cost_per_lead_aed": 55.8,
+        "leads_to_viewing_rate": 0.45
+      }
+    }
+  ],
+  "market_intelligence": {
+    "report_date": "2026-01-09",
+    "dubai_market_overview": {
+      "avg_rent_change_yoy": 8.5,
+      "avg_sale_price_change_yoy": 12.3,
+      "top_performing_areas": ["Dubai Marina", "Business Bay", "JVC", "Dubai Hills"],
+      "emerging_areas": ["Dubai South", "Al Furjan", "Town Square"]
+    },
+    "competitor_tracking": [
+      {
+        "competitor": "Betterhomes",
+        "market_share_estimate": 15,
+        "recent_campaigns": ["Business Bay Launch", "Off-Plan Expo"],
+        "differentiators": ["Large network", "Strong brand"]
+      },
+      {
+        "competitor": "Allsopp & Allsopp",
+        "market_share_estimate": 12,
+        "recent_campaigns": ["Luxury Portfolio", "Investor Club"],
+        "differentiators": ["Premium focus", "VIP service"]
+      }
+    ],
+    "trend_predictions": [
+      {"trend": "Off-plan demand surge in Dubai South", "confidence": 0.85, "timeframe": "Q1-Q2 2026"},
+      {"trend": "Rental yield stabilization in Marina", "confidence": 0.78, "timeframe": "Q2 2026"}
+    ]
+  },
+  "social_media_schedule": [
+    {
+      "post_id": "post_2026_01_09_001",
+      "platform": "instagram",
+      "type": "carousel",
+      "content": "Stunning 4BR Villa in Palm Jumeirah - Now Available",
+      "scheduled_time": "2026-01-09T18:00:00Z",
+      "status": "scheduled",
+      "target_reach": 15000
+    },
+    {
+      "post_id": "post_2026_01_09_002",
+      "platform": "linkedin",
+      "type": "article",
+      "content": "Dubai Real Estate Market Outlook Q1 2026",
+      "scheduled_time": "2026-01-09T10:00:00Z",
+      "status": "published",
+      "engagement": {"views": 2340, "likes": 156, "comments": 23, "shares": 45}
+    }
+  ],
+  "metrics_summary": {
+    "total_active_campaigns": 4,
+    "total_monthly_budget_aed": 85000,
+    "total_leads_this_month": 312,
+    "avg_cost_per_lead_aed": 127,
+    "top_performing_channel": "instagram_ads",
+    "roi_this_month": 285
+  }
+}

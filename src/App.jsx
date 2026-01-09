@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import './styles/reset.css'
 import './App.css'
 import './styles/theme.css'
 import './styles/design-system.css'
@@ -90,6 +91,7 @@ import { BiometricPrompt } from './features/auth/components/BiometricLogin';
 import { StatusProvider } from './components/common/StatusNotification';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import WebVitalsTracker from './components/analytics/WebVitalsTracker';
+import DesignSystemTest from './pages/DesignSystemTest';
 
 function App() {
   const dispatch = useDispatch();
@@ -265,6 +267,7 @@ function App() {
         } />
         
         <Route path="/sign/:token" element={<SignContractPage />} />
+        <Route path="/design-system" element={<DesignSystemTest />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

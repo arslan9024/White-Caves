@@ -4,12 +4,17 @@
   justify-content: space-between;
   padding: 0 32px;
   height: 72px;
+  min-height: 72px;
+  max-height: 72px;
   background: rgba(15, 15, 26, 0.95);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   position: sticky;
   top: 0;
   z-index: 90;
+  contain: layout style;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 72px;
 }
 
 .header-left {

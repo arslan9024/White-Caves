@@ -1,0 +1,331 @@
+.wc-card {
+  background: var(--color-background, #FFFFFF);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.wc-card--bordered {
+  border: 1px solid var(--color-border, #E5E7EB);
+}
+
+.wc-card--shadow-none { box-shadow: none; }
+.wc-card--shadow-sm { box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05)); }
+.wc-card--shadow-default { box-shadow: var(--shadow-default, 0 1px 3px 0 rgba(0, 0, 0, 0.1)); }
+.wc-card--shadow-md { box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1)); }
+.wc-card--shadow-lg { box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1)); }
+
+.wc-card--padding-compact { padding: 12px; }
+.wc-card--padding-normal { padding: 16px; }
+.wc-card--padding-relaxed { padding: 24px; }
+
+.wc-card--hoverable:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+}
+
+.wc-card--clickable {
+  cursor: pointer;
+}
+
+.wc-card-header {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border-light, #F3F4F6);
+  margin-bottom: 12px;
+}
+
+.wc-card-footer {
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border-light, #F3F4F6);
+  margin-top: 12px;
+}
+
+.wc-card--stat {
+  padding: 20px;
+}
+
+.wc-stat-card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.wc-stat-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wc-stat-card-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary, #6B7280);
+}
+
+.wc-stat-card-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text-primary, #111827);
+  line-height: 1.2;
+}
+
+.wc-stat-card-change {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.wc-stat-card-change--positive { color: #10B981; }
+.wc-stat-card-change--negative { color: #EF4444; }
+.wc-stat-card-change--neutral { color: var(--color-text-muted, #9CA3AF); }
+
+.wc-stat-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--color-primary-light, rgba(220, 38, 38, 0.1));
+  color: var(--color-primary, #DC2626);
+}
+
+.wc-stat-card-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.wc-card--property {
+  padding: 0;
+}
+
+.wc-property-card-image {
+  position: relative;
+  height: 180px;
+  background: var(--color-surface, #F9FAFB);
+}
+
+.wc-property-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wc-property-card-status {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.wc-property-card-status--forSale {
+  background: #10B981;
+  color: white;
+}
+
+.wc-property-card-status--forRent {
+  background: #3B82F6;
+  color: white;
+}
+
+.wc-property-card-status--sold {
+  background: #6B7280;
+  color: white;
+}
+
+.wc-property-card-status--reserved {
+  background: #F59E0B;
+  color: white;
+}
+
+.wc-property-card-favorite {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #9CA3AF;
+  transition: all 0.2s ease;
+}
+
+.wc-property-card-favorite:hover {
+  background: white;
+  color: #EF4444;
+}
+
+.wc-property-card-favorite--active {
+  color: #EF4444;
+}
+
+.wc-property-card-content {
+  padding: 16px;
+}
+
+.wc-property-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary, #111827);
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+}
+
+.wc-property-card-location {
+  font-size: 13px;
+  color: var(--color-text-secondary, #6B7280);
+  margin: 0 0 12px 0;
+}
+
+.wc-property-card-specs {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--color-text-secondary, #6B7280);
+  margin-bottom: 12px;
+}
+
+.wc-property-card-specs span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.wc-property-card-price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.wc-property-card-price-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #DC2626;
+}
+
+.wc-property-card-price-label {
+  font-size: 13px;
+  color: var(--color-text-muted, #9CA3AF);
+}
+
+.wc-card--agent {
+  padding: 20px;
+}
+
+.wc-agent-card-header {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.wc-agent-card-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.wc-agent-card-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wc-agent-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wc-agent-card-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary, #111827);
+  margin: 0;
+}
+
+.wc-agent-card-role {
+  font-size: 13px;
+  color: var(--color-text-secondary, #6B7280);
+  margin: 0;
+}
+
+.wc-agent-card-department {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.wc-agent-card-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--color-border-light, #F3F4F6);
+  border-bottom: 1px solid var(--color-border-light, #F3F4F6);
+}
+
+.wc-agent-card-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.wc-agent-card-stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary, #111827);
+}
+
+.wc-agent-card-stat-label {
+  font-size: 11px;
+  color: var(--color-text-muted, #9CA3AF);
+}
+
+.wc-agent-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+[data-theme="dark"] .wc-card {
+  background: var(--color-surface, #1E293B);
+}
+
+[data-theme="dark"] .wc-card--bordered {
+  border-color: var(--color-border, #334155);
+}
+
+[data-theme="dark"] .wc-stat-card-value,
+[data-theme="dark"] .wc-property-card-title,
+[data-theme="dark"] .wc-agent-card-name,
+[data-theme="dark"] .wc-agent-card-stat-value {
+  color: var(--color-text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .wc-card-header,
+[data-theme="dark"] .wc-card-footer,
+[data-theme="dark"] .wc-agent-card-stats {
+  border-color: var(--color-border, #334155);
+}

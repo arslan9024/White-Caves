@@ -61,6 +61,13 @@ export const DEPARTMENTS = {
     color: '#DC2626',
     gradient: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
     icon: 'Scale'
+  },
+  intelligence: {
+    id: 'intelligence',
+    label: 'Intelligence',
+    color: '#0D9488',
+    gradient: 'linear-gradient(135deg, #0D9488 0%, #0F766E 100%)',
+    icon: 'Brain'
   }
 };
 
@@ -421,6 +428,153 @@ export const AI_ASSISTANTS = {
       outputs: ['clara'],
       inputs: ['mary', 'olivia']
     }
+  },
+  henry: {
+    id: 'henry',
+    name: 'Henry',
+    title: 'Record Keeper & Timeline Master',
+    department: 'technology',
+    icon: 'BookOpen',
+    color: '#7C3AED',
+    avatar: '📚',
+    description: 'Centralized memory and audit system. Creates immutable audit trails, enables cross-system analytics, provides operational clarity, and automates compliance reporting',
+    capabilities: ['universal_event_ingestion', 'intelligent_categorization', 'timeline_visualization', 'relationship_mapping', 'search_query_engine', 'sla_monitoring', 'compliance_logging', 'anomaly_detection', 'report_generation', 'data_integrity_guardian'],
+    permissions: {
+      viewableBy: ['owner', 'admin'],
+      accessibleBy: ['owner'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/events', '/api/timeline', '/api/audit', '/api/reports'],
+    dataFlows: {
+      outputs: ['zoe', 'laila', 'aurora'],
+      inputs: ['all']
+    }
+  },
+  cipher: {
+    id: 'cipher',
+    name: 'Cipher',
+    title: 'Predictive Market Analyst',
+    department: 'intelligence',
+    icon: 'LineChart',
+    color: '#0D9488',
+    avatar: '🔮',
+    description: 'Uses advanced analytics on DLD transaction data, news, and economic indicators to generate predictive reports on neighborhood trends and property valuation',
+    capabilities: ['market_trend_analysis', 'price_prediction', 'demand_forecasting', 'competitor_tracking', 'investment_scoring', 'economic_indicator_monitoring'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'investment_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/analytics', '/api/predictions', '/api/market-data'],
+    dataFlows: {
+      outputs: ['zoe', 'olivia', 'maven'],
+      inputs: ['mary', 'henry']
+    }
+  },
+  atlas: {
+    id: 'atlas',
+    name: 'Atlas',
+    title: 'Development & Project Intelligence',
+    department: 'intelligence',
+    icon: 'Map',
+    color: '#6366F1',
+    avatar: '🗺️',
+    description: 'Analyzes zoning, DLC master plans, market gaps, and developer track records to identify high-potential off-plan projects for investment or brokerage',
+    capabilities: ['feasibility_analysis', 'zoning_analysis', 'developer_tracking', 'project_pipeline', 'market_gap_detection', 'roi_projection'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'investment_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/projects', '/api/developers', '/api/feasibility'],
+    dataFlows: {
+      outputs: ['mary', 'clara', 'cipher'],
+      inputs: ['cipher', 'mary']
+    }
+  },
+  vesta: {
+    id: 'vesta',
+    name: 'Vesta',
+    title: 'Project & Snagging Coordinator',
+    department: 'operations',
+    icon: 'ClipboardCheck',
+    color: '#F97316',
+    avatar: '🏗️',
+    description: 'Tracks construction milestones for off-plan buyers, automates communication with developers, and manages the digital snagging process using image recognition',
+    capabilities: ['milestone_tracking', 'developer_communication', 'snagging_management', 'defect_reporting', 'handover_coordination', 'image_recognition'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'operations_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'departmental'
+    },
+    apiEndpoints: ['/api/construction', '/api/snagging', '/api/handover'],
+    dataFlows: {
+      outputs: ['mary', 'linda'],
+      inputs: ['atlas', 'mary']
+    }
+  },
+  juno: {
+    id: 'juno',
+    name: 'Juno',
+    title: 'Smart Community & Facilities Manager',
+    department: 'operations',
+    icon: 'Building',
+    color: '#14B8A6',
+    avatar: '🏢',
+    description: 'Integrates with building IoT systems for energy optimization, manages community events, and automates facility service requests between Nina and vendors',
+    capabilities: ['iot_integration', 'energy_optimization', 'event_management', 'service_automation', 'access_control', 'utility_monitoring'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'operations_manager', 'community_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'departmental'
+    },
+    apiEndpoints: ['/api/facilities', '/api/iot', '/api/community'],
+    dataFlows: {
+      outputs: ['nina', 'sentinel'],
+      inputs: ['sentinel', 'mary']
+    }
+  },
+  kairos: {
+    id: 'kairos',
+    name: 'Kairos',
+    title: 'Luxury Concierge & VIP Experience',
+    department: 'sales',
+    icon: 'Crown',
+    color: '#D97706',
+    avatar: '👑',
+    description: 'Curates personalized services for high-net-worth clients: viewing schedules, interior design partners, visa/payment coordination, creating white-glove service',
+    capabilities: ['vip_client_management', 'concierge_services', 'lifestyle_coordination', 'partner_network', 'exclusive_access', 'personalized_experience'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'luxury_sales_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'departmental'
+    },
+    apiEndpoints: ['/api/concierge', '/api/vip', '/api/lifestyle'],
+    dataFlows: {
+      outputs: ['clara', 'linda'],
+      inputs: ['clara', 'sophia']
+    }
+  },
+  maven: {
+    id: 'maven',
+    name: 'Maven',
+    title: 'Investment Strategy & Portfolio Optimizer',
+    department: 'finance',
+    icon: 'PieChart',
+    color: '#8B5CF6',
+    avatar: '📊',
+    description: 'Analyzes rental yields, capital appreciation trends, and tax implications to provide data-driven advice on buying, holding, or selling assets for investor clients',
+    capabilities: ['portfolio_analysis', 'yield_optimization', 'tax_planning', 'investment_recommendations', 'risk_assessment', 'performance_tracking'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'investment_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/portfolio', '/api/investments', '/api/yields'],
+    dataFlows: {
+      outputs: ['zoe', 'clara'],
+      inputs: ['cipher', 'theodora', 'mary']
+    }
   }
 };
 
@@ -455,7 +609,8 @@ export const getDepartmentOrder = () => [
   'executive',
   'compliance',
   'legal',
-  'technology'
+  'technology',
+  'intelligence'
 ];
 
 export const getNavigationStructure = () => {

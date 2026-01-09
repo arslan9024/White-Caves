@@ -1,0 +1,108 @@
+{
+  "conversations": [
+    {
+      "session_id": "conv_ld_20260109_001",
+      "client": {
+        "client_id": "client_ua001",
+        "name": "Fatima Al Zahra",
+        "preferred_language": "ar",
+        "phone": "+971501234567",
+        "tier": "premium"
+      },
+      "channel": "whatsapp_business",
+      "agent_assigned": "agent_sara",
+      "status": "active",
+      "messages": [
+        {
+          "timestamp": "2026-01-09T10:15:00Z",
+          "sender": "client",
+          "content": "Hello, looking for a 2BR apartment for rent in Dubai Marina.",
+          "detected_intent": "rental_inquiry",
+          "detected_language": "ar",
+          "sentiment_score": 0.7
+        },
+        {
+          "timestamp": "2026-01-09T10:15:05Z",
+          "sender": "linda_ai",
+          "content": "أهلا وسهلا فاطمة! I have found 3 suitable 2BR apartments in Dubai Marina. Should I send you the links?",
+          "type": "smart_reply_used",
+          "matched_properties": ["prop_dm_201", "prop_dm_205", "prop_dm_210"]
+        }
+      ],
+      "summary": {
+        "lead_score": 85,
+        "next_action": "send_listing_links_and_schedule_viewing",
+        "required_documents": ["passport_copy", "visa_page"]
+      }
+    },
+    {
+      "session_id": "conv_ld_20260109_002",
+      "client": {
+        "client_id": "client_uk002",
+        "name": "James Wilson",
+        "preferred_language": "en",
+        "phone": "+447891234567",
+        "tier": "standard"
+      },
+      "channel": "whatsapp_business",
+      "agent_assigned": "agent_khalid",
+      "status": "pending_response",
+      "messages": [
+        {
+          "timestamp": "2026-01-09T09:30:00Z",
+          "sender": "client",
+          "content": "Hi, I'm looking to invest in off-plan property in Dubai Hills. Budget around 2-3 million AED.",
+          "detected_intent": "investment_inquiry",
+          "detected_language": "en",
+          "sentiment_score": 0.8
+        }
+      ],
+      "summary": {
+        "lead_score": 92,
+        "next_action": "connect_with_investment_specialist",
+        "investment_profile": "medium_term_investor"
+      }
+    }
+  ],
+  "client_intelligence": [
+    {
+      "client_id": "client_ua001",
+      "basic_info": {
+        "name": "Fatima Al Zahra",
+        "preferred_language": "ar",
+        "contact_points": [
+          {"type": "whatsapp", "value": "+971501234567", "primary": true},
+          {"type": "email", "value": "fatima@example.ae", "primary": false}
+        ],
+        "nationality": "UAE",
+        "client_tier": "premium"
+      },
+      "preferences": {
+        "property_types": ["apartment"],
+        "locations": ["Dubai Marina", "JBR"],
+        "budget_range": {"min": 80000, "max": 150000, "currency": "AED", "type": "annual_rent"},
+        "communication_style": "detailed",
+        "response_time_expectation": "1_hour"
+      },
+      "ai_insights": {
+        "conversation_pattern": "detailed_questions",
+        "decision_time_avg": "72_hours",
+        "preferred_contact_hours": ["09:00-12:00", "16:00-20:00"],
+        "next_best_action": "send_virtual_tour",
+        "engagement_score": 0.92
+      }
+    }
+  ],
+  "metrics": {
+    "total_conversations_today": 47,
+    "active_conversations": 12,
+    "avg_response_time_seconds": 45,
+    "ai_handled_percentage": 68,
+    "leads_generated_today": 15,
+    "sentiment_distribution": {
+      "positive": 72,
+      "neutral": 23,
+      "negative": 5
+    }
+  }
+}

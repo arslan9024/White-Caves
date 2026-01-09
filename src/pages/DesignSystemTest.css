@@ -1,0 +1,126 @@
+.design-system-test {
+  min-height: 100vh;
+  background: var(--color-background, #0F172A);
+  padding: 40px;
+  color: var(--color-text-primary, #F1F5F9);
+}
+
+.dst-header {
+  text-align: center;
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--color-border, #334155);
+}
+
+.dst-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #DC2626 0%, #F59E0B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dst-header p {
+  font-size: 1.125rem;
+  color: var(--color-text-secondary, #94A3B8);
+}
+
+.dst-section {
+  margin-bottom: 48px;
+}
+
+.dst-section > h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #DC2626;
+  display: inline-block;
+}
+
+.dst-group {
+  margin-bottom: 32px;
+}
+
+.dst-group h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-secondary, #94A3B8);
+  margin-bottom: 16px;
+}
+
+.dst-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.dst-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.dst-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.dst-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.dst-colors {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.dst-color {
+  width: 120px;
+  height: 80px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  gap: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 1200px) {
+  .dst-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .dst-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .design-system-test {
+    padding: 20px;
+  }
+
+  .dst-grid-2,
+  .dst-grid-3,
+  .dst-grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .dst-header h1 {
+    font-size: 1.75rem;
+  }
+}

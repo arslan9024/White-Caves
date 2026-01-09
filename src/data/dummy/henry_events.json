@@ -1,0 +1,170 @@
+{
+  "events": [
+    {
+      "event_id": "evt_20260109_144235_z9k8p",
+      "timestamp": "2026-01-09T14:42:35.000Z",
+      "type": "PROPERTY_STATUS_UPDATED",
+      "category": "PROPERTY",
+      "priority": "normal",
+      "initiator": {
+        "type": "ai_assistant",
+        "id": "mary_inventory"
+      },
+      "entities": [
+        {"type": "property", "id": "prop_dm_205", "role": "primary_subject"},
+        {"type": "contract", "id": "lease_2026001", "role": "related"},
+        {"type": "client", "id": "client_ua001", "role": "related"}
+      ],
+      "payload": {
+        "old_state": {"availability": "available_for_rent"},
+        "new_state": {"availability": "under_offer"},
+        "reason": "offer_accepted",
+        "note": "Offer of AED 120,000 p.a. accepted by owner."
+      },
+      "trace": {
+        "correlation_id": "workflow_offer_2026001",
+        "parent_event_id": "evt_20260108_101112_abc123"
+      },
+      "downstream_actions_triggered": [
+        {"assistant": "linda", "action": "send_offer_accepted_confirmation", "status": "completed"},
+        {"assistant": "olivia", "action": "mark_property_as_pending_on_portals", "status": "completed"},
+        {"assistant": "theodora", "action": "prepare_deposit_invoice", "status": "pending"}
+      ]
+    },
+    {
+      "event_id": "evt_20260109_100305_pay01",
+      "timestamp": "2026-01-09T10:03:05.000Z",
+      "type": "SERVICE_COMPLETED",
+      "category": "FINANCIAL",
+      "priority": "normal",
+      "initiator": {
+        "type": "ai_assistant",
+        "id": "theodora_finance"
+      },
+      "entities": [
+        {"type": "service", "id": "service_rent_202601_001", "role": "primary"},
+        {"type": "client", "id": "client_fatima_002", "role": "recipient"},
+        {"type": "property", "id": "prop_jvc_410", "role": "subject"},
+        {"type": "staff", "id": "agent_khalid_leasing", "role": "broker"}
+      ],
+      "payload": {
+        "service_type": "rental_leasing",
+        "completion_details": {
+          "final_invoice_id": "inv_20260109_001",
+          "total_amount_aed": 85000,
+          "description": "Annual lease contract for Sky View Apartments, JVC"
+        }
+      }
+    },
+    {
+      "event_id": "evt_20260109_110000_lead01",
+      "timestamp": "2026-01-09T11:00:00.000Z",
+      "type": "LEAD_QUALIFIED",
+      "category": "SALES",
+      "priority": "high",
+      "initiator": {
+        "type": "ai_assistant",
+        "id": "clara_leads"
+      },
+      "entities": [
+        {"type": "lead", "id": "lead_2026_00145", "role": "primary"},
+        {"type": "client", "id": "client_uk002", "role": "prospect"},
+        {"type": "staff", "id": "agent_sara", "role": "assigned"}
+      ],
+      "payload": {
+        "qualification_score": 92,
+        "budget_range": {"min": 2000000, "max": 3000000, "currency": "AED"},
+        "intent": "investment",
+        "preferred_areas": ["Dubai Hills", "Downtown"],
+        "timeline": "3_months"
+      },
+      "downstream_actions_triggered": [
+        {"assistant": "sophia", "action": "add_to_priority_pipeline", "status": "completed"},
+        {"assistant": "kairos", "action": "flag_as_vip_potential", "status": "pending"}
+      ]
+    }
+  ],
+  "knowledge_graph": [
+    {
+      "event_id": "evt_20260109_144235_z9k8p",
+      "ingested_at": "2026-01-09T14:42:36.100Z",
+      "processed_categories": ["PROPERTY", "SALES", "MILESTONE"],
+      "automated_insights": [
+        {
+          "type": "timeline_gap_check",
+          "result": "PASSED",
+          "note": "Event follows expected sequence for sales workflow."
+        },
+        {
+          "type": "sla_check",
+          "result": "WITHIN_SLA",
+          "note": "Property status updated 2.5 hours after offer acceptance, within 4-hour target."
+        }
+      ],
+      "related_events_linked": [
+        "evt_20260108_101112_abc123",
+        "evt_20260107_093000_def456"
+      ],
+      "access_log": [
+        {
+          "accessed_at": "2026-01-09T15:00:00Z",
+          "accessed_by": "ai_zoe",
+          "purpose": "generating_daily_sales_report"
+        }
+      ]
+    }
+  ],
+  "event_types": [
+    "PROPERTY_CREATED",
+    "PROPERTY_STATUS_UPDATED",
+    "PROPERTY_PRICE_CHANGED",
+    "LEAD_CREATED",
+    "LEAD_QUALIFIED",
+    "LEAD_ASSIGNED",
+    "LEAD_CONVERTED",
+    "VIEWING_SCHEDULED",
+    "VIEWING_COMPLETED",
+    "OFFER_MADE",
+    "OFFER_ACCEPTED",
+    "OFFER_REJECTED",
+    "CONTRACT_DRAFTED",
+    "CONTRACT_SIGNED",
+    "PAYMENT_RECEIVED",
+    "SERVICE_COMPLETED",
+    "MAINTENANCE_REQUESTED",
+    "MAINTENANCE_COMPLETED",
+    "DOCUMENT_UPLOADED",
+    "KYC_VERIFIED",
+    "EJARI_REGISTERED",
+    "DEAL_CLOSED_WITH_GRATITUDE",
+    "SUPPORT_TICKET_CREATED",
+    "SUPPORT_TICKET_RESOLVED",
+    "CAMPAIGN_LAUNCHED"
+  ],
+  "audit_summary": {
+    "report_date": "2026-01-09",
+    "total_events_today": 247,
+    "events_by_category": {
+      "PROPERTY": 45,
+      "SALES": 78,
+      "FINANCIAL": 32,
+      "COMMUNICATION": 56,
+      "MAINTENANCE": 18,
+      "COMPLIANCE": 8,
+      "MARKETING": 10
+    },
+    "sla_compliance_rate": 0.94,
+    "anomalies_detected": 2,
+    "data_integrity_checks_passed": 245,
+    "data_integrity_checks_failed": 2
+  },
+  "timeline_filters": {
+    "by_property": true,
+    "by_client": true,
+    "by_agent": true,
+    "by_transaction": true,
+    "by_date_range": true,
+    "by_event_type": true,
+    "by_department": true
+  }
+}

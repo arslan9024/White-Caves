@@ -1,0 +1,155 @@
+{
+  "support_tickets": [
+    {
+      "ticket_id": "sup_20260109_045",
+      "client_id": "client_ahmed_001",
+      "property_id": "prop_dm_205",
+      "subject": "AC not cooling in master bedroom",
+      "description": "The AC unit is running but only blowing warm air. Temperature is 28°C inside.",
+      "category": "maintenance",
+      "subcategory": "hvac",
+      "priority": "high",
+      "urgency": "medium",
+      "source": "whatsapp",
+      "status": "in_progress",
+      "created_at": "2026-01-09T14:25:00Z",
+      "sla_deadline": "2026-01-10T14:25:00Z",
+      "assigned_to": {
+        "type": "vendor",
+        "id": "vendor_cool_emirates",
+        "name": "Cool Emirates AC Services"
+      },
+      "history": [
+        {"timestamp": "2026-01-09T14:25:00Z", "event": "created", "actor": "linda_ai"},
+        {"timestamp": "2026-01-09T14:30:00Z", "event": "assigned", "actor": "nina_ai", "note": "Assigned to preferred HVAC vendor."},
+        {"timestamp": "2026-01-09T15:00:00Z", "event": "vendor_acknowledged", "actor": "vendor_cool_emirates"}
+      ],
+      "communications": [
+        {"timestamp": "2026-01-09T14:26:00Z", "direction": "outbound", "channel": "whatsapp", "summary": "Sent auto-acknowledgment and ETA request to vendor."}
+      ],
+      "predicted_issue": "refrigerant_leak",
+      "estimated_cost_aed": 850,
+      "resolution": null,
+      "feedback": null
+    },
+    {
+      "ticket_id": "sup_20260108_032",
+      "client_id": "client_fatima_002",
+      "property_id": "prop_jvc_410",
+      "subject": "Water leak under kitchen sink",
+      "description": "Minor puddle forming under kitchen sink. Noticed this morning.",
+      "category": "maintenance",
+      "subcategory": "plumbing",
+      "priority": "medium",
+      "urgency": "medium",
+      "source": "web_portal",
+      "status": "resolved",
+      "created_at": "2026-01-08T09:15:00Z",
+      "resolved_at": "2026-01-08T14:30:00Z",
+      "assigned_to": {
+        "type": "vendor",
+        "id": "vendor_aquafix",
+        "name": "AquaFix Plumbing"
+      },
+      "resolution": {
+        "summary": "Replaced worn washer and tightened pipe connection",
+        "parts_replaced": ["washer", "pipe_seal"],
+        "cost_aed": 250,
+        "warranty_months": 3
+      },
+      "feedback": {
+        "csat_score": 4.5,
+        "response_time_rating": 5,
+        "resolution_rating": 4,
+        "comments": "Quick response, very professional service."
+      }
+    }
+  ],
+  "gratitude_cycles": [
+    {
+      "gratitude_cycle_id": "thanks_20260108_100310",
+      "triggered_by_event": "evt_pay_20260108_100305",
+      "processed_at": "2026-01-08T10:03:10Z",
+      "recipients": {
+        "client": {
+          "id": "client_fatima_002",
+          "name": "Fatima Al Said",
+          "preferred_language": "ar",
+          "preferred_channel": "email"
+        },
+        "broker": {
+          "id": "agent_khalid_leasing",
+          "name": "Khalid Hassan",
+          "department": "leasing"
+        }
+      },
+      "messages_sent": [
+        {
+          "to": "client_fatima_002",
+          "channel": "email",
+          "template_used": "thanks_client_rental_ar",
+          "sent_at": "2026-01-08T10:05:00Z"
+        },
+        {
+          "to": "agent_khalid_leasing",
+          "channel": "internal_dashboard",
+          "template_used": "thanks_broker_lease_en",
+          "sent_at": "2026-01-08T10:05:02Z"
+        }
+      ],
+      "status": "completed"
+    }
+  ],
+  "knowledge_base": [
+    {
+      "faq_id": "faq_dewa_001",
+      "question_keywords": ["dewa", "transfer", "connect", "utilities", "electricity"],
+      "question": "How do I transfer or connect DEWA for my new rental?",
+      "answer": "To connect DEWA, you need: 1) Copy of your passport and visa, 2) Copy of the signed tenancy contract (Ejari), 3) Previous tenant's DEWA account number (if taking over). You can apply online via the DEWA website or app. Our team can assist you with the process for a standard service fee.",
+      "category": "utilities",
+      "effectiveness_metrics": {
+        "times_served": 142,
+        "client_helpful_clicks": 92,
+        "escalation_rate": 0.05
+      },
+      "last_updated": "2026-01-05T09:00:00Z"
+    },
+    {
+      "faq_id": "faq_ejari_001",
+      "question_keywords": ["ejari", "registration", "contract", "tenancy"],
+      "question": "What is Ejari and how do I register my tenancy contract?",
+      "answer": "Ejari is the mandatory registration system for all rental contracts in Dubai. You need: 1) Original tenancy contract, 2) Copy of tenant's passport and visa, 3) Copy of landlord's passport/Emirates ID, 4) Title deed copy. Registration can be done at any Ejari center or through our office. The fee is AED 220.",
+      "category": "tenancy",
+      "effectiveness_metrics": {
+        "times_served": 234,
+        "client_helpful_clicks": 189,
+        "escalation_rate": 0.03
+      },
+      "last_updated": "2026-01-02T11:30:00Z"
+    }
+  ],
+  "happiness_metrics": {
+    "report_period": "2026-01",
+    "overall_metrics": {
+      "customer_satisfaction_score_csat": 4.2,
+      "net_promoter_score_nps": 35,
+      "average_resolution_time_hours": 18.5,
+      "first_contact_resolution_rate": 0.78
+    },
+    "ticket_analytics": {
+      "total_tickets": 145,
+      "by_category": {
+        "maintenance": 65,
+        "billing_payment": 40,
+        "contractual": 25,
+        "general_inquiry": 15
+      },
+      "top_escalation_reasons": ["Vendor delayed response", "Missing document information"]
+    },
+    "trend_comparison": {
+      "csat_previous_month": 4.0,
+      "nps_previous_month": 28,
+      "resolution_time_change": -2.5
+    }
+  }
+}
