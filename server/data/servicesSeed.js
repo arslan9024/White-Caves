@@ -767,7 +767,7 @@ export const SERVICES_SEED = [
     category: 'Client Services',
     shortDescription: 'Custom market research',
     description: 'Tailored market intelligence reports for investors and developers',
-    departmentCode: 'INT',
+    departmentCode: 'INTEL',
     targetAudience: ['investors', 'developers'],
     pricing: { type: 'fixed', amount: 25000 },
     workflow: {
