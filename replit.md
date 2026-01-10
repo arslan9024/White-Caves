@@ -88,6 +88,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (January 2026)
 
+### CRM Data Integration (Latest)
+- **CRMDataService**: New centralized API client (`/src/services/CRMDataService.js`) with caching, error handling, and endpoints for all dashboard data
+- **Redux Inventory Slice**: Updated to fetch real property data from `/api/inventory/properties` with normalized state structure
+- **Redux Leads Slice**: New slice (`/src/store/slices/leadsSlice.js`) with async thunks for `/api/dashboard/leads/recent` and `/api/leads/metrics`
+- **ClaraLeadsCRM Integration**: Replaced hardcoded dummy data with Redux-connected real-time lead data from MongoDB (400+ leads)
+- **Data Hooks**: New `useDashboardData.js` with reusable hooks (useDashboardSummary, useProperties, useLeads, etc.)
+- **Loading/Error States**: Added visual feedback for API loading and error states in ClaraLeadsCRM with retry functionality
+- **Data Flow Architecture**: MongoDB -> Express API -> CRMDataService -> Redux Slices -> UI Components
+
 ### System Audit Completed
 - Verified all 24 AI assistant CRM components are lazy-loaded in MainGridView
 - Confirmed MongoDB integration returning live data: 200 properties, 400 leads, 18.5% conversion rate
@@ -101,7 +110,7 @@ Preferred communication style: Simple, everyday language.
 
 ### API Endpoints Verified
 - GET /api/dashboard/summary - Returns live MongoDB aggregated stats
-- GET /api/inventory/properties - DAMAC Hills 2 property data
-- GET /api/dashboard/leads/recent - Lead pipeline with scoring
-- GET /api/featured-properties - AI-selected top 10 properties
+- GET /api/inventory/properties - DAMAC Hills 2 property data with owner details
+- GET /api/dashboard/leads/recent - Lead pipeline with scoring (400 leads)
+- GET /api/featured-properties - AI-selected top 10 properties with score breakdown
 - GET /api/scheduler/status - Cron job monitoring
