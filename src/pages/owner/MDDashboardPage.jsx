@@ -418,6 +418,14 @@ export default function MDDashboardPage() {
         return <WhatsAppTab data={dashboardData} loading={loading} onAction={handleTabAction} />;
       case 'uaepass':
         return <UAEPassTab data={dashboardData} loading={loading} onAction={handleTabAction} />;
+      case 'finance':
+        return <Suspense fallback={<CRMLoadingFallback />}><TheodoraFinanceCRM /></Suspense>;
+      case 'compliance':
+        return <Suspense fallback={<CRMLoadingFallback />}><LailaComplianceCRM /></Suspense>;
+      case 'calendar':
+        return <Suspense fallback={<CRMLoadingFallback />}><ZoeExecutiveCRM /></Suspense>;
+      case 'vault':
+        return <Suspense fallback={<CRMLoadingFallback />}><ZoeExecutiveCRM /></Suspense>;
       case 'features':
         return <FeatureExplorer />;
       case 'settings':
@@ -428,6 +436,9 @@ export default function MDDashboardPage() {
   };
 
   const isAssistantActive = ASSISTANT_IDS.includes(activeTab);
+  const activeAssistantName = isAssistantActive 
+    ? activeTab.charAt(0).toUpperCase() + activeTab.slice(1) 
+    : null;
 
   return (
     <AppShell>
@@ -436,6 +447,7 @@ export default function MDDashboardPage() {
           activeTab={activeTab} 
           onTabChange={handleTabChange}
           assistantActive={isAssistantActive}
+          assistantName={activeAssistantName}
         />
         <div className="md-dashboard-content">
           {renderTabContent()}

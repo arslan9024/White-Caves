@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import TopCommandBar from './TopCommandBar';
-import IntelligentSidebar from './IntelligentSidebar';
+import CommandSidebar from './CommandSidebar';
 import DashboardWorkspace from './DashboardWorkspace';
 import { 
   setBreakpoint, 
@@ -55,7 +55,7 @@ const AppShell = ({ children }) => {
       <TopCommandBar />
       
       <div className="app-shell-body">
-        <IntelligentSidebar />
+        <CommandSidebar />
         
         <main className="app-shell-main">
           {children || <DashboardWorkspace />}
