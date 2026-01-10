@@ -289,4 +289,20 @@ export const selectOwnersWithMultiplePhones = createSelector(
   }
 );
 
+export const selectUniqueClusters = createSelector(
+  [selectProperties],
+  (properties) => {
+    const clusters = new Set();
+    properties.forEach(p => {
+      if (p.cluster) clusters.add(p.cluster);
+    });
+    return Array.from(clusters).sort();
+  }
+);
+
+export const selectSheetsMeta = createSelector(
+  [selectInventory],
+  (inventory) => inventory?.manifest?.sheets || []
+);
+
 export default inventorySlice.reducer;

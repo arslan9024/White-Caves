@@ -2,6 +2,7 @@ import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import AppShell from '../../components/layout/AppShell';
+import DashboardTopNav from '../../components/layout/DashboardTopNav';
 import { selectActiveAssistant, selectActiveWorkspace, setActiveAssistant, setActiveWorkspace } from '../../store/slices/dashboardViewSlice';
 import { setUserInfo, setActiveRole } from '../../store/slices/accessControlSlice';
 import OverviewTab from '../../components/owner/tabs/OverviewTab';
@@ -34,6 +35,16 @@ const LailaComplianceCRM = lazy(() => import('../../components/crm/LailaComplian
 const AuroraCTODashboard = lazy(() => import('../../components/crm/AuroraCTODashboard'));
 const HazelFrontendCRM = lazy(() => import('../../components/crm/HazelFrontendCRM'));
 const WillowBackendCRM = lazy(() => import('../../components/crm/WillowBackendCRM'));
+const EvangelineLegalCRM = lazy(() => import('../../components/crm/EvangelineLegalCRM'));
+const SentinelPropertyCRM = lazy(() => import('../../components/crm/SentinelPropertyCRM'));
+const HunterProspectingCRM = lazy(() => import('../../components/crm/HunterProspectingCRM'));
+const HenryAuditCRM = lazy(() => import('../../components/crm/HenryAuditCRM'));
+const CipherMarketCRM = lazy(() => import('../../components/crm/CipherMarketCRM'));
+const AtlasProjectsCRM = lazy(() => import('../../components/crm/AtlasProjectsCRM'));
+const VestaHandoverCRM = lazy(() => import('../../components/crm/VestaHandoverCRM'));
+const JunoCommunity = lazy(() => import('../../components/crm/JunoCommunity'));
+const KairosLuxuryCRM = lazy(() => import('../../components/crm/KairosLuxuryCRM'));
+const MavenInvestmentCRM = lazy(() => import('../../components/crm/MavenInvestmentCRM'));
 const AIAssistantHub = lazy(() => import('../../components/crm/AIAssistantHub'));
 const AICommandCenter = lazy(() => import('../../components/crm/AICommandCenter'));
 
@@ -370,6 +381,26 @@ export default function MDDashboardPage() {
         return <Suspense fallback={<CRMLoadingFallback />}><HazelFrontendCRM /></Suspense>;
       case 'willow':
         return <Suspense fallback={<CRMLoadingFallback />}><WillowBackendCRM /></Suspense>;
+      case 'evangeline':
+        return <Suspense fallback={<CRMLoadingFallback />}><EvangelineLegalCRM /></Suspense>;
+      case 'sentinel':
+        return <Suspense fallback={<CRMLoadingFallback />}><SentinelPropertyCRM /></Suspense>;
+      case 'hunter':
+        return <Suspense fallback={<CRMLoadingFallback />}><HunterProspectingCRM /></Suspense>;
+      case 'henry':
+        return <Suspense fallback={<CRMLoadingFallback />}><HenryAuditCRM /></Suspense>;
+      case 'cipher':
+        return <Suspense fallback={<CRMLoadingFallback />}><CipherMarketCRM /></Suspense>;
+      case 'atlas':
+        return <Suspense fallback={<CRMLoadingFallback />}><AtlasProjectsCRM /></Suspense>;
+      case 'vesta':
+        return <Suspense fallback={<CRMLoadingFallback />}><VestaHandoverCRM /></Suspense>;
+      case 'juno':
+        return <Suspense fallback={<CRMLoadingFallback />}><JunoCommunity /></Suspense>;
+      case 'kairos':
+        return <Suspense fallback={<CRMLoadingFallback />}><KairosLuxuryCRM /></Suspense>;
+      case 'maven':
+        return <Suspense fallback={<CRMLoadingFallback />}><MavenInvestmentCRM /></Suspense>;
       case 'chatbot':
         return <ChatbotTab data={dashboardData} loading={loading} onAction={handleTabAction} />;
       case 'whatsapp':
@@ -385,10 +416,21 @@ export default function MDDashboardPage() {
     }
   };
 
+  const isAssistantActive = ['linda', 'mary', 'clara', 'nina', 'nancy', 'sophia', 'daisy', 
+    'theodora', 'olivia', 'zoe', 'laila', 'aurora', 'hazel', 'willow', 'evangeline', 
+    'sentinel', 'hunter', 'henry', 'cipher', 'atlas', 'vesta', 'juno', 'kairos', 'maven'].includes(activeTab);
+
   return (
     <AppShell>
-      <div className="owner-dashboard-content">
-        {renderTabContent()}
+      <div className="md-dashboard-wrapper">
+        <DashboardTopNav 
+          activeTab={activeTab} 
+          onTabChange={handleTabChange}
+          assistantActive={isAssistantActive}
+        />
+        <div className="md-dashboard-content">
+          {renderTabContent()}
+        </div>
       </div>
     </AppShell>
   );
