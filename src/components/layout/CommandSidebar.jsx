@@ -15,12 +15,14 @@ import {
 import { setActiveWorkspace, setActiveAssistant } from '../../store/slices/dashboardViewSlice';
 import {
   selectAllAssistantsArray,
+  selectAssistantsByDepartment,
   selectPerformance,
   selectRecentActivity,
   selectGlobalUnreadCount,
-  selectAllUnreadCounts
+  selectAllUnreadCounts,
+  selectUI
 } from '../../store/slices/aiAssistantDashboardSlice';
-import { DEPARTMENTS, AI_ASSISTANTS, getAssistantsByDepartment } from '../../config/navigationMap';
+import { DEPARTMENTS } from '../../config/navigationMap';
 import './CommandSidebar.css';
 
 const DEPARTMENT_ICONS = {
@@ -106,10 +108,12 @@ const CommandSidebar = () => {
   const sidebar = useSelector(selectSidebar);
   const layout = useSelector(selectLayout);
   const allAssistants = useSelector(selectAllAssistantsArray);
+  const assistantsByDepartment = useSelector(selectAssistantsByDepartment);
   const performance = useSelector(selectPerformance);
   const recentActivity = useSelector(selectRecentActivity);
   const globalUnread = useSelector(selectGlobalUnreadCount);
   const unreadCounts = useSelector(selectAllUnreadCounts);
+  const ui = useSelector(selectUI);
 
   const [expandedDepartments, setExpandedDepartments] = useState(['executive', 'operations', 'sales']);
   const [showActivity, setShowActivity] = useState(false);
@@ -119,16 +123,24 @@ const CommandSidebar = () => {
   const isOpen = isMobile ? layout.isMobileMenuOpen : true;
 
   const filteredAssistants = useMemo(() => {
-    if (!sidebar.searchQuery) return AI_ASSISTANTS;
+    if (!sidebar.searchQuery) return allAssistants;
     const query = sidebar.searchQuery.toLowerCase();
-    return Object.fromEntries(
-      Object.entries(AI_ASSISTANTS).filter(([_, a]) =>
-        a.name.toLowerCase().includes(query) ||
-        a.role.toLowerCase().includes(query) ||
-        a.department.toLowerCase().includes(query)
-      )
+    return allAssistants.filter(a =>
+      a.name?.toLowerCase().includes(query) ||
+      a.title?.toLowerCase().includes(query) ||
+      a.department?.toLowerCase().includes(query)
     );
-  }, [sidebar.searchQuery]);
+  }, [sidebar.searchQuery, allAssistants]);
+
+  const filteredByDepartment = useMemo(() => {
+    const result = {};
+    filteredAssistants.forEach(assistant => {
+      const dept = assistant.department || 'other';
+      if (!result[dept]) result[dept] = [];
+      result[dept].push(assistant);
+    });
+    return result;
+  }, [filteredAssistants]);
 
   const toggleDepartment = useCallback((deptId) => {
     setExpandedDepartments(prev =>
@@ -144,13 +156,12 @@ const CommandSidebar = () => {
     navigate('/md/dashboard');
   }, [dispatch, navigate]);
 
-  const getAssistantStatus = (assistantId) => {
-    const assistant = allAssistants.find(a => a.id === assistantId);
+  const getAssistantStatus = useCallback((assistant) => {
     if (!assistant) return 'offline';
     if (assistant.metrics?.systemHealth === 'optimal') return 'active';
     if (assistant.metrics?.systemHealth === 'warning') return 'warning';
     return 'idle';
-  };
+  }, []);
 
   if (!isOpen && isMobile) return null;
 
@@ -209,18 +220,17 @@ const CommandSidebar = () => {
           <div className="departments-list">
             {Object.values(DEPARTMENTS).map(dept => {
               const DeptIcon = DEPARTMENT_ICONS[dept.id] || Bot;
-              const deptAssistants = getAssistantsByDepartment(dept.id).filter(a => 
-                filteredAssistants[a.id]
-              );
+              const deptAssistants = filteredByDepartment[dept.id] || [];
               const isExpanded = expandedDepartments.includes(dept.id);
               const deptUnread = deptAssistants.reduce((sum, a) => sum + (unreadCounts[a.id] || 0), 0);
+              const isSelectedDept = ui?.selectedAssistant && deptAssistants.some(a => a.id === ui.selectedAssistant);
 
               if (deptAssistants.length === 0) return null;
 
               return (
                 <div key={dept.id} className="department-group">
                   <button
-                    className={`department-header ${isExpanded ? 'expanded' : ''}`}
+                    className={`department-header ${isExpanded ? 'expanded' : ''} ${isSelectedDept ? 'has-selected' : ''}`}
                     onClick={() => !isCollapsed && toggleDepartment(dept.id)}
                     style={{ '--dept-color': dept.color }}
                     title={isCollapsed ? dept.name : undefined}
@@ -242,20 +252,21 @@ const CommandSidebar = () => {
                   {!isCollapsed && isExpanded && (
                     <ul className="assistants-list">
                       {deptAssistants.map(assistant => {
-                        const status = getAssistantStatus(assistant.id);
+                        const status = getAssistantStatus(assistant);
                         const unread = unreadCounts[assistant.id] || 0;
+                        const isSelected = ui?.selectedAssistant === assistant.id;
                         
                         return (
                           <li key={assistant.id}>
                             <button
-                              className="assistant-item"
+                              className={`assistant-item ${isSelected ? 'selected' : ''}`}
                               onClick={() => handleAssistantClick(assistant)}
-                              style={{ '--assistant-color': assistant.color }}
+                              style={{ '--assistant-color': assistant.colorScheme || assistant.color }}
                             >
                               <div className={`status-dot ${status}`} />
                               <div className="assistant-info">
                                 <span className="assistant-name">{assistant.name}</span>
-                                <span className="assistant-role">{assistant.role}</span>
+                                <span className="assistant-role">{assistant.title || assistant.role}</span>
                               </div>
                               {unread > 0 && (
                                 <span className="assistant-badge">{unread}</span>

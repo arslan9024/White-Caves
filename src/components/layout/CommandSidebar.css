@@ -305,6 +305,15 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
+.assistant-item.selected {
+  background: rgba(139, 92, 246, 0.15);
+  border-left: 2px solid #8B5CF6;
+}
+
+.department-header.has-selected .dept-icon {
+  background: color-mix(in srgb, var(--dept-color) 25%, transparent);
+}
+
 .status-dot {
   width: 8px;
   height: 8px;
