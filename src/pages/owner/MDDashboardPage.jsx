@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import AppShell from '../../components/layout/AppShell';
 import DashboardTopNav from '../../components/layout/DashboardTopNav';
+import DashboardShell from '../../components/layout/DashboardShell';
 import { selectActiveAssistant, selectActiveWorkspace, setActiveAssistant, setActiveWorkspace } from '../../store/slices/dashboardViewSlice';
 import { setUserInfo, setActiveRole } from '../../store/slices/accessControlSlice';
 import OverviewTab from '../../components/owner/tabs/OverviewTab';
@@ -435,24 +436,7 @@ export default function MDDashboardPage() {
     }
   };
 
-  const isAssistantActive = ASSISTANT_IDS.includes(activeTab);
-  const activeAssistantName = isAssistantActive 
-    ? activeTab.charAt(0).toUpperCase() + activeTab.slice(1) 
-    : null;
-
   return (
-    <AppShell>
-      <div className="md-dashboard-wrapper">
-        <DashboardTopNav 
-          activeTab={activeTab} 
-          onTabChange={handleTabChange}
-          assistantActive={isAssistantActive}
-          assistantName={activeAssistantName}
-        />
-        <div className="md-dashboard-content">
-          {renderTabContent()}
-        </div>
-      </div>
-    </AppShell>
+    <DashboardShell />
   );
 }

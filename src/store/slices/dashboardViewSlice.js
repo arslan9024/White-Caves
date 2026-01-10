@@ -150,6 +150,8 @@ export const selectActiveFeatureTab = createSelector(
   dv => dv?.activeFeatureTab
 );
 
+export const selectSelectedFeature = selectActiveFeatureTab;
+
 export const selectWorkspaceLayout = createSelector(
   [selectDashboardView, selectActiveWorkspace],
   (dv, workspaceId) => dv?.workspaceLayouts?.[workspaceId] || WORKSPACE_LAYOUTS.executive

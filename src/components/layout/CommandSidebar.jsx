@@ -7,19 +7,22 @@ import {
   Database, BarChart3, FileText, Workflow, Settings, Star,
   CheckCircle, AlertTriangle, Clock, Users, LayoutGrid, List,
   Eye, Target, Home, Server, Palette, Scale, Building, Landmark,
-  Wallet, Users2, Map
+  Wallet, Users2, Map, LayoutDashboard, Lightbulb, Wrench, Download,
+  FileSpreadsheet, ScanText, Radio, GitBranch, MessageCircle, Filter,
+  Handshake, LineChart, Calculator, UserPlus, Calendar, Award, Receipt,
+  CreditCard, Lock, PieChart, Share2, Brain, UserCheck, History,
+  Rocket, Book, Layers, Sun, Code, Gauge, AlertCircle, ClipboardCheck,
+  Send, Sparkles, Flag, Key, Cpu, Crown, Compass, Menu, X
 } from 'lucide-react';
 import {
   selectSidebar,
-  selectLayout,
   setSidebarSearch
 } from '../../store/slices/navigationUISlice';
-import { setActiveWorkspace, setActiveAssistant } from '../../store/slices/dashboardViewSlice';
+import { setActiveWorkspace, setActiveAssistant, setActiveFeatureTab } from '../../store/slices/dashboardViewSlice';
 import {
   selectAllAssistantsArray,
   selectAssistantsByDepartment,
   selectPerformance,
-  selectRecentActivity,
   selectGlobalUnreadCount,
   selectAllUnreadCounts,
   selectUI,
@@ -28,6 +31,7 @@ import {
   toggleFavorite,
   selectAssistant
 } from '../../store/slices/aiAssistantDashboardSlice';
+import { ASSISTANT_FEATURES, getAssistantFeatures, getDefaultFeature } from '../../config/assistantFeatures';
 import { DEPARTMENTS } from '../../config/navigationMap';
 import './CommandSidebar.css';
 
@@ -68,27 +72,100 @@ const ASSISTANT_ICONS = {
   vesta: Building,
   juno: Building,
   kairos: Landmark,
-  maven: Wallet,
-  penny: DollarSign,
-  quinn: Wallet,
-  marcus: Zap,
-  stella: Star,
-  vera: Shield,
-  sage: BarChart3,
-  ivy: FileText,
-  max: FileText
+  maven: Wallet
 };
 
-const formatTimeAgo = (timestamp) => {
-  if (!timestamp) return '';
-  const now = new Date();
-  const time = new Date(timestamp);
-  const diff = Math.floor((now - time) / 1000);
-  
-  if (diff < 60) return 'Just now';
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
+const FEATURE_ICONS = {
+  dashboard: LayoutDashboard,
+  suggestions: Lightbulb,
+  reports: FileText,
+  analytics: BarChart3,
+  briefings: Briefcase,
+  planning: Target,
+  inventory: Building,
+  data_tools: Wrench,
+  asset_fetcher: Download,
+  import: FileSpreadsheet,
+  ocr: ScanText,
+  conversations: MessageSquare,
+  agents: Users,
+  templates: FileText,
+  broadcasts: Radio,
+  scoring: Target,
+  bot_builder: Bot,
+  flows: GitBranch,
+  sessions: MessageCircle,
+  pipeline: Filter,
+  leads: Users,
+  nurturing: Workflow,
+  timeline: Clock,
+  deals: Handshake,
+  forecast: LineChart,
+  commission: Calculator,
+  employees: Users,
+  recruitment: UserPlus,
+  attendance: Calendar,
+  performance: Award,
+  leases: FileText,
+  tenants: Users,
+  maintenance: Wrench,
+  invoices: Receipt,
+  payments: CreditCard,
+  escrow: Lock,
+  budget: PieChart,
+  campaigns: Zap,
+  social: Share2,
+  automation: Zap,
+  intelligence: Brain,
+  kyc: UserCheck,
+  aml: Shield,
+  contracts: FileText,
+  audit: History,
+  systems: Activity,
+  deployments: Rocket,
+  documentation: Book,
+  governance: Shield,
+  components: Layers,
+  design_system: Palette,
+  accessibility: Eye,
+  themes: Sun,
+  apis: Code,
+  database: Database,
+  security: Lock,
+  risks: AlertTriangle,
+  regulations: Scale,
+  library: Book,
+  monitoring: Eye,
+  inspections: ClipboardCheck,
+  emergency: AlertCircle,
+  prospects: Users,
+  outreach: Send,
+  patterns: Sparkles,
+  enrichment: Database,
+  events: List,
+  trends: TrendingUp,
+  predictions: LineChart,
+  competitors: Users,
+  indicators: BarChart3,
+  projects: Building,
+  feasibility: Calculator,
+  developers: Users,
+  zoning: Map,
+  milestones: Flag,
+  snagging: ClipboardCheck,
+  handover: Key,
+  defects: AlertCircle,
+  facilities: Building,
+  iot: Cpu,
+  energy: Zap,
+  vip: Crown,
+  concierge: Sparkles,
+  lifestyle: Compass,
+  partners: Handshake,
+  portfolio: PieChart,
+  yields: TrendingUp,
+  tax: Calculator,
+  advice: Lightbulb
 };
 
 const QuickStats = ({ assistants, performance }) => {
@@ -128,123 +205,54 @@ const QuickStats = ({ assistants, performance }) => {
   );
 };
 
-const ActivityFeed = ({ activities, allAssistants }) => {
-  const recentActivities = activities?.slice(0, 8) || [];
-  
-  if (recentActivities.length === 0) {
-    return (
-      <div className="activity-feed empty">
-        <Clock size={16} />
-        <span>No recent activity</span>
-      </div>
-    );
-  }
-  
-  const getAssistantName = (assistantId) => {
-    const assistant = allAssistants.find(a => a.id === assistantId);
-    return assistant?.name || assistantId;
-  };
-
-  const getAssistantColor = (assistantId) => {
-    const assistant = allAssistants.find(a => a.id === assistantId);
-    return assistant?.colorScheme || '#8B5CF6';
-  };
-  
-  return (
-    <div className="activity-feed">
-      {recentActivities.map((activity, idx) => (
-        <div key={activity.id || idx} className="activity-item">
-          <div 
-            className={`activity-dot ${activity.type || 'info'}`} 
-            style={{ backgroundColor: getAssistantColor(activity.assistantId) }}
-          />
-          <div className="activity-content">
-            <span className="activity-assistant">{getAssistantName(activity.assistantId)}</span>
-            <span className="activity-text">
-              {activity.action || activity.message}
-              {activity.target && <span className="activity-target"> - {activity.target}</span>}
-            </span>
-            <span className="activity-time">{formatTimeAgo(activity.timestamp)}</span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-const CurrentAssistantDisplay = ({ assistant, onClick }) => {
-  if (!assistant) return null;
-  
-  const IconComponent = ASSISTANT_ICONS[assistant.id] || Bot;
-  
-  return (
-    <div className="current-assistant-display" onClick={onClick}>
-      <div 
-        className="assistant-avatar-display"
-        style={{ backgroundColor: assistant.colorScheme }}
-      >
-        <IconComponent size={16} />
-      </div>
-      <div className="assistant-display-info">
-        <span className="assistant-display-name">{assistant.name}</span>
-        <span className="assistant-display-title">{assistant.title}</span>
-      </div>
-      <ChevronDown size={16} className="dropdown-chevron" />
-    </div>
-  );
-};
-
 const CommandSidebar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const sidebar = useSelector(selectSidebar);
-  const layout = useSelector(selectLayout);
+  
+  const sidebar = useSelector(selectSidebar) || {};
   const allAssistants = useSelector(selectAllAssistantsArray);
   const assistantsByDepartment = useSelector(selectAssistantsByDepartment);
   const performance = useSelector(selectPerformance);
-  const recentActivity = useSelector(selectRecentActivity);
   const globalUnread = useSelector(selectGlobalUnreadCount);
   const unreadCounts = useSelector(selectAllUnreadCounts);
   const ui = useSelector(selectUI);
   const currentAssistant = useSelector(selectCurrentAssistant);
   const favorites = useSelector(selectFavorites);
-
+  
   const [expandedDepartments, setExpandedDepartments] = useState(['executive', 'operations', 'sales']);
-  const [activeTab, setActiveTab] = useState('assistants');
-  const [showSelector, setShowSelector] = useState(false);
-
-  const isCollapsed = sidebar.isCollapsed;
-  const isMobile = layout.breakpoint === 'mobile';
-  const isOpen = isMobile ? layout.isMobileMenuOpen : true;
-
-  const filteredAssistants = useMemo(() => {
-    if (!sidebar.searchQuery) return allAssistants;
-    const query = sidebar.searchQuery.toLowerCase();
-    return allAssistants.filter(a =>
-      a.name?.toLowerCase().includes(query) ||
-      a.title?.toLowerCase().includes(query) ||
-      a.department?.toLowerCase().includes(query)
-    );
-  }, [sidebar.searchQuery, allAssistants]);
-
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  
+  const currentFeatures = useMemo(() => {
+    if (!currentAssistant) return [];
+    return getAssistantFeatures(currentAssistant.id);
+  }, [currentAssistant]);
+  
+  const selectedFeature = useSelector(state => state.dashboardView?.activeFeatureTab) || 'dashboard';
+  
   const filteredByDepartment = useMemo(() => {
-    const result = {};
-    filteredAssistants.forEach(assistant => {
-      const dept = assistant.department || 'other';
-      if (!result[dept]) result[dept] = [];
-      result[dept].push(assistant);
+    if (!searchQuery) return assistantsByDepartment;
+    
+    const query = searchQuery.toLowerCase();
+    const filtered = {};
+    
+    Object.entries(assistantsByDepartment).forEach(([dept, assistants]) => {
+      const matches = assistants.filter(a => 
+        a.name.toLowerCase().includes(query) ||
+        a.title.toLowerCase().includes(query)
+      );
+      if (matches.length > 0) {
+        filtered[dept] = matches;
+      }
     });
-    return result;
-  }, [filteredAssistants]);
-
-  const favoriteAssistants = useMemo(() => {
-    return allAssistants.filter(a => favorites.includes(a.id));
-  }, [allAssistants, favorites]);
+    
+    return filtered;
+  }, [assistantsByDepartment, searchQuery]);
 
   const toggleDepartment = useCallback((deptId) => {
-    setExpandedDepartments(prev =>
-      prev.includes(deptId)
-        ? prev.filter(d => d !== deptId)
+    setExpandedDepartments(prev => 
+      prev.includes(deptId) 
+        ? prev.filter(id => id !== deptId)
         : [...prev, deptId]
     );
   }, []);
@@ -253,9 +261,14 @@ const CommandSidebar = () => {
     dispatch(selectAssistant(assistant.id));
     dispatch(setActiveAssistant(assistant.id));
     dispatch(setActiveWorkspace('ai-command'));
-    setShowSelector(false);
+    dispatch(setActiveFeatureTab('dashboard'));
+    setIsMobileOpen(false);
     navigate('/md/dashboard');
   }, [dispatch, navigate]);
+  
+  const handleFeatureClick = useCallback((featureId) => {
+    dispatch(setActiveFeatureTab(featureId));
+  }, [dispatch]);
 
   const handleToggleFavorite = useCallback((e, assistantId) => {
     e.stopPropagation();
@@ -272,226 +285,170 @@ const CommandSidebar = () => {
   const getAssistantIcon = useCallback((assistantId) => {
     return ASSISTANT_ICONS[assistantId] || Bot;
   }, []);
-
-  if (!isOpen && isMobile) return null;
+  
+  const getFeatureIcon = useCallback((iconName) => {
+    return FEATURE_ICONS[iconName] || LayoutDashboard;
+  }, []);
 
   return (
-    <aside className={`command-sidebar ${isCollapsed ? 'collapsed' : ''} ${isMobile ? 'mobile' : ''}`}>
-      <div className="command-header">
-        <div className="command-title">
-          <Bot size={20} />
-          {!isCollapsed && <span>AI Command Center</span>}
+    <>
+      <button 
+        className="mobile-menu-toggle"
+        onClick={() => setIsMobileOpen(!isMobileOpen)}
+      >
+        {isMobileOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+      
+      <aside className={`command-sidebar ${isMobileOpen ? 'mobile-open' : ''}`}>
+        <div className="sidebar-header">
+          <div className="sidebar-brand">
+            <Bot size={24} />
+            <span>AI Command</span>
+          </div>
+          {globalUnread > 0 && (
+            <div className="global-badge">
+              <Bell size={14} />
+              <span>{globalUnread}</span>
+            </div>
+          )}
         </div>
-        {!isCollapsed && globalUnread > 0 && (
-          <div className="global-notifications">
-            <Bell size={14} />
-            <span>{globalUnread}</span>
-          </div>
-        )}
-      </div>
-
-      {!isCollapsed && (
-        <>
-          <CurrentAssistantDisplay 
-            assistant={currentAssistant} 
-            onClick={() => setShowSelector(!showSelector)}
+        
+        <QuickStats assistants={allAssistants} performance={performance} />
+        
+        <div className="sidebar-search">
+          <Search size={16} />
+          <input
+            type="text"
+            placeholder="Search assistants..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
-          
-          <QuickStats assistants={allAssistants} performance={performance} />
-          
-          <div className="command-search">
-            <Search size={14} />
-            <input
-              type="text"
-              placeholder="Search assistants..."
-              value={sidebar.searchQuery}
-              onChange={(e) => dispatch(setSidebarSearch(e.target.value))}
-            />
-          </div>
+        </div>
 
-          <div className="section-tabs">
-            <button 
-              className={`section-tab ${activeTab === 'assistants' ? 'active' : ''}`}
-              onClick={() => setActiveTab('assistants')}
-            >
-              <Users size={14} />
-              <span>Assistants</span>
-            </button>
-            <button 
-              className={`section-tab ${activeTab === 'activity' ? 'active' : ''}`}
-              onClick={() => setActiveTab('activity')}
-            >
-              <Activity size={14} />
-              <span>Activity</span>
-            </button>
-            <button 
-              className={`section-tab ${activeTab === 'favorites' ? 'active' : ''}`}
-              onClick={() => setActiveTab('favorites')}
-            >
-              <Star size={14} />
-              <span>Favorites</span>
-            </button>
-          </div>
-        </>
-      )}
+        <div className="sidebar-sections">
+          <div className="selector-section assistants-section">
+            <div className="section-header">
+              <Users size={16} />
+              <span>AI Assistants</span>
+              <span className="section-count">{allAssistants.length}</span>
+            </div>
+            
+            <div className="section-content scrollable">
+              {Object.values(DEPARTMENTS).map(dept => {
+                const DeptIcon = DEPARTMENT_ICONS[dept.id] || Bot;
+                const deptAssistants = filteredByDepartment[dept.id] || [];
+                const isExpanded = expandedDepartments.includes(dept.id);
+                const deptUnread = deptAssistants.reduce((sum, a) => sum + (unreadCounts[a.id] || 0), 0);
+                const hasSelectedAssistant = currentAssistant && deptAssistants.some(a => a.id === currentAssistant.id);
 
-      <nav className="command-nav">
-        {!isCollapsed && activeTab === 'activity' ? (
-          <ActivityFeed activities={recentActivity} allAssistants={allAssistants} />
-        ) : !isCollapsed && activeTab === 'favorites' ? (
-          <div className="favorites-list">
-            {favoriteAssistants.length === 0 ? (
-              <div className="empty-favorites">
-                <Star size={20} />
-                <span>No favorites yet</span>
-                <p>Click the star icon on any assistant to add them here</p>
-              </div>
-            ) : (
-              <ul className="assistants-list favorites">
-                {favoriteAssistants.map(assistant => {
-                  const status = getAssistantStatus(assistant);
-                  const unread = unreadCounts[assistant.id] || 0;
-                  const isSelected = ui?.selectedAssistant === assistant.id;
-                  const IconComponent = getAssistantIcon(assistant.id);
-                  
-                  return (
-                    <li key={assistant.id}>
-                      <div
-                        className={`assistant-item ${isSelected ? 'selected' : ''}`}
-                        onClick={() => handleAssistantClick(assistant)}
-                        style={{ '--assistant-color': assistant.colorScheme }}
-                        role="button"
-                        tabIndex={0}
-                      >
-                        <div className="assistant-icon-wrapper" style={{ backgroundColor: assistant.colorScheme }}>
-                          <IconComponent size={14} />
-                        </div>
-                        <div className="assistant-info">
-                          <span className="assistant-name">{assistant.name}</span>
-                          <span className="assistant-role">{assistant.title}</span>
-                        </div>
-                        <div className="assistant-actions">
-                          <button 
-                            className="favorite-btn active"
-                            onClick={(e) => handleToggleFavorite(e, assistant.id)}
-                          >
-                            <Star size={12} fill="currentColor" />
-                          </button>
-                          {unread > 0 && <span className="assistant-badge">{unread}</span>}
-                        </div>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-        ) : (
-          <div className="departments-list">
-            {Object.values(DEPARTMENTS).map(dept => {
-              const DeptIcon = DEPARTMENT_ICONS[dept.id] || Bot;
-              const deptAssistants = filteredByDepartment[dept.id] || [];
-              const isExpanded = expandedDepartments.includes(dept.id);
-              const deptUnread = deptAssistants.reduce((sum, a) => sum + (unreadCounts[a.id] || 0), 0);
-              const isSelectedDept = ui?.selectedAssistant && deptAssistants.some(a => a.id === ui.selectedAssistant);
+                if (deptAssistants.length === 0) return null;
 
-              if (deptAssistants.length === 0) return null;
+                return (
+                  <div key={dept.id} className={`department-group ${hasSelectedAssistant ? 'has-selected' : ''}`}>
+                    <button
+                      className={`department-header ${isExpanded ? 'expanded' : ''}`}
+                      onClick={() => toggleDepartment(dept.id)}
+                      style={{ '--dept-color': dept.color }}
+                    >
+                      <DeptIcon size={16} className="dept-icon" />
+                      <span className="dept-name">{dept.name}</span>
+                      <span className="dept-count">{deptAssistants.length}</span>
+                      {deptUnread > 0 && <span className="dept-badge">{deptUnread}</span>}
+                      <ChevronRight size={14} className={`chevron ${isExpanded ? 'rotated' : ''}`} />
+                    </button>
 
-              return (
-                <div key={dept.id} className="department-group">
-                  <button
-                    className={`department-header ${isExpanded ? 'expanded' : ''} ${isSelectedDept ? 'has-selected' : ''}`}
-                    onClick={() => !isCollapsed && toggleDepartment(dept.id)}
-                    style={{ '--dept-color': dept.color }}
-                    title={isCollapsed ? dept.name : undefined}
-                  >
-                    <div className="dept-icon">
-                      <DeptIcon size={14} />
-                    </div>
-                    {!isCollapsed && (
-                      <>
-                        <span className="dept-name">{dept.name}</span>
-                        <span className="dept-count">{deptAssistants.length}</span>
-                        {deptUnread > 0 && (
-                          <span className="dept-badge">{deptUnread}</span>
-                        )}
-                        <ChevronRight size={12} className={`dept-chevron ${isExpanded ? 'rotated' : ''}`} />
-                      </>
+                    {isExpanded && (
+                      <ul className="assistants-list">
+                        {deptAssistants.map(assistant => {
+                          const status = getAssistantStatus(assistant);
+                          const unread = unreadCounts[assistant.id] || 0;
+                          const isSelected = currentAssistant?.id === assistant.id;
+                          const isFavorite = favorites.includes(assistant.id);
+                          const IconComponent = getAssistantIcon(assistant.id);
+                          
+                          return (
+                            <li key={assistant.id}>
+                              <div
+                                className={`assistant-item ${isSelected ? 'selected' : ''}`}
+                                onClick={() => handleAssistantClick(assistant)}
+                                role="button"
+                                tabIndex={0}
+                                style={{ '--assistant-color': assistant.colorScheme }}
+                              >
+                                <div className={`status-dot ${status}`} />
+                                <div className="assistant-avatar" style={{ backgroundColor: assistant.colorScheme }}>
+                                  <IconComponent size={14} />
+                                </div>
+                                <div className="assistant-info">
+                                  <span className="assistant-name">{assistant.name}</span>
+                                  <span className="assistant-role">{assistant.title}</span>
+                                </div>
+                                <div className="assistant-actions">
+                                  <button 
+                                    className={`favorite-btn ${isFavorite ? 'active' : ''}`}
+                                    onClick={(e) => handleToggleFavorite(e, assistant.id)}
+                                  >
+                                    <Star size={12} fill={isFavorite ? 'currentColor' : 'none'} />
+                                  </button>
+                                  {unread > 0 && <span className="unread-badge">{unread}</span>}
+                                </div>
+                              </div>
+                            </li>
+                          );
+                        })}
+                      </ul>
                     )}
-                  </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
-                  {!isCollapsed && isExpanded && (
-                    <ul className="assistants-list">
-                      {deptAssistants.map(assistant => {
-                        const status = getAssistantStatus(assistant);
-                        const unread = unreadCounts[assistant.id] || 0;
-                        const isSelected = ui?.selectedAssistant === assistant.id;
-                        const isFavorite = favorites.includes(assistant.id);
-                        const IconComponent = getAssistantIcon(assistant.id);
-                        
-                        return (
-                          <li key={assistant.id}>
-                            <div
-                              className={`assistant-item ${isSelected ? 'selected' : ''}`}
-                              onClick={() => handleAssistantClick(assistant)}
-                              style={{ '--assistant-color': assistant.colorScheme }}
-                              role="button"
-                              tabIndex={0}
-                            >
-                              <div className={`status-dot ${status}`} />
-                              <div className="assistant-icon-wrapper" style={{ backgroundColor: assistant.colorScheme }}>
-                                <IconComponent size={14} />
-                              </div>
-                              <div className="assistant-info">
-                                <span className="assistant-name">{assistant.name}</span>
-                                <span className="assistant-role">{assistant.title}</span>
-                                {assistant.quickStats?.today && (
-                                  <span className="assistant-stat">
-                                    {assistant.quickStats.today.value} {assistant.quickStats.today.label}
-                                  </span>
-                                )}
-                              </div>
-                              <div className="assistant-actions">
-                                <button 
-                                  className={`favorite-btn ${isFavorite ? 'active' : ''}`}
-                                  onClick={(e) => handleToggleFavorite(e, assistant.id)}
-                                >
-                                  <Star size={12} fill={isFavorite ? 'currentColor' : 'none'} />
-                                </button>
-                                {unread > 0 && <span className="assistant-badge">{unread}</span>}
-                              </div>
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
+          {currentAssistant && currentFeatures.length > 0 && (
+            <div className="selector-section features-section">
+              <div className="section-header" style={{ '--section-color': currentAssistant.colorScheme }}>
+                <div className="current-assistant-badge" style={{ backgroundColor: currentAssistant.colorScheme }}>
+                  {React.createElement(getAssistantIcon(currentAssistant.id), { size: 14 })}
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </nav>
+                <span>{currentAssistant.name}'s Features</span>
+              </div>
+              
+              <div className="section-content scrollable">
+                <ul className="features-list">
+                  {currentFeatures.map(feature => {
+                    const FeatureIcon = getFeatureIcon(feature.id);
+                    const isActive = selectedFeature === feature.id;
+                    
+                    return (
+                      <li key={feature.id}>
+                        <button
+                          className={`feature-item ${isActive ? 'active' : ''}`}
+                          onClick={() => handleFeatureClick(feature.id)}
+                          style={{ '--feature-color': currentAssistant.colorScheme }}
+                        >
+                          <FeatureIcon size={16} />
+                          <span>{feature.label}</span>
+                          {feature.default && <span className="default-badge">Default</span>}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
 
-      {!isCollapsed && (
-        <div className="command-footer">
-          <div className="footer-stats">
-            <span className="footer-stat">
-              <CheckCircle size={12} />
-              {performance?.activeTasks || 47} Tasks
-            </span>
-            <span className="footer-stat">
-              <LayoutGrid size={12} />
-              {allAssistants.length} Assistants
-            </span>
-          </div>
-          <button className="footer-action" title="Settings">
-            <Settings size={16} />
+        <div className="sidebar-footer">
+          <button className="footer-btn" title="Settings">
+            <Settings size={18} />
             <span>Settings</span>
           </button>
         </div>
-      )}
-    </aside>
+      </aside>
+      
+      {isMobileOpen && <div className="sidebar-overlay" onClick={() => setIsMobileOpen(false)} />}
+    </>
   );
 };
 
