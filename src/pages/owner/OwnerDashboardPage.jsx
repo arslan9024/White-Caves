@@ -1,7 +1,9 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import DashboardShell from '../../components/layout/DashboardShell';
+import AppShell from '../../components/layout/AppShell';
+import { selectActiveAssistant, selectActiveWorkspace, setActiveAssistant, setActiveWorkspace } from '../../store/slices/dashboardViewSlice';
+import { setUserInfo, setActiveRole } from '../../store/slices/accessControlSlice';
 import OverviewTab from '../../components/owner/tabs/OverviewTab';
 import PropertiesTab from '../../components/owner/tabs/PropertiesTab';
 import AgentsTab from '../../components/owner/tabs/AgentsTab';
@@ -60,7 +62,10 @@ const isOwnerAuthorized = (user) => {
 
 export default function OwnerDashboardPage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const user = useSelector(state => state.user.currentUser);
+  const activeAssistant = useSelector(selectActiveAssistant);
+  const activeWorkspace = useSelector(selectActiveWorkspace);
   
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(false);
@@ -69,8 +74,35 @@ export default function OwnerDashboardPage() {
   useEffect(() => {
     if (!isOwnerAuthorized(user)) {
       navigate('/');
+      return;
     }
-  }, [user, navigate]);
+    dispatch(setUserInfo({
+      userId: user?.uid || user?.id || 'owner',
+      userName: user?.displayName || 'Company Owner',
+      userEmail: user?.email || '',
+      userAvatar: user?.photoURL,
+      role: 'owner'
+    }));
+    dispatch(setActiveRole('owner'));
+  }, [user, navigate, dispatch]);
+  
+  useEffect(() => {
+    if (activeAssistant) {
+      setActiveTab(activeAssistant);
+    } else if (activeWorkspace) {
+      const workspaceToTab = {
+        'executive': 'overview',
+        'leads': 'leads',
+        'properties': 'properties',
+        'agents': 'agents',
+        'finance': 'analytics',
+        'ai-command': 'ai-command'
+      };
+      if (workspaceToTab[activeWorkspace]) {
+        setActiveTab(workspaceToTab[activeWorkspace]);
+      }
+    }
+  }, [activeAssistant, activeWorkspace]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -370,13 +402,10 @@ export default function OwnerDashboardPage() {
   };
 
   return (
-    <DashboardShell
-      activeTab={activeTab}
-      onTabChange={handleTabChange}
-      user={user}
-      onLogout={handleLogout}
-    >
-      {renderTabContent()}
-    </DashboardShell>
+    <AppShell>
+      <div className="owner-dashboard-content">
+        {renderTabContent()}
+      </div>
+    </AppShell>
   );
 }

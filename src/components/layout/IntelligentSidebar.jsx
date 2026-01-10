@@ -92,7 +92,7 @@ const IntelligentSidebar = () => {
   const handleAssistantClick = (assistant) => {
     dispatch(setActiveAssistant(assistant.id));
     dispatch(setActiveWorkspace('ai-command'));
-    navigate(`/dashboard/ai/${assistant.id}`);
+    navigate('/owner/dashboard');
   };
 
   const isActiveRoute = (path) => {
