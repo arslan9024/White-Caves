@@ -2,92 +2,21 @@
   position: relative;
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   overflow: hidden;
-  padding: 120px 0 80px;
+  padding: 0;
 }
 
-.hero-background {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
+.hero-section-search {
+  min-height: auto;
 }
 
-.hero-bg-image {
-  position: absolute;
-  inset: 0;
-  background-image: url('https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-}
-
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(0, 0, 0, 0.5) 50%,
-    rgba(0, 0, 0, 0.7) 100%
-  );
-}
-
-.hero-gradient-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(211, 47, 47, 0.15) 50%,
-    transparent 100%
-  );
-}
-
-.floating-shapes {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.shape {
-  position: absolute;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(211, 47, 47, 0.3), rgba(211, 47, 47, 0.1));
-  filter: blur(40px);
-}
-
-.shape-1 {
-  width: 400px;
-  height: 400px;
-  top: 10%;
-  left: -10%;
-}
-
-.shape-2 {
-  width: 300px;
-  height: 300px;
-  top: 60%;
-  right: -5%;
-  background: linear-gradient(135deg, rgba(255, 179, 0, 0.2), rgba(255, 179, 0, 0.05));
-}
-
-.shape-3 {
-  width: 200px;
-  height: 200px;
-  top: 30%;
-  right: 20%;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-}
-
-.shape-4 {
-  width: 150px;
-  height: 150px;
-  bottom: 20%;
-  left: 15%;
-  background: linear-gradient(135deg, rgba(211, 47, 47, 0.25), rgba(211, 47, 47, 0.1));
+.hero-stats-section {
+  width: 100%;
+  padding: 40px 0;
+  background: linear-gradient(180deg, #0A1A3A 0%, #0d2347 100%);
 }
 
 .hero-content {
@@ -221,7 +150,7 @@
   font-family: var(--font-heading);
   font-size: 2.5rem;
   font-weight: 800;
-  color: var(--primary-color);
+  color: #D4AF37;
   line-height: 1;
   margin-bottom: 0.5rem;
 }
@@ -256,10 +185,8 @@
 }
 
 .scroll-indicator {
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -268,6 +195,7 @@
   cursor: pointer;
   z-index: 3;
   transition: color var(--transition-fast);
+  padding-bottom: 24px;
 }
 
 .scroll-indicator:hover {

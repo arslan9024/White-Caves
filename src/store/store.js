@@ -15,6 +15,7 @@ import appReducer from './appSlice';
 import navigationUIReducer from './slices/navigationUISlice';
 import accessControlReducer from './slices/accessControlSlice';
 import dashboardViewReducer from './slices/dashboardViewSlice';
+import crmViewReducer from './slices/crmViewSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 
 export const store = configureStore({
@@ -34,7 +35,8 @@ export const store = configureStore({
     app: appReducer,
     navigationUI: navigationUIReducer,
     accessControl: accessControlReducer,
-    dashboardView: dashboardViewReducer
+    dashboardView: dashboardViewReducer,
+    crmView: crmViewReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

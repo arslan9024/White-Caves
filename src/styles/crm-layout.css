@@ -698,6 +698,98 @@
   color: #EF4444;
 }
 
+/* Breadcrumbs */
+.crm-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 16px;
+  padding-left: 16px;
+  border-left: 1px solid var(--border-color);
+}
+
+.breadcrumb-item {
+  padding: 4px 8px;
+  background: transparent;
+  border: none;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.breadcrumb-item:hover {
+  background: var(--hover-bg);
+  color: var(--crm-navy);
+}
+
+.breadcrumb-item:last-child {
+  color: var(--crm-navy);
+  font-weight: 500;
+}
+
+.breadcrumb-sep {
+  color: var(--text-muted);
+}
+
+/* AI Assistant Groups */
+.ai-assistant-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ai-assistant-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.ai-group-header {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  padding: 4px 0 8px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 8px;
+}
+
+.ai-assistant-status.online {
+  background: #10B981;
+}
+
+.ai-assistant-status.offline {
+  background: #94a3b8;
+}
+
+.ai-assistant-status.busy {
+  background: #F59E0B;
+}
+
+/* AI Chat Preview */
+.ai-chat-preview {
+  margin-top: 20px;
+  padding: 16px;
+  background: var(--surface-secondary);
+  border-radius: 10px;
+}
+
+.ai-chat-preview-header {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.ai-chat-preview-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0 0 12px;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .crm-shell {

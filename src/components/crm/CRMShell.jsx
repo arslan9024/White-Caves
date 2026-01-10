@@ -4,9 +4,23 @@ import { useNavigate, Link } from 'react-router-dom';
 import { 
   Menu, X, Search, Bell, Moon, Sun, User, Settings, LogOut,
   LayoutDashboard, Building2, Users, Briefcase, Bot, ChevronDown,
-  Home, FileText, MessageSquare, BarChart3, Shield, Sparkles
+  Home, FileText, MessageSquare, BarChart3, Shield, Sparkles, ChevronRight
 } from 'lucide-react';
 import { SUPER_ADMIN, isMDAuthorized } from '../../config/superAdmin';
+import {
+  setActiveCategory,
+  setActiveObjectId,
+  setActiveAssistant,
+  toggleSidebar,
+  toggleAiPanel,
+  setSelectedAssistantForChat,
+  selectActiveCategory,
+  selectSidebarOpen,
+  selectAiPanelOpen,
+  selectAllAiAssistants,
+  selectBreadcrumbs,
+  selectSelectedAssistantForChat
+} from '../../store/slices/crmViewSlice';
 import '../../styles/crm-layout.css';
 
 const CRM_NAV_ITEMS = [
@@ -22,26 +36,20 @@ const CRM_NAV_ITEMS = [
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-const AI_ASSISTANTS = [
-  { id: 'zoe', name: 'Zoe', role: 'Executive AI', dept: 'executive', color: '#10B981' },
-  { id: 'mary', name: 'Mary', role: 'Inventory Manager', dept: 'operations', color: '#3B82F6' },
-  { id: 'clara', name: 'Clara', role: 'Lead Manager', dept: 'sales', color: '#8B5CF6' },
-  { id: 'linda', name: 'Linda', role: 'WhatsApp Manager', dept: 'communications', color: '#25D366' },
-  { id: 'aurora', name: 'Aurora', role: 'CTO Intelligence', dept: 'technology', color: '#0EA5E9' },
-  { id: 'theodora', name: 'Theodora', role: 'CFO Intelligence', dept: 'finance', color: '#F59E0B' },
-  { id: 'sophia', name: 'Sophia', role: 'Contract Manager', dept: 'legal', color: '#DC2626' },
-  { id: 'henry', name: 'Henry', role: 'Compliance Officer', dept: 'compliance', color: '#6366F1' },
-];
-
 export default function CRMShell({ children, activeTab, onTabChange }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector(state => state.user?.currentUser);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [aiPanelOpen, setAiPanelOpen] = useState(false);
+  
+  const sidebarOpen = useSelector(selectSidebarOpen);
+  const aiPanelOpen = useSelector(selectAiPanelOpen);
+  const activeCategory = useSelector(selectActiveCategory);
+  const aiAssistants = useSelector(selectAllAiAssistants);
+  const breadcrumbs = useSelector(selectBreadcrumbs);
+  const selectedAssistantForChat = useSelector(selectSelectedAssistantForChat);
+  
   const [theme, setTheme] = useState('light');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedAssistant, setSelectedAssistant] = useState('zoe');
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   useEffect(() => {
@@ -58,8 +66,17 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
   };
 
   const handleNavClick = (navId) => {
+    dispatch(setActiveCategory(navId));
     if (onTabChange) {
       onTabChange(navId);
+    }
+  };
+
+  const handleAssistantClick = (assistantId) => {
+    dispatch(setActiveAssistant(assistantId));
+    dispatch(setSelectedAssistantForChat(assistantId));
+    if (onTabChange) {
+      onTabChange(assistantId);
     }
   };
 
@@ -67,20 +84,42 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
     navigate('/');
   };
 
+  const currentTab = activeTab || activeCategory;
+  
   const shellClasses = [
     'crm-shell',
     sidebarOpen ? 'sidebar-open' : '',
     aiPanelOpen ? 'ai-panel-open' : ''
   ].filter(Boolean).join(' ');
 
+  const groupedAssistants = aiAssistants.reduce((acc, assistant) => {
+    const dept = assistant.dept;
+    if (!acc[dept]) acc[dept] = [];
+    acc[dept].push(assistant);
+    return acc;
+  }, {});
+
+  const departmentLabels = {
+    executive: 'Executive',
+    operations: 'Operations',
+    sales: 'Sales',
+    communications: 'Communications',
+    technology: 'Technology',
+    finance: 'Finance',
+    legal: 'Legal',
+    compliance: 'Compliance',
+    intelligence: 'Intelligence',
+    hr: 'Human Resources',
+    marketing: 'Marketing'
+  };
+
   return (
     <div className={shellClasses}>
-      {/* Top Navigation */}
       <header className="crm-topnav">
         <div className="crm-topnav-left">
           <button 
             className={`crm-toggle-btn ${sidebarOpen ? 'active' : ''}`}
-            onClick={() => setSidebarOpen(!sidebarOpen)}
+            onClick={() => dispatch(toggleSidebar())}
             title="Toggle CRM Menu"
           >
             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
@@ -90,6 +129,22 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
             <div className="crm-brand-logo">W</div>
             <span>White Caves</span>
           </Link>
+
+          {breadcrumbs.length > 0 && (
+            <div className="crm-breadcrumbs">
+              {breadcrumbs.map((crumb, index) => (
+                <React.Fragment key={crumb.id}>
+                  {index > 0 && <ChevronRight size={14} className="breadcrumb-sep" />}
+                  <button 
+                    className="breadcrumb-item"
+                    onClick={() => handleNavClick(crumb.id)}
+                  >
+                    {crumb.label}
+                  </button>
+                </React.Fragment>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="crm-topnav-center">
@@ -120,7 +175,7 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
 
           <button 
             className={`crm-toggle-btn ai-toggle ${aiPanelOpen ? 'active' : ''}`}
-            onClick={() => setAiPanelOpen(!aiPanelOpen)}
+            onClick={() => dispatch(toggleAiPanel())}
             title="AI Assistants"
           >
             <Sparkles size={18} />
@@ -210,7 +265,6 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
         </div>
       </header>
 
-      {/* Left Sidebar - CRM Menu (MD Only) */}
       <aside className="crm-sidebar">
         <div className="crm-sidebar-header">
           <div className="crm-sidebar-title">CRM Management</div>
@@ -219,7 +273,7 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
           {CRM_NAV_ITEMS.map((item) => (
             <button
               key={item.id}
-              className={`crm-nav-item ${activeTab === item.id ? 'active' : ''}`}
+              className={`crm-nav-item ${currentTab === item.id ? 'active' : ''}`}
               onClick={() => handleNavClick(item.id)}
             >
               <item.icon size={18} className="icon" />
@@ -230,12 +284,10 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
         </nav>
       </aside>
 
-      {/* Main Content */}
       <main className="crm-main">
         {children}
       </main>
 
-      {/* Right AI Panel */}
       <aside className="crm-ai-panel">
         <div className="crm-ai-panel-header">
           <div className="crm-ai-panel-title">
@@ -244,47 +296,53 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
           </div>
           <button 
             className="crm-toggle-btn"
-            onClick={() => setAiPanelOpen(false)}
+            onClick={() => dispatch(toggleAiPanel())}
             style={{ width: '32px', height: '32px' }}
           >
             <X size={16} />
           </button>
         </div>
         <div className="crm-ai-panel-content">
-          <div style={{ marginBottom: '12px' }}>
-            <div className="crm-sidebar-title">Select Assistant</div>
-          </div>
-          <div className="ai-assistant-list">
-            {AI_ASSISTANTS.map((assistant) => (
-              <div
-                key={assistant.id}
-                className={`ai-assistant-item ${selectedAssistant === assistant.id ? 'active' : ''}`}
-                onClick={() => setSelectedAssistant(assistant.id)}
-              >
-                <div 
-                  className="ai-assistant-avatar"
-                  style={{ background: assistant.color }}
-                >
-                  {assistant.name.charAt(0)}
+          <div className="ai-assistant-groups">
+            {Object.entries(groupedAssistants).map(([dept, assistants]) => (
+              <div key={dept} className="ai-assistant-group">
+                <div className="ai-group-header">
+                  {departmentLabels[dept] || dept}
                 </div>
-                <div className="ai-assistant-info">
-                  <div className="ai-assistant-name">{assistant.name}</div>
-                  <div className="ai-assistant-role">{assistant.role}</div>
+                <div className="ai-assistant-list">
+                  {assistants.map((assistant) => (
+                    <div
+                      key={assistant.id}
+                      className={`ai-assistant-item ${selectedAssistantForChat === assistant.id ? 'active' : ''}`}
+                      onClick={() => handleAssistantClick(assistant.id)}
+                    >
+                      <div 
+                        className="ai-assistant-avatar"
+                        style={{ background: assistant.color }}
+                      >
+                        {assistant.name.charAt(0)}
+                      </div>
+                      <div className="ai-assistant-info">
+                        <div className="ai-assistant-name">{assistant.name}</div>
+                        <div className="ai-assistant-role">{assistant.role}</div>
+                      </div>
+                      <div className={`ai-assistant-status ${assistant.status}`} />
+                    </div>
+                  ))}
                 </div>
-                <div className="ai-assistant-status" />
               </div>
             ))}
           </div>
           
-          {selectedAssistant && (
-            <div style={{ marginTop: '20px', padding: '16px', background: 'var(--surface-secondary)', borderRadius: '10px' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '8px' }}>
-                Selected: {AI_ASSISTANTS.find(a => a.id === selectedAssistant)?.name}
+          {selectedAssistantForChat && (
+            <div className="ai-chat-preview">
+              <div className="ai-chat-preview-header">
+                Selected: {aiAssistants.find(a => a.id === selectedAssistantForChat)?.name}
               </div>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0 }}>
-                Ready to assist with {AI_ASSISTANTS.find(a => a.id === selectedAssistant)?.role.toLowerCase()} tasks.
+              <p className="ai-chat-preview-desc">
+                Ready to assist with {aiAssistants.find(a => a.id === selectedAssistantForChat)?.role.toLowerCase()} tasks.
               </p>
-              <button className="crm-btn crm-btn-primary" style={{ width: '100%', marginTop: '12px', justifyContent: 'center' }}>
+              <button className="crm-btn crm-btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
                 <MessageSquare size={16} /> Start Chat
               </button>
             </div>
@@ -292,7 +350,6 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
         </div>
       </aside>
 
-      {/* Click outside to close user menu */}
       {showUserMenu && (
         <div 
           style={{ position: 'fixed', inset: 0, zIndex: 100 }}
