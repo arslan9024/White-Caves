@@ -43,6 +43,21 @@ const CRMLoadingFallback = () => (
 
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
 
+const isOwnerAuthorized = (user) => {
+  if (!user) return false;
+  if (user.email === OWNER_EMAIL) return true;
+  const storedRole = localStorage.getItem('userRole');
+  if (storedRole) {
+    try {
+      const roleData = JSON.parse(storedRole);
+      return roleData.role === 'owner';
+    } catch (e) {
+      return false;
+    }
+  }
+  return false;
+};
+
 export default function OwnerDashboardPage() {
   const navigate = useNavigate();
   const user = useSelector(state => state.user.currentUser);
@@ -52,7 +67,7 @@ export default function OwnerDashboardPage() {
   const [dashboardData, setDashboardData] = useState({});
 
   useEffect(() => {
-    if (!user || user.email !== OWNER_EMAIL) {
+    if (!isOwnerAuthorized(user)) {
       navigate('/');
     }
   }, [user, navigate]);

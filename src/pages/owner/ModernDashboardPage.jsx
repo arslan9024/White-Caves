@@ -18,6 +18,21 @@ const AuroraCTODashboard = lazy(() => import('../../components/crm/AuroraCTODash
 
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
 
+const isOwnerAuthorized = (user) => {
+  if (!user) return false;
+  if (user.email === OWNER_EMAIL) return true;
+  const storedRole = localStorage.getItem('userRole');
+  if (storedRole) {
+    try {
+      const roleData = JSON.parse(storedRole);
+      return roleData.role === 'owner';
+    } catch (e) {
+      return false;
+    }
+  }
+  return false;
+};
+
 const LoadingFallback = () => (
   <div className="assistant-loading">
     <div className="loading-pulse" />
@@ -63,16 +78,16 @@ export default function ModernDashboardPage() {
   const activeAssistant = useSelector(selectActiveAssistant);
 
   useEffect(() => {
-    if (!user || user.email !== OWNER_EMAIL) {
+    if (!isOwnerAuthorized(user)) {
       navigate('/');
       return;
     }
 
     dispatch(setUserInfo({
-      userId: user.uid || user.id,
-      userName: user.displayName || 'Company Owner',
-      userEmail: user.email,
-      userAvatar: user.photoURL,
+      userId: user?.uid || user?.id || 'owner',
+      userName: user?.displayName || 'Company Owner',
+      userEmail: user?.email || '',
+      userAvatar: user?.photoURL,
       role: 'owner'
     }));
     dispatch(setActiveRole('owner'));
