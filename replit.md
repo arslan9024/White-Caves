@@ -23,7 +23,7 @@ Preferred communication style: Simple, everyday language.
 - **UI/UX**: Custom React components with CSS modules, featuring a premium dark mode, glassmorphism styling, mobile responsiveness, interactive elements (calculators, advanced search, property comparison, interactive SVG Dubai map, full-screen galleries), and role-based routing.
 - **Theming**: Consistent brand theme with a Red and White color scheme, Montserrat/Open Sans typography, and comprehensive light/dark theme support, managed by an enhanced design token system.
 - **Navigation System**: A two-tier navigation system with an integrated shell topnav for authenticated dashboards (containing homepage link, universal search, role switcher, theme toggle, notifications, and profile dropdown), and a minimal `CommandSidebar` for AI assistant selection.
-- **DashboardShell Architecture**: The MD Dashboard (`/md/dashboard`) uses a clean layout with `DashboardShell` as the container. The shell includes: (1) **TopNav** with sidebar toggle, brand, homepage link, universal search, role switcher (MD/Agent/Admin/Buyer/Tenant views), theme toggle, notifications, and profile dropdown; (2) **CommandSidebar** (280px, collapsible to 60px) containing two dropdown selectors - **Assistant Selector** showing all 24 AI assistants grouped by 10 departments with color-coded headers, and **Feature Selector** dynamically showing 4-6 features per selected assistant based on `assistantFeatures.js` mappings; (3) **Content Area** displaying dashboard content rendered by `ContentRenderer` which maps assistant+feature combinations to CRM components. Selection syncs with Redux (`selectedAssistant`, `selectedFeature` in `dashboardViewSlice`) and CRM components respond to the `activeFeature` prop.
+- **DashboardShell Architecture**: The MD Dashboard (`/md/dashboard`) uses a clean layout with `DashboardShell` as the container. The shell includes: (1) **TopNav** with sidebar toggle, brand, homepage link, universal search, role switcher (MD/Agent/Admin/Buyer/Tenant views), theme toggle, notifications, and profile dropdown; (2) **CommandSidebar** (280px, collapsible to 60px) containing two dropdown selectors - **Assistant Selector** showing all 32 AI assistants grouped by 10 departments with color-coded headers, and **Feature Selector** dynamically showing 4-6 features per selected assistant based on `assistantFeatures.js` mappings; (3) **Content Area** displaying dashboard content rendered by `ContentRenderer` which maps assistant+feature combinations to CRM components. Selection syncs with Redux (`selectedAssistant`, `selectedFeature` in `dashboardViewSlice`) and CRM components respond to the `activeFeature` prop.
 - **Design System**: A complete UI component library with variants, sizes, states, and theme support.
 - **SEO Optimization**: Comprehensive meta tags, structured data, and performance optimizations.
 
@@ -51,7 +51,7 @@ Preferred communication style: Simple, everyday language.
 - **Ejari System**: Compliant tenancy contract generation and digital signature workflows.
 - **Analytics**: Vercel Speed Insights and `web-vitals` for real-time Core Web Vitals tracking.
 - **Advanced Tools**: Smart Rent vs. Buy Calculator, Off-Plan Property Tracker, AI Neighborhood Analyzer, Virtual Tour Gallery.
-- **AI-Powered Automation**: Enhanced property schema, bilingual support (Arabic/English), AI Chatbot Service for intent classification, AI Agent Assignment Engine, and an AI Assistant Dashboard System for managing 24 assistants across 10 departments.
+- **AI-Powered Automation**: Enhanced property schema, bilingual support (Arabic/English), AI Chatbot Service for intent classification, AI Agent Assignment Engine, and an AI Assistant Dashboard System for managing 32 assistants across 10 departments.
 - **Market Analytics Dashboard**: Provides KPIs, transaction breakdowns, and agent performance insights.
 - **WhatsApp Business Integration**: Session management, QR code generation, Meta Business OAuth, and an AI Chatbot for customer support and lead scoring.
 - **Mary's Data Tools Suite**: Integrated data acquisition tools including DAMAC Asset Fetcher, Image Data Extractor (OCR), and Web Data Harvester.
@@ -84,7 +84,28 @@ Preferred communication style: Simple, everyday language.
 - **Matterport**: Virtual tour integration.
 - **Vercel Speed Insights**: Performance analytics.
 
-## AI Assistants Registry (24 Total)
+## Organization API Routes
+- **GET** `/api/organization/departments` - List all departments (optional: status, search, populate)
+- **GET** `/api/organization/departments/:id` - Get department details with assistants/teams/services
+- **GET** `/api/organization/assistants` - List all AI assistants (optional: department, status, accessLevel, search)
+- **GET** `/api/organization/assistants/:id` - Get assistant details with relationships
+- **GET** `/api/organization/assistants/code/:code` - Get assistant by code (e.g., ZOE, MARY)
+- **PUT** `/api/organization/assistants/:id/status` - Update assistant status
+- **GET** `/api/organization/teams` - List all teams (optional: department, status, search)
+- **GET** `/api/organization/teams/:id` - Get team details
+- **GET** `/api/organization/services` - List all services (optional: category, department, status, search, targetAudience)
+- **GET** `/api/organization/services/:id` - Get service details with workflow stages
+- **GET** `/api/organization/services/category/:category` - Get services by category
+- **GET** `/api/organization/search?q=query&type=all|departments|assistants|teams|services` - Universal search
+- **GET** `/api/organization/stats` - Get organization statistics
+
+## MongoDB Models (Organization)
+- **Department**: name, code, description, color, icon, head, assistants[], teams[], services[], kpis[], budget, status
+- **AIAssistant**: name, code, role, department, avatar, color, description, capabilities[], features[], accessLevel, permissions[], dataFlow, reportsTo, subordinates[], status, health, metrics, settings
+- **Team**: name, code, department, description, lead, members[], aiAssistant, responsibilities[], projects[], kpis[], status, size
+- **Service**: name, code, category, description, department, aiAssistant, workflow.stages[], pricing, requirements[], deliverables[], targetAudience[], metrics, status
+
+## AI Assistants Registry (32 Total)
 
 ### Executive Department
 | Assistant | Role | Features |
