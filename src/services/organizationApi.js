@@ -101,6 +101,94 @@ export const organizationApi = {
     return response.json();
   },
 
+  async getEmployees(options = {}) {
+    const params = new URLSearchParams();
+    if (options.department) params.append('department', options.department);
+    if (options.level) params.append('level', options.level);
+    if (options.status) params.append('status', options.status);
+    if (options.search) params.append('search', options.search);
+    if (options.limit) params.append('limit', options.limit);
+    if (options.page) params.append('page', options.page);
+    
+    const response = await fetch(`${API_BASE}/employees?${params}`);
+    if (!response.ok) throw new Error('Failed to fetch employees');
+    return response.json();
+  },
+
+  async getEmployee(id) {
+    const response = await fetch(`${API_BASE}/employees/${id}`);
+    if (!response.ok) throw new Error('Failed to fetch employee');
+    return response.json();
+  },
+
+  async createEmployee(data) {
+    const response = await fetch(`${API_BASE}/employees`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to create employee');
+    return response.json();
+  },
+
+  async updateEmployee(id, data) {
+    const response = await fetch(`${API_BASE}/employees/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to update employee');
+    return response.json();
+  },
+
+  async deleteEmployee(id) {
+    const response = await fetch(`${API_BASE}/employees/${id}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) throw new Error('Failed to delete employee');
+    return response.json();
+  },
+
+  async createDepartment(data) {
+    const response = await fetch(`${API_BASE}/departments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to create department');
+    return response.json();
+  },
+
+  async updateDepartment(id, data) {
+    const response = await fetch(`${API_BASE}/departments/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to update department');
+    return response.json();
+  },
+
+  async createService(data) {
+    const response = await fetch(`${API_BASE}/services`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to create service');
+    return response.json();
+  },
+
+  async updateService(id, data) {
+    const response = await fetch(`${API_BASE}/services/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to update service');
+    return response.json();
+  },
+
   async getSeedStatus() {
     const response = await fetch('/api/seed/status');
     if (!response.ok) throw new Error('Failed to fetch seed status');
@@ -109,6 +197,12 @@ export const organizationApi = {
 
   async seedDatabase() {
     const response = await fetch('/api/seed/organization', { method: 'POST' });
+    if (!response.ok) throw new Error('Failed to seed database');
+    return response.json();
+  },
+
+  async seedFullDatabase() {
+    const response = await fetch('/api/seed/full', { method: 'POST' });
     if (!response.ok) throw new Error('Failed to seed database');
     return response.json();
   }

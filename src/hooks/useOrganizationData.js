@@ -6,6 +6,7 @@ export function useOrganizationData() {
   const [assistants, setAssistants] = useState([]);
   const [teams, setTeams] = useState([]);
   const [services, setServices] = useState([]);
+  const [employees, setEmployees] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,11 +17,12 @@ export function useOrganizationData() {
     setLoading(true);
     setError(null);
     try {
-      const [deptRes, asstRes, teamRes, svcRes, statsRes] = await Promise.all([
+      const [deptRes, asstRes, teamRes, svcRes, empRes, statsRes] = await Promise.all([
         organizationApi.getDepartments({ populate: true }),
         organizationApi.getAssistants(),
         organizationApi.getTeams(),
         organizationApi.getServices(),
+        organizationApi.getEmployees({ limit: 200 }),
         organizationApi.getStats()
       ]);
       
@@ -28,6 +30,7 @@ export function useOrganizationData() {
       setAssistants(asstRes.data || []);
       setTeams(teamRes.data || []);
       setServices(svcRes.data || []);
+      setEmployees(empRes.data || []);
       setStats(statsRes.data || null);
       setHasData((deptRes.data?.length || 0) > 0);
     } catch (err) {
@@ -43,7 +46,7 @@ export function useOrganizationData() {
     setSeeding(true);
     setError(null);
     try {
-      await organizationApi.seedDatabase();
+      await organizationApi.seedFullDatabase();
       await fetchAll();
     } catch (err) {
       setError(err.message);
@@ -86,11 +89,22 @@ export function useOrganizationData() {
     );
   }, [teams]);
 
+  const getEmployeesByDepartment = useCallback((deptId) => {
+    return employees.filter(e => 
+      e.department?._id === deptId || e.department === deptId
+    );
+  }, [employees]);
+
+  const getEmployeesByLevel = useCallback((level) => {
+    return employees.filter(e => e.level === level);
+  }, [employees]);
+
   return {
     departments,
     assistants,
     teams,
     services,
+    employees,
     stats,
     loading,
     error,
@@ -100,7 +114,9 @@ export function useOrganizationData() {
     seedDatabase,
     getAssistantsByDepartment,
     getServicesByCategory,
-    getTeamsByDepartment
+    getTeamsByDepartment,
+    getEmployeesByDepartment,
+    getEmployeesByLevel
   };
 }
 
