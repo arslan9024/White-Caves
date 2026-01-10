@@ -4,6 +4,7 @@ import './styles/reset.css'
 import './App.css'
 import './styles/theme.css'
 import './styles/design-system.css'
+import './styles/crm-layout.css'
 import './styles/rtl.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from './store/userSlice';
@@ -86,6 +87,7 @@ import WhatsAppDashboardPage from './pages/owner/WhatsAppDashboardPage';
 import WhatsAppChatbotPage from './pages/owner/WhatsAppChatbotPage';
 import WhatsAppAnalyticsPage from './pages/owner/WhatsAppAnalyticsPage';
 import WhatsAppSettingsPage from './pages/owner/WhatsAppSettingsPage';
+import ModernDashboardPage from './pages/owner/ModernDashboardPage';
 import UAEPassSuccessPage from './pages/auth/UAEPassSuccessPage';
 import { BiometricPrompt } from './features/auth/components/BiometricLogin';
 import { StatusProvider } from './components/common/StatusNotification';
@@ -263,6 +265,12 @@ function App() {
         <Route path="/owner/whatsapp/settings" element={
           <ProtectedRoute allowedRoles={['owner']}>
             <WhatsAppSettingsPage />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/dashboard/*" element={
+          <ProtectedRoute allowedRoles={['owner']}>
+            <ModernDashboardPage />
           </ProtectedRoute>
         } />
         
