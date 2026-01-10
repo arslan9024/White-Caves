@@ -1,64 +1,81 @@
 import express from 'express';
+import dashboardService from '../services/dashboardService.js';
+
 const router = express.Router();
 
 router.get('/owner/summary', async (req, res) => {
   try {
-    const summary = {
-      totalProperties: 156,
-      activeAgents: 52,
-      monthlyRevenue: 2450000,
-      whatsappLeads: 89,
-      uaepassUsers: 34,
-      chatbotConversations: 245,
-      pendingDeals: 23,
-      closedDeals: 178,
-      newLeads: 45,
-      conversionRate: 34.2
-    };
-
-    const recentActivities = [
-      { type: 'success', title: 'New Property Listed', description: 'Villa in Palm Jumeirah - AED 15M', timestamp: new Date().toISOString() },
-      { type: 'info', title: 'Lead Assigned', description: 'Ahmed assigned to Marina property inquiry', timestamp: new Date(Date.now() - 3600000).toISOString() },
-      { type: 'warning', title: 'Contract Expiring', description: 'Tenancy contract #TC-2024-156 expires in 30 days', timestamp: new Date(Date.now() - 7200000).toISOString() },
-      { type: 'success', title: 'Deal Closed', description: 'Apartment in Downtown sold for AED 3.2M', timestamp: new Date(Date.now() - 14400000).toISOString() },
-      { type: 'info', title: 'WhatsApp Message', description: 'New inquiry from +971 50 XXX XXXX', timestamp: new Date(Date.now() - 21600000).toISOString() },
-    ];
-
-    res.json({
-      summary,
-      recentActivities,
-      recentProperties: [],
-      agentPerformance: [],
-      leads: [],
-      contracts: [],
-      analytics: {},
-      chatbotStats: {
-        totalConversations: 2456,
-        successfulLeads: 189,
-        avgResponseTime: 2.3,
-        satisfactionRate: 92,
-        activeChats: 12,
-        messagesProcessed: 18945
-      },
-      whatsappStats: {
-        totalContacts: 3456,
-        activeConversations: 89,
-        messagesThisMonth: 12450,
-        responseRate: 94,
-        avgResponseTime: '8 min',
-        leadsGenerated: 234
-      },
-      uaepassStats: {
-        totalUsers: 234,
-        verifiedUsers: 198,
-        pendingVerification: 36,
-        thisMonth: 45,
-        conversionRate: 84.6
-      }
-    });
+    const dashboardData = await dashboardService.getDashboardData();
+    res.json(dashboardData);
   } catch (error) {
     console.error('Error fetching owner dashboard:', error);
-    res.status(500).json({ error: 'Failed to fetch dashboard data' });
+    res.status(500).json({ 
+      error: 'Failed to fetch dashboard data',
+      message: error.message 
+    });
+  }
+});
+
+router.get('/summary', async (req, res) => {
+  try {
+    const summary = await dashboardService.getSummary();
+    res.json(summary);
+  } catch (error) {
+    console.error('Error fetching summary:', error);
+    res.status(500).json({ error: 'Failed to fetch summary' });
+  }
+});
+
+router.get('/properties/recent', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    const properties = await dashboardService.getRecentProperties(limit);
+    res.json(properties);
+  } catch (error) {
+    console.error('Error fetching recent properties:', error);
+    res.status(500).json({ error: 'Failed to fetch recent properties' });
+  }
+});
+
+router.get('/leads/recent', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 5;
+    const leads = await dashboardService.getRecentLeads(limit);
+    res.json(leads);
+  } catch (error) {
+    console.error('Error fetching recent leads:', error);
+    res.status(500).json({ error: 'Failed to fetch recent leads' });
+  }
+});
+
+router.get('/metrics', async (req, res) => {
+  try {
+    const metrics = await dashboardService.getPerformanceMetrics();
+    res.json(metrics);
+  } catch (error) {
+    console.error('Error fetching performance metrics:', error);
+    res.status(500).json({ error: 'Failed to fetch performance metrics' });
+  }
+});
+
+router.get('/analytics', async (req, res) => {
+  try {
+    const analytics = await dashboardService.getMarketAnalytics();
+    res.json(analytics);
+  } catch (error) {
+    console.error('Error fetching market analytics:', error);
+    res.status(500).json({ error: 'Failed to fetch market analytics' });
+  }
+});
+
+router.get('/activities', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    const activities = await dashboardService.getRecentActivities(limit);
+    res.json(activities);
+  } catch (error) {
+    console.error('Error fetching activities:', error);
+    res.status(500).json({ error: 'Failed to fetch activities' });
   }
 });
 
