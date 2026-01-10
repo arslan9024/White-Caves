@@ -225,7 +225,15 @@ const INTEREST_CATEGORIES = [
   { id: 'rent', label: 'Tenants (Rent)', icon: Key }
 ];
 
-const ClaraLeadsCRM = () => {
+const FEATURE_TO_VIEW = {
+  'dashboard': 'table',
+  'pipeline': 'pipeline',
+  'lead_list': 'table',
+  'scoring': 'scoring',
+  'nurturing_workflows': 'workflows'
+};
+
+const ClaraLeadsCRM = ({ activeFeature }) => {
   const dispatch = useDispatch();
   const apiLeads = useSelector(selectAllLeads);
   const apiMetrics = useSelector(selectLeadMetrics);

@@ -33,7 +33,15 @@ import {
 } from '../../store/slices/inventorySlice';
 import './MaryInventoryCRM.css';
 
-const MaryInventoryCRM = () => {
+const FEATURE_TO_TAB = {
+  'dashboard': null,
+  'inventory': null,
+  'data_tools': 'damac_fetcher',
+  'asset_fetcher': 'damac_fetcher',
+  'data_import': 'image_extractor'
+};
+
+const MaryInventoryCRM = ({ activeFeature }) => {
   const dispatch = useDispatch();
   const properties = useSelector(selectFilteredProperties);
   const stats = useSelector(selectInventoryStats);
@@ -53,6 +61,12 @@ const MaryInventoryCRM = () => {
   const [showFilters, setShowFilters] = useState(true);
   const [selectedCluster, setSelectedCluster] = useState('all');
   const [activeToolTab, setActiveToolTab] = useState(null);
+
+  useEffect(() => {
+    if (activeFeature && FEATURE_TO_TAB[activeFeature] !== undefined) {
+      setActiveToolTab(FEATURE_TO_TAB[activeFeature]);
+    }
+  }, [activeFeature]);
 
   useEffect(() => {
     dispatch(loadInventoryData());

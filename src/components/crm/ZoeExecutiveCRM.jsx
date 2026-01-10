@@ -64,10 +64,26 @@ const TYPE_ICONS = {
   cost_saving: DollarSign
 };
 
-const ZoeExecutiveCRM = () => {
+const FEATURE_TO_TAB = {
+  'dashboard': 'console',
+  'suggestion_inbox': 'suggestions',
+  'executive_reports': 'reports',
+  'kpi_analytics': 'analytics',
+  'md_briefings': 'briefings',
+  'organization': 'organization',
+  'services': 'services',
+  'events': 'events',
+  'demo': 'demo',
+  'docs': 'docs'
+};
+
+const ZoeExecutiveCRM = ({ activeFeature }) => {
   const dispatch = useDispatch();
-  const [activeTab, setActiveTab] = useState('console');
+  const [internalTab, setInternalTab] = useState('console');
   const [selectedSuggestion, setSelectedSuggestion] = useState(null);
+
+  const activeTab = activeFeature && FEATURE_TO_TAB[activeFeature] ? FEATURE_TO_TAB[activeFeature] : internalTab;
+  const setActiveTab = setInternalTab;
   
   const filteredSuggestions = useSelector(selectFilteredSuggestions);
   const unreviewedCount = useSelector(selectUnreviewedSuggestionsCount);
