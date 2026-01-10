@@ -1,17 +1,7 @@
 # White Caves - Luxury Real Estate Dubai
 
 ## Overview
-White Caves is a luxury real estate platform specializing in the Dubai market. It provides comprehensive services for property sales, rentals, appointment scheduling, tenancy agreement management, and payment processing, integrated with internal HR functionalities. The platform supports diverse user roles with robust access control. The primary goal is to become the leading digital solution for luxury real estate in Dubai, utilizing advanced technology and AI to streamline operations and enhance the user experience for all stakeholders. The project aims to deliver a high-tech, user-friendly system that sets a new standard for property transactions and management in the region.
-
-## Company Leadership
-
-| Role | Name | Email | AI Assistant |
-|------|------|-------|--------------|
-| **Managing Director (MD)** | Arslan Malik | arslanmalikgoraha@gmail.com | Zoe (Executive AI) |
-
-The Managing Director has super admin access (`isSuperUser`, `isDecisionMaker`) with full system permissions. The MD Dashboard is accessible at `/md/dashboard`.
-
-**Note**: In real estate context, "Owner" refers to property owners (clients), while "MD" refers to the company's Managing Director. This distinction is important for role-based access control.
+White Caves is a luxury real estate platform specializing in the Dubai market, aiming to be the leading digital solution for luxury property transactions and management in the region. The platform provides comprehensive services for property sales, rentals, appointment scheduling, tenancy agreement management, and payment processing. It integrates internal HR functionalities and supports diverse user roles with robust access control. The project focuses on leveraging advanced technology and AI to streamline operations and enhance the user experience for all stakeholders.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -19,53 +9,44 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### Frontend
-- **Framework**: React 18 with Vite, utilizing Redux Toolkit for state management.
-- **UI/UX**: Custom React components with CSS modules, featuring a premium dark mode, glassmorphism styling, mobile responsiveness, interactive elements (calculators, advanced search, property comparison, interactive SVG Dubai map, full-screen galleries), and role-based routing.
-- **Theming**: Consistent brand theme with a Red and White color scheme, Montserrat/Open Sans typography, and comprehensive light/dark theme support, managed by an enhanced design token system.
-- **Navigation System**: A two-tier navigation system with an integrated shell topnav for authenticated dashboards (containing homepage link, universal search, role switcher, theme toggle, notifications, and profile dropdown), and a minimal `CommandSidebar` for AI assistant selection.
-- **DashboardShell Architecture**: The MD Dashboard (`/md/dashboard`) uses a clean layout with `DashboardShell` as the container. The shell includes: (1) **TopNav** with sidebar toggle, brand, homepage link, universal search, role switcher (MD/Agent/Admin/Buyer/Tenant views), theme toggle, notifications, and profile dropdown; (2) **CommandSidebar** (280px, collapsible to 60px) containing two dropdown selectors - **Assistant Selector** showing all 32 AI assistants grouped by 10 departments with color-coded headers, and **Feature Selector** dynamically showing 4-6 features per selected assistant based on `assistantFeatures.js` mappings; (3) **Content Area** displaying dashboard content rendered by `ContentRenderer` which maps assistant+feature combinations to CRM components. Selection syncs with Redux (`selectedAssistant`, `selectedFeature` in `dashboardViewSlice`) and CRM components respond to the `activeFeature` prop.
+- **Framework**: React 18 with Vite and Redux Toolkit for state management.
+- **UI/UX**: Custom React components with CSS modules, featuring a premium dark mode, glassmorphism styling, mobile responsiveness, and interactive elements. Theming uses a consistent Red and White color scheme with Montserrat/Open Sans typography, supporting comprehensive light/dark modes.
+- **Navigation**: A two-tier system with a `DashboardShell` for authenticated users, including a `TopNav` and a `CommandSidebar` for AI assistant and feature selection.
 - **Design System**: A complete UI component library with variants, sizes, states, and theme support.
 - **SEO Optimization**: Comprehensive meta tags, structured data, and performance optimizations.
 
 ### Backend
 - **Framework**: Express.js, providing a RESTful API with organized routes.
-- **System Design**: Frontend and backend separation with a proxy setup and comprehensive error handling.
-- **Middleware**: Environment guard middleware for server-side validation of required deployment secrets.
+- **System Design**: Frontend/backend separation with a proxy setup and comprehensive error handling.
+- **Middleware**: Environment guard for server-side validation.
 
 ### Data Storage
 - **Primary Database**: MongoDB with Mongoose ODM.
 
 ### Authentication & Authorization
-- **Authentication**: Firebase Authentication (social logins, email/password, phone/SMS OTP) and WebAuthn/Passkeys for biometric authentication.
-- **Role-Based Access Control**: Multi-role system:
-  - **MD** (Managing Director): Super admin with full access - Arslan Malik
-  - **OWNER**: Property owners (clients who own properties)
-  - **BUYER**, **SELLER**, **LANDLORD**, **TENANT**: Client roles
-  - **AGENT**, **ADMIN**: Staff roles
-  - `isSuperUser` and `isDecisionMaker` flags for elevated permissions
+- **Authentication**: Firebase Authentication (social logins, email/password, phone/SMS OTP) and WebAuthn/Passkeys.
+- **Role-Based Access Control**: Multi-role system including MD (Super Admin), Owner, Buyer, Seller, Landlord, Tenant, Agent, and Admin roles, with `isSuperUser` and `isDecisionMaker` flags.
 - **Session Management**: Enhanced session tracking with device/browser detection, timeout, token refresh, and activity monitoring.
-- **Super Admin Config**: Centralized in `src/config/superAdmin.js`
 
 ### Key Features & Design Decisions
 - **Transaction Management**: `TenancyTimeline` and `SaleTimeline` models with stage progression and verification workflows.
 - **Ejari System**: Compliant tenancy contract generation and digital signature workflows.
 - **Analytics**: Vercel Speed Insights and `web-vitals` for real-time Core Web Vitals tracking.
 - **Advanced Tools**: Smart Rent vs. Buy Calculator, Off-Plan Property Tracker, AI Neighborhood Analyzer, Virtual Tour Gallery.
-- **AI-Powered Automation**: Enhanced property schema, bilingual support (Arabic/English), AI Chatbot Service for intent classification, AI Agent Assignment Engine, and an AI Assistant Dashboard System for managing 32 assistants across 10 departments.
+- **AI-Powered Automation**: Enhanced property schema, bilingual support (Arabic/English), AI Chatbot Service, AI Agent Assignment Engine, and an AI Assistant Dashboard System managing 32 assistants across 10 departments.
 - **Market Analytics Dashboard**: Provides KPIs, transaction breakdowns, and agent performance insights.
 - **WhatsApp Business Integration**: Session management, QR code generation, Meta Business OAuth, and an AI Chatbot for customer support and lead scoring.
 - **Mary's Data Tools Suite**: Integrated data acquisition tools including DAMAC Asset Fetcher, Image Data Extractor (OCR), and Web Data Harvester.
-- **Zoe Executive Intelligence System**: Executive Suggestion Inbox for AI-powered strategic suggestions, and Zoe Executive Visibility for organizational oversight.
-- **Confidential Vault System**: Redux state with dual-approval access request workflow, document management, and vault statistics.
-- **Lead Management Hub**: Redux state with lead pipeline, qualification engine, specialist routing, funnel metrics, and lead scoring rules.
-- **Compliance Engine**: KYC profile tracking, AML monitoring with flagged transactions, and an immutable audit log.
-- **Olivia Automation System**: Automated property availability sync, market intelligence gathering from Bayut/Property Finder/Dubizzle, and scheduling controls.
+- **Zoe Executive Intelligence System**: Executive Suggestion Inbox and Executive Visibility for strategic suggestions and organizational oversight.
+- **Confidential Vault System**: Redux state with dual-approval access request workflow and document management.
+- **Lead Management Hub**: Redux state with lead pipeline, qualification engine, specialist routing, and scoring rules.
+- **Compliance Engine**: KYC profile tracking, AML monitoring, and an immutable audit log.
+- **Olivia Automation System**: Automated property availability sync, market intelligence gathering, and scheduling controls.
 - **Henry Event System**: Universal event format for cross-assistant communication with correlation tracking.
-- **Centralized Assistant Registry**: Single source of truth for all AI assistants with department configuration, capabilities, permissions, and data flow definitions.
-- **Event Bus Middleware**: Redux middleware enabling event-driven communication between assistants.
-- **AI Command Center**: Unified CommandSidebar component (`src/components/layout/CommandSidebar.jsx`) integrating all AI Command Center features - quick stats bar (Active Assistants, System Health, Alerts), department-grouped assistant list with real-time status, notification badges per assistant, and activity feed tab. Selection syncs with Redux via `setActiveAssistant` action.
+- **Centralized Assistant Registry**: Single source of truth for all AI assistants with department configuration, capabilities, and data flow definitions.
+- **Event Bus Middleware**: Redux middleware for event-driven communication between assistants.
+- **AI Command Center**: Unified `CommandSidebar` component integrating quick stats, department-grouped assistant list with real-time status, notification badges, and activity feed.
 - **Company Services Registry**: 35 services across 6 categories with workflow stages and assigned AI assistants.
-- **ServiceDemoMode Component**: Interactive end-to-end service workflow demonstration.
 - **Reusable CRM Components**: StatsBar, DataTable, ActionButton, ActivityFeed, StatusBadge, FlowchartViewer.
 
 ## External Dependencies
@@ -83,102 +64,3 @@ Preferred communication style: Simple, everyday language.
 - **WhatsApp Business API**: Customer support and chatbot integration.
 - **Matterport**: Virtual tour integration.
 - **Vercel Speed Insights**: Performance analytics.
-
-## Organization API Routes
-- **GET** `/api/organization/departments` - List all departments (optional: status, search, populate)
-- **GET** `/api/organization/departments/:id` - Get department details with assistants/teams/services
-- **GET** `/api/organization/assistants` - List all AI assistants (optional: department, status, accessLevel, search)
-- **GET** `/api/organization/assistants/:id` - Get assistant details with relationships
-- **GET** `/api/organization/assistants/code/:code` - Get assistant by code (e.g., ZOE, MARY)
-- **PUT** `/api/organization/assistants/:id/status` - Update assistant status
-- **GET** `/api/organization/teams` - List all teams (optional: department, status, search)
-- **GET** `/api/organization/teams/:id` - Get team details
-- **GET** `/api/organization/services` - List all services (optional: category, department, status, search, targetAudience)
-- **GET** `/api/organization/services/:id` - Get service details with workflow stages
-- **GET** `/api/organization/services/category/:category` - Get services by category
-- **GET** `/api/organization/search?q=query&type=all|departments|assistants|teams|services` - Universal search
-- **GET** `/api/organization/stats` - Get organization statistics
-
-## MongoDB Models (Organization)
-- **Department**: name, code, description, color, icon, head, assistants[], teams[], services[], kpis[], budget, status
-- **AIAssistant**: name, code, role, department, avatar, color, description, capabilities[], features[], accessLevel, permissions[], dataFlow, reportsTo, subordinates[], status, health, metrics, settings
-- **Team**: name, code, department, description, lead, members[], aiAssistant, responsibilities[], projects[], kpis[], status, size
-- **Service**: name, code, category, description, department, aiAssistant, workflow.stages[], pricing, requirements[], deliverables[], targetAudience[], metrics, status
-
-## AI Assistants Registry (32 Total)
-
-### Executive Department
-| Assistant | Role | Features |
-|-----------|------|----------|
-| **Zoe** | MD Executive Assistant | Executive Dashboard, Suggestion Inbox, Analytics, Reports, MD Briefings (Reports to Arslan Malik) |
-
-### Operations Department
-| Assistant | Role | Features |
-|-----------|------|----------|
-| **Mary** | Inventory Manager | Inventory, Data Tools Suite, Asset Fetcher, Data Import |
-| **Daisy** | Property Coordinator | Leases, Tenants, Maintenance, Rental Analytics |
-| **Sentinel** | Quality Control | Property Monitoring, Predictive Maintenance, Inspections, Emergency Response |
-
-### Sales Department
-| Assistant | Role | Features |
-|-----------|------|----------|
-| **Clara** | Lead Manager | Pipeline, Lead List, Scoring, Nurturing Workflows |
-| **Nancy** | HR & Performance | Employees, Recruitment, Attendance, Performance Reviews |
-| **Hunter** | Lead Hunter | Prospects, Outreach Campaigns, Pattern Detection, Lead Enrichment |
-
-### Communications Department
-| Assistant | Role | Features |
-|-----------|------|----------|
-| **Linda** | WhatsApp Manager | Conversations, Agent Status, Templates, Broadcasts |
-| **Nina** | Client Relations | Bot Builder, Flow Designer, Sessions, Bot Analytics |
-
-### Finance Department
-| Assistant | Role | Features |
-|-----------|------|----------|
-| **Theodora** | CFO Intelligence | Invoices, Payments, Financial Reports, Escrow |
-| **Penny** | Commission Tracker | Commission calculations, payout schedules, agent earnings |
-| **Quinn** | Payment Processor | Payment gateway, transaction tracking, refunds |
-
-### Marketing Department
-| Assistant | Role | Features |
-|-----------|------|----------|
-| **Marcus** | Campaign Manager | Campaign creation, A/B testing, performance tracking |
-| **Stella** | Content Creator | Content calendar, asset management, copywriting |
-| **Laila** | Brand Manager | KYC verification, AML monitoring, Contract Review, Audit Trail |
-
-### Compliance Department
-| Assistant | Role | Features |
-|-----------|------|----------|
-| **Henry** | Compliance Officer | Events, Audit Log, Timeline Analytics, Compliance Reports |
-| **Vera** | KYC Specialist | Identity verification, document validation, risk scoring |
-
-### Technology Department
-| Assistant | Role | Features |
-|-----------|------|----------|
-| **Aurora** | CTO Intelligence | Systems Health, Deployments, Documentation, AI Governance |
-| **Atlas** | API Monitor | Projects, Feasibility Analysis, Developer Tracking, Zoning |
-
-### Intelligence Department
-| Assistant | Role | Features |
-|-----------|------|----------|
-| **Sage** | Market Analyst | Market trends, pricing predictions, competitor tracking |
-| **Olivia** | Research Lead | Campaigns, Social Media, Automation, Market Intelligence |
-
-### Legal Department
-| Assistant | Role | Features |
-|-----------|------|----------|
-| **Sophia** | Contract Manager | Deals, Sales Pipeline, Forecast, Commission Calculator |
-| **Ivy** | Ejari Specialist | Ejari registration, contract compliance, renewals |
-| **Max** | Document Processor | Document generation, OCR processing, archival |
-
-### Additional Specialized Assistants
-| Assistant | Role | Features |
-|-----------|------|----------|
-| **Hazel** | Frontend UX | Components, Design System, Accessibility, Themes |
-| **Willow** | Backend Ops | APIs, Database, Performance, Security |
-| **Evangeline** | Legal Risk | Risk Analysis, Contracts, Regulations, Best Practices |
-| **Cipher** | Market Intel | Market Trends, Predictions, Competitors, Economic Indicators |
-| **Vesta** | Project Handover | Milestones, Snagging, Handover, Defects |
-| **Juno** | Community Mgmt | Facilities, IoT, Events, Energy Optimization |
-| **Kairos** | VIP Services | VIP Clients, Concierge, Lifestyle, Partners |
-| **Maven** | Investment | Portfolio, Yields, Tax Planning, Investment Advice |
