@@ -1,0 +1,196 @@
+The dashboards have rich features and data models, but the UI isn't displaying them properly. The main grid view might be showing static content instead of dynamically generated data from your backend services. Here's a comprehensive prompt to diagnose and fix this issue.
+
+Prompt: Debug and Fix Dashboard Data Display Issues
+Core Instruction: You are a senior full-stack developer tasked with debugging the White Caves Real Estate platform's dashboard system. Multiple users report that AI assistant dashboards (like Zoe, Aurora, Linda, etc.) are not displaying real data despite having extensive backend implementations. The MainGridView shows only static/screenshot content, and clicking tabs doesn't load dynamic data. Your goal is to identify the root causes and implement fixes to make all dashboards fully functional with live data.
+
+Context: The platform has 14+ AI assistants with dedicated dashboard components, a comprehensive data layer (MongoDB models), and backend services. However, the frontend seems disconnected from the actual data.
+
+Task Steps:
+
+Phase 1: Comprehensive Audit of Dashboard Components
+
+Examine MainGridView Component:
+
+Find and display the complete code for MainGridView.jsx (likely in /src/components/ or /src/dashboards/).
+
+Analyze how it fetches data. Check if it uses Redux selectors, API calls, or static imports.
+
+Identify what data structure it expects and what it's actually receiving.
+
+Analyze Individual Dashboard Components:
+
+Examine at least 3 key dashboards (Zoe, Aurora, Linda) to identify patterns.
+
+For each, check:
+
+Data sources: Are they using Redux selectors? If so, which ones?
+
+API calls: Are there useEffect hooks fetching data from backend APIs?
+
+Mock data: Are they importing static JSON files instead of live data?
+
+Props: How do they receive data from parent components?
+
+Check Redux Configuration:
+
+Locate the Redux store configuration and slices, particularly aiAssistantDashboardSlice.
+
+Verify that selectors (like selectFilteredSuggestions, selectLeadFunnelMetrics) are properly connected to actual state.
+
+Check if actions are being dispatched to update the state with real data.
+
+Review Backend-Dashboard Connection:
+
+Examine /server/routes/dashboard.routes.js and /server/services/dashboardService.js.
+
+Verify that endpoints like /api/dashboard/summary are returning real database data, not mock data.
+
+Check if the frontend is actually calling these endpoints.
+
+Phase 2: Identify Specific Breakpoints
+
+Trace Data Flow for One Feature:
+
+Pick one key metric, like "Pending Suggestions" in Zoe's dashboard.
+
+Trace from the UI component back to the database:
+
+Which component displays it?
+
+Where does it get the data (selector, direct API call)?
+
+Which Redux slice/selector provides it?
+
+Which backend endpoint serves the data?
+
+Which service function queries the database?
+
+Which database collection is involved?
+
+Check API Integration Points:
+
+Open browser Developer Tools on the dashboard page.
+
+Check the Network tab for failed or missing API calls.
+
+Verify that API calls are being made to the correct endpoints with proper authentication.
+
+Identify Hardcoded Data:
+
+Search for files containing dummy data imports (like linda_conversations.json).
+
+Check if components are using this static data instead of making API calls.
+
+Phase 3: Develop Fix Strategy
+Based on findings, create a systematic plan to fix the most critical issues:
+
+Priority 1: Connect MainGridView to Real Data
+
+If MainGridView is using static data, replace with dynamic data fetching.
+
+Create or update a Redux slice to manage dashboard grid state.
+
+Implement API endpoint to provide dashboard metadata (list of assistants, status, metrics).
+
+Priority 2: Fix Individual Dashboard Data Fetching
+
+For each dashboard component, ensure it either:
+
+Uses Redux selectors connected to live state, OR
+
+Makes API calls to fetch its specific data on mount.
+
+Remove any hardcoded dummy data imports.
+
+Priority 3: Ensure Backend Services Return Real Data
+
+Update dashboardService.js and other services to query MongoDB instead of returning mock data.
+
+Verify all model imports and database connections are working.
+
+Priority 4: Implement Loading States and Error Handling
+
+Add loading spinners/skeletons for async data fetching.
+
+Add error boundaries and retry mechanisms for failed API calls.
+
+Phase 4: Implementation Plan
+Create a step-by-step fix implementation:
+
+Fix DashboardService First:
+
+Modify dashboardService.js to use Mongoose models for all queries.
+
+Ensure it returns proper data structures matching frontend expectations.
+
+Update Redux State Management:
+
+Modify aiAssistantDashboardSlice.js to dispatch real data from API responses.
+
+Create actions for fetching dashboard data.
+
+Refactor MainGridView:
+
+Replace static data with API-fetched or Redux-managed data.
+
+Implement proper loading and error states.
+
+Ensure grid items are clickable and navigate to correct dashboards.
+
+Refactor Individual Dashboards:
+
+Start with Zoe's dashboard, then Aurora, then others.
+
+Replace static data imports with API calls or Redux selectors.
+
+Add useEffect hooks for data fetching where needed.
+
+Update API Routes:
+
+Ensure all required endpoints exist and are properly connected to services.
+
+Add any missing endpoints needed by dashboards.
+
+Phase 5: Testing and Validation
+
+Create a Validation Checklist:
+
+After fixes, each dashboard should:
+
+Show loading state initially
+
+Display real data from database
+
+Update when tabs are clicked
+
+Show error state if data fetching fails
+
+Test Specific Scenarios:
+
+Add a new lead via WhatsApp, verify it appears in Linda's and Clara's dashboards.
+
+Create a property, verify it appears in Mary's inventory dashboard.
+
+Generate a high-priority lead, verify it triggers a suggestion in Zoe's dashboard.
+
+Final Deliverable:
+Provide a complete report with:
+
+Root cause analysis of why dashboards aren't showing data.
+
+Specific code changes needed for each component/service.
+
+The fixed dashboardService.js code.
+
+Updated MainGridView.jsx code.
+
+Updated aiAssistantDashboardSlice.js code (if applicable).
+
+Instructions for testing the fixes.
+
+Important: Work methodically. Start by showing me the current code of MainGridView.jsx and dashboardService.js, then your analysis, then the fixes.
+
+Excellent question. This is a critical issue where the UI is likely disconnected from your backend data layer. Here's a structured prompt to diagnose and fix this problem.
+
+Prompt: Diagnose and Fix Dashboard Data Display Issues
+Core Instruction: You are a senior full-stack 

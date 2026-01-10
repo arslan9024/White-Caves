@@ -1,0 +1,478 @@
+Here are the two additional functions you requested: the frontend API endpoint and the admin alert system.
+
+## 🌐 **Frontend API Code (Node.js/Express)**
+
+Create this API endpoint to serve the daily featured properties to your website:
+
+```javascript
+// File: /api/featured-properties.js (or similar route in your Express app)
+const express = require('express');
+const router = express.Router();
+const { MongoClient } = require('mongodb');
+
+// MongoDB connection details - use environment variables in production
+const MONGODB_URI = process.env.MONGODB_URI || 'your_mongodb_connection_string';
+const DB_NAME = process.env.DB_NAME || 'whitecaves';
+
+// Cache settings - homepage data changes once daily
+let cache = {
+  data: null,
+  timestamp: null,
+  dateKey: null
+};
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
+
+// Connect to MongoDB (pool connection for efficiency)
+let dbClient;
+async function connectDB() {
+  if (!dbClient) {
+    dbClient = new MongoClient(MONGODB_URI);
+    await dbClient.connect();
+  }
+  return dbClient.db(DB_NAME);
+}
+
+// API Endpoint: GET /api/featured-properties
+router.get('/', async (req, res) => {
+  try {
+    const { date } = req.query;
+    
+    // Generate today's date key in Dubai time (UTC+4)
+    const getDubaiDateKey = () => {
+      const now = new Date();
+      const dubaiOffset = 4 * 60 * 60 * 1000;
+      const dubaiTime = new Date(now.getTime() + dubaiOffset);
+      return dubaiTime.toISOString().split('T')[0]; // YYYY-MM-DD
+    };
+    
+    const todayKey = date || getDubaiDateKey();
+    const startOfDay = new Date(todayKey + 'T00:00:00.000Z');
+    const endOfDay = new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000);
+    
+    // Check cache first
+    if (cache.data && cache.dateKey === todayKey && 
+        (Date.now() - cache.timestamp) < CACHE_DURATION) {
+      return res.json({
+        success: true,
+        source: 'cache',
+        ...cache.data
+      });
+    }
+    
+    // Connect to database
+    const db = await connectDB();
+    const homepageCollection = db.collection('homepage_features');
+    
+    // Query for today's featured properties
+    const featuredData = await homepageCollection.findOne({
+      date_active: { 
+        $gte: startOfDay, 
+        $lt: endOfDay 
+      }
+    });
+    
+    // If no data for today, get the most recent available
+    if (!featuredData) {
+      const fallbackData = await homepageCollection
+        .find()
+        .sort({ date_active: -1 })
+        .limit(1)
+        .toArray();
+      
+      if (fallbackData.length > 0) {
+        // Update cache with fallback
+        cache = {
+          data: {
+            date_active: fallbackData[0].date_active,
+            featured_properties: fallbackData[0].featured_properties,
+            property_details: fallbackData[0].property_details,
+            is_fallback: true,
+            generated_at: fallbackData[0].generated_at
+          },
+          timestamp: Date.now(),
+          dateKey: todayKey
+        };
+        
+        return res.json({
+          success: true,
+          source: 'fallback',
+          message: 'Using most recent available data',
+          ...cache.data
+        });
+      }
+      
+      // No data at all
+      return res.status(404).json({
+        success: false,
+        message: 'No featured properties found'
+      });
+    }
+    
+    // Fetch full property details if not already embedded
+    let propertiesWithDetails = [];
+    if (featuredData.property_details && featuredData.property_details.length > 0) {
+      // Use embedded details
+      propertiesWithDetails = featuredData.property_details;
+    } else {
+      // Fetch from properties collection
+      const propertiesCollection = db.collection('properties');
+      propertiesWithDetails = await propertiesCollection
+        .find({ property_ref: { $in: featuredData.featured_properties } })
+        .project({
+          property_ref: 1,
+          title: 1,
+          price_aed: 1,
+          'media.primary_image': 1,
+          'location.community': 1,
+          'location.tower': 1,
+          features: 1,
+          property_type: 1,
+          bedrooms: 1,
+          bathrooms: 1,
+          area_sqft: 1,
+          status: 1
+        })
+        .toArray();
+    }
+    
+    // Prepare response
+    const responseData = {
+      date_active: featuredData.date_active,
+      featured_properties: featuredData.featured_properties,
+      property_details: propertiesWithDetails,
+      generated_at: featuredData.generated_at,
+      is_fallback: false
+    };
+    
+    // Update cache
+    cache = {
+      data: responseData,
+      timestamp: Date.now(),
+      dateKey: todayKey
+    };
+    
+    res.json({
+      success: true,
+      source: 'database',
+      ...responseData
+    });
+    
+  } catch (error) {
+    console.error('API Error fetching featured properties:', error);
+    
+    // Try to serve from cache even if expired
+    if (cache.data) {
+      return res.json({
+        success: true,
+        source: 'expired_cache',
+        message: 'Serving from expired cache due to database error',
+        ...cache.data
+      });
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+// Optional: Endpoint to manually refresh cache (for admin use)
+router.post('/refresh-cache', async (req, res) => {
+  const { secret } = req.body;
+  
+  // Simple security check
+  if (secret !== process.env.ADMIN_SECRET) {
+    return res.status(401).json({ success: false, message: 'Unauthorized' });
+  }
+  
+  cache = {
+    data: null,
+    timestamp: null,
+    dateKey: null
+  };
+  
+  res.json({ success: true, message: 'Cache cleared' });
+});
+
+module.exports = router;
+```
+
+## 📧 **Admin Alert Function (Atlas Function)**
+
+Create this function in MongoDB Atlas to handle email notifications for errors and warnings:
+
+```javascript
+// File: sendAdminAlert.js - MongoDB Atlas Function
+// This function sends email alerts for system issues
+
+exports = async function(payload) {
+  // Configuration - set these as Atlas Environment Variables
+  const config = {
+    adminEmail: context.values.get("ADMIN_EMAIL") || "admin@whitecaves.ae",
+    alertEmail: context.values.get("ALERT_EMAIL") || "alerts@whitecaves.ae",
+    companyName: "White Caves Real Estate LLC",
+    systemName: "Olivia AI Assistant"
+  };
+  
+  // Email service configuration (using EmailJS as example)
+  const emailService = {
+    serviceId: context.values.get("EMAIL_SERVICE_ID"),
+    templateId: context.values.get("ALERT_EMAIL_TEMPLATE_ID"),
+    userId: context.values.get("EMAIL_USER_ID")
+  };
+  
+  // Default payload structure
+  const alertData = {
+    type: payload.type || 'ERROR', // ERROR, WARNING, INFO, SUCCESS
+    subject: payload.subject || 'System Alert',
+    message: payload.message || 'An alert was triggered',
+    system: payload.system || config.systemName,
+    timestamp: new Date().toISOString(),
+    context: payload.context || {},
+    priority: payload.priority || 'medium' // low, medium, high, critical
+  };
+  
+  try {
+    console.log(`Processing ${alertData.type} alert: ${alertData.subject}`);
+    
+    // 1. Log to database for audit trail
+    const db = context.services.get('mongodb-atlas').db('whitecaves');
+    const alertsCollection = db.collection('system_alerts');
+    
+    await alertsCollection.insertOne({
+      ...alertData,
+      notified: false,
+      created_at: new Date()
+    });
+    
+    // 2. Determine if we should send immediate notification
+    const shouldSendImmediate = 
+      alertData.priority === 'high' || 
+      alertData.priority === 'critical' ||
+      alertData.type === 'ERROR';
+    
+    if (!shouldSendImmediate) {
+      console.log(`Alert logged but not sent (priority: ${alertData.priority})`);
+      return { success: true, action: 'logged_only' };
+    }
+    
+    // 3. Send email notification (using EmailJS example)
+    let emailSent = false;
+    
+    if (emailService.serviceId && emailService.templateId) {
+      const emailPayload = {
+        service_id: emailService.serviceId,
+        template_id: emailService.templateId,
+        user_id: emailService.userId,
+        template_params: {
+          to_name: 'Admin Team',
+          to_email: config.adminEmail,
+          from_name: config.systemName,
+          alert_subject: alertData.subject,
+          alert_message: alertData.message,
+          alert_type: alertData.type,
+          alert_priority: alertData.priority,
+          alert_timestamp: new Date().toLocaleString('en-AE', { 
+            timeZone: 'Asia/Dubai',
+            dateStyle: 'full',
+            timeStyle: 'long'
+          }),
+          alert_context: JSON.stringify(alertData.context, null, 2),
+          company_name: config.companyName,
+          action_required: alertData.priority === 'critical' ? 'YES' : 'NO'
+        }
+      };
+      
+      // Send email via HTTP request to EmailJS
+      const response = await context.http.post({
+        url: 'https://api.emailjs.com/api/v1.0/email/send',
+        headers: {
+          'Content-Type': ['application/json']
+        },
+        body: JSON.stringify(emailPayload)
+      });
+      
+      if (response.statusCode === 200) {
+        emailSent = true;
+        console.log('Alert email sent successfully');
+        
+        // Update alert record
+        await alertsCollection.updateOne(
+          { timestamp: alertData.timestamp },
+          { $set: { notified: true, notified_at: new Date() } }
+        );
+      }
+    }
+    
+    // 4. Alternative: Log to console/webhook if email fails
+    if (!emailSent) {
+      console.error('ALERT:', alertData);
+      
+      // You could add Slack/Discord webhook here
+      /*
+      if (context.values.get("SLACK_WEBHOOK_URL")) {
+        await context.http.post({
+          url: context.values.get("SLACK_WEBHOOK_URL"),
+          body: JSON.stringify({
+            text: `*${alertData.type} Alert - ${config.systemName}*\n${alertData.message}`
+          })
+        });
+      }
+      */
+    }
+    
+    return { 
+      success: true, 
+      alert_id: alertData.timestamp,
+      email_sent: emailSent,
+      priority: alertData.priority
+    };
+    
+  } catch (error) {
+    console.error('Failed to process admin alert:', error);
+    
+    // Last resort - log to system errors collection
+    try {
+      const db = context.services.get('mongodb-atlas').db('whitecaves');
+      await db.collection('system_errors').insertOne({
+        error: 'Admin alert function failed',
+        original_alert: alertData,
+        error_message: error.message,
+        timestamp: new Date()
+      });
+    } catch (dbError) {
+      console.error('Could not log to database:', dbError);
+    }
+    
+    return { 
+      success: false, 
+      error: error.message 
+    };
+  }
+};
+```
+
+## 🔧 **Setup Instructions for Both Functions**
+
+### **Part 1: Frontend API Setup**
+
+1. **Install Dependencies** (if not already installed):
+```bash
+npm install express mongodb cors dotenv
+```
+
+2. **Create Environment File** (`.env`):
+```env
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/
+DB_NAME=whitecaves
+NODE_ENV=production
+ADMIN_SECRET=your_secret_key_here
+```
+
+3. **Integrate with Your Express App**:
+```javascript
+// app.js or server.js
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const featuredPropertiesRouter = require('./api/featured-properties');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Your other routes...
+app.use('/api/featured-properties', featuredPropertiesRouter);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+```
+
+### **Part 2: Admin Alert Function Setup in Atlas**
+
+1. **Set Environment Values in Atlas**:
+   - Go to your Atlas App Services → "Values"
+   - Add these values:
+     - `ADMIN_EMAIL`: Your admin email address
+     - `ALERT_EMAIL`: Alerts sender email
+     - `EMAIL_SERVICE_ID`: Your EmailJS service ID (or similar)
+     - `EMAIL_TEMPLATE_ID`: Your alert email template
+     - `EMAIL_USER_ID`: Your EmailJS user ID
+
+2. **Create the Function**:
+   - In Atlas App Services → "Functions" → "Create New Function"
+   - Name it `sendAdminAlert`
+   - Copy and paste the function code above
+   - Set function permissions to allow execution from other functions
+
+3. **Update Your Original Trigger Function**:
+   Uncomment the alert calls in your original Olivia function:
+   ```javascript
+   // In the error section:
+   await context.functions.execute("sendAdminAlert", {
+     type: "ERROR",
+     subject: "Olivia's Daily Selection Failed",
+     message: `Error: ${error.message}`,
+     priority: "high",
+     context: { timestamp: new Date().toISOString() }
+   });
+   
+   // In the warning section (when < 10 properties):
+   await context.functions.execute("sendAdminAlert", {
+     type: "WARNING",
+     subject: "Low Available Properties",
+     message: `Only ${availableProperties.length} available properties found.`,
+     priority: "medium",
+     context: { count: availableProperties.length }
+   });
+   ```
+
+## 📊 **Additional Monitoring Collection Schema**
+
+Create this collection for comprehensive monitoring:
+
+```javascript
+// system_monitoring collection schema
+db.createCollection("system_monitoring", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["event_type", "timestamp"],
+      properties: {
+        event_type: {
+          bsonType: "string",
+          enum: ["DAILY_SELECTION", "API_REQUEST", "ERROR", "WARNING", "CACHE_REFRESH"]
+        },
+        timestamp: { bsonType: "date" },
+        duration_ms: { bsonType: "int" },
+        properties_selected: { bsonType: "int" },
+        cache_hit: { bsonType: "bool" },
+        user_agent: { bsonType: "string" },
+        endpoint: { bsonType: "string" }
+      }
+    }
+  }
+});
+
+// Create indexes for performance
+db.system_monitoring.createIndex({ timestamp: -1 });
+db.system_monitoring.createIndex({ event_type: 1, timestamp: -1 });
+```
+
+## 🚀 **Quick Deployment Checklist**
+
+- [ ] Set up environment variables in both Node.js and Atlas
+- [ ] Test the API endpoint locally with a sample MongoDB connection
+- [ ] Deploy the API to your production server (Render, Railway, AWS, etc.)
+- [ ] Configure CORS if your frontend is on a different domain
+- [ ] Set up the Atlas function with proper environment values
+- [ ] Test the alert system with a manual function execution
+- [ ] Update your original Olivia function to call the alerts
+- [ ] Add monitoring to your frontend API to track usage
+- [ ] Set up log rotation for the system_alerts collection
+
+These two components will complete your automated system, providing both the user-facing API and the operational monitoring you need for production use. Would you like me to create a simple frontend React/Vue component to display these properties as well?

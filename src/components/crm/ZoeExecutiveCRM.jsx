@@ -6,10 +6,11 @@ import {
   ArrowUp, ArrowDown, Plus, Search, MapPin, Star,
   Filter, Inbox, TrendingUp, AlertTriangle, Lightbulb,
   DollarSign, Shield, Archive, Eye, ChevronRight, Zap,
-  Building2, Network, Workflow, Bot, ChevronDown, Play
+  Building2, Network, Workflow, Bot, ChevronDown, Play,
+  MessageSquare
 } from 'lucide-react';
 import { AssistantDocsTab } from './shared';
-import { FlowchartViewer, ServiceDemoMode } from './index';
+import { FlowchartViewer, ServiceDemoMode, ZoeConsole } from './index';
 import { EXECUTIVES, DIRECTORS, DEPARTMENTS_CONFIG } from '../../data/organization/orgStructure';
 import { EMPLOYEES, WHATSAPP_AGENTS } from '../../data/organization/employees';
 import { COMPANY_SERVICES, getAllServices, getServiceStats } from '../../data/services/companyServices';
@@ -72,7 +73,7 @@ const TYPE_ICONS = {
 
 const ZoeExecutiveCRM = () => {
   const dispatch = useDispatch();
-  const [activeTab, setActiveTab] = useState('suggestions');
+  const [activeTab, setActiveTab] = useState('console');
   const [selectedSuggestion, setSelectedSuggestion] = useState(null);
   
   const filteredSuggestions = useSelector(selectFilteredSuggestions);
@@ -230,12 +231,13 @@ const ZoeExecutiveCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['suggestions', 'organization', 'departments', 'services', 'demo', 'calendar', 'tasks', 'docs'].map(tab => (
+        {['console', 'suggestions', 'organization', 'departments', 'services', 'demo', 'calendar', 'tasks', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
+            {tab === 'console' && <MessageSquare size={14} />}
             {tab === 'suggestions' && <Inbox size={14} />}
             {tab === 'suggestions' && unreviewedCount > 0 && (
               <span className="tab-badge">{unreviewedCount}</span>
@@ -244,12 +246,18 @@ const ZoeExecutiveCRM = () => {
             {tab === 'departments' && <Building2 size={14} />}
             {tab === 'services' && <Workflow size={14} />}
             {tab === 'demo' && <Play size={14} />}
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === 'console' ? 'AI Console' : tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
 
       <div className="tab-content">
+        {activeTab === 'console' && (
+          <div className="console-tab-wrapper">
+            <ZoeConsole />
+          </div>
+        )}
+
         {activeTab === 'suggestions' && (
           <div className="suggestions-view">
             {criticalSuggestions.length > 0 && (

@@ -1,0 +1,32 @@
+Excellent idea. A daily, random rotation is a smart way to ensure all listings get exposure, keep the homepage fresh for returning visitors, and automate a task completely. Here’s how to implement this for Olivia.
+
+### 🔄 The Automated Daily Selection Workflow
+This system creates a "set-and-forget" process where Olivia and Mary work together autonomously.
+
+1.  **The Daily Trigger**: A scheduler (like a **cron job** on your server or a cloud function) automatically triggers Olivia's process every day at a set time (e.g., 3:00 AM Dubai time).
+2.  **Data Handoff**: Olivia requests or accesses the current available inventory list from **Mary's** database or designated system. She should filter for properties marked as "Active" or "Available."
+3.  **Random Selection & Curation**: Olivia's core logic executes:
+    *   **Randomizes** the full list of available properties.
+    *   **Selects the first 10** from the randomized list.
+    *   **Formats the data** for the website, pulling in images, descriptions, and key details.
+4.  **Publishing**: Olivia sends the final curated list of 10 properties to your website's **content management system (CMS)** or database, automatically updating the "Featured Properties" component on the homepage.
+
+### 🛠️ Implementation & Technical Considerations
+To build this reliably, you'll need to address a few key technical points:
+
+| Consideration | Description & Recommendation |
+| :--- | :--- |
+| **Selection Logic** | Ensure the random algorithm is fair and efficient. A simple random sort of property IDs is a good start. Advanced logic could later add weightings (e.g., slightly higher chance for newer listings). |
+| **Data Consistency** | Olivia and Mary must share a **single, reliable source of truth** for inventory. This is typically a central database. Mary updates statuses (sold/leased), and Olivia reads from the same source. |
+| **Publishing Method** | The easiest path is integrating Olivia with your **website's CMS API** (like WordPress or a headless CMS). She can directly update a "Featured List" dataset. |
+| **Failure Handling** | Build in alerts. If Mary's list is empty or Olivia encounters an error, the system should notify an admin and keep the previous day's listings as a fallback. |
+| **Testing Environment** | **Crucially**, implement this in a development/staging environment first. Test the full loop: from Mary's inventory update to Olivia's selection to the website display. |
+
+### 📝 Recommended Next Steps
+To turn this into reality, these are the concrete steps to take:
+
+1.  **Architecture Discussion**: Brief your **IT/Development team** on this workflow. The key questions for them are: the best method for the daily trigger (cron job vs. cloud scheduler), and the specifics of how Olivia can access your property database and CMS.
+2.  **Define the Data Format**: Work with your web developers to agree on the **exact data structure** (JSON format is standard) that Olivia will send to the homepage component. This includes fields like `property_id`, `title`, `image_urls`, `price`, `short_description`, and `link`.
+3.  **Build the "Loop"**: Start development by creating the scheduled task and the basic selection script. You can begin with a simple proof-of-concept that selects random properties from a test database before full AI integration.
+
+This automation will make your marketing dynamic and hands-free. If you can share what technology powers your company website (e.g., WordPress, a custom-built platform, or a specific CMS), I can offer more tailored advice on the publishing step.

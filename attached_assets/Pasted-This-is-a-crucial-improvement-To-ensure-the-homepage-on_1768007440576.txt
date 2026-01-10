@@ -1,0 +1,64 @@
+This is a crucial improvement. To ensure the homepage only shows available properties, Olivia's daily process needs to verify and refresh listings based on real-time inventory status. Here's the enhanced, automated workflow.
+
+The following sequence diagram illustrates the complete daily interaction between the scheduler, Olivia, Mary's system, and your website to achieve this:
+```mermaid
+sequenceDiagram
+    participant Scheduler
+    participant Olivia
+    participant MarySystem
+    participant Website
+
+    Note over Scheduler,Olivia: Daily Automation Cycle
+    Scheduler->>Olivia: Trigger Daily Update
+    activate Olivia
+
+    Olivia->>MarySystem: Request Full Available Inventory
+    activate MarySystem
+    MarySystem-->>Olivia: Return List & Statuses
+    deactivate MarySystem
+
+    Note over Olivia: Core Processing Logic
+    Olivia->>Olivia: 1. Filter for 'Available'
+    Olivia->>Olivia: 2. Randomize List
+    Olivia->>Olivia: 3. Select Top 10
+    Olivia->>Olivia: 4. Compare to Yesterday's List
+    Olivia->>Olivia: 5. Format New Data
+
+    Olivia->>Website: Publish New List
+    activate Website
+    Website-->>Olivia: Confirm Update
+    deactivate Website
+
+    Olivia-->>Scheduler: Process Complete
+    deactivate Olivia
+```
+
+### 🔧 Building a Robust System: Key Technical Considerations
+
+To implement this reliably, especially for a real estate business, focus on these points:
+
+| Consideration | Why It Matters & Implementation Tip |
+| :--- | :--- |
+| **Single Source of Truth** | Mary's inventory database **must** be the only system defining a property's status. Olivia should always pull from this source directly or via an API to ensure data consistency. |
+| **Status Validation Logic** | Olivia's first step should be to filter the inventory list **exclusively** for properties with an "Available" or "Active" status before random selection. |
+| **The "Replacement" Mechanism** | This is handled automatically by the daily cycle. If a property from yesterday's list is now marked "Sold" in Mary's system, it won't be in the new "Available" pool and will be replaced. |
+| **Data Synchronization** | Discuss with your IT team whether the inventory data is updated in **real-time** (ideal) or batched. This affects how quickly a sale is reflected on the homepage. |
+| **Fallback & Monitoring** | Implement a monitoring alert. If available properties drop below 10, Olivia should notify an admin and can be programmed to supplement with "Just Listed" or "Featured" properties. |
+
+### 🚀 Recommended Action Plan
+
+To move forward, I recommend these three steps:
+
+1.  **Define the Data Connection**: The most important task is to establish how **Olivia will access Mary's inventory data**. Work with your technical team to decide on the method:
+    *   **Direct Database Read** (if both AIs share the same system).
+    *   **Internal API Call** (most common and secure modern practice).
+    *   **Shared Data File** (a simple temporary solution, like a cloud-synced spreadsheet).
+2.  **Finalize the Property Statuses**: Ensure your inventory system (managed by Mary) uses clear, consistent statuses like `AVAILABLE`, `UNDER_OFFER`, `SOLD`, `LEASED`. Olivia's filtering logic will depend on this.
+3.  **Develop the Integration**: Your development team should build and test the workflow in this order:
+    *   First, enable Olivia to fetch and filter the available list.
+    *   Then, add the random selection and formatting logic.
+    *   Finally, integrate with the website CMS to publish the list, replacing the old one entirely.
+
+By implementing this, you'll have a fully automated, self-correcting marketing display that is always accurate and fresh.
+
+If you can specify the type of database or system Mary uses to manage inventory, I can provide more specific guidance on the integration approach.

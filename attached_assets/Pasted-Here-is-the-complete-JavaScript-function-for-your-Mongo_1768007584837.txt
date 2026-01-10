@@ -1,0 +1,229 @@
+Here is the complete JavaScript function for your MongoDB Atlas Trigger, ready for deployment. This function will run daily, automatically selecting 10 random available properties and updating the homepage features collection.
+
+```javascript
+// MongoDB Atlas Scheduled Trigger Function for Olivia's Daily Property Selection
+// To be set up in Atlas Triggers with schedule: 0 3 * * * (3:00 AM daily, Dubai time)
+
+exports = async function() {
+  // 1. Connect to your database
+  const databaseName = 'whitecaves'; // Change this to your actual database name
+  const collectionName = 'properties'; // Your main property inventory collection
+  const homepageCollectionName = 'homepage_features'; // Collection for featured properties
+  
+  const db = context.services.get('mongodb-atlas').db(databaseName);
+  const propertiesCollection = db.collection(collectionName);
+  const homepageCollection = db.collection(homepageCollectionName);
+  
+  try {
+    console.log('Starting Olivia\'s daily property selection...');
+    
+    // 2. Get current date for Dubai timezone (UTC+4)
+    const now = new Date();
+    const dubaiOffset = 4 * 60 * 60 * 1000; // UTC+4 in milliseconds
+    const dubaiTime = new Date(now.getTime() + dubaiOffset);
+    const today = new Date(Date.UTC(dubaiTime.getUTCFullYear(), dubaiTime.getUTCMonth(), dubaiTime.getUTCDate()));
+    
+    // 3. Execute the aggregation pipeline to get 10 random available properties
+    const dailySelectionPipeline = [
+      { 
+        $match: { 
+          status: 'AVAILABLE',
+          // Optional: Add additional filters if needed
+          // 'media.primary_image': { $exists: true, $ne: null } // Only properties with images
+        } 
+      },
+      { $sample: { size: 15 } }, // Get 15 initially as buffer for the next step
+      {
+        $project: {
+          property_ref: 1,
+          title: 1,
+          price_aed: 1,
+          'media.primary_image': 1,
+          'location.community': 1,
+          last_status_update: 1,
+          _id: 0 // Exclude MongoDB _id
+        }
+      }
+    ];
+    
+    const availableProperties = await propertiesCollection.aggregate(dailySelectionPipeline).toArray();
+    
+    // 4. If we don't have enough properties, log a warning
+    if (availableProperties.length < 10) {
+      console.warn(`Warning: Only ${availableProperties.length} available properties found. Showing all available.`);
+      
+      // Optional: Send an alert email or notification
+      // await context.functions.execute('sendAdminAlert', {
+      //   message: `Only ${availableProperties.length} available properties for homepage.`
+      // });
+    }
+    
+    // 5. Take only the first 10 (or fewer if not enough)
+    const selectedProperties = availableProperties.slice(0, 10);
+    const propertyRefs = selectedProperties.map(p => p.property_ref);
+    
+    console.log(`Selected ${selectedProperties.length} properties:`, propertyRefs);
+    
+    // 6. Check if we already have an entry for today
+    const existingEntry = await homepageCollection.findOne({
+      date_active: { $gte: today, $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000) }
+    });
+    
+    // 7. Prepare the homepage feature document
+    const homepageFeatureDoc = {
+      date_active: today,
+      featured_properties: propertyRefs,
+      property_details: selectedProperties, // Storing full details for faster frontend loading
+      generated_at: new Date(),
+      generated_by: 'Olivia_AI_Assistant'
+    };
+    
+    // 8. Insert or update the daily selection
+    let result;
+    if (existingEntry) {
+      // Update existing entry
+      result = await homepageCollection.updateOne(
+        { _id: existingEntry._id },
+        { $set: homepageFeatureDoc }
+      );
+      console.log('Updated existing homepage feature entry:', result.modifiedCount);
+    } else {
+      // Insert new entry
+      result = await homepageCollection.insertOne(homepageFeatureDoc);
+      console.log('Inserted new homepage feature entry, ID:', result.insertedId);
+    }
+    
+    // 9. Optional: Archive old entries (older than 30 days)
+    const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const archiveResult = await homepageCollection.deleteMany({
+      date_active: { $lt: thirtyDaysAgo }
+    });
+    
+    if (archiveResult.deletedCount > 0) {
+      console.log(`Archived ${archiveResult.deletedCount} old homepage entries.`);
+    }
+    
+    // 10. Return success
+    return { 
+      success: true, 
+      message: `Successfully updated homepage with ${selectedProperties.length} properties.`,
+      property_count: selectedProperties.length,
+      property_refs: propertyRefs,
+      date: today.toISOString().split('T')[0]
+    };
+    
+  } catch (error) {
+    console.error('Error in Olivia\'s daily property selection:', error);
+    
+    // Optional: Send error notification
+    // await context.functions.execute('sendAdminAlert', {
+    //   message: `Olivia's daily selection failed: ${error.message}`
+    // });
+    
+    return { 
+      success: false, 
+      error: error.message,
+      timestamp: new Date().toISOString()
+    };
+  }
+};
+```
+
+## 📋 Step-by-Step Setup Instructions for MongoDB Atlas
+
+### **Step 1: Access Atlas Triggers**
+1. Log in to your **MongoDB Atlas Dashboard**
+2. Navigate to your cluster
+3. Click on "Triggers" in the left sidebar under "Services"
+
+### **Step 2: Create a New Trigger**
+1. Click **"Add Trigger"**
+2. Configure with these settings:
+
+| Setting | Value to Enter |
+|---------|----------------|
+| **Trigger Type** | `Scheduled` |
+| **Name** | `Olivia_Daily_Property_Selection` |
+| **Enabled** | ✅ Checked (ON) |
+| **Event Schedule** | `0 3 * * *` (3:00 AM daily - adjust for Dubai time) |
+| **Schedule Type** | `Basic` |
+| **Cluster Name** | Your cluster (e.g., `Cluster0`) |
+| **Database Name** | `whitecaves` (or your actual DB name) |
+| **Collection Name** | Leave empty (we're not reacting to a collection) |
+| **Function** | Copy and paste the function code above |
+
+### **Step 3: Configure Database Access**
+1. **Create a Database User** for the trigger (if you don't have one):
+   - In Atlas, go to "Database Access" → "Add New Database User"
+   - Create a user with read/write permissions to your database
+
+2. **Set IP Access List**:
+   - Go to "Network Access" → "Add IP Address"
+   - Add `0.0.0.0/0` (for testing) or restrict to Atlas Functions IP range
+
+### **Step 4: Test the Trigger**
+1. **Manually Run First**:
+   - In the Triggers interface, find your new trigger
+   - Click **"Run"** to execute immediately
+   - Check the logs for any errors
+
+2. **Verify the Data**:
+   ```javascript
+   // Run in MongoDB Compass or Atlas Data Explorer to check
+   use whitecaves;
+   db.homepage_features.find().sort({date_active: -1}).limit(1);
+   ```
+
+## ⚙️ Frontend Query for Your Website
+
+Your website/homepage should use this query to fetch today's featured properties:
+
+```javascript
+// Frontend query (example using fetch API)
+async function getTodayFeaturedProperties() {
+  const today = new Date();
+  const startOfDay = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+  
+  // Query the homepage_features collection
+  const response = await fetch('/api/featured-properties?date=' + startOfDay.toISOString());
+  const data = await response.json();
+  
+  // The API should query like this:
+  // db.homepage_features.findOne({
+  //   date_active: { 
+  //     $gte: startOfDay, 
+  //     $lt: new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000) 
+  //   }
+  // });
+  
+  return data;
+}
+```
+
+## 🔧 Important Configuration Notes
+
+1. **Database Indexes** (Crucial for Performance):
+   ```javascript
+   // Create these indexes in your properties collection
+   db.properties.createIndex({ status: 1 }); // For the $match stage
+   db.properties.createIndex({ "media.primary_image": 1 }); // If filtering by image existence
+   
+   // Create index for homepage_features
+   db.homepage_features.createIndex({ date_active: 1 }, { unique: true });
+   ```
+
+2. **Timezone Adjustment**: The function uses Dubai time (UTC+4). If you want it to run at 3:00 AM Dubai time, the cron expression `0 3 * * *` in Atlas (which uses UTC) will run at 7:00 AM Dubai time. Adjust to `0 23 * * *` to run at 3:00 AM Dubai time.
+
+3. **Error Monitoring**: Set up email alerts by uncommenting the `sendAdminAlert` function calls and creating that function in Atlas Functions.
+
+## 🚀 Immediate Next Steps
+
+1. **Test in a Development Environment First**: Create a copy of your database in a separate cluster and test the trigger there.
+
+2. **Adjust Field Names**: Update `property_ref`, `status`, and other field names in the function to match your actual schema.
+
+3. **Set Up the Frontend API**: Create an API endpoint that queries the `homepage_features` collection and returns today's properties.
+
+4. **Monitor First Few Runs**: Check the trigger logs in Atlas for the first few days to ensure it's working correctly.
+
+Would you like me to create the complementary frontend API code or the `sendAdminAlert` function for error notifications as well?

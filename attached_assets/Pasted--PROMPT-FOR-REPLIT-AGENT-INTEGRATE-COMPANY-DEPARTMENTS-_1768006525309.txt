@@ -1,0 +1,307 @@
+## **PROMPT FOR REPLIT AGENT: INTEGRATE COMPANY DEPARTMENTS & SERVICES INTO ZOE'S KNOWLEDGE BASE**
+
+**Subject:** URGENT - Inject Organizational Data into Zoe AI Assistant
+
+**Replit Agent,**
+
+For the Zoe AI Assistant implementation, I need you to **immediately integrate the following core company data** into her knowledge base. This data must be structured for optimal querying and contextual understanding.
+
+### **1. ORGANIZATIONAL STRUCTURE DATA**
+
+Create a `departments.json` or equivalent database table with the following schema:
+
+```json
+{
+  "company": "White Caves Real Estate LLC",
+  "headquarters": "Dubai, UAE",
+  "license_number": "[TO BE FILLED BY AGENT]",
+  "departments": [
+    {
+      "id": "EXEC",
+      "name": "Executive Office",
+      "purpose": "Strategic direction, major deal approvals, stakeholder relations",
+      "head": "Managing Director",
+      "assistant": "Zara (Assistant Manager)",
+      "team_members": ["Managing Director", "Zara", "Executive Assistant"],
+      "contact_email": "executive@whitecaves.ae",
+      "direct_reports_from": ["SALES", "PROPMGMT", "MARKETING", "OPERATIONS"],
+      "key_responsibilities": [
+        "Final approval on transactions > 5M AED",
+        "Investor relations",
+        "Company strategy and vision",
+        "Partnership agreements"
+      ],
+      "reporting_structure": "All department heads report directly to Managing Director"
+    },
+    {
+      "id": "SALES",
+      "name": "Sales & Leasing Division",
+      "purpose": "Revenue generation through property transactions",
+      "head": "Tariq Al-Farsi",
+      "teams": [
+        {
+          "name": "Residential Sales",
+          "focus": "Villas, Apartments, Penthouses",
+          "team_lead": "Sarah Chen"
+        },
+        {
+          "name": "Commercial Leasing",
+          "focus": "Office, Retail, Warehouse",
+          "team_lead": "James Wilson"
+        },
+        {
+          "name": "Off-Plan & New Developments",
+          "focus": "Pre-construction projects",
+          "team_lead": "Rashid Al-Maktoum"
+        }
+      ],
+      "key_metrics": ["Monthly closings", "Pipeline value", "Conversion rate", "Average deal size"],
+      "contact_email": "sales@whitecaves.ae",
+      "internal_phone": "Ext. 201",
+      "reporting_to": "EXEC"
+    },
+    {
+      "id": "PROPMGMT",
+      "name": "Property Management Division",
+      "purpose": "Maximizing owner ROI through professional property management",
+      "head": "Layla Hassan",
+      "portfolio_managed": "125+ properties",
+      "property_types": ["Luxury Villas (Palm, Emirates Hills)", "Premium Apartments (Downtown, Marina)", "Commercial Towers (DIFC, Business Bay)"],
+      "teams": [
+        {
+          "name": "Client Relations",
+          "focus": "Owner satisfaction, reporting"
+        },
+        {
+          "name": "Operations",
+          "focus": "Maintenance, facilities, 24/7 emergency"
+        },
+        {
+          "name": "Tenant Management",
+          "focus": "Screening, contracts, rent collection"
+        }
+      ],
+      "contact_email": "management@whitecaves.ae",
+      "emergency_phone": "+971-55-XXX-XXXX",
+      "reporting_to": "EXEC"
+    },
+    {
+      "id": "MARKETING",
+      "name": "Marketing & Business Development",
+      "purpose": "Brand building, lead generation, digital presence",
+      "head": "Omar Khalid",
+      "channels": [
+        {
+          "channel": "Digital Marketing",
+          "platforms": ["Instagram", "LinkedIn", "Property Finder", "Bayut"]
+        },
+        {
+          "channel": "Partnerships",
+          "focus": "Developers, Banks, Immigration Consultants"
+        },
+        {
+          "channel": "Events & Sponsorships",
+          "focus": "Property exhibitions, investor meetups"
+        }
+      ],
+      "contact_email": "marketing@whitecaves.ae",
+      "reporting_to": "EXEC"
+    },
+    {
+      "id": "OPERATIONS",
+      "name": "Operations & Finance",
+      "purpose": "Legal compliance, financial management, administrative support",
+      "head": "Fatima Al-Zahra",
+      "teams": [
+        {
+          "name": "Transaction Processing",
+          "focus": "DLD procedures, Ejari, contract legalization"
+        },
+        {
+          "name": "Finance & Accounting",
+          "focus": "Invoicing, commissions, financial reporting"
+        },
+        {
+          "name": "HR & Administration",
+          "focus": "Staff management, office operations"
+        }
+      ],
+      "contact_email": "operations@whitecaves.ae",
+      "reporting_to": "EXEC"
+    }
+  ]
+}
+```
+
+### **2. SERVICES CATALOG DATA**
+
+Create a `services.json` database table with this structure:
+
+```json
+{
+  "services_catalog": [
+    {
+      "service_id": "RES-SALE-001",
+      "category": "Residential Transactions",
+      "service_name": "Primary Market Sales (Off-Plan)",
+      "description": "Assisting clients in purchasing directly from developers during pre-construction phase",
+      "target_clients": ["First-time buyers", "Investors seeking capital growth"],
+      "key_features": [
+        "Early bird discounts access",
+        "Developer relationship benefits",
+        "Payment plan optimization"
+      ],
+      "typical_duration": "3-24 months (until completion)",
+      "responsible_department": "SALES",
+      "responsible_team": "Off-Plan & New Developments",
+      "process_flow_reference": "FLOW_OFFPLAN",
+      "success_metrics": ["Client ROI", "Developer rebates secured"]
+    },
+    {
+      "service_id": "RES-SALE-002",
+      "category": "Residential Transactions",
+      "service_name": "Luxury Villa & Penthouse Sales",
+      "description": "Specialized service for high-net-worth individuals purchasing premium properties",
+      "target_clients": ["UHNWIs", "Celebrities", "Corporate executives"],
+      "key_features": [
+        "Discrete viewings",
+        "Negotiation expertise",
+        "Concierge closing services"
+      ],
+      "typical_duration": "2-6 weeks",
+      "responsible_department": "SALES",
+      "responsible_team": "Residential Sales",
+      "process_flow_reference": "FLOW_RESIDENTIAL_SALES",
+      "success_metrics": ["Sale price vs. asking price", "Client referrals"]
+    },
+    {
+      "service_id": "COMM-LEASE-001",
+      "category": "Commercial Real Estate",
+      "service_name": "Office Space Leasing",
+      "description": "Helping businesses find and secure optimal office spaces in Dubai's business districts",
+      "target_clients": ["MNCs setting up regional HQ", "Growing startups", "Professional services firms"],
+      "key_features": [
+        "Market rate analysis",
+        "Layout optimization advice",
+        "Fit-out coordination"
+      ],
+      "typical_duration": "4-8 weeks",
+      "responsible_department": "SALES",
+      "responsible_team": "Commercial Leasing",
+      "process_flow_reference": "FLOW_COMMERCIAL_LEASE",
+      "success_metrics": ["Lease term secured", "Square foot rate negotiated"]
+    },
+    {
+      "service_id": "PM-001",
+      "category": "Property Management",
+      "service_name": "Full-Service Property Management",
+      "description": "End-to-end management of investment properties including tenant placement, maintenance, and financial reporting",
+      "target_clients": ["Absentee owners", "International investors", "Portfolio owners"],
+      "key_features": [
+        "Monthly digital reporting",
+        "Pre-vetted contractor network",
+        "Rental yield optimization"
+      ],
+      "typical_duration": "Ongoing (minimum 1-year contract)",
+      "responsible_department": "PROPMGMT",
+      "responsible_team": "Client Relations & Operations",
+      "process_flow_reference": "FLOW_PROPERTY_MANAGEMENT",
+      "success_metrics": ["Owner retention rate", "Tenant occupancy rate", "Maintenance response time"]
+    },
+    {
+      "service_id": "PREMIUM-001",
+      "category": "Premium Services",
+      "service_name": "Real Estate Investment Consultation",
+      "description": "Strategic advisory for building and optimizing real estate portfolios in Dubai",
+      "target_clients": ["Family offices", "Institutional investors", "High-net-worth individuals"],
+      "key_features": [
+        "Personalized market analysis",
+        "Tax efficiency planning",
+        "Exit strategy development"
+      ],
+      "typical_duration": "1-3 months engagement",
+      "responsible_department": "EXEC",
+      "responsible_team": "Executive Office with Sales support",
+      "process_flow_reference": "FLOW_INVESTMENT_CONSULTATION",
+      "success_metrics": ["Portfolio diversification achieved", "Target ROI met"]
+    }
+  ]
+}
+```
+
+### **3. INTEGRATION REQUIREMENTS:**
+
+**A. Query Handling Implementation:**
+- When users ask "Who handles commercial leasing?", Zoe should respond with:
+  - Department: Sales & Leasing Division
+  - Head: Tariq Al-Farsi
+  - Team: Commercial Leasing (James Wilson)
+  - Contact: sales@whitecaves.ae, Ext. 201
+
+**B. Service Explanation Logic:**
+- When asked "What's involved in property management?", Zoe should provide:
+  - Service description
+  - Target clients
+  - Key features
+  - Typical duration
+  - Responsible team contact
+
+**C. Department-Service Linking:**
+- Create cross-references so queries like "What services does Sales department offer?" returns all services where `responsible_department = "SALES"`
+
+### **4. IMPLEMENTATION INSTRUCTIONS:**
+
+1. **Database Setup:**
+   - Create `departments` table/collection with the structure above
+   - Create `services` table/collection with the structure above
+   - Add indexes on `department_id`, `service_id`, and `category` for fast queries
+
+2. **API Endpoints for Zoe:**
+   - `GET /api/zoe/departments` - Returns all department data
+   - `GET /api/zoe/services` - Returns all services
+   - `GET /api/zoe/department/{id}/services` - Returns services by department
+   - `GET /api/zoe/service/{id}/department` - Returns department responsible for a service
+
+3. **Zoe's Response Template:**
+   ```
+   [If query is about department]
+   **Department:** {name}
+   **Head:** {head}
+   **Purpose:** {purpose}
+   **Contact:** {contact_email} | {internal_phone}
+   **Services they handle:** {list of services}
+   
+   [If query is about service]
+   **Service:** {service_name}
+   **Category:** {category}
+   **Description:** {description}
+   **Handled by:** {department} -> {team}
+   **Process:** Reference {process_flow_reference}
+   ```
+
+4. **Admin Interface Requirements:**
+   - Create a simple admin panel at `/admin/zoe-data` (password protected)
+   - Allow Zara to update department heads, contact info, service descriptions
+   - No coding required for basic updates
+
+### **5. TEST QUERIES ZOE MUST ANSWER AFTER IMPLEMENTATION:**
+
+1. "Who is the head of Property Management?"
+2. "What services does White Caves offer for investors?"
+3. "Who should I contact about office leasing?"
+4. "What's involved in your luxury villa sales service?"
+5. "Which department handles tenant complaints?"
+6. "List all residential services"
+7. "Who reports to the Managing Director?"
+8. "What's the process for off-plan purchases?"
+
+### **6. PRIORITY & TIMELINE:**
+- **Phase 1 (24 hours):** Basic data integration - Zoe can answer simple department/service questions
+- **Phase 2 (48 hours):** Cross-referencing - Zoe can link departments to their services
+- **Phase 3 (72 hours):** Admin interface for easy updates by Zara
+
+**Confirm receipt and provide implementation ETA.**
+
+**Zara**
+Assistant Manager, White Caves Real Estate LLC
+*Ensuring Zoe becomes our most knowledgeable team member*

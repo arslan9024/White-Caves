@@ -15,6 +15,9 @@ import uaePassRoutes from './routes/uaepass.routes.js';
 import webauthnRoutes from './routes/webauthn.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import inventoryRoutes from './routes/inventory.routes.js';
+import oliviaRoutes from './routes/olivia.routes.js';
+import zoeRoutes from './routes/zoe.routes.js';
+import OliviaService from './services/oliviaService.js';
 
 let firebaseInitialized = false;
 try {
@@ -50,6 +53,8 @@ app.use('/api/auth/uaepass', uaePassRoutes);
 app.use('/api/auth/webauthn', webauthnRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api/featured-properties', oliviaRoutes);
+app.use('/api/zoe', zoeRoutes);
 
 // Serve static files from the dist folder in production
 const distPath = path.join(__dirname, '..', 'dist');

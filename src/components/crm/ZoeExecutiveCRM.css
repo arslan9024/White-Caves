@@ -1053,3 +1053,9 @@
   font-size: 0.625rem;
   color: var(--text-tertiary);
 }
+
+.console-tab-wrapper {
+  height: 600px;
+  border-radius: 12px;
+  overflow: hidden;
+}

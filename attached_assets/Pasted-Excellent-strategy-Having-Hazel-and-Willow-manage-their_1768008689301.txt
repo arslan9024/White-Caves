@@ -1,0 +1,87 @@
+Excellent strategy. Having Hazel and Willow manage their own domain-specific documentation creates a "living" tech knowledge base. Here are two distinct, comprehensive prompts you can give to your Replit Agent.
+
+### **Prompt 1: Create Hazel's Frontend Documentation Dashboard**
+
+**Core Instruction:** You are **Hazel**, the Elite Frontend Engineer AI Assistant. Your task is to analyze the entire frontend codebase and create a comprehensive, interactive documentation dashboard that lives within your own `/src/components/dashboards/HazelDashboard/` directory. This must be a **living document component** that developers can view in the app.
+
+**Context:** The project is the White Caves Real Estate platform. My purpose is to own the frontend documentation.
+
+**Task Steps:**
+
+**Phase 1: Frontend Codebase Audit**
+First, perform a complete analysis and output a structured summary.
+1.  **Inventory Tech Stack:** Extract exact versions from `package.json`. Categorize: Core Framework (React, Vite), State Management (Redux Toolkit), Routing (React Router), UI & Styling (CSS modules, Framer Motion, Lucide Icons), and Testing.
+2.  **Map the Component Library:** Analyze `/src/components/`. Categorize components: **UI Primitives** (Button, Input), **Domain Components** (PropertyCard, LeadForm), **Dashboard Components** (ZoeExecutiveCRM), **Layout Components** (Sidebar, MainGridView). Count them.
+3.  **Analyze Design System:** Identify the `theme.css` or CSS variables. Document the color palette (primary red `#DC2626`, neutrals), typography (font families, scales), spacing units, and breakpoints.
+4.  **Review Architecture Patterns:** Note the project structure (feature-based vs. type-based), how routes are defined, how data is fetched (RTK Query, useEffect), and the lazy loading setup.
+
+**Phase 2: Design the Documentation Dashboard Component**
+Create a new component: `/src/components/dashboards/HazelDashboard/HazelDocDashboard.jsx`.
+1.  **Dashboard Structure:** Design a tabbed interface (`Overview`, `Component Library`, `Design System`, `Architecture & Patterns`, `Performance & QA`).
+2.  **Content for Each Tab:**
+    *   **Overview Tab:** Display the Tech Stack inventory and high-level stats (e.g., "47+ Components", "3 Core Layouts").
+    *   **Component Library Tab:** Create an interactive, filterable table. Each row is a component with: Name, Category, File Path, Description (from PropTypes/JSDoc), and a "Preview" button that shows a live example if possible.
+    *   **Design System Tab:** Visualize the color palette with swatches and hex codes. Show typography examples and a spacing scale visualizer.
+    *   **Architecture Tab:** Display the folder tree. Diagram key data flows (e.g., "User Login -> Redux State Update -> Dashboard Render") using simple text flowcharts.
+    *   **Performance Tab:** List key frontend metrics (Core Web Vitals targets). Include a "Best Practices" checklist for new components.
+
+**Phase 3: Implement & Integrate**
+1.  **Write the Dashboard Code:** Generate the full `HazelDocDashboard.jsx` code. Use existing design patterns and the `ASSISTANT_COLORS` for Hazel.
+2.  **Create Supporting Data:** Generate a static JSON file (`/src/data/hazel-frontend-spec.json`) to power the dashboard tables, containing the component inventory and design tokens.
+3.  **Update Navigation:** Ensure Hazel's dashboard is accessible from the main sidebar, likely under a "Developer" or "Tech Docs" section. Update the navigation config if it exists.
+4.  **Add to Assistant Registry:** Update the `AI_ASSISTANTS_REGISTRY` in `AuroraCTODashboard.jsx` to include this new capability: `"features": ["Component Library (47+)", "Design System Management", "Live Frontend Documentation Dashboard"]`.
+
+**Final Deliverable:**
+1.  The complete `HazelDocDashboard.jsx` component.
+2.  The supporting `hazel-frontend-spec.json` data file.
+3.  Instructions on which file to update for sidebar navigation.
+4.  The updated entry for the `AI_ASSISTANTS_REGISTRY`.
+
+---
+
+### **Prompt 2: Create Willow's Backend Documentation Dashboard**
+
+**Core Instruction:** You are **Willow**, the Elite Backend Engineer AI Assistant. Your task is to analyze the entire backend codebase and create a comprehensive, interactive API and Service documentation dashboard that lives within your own directory. This dashboard must be a **live, queryable interface** for developers.
+
+**Context:** The project is the White Caves Real Estate platform. My purpose is to own the backend documentation.
+
+**Task Steps:**
+
+**Phase 1: Backend Codebase Audit**
+First, perform a complete analysis and output a structured summary.
+1.  **Inventory Tech Stack:** Extract exact versions from `/server/package.json`. Categorize: Runtime (Node.js), Framework (Express.js), ODM (Mongoose), Authentication (JWT, Firebase Admin), API Clients (Axios, Stripe SDK), and Utilities.
+2.  **Map the Data Layer:** Analyze `/server/models/`. List each Mongoose model (`User`, `Property`, `Lead`, `Owner`) and its key schema fields and relationships (references).
+3.  **Catalog API Endpoints:** Analyze `/server/routes/`. Create a master list of all RESTful endpoints, their HTTP methods, path, and a one-line description (e.g., `POST /api/leads - Creates a new lead`).
+4.  **Analyze Service Layer:** Review `/server/services/`. Document each core service (`AgentAssignmentEngine`, `ChatbotService`, `DashboardService`): its purpose, main methods, and dependencies.
+
+**Phase 2: Design the Documentation Dashboard Component**
+Create a new component: `/src/components/dashboards/WillowDashboard/WillowAPIDashboard.jsx`.
+1.  **Dashboard Structure:** Design a tabbed interface (`API Explorer`, `Data Models`, `Services`, `System Health`, `Deployment`).
+2.  **Content for Each Tab:**
+    *   **API Explorer Tab:** Create an interactive, searchable list of all endpoints. Clicking an endpoint expands a details panel showing: Method, Path, Required Headers (e.g., Authorization), Request Body Schema (as JSON), and Example Response. Include a "Test" button that could open a simple fetch() example.
+    *   **Data Models Tab:** Display each Mongoose schema as a clean, interactive table showing field names, types, required status, and references to other models.
+    *   **Services Tab:** Document each service in `/server/services/` with its class purpose, key method signatures, and a diagram of how it interacts with models and other services.
+    *   **System Health Tab:** Connect to existing or new backend health endpoints (`/api/system/health`) to display live status of MongoDB connection, external API integrations (WhatsApp, Stripe), and server metrics.
+    *   **Deployment Tab:** Document environment variables (`.env.example`), database migration notes, and server startup commands.
+
+**Phase 3: Implement & Integrate**
+1.  **Write the Dashboard Code:** Generate the full `WillowAPIDashboard.jsx` code. Use a technical, clean design. Consider using a mock API client to demonstrate the "Test" feature.
+2.  **Create Supporting Data:** Generate a static JSON file (`/src/data/willow-backend-spec.json`) containing the API endpoint catalog and model schemas.
+3.  **Create or Update Health Endpoint:** If not present, create a simple `/api/system/health` GET endpoint that returns MongoDB status and timestamp.
+4.  **Update Navigation & Registry:** Ensure Willow's dashboard is accessible from the sidebar. Update the `AI_ASSISTANTS_REGISTRY` to include: `"features": ["API Documentation & Explorer", "Data Model Reference", "Live System Health Monitor"]`.
+
+**Final Deliverable:**
+1.  The complete `WillowAPIDashboard.jsx` component.
+2.  The supporting `willow-backend-spec.json` data file.
+3.  The code for the `/api/system/health` endpoint.
+4.  Instructions for navigation update and the updated `AI_ASSISTANTS_REGISTRY` entry.
+
+---
+
+### **How to Execute:**
+
+1.  **Sequential Order:** Run **Prompt 1** in a new Replit Agent chat. Let Hazel build her dashboard. Once complete, run **Prompt 2** in another new chat for Willow.
+2.  **Integration:** After both are built, you will have two powerful, specialized documentation hubs. They should be linked from your main "Tech" or "Developer" section in the sidebar, accessible to your team.
+3.  **Maintenance:** In the future, you can simply ask Hazel or Willow to "update your documentation dashboard with the latest component/API changes."
+
+This approach embeds your documentation directly into the operational platform, making it far more likely to be used and kept current than a separate, static document.
