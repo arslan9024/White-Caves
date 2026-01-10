@@ -7,7 +7,7 @@ import {
   Filter, Inbox, TrendingUp, AlertTriangle, Lightbulb,
   DollarSign, Shield, Archive, Eye, ChevronRight, Zap,
   Building2, Network, Workflow, Bot, ChevronDown, Play,
-  MessageSquare
+  MessageSquare, RefreshCw, Database, Loader2
 } from 'lucide-react';
 import { AssistantDocsTab } from './shared';
 import { FlowchartViewer, ServiceDemoMode, ZoeConsole } from './index';
@@ -15,6 +15,7 @@ import AIAssistantsRegistry from './ui/AIAssistantsRegistry';
 import { EXECUTIVES, DIRECTORS, DEPARTMENTS_CONFIG } from '../../data/organization/orgStructure';
 import { EMPLOYEES, WHATSAPP_AGENTS } from '../../data/organization/employees';
 import { COMPANY_SERVICES, getAllServices, getServiceStats } from '../../data/services/companyServices';
+import useOrganizationData from '../../hooks/useOrganizationData';
 import {
   selectFilteredSuggestions,
   selectUnreviewedSuggestionsCount,
@@ -83,6 +84,20 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
   const [internalTab, setInternalTab] = useState('console');
   const [selectedSuggestion, setSelectedSuggestion] = useState(null);
 
+  const {
+    departments: apiDepartments,
+    assistants: apiAssistants,
+    teams: apiTeams,
+    services: apiServices,
+    stats: orgStats,
+    loading: orgLoading,
+    error: orgError,
+    hasData,
+    seeding,
+    refetch,
+    seedDatabase
+  } = useOrganizationData();
+
   const activeTab = activeFeature && FEATURE_TO_TAB[activeFeature] ? FEATURE_TO_TAB[activeFeature] : internalTab;
   const setActiveTab = setInternalTab;
   
@@ -93,6 +108,21 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
   const funnelMetrics = useSelector(selectLeadFunnelMetrics);
   const complianceMetrics = useSelector(selectComplianceMetrics);
   const vault = useSelector(selectConfidentialVault);
+
+  const servicesByCategory = useMemo(() => {
+    const grouped = {};
+    apiServices.forEach(service => {
+      if (!grouped[service.category]) {
+        grouped[service.category] = [];
+      }
+      grouped[service.category].push(service);
+    });
+    return grouped;
+  }, [apiServices]);
+
+  const totalServiceVolume = useMemo(() => {
+    return apiServices.reduce((sum, s) => sum + (s.metrics?.totalRequests || 0), 0);
+  }, [apiServices]);
 
   const handleStatusChange = useCallback((suggestionId, status) => {
     dispatch(updateSuggestionStatus({ suggestionId, status }));
@@ -181,13 +211,13 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
         </div>
         <div className="stat-card">
           <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
-            <Users size={20} />
+            <Bot size={20} />
           </div>
           <div className="stat-content">
-            <span className="stat-value">12</span>
+            <span className="stat-value">{orgStats?.assistants || apiAssistants.length || 32}</span>
             <span className="stat-label">AI Assistants</span>
           </div>
-          <span className="stat-change positive">All online</span>
+          <span className="stat-change positive">{orgStats?.onlineAssistants || apiAssistants.filter(a => a.status === 'online').length} online</span>
         </div>
       </div>
 
@@ -647,39 +677,129 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           <div className="departments-view">
             <div className="view-header">
               <h3><Building2 size={18} /> Department Overview</h3>
-              <span className="dept-count">{Object.keys(DEPARTMENTS_CONFIG).length} Departments</span>
+              <div className="header-actions">
+                <span className="dept-count">{apiDepartments.length || Object.keys(DEPARTMENTS_CONFIG).length} Departments</span>
+                <button 
+                  className="action-btn secondary small"
+                  onClick={refetch}
+                  disabled={orgLoading}
+                >
+                  <RefreshCw size={14} className={orgLoading ? 'spinning' : ''} />
+                  Refresh
+                </button>
+                {!hasData && (
+                  <button 
+                    className="action-btn primary small"
+                    onClick={seedDatabase}
+                    disabled={seeding}
+                  >
+                    <Database size={14} />
+                    {seeding ? 'Seeding...' : 'Seed Data'}
+                  </button>
+                )}
+              </div>
             </div>
-            <div className="departments-grid">
-              {Object.values(DEPARTMENTS_CONFIG).map(dept => (
-                <div key={dept.id} className="department-card" style={{ borderLeftColor: dept.color }}>
-                  <div className="dept-header">
-                    <div className="dept-icon" style={{ backgroundColor: `${dept.color}20`, color: dept.color }}>
-                      <Building2 size={20} />
-                    </div>
-                    <div className="dept-title">
-                      <h4>{dept.name}</h4>
-                      <p>{dept.description}</p>
-                    </div>
-                  </div>
-                  <div className="dept-kpis">
-                    {Object.entries(dept.kpis || {}).slice(0, 3).map(([key, value]) => (
-                      <div key={key} className="kpi-item">
-                        <span className="kpi-value">{typeof value === 'number' ? value.toLocaleString() : value}</span>
-                        <span className="kpi-label">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+            {orgLoading ? (
+              <div className="loading-state">
+                <Loader2 size={32} className="spinning" />
+                <p>Loading departments...</p>
+              </div>
+            ) : apiDepartments.length > 0 ? (
+              <div className="departments-grid">
+                {apiDepartments.map(dept => (
+                  <div key={dept._id} className="department-card" style={{ borderLeftColor: dept.color }}>
+                    <div className="dept-header">
+                      <div className="dept-icon" style={{ backgroundColor: `${dept.color}20`, color: dept.color }}>
+                        <Building2 size={20} />
                       </div>
-                    ))}
-                  </div>
-                  <div className="dept-assistants">
-                    <span className="assistants-label"><Bot size={12} /> AI Assistants:</span>
-                    <div className="assistants-list">
-                      {dept.assistants?.map(a => (
-                        <span key={a} className="assistant-tag" style={{ backgroundColor: `${dept.color}20`, color: dept.color }}>{a}</span>
+                      <div className="dept-title">
+                        <h4>{dept.name}</h4>
+                        <p>{dept.description}</p>
+                      </div>
+                    </div>
+                    <div className="dept-meta">
+                      <span className="meta-item"><Users size={12} /> {dept.head?.name || 'Not assigned'}</span>
+                      <span className="meta-item status-badge active">{dept.status}</span>
+                    </div>
+                    <div className="dept-kpis">
+                      {(dept.kpis || []).slice(0, 3).map((kpi, idx) => (
+                        <div key={idx} className="kpi-item">
+                          <span className="kpi-value">
+                            {kpi.current?.toLocaleString() || 0}
+                            <span className="kpi-unit">/{kpi.target?.toLocaleString()}</span>
+                          </span>
+                          <span className="kpi-label">{kpi.name}</span>
+                          <div className="kpi-bar">
+                            <div 
+                              className="kpi-fill" 
+                              style={{ 
+                                width: `${Math.min((kpi.current / kpi.target) * 100, 100)}%`,
+                                backgroundColor: dept.color 
+                              }} 
+                            />
+                          </div>
+                        </div>
                       ))}
                     </div>
+                    <div className="dept-budget">
+                      <span className="budget-label">Budget:</span>
+                      <span className="budget-value">
+                        {(dept.budget?.spent || 0).toLocaleString()} / {(dept.budget?.allocated || 0).toLocaleString()} AED
+                      </span>
+                    </div>
+                    <div className="dept-assistants">
+                      <span className="assistants-label"><Bot size={12} /> AI Assistants ({dept.assistants?.length || 0}):</span>
+                      <div className="assistants-list">
+                        {(dept.assistants || []).slice(0, 4).map(a => (
+                          <span 
+                            key={a._id || a} 
+                            className="assistant-tag" 
+                            style={{ backgroundColor: `${dept.color}20`, color: dept.color }}
+                          >
+                            {a.name || a}
+                          </span>
+                        ))}
+                        {(dept.assistants?.length || 0) > 4 && (
+                          <span className="more-tag">+{dept.assistants.length - 4}</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="departments-grid">
+                {Object.values(DEPARTMENTS_CONFIG).map(dept => (
+                  <div key={dept.id} className="department-card" style={{ borderLeftColor: dept.color }}>
+                    <div className="dept-header">
+                      <div className="dept-icon" style={{ backgroundColor: `${dept.color}20`, color: dept.color }}>
+                        <Building2 size={20} />
+                      </div>
+                      <div className="dept-title">
+                        <h4>{dept.name}</h4>
+                        <p>{dept.description}</p>
+                      </div>
+                    </div>
+                    <div className="dept-kpis">
+                      {Object.entries(dept.kpis || {}).slice(0, 3).map(([key, value]) => (
+                        <div key={key} className="kpi-item">
+                          <span className="kpi-value">{typeof value === 'number' ? value.toLocaleString() : value}</span>
+                          <span className="kpi-label">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="dept-assistants">
+                      <span className="assistants-label"><Bot size={12} /> AI Assistants:</span>
+                      <div className="assistants-list">
+                        {dept.assistants?.map(a => (
+                          <span key={a} className="assistant-tag" style={{ backgroundColor: `${dept.color}20`, color: dept.color }}>{a}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -688,50 +808,131 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
             <div className="view-header">
               <h3><Workflow size={18} /> Company Services</h3>
               <div className="services-stats">
-                <span>{getServiceStats().total} Services</span>
+                <span>{apiServices.length || getServiceStats().total} Services</span>
                 <span>|</span>
-                <span>{getServiceStats().totalMonthlyVolume.toLocaleString()} Monthly Volume</span>
+                <span>{totalServiceVolume.toLocaleString() || getServiceStats().totalMonthlyVolume.toLocaleString()} Total Requests</span>
+                <button 
+                  className="action-btn secondary small"
+                  onClick={refetch}
+                  disabled={orgLoading}
+                >
+                  <RefreshCw size={14} className={orgLoading ? 'spinning' : ''} />
+                </button>
               </div>
             </div>
-            <div className="services-categories">
-              {Object.entries(COMPANY_SERVICES).map(([category, services]) => (
-                <div key={category} className="service-category">
-                  <div className="category-header">
-                    <h4>{category.charAt(0).toUpperCase() + category.slice(1)}</h4>
-                    <span className="service-count">{services.length} services</span>
-                  </div>
-                  <div className="services-grid">
-                    {services.slice(0, 4).map(service => (
-                      <div key={service.id} className="service-card">
-                        <div className="service-header">
-                          <span className="service-icon">{service.icon}</span>
-                          <div className="service-info">
-                            <h5>{service.name}</h5>
-                            <p>{service.description?.slice(0, 60)}...</p>
+            {orgLoading ? (
+              <div className="loading-state">
+                <Loader2 size={32} className="spinning" />
+                <p>Loading services...</p>
+              </div>
+            ) : Object.keys(servicesByCategory).length > 0 ? (
+              <div className="services-categories">
+                {Object.entries(servicesByCategory).map(([category, categoryServices]) => (
+                  <div key={category} className="service-category">
+                    <div className="category-header">
+                      <h4>{category}</h4>
+                      <span className="service-count">{categoryServices.length} services</span>
+                    </div>
+                    <div className="services-grid">
+                      {categoryServices.map(service => (
+                        <div key={service._id} className="service-card">
+                          <div className="service-header">
+                            <div className="service-icon-wrap" style={{ backgroundColor: 'rgba(99, 102, 241, 0.15)' }}>
+                              <Workflow size={18} style={{ color: '#6366F1' }} />
+                            </div>
+                            <div className="service-info">
+                              <h5>{service.name}</h5>
+                              <p>{service.shortDescription || service.description?.slice(0, 60)}...</p>
+                            </div>
+                          </div>
+                          <div className="service-meta">
+                            <span className="service-stat"><Clock size={12} /> {service.workflow?.estimatedDuration || 'N/A'}</span>
+                            <span className="service-stat"><TrendingUp size={12} /> {service.metrics?.totalRequests || 0} requests</span>
+                          </div>
+                          <div className="service-metrics">
+                            <div className="metric-item">
+                              <span className="metric-value">{service.metrics?.completedRequests || 0}</span>
+                              <span className="metric-label">Completed</span>
+                            </div>
+                            <div className="metric-item">
+                              <span className="metric-value">{service.metrics?.satisfactionScore || 0}%</span>
+                              <span className="metric-label">Satisfaction</span>
+                            </div>
+                            <div className="metric-item">
+                              <span className="metric-value">{((service.metrics?.revenue || 0) / 1000).toFixed(0)}K</span>
+                              <span className="metric-label">Revenue</span>
+                            </div>
+                          </div>
+                          <div className="service-workflow">
+                            <span className="workflow-label">Workflow ({service.workflow?.stages?.length || 0} stages):</span>
+                            <div className="workflow-stages">
+                              {(service.workflow?.stages || []).slice(0, 3).map((stage, idx) => (
+                                <span key={idx} className="stage-chip">
+                                  {stage.name}
+                                  {idx < Math.min((service.workflow?.stages?.length || 0) - 1, 2) && <ChevronRight size={10} />}
+                                </span>
+                              ))}
+                              {(service.workflow?.stages?.length || 0) > 3 && (
+                                <span className="more">+{service.workflow.stages.length - 3}</span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="service-pricing">
+                            <span className="pricing-type">{service.pricing?.type}</span>
+                            {service.pricing?.percentage && (
+                              <span className="pricing-value">{service.pricing.percentage}%</span>
+                            )}
+                            {service.pricing?.amount && (
+                              <span className="pricing-value">{service.pricing.amount} AED</span>
+                            )}
                           </div>
                         </div>
-                        <div className="service-meta">
-                          <span className="service-stat"><Clock size={12} /> {service.avgDuration}</span>
-                          <span className="service-stat"><TrendingUp size={12} /> {service.monthlyVolume}/mo</span>
-                        </div>
-                        <div className="service-workflow">
-                          <span className="workflow-label">Workflow:</span>
-                          <div className="workflow-stages">
-                            {service.stages?.slice(0, 4).map((stage, idx) => (
-                              <span key={stage.id} className="stage-chip">
-                                {stage.icon} {stage.name}
-                                {idx < Math.min(service.stages.length - 1, 3) && <ChevronRight size={10} />}
-                              </span>
-                            ))}
-                            {service.stages?.length > 4 && <span className="more">+{service.stages.length - 4}</span>}
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="services-categories">
+                {Object.entries(COMPANY_SERVICES).map(([category, services]) => (
+                  <div key={category} className="service-category">
+                    <div className="category-header">
+                      <h4>{category.charAt(0).toUpperCase() + category.slice(1)}</h4>
+                      <span className="service-count">{services.length} services</span>
+                    </div>
+                    <div className="services-grid">
+                      {services.slice(0, 4).map(service => (
+                        <div key={service.id} className="service-card">
+                          <div className="service-header">
+                            <span className="service-icon">{service.icon}</span>
+                            <div className="service-info">
+                              <h5>{service.name}</h5>
+                              <p>{service.description?.slice(0, 60)}...</p>
+                            </div>
+                          </div>
+                          <div className="service-meta">
+                            <span className="service-stat"><Clock size={12} /> {service.avgDuration}</span>
+                            <span className="service-stat"><TrendingUp size={12} /> {service.monthlyVolume}/mo</span>
+                          </div>
+                          <div className="service-workflow">
+                            <span className="workflow-label">Workflow:</span>
+                            <div className="workflow-stages">
+                              {service.stages?.slice(0, 4).map((stage, idx) => (
+                                <span key={stage.id} className="stage-chip">
+                                  {stage.icon} {stage.name}
+                                  {idx < Math.min(service.stages.length - 1, 3) && <ChevronRight size={10} />}
+                                </span>
+                              ))}
+                              {service.stages?.length > 4 && <span className="more">+{service.stages.length - 4}</span>}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
