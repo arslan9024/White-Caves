@@ -909,295 +909,999 @@ export const TEAMS_SEED = [
 ];
 
 export const SERVICES_SEED = [
+  // CATEGORY 1: LUXURY PROPERTY TRANSACTIONS (LPT-001 to LPT-005)
   {
-    name: 'Off-Plan Purchase',
-    code: 'OFF-PLAN-PURCHASE',
-    category: 'Property Sales',
-    description: 'Purchase new development properties directly from developers with flexible payment plans',
-    shortDescription: 'New development properties with payment plans',
-    icon: 'Building2',
-    departmentCode: 'SALES',
-    assistantCode: 'SOPHIA',
-    workflow: {
-      stages: [
-        { order: 1, name: 'Research', description: 'Market analysis and project comparison', duration: '3-5 days', actions: ['Market analysis', 'Developer review', 'Project comparison'] },
-        { order: 2, name: 'Selection', description: 'Unit selection and negotiation', duration: '5-7 days', actions: ['Unit selection', 'Floor plan review', 'Price negotiation'] },
-        { order: 3, name: 'Booking', description: 'Reservation and documentation', duration: '1-2 days', actions: ['Reservation form', 'Initial deposit', 'Document collection'] },
-        { order: 4, name: 'Payment Plan', description: 'Payment schedule setup', duration: '1-3 days', actions: ['Plan selection', 'Payment schedule', 'Contract signing'] },
-        { order: 5, name: 'Handover', description: 'Final handover at completion', duration: 'At completion', actions: ['Inspection', 'Snagging', 'Key collection'] }
-      ],
-      estimatedDuration: '30-60 days',
-      sla: '48 hours response'
-    },
-    pricing: { type: 'percentage', percentage: 2, details: 'Commission on sale value' },
-    targetAudience: ['buyers', 'investors'],
-    metrics: { totalRequests: 245, completedRequests: 198, avgCompletionTime: 45, satisfactionScore: 94, revenue: 12500000 },
-    order: 1
-  },
-  {
-    name: 'Secondary Market Sale',
-    code: 'SECONDARY-SALE',
-    category: 'Property Sales',
-    description: 'Buy or sell existing properties in the secondary market with full transaction support',
-    shortDescription: 'Buy/sell existing properties',
-    icon: 'Home',
-    departmentCode: 'SALES',
-    assistantCode: 'SOPHIA',
-    workflow: {
-      stages: [
-        { order: 1, name: 'Valuation', description: 'Professional property valuation', duration: '2-3 days', actions: ['Property inspection', 'Market comparison', 'Price recommendation'] },
-        { order: 2, name: 'Listing', description: 'Property listing and marketing', duration: '1-2 days', actions: ['Photo shoot', 'Description writing', 'Portal upload'] },
-        { order: 3, name: 'Marketing', description: 'Active marketing campaign', duration: 'Ongoing', actions: ['Portal featuring', 'Social media', 'Email campaigns'] },
-        { order: 4, name: 'Negotiation', description: 'Offer and counter-offer management', duration: '3-7 days', actions: ['Offer presentation', 'Counter offers', 'Terms agreement'] },
-        { order: 5, name: 'Closing', description: 'Transaction completion', duration: '7-14 days', actions: ['Contract signing', 'DLD transfer', 'Payment processing'] }
-      ],
-      estimatedDuration: '45-90 days',
-      sla: '24 hours response'
-    },
-    pricing: { type: 'percentage', percentage: 2, details: 'Commission on sale value' },
-    targetAudience: ['buyers', 'sellers'],
-    metrics: { totalRequests: 320, completedRequests: 256, avgCompletionTime: 67, satisfactionScore: 92, revenue: 18200000 },
-    order: 2
-  },
-  {
-    name: 'Luxury Property Sales',
-    code: 'LUXURY-SALES',
-    category: 'Property Sales',
-    description: 'White-glove service for ultra-luxury properties above AED 10M with VIP treatment',
-    shortDescription: 'Ultra-luxury property sales',
+    name: 'Ultra-Prime Property Acquisition',
+    code: 'LPT-001',
+    category: 'Luxury Property Transactions',
+    tier: 'ultra',
+    description: 'End-to-end acquisition of properties AED 50M+ with discretion, portfolio integration, and tax structuring',
+    shortDescription: 'Ultra-luxury acquisition AED 50M+',
     icon: 'Crown',
     departmentCode: 'SALES',
     assistantCode: 'KAIROS',
     workflow: {
       stages: [
-        { order: 1, name: 'VIP Introduction', description: 'Personal consultation and portfolio presentation', duration: '1-3 days', actions: ['Personal consultation', 'Lifestyle assessment', 'Portfolio presentation'] },
-        { order: 2, name: 'Private Viewing', description: 'Exclusive property access', duration: 'By appointment', actions: ['Exclusive access', 'Champagne tour', 'Privacy guaranteed'] },
-        { order: 3, name: 'Custom Terms', description: 'Bespoke negotiation', duration: '7-14 days', actions: ['Bespoke negotiation', 'Special conditions', 'Legal customization'] },
-        { order: 4, name: 'White Glove Closing', description: 'Concierge closing service', duration: '14-30 days', actions: ['Concierge service', 'Full coordination', 'VIP handover'] }
+        { order: 1, name: 'Confidential Briefing', description: 'Private consultation and NDA', duration: '1-2 days', actions: ['Executive consultation', 'NDA signing', 'Requirements assessment'] },
+        { order: 2, name: 'Portfolio Curation', description: 'Exclusive property selection', duration: '7-14 days', actions: ['Off-market sourcing', 'Portfolio integration analysis', 'Investment modeling'] },
+        { order: 3, name: 'Private Viewing', description: 'Exclusive property access', duration: 'By appointment', actions: ['Helicopter tours', 'Private showings', 'Lifestyle preview'] },
+        { order: 4, name: 'Bespoke Negotiation', description: 'Custom deal structuring', duration: '14-30 days', actions: ['Price negotiation', 'Tax optimization', 'Legal structuring'] },
+        { order: 5, name: 'White Glove Closing', description: 'Concierge transaction completion', duration: '30-60 days', actions: ['Full legal coordination', 'Fund transfer management', 'VIP handover'] }
       ],
       estimatedDuration: '90-180 days',
+      sla: '2 hours response'
+    },
+    pricing: { type: 'percentage', percentage: 1.75, details: '1.5-2% of property value + advisory fee' },
+    targetAudience: ['uhnwi', 'family_offices', 'sovereign_funds'],
+    metrics: { totalRequests: 24, completedRequests: 18, avgCompletionTime: 135, satisfactionScore: 99, revenue: 42500000 },
+    order: 1
+  },
+  {
+    name: 'Prime Residential Sales',
+    code: 'LPT-002',
+    category: 'Luxury Property Transactions',
+    tier: 'premium',
+    description: 'Full-service sales of villas/apartments (AED 10-50M) with staging, marketing, and negotiation',
+    shortDescription: 'Luxury residential AED 10-50M',
+    icon: 'Home',
+    departmentCode: 'SALES',
+    assistantCode: 'SOPHIA',
+    workflow: {
+      stages: [
+        { order: 1, name: 'VIP Onboarding', description: 'Exclusive client consultation', duration: '1-3 days', actions: ['Personal consultation', 'Lifestyle assessment', 'Portfolio review'] },
+        { order: 2, name: 'Property Selection', description: 'Curated property shortlist', duration: '5-10 days', actions: ['Market analysis', 'Property shortlisting', 'Virtual previews'] },
+        { order: 3, name: 'Private Viewings', description: 'Exclusive property tours', duration: '3-7 days', actions: ['Private showings', 'Neighborhood tours', 'Developer meetings'] },
+        { order: 4, name: 'Negotiation', description: 'Expert price negotiation', duration: '7-14 days', actions: ['Offer presentation', 'Counter-negotiation', 'Terms finalization'] },
+        { order: 5, name: 'Transaction', description: 'Full closing support', duration: '14-30 days', actions: ['Contract review', 'DLD transfer', 'Key handover'] }
+      ],
+      estimatedDuration: '60-120 days',
       sla: '4 hours response'
     },
-    pricing: { type: 'percentage', percentage: 2.5, details: 'Premium commission on luxury sales' },
-    targetAudience: ['buyers', 'investors'],
-    metrics: { totalRequests: 48, completedRequests: 32, avgCompletionTime: 120, satisfactionScore: 98, revenue: 8500000 },
+    pricing: { type: 'percentage', percentage: 2, details: '2% of property value' },
+    targetAudience: ['hnwi', 'executives', 'entrepreneurs'],
+    metrics: { totalRequests: 156, completedRequests: 128, avgCompletionTime: 85, satisfactionScore: 96, revenue: 28500000 },
+    order: 2
+  },
+  {
+    name: 'Waterfront & Island Properties',
+    code: 'LPT-003',
+    category: 'Luxury Property Transactions',
+    tier: 'ultra',
+    description: 'Specialized expertise in Palm Jumeirah, Bluewaters, Dubai Creek Harbour properties',
+    shortDescription: 'Waterfront specialist service',
+    icon: 'Waves',
+    departmentCode: 'SALES',
+    assistantCode: 'KAIROS',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Waterfront Briefing', description: 'Specialized market overview', duration: '1-2 days', actions: ['Market overview', 'Community comparison', 'Investment potential'] },
+        { order: 2, name: 'Yacht Tour', description: 'Property viewing by water', duration: '1 day', actions: ['Yacht property tour', 'Beach access review', 'Marina inspection'] },
+        { order: 3, name: 'Developer Relations', description: 'Direct developer access', duration: '3-7 days', actions: ['Developer negotiations', 'Exclusive inventory', 'Payment flexibility'] },
+        { order: 4, name: 'Premium Closing', description: 'Enhanced closing service', duration: '21-45 days', actions: ['Legal coordination', 'Transfer management', 'Lifestyle setup'] }
+      ],
+      estimatedDuration: '45-90 days',
+      sla: '2 hours response'
+    },
+    pricing: { type: 'percentage', percentage: 2.25, details: '2% + premium service fee' },
+    targetAudience: ['international_investors', 'celebrity_clients', 'uhnwi'],
+    metrics: { totalRequests: 68, completedRequests: 52, avgCompletionTime: 72, satisfactionScore: 98, revenue: 35200000 },
     order: 3
   },
   {
-    name: 'Residential Rental',
-    code: 'RESIDENTIAL-RENTAL',
-    category: 'Property Rentals',
-    description: 'End-to-end residential leasing with Ejari registration and tenant screening',
-    shortDescription: 'Full-service residential leasing',
+    name: 'Off-Plan Luxury Projects',
+    code: 'LPT-004',
+    category: 'Luxury Property Transactions',
+    tier: 'premium',
+    description: 'Exclusive access to pre-launch developments with early investor pricing',
+    shortDescription: 'Pre-launch investment access',
+    icon: 'Building2',
+    departmentCode: 'SALES',
+    assistantCode: 'SOPHIA',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Project Pipeline', description: 'Upcoming project preview', duration: '2-5 days', actions: ['Developer briefings', 'Project comparison', 'ROI analysis'] },
+        { order: 2, name: 'Early Access', description: 'Pre-launch registration', duration: '1-3 days', actions: ['Priority registration', 'Unit selection', 'Price lock'] },
+        { order: 3, name: 'Payment Planning', description: 'Flexible payment structuring', duration: '2-5 days', actions: ['Payment plan options', 'Post-handover plans', 'Financing coordination'] },
+        { order: 4, name: 'Booking', description: 'Reservation completion', duration: '1-2 days', actions: ['SPA signing', 'Initial payment', 'Registration'] },
+        { order: 5, name: 'Progress Monitoring', description: 'Construction updates', duration: 'Ongoing', actions: ['Site visits', 'Progress reports', 'Milestone tracking'] }
+      ],
+      estimatedDuration: '14-30 days initial, then ongoing',
+      sla: '24 hours response'
+    },
+    pricing: { type: 'percentage', percentage: 2.5, details: '2-3% (developer paid)' },
+    targetAudience: ['investors', 'portfolio_diversifiers', 'speculative_investors'],
+    metrics: { totalRequests: 312, completedRequests: 245, avgCompletionTime: 28, satisfactionScore: 94, revenue: 18500000 },
+    order: 4
+  },
+  {
+    name: 'Bulk Portfolio Transactions',
+    code: 'LPT-005',
+    category: 'Luxury Property Transactions',
+    tier: 'corporate',
+    description: 'Acquisition/disposal of multiple properties (5+ units) with portfolio optimization',
+    shortDescription: 'Multi-property portfolio deals',
+    icon: 'Layers',
+    departmentCode: 'SALES',
+    assistantCode: 'KAIROS',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Portfolio Analysis', description: 'Comprehensive portfolio review', duration: '5-10 days', actions: ['Asset inventory', 'Valuation analysis', 'Optimization strategy'] },
+        { order: 2, name: 'Deal Structuring', description: 'Bulk transaction design', duration: '7-14 days', actions: ['Volume discounts', 'Transaction bundling', 'Tax efficiency'] },
+        { order: 3, name: 'Institutional Negotiation', description: 'Professional negotiations', duration: '14-30 days', actions: ['Seller negotiations', 'Due diligence coordination', 'Terms finalization'] },
+        { order: 4, name: 'Bulk Transfer', description: 'Multi-property transfer', duration: '30-60 days', actions: ['Simultaneous transfers', 'Fund management', 'Portfolio handover'] }
+      ],
+      estimatedDuration: '60-120 days',
+      sla: '4 hours response'
+    },
+    pricing: { type: 'percentage', percentage: 1.25, details: '1-1.5% (volume discount)' },
+    targetAudience: ['institutional_investors', 'reits', 'funds'],
+    metrics: { totalRequests: 18, completedRequests: 12, avgCompletionTime: 95, satisfactionScore: 97, revenue: 48200000 },
+    order: 5
+  },
+  // CATEGORY 2: PREMIUM LEASING SERVICES (PLS-001 to PLS-005)
+  {
+    name: 'Short-Term Luxury Leasing',
+    code: 'PLS-001',
+    category: 'Premium Leasing Services',
+    tier: 'premium',
+    description: 'Premium properties (3-11 months) with full concierge services for executives and productions',
+    shortDescription: 'Short-term luxury rentals',
+    icon: 'Clock',
+    departmentCode: 'OPS',
+    assistantCode: 'DAISY',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Requirements', description: 'Short-term needs assessment', duration: '1 day', actions: ['Duration confirmation', 'Amenity requirements', 'Location preferences'] },
+        { order: 2, name: 'Curated Selection', description: 'Property matching', duration: '2-3 days', actions: ['Inventory matching', 'Availability check', 'Virtual tours'] },
+        { order: 3, name: 'Booking', description: 'Reservation and contract', duration: '1-2 days', actions: ['Rate confirmation', 'Contract signing', 'Deposit payment'] },
+        { order: 4, name: 'Concierge Setup', description: 'Property preparation', duration: '1 day', actions: ['Deep cleaning', 'Welcome supplies', 'Concierge briefing'] }
+      ],
+      estimatedDuration: '5-7 days',
+      sla: '4 hours response'
+    },
+    pricing: { type: 'percentage', percentage: 8, details: '8% of rent + setup fee' },
+    targetAudience: ['executives', 'seasonal_residents', 'productions'],
+    metrics: { totalRequests: 245, completedRequests: 218, avgCompletionTime: 5, satisfactionScore: 95, revenue: 4200000 },
+    order: 6
+  },
+  {
+    name: 'Long-Term Premium Rentals',
+    code: 'PLS-002',
+    category: 'Premium Leasing Services',
+    tier: 'essential',
+    description: '1-3 year leases with comprehensive property management and tenant support',
+    shortDescription: 'Premium long-term leasing',
     icon: 'Key',
     departmentCode: 'OPS',
     assistantCode: 'DAISY',
     workflow: {
       stages: [
-        { order: 1, name: 'Inquiry', description: 'Requirements gathering', duration: 'Same day', actions: ['Requirements gathering', 'Budget confirmation', 'Availability check'] },
-        { order: 2, name: 'Viewing', description: 'Property tours', duration: '1-3 days', actions: ['Schedule viewing', 'Property tour', 'Q&A session'] },
-        { order: 3, name: 'Application', description: 'Tenant application', duration: '1 day', actions: ['Application form', 'Document submission', 'Initial checks'] },
-        { order: 4, name: 'Contract', description: 'Lease agreement', duration: '1-2 days', actions: ['Contract drafting', 'Terms review', 'Signing'] },
-        { order: 5, name: 'Ejari', description: 'DLD registration', duration: '1-2 days', actions: ['DLD submission', 'Registration', 'Certificate issuance'] },
-        { order: 6, name: 'Handover', description: 'Key handover', duration: '1 day', actions: ['Inventory check', 'Key handover', 'Welcome pack'] }
+        { order: 1, name: 'Inquiry', description: 'Requirements gathering', duration: 'Same day', actions: ['Requirements', 'Budget', 'Timeline'] },
+        { order: 2, name: 'Viewings', description: 'Property tours', duration: '3-7 days', actions: ['Scheduled tours', 'Neighborhood orientation', 'Q&A'] },
+        { order: 3, name: 'Application', description: 'Tenant vetting', duration: '2-3 days', actions: ['Background check', 'References', 'Income verification'] },
+        { order: 4, name: 'Lease Signing', description: 'Contract execution', duration: '1-2 days', actions: ['Lease drafting', 'Review', 'Signing'] },
+        { order: 5, name: 'Ejari & Handover', description: 'Registration and move-in', duration: '2-3 days', actions: ['DLD registration', 'Inventory', 'Key handover'] }
       ],
-      estimatedDuration: '7-14 days',
+      estimatedDuration: '10-20 days',
       sla: '4 hours response'
     },
-    pricing: { type: 'percentage', percentage: 5, details: '5% of annual rent' },
-    targetAudience: ['tenants', 'landlords'],
-    metrics: { totalRequests: 856, completedRequests: 742, avgCompletionTime: 10, satisfactionScore: 91, revenue: 3200000 },
-    order: 4
+    pricing: { type: 'percentage', percentage: 5, details: '5% of annual rent (landlord paid)' },
+    targetAudience: ['expat_families', 'corporate_assignees'],
+    metrics: { totalRequests: 856, completedRequests: 742, avgCompletionTime: 12, satisfactionScore: 92, revenue: 5800000 },
+    order: 7
   },
   {
-    name: 'Commercial Leasing',
-    code: 'COMMERCIAL-LEASE',
-    category: 'Property Rentals',
-    description: 'Office, retail, and warehouse leasing for businesses with fitout coordination',
-    shortDescription: 'Business property leasing',
+    name: 'Corporate Housing Solutions',
+    code: 'PLS-003',
+    category: 'Premium Leasing Services',
+    tier: 'corporate',
+    description: 'Tailored housing packages for corporate relocations (5+ employees)',
+    shortDescription: 'Corporate relocation housing',
     icon: 'Building',
     departmentCode: 'OPS',
     assistantCode: 'DAISY',
     workflow: {
       stages: [
-        { order: 1, name: 'Requirements', description: 'Space needs assessment', duration: '1-2 days', actions: ['Space needs', 'Location preferences', 'Budget range'] },
-        { order: 2, name: 'Site Visit', description: 'Property tours', duration: '3-7 days', actions: ['Property tours', 'Space assessment', 'Infrastructure check'] },
-        { order: 3, name: 'Negotiation', description: 'Terms negotiation', duration: '1-2 weeks', actions: ['Rent negotiation', 'Term discussion', 'Incentives'] },
-        { order: 4, name: 'Fit-out', description: 'Space customization', duration: '2-8 weeks', actions: ['Design approval', 'Construction', 'Handover preparation'] },
-        { order: 5, name: 'Lease Signing', description: 'Contract execution', duration: '3-5 days', actions: ['Contract finalization', 'Legal review', 'Execution'] }
+        { order: 1, name: 'Corporate Assessment', description: 'Company needs analysis', duration: '2-3 days', actions: ['Employee count', 'Budget allocation', 'Location requirements'] },
+        { order: 2, name: 'Portfolio Proposal', description: 'Housing options', duration: '3-5 days', actions: ['Inventory matching', 'Rate negotiation', 'Bulk pricing'] },
+        { order: 3, name: 'Master Agreement', description: 'Corporate contract', duration: '3-7 days', actions: ['Terms negotiation', 'Legal review', 'Contract signing'] },
+        { order: 4, name: 'Implementation', description: 'Housing rollout', duration: 'Ongoing', actions: ['Individual placements', 'Move coordination', 'Ongoing support'] }
       ],
-      estimatedDuration: '30-60 days',
-      sla: '24 hours response'
+      estimatedDuration: '14-30 days setup',
+      sla: '2 hours response'
     },
-    pricing: { type: 'percentage', percentage: 5, details: '5% of annual rent' },
-    targetAudience: ['tenants'],
-    metrics: { totalRequests: 124, completedRequests: 89, avgCompletionTime: 45, satisfactionScore: 93, revenue: 1850000 },
-    order: 5
+    pricing: { type: 'percentage', percentage: 6, details: '6% + corporate account fee' },
+    targetAudience: ['multinationals', 'government_entities'],
+    metrics: { totalRequests: 48, completedRequests: 42, avgCompletionTime: 25, satisfactionScore: 96, revenue: 3500000 },
+    order: 8
   },
   {
-    name: 'Property Management',
-    code: 'PROPERTY-MGMT',
-    category: 'Property Management',
-    description: 'Full property management including tenant relations, maintenance, and rent collection',
+    name: 'Vacation Home Management',
+    code: 'PLS-004',
+    category: 'Premium Leasing Services',
+    tier: 'premium',
+    description: 'Turnkey management of luxury vacation properties with rental optimization',
+    shortDescription: 'Vacation rental management',
+    icon: 'Sun',
+    departmentCode: 'OPS',
+    assistantCode: 'SENTINEL',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Property Assessment', description: 'Vacation potential evaluation', duration: '2-3 days', actions: ['Property inspection', 'Market analysis', 'Rate optimization'] },
+        { order: 2, name: 'Platform Setup', description: 'Multi-platform listing', duration: '5-7 days', actions: ['Photography', 'Listing creation', 'Calendar sync'] },
+        { order: 3, name: 'Ongoing Management', description: 'Full-service operation', duration: 'Continuous', actions: ['Guest communication', 'Check-in/out', 'Cleaning coordination'] }
+      ],
+      estimatedDuration: 'Ongoing service',
+      sla: '1 hour for urgent issues'
+    },
+    pricing: { type: 'percentage', percentage: 25, details: '20-30% of rental income' },
+    targetAudience: ['absentee_owners', 'international_investors'],
+    metrics: { totalRequests: 124, completedRequests: 112, avgCompletionTime: 7, satisfactionScore: 91, revenue: 2800000 },
+    order: 9
+  },
+  {
+    name: 'Serviced Apartment Placement',
+    code: 'PLS-005',
+    category: 'Premium Leasing Services',
+    tier: 'essential',
+    description: 'Luxury serviced apartments with hotel amenities for short-term stays',
+    shortDescription: 'Serviced apartment booking',
+    icon: 'Hotel',
+    departmentCode: 'OPS',
+    assistantCode: 'DAISY',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Search', description: 'Availability check', duration: 'Same day', actions: ['Date confirmation', 'Location matching', 'Amenity requirements'] },
+        { order: 2, name: 'Selection', description: 'Property comparison', duration: '1-2 days', actions: ['Options presentation', 'Virtual tours', 'Rate comparison'] },
+        { order: 3, name: 'Booking', description: 'Reservation', duration: 'Same day', actions: ['Rate lock', 'Payment processing', 'Confirmation'] }
+      ],
+      estimatedDuration: '1-3 days',
+      sla: '2 hours response'
+    },
+    pricing: { type: 'percentage', percentage: 10, details: '10% of stay value' },
+    targetAudience: ['business_travelers', 'medical_tourism'],
+    metrics: { totalRequests: 312, completedRequests: 298, avgCompletionTime: 1.5, satisfactionScore: 93, revenue: 1250000 },
+    order: 10
+  },
+
+  // CATEGORY 3: PROPERTY & PORTFOLIO MANAGEMENT (PPM-001 to PPM-005)
+  {
+    name: 'Full-Service Property Management',
+    code: 'PPM-001',
+    category: 'Property & Portfolio Management',
+    tier: 'essential',
+    description: 'End-to-end management: tenant sourcing, rent collection, maintenance, compliance',
     shortDescription: 'Complete property management',
     icon: 'Settings',
     departmentCode: 'OPS',
     assistantCode: 'SENTINEL',
     workflow: {
       stages: [
-        { order: 1, name: 'Onboarding', description: 'Property assessment and setup', duration: '3-5 days', actions: ['Property inspection', 'Documentation', 'System setup'] },
-        { order: 2, name: 'Ongoing Management', description: 'Day-to-day operations', duration: 'Monthly', actions: ['Rent collection', 'Maintenance coordination', 'Tenant relations'] }
+        { order: 1, name: 'Onboarding', description: 'Property setup', duration: '3-5 days', actions: ['Property inspection', 'Documentation', 'System setup'] },
+        { order: 2, name: 'Tenant Management', description: 'Ongoing tenant relations', duration: 'Continuous', actions: ['Communication', 'Issue resolution', 'Lease renewals'] },
+        { order: 3, name: 'Financial Management', description: 'Rent and expenses', duration: 'Monthly', actions: ['Rent collection', 'Expense tracking', 'Owner reporting'] },
+        { order: 4, name: 'Maintenance', description: 'Property upkeep', duration: 'As needed', actions: ['Issue logging', 'Vendor coordination', 'Quality control'] }
       ],
-      estimatedDuration: 'Ongoing',
+      estimatedDuration: 'Ongoing service',
       sla: '4 hours for urgent issues'
     },
-    pricing: { type: 'percentage', percentage: 8, details: '8% of monthly rent' },
-    targetAudience: ['landlords', 'investors'],
-    metrics: { totalRequests: 456, completedRequests: 423, avgCompletionTime: 5, satisfactionScore: 89, revenue: 2100000 },
-    order: 6
+    pricing: { type: 'percentage', percentage: 6, details: '4-8% of monthly rent' },
+    targetAudience: ['absentee_landlords', 'international_investors'],
+    metrics: { totalRequests: 456, completedRequests: 423, avgCompletionTime: 5, satisfactionScore: 91, revenue: 4200000 },
+    order: 11
   },
   {
-    name: 'Maintenance Request',
-    code: 'MAINTENANCE',
-    category: 'Property Management',
-    description: 'Property maintenance and repair coordination with verified vendors',
-    shortDescription: 'Maintenance and repairs',
-    icon: 'Wrench',
+    name: 'Luxury Concierge Services',
+    code: 'PPM-002',
+    category: 'Property & Portfolio Management',
+    tier: 'ultra',
+    description: '24/7 concierge, housekeeping, personal shopping, event planning',
+    shortDescription: '24/7 luxury concierge',
+    icon: 'Bell',
     departmentCode: 'OPS',
-    assistantCode: 'SENTINEL',
+    assistantCode: 'JUNO',
     workflow: {
       stages: [
-        { order: 1, name: 'Report', description: 'Issue reporting', duration: 'Immediate', actions: ['Issue description', 'Photo upload', 'Priority setting'] },
-        { order: 2, name: 'Assessment', description: 'Problem diagnosis', duration: '24 hours', actions: ['Technician visit', 'Problem diagnosis', 'Scope definition'] },
-        { order: 3, name: 'Quote', description: 'Cost estimation', duration: '1-2 days', actions: ['Cost estimate', 'Parts list', 'Timeline'] },
-        { order: 4, name: 'Work', description: 'Repair execution', duration: '1-5 days', actions: ['Schedule work', 'Execute repair', 'Quality check'] },
-        { order: 5, name: 'Verify', description: 'Completion verification', duration: '1 day', actions: ['Tenant inspection', 'Sign-off', 'Case closure'] }
+        { order: 1, name: 'Client Profiling', description: 'Lifestyle assessment', duration: '1-2 days', actions: ['Preference gathering', 'Service selection', 'Schedule setup'] },
+        { order: 2, name: 'Service Activation', description: 'Concierge team assignment', duration: '1 day', actions: ['Team briefing', 'Contact setup', 'Emergency protocols'] },
+        { order: 3, name: 'Ongoing Support', description: '24/7 availability', duration: 'Continuous', actions: ['Request fulfillment', 'Proactive service', 'Quality assurance'] }
       ],
-      estimatedDuration: '1-7 days',
-      sla: '4 hours for emergencies'
+      estimatedDuration: 'Ongoing service',
+      sla: '15 minutes response'
     },
-    pricing: { type: 'custom', details: 'Cost plus 15% management fee' },
-    targetAudience: ['tenants', 'landlords'],
-    metrics: { totalRequests: 1245, completedRequests: 1189, avgCompletionTime: 3, satisfactionScore: 87, revenue: 890000 },
-    order: 7
+    pricing: { type: 'subscription', monthly: 5000, details: 'AED 2,500-10,000/month' },
+    targetAudience: ['uhnwi_residents', 'vip_tenants'],
+    metrics: { totalRequests: 89, completedRequests: 89, avgCompletionTime: 0.5, satisfactionScore: 98, revenue: 3200000 },
+    order: 12
   },
   {
-    name: 'KYC Verification',
-    code: 'KYC',
-    category: 'Legal & Compliance',
-    description: 'Know Your Customer identity verification and risk assessment',
-    shortDescription: 'Identity verification',
-    icon: 'UserCheck',
+    name: 'Portfolio Performance Optimization',
+    code: 'PPM-003',
+    category: 'Property & Portfolio Management',
+    tier: 'premium',
+    description: 'AI-driven analysis of rental yields, occupancy rates, value appreciation',
+    shortDescription: 'Portfolio analytics and optimization',
+    icon: 'TrendingUp',
+    departmentCode: 'INTEL',
+    assistantCode: 'CIPHER',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Portfolio Audit', description: 'Comprehensive review', duration: '5-7 days', actions: ['Asset inventory', 'Performance analysis', 'Market comparison'] },
+        { order: 2, name: 'Strategy Development', description: 'Optimization plan', duration: '3-5 days', actions: ['Yield optimization', 'Rebalancing recommendations', 'Exit strategies'] },
+        { order: 3, name: 'Implementation', description: 'Action execution', duration: 'Ongoing', actions: ['Action items', 'Progress tracking', 'Quarterly reviews'] }
+      ],
+      estimatedDuration: 'Initial 2 weeks, then quarterly',
+      sla: '24 hours response'
+    },
+    pricing: { type: 'percentage', percentage: 1, details: '1% of portfolio value annually' },
+    targetAudience: ['portfolio_owners', 'hnwi'],
+    metrics: { totalRequests: 68, completedRequests: 62, avgCompletionTime: 14, satisfactionScore: 95, revenue: 4800000 },
+    order: 13
+  },
+  {
+    name: 'Smart Home Integration',
+    code: 'PPM-004',
+    category: 'Property & Portfolio Management',
+    tier: 'premium',
+    description: 'Installation and management of luxury home automation systems',
+    shortDescription: 'Home automation services',
+    icon: 'Smartphone',
+    departmentCode: 'TECH',
+    assistantCode: 'AURORA',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Assessment', description: 'Smart home evaluation', duration: '1-2 days', actions: ['Property assessment', 'Client requirements', 'System design'] },
+        { order: 2, name: 'Installation', description: 'System setup', duration: '3-7 days', actions: ['Equipment installation', 'Integration', 'Testing'] },
+        { order: 3, name: 'Training', description: 'Client onboarding', duration: '1 day', actions: ['System training', 'App setup', 'Support handoff'] },
+        { order: 4, name: 'Maintenance', description: 'Ongoing support', duration: 'Continuous', actions: ['Updates', 'Troubleshooting', 'Enhancements'] }
+      ],
+      estimatedDuration: '7-14 days setup',
+      sla: '4 hours for issues'
+    },
+    pricing: { type: 'custom', details: '15-20% of system cost + monthly fee' },
+    targetAudience: ['tech_savvy_owners', 'new_builds'],
+    metrics: { totalRequests: 156, completedRequests: 142, avgCompletionTime: 10, satisfactionScore: 94, revenue: 2100000 },
+    order: 14
+  },
+  {
+    name: 'Green & Sustainable Certification',
+    code: 'PPM-005',
+    category: 'Property & Portfolio Management',
+    tier: 'premium',
+    description: 'LEED/BREEAM certification and sustainable property management',
+    shortDescription: 'Sustainability certification',
+    icon: 'Leaf',
+    departmentCode: 'OPS',
+    assistantCode: 'JUNO',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Sustainability Audit', description: 'Environmental assessment', duration: '5-7 days', actions: ['Energy audit', 'Water assessment', 'Waste analysis'] },
+        { order: 2, name: 'Improvement Plan', description: 'Green strategy', duration: '3-5 days', actions: ['Recommendations', 'ROI analysis', 'Implementation roadmap'] },
+        { order: 3, name: 'Certification', description: 'Formal certification', duration: '30-90 days', actions: ['Documentation', 'Inspections', 'Certification'] }
+      ],
+      estimatedDuration: '60-120 days',
+      sla: '48 hours response'
+    },
+    pricing: { type: 'fixed', amount: 25000, currency: 'AED', details: 'AED 15,000-50,000 setup' },
+    targetAudience: ['esg_investors', 'corporate_owners'],
+    metrics: { totalRequests: 24, completedRequests: 18, avgCompletionTime: 75, satisfactionScore: 96, revenue: 720000 },
+    order: 15
+  },
+
+  // CATEGORY 4: INVESTMENT ADVISORY (IA-001 to IA-005)
+  {
+    name: 'Real Estate Investment Strategy',
+    code: 'IA-001',
+    category: 'Investment Advisory',
+    tier: 'premium',
+    description: 'Personalized investment roadmap based on risk profile, timeline, and goals',
+    shortDescription: 'Investment strategy consulting',
+    icon: 'Target',
+    departmentCode: 'FIN',
+    assistantCode: 'FELIX',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Discovery', description: 'Investor profiling', duration: '2-3 days', actions: ['Financial assessment', 'Risk profiling', 'Goal setting'] },
+        { order: 2, name: 'Strategy Development', description: 'Investment roadmap', duration: '5-7 days', actions: ['Market analysis', 'Portfolio design', 'Timeline creation'] },
+        { order: 3, name: 'Implementation', description: 'Strategy execution', duration: 'Ongoing', actions: ['Property sourcing', 'Transaction support', 'Performance tracking'] }
+      ],
+      estimatedDuration: 'Initial 2 weeks, then ongoing',
+      sla: '24 hours response'
+    },
+    pricing: { type: 'percentage', percentage: 1, details: '1% of investment amount (min AED 25,000)' },
+    targetAudience: ['first_time_investors', 'portfolio_builders'],
+    metrics: { totalRequests: 186, completedRequests: 162, avgCompletionTime: 18, satisfactionScore: 94, revenue: 5200000 },
+    order: 16
+  },
+  {
+    name: 'Market Intelligence & Research',
+    code: 'IA-002',
+    category: 'Investment Advisory',
+    tier: 'premium',
+    description: 'Custom reports on market trends, emerging areas, and yield projections',
+    shortDescription: 'Custom market research',
+    icon: 'BarChart2',
+    departmentCode: 'INTEL',
+    assistantCode: 'SAGE',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Brief', description: 'Research scope definition', duration: '1-2 days', actions: ['Requirements gathering', 'Scope definition', 'Timeline agreement'] },
+        { order: 2, name: 'Research', description: 'Data collection and analysis', duration: '5-10 days', actions: ['Data gathering', 'Market analysis', 'Trend identification'] },
+        { order: 3, name: 'Report Delivery', description: 'Insights presentation', duration: '2-3 days', actions: ['Report writing', 'Presentation', 'Q&A session'] }
+      ],
+      estimatedDuration: '10-15 days',
+      sla: '48 hours response'
+    },
+    pricing: { type: 'fixed', amount: 15000, currency: 'AED', details: 'AED 5,000-25,000 per report' },
+    targetAudience: ['institutional_investors', 'family_offices'],
+    metrics: { totalRequests: 86, completedRequests: 78, avgCompletionTime: 12, satisfactionScore: 96, revenue: 1290000 },
+    order: 17
+  },
+  {
+    name: 'Development Site Acquisition',
+    code: 'IA-003',
+    category: 'Investment Advisory',
+    tier: 'corporate',
+    description: 'Land sourcing, feasibility studies, and developer partnerships',
+    shortDescription: 'Development land acquisition',
+    icon: 'MapPin',
+    departmentCode: 'SALES',
+    assistantCode: 'ATLAS',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Site Search', description: 'Land identification', duration: '2-4 weeks', actions: ['Location scouting', 'Zoning analysis', 'Availability confirmation'] },
+        { order: 2, name: 'Feasibility', description: 'Development viability', duration: '2-3 weeks', actions: ['Financial modeling', 'Regulatory review', 'Risk assessment'] },
+        { order: 3, name: 'Negotiation', description: 'Deal structuring', duration: '3-6 weeks', actions: ['Price negotiation', 'Terms finalization', 'Due diligence'] },
+        { order: 4, name: 'Acquisition', description: 'Transaction completion', duration: '4-8 weeks', actions: ['Contract execution', 'Payment management', 'Transfer'] }
+      ],
+      estimatedDuration: '3-6 months',
+      sla: '24 hours response'
+    },
+    pricing: { type: 'percentage', percentage: 2.5, details: '2-3% of land value' },
+    targetAudience: ['developers', 'land_bankers'],
+    metrics: { totalRequests: 28, completedRequests: 18, avgCompletionTime: 120, satisfactionScore: 95, revenue: 12500000 },
+    order: 18
+  },
+  {
+    name: 'REIT & Fund Investment',
+    code: 'IA-004',
+    category: 'Investment Advisory',
+    tier: 'premium',
+    description: 'Access to UAE real estate funds and REIT investment opportunities',
+    shortDescription: 'REIT and fund access',
+    icon: 'PieChart',
+    departmentCode: 'FIN',
+    assistantCode: 'FELIX',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Investor Profiling', description: 'Suitability assessment', duration: '1-2 days', actions: ['Risk assessment', 'Investment horizon', 'Liquidity needs'] },
+        { order: 2, name: 'Fund Selection', description: 'Investment matching', duration: '3-5 days', actions: ['Fund comparison', 'Performance analysis', 'Fee review'] },
+        { order: 3, name: 'Investment', description: 'Capital deployment', duration: '3-7 days', actions: ['Subscription', 'Documentation', 'Fund transfer'] },
+        { order: 4, name: 'Monitoring', description: 'Performance tracking', duration: 'Ongoing', actions: ['NAV updates', 'Distribution tracking', 'Rebalancing'] }
+      ],
+      estimatedDuration: '2-3 weeks initial',
+      sla: '24 hours response'
+    },
+    pricing: { type: 'percentage', percentage: 1, details: '1% AUM annually' },
+    targetAudience: ['passive_investors', 'retirement_planners'],
+    metrics: { totalRequests: 124, completedRequests: 112, avgCompletionTime: 15, satisfactionScore: 93, revenue: 2800000 },
+    order: 19
+  },
+  {
+    name: 'Exit Strategy Planning',
+    code: 'IA-005',
+    category: 'Investment Advisory',
+    tier: 'premium',
+    description: 'Optimal timing and method for property disposal to maximize returns',
+    shortDescription: 'Exit strategy consulting',
+    icon: 'LogOut',
+    departmentCode: 'FIN',
+    assistantCode: 'FELIX',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Portfolio Review', description: 'Asset assessment', duration: '3-5 days', actions: ['Performance analysis', 'Market timing', 'Tax implications'] },
+        { order: 2, name: 'Exit Options', description: 'Strategy development', duration: '3-5 days', actions: ['Sale scenarios', 'Timing optimization', 'Buyer targeting'] },
+        { order: 3, name: 'Execution', description: 'Exit implementation', duration: 'Variable', actions: ['Marketing', 'Negotiation', 'Transaction management'] }
+      ],
+      estimatedDuration: '2-4 weeks planning',
+      sla: '24 hours response'
+    },
+    pricing: { type: 'percentage', percentage: 1, details: '1% of final sale price' },
+    targetAudience: ['investors_exiting', 'portfolio_rebalancers'],
+    metrics: { totalRequests: 68, completedRequests: 58, avgCompletionTime: 21, satisfactionScore: 95, revenue: 3400000 },
+    order: 20
+  },
+
+  // CATEGORY 5: LEGAL & COMPLIANCE SERVICES (LCS-001 to LCS-005)
+  {
+    name: 'UAE PASS Digital Onboarding',
+    code: 'LCS-001',
+    category: 'Legal & Compliance Services',
+    tier: 'basic',
+    description: 'Complete digital identity setup and verification via UAE PASS',
+    shortDescription: 'UAE PASS verification',
+    icon: 'Fingerprint',
+    departmentCode: 'COMP',
+    assistantCode: 'VERA',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Pre-requisites', description: 'Document preparation', duration: '1 hour', actions: ['Emirates ID check', 'Mobile verification', 'Document readiness'] },
+        { order: 2, name: 'Registration', description: 'UAE PASS setup', duration: '30 min', actions: ['App download', 'Biometric verification', 'Account creation'] },
+        { order: 3, name: 'Platform Link', description: 'White Caves integration', duration: '15 min', actions: ['OAuth connection', 'Profile sync', 'Verification complete'] }
+      ],
+      estimatedDuration: '2-4 hours',
+      sla: '1 hour support'
+    },
+    pricing: { type: 'fixed', amount: 500, currency: 'AED', details: 'AED 500 one-time' },
+    targetAudience: ['all_clients'],
+    metrics: { totalRequests: 2450, completedRequests: 2380, avgCompletionTime: 2, satisfactionScore: 97, revenue: 1190000 },
+    order: 21
+  },
+  {
+    name: 'RERA/DLD Compliance Package',
+    code: 'LCS-002',
+    category: 'Legal & Compliance Services',
+    tier: 'essential',
+    description: 'Full transaction compliance including Form F, Ejari, DLD registration',
+    shortDescription: 'Full regulatory compliance',
+    icon: 'Shield',
     departmentCode: 'COMP',
     assistantCode: 'LAILA',
     workflow: {
       stages: [
-        { order: 1, name: 'Document Upload', description: 'Identity documents', duration: '5-10 min', actions: ['Passport upload', 'Visa upload', 'Emirates ID'] },
-        { order: 2, name: 'Verification', description: 'Document validation', duration: '1-2 hours', actions: ['Document validation', 'Cross-reference', 'Authenticity check'] },
-        { order: 3, name: 'Risk Score', description: 'Risk assessment', duration: '30 min', actions: ['Risk calculation', 'PEP check', 'Sanctions screening'] },
-        { order: 4, name: 'Approval', description: 'Final decision', duration: '30 min', actions: ['Decision making', 'Notification', 'Documentation'] }
+        { order: 1, name: 'Document Collection', description: 'Required documents', duration: '1-2 days', actions: ['Identity docs', 'Property docs', 'Transaction docs'] },
+        { order: 2, name: 'RERA Processing', description: 'Form F and compliance', duration: '2-3 days', actions: ['Form F preparation', 'Broker verification', 'RERA submission'] },
+        { order: 3, name: 'DLD Registration', description: 'Transfer registration', duration: '1-2 days', actions: ['Transfer application', 'Fee payment', 'Title deed'] },
+        { order: 4, name: 'Ejari', description: 'Tenancy registration', duration: '1 day', actions: ['Ejari submission', 'Certificate issuance', 'Completion'] }
       ],
-      estimatedDuration: '2-4 hours',
-      sla: '4 hours'
+      estimatedDuration: '5-7 days',
+      sla: '4 hours response'
     },
-    pricing: { type: 'fixed', amount: 150, currency: 'AED' },
-    targetAudience: ['all'],
-    metrics: { totalRequests: 2340, completedRequests: 2298, avgCompletionTime: 2.5, satisfactionScore: 96, revenue: 345000 },
-    order: 8
+    pricing: { type: 'fixed', amount: 2500, currency: 'AED', details: 'AED 2,500 per transaction' },
+    targetAudience: ['all_transaction_parties'],
+    metrics: { totalRequests: 1890, completedRequests: 1845, avgCompletionTime: 5, satisfactionScore: 95, revenue: 4612500 },
+    order: 22
   },
   {
-    name: 'Ejari Registration',
-    code: 'EJARI',
-    category: 'Legal & Compliance',
-    description: 'Official tenancy contract registration with Dubai Land Department',
-    shortDescription: 'DLD tenancy registration',
-    icon: 'FileCheck',
+    name: 'Contract Review & Negotiation',
+    code: 'LCS-003',
+    category: 'Legal & Compliance Services',
+    tier: 'essential',
+    description: 'Legal review of sale/purchase agreements, leases, management contracts',
+    shortDescription: 'Contract review services',
+    icon: 'FileText',
     departmentCode: 'LEGAL',
-    assistantCode: 'IVY',
+    assistantCode: 'EVANGELINE',
     workflow: {
       stages: [
-        { order: 1, name: 'Document Collection', description: 'Required documents', duration: '1-2 hours', actions: ['Passport copies', 'Visa pages', 'Title deed', 'Contract'] },
-        { order: 2, name: 'DLD Portal', description: 'Online submission', duration: '30 min', actions: ['Data entry', 'Document upload', 'Fee payment'] },
-        { order: 3, name: 'Certificate', description: 'Registration complete', duration: '24-48 hours', actions: ['Certificate issuance', 'PDF download', 'Tenant notification'] }
+        { order: 1, name: 'Document Receipt', description: 'Contract submission', duration: 'Same day', actions: ['Contract upload', 'Scope confirmation', 'Priority setting'] },
+        { order: 2, name: 'Legal Review', description: 'Comprehensive analysis', duration: '2-5 days', actions: ['Clause analysis', 'Risk identification', 'Recommendation drafting'] },
+        { order: 3, name: 'Client Briefing', description: 'Review presentation', duration: '1 hour', actions: ['Findings presentation', 'Q&A', 'Negotiation strategy'] },
+        { order: 4, name: 'Negotiation Support', description: 'Amendment assistance', duration: 'As needed', actions: ['Amendment drafting', 'Counter-proposal', 'Final review'] }
       ],
-      estimatedDuration: '1-2 days',
-      sla: '24 hours'
+      estimatedDuration: '3-7 days',
+      sla: '24 hours initial response'
     },
-    pricing: { type: 'fixed', amount: 220, currency: 'AED' },
-    targetAudience: ['tenants', 'landlords'],
-    metrics: { totalRequests: 1890, completedRequests: 1845, avgCompletionTime: 1.5, satisfactionScore: 94, revenue: 405900 },
-    order: 9
+    pricing: { type: 'fixed', amount: 2500, currency: 'AED', details: 'AED 1,500-5,000 per contract' },
+    targetAudience: ['all_clients'],
+    metrics: { totalRequests: 568, completedRequests: 542, avgCompletionTime: 4, satisfactionScore: 94, revenue: 1420000 },
+    order: 23
   },
   {
-    name: 'Invoice Processing',
-    code: 'INVOICING',
+    name: 'Title Deed Verification',
+    code: 'LCS-004',
+    category: 'Legal & Compliance Services',
+    tier: 'essential',
+    description: 'Comprehensive due diligence on property ownership and encumbrances',
+    shortDescription: 'Property ownership verification',
+    icon: 'Search',
+    departmentCode: 'LEGAL',
+    assistantCode: 'LAILA',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Property Details', description: 'Information gathering', duration: '1 hour', actions: ['Title deed copy', 'Property ID', 'Owner details'] },
+        { order: 2, name: 'DLD Verification', description: 'Official records check', duration: '1-2 days', actions: ['Ownership verification', 'Mortgage check', 'Lien search'] },
+        { order: 3, name: 'Report', description: 'Findings documentation', duration: 'Same day', actions: ['Verification report', 'Risk assessment', 'Recommendations'] }
+      ],
+      estimatedDuration: '2-3 days',
+      sla: '24 hours'
+    },
+    pricing: { type: 'fixed', amount: 1000, currency: 'AED', details: 'AED 1,000 per property' },
+    targetAudience: ['buyers', 'investors'],
+    metrics: { totalRequests: 1245, completedRequests: 1220, avgCompletionTime: 2, satisfactionScore: 98, revenue: 1220000 },
+    order: 24
+  },
+  {
+    name: 'Dispute Resolution & Mediation',
+    code: 'LCS-005',
+    category: 'Legal & Compliance Services',
+    tier: 'essential',
+    description: 'Resolution of tenant-landlord disputes and contract disagreements',
+    shortDescription: 'Dispute resolution services',
+    icon: 'Scale',
+    departmentCode: 'LEGAL',
+    assistantCode: 'EVANGELINE',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Case Assessment', description: 'Dispute evaluation', duration: '1-2 days', actions: ['Case review', 'Evidence gathering', 'Legal assessment'] },
+        { order: 2, name: 'Mediation', description: 'Resolution attempts', duration: '3-7 days', actions: ['Party communication', 'Negotiation facilitation', 'Settlement drafting'] },
+        { order: 3, name: 'Resolution', description: 'Case closure', duration: 'Variable', actions: ['Agreement signing', 'Implementation monitoring', 'Case closure'] }
+      ],
+      estimatedDuration: '1-4 weeks',
+      sla: '24 hours initial response'
+    },
+    pricing: { type: 'hourly', rate: 350, currency: 'AED', details: 'AED 350/hour or fixed fee' },
+    targetAudience: ['all_clients_in_dispute'],
+    metrics: { totalRequests: 186, completedRequests: 164, avgCompletionTime: 12, satisfactionScore: 89, revenue: 820000 },
+    order: 25
+  },
+
+  // CATEGORY 6: FINANCIAL SERVICES (FS-001 to FS-005)
+  {
+    name: 'Mortgage Facilitation',
+    code: 'FS-001',
     category: 'Financial Services',
-    description: 'Automated invoice generation, tracking, and collection',
-    shortDescription: 'Invoice management',
-    icon: 'Receipt',
+    tier: 'essential',
+    description: 'Access to preferential mortgage rates from partner banks',
+    shortDescription: 'Mortgage broker services',
+    icon: 'Landmark',
     departmentCode: 'FIN',
     assistantCode: 'THEODORA',
     workflow: {
       stages: [
-        { order: 1, name: 'Generate', description: 'Invoice creation', duration: 'Instant', actions: ['Invoice creation', 'Line items', 'Tax calculation'] },
-        { order: 2, name: 'Send', description: 'Delivery', duration: 'Instant', actions: ['Email dispatch', 'SMS notification', 'Portal update'] },
-        { order: 3, name: 'Track', description: 'Payment tracking', duration: 'Ongoing', actions: ['View tracking', 'Reminder scheduling', 'Escalation rules'] },
-        { order: 4, name: 'Collect', description: 'Payment receipt', duration: 'Due date', actions: ['Payment receipt', 'Multi-channel', 'Reconciliation'] }
+        { order: 1, name: 'Pre-qualification', description: 'Eligibility assessment', duration: '1-2 days', actions: ['Income verification', 'Credit check', 'Eligibility calculation'] },
+        { order: 2, name: 'Bank Matching', description: 'Lender selection', duration: '2-3 days', actions: ['Rate comparison', 'Bank shortlisting', 'Pre-approval applications'] },
+        { order: 3, name: 'Application', description: 'Full application', duration: '1-2 weeks', actions: ['Documentation', 'Property valuation', 'Final approval'] },
+        { order: 4, name: 'Disbursement', description: 'Fund release', duration: '1 week', actions: ['Offer acceptance', 'Signing', 'Fund transfer'] }
       ],
-      estimatedDuration: 'Real-time',
-      sla: 'Instant'
+      estimatedDuration: '3-4 weeks',
+      sla: '24 hours response'
     },
-    pricing: { type: 'free', details: 'Included in service' },
-    targetAudience: ['all'],
-    metrics: { totalRequests: 8920, completedRequests: 8756, avgCompletionTime: 0.1, satisfactionScore: 95, revenue: 0 },
-    order: 10
+    pricing: { type: 'percentage', percentage: 0.75, details: '0.5-1% of loan amount (bank paid)' },
+    targetAudience: ['buyers_financing'],
+    metrics: { totalRequests: 456, completedRequests: 398, avgCompletionTime: 25, satisfactionScore: 92, revenue: 3800000 },
+    order: 26
   },
   {
-    name: 'Lead Generation',
-    code: 'LEAD-GEN',
-    category: 'Marketing',
-    description: 'Multi-channel lead acquisition, scoring, and routing',
-    shortDescription: 'Lead acquisition',
-    icon: 'Target',
-    departmentCode: 'MKT',
-    assistantCode: 'OLIVIA',
+    name: 'Tax Optimization Strategy',
+    code: 'FS-002',
+    category: 'Financial Services',
+    tier: 'premium',
+    description: 'UAE tax structuring for international real estate investments',
+    shortDescription: 'International tax planning',
+    icon: 'Calculator',
+    departmentCode: 'FIN',
+    assistantCode: 'FELIX',
     workflow: {
       stages: [
-        { order: 1, name: 'Campaign', description: 'Ad management', duration: 'Ongoing', actions: ['Ad creation', 'Targeting', 'Budget management'] },
-        { order: 2, name: 'Capture', description: 'Lead capture', duration: 'Real-time', actions: ['Form submission', 'Call tracking', 'Chat leads'] },
-        { order: 3, name: 'Score', description: 'AI scoring', duration: 'Instant', actions: ['AI scoring', 'Intent analysis', 'Priority assignment'] },
-        { order: 4, name: 'Route', description: 'Agent assignment', duration: 'Instant', actions: ['Agent matching', 'Availability check', 'Assignment'] }
+        { order: 1, name: 'Tax Assessment', description: 'Current situation review', duration: '3-5 days', actions: ['Tax residency review', 'Investment structure analysis', 'Exposure assessment'] },
+        { order: 2, name: 'Strategy Development', description: 'Optimization plan', duration: '5-7 days', actions: ['Structure recommendations', 'Legal entity setup', 'Compliance roadmap'] },
+        { order: 3, name: 'Implementation', description: 'Structure setup', duration: '2-4 weeks', actions: ['Entity formation', 'Account setup', 'Reporting systems'] }
       ],
-      estimatedDuration: 'Continuous',
-      sla: '5 minutes to first contact'
+      estimatedDuration: '4-6 weeks',
+      sla: '48 hours response'
     },
-    pricing: { type: 'custom', details: 'Based on marketing budget' },
-    targetAudience: ['all'],
-    metrics: { totalRequests: 4500, completedRequests: 3825, avgCompletionTime: 0.5, satisfactionScore: 88, revenue: 1200000 },
-    order: 11
+    pricing: { type: 'fixed', amount: 25000, currency: 'AED', details: 'AED 10,000-50,000 setup' },
+    targetAudience: ['international_investors', 'cross_border_owners'],
+    metrics: { totalRequests: 68, completedRequests: 58, avgCompletionTime: 35, satisfactionScore: 96, revenue: 1740000 },
+    order: 27
   },
   {
-    name: 'Property Marketing',
-    code: 'PROP-MARKETING',
-    category: 'Marketing',
-    description: 'Professional photography, listing creation, and multi-portal publishing',
-    shortDescription: 'Property marketing',
+    name: 'Currency Exchange & Transfer',
+    code: 'FS-003',
+    category: 'Financial Services',
+    tier: 'essential',
+    description: 'Competitive FX rates for international property payments',
+    shortDescription: 'FX and transfers',
+    icon: 'DollarSign',
+    departmentCode: 'FIN',
+    assistantCode: 'QUINN',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Rate Quote', description: 'FX rate provision', duration: 'Real-time', actions: ['Rate check', 'Comparison', 'Rate lock'] },
+        { order: 2, name: 'Transfer Setup', description: 'Transaction preparation', duration: '1-2 hours', actions: ['Beneficiary setup', 'Compliance check', 'Transfer initiation'] },
+        { order: 3, name: 'Execution', description: 'Fund transfer', duration: '1-3 days', actions: ['Fund transfer', 'Confirmation', 'Receipt'] }
+      ],
+      estimatedDuration: '1-3 days',
+      sla: '1 hour for quotes'
+    },
+    pricing: { type: 'spread', percentage: 0.3, details: '0.1-0.5% above interbank rate' },
+    targetAudience: ['overseas_buyers', 'overseas_sellers'],
+    metrics: { totalRequests: 892, completedRequests: 875, avgCompletionTime: 1.5, satisfactionScore: 94, revenue: 2680000 },
+    order: 28
+  },
+  {
+    name: 'Insurance Portfolio',
+    code: 'FS-004',
+    category: 'Financial Services',
+    tier: 'essential',
+    description: 'Property, liability, and rental income insurance packages',
+    shortDescription: 'Property insurance',
+    icon: 'ShieldCheck',
+    departmentCode: 'FIN',
+    assistantCode: 'THEODORA',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Risk Assessment', description: 'Insurance needs analysis', duration: '1-2 days', actions: ['Property valuation', 'Risk profiling', 'Coverage needs'] },
+        { order: 2, name: 'Quote Comparison', description: 'Insurer matching', duration: '2-3 days', actions: ['Multi-insurer quotes', 'Coverage comparison', 'Premium analysis'] },
+        { order: 3, name: 'Policy Binding', description: 'Insurance activation', duration: '1-2 days', actions: ['Policy selection', 'Documentation', 'Premium payment'] }
+      ],
+      estimatedDuration: '5-7 days',
+      sla: '24 hours response'
+    },
+    pricing: { type: 'commission', percentage: 17.5, details: '15-20% of premium' },
+    targetAudience: ['property_owners', 'landlords'],
+    metrics: { totalRequests: 568, completedRequests: 524, avgCompletionTime: 5, satisfactionScore: 91, revenue: 1420000 },
+    order: 29
+  },
+  {
+    name: 'Escrow Services Management',
+    code: 'FS-005',
+    category: 'Financial Services',
+    tier: 'essential',
+    description: 'Secure transaction holding with interest-bearing accounts',
+    shortDescription: 'Escrow management',
+    icon: 'Lock',
+    departmentCode: 'FIN',
+    assistantCode: 'QUINN',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Escrow Setup', description: 'Account creation', duration: '1-2 days', actions: ['Account opening', 'Terms agreement', 'Milestone definition'] },
+        { order: 2, name: 'Fund Receipt', description: 'Deposit management', duration: 'As per transaction', actions: ['Deposit verification', 'Holding confirmation', 'Interest accrual'] },
+        { order: 3, name: 'Release', description: 'Fund disbursement', duration: '1-2 days', actions: ['Milestone verification', 'Approval collection', 'Fund release'] }
+      ],
+      estimatedDuration: 'Transaction dependent',
+      sla: '4 hours for release requests'
+    },
+    pricing: { type: 'percentage', percentage: 0.25, details: '0.25% of escrow amount' },
+    targetAudience: ['off_plan_buyers', 'distant_sellers'],
+    metrics: { totalRequests: 245, completedRequests: 232, avgCompletionTime: 45, satisfactionScore: 97, revenue: 980000 },
+    order: 30
+  },
+
+  // CATEGORY 7: VALUE-ADDED SERVICES (VAS-001 to VAS-005)
+  {
+    name: 'Interior Design & Staging',
+    code: 'VAS-001',
+    category: 'Value-Added Services',
+    tier: 'essential',
+    description: 'Luxury interior design for sales enhancement or personalization',
+    shortDescription: 'Interior design and staging',
+    icon: 'Palette',
+    departmentCode: 'MKT',
+    assistantCode: 'STELLA',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Consultation', description: 'Design brief', duration: '1-2 days', actions: ['Style assessment', 'Budget setting', 'Scope definition'] },
+        { order: 2, name: 'Design', description: 'Concept development', duration: '5-10 days', actions: ['Concept creation', '3D renders', 'Material selection'] },
+        { order: 3, name: 'Execution', description: 'Implementation', duration: '2-8 weeks', actions: ['Procurement', 'Installation', 'Styling'] }
+      ],
+      estimatedDuration: '3-10 weeks',
+      sla: '48 hours response'
+    },
+    pricing: { type: 'percentage', percentage: 15, details: '10-20% of project cost' },
+    targetAudience: ['sellers', 'new_owners', 'landlords'],
+    metrics: { totalRequests: 186, completedRequests: 168, avgCompletionTime: 42, satisfactionScore: 95, revenue: 2800000 },
+    order: 31
+  },
+  {
+    name: 'Property Marketing Premium',
+    code: 'VAS-002',
+    category: 'Value-Added Services',
+    tier: 'essential',
+    description: 'Professional photography, drone videography, 3D virtual tours',
+    shortDescription: 'Premium property marketing',
     icon: 'Camera',
     departmentCode: 'MKT',
     assistantCode: 'OLIVIA',
     workflow: {
       stages: [
-        { order: 1, name: 'Photography', description: 'Photo shoot', duration: '2-4 hours', actions: ['Photo shoot', 'Video tour', 'Drone footage'] },
-        { order: 2, name: 'Listing', description: 'Content creation', duration: '1-2 days', actions: ['Description writing', 'Feature highlighting', 'SEO optimization'] },
-        { order: 3, name: 'Multi-Platform', description: 'Portal publishing', duration: '1 day', actions: ['Bayut', 'Property Finder', 'Dubizzle', 'Website'] },
-        { order: 4, name: 'Analytics', description: 'Performance tracking', duration: 'Ongoing', actions: ['View tracking', 'Lead monitoring', 'Performance reports'] }
+        { order: 1, name: 'Scheduling', description: 'Shoot planning', duration: '1-2 days', actions: ['Date scheduling', 'Property prep', 'Shot list'] },
+        { order: 2, name: 'Production', description: 'Content creation', duration: '1 day', actions: ['Photography', 'Drone footage', 'Virtual tour capture'] },
+        { order: 3, name: 'Post-production', description: 'Editing and delivery', duration: '3-5 days', actions: ['Photo editing', 'Video editing', 'Tour processing'] },
+        { order: 4, name: 'Distribution', description: 'Multi-platform publishing', duration: '1-2 days', actions: ['Portal upload', 'Social posting', 'Analytics setup'] }
       ],
-      estimatedDuration: '3-5 days',
-      sla: '48 hours'
+      estimatedDuration: '7-10 days',
+      sla: '24 hours response'
     },
-    pricing: { type: 'fixed', amount: 1500, currency: 'AED' },
+    pricing: { type: 'fixed', amount: 8000, currency: 'AED', details: 'AED 3,000-15,000 package' },
     targetAudience: ['sellers', 'landlords'],
-    metrics: { totalRequests: 785, completedRequests: 742, avgCompletionTime: 4, satisfactionScore: 92, revenue: 1113000 },
-    order: 12
+    metrics: { totalRequests: 785, completedRequests: 742, avgCompletionTime: 8, satisfactionScore: 94, revenue: 5936000 },
+    order: 32
+  },
+  {
+    name: 'Relocation & Settling-In',
+    code: 'VAS-003',
+    category: 'Value-Added Services',
+    tier: 'essential',
+    description: 'Visa processing, school placements, utility connections, cultural orientation',
+    shortDescription: 'Relocation assistance',
+    icon: 'Plane',
+    departmentCode: 'OPS',
+    assistantCode: 'JUNO',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Needs Assessment', description: 'Relocation requirements', duration: '1-2 days', actions: ['Family profiling', 'Service selection', 'Timeline planning'] },
+        { order: 2, name: 'Visa & Documentation', description: 'Legal requirements', duration: '2-4 weeks', actions: ['Visa processing', 'Emirates ID', 'License conversions'] },
+        { order: 3, name: 'Setup Services', description: 'Daily life setup', duration: '1-2 weeks', actions: ['Utilities', 'Banking', 'School enrollment'] },
+        { order: 4, name: 'Orientation', description: 'Cultural integration', duration: '1-3 days', actions: ['City orientation', 'Cultural briefing', 'Local tips'] }
+      ],
+      estimatedDuration: '4-8 weeks',
+      sla: '24 hours response'
+    },
+    pricing: { type: 'fixed', amount: 15000, currency: 'AED', details: 'AED 7,500-25,000 per family' },
+    targetAudience: ['new_residents', 'corporate_transferees'],
+    metrics: { totalRequests: 124, completedRequests: 112, avgCompletionTime: 35, satisfactionScore: 96, revenue: 1680000 },
+    order: 33
+  },
+  {
+    name: 'Lifestyle Concierge',
+    code: 'VAS-004',
+    category: 'Value-Added Services',
+    tier: 'ultra',
+    description: 'Restaurant reservations, event tickets, club memberships, yacht charters',
+    shortDescription: 'Lifestyle management',
+    icon: 'Sparkles',
+    departmentCode: 'OPS',
+    assistantCode: 'JUNO',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Preference Profiling', description: 'Lifestyle assessment', duration: '1 day', actions: ['Interest mapping', 'Preference documentation', 'Contact list'] },
+        { order: 2, name: 'Service Activation', description: 'Concierge setup', duration: '1 day', actions: ['Team assignment', 'Priority protocols', 'Communication setup'] },
+        { order: 3, name: 'Ongoing Service', description: 'Request fulfillment', duration: 'Continuous', actions: ['Request handling', 'Proactive suggestions', 'Quality assurance'] }
+      ],
+      estimatedDuration: 'Ongoing service',
+      sla: '1 hour response'
+    },
+    pricing: { type: 'subscription', monthly: 1500, details: 'AED 1,500/month retainer' },
+    targetAudience: ['vip_clients', 'tenants'],
+    metrics: { totalRequests: 86, completedRequests: 86, avgCompletionTime: 0.5, satisfactionScore: 98, revenue: 1548000 },
+    order: 34
+  },
+  {
+    name: 'AI-Powered Market Alerts',
+    code: 'VAS-005',
+    category: 'Value-Added Services',
+    tier: 'basic',
+    description: 'Personalized property alerts based on AI learning of preferences',
+    shortDescription: 'Smart property alerts',
+    icon: 'Bell',
+    departmentCode: 'TECH',
+    assistantCode: 'MARY',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Preference Setup', description: 'Alert configuration', duration: '30 min', actions: ['Property criteria', 'Budget range', 'Location preferences'] },
+        { order: 2, name: 'AI Learning', description: 'Preference refinement', duration: 'Ongoing', actions: ['Interaction tracking', 'Preference updates', 'Algorithm tuning'] },
+        { order: 3, name: 'Alert Delivery', description: 'Match notifications', duration: 'Real-time', actions: ['Match identification', 'Alert dispatch', 'Feedback collection'] }
+      ],
+      estimatedDuration: 'Ongoing service',
+      sla: 'Real-time alerts'
+    },
+    pricing: { type: 'subscription', monthly: 500, details: 'AED 500/month' },
+    targetAudience: ['all_registered_clients'],
+    metrics: { totalRequests: 1245, completedRequests: 1245, avgCompletionTime: 0.1, satisfactionScore: 89, revenue: 622500 },
+    order: 35
+  },
+
+  // CATEGORY 8: TECHNOLOGY SERVICES (TS-001 to TS-005)
+  {
+    name: 'White Caves AI Platform Access',
+    code: 'TS-001',
+    category: 'Technology Services',
+    tier: 'ultra',
+    description: 'Premium access to all 32 AI assistants for personal use',
+    shortDescription: 'Full AI platform access',
+    icon: 'Bot',
+    departmentCode: 'TECH',
+    assistantCode: 'AURORA',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Subscription', description: 'Account activation', duration: '1 day', actions: ['Account upgrade', 'Access provisioning', 'Training session'] },
+        { order: 2, name: 'Onboarding', description: 'Platform training', duration: '2-3 hours', actions: ['Feature walkthrough', 'Use case examples', 'Support setup'] },
+        { order: 3, name: 'Active Use', description: 'Ongoing access', duration: 'Continuous', actions: ['AI assistant usage', 'Feature updates', 'Premium support'] }
+      ],
+      estimatedDuration: 'Annual subscription',
+      sla: '30 minutes response'
+    },
+    pricing: { type: 'subscription', annual: 10000, details: 'AED 10,000/year' },
+    targetAudience: ['uhnwi_clients', 'corporate_accounts'],
+    metrics: { totalRequests: 48, completedRequests: 48, avgCompletionTime: 1, satisfactionScore: 97, revenue: 480000 },
+    order: 36
+  },
+  {
+    name: 'Digital Portfolio Dashboard',
+    code: 'TS-002',
+    category: 'Technology Services',
+    tier: 'premium',
+    description: 'Real-time dashboard of property portfolio performance',
+    shortDescription: 'Portfolio analytics dashboard',
+    icon: 'LayoutDashboard',
+    departmentCode: 'TECH',
+    assistantCode: 'AURORA',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Data Integration', description: 'Property data sync', duration: '2-3 days', actions: ['Property linking', 'Data import', 'Metric configuration'] },
+        { order: 2, name: 'Dashboard Setup', description: 'Customization', duration: '1-2 days', actions: ['Layout selection', 'KPI configuration', 'Alert setup'] },
+        { order: 3, name: 'Go Live', description: 'Dashboard activation', duration: '1 day', actions: ['User training', 'Access provisioning', 'Support handoff'] }
+      ],
+      estimatedDuration: '1 week setup',
+      sla: '4 hours for issues'
+    },
+    pricing: { type: 'subscription', monthly: 2500, details: 'AED 2,500/month' },
+    targetAudience: ['portfolio_owners'],
+    metrics: { totalRequests: 86, completedRequests: 82, avgCompletionTime: 5, satisfactionScore: 94, revenue: 2580000 },
+    order: 37
+  },
+  {
+    name: 'Predictive Analytics Reports',
+    code: 'TS-003',
+    category: 'Technology Services',
+    tier: 'premium',
+    description: 'AI-generated forecasts for property values and rental yields',
+    shortDescription: 'AI market predictions',
+    icon: 'Sparkles',
+    departmentCode: 'INTEL',
+    assistantCode: 'CIPHER',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Scope Definition', description: 'Report requirements', duration: '1-2 days', actions: ['Area selection', 'Metrics selection', 'Timeline definition'] },
+        { order: 2, name: 'AI Analysis', description: 'Data processing', duration: '3-5 days', actions: ['Data aggregation', 'Model execution', 'Prediction generation'] },
+        { order: 3, name: 'Report Delivery', description: 'Insights presentation', duration: '1-2 days', actions: ['Report compilation', 'Visualization', 'Presentation'] }
+      ],
+      estimatedDuration: '7-10 days',
+      sla: '48 hours response'
+    },
+    pricing: { type: 'fixed', amount: 2500, currency: 'AED', details: 'AED 2,500/report' },
+    targetAudience: ['serious_investors', 'developers'],
+    metrics: { totalRequests: 124, completedRequests: 118, avgCompletionTime: 8, satisfactionScore: 93, revenue: 295000 },
+    order: 38
+  },
+  {
+    name: 'API Integration Services',
+    code: 'TS-004',
+    category: 'Technology Services',
+    tier: 'corporate',
+    description: 'Connect White Caves platform to client systems and portals',
+    shortDescription: 'API and system integration',
+    icon: 'Code',
+    departmentCode: 'TECH',
+    assistantCode: 'WILLOW',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Requirements', description: 'Integration scope', duration: '3-5 days', actions: ['System analysis', 'API design', 'Security review'] },
+        { order: 2, name: 'Development', description: 'Integration build', duration: '2-4 weeks', actions: ['API development', 'Testing', 'Documentation'] },
+        { order: 3, name: 'Deployment', description: 'Go-live', duration: '1 week', actions: ['Production deployment', 'Training', 'Support transition'] }
+      ],
+      estimatedDuration: '4-6 weeks',
+      sla: '4 hours for production issues'
+    },
+    pricing: { type: 'fixed', amount: 30000, currency: 'AED', details: 'AED 15,000-50,000 setup' },
+    targetAudience: ['corporate_clients', 'partner_firms'],
+    metrics: { totalRequests: 18, completedRequests: 15, avgCompletionTime: 35, satisfactionScore: 95, revenue: 540000 },
+    order: 39
+  },
+  {
+    name: 'Blockchain Title Management',
+    code: 'TS-005',
+    category: 'Technology Services',
+    tier: 'ultra',
+    description: 'Digital title deeds on blockchain for enhanced security and transparency',
+    shortDescription: 'Blockchain title deeds',
+    icon: 'Link',
+    departmentCode: 'TECH',
+    assistantCode: 'HENRY',
+    workflow: {
+      stages: [
+        { order: 1, name: 'Title Verification', description: 'Ownership confirmation', duration: '2-3 days', actions: ['DLD verification', 'Document collection', 'Chain of title'] },
+        { order: 2, name: 'Blockchain Registration', description: 'Digital tokenization', duration: '3-5 days', actions: ['Token creation', 'Metadata upload', 'Smart contract'] },
+        { order: 3, name: 'Certificate Issuance', description: 'Blockchain title', duration: '1-2 days', actions: ['Certificate generation', 'Owner notification', 'Platform access'] }
+      ],
+      estimatedDuration: '7-10 days',
+      sla: '24 hours response'
+    },
+    pricing: { type: 'percentage', percentage: 0.5, details: '0.5% of property value' },
+    targetAudience: ['tech_forward_investors'],
+    metrics: { totalRequests: 24, completedRequests: 18, avgCompletionTime: 8, satisfactionScore: 96, revenue: 450000 },
+    order: 40
   }
 ];
