@@ -1,9 +1,49 @@
 import express from 'express';
+import admin from 'firebase-admin';
 import ZoeAIService from '../services/zoeAIService.js';
 import ZoeConversation from '../models/ZoeConversation.js';
 import crypto from 'crypto';
 
 const router = express.Router();
+
+const EXECUTIVE_EMAILS = [
+  'arslanmalikgoraha@gmail.com'
+];
+
+const requireExecutive = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required. Please sign in with an executive account.'
+      });
+    }
+
+    const token = authHeader.split('Bearer ')[1];
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const userEmail = decodedToken.email;
+
+    if (!EXECUTIVE_EMAILS.includes(userEmail)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Executive access required. This feature is restricted to authorized executives only.'
+      });
+    }
+
+    req.user = decodedToken;
+    req.userEmail = userEmail;
+    next();
+  } catch (error) {
+    console.error('Executive auth error:', error.message);
+    return res.status(401).json({
+      success: false,
+      message: 'Invalid or expired authentication token'
+    });
+  }
+};
+
+router.use(requireExecutive);
 
 router.post('/query', async (req, res) => {
   try {

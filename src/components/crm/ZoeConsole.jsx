@@ -4,7 +4,17 @@ import {
   List, Workflow, Loader2, ChevronRight, Clock, Sparkles,
   MessageSquare, History, Trash2, RefreshCw
 } from 'lucide-react';
+import { getAuth } from 'firebase/auth';
 import './ZoeConsole.css';
+
+const getAuthToken = async () => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (user) {
+    return await user.getIdToken();
+  }
+  return null;
+};
 
 const QUICK_ACTIONS = [
   { id: 'briefing', label: 'Daily Briefing', icon: Calendar, query: "Give me today's briefing" },
@@ -147,12 +157,18 @@ const ZoeConsole = () => {
     setIsLoading(true);
 
     try {
+      const token = await getAuthToken();
+      const headers = {
+        'Content-Type': 'application/json',
+        'x-user-id': 'executive-user'
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch('/api/zoe/query', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-id': 'executive-user'
-        },
+        headers,
         body: JSON.stringify({
           query: text.trim(),
           sessionId
@@ -200,7 +216,12 @@ const ZoeConsole = () => {
 
   const loadHistory = async () => {
     try {
-      const response = await fetch(`/api/zoe/history?sessionId=${sessionId}&limit=20`);
+      const token = await getAuthToken();
+      const headers = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      const response = await fetch(`/api/zoe/history?sessionId=${sessionId}&limit=20`, { headers });
       const data = await response.json();
       if (data.success) {
         setConversationHistory(data.history);
