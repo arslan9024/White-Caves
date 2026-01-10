@@ -1,0 +1,63 @@
+Excellent. This first prompt will resolve the foundational database conflict and establish the core `User` model. **I recommend opening a new chat with the Replit Agent and using the "Plan" mode** before executing this prompt for the best results.
+
+---
+
+### **Replit Agent Prompt: WP1 - Database Unification & Core Schema**
+
+**Project Context:** You are working on the White Caves Real Estate platform for Dubai. The existing codebase has a critical inconsistency: the README specifies **MongoDB**, but the repository contains a `/prisma` folder used for **PostgreSQL**. The project owner has confirmed MongoDB is the correct choice. The tech stack is React (Vite) frontend, Node.js/Express backend.
+
+**Your Task:** Unify the database layer to use only MongoDB and create the foundational `User` schema.
+
+**Step-by-Step Instructions:**
+
+1.  **Remove PostgreSQL/Prisma Artifacts:**
+    *   Delete the entire `/prisma` directory from the project root.
+    *   Check `package.json` files (both root and `/server`) and remove any PostgreSQL, `pg`, or `prisma` related dependencies.
+    *   Update the `README.md` file to remove any mention of Prisma or PostgreSQL, ensuring it only describes the MongoDB tech stack.
+
+2.  **Create the Core User Schema (`/server/models/User.js`):**
+    *   Using Mongoose, define a `User` schema that will be the central identity for all platform roles (Buyer, Tenant, Seller, Landlord, Agent, Admin).
+    *   **Required Fields:**
+        *   `email`: (String, unique, required)
+        *   `passwordHash`: (String, required) *// For JWT auth later*
+        *   `name`: (String, required)
+        *   `phoneNumber`: (String) *// UAE number format*
+        *   `roles`: (Array of Strings, default: `['CLIENT']`). Allowed values: `'CLIENT'`, `'AGENT'`, `'ADMIN'`, `'COMPANY_OWNER'`. *// This replaces the frontend self-selection for security.*
+        *   `profile`: (Object)
+            *   `profile.ownerRef`: (ObjectId, ref: 'Owner') *// Links to the existing `Owner` model if the user is a property owner.*
+            *   `profile.agentRef`: (ObjectId, ref: 'Agent') *// Placeholder for a future Agent model.*
+        *   `isActive`: (Boolean, default: true)
+        *   `preferredLanguage`: (String, enum: ['en', 'ar'], default: 'en')
+    *   Include automatic `timestamps` (createdAt, updatedAt).
+    *   Add a pre-save hook to normalize the email to lowercase.
+
+3.  **Update Database Connection Configuration:**
+    *   Locate the database connection file (likely `/server/lib/database.js` or `/server/index.js`).
+    *   Ensure it uses `mongoose.connect()` with the MongoDB URI from an environment variable (e.g., `process.env.MONGODB_URI`).
+    *   Update the `.env.example` file to include `MONGODB_URI` as a required variable.
+
+4.  **Create a Verification Script (Optional but Recommended):**
+    *   Create a simple script at `/scripts/verify-db.js` that:
+        1.  Connects to the MongoDB using the configured URI.
+        2.  Attempts to create and save a dummy `User` document.
+        3.  Logs a success message and disconnects.
+    *   This confirms the setup works before we proceed.
+
+**Expected Final State:**
+1.  No trace of PostgreSQL or Prisma in the codebase.
+2.  A robust `User` model exists in `/server/models/User.js`.
+3.  The database connection logic is configured for MongoDB.
+4.  The `.env.example` file is updated.
+5.  (Optional) A verification script confirms the connection works.
+
+**Please start by providing your step-by-step plan for this task, and then generate the necessary code and file changes.**
+
+---
+
+### **What to Do After This Prompt:**
+
+Once the Agent successfully completes this task, you will have a clean, unified database foundation. Your next prompt should be for **WP2: Auth System & Admin Dashboard**, where you will:
+1.  Use the new `User` model to build JWT-based registration/login APIs.
+2.  Create the protected `/dashboard/owner` endpoint and the corresponding React dashboard component with mock data, as outlined in the previous template.
+
+Proceed step-by-step. Each successful Work Package will bring your complete plan closer to reality. Good luck

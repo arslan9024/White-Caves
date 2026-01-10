@@ -1,0 +1,84 @@
+I understand. I'll continue in English as requested. I'll provide you with the two structured prompts for your Replit Agent to execute the critical upgrades we discussed.
+
+### **Prompt 1: Refactor DashboardService (Core Data Integration)**
+
+**Core Instruction:** Act as the technical lead to completely refactor the platform's `DashboardService`, transforming it from a static data service into a dynamic, MongoDB-based data hub.
+
+**Task Steps:**
+
+**Phase 1: Analysis & Audit**
+1.  **Locate & Display Code:** First, find and show the complete current code of the `/server/services/dashboardService.js` file.
+2.  **Analyze Current State:** Clearly identify which methods return hardcoded or mock data.
+3.  **Identify Model Dependencies:** Based on the project context, determine which MongoDB Mongoose models need to be imported and used (e.g., `Property`, `Lead`, `User` models). If model files don't exist, outline the basic structure needed to create them.
+
+**Phase 2: Create a Refactoring Plan**
+Provide a detailed implementation plan that includes:
+-   **Database Connection Confirmation:** Explain how to ensure the service can access the configured Mongoose database connection.
+-   **Model Import Strategy:** List the specific models and their file paths that need to be imported.
+-   **Query Design:** Design the MongoDB queries for the `getDashboardData()` method, including:
+    -   `totalProperties`: Use `countDocuments()`.
+    -   `recentLeads`: Use `find().sort({ createdAt: -1 }).limit(5)` with appropriate field selection.
+    -   `performanceMetrics`: Use an aggregation pipeline to calculate lead conversion statistics (e.g., count of leads per `stage`, average `score`).
+-   **Error Handling Framework:** Add try-catch blocks to all database operations with meaningful error messages.
+
+**Phase 3: Execute the Refactor**
+Based on your plan, generate the refactored `dashboardService.js` code. The new code must:
+1.  Correctly import the required Mongoose models.
+2.  Implement the `getDashboardData()` method with the asynchronous database queries designed above.
+3.  Ensure the method's return data structure is compatible with what the frontend dashboards (like Zoe, Aurora) expect. If the original mock data had specific fields, map the new query results to them.
+4.  Include robust error handling.
+
+**Phase 4: Update the Route**
+Locate and show the `/server/routes/dashboard.routes.js` file. Verify that it correctly imports and uses the new `DashboardService` class. Update the route file if necessary.
+
+**Final Deliverable:** Please execute these steps in order, ultimately delivering the complete, runnable code for `dashboardService.js` and the updated `dashboard.routes.js`.
+
+---
+
+### **Prompt 2: Build Event-Driven Integration (Cross-Assistant Intelligence)**
+
+**Core Instruction:** Act as the system architect to implement a lightweight event-driven communication layer within the platform. This will enable different AI assistants (e.g., Clara, Zoe, Nancy) to collaborate intelligently based on business events like "high-value lead created."
+
+**Task Steps:**
+
+**Phase 1: Design & Planning**
+1.  **Define Events:** Based on business logic, define at least 3 core events. For example:
+    -   `lead:high_priority_created` (when a lead's `score` > 80)
+    -   `property:viewing_scheduled`
+    -   `contract:generated`
+2.  **Design Event Service:** Plan an `EventService` class with `publish(eventName, eventData)` and `subscribe(eventName, callback)` methods.
+3.  **Plan Integration Points:** Specify where events should be triggered (published). For example, in the `Lead` model's `pre('save')` middleware or in a `leadController` after creating a lead.
+4.  **Plan Subscribers:** Specify where events should be listened for (subscribed) and acted upon. For example, Zoe's dashboard service could subscribe to `lead:high_priority_created` to create a record in the "Suggestion Inbox."
+
+**Phase 2: Implement the Event Service**
+In the `/server/services/` directory, create `EventService.js`.
+-   Use Node.js's `EventEmitter` class or a simple in-memory object as the pub-sub hub.
+-   Implement the `publish` and `subscribe` methods.
+-   Consider adding simple logging to monitor the event flow in Aurora's dashboard.
+
+**Phase 3: Trigger Events in Models (Lead Example)**
+1.  Find or create the `/server/models/Lead.js` model.
+2.  In the model's `schema.pre('save')` middleware, add logic: if the document's `score` field is set to >80 and it's a new document or the field was modified, call `EventService.publish('lead:high_priority_created', leadData)`.
+3.  Ensure the `EventService` is imported correctly.
+
+**Phase 4: Subscribe to Events in Dashboard Service**
+1.  Open `/server/services/dashboardService.js` (or a service dedicated to Zoe's logic).
+2.  During service initialization, subscribe to the relevant event: `EventService.subscribe('lead:high_priority_created', (data) => { … })`.
+3.  In the callback function, write logic to transform the event data into the format needed for Zoe's "Executive Suggestion Inbox." This could involve saving to a `Suggestion` collection or updating a global state. For a simple start, implement logging to the console and a global event list.
+
+**Phase 5: Update Aurora Dashboard to Display Event Stream**
+1.  Modify the `AuroraCTODashboard` component to add an "Event Log" tab or section.
+2.  Create a state to store recent events.
+3.  Set up the frontend to fetch event logs from a new `/api/system/events` endpoint (which you will need to create) via polling or WebSocket, and display them in real time.
+
+**Final Deliverable:** Generate all necessary code files (`EventService.js`, updated `Lead.js` model, updated/new service files, new API route) according to the phases. Explain how data flows from the event trigger to the dashboard display.
+
+---
+
+### **Implementation Advice for You**
+
+1.  **Sequential Execution:** I recommend you run **Prompt 1** in a new chat with your Replit Agent first. This is the essential foundation to get real data flowing.
+2.  **Verify:** After the refactor, manually test endpoints like `/api/dashboard/summary` to confirm they return live data from your database.
+3.  **Execute Phase Two:** Once the first step is stable, run **Prompt 2** in a *new* chat. This is a more advanced feature that builds upon a solid service layer.
+
+These prompts are designed to guide the Replit Agent through analysis, planning, and coding, maximizing the accuracy and quality of the output. Please copy the full prompt text to your Replit Agent to begin.

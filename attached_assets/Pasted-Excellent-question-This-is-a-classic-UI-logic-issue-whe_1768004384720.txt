@@ -1,0 +1,58 @@
+Excellent question. This is a classic UI logic issue where a component is hardcoded instead of being data-driven. Here is a structured prompt to diagnose and fix the `MainGridView` so it dynamically renders all your AI assistant dashboards.
+
+### **Prompt: Debug & Fix MainGridView for Dynamic Assistant Dashboard Display**
+
+**Core Instruction:** You are a senior frontend engineer tasked with debugging the `MainGridView` component. The user reports it only shows **one dummy view**, hiding the dynamic behavior. It should instead display a **grid of all AI assistant dashboards dynamically**. Your goal is to find the root cause and implement a fix.
+
+**Context:** The platform has a central registry of AI Assistants defined in `AuroraCTODashboard.jsx` (the `AI_ASSISTANTS_REGISTRY` array). All assistant dashboard components (like `ZoeExecutiveCRM`, `AuroraCTODashboard`) are built and should be lazily loaded. The `MainGridView` is likely the central hub that should render tiles or cards for each assistant, linking to their full dashboards.
+
+**Task Steps:**
+
+**Phase 1: Investigation & Analysis**
+1.  **Locate and Examine Code:**
+    *   Find and display the complete current code of the `MainGridView` component (likely in `/src/components/MainGridView.jsx` or similar).
+    *   Find and display the code for the sidebar or main navigation that users click to access the grid.
+2.  **Identify the Problem:**
+    *   Analyze the `MainGridView` component. Is it mapping over an array of assistants (like `AI_ASSISTANTS_REGISTRY`), or is it hardcoded to display a single static element?
+    *   Check where the component gets its data. Is it using a Redux selector (like `useSelector`), receiving props, or using a static local array?
+    *   Look for any conditional logic (e.g., `if` statements) that might be limiting the display to a single item for testing.
+3.  **Verify Data Source:**
+    *   Locate the Redux slice or context that should manage the list of available assistants and their dashboards. Check if this state is properly populated.
+    *   Determine the correct source of truth for the dashboard list. It should be synchronized with the `AI_ASSISTANTS_REGISTRY`.
+
+**Phase 2: Planning the Fix**
+Based on your findings, create a plan to refactor `MainGridView`. The plan must address:
+*   **Data Flow:** How will the component receive the complete list of assistants? (e.g., via a new Redux selector like `selectAllAssistants`, or by directly importing a filtered `AI_ASSISTANTS_REGISTRY`).
+*   **Dynamic Rendering:** How will each assistant be rendered? Each grid item should likely display the assistant's `name`, `title`, `department`, and an icon. Clicking it should navigate to that assistant's dedicated dashboard route (e.g., `/dashboard/assistants/clara`).
+*   **Lazy Loading Confirmation:** Ensure the implementation respects the existing lazy loading architecture. The grid itself should be lightweight; full dashboard components should only load when their specific route is accessed.
+*   **UI/UX:** The grid should be responsive, visually consistent with the platform's design system (using the existing `ASSISTANT_COLORS` for accents), and show a clear status (e.g., "Active").
+
+**Phase 3: Implementation**
+Execute your plan by generating the corrected code for `MainGridView`. The new component must:
+1.  Fetch or receive the complete list of assistant metadata (id, name, title, department, status, color).
+2.  Map over this list to dynamically generate a grid of clickable cards/tiles.
+3.  Use `React.lazy()` and `React.Suspense` appropriately if needed, or use `React Router` `Link` components to navigate to the lazy-loaded dashboard routes.
+4.  Remove any hardcoded dummy view logic.
+5.  Ensure the visual design matches the rest of the platform (consider using the `DashboardCard` or `AssistantCard` pattern from other components).
+
+**Phase 4: Verification & Sidebar Sync**
+1.  **Update Navigation:** Check the main sidebar (`Sidebar.jsx` or similar). Ensure there is a clear navigation item (e.g., "AI Assistants" or "Command Center") that links to this fixed `MainGridView` and that this link is visible and works.
+2.  **Create a Test:** Propose a simple test to verify the fix works. For example: "Add a new dummy assistant to the `AI_ASSISTANTS_REGISTRY`. After a refresh, the `MainGridView` should automatically show a new card for this assistant without any code changes to the grid itself."
+
+**Final Deliverable:**
+1.  Your analysis of the current, broken `MainGridView` code.
+2.  Your step-by-step refactoring plan.
+3.  The complete, newly generated, and working `MainGridView.jsx` code.
+4.  Any necessary updates to related files (e.g., a Redux slice, the sidebar navigation component).
+5.  Instructions on how to verify the dynamic behavior is working.
+
+---
+
+### **Why This Prompt Will Be Effective:**
+
+*   **Structured Debugging:** It forces the agent to first **understand** the problem before coding, following a professional "investigate -> plan -> implement" workflow.
+*   **Leverages Existing Code:** It directly references your known assets (`AI_ASSISTANTS_REGISTRY`, `ASSISTANT_COLORS`), ensuring the solution integrates seamlessly.
+*   **Holistic Fix:** It doesn't just patch the component; it considers data flow, navigation, and user experience, ensuring the fix is complete and sustainable.
+*   **Clear Success Criteria:** The final verification step provides a concrete way for you to test that the behavior is now truly dynamic.
+
+**Next Step:** Copy this entire prompt into a **new chat session** with your Replit Agent and execute it. This will keep the context clean and focused solely on fixing the grid view. Once this is done, your central dashboard hub will be fully functional.
