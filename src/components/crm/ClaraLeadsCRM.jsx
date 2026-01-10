@@ -247,27 +247,36 @@ const ClaraLeadsCRM = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [viewMode, setViewMode] = useState('table');
 
+  const hashCode = (str) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash |= 0;
+    }
+    return hash;
+  };
+
   useEffect(() => {
     dispatch(loadLeads());
     dispatch(loadLeadMetrics());
   }, [dispatch]);
 
   useEffect(() => {
-    if (apiLeads && apiLeads.length > 0) {
+    if (apiLeads) {
       const normalizedLeads = apiLeads.map(lead => ({
         id: lead._id || lead.id,
         name: lead.name || 'Unknown',
         email: lead.email || '',
         phone: lead.phone || '',
-        avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`,
+        avatar: `https://i.pravatar.cc/150?img=${Math.abs(hashCode(lead._id || lead.id || '')) % 70}`,
         source: lead.source || 'website',
         status: lead.status === 'new' ? 'warm' : (lead.status === 'qualified' ? 'hot' : lead.status) || 'warm',
         stage: lead.stage || 'initial',
         interest: lead.propertyInterest || { type: 'buy', propertyType: 'apartment', budget: 0, area: '' },
-        assignedAgent: lead.assignedAgent ? { name: lead.assignedAgent, id: lead.assignedAgent } : null,
+        assignedAgent: lead.assignedAgent ? { name: lead.assignedAgent.name || lead.assignedAgent, id: lead.assignedAgent.id || lead.assignedAgent } : null,
         score: lead.score || 50,
         lastContact: lead.updatedAt?.split('T')[0] || new Date().toISOString().split('T')[0],
-        nextFollowUp: lead.nextFollowUp || new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        nextFollowUp: lead.nextFollowUp?.split('T')[0] || new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         notes: lead.notes || '',
         activities: lead.interactions || [],
         createdAt: lead.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0]
@@ -394,6 +403,13 @@ const ClaraLeadsCRM = () => {
           >
             <Zap size={18} /> Features ({CLARA_FEATURES.length})
           </button>
+          <button 
+            className="clara-action-btn" 
+            onClick={handleRefresh}
+            disabled={loading}
+          >
+            <RefreshCw size={18} className={loading ? 'spinner' : ''} /> Refresh
+          </button>
           <button className="clara-action-btn primary" onClick={() => setShowAddForm(true)}>
             <UserPlus size={18} /> Add Lead
           </button>
@@ -408,6 +424,24 @@ const ClaraLeadsCRM = () => {
             accentColor="#ec4899"
             categories={['Lead Management', 'AI Features', 'Communication', 'Task Management', 'Analytics', 'Team Management', 'Display', 'Compliance']}
           />
+        </div>
+      )}
+
+      {/* Loading/Error States */}
+      {loading && (
+        <div className="clara-loading">
+          <Loader className="spinner" size={24} />
+          <span>Loading leads from database...</span>
+        </div>
+      )}
+      
+      {error && (
+        <div className="clara-error">
+          <AlertCircle size={20} />
+          <span>Failed to load leads: {error}</span>
+          <button onClick={handleRefresh} className="retry-btn">
+            <RefreshCw size={16} /> Retry
+          </button>
         </div>
       )}
 

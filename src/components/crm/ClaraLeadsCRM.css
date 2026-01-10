@@ -690,3 +690,65 @@
   background: rgba(255, 255, 255, 0.25);
 }
 
+/* Loading and Error States */
+.clara-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border-bottom: 1px solid #93c5fd;
+  color: #1e40af;
+  font-weight: 500;
+}
+
+.clara-loading .spinner {
+  animation: spin 1s linear infinite;
+}
+
+.clara-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border-bottom: 1px solid #fca5a5;
+  color: #991b1b;
+  font-weight: 500;
+}
+
+.clara-error .retry-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #991b1b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.clara-error .retry-btn:hover {
+  background: #7f1d1d;
+}
+
+.clara-action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
