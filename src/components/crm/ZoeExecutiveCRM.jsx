@@ -43,13 +43,6 @@ const TASKS = [
   { id: 4, title: 'Review New Agent Applications', priority: 'low', dueDate: '2024-01-15', status: 'pending', assignee: 'CEO' }
 ];
 
-const EXECUTIVES = [
-  { id: 1, name: 'Arslan Malik', role: 'CEO & Founder', avatar: '👨‍💼', status: 'available' },
-  { id: 2, name: 'Fatima Hassan', role: 'COO', avatar: '👩‍💼', status: 'in_meeting' },
-  { id: 3, name: 'Ahmed Al Rashid', role: 'CFO', avatar: '👨‍💻', status: 'available' },
-  { id: 4, name: 'Sarah Al Maktoum', role: 'CMO', avatar: '👩‍💻', status: 'busy' }
-];
-
 const ASSISTANT_COLORS = {
   clara: '#F59E0B',
   olivia: '#4FACFE',

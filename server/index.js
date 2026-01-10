@@ -18,6 +18,7 @@ import inventoryRoutes from './routes/inventory.routes.js';
 import oliviaRoutes from './routes/olivia.routes.js';
 import zoeRoutes from './routes/zoe.routes.js';
 import OliviaService from './services/oliviaService.js';
+import schedulerService from './services/schedulerService.js';
 
 let firebaseInitialized = false;
 try {
@@ -123,12 +124,22 @@ function normalizeContract(contract) {
 connectDB().then(() => {
   useDatabase = true;
   console.log('Using MongoDB for storage');
+  
+  schedulerService.init();
 }).catch(() => {
   console.log('Using file-based storage');
 });
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString(), database: useDatabase ? 'mongodb' : 'file' });
+});
+
+app.get('/api/scheduler/status', (req, res) => {
+  res.json({
+    success: true,
+    scheduledJobs: schedulerService.getJobStatus(),
+    timestamp: new Date().toISOString()
+  });
 });
 
 const serverStartTime = Date.now();
