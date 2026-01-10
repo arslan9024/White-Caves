@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { AssistantDocsTab } from './shared';
 import { FlowchartViewer, ServiceDemoMode, ZoeConsole } from './index';
+import AIAssistantsRegistry from './ui/AIAssistantsRegistry';
 import { EXECUTIVES, DIRECTORS, DEPARTMENTS_CONFIG } from '../../data/organization/orgStructure';
 import { EMPLOYEES, WHATSAPP_AGENTS } from '../../data/organization/employees';
 import { COMPANY_SERVICES, getAllServices, getServiceStats } from '../../data/services/companyServices';
@@ -240,7 +241,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
       </div>
 
       <div className="assistant-tabs">
-        {['console', 'suggestions', 'organization', 'departments', 'services', 'demo', 'calendar', 'tasks', 'docs'].map(tab => (
+        {['console', 'suggestions', 'assistants', 'organization', 'departments', 'services', 'demo', 'calendar', 'tasks', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -251,11 +252,12 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
             {tab === 'suggestions' && unreviewedCount > 0 && (
               <span className="tab-badge">{unreviewedCount}</span>
             )}
+            {tab === 'assistants' && <Bot size={14} />}
             {tab === 'organization' && <Network size={14} />}
             {tab === 'departments' && <Building2 size={14} />}
             {tab === 'services' && <Workflow size={14} />}
             {tab === 'demo' && <Play size={14} />}
-            {tab === 'console' ? 'AI Console' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === 'console' ? 'AI Console' : tab === 'assistants' ? 'AI Registry' : tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
@@ -468,6 +470,16 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                 )}
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'assistants' && (
+          <div className="assistants-registry-view">
+            <div className="view-header">
+              <h3><Bot size={18} /> AI Assistants Registry</h3>
+              <p className="view-subtitle">Complete registry of all 32 AI assistants managing White Caves operations</p>
+            </div>
+            <AIAssistantsRegistry showFilters={true} showSearch={true} />
           </div>
         )}
 
