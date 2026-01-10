@@ -1,9 +1,7 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import AppShell from '../../components/layout/AppShell';
-import DashboardTopNav from '../../components/layout/DashboardTopNav';
-import DashboardShell from '../../components/layout/DashboardShell';
+import CRMShell from '../../components/crm/CRMShell';
 import { selectActiveAssistant, selectActiveWorkspace, setActiveAssistant, setActiveWorkspace } from '../../store/slices/dashboardViewSlice';
 import { setUserInfo, setActiveRole } from '../../store/slices/accessControlSlice';
 import OverviewTab from '../../components/owner/tabs/OverviewTab';
@@ -20,6 +18,7 @@ import UsersTab from '../../components/owner/tabs/UsersTab';
 import FeatureExplorer from '../../components/owner/FeatureExplorer';
 import { SUPER_ADMIN, isMDAuthorized } from '../../config/superAdmin';
 import '../../shared/styles/theme.css';
+import '../../styles/crm-layout.css';
 import './MDDashboardPage.css';
 
 const LindaWhatsAppCRM = lazy(() => import('../../components/crm/LindaWhatsAppCRM'));
@@ -49,21 +48,26 @@ const MavenInvestmentCRM = lazy(() => import('../../components/crm/MavenInvestme
 const AIAssistantHub = lazy(() => import('../../components/crm/AIAssistantHub'));
 const AICommandCenter = lazy(() => import('../../components/crm/AICommandCenter'));
 
+const DepartmentsCRMTab = lazy(() => import('../../components/crm/tabs/DepartmentsCRMTab'));
+const EmployeesCRMTab = lazy(() => import('../../components/crm/tabs/EmployeesCRMTab'));
+const ServicesCRMTab = lazy(() => import('../../components/crm/tabs/ServicesCRMTab'));
+const AIAssistantsCRMTab = lazy(() => import('../../components/crm/tabs/AIAssistantsCRMTab'));
+
 const CRMLoadingFallback = () => (
   <div className="crm-loading-fallback">
     <div className="loading-spinner"></div>
-    <p>Loading Assistant...</p>
+    <p>Loading...</p>
   </div>
 );
 
 export default function MDDashboardPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const user = useSelector(state => state.user.currentUser);
+  const user = useSelector(state => state.user?.currentUser);
   const activeAssistant = useSelector(selectActiveAssistant);
   const activeWorkspace = useSelector(selectActiveWorkspace);
   
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(false);
   const [dashboardData, setDashboardData] = useState({});
 
@@ -87,10 +91,10 @@ export default function MDDashboardPage() {
       setActiveTab(activeAssistant);
     } else if (activeWorkspace) {
       const workspaceToTab = {
-        'executive': 'overview',
+        'executive': 'dashboard',
         'leads': 'leads',
         'properties': 'properties',
-        'agents': 'agents',
+        'agents': 'employees',
         'finance': 'analytics',
         'ai-command': 'ai-command'
       };
@@ -121,17 +125,13 @@ export default function MDDashboardPage() {
     }
   };
 
-  const handleLogout = () => {
-    navigate('/');
-  };
-
   const handleQuickAction = (action) => {
     switch(action) {
       case 'addProperty':
         navigate('/properties/add');
         break;
       case 'assignAgent':
-        setActiveTab('agents');
+        setActiveTab('employees');
         break;
       case 'generateReport':
         handleGenerateReport();
@@ -347,8 +347,16 @@ export default function MDDashboardPage() {
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case 'overview':
+      case 'dashboard':
         return <OverviewTab data={dashboardData} loading={loading} onQuickAction={handleQuickAction} />;
+      case 'departments':
+        return <Suspense fallback={<CRMLoadingFallback />}><DepartmentsCRMTab /></Suspense>;
+      case 'employees':
+        return <Suspense fallback={<CRMLoadingFallback />}><EmployeesCRMTab /></Suspense>;
+      case 'services':
+        return <Suspense fallback={<CRMLoadingFallback />}><ServicesCRMTab /></Suspense>;
+      case 'assistants':
+        return <Suspense fallback={<CRMLoadingFallback />}><AIAssistantsCRMTab /></Suspense>;
       case 'ai-command':
         return <Suspense fallback={<CRMLoadingFallback />}><AICommandCenter /></Suspense>;
       case 'ai-hub':
@@ -437,6 +445,8 @@ export default function MDDashboardPage() {
   };
 
   return (
-    <DashboardShell />
+    <CRMShell activeTab={activeTab} onTabChange={handleTabChange}>
+      {renderTabContent()}
+    </CRMShell>
   );
 }
