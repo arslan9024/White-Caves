@@ -264,16 +264,21 @@ export const AI_ASSISTANTS = {
   zoe: {
     id: 'zoe',
     name: 'Zoe',
-    title: 'Executive Assistant & Strategic Intelligence',
+    title: 'MD Executive Assistant & Strategic Intelligence',
     department: 'executive',
     icon: 'Briefcase',
     color: '#10B981',
     avatar: '👩‍🏫',
-    description: 'Executive support, strategic suggestions inbox, business intelligence, KPI dashboards, and cross-department coordination',
-    capabilities: ['executive_reports', 'suggestion_inbox', 'kpi_dashboard', 'strategic_planning', 'cross_department_coordination'],
+    description: 'Executive AI Assistant for Managing Director Arslan Malik. Provides strategic suggestions inbox, business intelligence, KPI dashboards, and cross-department coordination.',
+    reportsTo: {
+      name: 'Arslan Malik',
+      title: 'Managing Director',
+      email: 'arslanmalikgoraha@gmail.com'
+    },
+    capabilities: ['executive_reports', 'suggestion_inbox', 'kpi_dashboard', 'strategic_planning', 'cross_department_coordination', 'md_briefings'],
     permissions: {
-      viewableBy: ['owner', 'admin'],
-      accessibleBy: ['owner'],
+      viewableBy: ['md', 'admin'],
+      accessibleBy: ['md'],
       dataAccessLevel: 'full'
     },
     apiEndpoints: ['/api/executive', '/api/suggestions', '/api/analytics'],

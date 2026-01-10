@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setActiveRole } from '../store/navigationSlice';
+import { SUPER_ADMIN, isSuperAdmin } from '../config/superAdmin';
 import './RoleGateway.css';
-
-const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
 
 const ROLES = [
   { id: 'buyer', label: 'Buyer', icon: '🏠', description: 'Looking to purchase property in Dubai' },
@@ -24,16 +23,18 @@ export default function RoleGateway({ user, onRoleSelect }) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (user?.email === OWNER_EMAIL) {
-      const ownerRole = {
-        role: 'owner',
+    if (isSuperAdmin(user)) {
+      const mdRole = {
+        role: 'md',
         selectedAt: new Date().toISOString(),
         locked: true,
-        isOwner: true
+        isSuperAdmin: true,
+        name: SUPER_ADMIN.name,
+        title: SUPER_ADMIN.title
       };
-      localStorage.setItem('userRole', JSON.stringify(ownerRole));
-      dispatch(setActiveRole('owner'));
-      navigate('/owner/dashboard');
+      localStorage.setItem('userRole', JSON.stringify(mdRole));
+      dispatch(setActiveRole('md'));
+      navigate('/md/dashboard');
     }
   }, [user, navigate, dispatch]);
 

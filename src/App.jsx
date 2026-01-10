@@ -52,7 +52,12 @@ function ProtectedRoute({ children, allowedRoles }) {
   }
 
   if (allowedRoles && !allowedRoles.includes(userData.role)) {
-    return <Navigate to={`/${userData.role}/dashboard`} replace />;
+    const role = userData.role;
+    const validRoles = ['buyer', 'seller', 'landlord', 'tenant', 'leasing-agent', 'secondary-sales-agent', 'md'];
+    if (validRoles.includes(role)) {
+      return <Navigate to={`/${role}/dashboard`} replace />;
+    }
+    return <Navigate to="/select-role" replace />;
   }
 
   return children;
@@ -75,7 +80,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import SignContractPage from './pages/SignContractPage';
 import SystemHealthPage from './pages/owner/SystemHealthPage';
 import TenantDashboardPage from './pages/tenant/TenantDashboardPage';
-import OwnerDashboardPage from './pages/owner/OwnerDashboardPage';
+import MDDashboardPage from './pages/owner/MDDashboardPage';
 import BusinessModelPage from './pages/owner/BusinessModelPage';
 import ClientServicesPage from './pages/owner/ClientServicesPage';
 import ServicesPage from './pages/ServicesPage';
@@ -227,49 +232,52 @@ function App() {
           </ProtectedRoute>
         } />
         
-        <Route path="/owner/dashboard" element={
-          <ProtectedRoute allowedRoles={['owner']}>
-            <OwnerDashboardPage />
+        <Route path="/md/dashboard" element={
+          <ProtectedRoute allowedRoles={['md']}>
+            <MDDashboardPage />
           </ProtectedRoute>
         } />
-        <Route path="/owner/business-model" element={
-          <ProtectedRoute allowedRoles={['owner']}>
+        <Route path="/md/business-model" element={
+          <ProtectedRoute allowedRoles={['md']}>
             <BusinessModelPage />
           </ProtectedRoute>
         } />
-        <Route path="/owner/client-services" element={
-          <ProtectedRoute allowedRoles={['owner']}>
+        <Route path="/md/client-services" element={
+          <ProtectedRoute allowedRoles={['md']}>
             <ClientServicesPage />
           </ProtectedRoute>
         } />
-        <Route path="/owner/system-health" element={
-          <ProtectedRoute allowedRoles={['owner']}>
+        <Route path="/md/system-health" element={
+          <ProtectedRoute allowedRoles={['md']}>
             <SystemHealthPage />
           </ProtectedRoute>
         } />
-        <Route path="/owner/whatsapp" element={
-          <ProtectedRoute allowedRoles={['owner']}>
+        <Route path="/md/whatsapp" element={
+          <ProtectedRoute allowedRoles={['md']}>
             <WhatsAppDashboardPage />
           </ProtectedRoute>
         } />
-        <Route path="/owner/whatsapp/chatbot" element={
-          <ProtectedRoute allowedRoles={['owner']}>
+        <Route path="/md/whatsapp/chatbot" element={
+          <ProtectedRoute allowedRoles={['md']}>
             <WhatsAppChatbotPage />
           </ProtectedRoute>
         } />
-        <Route path="/owner/whatsapp/analytics" element={
-          <ProtectedRoute allowedRoles={['owner']}>
+        <Route path="/md/whatsapp/analytics" element={
+          <ProtectedRoute allowedRoles={['md']}>
             <WhatsAppAnalyticsPage />
           </ProtectedRoute>
         } />
-        <Route path="/owner/whatsapp/settings" element={
-          <ProtectedRoute allowedRoles={['owner']}>
+        <Route path="/md/whatsapp/settings" element={
+          <ProtectedRoute allowedRoles={['md']}>
             <WhatsAppSettingsPage />
           </ProtectedRoute>
         } />
         
+        {/* Legacy owner routes - redirect to md */}
+        <Route path="/owner/*" element={<Navigate to="/md/dashboard" replace />} />
+        
         <Route path="/dashboard/*" element={
-          <ProtectedRoute allowedRoles={['owner']}>
+          <ProtectedRoute allowedRoles={['md']}>
             <ModernDashboardPage />
           </ProtectedRoute>
         } />

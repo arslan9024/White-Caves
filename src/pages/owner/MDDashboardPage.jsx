@@ -16,8 +16,9 @@ import UAEPassTab from '../../components/owner/tabs/UAEPassTab';
 import SettingsTab from '../../components/owner/tabs/SettingsTab';
 import UsersTab from '../../components/owner/tabs/UsersTab';
 import FeatureExplorer from '../../components/owner/FeatureExplorer';
+import { SUPER_ADMIN, isMDAuthorized } from '../../config/superAdmin';
 import '../../shared/styles/theme.css';
-import './OwnerDashboardPage.css';
+import './MDDashboardPage.css';
 
 const LindaWhatsAppCRM = lazy(() => import('../../components/crm/LindaWhatsAppCRM'));
 const MaryInventoryCRM = lazy(() => import('../../components/crm/MaryInventoryCRM'));
@@ -43,24 +44,7 @@ const CRMLoadingFallback = () => (
   </div>
 );
 
-const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
-
-const isOwnerAuthorized = (user) => {
-  if (!user) return false;
-  if (user.email === OWNER_EMAIL) return true;
-  const storedRole = localStorage.getItem('userRole');
-  if (storedRole) {
-    try {
-      const roleData = JSON.parse(storedRole);
-      return roleData.role === 'owner';
-    } catch (e) {
-      return false;
-    }
-  }
-  return false;
-};
-
-export default function OwnerDashboardPage() {
+export default function MDDashboardPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector(state => state.user.currentUser);
@@ -72,18 +56,18 @@ export default function OwnerDashboardPage() {
   const [dashboardData, setDashboardData] = useState({});
 
   useEffect(() => {
-    if (!isOwnerAuthorized(user)) {
+    if (!isMDAuthorized(user)) {
       navigate('/');
       return;
     }
     dispatch(setUserInfo({
-      userId: user?.uid || user?.id || 'owner',
-      userName: user?.displayName || 'Company Owner',
-      userEmail: user?.email || '',
+      userId: user?.uid || user?.id || 'md',
+      userName: user?.displayName || SUPER_ADMIN.name,
+      userEmail: user?.email || SUPER_ADMIN.email,
       userAvatar: user?.photoURL,
-      role: 'owner'
+      role: 'md'
     }));
-    dispatch(setActiveRole('owner'));
+    dispatch(setActiveRole('md'));
   }, [user, navigate, dispatch]);
   
   useEffect(() => {

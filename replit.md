@@ -3,6 +3,16 @@
 ## Overview
 White Caves is a luxury real estate platform specializing in the Dubai market. It provides comprehensive services for property sales, rentals, appointment scheduling, tenancy agreement management, and payment processing, integrated with internal HR functionalities. The platform supports diverse user roles with robust access control. The primary goal is to become the leading digital solution for luxury real estate in Dubai, utilizing advanced technology and AI to streamline operations and enhance the user experience for all stakeholders. The project aims to deliver a high-tech, user-friendly system that sets a new standard for property transactions and management in the region.
 
+## Company Leadership
+
+| Role | Name | Email | AI Assistant |
+|------|------|-------|--------------|
+| **Managing Director (MD)** | Arslan Malik | arslanmalikgoraha@gmail.com | Zoe (Executive AI) |
+
+The Managing Director has super admin access (`isSuperUser`, `isDecisionMaker`) with full system permissions. The MD Dashboard is accessible at `/md/dashboard`.
+
+**Note**: In real estate context, "Owner" refers to property owners (clients), while "MD" refers to the company's Managing Director. This distinction is important for role-based access control.
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
@@ -26,8 +36,14 @@ Preferred communication style: Simple, everyday language.
 
 ### Authentication & Authorization
 - **Authentication**: Firebase Authentication (social logins, email/password, phone/SMS OTP) and WebAuthn/Passkeys for biometric authentication.
-- **Role-Based Access Control**: Multi-role system (`BUYER`, `SELLER`, `LANDLORD`, `TENANT`, `AGENT`, `ADMIN`) with `isSuperUser` and `isDecisionMaker` flags, supported by a comprehensive permission system.
+- **Role-Based Access Control**: Multi-role system:
+  - **MD** (Managing Director): Super admin with full access - Arslan Malik
+  - **OWNER**: Property owners (clients who own properties)
+  - **BUYER**, **SELLER**, **LANDLORD**, **TENANT**: Client roles
+  - **AGENT**, **ADMIN**: Staff roles
+  - `isSuperUser` and `isDecisionMaker` flags for elevated permissions
 - **Session Management**: Enhanced session tracking with device/browser detection, timeout, token refresh, and activity monitoring.
+- **Super Admin Config**: Centralized in `src/config/superAdmin.js`
 
 ### Key Features & Design Decisions
 - **Transaction Management**: `TenancyTimeline` and `SaleTimeline` models with stage progression and verification workflows.
@@ -72,7 +88,7 @@ Preferred communication style: Simple, everyday language.
 ### Executive Department
 | Assistant | Role | Features |
 |-----------|------|----------|
-| **Zoe** | CEO Intelligence | Executive Dashboard, Suggestion Inbox, Analytics, Reports |
+| **Zoe** | MD Executive Assistant | Executive Dashboard, Suggestion Inbox, Analytics, Reports, MD Briefings (Reports to Arslan Malik) |
 
 ### Operations Department
 | Assistant | Role | Features |

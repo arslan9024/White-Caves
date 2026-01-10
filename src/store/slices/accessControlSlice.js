@@ -1,6 +1,21 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 
 const ROLE_PERMISSIONS = {
+  md: {
+    canViewAllDashboards: true,
+    canManageAgents: true,
+    canManageFinances: true,
+    canAccessAIAssistants: true,
+    canManageProperties: true,
+    canManageLeads: true,
+    canAccessAnalytics: true,
+    canManageSettings: true,
+    canViewExecutiveReports: true,
+    canAccessConfidentialVault: true,
+    isSuperUser: true,
+    isDecisionMaker: true,
+    dashboards: ['executive', 'agents', 'properties', 'leads', 'finance', 'analytics', 'settings', 'ai-command']
+  },
   owner: {
     canViewAllDashboards: true,
     canManageAgents: true,
@@ -64,13 +79,13 @@ const ROLE_PERMISSIONS = {
 };
 
 const initialState = {
-  activeRole: 'owner',
+  activeRole: null,
   userId: null,
   userName: null,
   userEmail: null,
   userAvatar: null,
   isAuthenticated: false,
-  permissions: ROLE_PERMISSIONS.owner,
+  permissions: {},
   featureFlags: {
     aiAssistants: true,
     whatsappIntegration: true,
@@ -114,8 +129,8 @@ const accessControlSlice = createSlice({
       state.userEmail = null;
       state.userAvatar = null;
       state.isAuthenticated = false;
-      state.activeRole = 'owner';
-      state.permissions = ROLE_PERMISSIONS.owner;
+      state.activeRole = null;
+      state.permissions = {};
     },
     updateFeatureFlag: (state, action) => {
       const { flag, enabled } = action.payload;
