@@ -22,7 +22,7 @@ Preferred communication style: Simple, everyday language.
 - **Framework**: React 18 with Vite, utilizing Redux Toolkit for state management.
 - **UI/UX**: Custom React components with CSS modules, featuring a premium dark mode, glassmorphism styling, mobile responsiveness, interactive elements (calculators, advanced search, property comparison, interactive SVG Dubai map, full-screen galleries), and role-based routing.
 - **Theming**: Consistent brand theme with a Red and White color scheme, Montserrat/Open Sans typography, and comprehensive light/dark theme support, managed by an enhanced design token system.
-- **Navigation System**: A three-tier navigation system comprising a public `MainNavBar`, an authenticated `DashboardHeader` with dynamic feature tabs, and an `AssistantHubSidebar` for 24 AI assistants. A `DashboardAppLayout` uses CSS Grid for responsive design.
+- **Navigation System**: A three-tier navigation system comprising a public `MainNavBar`, an authenticated `DashboardTopNav` with sticky positioning and auto-scroll to active tabs, and a `CommandSidebar` for AI Command Center functionality. The CommandSidebar derives all assistant data from Redux (`selectAllAssistantsArray`, `selectAssistantsByDepartment`, `selectAllUnreadCounts`) and displays quick stats, department-grouped assistants with status dots, and real-time activity feed.
 - **Design System**: A complete UI component library with variants, sizes, states, and theme support.
 - **SEO Optimization**: Comprehensive meta tags, structured data, and performance optimizations.
 
@@ -62,7 +62,7 @@ Preferred communication style: Simple, everyday language.
 - **Henry Event System**: Universal event format for cross-assistant communication with correlation tracking.
 - **Centralized Assistant Registry**: Single source of truth for all AI assistants with department configuration, capabilities, permissions, and data flow definitions.
 - **Event Bus Middleware**: Redux middleware enabling event-driven communication between assistants.
-- **AI Command Center**: Unified dashboard entry point with an AIDropdownSelector for selecting assistants, quick stats bar, and activity sidebar.
+- **AI Command Center**: Unified CommandSidebar component (`src/components/layout/CommandSidebar.jsx`) integrating all AI Command Center features - quick stats bar (Active Assistants, System Health, Alerts), department-grouped assistant list with real-time status, notification badges per assistant, and activity feed tab. Selection syncs with Redux via `setActiveAssistant` action.
 - **Company Services Registry**: 35 services across 6 categories with workflow stages and assigned AI assistants.
 - **ServiceDemoMode Component**: Interactive end-to-end service workflow demonstration.
 - **Reusable CRM Components**: StatsBar, DataTable, ActionButton, ActivityFeed, StatusBadge, FlowchartViewer.
