@@ -311,6 +311,25 @@
   margin: 0;
 }
 
+.assistant-item-wrapper {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.assistant-item-wrapper:hover {
+  background: var(--hover-bg, #f1f5f9);
+}
+
+[data-theme="dark"] .assistant-item-wrapper:hover {
+  background: var(--hover-bg, #334155);
+}
+
+.assistant-item-wrapper:hover .pin-btn {
+  opacity: 1;
+}
+
 .assistant-item {
   display: flex;
   align-items: center;
@@ -325,11 +344,11 @@
 }
 
 .assistant-item:hover {
-  background: var(--hover-bg, #f1f5f9);
+  background: transparent;
 }
 
 [data-theme="dark"] .assistant-item:hover {
-  background: var(--hover-bg, #334155);
+  background: transparent;
 }
 
 .assistant-indicator {

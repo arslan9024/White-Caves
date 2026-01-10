@@ -241,4 +241,52 @@ export const selectActiveFiltersCount = createSelector(
   }
 );
 
+export const selectMultiOwnerProperties = createSelector(
+  [selectProperties],
+  (properties) => {
+    return properties.filter(p => {
+      const hasMultipleOwners = (p.ownerCount && p.ownerCount > 1) || 
+                                (p.owners && Array.isArray(p.owners) && p.owners.length > 1) ||
+                                (p.ownerNames && Array.isArray(p.ownerNames) && p.ownerNames.length > 1);
+      return hasMultipleOwners;
+    });
+  }
+);
+
+export const selectOwnersWithMultipleProperties = createSelector(
+  [selectOwners, selectProperties],
+  (owners, properties) => {
+    const ownerPropertyCounts = {};
+    const ownerById = owners.byId || {};
+    
+    properties.forEach(p => {
+      const ownerId = p.ownerId || p.owner;
+      if (ownerId) {
+        if (!ownerPropertyCounts[ownerId]) {
+          ownerPropertyCounts[ownerId] = { count: 0, owner: ownerById[ownerId] || { id: ownerId } };
+        }
+        ownerPropertyCounts[ownerId].count += 1;
+      }
+    });
+    
+    return Object.values(ownerPropertyCounts)
+      .filter(item => item.count > 1)
+      .map(item => ({
+        ...item.owner,
+        propertyCount: item.count
+      }));
+  }
+);
+
+export const selectOwnersWithMultiplePhones = createSelector(
+  [selectOwners],
+  (owners) => {
+    const allOwners = Object.values(owners.byId || {});
+    return allOwners.filter(owner => {
+      const phones = owner.phones || owner.phoneNumbers || [];
+      return Array.isArray(phones) && phones.length > 1;
+    });
+  }
+);
+
 export default inventorySlice.reducer;

@@ -230,26 +230,29 @@ const IntelligentSidebar = () => {
                         <ul className="assistants-list">
                           {deptAssistants.map(assistant => (
                             <li key={assistant.id}>
-                              <button
-                                className="assistant-item"
-                                onClick={() => handleAssistantClick(assistant)}
-                                style={{ '--assistant-color': assistant.color }}
-                              >
-                                <div className="assistant-indicator" />
-                                <div className="assistant-info">
-                                  <span className="assistant-name">{assistant.name}</span>
-                                  <span className="assistant-role">{assistant.role}</span>
-                                </div>
+                              <div className="assistant-item-wrapper">
+                                <button
+                                  className="assistant-item"
+                                  onClick={() => handleAssistantClick(assistant)}
+                                  style={{ '--assistant-color': assistant.color }}
+                                >
+                                  <div className="assistant-indicator" />
+                                  <div className="assistant-info">
+                                    <span className="assistant-name">{assistant.name}</span>
+                                    <span className="assistant-role">{assistant.role}</span>
+                                  </div>
+                                </button>
                                 <button 
                                   className={`pin-btn ${sidebar.pinnedItems.includes(assistant.id) ? 'pinned' : ''}`}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     dispatch(togglePinnedItem(assistant.id));
                                   }}
+                                  aria-label={`Pin ${assistant.name}`}
                                 >
                                   <Pin size={12} />
                                 </button>
-                              </button>
+                              </div>
                             </li>
                           ))}
                         </ul>
