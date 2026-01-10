@@ -66,3 +66,81 @@ Preferred communication style: Simple, everyday language.
 - **WhatsApp Business API**: Customer support and chatbot integration.
 - **Matterport**: Virtual tour integration.
 - **Vercel Speed Insights**: Performance analytics.
+
+## AI Assistants Registry (24 Total)
+
+### Executive Department
+| Assistant | Role | Features |
+|-----------|------|----------|
+| **Zoe** | CEO Intelligence | Executive Dashboard, Suggestion Inbox, Analytics, Reports |
+
+### Operations Department
+| Assistant | Role | Features |
+|-----------|------|----------|
+| **Mary** | Inventory Manager | Inventory, Data Tools Suite, Asset Fetcher, Data Import |
+| **Daisy** | Property Coordinator | Leases, Tenants, Maintenance, Rental Analytics |
+| **Sentinel** | Quality Control | Property Monitoring, Predictive Maintenance, Inspections, Emergency Response |
+
+### Sales Department
+| Assistant | Role | Features |
+|-----------|------|----------|
+| **Clara** | Lead Manager | Pipeline, Lead List, Scoring, Nurturing Workflows |
+| **Nancy** | HR & Performance | Employees, Recruitment, Attendance, Performance Reviews |
+| **Hunter** | Lead Hunter | Prospects, Outreach Campaigns, Pattern Detection, Lead Enrichment |
+
+### Communications Department
+| Assistant | Role | Features |
+|-----------|------|----------|
+| **Linda** | WhatsApp Manager | Conversations, Agent Status, Templates, Broadcasts |
+| **Nina** | Client Relations | Bot Builder, Flow Designer, Sessions, Bot Analytics |
+
+### Finance Department
+| Assistant | Role | Features |
+|-----------|------|----------|
+| **Theodora** | CFO Intelligence | Invoices, Payments, Financial Reports, Escrow |
+| **Penny** | Commission Tracker | Commission calculations, payout schedules, agent earnings |
+| **Quinn** | Payment Processor | Payment gateway, transaction tracking, refunds |
+
+### Marketing Department
+| Assistant | Role | Features |
+|-----------|------|----------|
+| **Marcus** | Campaign Manager | Campaign creation, A/B testing, performance tracking |
+| **Stella** | Content Creator | Content calendar, asset management, copywriting |
+| **Laila** | Brand Manager | KYC verification, AML monitoring, Contract Review, Audit Trail |
+
+### Compliance Department
+| Assistant | Role | Features |
+|-----------|------|----------|
+| **Henry** | Compliance Officer | Events, Audit Log, Timeline Analytics, Compliance Reports |
+| **Vera** | KYC Specialist | Identity verification, document validation, risk scoring |
+
+### Technology Department
+| Assistant | Role | Features |
+|-----------|------|----------|
+| **Aurora** | CTO Intelligence | Systems Health, Deployments, Documentation, AI Governance |
+| **Atlas** | API Monitor | Projects, Feasibility Analysis, Developer Tracking, Zoning |
+
+### Intelligence Department
+| Assistant | Role | Features |
+|-----------|------|----------|
+| **Sage** | Market Analyst | Market trends, pricing predictions, competitor tracking |
+| **Olivia** | Research Lead | Campaigns, Social Media, Automation, Market Intelligence |
+
+### Legal Department
+| Assistant | Role | Features |
+|-----------|------|----------|
+| **Sophia** | Contract Manager | Deals, Sales Pipeline, Forecast, Commission Calculator |
+| **Ivy** | Ejari Specialist | Ejari registration, contract compliance, renewals |
+| **Max** | Document Processor | Document generation, OCR processing, archival |
+
+### Additional Specialized Assistants
+| Assistant | Role | Features |
+|-----------|------|----------|
+| **Hazel** | Frontend UX | Components, Design System, Accessibility, Themes |
+| **Willow** | Backend Ops | APIs, Database, Performance, Security |
+| **Evangeline** | Legal Risk | Risk Analysis, Contracts, Regulations, Best Practices |
+| **Cipher** | Market Intel | Market Trends, Predictions, Competitors, Economic Indicators |
+| **Vesta** | Project Handover | Milestones, Snagging, Handover, Defects |
+| **Juno** | Community Mgmt | Facilities, IoT, Events, Energy Optimization |
+| **Kairos** | VIP Services | VIP Clients, Concierge, Lifestyle, Partners |
+| **Maven** | Investment | Portfolio, Yields, Tax Planning, Investment Advice |
