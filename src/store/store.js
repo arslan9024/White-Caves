@@ -8,6 +8,7 @@ import authReducer from './authSlice';
 import analyticsReducer from './analyticsSlice';
 import featuresReducer from './featuresSlice';
 import inventoryReducer from './slices/inventorySlice';
+import leadsReducer from './slices/leadsSlice';
 import aiAssistantDashboardReducer from './slices/aiAssistantDashboardSlice';
 import featuredReducer from './slices/featuredSlice';
 import appReducer from './appSlice';
@@ -24,6 +25,7 @@ export const store = configureStore({
     analytics: analyticsReducer,
     features: featuresReducer,
     inventory: inventoryReducer,
+    leads: leadsReducer,
     aiAssistantDashboard: aiAssistantDashboardReducer,
     featured: featuredReducer,
     app: appReducer

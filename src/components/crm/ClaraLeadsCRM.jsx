@@ -1,122 +1,23 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { 
   Users, Plus, Search, Filter, MoreVertical, Edit2, Trash2, 
   Eye, Phone, Mail, MessageCircle, Calendar, Tag, Star,
   ChevronDown, ChevronUp, Download, Upload, RefreshCw, Bot,
   UserPlus, TrendingUp, Clock, CheckCircle, XCircle, AlertCircle,
-  DollarSign, Home, MapPin, Briefcase, Zap, Building2, Key
+  DollarSign, Home, MapPin, Briefcase, Zap, Building2, Key, Loader
 } from 'lucide-react';
 import FullScreenDetailModal from '../../shared/components/ui/FullScreenDetailModal';
 import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
 import { DualCategoryTabStrip } from './shared';
 import { CLARA_FEATURES } from './data/assistantFeatures';
+import { 
+  loadLeads, 
+  loadLeadMetrics,
+  selectAllLeads, 
+  selectLeadMetrics 
+} from '../../store/slices/leadsSlice';
 import './ClaraLeadsCRM.css';
-
-const DUMMY_LEADS = [
-  {
-    id: 'L-001',
-    name: 'Mohammed Al Rashid',
-    email: 'mohammed.rashid@email.com',
-    phone: '+971501234567',
-    avatar: 'https://i.pravatar.cc/150?img=11',
-    source: 'website',
-    status: 'hot',
-    stage: 'negotiation',
-    interest: { type: 'buy', propertyType: 'apartment', budget: 3500000, area: 'Dubai Marina' },
-    assignedAgent: { name: 'Sarah Johnson', id: 'A001' },
-    score: 85,
-    lastContact: '2024-01-20',
-    nextFollowUp: '2024-01-22',
-    notes: 'Interested in 3BR apartments in Marina. Has financing approved.',
-    activities: [
-      { type: 'call', date: '2024-01-20', note: 'Discussed property options' },
-      { type: 'email', date: '2024-01-18', note: 'Sent property listings' },
-      { type: 'viewing', date: '2024-01-15', note: 'Viewed Marina Heights apartment' }
-    ],
-    createdAt: '2024-01-10'
-  },
-  {
-    id: 'L-002',
-    name: 'Sarah Williams',
-    email: 'sarah.w@email.com',
-    phone: '+971502345678',
-    avatar: 'https://i.pravatar.cc/150?img=5',
-    source: 'referral',
-    status: 'warm',
-    stage: 'viewing',
-    interest: { type: 'rent', propertyType: 'villa', budget: 180000, area: 'Arabian Ranches' },
-    assignedAgent: { name: 'Ahmed Hassan', id: 'A002' },
-    score: 65,
-    lastContact: '2024-01-19',
-    nextFollowUp: '2024-01-23',
-    notes: 'Family of 4, needs 4+ bedrooms. Relocating from UK.',
-    activities: [
-      { type: 'viewing', date: '2024-01-19', note: 'Viewed 2 villas in Arabian Ranches' }
-    ],
-    createdAt: '2024-01-12'
-  },
-  {
-    id: 'L-003',
-    name: 'Ahmad Khalil',
-    email: 'ahmad.k@business.com',
-    phone: '+971503456789',
-    avatar: 'https://i.pravatar.cc/150?img=12',
-    source: 'whatsapp',
-    status: 'cold',
-    stage: 'initial',
-    interest: { type: 'buy', propertyType: 'commercial', budget: 8000000, area: 'Business Bay' },
-    assignedAgent: { name: 'Fatima Khan', id: 'A003' },
-    score: 35,
-    lastContact: '2024-01-15',
-    nextFollowUp: '2024-01-25',
-    notes: 'Looking for investment property. Not in a hurry.',
-    activities: [
-      { type: 'whatsapp', date: '2024-01-15', note: 'Initial inquiry about commercial spaces' }
-    ],
-    createdAt: '2024-01-15'
-  },
-  {
-    id: 'L-004',
-    name: 'Emma Thompson',
-    email: 'emma.t@company.com',
-    phone: '+971504567890',
-    avatar: 'https://i.pravatar.cc/150?img=9',
-    source: 'portal',
-    status: 'hot',
-    stage: 'offer',
-    interest: { type: 'buy', propertyType: 'apartment', budget: 2500000, area: 'Downtown Dubai' },
-    assignedAgent: { name: 'Sarah Johnson', id: 'A001' },
-    score: 92,
-    lastContact: '2024-01-20',
-    nextFollowUp: '2024-01-21',
-    notes: 'Ready to make an offer. Prefers high floor with Burj view.',
-    activities: [
-      { type: 'meeting', date: '2024-01-20', note: 'Met to discuss offer terms' },
-      { type: 'viewing', date: '2024-01-18', note: 'Loved the apartment on 45th floor' }
-    ],
-    createdAt: '2024-01-05'
-  },
-  {
-    id: 'L-005',
-    name: 'Omar Hassan',
-    email: 'omar.h@gmail.com',
-    phone: '+971505678901',
-    avatar: 'https://i.pravatar.cc/150?img=15',
-    source: 'social',
-    status: 'warm',
-    stage: 'qualified',
-    interest: { type: 'rent', propertyType: 'apartment', budget: 85000, area: 'JVC' },
-    assignedAgent: null,
-    score: 55,
-    lastContact: '2024-01-17',
-    nextFollowUp: '2024-01-24',
-    notes: 'Young professional, single. Looking for studio or 1BR.',
-    activities: [
-      { type: 'call', date: '2024-01-17', note: 'Initial qualification call' }
-    ],
-    createdAt: '2024-01-17'
-  }
-];
 
 const LEAD_STAGES = [
   { id: 'initial', label: 'Initial Contact', color: '#6b7280' },
@@ -325,7 +226,13 @@ const INTEREST_CATEGORIES = [
 ];
 
 const ClaraLeadsCRM = () => {
-  const [leads, setLeads] = useState(DUMMY_LEADS);
+  const dispatch = useDispatch();
+  const apiLeads = useSelector(selectAllLeads);
+  const apiMetrics = useSelector(selectLeadMetrics);
+  const loading = useSelector(state => state.leads?.loading);
+  const error = useSelector(state => state.leads?.error);
+  
+  const [localLeads, setLocalLeads] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterStage, setFilterStage] = useState('all');
@@ -340,16 +247,55 @@ const ClaraLeadsCRM = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [viewMode, setViewMode] = useState('table');
 
+  useEffect(() => {
+    dispatch(loadLeads());
+    dispatch(loadLeadMetrics());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (apiLeads && apiLeads.length > 0) {
+      const normalizedLeads = apiLeads.map(lead => ({
+        id: lead._id || lead.id,
+        name: lead.name || 'Unknown',
+        email: lead.email || '',
+        phone: lead.phone || '',
+        avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`,
+        source: lead.source || 'website',
+        status: lead.status === 'new' ? 'warm' : (lead.status === 'qualified' ? 'hot' : lead.status) || 'warm',
+        stage: lead.stage || 'initial',
+        interest: lead.propertyInterest || { type: 'buy', propertyType: 'apartment', budget: 0, area: '' },
+        assignedAgent: lead.assignedAgent ? { name: lead.assignedAgent, id: lead.assignedAgent } : null,
+        score: lead.score || 50,
+        lastContact: lead.updatedAt?.split('T')[0] || new Date().toISOString().split('T')[0],
+        nextFollowUp: lead.nextFollowUp || new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        notes: lead.notes || '',
+        activities: lead.interactions || [],
+        createdAt: lead.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0]
+      }));
+      setLocalLeads(normalizedLeads);
+    }
+  }, [apiLeads]);
+
+  const leads = localLeads;
+
+  const handleRefresh = () => {
+    dispatch(loadLeads());
+    dispatch(loadLeadMetrics());
+  };
+
   const stats = useMemo(() => ({
-    total: leads.length,
+    total: apiMetrics?.total || leads.length,
     hot: leads.filter(l => l.status === 'hot').length,
     warm: leads.filter(l => l.status === 'warm').length,
     cold: leads.filter(l => l.status === 'cold').length,
     unassigned: leads.filter(l => !l.assignedAgent).length,
-    avgScore: Math.round(leads.reduce((acc, l) => acc + l.score, 0) / leads.length) || 0,
+    avgScore: Math.round(leads.reduce((acc, l) => acc + (l.score || 0), 0) / leads.length) || 0,
     buyers: leads.filter(l => l.interest?.type === 'buy').length,
-    renters: leads.filter(l => l.interest?.type === 'rent').length
-  }), [leads]);
+    renters: leads.filter(l => l.interest?.type === 'rent').length,
+    conversionRate: apiMetrics?.conversionRate || 0,
+    newLeads: apiMetrics?.new || 0,
+    qualified: apiMetrics?.qualified || 0
+  }), [leads, apiMetrics]);
 
   const categoryCounts = useMemo(() => ({
     all: leads.length,
@@ -380,18 +326,18 @@ const ClaraLeadsCRM = () => {
   }, [leads, searchQuery, filterStatus, filterStage, filterSource, interestCategory, sortBy, sortOrder]);
 
   const handleAddLead = (lead) => {
-    setLeads(prev => [...prev, lead]);
+    setLocalLeads(prev => [...prev, lead]);
     setShowAddForm(false);
   };
 
   const handleEditLead = (lead) => {
-    setLeads(prev => prev.map(l => l.id === lead.id ? lead : l));
+    setLocalLeads(prev => prev.map(l => l.id === lead.id ? lead : l));
     setEditLead(null);
   };
 
   const handleDeleteLead = (id) => {
     if (window.confirm('Are you sure you want to delete this lead?')) {
-      setLeads(prev => prev.filter(l => l.id !== id));
+      setLocalLeads(prev => prev.filter(l => l.id !== id));
     }
   };
 

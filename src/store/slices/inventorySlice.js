@@ -1,33 +1,69 @@
 import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit';
-
-import propertiesData from '../../data/damacHills2/properties.json';
-import ownersData from '../../data/damacHills2/owners.json';
-import ownershipsData from '../../data/damacHills2/ownerships.json';
-import manifestData from '../../data/damacHills2/manifest.json';
+import crmDataService from '../../services/CRMDataService';
 
 export const loadInventoryData = createAsyncThunk(
   'inventory/loadData',
-  async () => {
-    const propertiesById = {};
-    const propertyIds = [];
-    propertiesData.forEach(p => {
-      propertiesById[p.pNumber] = p;
-      propertyIds.push(p.pNumber);
-    });
-    
-    const ownersById = {};
-    const ownerIds = [];
-    ownersData.forEach(o => {
-      ownersById[o.id] = o;
-      ownerIds.push(o.id);
-    });
-    
-    return {
-      properties: { byId: propertiesById, allIds: propertyIds },
-      owners: { byId: ownersById, allIds: ownerIds },
-      ownerships: ownershipsData,
-      manifest: manifestData
-    };
+  async (_, { rejectWithValue }) => {
+    try {
+      const [propertiesRes, statsRes, areasRes] = await Promise.all([
+        crmDataService.getProperties(),
+        crmDataService.getPropertyStats(),
+        crmDataService.getPropertyAreas()
+      ]);
+
+      const properties = propertiesRes.properties || propertiesRes.data || [];
+      const propertiesById = {};
+      const propertyIds = [];
+      
+      properties.forEach(p => {
+        const id = p.pNumber || p._id || p.id;
+        propertiesById[id] = { ...p, pNumber: id };
+        propertyIds.push(id);
+      });
+
+      return {
+        properties: { byId: propertiesById, allIds: propertyIds },
+        stats: statsRes.stats || statsRes,
+        areas: areasRes.areas || areasRes,
+        manifest: {
+          sheets: [],
+          clusters: [],
+          stats: statsRes.stats || {},
+          filterOptions: {
+            areas: areasRes.areas || [],
+            statuses: ['Available', 'Rented', 'Sold', 'Reserved'],
+            propertyTypes: ['Villa', 'Townhouse', 'Apartment']
+          }
+        }
+      };
+    } catch (error) {
+      console.error('Failed to load inventory from API:', error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const loadOwnersData = createAsyncThunk(
+  'inventory/loadOwners',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await crmDataService.getOwners();
+      const owners = response.owners || response.data || [];
+      
+      const ownersById = {};
+      const ownerIds = [];
+      
+      owners.forEach(o => {
+        const id = o.id || o._id;
+        ownersById[id] = { ...o, id };
+        ownerIds.push(id);
+      });
+
+      return { byId: ownersById, allIds: ownerIds };
+    } catch (error) {
+      console.error('Failed to load owners from API:', error);
+      return rejectWithValue(error.message);
+    }
   }
 );
 
@@ -36,6 +72,8 @@ const initialState = {
   owners: { byId: {}, allIds: [] },
   ownerships: { byPropertyId: {}, byOwnerId: {} },
   manifest: { sheets: [], clusters: [], stats: {}, filterOptions: {} },
+  stats: {},
+  areas: [],
   filters: {
     cluster: null,
     status: null,
@@ -53,6 +91,7 @@ const initialState = {
   selectedPropertyId: null,
   selectedOwnerId: null,
   loading: false,
+  ownersLoading: false,
   error: null
 };
 
@@ -92,13 +131,24 @@ const inventorySlice = createSlice({
       .addCase(loadInventoryData.fulfilled, (state, action) => {
         state.loading = false;
         state.properties = action.payload.properties;
-        state.owners = action.payload.owners;
-        state.ownerships = action.payload.ownerships;
+        state.stats = action.payload.stats;
+        state.areas = action.payload.areas;
         state.manifest = action.payload.manifest;
       })
       .addCase(loadInventoryData.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(loadOwnersData.pending, (state) => {
+        state.ownersLoading = true;
+      })
+      .addCase(loadOwnersData.fulfilled, (state, action) => {
+        state.ownersLoading = false;
+        state.owners = action.payload;
+      })
+      .addCase(loadOwnersData.rejected, (state, action) => {
+        state.ownersLoading = false;
+        state.error = action.payload || action.error.message;
       });
   }
 });
@@ -113,179 +163,82 @@ export const {
   toggleMultiPropertyFilter
 } = inventorySlice.actions;
 
-const selectInventory = (state) => state.inventory;
-const selectProperties = (state) => state.inventory.properties;
-export const selectOwners = (state) => state.inventory.owners;
-const selectOwnerships = (state) => state.inventory.ownerships;
-export const selectFilters = (state) => state.inventory.filters;
-const selectManifest = (state) => state.inventory.manifest;
+const selectInventory = state => state.inventory;
 
-export const selectAllProperties = createSelector(
-  [selectProperties],
-  (properties) => properties.allIds.map(id => properties.byId[id])
+export const selectFilters = createSelector(
+  [selectInventory],
+  (inventory) => inventory?.filters || initialState.filters
 );
 
-export const selectAllOwners = createSelector(
-  [selectOwners],
-  (owners) => owners.allIds.map(id => owners.byId[id])
+export const selectProperties = createSelector(
+  [selectInventory],
+  (inventory) => {
+    const byId = inventory?.properties?.byId || {};
+    return Object.values(byId);
+  }
 );
 
-export const selectMultiOwnerProperties = createSelector(
-  [selectAllProperties],
-  (properties) => properties.filter(p => p.owners && p.owners.length > 1)
+export const selectFilteredProperties = createSelector(
+  [selectProperties, selectFilters],
+  (properties, filters) => {
+    return properties.filter(property => {
+      if (filters.searchQuery) {
+        const query = filters.searchQuery.toLowerCase();
+        const searchableFields = [
+          property.pNumber,
+          property.project,
+          property.area,
+          property.cluster,
+          property.status
+        ].filter(Boolean).join(' ').toLowerCase();
+        if (!searchableFields.includes(query)) return false;
+      }
+      
+      if (filters.status && property.status !== filters.status) return false;
+      if (filters.area && property.area !== filters.area) return false;
+      if (filters.cluster && property.cluster !== filters.cluster) return false;
+      
+      return true;
+    });
+  }
 );
 
-export const selectOwnersWithMultipleProperties = createSelector(
-  [selectAllOwners],
-  (owners) => owners.filter(o => o.properties && o.properties.length > 1)
+export const selectInventoryStats = createSelector(
+  [selectInventory, selectProperties],
+  (inventory, properties) => {
+    const apiStats = inventory?.stats || {};
+    
+    return {
+      totalProperties: properties.length || apiStats.totalProperties || 0,
+      availableProperties: properties.filter(p => p.status === 'Available').length || apiStats.available || 0,
+      rentedProperties: properties.filter(p => p.status === 'Rented').length || apiStats.rented || 0,
+      soldProperties: properties.filter(p => p.status === 'Sold').length || apiStats.sold || 0,
+      reservedProperties: properties.filter(p => p.status === 'Reserved').length || apiStats.reserved || 0,
+      totalOwners: inventory?.owners?.allIds?.length || apiStats.totalOwners || 0,
+      ...apiStats
+    };
+  }
 );
 
-export const selectOwnersWithMultiplePhones = createSelector(
-  [selectAllOwners],
-  (owners) => owners.filter(o => {
-    const phones = o.contacts?.filter(c => c.type === 'mobile' || c.type === 'phone') || [];
-    return phones.length > 1;
-  })
-);
-
-export const selectUniqueClusters = createSelector(
-  [selectManifest],
-  (manifest) => manifest.clusters || []
-);
-
-export const selectUniqueAreas = createSelector(
-  [selectAllProperties],
-  (properties) => [...new Set(properties.map(p => p.area).filter(Boolean))].sort()
-);
-
-export const selectUniqueStatuses = createSelector(
-  [selectAllProperties],
-  (properties) => [...new Set(properties.map(p => p.status).filter(Boolean))].sort()
+export const selectOwners = createSelector(
+  [selectInventory],
+  (inventory) => inventory?.owners || { byId: {}, allIds: [] }
 );
 
 export const selectFilterOptions = createSelector(
-  [selectManifest],
-  (manifest) => ({
-    ...manifest.filterOptions,
-    clusters: manifest.clusters || []
-  })
+  [selectInventory],
+  (inventory) => inventory?.manifest?.filterOptions || {}
 );
 
 export const selectActiveFiltersCount = createSelector(
   [selectFilters],
   (filters) => {
-    const filterKeys = ['cluster', 'status', 'area', 'layout', 'view', 'floor', 'rooms', 'masterProject'];
-    return filterKeys.filter(key => filters[key] !== null).length;
+    return Object.entries(filters).filter(([key, value]) => {
+      if (key === 'searchQuery') return value !== '';
+      if (typeof value === 'boolean') return value === true;
+      return value !== null;
+    }).length;
   }
-);
-
-export const selectFilteredProperties = createSelector(
-  [selectAllProperties, selectFilters, selectOwners],
-  (properties, filters, owners) => {
-    return properties.filter(property => {
-      if (filters.cluster && property.cluster !== filters.cluster) return false;
-      if (filters.status && property.status !== filters.status) return false;
-      if (filters.area && property.area !== filters.area) return false;
-      if (filters.layout && property.layout !== filters.layout) return false;
-      if (filters.view && property.view !== filters.view) return false;
-      if (filters.floor && String(property.floor) !== filters.floor) return false;
-      if (filters.rooms && String(property.rooms) !== filters.rooms) return false;
-      if (filters.masterProject && property.masterProject !== filters.masterProject) return false;
-      
-      if (filters.searchQuery) {
-        const query = filters.searchQuery.toLowerCase();
-        const matchesPNumber = property.pNumber?.toLowerCase().includes(query);
-        const matchesProject = property.project?.toLowerCase().includes(query);
-        const matchesPlot = property.plotNumber?.toLowerCase().includes(query);
-        const matchesOwnerName = property.owners?.some(oid => {
-          const owner = owners.byId[oid];
-          return owner?.name?.toLowerCase().includes(query);
-        });
-        if (!matchesPNumber && !matchesProject && !matchesPlot && !matchesOwnerName) return false;
-      }
-      
-      if (filters.showMultiOwner && (!property.owners || property.owners.length <= 1)) return false;
-      
-      if (filters.showMultiPhone) {
-        const hasOwnerWithMultiPhone = property.owners?.some(oid => {
-          const owner = owners.byId[oid];
-          if (!owner) return false;
-          const phones = owner.contacts?.filter(c => ['mobile', 'phone', 'secondaryMobile'].includes(c.type)) || [];
-          return phones.length > 1;
-        });
-        if (!hasOwnerWithMultiPhone) return false;
-      }
-      
-      if (filters.showMultiProperty) {
-        const hasOwnerWithMultiProps = property.owners?.some(oid => {
-          const owner = owners.byId[oid];
-          return owner?.properties?.length > 1;
-        });
-        if (!hasOwnerWithMultiProps) return false;
-      }
-      
-      return true;
-    });
-  }
-);
-
-export const selectFilteredOwners = createSelector(
-  [selectAllOwners, selectFilters],
-  (owners, filters) => {
-    return owners.filter(owner => {
-      if (filters.searchQuery) {
-        const query = filters.searchQuery.toLowerCase();
-        if (!owner.name?.toLowerCase().includes(query)) return false;
-      }
-      
-      if (filters.showMultiPhone) {
-        const phones = owner.contacts?.filter(c => c.type === 'mobile' || c.type === 'phone') || [];
-        if (phones.length <= 1) return false;
-      }
-      
-      if (filters.showMultiProperty) {
-        if (!owner.properties || owner.properties.length <= 1) return false;
-      }
-      
-      return true;
-    });
-  }
-);
-
-export const selectPropertyById = (propertyId) => createSelector(
-  [selectProperties],
-  (properties) => properties.byId[propertyId]
-);
-
-export const selectOwnerById = (ownerId) => createSelector(
-  [selectOwners],
-  (owners) => owners.byId[ownerId]
-);
-
-export const selectOwnersByPropertyId = (propertyId) => createSelector(
-  [selectOwnerships, selectOwners],
-  (ownerships, owners) => {
-    const ownerIds = ownerships.byPropertyId[propertyId] || [];
-    return ownerIds.map(id => owners.byId[id]).filter(Boolean);
-  }
-);
-
-export const selectPropertiesByOwnerId = (ownerId) => createSelector(
-  [selectOwnerships, selectProperties],
-  (ownerships, properties) => {
-    const propertyIds = ownerships.byOwnerId[ownerId] || [];
-    return propertyIds.map(id => properties.byId[id]).filter(Boolean);
-  }
-);
-
-export const selectInventoryStats = createSelector(
-  [selectManifest],
-  (manifest) => manifest.stats || {}
-);
-
-export const selectSheetsMeta = createSelector(
-  [selectManifest],
-  (manifest) => manifest.sheets || []
 );
 
 export default inventorySlice.reducer;
