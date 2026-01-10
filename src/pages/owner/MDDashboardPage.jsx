@@ -325,12 +325,23 @@ export default function MDDashboardPage() {
     }
   };
 
+  const ASSISTANT_IDS = ['linda', 'mary', 'clara', 'nina', 'nancy', 'sophia', 'daisy', 
+    'theodora', 'olivia', 'zoe', 'laila', 'aurora', 'hazel', 'willow', 'evangeline', 
+    'sentinel', 'hunter', 'henry', 'cipher', 'atlas', 'vesta', 'juno', 'kairos', 'maven'];
+
   const handleSelectAssistant = (assistantId) => {
     setActiveTab(assistantId);
+    dispatch(setActiveAssistant(assistantId));
   };
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
+    if (ASSISTANT_IDS.includes(tabId)) {
+      dispatch(setActiveAssistant(tabId));
+    } else {
+      dispatch(setActiveAssistant(null));
+      dispatch(setActiveWorkspace(null));
+    }
   };
 
   const renderTabContent = () => {
@@ -416,9 +427,7 @@ export default function MDDashboardPage() {
     }
   };
 
-  const isAssistantActive = ['linda', 'mary', 'clara', 'nina', 'nancy', 'sophia', 'daisy', 
-    'theodora', 'olivia', 'zoe', 'laila', 'aurora', 'hazel', 'willow', 'evangeline', 
-    'sentinel', 'hunter', 'henry', 'cipher', 'atlas', 'vesta', 'juno', 'kairos', 'maven'].includes(activeTab);
+  const isAssistantActive = ASSISTANT_IDS.includes(activeTab);
 
   return (
     <AppShell>
