@@ -158,13 +158,23 @@ const ZoeConsole = () => {
 
     try {
       const token = await getAuthToken();
+      if (!token) {
+        setMessages(prev => [...prev, {
+          id: `auth-${Date.now()}`,
+          text: "**Executive Access Required**\n\nPlease sign in with an authorized executive account to use Zoe's knowledge base. This feature is restricted to company executives for security purposes.",
+          isUser: false,
+          timestamp: new Date(),
+          confidence: 0
+        }]);
+        setIsLoading(false);
+        return;
+      }
+
       const headers = {
         'Content-Type': 'application/json',
-        'x-user-id': 'executive-user'
+        'x-user-id': 'executive-user',
+        'Authorization': `Bearer ${token}`
       };
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
 
       const response = await fetch('/api/zoe/query', {
         method: 'POST',
@@ -176,6 +186,17 @@ const ZoeConsole = () => {
       });
 
       const data = await response.json();
+
+      if (response.status === 401 || response.status === 403) {
+        setMessages(prev => [...prev, {
+          id: `auth-error-${Date.now()}`,
+          text: data.message || "**Access Denied**\n\nYour account is not authorized for executive access. Please contact the administrator.",
+          isUser: false,
+          timestamp: new Date(),
+          confidence: 0
+        }]);
+        return;
+      }
 
       if (data.success) {
         const assistantMessage = {
@@ -217,11 +238,18 @@ const ZoeConsole = () => {
   const loadHistory = async () => {
     try {
       const token = await getAuthToken();
-      const headers = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+      if (!token) {
+        console.log('No auth token available for history');
+        return;
       }
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
       const response = await fetch(`/api/zoe/history?sessionId=${sessionId}&limit=20`, { headers });
+      if (response.status === 401 || response.status === 403) {
+        console.log('Not authorized to view history');
+        return;
+      }
       const data = await response.json();
       if (data.success) {
         setConversationHistory(data.history);
