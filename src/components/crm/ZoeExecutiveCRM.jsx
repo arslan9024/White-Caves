@@ -89,14 +89,22 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
     assistants: apiAssistants,
     teams: apiTeams,
     services: apiServices,
+    employees: apiEmployees,
     stats: orgStats,
     loading: orgLoading,
     error: orgError,
     hasData,
     seeding,
     refetch,
-    seedDatabase
+    seedDatabase,
+    getEmployeesByLevel
   } = useOrganizationData();
+  
+  const [employeeSearch, setEmployeeSearch] = useState('');
+  const [employeeFilter, setEmployeeFilter] = useState('all');
+  const [departmentFilter, setDepartmentFilter] = useState('all');
+  const [serviceSearch, setServiceSearch] = useState('');
+  const [serviceCategoryFilter, setServiceCategoryFilter] = useState('all');
 
   const activeTab = activeFeature && FEATURE_TO_TAB[activeFeature] ? FEATURE_TO_TAB[activeFeature] : internalTab;
   const setActiveTab = setInternalTab;
@@ -122,6 +130,43 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
 
   const totalServiceVolume = useMemo(() => {
     return apiServices.reduce((sum, s) => sum + (s.metrics?.totalRequests || 0), 0);
+  }, [apiServices]);
+
+  const filteredEmployees = useMemo(() => {
+    return apiEmployees.filter(emp => {
+      const matchesSearch = !employeeSearch || 
+        emp.name?.toLowerCase().includes(employeeSearch.toLowerCase()) ||
+        emp.jobTitle?.toLowerCase().includes(employeeSearch.toLowerCase()) ||
+        emp.email?.toLowerCase().includes(employeeSearch.toLowerCase());
+      const matchesLevel = employeeFilter === 'all' || emp.level === employeeFilter;
+      const matchesDept = departmentFilter === 'all' || 
+        emp.department?._id === departmentFilter || 
+        emp.department?.code === departmentFilter;
+      return matchesSearch && matchesLevel && matchesDept;
+    });
+  }, [apiEmployees, employeeSearch, employeeFilter, departmentFilter]);
+
+  const employeesByLevel = useMemo(() => {
+    const levels = { 'C-Suite': 0, 'Director': 0, 'Senior': 0, 'Mid': 0, 'Junior': 0 };
+    apiEmployees.forEach(emp => {
+      if (levels[emp.level] !== undefined) levels[emp.level]++;
+    });
+    return levels;
+  }, [apiEmployees]);
+
+  const filteredServices = useMemo(() => {
+    return apiServices.filter(svc => {
+      const matchesSearch = !serviceSearch || 
+        svc.name?.toLowerCase().includes(serviceSearch.toLowerCase()) ||
+        svc.description?.toLowerCase().includes(serviceSearch.toLowerCase());
+      const matchesCategory = serviceCategoryFilter === 'all' || svc.category === serviceCategoryFilter;
+      return matchesSearch && matchesCategory;
+    });
+  }, [apiServices, serviceSearch, serviceCategoryFilter]);
+
+  const serviceCategories = useMemo(() => {
+    const cats = new Set(apiServices.map(s => s.category));
+    return Array.from(cats);
   }, [apiServices]);
 
   const handleStatusChange = useCallback((suggestionId, status) => {
@@ -219,6 +264,16 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           </div>
           <span className="stat-change positive">{orgStats?.onlineAssistants || apiAssistants.filter(a => a.status === 'online').length} online</span>
         </div>
+        <div className="stat-card">
+          <div className="stat-icon" style={{ background: 'rgba(6, 182, 212, 0.2)', color: '#06B6D4' }}>
+            <Users size={20} />
+          </div>
+          <div className="stat-content">
+            <span className="stat-value">{orgStats?.employees || apiEmployees.length || 132}</span>
+            <span className="stat-label">Employees</span>
+          </div>
+          <span className="stat-change positive">{orgStats?.activeEmployees || apiEmployees.filter(e => e.employment?.status === 'active').length} active</span>
+        </div>
       </div>
 
       <div className="quick-stats secondary">
@@ -268,10 +323,30 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           </div>
           <span className="stat-change">Pipeline split</span>
         </div>
+        <div className="stat-card highlight">
+          <div className="stat-icon" style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#6366F1' }}>
+            <TrendingUp size={20} />
+          </div>
+          <div className="stat-content">
+            <span className="stat-value">{(orgStats?.monthlyTransactions || 16000).toLocaleString()}+</span>
+            <span className="stat-label">Monthly Transactions</span>
+          </div>
+          <span className="stat-change positive">All services</span>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon" style={{ background: 'rgba(34, 197, 94, 0.2)', color: '#22C55E' }}>
+            <Workflow size={20} />
+          </div>
+          <div className="stat-content">
+            <span className="stat-value">{orgStats?.services || apiServices.length || 35}</span>
+            <span className="stat-label">Services</span>
+          </div>
+          <span className="stat-change positive">{orgStats?.activeServices || apiServices.filter(s => s.status === 'active').length} active</span>
+        </div>
       </div>
 
       <div className="assistant-tabs">
-        {['console', 'suggestions', 'assistants', 'organization', 'departments', 'services', 'demo', 'calendar', 'tasks', 'docs'].map(tab => (
+        {['console', 'suggestions', 'assistants', 'organization', 'departments', 'employees', 'services', 'demo', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -285,9 +360,14 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
             {tab === 'assistants' && <Bot size={14} />}
             {tab === 'organization' && <Network size={14} />}
             {tab === 'departments' && <Building2 size={14} />}
+            {tab === 'employees' && <Users size={14} />}
             {tab === 'services' && <Workflow size={14} />}
             {tab === 'demo' && <Play size={14} />}
-            {tab === 'console' ? 'AI Console' : tab === 'assistants' ? 'AI Registry' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === 'docs' && <FileText size={14} />}
+            {tab === 'console' ? 'AI Console' : 
+             tab === 'assistants' ? 'AI Registry' : 
+             tab === 'employees' ? `Employees (${apiEmployees.length || orgStats?.employees || 132})` :
+             tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
@@ -931,6 +1011,174 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'employees' && (
+          <div className="employees-view">
+            <div className="view-header">
+              <h3><Users size={18} /> Employee Directory</h3>
+              <div className="header-actions">
+                <div className="search-box">
+                  <Search size={16} />
+                  <input 
+                    type="text" 
+                    placeholder="Search employees..." 
+                    value={employeeSearch}
+                    onChange={(e) => setEmployeeSearch(e.target.value)}
+                  />
+                </div>
+                <select 
+                  className="filter-select"
+                  value={employeeFilter}
+                  onChange={(e) => setEmployeeFilter(e.target.value)}
+                >
+                  <option value="all">All Levels</option>
+                  <option value="C-Suite">C-Suite</option>
+                  <option value="Director">Directors</option>
+                  <option value="Senior">Senior</option>
+                  <option value="Mid">Mid-Level</option>
+                  <option value="Junior">Junior</option>
+                </select>
+                <select 
+                  className="filter-select"
+                  value={departmentFilter}
+                  onChange={(e) => setDepartmentFilter(e.target.value)}
+                >
+                  <option value="all">All Departments</option>
+                  {apiDepartments.map(dept => (
+                    <option key={dept._id} value={dept._id}>{dept.name}</option>
+                  ))}
+                </select>
+                <button 
+                  className="action-btn secondary small"
+                  onClick={refetch}
+                  disabled={orgLoading}
+                >
+                  <RefreshCw size={14} className={orgLoading ? 'spinning' : ''} />
+                </button>
+                {!hasData && (
+                  <button 
+                    className="action-btn primary small"
+                    onClick={seedDatabase}
+                    disabled={seeding}
+                  >
+                    <Database size={14} />
+                    {seeding ? 'Seeding...' : 'Seed Data'}
+                  </button>
+                )}
+              </div>
+            </div>
+            
+            <div className="employees-stats">
+              <div className="stat-pill">
+                <Star size={14} />
+                <span>C-Suite: {employeesByLevel['C-Suite']}</span>
+              </div>
+              <div className="stat-pill">
+                <Briefcase size={14} />
+                <span>Directors: {employeesByLevel['Director']}</span>
+              </div>
+              <div className="stat-pill">
+                <Users size={14} />
+                <span>Senior: {employeesByLevel['Senior']}</span>
+              </div>
+              <div className="stat-pill">
+                <Users size={14} />
+                <span>Mid: {employeesByLevel['Mid']}</span>
+              </div>
+              <div className="stat-pill">
+                <Users size={14} />
+                <span>Junior: {employeesByLevel['Junior']}</span>
+              </div>
+              <div className="stat-pill highlight">
+                <span>Total: {apiEmployees.length}</span>
+              </div>
+            </div>
+
+            {orgLoading ? (
+              <div className="loading-state">
+                <Loader2 size={32} className="spinning" />
+                <p>Loading employees...</p>
+              </div>
+            ) : filteredEmployees.length > 0 ? (
+              <div className="employees-table-wrapper">
+                <table className="employees-table">
+                  <thead>
+                    <tr>
+                      <th>Employee</th>
+                      <th>Job Title</th>
+                      <th>Department</th>
+                      <th>Level</th>
+                      <th>Reports To</th>
+                      <th>Status</th>
+                      <th>AI Assistant</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredEmployees.map(emp => (
+                      <tr key={emp._id} className={`employee-row ${emp.level?.toLowerCase().replace('-', '')}`}>
+                        <td className="employee-cell">
+                          <div className="employee-avatar" style={{ 
+                            background: emp.level === 'C-Suite' ? 'linear-gradient(135deg, #FFD700, #F59E0B)' :
+                                       emp.level === 'Director' ? 'linear-gradient(135deg, #8B5CF6, #6366F1)' :
+                                       'linear-gradient(135deg, #6366F1, #4F46E5)'
+                          }}>
+                            {emp.name?.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                          </div>
+                          <div className="employee-info">
+                            <span className="name">{emp.name}</span>
+                            <span className="email">{emp.email}</span>
+                          </div>
+                        </td>
+                        <td>{emp.jobTitle}</td>
+                        <td>
+                          <span 
+                            className="dept-badge"
+                            style={{ 
+                              backgroundColor: `${emp.department?.color || '#6366F1'}20`,
+                              color: emp.department?.color || '#6366F1'
+                            }}
+                          >
+                            {emp.department?.name || 'Unassigned'}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`level-badge ${emp.level?.toLowerCase().replace('-', '')}`}>
+                            {emp.level}
+                          </span>
+                        </td>
+                        <td className="reports-to">
+                          {emp.reportsTo ? (
+                            <span>{emp.reportsTo.name}</span>
+                          ) : (
+                            <span className="none">-</span>
+                          )}
+                        </td>
+                        <td>
+                          <span className={`status-badge ${emp.employment?.status || 'active'}`}>
+                            {emp.employment?.status || 'active'}
+                          </span>
+                        </td>
+                        <td>
+                          {emp.aiAssistant ? (
+                            <span className="assistant-chip">{emp.aiAssistant}</span>
+                          ) : (
+                            <span className="none">-</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="empty-state">
+                <Users size={48} />
+                <h4>No employees found</h4>
+                <p>Try adjusting your search or filters, or seed the database with sample data.</p>
               </div>
             )}
           </div>

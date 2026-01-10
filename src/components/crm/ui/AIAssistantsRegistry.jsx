@@ -6,7 +6,7 @@ import {
   Building2, Users, Briefcase, MessageSquare, Wallet, 
   Megaphone, Shield, Server, Brain, Scale
 } from 'lucide-react';
-import { setCurrentAssistant } from '../../../store/slices/aiAssistantDashboardSlice';
+import { selectAssistant } from '../../../store/slices/aiAssistantDashboardSlice';
 import { AI_ASSISTANTS_REGISTRY, getDepartmentGroups } from '../../../data/organization/aiAssistantsRegistry';
 import './AIAssistantsRegistry.css';
 
@@ -134,12 +134,7 @@ const AIAssistantsRegistry = ({
   }, [selectedDepartment, searchQuery]);
 
   const handleSelectAssistant = (assistant) => {
-    dispatch(setCurrentAssistant({
-      id: assistant.id,
-      name: assistant.name,
-      department: assistant.department,
-      colorScheme: assistant.color
-    }));
+    dispatch(selectAssistant(assistant.id));
     onSelectAssistant?.(assistant);
   };
 
