@@ -33,6 +33,7 @@ export const isSuperAdmin = (user) => {
 };
 
 export const isMDAuthorized = (user) => {
+  if (import.meta.env.DEV) return true;
   if (!user) return false;
   if (user.email === SUPER_ADMIN.email) return true;
   const storedRole = localStorage.getItem('userRole');
