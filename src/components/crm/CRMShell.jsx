@@ -14,6 +14,7 @@ import {
   toggleSidebar,
   toggleAiPanel,
   setSelectedAssistantForChat,
+  navigateToBreadcrumb,
   selectActiveCategory,
   selectSidebarOpen,
   selectAiPanelOpen,
@@ -67,14 +68,23 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
 
   const handleNavClick = (navId) => {
     dispatch(setActiveCategory(navId));
+    dispatch(setActiveObjectId(navId));
     if (onTabChange) {
       onTabChange(navId);
+    }
+  };
+
+  const handleBreadcrumbClick = (crumbId) => {
+    dispatch(navigateToBreadcrumb(crumbId));
+    if (onTabChange) {
+      onTabChange(crumbId);
     }
   };
 
   const handleAssistantClick = (assistantId) => {
     dispatch(setActiveAssistant(assistantId));
     dispatch(setSelectedAssistantForChat(assistantId));
+    dispatch(setActiveObjectId(assistantId));
     if (onTabChange) {
       onTabChange(assistantId);
     }
@@ -137,7 +147,7 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
                   {index > 0 && <ChevronRight size={14} className="breadcrumb-sep" />}
                   <button 
                     className="breadcrumb-item"
-                    onClick={() => handleNavClick(crumb.id)}
+                    onClick={() => handleBreadcrumbClick(crumb.id)}
                   >
                     {crumb.label}
                   </button>
