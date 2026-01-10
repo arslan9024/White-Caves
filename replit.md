@@ -10,7 +10,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Frontend
 - **Framework**: React 18 with Vite and Redux Toolkit for state management.
-- **UI/UX**: Custom React components with CSS modules, featuring a premium dark mode, glassmorphism styling, mobile responsiveness, and interactive elements. Theming uses a consistent Red and White color scheme with Montserrat/Open Sans typography, supporting comprehensive light/dark modes.
+- **UI/UX**: Custom React components with CSS modules, featuring light-first theme with Navy (#0A1A3A) and Gold (#D4AF37) brand colors, glassmorphism styling, mobile responsiveness, and interactive elements. Uses Montserrat/Open Sans typography with comprehensive light/dark modes.
 - **Navigation**: A two-tier system with a `DashboardShell` for authenticated users, including a `TopNav` and a `CommandSidebar` for AI assistant and feature selection.
 - **Design System**: A complete UI component library with variants, sizes, states, and theme support.
 - **SEO Optimization**: Comprehensive meta tags, structured data, and performance optimizations.
@@ -48,6 +48,9 @@ Preferred communication style: Simple, everyday language.
 - **AI Command Center**: Unified `CommandSidebar` component integrating quick stats, department-grouped assistant list with real-time status, notification badges, and activity feed.
 - **Company Services Registry**: 35 services across 6 categories with workflow stages and assigned AI assistants.
 - **Reusable CRM Components**: StatsBar, DataTable, ActionButton, ActivityFeed, StatusBadge, FlowchartViewer.
+- **PropertySearchHero**: Bayut/PropertyFinder-style property search with Buy/Rent tabs, 16 Dubai communities autocomplete, property type dropdown, bedrooms/price filters.
+- **AgentListingForm**: 6-step wizard for property listings (Basic Info, Location, Specs, Pricing, Media, Legal) with Dubai-specific fields and marketing packages.
+- **CRM View State (crmViewSlice)**: Redux slice managing 32 AI assistants across 11 departments, sidebar/AI panel toggles, breadcrumb navigation, favorites, and recent objects.
 
 ## External Dependencies
 
