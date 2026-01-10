@@ -1,7 +1,7 @@
 # White Caves - Luxury Real Estate Dubai
 
 ## Overview
-White Caves is a luxury real estate platform focused on the Dubai market, offering comprehensive services for property sales, rentals, appointment scheduling, tenancy agreement management, and payment processing, alongside internal HR functionalities. The platform supports diverse user roles with robust role-based access control. The vision is to be the premier digital solution for luxury real estate in Dubai, leveraging advanced technology and AI to streamline operations and enhance user experience for all stakeholders.
+White Caves is a luxury real estate platform specializing in the Dubai market. It provides comprehensive services for property sales, rentals, appointment scheduling, tenancy agreement management, and payment processing, integrated with internal HR functionalities. The platform supports diverse user roles with robust access control. The primary goal is to become the leading digital solution for luxury real estate in Dubai, utilizing advanced technology and AI to streamline operations and enhance the user experience for all stakeholders. The project aims to deliver a high-tech, user-friendly system that sets a new standard for property transactions and management in the region.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -10,23 +10,16 @@ Preferred communication style: Simple, everyday language.
 
 ### Frontend
 - **Framework**: React 18 with Vite, utilizing Redux Toolkit for state management.
-- **UI/UX**: Custom React components with CSS modules, featuring a premium dark mode, glassmorphism styling, mobile responsiveness, interactive elements (calculators, advanced search, property comparison, interactive SVG Dubai map), and full-screen galleries. Role-based routing is implemented.
-- **Theming**: Consistent brand theme with a Red and White color scheme (#D32F2F primary, white backgrounds), Montserrat/Open Sans typography, and comprehensive light/dark theme support.
-- **Design System**: Complete UI component library with Button, Input, Card, and Badge components featuring variants, sizes, states, and theme support, managed by an enhanced design token system for programmatic access to styles.
+- **UI/UX**: Custom React components with CSS modules, featuring a premium dark mode, glassmorphism styling, mobile responsiveness, interactive elements (calculators, advanced search, property comparison, interactive SVG Dubai map, full-screen galleries), and role-based routing.
+- **Theming**: Consistent brand theme with a Red and White color scheme, Montserrat/Open Sans typography, and comprehensive light/dark theme support, managed by an enhanced design token system.
+- **Navigation System**: A three-tier navigation system comprising a public `MainNavBar`, an authenticated `DashboardHeader` with dynamic feature tabs, and an `AssistantHubSidebar` for 24 AI assistants. A `DashboardAppLayout` uses CSS Grid for responsive design.
+- **Design System**: A complete UI component library with variants, sizes, states, and theme support.
 - **SEO Optimization**: Comprehensive meta tags, structured data, and performance optimizations.
-- **Three-Tier Navigation System**:
-  - **MainNavBar (Public)**: For website visitors - logo, public nav links (Home/Properties/Services/About/Contact), Buy/Rent/Sell dropdowns, Sign In button. No search, theme toggle, notifications, or profile.
-  - **DashboardHeader (Internal)**: For authenticated users - displays active assistant badge, dynamic feature tabs based on selected assistant, search bar with Cmd+K shortcut, theme toggle, notifications bell, user profile dropdown. No logo (handled by MainNavBar).
-  - **AssistantHubSidebar**: Fixed 280px width sidebar exclusively for 24 AI assistants organized by 10 departments. Features card-style items with name, status indicator, description, favorite toggle, and notification badges. Includes search, department filtering, and localStorage persistence for favorites.
-  - **DashboardAppLayout**: CSS Grid layout (280px sidebar | 70px header | main grid) with responsive breakpoints (tablet: 70px collapsed, mobile: overlay with hamburger menu).
-  - **DashboardShell**: Layout wrapper using DashboardAppLayout for authenticated dashboard pages.
-  - **MainGridView**: Universal content container that renders assistant-specific components based on activeAssistant selection and feature tabs.
-  - **CSS Namespacing**: Dashboard layout uses `.dashboard-app-layout` prefix to prevent CSS collision with public `.app-layout` used by HomePage.
 
 ### Backend
 - **Framework**: Express.js, providing a RESTful API with organized routes.
-- **System Design**: Frontend and backend separation with proxy setup and comprehensive error handling.
-- **Environment Guard Middleware**: Server-side validation for required deployment secrets.
+- **System Design**: Frontend and backend separation with a proxy setup and comprehensive error handling.
+- **Middleware**: Environment guard middleware for server-side validation of required deployment secrets.
 
 ### Data Storage
 - **Primary Database**: MongoDB with Mongoose ODM.
@@ -40,34 +33,23 @@ Preferred communication style: Simple, everyday language.
 - **Transaction Management**: `TenancyTimeline` and `SaleTimeline` models with stage progression and verification workflows.
 - **Ejari System**: Compliant tenancy contract generation and digital signature workflows.
 - **Analytics**: Vercel Speed Insights and `web-vitals` for real-time Core Web Vitals tracking.
-- **Advanced Tools**: Smart Rent vs. Buy Calculator, Off-Plan Property Tracker, AI Neighborhood Analyzer, and Virtual Tour Gallery.
-- **AI-Powered Automation**: Enhanced property schema, bilingual support (Arabic/English), AI Chatbot Service for intent classification, and an AI Agent Assignment Engine.
+- **Advanced Tools**: Smart Rent vs. Buy Calculator, Off-Plan Property Tracker, AI Neighborhood Analyzer, Virtual Tour Gallery.
+- **AI-Powered Automation**: Enhanced property schema, bilingual support (Arabic/English), AI Chatbot Service for intent classification, AI Agent Assignment Engine, and an AI Assistant Dashboard System for managing 24 assistants across 10 departments.
 - **Market Analytics Dashboard**: Provides KPIs, transaction breakdowns, and agent performance insights.
 - **WhatsApp Business Integration**: Session management, QR code generation, Meta Business OAuth, and an AI Chatbot for customer support and lead scoring.
-- **Chatbot Training Data Module**: Comprehensive bilingual training data for the AI chatbot.
-- **Owner Dashboard**: Comprehensive tabbed dashboard with real-time statistics, quick actions, data tables, agent performance cards, lead management, contract/Ejari tracking, analytics charts, chatbot stats, WhatsApp Business integration, UAE Pass user management, and system settings with feature toggles.
-- **Mary's Data Tools Suite**: Integrated data acquisition tools including DAMAC Asset Fetcher (S3 URL generator), Image Data Extractor (OCR-based), and Web Data Harvester (URL template iterator).
-- **AI Assistant Dashboard System**: Unified Redux state management for 24 AI assistants organized by department (Operations, Sales, Communications, Finance, Marketing, Executive, Compliance, Technology, Intelligence, Legal). Features include normalized state, memoized selectors, favorites, recent tracking, department filtering, search, real-time activity feed, performance metrics, and event-driven communication via Redux middleware.
+- **Mary's Data Tools Suite**: Integrated data acquisition tools including DAMAC Asset Fetcher, Image Data Extractor (OCR), and Web Data Harvester.
+- **Zoe Executive Intelligence System**: Executive Suggestion Inbox for AI-powered strategic suggestions, and Zoe Executive Visibility for organizational oversight.
+- **Confidential Vault System**: Redux state with dual-approval access request workflow, document management, and vault statistics.
+- **Lead Management Hub**: Redux state with lead pipeline, qualification engine, specialist routing, funnel metrics, and lead scoring rules.
+- **Compliance Engine**: KYC profile tracking, AML monitoring with flagged transactions, and an immutable audit log.
+- **Olivia Automation System**: Automated property availability sync, market intelligence gathering from Bayut/Property Finder/Dubizzle, and scheduling controls.
+- **Henry Event System**: Universal event format for cross-assistant communication with correlation tracking.
 - **Centralized Assistant Registry**: Single source of truth for all AI assistants with department configuration, capabilities, permissions, and data flow definitions.
-- **Event Bus Middleware**: Redux middleware enabling event-driven communication between assistants with automated routing and audit trail logging.
-- **UnifiedProfile Component**: Consistent user profile component with 3 variants (navbar, sidebar, dashboard) and ProfileContext for state management.
-- **Henry Event System**: Universal event format for cross-assistant communication with correlation tracking and workflow tracing.
-- **Olivia Automation System**: Automated property availability sync with inventory, market intelligence gathering from Bayut/Property Finder/Dubizzle, scheduling controls, and real-time activity logging.
-- **Zoe Executive Intelligence System**: Executive Suggestion Inbox receiving AI-powered strategic suggestions from all assistants with priority filtering, department categorization, status management, confidence scoring, and projected impact analysis.
-- **Weekly Research Module**: Shared component enabling all assistants to perform automated intelligence gathering on configurable schedules, generating structured suggestions for executive review.
-- **AI Command Center**: Unified dashboard entry point with an AIDropdownSelector for selecting assistants, quick stats bar, lazy-loaded assistant dashboards, and an activity sidebar.
-- **Confidential Vault System**: Redux state with dual-approval access request workflow (AI + human), document management, and vault statistics.
-- **Lead Management Hub**: Redux state with lead pipeline, qualification engine, specialist routing, funnel metrics, and lead scoring rules. Backend Lead model (`/server/models/Lead.js`) with Mongoose schema: name, email, phone, source (website/whatsapp/referral/walk-in/social-media/property-finder/bayut/dubizzle), status (new/contacted/qualified/negotiating/converted/lost), stage, score (0-100), propertyInterest ref, assignedAgent, interactions array.
-- **Dashboard Data Service**: Refactored `/server/services/dashboardService.js` connecting to MongoDB models (InventoryProperty, Owner, Lead, Contract, WhatsAppContact). Returns real aggregated data: property counts, lead metrics, performance analytics, recent activities. API endpoints: `/api/dashboard/owner/summary`, `/api/dashboard/summary`, `/api/dashboard/properties/recent`, `/api/dashboard/leads/recent`, `/api/dashboard/metrics`, `/api/dashboard/analytics`.
-- **Compliance Engine**: KYC profile tracking, AML monitoring with flagged transactions and investigation queue, and an immutable audit log.
-- **Olivia Featured Properties Manager**: Daily property selection using scoring algorithm: `(inquiries × 3) + (views × 0.5) + (qualityScore × 2) + (isNew × 10)`. Properties ranked and pushed to HomePage via Redux featuredSlice.
-- **FeaturedProperties Component**: Homepage section displaying AI-selected top 10 properties with rank badges, score overlays, property stats (inquiries, views), and responsive grid layout.
-- **Organization Data Infrastructure**: Complete org structure with 4 executives, 10 directors, 10 departments with KPIs, 20+ staff employees, and 23 WhatsApp agents.
-- **Company Services Registry**: 35 services across 6 categories (Property, Financial, Legal, Operations, Marketing, Technology) with workflow stages and assigned AI assistants.
-- **Aurora Project Documentation**: Version history, feature registry (50+ features), 4-phase roadmap with milestones, and release changelog.
-- **Zoe Executive Visibility**: Organization tab (org chart), Departments tab (10 cards with live KPIs), Services tab (35 services with workflow stages), Demo tab (interactive service workflow simulation).
-- **ServiceDemoMode Component**: Interactive end-to-end service workflow demonstration with category navigation, FlowchartViewer visualization, play/pause/step/reset controls, activity logging, and assigned AI assistant display. Integrated into Zoe's executive dashboard.
-- **Reusable CRM Components**: StatsBar, DataTable (sortable/searchable), ActionButton (loading states), ActivityFeed, StatusBadge, FlowchartViewer, ServiceDemoMode.
+- **Event Bus Middleware**: Redux middleware enabling event-driven communication between assistants.
+- **AI Command Center**: Unified dashboard entry point with an AIDropdownSelector for selecting assistants, quick stats bar, and activity sidebar.
+- **Company Services Registry**: 35 services across 6 categories with workflow stages and assigned AI assistants.
+- **ServiceDemoMode Component**: Interactive end-to-end service workflow demonstration.
+- **Reusable CRM Components**: StatsBar, DataTable, ActionButton, ActivityFeed, StatusBadge, FlowchartViewer.
 
 ## External Dependencies
 
@@ -84,33 +66,3 @@ Preferred communication style: Simple, everyday language.
 - **WhatsApp Business API**: Customer support and chatbot integration.
 - **Matterport**: Virtual tour integration.
 - **Vercel Speed Insights**: Performance analytics.
-- **GitHub API**: (Implied, for development tooling)
-
-## Recent Changes (January 2026)
-
-### CRM Data Integration (Latest)
-- **CRMDataService**: New centralized API client (`/src/services/CRMDataService.js`) with caching, error handling, and endpoints for all dashboard data
-- **Redux Inventory Slice**: Updated to fetch real property data from `/api/inventory/properties` with normalized state structure
-- **Redux Leads Slice**: New slice (`/src/store/slices/leadsSlice.js`) with async thunks for `/api/dashboard/leads/recent` and `/api/leads/metrics`
-- **ClaraLeadsCRM Integration**: Replaced hardcoded dummy data with Redux-connected real-time lead data from MongoDB (400+ leads)
-- **Data Hooks**: New `useDashboardData.js` with reusable hooks (useDashboardSummary, useProperties, useLeads, etc.)
-- **Loading/Error States**: Added visual feedback for API loading and error states in ClaraLeadsCRM with retry functionality
-- **Data Flow Architecture**: MongoDB -> Express API -> CRMDataService -> Redux Slices -> UI Components
-
-### System Audit Completed
-- Verified all 24 AI assistant CRM components are lazy-loaded in MainGridView
-- Confirmed MongoDB integration returning live data: 200 properties, 400 leads, 18.5% conversion rate
-- Validated Olivia's scheduler running at 3:00 AM Dubai time (Asia/Dubai timezone)
-- Featured properties API confirmed working with real AI-scored properties
-
-### Security Improvements
-- Enhanced ZoeConsole with explicit authentication token validation
-- Added clear error messages for unauthorized executive access (401/403 responses)
-- Improved session history loading with proper auth handling
-
-### API Endpoints Verified
-- GET /api/dashboard/summary - Returns live MongoDB aggregated stats
-- GET /api/inventory/properties - DAMAC Hills 2 property data with owner details
-- GET /api/dashboard/leads/recent - Lead pipeline with scoring (400 leads)
-- GET /api/featured-properties - AI-selected top 10 properties with score breakdown
-- GET /api/scheduler/status - Cron job monitoring
