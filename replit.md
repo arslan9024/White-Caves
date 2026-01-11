@@ -52,7 +52,15 @@ Preferred communication style: Simple, everyday language.
 - **AgentListingForm**: 6-step wizard for property listings (Basic Info, Location, Specs, Pricing, Media, Legal) with Dubai-specific fields and marketing packages.
 - **CRM View State (crmViewSlice)**: Redux slice managing 38 AI assistants across 11 departments, sidebar/AI panel toggles, breadcrumb navigation, favorites, and recent objects.
 - **CRM Accordion Navigation**: Hierarchical left sidebar with 11 main groups (Executive Overview, Operations & Organization, Sales & Pipeline, Properties & Inventory, Services & Fulfillment, Leasing & Tenancy, Marketing & Communications, Finance & Payments, Compliance & Legal, Analytics & Intelligence, Administration) containing 40+ expandable sub-items with gold-highlighted active state.
-- **ContextualDashboardRenderer**: Component that merges left sidebar feature selection with right AI panel selection to render contextual dashboards based on active category and selected assistant.
+- **ContextualDashboardRenderer**: Component that merges left sidebar feature selection with right AI panel selection to render contextual dashboards based on active category and selected assistant. Supports mixed dashboard mode when AI assistant capabilities match active department.
+- **Mixed Dashboard Architecture**: Department-assistant integration system featuring:
+  - **DEPT_ASSISTANT_MAP**: Configuration linking all 11 departments to their AI assistants with Zoe as executive overlay across all departments
+  - **MixedDashboard**: Slot-based shell component with composition for stats, flowchart, table, activity feed, and quick actions
+  - **AnimatedStatsBar**: Framer Motion animated KPI cards with counting animations and change indicators
+  - **LifecycleFlowchart**: Animated service/transaction lifecycle stages with stage counts, alerts, and progression arrows
+  - **AIQuickActions**: AI-powered action buttons with assistant badges and variant styling
+  - **LiveActivityFeed**: Real-time activity stream with actor icons, timestamps, and action types
+  - 11 department-specific mixed dashboards (Executive, Operations, Sales, Properties, Services, Leasing, Marketing, Finance, Compliance, Analytics, Admin) with tailored lifecycle stages and data tables
 - **CRM View Components**: 11 category-specific view components (ExecutiveOverview, OperationsView, SalesView, PropertiesView, ServicesView, LeasingView, MarketingView, FinanceView, ComplianceView, AnalyticsView, AdminView) each handling multiple sub-item routes via switch statements.
 - **CRM Styling**: White background (#ffffff) for main dashboard with dark mode support, crm-views.css with comprehensive styles for stats grids, data tables, pipelines, property cards, campaigns, and view-specific components.
 - **Document Viewing System**: CRMDocumentViewer component supporting PDF and HTML documents with browser-style back/forward navigation, zoom controls, print support. Document registry contains 8 Aurora technical documents (SRS, Architecture, API Spec, Database Schema, AI Catalog, Roadmap, Feature Registry, Release History) and 3 company documents (RERA Compliance, Ejari Guide, Service Catalog).
