@@ -790,6 +790,60 @@
   margin: 0 0 12px;
 }
 
+.team-lead-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  background: var(--crm-gold);
+  color: var(--crm-navy);
+  font-size: 0.5625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-radius: 4px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.ai-team-members {
+  margin-left: 16px;
+  padding-left: 12px;
+  border-left: 2px solid var(--crm-gold);
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.ai-team-label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--crm-gold);
+  padding: 4px 0 6px;
+}
+
+.ai-assistant-item.team-member {
+  padding: 8px 10px;
+}
+
+.ai-assistant-item.team-member .ai-assistant-avatar {
+  width: 28px;
+  height: 28px;
+  font-size: 0.6875rem;
+}
+
+.ai-assistant-item.team-member .ai-assistant-name {
+  font-size: 0.8125rem;
+}
+
+.ai-assistant-item.team-member .ai-assistant-role {
+  font-size: 0.6875rem;
+}
+
+.ai-assistant-item.team-lead {
+  border-left: 3px solid var(--crm-gold);
+  background: rgba(212, 175, 55, 0.05);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .crm-shell {

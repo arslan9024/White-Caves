@@ -5,7 +5,7 @@ const CRM_OBJECT_CATEGORIES = {
   departments: { id: 'departments', label: 'Departments', type: 'object', count: 10 },
   employees: { id: 'employees', label: 'Employees', type: 'object', count: 103 },
   services: { id: 'services', label: 'Services', type: 'object', count: 40 },
-  assistants: { id: 'assistants', label: 'AI Assistants', type: 'object', count: 32 },
+  assistants: { id: 'assistants', label: 'AI Assistants', type: 'object', count: 38 },
   properties: { id: 'properties', label: 'Properties', type: 'object' },
   leads: { id: 'leads', label: 'Leads', type: 'object' },
   analytics: { id: 'analytics', label: 'Analytics', type: 'view' },
@@ -18,7 +18,7 @@ const AI_ASSISTANTS_REGISTRY = [
   { id: 'mary', name: 'Mary', role: 'Inventory Manager', dept: 'operations', color: '#3B82F6', status: 'online' },
   { id: 'clara', name: 'Clara', role: 'Lead Manager', dept: 'sales', color: '#8B5CF6', status: 'online' },
   { id: 'linda', name: 'Linda', role: 'WhatsApp Manager', dept: 'communications', color: '#25D366', status: 'online' },
-  { id: 'aurora', name: 'Aurora', role: 'CTO Intelligence', dept: 'technology', color: '#0EA5E9', status: 'online' },
+  { id: 'aurora', name: 'Aurora', role: 'CTO Intelligence', dept: 'technology', color: '#0EA5E9', status: 'online', isTeamLead: true, teamName: 'SDLC Documentation Team' },
   { id: 'theodora', name: 'Theodora', role: 'CFO Intelligence', dept: 'finance', color: '#F59E0B', status: 'online' },
   { id: 'sophia', name: 'Sophia', role: 'Contract Manager', dept: 'legal', color: '#DC2626', status: 'online' },
   { id: 'henry', name: 'Henry', role: 'Compliance Officer', dept: 'compliance', color: '#6366F1', status: 'online' },
@@ -46,6 +46,12 @@ const AI_ASSISTANTS_REGISTRY = [
   { id: 'echo', name: 'Echo', role: 'Voice Assistant', dept: 'communications', color: '#06B6D4', status: 'online' },
   { id: 'nexus', name: 'Nexus', role: 'Integration Hub', dept: 'technology', color: '#4F46E5', status: 'online' },
   { id: 'aria', name: 'Aria', role: 'Scheduling Assistant', dept: 'operations', color: '#F97316', status: 'online' },
+  { id: 'stella', name: 'Stella', role: 'Backend Engineer', dept: 'technology', color: '#6366F1', status: 'online', reportsTo: 'aurora', specialty: 'API & Server Architecture' },
+  { id: 'nova', name: 'Nova', role: 'Backend Engineer', dept: 'technology', color: '#8B5CF6', status: 'online', reportsTo: 'aurora', specialty: 'Data Processing & Integration' },
+  { id: 'ember', name: 'Ember', role: 'Frontend Engineer', dept: 'technology', color: '#F97316', status: 'online', reportsTo: 'aurora', specialty: 'UI Documentation & Standards' },
+  { id: 'marina', name: 'Marina', role: 'DevOps Engineer', dept: 'technology', color: '#0891B2', status: 'online', reportsTo: 'aurora', specialty: 'Deployment & Operations' },
+  { id: 'coral', name: 'Coral', role: 'Database Specialist', dept: 'technology', color: '#EC4899', status: 'online', reportsTo: 'aurora', specialty: 'Schema & Data Management' },
+  { id: 'celeste', name: 'Celeste', role: 'AI/ML Engineer', dept: 'technology', color: '#10B981', status: 'online', reportsTo: 'aurora', specialty: 'ML Pipeline Documentation' },
 ];
 
 const initialState = {

@@ -29,7 +29,7 @@ const CRM_NAV_ITEMS = [
   { id: 'departments', label: 'Departments', icon: Building2, badge: '10' },
   { id: 'employees', label: 'Employees', icon: Users, badge: '103' },
   { id: 'services', label: 'Services', icon: Briefcase, badge: '40' },
-  { id: 'assistants', label: 'AI Assistants', icon: Bot, badge: '32' },
+  { id: 'assistants', label: 'AI Assistants', icon: Bot, badge: '38' },
   { id: 'properties', label: 'Properties', icon: Home },
   { id: 'leads', label: 'Leads', icon: MessageSquare },
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
@@ -108,6 +108,9 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
     acc[dept].push(assistant);
     return acc;
   }, {});
+
+  const auroraTeam = aiAssistants.filter(a => a.reportsTo === 'aurora');
+  const aurora = aiAssistants.find(a => a.id === 'aurora');
 
   const departmentLabels = {
     executive: 'Executive',
@@ -320,23 +323,51 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
                   {departmentLabels[dept] || dept}
                 </div>
                 <div className="ai-assistant-list">
-                  {assistants.map((assistant) => (
-                    <div
-                      key={assistant.id}
-                      className={`ai-assistant-item ${selectedAssistantForChat === assistant.id ? 'active' : ''}`}
-                      onClick={() => handleAssistantClick(assistant.id)}
-                    >
-                      <div 
-                        className="ai-assistant-avatar"
-                        style={{ background: assistant.color }}
+                  {assistants.filter(a => !a.reportsTo).map((assistant) => (
+                    <div key={assistant.id}>
+                      <div
+                        className={`ai-assistant-item ${selectedAssistantForChat === assistant.id ? 'active' : ''} ${assistant.isTeamLead ? 'team-lead' : ''}`}
+                        onClick={() => handleAssistantClick(assistant.id)}
                       >
-                        {assistant.name.charAt(0)}
+                        <div 
+                          className="ai-assistant-avatar"
+                          style={{ background: assistant.color }}
+                        >
+                          {assistant.name.charAt(0)}
+                        </div>
+                        <div className="ai-assistant-info">
+                          <div className="ai-assistant-name">
+                            {assistant.name}
+                            {assistant.isTeamLead && <span className="team-lead-badge">Lead</span>}
+                          </div>
+                          <div className="ai-assistant-role">{assistant.role}</div>
+                        </div>
+                        <div className={`ai-assistant-status ${assistant.status}`} />
                       </div>
-                      <div className="ai-assistant-info">
-                        <div className="ai-assistant-name">{assistant.name}</div>
-                        <div className="ai-assistant-role">{assistant.role}</div>
-                      </div>
-                      <div className={`ai-assistant-status ${assistant.status}`} />
+                      {assistant.isTeamLead && (
+                        <div className="ai-team-members">
+                          <div className="ai-team-label">{assistant.teamName}</div>
+                          {aiAssistants.filter(m => m.reportsTo === assistant.id).map((member) => (
+                            <div
+                              key={member.id}
+                              className={`ai-assistant-item team-member ${selectedAssistantForChat === member.id ? 'active' : ''}`}
+                              onClick={() => handleAssistantClick(member.id)}
+                            >
+                              <div 
+                                className="ai-assistant-avatar"
+                                style={{ background: member.color }}
+                              >
+                                {member.name.charAt(0)}
+                              </div>
+                              <div className="ai-assistant-info">
+                                <div className="ai-assistant-name">{member.name}</div>
+                                <div className="ai-assistant-role">{member.specialty || member.role}</div>
+                              </div>
+                              <div className={`ai-assistant-status ${member.status}`} />
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
