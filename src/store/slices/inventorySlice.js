@@ -178,6 +178,8 @@ export const selectProperties = createSelector(
   }
 );
 
+export const selectAllProperties = selectProperties;
+
 export const selectFilteredProperties = createSelector(
   [selectProperties, selectFilters],
   (properties, filters) => {

@@ -67,6 +67,12 @@ Preferred communication style: Simple, everyday language.
 - **Knowledge Base & System Health**: AdminView with Knowledge Base showing AuroraDocumentIndex for accessing all technical and company documents, plus System Health view with status cards for API, Database, Authentication, and Integrations.
 - **WhatsApp Click-to-Chat**: Floating chat button positioned on the left side with expandable quick messages, multiple contact apps (WhatsApp, Botim, GoChat), and star rating invitation.
 - **Footer Helpful Links**: 7 external Dubai resource links including Dubai Rental Calculator, Service Charge Index, Title Deed Verification, Dubai Land Department, Ejari Online Service, DREI Website, and Off-Plan Project Status.
+- **DLD Transactions System**: Real Dubai Land Department property transaction data (5,400+ records from January 2026) integrated into Properties & Inventory section with:
+  - **Transaction MongoDB Model**: 22 fields including transactionNumber, instanceDate, area, propType, propSubType, transValue, rooms, parking, nearestMetro, nearestMall, nearestLandmark, project, masterProject, isOffplan, isFreehold, and usage classification
+  - **RESTful API**: Full CRUD endpoints with advanced filtering (area, project, property type, rooms, price range, status), sorting, pagination, and stats aggregation (total value: AED 22.7B, top areas, property type distribution)
+  - **TransactionsView Component**: Animated Framer Motion table with stats dashboard, modal-based view/edit/create, CSV batch import, and responsive design
+  - **Top Areas**: JVC (333), Business Bay (246), DLRC (209), DIP Second (203), Um Suqaim Third (184)
+  - **Property Types**: Flats (4,343), Villas (665), Hotel Rooms (137), Offices (129), Shops (50)
 
 ## External Dependencies
 
