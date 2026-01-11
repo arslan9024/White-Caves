@@ -55,6 +55,10 @@ Preferred communication style: Simple, everyday language.
 - **ContextualDashboardRenderer**: Component that merges left sidebar feature selection with right AI panel selection to render contextual dashboards based on active category and selected assistant.
 - **CRM View Components**: 11 category-specific view components (ExecutiveOverview, OperationsView, SalesView, PropertiesView, ServicesView, LeasingView, MarketingView, FinanceView, ComplianceView, AnalyticsView, AdminView) each handling multiple sub-item routes via switch statements.
 - **CRM Styling**: White background (#ffffff) for main dashboard with dark mode support, crm-views.css with comprehensive styles for stats grids, data tables, pipelines, property cards, campaigns, and view-specific components.
+- **Document Viewing System**: CRMDocumentViewer component supporting PDF and HTML documents with browser-style back/forward navigation, zoom controls, print support. Document registry contains 8 Aurora technical documents (SRS, Architecture, API Spec, Database Schema, AI Catalog, Roadmap, Feature Registry, Release History) and 3 company documents (RERA Compliance, Ejari Guide, Service Catalog).
+- **Knowledge Base & System Health**: AdminView with Knowledge Base showing AuroraDocumentIndex for accessing all technical and company documents, plus System Health view with status cards for API, Database, Authentication, and Integrations.
+- **WhatsApp Click-to-Chat**: Floating chat button positioned on the left side with expandable quick messages, multiple contact apps (WhatsApp, Botim, GoChat), and star rating invitation.
+- **Footer Helpful Links**: 7 external Dubai resource links including Dubai Rental Calculator, Service Charge Index, Title Deed Verification, Dubai Land Department, Ejari Online Service, DREI Website, and Off-Plan Project Status.
 
 ## External Dependencies
 
