@@ -50,7 +50,11 @@ Preferred communication style: Simple, everyday language.
 - **Reusable CRM Components**: StatsBar, DataTable, ActionButton, ActivityFeed, StatusBadge, FlowchartViewer.
 - **PropertySearchHero**: Bayut/PropertyFinder-style property search with Buy/Rent tabs, 16 Dubai communities autocomplete, property type dropdown, bedrooms/price filters.
 - **AgentListingForm**: 6-step wizard for property listings (Basic Info, Location, Specs, Pricing, Media, Legal) with Dubai-specific fields and marketing packages.
-- **CRM View State (crmViewSlice)**: Redux slice managing 32 AI assistants across 11 departments, sidebar/AI panel toggles, breadcrumb navigation, favorites, and recent objects.
+- **CRM View State (crmViewSlice)**: Redux slice managing 38 AI assistants across 11 departments, sidebar/AI panel toggles, breadcrumb navigation, favorites, and recent objects.
+- **CRM Accordion Navigation**: Hierarchical left sidebar with 11 main groups (Executive Overview, Operations & Organization, Sales & Pipeline, Properties & Inventory, Services & Fulfillment, Leasing & Tenancy, Marketing & Communications, Finance & Payments, Compliance & Legal, Analytics & Intelligence, Administration) containing 40+ expandable sub-items with gold-highlighted active state.
+- **ContextualDashboardRenderer**: Component that merges left sidebar feature selection with right AI panel selection to render contextual dashboards based on active category and selected assistant.
+- **CRM View Components**: 11 category-specific view components (ExecutiveOverview, OperationsView, SalesView, PropertiesView, ServicesView, LeasingView, MarketingView, FinanceView, ComplianceView, AnalyticsView, AdminView) each handling multiple sub-item routes via switch statements.
+- **CRM Styling**: White background (#ffffff) for main dashboard with dark mode support, crm-views.css with comprehensive styles for stats grids, data tables, pipelines, property cards, campaigns, and view-specific components.
 
 ## External Dependencies
 
