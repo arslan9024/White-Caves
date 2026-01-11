@@ -1,5 +1,148 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 
+const CRM_NAV_TREE = [
+  {
+    id: 'executive',
+    label: 'Executive Overview',
+    icon: 'Crown',
+    expanded: true,
+    items: [
+      { id: 'md-dashboard', label: 'MD Dashboard', icon: 'LayoutDashboard' },
+      { id: 'strategic-kpis', label: 'Strategic KPIs', icon: 'TrendingUp' },
+      { id: 'announcements', label: 'Announcements', icon: 'Megaphone' },
+      { id: 'company-overview', label: 'Company Overview', icon: 'Building' },
+    ]
+  },
+  {
+    id: 'operations',
+    label: 'Operations & Organization',
+    icon: 'Settings2',
+    expanded: false,
+    badge: '113',
+    items: [
+      { id: 'departments', label: 'Departments', icon: 'Building2', badge: '10' },
+      { id: 'employees', label: 'Employees', icon: 'Users', badge: '103' },
+      { id: 'teams', label: 'Team Structure', icon: 'Network' },
+      { id: 'scheduling', label: 'Scheduling', icon: 'Calendar' },
+      { id: 'onboarding', label: 'Onboarding', icon: 'UserPlus' },
+    ]
+  },
+  {
+    id: 'sales',
+    label: 'Sales & Pipeline',
+    icon: 'Target',
+    expanded: false,
+    items: [
+      { id: 'leads', label: 'Leads', icon: 'UserSearch' },
+      { id: 'deals', label: 'Deals', icon: 'Handshake' },
+      { id: 'client-journey', label: 'Client Journey', icon: 'Route' },
+      { id: 'contracts', label: 'Contracts', icon: 'FileSignature' },
+      { id: 'negotiations', label: 'Negotiations', icon: 'MessageSquare' },
+    ]
+  },
+  {
+    id: 'properties',
+    label: 'Properties & Inventory',
+    icon: 'Home',
+    expanded: false,
+    items: [
+      { id: 'portfolio', label: 'Portfolio', icon: 'Grid3x3' },
+      { id: 'listings', label: 'Active Listings', icon: 'ListPlus' },
+      { id: 'add-listing', label: 'Add New Listing', icon: 'PlusCircle' },
+      { id: 'developer-pipeline', label: 'Developer Pipeline', icon: 'Workflow' },
+      { id: 'media-gallery', label: 'Media Gallery', icon: 'Image' },
+      { id: 'virtual-tours', label: 'Virtual Tours', icon: 'Video' },
+    ]
+  },
+  {
+    id: 'services',
+    label: 'Services & Fulfillment',
+    icon: 'Briefcase',
+    expanded: false,
+    badge: '40',
+    items: [
+      { id: 'service-catalog', label: 'Service Catalog', icon: 'Book', badge: '40' },
+      { id: 'service-tracker', label: 'Service Tracker', icon: 'ClipboardCheck' },
+      { id: 'owner-tools', label: 'Owner Tools', icon: 'Wrench' },
+      { id: 'vendor-management', label: 'Vendor Management', icon: 'Truck' },
+    ]
+  },
+  {
+    id: 'leasing',
+    label: 'Leasing & Tenancy',
+    icon: 'Key',
+    expanded: false,
+    items: [
+      { id: 'ejari-system', label: 'Ejari System', icon: 'FileCheck' },
+      { id: 'tenancy-lifecycle', label: 'Tenancy Lifecycle', icon: 'RefreshCw' },
+      { id: 'renewals', label: 'Renewals', icon: 'CalendarClock' },
+      { id: 'landlord-portal', label: 'Landlord Portal', icon: 'Building2' },
+      { id: 'tenant-management', label: 'Tenant Management', icon: 'Users2' },
+    ]
+  },
+  {
+    id: 'marketing',
+    label: 'Marketing & Communications',
+    icon: 'Megaphone',
+    expanded: false,
+    items: [
+      { id: 'campaigns', label: 'Campaigns', icon: 'Rocket' },
+      { id: 'whatsapp-center', label: 'WhatsApp Center', icon: 'MessageCircle' },
+      { id: 'content-calendar', label: 'Content Calendar', icon: 'CalendarDays' },
+      { id: 'website-assets', label: 'Website Assets', icon: 'Globe' },
+      { id: 'email-templates', label: 'Email Templates', icon: 'Mail' },
+    ]
+  },
+  {
+    id: 'finance',
+    label: 'Finance & Payments',
+    icon: 'Wallet',
+    expanded: false,
+    items: [
+      { id: 'payments', label: 'Payments', icon: 'CreditCard' },
+      { id: 'invoices', label: 'Invoices', icon: 'Receipt' },
+      { id: 'commissions', label: 'Commissions', icon: 'Percent' },
+      { id: 'reports', label: 'Financial Reports', icon: 'PieChart' },
+    ]
+  },
+  {
+    id: 'compliance',
+    label: 'Compliance & Legal',
+    icon: 'Shield',
+    expanded: false,
+    items: [
+      { id: 'rera-audits', label: 'RERA Audits', icon: 'CheckCircle' },
+      { id: 'document-vault', label: 'Document Vault', icon: 'Lock' },
+      { id: 'kyc-aml', label: 'KYC/AML', icon: 'UserCheck' },
+      { id: 'audit-log', label: 'Audit Log', icon: 'History' },
+    ]
+  },
+  {
+    id: 'analytics',
+    label: 'Analytics & Intelligence',
+    icon: 'BarChart3',
+    expanded: false,
+    items: [
+      { id: 'market-dashboard', label: 'Market Dashboard', icon: 'TrendingUp' },
+      { id: 'performance-reports', label: 'Performance Reports', icon: 'FileBarChart' },
+      { id: 'forecasting', label: 'Forecasting', icon: 'LineChart' },
+      { id: 'agent-performance', label: 'Agent Performance', icon: 'Award' },
+    ]
+  },
+  {
+    id: 'admin',
+    label: 'Administration',
+    icon: 'Settings',
+    expanded: false,
+    items: [
+      { id: 'settings', label: 'Settings', icon: 'Settings' },
+      { id: 'integrations', label: 'Integrations', icon: 'Plug' },
+      { id: 'knowledge-base', label: 'Knowledge Base', icon: 'BookOpen' },
+      { id: 'system-health', label: 'System Health', icon: 'Activity' },
+    ]
+  },
+];
+
 const CRM_OBJECT_CATEGORIES = {
   dashboard: { id: 'dashboard', label: 'Dashboard', type: 'view' },
   departments: { id: 'departments', label: 'Departments', type: 'object', count: 10 },
@@ -55,7 +198,8 @@ const AI_ASSISTANTS_REGISTRY = [
 ];
 
 const initialState = {
-  activeCategory: 'dashboard',
+  activeCategory: 'executive',
+  activeSubItem: 'md-dashboard',
   activeObjectId: null,
   activeAssistant: null,
   sidebarOpen: true,
@@ -64,9 +208,11 @@ const initialState = {
   viewMode: 'grid',
   searchQuery: '',
   filterState: {},
+  navTree: CRM_NAV_TREE,
+  expandedGroups: ['executive'],
   objectCategories: CRM_OBJECT_CATEGORIES,
   aiAssistants: AI_ASSISTANTS_REGISTRY,
-  breadcrumbs: [{ id: 'dashboard', label: 'Dashboard' }],
+  breadcrumbs: [{ id: 'executive', label: 'Executive Overview' }, { id: 'md-dashboard', label: 'MD Dashboard' }],
   recentObjects: [],
   favoriteObjects: [],
 };
@@ -173,6 +319,29 @@ const crmViewSlice = createSlice({
         state.favoriteObjects.push({ id, category, timestamp: Date.now() });
       }
     },
+
+    toggleNavGroup: (state, action) => {
+      const groupId = action.payload;
+      if (state.expandedGroups.includes(groupId)) {
+        state.expandedGroups = state.expandedGroups.filter(g => g !== groupId);
+      } else {
+        state.expandedGroups.push(groupId);
+      }
+    },
+
+    setActiveSubItem: (state, action) => {
+      const { categoryId, subItemId, categoryLabel, subItemLabel } = action.payload;
+      state.activeCategory = categoryId;
+      state.activeSubItem = subItemId;
+      state.activeObjectId = subItemId;
+      state.breadcrumbs = [
+        { id: categoryId, label: categoryLabel },
+        { id: subItemId, label: subItemLabel }
+      ];
+      if (!state.expandedGroups.includes(categoryId)) {
+        state.expandedGroups.push(categoryId);
+      }
+    },
     
     resetCrmView: () => initialState,
   },
@@ -194,6 +363,8 @@ export const {
   addBreadcrumb,
   navigateToBreadcrumb,
   toggleFavorite,
+  toggleNavGroup,
+  setActiveSubItem,
   resetCrmView,
 } = crmViewSlice.actions;
 
@@ -280,5 +451,22 @@ export const selectAiAssistantsByDepartment = createSelector(
     return grouped;
   }
 );
+
+export const selectNavTree = createSelector(
+  [selectCrmView],
+  cv => cv?.navTree || CRM_NAV_TREE
+);
+
+export const selectExpandedGroups = createSelector(
+  [selectCrmView],
+  cv => cv?.expandedGroups || []
+);
+
+export const selectActiveSubItem = createSelector(
+  [selectCrmView],
+  cv => cv?.activeSubItem
+);
+
+export { CRM_NAV_TREE };
 
 export default crmViewSlice.reducer;

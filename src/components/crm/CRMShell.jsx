@@ -3,8 +3,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   Menu, X, Search, Bell, Moon, Sun, User, Settings, LogOut,
-  LayoutDashboard, Building2, Users, Briefcase, Bot, ChevronDown,
-  Home, FileText, MessageSquare, BarChart3, Shield, Sparkles, ChevronRight
+  LayoutDashboard, Building2, Users, Briefcase, Bot, ChevronDown, ChevronUp,
+  Home, FileText, MessageSquare, BarChart3, Shield, Sparkles, ChevronRight,
+  Crown, Settings2, Target, Key, Megaphone, Wallet, Activity,
+  TrendingUp, Building, Network, Calendar, UserPlus, UserSearch, Handshake,
+  Route, FileSignature, Grid3x3, ListPlus, PlusCircle, Workflow, Image, Video,
+  Book, ClipboardCheck, Wrench, Truck, FileCheck, RefreshCw, CalendarClock,
+  Users2, Rocket, MessageCircle, CalendarDays, Globe, Mail, CreditCard,
+  Receipt, Percent, PieChart, CheckCircle, Lock, UserCheck, History,
+  FileBarChart, LineChart, Award, Plug, BookOpen
 } from 'lucide-react';
 import { SUPER_ADMIN, isMDAuthorized } from '../../config/superAdmin';
 import {
@@ -15,27 +22,31 @@ import {
   toggleAiPanel,
   setSelectedAssistantForChat,
   navigateToBreadcrumb,
+  toggleNavGroup,
+  setActiveSubItem,
   selectActiveCategory,
   selectSidebarOpen,
   selectAiPanelOpen,
   selectAllAiAssistants,
   selectBreadcrumbs,
-  selectSelectedAssistantForChat
+  selectSelectedAssistantForChat,
+  selectNavTree,
+  selectExpandedGroups,
+  selectActiveSubItem
 } from '../../store/slices/crmViewSlice';
 import '../../styles/crm-layout.css';
 
-const CRM_NAV_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'departments', label: 'Departments', icon: Building2, badge: '10' },
-  { id: 'employees', label: 'Employees', icon: Users, badge: '103' },
-  { id: 'services', label: 'Services', icon: Briefcase, badge: '40' },
-  { id: 'assistants', label: 'AI Assistants', icon: Bot, badge: '38' },
-  { id: 'properties', label: 'Properties', icon: Home },
-  { id: 'leads', label: 'Leads', icon: MessageSquare },
-  { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-  { id: 'compliance', label: 'Compliance', icon: Shield },
-  { id: 'settings', label: 'Settings', icon: Settings },
-];
+const ICON_MAP = {
+  Crown, LayoutDashboard, TrendingUp, Megaphone, Building, Settings2,
+  Building2, Users, Network, Calendar, UserPlus, Target, UserSearch,
+  Handshake, Route, FileSignature, MessageSquare, Home, Grid3x3, ListPlus,
+  PlusCircle, Workflow, Image, Video, Briefcase, Book, ClipboardCheck,
+  Wrench, Truck, Key, FileCheck, RefreshCw, CalendarClock, Users2,
+  Rocket, MessageCircle, CalendarDays, Globe, Mail, Wallet, CreditCard,
+  Receipt, Percent, PieChart, Shield, CheckCircle, Lock, UserCheck,
+  History, BarChart3, FileBarChart, LineChart, Award, Settings, Plug,
+  BookOpen, Activity
+};
 
 export default function CRMShell({ children, activeTab, onTabChange }) {
   const navigate = useNavigate();
@@ -45,9 +56,12 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
   const sidebarOpen = useSelector(selectSidebarOpen);
   const aiPanelOpen = useSelector(selectAiPanelOpen);
   const activeCategory = useSelector(selectActiveCategory);
+  const activeSubItem = useSelector(selectActiveSubItem);
   const aiAssistants = useSelector(selectAllAiAssistants);
   const breadcrumbs = useSelector(selectBreadcrumbs);
   const selectedAssistantForChat = useSelector(selectSelectedAssistantForChat);
+  const navTree = useSelector(selectNavTree);
+  const expandedGroups = useSelector(selectExpandedGroups);
   
   const [theme, setTheme] = useState('light');
   const [searchQuery, setSearchQuery] = useState('');
@@ -66,11 +80,19 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
     document.body.setAttribute('data-theme', newTheme);
   };
 
-  const handleNavClick = (navId) => {
-    dispatch(setActiveCategory(navId));
-    dispatch(setActiveObjectId(navId));
+  const handleGroupToggle = (groupId) => {
+    dispatch(toggleNavGroup(groupId));
+  };
+
+  const handleSubItemClick = (group, item) => {
+    dispatch(setActiveSubItem({
+      categoryId: group.id,
+      subItemId: item.id,
+      categoryLabel: group.label,
+      subItemLabel: item.label
+    }));
     if (onTabChange) {
-      onTabChange(navId);
+      onTabChange(item.id);
     }
   };
 
@@ -94,7 +116,10 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
     navigate('/');
   };
 
-  const currentTab = activeTab || activeCategory;
+  const getIcon = (iconName) => {
+    const IconComponent = ICON_MAP[iconName];
+    return IconComponent || LayoutDashboard;
+  };
   
   const shellClasses = [
     'crm-shell',
@@ -108,9 +133,6 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
     acc[dept].push(assistant);
     return acc;
   }, {});
-
-  const auroraTeam = aiAssistants.filter(a => a.reportsTo === 'aurora');
-  const aurora = aiAssistants.find(a => a.id === 'aurora');
 
   const departmentLabels = {
     executive: 'Executive',
@@ -189,9 +211,10 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
           <button 
             className={`crm-toggle-btn ai-toggle ${aiPanelOpen ? 'active' : ''}`}
             onClick={() => dispatch(toggleAiPanel())}
-            title="AI Assistants"
+            title="AI Command Center"
           >
             <Sparkles size={18} />
+            <span className="ai-toggle-label">AI</span>
           </button>
 
           <div className="user-menu-container" style={{ position: 'relative' }}>
@@ -280,32 +303,65 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
 
       <aside className="crm-sidebar">
         <div className="crm-sidebar-header">
-          <div className="crm-sidebar-title">CRM Management</div>
+          <div className="crm-sidebar-title">CRM Navigation</div>
         </div>
         <nav className="crm-sidebar-nav">
-          {CRM_NAV_ITEMS.map((item) => (
-            <button
-              key={item.id}
-              className={`crm-nav-item ${currentTab === item.id ? 'active' : ''}`}
-              onClick={() => handleNavClick(item.id)}
-            >
-              <item.icon size={18} className="icon" />
-              <span>{item.label}</span>
-              {item.badge && <span className="crm-nav-badge">{item.badge}</span>}
-            </button>
-          ))}
+          {navTree.map((group) => {
+            const GroupIcon = getIcon(group.icon);
+            const isExpanded = expandedGroups.includes(group.id);
+            const isActiveGroup = activeCategory === group.id;
+            
+            return (
+              <div key={group.id} className={`nav-group ${isExpanded ? 'expanded' : ''} ${isActiveGroup ? 'active-group' : ''}`}>
+                <button
+                  className="nav-group-header"
+                  onClick={() => handleGroupToggle(group.id)}
+                >
+                  <GroupIcon size={18} className="nav-group-icon" />
+                  <span className="nav-group-label">{group.label}</span>
+                  {group.badge && <span className="nav-group-badge">{group.badge}</span>}
+                  <span className="nav-group-chevron">
+                    {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </span>
+                </button>
+                
+                {isExpanded && (
+                  <div className="nav-group-items">
+                    {group.items.map((item) => {
+                      const ItemIcon = getIcon(item.icon);
+                      const isActive = activeSubItem === item.id;
+                      
+                      return (
+                        <button
+                          key={item.id}
+                          className={`nav-sub-item ${isActive ? 'active' : ''}`}
+                          onClick={() => handleSubItemClick(group, item)}
+                        >
+                          <ItemIcon size={16} className="nav-sub-icon" />
+                          <span>{item.label}</span>
+                          {item.badge && <span className="nav-sub-badge">{item.badge}</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </nav>
       </aside>
 
       <main className="crm-main">
-        {children}
+        <div className="crm-main-content">
+          {children}
+        </div>
       </main>
 
       <aside className="crm-ai-panel">
         <div className="crm-ai-panel-header">
           <div className="crm-ai-panel-title">
             <span className="ai-icon"><Sparkles size={14} /></span>
-            AI Assistants
+            AI Command Center
           </div>
           <button 
             className="crm-toggle-btn"
@@ -316,6 +372,21 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
           </button>
         </div>
         <div className="crm-ai-panel-content">
+          <div className="ai-panel-stats">
+            <div className="ai-stat">
+              <div className="ai-stat-value">{aiAssistants.length}</div>
+              <div className="ai-stat-label">Assistants</div>
+            </div>
+            <div className="ai-stat">
+              <div className="ai-stat-value">{aiAssistants.filter(a => a.status === 'online').length}</div>
+              <div className="ai-stat-label">Online</div>
+            </div>
+            <div className="ai-stat">
+              <div className="ai-stat-value">{Object.keys(groupedAssistants).length}</div>
+              <div className="ai-stat-label">Departments</div>
+            </div>
+          </div>
+
           <div className="ai-assistant-groups">
             {Object.entries(groupedAssistants).map(([dept, assistants]) => (
               <div key={dept} className="ai-assistant-group">
@@ -378,13 +449,37 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
           {selectedAssistantForChat && (
             <div className="ai-chat-preview">
               <div className="ai-chat-preview-header">
-                Selected: {aiAssistants.find(a => a.id === selectedAssistantForChat)?.name}
+                <div 
+                  className="ai-assistant-avatar"
+                  style={{ 
+                    background: aiAssistants.find(a => a.id === selectedAssistantForChat)?.color,
+                    width: '36px',
+                    height: '36px',
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  {aiAssistants.find(a => a.id === selectedAssistantForChat)?.name.charAt(0)}
+                </div>
+                <div>
+                  <div style={{ fontWeight: '600' }}>{aiAssistants.find(a => a.id === selectedAssistantForChat)?.name}</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    {aiAssistants.find(a => a.id === selectedAssistantForChat)?.role}
+                  </div>
+                </div>
               </div>
-              <p className="ai-chat-preview-desc">
-                Ready to assist with {aiAssistants.find(a => a.id === selectedAssistantForChat)?.role.toLowerCase()} tasks.
-              </p>
+              <div className="ai-quick-actions">
+                <button className="ai-quick-action">
+                  <MessageSquare size={14} /> Chat
+                </button>
+                <button className="ai-quick-action">
+                  <FileText size={14} /> Report
+                </button>
+                <button className="ai-quick-action">
+                  <Settings size={14} /> Config
+                </button>
+              </div>
               <button className="crm-btn crm-btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
-                <MessageSquare size={16} /> Start Chat
+                <MessageSquare size={16} /> Start Conversation
               </button>
             </div>
           )}
