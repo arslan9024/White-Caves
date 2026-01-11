@@ -21,6 +21,20 @@ import AnalyticsView from './views/AnalyticsView';
 import AdminView from './views/AdminView';
 import CRMDocumentViewer from './CRMDocumentViewer';
 
+import {
+  ExecutiveMixedDashboard,
+  OperationsMixedDashboard,
+  SalesMixedDashboard,
+  PropertiesMixedDashboard,
+  ServicesMixedDashboard,
+  LeasingMixedDashboard,
+  MarketingMixedDashboard,
+  FinanceMixedDashboard,
+  ComplianceMixedDashboard,
+  AnalyticsMixedDashboard,
+  AdminMixedDashboard
+} from './mixed';
+
 const VIEW_COMPONENTS = {
   executive: ExecutiveOverview,
   operations: OperationsView,
@@ -33,6 +47,20 @@ const VIEW_COMPONENTS = {
   compliance: ComplianceView,
   analytics: AnalyticsView,
   admin: AdminView,
+};
+
+const MIXED_DASHBOARD_COMPONENTS = {
+  executive: ExecutiveMixedDashboard,
+  operations: OperationsMixedDashboard,
+  sales: SalesMixedDashboard,
+  properties: PropertiesMixedDashboard,
+  services: ServicesMixedDashboard,
+  leasing: LeasingMixedDashboard,
+  marketing: MarketingMixedDashboard,
+  finance: FinanceMixedDashboard,
+  compliance: ComplianceMixedDashboard,
+  analytics: AnalyticsMixedDashboard,
+  admin: AdminMixedDashboard,
 };
 
 const SUB_ITEM_CONFIGS = {
@@ -89,13 +117,13 @@ const SUB_ITEM_CONFIGS = {
 };
 
 const AI_ASSISTANT_CAPABILITIES = {
-  zoe: ['executive', 'analytics', 'operations'],
+  zoe: ['executive', 'analytics', 'operations', 'sales', 'properties', 'services', 'leasing', 'marketing', 'finance', 'compliance', 'admin'],
   ella: ['sales', 'marketing'],
   liam: ['sales', 'operations'],
   sophia: ['services', 'compliance'],
   max: ['finance', 'compliance'],
   nina: ['leasing', 'services'],
-  henry: ['properties', 'services'],
+  henry: ['properties', 'services', 'compliance'],
   olivia: ['properties', 'marketing'],
   mary: ['properties', 'analytics'],
   mason: ['properties', 'compliance'],
@@ -117,8 +145,14 @@ const AI_ASSISTANT_CAPABILITIES = {
   nova: ['admin', 'operations'],
   ember: ['admin', 'operations'],
   marina: ['admin', 'operations'],
-  coral: ['admin', 'analytics'],
+  coral: ['analytics', 'admin'],
   celeste: ['analytics', 'operations'],
+  theodora: ['finance', 'executive'],
+  daisy: ['leasing', 'properties'],
+  clara: ['sales', 'marketing'],
+  linda: ['marketing', 'sales'],
+  sage: ['analytics', 'properties'],
+  evangeline: ['compliance', 'legal'],
 };
 
 export default function ContextualDashboardRenderer() {
@@ -139,9 +173,6 @@ export default function ContextualDashboardRenderer() {
     );
   }
 
-  const ViewComponent = VIEW_COMPONENTS[activeCategory] || ExecutiveOverview;
-  const subItemConfig = SUB_ITEM_CONFIGS[activeSubItem] || {};
-
   const assistantContext = selectedAssistant ? {
     assistantId: selectedAssistant.id,
     assistantName: selectedAssistant.name,
@@ -150,6 +181,26 @@ export default function ContextualDashboardRenderer() {
     capabilities: AI_ASSISTANT_CAPABILITIES[selectedAssistant.id] || [],
     isRelevant: AI_ASSISTANT_CAPABILITIES[selectedAssistant.id]?.includes(activeCategory),
   } : null;
+
+  const useMixedDashboard = assistantContext?.isRelevant || activeCategory === 'executive';
+  
+  if (useMixedDashboard) {
+    const MixedComponent = MIXED_DASHBOARD_COMPONENTS[activeCategory];
+    if (MixedComponent) {
+      return (
+        <div className="contextual-dashboard mixed-mode">
+          <MixedComponent 
+            subItem={activeSubItem}
+            selectedAssistant={selectedAssistant?.id}
+            assistantContext={assistantContext}
+          />
+        </div>
+      );
+    }
+  }
+
+  const ViewComponent = VIEW_COMPONENTS[activeCategory] || ExecutiveOverview;
+  const subItemConfig = SUB_ITEM_CONFIGS[activeSubItem] || {};
 
   return (
     <div className="contextual-dashboard">
