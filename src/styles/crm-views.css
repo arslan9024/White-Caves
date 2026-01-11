@@ -1144,3 +1144,94 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* System Health View */
+.health-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.health-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background: var(--surface-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.health-card.healthy {
+  border-left: 4px solid #10B981;
+}
+
+.health-card.warning {
+  border-left: 4px solid #F59E0B;
+}
+
+.health-card.error {
+  border-left: 4px solid #EF4444;
+}
+
+.health-card svg {
+  color: var(--crm-gold);
+  flex-shrink: 0;
+}
+
+.health-info h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+
+.health-status {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #10B981;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.health-info p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.uptime-section {
+  padding: 24px;
+  background: linear-gradient(135deg, #0A1A3A 0%, #1a2d52 100%);
+  border-radius: 12px;
+  text-align: center;
+  color: white;
+}
+
+.uptime-section h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #D4AF37;
+  margin: 0 0 8px 0;
+}
+
+.uptime-section p {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+/* Knowledge Base View */
+.knowledge-base-view {
+  padding: 24px;
+}
+
+.knowledge-base-view .view-title {
+  margin-bottom: 4px;
+}
+
+.knowledge-base-view .view-subtitle {
+  margin-bottom: 24px;
+}

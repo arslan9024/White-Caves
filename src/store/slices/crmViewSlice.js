@@ -215,6 +215,10 @@ const initialState = {
   breadcrumbs: [{ id: 'executive', label: 'Executive Overview' }, { id: 'md-dashboard', label: 'MD Dashboard' }],
   recentObjects: [],
   favoriteObjects: [],
+  documentViewMode: 'dashboard',
+  activeDocument: null,
+  documentHistory: [],
+  documentHistoryIndex: -1,
 };
 
 const crmViewSlice = createSlice({
@@ -342,6 +346,41 @@ const crmViewSlice = createSlice({
         state.expandedGroups.push(categoryId);
       }
     },
+
+    openDocument: (state, action) => {
+      const doc = action.payload;
+      state.documentViewMode = 'document';
+      state.activeDocument = doc;
+      if (state.documentHistoryIndex < state.documentHistory.length - 1) {
+        state.documentHistory = state.documentHistory.slice(0, state.documentHistoryIndex + 1);
+      }
+      state.documentHistory.push(doc);
+      state.documentHistoryIndex = state.documentHistory.length - 1;
+    },
+
+    closeDocument: (state) => {
+      state.documentViewMode = 'dashboard';
+      state.activeDocument = null;
+    },
+
+    navigateDocumentBack: (state) => {
+      if (state.documentHistoryIndex > 0) {
+        state.documentHistoryIndex -= 1;
+        state.activeDocument = state.documentHistory[state.documentHistoryIndex];
+      }
+    },
+
+    navigateDocumentForward: (state) => {
+      if (state.documentHistoryIndex < state.documentHistory.length - 1) {
+        state.documentHistoryIndex += 1;
+        state.activeDocument = state.documentHistory[state.documentHistoryIndex];
+      }
+    },
+
+    clearDocumentHistory: (state) => {
+      state.documentHistory = [];
+      state.documentHistoryIndex = -1;
+    },
     
     resetCrmView: () => initialState,
   },
@@ -365,6 +404,11 @@ export const {
   toggleFavorite,
   toggleNavGroup,
   setActiveSubItem,
+  openDocument,
+  closeDocument,
+  navigateDocumentBack,
+  navigateDocumentForward,
+  clearDocumentHistory,
   resetCrmView,
 } = crmViewSlice.actions;
 
@@ -465,6 +509,36 @@ export const selectExpandedGroups = createSelector(
 export const selectActiveSubItem = createSelector(
   [selectCrmView],
   cv => cv?.activeSubItem
+);
+
+export const selectDocumentViewMode = createSelector(
+  [selectCrmView],
+  cv => cv?.documentViewMode || 'dashboard'
+);
+
+export const selectActiveDocument = createSelector(
+  [selectCrmView],
+  cv => cv?.activeDocument
+);
+
+export const selectDocumentHistory = createSelector(
+  [selectCrmView],
+  cv => cv?.documentHistory || []
+);
+
+export const selectDocumentHistoryIndex = createSelector(
+  [selectCrmView],
+  cv => cv?.documentHistoryIndex ?? -1
+);
+
+export const selectCanNavigateBack = createSelector(
+  [selectDocumentHistoryIndex],
+  index => index > 0
+);
+
+export const selectCanNavigateForward = createSelector(
+  [selectDocumentHistory, selectDocumentHistoryIndex],
+  (history, index) => index < history.length - 1
 );
 
 export { CRM_NAV_TREE };

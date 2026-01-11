@@ -1,5 +1,6 @@
 import React from 'react';
-import { Settings, Plug, BookOpen, Shield, Users, Database } from 'lucide-react';
+import { Settings, Plug, BookOpen, Shield, Users, Database, Activity } from 'lucide-react';
+import AuroraDocumentIndex from '../AuroraDocumentIndex';
 
 const INTEGRATIONS = [
   { id: 'stripe', name: 'Stripe', status: 'connected', icon: '💳' },
@@ -62,24 +63,57 @@ export default function AdminView({ activeSubItem, subItemConfig, assistantConte
     </div>
   );
 
-  const renderAPIDocs = () => (
-    <div className="api-docs-view">
-      <h2 className="view-title">API Documentation</h2>
-      <p className="view-subtitle">Developer resources and API reference</p>
+  const renderKnowledgeBase = () => (
+    <div className="knowledge-base-view">
+      <h2 className="view-title">Knowledge Base</h2>
+      <p className="view-subtitle">Technical documentation, company policies, and operational guides</p>
+      <AuroraDocumentIndex showCompanyDocs={true} />
+    </div>
+  );
+
+  const renderSystemHealth = () => (
+    <div className="system-health-view">
+      <h2 className="view-title">System Health</h2>
+      <p className="view-subtitle">Platform monitoring and status</p>
       
-      <div className="api-sections">
-        <div className="api-section">
-          <BookOpen size={24} color="var(--crm-gold)" />
-          <h4>REST API Reference</h4>
-          <p>Complete API documentation for all endpoints</p>
-          <button className="crm-btn crm-btn-secondary">View Docs</button>
+      <div className="health-grid">
+        <div className="health-card healthy">
+          <Activity size={24} />
+          <div className="health-info">
+            <h4>API Server</h4>
+            <span className="health-status">Operational</span>
+            <p>Response time: 85ms</p>
+          </div>
         </div>
-        <div className="api-section">
-          <Database size={24} color="var(--crm-gold)" />
-          <h4>Data Models</h4>
-          <p>Schema documentation for all entities</p>
-          <button className="crm-btn crm-btn-secondary">View Schema</button>
+        <div className="health-card healthy">
+          <Database size={24} />
+          <div className="health-info">
+            <h4>Database</h4>
+            <span className="health-status">Operational</span>
+            <p>MongoDB Atlas M10</p>
+          </div>
         </div>
+        <div className="health-card healthy">
+          <Shield size={24} />
+          <div className="health-info">
+            <h4>Authentication</h4>
+            <span className="health-status">Operational</span>
+            <p>Firebase Auth</p>
+          </div>
+        </div>
+        <div className="health-card healthy">
+          <Plug size={24} />
+          <div className="health-info">
+            <h4>Integrations</h4>
+            <span className="health-status">5/6 Connected</span>
+            <p>Stripe, Drive, WhatsApp</p>
+          </div>
+        </div>
+      </div>
+      
+      <div className="uptime-section">
+        <h3>Uptime: 99.97%</h3>
+        <p>Last 30 days - No major incidents</p>
       </div>
     </div>
   );
@@ -91,9 +125,9 @@ export default function AdminView({ activeSubItem, subItemConfig, assistantConte
       case 'integrations':
         return renderIntegrations();
       case 'knowledge-base':
-        return renderAPIDocs();
+        return renderKnowledgeBase();
       case 'system-health':
-        return renderSystemSettings();
+        return renderSystemHealth();
       default:
         return renderSystemSettings();
     }

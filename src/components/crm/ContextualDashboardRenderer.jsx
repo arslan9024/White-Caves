@@ -4,7 +4,9 @@ import {
   selectActiveCategory, 
   selectActiveSubItem,
   selectSelectedAssistantForChat,
-  selectAiAssistantById
+  selectAiAssistantById,
+  selectDocumentViewMode,
+  selectActiveDocument
 } from '../../store/slices/crmViewSlice';
 import ExecutiveOverview from './views/ExecutiveOverview';
 import OperationsView from './views/OperationsView';
@@ -17,6 +19,7 @@ import FinanceView from './views/FinanceView';
 import ComplianceView from './views/ComplianceView';
 import AnalyticsView from './views/AnalyticsView';
 import AdminView from './views/AdminView';
+import CRMDocumentViewer from './CRMDocumentViewer';
 
 const VIEW_COMPONENTS = {
   executive: ExecutiveOverview,
@@ -125,6 +128,16 @@ export default function ContextualDashboardRenderer() {
   const selectedAssistant = useSelector(state => 
     selectedAssistantId ? selectAiAssistantById(selectedAssistantId)(state) : null
   );
+  const documentViewMode = useSelector(selectDocumentViewMode);
+  const activeDocument = useSelector(selectActiveDocument);
+
+  if (documentViewMode === 'document' && activeDocument) {
+    return (
+      <div className="contextual-dashboard">
+        <CRMDocumentViewer />
+      </div>
+    );
+  }
 
   const ViewComponent = VIEW_COMPONENTS[activeCategory] || ExecutiveOverview;
   const subItemConfig = SUB_ITEM_CONFIGS[activeSubItem] || {};

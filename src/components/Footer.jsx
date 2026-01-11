@@ -72,6 +72,19 @@ export default function Footer() {
         </div>
         
         <div className="footer-section">
+          <h3>Helpful Links</h3>
+          <ul>
+            <li><a href="https://dubailand.gov.ae/en/eservices/rental-index/" target="_blank" rel="noopener noreferrer">Dubai Rental Calculator</a></li>
+            <li><a href="https://dubailand.gov.ae/en/open-data/service-charge-index/" target="_blank" rel="noopener noreferrer">Service Charge Index</a></li>
+            <li><a href="https://dubailand.gov.ae/en/eservices/title-deed-verification/" target="_blank" rel="noopener noreferrer">Title Deed Verification</a></li>
+            <li><a href="https://dubailand.gov.ae/" target="_blank" rel="noopener noreferrer">Dubai Land Department</a></li>
+            <li><a href="https://ejari.gov.ae/" target="_blank" rel="noopener noreferrer">EJARI Online Service</a></li>
+            <li><a href="https://www.rera.ae/" target="_blank" rel="noopener noreferrer">DREI Website</a></li>
+            <li><a href="https://dubailand.gov.ae/en/open-data/offplan-sold-projects/" target="_blank" rel="noopener noreferrer">Off-Plan Project Status</a></li>
+          </ul>
+        </div>
+        
+        <div className="footer-section">
           <h3>Connect With Us</h3>
           <SocialLinks />
           <div className="footer-rating">
