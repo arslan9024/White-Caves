@@ -150,17 +150,40 @@ export default function SalesView({ activeSubItem, subItemConfig, assistantConte
     </div>
   );
 
+  const renderNegotiations = () => (
+    <div className="negotiations-view">
+      <h2 className="view-title">Negotiations</h2>
+      <p className="view-subtitle">Active deal negotiations in progress</p>
+      <div className="negotiations-list">
+        <div className="negotiation-card">
+          <div className="negotiation-header">
+            <span className="property-name">Palm Jumeirah Villa #234</span>
+            <span className="negotiation-status active">In Progress</span>
+          </div>
+          <div className="negotiation-parties">
+            <span>Buyer: Ahmad Al Rashid</span>
+            <span>Seller: Emirates Properties LLC</span>
+          </div>
+          <div className="negotiation-offer">
+            <span>Current Offer: AED 8,200,000</span>
+            <span>Counter: AED 8,500,000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderContent = () => {
     switch (activeSubItem) {
-      case 'lead-pipeline':
+      case 'leads':
         return renderLeadPipeline();
       case 'client-journey':
         return renderClientJourney();
       case 'deals':
         return renderDeals();
-      case 'routing-assignments':
-        return renderRouting();
-      case 'contracts-sales':
+      case 'negotiations':
+        return renderNegotiations();
+      case 'contracts':
         return renderContracts();
       default:
         return renderLeadPipeline();

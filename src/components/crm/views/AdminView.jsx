@@ -86,12 +86,14 @@ export default function AdminView({ activeSubItem, subItemConfig, assistantConte
 
   const renderContent = () => {
     switch (activeSubItem) {
-      case 'system-settings':
+      case 'settings':
         return renderSystemSettings();
       case 'integrations':
         return renderIntegrations();
-      case 'api-docs':
+      case 'knowledge-base':
         return renderAPIDocs();
+      case 'system-health':
+        return renderSystemSettings();
       default:
         return renderSystemSettings();
     }

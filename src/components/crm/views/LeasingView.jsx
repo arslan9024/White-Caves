@@ -131,15 +131,15 @@ export default function LeasingView({ activeSubItem, subItemConfig, assistantCon
 
   const renderContent = () => {
     switch (activeSubItem) {
+      case 'ejari-system':
+        return renderEjariContracts();
       case 'tenancy-lifecycle':
         return renderTenancyLifecycle();
-      case 'ejari-contracts':
-        return renderEjariContracts();
       case 'renewals':
         return renderRenewals();
-      case 'tenant-portal':
+      case 'landlord-portal':
         return renderTenantPortal();
-      case 'residents':
+      case 'tenant-management':
         return renderResidents();
       default:
         return renderTenancyLifecycle();

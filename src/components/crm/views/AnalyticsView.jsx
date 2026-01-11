@@ -104,13 +104,13 @@ export default function AnalyticsView({ activeSubItem, subItemConfig, assistantC
 
   const renderContent = () => {
     switch (activeSubItem) {
-      case 'market-analytics':
+      case 'market-dashboard':
         return renderMarketAnalytics();
-      case 'performance-dashboard':
+      case 'performance-reports':
         return renderPerformanceDashboard();
-      case 'ai-insights':
+      case 'forecasting':
         return renderAIInsights();
-      case 'custom-reports':
+      case 'agent-performance':
         return renderCustomReports();
       default:
         return renderMarketAnalytics();

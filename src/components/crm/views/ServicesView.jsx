@@ -128,11 +128,11 @@ export default function ServicesView({ activeSubItem, subItemConfig, assistantCo
     switch (activeSubItem) {
       case 'service-catalog':
         return renderServiceCatalog();
-      case 'service-requests':
+      case 'service-tracker':
         return renderServiceRequests();
-      case 'maintenance':
+      case 'owner-tools':
         return renderMaintenance();
-      case 'handover':
+      case 'vendor-management':
         return renderHandover();
       default:
         return renderServiceCatalog();

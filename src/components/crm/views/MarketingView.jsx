@@ -146,15 +146,13 @@ export default function MarketingView({ activeSubItem, subItemConfig, assistantC
     switch (activeSubItem) {
       case 'campaigns':
         return renderCampaigns();
-      case 'launch-events':
-        return renderLaunchEvents();
-      case 'content-hub':
-        return renderContentHub();
-      case 'social-integration':
-        return renderSocialIntegration();
       case 'whatsapp-center':
         return renderWhatsAppCenter();
-      case 'email-campaigns':
+      case 'content-calendar':
+        return renderLaunchEvents();
+      case 'website-assets':
+        return renderContentHub();
+      case 'email-templates':
         return renderEmailCampaigns();
       default:
         return renderCampaigns();

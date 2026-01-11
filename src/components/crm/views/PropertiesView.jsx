@@ -154,15 +154,15 @@ export default function PropertiesView({ activeSubItem, subItemConfig, assistant
 
   const renderContent = () => {
     switch (activeSubItem) {
-      case 'property-grid':
+      case 'portfolio':
         return renderPropertyGrid();
-      case 'new-listing':
+      case 'listings':
+        return renderPropertyGrid();
+      case 'add-listing':
         return renderNewListing();
-      case 'off-plan':
+      case 'developer-pipeline':
         return renderOffPlan();
-      case 'workflow-tracker':
-        return renderWorkflow();
-      case 'media-assets':
+      case 'media-gallery':
         return renderMedia();
       case 'virtual-tours':
         return renderVirtualTours();

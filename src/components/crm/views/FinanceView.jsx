@@ -117,13 +117,13 @@ export default function FinanceView({ activeSubItem, subItemConfig, assistantCon
 
   const renderContent = () => {
     switch (activeSubItem) {
-      case 'transactions':
+      case 'payments':
         return renderTransactions();
       case 'invoices':
         return renderInvoices();
       case 'commissions':
         return renderCommissions();
-      case 'revenue-reports':
+      case 'reports':
         return renderRevenueReports();
       default:
         return renderTransactions();

@@ -132,14 +132,12 @@ export default function ComplianceView({ activeSubItem, subItemConfig, assistant
 
   const renderContent = () => {
     switch (activeSubItem) {
-      case 'kyc-profiles':
-        return renderKYCProfiles();
-      case 'aml-monitoring':
-        return renderAMLMonitoring();
-      case 'confidential-vault':
-        return renderConfidentialVault();
-      case 'verification-queue':
+      case 'rera-audits':
         return renderVerificationQueue();
+      case 'document-vault':
+        return renderConfidentialVault();
+      case 'kyc-aml':
+        return renderKYCProfiles();
       case 'audit-log':
         return renderAuditLog();
       default:

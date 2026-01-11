@@ -347,17 +347,19 @@ export default function MDDashboardPage() {
     }
   };
 
-  const NAV_CATEGORIES = ['md-dashboard', 'strategic-kpis', 'announcements', 'company-overview',
+  const NAV_CATEGORIES = [
+    'md-dashboard', 'strategic-kpis', 'announcements', 'company-overview',
     'departments', 'employees', 'teams', 'scheduling', 'onboarding',
-    'lead-pipeline', 'client-journey', 'deals', 'routing-assignments', 'contracts-sales',
-    'property-grid', 'new-listing', 'off-plan', 'workflow-tracker', 'media-assets', 'virtual-tours',
-    'service-catalog', 'service-requests', 'maintenance', 'handover',
-    'tenancy-lifecycle', 'ejari-contracts', 'renewals', 'tenant-portal', 'residents',
-    'campaigns', 'launch-events', 'content-hub', 'social-integration', 'whatsapp-center', 'email-campaigns',
-    'transactions', 'invoices', 'commissions', 'revenue-reports',
-    'kyc-profiles', 'aml-monitoring', 'confidential-vault', 'verification-queue', 'audit-log',
-    'market-analytics', 'performance-dashboard', 'ai-insights', 'custom-reports',
-    'system-settings', 'integrations', 'api-docs'];
+    'leads', 'deals', 'client-journey', 'contracts', 'negotiations',
+    'portfolio', 'listings', 'add-listing', 'developer-pipeline', 'media-gallery', 'virtual-tours',
+    'service-catalog', 'service-tracker', 'owner-tools', 'vendor-management',
+    'ejari-system', 'tenancy-lifecycle', 'renewals', 'landlord-portal', 'tenant-management',
+    'campaigns', 'whatsapp-center', 'content-calendar', 'website-assets', 'email-templates',
+    'payments', 'invoices', 'commissions', 'reports',
+    'rera-audits', 'document-vault', 'kyc-aml', 'audit-log',
+    'market-dashboard', 'performance-reports', 'forecasting', 'agent-performance',
+    'settings', 'integrations', 'knowledge-base', 'system-health'
+  ];
 
   const renderTabContent = () => {
     if (NAV_CATEGORIES.includes(activeTab)) {
