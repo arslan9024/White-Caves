@@ -1,9 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { 
   Bot, MessageSquare, Code, Terminal, Play, Pause, RefreshCw, 
   Settings, Users, Phone, CheckCircle, XCircle, Clock, Zap,
   FileCode, Folder, ChevronRight, ChevronDown, Copy, Download,
-  AlertTriangle, Activity, Send, QrCode, Smartphone, Wifi, Star, Plus
+  AlertTriangle, Activity, Send, QrCode, Smartphone, Wifi, Star, Plus,
+  Megaphone, UserX, FileText, Table, Search, Filter, Trash2, Edit,
+  Upload, BarChart3, Globe, Shield, Mail
 } from 'lucide-react';
 import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
 import { BotSessionManager } from './shared';
@@ -52,33 +54,65 @@ const DUMMY_BOTS = [
   }
 ];
 
+const PROJECTS = [
+  { id: 1, name: 'Vardon', category: 'cluster', contacts: 245, lastSync: '2h ago' },
+  { id: 2, name: 'Sanctuary', category: 'cluster', contacts: 312, lastSync: '1h ago' },
+  { id: 4, name: 'Amazonia', category: 'cluster', contacts: 189, lastSync: '3h ago' },
+  { id: 5, name: 'Pacifica', category: 'cluster', contacts: 156, lastSync: '30m ago' },
+  { id: 6, name: 'Acuna', category: 'cluster', contacts: 278, lastSync: '45m ago' },
+  { id: 10, name: 'Sycamore', category: 'cluster', contacts: 201, lastSync: '1h ago' },
+  { id: 14, name: 'Claret', category: 'cluster', contacts: 167, lastSync: '2h ago' },
+  { id: 15, name: 'Juniper', category: 'cluster', contacts: 223, lastSync: '1h ago' },
+  { id: 26, name: 'Victoria', category: 'cluster', contacts: 189, lastSync: '4h ago' },
+  { id: 30, name: 'Albizia', category: 'cluster', contacts: 145, lastSync: '2h ago' },
+  { id: 33, name: 'Oxygen2023', category: 'campaign', contacts: 567, lastSync: '30m ago' },
+  { id: 35, name: 'TAG2024', category: 'campaign', contacts: 423, lastSync: '1h ago' },
+  { id: 48, name: 'Lagoons', category: 'cluster', contacts: 298, lastSync: '45m ago' }
+];
+
+const CAMPAIGNS = [
+  { id: 'camp-1', name: 'Victoria Outreach', project: 'Victoria', status: 'running', sent: 145, total: 189, failed: 3, startedAt: '10:30 AM' },
+  { id: 'camp-2', name: 'Lagoons Follow-up', project: 'Lagoons', status: 'paused', sent: 87, total: 298, failed: 1, startedAt: '09:15 AM' },
+  { id: 'camp-3', name: 'Oxygen Blast', project: 'Oxygen2023', status: 'completed', sent: 567, total: 567, failed: 12, startedAt: 'Yesterday' }
+];
+
+const MESSAGE_TEMPLATES = [
+  { id: 'tpl-1', name: 'Morning Greeting (EN)', category: 'greetings', language: 'en', preview: 'Good morning! How are you doing today?' },
+  { id: 'tpl-2', name: 'Morning Greeting (AR)', category: 'greetings', language: 'ar', preview: 'صباح الخير! كيف حالك اليوم؟' },
+  { id: 'tpl-3', name: 'Property Inquiry', category: 'property_inquiry', language: 'en', preview: 'Thank you for your interest in {property_name}...' },
+  { id: 'tpl-4', name: 'Appointment Confirm', category: 'appointment', language: 'en', preview: 'Your viewing is confirmed for {date}...' },
+  { id: 'tpl-5', name: 'D2 Campaign', category: 'campaigns', language: 'en', preview: 'Is your property still available for Sale or Rent?' },
+  { id: 'tpl-6', name: 'Ramadan Greeting', category: 'greetings', language: 'bilingual', preview: 'Ramadan Kareem! رمضان كريم' }
+];
+
 const CODE_MODULES = [
   {
     name: 'WhatsAppBot',
     expanded: true,
     files: [
-      { name: 'CreatingNewWhatsAppClient.js', type: 'js', lines: 45 },
-      { name: 'WhatsAppClientFunctions.js', type: 'js', lines: 234 },
-      { name: 'MessageHandler.js', type: 'js', lines: 178 },
-      { name: 'SessionManager.js', type: 'js', lines: 89 }
+      { name: 'WhatsAppClientFactory.js', type: 'js', lines: 156 },
+      { name: 'MessageRouter.js', type: 'js', lines: 189 },
+      { name: 'BroadcastManager.js', type: 'js', lines: 234 },
+      { name: 'RateLimiter.js', type: 'js', lines: 89 }
     ]
   },
   {
-    name: 'Inputs',
+    name: 'Services',
     expanded: false,
     files: [
-      { name: 'ArslanNumbers.js', type: 'js', lines: 25 },
-      { name: 'NawalNumbers.js', type: 'js', lines: 18 },
-      { name: 'BotConfig.js', type: 'js', lines: 42 }
+      { name: 'GoogleSheetsService.js', type: 'js', lines: 145 },
+      { name: 'PhoneNumberService.js', type: 'js', lines: 178 },
+      { name: 'ProjectService.js', type: 'js', lines: 112 },
+      { name: 'CampaignService.js', type: 'js', lines: 198 }
     ]
   },
   {
-    name: 'core-modules',
+    name: 'Templates',
     expanded: false,
     files: [
-      { name: 'LeadScoring.js', type: 'js', lines: 156 },
-      { name: 'AutoReply.js', type: 'js', lines: 89 },
-      { name: 'AppointmentBooking.js', type: 'js', lines: 112 }
+      { name: 'MessageTemplates.js', type: 'js', lines: 156 },
+      { name: 'greetings.json', type: 'json', lines: 45 },
+      { name: 'campaigns.json', type: 'json', lines: 32 }
     ]
   }
 ];
@@ -104,6 +138,13 @@ export default function NinaWhatsAppBotCRM() {
   const [codeModules, setCodeModules] = useState(CODE_MODULES);
   const [terminalInput, setTerminalInput] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
+  const [projects, setProjects] = useState(PROJECTS);
+  const [campaigns, setCampaigns] = useState(CAMPAIGNS);
+  const [templates, setTemplates] = useState(MESSAGE_TEMPLATES);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [blocklist, setBlocklist] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   
   const handleCreateBot = useCallback((newBot) => {
     const bot = {
@@ -159,6 +200,9 @@ export default function NinaWhatsAppBotCRM() {
       case 'connected': return '#10b981';
       case 'disconnected': return '#ef4444';
       case 'pending': return '#f59e0b';
+      case 'running': return '#10b981';
+      case 'paused': return '#f59e0b';
+      case 'completed': return '#6b7280';
       default: return '#6b7280';
     }
   };
@@ -225,6 +269,12 @@ export default function NinaWhatsAppBotCRM() {
     }, 2000);
   };
 
+  const filteredProjects = projects.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = categoryFilter === 'all' || p.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
   return (
     <div className="nina-crm-container">
       <div className="nina-header">
@@ -255,14 +305,42 @@ export default function NinaWhatsAppBotCRM() {
           onClick={() => setActiveTab('sessions')}
         >
           <QrCode size={16} />
-          Session Manager
+          Sessions
         </button>
         <button 
           className={`nina-tab ${activeTab === 'bots' ? 'active' : ''}`}
           onClick={() => setActiveTab('bots')}
         >
           <Smartphone size={16} />
-          Bot Status
+          Bots
+        </button>
+        <button 
+          className={`nina-tab ${activeTab === 'campaigns' ? 'active' : ''}`}
+          onClick={() => setActiveTab('campaigns')}
+        >
+          <Megaphone size={16} />
+          Campaigns
+        </button>
+        <button 
+          className={`nina-tab ${activeTab === 'contacts' ? 'active' : ''}`}
+          onClick={() => setActiveTab('contacts')}
+        >
+          <Users size={16} />
+          Contacts
+        </button>
+        <button 
+          className={`nina-tab ${activeTab === 'messages' ? 'active' : ''}`}
+          onClick={() => setActiveTab('messages')}
+        >
+          <Mail size={16} />
+          Messages
+        </button>
+        <button 
+          className={`nina-tab ${activeTab === 'sheets' ? 'active' : ''}`}
+          onClick={() => setActiveTab('sheets')}
+        >
+          <Table size={16} />
+          Sheets
         </button>
         <button 
           className={`nina-tab ${activeTab === 'terminal' ? 'active' : ''}`}
@@ -276,7 +354,7 @@ export default function NinaWhatsAppBotCRM() {
           onClick={() => setActiveTab('code')}
         >
           <FileCode size={16} />
-          Code Modules
+          Code
         </button>
         <button 
           className={`nina-tab ${activeTab === 'analytics' ? 'active' : ''}`}
@@ -290,7 +368,7 @@ export default function NinaWhatsAppBotCRM() {
           onClick={() => setActiveTab('features')}
         >
           <Star size={16} />
-          Features ({NINA_FEATURES.length})
+          Features
         </button>
       </div>
 
@@ -438,6 +516,304 @@ export default function NinaWhatsAppBotCRM() {
           </div>
         )}
 
+        {activeTab === 'campaigns' && (
+          <div className="campaigns-view">
+            <div className="campaigns-header">
+              <h3>Campaign Manager</h3>
+              <button className="create-campaign-btn">
+                <Plus size={16} />
+                New Campaign
+              </button>
+            </div>
+
+            <div className="campaigns-stats">
+              <div className="stat-card">
+                <div className="stat-icon running"><Megaphone size={20} /></div>
+                <div className="stat-info">
+                  <span className="stat-value">{campaigns.filter(c => c.status === 'running').length}</span>
+                  <span className="stat-label">Running</span>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon paused"><Pause size={20} /></div>
+                <div className="stat-info">
+                  <span className="stat-value">{campaigns.filter(c => c.status === 'paused').length}</span>
+                  <span className="stat-label">Paused</span>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon completed"><CheckCircle size={20} /></div>
+                <div className="stat-info">
+                  <span className="stat-value">{campaigns.filter(c => c.status === 'completed').length}</span>
+                  <span className="stat-label">Completed</span>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon total"><BarChart3 size={20} /></div>
+                <div className="stat-info">
+                  <span className="stat-value">{campaigns.reduce((sum, c) => sum + c.sent, 0)}</span>
+                  <span className="stat-label">Messages Sent</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="campaigns-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Campaign</th>
+                    <th>Project</th>
+                    <th>Status</th>
+                    <th>Progress</th>
+                    <th>Failed</th>
+                    <th>Started</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {campaigns.map(campaign => (
+                    <tr key={campaign.id}>
+                      <td className="campaign-name">{campaign.name}</td>
+                      <td>{campaign.project}</td>
+                      <td>
+                        <span className={`status-badge ${campaign.status}`}>
+                          {campaign.status}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="progress-cell">
+                          <div className="progress-bar">
+                            <div 
+                              className="progress-fill"
+                              style={{ width: `${(campaign.sent / campaign.total) * 100}%` }}
+                            />
+                          </div>
+                          <span>{campaign.sent}/{campaign.total}</span>
+                        </div>
+                      </td>
+                      <td className="failed-count">{campaign.failed}</td>
+                      <td>{campaign.startedAt}</td>
+                      <td>
+                        <div className="action-buttons">
+                          {campaign.status === 'running' && (
+                            <button className="action-btn pause"><Pause size={14} /></button>
+                          )}
+                          {campaign.status === 'paused' && (
+                            <button className="action-btn play"><Play size={14} /></button>
+                          )}
+                          <button className="action-btn"><Settings size={14} /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'contacts' && (
+          <div className="contacts-view">
+            <div className="contacts-header">
+              <h3>Contact Management</h3>
+              <div className="contacts-actions">
+                <button className="action-btn-primary">
+                  <Upload size={16} />
+                  Import
+                </button>
+                <button className="action-btn-secondary">
+                  <Download size={16} />
+                  Export
+                </button>
+              </div>
+            </div>
+
+            <div className="contacts-filters">
+              <div className="search-box">
+                <Search size={16} />
+                <input 
+                  type="text" 
+                  placeholder="Search projects..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <div className="filter-buttons">
+                <button 
+                  className={`filter-btn ${categoryFilter === 'all' ? 'active' : ''}`}
+                  onClick={() => setCategoryFilter('all')}
+                >
+                  All
+                </button>
+                <button 
+                  className={`filter-btn ${categoryFilter === 'cluster' ? 'active' : ''}`}
+                  onClick={() => setCategoryFilter('cluster')}
+                >
+                  Clusters
+                </button>
+                <button 
+                  className={`filter-btn ${categoryFilter === 'campaign' ? 'active' : ''}`}
+                  onClick={() => setCategoryFilter('campaign')}
+                >
+                  Campaigns
+                </button>
+              </div>
+            </div>
+
+            <div className="contacts-grid">
+              <div className="projects-list">
+                <h4>Projects ({filteredProjects.length})</h4>
+                {filteredProjects.map(project => (
+                  <div 
+                    key={project.id} 
+                    className={`project-item ${selectedProject?.id === project.id ? 'selected' : ''}`}
+                    onClick={() => setSelectedProject(project)}
+                  >
+                    <div className="project-info">
+                      <span className="project-name">{project.name}</span>
+                      <span className={`project-category ${project.category}`}>{project.category}</span>
+                    </div>
+                    <div className="project-meta">
+                      <span className="contact-count"><Users size={12} /> {project.contacts}</span>
+                      <span className="last-sync"><RefreshCw size={12} /> {project.lastSync}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="blocklist-panel">
+                <h4>Blocklist <Shield size={16} /></h4>
+                <p className="blocklist-count">{blocklist.length || 245} numbers blocked</p>
+                <div className="blocklist-actions">
+                  <button className="blocklist-btn">
+                    <Plus size={14} /> Add Numbers
+                  </button>
+                  <button className="blocklist-btn">
+                    <RefreshCw size={14} /> Refresh
+                  </button>
+                </div>
+                <div className="blocklist-info">
+                  <p>Blocked numbers are automatically excluded from all campaigns.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'messages' && (
+          <div className="messages-view">
+            <div className="messages-header">
+              <h3>Message Templates</h3>
+              <button className="create-template-btn">
+                <Plus size={16} />
+                New Template
+              </button>
+            </div>
+
+            <div className="template-categories">
+              <button className="category-btn active">All</button>
+              <button className="category-btn">Greetings</button>
+              <button className="category-btn">Property</button>
+              <button className="category-btn">Appointment</button>
+              <button className="category-btn">Campaigns</button>
+            </div>
+
+            <div className="templates-grid">
+              {templates.map(template => (
+                <div key={template.id} className="template-card">
+                  <div className="template-header">
+                    <span className="template-name">{template.name}</span>
+                    <span className={`template-lang ${template.language}`}>
+                      {template.language === 'ar' ? 'عربي' : template.language === 'bilingual' ? 'EN/AR' : 'EN'}
+                    </span>
+                  </div>
+                  <div className="template-category">{template.category}</div>
+                  <div className="template-preview">{template.preview}</div>
+                  <div className="template-actions">
+                    <button className="template-btn"><Edit size={14} /> Edit</button>
+                    <button className="template-btn"><Copy size={14} /> Copy</button>
+                    <button className="template-btn use"><Send size={14} /> Use</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'sheets' && (
+          <div className="sheets-view">
+            <div className="sheets-header">
+              <h3>Google Sheets Integration</h3>
+              <div className="sheets-status">
+                <span className="status-indicator connected" />
+                Connected
+              </div>
+            </div>
+
+            <div className="sheets-stats">
+              <div className="sheet-stat">
+                <Table size={24} />
+                <div>
+                  <span className="stat-value">{projects.length}</span>
+                  <span className="stat-label">Connected Sheets</span>
+                </div>
+              </div>
+              <div className="sheet-stat">
+                <Users size={24} />
+                <div>
+                  <span className="stat-value">{projects.reduce((sum, p) => sum + p.contacts, 0).toLocaleString()}</span>
+                  <span className="stat-label">Total Contacts</span>
+                </div>
+              </div>
+              <div className="sheet-stat">
+                <RefreshCw size={24} />
+                <div>
+                  <span className="stat-value">30m</span>
+                  <span className="stat-label">Last Sync</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="sheets-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Project Name</th>
+                    <th>Category</th>
+                    <th>Contacts</th>
+                    <th>Last Sync</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {projects.map(project => (
+                    <tr key={project.id}>
+                      <td className="sheet-name">
+                        <Table size={14} />
+                        {project.name}
+                      </td>
+                      <td>
+                        <span className={`category-badge ${project.category}`}>
+                          {project.category}
+                        </span>
+                      </td>
+                      <td>{project.contacts}</td>
+                      <td>{project.lastSync}</td>
+                      <td>
+                        <div className="action-buttons">
+                          <button className="action-btn" title="Sync"><RefreshCw size={14} /></button>
+                          <button className="action-btn" title="View"><Globe size={14} /></button>
+                          <button className="action-btn" title="Settings"><Settings size={14} /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'terminal' && (
           <div className="terminal-view">
             <div className="terminal-header">
@@ -522,22 +898,32 @@ export default function NinaWhatsAppBotCRM() {
                   <div className="editor-content">
                     <pre>
 {`// ${selectedFile.name}
-// WhatsApp Bot Module - Nina AI Managed
+// Nina WhatsApp Bot - Consolidated Services
 
-import { WhatsAppClientFunctions } from "./WhatsAppClientFunctions.js";
-import { CreatingNewWhatsAppClient } from "./CreatingNewWhatsAppClient.js";
+import { EventEmitter } from 'events';
 
-export const initializeBot = async (agentNumber) => {
-  const client = await CreatingNewWhatsAppClient(agentNumber);
-  WhatsAppClientFunctions(client, agentNumber, true);
-  
-  console.log(\`Bot initialized for \${agentNumber}\`);
-  return client;
-};
+export class ${selectedFile.name.replace('.js', '')} extends EventEmitter {
+  constructor() {
+    super();
+    this.initialized = false;
+    console.log('${selectedFile.name} loaded');
+  }
 
-// Nina AI: This module handles WhatsApp client initialization
-// Last modified: ${new Date().toISOString().split('T')[0]}
-// Lines: ${selectedFile.lines}`}
+  async initialize() {
+    if (this.initialized) return true;
+    // Initialization logic
+    this.initialized = true;
+    this.emit('ready');
+    return true;
+  }
+
+  // Additional methods...
+}
+
+export default new ${selectedFile.name.replace('.js', '')}();
+
+// Lines: ${selectedFile.lines}
+// Last modified: ${new Date().toISOString().split('T')[0]}`}
                     </pre>
                   </div>
                 </>
