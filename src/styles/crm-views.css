@@ -564,7 +564,7 @@
 
 .tier-badge.ultra-premium {
   background: rgba(212, 175, 55, 0.1);
-  color: #D4AF37;
+  color: #B03737;
 }
 
 /* Categories Grid */
@@ -1204,7 +1204,7 @@
 
 .uptime-section {
   padding: 24px;
-  background: linear-gradient(135deg, #0A1A3A 0%, #1a2d52 100%);
+  background: linear-gradient(135deg, #1A1A1A 0%, #1a2d52 100%);
   border-radius: 12px;
   text-align: center;
   color: white;
@@ -1213,7 +1213,7 @@
 .uptime-section h3 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #D4AF37;
+  color: #B03737;
   margin: 0 0 8px 0;
 }
 

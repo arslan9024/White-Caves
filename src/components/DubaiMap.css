@@ -108,7 +108,7 @@
 }
 
 .marker-group.active .marker-dot {
-  stroke: var(--accent-gold, #d4af37);
+  stroke: var(--accent-gold, #B03737);
   stroke-width: 3;
 }
 

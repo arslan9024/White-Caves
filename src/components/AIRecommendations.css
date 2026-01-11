@@ -16,7 +16,7 @@
 .ai-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #D4AF37, #F4D03F);
+  background: linear-gradient(135deg, #B03737, #F4D03F);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -69,8 +69,8 @@
 }
 
 .refresh-btn:hover {
-  background: #D4AF37;
-  border-color: #D4AF37;
+  background: #B03737;
+  border-color: #B03737;
 }
 
 .refresh-btn:hover svg {
@@ -95,7 +95,7 @@
   width: 40px;
   height: 40px;
   border: 3px solid var(--border-color);
-  border-top-color: #D4AF37;
+  border-top-color: #B03737;
   border-radius: 50%;
   margin: 0 auto 20px;
   animation: spin 1s linear infinite;
@@ -109,7 +109,7 @@
 .empty-state button {
   margin-top: 15px;
   padding: 10px 25px;
-  background: #D4AF37;
+  background: #B03737;
   border: none;
   border-radius: 8px;
   color: #1a1a2e;
@@ -151,7 +151,7 @@
 .recommendation-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-  border-color: #D4AF37;
+  border-color: #B03737;
 }
 
 .match-score {
@@ -159,7 +159,7 @@
   top: 15px;
   right: 15px;
   z-index: 2;
-  background: linear-gradient(135deg, #D4AF37, #F4D03F);
+  background: linear-gradient(135deg, #B03737, #F4D03F);
   border-radius: 10px;
   padding: 8px 12px;
   text-align: center;
@@ -214,7 +214,7 @@
 .card-content .price {
   font-size: 1.35rem;
   font-weight: 700;
-  color: #D4AF37;
+  color: #B03737;
   margin-bottom: 8px;
 }
 

@@ -11,6 +11,10 @@ import Locations from '../components/homepage/Locations';
 import Team from '../components/homepage/Team';
 import Testimonials from '../components/homepage/Testimonials';
 import ContactCTA from '../components/homepage/Contact';
+import PopularSearches from '../components/homepage/PopularSearches/PopularSearches';
+import NewsletterSignup from '../components/homepage/NewsletterSignup/NewsletterSignup';
+import InterestWizard from '../components/homepage/InterestWizard/InterestWizard';
+import MobileAppBanner from '../components/homepage/MobileAppBanner/MobileAppBanner';
 import InteractiveMap from '../components/InteractiveMap';
 import PropertyComparison from '../components/PropertyComparison';
 import OffPlanTracker from '../components/OffPlanTracker';
@@ -119,8 +123,10 @@ export default function HomePage() {
     <AppLayout>
       <div className="home-page">
         <Hero onPropertyClick={handlePropertyClick} />
+        <InterestWizard />
         <Features />
         <FeaturedProperties />
+        <PopularSearches />
         <DubaiMap onLocationClick={handlePropertyClick} />
         <Locations />
         <InteractiveMap />
@@ -129,11 +135,12 @@ export default function HomePage() {
         <OffPlanTracker />
         <NeighborhoodAnalyzer />
         <VirtualTourGallery />
+        <MobileAppBanner />
         <CompanyProfile />
         <Team />
         <Testimonials />
         <BlogSection />
-        <NewsletterSubscription />
+        <NewsletterSignup />
         <ContactCTA />
         <OnboardingGateway />
         <ClickToChat />

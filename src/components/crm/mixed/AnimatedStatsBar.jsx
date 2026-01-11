@@ -101,7 +101,7 @@ export default function AnimatedStatsBar({ stats = [], className = '' }) {
                 initial={{ width: 0 }}
                 animate={{ width: `${stat.progress}%` }}
                 transition={{ delay: index * 0.1 + 0.3, duration: 0.6, ease: 'easeOut' }}
-                style={{ background: stat.progressColor || '#D4AF37' }}
+                style={{ background: stat.progressColor || '#B03737' }}
               />
             </div>
           )}

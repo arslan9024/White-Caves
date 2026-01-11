@@ -95,7 +95,7 @@ export default function SalesMixedDashboard({ subItem = 'leads', selectedAssista
                   <tr key={i} style={{ borderBottom: '1px solid var(--border-color)' }}>
                     <td style={{ padding: '12px', fontSize: '0.85rem', fontWeight: 500 }}>{deal.client}</td>
                     <td style={{ padding: '12px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{deal.property}</td>
-                    <td style={{ padding: '12px', fontSize: '0.85rem', fontWeight: 600, color: '#D4AF37' }}>{deal.value}</td>
+                    <td style={{ padding: '12px', fontSize: '0.85rem', fontWeight: 600, color: '#B03737' }}>{deal.value}</td>
                     <td style={{ padding: '12px' }}>
                       <span style={{ 
                         padding: '4px 10px', 

@@ -24,7 +24,7 @@
 .dashboard-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-primary, #0A1A3A);
+  color: var(--text-primary, #1A1A1A);
   margin: 0;
 }
 
@@ -33,8 +33,8 @@
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
-  background: linear-gradient(135deg, #0A1A3A 0%, #1a2d52 100%);
-  color: #D4AF37;
+  background: linear-gradient(135deg, #1A1A1A 0%, #1a2d52 100%);
+  color: #B03737;
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 600;
@@ -117,13 +117,13 @@
 }
 
 .section-icon {
-  color: var(--crm-gold, #D4AF37);
+  color: var(--crm-gold, #B03737);
 }
 
 .section-title {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary, #0A1A3A);
+  color: var(--text-primary, #1A1A1A);
   margin: 0;
 }
 

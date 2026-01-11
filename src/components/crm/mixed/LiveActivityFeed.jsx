@@ -138,7 +138,7 @@ export function AIActivityItem({
     >
       <div 
         className="ai-avatar"
-        style={{ background: assistant?.color || '#D4AF37' }}
+        style={{ background: assistant?.color || '#B03737' }}
       >
         <Bot size={14} />
       </div>

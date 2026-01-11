@@ -14,7 +14,7 @@
   align-items: flex-start;
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 2px solid #D4AF37;
+  border-bottom: 2px solid #B03737;
 }
 
 .contract-logo {
@@ -96,7 +96,7 @@
 
 .contract-section h3 {
   font-size: 1rem;
-  color: #D4AF37;
+  color: #B03737;
   margin-bottom: 15px;
   padding-bottom: 8px;
   border-bottom: 1px solid #eee;
@@ -195,7 +195,7 @@
 }
 
 .btn-sign {
-  background: linear-gradient(135deg, #D4AF37, #B8860B);
+  background: linear-gradient(135deg, #B03737, #B8860B);
   color: white;
   border: none;
   padding: 12px 24px;
@@ -238,7 +238,7 @@
 }
 
 .contract-actions .btn-primary {
-  background: linear-gradient(135deg, #D4AF37, #B8860B);
+  background: linear-gradient(135deg, #B03737, #B8860B);
   border: none;
   color: #0a0a0f;
 }

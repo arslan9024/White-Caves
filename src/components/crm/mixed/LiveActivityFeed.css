@@ -78,7 +78,7 @@
 
 .activity-icon.default {
   background: rgba(212, 175, 55, 0.1);
-  color: #D4AF37;
+  color: #B03737;
 }
 
 .activity-content {
@@ -95,13 +95,13 @@
 
 .activity-actor {
   font-weight: 600;
-  color: var(--crm-navy, #0A1A3A);
+  color: var(--crm-navy, #1A1A1A);
   margin-right: 4px;
 }
 
 .activity-target {
   font-weight: 500;
-  color: #D4AF37;
+  color: #B03737;
   margin-left: 4px;
 }
 
@@ -135,14 +135,14 @@
   border-radius: 8px;
   font-size: 0.8rem;
   font-weight: 500;
-  color: #D4AF37;
+  color: #B03737;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .feed-view-all:hover {
   background: rgba(212, 175, 55, 0.1);
-  border-color: #D4AF37;
+  border-color: #B03737;
 }
 
 .ai-activity-item {
@@ -178,13 +178,13 @@
 
 .ai-name {
   font-weight: 600;
-  color: var(--crm-navy, #0A1A3A);
+  color: var(--crm-navy, #1A1A1A);
   margin-right: 4px;
 }
 
 .ai-target {
   font-weight: 500;
-  color: #D4AF37;
+  color: #B03737;
   margin-left: 4px;
 }
 
@@ -226,7 +226,7 @@
 }
 
 [data-theme="dark"] .activity-actor {
-  color: var(--crm-gold, #D4AF37);
+  color: var(--crm-gold, #B03737);
 }
 
 [data-theme="dark"] .ai-action {
@@ -234,5 +234,5 @@
 }
 
 [data-theme="dark"] .ai-name {
-  color: var(--crm-gold, #D4AF37);
+  color: var(--crm-gold, #B03737);
 }

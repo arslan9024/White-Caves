@@ -638,7 +638,7 @@ export default function TransactionsView() {
           gap: 10px;
           font-size: 1.5rem;
           font-weight: 700;
-          color: var(--text-primary, #0A1A3A);
+          color: var(--text-primary, #1A1A1A);
           margin: 0;
         }
         
@@ -667,7 +667,7 @@ export default function TransactionsView() {
         }
         
         .action-btn.primary {
-          background: linear-gradient(135deg, #0A1A3A, #1a2d52);
+          background: linear-gradient(135deg, #1A1A1A, #1a2d52);
           color: #fff;
         }
         
@@ -678,7 +678,7 @@ export default function TransactionsView() {
         
         .action-btn.secondary {
           background: var(--surface-secondary, #f8fafc);
-          color: var(--text-primary, #0A1A3A);
+          color: var(--text-primary, #1A1A1A);
           border: 1px solid var(--border-color, #e2e8f0);
         }
         
@@ -713,13 +713,13 @@ export default function TransactionsView() {
         }
         
         .stat-icon {
-          color: #D4AF37;
+          color: #B03737;
         }
         
         .stat-value {
           font-size: 1.25rem;
           font-weight: 700;
-          color: var(--text-primary, #0A1A3A);
+          color: var(--text-primary, #1A1A1A);
         }
         
         .stat-label {
@@ -873,7 +873,7 @@ export default function TransactionsView() {
         
         .tx-number {
           font-weight: 600;
-          color: var(--text-primary, #0A1A3A);
+          color: var(--text-primary, #1A1A1A);
         }
         
         .tx-date {
@@ -889,7 +889,7 @@ export default function TransactionsView() {
         
         .tx-value {
           font-weight: 700;
-          color: #D4AF37;
+          color: #B03737;
         }
         
         .type-badge {
@@ -937,7 +937,7 @@ export default function TransactionsView() {
         
         .actions-cell button:hover {
           background: #f1f5f9;
-          color: #0A1A3A;
+          color: #1A1A1A;
         }
         
         .actions-cell button.delete:hover {
@@ -1054,7 +1054,7 @@ export default function TransactionsView() {
         .detail-item span {
           font-size: 0.9375rem;
           font-weight: 500;
-          color: var(--text-primary, #0A1A3A);
+          color: var(--text-primary, #1A1A1A);
         }
         
         .edit-form {
@@ -1074,7 +1074,7 @@ export default function TransactionsView() {
           font-size: 0.8125rem;
           font-weight: 500;
           margin-bottom: 6px;
-          color: var(--text-primary, #0A1A3A);
+          color: var(--text-primary, #1A1A1A);
         }
         
         .form-group input,
@@ -1105,7 +1105,7 @@ export default function TransactionsView() {
         
         .save-btn {
           padding: 10px 20px;
-          background: linear-gradient(135deg, #0A1A3A, #1a2d52);
+          background: linear-gradient(135deg, #1A1A1A, #1a2d52);
           color: #fff;
           border: none;
           border-radius: 8px;

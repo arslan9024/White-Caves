@@ -58,6 +58,7 @@ const BEDROOM_OPTIONS = ['Studio', '1', '2', '3', '4', '5', '6', '7+'];
 export default function PropertySearchHero() {
   const navigate = useNavigate();
   const [listingType, setListingType] = useState('buy');
+  const [propertyStatus, setPropertyStatus] = useState('all');
   const [location, setLocation] = useState('');
   const [locationQuery, setLocationQuery] = useState('');
   const [propertyType, setPropertyType] = useState('');
@@ -105,6 +106,7 @@ export default function PropertySearchHero() {
   const handleSearch = () => {
     const params = new URLSearchParams();
     params.set('type', listingType);
+    if (propertyStatus !== 'all') params.set('status', propertyStatus);
     if (location) params.set('location', location);
     if (propertyType) params.set('propertyType', propertyType);
     if (bedrooms) params.set('bedrooms', bedrooms);
@@ -140,6 +142,36 @@ export default function PropertySearchHero() {
               onClick={() => setListingType('rent')}
             >
               Rent
+            </button>
+            <button
+              className={`listing-type-tab ${listingType === 'new-projects' ? 'active' : ''}`}
+              onClick={() => {
+                setListingType('new-projects');
+                setPropertyStatus('off-plan');
+              }}
+            >
+              New Projects
+            </button>
+          </div>
+          
+          <div className="property-status-tabs">
+            <button
+              className={`status-tab ${propertyStatus === 'all' ? 'active' : ''}`}
+              onClick={() => setPropertyStatus('all')}
+            >
+              All
+            </button>
+            <button
+              className={`status-tab ${propertyStatus === 'ready' ? 'active' : ''}`}
+              onClick={() => setPropertyStatus('ready')}
+            >
+              Ready
+            </button>
+            <button
+              className={`status-tab ${propertyStatus === 'off-plan' ? 'active' : ''}`}
+              onClick={() => setPropertyStatus('off-plan')}
+            >
+              Off-Plan
             </button>
           </div>
 
@@ -331,7 +363,7 @@ export default function PropertySearchHero() {
 
         <div className="quick-links">
           <span>Popular:</span>
-          {DUBAI_COMMUNITIES.filter(c => c.popular).slice(0, 5).map(community => (
+          {DUBAI_COMMUNITIES.filter(c => c.popular).slice(0, 4).map(community => (
             <button 
               key={community.id}
               className="quick-link"
@@ -343,6 +375,12 @@ export default function PropertySearchHero() {
               {community.name}
             </button>
           ))}
+          <button 
+            className="quick-link aurora-link"
+            onClick={() => navigate('/dashboard')}
+          >
+            Ask Aurora AI
+          </button>
         </div>
       </div>
     </div>

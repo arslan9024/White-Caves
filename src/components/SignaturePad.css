@@ -24,7 +24,7 @@
 }
 
 .signature-pad-header strong {
-  color: #D4AF37;
+  color: #B03737;
 }
 
 .signature-canvas-wrapper {
@@ -96,7 +96,7 @@
 }
 
 .signature-actions .btn-primary {
-  background: linear-gradient(135deg, #D4AF37, #B8860B);
+  background: linear-gradient(135deg, #B03737, #B8860B);
   border: none;
   color: #0a0a0f;
 }

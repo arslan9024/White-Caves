@@ -20,7 +20,7 @@
 }
 
 .animated-stat-card.highlight {
-  border-left: 4px solid #D4AF37;
+  border-left: 4px solid #B03737;
 }
 
 .stat-icon-wrapper {
@@ -30,7 +30,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #D4AF37;
+  color: #B03737;
 }
 
 .stat-content {
@@ -48,7 +48,7 @@
 .stat-value {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--text-primary, #0A1A3A);
+  color: var(--text-primary, #1A1A1A);
   line-height: 1.2;
 }
 
@@ -121,7 +121,7 @@
   align-items: center;
   justify-content: center;
   background: rgba(212, 175, 55, 0.1);
-  color: #D4AF37;
+  color: #B03737;
 }
 
 .mini-stat-content {
@@ -133,7 +133,7 @@
 .mini-stat-value {
   font-size: 1.125rem;
   font-weight: 700;
-  color: var(--text-primary, #0A1A3A);
+  color: var(--text-primary, #1A1A1A);
 }
 
 .mini-stat-label {

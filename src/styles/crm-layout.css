@@ -1,13 +1,15 @@
 /* CRM Layout System - White Caves Real Estate */
-/* Light-first theme with proper separation */
+/* STRICT RED & WHITE THEME - Light backgrounds only */
 
 :root {
-  /* Navy/Gold Brand Colors from UI/UX Plan */
-  --crm-navy: #0A1A3A;
-  --crm-navy-light: #152A53;
-  --crm-gold: #D4AF37;
-  --crm-gold-light: #F7EF8A;
-  --crm-sand: #E8D9C5;
+  /* RED & WHITE Brand Colors - DO NOT CHANGE */
+  --crm-navy: #1A1A1A;
+  --crm-navy-light: #374151;
+  --crm-gold: #B03737;
+  --crm-gold-light: #FDEAEA;
+  --crm-sand: #F5F5F5;
+  --crm-red: #B03737;
+  --crm-red-light: #FDEAEA;
   
   /* Layout Dimensions */
   --crm-topnav-height: 64px;
@@ -16,29 +18,30 @@
   --crm-ai-panel-width: 320px;
   --crm-ai-panel-collapsed: 0px;
   
-  /* Tier Colors */
+  /* Tier Colors - Updated to Red theme */
   --tier-basic: #64748B;
-  --tier-essential: #3B82F6;
-  --tier-premium: #D4AF37;
-  --tier-ultra: linear-gradient(135deg, #D4AF37, #FFD700);
-  --tier-corporate: #0A1A3A;
+  --tier-essential: #B03737;
+  --tier-premium: #B03737;
+  --tier-ultra: linear-gradient(135deg, #B03737, #D35050);
+  --tier-corporate: #1A1A1A;
 
-  /* CRM Surfaces */
-  --surface-primary: var(--bg-primary, #ffffff);
-  --surface-secondary: var(--bg-secondary, #f8fafc);
-  --text-tertiary: var(--text-muted, #94a3b8);
-  --hover-bg: var(--bg-hover, rgba(0, 0, 0, 0.05));
-  --input-bg: var(--bg-secondary, #f1f5f9);
-  --border-hover: var(--border-color, #cbd5e1);
+  /* CRM Surfaces - ALWAYS WHITE/LIGHT */
+  --surface-primary: #FFFFFF;
+  --surface-secondary: #FAFAFA;
+  --text-tertiary: #6B7280;
+  --hover-bg: rgba(176, 55, 55, 0.05);
+  --input-bg: #FAFAFA;
+  --border-hover: #E5E7EB;
 }
 
+/* FORCE LIGHT MODE - No dark theme */
 [data-theme="dark"] {
-  --surface-primary: var(--bg-primary, #1e293b);
-  --surface-secondary: var(--bg-tertiary, #334155);
-  --text-tertiary: var(--text-muted, #94a3b8);
-  --hover-bg: var(--bg-hover, rgba(255, 255, 255, 0.08));
-  --input-bg: var(--bg-tertiary, #334155);
-  --border-hover: #475569;
+  --surface-primary: #FFFFFF;
+  --surface-secondary: #FAFAFA;
+  --text-tertiary: #6B7280;
+  --hover-bg: rgba(176, 55, 55, 0.05);
+  --input-bg: #FAFAFA;
+  --border-hover: #E5E7EB;
 }
 
 /* CRM Shell - Grid Layout */
@@ -772,7 +775,7 @@
 .tier-badge.essential { background: #DBEAFE; color: #1D4ED8; }
 .tier-badge.premium { background: #FEF3C7; color: #B45309; }
 .tier-badge.ultra { background: linear-gradient(135deg, #FEF3C7, #FDE68A); color: #92400E; }
-.tier-badge.corporate { background: #0A1A3A; color: #FFFFFF; }
+.tier-badge.corporate { background: #1A1A1A; color: #FFFFFF; }
 
 /* Search Input */
 .crm-search {

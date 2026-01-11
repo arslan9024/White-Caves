@@ -91,11 +91,11 @@ export default function PropertiesMixedDashboard({ subItem = 'portfolio', select
               }}>
                 <div style={{
                   height: '120px',
-                  background: 'linear-gradient(135deg, #0A1A3A 0%, #1a2d52 100%)',
+                  background: 'linear-gradient(135deg, #1A1A1A 0%, #1a2d52 100%)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#D4AF37'
+                  color: '#B03737'
                 }}>
                   <Home size={40} />
                 </div>
@@ -105,7 +105,7 @@ export default function PropertiesMixedDashboard({ subItem = 'portfolio', select
                     {property.type} {property.beds && `• ${property.beds} Beds`}
                   </p>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#D4AF37' }}>{property.price}</span>
+                    <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#B03737' }}>{property.price}</span>
                     <span style={{
                       padding: '3px 8px',
                       borderRadius: '10px',

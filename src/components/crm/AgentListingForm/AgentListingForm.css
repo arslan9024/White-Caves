@@ -14,7 +14,7 @@
   justify-content: space-between;
   padding: 20px 24px;
   border-bottom: 1px solid var(--border-color, #e2e8f0);
-  background: var(--crm-navy, #0A1A3A);
+  background: var(--crm-navy, #1A1A1A);
 }
 
 .form-header h2 {
@@ -75,7 +75,7 @@
 
 .progress-step.active .step-icon {
   background: var(--crm-gold, #D4AF37);
-  color: var(--crm-navy, #0A1A3A);
+  color: var(--crm-navy, #1A1A1A);
 }
 
 .progress-step.completed .step-icon {
@@ -91,7 +91,7 @@
 }
 
 .progress-step.active .step-label {
-  color: var(--crm-navy, #0A1A3A);
+  color: var(--crm-navy, #1A1A1A);
   font-weight: 600;
 }
 
@@ -121,7 +121,7 @@
   margin: 0 0 24px;
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--text-primary, #0A1A3A);
+  color: var(--text-primary, #1A1A1A);
 }
 
 .form-group {
@@ -147,7 +147,7 @@
   border: 2px solid var(--border-color, #e2e8f0);
   border-radius: 10px;
   font-size: 0.95rem;
-  color: var(--text-primary, #0A1A3A);
+  color: var(--text-primary, #1A1A1A);
   transition: all 0.2s ease;
 }
 
@@ -202,7 +202,7 @@
 .type-card.selected {
   border-color: var(--crm-gold, #D4AF37);
   background: rgba(212, 175, 55, 0.1);
-  color: var(--crm-navy, #0A1A3A);
+  color: var(--crm-navy, #1A1A1A);
 }
 
 .type-card span {
@@ -258,7 +258,7 @@
 .amenity-card.selected {
   border-color: var(--crm-gold, #D4AF37);
   background: rgba(212, 175, 55, 0.1);
-  color: var(--crm-navy, #0A1A3A);
+  color: var(--crm-navy, #1A1A1A);
 }
 
 .amenity-card span {
@@ -289,11 +289,11 @@
 }
 
 .toggle-btn:hover {
-  color: var(--text-primary, #0A1A3A);
+  color: var(--text-primary, #1A1A1A);
 }
 
 .toggle-btn.active {
-  background: var(--crm-navy, #0A1A3A);
+  background: var(--crm-navy, #1A1A1A);
   color: #ffffff;
 }
 
@@ -353,7 +353,7 @@
   margin: 0 0 8px;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--crm-navy, #0A1A3A);
+  color: var(--crm-navy, #1A1A1A);
 }
 
 .upload-tips ul {
@@ -417,7 +417,7 @@
 
 .package-name {
   font-weight: 600;
-  color: var(--text-primary, #0A1A3A);
+  color: var(--text-primary, #1A1A1A);
 }
 
 .package-price {
@@ -509,7 +509,7 @@
 }
 
 .btn-primary {
-  background: var(--crm-navy, #0A1A3A);
+  background: var(--crm-navy, #1A1A1A);
   color: #ffffff;
 }
 
@@ -519,7 +519,7 @@
 
 .btn-submit {
   background: var(--crm-gold, #D4AF37);
-  color: var(--crm-navy, #0A1A3A);
+  color: var(--crm-navy, #1A1A1A);
 }
 
 .btn-submit:hover {

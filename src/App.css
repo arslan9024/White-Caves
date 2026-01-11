@@ -20,116 +20,12 @@
   }
 }
 
-body.dark-mode {
-  background-color: var(--bg-dark, #2d3748);
-  color: var(--text-on-dark, #f7fafc);
-}
-
-body.dark-mode .app header {
-  background: var(--bg-dark, #2d3748);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-}
-
-body.dark-mode .logo-img {
-  filter: brightness(1.1);
-}
-
-body.dark-mode .logo,
-body.dark-mode .nav-links a {
-  color: var(--text-on-dark, #f7fafc);
-}
-
-body.dark-mode .property-card {
-  background: var(--bg-dark, #2d3748);
-}
-
-body.dark-mode .property-card h3,
-body.dark-mode .property-card p {
-  color: var(--text-on-dark, #f7fafc);
-}
-
-body.dark-mode .contact {
-  background: var(--bg-dark, #2d3748);
-}
-
-body.dark-mode .contact h2,
-body.dark-mode .contact-info p {
-  color: var(--text-on-dark, #f7fafc);
-}
-
-body.dark-mode .cta-button {
-  background: var(--primary-color, #1a365d);
-  color: var(--text-on-dark, #f7fafc);
-}
-
-body.dark-mode .cta-button:hover {
-  background: var(--primary-hover, #234773);
-}
-
-body.dark-mode input,
-body.dark-mode textarea {
-  background: var(--bg-dark, #2d3748);
-  color: var(--text-on-dark, #f7fafc);
-  border: 1px solid var(--border-color, #4a5568);
-}
-
-body.dark-mode input::placeholder,
-body.dark-mode textarea::placeholder {
-  color: var(--text-light, #a0aec0);
-}
-
-body.dark-mode .theme-toggle {
-  color: var(--text-on-dark, #f7fafc);
-}
-
-body.dark-mode .about-section {
-  background: var(--bg-dark, #1a202c);
-}
-
-body.dark-mode .about-content h2 {
-  color: var(--text-on-dark, #f7fafc);
-}
-
-body.dark-mode .about-content > p {
-  color: var(--text-secondary, #e2e8f0);
-}
-
-body.dark-mode .feature h3 {
-  color: var(--text-on-dark, #f7fafc);
-}
-
-body.dark-mode .feature p {
-  color: var(--text-secondary, #e2e8f0);
-}
-
-body.dark-mode .featured-locations {
-  background: linear-gradient(to bottom, var(--bg-dark, #1a202c), var(--bg-dark, #1a202c));
-}
-
-body.dark-mode .featured-locations h2 {
-  color: var(--text-on-dark, #f7fafc);
-}
-
-body.dark-mode .section-subtitle {
-  color: var(--text-muted, #a0aec0);
-}
-
-body.dark-mode .services-info {
-  background: var(--bg-dark, #1a202c);
-}
-
-body.dark-mode .services-info h2,
-body.dark-mode .service-detail h3 {
-  color: var(--text-on-dark, #f7fafc);
-}
-
-body.dark-mode .service-detail {
-  background: var(--bg-dark, #2d3748);
-  border: 1px solid var(--border-color, #4a5568);
-}
-
-body.dark-mode .service-detail li {
-  color: var(--text-secondary, #e2e8f0);
+/* DARK MODE DISABLED - White Caves uses LIGHT THEME ONLY */
+/* All dark-mode styles removed to enforce red & white branding */
+body.dark-mode,
+body[data-theme="dark"] {
+  background-color: #FFFFFF !important;
+  color: #1A1A1A !important;
 }
 
 body.dark-mode .dubai-laws {

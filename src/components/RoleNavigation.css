@@ -184,12 +184,12 @@ body.dark-mode .nav-item:hover {
 .nav-item.home-link {
   background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(184, 134, 11, 0.15));
   border: 1px solid rgba(212, 175, 55, 0.3);
-  color: #D4AF37;
+  color: #B03737;
 }
 
 .nav-item.home-link:hover {
   background: linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(184, 134, 11, 0.25));
-  color: #D4AF37;
+  color: #B03737;
 }
 
 body.light-mode .nav-item.home-link {

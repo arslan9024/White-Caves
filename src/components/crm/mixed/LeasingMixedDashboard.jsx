@@ -101,7 +101,7 @@ export default function LeasingMixedDashboard({ subItem = 'ejari-system', select
                     <td style={{ padding: '12px', fontSize: '0.85rem', fontWeight: 500 }}>{renewal.tenant}</td>
                     <td style={{ padding: '12px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{renewal.property}</td>
                     <td style={{ padding: '12px', fontSize: '0.85rem' }}>{renewal.expires}</td>
-                    <td style={{ padding: '12px', fontSize: '0.85rem', fontWeight: 600, color: '#D4AF37' }}>{renewal.rent}</td>
+                    <td style={{ padding: '12px', fontSize: '0.85rem', fontWeight: 600, color: '#B03737' }}>{renewal.rent}</td>
                     <td style={{ padding: '12px' }}>
                       <span style={{ 
                         padding: '4px 10px', 

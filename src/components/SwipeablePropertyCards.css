@@ -60,7 +60,7 @@
 }
 
 .badge.featured {
-  background: linear-gradient(135deg, #D4AF37, #F4D03F);
+  background: linear-gradient(135deg, #B03737, #F4D03F);
   color: #1a1a2e;
 }
 
@@ -93,7 +93,7 @@
 }
 
 .favorite-btn:hover {
-  background: #D4AF37;
+  background: #B03737;
   transform: scale(1.1);
 }
 
@@ -110,7 +110,7 @@
 .price {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #D4AF37;
+  color: #B03737;
   margin-bottom: 8px;
 }
 
@@ -143,7 +143,7 @@
 }
 
 .spec svg {
-  color: #D4AF37;
+  color: #B03737;
 }
 
 .navigation-dots {
@@ -165,7 +165,7 @@
 .dot.active {
   width: 24px;
   border-radius: 4px;
-  background: #D4AF37;
+  background: #B03737;
   opacity: 1;
 }
 
@@ -208,8 +208,8 @@
 }
 
 .nav-btn:not(:disabled):hover {
-  background: #D4AF37;
-  border-color: #D4AF37;
+  background: #B03737;
+  border-color: #B03737;
 }
 
 .nav-btn:not(:disabled):hover svg {

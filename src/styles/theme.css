@@ -1,60 +1,81 @@
 :root {
-  --color-primary: #DC2626;
-  --color-primary-dark: #B91C1C;
-  --color-primary-light: #FEE2E2;
+  /* ============================================
+     WHITE CAVES BRAND THEME - RED & WHITE
+     DO NOT CHANGE - Core Brand Colors
+     ============================================ */
   
-  --color-white: #FFFFFF;
-  --color-off-white: #F9FAFB;
-  --color-black: #000000;
-  --color-dark-gray: #1F2937;
-  --color-medium-gray: #6B7280;
-  --color-light-gray: #E5E7EB;
+  /* Primary Brand Colors - STRICT RED & WHITE */
+  --color-primary: #B03737 !important;
+  --color-primary-dark: #8B2C2C !important;
+  --color-primary-light: #FDEAEA !important;
+  --primary-color: #B03737 !important;
+  --accent-gold: #B03737 !important;
   
-  --color-gold: #FFB300;
-  --color-success: #10B981;
-  --color-warning: #F59E0B;
-  --color-error: #EF4444;
-  --color-info: #3B82F6;
+  /* Neutral Colors - Always Light */
+  --color-white: #FFFFFF !important;
+  --color-off-white: #FAFAFA !important;
+  --color-black: #1A1A1A !important;
+  --color-dark-gray: #374151 !important;
+  --color-medium-gray: #6B7280 !important;
+  --color-light-gray: #F3F4F6 !important;
   
-  --bg-primary: var(--color-white);
-  --bg-secondary: var(--color-off-white);
-  --bg-tertiary: #F3F4F6;
-  --bg-dark: var(--color-dark-gray);
-  --bg-overlay: rgba(0, 0, 0, 0.5);
-  --bg-glass: rgba(255, 255, 255, 0.9);
-  --bg-card: var(--color-white);
-  --bg-input: var(--color-white);
-  --bg-hover: rgba(0, 0, 0, 0.05);
+  /* Remove Gold - Replace with Red */
+  --color-gold: #B03737 !important;
   
-  --text-primary: #111827;
-  --text-secondary: #374151;
-  --text-muted: #6B7280;
-  --text-inverse: var(--color-white);
-  --text-link: var(--color-primary);
+  /* Status Colors */
+  --color-success: #10B981 !important;
+  --color-warning: #F59E0B !important;
+  --color-error: #EF4444 !important;
+  --color-info: #B03737 !important;
   
-  --border-color: #E5E7EB;
-  --border-light: rgba(0, 0, 0, 0.08);
-  --border-input: #D1D5DB;
+  /* Backgrounds - ALWAYS LIGHT/WHITE */
+  --bg-primary: #FFFFFF !important;
+  --bg-secondary: #FAFAFA !important;
+  --bg-tertiary: #F5F5F5 !important;
+  --bg-dark: #FFFFFF !important;
+  --bg-overlay: rgba(0, 0, 0, 0.5) !important;
+  --bg-glass: rgba(255, 255, 255, 0.95) !important;
+  --bg-card: #FFFFFF !important;
+  --bg-input: #FFFFFF !important;
+  --bg-hover: rgba(176, 55, 55, 0.05) !important;
+  --surface-primary: #FFFFFF !important;
+  --surface-secondary: #FAFAFA !important;
+  
+  /* Text Colors - Dark on Light */
+  --text-primary: #1A1A1A !important;
+  --text-secondary: #374151 !important;
+  --text-muted: #6B7280 !important;
+  --text-inverse: #FFFFFF !important;
+  --text-link: #B03737 !important;
+  
+  /* Borders */
+  --border-color: #E5E7EB !important;
+  --border-light: rgba(0, 0, 0, 0.08) !important;
+  --border-input: #D1D5DB !important;
   --border-radius: 8px;
   --border-radius-sm: 4px;
   --border-radius-lg: 12px;
   --border-radius-xl: 16px;
   --border-radius-full: 9999px;
   
+  /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-red: 0 0 20px rgba(220, 38, 38, 0.15);
+  --shadow-red: 0 0 20px rgba(176, 55, 55, 0.15);
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   
+  /* Transitions */
   --transition-fast: 0.15s ease;
   --transition-normal: 0.3s ease;
   --transition-slow: 0.5s ease;
   
+  /* Typography */
   --font-heading: 'Montserrat', sans-serif;
   --font-body: 'Open Sans', sans-serif;
   
+  /* Spacing */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
@@ -63,45 +84,33 @@
   --spacing-2xl: 48px;
   --spacing-3xl: 64px;
   
+  /* Z-Index */
   --z-dropdown: 100;
   --z-sticky: 200;
   --z-modal: 300;
   --z-toast: 400;
   --z-navbar: 1000;
 
-  --nav-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  --nav-text: rgba(255, 255, 255, 0.9);
-  --nav-text-muted: rgba(255, 255, 255, 0.7);
+  /* Navigation - Light with Red accents */
+  --nav-bg: #FFFFFF !important;
+  --nav-text: #1A1A1A !important;
+  --nav-text-muted: #6B7280 !important;
 }
 
-[data-theme="dark"] {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-tertiary: #334155;
-  --bg-dark: #0f172a;
-  --bg-overlay: rgba(0, 0, 0, 0.7);
-  --bg-glass: rgba(30, 41, 59, 0.95);
-  --bg-card: #1e293b;
-  --bg-input: #334155;
-  --bg-hover: rgba(255, 255, 255, 0.08);
-  
-  --text-primary: #f8fafc;
-  --text-secondary: #e2e8f0;
-  --text-muted: #94a3b8;
-  --text-inverse: #0f172a;
-  --text-link: #f87171;
-  
-  --border-color: #334155;
-  --border-light: rgba(255, 255, 255, 0.1);
-  --border-input: #475569;
-  
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
-  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.4);
-  
-  --nav-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+/* FORCE LIGHT MODE - Override any dark mode attempts */
+[data-theme="dark"],
+[data-theme="dark"] *,
+.dark-mode,
+.dark-mode * {
+  --bg-primary: #FFFFFF !important;
+  --bg-secondary: #FAFAFA !important;
+  --bg-tertiary: #F5F5F5 !important;
+  --bg-dark: #FFFFFF !important;
+  --bg-card: #FFFFFF !important;
+  --bg-input: #FFFFFF !important;
+  --text-primary: #1A1A1A !important;
+  --text-secondary: #374151 !important;
+  --nav-bg: #FFFFFF !important;
 }
 
 * {

@@ -10,9 +10,10 @@ Preferred communication style: Simple, everyday language.
 
 ### Frontend
 - **Framework**: React 18 with Vite and Redux Toolkit for state management.
-- **UI/UX**: Custom React components with CSS modules, featuring light-first theme with Navy (#0A1A3A) and Gold (#D4AF37) brand colors, glassmorphism styling, mobile responsiveness, and interactive elements. Uses Montserrat/Open Sans typography with comprehensive light/dark modes.
+- **UI/UX**: Custom React components with CSS modules, featuring **STRICT RED (#B03737) AND WHITE THEME** - bright backgrounds only, no dark mode. Uses Montserrat/Open Sans typography.
+- **Brand Colors**: Primary Red (#B03737), White (#FFFFFF), Light Gray (#FAFAFA) - enforced via CSS !important declarations.
 - **Navigation**: A two-tier system with a `DashboardShell` for authenticated users, including a `TopNav` and a `CommandSidebar` for AI assistant and feature selection.
-- **Design System**: A complete UI component library with variants, sizes, states, and theme support.
+- **Design System**: A complete UI component library with variants, sizes, states. Dark mode disabled platform-wide.
 - **SEO Optimization**: Comprehensive meta tags, structured data, and performance optimizations.
 
 ### Backend
@@ -48,7 +49,12 @@ Preferred communication style: Simple, everyday language.
 - **AI Command Center**: Unified `CommandSidebar` component integrating quick stats, department-grouped assistant list with real-time status, notification badges, and activity feed.
 - **Company Services Registry**: 35 services across 6 categories with workflow stages and assigned AI assistants.
 - **Reusable CRM Components**: StatsBar, DataTable, ActionButton, ActivityFeed, StatusBadge, FlowchartViewer.
-- **PropertySearchHero**: Bayut/PropertyFinder-style property search with Buy/Rent tabs, 16 Dubai communities autocomplete, property type dropdown, bedrooms/price filters.
+- **PropertySearchHero**: Bayut/PropertyFinder-style property search with Buy/Rent/New Projects tabs, All/Ready/Off-Plan status filters, 16 Dubai communities autocomplete, property type dropdown, bedrooms/price filters, "Ask Aurora AI" quick link, Dubai skyline background image.
+- **Homepage Components**:
+  - **InterestWizard**: Onboarding component with Buying/Selling/Renting selection cards and animated progress bar
+  - **PopularSearches**: Grid of top Dubai areas with DLD transaction counts and average prices (JVC, Business Bay, DLRC, etc.)
+  - **NewsletterSignup**: Dark section newsletter subscription with email input and animated success state
+  - **MobileAppBanner**: App Store/Play Store download buttons with phone mockup (Coming Soon)
 - **AgentListingForm**: 6-step wizard for property listings (Basic Info, Location, Specs, Pricing, Media, Legal) with Dubai-specific fields and marketing packages.
 - **CRM View State (crmViewSlice)**: Redux slice managing 38 AI assistants across 11 departments, sidebar/AI panel toggles, breadcrumb navigation, favorites, and recent objects.
 - **CRM Accordion Navigation**: Hierarchical left sidebar with 11 main groups (Executive Overview, Operations & Organization, Sales & Pipeline, Properties & Inventory, Services & Fulfillment, Leasing & Tenancy, Marketing & Communications, Finance & Payments, Compliance & Legal, Analytics & Intelligence, Administration) containing 40+ expandable sub-items with gold-highlighted active state.
@@ -73,6 +79,12 @@ Preferred communication style: Simple, everyday language.
   - **TransactionsView Component**: Animated Framer Motion table with stats dashboard, modal-based view/edit/create, CSV batch import, and responsive design
   - **Top Areas**: JVC (333), Business Bay (246), DLRC (209), DIP Second (203), Um Suqaim Third (184)
   - **Property Types**: Flats (4,343), Villas (665), Hotel Rooms (137), Offices (129), Shops (50)
+- **Off-Plan Properties System**: Complete off-plan project management with Dubai regulatory compliance:
+  - **OffPlanProject Model**: Project details including RERA permit number, Oqood ID, escrow account, developer info, construction status, payment plans, amenities, and progress tracking
+  - **OffPlanUnit Model**: Individual unit tracking with pricing, floor plans, reservation/sale status, buyer info, and payment schedule tracking
+  - **Construction Progress**: Date-stamped progress updates with percentage, phase description, and images
+  - **Payment Plans**: Configurable down payment, during construction, on handover, and post-handover percentages
+  - **RESTful API**: Full CRUD endpoints at /api/offplan with project/unit management, progress updates, reservation system, and stats aggregation
 
 ## External Dependencies
 

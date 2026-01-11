@@ -39,7 +39,7 @@
 }
 
 .tour-badge {
-  background: linear-gradient(135deg, #D4AF37, #B8860B);
+  background: linear-gradient(135deg, #B03737, #B8860B);
   color: #0a0a0f;
   padding: 4px 12px;
   border-radius: 20px;
@@ -78,12 +78,12 @@
 
 .tour-btn:hover {
   background: rgba(212, 175, 55, 0.3);
-  border-color: #D4AF37;
+  border-color: #B03737;
 }
 
 .tour-btn.active {
   background: rgba(212, 175, 55, 0.4);
-  border-color: #D4AF37;
+  border-color: #B03737;
 }
 
 .tour-btn.close-btn:hover {
@@ -131,7 +131,7 @@
 
 .tour-hotspot:hover {
   transform: translate(-50%, -50%) scale(1.2);
-  background: #D4AF37;
+  background: #B03737;
 }
 
 .tour-hotspot.info {
@@ -271,7 +271,7 @@
 }
 
 .room-thumb.active {
-  border-color: #D4AF37;
+  border-color: #B03737;
   box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
 }
 

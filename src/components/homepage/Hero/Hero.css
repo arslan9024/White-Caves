@@ -16,7 +16,8 @@
 .hero-stats-section {
   width: 100%;
   padding: 40px 0;
-  background: linear-gradient(180deg, #0A1A3A 0%, #0d2347 100%);
+  background: #FFFFFF;
+  border-top: 1px solid #E5E7EB;
 }
 
 .hero-content {
@@ -62,7 +63,7 @@
 }
 
 .hero-title .gradient-text {
-  background: linear-gradient(135deg, var(--primary-color), var(--accent-gold));
+  background: linear-gradient(135deg, #B03737, #D35050);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -150,7 +151,7 @@
   font-family: var(--font-heading);
   font-size: 2.5rem;
   font-weight: 800;
-  color: #D4AF37;
+  color: #B03737;
   line-height: 1;
   margin-bottom: 0.5rem;
 }

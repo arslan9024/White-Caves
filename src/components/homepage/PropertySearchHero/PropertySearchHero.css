@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: center;
   padding: 80px 24px 60px;
-  background: linear-gradient(135deg, #0A1A3A 0%, #1a2f5a 50%, #0A1A3A 100%);
+  background: url('/images/dubai-skyline.jpg') center center / cover no-repeat;
   overflow: hidden;
 }
 
@@ -16,7 +16,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4AF37' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.6) 100%);
   pointer-events: none;
 }
 
@@ -36,8 +36,10 @@
   line-height: 1.2;
 }
 
-.search-hero-title .gold-text {
-  color: #D4AF37;
+.search-hero-title .gold-text,
+.search-hero-title .red-text,
+.search-hero-title .accent-text {
+  color: #B03737;
   display: inline;
 }
 
@@ -56,7 +58,7 @@
   border-radius: 16px;
   padding: 8px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(176, 55, 55, 0.2);
 }
 
 .listing-type-tabs {
@@ -82,13 +84,42 @@
 }
 
 .listing-type-tab:hover {
-  color: #0A1A3A;
+  color: #1A1A1A;
 }
 
 .listing-type-tab.active {
-  background: #0A1A3A;
+  background: #B03737;
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(10, 26, 58, 0.3);
+  box-shadow: 0 2px 8px rgba(176, 55, 55, 0.3);
+}
+
+.property-status-tabs {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 12px 0;
+  padding: 0 12px;
+}
+
+.status-tab {
+  padding: 6px 16px;
+  border: none;
+  background: transparent;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.status-tab:hover {
+  color: #B03737;
+}
+
+.status-tab.active {
+  color: #B03737;
+  border-bottom-color: #B03737;
 }
 
 .search-filters-row {
@@ -121,12 +152,12 @@
 
 .filter-input-wrapper:hover,
 .filter-input-wrapper:focus-within {
-  border-color: #D4AF37;
+  border-color: #B03737;
   background: #ffffff;
 }
 
 .filter-icon {
-  color: #D4AF37;
+  color: #B03737;
   flex-shrink: 0;
 }
 
@@ -135,7 +166,7 @@
   border: none;
   background: transparent;
   font-size: 0.95rem;
-  color: #0A1A3A;
+  color: #1A1A1A;
   outline: none;
   min-width: 0;
 }
@@ -159,7 +190,7 @@
 
 .clear-btn:hover {
   background: #cbd5e1;
-  color: #0A1A3A;
+  color: #1A1A1A;
 }
 
 .filter-select-btn {
@@ -173,14 +204,14 @@
   border: 2px solid transparent;
   border-radius: 10px;
   font-size: 0.95rem;
-  color: #0A1A3A;
+  color: #1A1A1A;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .filter-select-btn:hover {
-  border-color: #D4AF37;
+  border-color: #B03737;
   background: #ffffff;
 }
 
@@ -240,12 +271,12 @@
 
 .dropdown-item:hover {
   background: #f1f5f9;
-  color: #0A1A3A;
+  color: #1A1A1A;
 }
 
 .dropdown-item.selected {
-  background: rgba(212, 175, 55, 0.1);
-  color: #D4AF37;
+  background: rgba(176, 55, 55, 0.1);
+  color: #B03737;
   font-weight: 500;
 }
 
@@ -254,7 +285,7 @@
 }
 
 .dropdown-item.selected svg {
-  color: #D4AF37;
+  color: #B03737;
 }
 
 .bedroom-dropdown {
@@ -271,12 +302,12 @@
   justify-content: center;
   gap: 8px;
   padding: 14px 32px;
-  background: linear-gradient(135deg, #D4AF37 0%, #c9a227 100%);
+  background: #B03737;
   border: none;
   border-radius: 10px;
   font-size: 1rem;
   font-weight: 600;
-  color: #0A1A3A;
+  color: #FFFFFF;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -284,9 +315,9 @@
 }
 
 .search-btn:hover {
-  background: linear-gradient(135deg, #e5c04a 0%, #D4AF37 100%);
+  background: #8B2C2C;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 8px 20px rgba(176, 55, 55, 0.4);
 }
 
 .quick-links {
@@ -316,9 +347,21 @@
 }
 
 .quick-link:hover {
-  background: rgba(212, 175, 55, 0.2);
-  border-color: #D4AF37;
-  color: #D4AF37;
+  background: rgba(176, 55, 55, 0.2);
+  border-color: #B03737;
+  color: #ffffff;
+}
+
+.quick-link.aurora-link {
+  background: rgba(176, 55, 55, 0.3);
+  border-color: #B03737;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.quick-link.aurora-link:hover {
+  background: #B03737;
+  color: #ffffff;
 }
 
 @media (max-width: 1024px) {

@@ -86,7 +86,7 @@ export default function MarketingMixedDashboard({ subItem = 'campaigns', selecte
                 </div>
                 <p style={{ margin: '0 0 8px 0', fontSize: '0.75rem', color: 'var(--text-muted)' }}>{campaign.platform}</p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
-                  <span><strong style={{ color: '#D4AF37' }}>{campaign.leads}</strong> leads</span>
+                  <span><strong style={{ color: '#B03737' }}>{campaign.leads}</strong> leads</span>
                   <span style={{ color: 'var(--text-muted)' }}>{campaign.budget}</span>
                 </div>
               </div>
