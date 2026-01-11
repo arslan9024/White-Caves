@@ -19,6 +19,7 @@ import oliviaRoutes from './routes/olivia.routes.js';
 import zoeRoutes from './routes/zoe.routes.js';
 import organizationRoutes from './routes/organization.js';
 import seedRoutes from './routes/seed.js';
+import transactionsRoutes from './routes/transactions.routes.js';
 import OliviaService from './services/oliviaService.js';
 import schedulerService from './services/schedulerService.js';
 
@@ -60,6 +61,7 @@ app.use('/api/featured-properties', oliviaRoutes);
 app.use('/api/zoe', zoeRoutes);
 app.use('/api/organization', organizationRoutes);
 app.use('/api/seed', seedRoutes);
+app.use('/api/transactions', transactionsRoutes);
 
 // Serve static files from the dist folder in production
 const distPath = path.join(__dirname, '..', 'dist');

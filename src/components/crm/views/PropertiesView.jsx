@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Home, Grid3x3, Plus, Building, Image, Video, Eye } from 'lucide-react';
+import TransactionsView from './TransactionsView';
 
 const PROPERTIES = [
   { id: 1, title: 'Palm Jumeirah Villa', type: 'Villa', beds: 5, baths: 6, area: 8500, price: 'AED 12,500,000', status: 'active', image: '🏠' },
@@ -158,6 +159,8 @@ export default function PropertiesView({ activeSubItem, subItemConfig, assistant
         return renderPropertyGrid();
       case 'listings':
         return renderPropertyGrid();
+      case 'transactions':
+        return <TransactionsView />;
       case 'add-listing':
         return renderNewListing();
       case 'developer-pipeline':

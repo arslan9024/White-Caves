@@ -48,6 +48,7 @@ const CRM_NAV_TREE = [
     items: [
       { id: 'portfolio', label: 'Portfolio', icon: 'Grid3x3' },
       { id: 'listings', label: 'Active Listings', icon: 'ListPlus' },
+      { id: 'transactions', label: 'Transactions', icon: 'Receipt', badge: '5.5K' },
       { id: 'add-listing', label: 'Add New Listing', icon: 'PlusCircle' },
       { id: 'developer-pipeline', label: 'Developer Pipeline', icon: 'Workflow' },
       { id: 'media-gallery', label: 'Media Gallery', icon: 'Image' },

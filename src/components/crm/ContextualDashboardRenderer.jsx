@@ -84,6 +84,7 @@ const SUB_ITEM_CONFIGS = {
   'developer-pipeline': { title: 'Developer Pipeline', description: 'Off-plan developments' },
   'media-gallery': { title: 'Media Gallery', description: 'Property images and videos' },
   'virtual-tours': { title: 'Virtual Tours', description: 'Matterport tours' },
+  'transactions': { title: 'DLD Transactions', description: 'Dubai Land Department property transactions' },
   'service-catalog': { title: 'Service Catalog', description: '40 services across 6 categories' },
   'service-tracker': { title: 'Service Tracker', description: 'Track service requests' },
   'owner-tools': { title: 'Owner Tools', description: 'Property owner services' },
