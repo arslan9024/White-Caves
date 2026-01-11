@@ -19,7 +19,9 @@ import FeatureExplorer from '../../components/owner/FeatureExplorer';
 import { SUPER_ADMIN, isMDAuthorized } from '../../config/superAdmin';
 import '../../shared/styles/theme.css';
 import '../../styles/crm-layout.css';
+import '../../styles/crm-views.css';
 import './MDDashboardPage.css';
+import ContextualDashboardRenderer from '../../components/crm/ContextualDashboardRenderer';
 
 const LindaWhatsAppCRM = lazy(() => import('../../components/crm/LindaWhatsAppCRM'));
 const MaryInventoryCRM = lazy(() => import('../../components/crm/MaryInventoryCRM'));
@@ -345,10 +347,26 @@ export default function MDDashboardPage() {
     }
   };
 
+  const NAV_CATEGORIES = ['md-dashboard', 'strategic-kpis', 'announcements', 'company-overview',
+    'departments', 'employees', 'teams', 'scheduling', 'onboarding',
+    'lead-pipeline', 'client-journey', 'deals', 'routing-assignments', 'contracts-sales',
+    'property-grid', 'new-listing', 'off-plan', 'workflow-tracker', 'media-assets', 'virtual-tours',
+    'service-catalog', 'service-requests', 'maintenance', 'handover',
+    'tenancy-lifecycle', 'ejari-contracts', 'renewals', 'tenant-portal', 'residents',
+    'campaigns', 'launch-events', 'content-hub', 'social-integration', 'whatsapp-center', 'email-campaigns',
+    'transactions', 'invoices', 'commissions', 'revenue-reports',
+    'kyc-profiles', 'aml-monitoring', 'confidential-vault', 'verification-queue', 'audit-log',
+    'market-analytics', 'performance-dashboard', 'ai-insights', 'custom-reports',
+    'system-settings', 'integrations', 'api-docs'];
+
   const renderTabContent = () => {
+    if (NAV_CATEGORIES.includes(activeTab)) {
+      return <ContextualDashboardRenderer />;
+    }
+    
     switch (activeTab) {
       case 'dashboard':
-        return <OverviewTab data={dashboardData} loading={loading} onQuickAction={handleQuickAction} />;
+        return <ContextualDashboardRenderer />;
       case 'departments':
         return <Suspense fallback={<CRMLoadingFallback />}><DepartmentsCRMTab /></Suspense>;
       case 'employees':
