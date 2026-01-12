@@ -149,37 +149,67 @@ export const NINA_FEATURES = [
     name: 'AI Intent Classifier',
     category: 'AI/ML',
     status: 'active',
-    description: 'Machine learning-powered message intent classification for property inquiry, viewing requests, negotiation, and opt-out detection.',
+    description: 'Open-source rule-based intent classification for 12 intents including property inquiry, viewing, negotiation, and opt-out. Zero API costs.',
     sourceFiles: ['AIServices.js'],
-    capabilities: ['Intent detection', 'Keyword matching', 'Arabic support', 'Confidence scoring'],
-    icon: <Brain size={18} />
+    capabilities: ['12 Intent Categories', 'Weighted Keywords', 'Arabic + English', 'Context Patterns', 'Custom Intent Support'],
+    icon: <Brain size={18} />,
+    openSource: true,
+    cost: 'Free'
   },
   {
     name: 'AI Sentiment Analyzer',
     category: 'AI/ML',
     status: 'active',
-    description: 'Analyze customer sentiment from messages to detect positive, negative, or urgent communications.',
+    description: 'Free sentiment analysis with 3-tier lexicon (strong/moderate/mild), negation handling, and urgency detection.',
     sourceFiles: ['AIServices.js'],
-    capabilities: ['Sentiment scoring', 'Urgency detection', 'Mood indicators', 'Escalation triggers'],
-    icon: <Zap size={18} />
+    capabilities: ['Lexicon-based Analysis', 'Negation Detection', 'Intensifier Support', 'Escalation Triggers', 'Custom Lexicon'],
+    icon: <Zap size={18} />,
+    openSource: true,
+    cost: 'Free'
   },
   {
     name: 'AI Language Detector',
     category: 'AI/ML',
     status: 'active',
-    description: 'Automatic language detection for Arabic, English, Hindi, and Chinese to enable bilingual responses.',
+    description: 'Unicode pattern-based language detection for Arabic, English, Hindi, Chinese, Russian, Urdu, Persian with RTL support.',
     sourceFiles: ['AIServices.js'],
-    capabilities: ['Auto-detection', 'Script analysis', 'Confidence level', 'Bilingual routing'],
-    icon: <Languages size={18} />
+    capabilities: ['7 Languages', 'Script Analysis', 'Mixed Language Detection', 'RTL Support', 'Bilingual Routing'],
+    icon: <Languages size={18} />,
+    openSource: true,
+    cost: 'Free'
   },
   {
     name: 'AI Response Generator',
     category: 'AI/ML',
     status: 'active',
-    description: 'Generate personalized responses in Arabic and English based on detected intent and customer context.',
+    description: 'Template-based response generation with multiple variations per intent, personalization tokens, and bilingual support.',
     sourceFiles: ['AIServices.js'],
-    capabilities: ['Template responses', 'Personalization', 'Multi-language', 'Context awareness'],
-    icon: <MessageSquare size={18} />
+    capabilities: ['8 Intent Templates', 'Multiple Variations', 'Personalization Tokens', 'Custom Templates', 'AR/EN Support'],
+    icon: <MessageSquare size={18} />,
+    openSource: true,
+    cost: 'Free'
+  },
+  {
+    name: 'AI Entity Extractor',
+    category: 'AI/ML',
+    status: 'active',
+    description: 'Extract UAE phone numbers, emails, prices, bedrooms, locations, property types, and dates from messages using regex patterns.',
+    sourceFiles: ['AIServices.js'],
+    capabilities: ['UAE Phone Parsing', 'Email Extraction', 'Price Normalization', 'Location Detection', '7 Entity Types'],
+    icon: <Search size={18} />,
+    openSource: true,
+    cost: 'Free'
+  },
+  {
+    name: 'AI Smart Router',
+    category: 'AI/ML',
+    status: 'active',
+    description: 'Intelligent conversation routing based on lead score, intent, and sentiment to appropriate team members with SLA tracking.',
+    sourceFiles: ['AIServices.js'],
+    capabilities: ['6 Route Types', 'Priority Assignment', 'SLA Tracking', 'Handler Mapping', 'Escalation Logic'],
+    icon: <Shuffle size={18} />,
+    openSource: true,
+    cost: 'Free'
   },
   {
     name: 'AES-256 Encrypted Storage',

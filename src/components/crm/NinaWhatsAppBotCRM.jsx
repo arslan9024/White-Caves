@@ -6,7 +6,7 @@ import {
   AlertTriangle, Activity, Send, QrCode, Smartphone, Wifi, Star, Plus,
   Megaphone, UserX, FileText, Table, Search, Filter, Trash2, Edit,
   Upload, BarChart3, Globe, Shield, Mail, Brain, Lock, Eye, Key,
-  Timer, Languages, Map, Fingerprint, Shuffle
+  Timer, Languages, Map, Fingerprint, Shuffle, MapPin
 } from 'lucide-react';
 import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
 import { BotSessionManager } from './shared';
@@ -1070,10 +1070,13 @@ export default new ${selectedFile.name.replace('.js', '')}();
         {activeTab === 'ai' && (
           <div className="ai-view">
             <div className="ai-header">
-              <h3>AI/ML Intelligence Engine</h3>
-              <div className="ai-status">
-                <span className="status-indicator active" />
-                All Models Active
+              <h3>Open Source AI/ML Engine</h3>
+              <div className="ai-status-group">
+                <div className="ai-status">
+                  <span className="status-indicator active" />
+                  All Models Active
+                </div>
+                <span className="open-source-badge">100% Free - No API Costs</span>
               </div>
             </div>
 
@@ -1082,65 +1085,98 @@ export default new ${selectedFile.name.replace('.js', '')}();
                 <div className="model-icon intent"><Brain size={24} /></div>
                 <div className="model-info">
                   <h4>Intent Classifier</h4>
-                  <p>Detects property inquiry, viewing requests, negotiation, opt-out, greetings</p>
+                  <p>Rule-based classification for 12 intents with weighted keywords and context patterns</p>
                   <div className="model-stats">
-                    <span className="stat"><CheckCircle size={12} /> 10 Intent Categories</span>
+                    <span className="stat"><CheckCircle size={12} /> 12 Intent Categories</span>
                     <span className="stat"><Languages size={12} /> Arabic + English</span>
+                    <span className="stat free-badge"><Shield size={12} /> Open Source</span>
                   </div>
                 </div>
-                <span className="model-badge active">Active</span>
+                <span className="model-badge active">Free</span>
               </div>
 
               <div className="ai-model-card">
                 <div className="model-icon scoring"><Star size={24} /></div>
                 <div className="model-info">
                   <h4>Lead Scorer</h4>
-                  <p>AI-powered lead scoring 0-100 based on engagement, budget, timeline</p>
+                  <p>Weight-based scoring with 12 factors including premium area and ready buyer detection</p>
                   <div className="model-stats">
                     <span className="stat"><Zap size={12} /> Real-time Scoring</span>
-                    <span className="stat"><Activity size={12} /> 10 Weight Factors</span>
+                    <span className="stat"><Activity size={12} /> 12 Weight Factors</span>
+                    <span className="stat free-badge"><Shield size={12} /> Open Source</span>
                   </div>
                 </div>
-                <span className="model-badge active">Active</span>
+                <span className="model-badge active">Free</span>
               </div>
 
               <div className="ai-model-card">
                 <div className="model-icon sentiment"><Activity size={24} /></div>
                 <div className="model-info">
                   <h4>Sentiment Analyzer</h4>
-                  <p>Analyze customer mood: positive, negative, urgent communications</p>
+                  <p>3-tier lexicon with negation handling, intensifiers, and escalation triggers</p>
                   <div className="model-stats">
-                    <span className="stat"><CheckCircle size={12} /> Urgency Detection</span>
-                    <span className="stat"><AlertTriangle size={12} /> Escalation Triggers</span>
+                    <span className="stat"><CheckCircle size={12} /> Negation Detection</span>
+                    <span className="stat"><AlertTriangle size={12} /> Auto-Escalation</span>
+                    <span className="stat free-badge"><Shield size={12} /> Open Source</span>
                   </div>
                 </div>
-                <span className="model-badge active">Active</span>
+                <span className="model-badge active">Free</span>
               </div>
 
               <div className="ai-model-card">
                 <div className="model-icon language"><Languages size={24} /></div>
                 <div className="model-info">
                   <h4>Language Detector</h4>
-                  <p>Auto-detect Arabic, English, Hindi, Chinese for bilingual routing</p>
+                  <p>Unicode pattern detection for 7 languages with RTL support and mixed detection</p>
                   <div className="model-stats">
-                    <span className="stat"><Globe size={12} /> 4 Languages</span>
-                    <span className="stat"><CheckCircle size={12} /> Script Analysis</span>
+                    <span className="stat"><Globe size={12} /> 7 Languages</span>
+                    <span className="stat"><CheckCircle size={12} /> RTL Support</span>
+                    <span className="stat free-badge"><Shield size={12} /> Open Source</span>
                   </div>
                 </div>
-                <span className="model-badge active">Active</span>
+                <span className="model-badge active">Free</span>
               </div>
 
               <div className="ai-model-card">
                 <div className="model-icon response"><MessageSquare size={24} /></div>
                 <div className="model-info">
                   <h4>Response Generator</h4>
-                  <p>Generate personalized AR/EN responses based on intent and context</p>
+                  <p>Template library with 8 intents, multiple variations, and personalization tokens</p>
                   <div className="model-stats">
-                    <span className="stat"><FileText size={12} /> Template Library</span>
+                    <span className="stat"><FileText size={12} /> 8 Intent Templates</span>
                     <span className="stat"><Users size={12} /> Personalization</span>
+                    <span className="stat free-badge"><Shield size={12} /> Open Source</span>
                   </div>
                 </div>
-                <span className="model-badge active">Active</span>
+                <span className="model-badge active">Free</span>
+              </div>
+
+              <div className="ai-model-card">
+                <div className="model-icon entity"><Search size={24} /></div>
+                <div className="model-info">
+                  <h4>Entity Extractor</h4>
+                  <p>Extract UAE phones, emails, prices, bedrooms, locations using regex patterns</p>
+                  <div className="model-stats">
+                    <span className="stat"><Phone size={12} /> UAE Phone Parsing</span>
+                    <span className="stat"><MapPin size={12} /> 7 Entity Types</span>
+                    <span className="stat free-badge"><Shield size={12} /> Open Source</span>
+                  </div>
+                </div>
+                <span className="model-badge active">Free</span>
+              </div>
+
+              <div className="ai-model-card">
+                <div className="model-icon router"><Shuffle size={24} /></div>
+                <div className="model-info">
+                  <h4>Smart Router</h4>
+                  <p>Intelligent routing based on lead score, intent, and sentiment with SLA tracking</p>
+                  <div className="model-stats">
+                    <span className="stat"><Users size={12} /> 6 Route Types</span>
+                    <span className="stat"><Clock size={12} /> SLA Tracking</span>
+                    <span className="stat free-badge"><Shield size={12} /> Open Source</span>
+                  </div>
+                </div>
+                <span className="model-badge active">Free</span>
               </div>
             </div>
 
@@ -1166,7 +1202,17 @@ export default new ${selectedFile.name.replace('.js', '')}();
                   <span className="value">English</span>
                   <span className="confidence">92%</span>
                 </div>
+                <div className="result-item">
+                  <span className="label">Entities:</span>
+                  <span className="value">3 found</span>
+                  <span className="confidence">phone, location, bedrooms</span>
+                </div>
               </div>
+            </div>
+
+            <div className="ai-architecture-note">
+              <Shield size={16} />
+              <span>All AI models run locally using open-source algorithms. Zero external API calls. Zero recurring costs.</span>
             </div>
           </div>
         )}

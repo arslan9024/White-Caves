@@ -37,6 +37,12 @@ Preferred communication style: Simple, everyday language.
 - **AI-Powered Automation**: Enhanced property schema, bilingual support (Arabic/English), AI Chatbot Service, AI Agent Assignment Engine, and an AI Assistant Dashboard System managing 32 assistants across 10 departments.
 - **Market Analytics Dashboard**: Provides KPIs, transaction breakdowns, and agent performance insights.
 - **WhatsApp Business Integration**: Session management, QR code generation, Meta Business OAuth, and an AI Chatbot for customer support and lead scoring.
+- **Nina WhatsApp Bot Developer**: Comprehensive WhatsApp bot management system with 35+ features across 14 categories:
+  - **Open-Source AI/ML Engine**: 7 modules (Intent Classifier, Lead Scorer, Sentiment Analyzer, Language Detector, Response Generator, Entity Extractor, Smart Router) - 100% free, no API costs
+  - **AI Features**: 12 intent categories, 3-tier sentiment lexicon, 7-language detection, template-based responses, UAE phone/email/price extraction
+  - **Security**: AES-256-GCM encryption, audit logging (10,000 entries), RBAC (4 roles), session management with auto-expiry
+  - **Scheduling**: ISO 3166-1 country mapping (18 countries), timezone-aware sending, strict schedule enforcement, behavioral simulation
+  - **Dashboard**: 13 tabs (Sessions, Bots, Campaigns, Contacts, Messages, AI/ML, Security, Scheduling, Sheets, Terminal, Code, Analytics, Features)
 - **Mary's Data Tools Suite**: Integrated data acquisition tools including DAMAC Asset Fetcher, Image Data Extractor (OCR), and Web Data Harvester.
 - **Zoe Executive Intelligence System**: Executive Suggestion Inbox and Executive Visibility for strategic suggestions and organizational oversight.
 - **Confidential Vault System**: Redux state with dual-approval access request workflow and document management.
