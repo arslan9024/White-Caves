@@ -5,7 +5,8 @@ import {
   FileCode, Folder, ChevronRight, ChevronDown, Copy, Download,
   AlertTriangle, Activity, Send, QrCode, Smartphone, Wifi, Star, Plus,
   Megaphone, UserX, FileText, Table, Search, Filter, Trash2, Edit,
-  Upload, BarChart3, Globe, Shield, Mail
+  Upload, BarChart3, Globe, Shield, Mail, Brain, Lock, Eye, Key,
+  Timer, Languages, Map, Fingerprint, Shuffle
 } from 'lucide-react';
 import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
 import { BotSessionManager } from './shared';
@@ -104,6 +105,36 @@ const CODE_MODULES = [
       { name: 'PhoneNumberService.js', type: 'js', lines: 178 },
       { name: 'ProjectService.js', type: 'js', lines: 112 },
       { name: 'CampaignService.js', type: 'js', lines: 198 }
+    ]
+  },
+  {
+    name: 'AI Services',
+    expanded: false,
+    files: [
+      { name: 'AIServices.js', type: 'js', lines: 245 },
+      { name: 'IntentClassifier.js', type: 'js', lines: 89 },
+      { name: 'LeadScorer.js', type: 'js', lines: 112 },
+      { name: 'SentimentAnalyzer.js', type: 'js', lines: 78 }
+    ]
+  },
+  {
+    name: 'Security',
+    expanded: false,
+    files: [
+      { name: 'SecurityServices.js', type: 'js', lines: 198 },
+      { name: 'EncryptedStorage.js', type: 'js', lines: 87 },
+      { name: 'AuditLogger.js', type: 'js', lines: 112 },
+      { name: 'AccessControl.js', type: 'js', lines: 145 }
+    ]
+  },
+  {
+    name: 'Scheduling',
+    expanded: false,
+    files: [
+      { name: 'SchedulingServices.js', type: 'js', lines: 267 },
+      { name: 'ISOCountryMapper.js', type: 'js', lines: 98 },
+      { name: 'LocalTimeScheduler.js', type: 'js', lines: 134 },
+      { name: 'BehavioralSimulator.js', type: 'js', lines: 89 }
     ]
   },
   {
@@ -334,6 +365,27 @@ export default function NinaWhatsAppBotCRM() {
         >
           <Mail size={16} />
           Messages
+        </button>
+        <button 
+          className={`nina-tab ${activeTab === 'ai' ? 'active' : ''}`}
+          onClick={() => setActiveTab('ai')}
+        >
+          <Brain size={16} />
+          AI/ML
+        </button>
+        <button 
+          className={`nina-tab ${activeTab === 'security' ? 'active' : ''}`}
+          onClick={() => setActiveTab('security')}
+        >
+          <Shield size={16} />
+          Security
+        </button>
+        <button 
+          className={`nina-tab ${activeTab === 'scheduling' ? 'active' : ''}`}
+          onClick={() => setActiveTab('scheduling')}
+        >
+          <Timer size={16} />
+          Scheduling
         </button>
         <button 
           className={`nina-tab ${activeTab === 'sheets' ? 'active' : ''}`}
@@ -1015,12 +1067,284 @@ export default new ${selectedFile.name.replace('.js', '')}();
           </div>
         )}
 
+        {activeTab === 'ai' && (
+          <div className="ai-view">
+            <div className="ai-header">
+              <h3>AI/ML Intelligence Engine</h3>
+              <div className="ai-status">
+                <span className="status-indicator active" />
+                All Models Active
+              </div>
+            </div>
+
+            <div className="ai-models-grid">
+              <div className="ai-model-card">
+                <div className="model-icon intent"><Brain size={24} /></div>
+                <div className="model-info">
+                  <h4>Intent Classifier</h4>
+                  <p>Detects property inquiry, viewing requests, negotiation, opt-out, greetings</p>
+                  <div className="model-stats">
+                    <span className="stat"><CheckCircle size={12} /> 10 Intent Categories</span>
+                    <span className="stat"><Languages size={12} /> Arabic + English</span>
+                  </div>
+                </div>
+                <span className="model-badge active">Active</span>
+              </div>
+
+              <div className="ai-model-card">
+                <div className="model-icon scoring"><Star size={24} /></div>
+                <div className="model-info">
+                  <h4>Lead Scorer</h4>
+                  <p>AI-powered lead scoring 0-100 based on engagement, budget, timeline</p>
+                  <div className="model-stats">
+                    <span className="stat"><Zap size={12} /> Real-time Scoring</span>
+                    <span className="stat"><Activity size={12} /> 10 Weight Factors</span>
+                  </div>
+                </div>
+                <span className="model-badge active">Active</span>
+              </div>
+
+              <div className="ai-model-card">
+                <div className="model-icon sentiment"><Activity size={24} /></div>
+                <div className="model-info">
+                  <h4>Sentiment Analyzer</h4>
+                  <p>Analyze customer mood: positive, negative, urgent communications</p>
+                  <div className="model-stats">
+                    <span className="stat"><CheckCircle size={12} /> Urgency Detection</span>
+                    <span className="stat"><AlertTriangle size={12} /> Escalation Triggers</span>
+                  </div>
+                </div>
+                <span className="model-badge active">Active</span>
+              </div>
+
+              <div className="ai-model-card">
+                <div className="model-icon language"><Languages size={24} /></div>
+                <div className="model-info">
+                  <h4>Language Detector</h4>
+                  <p>Auto-detect Arabic, English, Hindi, Chinese for bilingual routing</p>
+                  <div className="model-stats">
+                    <span className="stat"><Globe size={12} /> 4 Languages</span>
+                    <span className="stat"><CheckCircle size={12} /> Script Analysis</span>
+                  </div>
+                </div>
+                <span className="model-badge active">Active</span>
+              </div>
+
+              <div className="ai-model-card">
+                <div className="model-icon response"><MessageSquare size={24} /></div>
+                <div className="model-info">
+                  <h4>Response Generator</h4>
+                  <p>Generate personalized AR/EN responses based on intent and context</p>
+                  <div className="model-stats">
+                    <span className="stat"><FileText size={12} /> Template Library</span>
+                    <span className="stat"><Users size={12} /> Personalization</span>
+                  </div>
+                </div>
+                <span className="model-badge active">Active</span>
+              </div>
+            </div>
+
+            <div className="ai-test-section">
+              <h4>Test AI Models</h4>
+              <div className="test-input">
+                <input type="text" placeholder="Enter a message to test intent classification..." />
+                <button className="test-btn"><Brain size={14} /> Analyze</button>
+              </div>
+              <div className="test-results">
+                <div className="result-item">
+                  <span className="label">Intent:</span>
+                  <span className="value">property_inquiry</span>
+                  <span className="confidence">95%</span>
+                </div>
+                <div className="result-item">
+                  <span className="label">Sentiment:</span>
+                  <span className="value positive">Positive</span>
+                  <span className="confidence">87%</span>
+                </div>
+                <div className="result-item">
+                  <span className="label">Language:</span>
+                  <span className="value">English</span>
+                  <span className="confidence">92%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'security' && (
+          <div className="security-view">
+            <div className="security-header">
+              <h3>Security & Compliance Center</h3>
+              <div className="security-status">
+                <span className="status-indicator secure" />
+                All Systems Secure
+              </div>
+            </div>
+
+            <div className="security-cards">
+              <div className="security-card">
+                <div className="security-icon encryption"><Lock size={24} /></div>
+                <div className="security-info">
+                  <h4>AES-256 Encryption</h4>
+                  <p>Military-grade encryption for session data</p>
+                  <span className="security-badge active">Enabled</span>
+                </div>
+              </div>
+
+              <div className="security-card">
+                <div className="security-icon audit"><Eye size={24} /></div>
+                <div className="security-info">
+                  <h4>Audit Logging</h4>
+                  <p>Complete action tracking with IP logging</p>
+                  <span className="security-badge active">Recording</span>
+                </div>
+              </div>
+
+              <div className="security-card">
+                <div className="security-icon access"><Key size={24} /></div>
+                <div className="security-info">
+                  <h4>Role-Based Access</h4>
+                  <p>Admin, Manager, Agent, Viewer roles</p>
+                  <span className="security-badge active">Enforced</span>
+                </div>
+              </div>
+
+              <div className="security-card">
+                <div className="security-icon session"><Fingerprint size={24} /></div>
+                <div className="security-info">
+                  <h4>Session Management</h4>
+                  <p>Auto-expiry and activity tracking</p>
+                  <span className="security-badge active">Active</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="audit-log-section">
+              <h4>Recent Audit Log</h4>
+              <div className="audit-table">
+                <div className="audit-row header">
+                  <span>Time</span>
+                  <span>User</span>
+                  <span>Action</span>
+                  <span>Resource</span>
+                  <span>Status</span>
+                </div>
+                <div className="audit-row">
+                  <span>13:45:23</span>
+                  <span>admin@whitecaves.ae</span>
+                  <span>Campaign Started</span>
+                  <span>Victoria Outreach</span>
+                  <span className="status success">Success</span>
+                </div>
+                <div className="audit-row">
+                  <span>13:42:15</span>
+                  <span>nina@system</span>
+                  <span>Session Refresh</span>
+                  <span>Lion0</span>
+                  <span className="status success">Success</span>
+                </div>
+                <div className="audit-row">
+                  <span>13:38:01</span>
+                  <span>agent@whitecaves.ae</span>
+                  <span>Template Edit</span>
+                  <span>Morning Greeting</span>
+                  <span className="status success">Success</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'scheduling' && (
+          <div className="scheduling-view">
+            <div className="scheduling-header">
+              <h3>Intelligent Scheduling System</h3>
+              <div className="schedule-status">
+                <span className="status-indicator active" />
+                Within Working Hours
+              </div>
+            </div>
+
+            <div className="scheduling-cards">
+              <div className="schedule-card">
+                <div className="schedule-icon timezone"><Map size={24} /></div>
+                <div className="schedule-info">
+                  <h4>ISO Country Mapper</h4>
+                  <p>18 countries with timezone + business hours</p>
+                  <div className="schedule-detail">
+                    <span>UAE: Asia/Dubai (GMT+4)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="schedule-card">
+                <div className="schedule-icon local"><Clock size={24} /></div>
+                <div className="schedule-info">
+                  <h4>Local Time Scheduler</h4>
+                  <p>Respects target timezone business hours</p>
+                  <div className="schedule-detail">
+                    <span>Current: 1:30 PM Dubai</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="schedule-card">
+                <div className="schedule-icon strict"><Timer size={24} /></div>
+                <div className="schedule-info">
+                  <h4>Strict Schedule Manager</h4>
+                  <p>Off-hours blocking, hourly limits</p>
+                  <div className="schedule-detail">
+                    <span>Limit: 25/hour (Afternoon Peak)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="schedule-card">
+                <div className="schedule-icon behavior"><Bot size={24} /></div>
+                <div className="schedule-info">
+                  <h4>Behavioral Simulator</h4>
+                  <p>Human-like typing delays</p>
+                  <div className="schedule-detail">
+                    <span>Delay: 2-8s randomized</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="schedule-timeline">
+              <h4>Today's Schedule</h4>
+              <div className="timeline">
+                <div className="timeline-block off">
+                  <span className="time">00:00 - 08:00</span>
+                  <span className="label">Night Off</span>
+                </div>
+                <div className="timeline-block active">
+                  <span className="time">08:00 - 12:00</span>
+                  <span className="label">Morning (20/hr)</span>
+                </div>
+                <div className="timeline-block off">
+                  <span className="time">12:00 - 13:00</span>
+                  <span className="label">Lunch</span>
+                </div>
+                <div className="timeline-block current">
+                  <span className="time">13:00 - 19:00</span>
+                  <span className="label">Afternoon Peak (25/hr)</span>
+                </div>
+                <div className="timeline-block off">
+                  <span className="time">19:00 - 24:00</span>
+                  <span className="label">Evening Off</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'features' && (
           <AssistantFeatureMatrix 
             features={NINA_FEATURES}
             title="Nina's Programmed Capabilities"
             accentColor="#7c3aed"
-            categories={['Bot Management', 'Development Tools', 'Analytics', 'Automation', 'AI Features', 'Integrations', 'Core System', 'Monitoring', 'Communication', 'Security']}
+            categories={['Bot Management', 'Development Tools', 'Analytics', 'Automation', 'AI/ML', 'Integrations', 'Core System', 'Monitoring', 'Communication', 'Security', 'Scheduling', 'Anti-Detection', 'Compliance', 'Campaign Intelligence']}
           />
         )}
       </div>

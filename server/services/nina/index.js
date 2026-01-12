@@ -7,6 +7,29 @@ import MessageRouter from './MessageRouter.js';
 import CampaignService from './CampaignService.js';
 import MessageTemplates from './MessageTemplates.js';
 
+import AIServices, {
+  intentClassifier,
+  leadScorer,
+  sentimentAnalyzer,
+  languageDetector,
+  responseGenerator
+} from './AIServices.js';
+
+import SecurityServices, {
+  encryptedStorage,
+  auditLogger,
+  accessControl,
+  sessionManager
+} from './SecurityServices.js';
+
+import SchedulingServices, {
+  countryMapper,
+  localTimeScheduler,
+  strictScheduleManager,
+  behavioralSimulator,
+  optOutDetector
+} from './SchedulingServices.js';
+
 export {
   GoogleSheetsService,
   PhoneNumberService,
@@ -15,7 +38,24 @@ export {
   RateLimiter,
   MessageRouter,
   CampaignService,
-  MessageTemplates
+  MessageTemplates,
+  AIServices,
+  intentClassifier,
+  leadScorer,
+  sentimentAnalyzer,
+  languageDetector,
+  responseGenerator,
+  SecurityServices,
+  encryptedStorage,
+  auditLogger,
+  accessControl,
+  sessionManager,
+  SchedulingServices,
+  countryMapper,
+  localTimeScheduler,
+  strictScheduleManager,
+  behavioralSimulator,
+  optOutDetector
 };
 
 export default {
@@ -26,5 +66,8 @@ export default {
   RateLimiter,
   MessageRouter,
   CampaignService,
-  MessageTemplates
+  MessageTemplates,
+  AI: AIServices,
+  Security: SecurityServices,
+  Scheduling: SchedulingServices
 };
