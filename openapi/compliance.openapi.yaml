@@ -1,0 +1,127 @@
+openapi: 3.0.3
+info:
+  title: White Caves Compliance API (MVP)
+  version: 1.0.0
+  description: API surface for KYC onboarding, screening, and SAR drafting (MVP)
+servers:
+  - url: /api
+
+paths:
+  /kyc:
+    post:
+      summary: Create or update a KYC profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../src/schemas/kyc.schema.json'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '../src/schemas/kyc.schema.json'
+
+  /kyc/{customerId}:
+    get:
+      summary: Retrieve a KYC profile
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../src/schemas/kyc.schema.json'
+
+  /screening:
+    post:
+      summary: Run screening for a customer or payload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customerId:
+                  type: string
+                payload:
+                  type: object
+      responses:
+        '200':
+          description: Screening result
+          content:
+            application/json:
+              schema:
+                $ref: '../src/schemas/screening.schema.json'
+
+  /screening/{customerId}:
+    get:
+      summary: Get latest screening for a customer
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../src/schemas/screening.schema.json'
+
+  /sar:
+    post:
+      summary: Create a SAR (draft)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../src/schemas/sar.schema.json'
+      responses:
+        '201':
+          description: SAR draft created
+          content:
+            application/json:
+              schema:
+                $ref: '../src/schemas/sar.schema.json'
+
+  /sar/{caseId}:
+    get:
+      summary: Get SAR by caseId
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../src/schemas/sar.schema.json'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas: {}
+
+security:
+  - bearerAuth: []
