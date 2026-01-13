@@ -9,7 +9,7 @@ export const fetchKYCProfiles = createAsyncThunk(
       if (riskLevel) params.append('riskLevel', riskLevel);
       params.append('limit', limit);
       
-      const response = await fetch(`/api/compliance/profiles?${params}`);
+      const response = await fetch(`/api/compliance/kyc?${params}`);
       if (!response.ok) throw new Error('Failed to fetch profiles');
       return response.json();
     } catch (error) {
@@ -66,7 +66,7 @@ export const createKYCProfile = createAsyncThunk(
   'kycAml/createProfile',
   async (profileData, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/compliance/profiles', {
+      const response = await fetch('/api/compliance/kyc', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profileData)
@@ -83,7 +83,7 @@ export const updateKYCProfile = createAsyncThunk(
   'kycAml/updateProfile',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/compliance/profiles/${id}`, {
+      const response = await fetch(`/api/compliance/kyc/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -100,7 +100,7 @@ export const verifyDocument = createAsyncThunk(
   'kycAml/verifyDocument',
   async ({ profileId, documentType, documentData }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/compliance/profiles/${profileId}/documents/${documentType}/verify`, {
+      const response = await fetch(`/api/compliance/kyc/${profileId}/documents/${documentType}/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(documentData)

@@ -1,6 +1,7 @@
 import KYCProfile from '../../models/compliance/KYCProfile.js';
 import AMLAlert from '../../models/compliance/AMLAlert.js';
 import ComplianceAudit from '../../models/compliance/ComplianceAudit.js';
+import encryptionService from '../security/encryptionService.js';
 
 const KYC_AML_POLICIES = {
   riskScoringMatrix: {

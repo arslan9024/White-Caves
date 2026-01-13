@@ -151,7 +151,7 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
         formDataToSend.append(`document_${docType}`, file);
       });
 
-      const response = await fetch('/api/compliance/profiles', {
+      const response = await fetch('/api/compliance/kyc', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
