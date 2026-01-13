@@ -88,12 +88,26 @@ White Caves Real Estate LLC is a comprehensive digital platform specializing in 
 - Firebase project with service account
 - Required environment variables configured
 
+
 ### Build Commands
 ```bash
-npm install
-npm run build
-npm start
+# On Windows PowerShell, use npm.cmd instead of npm if you see script execution errors:
+npm.cmd install
+npm.cmd run build
+npm.cmd start
+# Or use Node directly for package binaries:
+node node_modules/vite/bin/vite.js
+node node_modules/vitest/vitest.mjs run
 ```
+
+If you see an error like:
+> File C:\Program Files\nodejs\npm.ps1 cannot be loaded because running scripts is disabled on this system.
+
+This is a PowerShell security policy. Either use npm.cmd as above, or run:
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+to allow script execution for npm.ps1 (not recommended for most users).
 
 ### Environment Variables
 - `MONGODB_URI`: MongoDB connection string

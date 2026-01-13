@@ -208,6 +208,30 @@ app.post('/api/chatbot/test', async (req, res) => {
   });
 });
 
+
+// --- API STUBS FOR WHATSAPP AND BOT FLOWS ---
+app.get('/api/whatsapp/session', (req, res) => {
+  res.json({ success: true, session: { status: 'mocked', connected: false, qr: 'mock-qr-code' } });
+});
+app.post('/api/whatsapp/connect', (req, res) => {
+  res.json({ success: true, message: 'WhatsApp connect simulated.' });
+});
+app.post('/api/whatsapp/disconnect', (req, res) => {
+  res.json({ success: true, message: 'WhatsApp disconnect simulated.' });
+});
+app.get('/api/whatsapp/qr/refresh', (req, res) => {
+  res.json({ success: true, qr: 'mock-qr-code-refreshed' });
+});
+app.get('/api/bots', (req, res) => {
+  res.json({ success: true, bots: [{ id: 'nina', name: 'Nina Bot', status: 'active' }] });
+});
+app.get('/api/flows', (req, res) => {
+  res.json({ success: true, flows: [{ id: 'default', name: 'Default Flow', steps: 3 }] });
+});
+app.get('/api/sessions', (req, res) => {
+  res.json({ success: true, sessions: [{ id: 'mock-session', user: 'test', status: 'active' }] });
+});
+
 app.all('/api/*', (req, res) => {
   res.status(404).json({ error: 'API endpoint not found' });
 });
