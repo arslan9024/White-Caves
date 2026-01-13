@@ -6,9 +6,11 @@ import {
   Rocket, Shield, TrendingUp, TrendingDown, RefreshCw,
   Box, Smartphone, Globe, Code, Terminal, Zap,
   BarChart3, AlertCircle, CheckCircle2, XCircle, Timer,
-  BookOpen, Users, Layers, FileText, Settings, Network
+  BookOpen, Users, Layers, FileText, Settings, Network,
+  Scan
 } from 'lucide-react';
 import './AuroraCTODashboard.css';
+import AuroraAnalysisDashboard from './AuroraAnalysisDashboard';
 
 const AI_ASSISTANTS_REGISTRY = [
   { id: 'linda', name: 'Linda', title: 'WhatsApp CRM Manager', department: 'Communications', status: 'active', features: ['23+ Agent Management', 'Conversation Routing', 'Lead Pre-qualification', 'Template Messaging', 'Performance Tracking'], connections: ['Clara', 'Sophia'] },
@@ -278,13 +280,14 @@ const AuroraCTODashboard = () => {
       </div>
 
       <div className="aurora-tabs">
-        {['overview', 'documentation', 'assistants', 'architecture', 'applications', 'deployments', 'api-performance'].map(tab => (
+        {['overview', 'self-analysis', 'documentation', 'assistants', 'architecture', 'applications', 'deployments', 'api-performance'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
             {tab === 'overview' && <Activity size={16} />}
+            {tab === 'self-analysis' && <Scan size={16} />}
             {tab === 'documentation' && <BookOpen size={16} />}
             {tab === 'assistants' && <Users size={16} />}
             {tab === 'architecture' && <Layers size={16} />}
@@ -418,6 +421,10 @@ const AuroraCTODashboard = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {activeTab === 'self-analysis' && (
+        <AuroraAnalysisDashboard />
       )}
 
       {activeTab === 'documentation' && (

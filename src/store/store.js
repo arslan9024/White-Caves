@@ -19,6 +19,7 @@ import crmViewReducer from './slices/crmViewSlice';
 import kycAmlReducer from './slices/kycAmlSlice';
 import dealsReducer from './slices/dealsSlice';
 import workspaceReducer from './slices/workspaceSlice';
+import auroraReducer from './slices/auroraSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 
 export const store = configureStore({
@@ -42,7 +43,8 @@ export const store = configureStore({
     crmView: crmViewReducer,
     kycAml: kycAmlReducer,
     deals: dealsReducer,
-    workspace: workspaceReducer
+    workspace: workspaceReducer,
+    aurora: auroraReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
