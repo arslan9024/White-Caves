@@ -1,0 +1,1241 @@
+# **SOFTWARE DESIGN DOCUMENT (SDD)**
+# **For White Caves Real Estate AI Platform**
+**Document Version:** 1.0  
+**Date:** January 16, 2024  
+
+---
+
+## **1. ARCHITECTURAL OVERVIEW**
+
+### **1.1 System Architecture Diagram**
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        CLIENT LAYER                                      │
+├─────────────────────────────────────────────────────────────────────────┤
+│  • Web Application (React/Next.js)                                       │
+│  • Mobile Applications (iOS/Android - React Native)                      │
+│  • Progressive Web App (PWA)                                             │
+│  • Third-Party Integrations (Property Portals, APIs)                     │
+└─────────────────────────────────────────────────────────────────────────┘
+                                   │ HTTPS/WebSocket
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        API GATEWAY LAYER                                 │
+├─────────────────────────────────────────────────────────────────────────┤
+│  • API Gateway (Kong/AWS API Gateway)                                    │
+│  • Load Balancer                                                         │
+│  • Rate Limiting & Throttling                                            │
+│  • Request Routing & Composition                                          │
+│  • Authentication & Authorization Middleware                             │
+└─────────────────────────────────────────────────────────────────────────┘
+                                   │
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    MICROSERVICES LAYER                                   │
+├───────┬────────┬──────────┬──────────┬─────────┬─────────┬─────────────┤
+│ User  │ Property│ Service  │ CRM      │ Inventory│ AI      │ Analytics  │
+│ Service│ Service │ Catalog  │ Service  │ Service │ Service │ Service    │
+│       │        │ Service   │         │         │         │            │
+│ PostgreSQL│ Elasticsearch│ PostgreSQL│ PostgreSQL│ PostgreSQL│ Python/   │ PostgreSQL│
+│        │         │          │          │          │ TensorFlow│            │
+└───────┴────────┴──────────┴──────────┴─────────┴─────────┴─────────────┘
+                                   │ Message Queue (Kafka/RabbitMQ)
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    SHARED SERVICES LAYER                                 │
+├─────────────────────────────────────────────────────────────────────────┤
+│  • Redis Cache                                                          │
+│  • AWS S3/Cloudinary (Media Storage)                                    │
+│  • Email Service (SendGrid)                                             │
+│  • SMS Service (Twilio)                                                 │
+│  • Notification Service                                                  │
+│  • Payment Gateway Integration                                           │
+│  • UAE PASS Integration Service                                         │
+│  • DLD/RERA API Integration                                             │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### **1.2 Technology Stack**
+
+| **Layer** | **Technology** | **Justification** |
+|-----------|---------------|-------------------|
+| **Frontend** | React.js + Next.js + TypeScript | Server-side rendering, SEO optimization, Dubai market requires fast load times |
+| **Mobile** | React Native + Expo | Cross-platform, faster development, native performance |
+| **Backend** | Node.js (Express/NestJS) + Python (FastAPI) | Node for web services, Python for AI/ML components |
+| **Database** | PostgreSQL (primary), Redis (cache), Elasticsearch (search) | ACID compliance, full-text search, real-time caching |
+| **AI/ML** | TensorFlow, PyTorch, Scikit-learn | Industry standard for machine learning |
+| **Cloud** | AWS (EC2, RDS, S3, Lambda, SageMaker) | Global infrastructure, compliance with UAE data laws |
+| **DevOps** | Docker, Kubernetes, Jenkins, GitHub Actions | Scalability, CI/CD automation |
+| **APIs** | GraphQL (internal), REST (external) | Flexible data querying, standard integration |
+
+---
+
+## **2. DETAILED SYSTEM DESIGN**
+
+### **2.1 Microservices Architecture**
+
+#### **Service 1: User Service**
+**Purpose**: Authentication, authorization, profile management
+**Database**: PostgreSQL (users, roles, permissions)
+**Key Endpoints**:
+- `POST /api/v1/auth/register` - User registration
+- `POST /api/v1/auth/uae-pass/verify` - UAE PASS verification
+- `GET /api/v1/users/{id}/profile` - Get user profile
+- `PUT /api/v1/users/{id}/tier` - Update user tier
+
+**Data Model**:
+```sql
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
+    email VARCHAR(255) UNIQUE,
+    phone VARCHAR(20),
+    uae_pass_id VARCHAR(100) UNIQUE,
+    tier INTEGER DEFAULT 1,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+
+CREATE TABLE user_permissions (
+    user_id UUID REFERENCES users(id),
+    permission VARCHAR(100),
+    granted_at TIMESTAMP
+);
+```
+
+#### **Service 2: Property Service**
+**Purpose**: Property listings, search, virtual tours
+**Database**: PostgreSQL (property details), Elasticsearch (search index)
+**Key Endpoints**:
+- `GET /api/v1/properties/search` - Advanced property search
+- `GET /api/v1/properties/{id}` - Property details
+- `POST /api/v1/properties/{id}/virtual-tour` - Virtual tour data
+- `GET /api/v1/properties/recommendations` - AI recommendations
+
+**Data Model**:
+```sql
+CREATE TABLE properties (
+    id UUID PRIMARY KEY,
+    title VARCHAR(255),
+    property_type VARCHAR(50),
+    location JSONB, -- {area: "Dubai Marina", coordinates: {lat, lng}}
+    price DECIMAL(15,2),
+    bedrooms INTEGER,
+    bathrooms INTEGER,
+    area_sqft DECIMAL(10,2),
+    status VARCHAR(20), -- available, reserved, sold, rented
+    created_at TIMESTAMP
+);
+
+CREATE TABLE property_media (
+    property_id UUID REFERENCES properties(id),
+    media_type VARCHAR(20), -- image, video, virtual_tour, floor_plan
+    url VARCHAR(500),
+    order_index INTEGER
+);
+```
+
+#### **Service 3: Service Catalog Service**
+**Purpose**: 40+ services management, booking, delivery tracking
+**Database**: PostgreSQL (services, bookings, deliveries)
+**Key Endpoints**:
+- `GET /api/v1/services` - List all services
+- `POST /api/v1/services/{id}/book` - Book a service
+- `GET /api/v1/services/bookings/{id}/status` - Check booking status
+- `POST /api/v1/services/packages` - Create service package
+
+**Data Model**:
+```sql
+CREATE TABLE services (
+    id UUID PRIMARY KEY,
+    name VARCHAR(255),
+    category VARCHAR(100),
+    description TEXT,
+    base_price DECIMAL(10,2),
+    estimated_duration_days INTEGER,
+    department VARCHAR(50)
+);
+
+CREATE TABLE service_bookings (
+    id UUID PRIMARY KEY,
+    user_id UUID REFERENCES users(id),
+    service_id UUID REFERENCES services(id),
+    status VARCHAR(20), -- pending, confirmed, in_progress, completed
+    booked_at TIMESTAMP,
+    scheduled_date DATE,
+    assigned_to UUID -- department staff
+);
+```
+
+#### **Service 4: CRM Service**
+**Purpose**: Departmental CRM, client management, workflow automation
+**Database**: PostgreSQL (clients, interactions, tasks, workflows)
+**Key Endpoints**:
+- `GET /api/v1/crm/clients/{id}/360` - 360-degree client view
+- `POST /api/v1/crm/tasks` - Create department task
+- `GET /api/v1/crm/departments/{dept}/dashboard` - Department dashboard
+- `POST /api/v1/crm/workflows/execute` - Execute workflow
+
+**Data Model**:
+```sql
+CREATE TABLE clients (
+    id UUID PRIMARY KEY,
+    user_id UUID REFERENCES users(id),
+    client_type VARCHAR(50), -- buyer, seller, tenant, landlord
+    total_value DECIMAL(15,2),
+    satisfaction_score DECIMAL(3,2),
+    created_at TIMESTAMP
+);
+
+CREATE TABLE department_tasks (
+    id UUID PRIMARY KEY,
+    department VARCHAR(50),
+    assigned_to UUID REFERENCES users(id),
+    task_type VARCHAR(100),
+    status VARCHAR(20),
+    priority INTEGER,
+    due_date TIMESTAMP,
+    completed_at TIMESTAMP
+);
+```
+
+#### **Service 5: Inventory Service**
+**Purpose**: Property lifecycle management, compliance tracking
+**Database**: PostgreSQL (inventory, maintenance, compliance)
+**Key Endpoints**:
+- `POST /api/v1/inventory/properties` - Add property to inventory
+- `GET /api/v1/inventory/properties/{id}/lifecycle` - Property lifecycle
+- `POST /api/v1/inventory/maintenance` - Schedule maintenance
+- `GET /api/v1/inventory/compliance/reports` - Compliance reports
+
+**Data Model**:
+```sql
+CREATE TABLE property_inventory (
+    property_id UUID PRIMARY KEY REFERENCES properties(id),
+    acquisition_date DATE,
+    current_status VARCHAR(50),
+    ownership_type VARCHAR(50),
+    rera_registration_number VARCHAR(100),
+    dld_contract_number VARCHAR(100),
+    annual_maintenance_cost DECIMAL(10,2)
+);
+
+CREATE TABLE maintenance_records (
+    id UUID PRIMARY KEY,
+    property_id UUID REFERENCES properties(id),
+    type VARCHAR(50), -- preventive, emergency, cosmetic
+    scheduled_date DATE,
+    completed_date DATE,
+    cost DECIMAL(10,2),
+    vendor_id UUID
+);
+```
+
+#### **Service 6: AI Service**
+**Purpose**: AI assistants, machine learning models, predictions
+**Database**: PostgreSQL (AI models, training data, predictions)
+**Key Endpoints**:
+- `POST /api/v1/ai/assistants/{name}/query` - Query AI assistant
+- `GET /api/v1/ai/models/performance` - AI model performance
+- `POST /api/v1/ai/train` - Train/re-train AI model
+- `GET /api/v1/ai/insights/daily` - Daily AI insights
+
+**Data Model**:
+```sql
+CREATE TABLE ai_assistants (
+    id UUID PRIMARY KEY,
+    name VARCHAR(100),
+    department VARCHAR(50),
+    model_type VARCHAR(50),
+    version VARCHAR(20),
+    accuracy_score DECIMAL(5,4),
+    last_trained_at TIMESTAMP
+);
+
+CREATE TABLE ai_predictions (
+    id UUID PRIMARY KEY,
+    assistant_id UUID REFERENCES ai_assistants(id),
+    input_data JSONB,
+    prediction_output JSONB,
+    confidence DECIMAL(5,4),
+    created_at TIMESTAMP
+);
+```
+
+---
+
+## **3. DETAILED FLOWCHARTS**
+
+### **3.1 Overall Platform Flow**
+
+```mermaid
+flowchart TD
+    A[User Visits Platform] --> B{User Type?}
+    
+    B --> C[Public User]
+    B --> D[Registered Client]
+    B --> E[Department Staff]
+    
+    C --> F[Browse Properties<br/>without registration]
+    F --> G[Register/Login<br/>to access more]
+    G --> H[UAE PASS Verification]
+    H --> D
+    
+    D --> I[Search Properties<br/>with 50+ filters]
+    I --> J[View Property Details<br/>& Virtual Tours]
+    J --> K[Schedule Viewing<br/>or Make Offer]
+    K --> L[Access Service Catalog<br/>40+ services]
+    L --> M[Book Services<br/>with UAE PASS signing]
+    M --> N[Track Service Delivery<br/>real-time updates]
+    
+    E --> O[Login to Department CRM]
+    O --> P{Which Department?}
+    
+    P --> Q[Sales Department]
+    P --> R[Leasing Department]
+    P --> S[Property Management]
+    P --> T[Other 7 Departments]
+    
+    Q --> U[Manage Leads<br/>Track Sales Pipeline<br/>Commission Calculation]
+    R --> V[Manage Tenants<br/>Lease Administration<br/>Rent Collection]
+    S --> W[Maintenance Scheduling<br/>Vendor Management<br/>Owner Reporting]
+    
+    U --> X[Update Inventory Status]
+    V --> X
+    W --> X
+    
+    X --> Y[AI Command Center<br/>Monitors & Enhances]
+    Y --> Z[Customer Happiness<br/>& Company Performance]
+    
+    N --> Z
+```
+
+### **3.2 User Registration & UAE PASS Flow**
+
+```mermaid
+flowchart TD
+    A[User Clicks Register] --> B[Enter Basic Details<br/>Email, Phone, Password]
+    B --> C[Email Verification<br/>6-digit code]
+    C --> D[Basic Profile Setup<br/>Preferences, Property Interests]
+    
+    D --> E{User Requests<br/>Service Access?}
+    
+    E -->|No| F[Registration Complete<br/>Tier 1: Basic Access]
+    E -->|Yes| G[Initiate UAE PASS Verification]
+    
+    G --> H[Redirect to UAE PASS<br/>Federal Authority Portal]
+    H --> I[User Authenticates<br/>with UAE PASS Credentials]
+    I --> J[UAE PASS Returns<br/>Verified Identity Data]
+    
+    J --> K[Platform Receives<br/>Verified Attributes:<br/>Name, Emirates ID, DOB]
+    K --> L[Create Verified User Profile<br/>with UAE PASS ID]
+    
+    L --> M[Grant Tier 2+ Permissions<br/>based on verification]
+    M --> N[Enable Service Access<br/>Contract Signing, Payments]
+    
+    F --> O[Can Browse Properties<br/>Save Searches,<br/>Basic Inquiries]
+    N --> P[Full Platform Access:<br/>Book Services,<br/>Digital Contracts,<br/>Priority Support]
+    
+    O --> Q[Platform Usage<br/>Progressive Disclosure]
+    P --> Q
+```
+
+### **3.3 Property Search & Recommendation Flow**
+
+```mermaid
+flowchart TD
+    A[User Accesses<br/>Property Search] --> B[Search Interface<br/>with 50+ Filters]
+    
+    B --> C{Search Method?}
+    C -->|Map Search| D[Interactive Dubai Map<br/>Click Areas/Properties]
+    C -->|Filter Search| E[Select Filters:<br/>- Price Range<br/>- Property Type<br/>- Bedrooms/Bathrooms<br/>- Amenities<br/>- Location Areas]
+    C -->|Keyword Search| F[Natural Language Search<br/>e.g., "3 bed villa in Palm Jumeirah<br/>with pool and sea view"]
+    
+    D --> G[Execute Search<br/>with Elasticsearch]
+    E --> G
+    F --> G
+    
+    G --> H[Display Results<br/>List View + Map View]
+    H --> I{User Interaction?}
+    
+    I -->|View Details| J[Property Detail Page<br/>- Photos/Virtual Tour<br/>- Floor Plans<br/>- Amenities List<br/>- Neighborhood Info]
+    I -->|Save Search| K[Save Search Criteria<br/>for Email Alerts]
+    I -->|Compare| L[Add to Comparison Tool<br/>Side-by-side Analysis]
+    
+    J --> M[AI Recommendation Engine<br/>Triggers]
+    M --> N[Analyze User Behavior<br/>& Similar Properties]
+    N --> O[Generate Recommendations:<br/>1. Similar Properties<br/>2. Complementary Services<br/>3. Market Insights]
+    
+    O --> P[Display Recommendations<br/>"You Might Also Like"<br/>"Others Viewed"<br/>"Trending in This Area"]
+    
+    L --> Q[Comparison Dashboard<br/>Features Matrix<br/>Price Analysis<br/>ROI Calculator]
+    
+    K --> R[Email Alert System<br/>New Matching Properties<br/>Price Changes<br/>Status Updates]
+    
+    P --> S[Continue User Journey<br/>to Service Acquisition]
+    Q --> S
+    R --> S
+```
+
+### **3.4 Service Acquisition Flow**
+
+```mermaid
+flowchart TD
+    A[Verified Client<br/>Tier 2+] --> B[Access Service Hub<br/>40+ Services Catalog]
+    
+    B --> C{Service Discovery Method?}
+    C -->|Browse Categories| D[8 Service Categories:<br/>1. Advisory & Consultation<br/>2. Transaction Services<br/>3. Property Management<br/>4. Legal & Compliance<br/>5. Financial Services<br/>6. Renovation & Staging<br/>7. Relocation Services<br/>8. Concierge Services]
+    C -->|AI Recommendations| E[AI Service Matcher<br/>Analyzes Client Needs<br/>Suggests Relevant Services]
+    C -->|Package Bundles| F[Pre-defined Packages:<br/>- First-Time Buyer Package<br/>- Investor Package<br/>- Luxury Seller Package<br/>- Tenant Relocation Package]
+    
+    D --> G[View Service Details<br/>- Description<br/>- Pricing<br/>- Duration<br/>- Requirements<br/>- Success Metrics]
+    E --> G
+    F --> G
+    
+    G --> H[Add to Service Cart<br/>or Select Package]
+    H --> I[Service Configuration<br/>Customize Options<br/>Select Dates/Times<br/>Choose Service Level]
+    
+    I --> J[Review & Checkout<br/>Service Summary<br/>Total Cost<br/>Terms & Conditions]
+    
+    J --> K{UAE PASS<br/>Verification Required?}
+    K -->|Yes - New Service| L[Initiate UAE PASS<br/>Digital Signature]
+    K -->|No - Existing Client| M[Proceed to Payment]
+    
+    L --> N[UAE PASS Signing<br/>Digital Contract Execution]
+    N --> M
+    
+    M --> O[Payment Processing<br/>Multiple Options:<br/>- Credit Card<br/>- Bank Transfer<br/>- Installments<br/>- Corporate Billing]
+    
+    O --> P[Service Confirmation<br/>Email/SMS/Notification]
+    
+    P --> Q[Service Delivery Dashboard]
+    
+    Q --> R[Real-time Tracking<br/>- Status Updates<br/>- Milestone Completion<br/>- Document Delivery<br/>- Team Assignments]
+    
+    R --> S[Quality Assurance<br/>- Client Feedback<br/>- Service Rating<br/>- Issue Resolution<br/>- Continuous Improvement]
+    
+    S --> T[Service Completion<br/>- Final Documentation<br/>- Invoice Generation<br/>- Retention Follow-up<br/>- Upsell Opportunities]
+    
+    T --> U[CRM Update<br/>Client Profile Enhanced<br/>Department Tasks Created<br/>Performance Metrics Recorded]
+```
+
+### **3.5 Departmental CRM Workflow (Sales Department Example)**
+
+```mermaid
+flowchart TD
+    A[Sales Agent Login] --> B[Sales CRM Dashboard]
+    
+    B --> C{Primary Actions}
+    C -->|Lead Management| D[Leads Pipeline<br/>- New Leads<br/>- Contacted<br/>- Viewing Scheduled<br/>- Offer Made<br/>- Negotiating<br/>- Closed Won/Lost]
+    C -->|Property Management| E[Assigned Properties<br/>- Listing Details<br/>- Viewing Schedule<br/>- Offer Status<br/>- Competitor Analysis]
+    C -->|Client Management| F[Client Portfolio<br/>- Past Transactions<br/>- Service History<br/>- Preferences<br/>- Communication Log]
+    
+    D --> G[Lead Assignment<br/>Auto or Manual]
+    G --> H[Lead Contact<br/>Call/Email/WhatsApp<br/>with AI Script Assistance]
+    
+    H --> I[Schedule Viewing<br/>Calendar Integration<br/>Automated Reminders]
+    
+    I --> J[Conduct Viewing<br/>Virtual or Physical<br/>with Digital Checklist]
+    
+    J --> K[Client Feedback<br/>Immediate Rating<br/>Follow-up Tasks]
+    
+    K --> L{Client Interested?}
+    L -->|Yes| M[Prepare Offer<br/>AI-Priced Recommendation<br/>Contract Templates]
+    L -->|No| N[Update Lead Status<br/>Reason Analysis<br/>Future Follow-up]
+    
+    M --> O[Submit Offer<br/>Digital Form F<br/>UAE PASS Signature]
+    
+    O --> P[Offer Negotiation<br/>Counter-offer Management<br/>Terms Discussion]
+    
+    P --> Q{Offer Accepted?}
+    Q -->|Yes| R[Move to Legal Department<br/>Contract Preparation<br/>Compliance Checks]
+    Q -->|No| S[Return to Negotiation<br/>or Close Lost]
+    
+    R --> T[Transaction Management<br/>- Payment Tracking<br/>- Document Collection<br/>- DLD Registration]
+    
+    T --> U[Commission Calculation<br/>Automated Based on Rules<br/>Approval Workflow]
+    
+    U --> V[Handover to Property Management<br/>or Client Onboarding]
+    
+    V --> W[CRM Updates<br/>- Client Satisfaction Survey<br/>- Referral Request<br/>- Future Service Opportunities]
+    
+    N --> X[Lead Nurturing<br/>Automated Follow-ups<br/>Market Updates<br/>New Property Alerts]
+    
+    X --> Y[CRM Analytics<br/>- Conversion Rates<br/>- Sales Cycle Length<br/>- Agent Performance<br/>- Revenue Forecasting]
+    
+    Y --> Z[AI Assistant (Clara)<br/>Continuous Optimization<br/>Predictive Lead Scoring<br/>Next Best Action]
+```
+
+### **3.6 Inventory Management Flow**
+
+```mermaid
+flowchart TD
+    A[Property Acquisition<br/>or Listing Agreement] --> B[Property Registration<br/>in Inventory System]
+    
+    B --> C[Data Collection Phase]
+    C --> D[Property Details<br/>- Specifications<br/>- Photos/Media<br/>- Legal Documents<br/>- Ownership Proof]
+    C --> E[Market Analysis<br/>- Comparative Pricing<br/>- Target Audience<br/>- Marketing Strategy]
+    C --> F[Compliance Check<br/>- RERA Requirements<br/>- DLD Registration<br/>- DEWA/Chiller Status]
+    
+    D --> G[Inventory Database Entry<br/>with Unique Property ID]
+    E --> G
+    F --> G
+    
+    G --> H[Property Status:<br/>"Available for Sale/Rent"]
+    
+    H --> I[Listing Phase]
+    I --> J[Marketing Materials<br/>- Professional Photos<br/>- Virtual Tour<br/>- Floor Plans<br/>- Brochures]
+    I --> K[Platform Listing<br/>- White Caves Platform<br/>- Property Portals<br/>- Social Media]
+    I --> L[Viewing Management<br/>- Schedule Coordination<br/>- Access Arrangements<br/>- Feedback Collection]
+    
+    J --> M[Offer Phase]
+    K --> M
+    L --> M
+    
+    M --> N[Offer Received<br/>Digital Form F<br/>Price & Terms]
+    
+    N --> O[Offer Evaluation<br/>- Price Analysis<br/>- Buyer Qualification<br/>- Terms Assessment]
+    
+    O --> P{Offer Accepted?}
+    P -->|Yes| Q[Transaction Phase]
+    P -->|No| R[Return to Available Status<br/>with Price/Strategy Review]
+    
+    Q --> S[Contract Preparation<br/>MOU to SPA<br/>UAE PASS Signing]
+    S --> T[DLD Registration<br/>Title Deed Transfer<br/>Oqood Registration]
+    T --> U[Financial Settlement<br/>- Commission Payment<br/>- Government Fees<br/>- Service Charges]
+    
+    U --> V[Property Handover<br/>- Key Transfer<br/>- DEWA Transfer<br/>- Service Handover]
+    
+    V --> W{Property Management<br/>Required?}
+    
+    W -->|Yes| X[Property Management Phase]
+    W -->|No| Y[Inventory Status Update:<br/>"Sold/Leased - Not Managed"]
+    
+    X --> Z[Ongoing Management<br/>- Maintenance Schedule<br/>- Tenant/Owner Communication<br/>- Financial Reporting<br/>- Compliance Renewals]
+    
+    Z --> AA[Performance Monitoring<br/>- Rental Yield<br/>- Occupancy Rate<br/>- Maintenance Costs<br/>- Owner Satisfaction]
+    
+    AA --> BB[Lifecycle Events<br/>- Lease Renewals<br/>- Major Repairs<br/>- Value Appraisal<br/>- Resale/Re-lease]
+    
+    Y --> CC[Inventory Archive<br/>with Complete History<br/>for Future Reference]
+    
+    BB --> CC
+    R --> H
+```
+
+### **3.7 AI Command Center Flow**
+
+```mermaid
+flowchart TD
+    A[AI Command Center<br/>Central Dashboard] --> B[Data Collection Layer]
+    
+    B --> C[Real-time Data Streams<br/>from All Platform Actions]
+    B --> D[Historical Data<br/>from All Databases]
+    B --> E[External Data Sources<br/>Market Data, Regulations, Trends]
+    
+    C --> F[AI Processing Layer]
+    D --> F
+    E --> F
+    
+    F --> G{AI Assistant Category}
+    
+    G -->|Client-Facing AI| H[8 Assistants:<br/>- Property Matcher<br/>- Service Recommender<br/>- Virtual Assistant<br/>- Document Helper<br/>- Market Analyst<br/>- Negotiation Coach<br/>- Viewing Scheduler<br/>- Feedback Analyzer]
+    
+    G -->|Operational AI| I[12 Assistants:<br/>- Lead Scorer (Clara)<br/>- Inventory Optimizer (Mary)<br/>- Maintenance Predictor<br/>- Compliance Monitor (Henry)<br/>- Contract Analyzer (Sophia)<br/>- Financial Optimizer (Theodora)<br/>- Marketing Content Generator<br/>- Workflow Automator<br/>- Quality Assurance AI<br/>- Vendor Management AI<br/>- Performance Predictor<br/>- Risk Assessment AI]
+    
+    G -->|Analytical AI| J[6 Assistants:<br/>- Market Intelligence (Sage)<br/>- Investment Analyst<br/>- Trend Predictor<br/>- Competitor Analyzer<br/>- Customer Sentiment Analyzer<br/>- Performance Diagnostic]
+    
+    G -->|Specialized AI| K[6 Assistants:<br/>- Virtual Staging AI<br/>- Property Valuation AI<br/>- Legal Clause Generator<br/>- Financial Model Builder<br/>- Strategic Planner (Zoe)<br/>- Innovation Scout]
+    
+    H --> L[AI Action Execution]
+    I --> L
+    J --> L
+    K --> L
+    
+    L --> M[Action Types]
+    M --> N[Automated Tasks<br/>- Send Follow-up Email<br/>- Update CRM Fields<br/>- Generate Reports<br/>- Schedule Appointments]
+    M --> O[Recommendations<br/>- Next Best Action<br/>- Pricing Suggestions<br/>- Service Upsells<br/>- Risk Alerts]
+    M --> P[Predictions<br/>- Lead Conversion Probability<br/>- Property Price Movement<br/>- Maintenance Requirements<br/>- Market Trends]
+    M --> Q[Optimizations<br/>- Resource Allocation<br/>- Schedule Optimization<br/>- Route Planning<br/>- Cost Reduction]
+    
+    N --> R[Results Collection<br/>Track Outcomes<br/>Measure Effectiveness]
+    O --> R
+    P --> R
+    Q --> R
+    
+    R --> S[Performance Analytics<br/>- AI Accuracy Rates<br/>- Task Completion %<br/>- Efficiency Gains<br/>- ROI Calculation]
+    
+    S --> T[Continuous Learning Loop]
+    T --> U[Model Retraining<br/>with New Data<br/>and Outcomes]
+    
+    U --> V[Model Deployment<br/>Updated AI Models<br/>A/B Testing<br/>Phased Rollout]
+    
+    V --> W[Performance Monitoring<br/>Real-time Dashboards<br/>Alert Systems<br/>Anomaly Detection]
+    
+    W --> X[Strategic Insights<br/>for Management<br/>Executive Reports<br/>Future Roadmap]
+    
+    X --> Y[Customer Happiness Impact<br/>Measured Improvement<br/>in CSAT, NPS, CES]
+    
+    Y --> Z[Company Performance Impact<br/>Revenue Growth<br/>Efficiency Gains<br/>Market Share Increase]
+```
+
+### **3.8 End-to-End Transaction Flow**
+
+```mermaid
+flowchart TD
+    A[Client Property Search] --> B[Property Viewing Scheduled]
+    B --> C[Client Interested<br/>Makes Offer]
+    
+    C --> D[Sales Department CRM<br/>Offer Management]
+    D --> E[Offer Accepted<br/>Form F Signed]
+    
+    E --> F[Legal Department<br/>Contract Preparation]
+    F --> G[UAE PASS Digital Signing<br/>SPA/MOU Execution]
+    
+    G --> H[Finance Department<br/>Payment Processing]
+    H --> I[DLD Registration<br/>Title Deed Transfer]
+    
+    I --> J[Property Handover<br/>Key Transfer]
+    
+    J --> K{Service Requirements?}
+    
+    K -->|Property Management| L[Property Management Dept<br/>Takes Over]
+    K -->|Additional Services| M[Service Delivery<br/>from Catalog]
+    K -->|No Services| N[Transaction Complete<br/>Client Onboarding]
+    
+    L --> O[Ongoing Management<br/>Maintenance, Rent Collection]
+    M --> P[Service Execution<br/>by Relevant Department]
+    
+    O --> Q[Continuous Relationship<br/>Regular Reporting]
+    P --> Q
+    N --> Q
+    
+    Q --> R[Client Satisfaction Survey<br/>and Feedback]
+    
+    R --> S[CRM Updates<br/>Client Profile Enhancement]
+    
+    S --> T[AI Command Center<br/>Analyzes Full Journey]
+    
+    T --> U[Performance Metrics<br/>Tracked & Optimized]
+    
+    U --> V[Strategic Insights<br/>for Future Improvements]
+    
+    V --> W[Enhanced Platform<br/>Better Client Experience<br/>Higher Efficiency]
+```
+
+---
+
+## **4. DATABASE SCHEMA DETAILS**
+
+### **4.1 Core Entity Relationships**
+
+```sql
+-- Core Entity Relationship Diagram
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    uae_pass_id VARCHAR(100) UNIQUE,
+    user_type VARCHAR(50) NOT NULL, -- client, agent, staff, admin
+    tier INTEGER DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE properties (
+    id UUID PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    property_type VARCHAR(50) NOT NULL,
+    location_id UUID REFERENCES locations(id),
+    price DECIMAL(15,2),
+    status VARCHAR(20) DEFAULT 'available',
+    created_by UUID REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE services (
+    id UUID PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    category VARCHAR(100),
+    base_price DECIMAL(10,2),
+    department VARCHAR(50),
+    estimated_duration_days INTEGER
+);
+
+CREATE TABLE clients (
+    id UUID PRIMARY KEY,
+    user_id UUID UNIQUE REFERENCES users(id),
+    client_type VARCHAR(50),
+    total_transaction_value DECIMAL(15,2) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE departments (
+    id UUID PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL,
+    head_id UUID REFERENCES users(id),
+    kpi_metrics JSONB
+);
+
+CREATE TABLE ai_assistants (
+    id UUID PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL,
+    department VARCHAR(50),
+    purpose TEXT,
+    model_version VARCHAR(20),
+    is_active BOOLEAN DEFAULT true
+);
+
+-- Relationship Tables
+CREATE TABLE user_services (
+    user_id UUID REFERENCES users(id),
+    service_id UUID REFERENCES services(id),
+    booking_status VARCHAR(20),
+    booked_at TIMESTAMP,
+    PRIMARY KEY (user_id, service_id, booked_at)
+);
+
+CREATE TABLE department_users (
+    department_id UUID REFERENCES departments(id),
+    user_id UUID REFERENCES users(id),
+    role VARCHAR(50),
+    PRIMARY KEY (department_id, user_id)
+);
+
+CREATE TABLE property_services (
+    property_id UUID REFERENCES properties(id),
+    service_id UUID REFERENCES services(id),
+    recommended BOOLEAN DEFAULT false,
+    PRIMARY KEY (property_id, service_id)
+);
+
+CREATE TABLE client_properties (
+    client_id UUID REFERENCES clients(id),
+    property_id UUID REFERENCES properties(id),
+    relationship_type VARCHAR(50), -- owner, buyer, tenant, interested
+    PRIMARY KEY (client_id, property_id)
+);
+```
+
+### **4.2 Indexing Strategy**
+
+```sql
+-- Critical Indexes for Performance
+CREATE INDEX idx_properties_location ON properties(location_id);
+CREATE INDEX idx_properties_price ON properties(price);
+CREATE INDEX idx_properties_status ON properties(status);
+CREATE INDEX idx_properties_type ON properties(property_type);
+
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_uae_pass ON users(uae_pass_id);
+CREATE INDEX idx_users_tier ON users(tier);
+
+CREATE INDEX idx_services_category ON services(category);
+CREATE INDEX idx_services_department ON services(department);
+
+CREATE INDEX idx_clients_type ON clients(client_type);
+CREATE INDEX idx_clients_value ON clients(total_transaction_value);
+
+-- Composite Indexes for Common Queries
+CREATE INDEX idx_property_search ON properties(property_type, price, status, location_id);
+CREATE INDEX idx_user_services_status ON user_services(booking_status, booked_at);
+CREATE INDEX idx_department_performance ON departments((kpi_metrics->>'revenue'));
+```
+
+---
+
+## **5. API DESIGN SPECIFICATION**
+
+### **5.1 REST API Endpoints**
+
+#### **Property Service API**
+```yaml
+/properties:
+  get:
+    summary: Search properties with filters
+    parameters:
+      - name: property_type
+        in: query
+        schema:
+          type: string
+      - name: min_price
+        in: query
+        schema:
+          type: number
+      - name: max_price
+        in: query
+        schema:
+          type: number
+      - name: location
+        in: query
+        schema:
+          type: string
+      - name: bedrooms
+        in: query
+        schema:
+          type: integer
+    responses:
+      200:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Property'
+
+/properties/{id}:
+  get:
+    summary: Get property details
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      200:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PropertyDetail'
+
+/properties/{id}/virtual-tour:
+  get:
+    summary: Get virtual tour data
+    responses:
+      200:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VirtualTour'
+```
+
+#### **AI Service API**
+```yaml
+/ai/assistants/{name}/query:
+  post:
+    summary: Query an AI assistant
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              query:
+                type: string
+              context:
+                type: object
+    responses:
+      200:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                response:
+                  type: string
+                confidence:
+                  type: number
+                sources:
+                  type: array
+                  items:
+                    type: string
+
+/ai/recommendations/properties:
+  post:
+    summary: Get AI property recommendations
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              user_id:
+                type: string
+              search_history:
+                type: array
+                items:
+                  type: string
+    responses:
+      200:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recommendations:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Property'
+                reasoning:
+                  type: string
+```
+
+### **5.2 GraphQL Schema (Internal)**
+
+```graphql
+type Query {
+  # Property queries
+  properties(
+    filters: PropertyFilters
+    limit: Int = 20
+    offset: Int = 0
+  ): [Property!]!
+  
+  property(id: ID!): Property
+  
+  # User queries
+  user(id: ID!): User
+  client360(id: ID!): Client360View
+  
+  # Department queries
+  departmentDashboard(dept: Department!): Dashboard
+  
+  # AI queries
+  aiInsights(assistant: AIAssistant!, timeframe: Timeframe): [Insight!]!
+}
+
+type Mutation {
+  # Property mutations
+  createProperty(input: PropertyInput!): Property!
+  updatePropertyStatus(id: ID!, status: PropertyStatus!): Property!
+  
+  # Service mutations
+  bookService(input: ServiceBookingInput!): Booking!
+  updateBookingStatus(id: ID!, status: BookingStatus!): Booking!
+  
+  # CRM mutations
+  createTask(input: TaskInput!): Task!
+  updateTask(id: ID!, input: TaskUpdate!): Task!
+  
+  # AI mutations
+  trainModel(assistant: AIAssistant!): TrainingResult!
+}
+
+type Subscription {
+  # Real-time subscriptions
+  propertyUpdates(propertyId: ID!): PropertyUpdate!
+  bookingUpdates(bookingId: ID!): BookingUpdate!
+  taskUpdates(department: Department!): TaskUpdate!
+}
+```
+
+---
+
+## **6. SECURITY ARCHITECTURE**
+
+### **6.1 Authentication Flow**
+
+```
+┌─────────┐      ┌──────────────┐      ┌─────────────┐      ┌─────────────┐
+│  Client │─────>│ API Gateway  │─────>│ Auth Service│─────>│ UAE PASS    │
+│         │      │              │      │             │      │   API       │
+└─────────┘      └──────────────┘      └─────────────┘      └─────────────┘
+     │                  │                     │                     │
+     │                  │                     │                     │
+     │                  │                     │                     │
+     │                  │                     │                     │
+     │                  │                     │                     │
+┌─────────┐      ┌──────────────┐      ┌─────────────┐      ┌─────────────┐
+│         │<─────│              │<─────│             │<─────│             │
+│  Client │      │ API Gateway  │      │ Auth Service│      │ UAE PASS    │
+│         │      │              │      │             │      │   API       │
+└─────────┘      └──────────────┘      └─────────────┘      └─────────────┘
+     │                  │                     │
+     │                  │                     │
+     │                  │                     │
+     │                  │                     │
+┌─────────┐      ┌──────────────┐      ┌─────────────┐
+│         │      │              │      │             │
+│  Client │─────>│ API Gateway  │─────>│   Services  │
+│         │      │  (with JWT)  │      │             │
+└─────────┘      └──────────────┘      └─────────────┘
+```
+
+### **6.2 Permission Matrix**
+
+```yaml
+User Tiers:
+  Tier 0: Public (Unauthenticated)
+    - View property listings (limited)
+    - Search properties (basic)
+    - Register account
+    
+  Tier 1: Registered User (Email Verified)
+    - Full property search
+    - Save searches
+    - Virtual tours
+    - Basic inquiries
+    
+  Tier 2: Verified Client (UAE PASS Verified)
+    - Schedule viewings
+    - Make offers
+    - Access basic services
+    - Digital document signing
+    
+  Tier 3: Premium Client
+    - Priority support
+    - Premium services
+    - Advanced analytics
+    - Dedicated account manager
+    
+  Tier 4: VIP Client
+    - All platform features
+    - Custom service packages
+    - Executive reports
+    - Strategic advisory
+
+Department Roles:
+  Sales Agent:
+    - View assigned properties
+    - Manage own leads
+    - Schedule viewings
+    - Create offers
+    
+  Department Head:
+    - View all department properties
+    - Manage team leads
+    - Approve offers
+    - View department analytics
+    
+  Executive:
+    - View all platform data
+    - Strategic analytics
+    - Performance monitoring
+    - System configuration
+```
+
+---
+
+## **7. DEPLOYMENT ARCHITECTURE**
+
+### **7.1 AWS Infrastructure**
+
+```yaml
+# CloudFormation/Terraform Structure
+Region: me-central-1 (UAE)
+Availability Zones: 3 zones for high availability
+
+VPC Configuration:
+  - Public Subnets: API Gateway, Load Balancers
+  - Private Subnets: Microservices, Databases
+  - Data Subnets: Redis, Elasticsearch
+
+Services:
+  - ECS/EKS: Container orchestration
+  - RDS: PostgreSQL databases (Multi-AZ)
+  - ElastiCache: Redis clusters
+  - Elasticsearch Service: Search cluster
+  - S3: Media storage, backups
+  - CloudFront: CDN for global content delivery
+  - Route 53: DNS management
+  - WAF: Web Application Firewall
+  - CloudWatch: Monitoring and logging
+  - Lambda: Serverless functions
+  - SageMaker: AI/ML model training and deployment
+
+Security:
+  - Security Groups: Service isolation
+  - IAM Roles: Least privilege access
+  - KMS: Encryption at rest
+  - CloudTrail: Audit logging
+  - GuardDuty: Threat detection
+```
+
+### **7.2 CI/CD Pipeline**
+
+```
+Developer Push
+    ↓
+GitHub/GitLab Repository
+    ↓
+Automated Testing
+    ├── Unit Tests
+    ├── Integration Tests
+    ├── Security Scanning
+    └── Performance Tests
+    ↓
+Build Docker Images
+    ↓
+Push to ECR (Container Registry)
+    ↓
+Deploy to Staging Environment
+    ↓
+Automated Staging Tests
+    ↓
+Manual QA Approval
+    ↓
+Blue-Green Deployment to Production
+    ↓
+Monitoring & Rollback if Needed
+    ↓
+Post-Deployment Verification
+```
+
+---
+
+## **8. PERFORMANCE OPTIMIZATION**
+
+### **8.1 Caching Strategy**
+
+```yaml
+Level 1: CDN Caching (CloudFront)
+  - Static assets: 7 days
+  - Property images: 24 hours
+  - API responses: 5 minutes (public data)
+
+Level 2: Redis Cache
+  - User sessions: 30 minutes
+  - Property search results: 10 minutes
+  - Frequently accessed data: 5 minutes
+  - API rate limiting: Real-time
+
+Level 3: Database Query Cache
+  - Common queries: 1 minute
+  - Reference data: 1 hour
+  - Complex joins: 5 minutes
+
+Cache Invalidation Strategy:
+  - Time-based expiration
+  - Event-based invalidation
+  - Manual cache busting
+  - Version-based cache keys
+```
+
+### **8.2 Database Optimization**
+
+```sql
+-- Partitioning for large tables
+CREATE TABLE property_views PARTITION BY RANGE (created_at);
+
+-- Read replicas for reporting
+CREATE REPLICA properties_replica FOR properties;
+
+-- Materialized views for complex queries
+CREATE MATERIALIZED VIEW property_analytics AS
+SELECT 
+  property_type,
+  location_id,
+  AVG(price) as avg_price,
+  COUNT(*) as total_listings,
+  AVG(days_on_market) as avg_days
+FROM properties
+GROUP BY property_type, location_id;
+
+-- Query optimization
+EXPLAIN ANALYZE SELECT * FROM properties 
+WHERE location_id = 'xxx' 
+AND price BETWEEN 1000000 AND 5000000
+AND status = 'available';
+```
+
+---
+
+## **9. MONITORING AND ALERTING**
+
+### **9.1 Key Metrics Dashboard**
+
+```yaml
+Business Metrics:
+  - Daily Active Users (DAU)
+  - Property Views per Session
+  - Lead Conversion Rate
+  - Service Adoption Rate
+  - Customer Satisfaction (CSAT)
+  - Revenue per Client
+  - Days on Market
+  - Inventory Turnover Rate
+
+Technical Metrics:
+  - API Response Time (p95 < 200ms)
+  - System Uptime (99.95%)
+  - Error Rate (< 0.1%)
+  - Database Connection Pool
+  - Cache Hit Rate (> 90%)
+  - Queue Depth
+  - Memory/CPU Utilization
+
+AI Metrics:
+  - Model Accuracy (> 90%)
+  - Prediction Latency (< 100ms)
+  - Training Time
+  - Model Drift Detection
+  - A/B Test Results
+```
+
+### **9.2 Alert Rules**
+
+```yaml
+Critical Alerts (PagerDuty/SMS):
+  - System downtime > 1 minute
+  - Database connection failures
+  - Payment processing errors
+  - Security breach detection
+  - UAE PASS API failures
+
+Warning Alerts (Email/Slack):
+  - Response time > 500ms
+  - Error rate > 1%
+  - Cache hit rate < 80%
+  - Disk space < 20%
+  - Queue depth > 1000
+
+Business Alerts:
+  - Daily leads < threshold
+  - Service completion delays
+  - Negative feedback received
+  - Compliance deadline approaching
+  - Revenue deviation > 10%
+```
+
+---
+
+## **10. DISASTER RECOVERY PLAN**
+
+### **10.1 Recovery Objectives**
+
+```yaml
+Recovery Time Objective (RTO):
+  - Tier 1 Services (Property Search, UAE PASS): 15 minutes
+  - Tier 2 Services (CRM, Inventory): 30 minutes
+  - Tier 3 Services (AI, Analytics): 2 hours
+  - Tier 4 Services (Reporting, Archives): 4 hours
+
+Recovery Point Objective (RPO):
+  - User Data: 5 minutes
+  - Property Data: 15 minutes
+  - Transaction Data: 1 minute
+  - Media Files: 1 hour
+
+Backup Strategy:
+  - Database: Continuous WAL archiving + Daily snapshots
+  - Media: S3 versioning + Cross-region replication
+  - Configuration: Git repository + Infrastructure as Code
+  - AI Models: S3 storage + Version tagging
+```
+
+### **10.2 Multi-Region Deployment**
+
+```
+Primary Region: me-central-1 (UAE)
+  - Active traffic
+  - Read/write databases
+  - Real-time processing
+
+Secondary Region: eu-west-1 (Ireland)
+  - Read replicas
+  - Backup data
+  - Disaster recovery standby
+
+Failover Procedure:
+  1. Detect regional failure (Health checks)
+  2. Update DNS to secondary region
+  3. Promote read replicas to primary
+  4. Update application configuration
+  5. Monitor failover completion
+  6. Begin data synchronization back
+```
+
+---
+
+**END OF SOFTWARE DESIGN DOCUMENT VERSION 1.0**
+
+*This SDD provides the technical blueprint for implementing the White Caves Real Estate AI Platform, covering architecture, database design, API specifications, security, deployment, and operational considerations.*
