@@ -97,6 +97,7 @@ import WhatsAppChatbotPage from './pages/owner/WhatsAppChatbotPage';
 import WhatsAppAnalyticsPage from './pages/owner/WhatsAppAnalyticsPage';
 import WhatsAppSettingsPage from './pages/owner/WhatsAppSettingsPage';
 import ModernDashboardPage from './pages/owner/ModernDashboardPage';
+import CRMWorkspacePage from './pages/owner/CRMWorkspacePage';
 import UAEPassSuccessPage from './pages/auth/UAEPassSuccessPage';
 import { BiometricPrompt } from './features/auth/components/BiometricLogin';
 import { StatusProvider } from './components/common/StatusNotification';
@@ -276,6 +277,12 @@ function App() {
             <WhatsAppSettingsPage />
           </ProtectedRoute>
         } />
+        <Route path="/md/crm" element={
+          <ProtectedRoute allowedRoles={['md']}>
+            <CRMWorkspacePage />
+          </ProtectedRoute>
+        } />
+        <Route path="/crm" element={<CRMWorkspacePage />} />
         
         {/* Legacy owner routes - redirect to md */}
         <Route path="/owner/*" element={<Navigate to="/md/dashboard" replace />} />

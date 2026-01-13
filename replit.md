@@ -108,10 +108,30 @@ Preferred communication style: Simple, everyday language.
 - `GET /stats` - Get deal statistics
 
 ## Recent Changes (January 2026)
+- **Two-Pane CRM Workspace**: New `/crm` route with sophisticated two-pane layout:
+  - LEFT sidebar: 10 CRM departments + 5 platform pillars (no AI assistants)
+  - RIGHT panel: AI Command Center with 32+ assistants organized by department
+  - 3-mode dashboard rendering: Welcome (overview), Department (CRM-only), Assistant (AI-only), Mixed (collaborative)
+  - MixedCollaborativeDashboard shows shared functions, events, and data flows when both department + assistant selected
+  - workspaceSlice with memoized selectors using createSelector
+- Added new departments to assistantRegistry: leasing, property_management, hr
+- Added new AI assistants: Daisy (Leasing), Nancy (Property Mgmt), Marcus (HR)
 - Added Deal Management System with TenancyDeal and SalesDeal models
 - Created DealJourneyTimeline component for visual stage tracking
 - Built DemoDataPanel with 4 learning scenarios
 - Added MarketingSEOTools for digital marketing features
 - Fixed .vercelignore deployment issue
-- Updated Redux store with deals slice
+- Updated Redux store with workspace and deals slices
 - Configured Replit autoscale deployment
+
+## Two-Pane Workspace Architecture
+- **Route**: `/crm` and `/md/crm`
+- **Components**:
+  - `TwoPaneLayout` - Main layout orchestrating sidebars and dashboard
+  - `LeftSidebarCRM` - Department/pillar navigation (10 depts + 5 pillars)
+  - `RightAssistantPanel` - AI assistants with favorites, search, filtering
+  - `WelcomeDashboard` - Overview when nothing selected
+  - `DepartmentDashboard` - CRM view with KPIs and assigned assistants
+  - `AssistantDashboard` - AI capabilities, data flows, endpoints
+  - `MixedCollaborativeDashboard` - Shared functions, events, data flow visualization
+- **State**: workspaceSlice manages left/right sidebar selection, dashboard mode, recent items

@@ -68,6 +68,27 @@ export const DEPARTMENTS = {
     color: '#0D9488',
     gradient: 'linear-gradient(135deg, #0D9488 0%, #0F766E 100%)',
     icon: 'Brain'
+  },
+  leasing: {
+    id: 'leasing',
+    label: 'Leasing',
+    color: '#F59E0B',
+    gradient: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+    icon: 'Home'
+  },
+  property_management: {
+    id: 'property_management',
+    label: 'Property Management',
+    color: '#3B82F6',
+    gradient: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+    icon: 'Building2'
+  },
+  hr: {
+    id: 'hr',
+    label: 'Human Resources',
+    color: '#14B8A6',
+    gradient: 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
+    icon: 'UserCheck'
   }
 };
 
@@ -580,6 +601,69 @@ export const AI_ASSISTANTS = {
       outputs: ['zoe', 'clara'],
       inputs: ['cipher', 'theodora', 'mary']
     }
+  },
+  daisy: {
+    id: 'daisy',
+    name: 'Daisy',
+    title: 'Leasing Coordinator',
+    department: 'leasing',
+    icon: 'Home',
+    color: '#F59E0B',
+    avatar: '🏠',
+    description: 'Manages tenant onboarding, lease agreements, renewals, and Ejari registration',
+    capabilities: ['tenant_onboarding', 'lease_management', 'renewal_tracking', 'ejari_registration'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'leasing_agent'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/leases', '/api/tenants', '/api/ejari'],
+    dataFlows: {
+      outputs: ['nancy', 'theodora'],
+      inputs: ['clara', 'mary']
+    }
+  },
+  nancy: {
+    id: 'nancy',
+    name: 'Nancy',
+    title: 'Property Inspector',
+    department: 'property_management',
+    icon: 'Building2',
+    color: '#3B82F6',
+    avatar: '🔍',
+    description: 'Handles property inspections, maintenance coordination, and asset condition tracking',
+    capabilities: ['property_inspection', 'maintenance_coordination', 'condition_reporting', 'snag_list_management'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'property_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/inspections', '/api/maintenance', '/api/conditions'],
+    dataFlows: {
+      outputs: ['mary', 'daisy'],
+      inputs: ['daisy', 'mary']
+    }
+  },
+  marcus: {
+    id: 'marcus',
+    name: 'Marcus',
+    title: 'HR Operations Manager',
+    department: 'hr',
+    icon: 'UserCheck',
+    color: '#14B8A6',
+    avatar: '👨‍💼',
+    description: 'Manages employee records, recruitment, performance tracking, and training programs',
+    capabilities: ['employee_management', 'recruitment', 'performance_tracking', 'training_coordination'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'hr_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/employees', '/api/recruitment', '/api/training'],
+    dataFlows: {
+      outputs: ['zoe'],
+      inputs: ['cipher']
+    }
   }
 };
 
@@ -609,12 +693,15 @@ export const getDepartmentOrder = () => [
   'communications',
   'operations', 
   'sales',
+  'leasing',
+  'property_management',
   'finance',
   'marketing',
   'executive',
   'compliance',
   'legal',
   'technology',
+  'hr',
   'intelligence'
 ];
 
