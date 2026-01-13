@@ -16,6 +16,7 @@ import navigationUIReducer from './slices/navigationUISlice';
 import accessControlReducer from './slices/accessControlSlice';
 import dashboardViewReducer from './slices/dashboardViewSlice';
 import crmViewReducer from './slices/crmViewSlice';
+import kycAmlReducer from './slices/kycAmlSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 
 export const store = configureStore({
@@ -36,7 +37,8 @@ export const store = configureStore({
     navigationUI: navigationUIReducer,
     accessControl: accessControlReducer,
     dashboardView: dashboardViewReducer,
-    crmView: crmViewReducer
+    crmView: crmViewReducer,
+    kycAml: kycAmlReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
