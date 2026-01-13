@@ -83,3 +83,35 @@ Preferred communication style: Simple, everyday language.
 - **WhatsApp Business API**: Customer support and chatbot.
 - **Matterport**: Virtual tour integration.
 - **Vercel Speed Insights**: Performance analytics.
+
+## Deployment
+
+- **Platform**: Replit Autoscale Deployment
+- **Build Command**: `npm run build`
+- **Run Command**: `node server/index.js`
+- **Frontend Port**: 5000 (served by Express in production)
+- **Backend Port**: 3000 (development) / 5000 (production)
+
+## API Endpoints
+
+### Deals API (`/api/deals`)
+- `GET /tenancy` - List tenancy deals with pagination
+- `GET /tenancy/:dealNumber` - Get tenancy deal by number
+- `POST /tenancy` - Create new tenancy deal
+- `PUT /tenancy/:dealNumber/status` - Update tenancy deal status
+- `GET /sales` - List sales deals with pagination
+- `GET /sales/:dealNumber` - Get sales deal by number
+- `POST /sales` - Create new sales deal
+- `PUT /sales/:dealNumber/status` - Update sales deal status
+- `GET /demo` - Get demo data scenarios
+- `POST /demo/seed` - Seed demo data
+- `GET /stats` - Get deal statistics
+
+## Recent Changes (January 2026)
+- Added Deal Management System with TenancyDeal and SalesDeal models
+- Created DealJourneyTimeline component for visual stage tracking
+- Built DemoDataPanel with 4 learning scenarios
+- Added MarketingSEOTools for digital marketing features
+- Fixed .vercelignore deployment issue
+- Updated Redux store with deals slice
+- Configured Replit autoscale deployment
