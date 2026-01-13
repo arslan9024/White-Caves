@@ -23,6 +23,7 @@ import transactionsRoutes from './routes/transactions.routes.js';
 import seedTransactionsRoutes from './routes/seed-transactions.js';
 import offplanRoutes from './routes/offplan.js';
 import ninaRoutes from './routes/nina.js';
+import complianceRoutes from './routes/compliance.js';
 import OliviaService from './services/oliviaService.js';
 import schedulerService from './services/schedulerService.js';
 
@@ -68,6 +69,7 @@ app.use('/api/transactions', transactionsRoutes);
 app.use('/api/seed', seedTransactionsRoutes);
 app.use('/api/offplan', offplanRoutes);
 app.use('/api/nina', ninaRoutes);
+app.use('/api/compliance', complianceRoutes);
 
 // Serve static files from the dist folder in production
 const distPath = path.join(__dirname, '..', 'dist');
