@@ -20,3 +20,6 @@ export { default as PlatformPublisherForm } from './PlatformPublisherForm';
 export { default as JobPostComposer } from './JobPostComposer';
 export { default as WeeklyResearchModule } from './WeeklyResearchModule';
 export { default as AssistantDocsTab } from './AssistantDocsTab';
+export { default as DealJourneyTimeline } from './DealJourneyTimeline';
+export { default as DemoDataPanel } from './DemoDataPanel';
+export { default as MarketingSEOTools } from './MarketingSEOTools';

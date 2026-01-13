@@ -64,6 +64,9 @@ Preferred communication style: Simple, everyday language.
 - **Footer Helpful Links**: External Dubai resource links.
 - **DLD Transactions System**: Integration of real Dubai Land Department transaction data (5,400+ records) with MongoDB model, RESTful API (CRUD, filtering, aggregation), and `TransactionsView` component.
 - **Off-Plan Properties System**: Complete off-plan project management with `OffPlanProject` and `OffPlanUnit` models, construction progress tracking, configurable payment plans, and a RESTful API.
+- **Deal Management System**: Comprehensive TenancyDeal and SalesDeal models with full lifecycle tracking. Features DealJourneyTimeline component for visual stage progression, Redux dealsSlice for state management, and /api/deals REST API with 25+ endpoints.
+- **Learning Demo Scenarios**: Interactive demo data seeder with 4 learning scenarios (Ejari tenancy, off-plan sale, secondary sale, KYC/AML high-risk case). DemoDataPanel component provides realistic examples to teach best practices.
+- **Digital Marketing & SEO Tools**: MarketingSEOTools component with keyword research (Dubai property keywords), SEO audit checklist, AI content ideas generator, and analytics dashboard.
 
 ## External Dependencies
 
