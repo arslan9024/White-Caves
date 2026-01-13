@@ -5,6 +5,7 @@ import {
   AlertCircle, CheckCircle, Eye, Download, TrendingUp, ArrowUp
 } from 'lucide-react';
 import AssistantDocsTab from './shared/AssistantDocsTab';
+import KYCAMLDashboard from './shared/KYCAMLDashboard';
 import './AssistantDashboard.css';
 
 const TIMELINE_EVENTS = [
@@ -43,7 +44,7 @@ const ASSISTANT_COLORS = {
 };
 
 const HenryAuditCRM = () => {
-  const [activeTab, setActiveTab] = useState('timeline');
+  const [activeTab, setActiveTab] = useState('compliance');
   const [searchQuery, setSearchQuery] = useState('');
 
   const getEventIcon = (type) => {
@@ -65,8 +66,8 @@ const HenryAuditCRM = () => {
           <BookOpen size={28} />
         </div>
         <div className="assistant-info">
-          <h2>Henry - Record Keeper & Timeline Master</h2>
-          <p>Centralized memory and audit system. Creates immutable audit trails, enables cross-system analytics, and automates compliance reporting</p>
+          <h2>Henry - Compliance Officer & Record Keeper</h2>
+          <p>KYC/AML compliance management, immutable audit trails, cross-system analytics, and automated compliance reporting</p>
         </div>
         <div className="assistant-status online">
           <span className="status-dot"></span>
@@ -100,7 +101,7 @@ const HenryAuditCRM = () => {
             <Clock size={20} />
           </div>
           <div className="stat-content">
-            <span className="stat-value">24</span>
+            <span className="stat-value">38</span>
             <span className="stat-label">AI Assistants</span>
           </div>
           <span className="stat-change">All monitored</span>
@@ -118,18 +119,28 @@ const HenryAuditCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['timeline', 'audit', 'reports', 'analytics', 'docs'].map(tab => (
+        {['compliance', 'timeline', 'audit', 'reports', 'analytics', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
-            {tab === 'docs' ? 'Documentation' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === 'docs' ? 'Documentation' : 
+             tab === 'compliance' ? 'KYC/AML Compliance' :
+             tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
 
       <div className="tab-content">
+        {activeTab === 'compliance' && (
+          <KYCAMLDashboard 
+            assistant="henry"
+            accessLevel="full"
+            showTabs={['queue', 'profiles', 'alerts', 'pep', 'sanctions', 'audit', 'reports']}
+          />
+        )}
+
         {activeTab === 'timeline' && (
           <div className="timeline-view">
             <div className="view-header">

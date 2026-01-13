@@ -5,6 +5,7 @@ import {
   TrendingUp, ArrowUp, ArrowDown, Eye, Plus, AlertCircle
 } from 'lucide-react';
 import AssistantDocsTab from './shared/AssistantDocsTab';
+import KYCAMLDashboard from './shared/KYCAMLDashboard';
 import './AssistantDashboard.css';
 
 const LEGAL_RISKS = [
@@ -119,13 +120,15 @@ const EvangelineLegalCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['risks', 'contracts', 'regulations', 'library', 'docs'].map(tab => (
+        {['risks', 'contracts', 'compliance', 'regulations', 'library', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
-            {tab === 'docs' ? 'Documentation' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === 'docs' ? 'Documentation' :
+             tab === 'compliance' ? 'Legal Compliance' :
+             tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
@@ -202,6 +205,14 @@ const EvangelineLegalCRM = () => {
               ))}
             </div>
           </div>
+        )}
+
+        {activeTab === 'compliance' && (
+          <KYCAMLDashboard 
+            assistant="evangeline"
+            accessLevel="limited"
+            showTabs={['profiles', 'pep', 'sanctions', 'audit']}
+          />
         )}
 
         {activeTab === 'regulations' && (

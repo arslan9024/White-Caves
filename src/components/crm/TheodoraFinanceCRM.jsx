@@ -5,6 +5,7 @@ import {
   CheckCircle, Clock, AlertCircle, PieChart, BarChart3, Send, MessageSquare
 } from 'lucide-react';
 import { PaymentInstructionDeck, AssistantDocsTab } from './shared';
+import KYCAMLDashboard from './shared/KYCAMLDashboard';
 import './AssistantDashboard.css';
 
 const INVOICES = [
@@ -91,13 +92,15 @@ const TheodoraFinanceCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['overview', 'invoices', 'payments', 'expenses', 'reports', 'docs'].map(tab => (
+        {['overview', 'invoices', 'payments', 'expenses', 'aml_monitoring', 'reports', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === 'aml_monitoring' ? 'AML Monitoring' :
+             tab === 'docs' ? 'Documentation' :
+             tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
@@ -252,6 +255,14 @@ const TheodoraFinanceCRM = () => {
               ))}
             </div>
           </div>
+        )}
+
+        {activeTab === 'aml_monitoring' && (
+          <KYCAMLDashboard 
+            assistant="theodora"
+            accessLevel="limited"
+            showTabs={['alerts', 'sanctions']}
+          />
         )}
 
         {activeTab === 'reports' && (
