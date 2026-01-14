@@ -111,9 +111,9 @@
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 30px;
+  width: 40px;
   height: 2px;
-  background: var(--color-primary, #DC2626);
+  background: #B03737;
 }
 
 .footer-section ul {
@@ -135,7 +135,7 @@
 }
 
 .footer-section a:hover {
-  color: white;
+  color: #B03737;
   transform: translateX(3px);
 }
 
@@ -172,12 +172,12 @@
 .dld-badge {
   display: inline-block;
   padding: 0.375rem 0.75rem;
-  background: rgba(220, 38, 38, 0.2);
-  border: 1px solid rgba(220, 38, 38, 0.4);
+  background: rgba(176, 55, 55, 0.2);
+  border: 1px solid rgba(176, 55, 55, 0.4);
   border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #FF6B6B;
+  color: #B03737;
   margin-right: 0.5rem;
   margin-bottom: 0.5rem;
 }
@@ -222,7 +222,7 @@
 }
 
 .footer-legal a:hover {
-  color: white;
+  color: #B03737;
 }
 
 @media (max-width: 1200px) {

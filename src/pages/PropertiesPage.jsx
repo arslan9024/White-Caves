@@ -250,24 +250,26 @@ export default function PropertiesPage() {
   const navigate = useNavigate();
   const favorites = useSelector(selectFavorites);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [properties, setProperties] = useState(SAMPLE_PROPERTIES);
-  const [filteredProperties, setFilteredProperties] = useState(SAMPLE_PROPERTIES);
+  const [properties, setProperties] = useState([]);
+  const [filteredProperties, setFilteredProperties] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProperties = async () => {
       try {
+        setLoading(true);
         const response = await fetch('/api/crud/properties?limit=100');
         if (response.ok) {
           const data = await response.json();
-          const dbProperties = data.data.map(p => ({
+          const dbProperties = (data.data || []).map(p => ({
             id: p._id,
-            title: p.title,
-            location: p.location,
-            type: p.type,
+            title: p.title || 'Untitled Property',
+            location: p.location || 'Dubai',
+            type: p.type || 'Property',
             purpose: p.purpose || 'buy',
             beds: p.beds || p.bedrooms || 0,
             baths: p.baths || p.bathrooms || 0,
@@ -282,13 +284,22 @@ export default function PropertiesPage() {
             address: p.address,
             developer: p.developer
           }));
+          
           if (dbProperties.length > 0) {
             setProperties(dbProperties);
             setFilteredProperties(dbProperties);
+          } else {
+            setProperties(SAMPLE_PROPERTIES);
+            setFilteredProperties(SAMPLE_PROPERTIES);
           }
+        } else {
+          setProperties(SAMPLE_PROPERTIES);
+          setFilteredProperties(SAMPLE_PROPERTIES);
         }
       } catch (err) {
-        console.log('Using sample data');
+        console.error('Error fetching properties:', err);
+        setProperties(SAMPLE_PROPERTIES);
+        setFilteredProperties(SAMPLE_PROPERTIES);
       } finally {
         setLoading(false);
       }
