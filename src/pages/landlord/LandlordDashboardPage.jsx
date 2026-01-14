@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import RolePageLayout from '../../components/layout/RolePageLayout';
 import {
   StatCard,
@@ -11,58 +12,89 @@ import {
   QuickLinks,
   ActionButton
 } from '../../components/common';
+import {
+  fetchLandlordStats,
+  fetchLandlordProperties,
+  fetchLandlordMaintenance,
+  fetchLandlordFinances,
+  setActiveTab
+} from '../../store/slices/landlordSlice';
 import './LandlordDashboard.css';
 
-const LANDLORD_STATS = [
-  { icon: '🏢', value: '6', label: 'Total Properties', change: 'Portfolio: AED 15.2M', positive: true },
-  { icon: '🔑', value: '5', label: 'Occupied', change: '83% occupancy', positive: true },
-  { icon: '📋', value: '1', label: 'Available', change: 'Ready to rent', positive: false },
-  { icon: '💰', value: 'AED 125K', label: 'Monthly Income', change: '+8% vs last month', positive: true },
-];
-
-const QUICK_LINKS = [
-  { path: '/landlord/rental-management', icon: '🏠', title: 'Rental Management', description: 'Manage all rentals' },
-  { path: '/landlord/tenants', icon: '👥', title: 'My Tenants', description: 'View tenant details' },
-  { path: '/landlord/finances', icon: '💰', title: 'Finances', description: 'Track income & expenses' },
-  { path: '/landlord/maintenance', icon: '🔧', title: 'Maintenance', description: 'Handle repairs' },
-];
-
-const PROPERTIES = [
-  { id: 1, name: 'Marina View 2BR', location: 'Dubai Marina', status: 'Occupied', rent: 'AED 95,000/yr', tenant: 'Ahmed Al-Rashid', leaseEnd: 'Dec 2024', paymentStatus: 'Paid' },
-  { id: 2, name: 'Downtown Studio', location: 'Downtown Dubai', status: 'Occupied', rent: 'AED 65,000/yr', tenant: 'Sarah Johnson', leaseEnd: 'Jun 2024', paymentStatus: 'Due Soon' },
-  { id: 3, name: 'JBR 3BR Apartment', location: 'JBR', status: 'Available', rent: 'AED 180,000/yr', tenant: '-', leaseEnd: '-', paymentStatus: '-' },
-  { id: 4, name: 'Business Bay Office', location: 'Business Bay', status: 'Occupied', rent: 'AED 250,000/yr', tenant: 'Tech Solutions LLC', leaseEnd: 'Mar 2025', paymentStatus: 'Paid' },
-];
-
-const MAINTENANCE_REQUESTS = [
-  { id: 1, property: 'Marina View 2BR', issue: 'AC maintenance required', priority: 'Medium', date: 'Today', status: 'Pending' },
-  { id: 2, property: 'Downtown Studio', issue: 'Water heater replacement', priority: 'High', date: 'Yesterday', status: 'In Progress' },
-  { id: 3, property: 'Business Bay Office', issue: 'Parking access card issue', priority: 'Low', date: '3 days ago', status: 'Resolved' },
-];
-
-const FINANCIAL_SUMMARY = {
-  totalIncome: 'AED 590,000',
-  collected: 'AED 495,000',
-  pending: 'AED 95,000',
-  expenses: 'AED 45,000',
-  netIncome: 'AED 450,000',
-};
-
-const UPCOMING_LEASE_EVENTS = [
-  { property: 'Downtown Studio', event: 'Lease Renewal', date: 'Jun 15, 2024', daysLeft: 45 },
-  { property: 'Marina View 2BR', event: 'Rent Review', date: 'Nov 1, 2024', daysLeft: 180 },
-  { property: 'Business Bay Office', event: 'Lease Expiry', date: 'Mar 15, 2025', daysLeft: 320 },
-];
-
 export default function LandlordDashboardPage() {
-  const [activeTab, setActiveTab] = useState('overview');
+  const dispatch = useDispatch();
+  const { stats, properties, maintenance, finances, loading, error, activeTab } = useSelector(state => state.landlord);
+
+  const QUICK_LINKS = [
+    { path: '/landlord/rental-management', icon: '🏠', title: 'Rental Management', description: 'Manage all rentals' },
+    { path: '/landlord/tenants', icon: '👥', title: 'My Tenants', description: 'View tenant details' },
+    { path: '/landlord/finances', icon: '💰', title: 'Finances', description: 'Track income & expenses' },
+    { path: '/landlord/maintenance', icon: '🔧', title: 'Maintenance', description: 'Handle repairs' },
+  ];
+
+  const UPCOMING_LEASE_EVENTS = [
+    { property: 'Downtown Studio', event: 'Lease Renewal', date: 'Jun 15, 2024', daysLeft: 45 },
+    { property: 'Marina View 2BR', event: 'Rent Review', date: 'Nov 1, 2024', daysLeft: 180 },
+    { property: 'Business Bay Office', event: 'Lease Expiry', date: 'Mar 15, 2025', daysLeft: 320 },
+  ];
+
+  // Fetch data from APIs on component mount
+  useEffect(() => {
+    dispatch(fetchLandlordStats());
+    dispatch(fetchLandlordProperties());
+    dispatch(fetchLandlordMaintenance());
+    dispatch(fetchLandlordFinances());
+
+    // Set up polling interval (refresh every 30 seconds)
+    const pollingInterval = setInterval(() => {
+      dispatch(fetchLandlordStats());
+      dispatch(fetchLandlordContacts());
+    }, 30000);
+
+    return () => clearInterval(pollingInterval);
+  }, [dispatch]);
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: '📊' },
-    { id: 'properties', label: 'Properties', icon: '🏢', badge: PROPERTIES.length },
-    { id: 'maintenance', label: 'Maintenance', icon: '🔧', badge: MAINTENANCE_REQUESTS.filter(m => m.status !== 'Resolved').length },
+    { id: 'properties', label: 'Properties', icon: '🏢', badge: properties.length },
+    { id: 'maintenance', label: 'Maintenance', icon: '🔧', badge: maintenance.filter(m => m.status !== 'Resolved').length },
     { id: 'finances', label: 'Finances', icon: '💰' },
   ];
+
+  const transformStatsForDisplay = () => {
+    if (!stats) return [];
+    return [
+      { 
+        icon: '🏢', 
+        value: stats.totalProperties?.toString() || '0', 
+        label: 'Total Properties', 
+        change: 'Portfolio: AED 15.2M', 
+        positive: true 
+      },
+      { 
+        icon: '🔑', 
+        value: stats.occupied?.toString() || '0', 
+        label: 'Occupied', 
+        change: `${stats.occupied}/${stats.totalProperties} occupied`, 
+        positive: true 
+      },
+      { 
+        icon: '📋', 
+        value: stats.available?.toString() || '0', 
+        label: 'Available', 
+        change: 'Ready to rent', 
+        positive: false 
+      },
+      { 
+        icon: '💰', 
+        value: stats.monthlyIncome || 'N/A', 
+        label: 'Monthly Income', 
+        change: '+8% vs last month', 
+        positive: true 
+      },
+    ];
+  };
+
 
   const getPriorityColor = (priority) => {
     switch (priority.toLowerCase()) {
@@ -82,6 +114,34 @@ export default function LandlordDashboardPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <RolePageLayout
+        title="Landlord Dashboard"
+        subtitle="Manage your rental property portfolio"
+        role="landlord"
+      >
+        <div style={{ padding: '40px', textAlign: 'center', fontSize: '18px', color: '#666' }}>
+          Loading your dashboard...
+        </div>
+      </RolePageLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <RolePageLayout
+        title="Landlord Dashboard"
+        subtitle="Manage your rental property portfolio"
+        role="landlord"
+      >
+        <div style={{ padding: '40px', textAlign: 'center', fontSize: '18px', color: '#DC2626' }}>
+          Error: {error}
+        </div>
+      </RolePageLayout>
+    );
+  }
+
   return (
     <RolePageLayout
       title="Landlord Dashboard"
@@ -97,7 +157,7 @@ export default function LandlordDashboardPage() {
       }
     >
       <StatCardGrid columns={4}>
-        {LANDLORD_STATS.map((stat, index) => (
+        {transformStatsForDisplay().map((stat, index) => (
           <StatCard key={index} {...stat} variant="landlord" />
         ))}
       </StatCardGrid>
@@ -107,7 +167,7 @@ export default function LandlordDashboardPage() {
       <TabbedPanel
         tabs={tabs}
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={(tab) => dispatch(setActiveTab(tab))}
         storeKey="landlordDashboard"
       />
 
@@ -115,7 +175,7 @@ export default function LandlordDashboardPage() {
         <DataCardGrid columns={2}>
           <DataCard title="My Properties" viewAllLink="/landlord/properties">
             <DataList>
-              {PROPERTIES.slice(0, 3).map(property => (
+              {properties.slice(0, 3).map(property => (
                 <DataListItem
                   key={property.id}
                   icon="🏢"
@@ -131,7 +191,7 @@ export default function LandlordDashboardPage() {
 
           <DataCard title="Maintenance Requests" viewAllLink="/landlord/maintenance">
             <DataList>
-              {MAINTENANCE_REQUESTS.map(request => (
+              {maintenance.map(request => (
                 <DataListItem
                   key={request.id}
                   icon="🔧"
@@ -148,23 +208,23 @@ export default function LandlordDashboardPage() {
             <div className="financial-grid">
               <div className="financial-item">
                 <span className="financial-label">Total Income</span>
-                <span className="financial-value">{FINANCIAL_SUMMARY.totalIncome}</span>
+                <span className="financial-value">{finances?.totalIncome || 'N/A'}</span>
               </div>
               <div className="financial-item collected">
                 <span className="financial-label">Collected</span>
-                <span className="financial-value">{FINANCIAL_SUMMARY.collected}</span>
+                <span className="financial-value">{finances?.collected || 'N/A'}</span>
               </div>
               <div className="financial-item pending">
                 <span className="financial-label">Pending</span>
-                <span className="financial-value">{FINANCIAL_SUMMARY.pending}</span>
+                <span className="financial-value">{finances?.pending || 'N/A'}</span>
               </div>
               <div className="financial-item expenses">
                 <span className="financial-label">Expenses</span>
-                <span className="financial-value">{FINANCIAL_SUMMARY.expenses}</span>
+                <span className="financial-value">{finances?.expenses || 'N/A'}</span>
               </div>
               <div className="financial-item net">
                 <span className="financial-label">Net Income</span>
-                <span className="financial-value">{FINANCIAL_SUMMARY.netIncome}</span>
+                <span className="financial-value">{finances?.netIncome || 'N/A'}</span>
               </div>
             </div>
           </DataCard>
@@ -187,9 +247,9 @@ export default function LandlordDashboardPage() {
       )}
 
       {activeTab === 'properties' && (
-        <DataCard title={`All Properties (${PROPERTIES.length})`}>
+        <DataCard title={`All Properties (${properties.length})`}>
           <DataList>
-            {PROPERTIES.map(property => (
+            {properties.map(property => (
               <DataListItem
                 key={property.id}
                 icon="🏢"
@@ -212,7 +272,7 @@ export default function LandlordDashboardPage() {
 
       {activeTab === 'maintenance' && (
         <DataCard 
-          title={`Maintenance Requests (${MAINTENANCE_REQUESTS.length})`}
+          title={`Maintenance Requests (${maintenanceRequests.length})`}
           headerActions={
             <ActionButton 
               icon="➕" 
@@ -223,7 +283,7 @@ export default function LandlordDashboardPage() {
           }
         >
           <DataList>
-            {MAINTENANCE_REQUESTS.map(request => (
+            {maintenanceRequests.map(request => (
               <DataListItem
                 key={request.id}
                 icon="🔧"
@@ -248,15 +308,15 @@ export default function LandlordDashboardPage() {
             <div className="financial-summary-card">
               <div className="summary-row">
                 <span>Total Annual Income</span>
-                <span className="value">{FINANCIAL_SUMMARY.totalIncome}</span>
+                <span className="value">{finances?.totalIncome || 'N/A'}</span>
               </div>
               <div className="summary-row collected">
                 <span>Collected</span>
-                <span className="value">{FINANCIAL_SUMMARY.collected}</span>
+                <span className="value">{finances?.collected || 'N/A'}</span>
               </div>
               <div className="summary-row pending">
                 <span>Pending</span>
-                <span className="value">{FINANCIAL_SUMMARY.pending}</span>
+                <span className="value">{finances?.pending || 'N/A'}</span>
               </div>
             </div>
           </DataCard>
@@ -265,11 +325,11 @@ export default function LandlordDashboardPage() {
             <div className="financial-summary-card">
               <div className="summary-row expenses">
                 <span>Total Expenses</span>
-                <span className="value">{FINANCIAL_SUMMARY.expenses}</span>
+                <span className="value">{finances?.expenses || 'N/A'}</span>
               </div>
               <div className="summary-row net">
                 <span>Net Income</span>
-                <span className="value highlight">{FINANCIAL_SUMMARY.netIncome}</span>
+                <span className="value highlight">{finances?.netIncome || 'N/A'}</span>
               </div>
             </div>
           </DataCard>

@@ -580,6 +580,513 @@ export const AI_ASSISTANTS = {
       outputs: ['zoe', 'clara'],
       inputs: ['cipher', 'theodora', 'mary']
     }
+  },
+  // === ADDITIONAL CORE ASSISTANTS (Phase 1 Extension) ===
+  penny: {
+    id: 'penny',
+    name: 'Penny',
+    title: 'Commission Tracker & Payment Orchestrator',
+    department: 'finance',
+    icon: 'CreditCard',
+    color: '#EC4899',
+    avatar: '💳',
+    description: 'Automates commission calculation, payout scheduling, agent performance bonuses, and creates detailed earning reports for all team members',
+    capabilities: ['commission_calculation', 'payout_scheduling', 'performance_bonuses', 'earning_reports', 'payment_automation', 'compliance_tracking'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'finance_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'departmental'
+    },
+    apiEndpoints: ['/api/commissions', '/api/payouts', '/api/earnings'],
+    dataFlows: {
+      outputs: ['theodora', 'zoe'],
+      inputs: ['sophia', 'clara', 'theodora']
+    }
+  },
+  quinn: {
+    id: 'quinn',
+    name: 'Quinn',
+    title: 'Payment Processor & Gateway Manager',
+    department: 'finance',
+    icon: 'Zap',
+    color: '#00D084',
+    avatar: '⚡',
+    description: 'Manages payment gateway integrations, transaction processing, refund handling, escrow operations, and reconciliation across all transactions',
+    capabilities: ['payment_gateway_management', 'transaction_processing', 'refund_handling', 'escrow_operations', 'reconciliation', 'fraud_detection'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'finance_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/payments', '/api/gateway', '/api/escrow'],
+    dataFlows: {
+      outputs: ['theodora', 'laila'],
+      inputs: ['clara', 'theodora', 'daisy']
+    }
+  },
+  marcus: {
+    id: 'marcus',
+    name: 'Marcus',
+    title: 'Campaign Manager & Performance Analyst',
+    department: 'marketing',
+    icon: 'Gauge',
+    color: '#FF6B6B',
+    avatar: '📈',
+    description: 'Creates and manages multi-channel marketing campaigns, performs A/B testing, allocates budget, and tracks conversion metrics across all platforms',
+    capabilities: ['campaign_creation', 'ab_testing', 'performance_tracking', 'budget_allocation', 'channel_optimization', 'attribution_modeling'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'marketing_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'departmental'
+    },
+    apiEndpoints: ['/api/campaigns', '/api/analytics', '/api/budget'],
+    dataFlows: {
+      outputs: ['zoe', 'olivia'],
+      inputs: ['olivia', 'clara', 'mary']
+    }
+  },
+  stella: {
+    id: 'stella',
+    name: 'Stella',
+    title: 'Content Creator & Asset Manager',
+    department: 'marketing',
+    icon: 'Sparkles',
+    color: '#FFB347',
+    avatar: '✨',
+    description: 'Manages content calendar, creates property copy, organizes digital assets, maintains brand guidelines, and generates social media content recommendations',
+    capabilities: ['content_calendar', 'copywriting', 'asset_management', 'brand_guidelines', 'social_content', 'seo_optimization'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'marketing_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'departmental'
+    },
+    apiEndpoints: ['/api/content', '/api/assets', '/api/social'],
+    dataFlows: {
+      outputs: ['olivia', 'marcus'],
+      inputs: ['olivia', 'mary']
+    }
+  },
+  vera: {
+    id: 'vera',
+    name: 'Vera',
+    title: 'KYC Specialist & Identity Verification',
+    department: 'compliance',
+    icon: 'UserCheck',
+    color: '#8FB9A8',
+    avatar: '✅',
+    description: 'Manages complete KYC process, document validation, risk scoring, client onboarding workflows, and multi-layer identity verification',
+    capabilities: ['identity_verification', 'document_validation', 'risk_scoring', 'client_onboarding', 'compliance_checks', 'fraud_prevention'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'compliance_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/kyc', '/api/identity', '/api/verification'],
+    dataFlows: {
+      outputs: ['laila', 'clara'],
+      inputs: ['laila', 'clara']
+    }
+  },
+  ivy: {
+    id: 'ivy',
+    name: 'Ivy',
+    title: 'Ejari & RERA Specialist',
+    department: 'legal',
+    icon: 'FileCheck',
+    color: '#7B68EE',
+    avatar: '📜',
+    description: 'Manages Ejari registrations, rental contract compliance, RERA requirements, lease renewals, and automatic compliance reminders for all rental transactions',
+    capabilities: ['ejari_management', 'rera_compliance', 'contract_compliance', 'lease_renewal', 'document_generation', 'regulatory_tracking'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'legal_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/ejari', '/api/rera', '/api/legal-docs'],
+    dataFlows: {
+      outputs: ['laila', 'daisy'],
+      inputs: ['daisy', 'laila']
+    }
+  },
+  max: {
+    id: 'max',
+    name: 'Max',
+    title: 'Document Processor & OCR Engine',
+    department: 'legal',
+    icon: 'FileText',
+    color: '#4A90E2',
+    avatar: '📋',
+    description: 'Processes and extracts data from legal documents using OCR, manages contract templates, archives documents with full-text search, and generates compliance reports',
+    capabilities: ['ocr_processing', 'document_extraction', 'template_management', 'archive_management', 'full_text_search', 'document_generation'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'legal_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/documents', '/api/ocr', '/api/templates'],
+    dataFlows: {
+      outputs: ['laila', 'evangeline'],
+      inputs: ['laila', 'clara']
+    }
+  },
+  sage: {
+    id: 'sage',
+    name: 'Sage',
+    title: 'Market Analyst & Trend Forecaster',
+    department: 'intelligence',
+    icon: 'TrendingUp',
+    color: '#5FD3BC',
+    avatar: '🔍',
+    description: 'Analyzes Dubai real estate market dynamics, property pricing trends, competitive landscape, and generates quarterly market intelligence reports for stakeholders',
+    capabilities: ['market_analysis', 'pricing_strategy', 'competitive_intelligence', 'trend_forecasting', 'market_reports', 'benchmark_analysis'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'investment_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/market', '/api/analytics', '/api/reports'],
+    dataFlows: {
+      outputs: ['zoe', 'cipher'],
+      inputs: ['cipher', 'mary', 'henry']
+    }
+  },
+  // === EXTENDED TEAM MEMBERS (Phase 2) ===
+  nova: {
+    id: 'nova',
+    name: 'Nova',
+    title: 'Social Media & Community Manager',
+    department: 'marketing',
+    icon: 'Share2',
+    color: '#FF1493',
+    avatar: '📱',
+    description: 'Manages social media presence, community engagement, influencer partnerships, and viral content strategies across Instagram, TikTok, LinkedIn, and Twitter',
+    capabilities: ['social_media_management', 'community_engagement', 'influencer_partnerships', 'content_scheduling', 'sentiment_analysis', 'viral_marketing'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'marketing_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'departmental'
+    },
+    apiEndpoints: ['/api/social', '/api/community', '/api/influencers'],
+    dataFlows: {
+      outputs: ['olivia', 'marcus'],
+      inputs: ['olivia', 'stella']
+    }
+  },
+  lyra: {
+    id: 'lyra',
+    name: 'Lyra',
+    title: 'Customer Feedback & Experience Analytics',
+    department: 'operations',
+    icon: 'MessageCircle',
+    color: '#FF69B4',
+    avatar: '💬',
+    description: 'Collects customer feedback, performs sentiment analysis, identifies pain points, generates experience improvement recommendations, and tracks NPS metrics',
+    capabilities: ['feedback_collection', 'sentiment_analysis', 'pain_point_identification', 'nps_tracking', 'survey_management', 'experience_recommendations'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'operations_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'departmental'
+    },
+    apiEndpoints: ['/api/feedback', '/api/surveys', '/api/sentiment'],
+    dataFlows: {
+      outputs: ['zoe', 'olivia'],
+      inputs: ['linda', 'clara', 'daisy']
+    }
+  },
+  orion: {
+    id: 'orion',
+    name: 'Orion',
+    title: 'Quality Assurance & Testing Master',
+    department: 'technology',
+    icon: 'CheckSquare',
+    color: '#1E90FF',
+    avatar: '🔬',
+    description: 'Conducts automated testing, performance benchmarking, security audits, user acceptance testing, and generates quality metrics for all platform components',
+    capabilities: ['automated_testing', 'performance_benchmarking', 'security_audits', 'uat_management', 'bug_tracking', 'quality_metrics'],
+    permissions: {
+      viewableBy: ['owner', 'admin'],
+      accessibleBy: ['owner'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/qa', '/api/testing', '/api/security'],
+    dataFlows: {
+      outputs: ['aurora'],
+      inputs: ['aurora', 'hazel', 'willow']
+    }
+  },
+  celeste: {
+    id: 'celeste',
+    name: 'Celeste',
+    title: 'AI/ML Training & Optimization Specialist',
+    department: 'technology',
+    icon: 'Brain',
+    color: '#9370DB',
+    avatar: '🧠',
+    description: 'Fine-tunes AI models, manages training data pipelines, monitors model performance drift, and optimizes inference for all 32+ assistants across the platform',
+    capabilities: ['model_training', 'data_pipeline_management', 'performance_monitoring', 'model_optimization', 'training_data_curation', 'inference_optimization'],
+    permissions: {
+      viewableBy: ['owner', 'admin'],
+      accessibleBy: ['owner'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/ml', '/api/training', '/api/models'],
+    dataFlows: {
+      outputs: ['aurora'],
+      inputs: ['aurora', 'henry', 'cipher']
+    }
+  },
+  phoenix: {
+    id: 'phoenix',
+    name: 'Phoenix',
+    title: 'Crisis Management & Incident Response',
+    department: 'executive',
+    icon: 'AlertTriangle',
+    color: '#FF4500',
+    avatar: '🔥',
+    description: 'Manages emergency incidents, coordinates crisis response across departments, maintains incident timelines, and generates post-mortem analysis reports',
+    capabilities: ['incident_detection', 'crisis_coordination', 'emergency_response', 'stakeholder_communication', 'incident_timeline', 'root_cause_analysis'],
+    permissions: {
+      viewableBy: ['owner', 'admin'],
+      accessibleBy: ['owner'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/incidents', '/api/emergency', '/api/alerts'],
+    dataFlows: {
+      outputs: ['zoe', 'henry'],
+      inputs: ['henry', 'aurora']
+    }
+  },
+  jasper: {
+    id: 'jasper',
+    name: 'Jasper',
+    title: 'Document Lifecycle & Smart Contracts',
+    department: 'legal',
+    icon: 'ScrollText',
+    color: '#FF8C00',
+    avatar: '⚖️',
+    description: 'Manages end-to-end document lifecycle, implements smart contract templates, handles digital signatures, and automates document workflow approvals',
+    capabilities: ['document_lifecycle', 'smart_contracts', 'digital_signatures', 'workflow_automation', 'template_management', 'version_control'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'legal_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/contracts', '/api/signatures', '/api/workflows'],
+    dataFlows: {
+      outputs: ['laila', 'evangeline'],
+      inputs: ['max', 'laila', 'theodora']
+    }
+  },
+  luna: {
+    id: 'luna',
+    name: 'Luna',
+    title: 'Multilingual & Localization Specialist',
+    department: 'marketing',
+    icon: 'Globe',
+    color: '#4B0082',
+    avatar: '🌍',
+    description: 'Manages Arabic/English content localization, cultural adaptation, translation quality assurance, and ensures platform supports 15+ languages seamlessly',
+    capabilities: ['translation_management', 'localization', 'cultural_adaptation', 'multilingual_seo', 'language_quality_assurance', 'rtl_support'],
+    permissions: {
+      viewableBy: ['owner', 'admin'],
+      accessibleBy: ['owner'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/i18n', '/api/translation', '/api/localization'],
+    dataFlows: {
+      outputs: ['stella', 'olivia'],
+      inputs: ['stella', 'max']
+    }
+  },
+  kai: {
+    id: 'kai',
+    name: 'Kai',
+    title: 'Voice Assistant & Audio Interface',
+    department: 'communications',
+    icon: 'Mic',
+    color: '#FF6347',
+    avatar: '🎙️',
+    description: 'Provides voice-based interface for hands-free platform access, manages voice command recognition, audio notifications, and call transcription services',
+    capabilities: ['voice_recognition', 'voice_command_processing', 'audio_notifications', 'call_transcription', 'voice_search', 'speech_synthesis'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'agent'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/voice', '/api/transcription', '/api/audio'],
+    dataFlows: {
+      outputs: ['nina', 'clara'],
+      inputs: ['nina', 'linda']
+    }
+  },
+  // === SPECIALIZED SUPPORT ROLES (Phase 3) ===
+  ember: {
+    id: 'ember',
+    name: 'Ember',
+    title: 'Frontend Engineer & UI Documentation',
+    department: 'technology',
+    icon: 'Code',
+    color: '#FF4500',
+    avatar: '🔥',
+    description: 'Develops frontend components, maintains UI documentation standards, manages component library versioning, and ensures consistent design patterns',
+    capabilities: ['component_development', 'ui_documentation', 'design_pattern_enforcement', 'accessibility_compliance', 'performance_optimization', 'component_testing'],
+    permissions: {
+      viewableBy: ['owner', 'admin'],
+      accessibleBy: ['owner'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/components', '/api/documentation', '/api/ui'],
+    dataFlows: {
+      outputs: ['hazel'],
+      inputs: ['hazel', 'orion']
+    }
+  },
+  coral: {
+    id: 'coral',
+    name: 'Coral',
+    title: 'Database Architect & Data Manager',
+    department: 'technology',
+    icon: 'Database',
+    color: '#FF7F50',
+    avatar: '🪸',
+    description: 'Designs database schemas, manages data migrations, optimizes data models, and ensures data integrity across all MongoDB collections',
+    capabilities: ['schema_design', 'data_migration', 'data_modeling', 'query_optimization', 'data_integrity', 'backup_management'],
+    permissions: {
+      viewableBy: ['owner', 'admin'],
+      accessibleBy: ['owner'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/database', '/api/schema', '/api/data'],
+    dataFlows: {
+      outputs: ['willow'],
+      inputs: ['willow', 'henry']
+    }
+  },
+  marina: {
+    id: 'marina',
+    name: 'Marina',
+    title: 'DevOps Engineer & Infrastructure Manager',
+    department: 'technology',
+    icon: 'Zap',
+    color: '#20B2AA',
+    avatar: '⚙️',
+    description: 'Manages cloud infrastructure, CI/CD pipelines, monitoring and alerting, auto-scaling, and disaster recovery for all platform services',
+    capabilities: ['infrastructure_management', 'ci_cd_pipelines', 'monitoring_alerting', 'auto_scaling', 'disaster_recovery', 'performance_optimization'],
+    permissions: {
+      viewableBy: ['owner', 'admin'],
+      accessibleBy: ['owner'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/infrastructure', '/api/deployments', '/api/monitoring'],
+    dataFlows: {
+      outputs: ['aurora'],
+      inputs: ['aurora', 'orion']
+    }
+  },
+  chloe: {
+    id: 'chloe',
+    name: 'Chloe',
+    title: 'Client Relations & Retention Specialist',
+    department: 'sales',
+    icon: 'Heart',
+    color: '#FF1493',
+    avatar: '💝',
+    description: 'Manages client relationships post-transaction, identifies churn risks, creates retention campaigns, and ensures ongoing customer satisfaction and loyalty',
+    capabilities: ['relationship_management', 'churn_prediction', 'retention_campaigns', 'customer_satisfaction', 'loyalty_programs', 'feedback_integration'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'sales_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'departmental'
+    },
+    apiEndpoints: ['/api/clients', '/api/retention', '/api/loyalty'],
+    dataFlows: {
+      outputs: ['clara', 'sophia'],
+      inputs: ['clara', 'kairos', 'lyra']
+    }
+  },
+  iris: {
+    id: 'iris',
+    name: 'Iris',
+    title: 'Contract Specialist & Legal Documentation',
+    department: 'legal',
+    icon: 'LayoutList',
+    color: '#8A2BE2',
+    avatar: '📑',
+    description: 'Manages contract lifecycle, maintains legal document templates, tracks contract expirations, and coordinates with external legal counsel as needed',
+    capabilities: ['contract_management', 'template_library', 'expiration_tracking', 'external_counsel_coordination', 'version_control', 'compliance_review'],
+    permissions: {
+      viewableBy: ['owner', 'admin', 'legal_manager'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/contracts', '/api/legal', '/api/compliance'],
+    dataFlows: {
+      outputs: ['laila', 'jasper'],
+      inputs: ['jasper', 'max', 'laila']
+    }
+  },
+  echo: {
+    id: 'echo',
+    name: 'Echo',
+    title: 'Voice & Audio Interaction Designer',
+    department: 'communications',
+    icon: 'Volume2',
+    color: '#32CD32',
+    avatar: '🔊',
+    description: 'Designs voice conversation flows, manages audio quality standards, creates voice-first UX, and ensures natural language processing accuracy for voice interactions',
+    capabilities: ['conversation_design', 'audio_quality', 'voice_ux_design', 'nlp_optimization', 'voice_branding', 'transcription_quality'],
+    permissions: {
+      viewableBy: ['owner', 'admin'],
+      accessibleBy: ['owner'],
+      dataAccessLevel: 'departmental'
+    },
+    apiEndpoints: ['/api/voice', '/api/audio', '/api/nlp'],
+    dataFlows: {
+      outputs: ['kai', 'nina'],
+      inputs: ['kai']
+    }
+  },
+  nexus: {
+    id: 'nexus',
+    name: 'Nexus',
+    title: 'Integration Hub & API Manager',
+    department: 'technology',
+    icon: 'Share',
+    color: '#00CED1',
+    avatar: '🔗',
+    description: 'Manages all external API integrations (Bayut, PropertyFinder, Dubizzle, Skyloov, DLD, RERA, WhatsApp), maintains integration documentation, and handles error reconciliation',
+    capabilities: ['api_integration', 'webhook_management', 'data_sync', 'error_handling', 'rate_limiting', 'documentation_management'],
+    permissions: {
+      viewableBy: ['owner', 'admin'],
+      accessibleBy: ['owner'],
+      dataAccessLevel: 'full'
+    },
+    apiEndpoints: ['/api/integrations', '/api/webhooks', '/api/external'],
+    dataFlows: {
+      outputs: ['willow', 'aurora'],
+      inputs: ['willow', 'mary', 'clara']
+    }
+  },
+  aria: {
+    id: 'aria',
+    name: 'Aria',
+    title: 'Scheduling & Calendar Coordinator',
+    department: 'operations',
+    icon: 'Calendar',
+    color: '#FFD700',
+    avatar: '📅',
+    description: 'Manages team schedules, coordinates property viewings, books appointments, manages availability, and sends reminders across all departments and clients',
+    capabilities: ['schedule_management', 'appointment_booking', 'availability_coordination', 'reminder_automation', 'calendar_sync', 'resource_allocation'],
+    permissions: {
+      viewableBy: ['owner', 'admin'],
+      accessibleBy: ['owner', 'admin'],
+      dataAccessLevel: 'departmental'
+    },
+    apiEndpoints: ['/api/calendar', '/api/appointments', '/api/scheduling'],
+    dataFlows: {
+      outputs: ['nina', 'clara'],
+      inputs: ['clara', 'linda', 'daisy']
+    }
   }
 };
 
@@ -600,6 +1107,15 @@ export const getDepartmentById = (id) => DEPARTMENTS[id] || null;
 export const getAssistantCount = () => Object.keys(AI_ASSISTANTS).length;
 
 export const getDepartmentCount = () => Object.keys(DEPARTMENTS).length;
+
+export const TOTAL_ASSISTANTS = 32; // Complete White Caves AI Ecosystem
+
+export const ASSISTANT_PHASES = {
+  phase1: ['zoe', 'clara', 'mary', 'sophia', 'theodora', 'aurora', 'hazel', 'willow', 'linda', 'nina'], // 10 core
+  phase2: ['penny', 'quinn', 'hunter', 'kairos', 'olivia', 'marcus', 'stella', 'laila'], // 8 extended
+  phase3: ['henry', 'vera', 'evangeline', 'sentinel', 'cipher', 'atlas', 'vesta', 'juno', 'ivy', 'max', 'sage', 'nancy', 'daisy'], // 13 infrastructure
+  phase4: ['nova', 'lyra', 'orion', 'celeste', 'phoenix', 'jasper', 'luna', 'kai', 'ember', 'coral', 'marina', 'chloe', 'iris', 'echo', 'nexus', 'aria'] // 16 specialized
+};
 
 export const ASSISTANT_IDS = Object.keys(AI_ASSISTANTS);
 

@@ -18,6 +18,8 @@ import dashboardViewReducer from './slices/dashboardViewSlice';
 import crmViewReducer from './slices/crmViewSlice';
 import kycAmlReducer from './slices/kycAmlSlice';
 import dealsReducer from './slices/dealsSlice';
+import landlordReducer from './slices/landlordSlice';
+import whatsappReducer from './slices/whatsappSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 
 export const store = configureStore({
@@ -40,7 +42,9 @@ export const store = configureStore({
     dashboardView: dashboardViewReducer,
     crmView: crmViewReducer,
     kycAml: kycAmlReducer,
-    deals: dealsReducer
+    deals: dealsReducer,
+    landlord: landlordReducer,
+    whatsapp: whatsappReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

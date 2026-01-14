@@ -27,49 +27,107 @@ const WhatsAppDashboardPage = () => {
   const [activeChat, setActiveChat] = useState(null);
   const [newMessage, setNewMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [stats, setStats] = useState({
-    totalMessages: 156,
-    unread: 8,
-    todayMessages: 24,
-    responseRate: '94%'
-  });
+  const [stats, setStats] = useState(null);
+  const [contacts, setContacts] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const [contacts, setContacts] = useState([
-    { id: 1, name: 'Ahmed Hassan', phone: '+971501234567', lastMessage: 'I am interested in the villa at Palm Jumeirah', time: '2 min ago', unread: 2, avatar: null },
-    { id: 2, name: 'Sarah Johnson', phone: '+971502345678', lastMessage: 'Can we schedule a viewing tomorrow?', time: '15 min ago', unread: 1, avatar: null },
-    { id: 3, name: 'Mohammed Ali', phone: '+971503456789', lastMessage: 'Thank you for the information!', time: '1 hr ago', unread: 0, avatar: null },
-    { id: 4, name: 'Emily Chen', phone: '+971504567890', lastMessage: 'What is the price for the Downtown apartment?', time: '2 hrs ago', unread: 3, avatar: null },
-    { id: 5, name: 'Khalid Rahman', phone: '+971505678901', lastMessage: 'Please send me more details', time: 'Yesterday', unread: 0, avatar: null },
-  ]);
-
-  const [messages, setMessages] = useState([
-    { id: 1, content: 'Hello! I am interested in the Palm Jumeirah villa', direction: 'incoming', time: '10:30 AM', status: 'read' },
-    { id: 2, content: 'Thank you for your interest! The 5-bedroom villa is priced at AED 15,000,000. Would you like to schedule a viewing?', direction: 'outgoing', time: '10:32 AM', status: 'read' },
-    { id: 3, content: 'Yes, that would be great. Is tomorrow afternoon available?', direction: 'incoming', time: '10:35 AM', status: 'read' },
-    { id: 4, content: 'Let me check our schedule. One moment please.', direction: 'outgoing', time: '10:36 AM', status: 'delivered' },
-  ]);
-
+  // Fetch WhatsApp data from APIs
   useEffect(() => {
-    if (!user || user.email !== OWNER_EMAIL) {
+    const fetchWhatsAppData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const [sessionRes, statsRes, contactsRes] = await Promise.all([
+          fetch('/api/whatsapp/session'),
+          fetch('/api/whatsapp/stats'),
+          fetch('/api/whatsapp/contacts')
+        ]);
+
+        if (!sessionRes.ok || !statsRes.ok || !contactsRes.ok) {
+          throw new Error('Failed to fetch WhatsApp data');
+        }
+
+        const sessionData = await sessionRes.json();
+        const statsData = await statsRes.json();
+        const contactsData = await contactsRes.json();
+
+        setIsConnected(sessionData.session.connected);
+        setStats(statsData.stats);
+        setContacts(contactsData.contacts);
+
+        // Load messages for first contact if available
+        if (contactsData.contacts.length > 0) {
+          const firstContactId = contactsData.contacts[0].id;
+          setActiveChat(firstContactId);
+          const messagesRes = await fetch(`/api/whatsapp/messages/${firstContactId}`);
+          if (messagesRes.ok) {
+            const messagesData = await messagesRes.json();
+            setMessages(messagesData.messages);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching WhatsApp data:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user && user.email === OWNER_EMAIL) {
+      fetchWhatsAppData();
+    } else {
       navigate('/');
     }
-    setIsConnected(true);
   }, [user, navigate]);
 
-  const handleSendMessage = (e) => {
+  // Load messages when chat changes
+  useEffect(() => {
+    if (activeChat) {
+      const loadMessages = async () => {
+        try {
+          const res = await fetch(`/api/whatsapp/messages/${activeChat}`);
+          if (res.ok) {
+            const data = await res.json();
+            setMessages(data.messages);
+          }
+        } catch (err) {
+          console.error('Error loading messages:', err);
+        }
+      };
+      loadMessages();
+    }
+  }, [activeChat]);
+
+  const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || !activeChat) return;
     
-    const message = {
-      id: messages.length + 1,
-      content: newMessage,
-      direction: 'outgoing',
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      status: 'sent'
-    };
-    
-    setMessages([...messages, message]);
-    setNewMessage('');
+    try {
+      const response = await fetch('/api/whatsapp/send-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactId: activeChat, message: newMessage })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const message = {
+          id: data.messageId,
+          content: newMessage,
+          direction: 'outgoing',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          status: 'sent'
+        };
+        
+        setMessages([...messages, message]);
+        setNewMessage('');
+      }
+    } catch (err) {
+      console.error('Error sending message:', err);
+    }
   };
 
   const getStatusIcon = (status) => {
@@ -85,6 +143,26 @@ const WhatsAppDashboardPage = () => {
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.phone.includes(searchQuery)
   );
+
+  if (loading) {
+    return (
+      <div className="whatsapp-dashboard no-sidebar">
+        <div style={{ padding: '40px', textAlign: 'center', fontSize: '18px', color: '#666' }}>
+          Loading WhatsApp dashboard...
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="whatsapp-dashboard no-sidebar">
+        <div style={{ padding: '40px', textAlign: 'center', fontSize: '18px', color: '#DC2626' }}>
+          Error: {error}
+        </div>
+      </div>
+    );
+  }
 
   if (!isConnected) {
     return (
@@ -138,28 +216,28 @@ const WhatsAppDashboardPage = () => {
           <div className="stat-card">
             <div className="stat-icon">💬</div>
             <div className="stat-info">
-              <span className="stat-value">{stats.totalMessages}</span>
+              <span className="stat-value">{stats?.totalMessages || '0'}</span>
               <span className="stat-label">Total Messages</span>
             </div>
           </div>
           <div className="stat-card highlight">
             <div className="stat-icon">👁️</div>
             <div className="stat-info">
-              <span className="stat-value">{stats.unread}</span>
+              <span className="stat-value">{stats?.unread || '0'}</span>
               <span className="stat-label">Unread</span>
             </div>
           </div>
           <div className="stat-card">
             <div className="stat-icon">📅</div>
             <div className="stat-info">
-              <span className="stat-value">{stats.todayMessages}</span>
+              <span className="stat-value">{stats?.todayMessages || '0'}</span>
               <span className="stat-label">Today</span>
             </div>
           </div>
           <div className="stat-card">
             <div className="stat-icon">⚡</div>
             <div className="stat-info">
-              <span className="stat-value">{stats.responseRate}</span>
+              <span className="stat-value">{stats?.responseRate || 'N/A'}</span>
               <span className="stat-label">Response Rate</span>
             </div>
           </div>

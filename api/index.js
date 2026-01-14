@@ -208,19 +208,105 @@ app.post('/api/chatbot/test', async (req, res) => {
   });
 });
 
+// --- LANDLORD API ENDPOINTS ---
+app.get('/api/landlord/properties', (req, res) => {
+  res.json({
+    success: true,
+    properties: [
+      { id: 1, name: 'Marina View 2BR', location: 'Dubai Marina', status: 'Occupied', rent: 'AED 95,000/yr', tenant: 'Ahmed Al-Rashid', leaseEnd: 'Dec 2024', paymentStatus: 'Paid' },
+      { id: 2, name: 'Downtown Studio', location: 'Downtown Dubai', status: 'Occupied', rent: 'AED 65,000/yr', tenant: 'Sarah Johnson', leaseEnd: 'Jun 2024', paymentStatus: 'Due Soon' },
+      { id: 3, name: 'JBR 3BR Apartment', location: 'JBR', status: 'Available', rent: 'AED 180,000/yr', tenant: '-', leaseEnd: '-', paymentStatus: '-' },
+      { id: 4, name: 'Business Bay Office', location: 'Business Bay', status: 'Occupied', rent: 'AED 250,000/yr', tenant: 'Tech Solutions LLC', leaseEnd: 'Mar 2025', paymentStatus: 'Paid' }
+    ]
+  });
+});
 
-// --- API STUBS FOR WHATSAPP AND BOT FLOWS ---
+app.get('/api/landlord/maintenance', (req, res) => {
+  res.json({
+    success: true,
+    requests: [
+      { id: 1, property: 'Marina View 2BR', issue: 'AC maintenance required', priority: 'Medium', date: 'Today', status: 'Pending' },
+      { id: 2, property: 'Downtown Studio', issue: 'Water heater replacement', priority: 'High', date: 'Yesterday', status: 'In Progress' },
+      { id: 3, property: 'Business Bay Office', issue: 'Parking access card issue', priority: 'Low', date: '3 days ago', status: 'Resolved' }
+    ]
+  });
+});
+
+app.get('/api/landlord/finances', (req, res) => {
+  res.json({
+    success: true,
+    finances: {
+      totalIncome: 'AED 590,000',
+      collected: 'AED 495,000',
+      pending: 'AED 95,000',
+      expenses: 'AED 45,000',
+      netIncome: 'AED 450,000'
+    }
+  });
+});
+
+app.get('/api/landlord/stats', (req, res) => {
+  res.json({
+    success: true,
+    stats: {
+      totalProperties: 6,
+      occupied: 5,
+      available: 1,
+      monthlyIncome: 'AED 125K'
+    }
+  });
+});
+
+// --- WHATSAPP API ENDPOINTS ---
 app.get('/api/whatsapp/session', (req, res) => {
-  res.json({ success: true, session: { status: 'mocked', connected: false, qr: 'mock-qr-code' } });
+  res.json({ success: true, session: { status: 'active', connected: true, qr: null } });
 });
 app.post('/api/whatsapp/connect', (req, res) => {
-  res.json({ success: true, message: 'WhatsApp connect simulated.' });
+  res.json({ success: true, message: 'WhatsApp connect simulated.', qr: 'mock-qr-code-123' });
 });
 app.post('/api/whatsapp/disconnect', (req, res) => {
   res.json({ success: true, message: 'WhatsApp disconnect simulated.' });
 });
 app.get('/api/whatsapp/qr/refresh', (req, res) => {
-  res.json({ success: true, qr: 'mock-qr-code-refreshed' });
+  res.json({ success: true, qr: 'mock-qr-code-refreshed-' + Date.now() });
+});
+app.get('/api/whatsapp/contacts', (req, res) => {
+  res.json({
+    success: true,
+    contacts: [
+      { id: 1, name: 'Ahmed Hassan', phone: '+971501234567', lastMessage: 'I am interested in the villa at Palm Jumeirah', time: '2 min ago', unread: 2 },
+      { id: 2, name: 'Sarah Johnson', phone: '+971502345678', lastMessage: 'Can we schedule a viewing tomorrow?', time: '15 min ago', unread: 1 },
+      { id: 3, name: 'Mohammed Ali', phone: '+971503456789', lastMessage: 'Thank you for the information!', time: '1 hr ago', unread: 0 },
+      { id: 4, name: 'Emily Chen', phone: '+971504567890', lastMessage: 'What is the price for the Downtown apartment?', time: '2 hrs ago', unread: 3 },
+      { id: 5, name: 'Khalid Rahman', phone: '+971505678901', lastMessage: 'Please send me more details', time: 'Yesterday', unread: 0 }
+    ]
+  });
+});
+app.get('/api/whatsapp/messages/:contactId', (req, res) => {
+  res.json({
+    success: true,
+    messages: [
+      { id: 1, content: 'Hello! I am interested in the Palm Jumeirah villa', direction: 'incoming', time: '10:30 AM', status: 'read' },
+      { id: 2, content: 'Thank you for your interest! The 5-bedroom villa is priced at AED 15,000,000. Would you like to schedule a viewing?', direction: 'outgoing', time: '10:32 AM', status: 'read' },
+      { id: 3, content: 'Yes, that would be great. Is tomorrow afternoon available?', direction: 'incoming', time: '10:35 AM', status: 'read' },
+      { id: 4, content: 'Let me check our schedule. One moment please.', direction: 'outgoing', time: '10:36 AM', status: 'delivered' }
+    ]
+  });
+});
+app.post('/api/whatsapp/send-message', (req, res) => {
+  const { contactId, message } = req.body;
+  res.json({ success: true, messageId: 'msg-' + Date.now(), message, status: 'sent' });
+});
+app.get('/api/whatsapp/stats', (req, res) => {
+  res.json({
+    success: true,
+    stats: {
+      totalMessages: 156,
+      unread: 8,
+      todayMessages: 24,
+      responseRate: '94%'
+    }
+  });
 });
 app.get('/api/bots', (req, res) => {
   res.json({ success: true, bots: [{ id: 'nina', name: 'Nina Bot', status: 'active' }] });
