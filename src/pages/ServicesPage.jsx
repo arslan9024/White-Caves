@@ -12,6 +12,7 @@ export default function ServicesPage() {
   const [activeService, setActiveService] = useState('offplan');
   const [formData, setFormData] = useState({
     name: '',
+    email: '',
     phone: '',
     service: '',
     message: ''
@@ -21,10 +22,44 @@ export default function ServicesPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleFormSubmit = (e) => {
+  const [submitting, setSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
+
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    alert('Thank you for your inquiry! Our team will contact you shortly.');
-    setFormData({ name: '', phone: '', service: '', message: '' });
+    setSubmitting(true);
+    setSubmitStatus(null);
+    
+    try {
+      const response = await fetch('/api/crud/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email || `${formData.name.toLowerCase().replace(/\s+/g, '.')}@inquiry.whitecaves.com`,
+          phone: formData.phone,
+          source: 'Services Page',
+          status: 'new',
+          notes: `Service: ${formData.service}\n\nMessage: ${formData.message}`,
+          propertyInterest: formData.service,
+          assignedTo: null,
+          score: 60
+        })
+      });
+      
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({ name: '', phone: '', email: '', service: '', message: '' });
+        setTimeout(() => setSubmitStatus(null), 5000);
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (err) {
+      console.error('Error submitting inquiry:', err);
+      setSubmitStatus('error');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const services = [
@@ -402,12 +437,30 @@ export default function ServicesPage() {
             </div>
             <div className="cta-form">
               <h3>Request a Consultation</h3>
+              {submitStatus === 'success' && (
+                <div className="submit-success">
+                  Thank you for your inquiry! Our team will contact you shortly.
+                </div>
+              )}
+              {submitStatus === 'error' && (
+                <div className="submit-error">
+                  Something went wrong. Please try again or call us directly.
+                </div>
+              )}
               <form onSubmit={handleFormSubmit}>
                 <input 
                   type="text" 
                   name="name" 
                   placeholder="Your Name" 
                   value={formData.name}
+                  onChange={handleFormChange}
+                  required 
+                />
+                <input 
+                  type="email" 
+                  name="email" 
+                  placeholder="Email Address" 
+                  value={formData.email}
                   onChange={handleFormChange}
                   required 
                 />
@@ -438,7 +491,9 @@ export default function ServicesPage() {
                   onChange={handleFormChange}
                   rows="3"
                 ></textarea>
-                <button type="submit" className="btn-submit">Send Inquiry</button>
+                <button type="submit" className="btn-submit" disabled={submitting}>
+                  {submitting ? 'Sending...' : 'Send Inquiry'}
+                </button>
               </form>
             </div>
           </div>
