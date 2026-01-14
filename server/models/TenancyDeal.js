@@ -13,22 +13,22 @@ const tenancyDealSchema = new mongoose.Schema({
   },
   property: {
     propertyId: { type: mongoose.Schema.Types.ObjectId, ref: 'InventoryProperty' },
-    address: String,
-    area: String,
-    type: String,
-    bedrooms: Number,
-    bathrooms: Number,
-    size: Number,
-    annualRent: Number,
-    securityDeposit: Number
+    address: { type: String },
+    area: { type: String },
+    propertyType: { type: String },
+    bedrooms: { type: Number },
+    bathrooms: { type: Number },
+    size: { type: Number },
+    annualRent: { type: Number },
+    securityDeposit: { type: Number }
   },
   landlord: {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    name: String,
-    email: String,
-    phone: String,
-    emiratesId: String,
-    type: { type: String, enum: ['individual', 'company'], default: 'individual' }
+    name: { type: String },
+    email: { type: String },
+    phone: { type: String },
+    emiratesId: { type: String },
+    landlordType: { type: String, enum: ['individual', 'company'], default: 'individual' }
   },
   tenant: {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

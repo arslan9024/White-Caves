@@ -19,24 +19,24 @@ const salesDealSchema = new mongoose.Schema({
   property: {
     propertyId: { type: mongoose.Schema.Types.ObjectId, ref: 'InventoryProperty' },
     projectId: { type: mongoose.Schema.Types.ObjectId, ref: 'OffPlanProject' },
-    address: String,
-    area: String,
-    project: String,
-    developer: String,
-    type: String,
-    bedrooms: Number,
-    bathrooms: Number,
-    size: Number,
-    askingPrice: Number,
+    address: { type: String },
+    area: { type: String },
+    project: { type: String },
+    developer: { type: String },
+    propertyType: { type: String },
+    bedrooms: { type: Number },
+    bathrooms: { type: Number },
+    size: { type: Number },
+    askingPrice: { type: Number },
     isOffPlan: { type: Boolean, default: false }
   },
   seller: {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    name: String,
-    email: String,
-    phone: String,
-    emiratesId: String,
-    type: { type: String, enum: ['individual', 'developer', 'company'], default: 'individual' }
+    name: { type: String },
+    email: { type: String },
+    phone: { type: String },
+    emiratesId: { type: String },
+    sellerType: { type: String, enum: ['individual', 'developer', 'company'], default: 'individual' }
   },
   buyer: {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
