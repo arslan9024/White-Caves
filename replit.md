@@ -67,6 +67,13 @@ Preferred communication style: Simple, everyday language.
 - **Deal Management System**: Comprehensive TenancyDeal and SalesDeal models with full lifecycle tracking. Features DealJourneyTimeline component for visual stage progression, Redux dealsSlice for state management, and /api/deals REST API with 25+ endpoints.
 - **Learning Demo Scenarios**: Interactive demo data seeder with 4 learning scenarios (Ejari tenancy, off-plan sale, secondary sale, KYC/AML high-risk case). DemoDataPanel component provides realistic examples to teach best practices.
 - **Digital Marketing & SEO Tools**: MarketingSEOTools component with keyword research (Dubai property keywords), SEO audit checklist, AI content ideas generator, and analytics dashboard.
+- **Dubai Real Estate Intelligence Platform**: Comprehensive data platform with:
+  - 15 User Types (UHNWI investors to staff roles) with service expectations, AI assistant allocation, and security requirements
+  - 24+ Services Catalog across 6 categories (transaction, property management, legal, financial, marketing, concierge) with pricing and workflows
+  - 9 Premium Communities database (Emirates Hills, Palm Jumeirah, Downtown, Marina, etc.) with market data, demographics, and AI recommendations
+  - AML Risk Scoring Engine with UAE-specific rules: AED 55K cash threshold, PEP checks, high-risk countries, property flipping detection
+  - Commission Calculator with tier-based rates (ultra_prime, luxury, premium), VAT calculations, agent/company splits
+  - Lead Scoring system using budget, urgency, engagement, pre-approval, and verification factors
 
 ## External Dependencies
 
@@ -106,6 +113,19 @@ Preferred communication style: Simple, everyday language.
 - `GET /demo` - Get demo data scenarios
 - `POST /demo/seed` - Seed demo data
 - `GET /stats` - Get deal statistics
+
+### Dubai Platform API (`/api/dubai`)
+- `GET /user-types` - List all user types with AI assistant allocation
+- `GET /user-types/:typeCode` - Get specific user type
+- `GET /user-types/tier/:tier` - Filter by tier (uhnwi, hnwi, premium, standard)
+- `GET /services` - List all services (supports ?category= filter)
+- `GET /services/:serviceId` - Get specific service
+- `GET /communities` - List all communities (supports ?tier=, ?freehold=, ?minYield= filters)
+- `GET /communities/:communityId` - Get specific community
+- `GET /communities/tier/:tier` - Filter by tier (super_prime, prime, established, emerging, affordable)
+- `POST /aml/quick-score` - Quick AML risk assessment (body: amount, isCash, isPEP, nationality, priceDeviation)
+- `POST /commission/calculate` - Calculate commission with splits (body: transactionValue, transactionType, tier, baseRate, agentSharePercent)
+- `POST /lead-score` - Score a lead (body: budgetAED, urgency, viewedProperties, hasPreApproval, isVerified)
 
 ## Recent Changes (January 2026)
 - **Two-Pane CRM Workspace**: New `/crm` route with sophisticated two-pane layout:
