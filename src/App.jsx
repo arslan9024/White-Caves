@@ -17,6 +17,7 @@ import SignInPage from './pages/auth/SignInPage';
 import ProfilePage from './pages/auth/ProfilePage';
 import PendingApprovalPage from './pages/auth/PendingApprovalPage';
 import HomePage from './pages/HomePage';
+import PropertyDetailPage from './pages/PropertyDetailPage';
 
 function ProtectedRoute({ children, allowedRoles }) {
   const user = useSelector(state => state.user.currentUser);
@@ -148,6 +149,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/properties" element={<PropertiesPage />} />
+        <Route path="/property/:id" element={<PropertyDetailPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/careers" element={<CareersPage />} />

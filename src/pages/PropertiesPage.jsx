@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { addToFavorites, removeFromFavorites, selectFavorites } from '../store/dashboardSlice';
 import AppLayout from '../components/layout/AppLayout';
 import Footer from '../components/Footer';
@@ -247,13 +247,54 @@ const PROPERTY_TYPES = ['All Types', 'Villa', 'Apartment', 'Penthouse', 'Townhou
 
 export default function PropertiesPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const favorites = useSelector(selectFavorites);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [properties] = useState(SAMPLE_PROPERTIES);
+  const [properties, setProperties] = useState(SAMPLE_PROPERTIES);
   const [filteredProperties, setFilteredProperties] = useState(SAMPLE_PROPERTIES);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const response = await fetch('/api/crud/properties?limit=100');
+        if (response.ok) {
+          const data = await response.json();
+          const dbProperties = data.data.map(p => ({
+            id: p._id,
+            title: p.title,
+            location: p.location,
+            type: p.type,
+            purpose: p.purpose || 'buy',
+            beds: p.beds || p.bedrooms || 0,
+            baths: p.baths || p.bathrooms || 0,
+            sqft: p.sqft || p.size || 0,
+            price: p.price || 0,
+            priceType: p.purpose === 'rent' ? 'yearly' : undefined,
+            images: p.images?.length ? p.images : [p.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800'],
+            image: p.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800',
+            amenities: p.amenities || [],
+            featured: p.featured || false,
+            yearBuilt: p.yearBuilt,
+            address: p.address,
+            developer: p.developer
+          }));
+          if (dbProperties.length > 0) {
+            setProperties(dbProperties);
+            setFilteredProperties(dbProperties);
+          }
+        }
+      } catch (err) {
+        console.log('Using sample data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProperties();
+  }, []);
   
   const [filters, setFilters] = useState({
     purpose: searchParams.get('type') || 'all',
@@ -573,7 +614,7 @@ export default function PropertiesPage() {
           <div className={`properties-grid ${viewMode}`}>
             {filteredProperties.map(property => (
               <div key={property.id} className="property-card-enhanced">
-                <div className="card-image-wrapper" onClick={() => setSelectedProperty(property)}>
+                <div className="card-image-wrapper" onClick={() => navigate(`/property/${property.id}`)}>
                   <PropertyImageSlider 
                     images={property.images}
                     title={property.title}
@@ -589,7 +630,7 @@ export default function PropertiesPage() {
                   </div>
                 </div>
                 
-                <div className="card-content" onClick={() => setSelectedProperty(property)}>
+                <div className="card-content" onClick={() => navigate(`/property/${property.id}`)}>
                   <div className="card-type">{property.type}</div>
                   <h3 className="card-title">{property.title}</h3>
                   <p className="card-location">
@@ -600,14 +641,14 @@ export default function PropertiesPage() {
                   <div className="card-specs">
                     <span><Bed size={16} /> {property.beds === 0 ? 'Studio' : `${property.beds} Beds`}</span>
                     <span><Bath size={16} /> {property.baths} Baths</span>
-                    <span><Maximize size={16} /> {property.sqft.toLocaleString()} sqft</span>
+                    <span><Maximize size={16} /> {(property.sqft || 0).toLocaleString()} sqft</span>
                   </div>
                   
                   <div className="card-amenities">
-                    {property.amenities.slice(0, 3).map((amenity, i) => (
+                    {(property.amenities || []).slice(0, 3).map((amenity, i) => (
                       <span key={i} className="amenity-chip">{amenity}</span>
                     ))}
-                    {property.amenities.length > 3 && (
+                    {(property.amenities || []).length > 3 && (
                       <span className="amenity-chip more">+{property.amenities.length - 3}</span>
                     )}
                   </div>
@@ -616,7 +657,7 @@ export default function PropertiesPage() {
                     <span className="card-price">
                       {formatPrice(property.price, property.priceType)}
                     </span>
-                    <button className="view-details-btn">
+                    <button className="view-details-btn" onClick={(e) => { e.stopPropagation(); navigate(`/property/${property.id}`); }}>
                       View Details
                       <ChevronDown size={16} className="rotated" />
                     </button>
