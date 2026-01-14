@@ -28,6 +28,8 @@ import dealsRoutes from './routes/deals.js';
 import auroraRoutes from './routes/aurora.js';
 import comprehensiveSeedRoutes from './routes/comprehensive-seed.js';
 import crudRoutes from './routes/crud.js';
+import dubaiPlatformRoutes from './routes/dubai-platform.js';
+import seedDubaiPlatformRoutes from './routes/seed-dubai-platform.js';
 import OliviaService from './services/oliviaService.js';
 import schedulerService from './services/schedulerService.js';
 
@@ -78,6 +80,8 @@ app.use('/api/deals', dealsRoutes);
 app.use('/api/aurora', auroraRoutes);
 app.use('/api/seed/comprehensive', comprehensiveSeedRoutes);
 app.use('/api/crud', crudRoutes);
+app.use('/api/dubai', dubaiPlatformRoutes);
+app.use('/api/seed/dubai', seedDubaiPlatformRoutes);
 
 // Serve static files from the dist folder in production
 const distPath = path.join(__dirname, '..', 'dist');
