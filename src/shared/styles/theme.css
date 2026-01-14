@@ -6,11 +6,11 @@
    ========================================== */
 
 :root {
-  /* Primary Brand Colors */
-  --primary-color: #dc2626;
-  --primary-hover: #b91c1c;
-  --primary-light: #fef2f2;
-  --primary-dark: #991b1b;
+  /* Primary Brand Colors - WHITE CAVES RED */
+  --primary-color: #B03737;
+  --primary-hover: #8B2C2C;
+  --primary-light: #FDEAEA;
+  --primary-dark: #8B2C2C;
   
   /* Secondary Colors */
   --secondary-color: #1f2937;
@@ -62,26 +62,26 @@
   --text-tertiary: #6b7280;
   --text-muted: #9ca3af;
   --text-inverse: #ffffff;
-  --text-link: #dc2626;
-  --text-link-hover: #b91c1c;
+  --text-link: #B03737;
+  --text-link-hover: #8B2C2C;
   
   /* Border Colors */
   --border-color: #e5e7eb;
   --border-light: #f3f4f6;
   --border-dark: #d1d5db;
-  --border-focus: #dc2626;
+  --border-focus: #B03737;
   
   /* Shadow Colors */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
-  --shadow-glow: 0 0 20px rgba(220, 38, 38, 0.3);
+  --shadow-glow: 0 0 20px rgba(176, 55, 55, 0.3);
   
   /* Input Colors */
   --input-bg: #ffffff;
   --input-border: #d1d5db;
-  --input-focus-border: #dc2626;
+  --input-focus-border: #B03737;
   --input-placeholder: #9ca3af;
   
   /* Table Colors */
@@ -92,8 +92,8 @@
   /* Sidebar/Nav Colors */
   --nav-bg: #ffffff;
   --nav-text: #374151;
-  --nav-text-active: #dc2626;
-  --nav-bg-active: #fef2f2;
+  --nav-text-active: #B03737;
+  --nav-bg-active: #FDEAEA;
   
   /* Badge/Tag Colors */
   --badge-bg: #f3f4f6;

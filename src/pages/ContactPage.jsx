@@ -10,16 +10,48 @@ export default function ContactPage() {
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 5000);
-    setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+    setSubmitting(true);
+    setSubmitError(false);
+    
+    try {
+      const response = await fetch('/api/crud/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          source: 'Contact Page',
+          status: 'new',
+          notes: `Subject: ${formData.subject}\n\nMessage: ${formData.message}`,
+          propertyInterest: formData.subject,
+          assignedTo: null,
+          score: 50
+        })
+      });
+      
+      if (response.ok) {
+        setSubmitted(true);
+        setTimeout(() => setSubmitted(false), 5000);
+        setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      } else {
+        setSubmitError(true);
+      }
+    } catch (err) {
+      console.error('Error submitting contact form:', err);
+      setSubmitError(true);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -164,6 +196,12 @@ export default function ContactPage() {
               </div>
             )}
 
+            {submitError && (
+              <div className="error-message">
+                Something went wrong. Please try again or call us directly.
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="contact-form">
               <div className="form-group">
                 <label htmlFor="name">Full Name *</label>
@@ -238,8 +276,8 @@ export default function ContactPage() {
                 />
               </div>
 
-              <button type="submit" className="submit-btn">
-                Send Message
+              <button type="submit" className="submit-btn" disabled={submitting}>
+                {submitting ? 'Sending...' : 'Send Message'}
               </button>
             </form>
           </div>

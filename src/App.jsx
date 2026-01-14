@@ -17,6 +17,7 @@ import SignInPage from './pages/auth/SignInPage';
 import ProfilePage from './pages/auth/ProfilePage';
 import PendingApprovalPage from './pages/auth/PendingApprovalPage';
 import HomePage from './pages/HomePage';
+import PropertyDetailPage from './pages/PropertyDetailPage';
 
 function ProtectedRoute({ children, allowedRoles }) {
   const user = useSelector(state => state.user.currentUser);
@@ -97,6 +98,7 @@ import WhatsAppChatbotPage from './pages/owner/WhatsAppChatbotPage';
 import WhatsAppAnalyticsPage from './pages/owner/WhatsAppAnalyticsPage';
 import WhatsAppSettingsPage from './pages/owner/WhatsAppSettingsPage';
 import ModernDashboardPage from './pages/owner/ModernDashboardPage';
+import CRMWorkspacePage from './pages/owner/CRMWorkspacePage';
 import UAEPassSuccessPage from './pages/auth/UAEPassSuccessPage';
 import { BiometricPrompt } from './features/auth/components/BiometricLogin';
 import { StatusProvider } from './components/common/StatusNotification';
@@ -147,6 +149,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/properties" element={<PropertiesPage />} />
+        <Route path="/property/:id" element={<PropertyDetailPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/careers" element={<CareersPage />} />
@@ -276,6 +279,12 @@ function App() {
             <WhatsAppSettingsPage />
           </ProtectedRoute>
         } />
+        <Route path="/md/crm" element={
+          <ProtectedRoute allowedRoles={['md']}>
+            <CRMWorkspacePage />
+          </ProtectedRoute>
+        } />
+        <Route path="/crm" element={<CRMWorkspacePage />} />
         
         {/* Legacy owner routes - redirect to md */}
         <Route path="/owner/*" element={<Navigate to="/md/dashboard" replace />} />
