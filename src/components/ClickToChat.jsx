@@ -6,7 +6,7 @@ export default function ClickToChat() {
   const [message, setMessage] = useState('');
   const [isOnline, setIsOnline] = useState(true);
   
-  const phoneNumber = import.meta.env.VITE_WHATSAPP_NUMBER || '971563616136';
+  const phoneNumber = import.meta.env.VITE_WHATSAPP_NUMBER || '971505110636';
   const baseUrl = import.meta.env.BASE_URL || '/';
   
   useEffect(() => {

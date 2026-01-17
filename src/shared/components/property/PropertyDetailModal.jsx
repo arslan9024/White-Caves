@@ -34,11 +34,11 @@ export default function PropertyDetailModal({ property, onClose, onContact, onFa
 
   const handleWhatsApp = () => {
     const message = `Hi, I'm interested in the property: ${property.title} in ${property.location}`;
-    window.open(`https://wa.me/971563616136?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/971505110636?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   const handleCall = () => {
-    window.open('tel:+971563616136', '_self');
+    window.open('tel:+971505110636', '_self');
   };
 
   const handleEmail = () => {

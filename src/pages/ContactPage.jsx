@@ -166,11 +166,11 @@ export default function ContactPage() {
             <div className="quick-links">
               <h3>Quick Actions</h3>
               <div className="quick-links-grid">
-                <a href="tel:+971563616136" className="quick-link">
+                <a href="tel:+971505110636" className="quick-link">
                   <span className="quick-icon">📞</span>
                   Call Office
                 </a>
-                <a href="https://wa.me/971563616136" target="_blank" rel="noopener noreferrer" className="quick-link whatsapp">
+                <a href="https://wa.me/971505110636" target="_blank" rel="noopener noreferrer" className="quick-link whatsapp">
                   <span className="quick-icon">💬</span>
                   WhatsApp
                 </a>

@@ -33,7 +33,7 @@ export default function ContactCTA() {
       icon: Phone,
       label: 'Call Us',
       value: '+971 56 361 6136',
-      link: 'tel:+971563616136'
+      link: 'tel:+971505110636'
     },
     {
       icon: Mail,

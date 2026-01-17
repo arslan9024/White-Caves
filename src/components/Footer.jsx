@@ -22,13 +22,13 @@ export default function Footer() {
           <div className="footer-apps">
             <p className="apps-title">Contact us on:</p>
             <div className="app-buttons">
-              <a href="https://wa.me/971563616136" target="_blank" rel="noopener noreferrer" className="app-btn whatsapp">
+              <a href="https://wa.me/971505110636" target="_blank" rel="noopener noreferrer" className="app-btn whatsapp">
                 <span>WhatsApp</span>
               </a>
-              <a href="botim://call?number=+971563616136" className="app-btn botim">
+              <a href="botim://call?number=+971505110636" className="app-btn botim">
                 <span>Botim</span>
               </a>
-              <a href="https://gochat.me/+971563616136" target="_blank" rel="noopener noreferrer" className="app-btn gochat">
+              <a href="https://gochat.me/+971505110636" target="_blank" rel="noopener noreferrer" className="app-btn gochat">
                 <span>GoChat</span>
               </a>
             </div>
