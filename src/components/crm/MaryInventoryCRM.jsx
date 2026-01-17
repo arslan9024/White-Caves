@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { 
   Building2, Plus, Search, Download, Bot, Home, 
   Users, Phone, XCircle, Star, MapPin, Eye, Image, 
-  FileImage, Globe, Wrench
+  FileImage, Globe, Wrench, AlertCircle, Zap
 } from 'lucide-react';
 import FullScreenDetailModal from '../../shared/components/ui/FullScreenDetailModal';
 import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
@@ -17,6 +17,11 @@ import PropertyDetailsCard from './inventory/PropertyDetailsCard';
 import DamacAssetFetcher from './inventory/DamacAssetFetcher';
 import ImageDataExtractor from './inventory/ImageDataExtractor';
 import WebDataHarvester from './inventory/WebDataHarvester';
+import PropertyInformationCard from './inventory/PropertyInformationCard';
+import OwnerInformationCard from './inventory/OwnerInformationCard';
+import PropertyStatusUpdater from './inventory/PropertyStatusUpdater';
+import OwnerFollowUpList from './inventory/OwnerFollowUpList';
+import ContactStatusBadge from './inventory/ContactStatusBadge';
 import {
   loadInventoryData,
   selectFilteredProperties,
@@ -61,6 +66,7 @@ const MaryInventoryCRM = ({ activeFeature }) => {
   const [showFilters, setShowFilters] = useState(true);
   const [selectedCluster, setSelectedCluster] = useState('all');
   const [activeToolTab, setActiveToolTab] = useState(null);
+  const [showFollowUpTab, setShowFollowUpTab] = useState(false);
 
   useEffect(() => {
     if (activeFeature && FEATURE_TO_TAB[activeFeature] !== undefined) {
@@ -150,6 +156,12 @@ const MaryInventoryCRM = ({ activeFeature }) => {
         <div className="mary-actions">
           <button className="mary-action-btn"><Download size={18} /> Export</button>
           <button 
+            className={`mary-action-btn follow-ups ${showFollowUpTab ? 'active' : ''}`}
+            onClick={() => setShowFollowUpTab(!showFollowUpTab)}
+          >
+            <AlertCircle size={18} /> Follow-ups
+          </button>
+          <button 
             className={`mary-action-btn tools ${activeToolTab ? 'active' : ''}`}
             onClick={() => setActiveToolTab(activeToolTab ? null : 'assets')}
           >
@@ -205,6 +217,27 @@ const MaryInventoryCRM = ({ activeFeature }) => {
             features={MARY_FEATURES}
             assistantName="Mary"
             accentColor="#8b5cf6"
+          />
+        </div>
+      )}
+
+      {showFollowUpTab && (
+        <div className="follow-up-section">
+          <div className="follow-up-header">
+            <h3>
+              <AlertCircle size={20} /> Owner Follow-up Management
+            </h3>
+            <button className="close-btn" onClick={() => setShowFollowUpTab(false)}>
+              <XCircle size={18} />
+            </button>
+          </div>
+          <OwnerFollowUpList 
+            owners={Object.values(owners.byId || {})}
+            onFollowUp={(ownerId, method) => {
+              const owner = owners.byId[ownerId];
+              setSelectedOwner(owner);
+              setShowOwnerDrawer(true);
+            }}
           />
         </div>
       )}
@@ -336,6 +369,30 @@ const MaryInventoryCRM = ({ activeFeature }) => {
                 property={selectedProperty}
                 owners={getPropertyOwners(selectedProperty)}
                 onOwnerClick={handleOwnerClick}
+              />
+            )
+          },
+          {
+            label: 'Property Info',
+            icon: Building2,
+            content: selectedProperty && (
+              <PropertyInformationCard 
+                property={selectedProperty}
+                onUpdate={(data) => {
+                  console.log('Property updated:', data);
+                }}
+              />
+            )
+          },
+          {
+            label: 'Status',
+            icon: Zap,
+            content: selectedProperty && (
+              <PropertyStatusUpdater 
+                property={selectedProperty}
+                onUpdate={(data) => {
+                  console.log('Status updated:', data);
+                }}
               />
             )
           },

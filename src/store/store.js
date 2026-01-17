@@ -21,6 +21,8 @@ import dealsReducer from './slices/dealsSlice';
 import landlordReducer from './slices/landlordSlice';
 import whatsappReducer from './slices/whatsappSlice';
 import wednesdayPlanReducer from './slices/wednesdayPlanSlice';
+import contactStatusReducer from './slices/contactStatusSlice';
+import propertyStatusReducer from './slices/propertyStatusSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 
 export const store = configureStore({
@@ -46,7 +48,9 @@ export const store = configureStore({
     deals: dealsReducer,
     landlord: landlordReducer,
     whatsapp: whatsappReducer,
-    wednesday: wednesdayPlanReducer
+    wednesday: wednesdayPlanReducer,
+    contactStatus: contactStatusReducer,
+    propertyStatus: propertyStatusReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

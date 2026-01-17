@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { X, User, Phone, Mail, Building2, MapPin, ChevronRight } from 'lucide-react';
+import OwnerInformationCard from './OwnerInformationCard';
 import './OwnerDetailDrawer.css';
 
 const OwnerDetailDrawer = ({ owner, properties, onClose, onPropertyClick }) => {
@@ -26,6 +27,13 @@ const OwnerDetailDrawer = ({ owner, properties, onClose, onPropertyClick }) => {
         </div>
 
         <div className="drawer-content">
+          <OwnerInformationCard 
+            owner={owner}
+            onUpdate={(data) => {
+              console.log('Owner information updated:', data);
+            }}
+          />
+
           <section className="drawer-section">
             <h3><Phone size={16} /> Contact Numbers ({phones.length})</h3>
             <div className="contact-list">

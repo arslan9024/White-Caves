@@ -33,6 +33,7 @@ import plansRoutes from './routes/plans.js';
 import contractsRoutes from './routes/contracts.js';
 import whatsappRoutes from './routes/whatsapp.js';
 import signaturesRoutes from './routes/signatures.js';
+import statusRoutes from './routes/status.js';
 import OliviaService from './services/oliviaService.js';
 import schedulerService from './services/schedulerService.js';
 
@@ -99,6 +100,7 @@ app.use('/api/plans', plansRoutes);
 app.use('/api/contracts', contractsRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
 app.use('/api/signature', signaturesRoutes);
+app.use('/api', statusRoutes);
 
 // Serve static files from the dist folder in production
 const distPath = path.join(__dirname, '..', 'dist');
