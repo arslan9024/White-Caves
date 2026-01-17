@@ -24,7 +24,7 @@ const RoleApprovalQueue = () => {
       const data = await apiClient.get('/admin/role-requests');
       dispatch(setPendingRequests(data.requests || []));
     } catch (error) {
-      console.error('Failed to fetch role requests:', error);
+      
       setFetchError(error.message || 'Failed to load role requests');
     } finally {
       setInitialLoading(false);
@@ -53,7 +53,7 @@ const RoleApprovalQueue = () => {
         reviewedBy: user?.uid,
       }));
     } catch (error) {
-      console.error('Approval error:', error);
+      
       alert(error.message || 'Failed to approve request');
     } finally {
       setLoading(false);
@@ -83,7 +83,7 @@ const RoleApprovalQueue = () => {
       setSelectedRequest(null);
       setRejectionReason('');
     } catch (error) {
-      console.error('Rejection error:', error);
+      
       alert(error.message || 'Failed to reject request');
     } finally {
       setLoading(false);

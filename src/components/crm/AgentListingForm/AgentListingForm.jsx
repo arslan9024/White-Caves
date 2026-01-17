@@ -118,7 +118,7 @@ export default function AgentListingForm({ onClose }) {
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
   const handleSubmit = async () => {
-    console.log('Submitting listing:', formData);
+    
     if (onClose) onClose();
   };
 

@@ -509,7 +509,7 @@ const KYCAMLDashboard = ({
       if (alertsRes.success) setAlerts(alertsRes.data);
       if (auditRes.success) setAuditLogs(auditRes.logs || []);
     } catch (error) {
-      console.error('Failed to fetch compliance data:', error);
+      
     } finally {
       setLoading(false);
     }

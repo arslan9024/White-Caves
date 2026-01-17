@@ -192,7 +192,7 @@ router.post('/ai-recommendations', async (req, res) => {
       generatedAt: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Recommendations error:', error);
+    
     res.status(500).json({ 
       success: false, 
       error: 'Failed to generate recommendations' 
@@ -212,11 +212,9 @@ router.post('/track-behavior', async (req, res) => {
       timestamp: new Date().toISOString()
     };
 
-    console.log('User behavior tracked:', behaviorLog);
-
     res.json({ success: true, tracked: behaviorLog });
   } catch (error) {
-    console.error('Behavior tracking error:', error);
+    
     res.status(500).json({ success: false, error: 'Failed to track behavior' });
   }
 });

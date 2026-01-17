@@ -24,7 +24,7 @@ class CRMDataService {
 
       return await response.json();
     } catch (error) {
-      console.error(`CRMDataService error for ${endpoint}:`, error);
+      
       throw error;
     }
   }

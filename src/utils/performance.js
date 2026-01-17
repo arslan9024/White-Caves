@@ -40,7 +40,7 @@ export async function measurePerformance(name, fn) {
   const start = performance.now();
   const result = await fn();
   const end = performance.now();
-  console.log(`[Performance] ${name}: ${(end - start).toFixed(2)}ms`);
+  .toFixed(2)}ms`);
   return result;
 }
 
@@ -53,7 +53,7 @@ export function reportWebVitals(onPerfEntry) {
       getLCP(onPerfEntry);
       getTTFB(onPerfEntry);
     }).catch(() => {
-      console.log('Web vitals not available');
+      
     });
   }
 }

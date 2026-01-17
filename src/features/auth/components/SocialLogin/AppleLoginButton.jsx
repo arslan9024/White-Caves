@@ -41,7 +41,7 @@ const AppleLoginButton = ({ onSuccess, onError, disabled }) => {
       
       onSuccess?.(userData);
     } catch (error) {
-      console.error('Apple login error:', error);
+      
       dispatch(loginFailure(error.message));
       onError?.(error);
     } finally {

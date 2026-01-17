@@ -30,6 +30,7 @@ import comprehensiveSeedRoutes from './routes/comprehensive-seed.js';
 import crudRoutes from './routes/crud.js';
 import dubaiPlatformRoutes from './routes/dubai-platform.js';
 import seedDubaiPlatformRoutes from './routes/seed-dubai-platform.js';
+import errorRoutes from './routes/errors.js';
 import OliviaService from './services/oliviaService.js';
 import schedulerService from './services/schedulerService.js';
 
@@ -65,6 +66,7 @@ app.use(express.json({ limit: '50mb' }));
 
 app.use('/api/auth/uaepass', uaePassRoutes);
 app.use('/api/auth/webauthn', webauthnRoutes);
+app.use('/api/errors', errorRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/featured-properties', oliviaRoutes);
@@ -827,7 +829,7 @@ app.patch('/api/tasks/:taskId/complete', async (req, res) => {
   }
 });
 
-const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
+const OWNER_EMAIL = process.env.WHATSAPP_OWNER_EMAIL || 'admin@whitecaves.com';
 
 const isOwnerMiddleware = async (req, res, next) => {
   try {

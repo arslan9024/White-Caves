@@ -29,7 +29,7 @@ router.post('/tenancy', async (req, res) => {
     await timeline.save();
     res.status(201).json(timeline);
   } catch (error) {
-    console.error('Error creating tenancy timeline:', error);
+    
     res.status(500).json({ error: 'Failed to create tenancy timeline' });
   }
 });
@@ -52,7 +52,7 @@ router.post('/sale', async (req, res) => {
     await timeline.save();
     res.status(201).json(timeline);
   } catch (error) {
-    console.error('Error creating sale timeline:', error);
+    
     res.status(500).json({ error: 'Failed to create sale timeline' });
   }
 });
@@ -75,7 +75,7 @@ router.get('/tenancy', async (req, res) => {
     
     res.json(timelines);
   } catch (error) {
-    console.error('Error fetching tenancy timelines:', error);
+    
     res.status(500).json({ error: 'Failed to fetch tenancy timelines' });
   }
 });
@@ -98,7 +98,7 @@ router.get('/sale', async (req, res) => {
     
     res.json(timelines);
   } catch (error) {
-    console.error('Error fetching sale timelines:', error);
+    
     res.status(500).json({ error: 'Failed to fetch sale timelines' });
   }
 });
@@ -122,7 +122,7 @@ router.get('/tenancy/:id', async (req, res) => {
     
     res.json(timeline);
   } catch (error) {
-    console.error('Error fetching tenancy timeline:', error);
+    
     res.status(500).json({ error: 'Failed to fetch tenancy timeline' });
   }
 });
@@ -145,7 +145,7 @@ router.get('/sale/:id', async (req, res) => {
     
     res.json(timeline);
   } catch (error) {
-    console.error('Error fetching sale timeline:', error);
+    
     res.status(500).json({ error: 'Failed to fetch sale timeline' });
   }
 });
@@ -176,7 +176,7 @@ router.patch('/tenancy/:id/stage', async (req, res) => {
     
     res.json(timeline);
   } catch (error) {
-    console.error('Error updating tenancy stage:', error);
+    
     res.status(500).json({ error: 'Failed to update stage' });
   }
 });
@@ -207,7 +207,7 @@ router.patch('/sale/:id/stage', async (req, res) => {
     
     res.json(timeline);
   } catch (error) {
-    console.error('Error updating sale stage:', error);
+    
     res.status(500).json({ error: 'Failed to update stage' });
   }
 });
@@ -237,7 +237,7 @@ router.patch('/tenancy/:id/document', async (req, res) => {
     await timeline.save();
     res.json(timeline);
   } catch (error) {
-    console.error('Error updating document:', error);
+    
     res.status(500).json({ error: 'Failed to update document' });
   }
 });
@@ -267,7 +267,7 @@ router.get('/stats', async (req, res) => {
       renewalsDue
     });
   } catch (error) {
-    console.error('Error fetching timeline stats:', error);
+    
     res.status(500).json({ error: 'Failed to fetch stats' });
   }
 });

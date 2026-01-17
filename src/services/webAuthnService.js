@@ -65,7 +65,7 @@ const removeCredential = async (credentialId, userId) => {
       method: 'DELETE',
     });
   } catch (error) {
-    console.error('Failed to remove credential from server:', error);
+    
   }
 };
 
@@ -132,7 +132,7 @@ const registerBiometric = async (userId, userName, displayName) => {
       message: 'Biometric authentication registered successfully',
     };
   } catch (error) {
-    console.error('WebAuthn registration error:', error);
+    
     if (error.name === 'NotAllowedError') {
       throw new Error('Biometric registration was cancelled');
     }
@@ -220,7 +220,7 @@ const authenticateWithBiometric = async (userId = null) => {
       credentialId: assertion.id,
     };
   } catch (error) {
-    console.error('WebAuthn authentication error:', error);
+    
     if (error.name === 'NotAllowedError') {
       throw new Error('Authentication cancelled or not allowed');
     }

@@ -44,7 +44,6 @@ export class LeadAggregationEngine {
    * Initialize all adapters
    */
   async initialize(credentials = {}) {
-    console.log('[LeadAggregationEngine] Initializing adapters...');
 
     const results = {};
 
@@ -53,13 +52,13 @@ export class LeadAggregationEngine {
         if (credentials[portalName]) {
           await adapter.connect(credentials[portalName]);
           results[portalName] = { success: true, message: 'Connected' };
-          console.log(`[LeadAggregationEngine] ${portalName} initialized`);
+          
         } else {
           results[portalName] = { success: false, message: 'No credentials provided' };
         }
       } catch (error) {
         results[portalName] = { success: false, message: error.message };
-        console.error(`[LeadAggregationEngine] ${portalName} failed:`, error.message);
+        
       }
     }
 
@@ -77,24 +76,23 @@ export class LeadAggregationEngine {
    * Fetch all leads from all portals
    */
   async fetchAllLeads(filters = {}) {
-    console.log('[LeadAggregationEngine] Fetching leads from all portals...');
 
     const leadsByPortal = {};
 
     const results = await Promise.allSettled(
       Object.entries(this.adapters).map(async ([portalName, adapter]) => {
         if (!adapter.isConnected) {
-          console.warn(`[LeadAggregationEngine] ${portalName} not connected, skipping`);
+          
           return null;
         }
 
         try {
           const leads = await adapter.getLeads(filters);
           leadsByPortal[portalName] = leads;
-          console.log(`[LeadAggregationEngine] Fetched ${leads.length} leads from ${portalName}`);
+          
           return { portal: portalName, count: leads.length };
         } catch (error) {
-          console.error(`[LeadAggregationEngine] Error fetching from ${portalName}:`, error.message);
+          
           return null;
         }
       })
@@ -123,7 +121,6 @@ export class LeadAggregationEngine {
     // Sort by priority (highest first)
     this.deduplicationRules.sort((a, b) => b.priority - a.priority);
 
-    console.log(`[LeadAggregationEngine] Added deduplication rule: ${rule.name}`);
   }
 
   /**
@@ -138,7 +135,7 @@ export class LeadAggregationEngine {
      * }
      */
     this.scoringRules.push(rule);
-    console.log(`[LeadAggregationEngine] Added scoring rule: ${rule.name}`);
+    
   }
 
   /**
@@ -154,7 +151,7 @@ export class LeadAggregationEngine {
      * }
      */
     this.assignmentRules.push(rule);
-    console.log(`[LeadAggregationEngine] Added assignment rule: ${rule.name}`);
+    
   }
 
   /**
@@ -229,14 +226,12 @@ export class LeadAggregationEngine {
       points: 20
     });
 
-    console.log('[LeadAggregationEngine] Default rules configured');
   }
 
   /**
    * Deduplicate leads
    */
   async deduplicateLeads(leads) {
-    console.log(`[LeadAggregationEngine] Deduplicating ${leads.length} leads...`);
 
     const deduplicated = [];
     const duplicateMap = new Map();
@@ -258,7 +253,7 @@ export class LeadAggregationEngine {
             duplicateMap.set(key, merged);
           }
 
-          console.log(`[LeadAggregationEngine] Duplicate detected (${rule.name}): ${key}`);
+          : ${key}`);
           break;
         }
       }
@@ -270,7 +265,6 @@ export class LeadAggregationEngine {
       }
     }
 
-    console.log(`[LeadAggregationEngine] Deduplicated ${leads.length} → ${deduplicated.length} leads`);
     return deduplicated;
   }
 
@@ -358,7 +352,7 @@ export class LeadAggregationEngine {
    */
   async aggregateLeads(filters = {}) {
     if (this.isProcessing) {
-      console.warn('[LeadAggregationEngine] Aggregation already in progress');
+      
       return null;
     }
 
@@ -366,14 +360,12 @@ export class LeadAggregationEngine {
     const startTime = Date.now();
 
     try {
-      console.log('[LeadAggregationEngine] Starting lead aggregation...');
 
       // Step 1: Fetch leads from all portals
       const leadsByPortal = await this.fetchAllLeads(filters);
 
       // Step 2: Flatten and combine
       const allLeads = Object.values(leadsByPortal).flat();
-      console.log(`[LeadAggregationEngine] Total leads fetched: ${allLeads.length}`);
 
       // Step 3: Deduplicate
       const deduplicated = await this.deduplicateLeads(allLeads);
@@ -386,7 +378,6 @@ export class LeadAggregationEngine {
       this.lastSync = new Date().toISOString();
 
       const duration = Date.now() - startTime;
-      console.log(`[LeadAggregationEngine] Aggregation completed in ${duration}ms`);
 
       return {
         success: true,
@@ -401,7 +392,7 @@ export class LeadAggregationEngine {
         currentLeads: scored.length
       };
     } catch (error) {
-      console.error('[LeadAggregationEngine] Aggregation failed:', error);
+      
       return {
         success: false,
         error: error.message
@@ -419,11 +410,9 @@ export class LeadAggregationEngine {
       clearInterval(this.autoAggregationInterval);
     }
 
-    console.log(`[LeadAggregationEngine] Starting auto-aggregation every ${interval / 1000}s`);
-
     this.autoAggregationInterval = setInterval(() => {
       this.aggregateLeads().catch(err =>
-        console.error('[LeadAggregationEngine] Auto-aggregation error:', err)
+        
       );
     }, interval);
 
@@ -438,7 +427,7 @@ export class LeadAggregationEngine {
     if (this.autoAggregationInterval) {
       clearInterval(this.autoAggregationInterval);
       this.autoAggregationInterval = null;
-      console.log('[LeadAggregationEngine] Auto-aggregation stopped');
+      
     }
   }
 
@@ -500,7 +489,6 @@ export class LeadAggregationEngine {
    * Setup webhook for real-time lead updates
    */
   async setupWebhooks(webhookUrl) {
-    console.log('[LeadAggregationEngine] Setting up webhooks...');
 
     const results = {};
 
@@ -515,10 +503,10 @@ export class LeadAggregationEngine {
         ]);
 
         results[portalName] = { success: true, webhookId: result?.id };
-        console.log(`[LeadAggregationEngine] Webhook configured for ${portalName}`);
+        
       } catch (error) {
         results[portalName] = { success: false, error: error.message };
-        console.error(`[LeadAggregationEngine] Webhook setup failed for ${portalName}:`, error.message);
+        
       }
     }
 
@@ -538,14 +526,14 @@ export class LeadAggregationEngine {
       const result = await adapter.handleWebhookPayload(payload);
 
       if (result.type === 'lead') {
-        console.log('[LeadAggregationEngine] New lead from webhook:', result.data.id);
+        
         // Re-aggregate to include new lead
         await this.aggregateLeads();
       }
 
       return result;
     } catch (error) {
-      console.error('[LeadAggregationEngine] Webhook handling failed:', error.message);
+      
       throw error;
     }
   }

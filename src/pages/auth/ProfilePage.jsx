@@ -37,7 +37,7 @@ export default function ProfilePage() {
       dispatch(setUser(null));
       navigate('/');
     } catch (error) {
-      console.error('Logout error:', error);
+      
     }
   };
 

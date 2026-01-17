@@ -28,7 +28,7 @@ const LinkedInLoginButton = ({ onSuccess, onError, disabled }) => {
       sessionStorage.setItem('linkedin_auth_state', state);
       window.location.href = authUrl;
     } catch (error) {
-      console.error('LinkedIn login error:', error);
+      
       dispatch(loginFailure(error.message));
       onError?.(error);
       setLoading(false);

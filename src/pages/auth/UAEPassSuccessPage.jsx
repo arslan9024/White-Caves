@@ -60,7 +60,7 @@ const UAEPassSuccessPage = () => {
         }, 1500);
 
       } catch (err) {
-        console.error('UAE Pass verification error:', err);
+        
         setStatus('error');
         setError(err.message);
         dispatch(loginFailure(err.message));

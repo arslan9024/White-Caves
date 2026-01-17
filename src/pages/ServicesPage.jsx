@@ -55,7 +55,7 @@ export default function ServicesPage() {
         setSubmitStatus('error');
       }
     } catch (err) {
-      console.error('Error submitting inquiry:', err);
+      
       setSubmitStatus('error');
     } finally {
       setSubmitting(false);

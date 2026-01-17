@@ -36,7 +36,7 @@ const UAEPassLoginButton = ({ onSuccess, onError, disabled }) => {
       }
       
     } catch (error) {
-      console.error('UAE Pass login error:', error);
+      
       dispatch(loginFailure(error.message));
       onError?.(error);
       setLoading(false);

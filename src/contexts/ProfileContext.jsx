@@ -35,7 +35,7 @@ export const ProfileProvider = ({ children }) => {
         ]);
         
       } catch (error) {
-        console.error('Failed to fetch profile data:', error);
+        
       } finally {
         setLoading(false);
       }

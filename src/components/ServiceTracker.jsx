@@ -17,7 +17,6 @@ export default function ServiceTracker({ userId, userRole }) {
   });
   const [property, setProperty] = useState(null); // Placeholder for property details
 
-
   useEffect(() => {
     fetchServices();
   }, [userId]);
@@ -29,7 +28,7 @@ export default function ServiceTracker({ userId, userRole }) {
       setServices(data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching services:', error);
+      
       setLoading(false);
     }
   };
@@ -87,7 +86,7 @@ export default function ServiceTracker({ userId, userRole }) {
         setSecurityCheque({chequeNumber: '', amount: '', bankName: ''}); // Clear form
       }
     } catch (error) {
-      console.error('Error creating service:', error);
+      
     }
   };
 

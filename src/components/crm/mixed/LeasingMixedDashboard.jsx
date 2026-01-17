@@ -58,7 +58,7 @@ export default function LeasingMixedDashboard({ subItem = 'ejari-system', select
   };
 
   const handleAction = (action) => {
-    console.log('Leasing action:', action);
+    
   };
 
   return (

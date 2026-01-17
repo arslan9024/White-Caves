@@ -31,7 +31,7 @@ export const errorHandler = (err, req, res, next) => {
   const message = error.message || 'Server error';
 
   if (process.env.NODE_ENV === 'development') {
-    console.error('Error:', err);
+    
   }
 
   res.status(statusCode).json({

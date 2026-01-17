@@ -38,7 +38,7 @@ export default function CreateTenancyAgreement() {
       );
       setProperties(managedProperties);
     } catch (error) {
-      console.error('Error fetching properties:', error);
+      
     }
   };
 
@@ -49,7 +49,7 @@ export default function CreateTenancyAgreement() {
       const tenantUsers = data.filter(u => u.roles.includes('TENANT'));
       setTenants(tenantUsers);
     } catch (error) {
-      console.error('Error fetching tenants:', error);
+      
     }
   };
 
@@ -126,7 +126,7 @@ export default function CreateTenancyAgreement() {
         alert(error.error || 'Failed to create tenancy agreement');
       }
     } catch (error) {
-      console.error('Error creating agreement:', error);
+      
       alert('Failed to create tenancy agreement');
     } finally {
       setLoading(false);

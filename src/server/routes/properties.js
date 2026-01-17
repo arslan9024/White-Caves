@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
       .populate('propertyManagerId');
     res.json(properties);
   } catch (error) {
-    console.error('Error fetching properties:', error);
+    
     res.status(500).json({ error: 'Failed to fetch properties' });
   }
 });
@@ -24,7 +24,7 @@ router.get('/:id', async (req, res) => {
     }
     res.json(property);
   } catch (error) {
-    console.error('Error fetching property:', error);
+    
     res.status(500).json({ error: 'Failed to fetch property' });
   }
 });
@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
     await property.save();
     res.status(201).json(property);
   } catch (error) {
-    console.error('Error creating property:', error);
+    
     res.status(500).json({ error: 'Failed to create property' });
   }
 });
@@ -52,7 +52,7 @@ router.put('/:id', async (req, res) => {
     }
     res.json(property);
   } catch (error) {
-    console.error('Error updating property:', error);
+    
     res.status(500).json({ error: 'Failed to update property' });
   }
 });
@@ -71,7 +71,7 @@ router.put('/:id/assign-manager', async (req, res) => {
     }
     res.json(property);
   } catch (error) {
-    console.error('Error assigning property manager:', error);
+    
     res.status(500).json({ error: 'Failed to assign property manager' });
   }
 });

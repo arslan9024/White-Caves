@@ -62,7 +62,7 @@ const ExampleErrorHandling = () => {
       });
       
       toast.success('Payment intent created successfully!');
-      console.log('Payment result:', result);
+      
     } catch (error) {
       toast.error(error.message || 'Payment processing failed');
     } finally {

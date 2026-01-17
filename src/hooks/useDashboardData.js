@@ -14,7 +14,7 @@ export const useDashboardData = (fetchFn, dependencies = []) => {
       setData(result);
     } catch (err) {
       setError(err.message || 'Failed to load data');
-      console.error('Dashboard data fetch error:', err);
+      
     } finally {
       setLoading(false);
     }

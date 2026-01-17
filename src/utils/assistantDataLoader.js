@@ -10,7 +10,7 @@ export const loadAssistantData = async (assistantId) => {
     dataCache[assistantId] = data.default || data;
     return dataCache[assistantId];
   } catch (error) {
-    console.warn(`Failed to load data for ${assistantId}:`, error);
+    
     return null;
   }
 };
@@ -42,7 +42,7 @@ export const loadPropertiesData = async () => {
     dataCache.properties = data.default || data;
     return dataCache.properties;
   } catch (error) {
-    console.warn('Failed to load properties data:', error);
+    
     return { properties: [] };
   }
 };
@@ -67,7 +67,7 @@ export const loadWorkflowsData = async () => {
     
     return dataCache.workflows;
   } catch (error) {
-    console.warn('Failed to load workflows data:', error);
+    
     return { services: [], events: [], property: [] };
   }
 };

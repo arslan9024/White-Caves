@@ -777,8 +777,8 @@ export default function NancyHRCRM() {
         {activeTab === 'post-job' && (
           <div className="post-job-view">
             <JobPostComposer
-              onPublish={(data, platforms) => console.log('Publishing job to:', platforms, data)}
-              onSaveDraft={() => console.log('Job saved as draft')}
+              onPublish={(data, platforms) => }
+              onSaveDraft={() => }
             />
           </div>
         )}

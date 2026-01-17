@@ -39,12 +39,12 @@ if (firebaseConfig.apiKey) {
   try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
-    console.log('✅ Firebase initialized successfully');
+    
   } catch (error) {
-    console.error('❌ Firebase initialization failed:', error.message);
+    
   }
 } else {
-  console.warn('⚠️ Firebase configuration missing. Please set up environment variables.');
+  
 }
 
 const googleProvider = new GoogleAuthProvider();
@@ -86,7 +86,7 @@ export const createRecaptchaVerifier = (elementId) => {
   return new RecaptchaVerifier(auth, elementId, {
     size: 'invisible',
     callback: () => {
-      console.log('reCAPTCHA verified');
+      
     }
   });
 };
@@ -129,7 +129,7 @@ export const setAuthPersistence = async (rememberMe = true) => {
 
 export const onAuthChange = (callback) => {
   if (!auth) {
-    console.warn('Firebase not initialized');
+    
     return () => {};
   }
   return onAuthStateChanged(auth, callback);

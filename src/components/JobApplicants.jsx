@@ -17,7 +17,7 @@ export default function JobApplicants() {
       const data = await response.json();
       setApplications(data);
     } catch (error) {
-      console.error('Error fetching applications:', error);
+      
     }
   };
 
@@ -35,7 +35,7 @@ export default function JobApplicants() {
         setSelectedApplication(null);
       }
     } catch (error) {
-      console.error('Error updating application:', error);
+      
     }
   };
 

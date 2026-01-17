@@ -4,7 +4,7 @@ import WhatsAppSession from '../models/WhatsAppSession.js';
 
 const router = express.Router();
 
-const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
+const OWNER_EMAIL = process.env.WHATSAPP_OWNER_EMAIL || 'admin@whitecaves.com';
 
 const ownerMiddleware = async (req, res, next) => {
   const userEmail = req.user?.email;

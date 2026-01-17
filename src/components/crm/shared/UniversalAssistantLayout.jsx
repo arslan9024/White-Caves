@@ -34,7 +34,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('Dashboard Error:', error, errorInfo);
+    
   }
 
   render() {

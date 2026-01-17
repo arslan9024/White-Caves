@@ -174,7 +174,7 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
 
       setStep('success');
     } catch (error) {
-      console.error('KYC submission error:', error);
+      
       setErrors({ submit: error.message });
     } finally {
       setLoading(false);

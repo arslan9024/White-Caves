@@ -44,7 +44,7 @@ export default function OperationsMixedDashboard({ subItem = 'departments', sele
   const deptConfig = DEPT_ASSISTANT_MAP.operations;
   
   const handleStageClick = (stage, index) => setCurrentStage(index);
-  const handleAction = (action) => console.log('Operations action:', action);
+  const handleAction = (action) => 
 
   return (
     <MixedDashboard

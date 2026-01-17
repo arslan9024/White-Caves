@@ -34,7 +34,7 @@ export function useOrganizationData() {
       setStats(statsRes.data || null);
       setHasData((deptRes.data?.length || 0) > 0);
     } catch (err) {
-      console.error('Error fetching organization data:', err);
+      
       setError(err.message);
       setHasData(false);
     } finally {

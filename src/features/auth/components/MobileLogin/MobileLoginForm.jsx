@@ -58,7 +58,7 @@ const MobileLoginForm = ({ onSuccess, onError }) => {
       setConfirmationResult(result);
       setStep('otp');
     } catch (error) {
-      console.error('Send OTP error:', error);
+      
       setError(error.message || 'Failed to send OTP');
       dispatch(loginFailure(error.message));
       onError?.(error);
@@ -98,7 +98,7 @@ const MobileLoginForm = ({ onSuccess, onError }) => {
       
       onSuccess?.(userData);
     } catch (error) {
-      console.error('Verify OTP error:', error);
+      
       setError('Invalid OTP. Please try again.');
       dispatch(loginFailure(error.message));
       onError?.(error);

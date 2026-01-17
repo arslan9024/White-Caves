@@ -7,7 +7,7 @@ import crypto from 'crypto';
 const router = express.Router();
 
 const EXECUTIVE_EMAILS = [
-  'arslanmalikgoraha@gmail.com'
+  process.env.EXECUTIVE_EMAIL || 'admin@whitecaves.com'
 ];
 
 const requireExecutive = async (req, res, next) => {

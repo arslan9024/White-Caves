@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
  *   type="success"
  *   title="Success"
  *   message="Your changes have been saved"
- *   onDismiss={() => console.log('dismissed')}
+ *   onDismiss={() => }
  *   autoClose={3000}
  * />
  */

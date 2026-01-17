@@ -250,7 +250,7 @@ export class BasePortalAdapter {
 
       return await response.json();
     } catch (error) {
-      console.error(`[${this.portalName}] Request failed:`, error);
+      
       throw error;
     }
   }
@@ -285,7 +285,7 @@ export class BasePortalAdapter {
    */
   async sync() {
     if (this.isProcessing) {
-      console.warn(`[${this.portalName}] Sync already in progress`);
+      
       return;
     }
 
@@ -293,8 +293,7 @@ export class BasePortalAdapter {
     const startTime = Date.now();
 
     try {
-      console.log(`[${this.portalName}] Starting sync...`);
-      
+
       const [properties, leads] = await Promise.all([
         this.getAllProperties(),
         this.getLeads()
@@ -303,7 +302,6 @@ export class BasePortalAdapter {
       this.lastSync = new Date().toISOString();
       
       const duration = Date.now() - startTime;
-      console.log(`[${this.portalName}] Sync completed in ${duration}ms. Properties: ${properties.length}, Leads: ${leads.length}`);
 
       return {
         success: true,
@@ -314,7 +312,7 @@ export class BasePortalAdapter {
         leads: leads.length
       };
     } catch (error) {
-      console.error(`[${this.portalName}] Sync failed:`, error);
+      
       return {
         success: false,
         portalName: this.portalName,
@@ -333,11 +331,9 @@ export class BasePortalAdapter {
       clearInterval(this.autoSyncInterval);
     }
 
-    console.log(`[${this.portalName}] Starting auto-sync every ${interval / 1000}s`);
-    
     this.autoSyncInterval = setInterval(() => {
       this.sync().catch(err => 
-        console.error(`[${this.portalName}] Auto-sync error:`, err)
+        
       );
     }, interval);
 
@@ -352,7 +348,7 @@ export class BasePortalAdapter {
     if (this.autoSyncInterval) {
       clearInterval(this.autoSyncInterval);
       this.autoSyncInterval = null;
-      console.log(`[${this.portalName}] Auto-sync stopped`);
+      
     }
   }
 
@@ -394,7 +390,7 @@ export class BasePortalAdapter {
       message,
       ...data
     };
-    console.log(`[${timestamp}] [${this.portalName}] [${level}] ${message}`, data);
+    
   }
 }
 

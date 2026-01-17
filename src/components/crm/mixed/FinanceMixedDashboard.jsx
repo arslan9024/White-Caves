@@ -44,7 +44,7 @@ export default function FinanceMixedDashboard({ subItem = 'payments', selectedAs
   const deptConfig = DEPT_ASSISTANT_MAP.finance;
   
   const handleStageClick = (stage, index) => setCurrentStage(index);
-  const handleAction = (action) => console.log('Finance action:', action);
+  const handleAction = (action) => 
 
   return (
     <MixedDashboard

@@ -49,7 +49,7 @@ export default function SalesMixedDashboard({ subItem = 'leads', selectedAssista
   };
 
   const handleAction = (action) => {
-    console.log('Sales action:', action);
+    
   };
 
   return (

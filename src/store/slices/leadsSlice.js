@@ -8,7 +8,7 @@ export const loadLeads = createAsyncThunk(
       const response = await crmDataService.getRecentLeads();
       return response.leads || response.data || [];
     } catch (error) {
-      console.error('Failed to load leads:', error);
+      
       return rejectWithValue(error.message);
     }
   }
@@ -21,7 +21,7 @@ export const loadLeadMetrics = createAsyncThunk(
       const response = await crmDataService.getLeadMetrics();
       return response.metrics || response;
     } catch (error) {
-      console.error('Failed to load lead metrics:', error);
+      
       return rejectWithValue(error.message);
     }
   }

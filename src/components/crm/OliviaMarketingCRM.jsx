@@ -689,14 +689,14 @@ const OliviaMarketingCRM = () => {
           <div className="publish-view">
             <PlatformPublisherForm 
               onPublish={(data, platforms) => {
-                console.log('Publishing to:', platforms, data);
+                
                 dispatch(addOliviaActivity({
                   action: 'Property Published',
                   status: 'success',
                   details: `Published to ${platforms.join(', ')}`
                 }));
               }}
-              onSaveDraft={() => console.log('Saved as draft')}
+              onSaveDraft={() => }
             />
           </div>
         )}

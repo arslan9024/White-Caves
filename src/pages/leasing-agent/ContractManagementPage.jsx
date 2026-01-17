@@ -60,7 +60,7 @@ export default function ContractManagementPage() {
         setContracts(data.contracts);
       }
     } catch (error) {
-      console.error('Error fetching contracts:', error);
+      
     } finally {
       setLoading(false);
     }
@@ -87,7 +87,7 @@ export default function ContractManagementPage() {
         alert(`Contract ${data.contract.contractNumber} created successfully!`);
       }
     } catch (error) {
-      console.error('Error creating contract:', error);
+      
       alert('Failed to create contract. Please try again.');
     }
   };
@@ -108,7 +108,7 @@ export default function ContractManagementPage() {
         fetchContracts();
       }
     } catch (error) {
-      console.error('Error generating link:', error);
+      
       alert('Failed to generate signature link.');
     }
   };
@@ -134,7 +134,7 @@ export default function ContractManagementPage() {
         alert('Broker signature added successfully!');
       }
     } catch (error) {
-      console.error('Error signing:', error);
+      
       alert('Failed to add signature.');
     }
   };
@@ -154,7 +154,7 @@ export default function ContractManagementPage() {
         throw new Error(data.error);
       }
     } catch (error) {
-      console.error('Error uploading:', error);
+      
       alert('Failed to upload to Google Drive. Please try again.');
     }
   };

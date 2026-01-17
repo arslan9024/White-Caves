@@ -121,7 +121,7 @@ export default function MDDashboardPage() {
         setDashboardData(data);
       }
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+      
     } finally {
       setLoading(false);
     }
@@ -175,7 +175,7 @@ export default function MDDashboardPage() {
         link.remove();
       }
     } catch (error) {
-      console.error('Failed to generate report:', error);
+      
     }
   };
 
@@ -192,7 +192,7 @@ export default function MDDashboardPage() {
         break;
       case 'deleteProperty':
         if (window.confirm('Are you sure you want to delete this property?')) {
-          console.log('Delete property:', id);
+          
         }
         break;
       case 'addAgent':
@@ -205,7 +205,7 @@ export default function MDDashboardPage() {
         navigate(`/agents/edit/${id}`);
         break;
       case 'messageAgent':
-        console.log('Message agent:', id);
+        
         break;
       case 'addLead':
         navigate('/leads/add');
@@ -214,16 +214,16 @@ export default function MDDashboardPage() {
         navigate(`/leads/${id}`);
         break;
       case 'exportLeads':
-        console.log('Export leads');
+        
         break;
       case 'callLead':
-        console.log('Call lead:', id);
+        
         break;
       case 'whatsappLead':
-        console.log('WhatsApp lead:', id);
+        
         break;
       case 'assignLead':
-        console.log('Assign lead:', id);
+        
         break;
       case 'addContract':
         navigate('/contracts/add');
@@ -235,7 +235,7 @@ export default function MDDashboardPage() {
         navigate(`/contracts/edit/${id}`);
         break;
       case 'downloadContract':
-        console.log('Download contract:', id);
+        
         break;
       case 'generateContract':
         navigate('/contracts/generate');
@@ -259,16 +259,16 @@ export default function MDDashboardPage() {
         window.open('https://web.whatsapp.com', '_blank');
         break;
       case 'sendBroadcast':
-        console.log('Send broadcast:', id);
+        
         break;
       case 'viewAllMessages':
         navigate('/whatsapp/messages');
         break;
       case 'replyMessage':
-        console.log('Reply to message:', id);
+        
         break;
       case 'assignMessage':
-        console.log('Assign message:', id);
+        
         break;
       case 'addTemplate':
         navigate('/whatsapp/templates/add');
@@ -280,10 +280,10 @@ export default function MDDashboardPage() {
         navigate(`/users/${id}`);
         break;
       case 'verifyUser':
-        console.log('Verify user:', id);
+        
         break;
       case 'exportUsers':
-        console.log('Export users');
+        
         break;
       case 'configureUAEPass':
         navigate('/settings/uaepass');
@@ -296,19 +296,19 @@ export default function MDDashboardPage() {
         break;
       case 'clearCache':
         if (window.confirm('Are you sure you want to clear the cache?')) {
-          console.log('Clear cache');
+          
         }
         break;
       case 'resetAnalytics':
         if (window.confirm('Are you sure you want to reset analytics?')) {
-          console.log('Reset analytics');
+          
         }
         break;
       case 'exportData':
-        console.log('Export all data');
+        
         break;
       default:
-        console.log('Unhandled action:', action, id);
+        
         break;
     }
   };
@@ -324,7 +324,7 @@ export default function MDDashboardPage() {
         alert('Settings saved successfully!');
       }
     } catch (error) {
-      console.error('Failed to save settings:', error);
+      
     }
   };
 

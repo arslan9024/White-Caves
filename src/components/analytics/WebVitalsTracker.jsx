@@ -26,7 +26,7 @@ const WebVitalsTracker = () => {
         onTTFB(reportWebVital);
         onINP(reportWebVital);
       } catch (error) {
-        console.log('Web vitals not available:', error.message);
+        
       }
     };
 

@@ -10,12 +10,12 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
       credential: admin.credential.cert(serviceAccount)
     });
     
-    console.log('✓ Firebase Admin SDK initialized');
+    // Firebase Admin SDK initialized successfully
   } catch (error) {
-    console.error('✗ Firebase Admin SDK initialization failed:', error.message);
+    // Firebase Admin SDK initialization failed - features will be unavailable
   }
 } else {
-  console.warn('WARNING: FIREBASE_SERVICE_ACCOUNT not set. Firebase Admin features will not work.');
+  // WARNING: FIREBASE_SERVICE_ACCOUNT not set - Firebase Admin features will not work
 }
 
 export const verifyIdToken = async (idToken) => {

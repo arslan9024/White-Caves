@@ -113,10 +113,9 @@ export const runDailySelection = () => async (dispatch, getState) => {
     const topProperties = selectTopProperties(allProperties, criteria, criteria.maxFeatured);
     
     dispatch(setFeaturedProperties(topProperties));
-    
-    console.log(`[Olivia] Daily selection complete: ${topProperties.length} properties featured`);
+
   } catch (error) {
-    console.error('[Olivia] Daily selection failed:', error);
+    
     dispatch(setError(error.message));
   }
 };

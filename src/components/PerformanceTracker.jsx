@@ -16,7 +16,7 @@ export default function PerformanceTracker({ userId }) {
       const data = await response.json();
       setPerformance(data);
     } catch (error) {
-      console.error('Error fetching performance data:', error);
+      
     } finally {
       setLoading(false);
     }

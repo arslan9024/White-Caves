@@ -37,7 +37,7 @@ export const loadInventoryData = createAsyncThunk(
         }
       };
     } catch (error) {
-      console.error('Failed to load inventory from API:', error);
+      
       return rejectWithValue(error.message);
     }
   }
@@ -61,7 +61,7 @@ export const loadOwnersData = createAsyncThunk(
 
       return { byId: ownersById, allIds: ownerIds };
     } catch (error) {
-      console.error('Failed to load owners from API:', error);
+      
       return rejectWithValue(error.message);
     }
   }

@@ -147,7 +147,7 @@ export default function CareersPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Application submitted:', formData);
+    
     setSubmitted(true);
     setShowForm(false);
     setTimeout(() => {

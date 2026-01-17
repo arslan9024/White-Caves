@@ -70,7 +70,7 @@ export default function TenancyContract({
         status: getContractStatus()
       });
     } catch (error) {
-      console.error('Error saving contract:', error);
+      
     }
     setIsSaving(false);
   };
@@ -84,7 +84,7 @@ export default function TenancyContract({
         status: getContractStatus()
       });
     } catch (error) {
-      console.error('Error uploading to Drive:', error);
+      
     }
     setIsUploading(false);
   };

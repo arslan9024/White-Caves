@@ -41,9 +41,7 @@ const BiometricSetup = () => {
       const userId = user.uid || user.id || user.email;
       const userEmail = user.email;
       const userName = user.displayName || user.name || user.email;
-      
-      console.log('Registering biometric for:', { userId, userEmail, userName });
-      
+
       const result = await registerBiometric(userId, userEmail, userName);
 
       if (result.success) {
@@ -58,7 +56,7 @@ const BiometricSetup = () => {
         setMessage({ type: 'success', text: 'Biometric login enabled successfully!' });
       }
     } catch (error) {
-      console.error('Biometric setup error:', error);
+      
       setMessage({ type: 'error', text: error.message || 'Failed to enable biometric login' });
     } finally {
       setLoading(false);

@@ -177,7 +177,7 @@ export default function Auth({ onLogin }) {
       toast.success('Successfully signed in with Google!');
       onLogin(userData);
     } catch (error) {
-      console.error("Error signing in with Google:", error);
+      
       if (error.code === 'auth/popup-closed-by-user') {
         toast.error('Sign-in cancelled. Please try again.');
       } else if (error.code === 'auth/popup-blocked') {
@@ -217,7 +217,7 @@ export default function Auth({ onLogin }) {
       toast.success('Successfully signed in with Facebook!');
       onLogin(userData);
     } catch (error) {
-      console.error("Error signing in with Facebook:", error);
+      
       if (error.code === 'auth/popup-closed-by-user') {
         toast.error('Sign-in cancelled. Please try again.');
       } else if (error.code === 'auth/account-exists-with-different-credential') {
@@ -255,7 +255,7 @@ export default function Auth({ onLogin }) {
       toast.success('Successfully signed in with Apple!');
       onLogin(userData);
     } catch (error) {
-      console.error("Error signing in with Apple:", error);
+      
       if (error.code === 'auth/popup-closed-by-user') {
         toast.error('Sign-in cancelled. Please try again.');
       } else {
@@ -302,7 +302,7 @@ export default function Auth({ onLogin }) {
       toast.success(isSignUp ? 'Account created successfully!' : 'Successfully signed in!');
       onLogin(userData);
     } catch (error) {
-      console.error("Email auth error:", error);
+      
       if (error.code === 'auth/email-already-in-use') {
         toast.error('This email is already registered. Switch to "Sign In" mode.');
         setIsSignUp(false);
@@ -355,7 +355,7 @@ export default function Auth({ onLogin }) {
       setOtpCountdown(60);
       toast.success('OTP sent to your phone!');
     } catch (error) {
-      console.error("Phone auth error:", error);
+      
       if (error.code === 'auth/too-many-requests') {
         toast.error('Too many attempts. Please try again later.');
       } else if (error.code === 'auth/invalid-phone-number') {
@@ -402,7 +402,7 @@ export default function Auth({ onLogin }) {
       toast.success('Successfully signed in!');
       onLogin(userData);
     } catch (error) {
-      console.error("OTP verification error:", error);
+      
       if (error.code === 'auth/invalid-verification-code') {
         toast.error('Invalid OTP. Please check and try again.');
       } else {
@@ -447,7 +447,7 @@ export default function Auth({ onLogin }) {
       setConfirmationResult(null);
       toast.success('Logged out successfully');
     } catch (error) {
-      console.error("Error signing out:", error);
+      
       toast.error('Failed to log out');
     }
   };

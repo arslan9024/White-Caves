@@ -205,7 +205,7 @@ const FeaturedProperties = () => {
         throw new Error(data.message || 'Failed to load properties');
       }
     } catch (err) {
-      console.error('Error fetching featured properties:', err);
+      
       setError('Unable to load featured properties');
     } finally {
       setLoading(false);

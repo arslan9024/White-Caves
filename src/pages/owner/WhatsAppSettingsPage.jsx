@@ -74,7 +74,7 @@ const WhatsAppSettingsPage = () => {
         });
       }
     } catch (error) {
-      console.error('Error fetching session:', error);
+      
     } finally {
       setLoading(false);
     }
@@ -121,7 +121,7 @@ const WhatsAppSettingsPage = () => {
         setNotification({ type: 'error', message: data.error || 'Connection failed' });
       }
     } catch (error) {
-      console.error('Connection error:', error);
+      
       setNotification({ type: 'error', message: 'Failed to initiate connection' });
     }
   };
@@ -142,7 +142,7 @@ const WhatsAppSettingsPage = () => {
         setNotification({ type: 'success', message: 'WhatsApp disconnected' });
       }
     } catch (error) {
-      console.error('Disconnect error:', error);
+      
       setNotification({ type: 'error', message: 'Failed to disconnect' });
     }
   };
@@ -158,7 +158,7 @@ const WhatsAppSettingsPage = () => {
         setQrExpiry(new Date(data.qrExpiry));
       }
     } catch (error) {
-      console.error('QR refresh error:', error);
+      
     }
   };
 
@@ -183,7 +183,7 @@ const WhatsAppSettingsPage = () => {
         setNotification({ type: 'success', message: 'Connected successfully!' });
       }
     } catch (error) {
-      console.error('Simulate error:', error);
+      
     }
   };
 
@@ -203,7 +203,7 @@ const WhatsAppSettingsPage = () => {
         setNotification({ type: 'error', message: 'Failed to save settings' });
       }
     } catch (error) {
-      console.error('Save error:', error);
+      
       setNotification({ type: 'error', message: 'Failed to save settings' });
     } finally {
       setSaving(false);
@@ -264,7 +264,7 @@ const WhatsAppSettingsPage = () => {
         setTestMessage('');
       }
     } catch (error) {
-      console.error('Chatbot test error:', error);
+      
       setTestResult({ error: 'Failed to test chatbot' });
     } finally {
       setTestLoading(false);
@@ -282,7 +282,7 @@ const WhatsAppSettingsPage = () => {
       setTestResult(null);
       setNotification({ type: 'success', message: 'Test conversation cleared' });
     } catch (error) {
-      console.error('Clear context error:', error);
+      
     }
   };
 

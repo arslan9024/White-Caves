@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import RolePageLayout from '../../components/layout/RolePageLayout';
+import LoadingSkeleton from '../../components/LoadingSkeleton';
 import {
   StatCard,
   StatCardGrid,
@@ -121,8 +122,11 @@ export default function LandlordDashboardPage() {
         subtitle="Manage your rental property portfolio"
         role="landlord"
       >
-        <div style={{ padding: '40px', textAlign: 'center', fontSize: '18px', color: '#666' }}>
-          Loading your dashboard...
+        <div style={{ padding: '20px' }}>
+          <LoadingSkeleton variant="card" count={4} height={120} />
+          <div style={{ marginTop: '40px' }}>
+            <LoadingSkeleton variant="table" count={1} />
+          </div>
         </div>
       </RolePageLayout>
     );

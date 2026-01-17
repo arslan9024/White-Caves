@@ -38,11 +38,11 @@ export class BayutAdapter extends BasePortalAdapter {
       
       if (response && response.data) {
         this.isConnected = true;
-        console.log('[Bayut] Connected successfully');
+        
         return true;
       }
     } catch (error) {
-      console.error('[Bayut] Connection failed:', error.message);
+      
       this.isConnected = false;
       throw error;
     }
@@ -216,7 +216,7 @@ export class BayutAdapter extends BasePortalAdapter {
     const response = await this.makeRequest('POST', '/webhooks', webhook);
     
     if (response.data) {
-      console.log('[Bayut] Webhook configured:', response.data.id);
+      
       return response.data;
     }
 
@@ -242,7 +242,6 @@ export class BayutAdapter extends BasePortalAdapter {
    * Handle webhook payload from Bayut
    */
   async handleWebhookPayload(payload) {
-    console.log('[Bayut] Webhook received:', payload.event);
 
     if (!this.validateWebhookSignature(payload, payload.signature, this.webhookSecret)) {
       throw new Error('Invalid webhook signature');

@@ -46,7 +46,7 @@ const PropertyDetailPage = () => {
         const data = await response.json();
         setProperty(data.data);
       } catch (err) {
-        console.error('Error fetching property:', err);
+        
         setError(err.message);
       } finally {
         setLoading(false);
@@ -74,7 +74,7 @@ const PropertyDetailPage = () => {
           url: window.location.href
         });
       } catch (err) {
-        console.log('Share cancelled');
+        
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
@@ -111,7 +111,7 @@ const PropertyDetailPage = () => {
         }, 2000);
       }
     } catch (err) {
-      console.error('Error submitting inquiry:', err);
+      
     } finally {
       setSubmitting(false);
     }

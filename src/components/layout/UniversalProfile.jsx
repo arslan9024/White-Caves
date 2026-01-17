@@ -64,7 +64,7 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
       dispatch(closeAllMenus());
       navigate('/');
     } catch (error) {
-      console.error('Logout error:', error);
+      
     }
   };
 

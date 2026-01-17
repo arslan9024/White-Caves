@@ -46,7 +46,7 @@ router.post('/', async (req, res) => {
     await appointment.save();
     res.status(201).json(appointment);
   } catch (error) {
-    console.error('Error creating appointment:', error);
+    
     res.status(500).json({ error: 'Failed to create appointment' });
   }
 });

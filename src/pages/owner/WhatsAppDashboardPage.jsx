@@ -69,7 +69,7 @@ const WhatsAppDashboardPage = () => {
           }
         }
       } catch (err) {
-        console.error('Error fetching WhatsApp data:', err);
+        
         setError(err.message);
       } finally {
         setLoading(false);
@@ -94,7 +94,7 @@ const WhatsAppDashboardPage = () => {
             setMessages(data.messages);
           }
         } catch (err) {
-          console.error('Error loading messages:', err);
+          
         }
       };
       loadMessages();
@@ -126,7 +126,7 @@ const WhatsAppDashboardPage = () => {
         setNewMessage('');
       }
     } catch (err) {
-      console.error('Error sending message:', err);
+      
     }
   };
 

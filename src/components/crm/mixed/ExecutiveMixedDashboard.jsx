@@ -50,7 +50,7 @@ export default function ExecutiveMixedDashboard({ subItem = 'md-dashboard', sele
   const deptConfig = DEPT_ASSISTANT_MAP.executive;
   
   const handleAction = (action) => {
-    console.log('Executive action:', action);
+    
   };
 
   return (

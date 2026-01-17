@@ -174,7 +174,7 @@ export default function SalesAgentDashboardPage() {
                 budget={lead.budget}
                 status={lead.status}
                 score={lead.score}
-                onClick={() => console.log('View lead', lead.id)}
+                onClick={() => console.log('Lead clicked:', lead.id)}
               />
             ))}
           </DataList>

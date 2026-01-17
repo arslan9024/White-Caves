@@ -297,7 +297,7 @@ export default function PropertiesPage() {
           setFilteredProperties(SAMPLE_PROPERTIES);
         }
       } catch (err) {
-        console.error('Error fetching properties:', err);
+        
         setProperties(SAMPLE_PROPERTIES);
         setFilteredProperties(SAMPLE_PROPERTIES);
       } finally {

@@ -7,7 +7,7 @@ let stripePromise;
 if (import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
   stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 } else {
-  console.warn('VITE_STRIPE_PUBLIC_KEY not found. Payment processing will not work until this is set.');
+  
 }
 
 const CheckoutForm = ({ property, amount, onSuccess, onCancel }) => {

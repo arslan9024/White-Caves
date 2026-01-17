@@ -179,7 +179,7 @@ export default function LeasingAgentDashboardPage() {
                 budget={lead.budget}
                 status={lead.status}
                 score={lead.score}
-                onClick={() => console.log('View lead', lead.id)}
+                onClick={() => }
               />
             ))}
           </DataList>

@@ -56,7 +56,7 @@ export default function PropertiesMixedDashboard({ subItem = 'portfolio', select
   };
 
   const handleAction = (action) => {
-    console.log('Property action:', action);
+    
   };
 
   return (

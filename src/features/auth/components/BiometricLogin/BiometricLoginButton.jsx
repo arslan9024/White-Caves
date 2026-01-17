@@ -66,7 +66,7 @@ const BiometricLoginButton = ({ onSuccess, onError, disabled }) => {
         }
       }
     } catch (error) {
-      console.error('Biometric login error:', error);
+      
       dispatch(loginFailure(error.message));
       onError?.(error);
     } finally {

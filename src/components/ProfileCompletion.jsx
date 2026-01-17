@@ -45,7 +45,7 @@ export default function ProfileCompletion({ user, token, onComplete, onSkip }) {
       toast.success('Profile updated successfully!');
       onComplete(data.user, data.token);
     } catch (error) {
-      console.error('Profile completion error:', error);
+      
       toast.error(error.message);
     } finally {
       setLoading(false);

@@ -47,7 +47,7 @@ export default function JobBoard() {
         });
       }
     } catch (error) {
-      console.error('Error submitting application:', error);
+      
     }
   };
 

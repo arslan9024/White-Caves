@@ -47,7 +47,7 @@ export default function ContactPage() {
         setSubmitError(true);
       }
     } catch (err) {
-      console.error('Error submitting contact form:', err);
+      
       setSubmitError(true);
     } finally {
       setSubmitting(false);

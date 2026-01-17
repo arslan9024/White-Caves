@@ -22,7 +22,7 @@ import PropTypes from 'prop-types';
  *     { key: 'status', label: 'Status', sortable: true },
  *   ]}
  *   rows={[{ name: 'John', status: 'active' }]}
- *   onSort={(col, dir) => console.log(col, dir)}
+ *   onSort={(col, dir) => }
  * />
  */
 const DataTable = ({

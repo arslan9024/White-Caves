@@ -14,7 +14,7 @@ const ProfilePanel = ({ user, onClose }) => {
       navigate('/');
       onClose();
     } catch (error) {
-      console.error('Sign out error:', error);
+      
     }
   };
 

@@ -39,11 +39,11 @@ export class SkyloovAdapter extends BasePortalAdapter {
       
       if (response) {
         this.isConnected = true;
-        console.log('[Skyloov] Connected successfully');
+        
         return true;
       }
     } catch (error) {
-      console.error('[Skyloov] Connection failed:', error.message);
+      
       this.isConnected = false;
       throw error;
     }
@@ -93,7 +93,7 @@ export class SkyloovAdapter extends BasePortalAdapter {
 
       return await response.json();
     } catch (error) {
-      console.error(`[Skyloov] Request failed:`, error);
+      
       throw error;
     }
   }
@@ -340,7 +340,7 @@ export class SkyloovAdapter extends BasePortalAdapter {
     const response = await this.makeRequest('POST', '/webhooks', webhook);
     
     if (response.data) {
-      console.log('[Skyloov] Webhook configured:', response.data.id);
+      
       return response.data;
     }
 
@@ -369,7 +369,6 @@ export class SkyloovAdapter extends BasePortalAdapter {
    * Handle webhook payload
    */
   async handleWebhookPayload(payload) {
-    console.log('[Skyloov] Webhook received:', payload.event);
 
     if (!this.validateWebhookSignature(payload, payload.signature, this.webhookSecret)) {
       throw new Error('Invalid webhook signature');

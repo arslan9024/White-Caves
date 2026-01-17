@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
  *   label="New" 
  *   color="red" 
  *   size="md"
- *   onRemove={() => console.log('removed')}
+ *   onRemove={() => }
  * />
  */
 const Badge = ({

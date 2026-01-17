@@ -40,7 +40,7 @@ export default function PassportUpload({ userId, onUploadComplete }) {
         alert('Failed to upload passport');
       }
     } catch (error) {
-      console.error('Error uploading passport:', error);
+      
       alert('Error uploading passport');
     } finally {
       setLoading(false);

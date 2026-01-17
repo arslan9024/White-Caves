@@ -53,7 +53,7 @@ export default function UserDashboard() {
         scheduledViewings: Math.floor(Math.random() * 5) + 1
       });
     } catch (error) {
-      console.log('Dashboard data loading with demo data');
+      
     }
     setLoading(false);
   };
@@ -65,7 +65,7 @@ export default function UserDashboard() {
       });
       setFavorites(prev => prev.filter(f => f.propertyId !== propertyId));
     } catch (error) {
-      console.log('Remove favorite error:', error);
+      
     }
   };
 
@@ -76,7 +76,7 @@ export default function UserDashboard() {
       });
       setSavedSearches(prev => prev.filter(s => s._id !== searchId));
     } catch (error) {
-      console.log('Delete search error:', error);
+      
     }
   };
 
@@ -91,7 +91,7 @@ export default function UserDashboard() {
         a._id === alertId ? { ...a, active: !currentActive } : a
       ));
     } catch (error) {
-      console.log('Toggle alert error:', error);
+      
     }
   };
 

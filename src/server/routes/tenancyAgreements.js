@@ -111,13 +111,13 @@ router.post('/', async (req, res) => {
           await agreement.save();
         }
       } catch (calError) {
-        console.error('Error creating calendar event:', calError);
+        
       }
     }
 
     res.status(201).json(agreement);
   } catch (error) {
-    console.error('Error creating tenancy agreement:', error);
+    
     res.status(500).json({ error: 'Failed to create tenancy agreement' });
   }
 });
@@ -132,7 +132,7 @@ router.get('/', async (req, res) => {
       .sort({ createdAt: -1 });
     res.json(agreements);
   } catch (error) {
-    console.error('Error fetching agreements:', error);
+    
     res.status(500).json({ error: 'Failed to fetch agreements' });
   }
 });
@@ -151,7 +151,7 @@ router.get('/:id', async (req, res) => {
     
     res.json(agreement);
   } catch (error) {
-    console.error('Error fetching agreement:', error);
+    
     res.status(500).json({ error: 'Failed to fetch agreement' });
   }
 });
@@ -214,7 +214,7 @@ router.post('/:id/sign', async (req, res) => {
     await agreement.save();
     res.json(agreement);
   } catch (error) {
-    console.error('Error signing agreement:', error);
+    
     res.status(500).json({ error: 'Failed to sign agreement' });
   }
 });
@@ -247,7 +247,7 @@ router.post('/:id/reject', async (req, res) => {
     await agreement.save();
     res.json(agreement);
   } catch (error) {
-    console.error('Error rejecting agreement:', error);
+    
     res.status(500).json({ error: 'Failed to reject agreement' });
   }
 });
@@ -269,7 +269,7 @@ router.get('/user/:userId', async (req, res) => {
     
     res.json(agreements);
   } catch (error) {
-    console.error('Error fetching user agreements:', error);
+    
     res.status(500).json({ error: 'Failed to fetch user agreements' });
   }
 });

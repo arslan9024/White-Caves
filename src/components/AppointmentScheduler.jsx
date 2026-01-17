@@ -29,7 +29,7 @@ export default function AppointmentScheduler({ propertyId, agentId }) {
         setIsRescheduling(false);
       }
     } catch (error) {
-      console.error('Error scheduling appointment:', error);
+      
       alert('Failed to schedule appointment');
     }
   };

@@ -958,7 +958,7 @@ export class ${selectedFile.name.replace('.js', '')} extends EventEmitter {
   constructor() {
     super();
     this.initialized = false;
-    console.log('${selectedFile.name} loaded');
+    
   }
 
   async initialize() {

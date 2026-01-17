@@ -208,7 +208,7 @@ export default function Profile({ user, onLogout }) {
       toast.success('Profile updated successfully!');
       setEditingProfile(false);
     } catch (error) {
-      console.error('Profile update error:', error);
+      
       toast.error('Failed to update profile');
     } finally {
       setLoading(false);
@@ -235,7 +235,7 @@ export default function Profile({ user, onLogout }) {
       await verifyEmail(user);
       toast.success('Verification email sent! Please check your inbox.');
     } catch (error) {
-      console.error('Email verification error:', error);
+      
       toast.error('Failed to send verification email');
     }
   };
@@ -258,7 +258,7 @@ export default function Profile({ user, onLogout }) {
       setShowPasswordModal(false);
       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (error) {
-      console.error('Password change error:', error);
+      
       if (error.code === 'auth/wrong-password') {
         toast.error('Current password is incorrect');
       } else {
@@ -283,7 +283,7 @@ export default function Profile({ user, onLogout }) {
       setShowEmailModal(false);
       setEmailData({ newEmail: '', password: '' });
     } catch (error) {
-      console.error('Email change error:', error);
+      
       if (error.code === 'auth/wrong-password') {
         toast.error('Password is incorrect');
       } else if (error.code === 'auth/email-already-in-use') {

@@ -61,7 +61,7 @@ export default function TransactionsView() {
         setPagination(prev => ({ ...prev, ...response.data.pagination }));
       }
     } catch (error) {
-      console.error('Error fetching transactions:', error);
+      
     } finally {
       setLoading(false);
     }
@@ -74,7 +74,7 @@ export default function TransactionsView() {
         setStats(response.data.stats);
       }
     } catch (error) {
-      console.error('Error fetching stats:', error);
+      
     }
   };
 
@@ -157,7 +157,7 @@ export default function TransactionsView() {
       fetchTransactions();
       fetchStats();
     } catch (error) {
-      console.error('Error saving transaction:', error);
+      
       alert('Failed to save transaction');
     }
   };
@@ -169,7 +169,7 @@ export default function TransactionsView() {
       fetchTransactions();
       fetchStats();
     } catch (error) {
-      console.error('Error deleting transaction:', error);
+      
     }
   };
 
@@ -191,7 +191,7 @@ export default function TransactionsView() {
         fetchStats();
       }
     } catch (error) {
-      console.error('Error importing:', error);
+      
       alert('Failed to import file');
     } finally {
       setImporting(false);

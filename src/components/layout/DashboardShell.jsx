@@ -94,7 +94,7 @@ const DashboardShell = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log('Search:', searchQuery);
+    
   };
 
   const getUserInitials = () => {

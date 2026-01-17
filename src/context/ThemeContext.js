@@ -33,7 +33,7 @@ export const ThemeProvider = ({ children, defaultTheme = 'light' }) => {
       setTheme(initialTheme);
       applyTheme(initialTheme);
     } catch (error) {
-      console.warn('Failed to initialize theme:', error);
+      
       applyTheme(defaultTheme);
     } finally {
       setIsLoading(false);
@@ -75,7 +75,7 @@ export const ThemeProvider = ({ children, defaultTheme = 'light' }) => {
     try {
       localStorage.setItem('app-theme', newTheme);
     } catch (error) {
-      console.warn('Failed to save theme preference:', error);
+      
     }
   };
 
@@ -91,10 +91,10 @@ export const ThemeProvider = ({ children, defaultTheme = 'light' }) => {
       try {
         localStorage.setItem('app-theme', newTheme);
       } catch (error) {
-        console.warn('Failed to save theme preference:', error);
+        
       }
     } else {
-      console.warn(`Invalid theme value: ${newTheme}. Use 'light' or 'dark'.`);
+      
     }
   };
 

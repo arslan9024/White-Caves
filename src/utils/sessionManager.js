@@ -12,7 +12,7 @@ const simpleEncrypt = (text) => {
     const encoded = btoa(encodeURIComponent(text));
     return encoded.split('').reverse().join('');
   } catch (e) {
-    console.error('Encryption error:', e);
+    
     return text;
   }
 };
@@ -22,7 +22,7 @@ const simpleDecrypt = (text) => {
     const reversed = text.split('').reverse().join('');
     return decodeURIComponent(atob(reversed));
   } catch (e) {
-    console.error('Decryption error:', e);
+    
     return text;
   }
 };
@@ -42,7 +42,7 @@ export const sessionManager = {
       localStorage.setItem(STORAGE_KEYS.PREFERENCES, encrypted);
       return true;
     } catch (e) {
-      console.error('Error saving preferences:', e);
+      
       return false;
     }
   },
@@ -54,7 +54,7 @@ export const sessionManager = {
       const decrypted = simpleDecrypt(encrypted);
       return safeJSONParse(decrypted, getDefaultPreferences());
     } catch (e) {
-      console.error('Error getting preferences:', e);
+      
       return getDefaultPreferences();
     }
   },
@@ -83,7 +83,7 @@ export const sessionManager = {
       localStorage.setItem(STORAGE_KEYS.SEARCH_HISTORY, encrypted);
       return true;
     } catch (e) {
-      console.error('Error adding to search history:', e);
+      
       return false;
     }
   },
@@ -95,7 +95,7 @@ export const sessionManager = {
       const decrypted = simpleDecrypt(encrypted);
       return safeJSONParse(decrypted, []);
     } catch (e) {
-      console.error('Error getting search history:', e);
+      
       return [];
     }
   },
@@ -120,7 +120,7 @@ export const sessionManager = {
       localStorage.setItem(STORAGE_KEYS.FAVORITES, encrypted);
       return true;
     } catch (e) {
-      console.error('Error adding to favorites:', e);
+      
       return false;
     }
   },
@@ -133,7 +133,7 @@ export const sessionManager = {
       localStorage.setItem(STORAGE_KEYS.FAVORITES, encrypted);
       return true;
     } catch (e) {
-      console.error('Error removing from favorites:', e);
+      
       return false;
     }
   },
@@ -145,7 +145,7 @@ export const sessionManager = {
       const decrypted = simpleDecrypt(encrypted);
       return safeJSONParse(decrypted, []);
     } catch (e) {
-      console.error('Error getting favorites:', e);
+      
       return [];
     }
   },
@@ -174,7 +174,7 @@ export const sessionManager = {
       localStorage.setItem(STORAGE_KEYS.RECENTLY_VIEWED, encrypted);
       return true;
     } catch (e) {
-      console.error('Error adding to recently viewed:', e);
+      
       return false;
     }
   },
@@ -186,7 +186,7 @@ export const sessionManager = {
       const decrypted = simpleDecrypt(encrypted);
       return safeJSONParse(decrypted, []);
     } catch (e) {
-      console.error('Error getting recently viewed:', e);
+      
       return [];
     }
   },
@@ -212,7 +212,7 @@ export const sessionManager = {
       sessionStorage.setItem(STORAGE_KEYS.FORM_DATA, encrypted);
       return true;
     } catch (e) {
-      console.error('Error saving form data:', e);
+      
       return false;
     }
   },
@@ -222,7 +222,7 @@ export const sessionManager = {
       const allFormData = sessionManager.getAllFormData();
       return allFormData[formId]?.data || {};
     } catch (e) {
-      console.error('Error getting form data:', e);
+      
       return {};
     }
   },
@@ -234,7 +234,7 @@ export const sessionManager = {
       const decrypted = simpleDecrypt(encrypted);
       return safeJSONParse(decrypted, {});
     } catch (e) {
-      console.error('Error getting all form data:', e);
+      
       return {};
     }
   },
@@ -246,7 +246,7 @@ export const sessionManager = {
       sessionStorage.setItem(STORAGE_KEYS.SESSION_DATA, JSON.stringify(sessionData));
       return true;
     } catch (e) {
-      console.error('Error saving session data:', e);
+      
       return false;
     }
   },
@@ -257,7 +257,7 @@ export const sessionManager = {
       const parsed = safeJSONParse(data, {});
       return key ? parsed[key] : parsed;
     } catch (e) {
-      console.error('Error getting session data:', e);
+      
       return key ? null : {};
     }
   },

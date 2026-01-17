@@ -39,11 +39,11 @@ export class PropertyFinderAdapter extends BasePortalAdapter {
       
       if (response) {
         this.isConnected = true;
-        console.log('[PropertyFinder] Connected successfully');
+        
         return true;
       }
     } catch (error) {
-      console.error('[PropertyFinder] Connection failed:', error.message);
+      
       this.isConnected = false;
       throw error;
     }
@@ -89,7 +89,7 @@ export class PropertyFinderAdapter extends BasePortalAdapter {
 
       return await response.json();
     } catch (error) {
-      console.error(`[PropertyFinder] Request failed:`, error);
+      
       throw error;
     }
   }
@@ -252,7 +252,7 @@ export class PropertyFinderAdapter extends BasePortalAdapter {
     const response = await this.makeRequest('POST', '/webhooks', webhook);
     
     if (response.data) {
-      console.log('[PropertyFinder] Webhook configured:', response.data.id);
+      
       return response.data;
     }
 
@@ -278,7 +278,6 @@ export class PropertyFinderAdapter extends BasePortalAdapter {
    * Handle webhook payload
    */
   async handleWebhookPayload(payload) {
-    console.log('[PropertyFinder] Webhook received:', payload.event);
 
     if (!this.validateWebhookSignature(payload, payload.signature, this.webhookSecret)) {
       throw new Error('Invalid webhook signature');

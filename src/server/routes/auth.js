@@ -1,12 +1,13 @@
 import express from 'express';
 import { verifyIdToken, getUser } from '../config/firebaseAdmin.js';
 import { generateJWT, authenticateToken } from '../middleware/authMiddleware.js';
+import { loginLimiter, passwordResetLimiter } from '../middleware/rateLimiter.js';
 import User from '../models/User.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 
 const router = express.Router();
 
-router.post('/verify-firebase-token', asyncHandler(async (req, res) => {
+router.post('/verify-firebase-token', loginLimiter, asyncHandler(async (req, res) => {
   const { idToken } = req.body;
   
   if (!idToken) {

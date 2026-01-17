@@ -13,7 +13,7 @@ const Icon = React.memo(({
   const IconComponent = LucideIcons[name];
   
   if (!IconComponent) {
-    console.warn(`Icon "${name}" not found in lucide-react`);
+    
     return null;
   }
 

@@ -212,7 +212,7 @@ const ZoeConsole = () => {
         throw new Error(data.message || 'Failed to get response');
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      
       setMessages(prev => [...prev, {
         id: `error-${Date.now()}`,
         text: "I'm having trouble connecting right now. Please try again in a moment.",
@@ -239,7 +239,7 @@ const ZoeConsole = () => {
     try {
       const token = await getAuthToken();
       if (!token) {
-        console.log('No auth token available for history');
+        
         return;
       }
       const headers = {
@@ -247,7 +247,7 @@ const ZoeConsole = () => {
       };
       const response = await fetch(`/api/zoe/history?sessionId=${sessionId}&limit=20`, { headers });
       if (response.status === 401 || response.status === 403) {
-        console.log('Not authorized to view history');
+        
         return;
       }
       const data = await response.json();
@@ -255,7 +255,7 @@ const ZoeConsole = () => {
         setConversationHistory(data.history);
       }
     } catch (error) {
-      console.error('Error loading history:', error);
+      
     }
   };
 

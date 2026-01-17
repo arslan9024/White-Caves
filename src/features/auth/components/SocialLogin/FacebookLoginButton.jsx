@@ -41,7 +41,7 @@ const FacebookLoginButton = ({ onSuccess, onError, disabled }) => {
       
       onSuccess?.(userData);
     } catch (error) {
-      console.error('Facebook login error:', error);
+      
       dispatch(loginFailure(error.message));
       onError?.(error);
     } finally {

@@ -84,7 +84,7 @@ function SystemHealthPage() {
       setLastChecked(new Date());
       dispatch(fetchAnalytics());
     } catch (error) {
-      console.error('Health check failed:', error);
+      
       setHealthData({ error: 'Failed to fetch health status' });
     }
     setLoading(false);

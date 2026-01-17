@@ -49,7 +49,7 @@ export default function AdminMixedDashboard({ subItem = 'settings', selectedAssi
   const deptConfig = DEPT_ASSISTANT_MAP.admin;
   
   const handleStageClick = (stage, index) => setCurrentStage(index);
-  const handleAction = (action) => console.log('Admin action:', action);
+  const handleAction = (action) => 
 
   return (
     <MixedDashboard

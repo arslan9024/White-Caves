@@ -7,7 +7,7 @@ router.get('/', async (req, res) => {
     const users = await User.find().select('-passport.documentUrl');
     res.json(users);
   } catch (error) {
-    console.error('Error fetching users:', error);
+    
     res.status(500).json({ error: 'Failed to fetch users' });
   }
 });
@@ -20,7 +20,7 @@ router.get('/:id', async (req, res) => {
     }
     res.json(user);
   } catch (error) {
-    console.error('Error fetching user:', error);
+    
     res.status(500).json({ error: 'Failed to fetch user' });
   }
 });
@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
     await user.save();
     res.status(201).json(user);
   } catch (error) {
-    console.error('Error creating user:', error);
+    
     res.status(500).json({ error: 'Failed to create user' });
   }
 });
@@ -48,7 +48,7 @@ router.put('/:id', async (req, res) => {
     }
     res.json(user);
   } catch (error) {
-    console.error('Error updating user:', error);
+    
     res.status(500).json({ error: 'Failed to update user' });
   }
 });

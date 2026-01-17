@@ -41,7 +41,7 @@ const GoogleLoginButton = ({ onSuccess, onError, disabled }) => {
       
       onSuccess?.(userData);
     } catch (error) {
-      console.error('Google login error:', error);
+      
       dispatch(loginFailure(error.message));
       onError?.(error);
     } finally {

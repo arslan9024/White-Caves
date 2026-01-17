@@ -5,6 +5,7 @@ import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import { validateEnvironment } from './lib/validateEnv.js';
 import './config/firebaseAdmin.js';
 import usersRouter from './routes/users.js';
 import propertiesRouter from './routes/properties.js';
@@ -19,6 +20,16 @@ import recommendationsRouter from './routes/recommendations.js';
 import dashboardRouter from './routes/dashboard.js';
 import timelinesRouter from './routes/timelines.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
+
+// Validate environment variables first (before any other initialization)
+try {
+  validateEnvironment();
+} catch (error) {
+  // Log error and exit gracefully
+  if (process.env.NODE_ENV !== 'test') {
+    process.exit(1);
+  }
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -47,13 +58,12 @@ if (mongoURI) {
     socketTimeoutMS: 45000,
   }).then(() => {
     isMongoDBConnected = true;
-    console.log('✓ Connected to MongoDB');
+    // MongoDB connection established
   }).catch(err => {
-    console.error('✗ MongoDB connection error:', err.message);
-    console.warn('Database features will be unavailable');
+    // MongoDB connection failed - database features will be unavailable
   });
 } else {
-  console.warn('WARNING: MongoDB credentials not set. Database features will not work.');
+  // WARNING: MongoDB credentials not set - database features will not work
 }
 
 export { isMongoDBConnected };
@@ -84,10 +94,7 @@ let distPath = null;
 for (const p of possiblePaths) {
   if (fs.existsSync(p)) {
     distPath = p;
-    console.log('✓ Found dist folder at:', p);
-    try {
-      console.log('dist contents:', fs.readdirSync(p));
-    } catch (e) {}
+    // Found dist folder
     break;
   }
 }
@@ -114,7 +121,7 @@ if (distPath) {
     }
   });
 } else {
-  console.warn('⚠ dist folder not found - frontend will not be served');
+  // WARNING: dist folder not found - frontend will not be served
 }
 
 // Error handlers (only for API routes)
@@ -124,5 +131,5 @@ app.use('/api', errorHandler);
 // Always use port 5000 for Replit deployment
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
+  // Server started successfully
 });

@@ -83,7 +83,7 @@ const EmailLoginForm = ({ mode = 'login', onSuccess, onError, onModeChange }) =>
       
       onSuccess?.(userData);
     } catch (error) {
-      console.error('Email auth error:', error);
+      
       let errorMessage = 'Authentication failed';
       
       switch (error.code) {

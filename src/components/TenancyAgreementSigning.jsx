@@ -29,7 +29,7 @@ export default function TenancyAgreementSigning() {
       setAgreements(data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching agreements:', error);
+      
       setLoading(false);
     }
   };
@@ -101,7 +101,7 @@ export default function TenancyAgreementSigning() {
         alert(error.error || 'Failed to sign agreement');
       }
     } catch (error) {
-      console.error('Error signing agreement:', error);
+      
       alert('Failed to sign agreement');
     } finally {
       setSigning(false);
@@ -141,7 +141,7 @@ export default function TenancyAgreementSigning() {
         alert(error.error || 'Failed to reject agreement');
       }
     } catch (error) {
-      console.error('Error rejecting agreement:', error);
+      
       alert('Failed to reject agreement');
     } finally {
       setSigning(false);

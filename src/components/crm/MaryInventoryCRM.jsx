@@ -120,11 +120,11 @@ const MaryInventoryCRM = ({ activeFeature }) => {
   const enrichedFilterOptions = filterOptions;
 
   const handleDataExtracted = (data) => {
-    console.log('Data extracted from images:', data);
+    
   };
 
   const handleDataHarvested = (data) => {
-    console.log('Data harvested from web:', data);
+    
   };
 
   const dataTools = [

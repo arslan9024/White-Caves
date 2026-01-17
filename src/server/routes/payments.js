@@ -1,6 +1,7 @@
 
 import express from 'express';
 import Stripe from 'stripe';
+import { paymentLimiter } from '../middleware/rateLimiter.js';
 import { ConfigurationError, PaymentError, ValidationError } from '../../utils/errors.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { validateAmount, validateRequired } from '../middleware/validation.js';
@@ -15,7 +16,7 @@ if (isStripeConfigured) {
     apiVersion: "2023-10-16",
   });
 } else {
-  console.warn('STRIPE_SECRET_KEY not found. Payment processing will not work until this is set.');
+  
 }
 
 const checkStripeConfig = (req, res, next) => {
@@ -25,7 +26,7 @@ const checkStripeConfig = (req, res, next) => {
   next();
 };
 
-router.post('/create-payment-intent', checkStripeConfig, asyncHandler(async (req, res) => {
+router.post('/create-payment-intent', paymentLimiter, checkStripeConfig, asyncHandler(async (req, res) => {
   const { amount, propertyId, propertyTitle } = req.body;
 
   validateRequired(amount, 'amount');
@@ -46,7 +47,7 @@ router.post('/create-payment-intent', checkStripeConfig, asyncHandler(async (req
       clientSecret: paymentIntent.client_secret 
     });
   } catch (error) {
-    console.error('Stripe error:', error);
+    
     throw new PaymentError(error.message || 'Payment processing failed');
   }
 }));
