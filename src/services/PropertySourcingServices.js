@@ -379,4 +379,6 @@ class PropertySourcingService {
   }
 }
 
-export default new PropertySourcingService();
+export default PropertySourcingService;
+export { PropertySourcingService };
+export const propertySourcingService = new PropertySourcingService();

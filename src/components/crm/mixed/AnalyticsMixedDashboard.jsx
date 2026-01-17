@@ -44,7 +44,7 @@ export default function AnalyticsMixedDashboard({ subItem = 'market-dashboard', 
   const deptConfig = DEPT_ASSISTANT_MAP.analytics;
   
   const handleStageClick = (stage, index) => setCurrentStage(index);
-  const handleAction = (action) => 
+  const handleAction = (action) => {};
 
   return (
     <MixedDashboard

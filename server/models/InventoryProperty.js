@@ -149,8 +149,7 @@ const InventoryPropertySchema = new mongoose.Schema({
   source: {
     type: String,
     enum: ['excel_import', 'manual', 'api', 'migration', 'whatsapp_conversation', 'broker', 'direct_contact'],
-    default: 'manual',
-    index: true
+    default: 'manual'
   },
   sourceFileId: String,
   importBatch: String,
@@ -159,13 +158,11 @@ const InventoryPropertySchema = new mongoose.Schema({
   sourcingMetadata: {
     opportunityId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'PropertyOpportunity',
-      sparse: true
+      ref: 'PropertyOpportunity'
     },
     ownerRelationshipId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'OwnerRelationship',
-      sparse: true
+      ref: 'OwnerRelationship'
     },
     sourceConversationId: String, // WhatsApp conversation ID where property was found
     sourceMessage: String, // Original message from owner
@@ -213,8 +210,7 @@ const InventoryPropertySchema = new mongoose.Schema({
         'deal_in_progress',            // Deal/viewing scheduled
         'deal_closed'                  // Property rented or sold
       ],
-      default: 'listed_in_inventory',
-      index: true
+      default: 'listed_in_inventory'
     },
     stageUpdatedAt: Date,
     stageUpdatedBy: String,

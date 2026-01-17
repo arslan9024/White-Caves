@@ -44,7 +44,7 @@ export default function ServicesMixedDashboard({ subItem = 'service-catalog', se
   const deptConfig = DEPT_ASSISTANT_MAP.services;
   
   const handleStageClick = (stage, index) => setCurrentStage(index);
-  const handleAction = (action) => 
+  const handleAction = (action) => {};
 
   return (
     <MixedDashboard

@@ -468,4 +468,8 @@ class ConversationAnalyzer {
   }
 }
 
-export default new ConversationAnalyzer();
+export default ConversationAnalyzer;
+export { ConversationAnalyzer };
+
+// For backward compatibility, also export an instance
+export const conversationAnalyzer = new ConversationAnalyzer();

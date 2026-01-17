@@ -44,7 +44,7 @@ export default function MarketingMixedDashboard({ subItem = 'campaigns', selecte
   const deptConfig = DEPT_ASSISTANT_MAP.marketing;
   
   const handleStageClick = (stage, index) => setCurrentStage(index);
-  const handleAction = (action) => 
+  const handleAction = (action) => {};
 
   return (
     <MixedDashboard

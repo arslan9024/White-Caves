@@ -364,4 +364,6 @@ class WhatsAppWebIntegrationService {
   }
 }
 
-export default new WhatsAppWebIntegrationService();
+export default WhatsAppWebIntegrationService;
+export { WhatsAppWebIntegrationService };
+export const whatsappWebIntegration = new WhatsAppWebIntegrationService();

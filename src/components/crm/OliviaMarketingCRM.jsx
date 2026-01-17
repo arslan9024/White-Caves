@@ -696,7 +696,7 @@ const OliviaMarketingCRM = () => {
                   details: `Published to ${platforms.join(', ')}`
                 }));
               }}
-              onSaveDraft={() => }
+              onSaveDraft={() => {}}
             />
           </div>
         )}

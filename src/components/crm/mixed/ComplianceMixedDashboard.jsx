@@ -44,7 +44,7 @@ export default function ComplianceMixedDashboard({ subItem = 'kyc-aml', selected
   const deptConfig = DEPT_ASSISTANT_MAP.compliance;
   
   const handleStageClick = (stage, index) => setCurrentStage(index);
-  const handleAction = (action) => 
+  const handleAction = (action) => {};
 
   return (
     <MixedDashboard
