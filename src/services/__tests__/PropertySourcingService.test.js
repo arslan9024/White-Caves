@@ -3,29 +3,53 @@ import PropertySourcingService from '../PropertySourcingServices';
 
 describe('PropertySourcingService', () => {
   let service;
+  
+  // Mock data matching ACTUAL ConversationAnalyzer output format
   const mockAnalysisResult = {
-    propertyDetected: true,
-    confidenceScore: 85,
-    extractedData: {
-      propertyType: 'villa',
-      location: 'Dubai Marina',
-      bedrooms: 4,
-      bathrooms: 3,
-      price: 5000,
-      furnishing: 'unfurnished',
-      features: ['swimming pool', 'garden', 'parking']
-    },
-    ownerInfo: {
+    properties: [{
+      type: 'villa',
+      confidence: 85,
+      extractedData: {
+        type: 'villa',
+        location: 'Dubai Marina',
+        availability: 'for_rent',
+        size: {
+          rooms: 4,
+          sqft: 4000
+        },
+        price: {
+          monthlyRent: 5000,
+          currency: 'AED'
+        },
+        furnishing: 'unfurnished',
+        features: ['swimming pool', 'garden', 'parking'],
+        owner: {
+          name: 'Ahmed Al-Mazrouei',
+          whatsappNumber: '+971501234567',
+          ownershipType: 'direct_owner'
+        }
+      }
+    }],
+    overallConfidence: 85,
+    ownerIdentification: {
       name: 'Ahmed Al-Mazrouei',
-      phone: '+971501234567',
-      type: 'direct_owner'
-    }
+      whatsappNumber: '+971501234567',
+      ownershipType: 'direct_owner'
+    },
+    extractedEntities: [
+      { type: 'phone', value: '+971501234567' }
+    ]
   };
 
   const mockConversationData = {
     chatId: 'test-chat-123',
-    messages: ['Hi, I have a villa available', '4 bedrooms in Dubai Marina', '5000 AED per month'],
-    timestamp: new Date()
+    messages: [
+      { content: 'Hi, I have a villa available', senderName: 'Ahmed', senderPhone: '+971501234567' },
+      { content: '4 bedrooms in Dubai Marina' },
+      { content: 'AED 5000 per month' }
+    ],
+    timestamp: new Date(),
+    source: 'whatsapp'
   };
 
   beforeEach(() => {

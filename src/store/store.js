@@ -20,6 +20,7 @@ import kycAmlReducer from './slices/kycAmlSlice';
 import dealsReducer from './slices/dealsSlice';
 import landlordReducer from './slices/landlordSlice';
 import whatsappReducer from './slices/whatsappSlice';
+import wednesdayPlanReducer from './slices/wednesdayPlanSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 
 export const store = configureStore({
@@ -44,7 +45,8 @@ export const store = configureStore({
     kycAml: kycAmlReducer,
     deals: dealsReducer,
     landlord: landlordReducer,
-    whatsapp: whatsappReducer
+    whatsapp: whatsappReducer,
+    wednesday: wednesdayPlanReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -166,7 +166,22 @@ const whatsappContactSchema = new mongoose.Schema({
   conversationStatus: { type: String, enum: ['active', 'pending', 'resolved', 'escalated'], default: 'active' }
 }, { timestamps: true });
 
+const whatsappSessionSchema = new mongoose.Schema({
+  phoneNumber: { type: String, required: true, unique: true },
+  sessionToken: { type: String, required: true },
+  isActive: { type: Boolean, default: true },
+  expiresAt: { type: Date, required: true },
+  clientInfo: {
+    name: String,
+    email: String,
+    type: { type: String, enum: ['whatsapp', 'web', 'api'], default: 'whatsapp' }
+  },
+  lastActivityAt: { type: Date, default: Date.now },
+  metadata: { type: mongoose.Schema.Types.Mixed, default: {} }
+}, { timestamps: true });
+
 export const WhatsAppMessage = mongoose.model('WhatsAppMessage', whatsappMessageSchema);
 export const WhatsAppChatbotRule = mongoose.model('WhatsAppChatbotRule', whatsappChatbotRuleSchema);
 export const WhatsAppSettings = mongoose.model('WhatsAppSettings', whatsappSettingsSchema);
 export const WhatsAppContact = mongoose.model('WhatsAppContact', whatsappContactSchema);
+export const WhatsAppSession = mongoose.model('WhatsAppSession', whatsappSessionSchema);

@@ -1,0 +1,793 @@
+[
+  {
+    "_id": "6966df775a2dad4821944c4a",
+    "name": "Mohammed Al Nahyan",
+    "email": "mohammed.n@gmail.com",
+    "phone": "+971501234567",
+    "role": "buyer",
+    "nationality": "UAE",
+    "preferences": {
+      "propertyType": "villa",
+      "budget": {
+        "min": 5000000,
+        "max": 20000000,
+        "isRental": false
+      },
+      "locations": [
+        "Palm Jumeirah",
+        "Emirates Hills"
+      ]
+    },
+    "ownedProperties": 0,
+    "kycStatus": "pending",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.628Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.630Z",
+    "updatedAt": "2026-01-14T00:12:39.630Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c4c",
+    "name": "James Richardson",
+    "email": "james.r@gmail.com",
+    "phone": "+447911234567",
+    "role": "buyer",
+    "nationality": "UK",
+    "preferences": {
+      "propertyType": "apartment",
+      "budget": {
+        "min": 2000000,
+        "max": 5000000,
+        "isRental": false
+      },
+      "locations": [
+        "Dubai Marina",
+        "Downtown Dubai"
+      ]
+    },
+    "ownedProperties": 0,
+    "kycStatus": "pending",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.631Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.632Z",
+    "updatedAt": "2026-01-14T00:12:39.632Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c4e",
+    "name": "Liu Wei",
+    "email": "liu.wei@qq.com",
+    "phone": "+8613812345678",
+    "role": "buyer",
+    "nationality": "China",
+    "preferences": {
+      "propertyType": "penthouse",
+      "budget": {
+        "min": 10000000,
+        "max": 50000000,
+        "isRental": false
+      },
+      "locations": [
+        "Palm Jumeirah",
+        "Bluewaters Island"
+      ]
+    },
+    "ownedProperties": 0,
+    "kycStatus": "pending",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.633Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.634Z",
+    "updatedAt": "2026-01-14T00:12:39.634Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c50",
+    "name": "Anna Kuznetsova",
+    "email": "anna.k@yandex.ru",
+    "phone": "+79161234567",
+    "role": "buyer",
+    "nationality": "Russia",
+    "preferences": {
+      "propertyType": "apartment",
+      "budget": {
+        "min": 1500000,
+        "max": 4000000,
+        "isRental": false
+      },
+      "locations": [
+        "JBR",
+        "Business Bay"
+      ]
+    },
+    "ownedProperties": 0,
+    "kycStatus": "pending",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.635Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.635Z",
+    "updatedAt": "2026-01-14T00:12:39.635Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c52",
+    "name": "Raj Malhotra",
+    "email": "raj.m@gmail.com",
+    "phone": "+919821234567",
+    "role": "buyer",
+    "nationality": "India",
+    "preferences": {
+      "propertyType": "apartment",
+      "budget": {
+        "min": 800000,
+        "max": 2000000,
+        "isRental": false
+      },
+      "locations": [
+        "Dubai Hills Estate",
+        "Downtown Dubai"
+      ]
+    },
+    "ownedProperties": 0,
+    "kycStatus": "pending",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.637Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.637Z",
+    "updatedAt": "2026-01-14T00:12:39.637Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c54",
+    "name": "Sophie Martin",
+    "email": "sophie.m@gmail.com",
+    "phone": "+33612345678",
+    "role": "buyer",
+    "nationality": "France",
+    "preferences": {
+      "propertyType": "villa",
+      "budget": {
+        "min": 3000000,
+        "max": 8000000,
+        "isRental": false
+      },
+      "locations": [
+        "Arabian Ranches",
+        "Dubai Hills Estate"
+      ]
+    },
+    "ownedProperties": 0,
+    "kycStatus": "pending",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.639Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.639Z",
+    "updatedAt": "2026-01-14T00:12:39.639Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c56",
+    "name": "Ahmed Al Sayed",
+    "email": "ahmed.s@gmail.com",
+    "phone": "+966501234567",
+    "role": "buyer",
+    "nationality": "Saudi Arabia",
+    "preferences": {
+      "propertyType": "villa",
+      "budget": {
+        "min": 8000000,
+        "max": 25000000,
+        "isRental": false
+      },
+      "locations": [
+        "Palm Jumeirah",
+        "Al Barari"
+      ]
+    },
+    "ownedProperties": 0,
+    "kycStatus": "pending",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.640Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.641Z",
+    "updatedAt": "2026-01-14T00:12:39.641Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c58",
+    "name": "David Miller",
+    "email": "david.m@gmail.com",
+    "phone": "+12125551234",
+    "role": "buyer",
+    "nationality": "USA",
+    "preferences": {
+      "propertyType": "apartment",
+      "budget": {
+        "min": 1000000,
+        "max": 3000000,
+        "isRental": false
+      },
+      "locations": [
+        "DIFC",
+        "Downtown Dubai"
+      ]
+    },
+    "ownedProperties": 0,
+    "kycStatus": "pending",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.644Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.645Z",
+    "updatedAt": "2026-01-14T00:12:39.645Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c5a",
+    "name": "Khalid Bin Rashid",
+    "email": "khalid.br@gmail.com",
+    "phone": "+971504567890",
+    "role": "seller",
+    "nationality": "UAE",
+    "preferences": {
+      "budget": {
+        "isRental": false
+      },
+      "locations": []
+    },
+    "ownedProperties": 3,
+    "kycStatus": "verified",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.646Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.647Z",
+    "updatedAt": "2026-01-14T00:12:39.647Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c5c",
+    "name": "Robert Wilson",
+    "email": "robert.w@gmail.com",
+    "phone": "+447912345678",
+    "role": "seller",
+    "nationality": "UK",
+    "preferences": {
+      "budget": {
+        "isRental": false
+      },
+      "locations": []
+    },
+    "ownedProperties": 2,
+    "kycStatus": "verified",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.648Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.648Z",
+    "updatedAt": "2026-01-14T00:12:39.648Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c5e",
+    "name": "Faisal Al Thani",
+    "email": "faisal.t@gmail.com",
+    "phone": "+97455123456",
+    "role": "seller",
+    "nationality": "Qatar",
+    "preferences": {
+      "budget": {
+        "isRental": false
+      },
+      "locations": []
+    },
+    "ownedProperties": 5,
+    "kycStatus": "verified",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.650Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.650Z",
+    "updatedAt": "2026-01-14T00:12:39.650Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c60",
+    "name": "Sheikh Abdullah",
+    "email": "abdullah@emirates.ae",
+    "phone": "+971505678901",
+    "role": "landlord",
+    "nationality": "UAE",
+    "preferences": {
+      "budget": {
+        "isRental": false
+      },
+      "locations": []
+    },
+    "ownedProperties": 12,
+    "kycStatus": "verified",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.652Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.652Z",
+    "updatedAt": "2026-01-14T00:12:39.652Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c62",
+    "name": "Maria Fernandez",
+    "email": "maria.f@gmail.com",
+    "phone": "+34612345678",
+    "role": "landlord",
+    "nationality": "Spain",
+    "preferences": {
+      "budget": {
+        "isRental": false
+      },
+      "locations": []
+    },
+    "ownedProperties": 4,
+    "kycStatus": "verified",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.653Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.653Z",
+    "updatedAt": "2026-01-14T00:12:39.653Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c64",
+    "name": "George Chen",
+    "email": "george.c@gmail.com",
+    "phone": "+8613912345678",
+    "role": "landlord",
+    "nationality": "China",
+    "preferences": {
+      "budget": {
+        "isRental": false
+      },
+      "locations": []
+    },
+    "ownedProperties": 8,
+    "kycStatus": "verified",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.655Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.655Z",
+    "updatedAt": "2026-01-14T00:12:39.655Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c66",
+    "name": "Hamad Al Maktoum",
+    "email": "hamad.m@gmail.com",
+    "phone": "+971506789012",
+    "role": "landlord",
+    "nationality": "UAE",
+    "preferences": {
+      "budget": {
+        "isRental": false
+      },
+      "locations": []
+    },
+    "ownedProperties": 15,
+    "kycStatus": "verified",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.656Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.657Z",
+    "updatedAt": "2026-01-14T00:12:39.657Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c68",
+    "name": "Sarah Johnson",
+    "email": "sarah.j@gmail.com",
+    "phone": "+971507890123",
+    "role": "tenant",
+    "nationality": "USA",
+    "preferences": {
+      "budget": {
+        "isRental": false
+      },
+      "locations": []
+    },
+    "employer": "Google Dubai",
+    "monthlyIncome": 45000,
+    "ownedProperties": 0,
+    "kycStatus": "pending",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.658Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.658Z",
+    "updatedAt": "2026-01-14T00:12:39.658Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c6a",
+    "name": "Priyanka Chopra",
+    "email": "priyanka.c@gmail.com",
+    "phone": "+971508901234",
+    "role": "tenant",
+    "nationality": "India",
+    "preferences": {
+      "budget": {
+        "isRental": false
+      },
+      "locations": []
+    },
+    "employer": "Emirates Airlines",
+    "monthlyIncome": 35000,
+    "ownedProperties": 0,
+    "kycStatus": "pending",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.660Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.660Z",
+    "updatedAt": "2026-01-14T00:12:39.660Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c6c",
+    "name": "Thomas Mueller",
+    "email": "thomas.m@gmail.com",
+    "phone": "+971509012345",
+    "role": "tenant",
+    "nationality": "Germany",
+    "preferences": {
+      "budget": {
+        "isRental": false
+      },
+      "locations": []
+    },
+    "employer": "SAP Middle East",
+    "monthlyIncome": 55000,
+    "ownedProperties": 0,
+    "kycStatus": "pending",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.661Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.662Z",
+    "updatedAt": "2026-01-14T00:12:39.662Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c6e",
+    "name": "Olga Ivanova",
+    "email": "olga.i@gmail.com",
+    "phone": "+971501122334",
+    "role": "tenant",
+    "nationality": "Russia",
+    "preferences": {
+      "budget": {
+        "isRental": false
+      },
+      "locations": []
+    },
+    "employer": "Jumeirah Hotels",
+    "monthlyIncome": 28000,
+    "ownedProperties": 0,
+    "kycStatus": "pending",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.663Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.663Z",
+    "updatedAt": "2026-01-14T00:12:39.663Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c70",
+    "name": "Carlos Mendez",
+    "email": "carlos.m@gmail.com",
+    "phone": "+971502233445",
+    "role": "tenant",
+    "nationality": "Spain",
+    "preferences": {
+      "budget": {
+        "isRental": false
+      },
+      "locations": []
+    },
+    "employer": "Dubai Properties",
+    "monthlyIncome": 40000,
+    "ownedProperties": 0,
+    "kycStatus": "pending",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.665Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.665Z",
+    "updatedAt": "2026-01-14T00:12:39.665Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c72",
+    "name": "Lisa Anderson",
+    "email": "lisa.a@gmail.com",
+    "phone": "+971503344556",
+    "role": "tenant",
+    "nationality": "Australia",
+    "preferences": {
+      "budget": {
+        "isRental": false
+      },
+      "locations": []
+    },
+    "employer": "HSBC Dubai",
+    "monthlyIncome": 50000,
+    "ownedProperties": 0,
+    "kycStatus": "pending",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.666Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.666Z",
+    "updatedAt": "2026-01-14T00:12:39.666Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c74",
+    "name": "Yuki Tanaka",
+    "email": "yuki.t@gmail.com",
+    "phone": "+971504455667",
+    "role": "tenant",
+    "nationality": "Japan",
+    "preferences": {
+      "budget": {
+        "isRental": false
+      },
+      "locations": []
+    },
+    "employer": "Toyota Middle East",
+    "monthlyIncome": 38000,
+    "ownedProperties": 0,
+    "kycStatus": "pending",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.668Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.668Z",
+    "updatedAt": "2026-01-14T00:12:39.668Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c76",
+    "name": "Mark Stevens",
+    "email": "mark.s@gmail.com",
+    "phone": "+971505566778",
+    "role": "tenant",
+    "nationality": "UK",
+    "preferences": {
+      "budget": {
+        "isRental": false
+      },
+      "locations": []
+    },
+    "employer": "KPMG Dubai",
+    "monthlyIncome": 42000,
+    "ownedProperties": 0,
+    "kycStatus": "pending",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.669Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.670Z",
+    "updatedAt": "2026-01-14T00:12:39.670Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c78",
+    "name": "Rami Al Hassan",
+    "email": "rami@partner.ae",
+    "phone": "+971506677889",
+    "role": "agent",
+    "preferences": {
+      "budget": {
+        "isRental": false
+      },
+      "locations": []
+    },
+    "ownedProperties": 0,
+    "company": "Partner Realty",
+    "brnNumber": "BRN-12345",
+    "kycStatus": "verified",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.671Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.671Z",
+    "updatedAt": "2026-01-14T00:12:39.671Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c7a",
+    "name": "Elena Kozlova",
+    "email": "elena@luxprop.ae",
+    "phone": "+971507788990",
+    "role": "agent",
+    "preferences": {
+      "budget": {
+        "isRental": false
+      },
+      "locations": []
+    },
+    "ownedProperties": 0,
+    "company": "Luxury Properties",
+    "brnNumber": "BRN-12346",
+    "kycStatus": "verified",
+    "kycData": {
+      "emiratesIdVerified": false,
+      "passportVerified": false,
+      "addressVerified": false
+    },
+    "uaePassLinked": false,
+    "tags": [],
+    "source": "website",
+    "lastActivity": "2026-01-14T00:12:39.673Z",
+    "isActive": true,
+    "createdAt": "2026-01-14T00:12:39.673Z",
+    "updatedAt": "2026-01-14T00:12:39.673Z",
+    "__v": 0
+  }
+]

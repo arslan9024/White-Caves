@@ -8,6 +8,7 @@ import {
   Home, TrendingUp, DollarSign, Users, Calendar, AlertCircle,
   Filter, Download, Plus, Settings, Phone, MessageSquare
 } from 'lucide-react';
+import PlanManager from '../plans/PlanManager';
 import './OwnerDashboard.css';
 
 /**
@@ -277,13 +278,13 @@ export default function OwnerDashboard({ user }) {
 
       {/* Tabs */}
       <div className="dashboard-tabs">
-        {['overview', 'properties', 'tenants', 'maintenance', 'financials'].map(tab => (
+        {['overview', 'properties', 'tenants', 'maintenance', 'financials', 'plans'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === 'plans' ? '📋 Plans' : tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
@@ -525,6 +526,13 @@ export default function OwnerDashboard({ user }) {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Plans Tab */}
+      {activeTab === 'plans' && (
+        <div className="tab-content plans-tab">
+          <PlanManager />
         </div>
       )}
     </div>

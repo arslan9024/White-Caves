@@ -1,4 +1,9 @@
+import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+
+// Load environment variables from .env.staging first, then .env
+dotenv.config({ path: '.env.staging' });
+dotenv.config({ path: '.env' });
 
 import InventoryProperty from '../server/models/InventoryProperty.js';
 import Owner from '../server/models/Owner.js';

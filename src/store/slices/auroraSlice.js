@@ -230,6 +230,37 @@ const initialState = {
       includeArabic: false,
       preferredProvider: null
     }
+  },
+
+  // Aurora monitoring extensions for Wednesday plan
+  monitoring: {
+    realtime: {
+      enabled: false,
+      interval: 30000, // 30 seconds
+      lastUpdate: null
+    },
+    vercel: {
+      connected: false,
+      buildTime: null,
+      errorRate: null,
+      uptime: null,
+      lastCheck: null
+    },
+    mongodb: {
+      connected: false,
+      queryPerformance: null,
+      connections: null,
+      lastCheck: null
+    },
+    alertThresholds: {
+      apiResponseTime: 500, // ms
+      databaseQueryTime: 100, // ms
+      errorRate: 0.005, // 0.5%
+      uptime: 0.999, // 99.9%
+      concurrentUsers: 80 // out of 100
+    },
+    alertHistory: [],
+    alertsSuppressed: false
   }
 };
 
@@ -260,6 +291,60 @@ const auroraSlice = createSlice({
     },
     resetAudit: (state) => {
       state.audit = initialState.audit;
+    },
+    // Monitoring actions
+    enableRealtimeMonitoring: (state, action) => {
+      state.monitoring.realtime.enabled = true;
+      state.monitoring.realtime.interval = action.payload?.interval || 30000;
+    },
+    disableRealtimeMonitoring: (state) => {
+      state.monitoring.realtime.enabled = false;
+    },
+    updateVercelMonitoring: (state, action) => {
+      const { buildTime, errorRate, uptime } = action.payload;
+      state.monitoring.vercel = {
+        ...state.monitoring.vercel,
+        connected: true,
+        buildTime,
+        errorRate,
+        uptime,
+        lastCheck: new Date().toISOString()
+      };
+    },
+    updateMongoDBMonitoring: (state, action) => {
+      const { queryPerformance, connections } = action.payload;
+      state.monitoring.mongodb = {
+        ...state.monitoring.mongodb,
+        connected: true,
+        queryPerformance,
+        connections,
+        lastCheck: new Date().toISOString()
+      };
+    },
+    updateAlertThresholds: (state, action) => {
+      state.monitoring.alertThresholds = {
+        ...state.monitoring.alertThresholds,
+        ...action.payload
+      };
+    },
+    recordAlert: (state, action) => {
+      const { type, severity, message, metric, value, threshold } = action.payload;
+      state.monitoring.alertHistory.push({
+        id: `alert-${Date.now()}`,
+        type,
+        severity,
+        message,
+        metric,
+        value,
+        threshold,
+        recordedAt: new Date().toISOString()
+      });
+    },
+    suppressAlerts: (state) => {
+      state.monitoring.alertsSuppressed = true;
+    },
+    unsuppressAlerts: (state) => {
+      state.monitoring.alertsSuppressed = false;
     }
   },
   extraReducers: (builder) => {
@@ -418,7 +503,15 @@ export const {
   setSRSConfig,
   setGenerationProgress,
   clearError,
-  resetAudit
+  resetAudit,
+  enableRealtimeMonitoring,
+  disableRealtimeMonitoring,
+  updateVercelMonitoring,
+  updateMongoDBMonitoring,
+  updateAlertThresholds,
+  recordAlert,
+  suppressAlerts,
+  unsuppressAlerts
 } = auroraSlice.actions;
 
 const selectAurora = (state) => state.aurora;

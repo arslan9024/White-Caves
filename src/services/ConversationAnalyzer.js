@@ -82,16 +82,34 @@ class ConversationAnalyzer {
    * Analyze conversation for property opportunities
    */
   analyzeConversation(messages) {
-    if (!Array.isArray(messages) || messages.length === 0) {
-      return { properties: [], overallConfidence: 0, reasoning: 'No messages provided' };
+    // Handle both string and array inputs
+    let messagesArray = messages;
+    if (typeof messages === 'string') {
+      messagesArray = [{ content: messages, text: messages }];
+    }
+
+    if (!Array.isArray(messagesArray) || messagesArray.length === 0) {
+      return { 
+        propertyDetected: false,
+        properties: [], 
+        overallConfidence: 0, 
+        confidenceScore: 0,
+        reasoning: 'No messages provided',
+        matchedKeywords: [],
+        extractedData: {}
+      };
     }
 
     const analysis = {
       properties: [],
       overallConfidence: 0,
+      confidenceScore: 0,
       ownerIdentification: null,
       extractedEntities: [],
-      reasoning: ''
+      reasoning: '',
+      matchedKeywords: [],
+      extractedData: {},
+      propertyDetected: false
     };
 
     let currentProperty = null;
@@ -106,7 +124,7 @@ class ConversationAnalyzer {
       featuresCount: 0
     };
 
-    const fullConversation = messages.map(m => m.content || m.text).join(' ').toLowerCase();
+    const fullConversation = messagesArray.map(m => m.content || m.text || m).join(' ').toLowerCase();
 
     // Step 1: Identify property type
     for (const [type, keywords] of Object.entries(this.keywords.propertyTypes)) {
@@ -119,9 +137,13 @@ class ConversationAnalyzer {
 
     if (!currentProperty) {
       return {
+        propertyDetected: false,
         properties: [],
         overallConfidence: 0,
-        reasoning: 'No property type keywords detected'
+        confidenceScore: 0,
+        reasoning: 'No property type keywords detected',
+        matchedKeywords: [],
+        extractedData: {}
       };
     }
 
@@ -189,7 +211,50 @@ class ConversationAnalyzer {
 
     analysis.properties.push(currentProperty);
     analysis.overallConfidence = currentProperty.confidence;
+    analysis.confidenceScore = currentProperty.confidence;
+    analysis.propertyDetected = true;  // Set to true since we found a property
     analysis.extractedEntities = this.extractEntities(messages);
+    
+    // Copy extracted data to top level for backward compatibility
+    analysis.extractedData = {
+      ...currentProperty.extractedData,
+      bedrooms: sizeData?.rooms,
+      bathrooms: sizeData?.bathrooms,
+      price: priceData?.monthlyRent || priceData?.annualRent
+    };
+    
+    // Extract matched keywords from property types, locations, and availability
+    const fullTextLower = fullConversation;
+    
+    // Add property type keywords
+    for (const [type, keywords] of Object.entries(this.keywords.propertyTypes)) {
+      keywords.forEach(kw => {
+        if (fullTextLower.includes(kw.toLowerCase()) && !analysis.matchedKeywords.includes(kw)) {
+          analysis.matchedKeywords.push(kw);
+        }
+      });
+    }
+    
+    // Add location keywords
+    for (const location of this.keywords.locationKeywords) {
+      if (fullTextLower.includes(location.toLowerCase())) {
+        const formattedLocation = location.split(' ').map(word => 
+          word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ');
+        if (!analysis.matchedKeywords.includes(formattedLocation)) {
+          analysis.matchedKeywords.push(formattedLocation);
+        }
+      }
+    }
+    
+    // Add availability keywords
+    for (const [type, keywords] of Object.entries(this.keywords.availability)) {
+      keywords.forEach(kw => {
+        if (fullTextLower.includes(kw.toLowerCase()) && !analysis.matchedKeywords.includes(kw)) {
+          analysis.matchedKeywords.push(kw);
+        }
+      });
+    }
 
     return analysis;
   }
@@ -237,10 +302,19 @@ class ConversationAnalyzer {
   extractSize(text) {
     const sizeData = {};
 
-    const roomsPattern = /(\d+)\s*(?:br|bedroom|bedrooms|room|rooms)/gi;
-    const roomsMatch = roomsPattern.exec(text);
-    if (roomsMatch) {
-      sizeData.rooms = parseInt(roomsMatch[1]);
+    // Extract bedrooms/beds
+    const bedroomsPattern = /(\d+)\s*(?:br|bed|bedroom|bedrooms|beds)/gi;
+    const bedroomsMatch = bedroomsPattern.exec(text);
+    if (bedroomsMatch) {
+      sizeData.rooms = parseInt(bedroomsMatch[1]);
+      sizeData.bedrooms = parseInt(bedroomsMatch[1]);
+    }
+
+    // Extract bathrooms/baths
+    const bathroomsPattern = /(\d+)\s*(?:ba|bath|bathroom|bathrooms|baths)/gi;
+    const bathroomsMatch = bathroomsPattern.exec(text);
+    if (bathroomsMatch) {
+      sizeData.bathrooms = parseInt(bathroomsMatch[1]);
     }
 
     const sqftPattern = /(\d+(?:,\d+)*)\s*(?:sqft|sq\.ft|square feet)/gi;
@@ -358,7 +432,9 @@ class ConversationAnalyzer {
     const emailPattern = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/g;
 
     for (const message of messages) {
-      const content = message.content || message.text;
+      const content = (message.content || message.text || '').toString();
+
+      if (!content) continue; // Skip if no content
 
       const phones = content.match(phonePattern);
       if (phones) {
@@ -466,7 +542,96 @@ class ConversationAnalyzer {
 
     return quickReplies;
   }
-}
+  /**
+   * Extract phone numbers from text
+   * Supports UAE and international formats
+   */
+  extractPhoneNumbers(text) {
+    if (!text) return [];
+    
+    const textLower = String(text).toLowerCase();
+    
+    // Phone patterns: +971501234567, 0501234567, 971501234567
+    const patterns = [
+      /\+?971[0-9]{9}/g,        // +971 format
+      /\+[1-9][0-9]{1,14}/g,    // International format
+      /0[0-9]{8,9}/g             // Local UAE format
+    ];
+    
+    const phones = new Set();
+    for (const pattern of patterns) {
+      const matches = textLower.match(pattern);
+      if (matches) {
+        matches.forEach(m => phones.add(m));
+      }
+    }
+    
+    return Array.from(phones);
+  }
+
+  /**
+   * Extract email addresses from text
+   */
+  extractEmails(text) {
+    if (!text) return [];
+    
+    const textLower = String(text).toLowerCase();
+    const emailPattern = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/g;
+    const matches = textLower.match(emailPattern);
+    
+    return matches ? Array.from(new Set(matches)) : [];
+  }
+
+  /**
+   * Extract location keywords from text
+   */
+  extractLocations(text) {
+    if (!text) return [];
+    
+    const textLower = String(text).toLowerCase();
+    const foundLocations = [];
+    
+    for (const location of this.keywords.locationKeywords) {
+      if (textLower.includes(location.toLowerCase())) {
+        foundLocations.push(location);
+      }
+    }
+    
+    return foundLocations;
+  }
+
+  /**
+   * Calculate weighted confidence score from components
+   * @param {Object} components - Confidence components object
+   * @returns {number} Confidence score 0-100
+   */
+  calculateConfidenceScore(components) {
+    if (!components || typeof components !== 'object') {
+      return 0;
+    }
+
+    let totalScore = 0;
+
+    // Calculate weighted score
+    for (const [key, weight] of Object.entries(this.confidenceWeights)) {
+      if (key === 'featuresListedCount') {
+        // For features, multiply count by weight
+        const count = Math.min(components.featuresCount || 0, 10);
+        totalScore += (count * weight);
+      } else {
+        // For boolean flags, add weight if true
+        if (components[key] === true) {
+          totalScore += weight;
+        }
+      }
+    }
+
+    // Normalize to 0-100 scale
+    const maxPossibleScore = Object.values(this.confidenceWeights).reduce((a, b) => a + b, 0) + 50;
+    const confidence = Math.min((totalScore / maxPossibleScore) * 100, 100);
+    
+    return Math.round(confidence);
+  }}
 
 export default ConversationAnalyzer;
 export { ConversationAnalyzer };

@@ -1,0 +1,687 @@
+[
+  {
+    "_id": "6966df795a2dad4821944d2c",
+    "dealNumber": "SD-2024-001",
+    "dealType": "secondary",
+    "status": "completed",
+    "property": {
+      "address": "Villa N12, Signature Villas, Palm Jumeirah",
+      "area": "Palm Jumeirah",
+      "project": "Signature Villas",
+      "propertyType": "villa",
+      "bedrooms": 6,
+      "bathrooms": 7,
+      "size": 12500,
+      "askingPrice": 45000000,
+      "isOffPlan": false
+    },
+    "seller": {
+      "name": "Khalid Bin Rashid",
+      "email": "khalid.br@gmail.com",
+      "phone": "+971504567890",
+      "sellerType": "individual"
+    },
+    "buyer": {
+      "name": "Mohammed Al Nahyan",
+      "email": "mohammed.n@gmail.com",
+      "phone": "+971501234567",
+      "nationality": "UAE",
+      "kycStatus": "verified"
+    },
+    "broker": {
+      "name": "Fatima Al Rashid",
+      "brnNumber": "BRN-12345",
+      "specialization": "both",
+      "assignedBy": "Emma AI"
+    },
+    "leadSource": {
+      "source": "website",
+      "leadScore": 50,
+      "qualification": "warm"
+    },
+    "offer": {
+      "offerPrice": 43000000,
+      "agreedPrice": 44000000,
+      "depositAmount": 4400000
+    },
+    "dld": {
+      "dldTransactionNumber": "DLD-2024-123456",
+      "transferDate": "2024-01-10T00:00:00.000Z",
+      "titleDeedNumber": "TD-PJ-2024-001",
+      "registrationFee": 176000,
+      "transferFee": 1760000,
+      "completedAt": "2024-01-10T00:00:00.000Z"
+    },
+    "timeline": [
+      {
+        "stage": "lead",
+        "status": "completed",
+        "timestamp": "2025-12-15T00:12:41.617Z",
+        "actor": "System",
+        "notes": "Lead captured",
+        "_id": "6966df795a2dad4821944d2d"
+      },
+      {
+        "stage": "qualified",
+        "status": "completed",
+        "timestamp": "2025-12-17T00:12:41.617Z",
+        "actor": "Fatima Al Rashid",
+        "_id": "6966df795a2dad4821944d2e"
+      },
+      {
+        "stage": "viewing_scheduled",
+        "status": "completed",
+        "timestamp": "2025-12-19T00:12:41.617Z",
+        "actor": "Fatima Al Rashid",
+        "_id": "6966df795a2dad4821944d2f"
+      },
+      {
+        "stage": "viewing_completed",
+        "status": "completed",
+        "timestamp": "2025-12-21T00:12:41.617Z",
+        "actor": "Fatima Al Rashid",
+        "_id": "6966df795a2dad4821944d30"
+      },
+      {
+        "stage": "offer_submitted",
+        "status": "completed",
+        "timestamp": "2025-12-23T00:12:41.617Z",
+        "actor": "Fatima Al Rashid",
+        "_id": "6966df795a2dad4821944d31"
+      },
+      {
+        "stage": "negotiation",
+        "status": "completed",
+        "timestamp": "2025-12-25T00:12:41.617Z",
+        "actor": "Fatima Al Rashid",
+        "_id": "6966df795a2dad4821944d32"
+      },
+      {
+        "stage": "offer_accepted",
+        "status": "completed",
+        "timestamp": "2025-12-27T00:12:41.617Z",
+        "actor": "Fatima Al Rashid",
+        "_id": "6966df795a2dad4821944d33"
+      },
+      {
+        "stage": "spa_preparation",
+        "status": "completed",
+        "timestamp": "2025-12-29T00:12:41.617Z",
+        "actor": "Fatima Al Rashid",
+        "_id": "6966df795a2dad4821944d34"
+      },
+      {
+        "stage": "spa_signed",
+        "status": "completed",
+        "timestamp": "2025-12-31T00:12:41.617Z",
+        "actor": "Fatima Al Rashid",
+        "_id": "6966df795a2dad4821944d35"
+      },
+      {
+        "stage": "noc_applied",
+        "status": "completed",
+        "timestamp": "2026-01-02T00:12:41.617Z",
+        "actor": "Fatima Al Rashid",
+        "_id": "6966df795a2dad4821944d36"
+      },
+      {
+        "stage": "noc_received",
+        "status": "completed",
+        "timestamp": "2026-01-04T00:12:41.617Z",
+        "actor": "Fatima Al Rashid",
+        "_id": "6966df795a2dad4821944d37"
+      },
+      {
+        "stage": "dld_transfer",
+        "status": "completed",
+        "timestamp": "2026-01-06T00:12:41.617Z",
+        "actor": "Fatima Al Rashid",
+        "_id": "6966df795a2dad4821944d38"
+      },
+      {
+        "stage": "completed",
+        "status": "in_progress",
+        "timestamp": "2026-01-08T00:12:41.617Z",
+        "actor": "Fatima Al Rashid",
+        "_id": "6966df795a2dad4821944d39"
+      }
+    ],
+    "kycVerification": {
+      "sellerVerified": false,
+      "buyerVerified": false,
+      "amlCleared": false
+    },
+    "financials": {
+      "commissionPercentage": 2,
+      "commissionPaid": false,
+      "paymentsReceived": []
+    },
+    "isDemo": false,
+    "createdAt": "2026-01-14T00:12:41.621Z",
+    "updatedAt": "2026-01-14T00:12:41.621Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944d3b",
+    "dealNumber": "SD-2024-002",
+    "dealType": "off_plan",
+    "status": "spa_signed",
+    "property": {
+      "address": "Unit 3501, FIVE Palm, Palm Jumeirah",
+      "area": "Palm Jumeirah",
+      "project": "FIVE Palm",
+      "developer": "FIVE Holdings",
+      "propertyType": "apartment",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "size": 3500,
+      "askingPrice": 8500000,
+      "isOffPlan": true
+    },
+    "seller": {
+      "name": "FIVE Holdings",
+      "email": "sales@five.ae",
+      "phone": "+97145678901",
+      "sellerType": "developer"
+    },
+    "buyer": {
+      "name": "Liu Wei",
+      "email": "liu.wei@qq.com",
+      "phone": "+8613812345678",
+      "nationality": "China",
+      "kycStatus": "verified"
+    },
+    "broker": {
+      "name": "Ahmed Hassan",
+      "brnNumber": "BRN-12346",
+      "specialization": "off_plan",
+      "assignedBy": "Emma AI"
+    },
+    "leadSource": {
+      "source": "website",
+      "leadScore": 50,
+      "qualification": "warm"
+    },
+    "offer": {
+      "offerPrice": 8500000,
+      "agreedPrice": 8500000,
+      "depositAmount": 850000,
+      "paymentPlan": "60/40"
+    },
+    "spa": {
+      "spaNumber": "SPA-2024-002",
+      "generatedAt": "2024-01-05T00:00:00.000Z",
+      "sellerSignedAt": "2024-01-06T00:00:00.000Z",
+      "buyerSignedAt": "2024-01-07T00:00:00.000Z"
+    },
+    "timeline": [
+      {
+        "stage": "lead",
+        "status": "completed",
+        "timestamp": "2025-12-15T00:12:41.626Z",
+        "actor": "System",
+        "notes": "Lead captured",
+        "_id": "6966df795a2dad4821944d3c"
+      },
+      {
+        "stage": "qualified",
+        "status": "completed",
+        "timestamp": "2025-12-17T00:12:41.626Z",
+        "actor": "Ahmed Hassan",
+        "_id": "6966df795a2dad4821944d3d"
+      },
+      {
+        "stage": "viewing_scheduled",
+        "status": "completed",
+        "timestamp": "2025-12-19T00:12:41.626Z",
+        "actor": "Ahmed Hassan",
+        "_id": "6966df795a2dad4821944d3e"
+      },
+      {
+        "stage": "viewing_completed",
+        "status": "completed",
+        "timestamp": "2025-12-21T00:12:41.626Z",
+        "actor": "Ahmed Hassan",
+        "_id": "6966df795a2dad4821944d3f"
+      },
+      {
+        "stage": "offer_submitted",
+        "status": "completed",
+        "timestamp": "2025-12-23T00:12:41.626Z",
+        "actor": "Ahmed Hassan",
+        "_id": "6966df795a2dad4821944d40"
+      },
+      {
+        "stage": "negotiation",
+        "status": "completed",
+        "timestamp": "2025-12-25T00:12:41.626Z",
+        "actor": "Ahmed Hassan",
+        "_id": "6966df795a2dad4821944d41"
+      },
+      {
+        "stage": "offer_accepted",
+        "status": "completed",
+        "timestamp": "2025-12-27T00:12:41.626Z",
+        "actor": "Ahmed Hassan",
+        "_id": "6966df795a2dad4821944d42"
+      },
+      {
+        "stage": "spa_preparation",
+        "status": "completed",
+        "timestamp": "2025-12-29T00:12:41.626Z",
+        "actor": "Ahmed Hassan",
+        "_id": "6966df795a2dad4821944d43"
+      },
+      {
+        "stage": "spa_signed",
+        "status": "in_progress",
+        "timestamp": "2025-12-31T00:12:41.626Z",
+        "actor": "Ahmed Hassan",
+        "_id": "6966df795a2dad4821944d44"
+      }
+    ],
+    "kycVerification": {
+      "sellerVerified": false,
+      "buyerVerified": false,
+      "amlCleared": false
+    },
+    "financials": {
+      "commissionPercentage": 2,
+      "commissionPaid": false,
+      "paymentsReceived": []
+    },
+    "isDemo": false,
+    "createdAt": "2026-01-14T00:12:41.629Z",
+    "updatedAt": "2026-01-14T00:12:41.629Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944d46",
+    "dealNumber": "SD-2024-003",
+    "dealType": "secondary",
+    "status": "noc_applied",
+    "property": {
+      "address": "Apt 5502, Cayan Tower, Dubai Marina",
+      "area": "Dubai Marina",
+      "project": "Cayan Tower",
+      "propertyType": "apartment",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "size": 2100,
+      "askingPrice": 4500000,
+      "isOffPlan": false
+    },
+    "seller": {
+      "name": "Robert Wilson",
+      "email": "robert.w@gmail.com",
+      "phone": "+447912345678",
+      "sellerType": "individual"
+    },
+    "buyer": {
+      "name": "Anna Kuznetsova",
+      "email": "anna.k@yandex.ru",
+      "phone": "+79161234567",
+      "nationality": "Russia",
+      "kycStatus": "verified"
+    },
+    "broker": {
+      "name": "Priya Sharma",
+      "brnNumber": "BRN-12347",
+      "specialization": "secondary",
+      "assignedBy": "System"
+    },
+    "leadSource": {
+      "source": "website",
+      "leadScore": 50,
+      "qualification": "warm"
+    },
+    "offer": {
+      "offerPrice": 4200000,
+      "counterPrice": 4400000,
+      "agreedPrice": 4350000,
+      "depositAmount": 435000
+    },
+    "noc": {
+      "nocNumber": "NOC-2024-003",
+      "appliedAt": "2024-01-12T00:00:00.000Z",
+      "developerName": "Cayan Group"
+    },
+    "timeline": [
+      {
+        "stage": "lead",
+        "status": "completed",
+        "timestamp": "2025-12-15T00:12:41.630Z",
+        "actor": "System",
+        "notes": "Lead captured",
+        "_id": "6966df795a2dad4821944d47"
+      },
+      {
+        "stage": "qualified",
+        "status": "completed",
+        "timestamp": "2025-12-17T00:12:41.630Z",
+        "actor": "Priya Sharma",
+        "_id": "6966df795a2dad4821944d48"
+      },
+      {
+        "stage": "viewing_scheduled",
+        "status": "completed",
+        "timestamp": "2025-12-19T00:12:41.630Z",
+        "actor": "Priya Sharma",
+        "_id": "6966df795a2dad4821944d49"
+      },
+      {
+        "stage": "viewing_completed",
+        "status": "completed",
+        "timestamp": "2025-12-21T00:12:41.630Z",
+        "actor": "Priya Sharma",
+        "_id": "6966df795a2dad4821944d4a"
+      },
+      {
+        "stage": "offer_submitted",
+        "status": "completed",
+        "timestamp": "2025-12-23T00:12:41.630Z",
+        "actor": "Priya Sharma",
+        "_id": "6966df795a2dad4821944d4b"
+      },
+      {
+        "stage": "negotiation",
+        "status": "completed",
+        "timestamp": "2025-12-25T00:12:41.630Z",
+        "actor": "Priya Sharma",
+        "_id": "6966df795a2dad4821944d4c"
+      },
+      {
+        "stage": "offer_accepted",
+        "status": "completed",
+        "timestamp": "2025-12-27T00:12:41.630Z",
+        "actor": "Priya Sharma",
+        "_id": "6966df795a2dad4821944d4d"
+      },
+      {
+        "stage": "spa_preparation",
+        "status": "completed",
+        "timestamp": "2025-12-29T00:12:41.630Z",
+        "actor": "Priya Sharma",
+        "_id": "6966df795a2dad4821944d4e"
+      },
+      {
+        "stage": "spa_signed",
+        "status": "completed",
+        "timestamp": "2025-12-31T00:12:41.630Z",
+        "actor": "Priya Sharma",
+        "_id": "6966df795a2dad4821944d4f"
+      },
+      {
+        "stage": "noc_applied",
+        "status": "in_progress",
+        "timestamp": "2026-01-02T00:12:41.630Z",
+        "actor": "Priya Sharma",
+        "_id": "6966df795a2dad4821944d50"
+      }
+    ],
+    "kycVerification": {
+      "sellerVerified": false,
+      "buyerVerified": false,
+      "amlCleared": false
+    },
+    "financials": {
+      "commissionPercentage": 2,
+      "commissionPaid": false,
+      "paymentsReceived": []
+    },
+    "isDemo": false,
+    "createdAt": "2026-01-14T00:12:41.632Z",
+    "updatedAt": "2026-01-14T00:12:41.632Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944d52",
+    "dealNumber": "SD-2024-004",
+    "dealType": "secondary",
+    "status": "viewing_scheduled",
+    "property": {
+      "address": "Villa E15, Sector E, Emirates Hills",
+      "area": "Emirates Hills",
+      "project": "Sector E",
+      "propertyType": "villa",
+      "bedrooms": 7,
+      "bathrooms": 8,
+      "size": 15000,
+      "askingPrice": 85000000,
+      "isOffPlan": false
+    },
+    "seller": {
+      "name": "Faisal Al Thani",
+      "email": "faisal.t@gmail.com",
+      "phone": "+97455123456",
+      "sellerType": "individual"
+    },
+    "buyer": {
+      "name": "Ahmed Al Sayed",
+      "email": "ahmed.s@gmail.com",
+      "phone": "+966501234567",
+      "nationality": "Saudi Arabia",
+      "kycStatus": "pending"
+    },
+    "broker": {
+      "name": "Ahmed Hassan",
+      "brnNumber": "BRN-12346",
+      "specialization": "both",
+      "assignedBy": "Emma AI"
+    },
+    "leadSource": {
+      "source": "referral",
+      "leadScore": 90,
+      "qualification": "hot"
+    },
+    "timeline": [
+      {
+        "stage": "lead",
+        "status": "completed",
+        "timestamp": "2025-12-15T00:12:41.634Z",
+        "actor": "System",
+        "notes": "Lead captured",
+        "_id": "6966df795a2dad4821944d53"
+      },
+      {
+        "stage": "qualified",
+        "status": "completed",
+        "timestamp": "2025-12-17T00:12:41.634Z",
+        "actor": "Ahmed Hassan",
+        "_id": "6966df795a2dad4821944d54"
+      },
+      {
+        "stage": "viewing_scheduled",
+        "status": "in_progress",
+        "timestamp": "2025-12-19T00:12:41.634Z",
+        "actor": "Ahmed Hassan",
+        "_id": "6966df795a2dad4821944d55"
+      }
+    ],
+    "kycVerification": {
+      "sellerVerified": false,
+      "buyerVerified": false,
+      "amlCleared": false
+    },
+    "financials": {
+      "commissionPercentage": 2,
+      "commissionPaid": false,
+      "paymentsReceived": []
+    },
+    "isDemo": false,
+    "createdAt": "2026-01-14T00:12:41.635Z",
+    "updatedAt": "2026-01-14T00:12:41.635Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944d57",
+    "dealNumber": "SD-2024-005",
+    "dealType": "off_plan",
+    "status": "offer_submitted",
+    "property": {
+      "address": "Villa D1-25, District One, MBR City",
+      "area": "Mohammed Bin Rashid City",
+      "project": "District One",
+      "developer": "Meydan Sobha",
+      "propertyType": "villa",
+      "bedrooms": 6,
+      "bathrooms": 7,
+      "size": 9500,
+      "askingPrice": 28000000,
+      "isOffPlan": true
+    },
+    "seller": {
+      "name": "Meydan Sobha",
+      "email": "sales@meydansobha.com",
+      "phone": "+97145678902",
+      "sellerType": "developer"
+    },
+    "buyer": {
+      "name": "James Richardson",
+      "email": "james.r@gmail.com",
+      "phone": "+447911234567",
+      "nationality": "UK",
+      "kycStatus": "verified"
+    },
+    "broker": {
+      "name": "Michael Chen",
+      "brnNumber": "BRN-12348",
+      "specialization": "off_plan",
+      "assignedBy": "System"
+    },
+    "leadSource": {
+      "source": "website",
+      "leadScore": 78,
+      "qualification": "warm"
+    },
+    "offer": {
+      "offerPrice": 27000000,
+      "submittedAt": "2024-01-13T00:00:00.000Z",
+      "validUntil": "2024-01-20T00:00:00.000Z"
+    },
+    "timeline": [
+      {
+        "stage": "lead",
+        "status": "completed",
+        "timestamp": "2025-12-15T00:12:41.637Z",
+        "actor": "System",
+        "notes": "Lead captured",
+        "_id": "6966df795a2dad4821944d58"
+      },
+      {
+        "stage": "qualified",
+        "status": "completed",
+        "timestamp": "2025-12-17T00:12:41.637Z",
+        "actor": "Michael Chen",
+        "_id": "6966df795a2dad4821944d59"
+      },
+      {
+        "stage": "viewing_scheduled",
+        "status": "completed",
+        "timestamp": "2025-12-19T00:12:41.637Z",
+        "actor": "Michael Chen",
+        "_id": "6966df795a2dad4821944d5a"
+      },
+      {
+        "stage": "viewing_completed",
+        "status": "completed",
+        "timestamp": "2025-12-21T00:12:41.637Z",
+        "actor": "Michael Chen",
+        "_id": "6966df795a2dad4821944d5b"
+      },
+      {
+        "stage": "offer_submitted",
+        "status": "in_progress",
+        "timestamp": "2025-12-23T00:12:41.637Z",
+        "actor": "Michael Chen",
+        "_id": "6966df795a2dad4821944d5c"
+      }
+    ],
+    "kycVerification": {
+      "sellerVerified": false,
+      "buyerVerified": false,
+      "amlCleared": false
+    },
+    "financials": {
+      "commissionPercentage": 2,
+      "commissionPaid": false,
+      "paymentsReceived": []
+    },
+    "isDemo": false,
+    "createdAt": "2026-01-14T00:12:41.638Z",
+    "updatedAt": "2026-01-14T00:12:41.638Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944d5e",
+    "dealNumber": "SD-2024-006",
+    "dealType": "secondary",
+    "status": "qualified",
+    "property": {
+      "address": "Apt 12001, Burj Khalifa, Downtown Dubai",
+      "area": "Downtown Dubai",
+      "project": "Burj Khalifa",
+      "propertyType": "apartment",
+      "bedrooms": 3,
+      "bathrooms": 4,
+      "size": 2800,
+      "askingPrice": 15000000,
+      "isOffPlan": false
+    },
+    "seller": {
+      "name": "Khalid Bin Rashid",
+      "email": "khalid.br@gmail.com",
+      "phone": "+971504567890",
+      "sellerType": "individual"
+    },
+    "buyer": {
+      "name": "David Miller",
+      "email": "david.m@gmail.com",
+      "phone": "+12125551234",
+      "nationality": "USA",
+      "kycStatus": "pending"
+    },
+    "broker": {
+      "name": "Fatima Al Rashid",
+      "brnNumber": "BRN-12345",
+      "specialization": "both",
+      "assignedBy": "Emma AI"
+    },
+    "leadSource": {
+      "source": "walk_in",
+      "leadScore": 72,
+      "qualification": "warm"
+    },
+    "timeline": [
+      {
+        "stage": "lead",
+        "status": "completed",
+        "timestamp": "2025-12-15T00:12:41.640Z",
+        "actor": "System",
+        "notes": "Lead captured",
+        "_id": "6966df795a2dad4821944d5f"
+      },
+      {
+        "stage": "qualified",
+        "status": "in_progress",
+        "timestamp": "2025-12-17T00:12:41.640Z",
+        "actor": "Fatima Al Rashid",
+        "_id": "6966df795a2dad4821944d60"
+      }
+    ],
+    "kycVerification": {
+      "sellerVerified": false,
+      "buyerVerified": false,
+      "amlCleared": false
+    },
+    "financials": {
+      "commissionPercentage": 2,
+      "commissionPaid": false,
+      "paymentsReceived": []
+    },
+    "isDemo": false,
+    "createdAt": "2026-01-14T00:12:41.642Z",
+    "updatedAt": "2026-01-14T00:12:41.642Z",
+    "__v": 0
+  }
+]
