@@ -5,6 +5,11 @@ import path from 'path';
 import fs from 'fs';
 import { CandidateScoringService } from '../services/CandidateScoringService.js';
 import { ResumeParserService } from '../services/ResumeParserService.js';
+import { ConversationMetricsAnalyzer } from '../services/ConversationMetricsAnalyzer.js';
+import { EnhancedIntentDetectionService } from '../services/EnhancedIntentDetectionService.js';
+import { LeadQualificationService } from '../services/LeadQualificationService.js';
+import { ConversationBatchProcessor } from '../services/ConversationBatchProcessor.js';
+import { LeadScoringIntegration } from '../utils/LeadScoringIntegration.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -1428,6 +1433,406 @@ router.patch('/interview/:interviewId/status', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       error: 'Failed to update interview status',
+      details: error.message
+    });
+  }
+});
+
+// ============= PHASE 1C PART 3: LEAD SCORING ENDPOINTS =============
+
+/**
+ * POST /recruitment/conversations/:candidateId/analyze
+ * Analyze single conversation history and return metrics
+ */
+router.post('/conversations/:candidateId/analyze', async (req, res) => {
+  try {
+    const { candidateId } = req.params;
+    const { messages } = req.body;
+
+    if (!Array.isArray(messages)) {
+      return res.status(400).json({
+        error: 'Messages must be an array',
+        example: [{ content: 'text', timestamp: '2024-01-01T00:00:00Z', direction: 'incoming' }]
+      });
+    }
+
+    // Analyze conversation metrics
+    const metrics = ConversationMetricsAnalyzer.analyzeConversation(messages);
+
+    // Detect intent from latest message
+    const latestMessage = messages.length > 0 ? messages[messages.length - 1].content : '';
+    const intent = EnhancedIntentDetectionService.detectIntent(latestMessage, messages.slice(-5));
+
+    // Get qualification assessment
+    const qualification = EnhancedIntentDetectionService.assessQualification(messages);
+
+    return res.json({
+      success: true,
+      candidateId,
+      analysis: {
+        metrics,
+        intent,
+        qualification,
+        messageCount: messages.length,
+        analyzedAt: new Date()
+      }
+    });
+  } catch (error) {
+    console.error('Conversation analysis error:', error);
+    return res.status(500).json({
+      error: 'Failed to analyze conversation',
+      details: error.message
+    });
+  }
+});
+
+/**
+ * POST /recruitment/leads/:candidateId/calculate-score
+ * Calculate comprehensive lead score combining resume + conversation
+ */
+router.post('/leads/:candidateId/calculate-score', async (req, res) => {
+  try {
+    const { candidateId } = req.params;
+    const { resumeScore, conversationMessages, jobId } = req.body;
+
+    if (typeof resumeScore !== 'number' || !Array.isArray(conversationMessages)) {
+      return res.status(400).json({
+        error: 'Invalid input. Require: resumeScore (number), conversationMessages (array)'
+      });
+    }
+
+    // Get previous lead score for velocity calculation
+    let previousLeadScore = null;
+    try {
+      previousLeadScore = await prisma.leadScore.findFirst({
+        where: { candidateId, jobId: jobId || null },
+        orderBy: { createdAt: 'desc' }
+      });
+    } catch (e) {
+      // LeadScore table may not exist yet
+      console.warn('LeadScore table not found, continuing without velocity');
+    }
+
+    // Calculate lead score
+    const leadScore = LeadQualificationService.calculateLeadScore(
+      resumeScore,
+      conversationMessages,
+      candidateId,
+      previousLeadScore
+    );
+
+    // Try to save to database
+    try {
+      if (jobId) {
+        await prisma.leadScore.create({
+          data: {
+            candidateId,
+            jobId,
+            overallScore: leadScore.overallScore,
+            scoreBreakdown: leadScore.scoreBreakdown,
+            leadTemperature: leadScore.leadTemperature,
+            qualificationLevel: leadScore.qualificationLevel,
+            recommendations: leadScore.recommendations
+          }
+        });
+      }
+    } catch (dbError) {
+      console.warn('Could not save to database:', dbError.message);
+    }
+
+    return res.json({
+      success: true,
+      candidateId,
+      leadScore,
+      savedToDatabase: !!jobId
+    });
+  } catch (error) {
+    console.error('Lead score calculation error:', error);
+    return res.status(500).json({
+      error: 'Failed to calculate lead score',
+      details: error.message
+    });
+  }
+});
+
+/**
+ * GET /recruitment/leads?temperature=hot|warm|cold&jobId=?&limit=20
+ * List qualified leads by temperature tier
+ */
+router.get('/leads', async (req, res) => {
+  try {
+    const { temperature, jobId, limit = 20 } = req.query;
+    const parsedLimit = Math.min(parseInt(limit) || 20, 100);
+
+    let query = {};
+    if (temperature) {
+      query.leadTemperature = temperature.toUpperCase();
+    }
+    if (jobId) {
+      query.jobId = jobId;
+    }
+
+    // Try to fetch from database
+    let leads = [];
+    try {
+      leads = await prisma.leadScore.findMany({
+        where: query,
+        take: parsedLimit,
+        orderBy: { overallScore: 'desc' },
+        include: {
+          candidate: {
+            select: {
+              id: true,
+              email: true,
+              firstName: true,
+              lastName: true,
+              phone: true,
+              location: true
+            }
+          }
+        }
+      });
+    } catch (dbError) {
+      console.warn('Could not query database:', dbError.message);
+    }
+
+    // Format response
+    const formattedLeads = leads.map(lead => ({
+      candidateId: lead.candidateId,
+      candidate: lead.candidate,
+      overallScore: lead.overallScore,
+      temperature: lead.leadTemperature,
+      qualification: lead.qualificationLevel,
+      recommendations: lead.recommendations,
+      scoredAt: lead.createdAt
+    }));
+
+    // Get temperature breakdown
+    const breakdown = {
+      HOT: formattedLeads.filter(l => l.temperature === 'HOT').length,
+      WARM: formattedLeads.filter(l => l.temperature === 'WARM').length,
+      COLD: formattedLeads.filter(l => l.temperature === 'COLD').length
+    };
+
+    return res.json({
+      success: true,
+      filters: { temperature, jobId, limit: parsedLimit },
+      leadsCount: formattedLeads.length,
+      breakdown,
+      leads: formattedLeads
+    });
+  } catch (error) {
+    console.error('Lead listing error:', error);
+    return res.status(500).json({
+      error: 'Failed to list leads',
+      details: error.message
+    });
+  }
+});
+
+/**
+ * PATCH /recruitment/leads/:candidateId/status
+ * Update lead status and trigger recommended actions
+ */
+router.patch('/leads/:candidateId/status', async (req, res) => {
+  try {
+    const { candidateId } = req.params;
+    const { newStatus, jobId, notes } = req.body;
+
+    if (!newStatus) {
+      return res.status(400).json({
+        error: 'newStatus is required',
+        validStatuses: ['hot_interview_scheduled', 'warm_under_review', 'cold_archived', 'nurture_sequence']
+      });
+    }
+
+    // Fetch lead data
+    let leadData = null;
+    try {
+      leadData = await prisma.leadScore.findFirst({
+        where: { candidateId, jobId: jobId || null },
+        orderBy: { createdAt: 'desc' }
+      });
+    } catch (e) {
+      console.warn('Could not fetch lead data');
+    }
+
+    // Get integration insights
+    const integrationResult = LeadScoringIntegration.integrateWithInterviewScheduling(
+      { candidateId, leadScore: leadData, resumeScore: leadData?.scoreBreakdown?.resumeScore || 0 },
+      null // Passing null for service - would be actual service in production
+    );
+
+    // Log the status update
+    const updateLog = {
+      candidateId,
+      jobId,
+      oldStatus: leadData?.leadTemperature,
+      newStatus,
+      notes,
+      updatedAt: new Date(),
+      integrationDecision: integrationResult.decision
+    };
+
+    try {
+      await prisma.candidate.update({
+        where: { id: candidateId },
+        data: {
+          lead_temperature: newStatus.split('_')[0].toUpperCase(),
+          updated_at: new Date()
+        }
+      });
+    } catch (dbError) {
+      console.warn('Could not update candidate record');
+    }
+
+    return res.json({
+      success: true,
+      candidateId,
+      updated: {
+        status: newStatus,
+        notes,
+        integrationActions: integrationResult.decision?.autoActions || [],
+        timestamp: new Date()
+      }
+    });
+  } catch (error) {
+    console.error('Lead status update error:', error);
+    return res.status(500).json({
+      error: 'Failed to update lead status',
+      details: error.message
+    });
+  }
+});
+
+/**
+ * GET /recruitment/analytics/lead-funnel?jobId=?
+ * Analytics on lead quality distribution and KPIs
+ */
+router.get('/analytics/lead-funnel', async (req, res) => {
+  try {
+    const { jobId } = req.query;
+
+    let query = {};
+    if (jobId) {
+      query.jobId = jobId;
+    }
+
+    // Fetch all lead scores
+    let allLeads = [];
+    try {
+      allLeads = await prisma.leadScore.findMany({
+        where: query,
+        select: {
+          overallScore: true,
+          leadTemperature: true,
+          qualificationLevel: true,
+          scoreBreakdown: true,
+          createdAt: true
+        }
+      });
+    } catch (dbError) {
+      console.warn('Could not fetch lead data from database');
+    }
+
+    // If no database data, return template analytics
+    if (allLeads.length === 0) {
+      return res.json({
+        success: true,
+        analytics: {
+          totalLeads: 0,
+          temperatureDistribution: {
+            HOT: 0,
+            WARM: 0,
+            COLD: 0
+          },
+          qualificationDistribution: {
+            Excellent: 0,
+            Good: 0,
+            Fair: 0,
+            Weak: 0,
+            Poor: 0
+          },
+          scoreDistribution: {
+            '80-100': 0,
+            '60-79': 0,
+            '40-59': 0,
+            '0-39': 0
+          },
+          averageScores: {
+            overall: 0,
+            resume: 0,
+            conversation: 0,
+            engagement: 0
+          },
+          kpis: {
+            hotLeadPercentage: 0,
+            averageQualification: 'Unknown',
+            conversionPotential: 'Unknown'
+          },
+          jobId: jobId || 'all',
+          generatedAt: new Date()
+        }
+      });
+    }
+
+    // Calculate analytics
+    const temperatureBreakdown = {
+      HOT: allLeads.filter(l => l.leadTemperature === 'HOT').length,
+      WARM: allLeads.filter(l => l.leadTemperature === 'WARM').length,
+      COLD: allLeads.filter(l => l.leadTemperature === 'COLD').length
+    };
+
+    const qualificationBreakdown = {
+      Excellent: allLeads.filter(l => l.qualificationLevel === 'Excellent').length,
+      Good: allLeads.filter(l => l.qualificationLevel === 'Good').length,
+      Fair: allLeads.filter(l => l.qualificationLevel === 'Fair').length,
+      Weak: allLeads.filter(l => l.qualificationLevel === 'Weak').length,
+      Poor: allLeads.filter(l => l.qualificationLevel === 'Poor').length
+    };
+
+    const scoreDistribution = {
+      '80-100': allLeads.filter(l => l.overallScore >= 80).length,
+      '60-79': allLeads.filter(l => l.overallScore >= 60 && l.overallScore < 80).length,
+      '40-59': allLeads.filter(l => l.overallScore >= 40 && l.overallScore < 60).length,
+      '0-39': allLeads.filter(l => l.overallScore < 40).length
+    };
+
+    const avgOverallScore = (allLeads.reduce((sum, l) => sum + l.overallScore, 0) / allLeads.length).toFixed(1);
+    const avgResumeScore = (allLeads.reduce((sum, l) => sum + (l.scoreBreakdown?.resumeScore || 0), 0) / allLeads.length).toFixed(1);
+    const avgConversationScore = (allLeads.reduce((sum, l) => sum + (l.scoreBreakdown?.conversationScore || 0), 0) / allLeads.length).toFixed(1);
+    const avgEngagementScore = (allLeads.reduce((sum, l) => sum + (l.scoreBreakdown?.engagementVelocity || 0), 0) / allLeads.length).toFixed(1);
+
+    return res.json({
+      success: true,
+      analytics: {
+        totalLeads: allLeads.length,
+        temperatureDistribution: temperatureBreakdown,
+        qualificationDistribution: qualificationBreakdown,
+        scoreDistribution,
+        averageScores: {
+          overall: parseFloat(avgOverallScore),
+          resume: parseFloat(avgResumeScore),
+          conversation: parseFloat(avgConversationScore),
+          engagement: parseFloat(avgEngagementScore)
+        },
+        kpis: {
+          hotLeadPercentage: ((temperatureBreakdown.HOT / allLeads.length) * 100).toFixed(1),
+          warmLeadPercentage: ((temperatureBreakdown.WARM / allLeads.length) * 100).toFixed(1),
+          coldLeadPercentage: ((temperatureBreakdown.COLD / allLeads.length) * 100).toFixed(1),
+          averageQualification: Object.keys(qualificationBreakdown).reduce((a, b) => 
+            qualificationBreakdown[a] > qualificationBreakdown[b] ? a : b
+          ),
+          conversionPotential: parseFloat(avgOverallScore) > 70 ? 'High' : parseFloat(avgOverallScore) > 50 ? 'Medium' : 'Low'
+        },
+        jobId: jobId || 'all',
+        generatedAt: new Date()
+      }
+    });
+  } catch (error) {
+    console.error('Lead funnel analytics error:', error);
+    return res.status(500).json({
+      error: 'Failed to generate analytics',
       details: error.message
     });
   }
