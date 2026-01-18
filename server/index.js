@@ -34,6 +34,9 @@ import contractsRoutes from './routes/contracts.js';
 import whatsappRoutes from './routes/whatsapp.js';
 import signaturesRoutes from './routes/signatures.js';
 import statusRoutes from './routes/status.js';
+import offersRoutes from './routes/offers.js';
+import propertyInventoryRoutes from './routes/property-inventory.js';
+import dealJourneyRoutes from './routes/deal-journey.js';
 import OliviaService from './services/oliviaService.js';
 import schedulerService from './services/schedulerService.js';
 
@@ -100,6 +103,9 @@ app.use('/api/plans', plansRoutes);
 app.use('/api/contracts', contractsRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
 app.use('/api/signature', signaturesRoutes);
+app.use('/api/offers', offersRoutes);
+app.use('/api/property-inventory', propertyInventoryRoutes);
+app.use('/api/deal-journey', dealJourneyRoutes);
 app.use('/api', statusRoutes);
 
 // Serve static files from the dist folder in production
