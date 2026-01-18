@@ -4,6 +4,13 @@ import AreaSummaryCard from './AreaSummaryCard';
 import PropertyCard from './PropertyCard';
 import PropertyListItem from './PropertyListItem';
 import FilterPanel from './FilterPanel';
+import BulkActionToolbar from '../../BulkOperations/BulkActionToolbar';
+import BulkStatusModal from '../../BulkOperations/BulkStatusModal';
+import BulkPriceModal from '../../BulkOperations/BulkPriceModal';
+import BulkFurnishingModal from '../../BulkOperations/BulkFurnishingModal';
+import BulkTagModal from '../../BulkOperations/BulkTagModal';
+import BulkNotificationModal from '../../BulkOperations/BulkNotificationModal';
+import BulkDeleteModal from '../../BulkOperations/BulkDeleteModal';
 import cacheUtils from '../../../utils/cacheUtils';
 import './InventoryDashboard.css';
 
@@ -19,6 +26,14 @@ const InventoryDashboard = () => {
   const [dashboardStats, setDashboardStats] = useState(null);
   const [areaLoadingState, setAreaLoadingState] = useState({});
   const [lastRefreshTime, setLastRefreshTime] = useState(null);
+
+  // Bulk Operations State
+  const [selectedProperties, setSelectedProperties] = useState(new Set());
+  const [bulkActionType, setBulkActionType] = useState(null);
+  const [bulkActionData, setBulkActionData] = useState(null);
+  const [isBulkLoading, setIsBulkLoading] = useState(false);
+  const [bulkError, setBulkError] = useState(null);
+  const [bulkSuccess, setBulkSuccess] = useState(null);
 
   // Filter state
   const [filters, setFilters] = useState({
@@ -250,6 +265,98 @@ const InventoryDashboard = () => {
     }
   };
 
+  // Bulk Operations Handlers
+  const handlePropertySelect = (propertyId, checked) => {
+    const newSet = new Set(selectedProperties);
+    if (checked) {
+      newSet.add(propertyId);
+    } else {
+      newSet.delete(propertyId);
+    }
+    setSelectedProperties(newSet);
+  };
+
+  const handleClearSelection = () => {
+    setSelectedProperties(new Set());
+    setBulkActionType(null);
+    setBulkActionData(null);
+  };
+
+  const handleBulkActionOpen = (type) => {
+    setBulkActionType(type);
+  };
+
+  const handleBulkActionConfirm = async (data) => {
+    if (selectedProperties.size === 0) return;
+
+    setIsBulkLoading(true);
+    setBulkError(null);
+    setBulkSuccess(null);
+
+    try {
+      const propertyIds = Array.from(selectedProperties);
+      let endpoint = '';
+      let payload = {};
+
+      switch (bulkActionType) {
+        case 'status':
+          endpoint = '/api/bulk/status-update';
+          payload = { propertyIds, newStatus: data };
+          break;
+        case 'price':
+          endpoint = '/api/bulk/price-update';
+          payload = { propertyIds, priceUpdate: data };
+          break;
+        case 'furnishing':
+          endpoint = '/api/bulk/furnishing-update';
+          payload = { propertyIds, furnishing: data };
+          break;
+        case 'tags':
+          endpoint = '/api/bulk/tags-update';
+          payload = { propertyIds, tags: data };
+          break;
+        case 'notification':
+          endpoint = '/api/bulk/notify';
+          payload = { propertyIds, message: data.message, type: data.type };
+          break;
+        case 'delete':
+          endpoint = '/api/bulk/delete';
+          payload = { propertyIds };
+          break;
+        default:
+          return;
+      }
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setBulkSuccess(`${bulkActionType} updated successfully for ${propertyIds.length} properties`);
+        handleClearSelection();
+        // Reload data
+        loadAreaSummaries();
+        loadDashboardStats();
+        expandedAreas.forEach((area) => loadAreaProperties(area, 1));
+        // Clear message after 3 seconds
+        setTimeout(() => setBulkSuccess(null), 3000);
+      } else {
+        setBulkError(result.message || `Failed to perform bulk ${bulkActionType}`);
+      }
+    } catch (error) {
+      console.error('Bulk operation error:', error);
+      setBulkError(`Error performing bulk ${bulkActionType}: ${error.message}`);
+    } finally {
+      setIsBulkLoading(false);
+      setBulkActionType(null);
+      setBulkActionData(null);
+    }
+  };
+
   // Render area properties
   const renderAreaProperties = (area) => {
     const properties = areaProperties[area];
@@ -263,7 +370,16 @@ const InventoryDashboard = () => {
               viewMode === 'grid' ? (
                 <PropertyCard key={property._id} property={property} />
               ) : (
-                <PropertyListItem key={property._id} property={property} />
+                <PropertyListItem
+                  key={property._id}
+                  property={property}
+                  inventory={property.inventory}
+                  isSelected={selectedProperties.has(property._id)}
+                  onSelect={handlePropertySelect}
+                  onViewDetails={() => console.log('View details:', property)}
+                  onCreateOffer={() => console.log('Create offer:', property)}
+                  onAssignAgent={() => console.log('Assign agent:', property)}
+                />
               )
             )
           ) : (
@@ -352,6 +468,79 @@ const InventoryDashboard = () => {
           ) : (
             <p>No areas found.</p>
           )}
+        </div>
+      )}
+
+      {/* Bulk Action Toolbar */}
+      <BulkActionToolbar
+        selectedCount={selectedProperties.size}
+        onStatusUpdate={() => handleBulkActionOpen('status')}
+        onPriceUpdate={() => handleBulkActionOpen('price')}
+        onFurnishingUpdate={() => handleBulkActionOpen('furnishing')}
+        onTagsUpdate={() => handleBulkActionOpen('tags')}
+        onNotification={() => handleBulkActionOpen('notification')}
+        onDelete={() => handleBulkActionOpen('delete')}
+        onClear={handleClearSelection}
+        isLoading={isBulkLoading}
+      />
+
+      {/* Bulk Status Modal */}
+      <BulkStatusModal
+        isOpen={bulkActionType === 'status'}
+        propertyCount={selectedProperties.size}
+        onConfirm={handleBulkActionConfirm}
+        onCancel={() => setBulkActionType(null)}
+      />
+
+      {/* Bulk Price Modal */}
+      <BulkPriceModal
+        isOpen={bulkActionType === 'price'}
+        propertyCount={selectedProperties.size}
+        onConfirm={handleBulkActionConfirm}
+        onCancel={() => setBulkActionType(null)}
+      />
+
+      {/* Bulk Furnishing Modal */}
+      <BulkFurnishingModal
+        isOpen={bulkActionType === 'furnishing'}
+        propertyCount={selectedProperties.size}
+        onConfirm={handleBulkActionConfirm}
+        onCancel={() => setBulkActionType(null)}
+      />
+
+      {/* Bulk Tag Modal */}
+      <BulkTagModal
+        isOpen={bulkActionType === 'tags'}
+        propertyCount={selectedProperties.size}
+        onConfirm={handleBulkActionConfirm}
+        onCancel={() => setBulkActionType(null)}
+      />
+
+      {/* Bulk Notification Modal */}
+      <BulkNotificationModal
+        isOpen={bulkActionType === 'notification'}
+        propertyCount={selectedProperties.size}
+        onConfirm={handleBulkActionConfirm}
+        onCancel={() => setBulkActionType(null)}
+      />
+
+      {/* Bulk Delete Modal */}
+      <BulkDeleteModal
+        isOpen={bulkActionType === 'delete'}
+        propertyCount={selectedProperties.size}
+        onConfirm={handleBulkActionConfirm}
+        onCancel={() => setBulkActionType(null)}
+      />
+
+      {/* Bulk Success/Error Messages */}
+      {bulkSuccess && (
+        <div className="bulk-notification bulk-success">
+          ✓ {bulkSuccess}
+        </div>
+      )}
+      {bulkError && (
+        <div className="bulk-notification bulk-error">
+          ✕ {bulkError}
         </div>
       )}
     </div>

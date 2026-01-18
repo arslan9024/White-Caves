@@ -7,6 +7,8 @@ const PropertyListItem = ({
   onViewDetails,
   onCreateOffer,
   onAssignAgent,
+  isSelected,
+  onSelect,
 }) => {
   const pNumber = property.pNumber || 'N/A';
   const tenancyStatus = inventory?.status || 'unknown';
@@ -36,7 +38,16 @@ const PropertyListItem = ({
   const assignedAgent = inventory?.assignedAgents?.[0]?.agentId;
 
   return (
-    <div className='property-list-item'>
+    <div className={`property-list-item ${isSelected ? 'selected' : ''}`}>
+      <div className='list-item-cell list-checkbox'>
+        <input
+          type='checkbox'
+          checked={isSelected || false}
+          onChange={(e) => onSelect && onSelect(property._id, e.target.checked)}
+          className='property-checkbox'
+        />
+      </div>
+
       <div className='list-item-cell list-pnumber'>
         <strong>{pNumber}</strong>
       </div>
