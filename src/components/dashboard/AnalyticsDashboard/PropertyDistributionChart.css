@@ -1,0 +1,177 @@
+/* PropertyDistributionChart.module.css */
+/* Styling for property distribution charts */
+
+.distribution-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.distribution-chart {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.distribution-chart:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.distribution-chart--full-width {
+  grid-column: 1 / -1;
+}
+
+.chart-title {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chart-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 1.125rem;
+  background: linear-gradient(180deg, #3b82f6 0%, #8b5cf6 100%);
+  border-radius: 2px;
+}
+
+/* Chart Container */
+.recharts-wrapper {
+  margin-bottom: 1rem;
+}
+
+/* Legend */
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 1rem;
+}
+
+.chart-legend--multi-column {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.legend-color {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* Loading State */
+.chart-loading {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+  grid-column: 1 / -1;
+}
+
+/* Error State */
+.chart-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 1.5rem;
+  color: #dc2626;
+  text-align: center;
+  font-size: 0.875rem;
+  grid-column: 1 / -1;
+}
+
+/* Tooltip Styling */
+.recharts-default-tooltip {
+  background: white !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  padding: 0.75rem !important;
+}
+
+.recharts-tooltip-label {
+  font-weight: 600;
+  color: #1f2937 !important;
+  margin-bottom: 0.5rem;
+}
+
+.recharts-tooltip-item {
+  color: #6b7280 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .distribution-charts {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .distribution-charts {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .distribution-chart {
+    padding: 1rem;
+  }
+
+  .chart-title {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .chart-legend {
+    gap: 1rem;
+  }
+
+  .chart-legend--multi-column {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .distribution-chart {
+    padding: 0.75rem;
+  }
+
+  .chart-title {
+    font-size: 0.875rem;
+  }
+
+  .legend-item {
+    font-size: 0.75rem;
+  }
+
+  .chart-legend {
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
+  }
+}
