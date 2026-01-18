@@ -42,24 +42,56 @@ export default defineConfig({
     assetsDir: 'assets',
     sourcemap: false,
     minify: 'esbuild',
+    cssCodeSplit: true,
+    chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            if (id.includes('react-dom') || id.includes('react-router')) {
-              return 'vendor';
-            }
-            if (id.includes('@reduxjs/toolkit') || id.includes('react-redux')) {
-              return 'redux';
-            }
-            if (id.includes('firebase')) {
-              return 'firebase';
-            }
+        manualChunks: {
+          // ============ CORE VENDOR CHUNKS ============
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-router': ['react-router-dom', 'react-router'],
+          'vendor-redux': ['@reduxjs/toolkit', 'react-redux', 'redux'],
+          
+          // ============ FIREBASE CHUNKS (Split by module) ============
+          'firebase-core': ['firebase/app'],
+          'firebase-auth': ['firebase/auth'],
+          'firebase-database': ['firebase/database', 'firebase/firestore'],
+          'firebase-storage': ['firebase/storage'],
+          
+          // ============ CRM DASHBOARD CHUNKS ============
+          'crm-mary-inventory': ['src/components/crm/MaryInventoryCRM.jsx'],
+          'crm-zoe-executive': ['src/components/crm/ZoeExecutiveCRM.jsx'],
+          'crm-linda-whatsapp': ['src/components/crm/LindaWhatsAppCRM.jsx'],
+          'crm-clara-leads': ['src/components/crm/ClaraLeadsCRM.jsx'],
+          'crm-nina-chatbot': ['src/components/crm/NinaWhatsAppBotCRM.jsx'],
+          'crm-core': ['src/components/crm/AIAssistantHub.jsx', 'src/components/crm/AICommandCenter.jsx'],
+          
+          // ============ PAGE CHUNKS ============
+          'page-buyer': ['src/pages/buyer/BuyerDashboardPage.jsx', 'src/pages/buyer/MortgageCalculatorPage.jsx'],
+          'page-seller': ['src/pages/seller/SellerDashboardPage.jsx', 'src/pages/seller/PricingToolsPage.jsx'],
+          'page-landlord': ['src/pages/landlord/LandlordDashboardPage.jsx', 'src/pages/landlord/RentalManagementPage.jsx'],
+          'page-leasing': ['src/pages/leasing-agent/LeasingAgentDashboardPage.jsx'],
+          'page-secondary-sales': ['src/pages/secondary-sales-agent/SalesAgentDashboardPage.jsx'],
+          'page-tenant': ['src/pages/tenant/TenantDashboardPage.jsx'],
+          'page-owner': ['src/pages/owner/MDDashboardPage.jsx', 'src/pages/owner/ModernDashboardPage.jsx'],
+          'page-public': ['src/pages/AboutPage.jsx', 'src/pages/ServicesPage.jsx', 'src/pages/CareersPage.jsx', 'src/pages/PropertiesPage.jsx']
+        },
+        chunkFileNames: 'chunks/[name]-[hash].js',
+        entryFileNames: '[name]-[hash].js',
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name.split('.');
+          const ext = info[info.length - 1];
+          if (/png|jpe?g|gif|svg/.test(ext)) {
+            return `assets/images/[name]-[hash][extname]`;
+          } else if (/woff|woff2|ttf|otf|eot/.test(ext)) {
+            return `assets/fonts/[name]-[hash][extname]`;
+          } else if (ext === 'css') {
+            return `assets/css/[name]-[hash][extname]`;
           }
+          return `assets/[name]-[hash][extname]`;
         }
       }
-    },
-    chunkSizeWarningLimit: 1000
+    }
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom']
