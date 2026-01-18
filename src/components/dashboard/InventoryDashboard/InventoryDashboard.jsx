@@ -1,8 +1,10 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import AreaSummaryCard from './AreaSummaryCard';
 import PropertyCard from './PropertyCard';
 import PropertyListItem from './PropertyListItem';
+import FilterPanel from './FilterPanel';
+import cacheUtils from '../../../utils/cacheUtils';
 import './InventoryDashboard.css';
 
 const InventoryDashboard = () => {
@@ -12,232 +14,346 @@ const InventoryDashboard = () => {
   const [areaSummaries, setAreaSummaries] = useState([]);
   const [expandedAreas, setExpandedAreas] = useState([]);
   const [areaProperties, setAreaProperties] = useState({});
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+  const [viewMode, setViewMode] = useState('grid');
   const [loading, setLoading] = useState(false);
   const [dashboardStats, setDashboardStats] = useState(null);
   const [areaLoadingState, setAreaLoadingState] = useState({});
+  const [lastRefreshTime, setLastRefreshTime] = useState(null);
+
+  // Filter state
+  const [filters, setFilters] = useState({
+    status: [],
+    type: [],
+    areas: [],
+    priceMin: null,
+    priceMax: null,
+    furnishing: [],
+  });
+
+  // Refs for polling control and abort
+  const abortControllerRef = useRef(null);
+  const statsPollingRef = useRef(null);
+  const areaPollingRef = useRef(null);
+  const lastFetchTimeRef = useRef({});
+  const isTabActiveRef = useRef(true);
+
+  // Track tab visibility for smart polling
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      isTabActiveRef.current = !document.hidden;
+      if (isTabActiveRef.current) {
+        // Resume normal polling when tab becomes active
+        loadAreaSummaries();
+        loadDashboardStats();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
 
   // Fetch area summaries on mount
   useEffect(() => {
     loadAreaSummaries();
     loadDashboardStats();
 
-    // Set up 5-second polling
-    const pollInterval = setInterval(() => {
-      loadDashboardStats();
-    }, 5000);
+    // Smart polling: 30 seconds for dashboard stats
+    statsPollingRef.current = setInterval(() => {
+      if (isTabActiveRef.current) {
+        loadDashboardStats();
+      }
+    }, 30000);
 
-    return () => clearInterval(pollInterval);
+    return () => {
+      if (statsPollingRef.current) clearInterval(statsPollingRef.current);
+    };
   }, []);
 
-  // Poll expanded areas every 5 seconds
+  // Poll expanded areas every 10 seconds (reduced from 5s)
   useEffect(() => {
-    if (expandedAreas.length === 0) return;
+    if (expandedAreas.length === 0) {
+      if (areaPollingRef.current) clearInterval(areaPollingRef.current);
+      return;
+    }
 
-    const pollInterval = setInterval(() => {
-      expandedAreas.forEach((area) => {
-        loadAreaProperties(area, 1);
-      });
-    }, 5000);
+    areaPollingRef.current = setInterval(() => {
+      if (isTabActiveRef.current) {
+        expandedAreas.forEach((area) => {
+          loadAreaProperties(area, 1);
+        });
+      }
+    }, 10000);
 
-    return () => clearInterval(pollInterval);
+    return () => {
+      if (areaPollingRef.current) clearInterval(areaPollingRef.current);
+    };
   }, [expandedAreas]);
 
-  const loadAreaSummaries = async () => {
+  const loadAreaSummaries = useCallback(async () => {
     try {
+      // Check cache freshness
+      const cacheKey = 'areas-summary';
+      const cachedResponse = cacheUtils.getCacheResponse(cacheKey);
+      
+      if (cacheUtils.isCacheFresh(lastFetchTimeRef.current[cacheKey])) {
+        return; // Use cached data
+      }
+
       setLoading(true);
-      const response = await fetch('/api/property-inventory/dashboard/areas-summary');
+      
+      // Create abort controller for this request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      abortControllerRef.current = new AbortController();
+
+      const response = await fetch('/api/property-inventory/dashboard/areas-summary', {
+        signal: abortControllerRef.current.signal,
+      });
       const data = await response.json();
+      
       if (data.success) {
-        setAreaSummaries(data.data);
+        // Check if data changed
+        if (cacheUtils.hasDataChanged(data.data, cachedResponse)) {
+          setAreaSummaries(data.data);
+          cacheUtils.setCacheResponse(cacheKey, data.data);
+        }
+        lastFetchTimeRef.current[cacheKey] = Date.now();
       }
     } catch (error) {
-      console.error('Error loading area summaries:', error);
+      if (error.name !== 'AbortError') {
+        console.error('Error loading area summaries:', error);
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const loadDashboardStats = async () => {
+  const loadDashboardStats = useCallback(async () => {
     try {
-      const response = await fetch('/api/property-inventory/dashboard/stats');
+      // Check cache freshness
+      const cacheKey = 'dashboard-stats';
+      const cachedResponse = cacheUtils.getCacheResponse(cacheKey);
+      
+      if (cacheUtils.isCacheFresh(lastFetchTimeRef.current[cacheKey])) {
+        return; // Use cached data
+      }
+
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      abortControllerRef.current = new AbortController();
+
+      const response = await fetch('/api/property-inventory/dashboard/stats', {
+        signal: abortControllerRef.current.signal,
+      });
       const data = await response.json();
+      
       if (data.success) {
-        setDashboardStats(data.data);
+        // Check if data changed
+        if (cacheUtils.hasDataChanged(data.data, cachedResponse)) {
+          setDashboardStats(data.data);
+          cacheUtils.setCacheResponse(cacheKey, data.data);
+          setLastRefreshTime(new Date());
+        }
+        lastFetchTimeRef.current[cacheKey] = Date.now();
       }
     } catch (error) {
-      console.error('Error loading dashboard stats:', error);
+      if (error.name !== 'AbortError') {
+        console.error('Error loading dashboard stats:', error);
+      }
     }
-  };
+  }, []);
 
-  const loadAreaProperties = async (area, page = 1) => {
+  const loadAreaProperties = useCallback(async (area, page = 1) => {
     try {
+      const cacheKey = `area-properties-${area}`;
+      const cachedResponse = cacheUtils.getCacheResponse(cacheKey);
+      
+      // Skip fetch if cache is fresh
+      if (cacheUtils.isCacheFresh(lastFetchTimeRef.current[cacheKey])) {
+        return;
+      }
+
       setAreaLoadingState((prev) => ({ ...prev, [area]: true }));
+      
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      abortControllerRef.current = new AbortController();
+
       const response = await fetch(
-        \/api/property-inventory/dashboard/properties-by-area/\?page=\&limit=10\
+        `/api/property-inventory/dashboard/properties-by-area/${encodeURIComponent(area)}?page=${page}&limit=10`,
+        { signal: abortControllerRef.current.signal }
       );
       const data = await response.json();
+      
       if (data.success) {
-        setAreaProperties((prev) => ({
-          ...prev,
-          [area]: data.data,
-        }));
+        // Check if data changed
+        if (cacheUtils.hasDataChanged(data.data, cachedResponse)) {
+          setAreaProperties((prev) => ({
+            ...prev,
+            [area]: data.data,
+          }));
+          cacheUtils.setCacheResponse(cacheKey, data.data);
+        }
+        lastFetchTimeRef.current[cacheKey] = Date.now();
       }
     } catch (error) {
-      console.error(\Error loading properties for \:\, error);
+      if (error.name !== 'AbortError') {
+        console.error(`Error loading properties for ${area}:`, error);
+      }
     } finally {
       setAreaLoadingState((prev) => ({ ...prev, [area]: false }));
     }
-  };
+  }, []);
 
-  const handleToggleArea = (area) => {
+  // Filter handlers
+  const handleFilterChange = useCallback((filterKey, value) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [filterKey]: value,
+    }));
+  }, []);
+
+  const handleApplyFilters = useCallback(async () => {
+    // Clear related caches when filters change
+    cacheUtils.clearCacheKey('areas-summary');
+    cacheUtils.clearCacheKey('dashboard-stats');
+    expandedAreas.forEach((area) => {
+      cacheUtils.clearCacheKey(`area-properties-${area}`);
+    });
+
+    // Reload with new filters
+    await loadAreaSummaries();
+    await loadDashboardStats();
+  }, [expandedAreas]);
+
+  const handleResetFilters = useCallback(() => {
+    setFilters({
+      status: [],
+      type: [],
+      areas: [],
+      priceMin: null,
+      priceMax: null,
+      furnishing: [],
+    });
+  }, []);
+
+  // Handle area expansion
+  const toggleAreaExpand = (area) => {
     if (expandedAreas.includes(area)) {
       setExpandedAreas(expandedAreas.filter((a) => a !== area));
-      setAreaProperties((prev) => {
-        const newProps = { ...prev };
-        delete newProps[area];
-        return newProps;
-      });
     } else {
       setExpandedAreas([...expandedAreas, area]);
       loadAreaProperties(area, 1);
     }
   };
 
-  const handleViewDetails = (property) => {
-    console.log('View details:', property);
-    // TODO: Open property details modal
-  };
+  // Render area properties
+  const renderAreaProperties = (area) => {
+    const properties = areaProperties[area];
+    if (!properties) return null;
 
-  const handleCreateOffer = (property) => {
-    console.log('Create offer:', property);
-    // TODO: Open create offer modal
-  };
-
-  const handleAssignAgent = (property) => {
-    console.log('Assign agent:', property);
-    // TODO: Open assign agent modal
-  };
-
-  const handleRefresh = () => {
-    loadAreaSummaries();
-    loadDashboardStats();
-    expandedAreas.forEach((area) => {
-      loadAreaProperties(area, 1);
-    });
-  };
-
-  return (
-    <div className='inventory-dashboard'>
-      {/* Header */}
-      <div className='dashboard-header'>
-        <h1>Property Inventory Dashboard</h1>
-        <div className='header-controls'>
-          <div className='view-toggle'>
-            <button
-              className={\	oggle-btn \\}
-              onClick={() => setViewMode('grid')}
-              title='Grid View'
-            >
-               Grid
-            </button>
-            <button
-              className={\	oggle-btn \\}
-              onClick={() => setViewMode('list')}
-              title='List View'
-            >
-               List
-            </button>
-          </div>
-          <button className='refresh-btn' onClick={handleRefresh} title='Refresh'>
-             Refresh
-          </button>
+    return (
+      <div className="area-properties">
+        <div className={viewMode === 'grid' ? 'grid-view' : 'list-view'}>
+          {properties && properties.length > 0 ? (
+            properties.map((property) =>
+              viewMode === 'grid' ? (
+                <PropertyCard key={property._id} property={property} />
+              ) : (
+                <PropertyListItem key={property._id} property={property} />
+              )
+            )
+          ) : (
+            <p>No properties found in this area.</p>
+          )}
         </div>
       </div>
+    );
+  };
+
+  // Render
+  return (
+    <div className="inventory-dashboard">
+      <div className="dashboard-header">
+        <h1>Inventory Dashboard</h1>
+        {lastRefreshTime && (
+          <p className="last-refresh">Last updated: {lastRefreshTime.toLocaleTimeString()}</p>
+        )}
+      </div>
+
+      {/* Advanced Filters */}
+      <FilterPanel
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        onApplyFilters={handleApplyFilters}
+        onResetFilters={handleResetFilters}
+        areas={areaSummaries.map((area) => area.name)}
+        isLoading={loading}
+      />
 
       {/* Dashboard Stats */}
       {dashboardStats && (
-        <div className='dashboard-stats'>
-          <div className='stat-card'>
-            <div className='stat-value'>{dashboardStats.totalProperties}</div>
-            <div className='stat-label'>Total Properties</div>
+        <div className="dashboard-stats">
+          <div className="stat-card">
+            <h3>Total Properties</h3>
+            <p className="stat-value">{dashboardStats.totalProperties || 0}</p>
           </div>
-          <div className='stat-card'>
-            <div className='stat-value'>{dashboardStats.availabilityRate.toFixed(1)}%</div>
-            <div className='stat-label'>Availability Rate</div>
+          <div className="stat-card">
+            <h3>Total Areas</h3>
+            <p className="stat-value">{dashboardStats.totalAreas || 0}</p>
           </div>
-          <div className='stat-card'>
-            <div className='stat-value'>{dashboardStats.occupancyRate.toFixed(1)}%</div>
-            <div className='stat-label'>Occupancy Rate</div>
+          <div className="stat-card">
+            <h3>Vacant Properties</h3>
+            <p className="stat-value">{dashboardStats.vacantProperties || 0}</p>
           </div>
-          <div className='stat-card'>
-            <div className='stat-value'>{dashboardStats.maryVisibleCount}</div>
-            <div className='stat-label'>Mary Visible</div>
-          </div>
-          <div className='stat-card'>
-            <div className='stat-value'>{dashboardStats.agentAssignmentCount}</div>
-            <div className='stat-label'>With Agents</div>
+          <div className="stat-card">
+            <h3>Occupied Properties</h3>
+            <p className="stat-value">{dashboardStats.occupiedProperties || 0}</p>
           </div>
         </div>
       )}
 
-      {/* Areas Container */}
-      <div className='areas-container'>
-        {loading ? (
-          <div className='loading-spinner'>
-            <div className='spinner' />
-            <span>Loading areas...</span>
-          </div>
-        ) : (
-          areaSummaries.map((areaSummary) => (
-            <div key={areaSummary._id}>
-              <AreaSummaryCard
-                area={areaSummary._id}
-                total={areaSummary.total}
-                available={areaSummary.available}
-                rented={areaSummary.rented}
-                sold={areaSummary.sold}
-                availabilityRate={areaSummary.availabilityRate}
-                isExpanded={expandedAreas.includes(areaSummary._id)}
-                isLoading={areaLoadingState[areaSummary._id]}
-                onToggleExpand={() => handleToggleArea(areaSummary._id)}
-              />
-
-              {expandedAreas.includes(areaSummary._id) && (
-                <div className={properties-container properties-\}>
-                  {viewMode === 'grid' ? (
-                    <div className='properties-grid'>
-                      {areaProperties[areaSummary._id]?.map((prop) => (
-                        <PropertyCard
-                          key={prop._id}
-                          property={prop}
-                          inventory={prop.inventory}
-                          onViewDetails={handleViewDetails}
-                          onCreateOffer={handleCreateOffer}
-                          onAssignAgent={handleAssignAgent}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className='properties-list'>
-                      {areaProperties[areaSummary._id]?.map((prop) => (
-                        <PropertyListItem
-                          key={prop._id}
-                          property={prop}
-                          inventory={prop.inventory}
-                          onViewDetails={handleViewDetails}
-                          onCreateOffer={handleCreateOffer}
-                          onAssignAgent={handleAssignAgent}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          ))
-        )}
+      {/* View Mode Toggle */}
+      <div className="view-mode-toggle">
+        <button
+          className={viewMode === 'grid' ? 'active' : ''}
+          onClick={() => setViewMode('grid')}
+        >
+          Grid View
+        </button>
+        <button
+          className={viewMode === 'list' ? 'active' : ''}
+          onClick={() => setViewMode('list')}
+        >
+          List View
+        </button>
       </div>
+
+      {/* Area Summaries */}
+      {loading && areaSummaries.length === 0 ? (
+        <p>Loading areas...</p>
+      ) : (
+        <div className="areas-summary">
+          {areaSummaries && areaSummaries.length > 0 ? (
+            areaSummaries.map((area) => (
+              <div key={area._id} className="area-section">
+                <AreaSummaryCard
+                  area={area}
+                  expanded={expandedAreas.includes(area.name)}
+                  onToggleExpand={() => toggleAreaExpand(area.name)}
+                  isLoading={areaLoadingState[area.name] || false}
+                />
+                {expandedAreas.includes(area.name) && renderAreaProperties(area.name)}
+              </div>
+            ))
+          ) : (
+            <p>No areas found.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };
