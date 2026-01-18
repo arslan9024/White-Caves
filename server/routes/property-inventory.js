@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const PropertyInventory = require('../models/PropertyInventory');
 const InventoryProperty = require('../models/InventoryProperty');
+const FilterService = require('../services/FilterService');
 
 // Create or get property inventory entry
 router.post('/:propertyId/inventory', async (req, res) => {
@@ -275,25 +276,45 @@ router.get('/dashboard/areas-summary', async (req, res) => {
   }
 });
 
-// Dashboard: Get properties by area with pagination
+// Dashboard: Get properties by area with pagination and filters
 router.get('/dashboard/properties-by-area/:area', async (req, res) => {
   try {
     const { area } = req.params;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
+    const sortBy = req.query.sortBy || 'createdAt';
+    const sortOrder = req.query.sortOrder || 'desc';
 
-    const properties = await InventoryProperty.find({ area, isActive: true })
+    // Extract and validate filters
+    const filters = FilterService.extractFiltersFromQuery(req.query);
+    const validation = FilterService.validateFilters(filters);
+
+    if (!validation.isValid) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid filter parameters',
+        details: validation.errors,
+      });
+    }
+
+    // Build MongoDB query
+    let mongoQuery = FilterService.buildMongoQuery(filters);
+    mongoQuery.area = area; // Add area filter
+    mongoQuery.isActive = true;
+
+    // Get pagination and sorting
+    const pagination = FilterService.getPagination(page, limit);
+    const sort = FilterService.getSort(sortBy, sortOrder);
+
+    // Execute query
+    const properties = await InventoryProperty.find(mongoQuery)
       .populate('owners', 'name phone email')
       .populate('primaryOwner', 'name phone email')
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+      .sort(sort)
+      .skip(pagination.skip)
+      .limit(pagination.limit);
 
-    const total = await InventoryProperty.countDocuments({
-      area,
-      isActive: true,
-    });
+    const total = await InventoryProperty.countDocuments(mongoQuery);
 
     // Get corresponding inventory data for each property
     const inventoryData = await PropertyInventory.find({
@@ -311,19 +332,92 @@ router.get('/dashboard/properties-by-area/:area', async (req, res) => {
       };
     });
 
-    res.json({
-      success: true,
-      data: enrichedProperties,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
-      },
-    });
+    // Build response with filter metadata
+    const response = FilterService.buildResponse(
+      enrichedProperties,
+      filters,
+      pagination,
+      total
+    );
+
+    res.json(response);
   } catch (error) {
     console.error('Error fetching properties by area:', error);
     res.status(500).json({ error: 'Failed to fetch properties' });
+  }
+});
+
+// Dashboard: Advanced search with global filters (all areas)
+router.get('/dashboard/search', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const sortBy = req.query.sortBy || 'createdAt';
+    const sortOrder = req.query.sortOrder || 'desc';
+
+    // Extract and validate filters
+    const filters = FilterService.extractFiltersFromQuery(req.query);
+    const validation = FilterService.validateFilters(filters);
+
+    if (!validation.isValid) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid filter parameters',
+        details: validation.errors,
+      });
+    }
+
+    // Build MongoDB query
+    let mongoQuery = FilterService.buildMongoQuery(filters);
+    mongoQuery.isActive = true;
+
+    // Add specific areas filter if provided
+    if (filters.areas && filters.areas.length > 0) {
+      mongoQuery.area = { $in: filters.areas };
+    }
+
+    // Get pagination and sorting
+    const pagination = FilterService.getPagination(page, limit);
+    const sort = FilterService.getSort(sortBy, sortOrder);
+
+    // Execute query
+    const properties = await InventoryProperty.find(mongoQuery)
+      .populate('owners', 'name phone email')
+      .populate('primaryOwner', 'name phone email')
+      .sort(sort)
+      .skip(pagination.skip)
+      .limit(pagination.limit);
+
+    const total = await InventoryProperty.countDocuments(mongoQuery);
+
+    // Get corresponding inventory data
+    const inventoryData = await PropertyInventory.find({
+      propertyId: { $in: properties.map((p) => p._id) },
+    }).populate('assignedAgents.agentId', 'name email');
+
+    // Merge inventory data
+    const enrichedProperties = properties.map((prop) => {
+      const inv = inventoryData.find(
+        (i) => i.propertyId.toString() === prop._id.toString()
+      );
+      return {
+        ...prop.toObject(),
+        inventory: inv || null,
+      };
+    });
+
+    // Build response with filter metadata
+    const response = FilterService.buildResponse(
+      enrichedProperties,
+      filters,
+      pagination,
+      total
+    );
+
+    res.json(response);
+  } catch (error) {
+    console.error('Error searching properties:', error);
+    res.status(500).json({ error: 'Failed to search properties' });
   }
 });
 
