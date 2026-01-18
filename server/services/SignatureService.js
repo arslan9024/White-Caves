@@ -1,5 +1,9 @@
 import ContractSignature from '../models/ContractSignature.js';
+import SignatureToken from '../models/SignatureToken.js';
+import SignatureAudit from '../models/SignatureAudit.js';
+import Contract from '../models/Contract.js';
 import crypto from 'crypto';
+import nodemailer from 'nodemailer';
 
 class SignatureService {
   /**
@@ -285,6 +289,493 @@ class SignatureService {
       return result;
     } catch (error) {
       throw new Error(`Failed to get bulk signature status: ${error.message}`);
+    }
+  }
+
+  /**
+   * Create new signature request
+   * @param {Object} signatureData - Signature request data
+   * @returns {Promise<Object>} Created signature request
+   */
+  async createSignatureRequest(signatureData) {
+    try {
+      const {
+        contractId,
+        signerEmail,
+        signerRole,
+        signerName,
+        signerPhone,
+        signatureType = 'digital'
+      } = signatureData;
+
+      // Check if signature already exists
+      const existingSignature = await ContractSignature.findOne({
+        contractId,
+        'signedBy.email': signerEmail
+      });
+
+      if (existingSignature && existingSignature.status === 'signed') {
+        throw new Error('This contract has already been signed by this user');
+      }
+
+      // Generate token
+      const token = crypto.randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+      // Create signature record
+      const signature = new ContractSignature({
+        contractId,
+        signedBy: {
+          email: signerEmail,
+          name: signerName,
+          phone: signerPhone,
+          role: signerRole
+        },
+        token,
+        expiresAt,
+        signatureType,
+        status: 'pending'
+      });
+
+      await signature.save();
+
+      // Create audit log
+      await this.createAuditLog(contractId, signerEmail, 'request_created', {
+        signatureId: signature._id,
+        expiresAt
+      });
+
+      return {
+        signatureId: signature._id,
+        token,
+        signingLink: `/contracts/sign/${contractId}/${token}`,
+        expiresAt
+      };
+    } catch (error) {
+      throw new Error(`Failed to create signature request: ${error.message}`);
+    }
+  }
+
+  /**
+   * Verify signature token is valid
+   * @param {String} contractId - Contract ID
+   * @param {String} token - Signature token
+   * @returns {Promise<Object>} Token data if valid
+   */
+  async verifySignatureToken(contractId, token) {
+    try {
+      const signature = await ContractSignature.findOne({
+        contractId,
+        token
+      });
+
+      if (!signature) {
+        throw new Error('Invalid signature token');
+      }
+
+      if (signature.status === 'expired') {
+        throw new Error('Signature request has expired');
+      }
+
+      if (signature.status === 'signed') {
+        throw new Error('Contract has already been signed by this party');
+      }
+
+      if (new Date() > signature.expiresAt) {
+        signature.status = 'expired';
+        await signature.save();
+        throw new Error('Signature request has expired');
+      }
+
+      // Check rate limiting (max 10 signature page views per hour)
+      const recentViews = signature.pageViews || [];
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+      const recentCount = recentViews.filter(
+        (view) => new Date(view) > oneHourAgo
+      ).length;
+
+      if (recentCount > 10) {
+        throw new Error('Too many signature requests. Please try again later.');
+      }
+
+      // Update page views
+      signature.pageViews = [...recentViews, new Date()];
+      await signature.save();
+
+      return {
+        signatureId: signature._id,
+        contractId,
+        signerEmail: signature.signedBy.email,
+        signerName: signature.signedBy.name,
+        signerRole: signature.signedBy.role,
+        expiresAt: signature.expiresAt
+      };
+    } catch (error) {
+      throw new Error(`Token verification failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Save signature data
+   * @param {String} signatureId - Signature ID
+   * @param {Object} signatureData - Signature image and metadata
+   * @returns {Promise<Object>} Saved signature
+   */
+  async saveSignature(signatureId, signatureData) {
+    try {
+      const signature = await ContractSignature.findById(signatureId);
+      if (!signature) {
+        throw new Error('Signature request not found');
+      }
+
+      if (signature.status !== 'pending') {
+        throw new Error(`Cannot sign: status is ${signature.status}`);
+      }
+
+      if (new Date() > signature.expiresAt) {
+        signature.status = 'expired';
+        await signature.save();
+        throw new Error('Signature request has expired');
+      }
+
+      // Calculate hash
+      const hash = crypto
+        .createHash('sha256')
+        .update(signatureData.imageData)
+        .digest('hex');
+
+      // Extract device info
+      const userAgent = signatureData.deviceInfo?.userAgent || 'Unknown';
+      const platform = this.detectPlatform(userAgent);
+      const browser = this.detectBrowser(userAgent);
+
+      // Update signature
+      signature.signatureData = {
+        imageData: signatureData.imageData,
+        mimeType: signatureData.mimeType || 'image/png',
+        hash,
+        coordinates: signatureData.coordinates || null
+      };
+      signature.deviceInfo = {
+        ipAddress: signatureData.deviceInfo?.ipAddress,
+        userAgent,
+        platform,
+        browser,
+        timestamp: new Date()
+      };
+      signature.method = signatureData.method || 'canvas';
+      signature.status = 'signed';
+      signature.signedAt = new Date();
+
+      await signature.save();
+
+      // Create audit log
+      await this.createAuditLog(
+        signature.contractId,
+        signature.signedBy.email,
+        'signed',
+        {
+          signatureId,
+          method: signature.method,
+          platform,
+          browser
+        }
+      );
+
+      // Check if all signatures collected
+      await this.checkContractSignatureCompletion(signature.contractId);
+
+      return signature;
+    } catch (error) {
+      throw new Error(`Failed to save signature: ${error.message}`);
+    }
+  }
+
+  /**
+   * Check if all required signatures are collected
+   * @param {String} contractId - Contract ID
+   * @returns {Promise<boolean>} True if all signatures collected
+   */
+  async checkContractSignatureCompletion(contractId) {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (!contract) throw new Error('Contract not found');
+
+      const signatures = await ContractSignature.find({
+        contractId,
+        status: 'signed'
+      });
+
+      // Check if all required signers have signed
+      const requiredRoles = contract.requiredSignatures || ['tenant', 'landlord'];
+      const signedRoles = signatures.map((s) => s.signedBy.role);
+
+      const allSigned = requiredRoles.every((role) =>
+        signedRoles.includes(role)
+      );
+
+      if (allSigned) {
+        contract.signatureStatus = 'complete';
+        contract.fullySignedAt = new Date();
+        contract.status = 'executed';
+        await contract.save();
+
+        // Create audit log
+        await this.createAuditLog(contractId, 'system', 'all_signatures_complete', {
+          signedAt: new Date()
+        });
+
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Error checking signature completion:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Create audit log entry
+   * @param {String} contractId - Contract ID
+   * @param {String} actor - Who performed the action
+   * @param {String} action - Action performed
+   * @param {Object} details - Additional details
+   * @returns {Promise<Object>} Created audit log
+   */
+  async createAuditLog(contractId, actor, action, details = {}) {
+    try {
+      const auditLog = new SignatureAudit({
+        contractId,
+        actor,
+        action,
+        details,
+        timestamp: new Date()
+      });
+
+      await auditLog.save();
+      return auditLog;
+    } catch (error) {
+      console.error('Error creating audit log:', error);
+      // Don't throw to prevent blocking the main operation
+    }
+  }
+
+  /**
+   * Get contract audit trail
+   * @param {String} contractId - Contract ID
+   * @returns {Promise<Array>} Audit log entries
+   */
+  async getAuditTrail(contractId) {
+    try {
+      const auditLogs = await SignatureAudit.find({ contractId })
+        .sort({ timestamp: -1 })
+        .lean();
+
+      return auditLogs;
+    } catch (error) {
+      throw new Error(`Failed to get audit trail: ${error.message}`);
+    }
+  }
+
+  /**
+   * Send signing notification
+   * @param {String} signatureId - Signature ID
+   * @param {String} signingLink - Link to signing page
+   * @returns {Promise<boolean>} True if sent successfully
+   */
+  async sendSigningNotification(signatureId, signingLink) {
+    try {
+      const signature = await ContractSignature.findById(signatureId).populate(
+        'contractId'
+      );
+      if (!signature) {
+        throw new Error('Signature not found');
+      }
+
+      // TODO: Integrate with email service
+      const emailContent = `
+        Dear ${signature.signedBy.name},
+        
+        Please sign the contract by clicking the link below:
+        ${signingLink}
+        
+        This link expires on: ${signature.expiresAt.toLocaleString()}
+        
+        Best regards,
+        White Caves Real Estate
+      `;
+
+      console.log(`Sending signing notification to ${signature.signedBy.email}`);
+      console.log(emailContent);
+
+      // Create audit log
+      await this.createAuditLog(
+        signature.contractId._id,
+        'system',
+        'notification_sent',
+        {
+          email: signature.signedBy.email
+        }
+      );
+
+      return true;
+    } catch (error) {
+      console.error('Failed to send signing notification:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Resend signing request
+   * @param {String} signatureId - Signature ID
+   * @returns {Promise<Object>} Updated signature request
+   */
+  async resendSigningRequest(signatureId) {
+    try {
+      const signature = await ContractSignature.findById(signatureId);
+      if (!signature) {
+        throw new Error('Signature not found');
+      }
+
+      // Generate new token
+      const newToken = crypto.randomBytes(32).toString('hex');
+      const newExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+      signature.token = newToken;
+      signature.expiresAt = newExpiresAt;
+      signature.pageViews = [];
+      await signature.save();
+
+      // Create audit log
+      await this.createAuditLog(signature.contractId, 'system', 'request_resent', {
+        signatureId,
+        expiresAt: newExpiresAt
+      });
+
+      return {
+        signatureId: signature._id,
+        token: newToken,
+        signingLink: `/contracts/sign/${signature.contractId}/${newToken}`,
+        expiresAt: newExpiresAt
+      };
+    } catch (error) {
+      throw new Error(`Failed to resend signing request: ${error.message}`);
+    }
+  }
+
+  /**
+   * Cancel signature request
+   * @param {String} signatureId - Signature ID
+   * @returns {Promise<Object>} Cancelled signature
+   */
+  async cancelSignatureRequest(signatureId) {
+    try {
+      const signature = await ContractSignature.findByIdAndUpdate(
+        signatureId,
+        { status: 'cancelled', cancelledAt: new Date() },
+        { new: true }
+      );
+
+      if (!signature) {
+        throw new Error('Signature not found');
+      }
+
+      // Create audit log
+      await this.createAuditLog(signature.contractId, 'system', 'request_cancelled', {
+        signatureId
+      });
+
+      return signature;
+    } catch (error) {
+      throw new Error(`Failed to cancel signature request: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get signature statistics for a contract
+   * @param {String} contractId - Contract ID
+   * @returns {Promise<Object>} Signature statistics
+   */
+  async getSignatureStats(contractId) {
+    try {
+      const signatures = await ContractSignature.find({ contractId });
+      const auditLogs = await SignatureAudit.find({ contractId }).sort({
+        timestamp: -1
+      });
+
+      const stats = {
+        contractId,
+        totalSignatures: signatures.length,
+        signed: signatures.filter((s) => s.status === 'signed').length,
+        pending: signatures.filter((s) => s.status === 'pending').length,
+        expired: signatures.filter((s) => s.status === 'expired').length,
+        cancelled: signatures.filter((s) => s.status === 'cancelled').length,
+        averageSigningTime: this.calculateAverageSigningTime(signatures),
+        lastActivity: auditLogs[0]?.timestamp || null,
+        auditLogCount: auditLogs.length
+      };
+
+      return stats;
+    } catch (error) {
+      throw new Error(`Failed to get signature stats: ${error.message}`);
+    }
+  }
+
+  /**
+   * Calculate average time to sign
+   * @param {Array} signatures - Signature records
+   * @returns {String} Human-readable average signing time
+   */
+  calculateAverageSigningTime(signatures) {
+    const signedSignatures = signatures.filter((s) => s.status === 'signed');
+    if (signedSignatures.length === 0) return 'N/A';
+
+    const totalTime = signedSignatures.reduce((sum, sig) => {
+      const created = new Date(sig.createdAt);
+      const signed = new Date(sig.signedAt);
+      return sum + (signed - created);
+    }, 0);
+
+    const avgMs = totalTime / signedSignatures.length;
+    const hours = Math.floor(avgMs / (1000 * 60 * 60));
+    const minutes = Math.floor((avgMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    }
+    return `${minutes}m`;
+  }
+
+  /**
+   * Batch create signature requests
+   * @param {String} contractId - Contract ID
+   * @param {Array} signerList - List of signers
+   * @returns {Promise<Array>} Created signature requests
+   */
+  async createBatchSignatureRequests(contractId, signerList) {
+    try {
+      const requests = [];
+
+      for (const signer of signerList) {
+        const request = await this.createSignatureRequest({
+          contractId,
+          signerEmail: signer.email,
+          signerRole: signer.role,
+          signerName: signer.name,
+          signerPhone: signer.phone
+        });
+        requests.push(request);
+      }
+
+      // Create audit log
+      await this.createAuditLog(contractId, 'system', 'batch_requests_created', {
+        count: requests.length
+      });
+
+      return requests;
+    } catch (error) {
+      throw new Error(`Failed to create batch signature requests: ${error.message}`);
     }
   }
 }

@@ -228,4 +228,187 @@ router.get('/:propertyId', async (req, res) => {
   }
 });
 
+// Dashboard: Get area summaries with counts
+router.get('/dashboard/areas-summary', async (req, res) => {
+  try {
+    const areaSummary = await InventoryProperty.aggregate([
+      { $match: { isActive: true } },
+      {
+        $group: {
+          _id: '$area',
+          total: { $sum: 1 },
+          available: {
+            $sum: { $cond: [{ $eq: ['$status', 'available'] }, 1, 0] },
+          },
+          rented: {
+            $sum: { $cond: [{ $eq: ['$status', 'rented'] }, 1, 0] },
+          },
+          sold: {
+            $sum: { $cond: [{ $eq: ['$status', 'sold'] }, 1, 0] },
+          },
+          reserved: {
+            $sum: { $cond: [{ $eq: ['$status', 'reserved'] }, 1, 0] },
+          },
+        },
+      },
+      {
+        $addFields: {
+          availabilityRate: {
+            $multiply: [
+              { $divide: ['$available', '$total'] },
+              100,
+            ],
+          },
+        },
+      },
+      { $sort: { total: -1 } },
+    ]);
+
+    res.json({
+      success: true,
+      data: areaSummary,
+      count: areaSummary.length,
+    });
+  } catch (error) {
+    console.error('Error fetching area summary:', error);
+    res.status(500).json({ error: 'Failed to fetch area summary' });
+  }
+});
+
+// Dashboard: Get properties by area with pagination
+router.get('/dashboard/properties-by-area/:area', async (req, res) => {
+  try {
+    const { area } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const properties = await InventoryProperty.find({ area, isActive: true })
+      .populate('owners', 'name phone email')
+      .populate('primaryOwner', 'name phone email')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await InventoryProperty.countDocuments({
+      area,
+      isActive: true,
+    });
+
+    // Get corresponding inventory data for each property
+    const inventoryData = await PropertyInventory.find({
+      propertyId: { $in: properties.map((p) => p._id) },
+    }).populate('assignedAgents.agentId', 'name email');
+
+    // Merge inventory data into properties
+    const enrichedProperties = properties.map((prop) => {
+      const inv = inventoryData.find(
+        (i) => i.propertyId.toString() === prop._id.toString()
+      );
+      return {
+        ...prop.toObject(),
+        inventory: inv || null,
+      };
+    });
+
+    res.json({
+      success: true,
+      data: enrichedProperties,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching properties by area:', error);
+    res.status(500).json({ error: 'Failed to fetch properties' });
+  }
+});
+
+// Dashboard: Get overall dashboard statistics
+router.get('/dashboard/stats', async (req, res) => {
+  try {
+    // Get total count and status breakdown
+    const statusBreakdown = await InventoryProperty.aggregate([
+      { $match: { isActive: true } },
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Get PropertyInventory tenancy cycle breakdown
+    const tenancyBreakdown = await PropertyInventory.aggregate([
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Get total counts
+    const totalProperties = await InventoryProperty.countDocuments({
+      isActive: true,
+    });
+
+    const totalInventory = await PropertyInventory.countDocuments();
+
+    // Calculate availability rate
+    const availableCount = statusBreakdown.find(
+      (s) => s._id === 'available'
+    )?.count || 0;
+    const rentedCount = statusBreakdown.find((s) => s._id === 'rented')?.count || 0;
+    const occupancyRate = ((rentedCount / totalProperties) * 100).toFixed(1);
+    const availabilityRate = (
+      ((availableCount / totalProperties) * 100).toFixed(1)
+    );
+
+    // Count Mary's visible properties
+    const maryVisibleCount = await PropertyInventory.countDocuments({
+      'visibleTo.mary': true,
+    });
+
+    // Get area distribution
+    const areaDistribution = await InventoryProperty.aggregate([
+      { $match: { isActive: true } },
+      {
+        $group: {
+          _id: '$area',
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+      { $limit: 10 },
+    ]);
+
+    // Count properties with assigned agents
+    const withAgentsCount = await PropertyInventory.countDocuments({
+      'assignedAgents.0': { $exists: true },
+    });
+
+    res.json({
+      success: true,
+      data: {
+        totalProperties,
+        totalInventory,
+        maryVisibleCount,
+        availabilityRate: parseFloat(availabilityRate),
+        occupancyRate: parseFloat(occupancyRate),
+        statusBreakdown,
+        tenancyBreakdown,
+        areaDistribution,
+        agentAssignmentCount: withAgentsCount,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    res.status(500).json({ error: 'Failed to fetch dashboard stats' });
+  }
+});
+
 module.exports = router;
