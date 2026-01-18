@@ -14,12 +14,23 @@ const contractSchema = new mongoose.Schema(
     },
     leadId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Lead',
-      required: true
+      ref: 'Lead'
     },
     agentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Agent'
+    },
+    offerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Offer'
+    },
+    landlordId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    tenantId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
     },
     
     // Parties involved
@@ -32,6 +43,17 @@ const contractSchema = new mongoose.Schema(
       nationality: String,
       address: String
     },
+    tenantDetails: {
+      name: String,
+      email: String,
+      phone: String,
+      nationality: String,
+      emiratesId: String,
+      passportNo: String,
+      address: String,
+      occupation: String,
+      employer: String
+    },
     landlord: {
       name: String,
       email: String,
@@ -40,6 +62,21 @@ const contractSchema = new mongoose.Schema(
       passport: String,
       nationality: String,
       address: String
+    },
+    landlordDetails: {
+      name: String,
+      email: String,
+      phone: String,
+      nationality: String,
+      emiratesId: String,
+      passportNo: String,
+      address: String
+    },
+    agentDetails: {
+      name: String,
+      email: String,
+      phone: String,
+      company: String
     },
     witness: {
       name: String,
@@ -56,7 +93,12 @@ const contractSchema = new mongoose.Schema(
       propertyType: String,
       bedrooms: Number,
       bathrooms: Number,
-      area: Number // sqft
+      area: Number, // sqft
+      name: String,
+      type: String,
+      location: String,
+      size: Number,
+      features: [String]
     },
     
     // Lease terms
@@ -72,7 +114,17 @@ const contractSchema = new mongoose.Schema(
       securityDeposit: Number,
       maidRoomAllowed: Boolean,
       petPolicy: String,
-      parkingSpaces: Number
+      parkingSpaces: Number,
+      startDate: Date,
+      endDate: Date,
+      duration: Number,
+      monthlyRent: Number,
+      chequeFrequency: String,
+      noOfCheques: Number,
+      rentIncreasePercentage: Number,
+      maintenanceResponsibility: String,
+      utilities: String,
+      specialTerms: String
     },
     
     // Template & customization
@@ -168,9 +220,13 @@ const contractSchema = new mongoose.Schema(
 contractSchema.index({ contractNumber: 1 });
 contractSchema.index({ propertyId: 1 });
 contractSchema.index({ leadId: 1 });
+contractSchema.index({ offerId: 1 });
 contractSchema.index({ agentId: 1 });
+contractSchema.index({ landlordId: 1 });
+contractSchema.index({ tenantId: 1 });
 contractSchema.index({ status: 1 });
 contractSchema.index({ 'leaseTerms.rentalPeriod.endDate': 1 });
+contractSchema.index({ 'leaseTerms.endDate': 1 });
 
 // Generate contract number
 contractSchema.pre('save', async function (next) {
