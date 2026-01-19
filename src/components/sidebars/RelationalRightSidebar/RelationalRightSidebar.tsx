@@ -9,21 +9,22 @@ import {
   selectAssistantNotifications,
   clearNotifications,
   setActiveContext,
-} from '../../redux/slices/relationalSidebarSlice';
+} from '../../../redux/slices/relationalSidebarSlice';
+import { fetchAssistants, fetchContextualData } from '../../../store/thunks/relationalSidebarThunks';
 import {
   filterAssistantsByDepartment,
   filterAssistantsByService,
   getDefaultAssistant,
   getContextsForAssistant,
-} from '../../utils/relationalSidebarUtils';
-import { BaseSidebar, SidebarSection, SidebarItem } from '../sidebars/shared';
+} from '../../../utils/relationalSidebarUtils';
+import { BaseSidebar, SidebarSection, SidebarItem } from '../../shared/sidebars';
 
 // Styled Components
 const RightSidebarContainer = styled.div`
-  width: 280px;
+  width: 100%;
   height: 100%;
-  background: ${(props) => props.theme.colors.sidebar.background || '#1a1a1a'};
-  border-left: 1px solid ${(props) => props.theme.colors.border || '#333'};
+  background: ${(props: any) => props.theme?.colors?.sidebarBg || '#1a1a1a'};
+  border-left: 1px solid ${(props: any) => props.theme?.colors?.border || '#333'};
   overflow-y: auto;
   overflow-x: hidden;
   display: flex;
@@ -39,29 +40,12 @@ const RightSidebarContainer = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${(props) => props.theme.colors.scrollbar || '#555'};
+    background: ${(props: any) => props.theme?.colors?.scrollbar || '#555'};
     border-radius: 4px;
 
     &:hover {
-      background: ${(props) => props.theme.colors.scrollbarHover || '#777'};
+      background: ${(props: any) => props.theme?.colors?.scrollbarHover || '#777'};
     }
-  }
-`;
-
-const AssistantItemStyled = styled(SidebarItem)`
-  position: relative;
-  padding: 12px 16px;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-
-  &.active {
-    background-color: ${(props) => props.theme.colors.sidebar.activeBackground || '#2a2a2a'};
-    border-left: 3px solid ${(props) => props.theme.colors.primary || '#007bff'};
-  }
-
-  &:hover {
-    background-color: ${(props) => props.theme.colors.sidebar.hoverBackground || '#252525'};
   }
 `;
 
@@ -88,24 +72,24 @@ const AssistantColorDot = styled.div`
   height: 8px;
   border-radius: 50%;
   margin-right: 8px;
-  background-color: ${(props) => props.color};
+  background-color: ${(props: any) => props.color};
 `;
 
 const ContextsContainer = styled.div`
   padding: 8px 16px;
-  border-top: 1px solid ${(props) => props.theme.colors.border || '#333'};
+  border-top: 1px solid ${(props: any) => props.theme?.colors?.border || '#333'};
   margin-top: 8px;
 `;
 
-const ContextButton = styled.button`
+const ContextButton = styled.button<{ isActive?: boolean }>`
   display: inline-block;
   padding: 4px 12px;
   margin-right: 4px;
   margin-bottom: 4px;
   background: ${(props) =>
     props.isActive
-      ? props.theme.colors.primary || '#007bff'
-      : props.theme.colors.sidebar.itemBackground || '#2a2a2a'};
+      ? props.theme?.colors?.primary || '#007bff'
+      : props.theme?.colors?.sidebarItemBg || '#2a2a2a'};
   color: white;
   border: none;
   border-radius: 4px;
@@ -114,7 +98,7 @@ const ContextButton = styled.button`
   transition: all 0.2s ease;
 
   &:hover {
-    background: ${(props) => props.theme.colors.primaryHover || '#0056b3'};
+    background: ${(props: any) => props.theme?.colors?.primaryHover || '#0056b3'};
   }
 
   &:disabled {
@@ -129,7 +113,7 @@ const SectionHeader = styled.div`
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: ${(props) => props.theme.colors.textSecondary || '#999'};
+  color: ${(props: any) => props.theme?.colors?.textSecondary || '#999'};
   margin-top: 16px;
 
   &:first-child {
@@ -137,56 +121,121 @@ const SectionHeader = styled.div`
   }
 `;
 
+// Loading skeleton
+const SkeletonItem = styled.div`
+  height: 40px;
+  background: linear-gradient(90deg, #2a2a2a 25%, #1f1f1f 50%, #2a2a2a 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  margin: 8px 16px;
+  border-radius: 4px;
+  
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+`;
+
+// Error container
+const ErrorContainer = styled.div`
+  padding: 16px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 4px;
+  margin: 12px 16px;
+`;
+
+const ErrorText = styled.div`
+  color: #ef4444;
+  font-size: 12px;
+  margin-bottom: 12px;
+  word-break: break-word;
+`;
+
+const RetryButton = styled.button`
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  
+  &:hover {
+    background: #dc2626;
+  }
+  
+  &:disabled {
+    background: #999;
+    cursor: not-allowed;
+  }
+`;
+
+interface RelationalRightSidebarProps {
+  selectedDepartment?: string | null;
+  selectedService?: string | null;
+  userPermissions?: Record<string, boolean>;
+}
+
 /**
  * RelationalRightSidebar Component
  * Displays filtered AI Assistants based on department/service selection
  * Includes notification badges and context-specific tools
+ * Redux Integration: Uses fetchAssistants thunk to load data from API
  */
-const RelationalRightSidebar = ({
-  selectedDepartment,
-  selectedService,
+const RelationalRightSidebar: React.FC<RelationalRightSidebarProps> = ({
+  selectedDepartment = null,
+  selectedService = null,
   userPermissions = {},
-}) => {
-  const dispatch = useDispatch();
-  const selectedAssistant = useSelector(selectSelectedAssistant);
-  const filteredAssistants = useSelector(selectFilteredAssistants);
-  const assistantNotifications = useSelector(selectAssistantNotifications);
+}): JSX.Element => {
+  const dispatch = useDispatch() as any;
+  const selectedAssistant = useSelector(selectSelectedAssistant) as string | null;
+  const filteredAssistants = useSelector(selectFilteredAssistants) as Array<any>;
+  const assistantNotifications = useSelector(selectAssistantNotifications) as Record<string, any>;
 
-  // Filter assistants based on department or service selection
+  // Redux selectors for loading/error states
+  const assistantLoading = useSelector((state: any) => state.relationalSidebar?.assistantLoading || false) as boolean;
+  const assistantError = useSelector((state: any) => state.relationalSidebar?.assistantError || null) as string | null;
+
+  // Fetch assistants when department or service changes
   useEffect(() => {
     try {
-      let filtered = [];
-
-      if (selectedService) {
-        // Filter by service
-        filtered = filterAssistantsByService(selectedService, userPermissions);
-      } else if (selectedDepartment) {
-        // Filter by department
-        filtered = filterAssistantsByDepartment(
-          selectedDepartment,
-          userPermissions
-        );
-      }
-
-      dispatch(setFilteredAssistants(filtered));
-
-      // Auto-select default assistant if none selected
-      if (filtered.length > 0 && !selectedAssistant) {
-        const defaultAssistant = getDefaultAssistant(selectedDepartment);
-        if (defaultAssistant) {
-          dispatch(setSelectedAssistant(defaultAssistant));
-        } else {
-          dispatch(setSelectedAssistant(filtered[0].id));
-        }
+      if (selectedDepartment || selectedService) {
+        console.debug('[RelationalRightSidebar] Fetching assistants with filters:', {
+          department: selectedDepartment,
+          service: selectedService,
+        });
+        
+        const filters: any = {};
+        if (selectedDepartment) filters.department = selectedDepartment;
+        if (selectedService) filters.service = selectedService;
+        
+        dispatch(fetchAssistants(filters));
       }
     } catch (error) {
-      console.error('Error filtering assistants:', error);
+      console.error('[RelationalRightSidebar] Error fetching assistants:', error);
     }
-  }, [selectedDepartment, selectedService, userPermissions]);
+  }, [selectedDepartment, selectedService, dispatch]);
+
+  // Auto-select default assistant when assistants load
+  useEffect(() => {
+    if (!selectedAssistant && filteredAssistants.length > 0) {
+      const defaultAssistant = getDefaultAssistant(selectedDepartment || '');
+      if (defaultAssistant) {
+        console.debug('[RelationalRightSidebar] Setting default assistant:', defaultAssistant);
+        dispatch(setSelectedAssistant(defaultAssistant));
+      } else {
+        console.debug('[RelationalRightSidebar] Setting first assistant as default');
+        dispatch(setSelectedAssistant(filteredAssistants[0].id));
+      }
+    }
+  }, [filteredAssistants, selectedAssistant, selectedDepartment, dispatch]);
 
   // Handle assistant selection
-  const handleAssistantSelect = (assistantId) => {
+  const handleAssistantSelect = (assistantId: string): void => {
     try {
+      console.debug('[RelationalRightSidebar] Selected assistant:', assistantId);
       dispatch(setSelectedAssistant(assistantId));
       // Clear active context when switching assistants
       dispatch(setActiveContext({ context: null }));
@@ -196,21 +245,36 @@ const RelationalRightSidebar = ({
   };
 
   // Handle context selection
-  const handleContextSelect = (context) => {
+  const handleContextSelect = (context: string): void => {
     try {
-      dispatch(setActiveContext({ context }));
+      if (selectedAssistant) {
+        console.debug('[RelationalRightSidebar] Selected context:', context, 'for assistant:', selectedAssistant);
+        dispatch(setActiveContext({ context }));
+        // Optionally fetch context-specific data
+        dispatch(fetchContextualData({ assistantId: selectedAssistant, context }));
+      }
     } catch (error) {
       console.error('Error selecting context:', error);
     }
   };
 
   // Handle notification clear
-  const handleClearNotifications = (assistantId) => {
+  const handleClearNotifications = (assistantId: string): void => {
     try {
+      console.debug('[RelationalRightSidebar] Clearing notifications for:', assistantId);
       dispatch(clearNotifications(assistantId));
     } catch (error) {
       console.error('Error clearing notifications:', error);
     }
+  };
+
+  // Handle retry on error
+  const handleRetry = (): void => {
+    console.debug('[RelationalRightSidebar] Retrying assistants fetch...');
+    const filters: any = {};
+    if (selectedDepartment) filters.department = selectedDepartment;
+    if (selectedService) filters.service = selectedService;
+    dispatch(fetchAssistants(filters));
   };
 
   // Get available contexts for selected assistant
@@ -221,75 +285,95 @@ const RelationalRightSidebar = ({
   return (
     <RightSidebarContainer>
       <BaseSidebar
+        name="relational-right-sidebar"
         title="AI Assistants"
-        subtitle={`${filteredAssistants.length} available`}
-        isCollapsible={true}
+        icon="🤖"
+        position="right"
       >
+        {/* Loading State */}
+        {assistantLoading && (
+          <div>
+            {[1, 2, 3].map((i) => (
+              <SkeletonItem key={`skeleton-${i}`} />
+            ))}
+          </div>
+        )}
+
+        {/* Error State */}
+        {assistantError && !assistantLoading && (
+          <ErrorContainer>
+            <ErrorText>Failed to load assistants: {assistantError}</ErrorText>
+            <RetryButton onClick={handleRetry}>Retry</RetryButton>
+          </ErrorContainer>
+        )}
+
         {/* Assistants List */}
-        <SectionHeader>Assistants</SectionHeader>
-        <SidebarSection>
-          {filteredAssistants.length > 0 ? (
-            filteredAssistants.map((assistant) => {
-              const notificationCount =
-                assistantNotifications[assistant.id]?.count || 0;
+        {!assistantLoading && !assistantError && (
+          <>
+            <SectionHeader>Assistants ({filteredAssistants.length})</SectionHeader>
+            <SidebarSection 
+              id="assistants-list"
+              title="Available"
+              sidebarName="relational-right-sidebar"
+            >
+              {filteredAssistants.length > 0 ? (
+                filteredAssistants.map((assistant: any) => {
+                  const notificationCount =
+                    assistantNotifications[assistant.id]?.count || 0;
 
-              return (
-                <div key={assistant.id}>
-                  <AssistantItemStyled
-                    id={assistant.id}
-                    label={
-                      <>
-                        <AssistantColorDot color={assistant.color} />
-                        {assistant.name}
-                      </>
-                    }
-                    description={assistant.description}
-                    isActive={selectedAssistant === assistant.id}
-                    onClick={() => handleAssistantSelect(assistant.id)}
-                    icon={assistant.icon}
-                  >
-                    {notificationCount > 0 && (
-                      <NotificationBadge
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleClearNotifications(assistant.id);
-                        }}
-                        title={`${notificationCount} notification(s)`}
-                      >
-                        {notificationCount > 99 ? '99+' : notificationCount}
-                      </NotificationBadge>
-                    )}
-                  </AssistantItemStyled>
+                  return (
+                    <div key={assistant.id} style={{ position: 'relative' }}>
+                      <SidebarItem
+                        id={assistant.id}
+                        label={`${assistant.name || assistant.id}`}
+                        isSelected={selectedAssistant === assistant.id}
+                        onClick={() => handleAssistantSelect(assistant.id)}
+                        icon={assistant.icon || '🤖'}
+                        sidebarName="relational-right-sidebar"
+                      />
+                      {notificationCount > 0 && (
+                        <NotificationBadge
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleClearNotifications(assistant.id);
+                          }}
+                          title={`${notificationCount} notification(s) - Click to clear`}
+                        >
+                          {notificationCount > 99 ? '99+' : notificationCount}
+                        </NotificationBadge>
+                      )}
+                    </div>
+                  );
+                })
+              ) : (
+                <div style={{ padding: '12px 16px', fontSize: '12px', color: '#999' }}>
+                  No assistants available for this selection
                 </div>
-              );
-            })
-          ) : (
-            <div style={{ padding: '12px 16px', fontSize: '12px', color: '#999' }}>
-              No assistants available for this selection
-            </div>
-          )}
-        </SidebarSection>
+              )}
+            </SidebarSection>
 
-        {/* Contexts for Selected Assistant */}
-        {selectedAssistant && availableContexts.length > 0 && (
-          <ContextsContainer>
-            <SectionHeader>Context Tools</SectionHeader>
-            <div>
-              {availableContexts.map((context) => (
-                <ContextButton
-                  key={context}
-                  onClick={() => handleContextSelect(context)}
-                  isActive={false}
-                  title={`Open ${context} tools`}
-                >
-                  {context.charAt(0).toUpperCase() +
-                    context
-                      .slice(1)
-                      .replace('-', ' ')}
-                </ContextButton>
-              ))}
-            </div>
-          </ContextsContainer>
+            {/* Contexts for Selected Assistant */}
+            {selectedAssistant && availableContexts.length > 0 && (
+              <ContextsContainer>
+                <SectionHeader>Context Tools</SectionHeader>
+                <div>
+                  {availableContexts.map((context: string) => (
+                    <ContextButton
+                      key={context}
+                      onClick={() => handleContextSelect(context)}
+                      isActive={false}
+                      title={`Open ${context} tools`}
+                    >
+                      {context.charAt(0).toUpperCase() +
+                        context
+                          .slice(1)
+                          .replace('-', ' ')}
+                    </ContextButton>
+                  ))}
+                </div>
+              </ContextsContainer>
+            )}
+          </>
         )}
       </BaseSidebar>
     </RightSidebarContainer>

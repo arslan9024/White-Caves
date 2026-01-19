@@ -19,10 +19,10 @@ import { BaseSidebar, SidebarSection, SidebarItem } from '../../shared/sidebars'
 
 // Styled Components
 const LeftSidebarContainer = styled.div`
-  width: 100%;
+  width: 280px;
   height: 100%;
-  background: ${(props: any) => props.theme?.colors?.sidebarBg || '#1a1a1a'};
-  border-right: 1px solid ${(props: any) => props.theme?.colors?.border || '#333'};
+  background: ${(props) => props.theme.colors.sidebar.background || '#1a1a1a'};
+  border-right: 1px solid ${(props) => props.theme.colors.border || '#333'};
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -36,11 +36,11 @@ const LeftSidebarContainer = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${(props: any) => props.theme?.colors?.scrollbar || '#555'};
+    background: ${(props) => props.theme.colors.scrollbar || '#555'};
     border-radius: 4px;
 
     &:hover {
-      background: ${(props: any) => props.theme?.colors?.scrollbarHover || '#777'};
+      background: ${(props) => props.theme.colors.scrollbarHover || '#777'};
     }
   }
 `;
@@ -51,7 +51,7 @@ const DepartmentHeader = styled.div`
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: ${(props: any) => props.theme?.colors?.textSecondary || '#999'};
+  color: ${(props) => props.theme.colors.textSecondary || '#999'};
   margin-top: 16px;
 
   &:first-child {
@@ -59,10 +59,20 @@ const DepartmentHeader = styled.div`
   }
 `;
 
+const ServiceItem = styled(SidebarItem)`
+  padding-left: 32px;
+  font-size: 13px;
+
+  &.active {
+    background-color: ${(props) => props.theme.colors.sidebar.activeBackground || '#2a2a2a'};
+    border-left: 3px solid ${(props) => props.theme.colors.primary || '#007bff'};
+  }
+`;
+
 const NoServicesMessage = styled.div`
   padding: 12px 32px;
   font-size: 12px;
-  color: ${(props: any) => props.theme?.colors?.textSecondary || '#999'};
+  color: ${(props) => props.theme.colors.textSecondary || '#999'};
   font-style: italic;
 `;
 
@@ -72,7 +82,7 @@ const SkeletonItem = styled.div`
   background: linear-gradient(90deg, #2a2a2a 25%, #1f1f1f 50%, #2a2a2a 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
-  margin: 8px 16px;
+  margin-bottom: 8px;
   border-radius: 4px;
   
   @keyframes shimmer {
@@ -126,7 +136,7 @@ const RetryButton = styled.button`
  * Redux Integration: Uses fetchDepartments thunk to load data from API
  */
 const RelationalLeftSidebar = ({ userPermissions = {} }: { userPermissions?: Record<string, boolean> }): JSX.Element => {
-  const dispatch = useDispatch() as any;
+  const dispatch = useDispatch();
   const selectedDepartment = useSelector(selectSelectedDepartment) as string | null;
   const selectedService = useSelector(selectSelectedService) as string | null;
   const filteredServices = useSelector(selectFilteredServices) as Array<any>;
@@ -157,9 +167,9 @@ const RelationalLeftSidebar = ({ userPermissions = {} }: { userPermissions?: Rec
   // Handle department selection
   const handleDepartmentSelect = (departmentId: string): void => {
     try {
-      console.debug('[RelationalLeftSidebar] Selected department:', departmentId);
       dispatch(setSelectedDepartment(departmentId));
       dispatch(setSelectedService(null)); // Reset service selection
+      // Note: Filtering assistants happens in RelationalRightSidebar
     } catch (error) {
       console.error('Error selecting department:', error);
     }
@@ -168,10 +178,24 @@ const RelationalLeftSidebar = ({ userPermissions = {} }: { userPermissions?: Rec
   // Handle service selection
   const handleServiceSelect = (serviceId: string): void => {
     try {
-      console.debug('[RelationalLeftSidebar] Selected service:', serviceId);
       dispatch(setSelectedService(serviceId));
+      // Assistants will be filtered by the right sidebar based on this service
     } catch (error) {
       console.error('Error selecting service:', error);
+    }
+  };
+
+  // Get services for selected department
+  const getDepartmentServices = (departmentId: string): Array<any> => {
+    try {
+      // This would normally come from your API/database
+      // For now, we'll use a mapping from ASSISTANTS that works in this department
+      const assistantsInDept = filterServicesByAssistant;
+      // In a real app, fetch from API: /api/departments/{departmentId}/services
+      return [];
+    } catch (error) {
+      console.error('Error getting department services:', error);
+      return [];
     }
   };
 
@@ -184,10 +208,9 @@ const RelationalLeftSidebar = ({ userPermissions = {} }: { userPermissions?: Rec
   return (
     <LeftSidebarContainer>
       <BaseSidebar
-        name="relational-left-sidebar"
         title="Organization"
-        icon="🏢"
-        position="left"
+        subtitle="Departments & Services"
+        isCollapsible={true}
       >
         {/* Loading State */}
         {departmentsLoading && (
@@ -214,27 +237,22 @@ const RelationalLeftSidebar = ({ userPermissions = {} }: { userPermissions?: Rec
                 <SidebarItem
                   id={`dept-${dept}`}
                   label={dept}
-                  isSelected={selectedDepartment === dept}
+                  isActive={selectedDepartment === dept}
                   onClick={() => handleDepartmentSelect(dept)}
-                  icon="🏢"
-                  sidebarName="relational-left-sidebar"
+                  icon="Building2"
+                  hasSubItems={true}
                 />
 
                 {selectedDepartment === dept && (filteredServices as any[]).length > 0 && (
-                  <SidebarSection 
-                    id={`services-${dept}`}
-                    title="Services"
-                    sidebarName="relational-left-sidebar"
-                  >
+                  <SidebarSection>
                     {(filteredServices as any[]).map((service: any) => (
-                      <SidebarItem
+                      <ServiceItem
                         key={`service-${service.id}`}
                         id={`service-${service.id}`}
                         label={service.label}
-                        isSelected={selectedService === service.id}
+                        isActive={selectedService === service.id}
                         onClick={() => handleServiceSelect(service.id)}
-                        icon={service.icon || '📋'}
-                        sidebarName="relational-left-sidebar"
+                        icon={service.icon}
                       />
                     ))}
                   </SidebarSection>
