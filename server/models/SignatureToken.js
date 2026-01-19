@@ -202,4 +202,6 @@ signatureTokenSchema.statics.cleanupExpiredTokens = async function() {
   return expiredTokens.length;
 };
 
-export default mongoose.model('SignatureToken', signatureTokenSchema);
+// Prevent model recompilation when module reloads
+const SignatureTokenModel = mongoose.models.SignatureToken || mongoose.model('SignatureToken', signatureTokenSchema);
+export default SignatureTokenModel;
