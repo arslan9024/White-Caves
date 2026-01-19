@@ -150,6 +150,9 @@ const PropertiesPage = lazy(() =>
 );
 
 // Other Pages
+const DashboardPage = lazy(() => 
+  import(/* webpackChunkName: "page-dashboard" */ './pages/DashboardPage')
+);
 const NotFoundPage = lazy(() => 
   import(/* webpackChunkName: "page-misc" */ './pages/NotFoundPage')
 );
@@ -262,6 +265,16 @@ function App() {
       {user && <BiometricPrompt />}
       <Routes>
         <Route path="/" element={<HomePage />} />
+        
+        {/* New Dual Sidebar Dashboard */}
+        <Route path="/modern-dashboard" element={
+          <ProtectedRoute>
+            <Suspense fallback={<PageLoader />}>
+              <DashboardPage />
+            </Suspense>
+          </ProtectedRoute>
+        } />
+        
         <Route path="/properties" element={
           <Suspense fallback={<PageLoader />}>
             <PropertiesPage />

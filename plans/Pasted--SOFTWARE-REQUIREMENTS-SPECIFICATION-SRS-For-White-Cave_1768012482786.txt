@@ -1,0 +1,793 @@
+# **SOFTWARE REQUIREMENTS SPECIFICATION (SRS)**
+**For White Caves Real Estate AI Platform**
+**Document Version:** 2.0
+**Date:** January 11, 2024
+**Project Sponsor:** Arslan Malik, Managing Director
+**Primary Audience:** Development Team, Project Stakeholders, System Architects
+
+---
+
+## **1. INTRODUCTION**
+
+### **1.1 Purpose**
+This document defines the complete functional and non-functional requirements for the White Caves Real Estate AI Platform. It serves as the authoritative specification for developers, testers, project managers, and stakeholders to ensure all implemented features are properly connected, surfaced in the UI, and deliver measurable business value.
+
+### **1.2 Scope**
+The platform is a comprehensive AI-powered real estate management system serving the Dubai luxury property market. It integrates property listing management, intelligent customer relationship management (CRM), automated AI assistants, financial tracking, and multi-role dashboards into a unified web application.
+
+**In-Scope:**
+- AI Assistant dashboards (Zoe, Aurora, Linda, Clara, etc.)
+- Multi-role user interfaces and navigation
+- Property and lead management workflows
+- WhatsApp Business API integration
+- Real-time data visualization and analytics
+- UAE-specific compliance features (RERA, DLD, Ejari)
+
+**Out-of-Scope:**
+- Mobile native applications (iOS/Android)
+- Blockchain-based property tokenization
+- Advanced predictive market analytics using external data feeds
+- Physical hardware integration (smart locks, sensors)
+
+### **1.3 Definitions, Acronyms, and Abbreviations**
+| Term | Definition |
+|------|------------|
+| **AI Assistant** | A specialized software agent managing a specific business domain (e.g., Zoe for executive functions) |
+| **CRM** | Customer Relationship Management system |
+| **RERA** | Real Estate Regulatory Agency (Dubai) |
+| **DLD** | Dubai Land Department |
+| **Ejari** | UAE's official rental contract registration system |
+| **KYC** | Know Your Customer compliance process |
+| **AED** | UAE Dirham (currency) |
+| **MERN** | MongoDB, Express.js, React, Node.js technology stack |
+| **JWT** | JSON Web Token for authentication |
+
+### **1.4 References**
+- Project Charter: White Caves Real Estate Digital Transformation
+- Initial Technical Architecture Document (Previous discussions)
+- UAE Real Estate Compliance Guidelines 2024
+- WhatsApp Business API Documentation
+
+### **1.5 Overview**
+This SRS is organized as follows: Section 2 provides overall description, Section 3 details specific requirements, and Appendices contain supplementary information including data models and flowcharts.
+
+---
+
+## **2. OVERALL DESCRIPTION**
+
+### **2.1 Product Perspective**
+The White Caves platform is a standalone web application that will integrate with several external systems:
+- **WhatsApp Business API** for customer communications
+- **Google Workspace** for calendar and document management
+- **Stripe Payment Gateway** for transaction processing
+- **MongoDB Atlas** for cloud database hosting
+- **Firebase Authentication** for user identity management
+
+### **2.2 Product Functions**
+| Function Category | Key Capabilities |
+|-------------------|------------------|
+| **Property Management** | List, search, filter, compare properties with UAE-specific fields |
+| **Lead Management** | Capture, score, assign, and track leads through sales pipeline |
+| **AI Automation** | 14+ specialized AI assistants for different business functions |
+| **Communication** | Integrated WhatsApp, email, and in-app messaging |
+| **Document Management** | Tenancy contracts, compliance documents, ownership papers |
+| **Analytics & Reporting** | Real-time dashboards, performance metrics, financial reports |
+| **User Management** | Role-based access control with 5 distinct user types |
+
+### **2.3 User Characteristics**
+| User Role | Technical Proficiency | Frequency of Use | Primary Goals |
+|-----------|----------------------|------------------|--------------|
+| **Company Owner** | Medium-High | Daily | Monitor business performance, manage team, make strategic decisions |
+| **Real Estate Agent** | Medium | Daily | Manage assigned leads, schedule viewings, close deals |
+| **Property Buyer** | Low-Medium | Weekly | Search properties, schedule viewings, submit inquiries |
+| **Property Seller/Landlord** | Medium | Weekly | List properties, track interest, manage documents |
+| **Tenant** | Low | Monthly | Apply for rentals, sign contracts, submit maintenance requests |
+| **System Administrator** | High | Daily | Manage users, configure system, monitor performance |
+
+### **2.4 Constraints**
+1. **Regulatory Compliance**: Must adhere to UAE RERA and DLD regulations
+2. **Language Support**: Must support both English and Arabic (RTL layout)
+3. **Performance**: Dashboard load time < 3 seconds on 4G connection
+4. **Security**: All customer data must be encrypted at rest and in transit
+5. **Browser Support**: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+
+### **2.5 Assumptions and Dependencies**
+1. **Assumption**: Company owner (arslanmalikgoraha@gmail.com) has exclusive access to full CRM
+2. **Assumption**: WhatsApp Business API approval will be obtained before launch
+3. **Dependency**: MongoDB Atlas cluster will be provisioned before deployment
+4. **Dependency**: Google Workspace organization account exists for integration
+5. **Assumption**: All agents have smartphones with WhatsApp installed
+
+---
+
+## **3. SPECIFIC REQUIREMENTS**
+
+### **3.1 Functional Requirements**
+
+#### **3.1.1 User Interface Requirements**
+
+**UI-FR-001: Unified Navigation System**
+The system shall provide a consistent navigation structure across all pages consisting of:
+1. A fixed top navigation bar with: Logo, Global Search, Theme Toggle, Notifications, User Profile
+2. A collapsible sidebar (280px expanded / 72px collapsed) with hierarchical menu
+3. Dashboard-specific tab navigation (maximum 6 tabs per dashboard)
+*Priority: P0 (Critical)*
+
+**UI-FR-002: Role-Based Dashboard Access**
+The system shall display different dashboard sets based on user role:
+1. Company Owner: Access to ALL 14+ AI assistant dashboards
+2. Real Estate Agent: Access to Agent Dashboard, Leads CRM, and Property Search
+3. Property Buyer/Seller: Access to respective portals only
+4. System shall prevent unauthorized dashboard access with clear "Access Denied" message
+*Priority: P0 (Critical)*
+
+**UI-FR-003: Real-Time Data Display**
+All UI components displaying data shall:
+1. Show data source and last update timestamp
+2. Provide manual refresh control
+3. Display loading states using skeleton screens
+4. Show empty states with actionable prompts when no data exists
+5. Display error states with recovery options when data fetch fails
+*Priority: P1 (High)*
+
+**UI-FR-004: Action Feedback System**
+All user interactions shall provide immediate visual feedback:
+1. Buttons: Hover → Active → Loading → Success/Error states
+2. Forms: Real-time validation → Submission → Result confirmation
+3. Data changes: Visual indicators showing what changed
+4. Notifications: Toast messages for system events
+*Priority: P1 (High)*
+
+#### **3.1.2 CRM Core Requirements**
+
+**CRM-FR-001: Exclusive Company Owner Access**
+The full CRM functionality shall be accessible ONLY to the user with email `arslanmalikgoraha@gmail.com`.
+1. All other users shall see "Access Restricted - Company Owners Only" message
+2. Attempted access shall be logged for security auditing
+3. Owner access shall bypass all other role-based restrictions
+*Priority: P0 (Critical)*
+
+**CRM-FR-002: Lead Management Pipeline**
+The system shall manage leads through a 7-stage pipeline:
+1. **New**: Initial inquiry received
+2. **Contacted**: Agent has made first contact
+3. **Qualified**: Lead meets minimum criteria (score > 60)
+4. **Proposal**: Formal proposal sent to client
+5. **Negotiation**: Price/terms under discussion
+6. **Won**: Deal closed successfully
+7. **Lost**: Deal lost to competition or withdrawn
+*Priority: P1 (High)*
+
+**CRM-FR-003: Lead Scoring Automation**
+The system shall automatically score leads based on:
+1. **Budget Clarity** (0-25 points): Has the client specified a budget range?
+2. **Property Specificity** (0-25 points): Has the client identified specific properties?
+3. **Timeline Urgency** (0-25 points): Does the client have a specific move-in date?
+4. **Communication Responsiveness** (0-25 points): How quickly does the client respond?
+*Priority: P1 (High)*
+
+**CRM-FR-004: Document Management**
+The system shall manage UAE-specific real estate documents:
+1. Automatically generate Ejari-compliant tenancy contracts
+2. Track RERA permit numbers and expiration dates
+3. Store and categorize: Passport copies, Visa pages, Emirates ID, Title Deeds
+4. Provide document expiry alerts (30, 15, 7 days before expiry)
+*Priority: P2 (Medium)*
+
+#### **3.1.3 AI Assistant Requirements**
+
+**AI-FR-001: Zoe - Executive Assistant**
+Zoe shall provide executive oversight with:
+1. **Executive Summary Tab**: Real-time KPI dashboard (8 key metrics)
+2. **AI Suggestions Tab**: Aggregated recommendations from all other assistants
+3. **Calendar Tab**: Integrated schedule with Google Calendar sync
+4. **Team Overview Tab**: Agent performance and availability
+5. **Reports Tab**: One-click report generation (PDF/Excel)
+*Priority: P1 (High)*
+
+**AI-FR-002: Aurora - CTO Dashboard**
+Aurora shall provide system monitoring with:
+1. **System Health Tab**: Live service status (MongoDB, APIs, External services)
+2. **API Monitor Tab**: Endpoint performance and error rates
+3. **Documentation Tab**: Searchable technical documentation
+4. **Deployments Tab**: Release history and rollback controls
+*Priority: P1 (High)*
+
+**AI-FR-003: Linda - WhatsApp CRM Manager**
+Linda shall manage WhatsApp communications with:
+1. **Active Conversations Tab**: Real-time chat interface
+2. **Agent Assignment Tab**: Manual and automatic agent assignment
+3. **Templates Tab**: Pre-approved message templates
+4. **Analytics Tab**: Conversation metrics and response times
+*Priority: P1 (High)*
+
+**AI-FR-004: Clara - Lead Pipeline Manager**
+Clara shall manage the sales pipeline with:
+1. **Pipeline View Tab**: Kanban-style lead progression board
+2. **Lead Qualification Tab**: Scoring and categorization tools
+3. **Conversion Tracking Tab**: Lead-to-deal conversion analytics
+4. **Automation Rules Tab**: Workflow automation configuration
+*Priority: P1 (High)*
+
+**AI-FR-005: Agent Assignment Engine**
+The system shall automatically assign leads to agents using weighted scoring:
+1. **Expertise Match** (35%): Agent specialization vs. property type/location
+2. **Availability** (25%): Current workload and capacity
+3. **Performance** (20%): Historical conversion rates and client ratings
+4. **Proximity** (10%): Geographic closeness to property
+5. **Client Match** (10%): Language, nationality, budget alignment
+*Priority: P1 (High)*
+
+**AI-FR-006: Chatbot Service**
+The system shall provide AI-powered chat with:
+1. **Bilingual Support**: English and Arabic language understanding
+2. **Intent Recognition**: 10+ predefined real estate intents
+3. **Context Management**: Remember conversation history within session
+4. **Lead Qualification**: Automatic scoring based on conversation content
+5. **Agent Handoff**: Seamless transfer to human agent when needed
+*Priority: P2 (Medium)*
+
+#### **3.1.4 Property Management Requirements**
+
+**PM-FR-001: Property Listing Management**
+The system shall manage property listings with:
+1. **UAE-Specific Fields**: RERA number, DLD permit, DEWA number, Ejari status
+2. **Media Management**: High-resolution images, virtual tours, floor plans
+3. **Multi-Portal Publishing**: One-click publishing to Bayut, Property Finder, Dubizzle
+4. **Status Tracking**: Draft → Active → Under Offer → Sold/Rented workflow
+*Priority: P1 (High)*
+
+**PM-FR-002: Advanced Property Search**
+The system shall provide property search with:
+1. **Location Filtering**: By emirate, community, and neighborhood
+2. **Price Range**: Minimum and maximum in AED
+3. **Property Type**: Villa, apartment, townhouse, penthouse, land
+4. **Amenities**: Swimming pool, gym, concierge, parking, etc.
+5. **Advanced Filters**: Year built, square footage, bedroom/bathroom count
+*Priority: P2 (Medium)*
+
+**PM-FR-003: DAMAC Hills 2 Inventory Integration**
+The system shall integrate with DAMAC inventory database:
+1. **Automatic Synchronization**: Daily sync of available units
+2. **Price Monitoring**: Track price changes and trends
+3. **Availability Alerts**: Notify when specific unit types become available
+4. **Competitive Analysis**: Compare with similar properties in area
+*Priority: P2 (Medium)*
+
+#### **3.1.5 Integration Requirements**
+
+**INT-FR-001: WhatsApp Business API Integration**
+The system shall integrate with WhatsApp Business API to:
+1. **Receive Messages**: Process incoming customer messages via webhook
+2. **Send Messages**: Send templated and free-form messages
+3. **Template Management**: Create and approve message templates
+4. **Session Management**: Maintain conversation context across messages
+5. **Media Handling**: Send and receive images, documents, location
+*Priority: P1 (High)*
+
+**INT-FR-002: Google Workspace Integration**
+The system shall integrate with Google services:
+1. **Google Calendar**: Create viewing appointments and sync with agent calendars
+2. **Google Drive**: Store and manage documents (contracts, images, reports)
+3. **Google Contacts**: Sync client contact information
+4. **Single Sign-On**: Optional Google-based authentication
+*Priority: P2 (Medium)*
+
+**INT-FR-003: Payment Gateway Integration**
+The system shall integrate with payment processors:
+1. **Stripe**: Primary payment processing for commissions and fees
+2. **Mashreq NEOBiz**: Local UAE bank integration for wire transfers
+3. **Aani**: QR code payment generation for quick transactions
+4. **Receipt Generation**: Automatic digital receipt creation
+*Priority: P3 (Low)*
+
+### **3.2 Non-Functional Requirements**
+
+#### **3.2.1 Performance Requirements**
+1. **Page Load Time**: Dashboard initial load < 3 seconds on 50 Mbps connection
+2. **API Response Time**: 95% of API calls respond in < 500ms under normal load
+3. **Concurrent Users**: Support 50 simultaneous users without degradation
+4. **Data Refresh**: Real-time data updates within 5 seconds of backend change
+5. **Search Performance**: Property search results in < 2 seconds with 10,000+ listings
+
+#### **3.2.2 Security Requirements**
+1. **Authentication**: JWT-based authentication with 24-hour expiry
+2. **Authorization**: Role-based access control (RBAC) for all features
+3. **Data Encryption**: AES-256 encryption for data at rest and TLS 1.3 for data in transit
+4. **Input Validation**: All user inputs validated server-side before processing
+5. **Audit Logging**: All sensitive operations logged with user ID and timestamp
+
+#### **3.2.3 Usability Requirements**
+1. **Learnability**: New users should be able to perform basic tasks within 15 minutes
+2. **Efficiency**: Frequent tasks should be accomplishable within 3 clicks
+3. **Error Recovery**: Users should recover from errors with clear guidance
+4. **Accessibility**: WCAG 2.1 Level AA compliance for users with disabilities
+5. **Responsive Design**: Full functionality on mobile, tablet, and desktop
+
+#### **3.2.4 Reliability Requirements**
+1. **Availability**: 99.5% uptime excluding scheduled maintenance
+2. **Mean Time Between Failures (MTBF)**: > 720 hours (30 days)
+3. **Mean Time To Recovery (MTTR)**: < 30 minutes for critical failures
+4. **Data Integrity**: Automatic daily backups with 30-day retention
+5. **Error Handling**: Graceful degradation when external services fail
+
+#### **3.2.5 Scalability Requirements**
+1. **Horizontal Scaling**: Ability to add application servers without downtime
+2. **Database Scaling**: MongoDB sharding support for 1M+ documents
+3. **Cache Strategy**: Redis caching for frequently accessed data
+4. **Load Balancing**: Support for multiple concurrent instances
+5. **Storage Growth**: Support for 100GB+ of document storage
+
+### **3.3 External Interface Requirements**
+
+#### **3.3.1 User Interfaces**
+1. **Primary Web Interface**: Responsive React application (Chrome, Firefox, Safari, Edge)
+2. **Admin Interface**: Enhanced controls for company owner and administrators
+3. **Mobile-Optimized View**: Touch-friendly interface for phones and tablets
+4. **Print-Optimized Views**: Contract and report printing formats
+
+#### **3.3.2 Hardware Interfaces**
+1. **Server Hardware**: Cloud-based (AWS/Azure/Google Cloud) virtual machines
+2. **Client Hardware**: Modern browsers on desktops, tablets, and smartphones
+3. **Peripheral Support**: Webcam for document scanning, printers for contracts
+
+#### **3.3.3 Software Interfaces**
+1. **MongoDB Database**: MongoDB Atlas cloud database
+2. **Firebase Authentication**: User identity and authentication management
+3. **WhatsApp Business API**: Cloud API for WhatsApp messaging
+4. **Stripe API**: Payment processing and subscription management
+5. **Google APIs**: Calendar, Drive, and Maps integration
+
+#### **3.3.4 Communication Interfaces**
+1. **HTTPS/REST**: JSON-based REST API for all client-server communication
+2. **WebSocket**: Real-time notifications and dashboard updates
+3. **Webhook**: Incoming webhooks for WhatsApp and payment notifications
+4. **Email/SMS**: Transactional notifications to users
+
+### **3.4 Data Requirements**
+
+#### **3.4.1 Data Models**
+**Lead Model:**
+```javascript
+{
+  _id: ObjectId,
+  name: { type: String, required: true, trim: true },
+  email: { 
+    type: String, 
+    required: true, 
+    unique: true,
+    match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email']
+  },
+  phone: { 
+    type: String, 
+    required: true,
+    match: [/^\+971[0-9]{9}$/, 'Please enter a valid UAE phone number']
+  },
+  source: { 
+    type: String, 
+    enum: ['whatsapp', 'website', 'portal', 'referral', 'walkin'],
+    required: true 
+  },
+  status: {
+    type: String,
+    enum: ['new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost'],
+    default: 'new',
+    index: true
+  },
+  score: { 
+    type: Number, 
+    min: 0, 
+    max: 100, 
+    default: 0,
+    index: true 
+  },
+  budget: {
+    min: { type: Number, min: 0 },
+    max: { type: Number, min: 0 },
+    currency: { type: String, default: 'AED' }
+  },
+  assignedTo: { 
+    type: ObjectId, 
+    ref: 'Agent',
+    index: true 
+  },
+  propertyInterest: [{ 
+    type: ObjectId, 
+    ref: 'Property' 
+  }],
+  activities: [{
+    type: { 
+      type: String, 
+      enum: ['call', 'email', 'whatsapp', 'viewing', 'meeting', 'document'] 
+    },
+    description: String,
+    agent: { type: ObjectId, ref: 'Agent' },
+    createdAt: { type: Date, default: Date.now }
+  }],
+  metadata: {
+    lastActive: { type: Date, default: Date.now },
+    conversationCount: { type: Number, default: 0 },
+    documents: [String],
+    tags: [String]
+  },
+  createdAt: { type: Date, default: Date.now, index: true },
+  updatedAt: { type: Date, default: Date.now }
+}
+```
+
+**Property Model:**
+```javascript
+{
+  _id: ObjectId,
+  title: { type: String, required: true, trim: true },
+  description: { type: String, required: true },
+  type: {
+    type: String,
+    enum: ['villa', 'apartment', 'townhouse', 'penthouse', 'office', 'land', 'warehouse'],
+    required: true,
+    index: true
+  },
+  price: {
+    amount: { type: Number, required: true, min: 0 },
+    currency: { type: String, default: 'AED' },
+    type: { 
+      type: String, 
+      enum: ['sale', 'rent', 'lease'],
+      required: true 
+    },
+    period: { type: String, enum: ['monthly', 'annual', 'one-time'] }
+  },
+  location: {
+    emirate: { 
+      type: String, 
+      enum: ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'RAK', 'Fujairah', 'Umm Al Quwain'],
+      required: true,
+      index: true 
+    },
+    community: { 
+      type: String, 
+      required: true,
+      index: true 
+    },
+    exactLocation: String,
+    coordinates: {
+      lat: { type: Number, required: true },
+      lng: { type: Number, required: true }
+    },
+    makaniNumber: String
+  },
+  specifications: {
+    bedrooms: { type: Number, min: 0, index: true },
+    bathrooms: { type: Number, min: 1 },
+    area: { 
+      size: { type: Number, required: true },
+      unit: { type: String, enum: ['sqft', 'sqm'], default: 'sqft' }
+    },
+    yearBuilt: { type: Number },
+    parkingSpaces: { type: Number, default: 0 },
+    furnished: { type: Boolean, default: false }
+  },
+  uaeSpecific: {
+    reraNumber: { type: String, index: true },
+    dldPermit: { type: String },
+    dewaNumber: { type: String },
+    ejariStatus: { 
+      registered: { type: Boolean, default: false },
+      number: String,
+      expiryDate: Date
+    }
+  },
+  media: {
+    images: [{
+      url: { type: String, required: true },
+      caption: String,
+      isPrimary: { type: Boolean, default: false },
+      order: { type: Number, default: 0 }
+    }],
+    videos: [{
+      url: String,
+      type: { type: String, enum: ['youtube', 'vimeo', 'direct'] },
+      thumbnail: String
+    }],
+    virtualTour: {
+      url: String,
+      type: { type: String, enum: ['matterport', 'kuula', 'custom'] }
+    },
+    floorPlans: [{
+      url: String,
+      caption: String,
+      bedrooms: Number,
+      area: Number
+    }]
+  },
+  amenities: [{
+    type: { type: String, enum: ['basic', 'luxury', 'security', 'community'] },
+    name: { type: String, required: true }
+  }],
+  status: {
+    type: String,
+    enum: ['draft', 'active', 'under_offer', 'sold', 'rented', 'inactive'],
+    default: 'draft',
+    index: true
+  },
+  owner: { 
+    type: ObjectId, 
+    ref: 'Owner', 
+    required: true,
+    index: true 
+  },
+  assignedAgent: { 
+    type: ObjectId, 
+    ref: 'Agent',
+    index: true 
+  },
+  viewingSchedule: [{
+    date: { type: Date, required: true },
+    timeSlots: [{
+      start: { type: String, required: true }, // "14:00"
+      end: { type: String, required: true },   // "15:00"
+      bookedBy: { type: ObjectId, ref: 'Lead' }
+    }]
+  }],
+  createdAt: { type: Date, default: Date.now, index: true },
+  updatedAt: { type: Date, default: Date.now }
+}
+```
+
+#### **3.4.2 Data Retention**
+1. **Active Leads**: Retain indefinitely while status ≠ 'lost'
+2. **Closed Deals**: Retain for 7 years for compliance
+3. **User Activity Logs**: Retain for 2 years
+4. **System Logs**: Retain for 90 days
+5. **Backup Data**: Daily backups retained for 30 days
+
+### **3.5 System Features Prioritization**
+
+| Priority | Feature | Business Value | Effort Estimate | Dependencies |
+|----------|---------|----------------|-----------------|--------------|
+| **P0** | Fix Navigation & Basic Auth | Enables all other features | 2 days | None |
+| **P0** | Company Owner CRM Access | Critical for business oversight | 1 day | Auth System |
+| **P1** | Zoe Executive Dashboard | Executive decision making | 3 days | Navigation, API |
+| **P1** | Lead Management Pipeline | Core business process | 4 days | Database Models |
+| **P1** | WhatsApp Integration | Primary customer channel | 5 days | WhatsApp API Access |
+| **P2** | All Other AI Dashboards | Departmental efficiency | 10 days | Core Infrastructure |
+| **P2** | Property Management | Inventory management | 6 days | Media Storage |
+| **P3** | Advanced Analytics | Business intelligence | 8 days | Data Collection |
+| **P3** | Mobile Optimization | Field agent usability | 5 days | Responsive Design |
+
+### **3.6 Compliance Requirements**
+1. **UAE Data Protection Law**: Personal data protection and privacy
+2. **RERA Regulations**: Real estate brokerage compliance
+3. **Anti-Money Laundering (AML)**: Customer verification and transaction monitoring
+4. **GDPR**: For European clients (optional future requirement)
+5. **Payment Card Industry (PCI)**: For payment processing compliance
+
+---
+
+## **APPENDIX A: SYSTEM FLOW CHARTS**
+
+### **A.1 Complete User Journey: Property Inquiry to Deal Closure**
+
+```
+┌─────────────────┐     ┌──────────────────┐     ┌────────────────────┐
+│   Potential     │────▶│   Browse         │────▶│   Submit Inquiry   │
+│   Client        │     │   Properties     │     │   via Website/     │
+│   Discovers     │     │   on Website     │     │   WhatsApp         │
+│   White Caves   │     │                  │     │                    │
+└─────────────────┘     └──────────────────┘     └────────────────────┘
+         │                                                    │
+         │                                                    ▼
+         │                                           ┌────────────────────┐
+         │                                           │   System Creates   │
+         │                                           │   Lead Record &    │
+         │                                           │   Scores (0-100)   │
+         │                                           └────────────────────┘
+         │                                                    │
+         │                                                    ▼
+         │                                           ┌────────────────────┐
+         │                                           │   AgentAssignment  │
+         │                                           │   Engine Runs &    │
+         │                                           │   Assigns to Best  │
+         │                                           │   Agent            │
+         │                                           └────────────────────┘
+         │                                                    │
+         │                                                    ▼
+         │                                           ┌────────────────────┐
+         │                                           │   Agent Notified   │
+         │                                           │   via Dashboard &  │
+         │                                           │   WhatsApp         │
+         │                                           └────────────────────┘
+         │                                                    │
+         ▼                                                    ▼
+┌─────────────────┐                                 ┌────────────────────┐
+│   Client        │                                 │   Agent Contacts   │
+│   Receives      │◀────────────────────────────────│   Client & Updates │
+│   Response &    │                                 │   Lead Status      │
+│   Confirmation  │                                 │   → 'Contacted'    │
+└─────────────────┘                                 └────────────────────┘
+         │                                                    │
+         ▼                                                    ▼
+┌─────────────────┐                                 ┌────────────────────┐
+│   Viewing       │◀────────────────────────────────│   Agent Schedules  │
+│   Scheduled &   │                                 │   Viewing via      │
+│   Conducted     │                                 │   Calendar         │
+└─────────────────┘                                 └────────────────────┘
+         │                                                    │
+         ▼                                                    ▼
+┌─────────────────┐                                 ┌────────────────────┐
+│   Negotiation   │◀────────────────────────────────│   Agent Submits    │
+│   & Offer       │                                 │   Proposal &       │
+│   Submission    │                                 │   Updates Status   │
+└─────────────────┘                                 └────────────────────┘
+         │                                                    │
+         ▼                                                    ▼
+┌─────────────────┐                                 ┌────────────────────┐
+│   Deal Closed   │◀────────────────────────────────│   Agent Marks      │
+│   & Payment     │                                 │   Deal as 'Won' &  │
+│   Processed     │                                 │   Triggers Docs    │
+└─────────────────┘                                 └────────────────────┘
+```
+
+### **A.2 Data Synchronization Flow Across Dashboards**
+
+```
+┌─────────────────┐     ┌──────────────────┐     ┌────────────────────┐
+│   Database      │────▶│   Change Stream  │────▶│   WebSocket        │
+│   Change Event  │     │   Listener       │     │   Server           │
+│   (New Lead)    │     │   (MongoDB)      │     │   (Socket.io)      │
+└─────────────────┘     └──────────────────┘     └────────────────────┘
+                                                                    │
+                                                                    ▼
+                                                           ┌────────────────────┐
+                                                           │   Broadcast to     │
+                                                           │   Connected        │
+                                                           │   Clients          │
+                                                           └────────────────────┘
+                                                                    │
+                     ┌──────────────────────────────────────────────┼─────────────────────────────────────────────┐
+                     ▼                                              ▼                                             ▼
+            ┌─────────────────┐                          ┌────────────────────┐                          ┌────────────────────┐
+            │   Zoe Dashboard │                          │   Clara Dashboard  │                          │   Agent Dashboard  │
+            │   Updates       │                          │   Updates          │                          │   Updates          │
+            │   Executive     │                          │   Lead List &      │                          │   Assigned Leads   │
+            │   Summary KPI   │                          │   Pipeline         │                          │   Count            │
+            └─────────────────┘                          └────────────────────┘                          └────────────────────┘
+                     │                                              │                                             │
+                     ▼                                              ▼                                             ▼
+            ┌─────────────────┐                          ┌────────────────────┐                          ┌────────────────────┐
+            │   UI Re-renders │                          │   UI Re-renders    │                          │   UI Re-renders    │
+            │   with New      │                          │   with New Lead    │                          │   with New Lead    │
+            │   Lead Count    │                          │   in Pipeline      │                          │   in Task List     │
+            └─────────────────┘                          └────────────────────┘                          └────────────────────┘
+```
+
+### **A.3 Error Handling and Recovery Flow**
+
+```
+┌─────────────────┐     ┌──────────────────┐     ┌────────────────────┐
+│   Error         │────▶│   Error          │────▶│   Categorize       │
+│   Occurs        │     │   Interception   │     │   Error Severity   │
+│   (API Failure, │     │   (Frontend/     │     │   (Critical/High/  │
+│   Network       │     │   Backend)       │     │   Medium/Low)      │
+│   Timeout, etc.)│     │                  │     │                    │
+└─────────────────┘     └──────────────────┘     └────────────────────┘
+         │                                                    │
+         │                                                    ▼
+         │                                           ┌────────────────────┐
+         │                                           │   Log Error with   │
+         │                                           │   Context &        │
+         │                                           │   User Info        │
+         │                                           └────────────────────┘
+         │                                                    │
+         │                                                    ▼
+         │                                           ┌────────────────────┐
+         │                              ┌────────────│   If Critical:     │
+         │                              │            │   Notify Admin &   │
+         │                              │            │   Aurora Dashboard │
+         │                              │            └────────────────────┘
+         │                              │                      │
+         │                              ▼                      ▼
+┌─────────────────┐     ┌──────────────────┐     ┌────────────────────┐
+│   User Sees     │     │   System         │     │   Admin Receives   │
+│   User-Friendly │◀────│   Attempts       │◀────│   Alert & Can      │
+│   Error Message │     │   Auto-Retry     │     │   Manually         │
+│   with Recovery │     │   (3x with       │     │   Intervene        │
+│   Options       │     │   Backoff)       │     │                    │
+└─────────────────┘     └──────────────────┘     └────────────────────┘
+         │
+         │
+         ▼
+┌─────────────────┐
+│   If Recoverable│
+│   Error: System │
+│   Continues     │
+│   If Critical:  │
+│   Graceful      │
+│   Degradation   │
+└─────────────────┘
+```
+
+---
+
+## **APPENDIX B: GLOSSARY**
+
+| Term | Definition |
+|------|------------|
+| **AI Assistant** | Specialized software agent handling specific business functions |
+| **Agent** | Real estate sales professional working for White Caves |
+| **AED** | UAE Dirham, local currency |
+| **Community** | Residential area within an emirate (e.g., Dubai Marina) |
+| **CRM** | Customer Relationship Management system |
+| **DEWA** | Dubai Electricity and Water Authority |
+| **DLD** | Dubai Land Department |
+| **Ejari** | Official UAE rental contract registration system |
+| **Emirate** | One of the seven states of UAE (Dubai, Abu Dhabi, etc.) |
+| **KYC** | Know Your Customer compliance process |
+| **Lead** | Potential customer who has shown interest |
+| **MERN Stack** | MongoDB, Express.js, React, Node.js technology stack |
+| **Pipeline** | Stages a lead goes through from inquiry to close |
+| **Property Portal** | Online property listing website (Bayut, Property Finder) |
+| **RERA** | Real Estate Regulatory Agency (Dubai) |
+| **Villa** | Standalone house (as opposed to apartment) |
+
+---
+
+## **APPENDIX C: IMPLEMENTATION ROADMAP**
+
+### **Phase 1: Foundation (Week 1-2)**
+1. **Day 1-2**: Fix navigation system and implement unified layout
+2. **Day 3-4**: Connect Redux to backend APIs and fix authentication
+3. **Day 5-7**: Implement role-based access control and company owner restriction
+4. **Day 8-10**: Connect Zoe dashboard to live data and fix basic data flow
+5. **Day 11-14**: Implement real-time notifications and basic error handling
+
+### **Phase 2: Core CRM (Week 3-4)**
+1. **Week 3**: Complete lead management pipeline with all 7 stages
+2. **Week 3**: Implement lead scoring and AgentAssignmentEngine integration
+3. **Week 4**: Connect WhatsApp integration and live chat interface
+4. **Week 4**: Implement document management and UAE compliance features
+
+### **Phase 3: Dashboard Completion (Week 5-6)**
+1. **Week 5**: Complete all remaining AI assistant dashboards
+2. **Week 5**: Implement property management with DAMAC inventory sync
+3. **Week 6**: Add advanced analytics and reporting features
+4. **Week 6**: Performance optimization and mobile responsiveness
+
+### **Phase 4: Polish & Deployment (Week 7-8)**
+1. **Week 7**: User acceptance testing and bug fixing
+2. **Week 7**: Security audit and compliance verification
+3. **Week 8**: Production deployment and monitoring setup
+4. **Week 8**: User training and documentation completion
+
+---
+
+## **APPENDIX D: ACCEPTANCE CRITERIA**
+
+### **D.1 Must-Have Criteria (Release 1.0)**
+1. Company owner (arslanmalikgoraha@gmail.com) can access full CRM
+2. All 5 user roles see appropriate dashboards and features
+3. Lead creation from website/WhatsApp works end-to-end
+4. Agent assignment happens automatically within 60 seconds
+5. Zoe dashboard shows real-time data (not static/mock)
+6. Basic property search and listing management works
+7. System handles 50 concurrent users without crashing
+
+### **D.2 Should-Have Criteria (Release 1.1)**
+1. All 14+ AI assistant dashboards are functional
+2. WhatsApp integration handles 100+ conversations daily
+3. Document generation for tenancy contracts works
+4. Mobile responsive design works on iOS and Android
+5. Performance: Dashboard loads < 3 seconds on 4G
+
+### **D.3 Nice-to-Have Criteria (Release 1.2+)**
+1. Advanced predictive analytics and market trends
+2. AI-powered property recommendations
+3. Multi-language support beyond English/Arabic
+4. Integration with additional property portals
+5. Mobile app (React Native) for field agents
+
+---
+
+**END OF DOCUMENT**
+
+*This SRS document shall be reviewed and updated as requirements evolve. All stakeholders should reference this document for clarification of system capabilities and constraints.*

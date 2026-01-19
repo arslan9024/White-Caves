@@ -1,0 +1,128 @@
+# Real Estate Services Page Code Prompt
+
+## Project Overview
+Design an elegant, conversion-focused services page for a Dubai-based real estate agency specializing in:
+- **Buying/Selling Properties**: Off-plan & secondary market
+- **Leasing Services**: Residential & commercial properties in Dubai
+
+## Design Requirements
+
+### 1. Visual Direction
+- Modern, luxury aesthetic reflecting Dubai's premium real estate market
+- Clean layout with ample white space
+- Gold/blue color scheme (corporate colors: #0A2463 for blue, #D4AF37 for gold)
+- High-quality imagery of Dubai properties and landmarks
+- Mobile-responsive design (Dubai has high mobile usage)
+
+### 2. Page Sections
+
+#### A. Hero Section
+- Bold headline: "Premium Real Estate Services in Dubai"
+- Subheading: "Expert guidance for buying, selling, and leasing properties in off-plan and secondary markets"
+- CTA: "Get Free Consultation" (primary), "Browse Properties" (secondary)
+- Background: Video or high-resolution Dubai skyline image
+
+#### B. Services Overview Cards
+Create 3 prominent cards with icons:
+
+1. **Buying Services**
+   - Icon: Key/Home
+   - Sub-services: Off-plan purchases, Secondary market, New developments
+   - Key features: Market analysis, Negotiation, Due diligence
+
+2. **Selling Services**
+   - Icon: Trending up/Sale tag
+   - Sub-services: Property valuation, Marketing, Closing
+   - Key features: Premium exposure, Competitive pricing, Quick transactions
+
+3. **Leasing Services**
+   - Icon: Contract/Lease
+   - Sub-services: Residential leasing, Commercial leasing, Property management
+   - Key features: Tenant screening, Legal compliance, Maintenance
+
+#### C. Detailed Service Breakdown
+Expandable sections for each service:
+
+**Off-Plan Properties Section**
+- Process flowchart: Research → Selection → Booking → Payment plan → Handover
+- Developer partnerships logos
+- Benefits: Price advantages, Customization options, Payment plans
+
+**Secondary Market Section**
+- Comparison table: Off-plan vs. Secondary market
+- Success metrics: Average days on market, Premium achieved
+- Testimonials from recent sellers
+
+**Leasing Services Section**
+- Interactive calculator: Estimate rental yield
+- Management dashboard preview
+- FAQ: Tenant rights, Ejari, Security deposits
+
+#### D. Dubai Market Insights
+- Interactive map showing prime areas: Downtown, Marina, Palm, Business Bay
+- Market statistics: Price trends, Rental yields, Vacancy rates
+- Upcoming developments section
+
+#### E. Client Process Timeline
+Visual timeline with steps:
+1. Consultation
+2. Requirement analysis
+3. Property shortlisting
+4. Viewings
+5. Offer & negotiation
+6. Documentation
+7. Handover/Lease signing
+
+#### F. Trust Indicators
+- RERA certification display
+- Years of experience counter
+- Properties transacted counter
+- Client testimonials carousel
+- Partner agencies logos
+
+#### G. CTA Section
+- "Ready to begin your Dubai property journey?"
+- Contact form: Name, Phone, Service interest dropdown, Message
+- WhatsApp integration (popular in UAE)
+- Call tracking for conversions
+
+### 3. Technical Requirements
+- HTML5, CSS3 (Flexbox/Grid)
+- JavaScript for interactive elements
+- Mobile-first responsive design
+- Fast loading (optimize images)
+- ARIA labels for accessibility
+- RTL support consideration (Arabic)
+- Schema markup for local business
+
+### 4. Interactive Elements
+- Service selector quiz: "What service do you need?"
+- Mortgage calculator integration
+- Virtual tour previews
+- Downloadable guides: "Dubai Buying Checklist", "Rental Laws Guide"
+- Live chat/WhatsApp chat button
+
+### 5. Content Requirements
+- Clear value propositions for each service
+- Dubai-specific terminology: RERA, DLD, Ejari, Title Deed
+- Multilingual consideration (English primary, Arabic option)
+- Trust-building elements throughout
+- Clear next steps for each user journey
+
+## Success Metrics
+- Clear visual hierarchy guiding users to conversion
+- Service differentiation is obvious and compelling
+- Mobile usability and fast loading
+- Compliance with Dubai real estate regulations in presentation
+- Persuasive trust signals throughout
+
+## Deliverables
+1. Fully responsive HTML/CSS/JS page
+2. Mobile, tablet, and desktop versions
+3. All interactive components functional
+4. Optimized images and assets
+5. Documentation for updating service details
+
+---
+
+**Note**: Emphasize luxury experience while maintaining clarity of services. Dubai clients expect premium presentation with clear expertise demonstration. Include regulatory compliance indicators (RERA) prominently as this builds immediate trust in the Dubai market.
