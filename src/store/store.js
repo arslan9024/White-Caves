@@ -23,6 +23,7 @@ import whatsappReducer from './slices/whatsappSlice';
 import wednesdayPlanReducer from './slices/wednesdayPlanSlice';
 import contactStatusReducer from './slices/contactStatusSlice';
 import propertyStatusReducer from './slices/propertyStatusSlice';
+import relationalSidebarReducer from '../redux/slices/relationalSidebarSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 
 export const store = configureStore({
@@ -50,7 +51,8 @@ export const store = configureStore({
     whatsapp: whatsappReducer,
     wednesday: wednesdayPlanReducer,
     contactStatus: contactStatusReducer,
-    propertyStatus: propertyStatusReducer
+    propertyStatus: propertyStatusReducer,
+    relationalSidebar: relationalSidebarReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
