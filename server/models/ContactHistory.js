@@ -41,8 +41,10 @@ const contactHistorySchema = new mongoose.Schema(
       default: null,
     },
     properties: [{
-      propertyId: mongoose.Schema.Types.ObjectId,
-      ref: 'InventoryProperty',
+      propertyId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'PropertyInventory',  // Changed from InventoryProperty
+      },
       interested: Boolean,
     }],
   },
