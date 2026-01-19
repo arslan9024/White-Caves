@@ -238,4 +238,6 @@ contractSchema.pre('save', async function (next) {
   next();
 });
 
-export default mongoose.model('Contract', contractSchema);
+// Prevent model recompilation when module reloads
+const ContractModel = mongoose.models.Contract || mongoose.model('Contract', contractSchema);
+export default ContractModel;
