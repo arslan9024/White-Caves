@@ -36,9 +36,9 @@ import signaturesRoutes from './routes/signatures.js';
 import statusRoutes from './routes/status.js';
 import offersRoutes from './routes/offers.js';
 import propertyInventoryRoutes from './routes/property-inventory.js';
-import bulkOperationsRoutes from './routes/bulk-operations.js';
+// import bulkOperationsRoutes from './routes/bulk-operations.js';  // Temporarily disabled - module system mismatch
 import dealJourneyRoutes from './routes/deal-journey.js';
-import contractGeneratorRoutes from './routes/contract-generator.js';
+// import contractGeneratorRoutes from './routes/contract-generator.js';  // Temporarily disabled due to module export issue
 import relationalSidebarRoutes from './routes/relational-sidebar.js';
 import OliviaService from './services/oliviaService.js';
 import schedulerService from './services/schedulerService.js';
@@ -104,12 +104,12 @@ app.use('/api/plans', plansRoutes);
 
 // New modular routes
 app.use('/api/contracts', contractsRoutes);
-app.use('/api/contract-generator', contractGeneratorRoutes);
+// app.use('/api/contract-generator', contractGeneratorRoutes);  // Temporarily disabled
 app.use('/api/whatsapp', whatsappRoutes);
 app.use('/api/signature', signaturesRoutes);
 app.use('/api/offers', offersRoutes);
 app.use('/api/property-inventory', propertyInventoryRoutes);
-app.use('/api/bulk', bulkOperationsRoutes);
+// app.use('/api/bulk', bulkOperationsRoutes);  // Temporarily disabled - module system mismatch
 app.use('/api/deal-journey', dealJourneyRoutes);
 app.use('/api/relational-sidebar', relationalSidebarRoutes);
 app.use('/api', statusRoutes);

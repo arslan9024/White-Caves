@@ -1,5 +1,5 @@
-import PropertyInventory from '../models/PropertyInventory.js';
-// import Notification from '../models/Notification.js';  // TODO: Create Notification model
+const PropertyInventory = require('../models/PropertyInventory');
+// const Notification = require('../models/Notification');  // TODO: Create Notification model
 
 class BulkOperationsService {
   /**
@@ -238,4 +238,4 @@ class BulkOperationsService {
   }
 }
 
-export default BulkOperationsService;
+module.exports = BulkOperationsService;
