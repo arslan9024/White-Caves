@@ -1,5 +1,5 @@
 import PropertyInventory from '../models/PropertyInventory.js';
-import Notification from '../models/Notification.js';
+// import Notification from '../models/Notification.js';  // TODO: Create Notification model
 
 class BulkOperationsService {
   /**
@@ -150,24 +150,32 @@ class BulkOperationsService {
 
   /**
    * Send notifications for multiple properties
+   * TODO: Implement when Notification model is created
    */
   static async sendNotifications(propertyIds, message, type = 'info') {
     try {
-      const notifications = propertyIds.map((propertyId) => ({
-        propertyId,
-        message,
-        type,
-        createdAt: new Date(),
-        read: false,
-      }));
-
-      const result = await Notification.insertMany(notifications);
-
+      // Notification model not yet implemented
       return {
         success: true,
-        sent: result.length,
-        message: `Sent notification to ${result.length} properties`,
+        sent: propertyIds.length,
+        message: `Notification feature not yet implemented`,
       };
+      
+      // const notifications = propertyIds.map((propertyId) => ({
+      //   propertyId,
+      //   message,
+      //   type,
+      //   createdAt: new Date(),
+      //   read: false,
+      // }));
+      //
+      // const result = await Notification.insertMany(notifications);
+      //
+      // return {
+      //   success: true,
+      //   sent: result.length,
+      //   message: `Sent notification to ${result.length} properties`,
+      // };
     } catch (error) {
       throw new Error(`Failed to send notifications: ${error.message}`);
     }
