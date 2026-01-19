@@ -39,6 +39,7 @@ import propertyInventoryRoutes from './routes/property-inventory.js';
 import bulkOperationsRoutes from './routes/bulk-operations.js';
 import dealJourneyRoutes from './routes/deal-journey.js';
 import contractGeneratorRoutes from './routes/contract-generator.js';
+import relationalSidebarRoutes from './routes/relational-sidebar.js';
 import OliviaService from './services/oliviaService.js';
 import schedulerService from './services/schedulerService.js';
 
@@ -110,6 +111,7 @@ app.use('/api/offers', offersRoutes);
 app.use('/api/property-inventory', propertyInventoryRoutes);
 app.use('/api/bulk', bulkOperationsRoutes);
 app.use('/api/deal-journey', dealJourneyRoutes);
+app.use('/api/relational-sidebar', relationalSidebarRoutes);
 app.use('/api', statusRoutes);
 
 // Serve static files from the dist folder in production

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const contractTemplateSchema = new mongoose.Schema(
   {
@@ -139,4 +139,6 @@ contractTemplateSchema.methods.generateContent = function (data) {
   return content;
 };
 
-module.exports = mongoose.model('ContractTemplate', contractTemplateSchema);
+const ContractTemplate = mongoose.model('ContractTemplate', contractTemplateSchema);
+
+export default ContractTemplate;

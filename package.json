@@ -102,6 +102,7 @@
     "mongoose": "^8.14.1",
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
+    "nodemailer": "^7.0.12",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^5.4.394",
     "prisma": "^6.6.0",
