@@ -12,9 +12,10 @@ import { DataCard } from '../shared/dashboard';
 interface SalesViewProps {
   serviceName?: string;
   subitemId?: string;
+  departmentData?: any;
 }
 
-const SalesView: React.FC<SalesViewProps> = ({ serviceName = 'lead-pipeline', subitemId }) => {
+const SalesView: React.FC<SalesViewProps> = ({ serviceName = 'lead-pipeline', subitemId, departmentData }) => {
   const config = getDepartmentConfig('SALES')!;
 
   // Render main content based on serviceName and subitemId
@@ -83,6 +84,7 @@ const SalesView: React.FC<SalesViewProps> = ({ serviceName = 'lead-pipeline', su
       config={config}
       serviceName={serviceName}
       subitemId={subitemId}
+      departmentData={departmentData}
       contentRenderer={renderContent}
     />
   );

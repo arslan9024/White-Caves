@@ -11,9 +11,10 @@ import { DataCard } from '../shared/dashboard';
 interface ComplianceViewProps {
   serviceName?: string;
   subitemId?: string;
+  departmentData?: any;
 }
 
-const ComplianceView: React.FC<ComplianceViewProps> = ({ serviceName = 'compliance-dashboard', subitemId }) => {
+const ComplianceView: React.FC<ComplianceViewProps> = ({ serviceName = 'compliance-dashboard', subitemId, departmentData }) => {
   const config = getDepartmentConfig('COMPLIANCE')!;
 
   const renderContent = (data: any) => {
@@ -76,6 +77,7 @@ const ComplianceView: React.FC<ComplianceViewProps> = ({ serviceName = 'complian
       config={config}
       serviceName={serviceName}
       subitemId={subitemId}
+      departmentData={departmentData}
       contentRenderer={renderContent}
     />
   );

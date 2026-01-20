@@ -11,9 +11,10 @@ import { DataCard } from '../shared/dashboard';
 interface ExecutiveViewProps {
   serviceName?: string;
   subitemId?: string;
+  departmentData?: any;
 }
 
-const ExecutiveView: React.FC<ExecutiveViewProps> = ({ serviceName = 'strategic-overview', subitemId }) => {
+const ExecutiveView: React.FC<ExecutiveViewProps> = ({ serviceName = 'executive-dashboard', subitemId, departmentData }) => {
   const config = getDepartmentConfig('EXECUTIVE')!;
 
   const renderContent = (data: any) => {
@@ -68,6 +69,7 @@ const ExecutiveView: React.FC<ExecutiveViewProps> = ({ serviceName = 'strategic-
       config={config}
       serviceName={serviceName}
       subitemId={subitemId}
+      departmentData={departmentData}
       contentRenderer={renderContent}
     />
   );

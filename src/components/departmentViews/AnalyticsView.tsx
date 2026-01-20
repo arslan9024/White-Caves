@@ -11,9 +11,10 @@ import { DataCard } from '../shared/dashboard';
 interface AnalyticsViewProps {
   serviceName?: string;
   subitemId?: string;
+  departmentData?: any;
 }
 
-const AnalyticsView: React.FC<AnalyticsViewProps> = ({ serviceName = 'business-intelligence', subitemId }) => {
+const AnalyticsView: React.FC<AnalyticsViewProps> = ({ serviceName = 'business-intelligence', subitemId, departmentData }) => {
   const config = getDepartmentConfig('ANALYTICS')!;
 
   const renderContent = (data: any) => {
@@ -76,6 +77,7 @@ const AnalyticsView: React.FC<AnalyticsViewProps> = ({ serviceName = 'business-i
       config={config}
       serviceName={serviceName}
       subitemId={subitemId}
+      departmentData={departmentData}
       contentRenderer={renderContent}
     />
   );

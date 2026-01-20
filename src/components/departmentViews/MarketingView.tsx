@@ -11,9 +11,10 @@ import { DataCard } from '../shared/dashboard';
 interface MarketingViewProps {
   serviceName?: string;
   subitemId?: string;
+  departmentData?: any;
 }
 
-const MarketingView: React.FC<MarketingViewProps> = ({ serviceName = 'campaign-management', subitemId }) => {
+const MarketingView: React.FC<MarketingViewProps> = ({ serviceName = 'campaigns', subitemId, departmentData }) => {
   const config = getDepartmentConfig('MARKETING')!;
 
   const renderContent = (data: any) => {
@@ -76,6 +77,7 @@ const MarketingView: React.FC<MarketingViewProps> = ({ serviceName = 'campaign-m
       config={config}
       serviceName={serviceName}
       subitemId={subitemId}
+      departmentData={departmentData}
       contentRenderer={renderContent}
     />
   );

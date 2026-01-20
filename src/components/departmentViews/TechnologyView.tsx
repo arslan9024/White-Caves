@@ -11,9 +11,10 @@ import { DataCard } from '../shared/dashboard';
 interface TechnologyViewProps {
   serviceName?: string;
   subitemId?: string;
+  departmentData?: any;
 }
 
-const TechnologyView: React.FC<TechnologyViewProps> = ({ serviceName = 'infrastructure-status', subitemId }) => {
+const TechnologyView: React.FC<TechnologyViewProps> = ({ serviceName = 'infrastructure', subitemId, departmentData }) => {
   const config = getDepartmentConfig('TECHNOLOGY')!;
 
   const renderContent = (data: any) => {
@@ -76,6 +77,7 @@ const TechnologyView: React.FC<TechnologyViewProps> = ({ serviceName = 'infrastr
       config={config}
       serviceName={serviceName}
       subitemId={subitemId}
+      departmentData={departmentData}
       contentRenderer={renderContent}
     />
   );

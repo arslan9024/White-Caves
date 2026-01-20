@@ -11,9 +11,10 @@ import { DataCard } from '../shared/dashboard';
 interface OperationsViewProps {
   serviceName?: string;
   subitemId?: string;
+  departmentData?: any;
 }
 
-const OperationsView: React.FC<OperationsViewProps> = ({ serviceName = 'daily-operations', subitemId }) => {
+const OperationsView: React.FC<OperationsViewProps> = ({ serviceName = 'operations-center', subitemId, departmentData }) => {
   const config = getDepartmentConfig('OPERATIONS')!;
 
   const renderContent = (data: any) => {
@@ -68,6 +69,7 @@ const OperationsView: React.FC<OperationsViewProps> = ({ serviceName = 'daily-op
       config={config}
       serviceName={serviceName}
       subitemId={subitemId}
+      departmentData={departmentData}
       contentRenderer={renderContent}
     />
   );

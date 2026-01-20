@@ -21,6 +21,7 @@ interface BaseDepartmentViewProps {
   config: DepartmentViewConfig;
   serviceName?: string;
   subitemId?: string;
+  departmentData?: any; // Data from Redux
   children?: ReactNode;
   kpiRenderer?: (data: any) => ReactNode;
   contentRenderer?: (data: any) => ReactNode;
@@ -57,65 +58,34 @@ const LoadingContainer = styled.div`
 /**
  * Generic Department View Component
  * Handles common patterns:
- * - Data fetching based on department and service
- * - Loading and error states
+ * - Receives data from Redux via props
+ * - Loading and error states from Redux
  * - KPI rendering
  * - Content rendering
- * - Redux integration
  */
 export const BaseDepartmentView: React.FC<BaseDepartmentViewProps> = ({
   config,
   serviceName = config.defaultService,
   subitemId,
+  departmentData,
   children,
   kpiRenderer,
   contentRenderer,
   onDataLoaded,
 }) => {
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<any>(null);
+  // Use departmentData from Redux (passed as prop)
+  const [loading, setLoading] = useState(!departmentData);
+  const [data, setData] = useState<any>(departmentData);
   const [error, setError] = useState<string | null>(null);
 
-  // Select from Redux
-  const userRole = useSelector((state: any) => state.auth?.user?.role);
-  const selectedDepartment = useSelector(
-    (state: any) => state.relationalSidebar?.selectedDepartment
-  );
-
-  // Data fetching effect
+  // Update local state when departmentData changes
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const endpoint = subitemId
-          ? `${config.apiBasePath}/${serviceName}/${subitemId}`
-          : `${config.apiBasePath}/${serviceName}`;
-
-        const response = await fetch(endpoint);
-        if (!response.ok) {
-          throw new Error(
-            `Failed to fetch ${config.departmentName} data: ${response.statusText}`
-          );
-        }
-
-        const result = await response.json();
-        setData(result);
-        onDataLoaded?.(result);
-      } catch (err: any) {
-        setError(err.message || `Failed to load ${config.departmentName} data`);
-        console.error(`[${config.departmentCode}] Error:`, err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Only fetch if this is the selected department
-    if (selectedDepartment === config.departmentCode) {
-      fetchData();
+    if (departmentData) {
+      setData(departmentData);
+      setLoading(false);
+      onDataLoaded?.(departmentData);
     }
-  }, [serviceName, subitemId, selectedDepartment, config]);
+  }, [departmentData, onDataLoaded]);
 
   // Determine title and subtitle
   const title = subitemId

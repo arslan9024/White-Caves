@@ -11,11 +11,13 @@ import { DataCard } from '../shared/dashboard';
 interface PropertyManagementViewProps {
   serviceName?: string;
   subitemId?: string;
+  departmentData?: any;
 }
 
 const PropertyManagementView: React.FC<PropertyManagementViewProps> = ({ 
   serviceName = 'property-portfolio', 
-  subitemId 
+  subitemId,
+  departmentData 
 }) => {
   const config = getDepartmentConfig('PROPERTY_MANAGEMENT')!;
 
@@ -79,6 +81,7 @@ const PropertyManagementView: React.FC<PropertyManagementViewProps> = ({
       config={config}
       serviceName={serviceName}
       subitemId={subitemId}
+      departmentData={departmentData}
       contentRenderer={renderContent}
     />
   );

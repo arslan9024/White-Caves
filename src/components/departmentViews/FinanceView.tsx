@@ -12,9 +12,10 @@ import { DataCard } from '../shared/dashboard';
 interface FinanceViewProps {
   serviceName?: string;
   subitemId?: string;
+  departmentData?: any;
 }
 
-const FinanceView: React.FC<FinanceViewProps> = ({ serviceName = 'financial-reports', subitemId }) => {
+const FinanceView: React.FC<FinanceViewProps> = ({ serviceName = 'financial-reports', subitemId, departmentData }) => {
   const config = getDepartmentConfig('FINANCE')!;
 
   // Render main content based on serviceName and subitemId
@@ -75,6 +76,7 @@ const FinanceView: React.FC<FinanceViewProps> = ({ serviceName = 'financial-repo
       config={config}
       serviceName={serviceName}
       subitemId={subitemId}
+      departmentData={departmentData}
       contentRenderer={renderContent}
     />
   );

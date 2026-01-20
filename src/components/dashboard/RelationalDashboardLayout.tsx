@@ -2,20 +2,13 @@ import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
-  selectSelectedAssistant,
   selectSelectedDepartment,
   selectSelectedService,
-  selectActiveContext,
-  selectShowFeatureSidebar,
-  fetchContextualData,
+  selectSelectedAssistant,
+  fetchDepartmentData,
 } from '../../redux/slices/relationalSidebarSlice';
-import {
-  isValidAssistantContext,
-  getSidebarRenderConfig,
-} from '../../utils/relationalSidebarUtils';
 import RelationalLeftSidebar from '../sidebars/RelationalLeftSidebar/RelationalLeftSidebar';
 import RelationalRightSidebar from '../sidebars/RelationalRightSidebar/RelationalRightSidebar';
-import MaryInventorySidebar from '../sidebars/MaryInventorySidebar/MaryInventorySidebar';
 // Import all department views
 import ExecutiveView from '../departmentViews/ExecutiveView';
 import SalesView from '../departmentViews/SalesView';
@@ -102,24 +95,11 @@ const BreadcrumbNav = styled.div`
   }
 `;
 
-const FeatureSidebarContainer = styled.div<{ $isVisible?: boolean }>`
-  position: absolute;
-  right: 0;
-  top: 0;
+const RightSidebarWrapper = styled.div`
+  flex: 0 0 auto;
   width: 280px;
   height: 100%;
-  background: ${(props) => (props.theme?.colors as any)?.sidebarBg || '#1a1a1a'};
   border-left: 1px solid ${(props) => props.theme.colors.border || '#333'};
-  overflow: hidden;
-  transition: all 0.3s ease;
-  opacity: ${(props) => (props.$isVisible ? 1 : 0)};
-  pointer-events: ${(props) => (props.$isVisible ? 'auto' : 'none')};
-  transform: translateX(${(props) => (props.$isVisible ? '0' : '100%')});
-`;
-
-const ContentWrapper = styled.div`
-  position: relative;
-  flex: 1;
   overflow: hidden;
 `;
 
@@ -166,17 +146,17 @@ const EmptyState = styled.div`
  * - Left sidebar: Departments/Services
  * - Right sidebar: AI Assistants with notifications
  * - Main content: Dynamic department views
- * - Feature sidebar: Conditional (e.g., Inventory when Mary+Inventory selected)
  */
-const RelationalDashboardLayout = ({ userPermissions = {} }) => {
+const RelationalDashboardLayout = ({ userPermissions = {} }: { userPermissions?: Record<string, boolean> }) => {
   const dispatch = useDispatch();
 
   // Redux selectors
-  const selectedAssistant = useSelector(selectSelectedAssistant);
   const selectedDepartment = useSelector(selectSelectedDepartment);
   const selectedService = useSelector(selectSelectedService);
-  const activeContext = useSelector(selectActiveContext);
-  const showFeatureSidebar = useSelector(selectShowFeatureSidebar);
+  const selectedAssistant = useSelector(selectSelectedAssistant);
+  const departmentData = useSelector((state: any) => state.relationalSidebar?.departmentData);
+  const departmentLoading = useSelector((state: any) => state.relationalSidebar?.departmentLoading);
+  const departmentError = useSelector((state: any) => state.relationalSidebar?.departmentError);
 
   // Department view component map
   const departmentViewMap = useMemo(() => ({
@@ -192,51 +172,13 @@ const RelationalDashboardLayout = ({ userPermissions = {} }) => {
     HR: HRView,
   } as any), []);
 
-  // Fetch contextual data when context changes
+  // Fetch department data when department selection changes
   useEffect(() => {
-    if (selectedAssistant && activeContext) {
-      try {
-        const isValid = isValidAssistantContext(selectedAssistant, activeContext);
-        if (isValid) {
-          // TODO: Implement contextual data fetching for selected assistant/context
-          // dispatch(fetchContextualData({ assistantId: selectedAssistant, context: activeContext }));
-          console.debug('[RelationalDashboardLayout] Context changed:', {
-            selectedAssistant,
-            activeContext,
-            isValid
-          });
-        }
-      } catch (error) {
-        console.error('Error validating context:', error);
-      }
+    if (selectedDepartment) {
+      console.debug('[RelationalDashboardLayout] Fetching data for department:', selectedDepartment);
+      dispatch(fetchDepartmentData(selectedDepartment) as any);
     }
-  }, [selectedAssistant, activeContext]);
-
-  // Get sidebar configuration
-  const renderConfig = getSidebarRenderConfig(
-    selectedAssistant,
-    selectedDepartment,
-    activeContext
-  ) as any;
-
-  // Default to true for now since we always show sidebars
-  const showRightSidebar = renderConfig?.showRightSidebar !== false;
-
-  // Render feature-specific sidebar
-  const renderFeatureSidebar = () => {
-    if (!showFeatureSidebar || !selectedAssistant) return null;
-
-    // Map assistant ID + context to sidebar components
-    const featureSidebarMap = {
-      'mary_001-inventory': <MaryInventorySidebar />,
-      // Add more mappings as feature sidebars are created
-      // 'daisy_001-leasing': <LeaseManagerSidebar />,
-      // 'cipher_001-analytics': <AnalyticsSidebar />,
-    } as any;
-
-    const mapKey = `${selectedAssistant}-${activeContext}`;
-    return featureSidebarMap[mapKey] || null;
-  };
+  }, [selectedDepartment, dispatch]);
 
   // Render main content based on current selection
   const renderMainContent = () => {
@@ -245,6 +187,24 @@ const RelationalDashboardLayout = ({ userPermissions = {} }) => {
       return (
         <EmptyState>
           <div>Select a department from the left sidebar to get started</div>
+        </EmptyState>
+      );
+    }
+
+    // Show loading state while fetching
+    if (departmentLoading) {
+      return (
+        <LoadingState>
+          Loading {selectedDepartment} data...
+        </LoadingState>
+      );
+    }
+
+    // Show error state if fetch failed
+    if (departmentError) {
+      return (
+        <EmptyState>
+          <div style={{ color: '#ef4444' }}>Error loading data: {departmentError}</div>
         </EmptyState>
       );
     }
@@ -260,11 +220,12 @@ const RelationalDashboardLayout = ({ userPermissions = {} }) => {
       );
     }
 
-    // Render the department view with service info
+    // Render the department view with service info and Redux data
     return (
       <ViewComponent
         serviceName={selectedService || undefined}
         subitemId={undefined}
+        departmentData={departmentData}
       />
     );
   };
@@ -272,52 +233,43 @@ const RelationalDashboardLayout = ({ userPermissions = {} }) => {
   return (
     <DashboardContainer>
       {/* Left Sidebar: Departments & Services */}
-      {renderConfig?.showLeftSidebar !== false && (
-        <LeftSidebarWrapper>
-          <RelationalLeftSidebar userPermissions={userPermissions} />
-        </LeftSidebarWrapper>
-      )}
+      <LeftSidebarWrapper>
+        <RelationalLeftSidebar userPermissions={userPermissions} />
+      </LeftSidebarWrapper>
 
       {/* Main Content Area */}
       <MainContentArea>
-        <ContentWrapper>
-          {/* Dashboard Content */}
-          <DashboardContent>
-            {/* Breadcrumb Navigation */}
-            {selectedDepartment && (
-              <BreadcrumbNav>
-                <span className="active">
-                  {selectedDepartment}
-                </span>
-                {selectedService && (
-                  <>
-                    <span className="separator">/</span>
-                    <span className="active">
-                      {selectedService}
-                    </span>
-                  </>
-                )}
-              </BreadcrumbNav>
-            )}
+        {/* Dashboard Content */}
+        <DashboardContent>
+          {/* Breadcrumb Navigation */}
+          {selectedDepartment && (
+            <BreadcrumbNav>
+              <span className="active">
+                {selectedDepartment}
+              </span>
+              {selectedService && (
+                <>
+                  <span className="separator">/</span>
+                  <span className="active">
+                    {selectedService}
+                  </span>
+                </>
+              )}
+            </BreadcrumbNav>
+          )}
 
-            {/* Dynamic Content */}
-            {renderMainContent()}
-          </DashboardContent>
-
-          {/* Feature-Specific Sidebar (e.g., Inventory, Leasing, Analytics) */}
-          <FeatureSidebarContainer $isVisible={showFeatureSidebar}>
-            {renderFeatureSidebar()}
-          </FeatureSidebarContainer>
-        </ContentWrapper>
+          {/* Dynamic Content */}
+          {renderMainContent()}
+        </DashboardContent>
 
         {/* Right Sidebar: AI Assistants */}
-        {renderConfig?.showRightSidebar !== false && (
+        <RightSidebarWrapper>
           <RelationalRightSidebar
             selectedDepartment={selectedDepartment}
             selectedService={selectedService}
             userPermissions={userPermissions}
           />
-        )}
+        </RightSidebarWrapper>
       </MainContentArea>
     </DashboardContainer>
   );

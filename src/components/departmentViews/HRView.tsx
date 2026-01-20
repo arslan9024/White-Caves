@@ -11,9 +11,10 @@ import { DataCard } from '../shared/dashboard';
 interface HRViewProps {
   serviceName?: string;
   subitemId?: string;
+  departmentData?: any;
 }
 
-const HRView: React.FC<HRViewProps> = ({ serviceName = 'employee-management', subitemId }) => {
+const HRView: React.FC<HRViewProps> = ({ serviceName = 'employee-management', subitemId, departmentData }) => {
   const config = getDepartmentConfig('HR')!;
 
   const renderContent = (data: any) => {
@@ -76,6 +77,7 @@ const HRView: React.FC<HRViewProps> = ({ serviceName = 'employee-management', su
       config={config}
       serviceName={serviceName}
       subitemId={subitemId}
+      departmentData={departmentData}
       contentRenderer={renderContent}
     />
   );
