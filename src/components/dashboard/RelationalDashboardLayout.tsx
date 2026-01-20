@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
   selectSelectedAssistant,
   selectSelectedDepartment,
+  selectSelectedService,
   selectActiveContext,
   selectShowFeatureSidebar,
   fetchContextualData,
@@ -15,6 +16,17 @@ import {
 import RelationalLeftSidebar from '../sidebars/RelationalLeftSidebar/RelationalLeftSidebar';
 import RelationalRightSidebar from '../sidebars/RelationalRightSidebar/RelationalRightSidebar';
 import MaryInventorySidebar from '../sidebars/MaryInventorySidebar/MaryInventorySidebar';
+// Import all department views
+import ExecutiveView from '../departmentViews/ExecutiveView';
+import SalesView from '../departmentViews/SalesView';
+import OperationsView from '../departmentViews/OperationsView';
+import FinanceView from '../departmentViews/FinanceView';
+import ComplianceView from '../departmentViews/ComplianceView';
+import AnalyticsView from '../departmentViews/AnalyticsView';
+import TechnologyView from '../departmentViews/TechnologyView';
+import MarketingView from '../departmentViews/MarketingView';
+import PropertyManagementView from '../departmentViews/PropertyManagementView';
+import HRView from '../departmentViews/HRView';
 
 // Styled Components
 const DashboardContainer = styled.div`
@@ -57,11 +69,11 @@ const DashboardContent = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${(props) => props.theme.colors.scrollbar || '#555'};
+    background: ${(props) => (props.theme?.colors as any)?.scrollbar || '#555'};
     border-radius: 4px;
 
     &:hover {
-      background: ${(props) => props.theme.colors.scrollbarHover || '#777'};
+      background: ${(props) => (props.theme?.colors as any)?.scrollbarHover || '#777'};
     }
   }
 `;
@@ -90,19 +102,19 @@ const BreadcrumbNav = styled.div`
   }
 `;
 
-const FeatureSidebarContainer = styled.div`
+const FeatureSidebarContainer = styled.div<{ $isVisible?: boolean }>`
   position: absolute;
   right: 0;
   top: 0;
   width: 280px;
   height: 100%;
-  background: ${(props) => props.theme.colors.sidebar.background || '#1a1a1a'};
+  background: ${(props) => (props.theme?.colors as any)?.sidebarBg || '#1a1a1a'};
   border-left: 1px solid ${(props) => props.theme.colors.border || '#333'};
   overflow: hidden;
   transition: all 0.3s ease;
-  opacity: ${(props) => (props.isVisible ? 1 : 0)};
-  pointer-events: ${(props) => (props.isVisible ? 'auto' : 'none')};
-  transform: translateX(${(props) => (props.isVisible ? '0' : '100%')});
+  opacity: ${(props) => (props.$isVisible ? 1 : 0)};
+  pointer-events: ${(props) => (props.$isVisible ? 'auto' : 'none')};
+  transform: translateX(${(props) => (props.$isVisible ? '0' : '100%')});
 `;
 
 const ContentWrapper = styled.div`
@@ -153,7 +165,7 @@ const EmptyState = styled.div`
  * Main layout component that orchestrates:
  * - Left sidebar: Departments/Services
  * - Right sidebar: AI Assistants with notifications
- * - Main content: Contextual display
+ * - Main content: Dynamic department views
  * - Feature sidebar: Conditional (e.g., Inventory when Mary+Inventory selected)
  */
 const RelationalDashboardLayout = ({ userPermissions = {} }) => {
@@ -162,8 +174,23 @@ const RelationalDashboardLayout = ({ userPermissions = {} }) => {
   // Redux selectors
   const selectedAssistant = useSelector(selectSelectedAssistant);
   const selectedDepartment = useSelector(selectSelectedDepartment);
+  const selectedService = useSelector(selectSelectedService);
   const activeContext = useSelector(selectActiveContext);
   const showFeatureSidebar = useSelector(selectShowFeatureSidebar);
+
+  // Department view component map
+  const departmentViewMap = useMemo(() => ({
+    EXECUTIVE: ExecutiveView,
+    SALES: SalesView,
+    OPERATIONS: OperationsView,
+    FINANCE: FinanceView,
+    COMPLIANCE: ComplianceView,
+    ANALYTICS: AnalyticsView,
+    TECHNOLOGY: TechnologyView,
+    MARKETING: MarketingView,
+    PROPERTY_MANAGEMENT: PropertyManagementView,
+    HR: HRView,
+  } as any), []);
 
   // Fetch contextual data when context changes
   useEffect(() => {
@@ -171,20 +198,29 @@ const RelationalDashboardLayout = ({ userPermissions = {} }) => {
       try {
         const isValid = isValidAssistantContext(selectedAssistant, activeContext);
         if (isValid) {
-          dispatch(fetchContextualData({ assistantId: selectedAssistant, context: activeContext }));
+          // TODO: Implement contextual data fetching for selected assistant/context
+          // dispatch(fetchContextualData({ assistantId: selectedAssistant, context: activeContext }));
+          console.debug('[RelationalDashboardLayout] Context changed:', {
+            selectedAssistant,
+            activeContext,
+            isValid
+          });
         }
       } catch (error) {
-        console.error('Error fetching contextual data:', error);
+        console.error('Error validating context:', error);
       }
     }
-  }, [selectedAssistant, activeContext, dispatch]);
+  }, [selectedAssistant, activeContext]);
 
   // Get sidebar configuration
   const renderConfig = getSidebarRenderConfig(
     selectedAssistant,
     selectedDepartment,
     activeContext
-  );
+  ) as any;
+
+  // Default to true for now since we always show sidebars
+  const showRightSidebar = renderConfig?.showRightSidebar !== false;
 
   // Render feature-specific sidebar
   const renderFeatureSidebar = () => {
@@ -196,7 +232,7 @@ const RelationalDashboardLayout = ({ userPermissions = {} }) => {
       // Add more mappings as feature sidebars are created
       // 'daisy_001-leasing': <LeaseManagerSidebar />,
       // 'cipher_001-analytics': <AnalyticsSidebar />,
-    };
+    } as any;
 
     const mapKey = `${selectedAssistant}-${activeContext}`;
     return featureSidebarMap[mapKey] || null;
@@ -204,43 +240,39 @@ const RelationalDashboardLayout = ({ userPermissions = {} }) => {
 
   // Render main content based on current selection
   const renderMainContent = () => {
-    if (!selectedAssistant) {
+    // If no department selected, show empty state
+    if (!selectedDepartment) {
       return (
         <EmptyState>
-          <div>Select an assistant to get started</div>
+          <div>Select a department from the left sidebar to get started</div>
         </EmptyState>
       );
     }
 
-    if (activeContext && showFeatureSidebar) {
+    // Get the component for the selected department
+    const ViewComponent = departmentViewMap[selectedDepartment];
+
+    if (!ViewComponent) {
       return (
         <EmptyState>
-          <div>
-            {activeContext.charAt(0).toUpperCase() + activeContext.slice(1)} tools
-            are displayed in the sidebar →
-          </div>
+          <div>Department view not available for: {selectedDepartment}</div>
         </EmptyState>
       );
     }
 
+    // Render the department view with service info
     return (
-      <EmptyState>
-        <div>
-          <div style={{ marginBottom: '16px' }}>
-            {selectedAssistant.charAt(0).toUpperCase() + selectedAssistant.slice(1)} Assistant
-          </div>
-          <div style={{ fontSize: '12px', color: '#666' }}>
-            Select a context tool to begin working
-          </div>
-        </div>
-      </EmptyState>
+      <ViewComponent
+        serviceName={selectedService || undefined}
+        subitemId={undefined}
+      />
     );
   };
 
   return (
     <DashboardContainer>
       {/* Left Sidebar: Departments & Services */}
-      {renderConfig.showLeftSidebar && (
+      {renderConfig?.showLeftSidebar !== false && (
         <LeftSidebarWrapper>
           <RelationalLeftSidebar userPermissions={userPermissions} />
         </LeftSidebarWrapper>
@@ -252,30 +284,17 @@ const RelationalDashboardLayout = ({ userPermissions = {} }) => {
           {/* Dashboard Content */}
           <DashboardContent>
             {/* Breadcrumb Navigation */}
-            {renderConfig.breadcrumb && (
+            {selectedDepartment && (
               <BreadcrumbNav>
-                {renderConfig.breadcrumb.department && (
+                <span className="active">
+                  {selectedDepartment}
+                </span>
+                {selectedService && (
                   <>
-                    <span className="active">
-                      {renderConfig.breadcrumb.department}
-                    </span>
                     <span className="separator">/</span>
-                  </>
-                )}
-
-                {renderConfig.breadcrumb.assistant && (
-                  <>
                     <span className="active">
-                      {renderConfig.breadcrumb.assistant}
+                      {selectedService}
                     </span>
-                    {renderConfig.breadcrumb.context && (
-                      <>
-                        <span className="separator">/</span>
-                        <span className="active">
-                          {renderConfig.breadcrumb.context}
-                        </span>
-                      </>
-                    )}
                   </>
                 )}
               </BreadcrumbNav>
@@ -286,16 +305,16 @@ const RelationalDashboardLayout = ({ userPermissions = {} }) => {
           </DashboardContent>
 
           {/* Feature-Specific Sidebar (e.g., Inventory, Leasing, Analytics) */}
-          <FeatureSidebarContainer isVisible={showFeatureSidebar}>
+          <FeatureSidebarContainer $isVisible={showFeatureSidebar}>
             {renderFeatureSidebar()}
           </FeatureSidebarContainer>
         </ContentWrapper>
 
         {/* Right Sidebar: AI Assistants */}
-        {renderConfig.showRightSidebar && (
+        {renderConfig?.showRightSidebar !== false && (
           <RelationalRightSidebar
             selectedDepartment={selectedDepartment}
-            selectedService={renderConfig.breadcrumb?.service}
+            selectedService={selectedService}
             userPermissions={userPermissions}
           />
         )}

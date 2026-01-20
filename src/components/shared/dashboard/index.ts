@@ -3,5 +3,6 @@
  * Aggregates all shared dashboard components for easy import
  */
 
-export { DashboardShell } from './DashboardShell';
-export { DataCard } from './DataCard';
+export { default as DashboardShell } from './DashboardShell';
+export { default as DataCard } from './DataCard';
+export { default as DataCardGrid } from './DataCardGrid';

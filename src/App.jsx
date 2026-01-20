@@ -153,6 +153,9 @@ const PropertiesPage = lazy(() =>
 const DashboardPage = lazy(() => 
   import(/* webpackChunkName: "page-dashboard" */ './pages/DashboardPage')
 );
+const RelationalDashboardLayout = lazy(() => 
+  import(/* webpackChunkName: "page-relational-dashboard" */ './components/dashboard/RelationalDashboardLayout')
+);
 const NotFoundPage = lazy(() => 
   import(/* webpackChunkName: "page-misc" */ './pages/NotFoundPage')
 );
@@ -271,6 +274,15 @@ function App() {
           <ProtectedRoute>
             <Suspense fallback={<PageLoader />}>
               <DashboardPage />
+            </Suspense>
+          </ProtectedRoute>
+        } />
+
+        {/* Relational Sidebar Dashboard */}
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <Suspense fallback={<PageLoader />}>
+              <RelationalDashboardLayout userPermissions={['view_all']} />
             </Suspense>
           </ProtectedRoute>
         } />

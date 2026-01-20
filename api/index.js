@@ -1783,6 +1783,274 @@ app.post('/api/aurora/monitoring/biometric-stats', express.json(), (req, res) =>
   });
 });
 
+// ============================================================
+// RELATIONAL SIDEBAR API ENDPOINTS
+// ============================================================
+
+// Import utilities for relational sidebar
+import { DEPARTMENTS, ASSISTANTS, filterServicesByAssistant } from '../src/utils/relationalSidebarUtils.js';
+
+/**
+ * GET /api/relational-sidebar/departments
+ * Returns all departments with their services
+ */
+app.get('/api/relational-sidebar/departments', async (req, res) => {
+  try {
+    const departments = Object.entries(DEPARTMENTS).map(([key, dept]) => ({
+      id: key,
+      label: dept.label,
+      icon: dept.icon,
+      color: dept.color,
+      serviceCount: Object.keys(dept.services || {}).length,
+      services: Object.keys(dept.services || {})
+    }));
+
+    res.json({
+      success: true,
+      data: departments,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[API] GET /relational-sidebar/departments - Error:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/relational-sidebar/departments/:id
+ * Returns specific department with full details
+ */
+app.get('/api/relational-sidebar/departments/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const dept = DEPARTMENTS[id];
+
+    if (!dept) {
+      return res.status(404).json({
+        success: false,
+        error: `Department '${id}' not found`
+      });
+    }
+
+    const services = Object.entries(dept.services || {}).map(([serviceId, service]) => ({
+      id: serviceId,
+      label: service.label,
+      description: service.description,
+      component: service.component,
+      subitems: Object.keys(service.subitems || {}).length
+    }));
+
+    res.json({
+      success: true,
+      data: {
+        id,
+        label: dept.label,
+        icon: dept.icon,
+        color: dept.color,
+        services,
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error(`[API] GET /relational-sidebar/departments/${req.params.id} - Error:`, error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/relational-sidebar/assistants
+ * Returns all assistants, optionally filtered by department or service
+ */
+app.get('/api/relational-sidebar/assistants', async (req, res) => {
+  try {
+    const { department, service, hasPermission } = req.query;
+
+    let assistants = Object.entries(ASSISTANTS).map(([key, assistant]) => ({
+      id: key,
+      name: assistant.name,
+      description: assistant.description,
+      color: assistant.color,
+      icon: assistant.icon,
+      departments: assistant.departments,
+      services: assistant.services,
+      contexts: assistant.contexts
+    }));
+
+    // Apply filters
+    if (department) {
+      assistants = assistants.filter(a => a.departments.includes(department));
+    }
+
+    if (service) {
+      assistants = assistants.filter(a => a.services.includes(service));
+    }
+
+    if (hasPermission === 'true') {
+      // Filter assistants that have permissions (all in this mock)
+      assistants = assistants.filter(a => a.departments.length > 0);
+    }
+
+    res.json({
+      success: true,
+      data: assistants,
+      count: assistants.length,
+      filters: { department, service, hasPermission },
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[API] GET /relational-sidebar/assistants - Error:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/relational-sidebar/assistants/:id
+ * Returns specific assistant with full profile
+ */
+app.get('/api/relational-sidebar/assistants/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const assistant = ASSISTANTS[id];
+
+    if (!assistant) {
+      return res.status(404).json({
+        success: false,
+        error: `Assistant '${id}' not found`
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        id,
+        name: assistant.name,
+        description: assistant.description,
+        color: assistant.color,
+        icon: assistant.icon,
+        departments: assistant.departments,
+        services: assistant.services,
+        contexts: assistant.contexts,
+        permissions: ['view', 'edit', 'manage'],
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error(`[API] GET /relational-sidebar/assistants/${req.params.id} - Error:`, error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/relational-sidebar/contextual-data
+ * Returns context-specific data (e.g., inventory for Mary)
+ */
+app.get('/api/relational-sidebar/contextual-data', async (req, res) => {
+  try {
+    const { assistantId, context } = req.query;
+
+    if (!assistantId || !context) {
+      return res.status(400).json({
+        success: false,
+        error: 'assistantId and context are required'
+      });
+    }
+
+    const assistant = ASSISTANTS[assistantId];
+
+    if (!assistant) {
+      return res.status(404).json({
+        success: false,
+        error: `Assistant '${assistantId}' not found`
+      });
+    }
+
+    if (!assistant.contexts.includes(context)) {
+      return res.status(400).json({
+        success: false,
+        error: `Context '${context}' not available for assistant '${assistantId}'`
+      });
+    }
+
+    // Return context-specific data based on assistant and context
+    let contextData = {};
+
+    if (assistantId === 'mary_001' && context === 'inventory') {
+      contextData = {
+        inventoryCount: 150,
+        availableProperties: 45,
+        lastUpdated: new Date().toISOString(),
+        tools: [
+          { id: 'search', label: 'Search Inventory', icon: 'Search' },
+          { id: 'add', label: 'Add Property', icon: 'Plus' },
+          { id: 'manage', label: 'Manage Listings', icon: 'Settings' },
+          { id: 'analytics', label: 'Inventory Analytics', icon: 'BarChart' }
+        ]
+      };
+    }
+
+    res.json({
+      success: true,
+      data: {
+        assistantId,
+        context,
+        contextData,
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error('[API] GET /relational-sidebar/contextual-data - Error:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/relational-sidebar/notifications/:assistantId/clear
+ * Clears notifications for an assistant
+ */
+app.post('/api/relational-sidebar/notifications/:assistantId/clear', async (req, res) => {
+  try {
+    const { assistantId } = req.params;
+    const assistant = ASSISTANTS[assistantId];
+
+    if (!assistant) {
+      return res.status(404).json({
+        success: false,
+        error: `Assistant '${assistantId}' not found`
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        assistantId,
+        notificationsCleared: 0,
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error(`[API] POST /relational-sidebar/notifications/${req.params.assistantId}/clear - Error:`, error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 app.all('/api/*', (req, res) => {
   res.status(404).json({ error: 'API endpoint not found' });
 });
