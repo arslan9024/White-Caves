@@ -4,7 +4,7 @@ import {
   SidebarSection as StyledSection,
   SidebarSectionHeader,
   SidebarSectionContent,
-  SidebarEmptyState,
+  EmptySidebarState,
 } from './styled/SidebarStyledComponents';
 import { useSidebarState } from '../../../hooks/useSidebarState';
 
@@ -58,7 +58,7 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
   }, [id, toggleExpanded, shouldShowExpanded, onToggle]);
 
   return (
-    <StyledSection isDivider={isDivider}>
+    <StyledSection>
       {isCollapsible && (
         <SidebarSectionHeader
           onClick={handleToggle}
@@ -100,16 +100,16 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
       )}
 
       <SidebarSectionContent
-        isVisible={shouldShowExpanded && !isEmpty}
         id={`section-content-${id}`}
         role="region"
         aria-labelledby={`section-header-${id}`}
         data-testid={`sidebar-section-content-${id}`}
+        style={{ display: shouldShowExpanded && !isEmpty ? 'flex' : 'none' }}
       >
         {isEmpty ? (
-          <SidebarEmptyState>
+          <EmptySidebarState>
             <p>{emptyMessage}</p>
-          </SidebarEmptyState>
+          </EmptySidebarState>
         ) : (
           children
         )}

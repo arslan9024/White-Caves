@@ -93,8 +93,8 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
 
   return (
     <SidebarItemWrapper
-      isActive={isSelected}
-      isDragging={isDragging}
+      $isActive={isSelected}
+      $isDragging={isDragging}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
       onContextMenu={handleContextMenu}
@@ -109,7 +109,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
         <StatusIndicator
           status={status}
           color={statusColor}
-          size="md"
+          $size="md"
           pulsing={status === 'online'}
         />
       )}
@@ -126,7 +126,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
         {badge && (
           <SidebarItemBadge
             variant={badge.variant || 'primary'}
-            size={badge.size || 'md'}
+            $size={badge.size || 'md'}
           >
             {badge.text}
           </SidebarItemBadge>
@@ -134,7 +134,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
 
         {isFavoriteable && (isHovering || isFav) && (
           <SidebarFavoriteButton
-            isFavorited={isFav}
+            $isFavorited={isFav}
             onClick={handleFavoriteClick}
             aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
             title={isFav ? 'Remove from favorites' : 'Add to favorites'}

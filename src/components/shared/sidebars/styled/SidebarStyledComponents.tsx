@@ -210,37 +210,41 @@ export const SidebarSectionContent = styled.div`
 // ============================================================================
 
 export const SidebarItemWrapper = styled.div<{
-  isSelected?: boolean;
-  isDragging?: boolean;
-  isRelated?: boolean;
+  $isActive?: boolean;
+  $isDragging?: boolean;
+  $isRelated?: boolean;
 }>`
+  display: flex;
+  align-items: center;
   gap: ${SPACING.sm};
   padding: ${SPACING.sm} ${SPACING.md};
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 
   background-color: ${props => {
-    if (props.isSelected) {
+    if (props.$isActive) {
       return COLORS.sidebar.activeBackground;
     }
-    if (props.isDragging) {
+    if (props.$isDragging) {
       return COLORS.sidebar.dragBackground;
     }
-    return props.isRelated ? COLORS.sidebar.background : 'transparent';
+    return props.$isRelated ? COLORS.sidebar.background : 'transparent';
   }};
 
   color: ${props =>
-    props.isSelected ? COLORS.primary : COLORS.sidebar.background};
+    props.$isActive ? COLORS.primary : COLORS.text.primary};
 
   &:hover {
     background: ${props =>
-      props.isSelected ? COLORS.sidebar.activeBackground : COLORS.sidebar.hoverBackground};
+      props.$isActive ? COLORS.sidebar.activeBackground : COLORS.sidebar.hoverBackground};
   }
 
   ${props =>
-    props.isSelected &&
+    props.$isActive &&
     css`
       background: ${COLORS.sidebar.activeBackground};
       box-shadow: inset 2px 0 0 ${COLORS.primary};
-      background: ${COLORS.sidebar.selectedBackground};
     `}
 `;
 
@@ -282,6 +286,7 @@ export const SidebarItemMeta = styled.span`
 
 export const SidebarItemBadge = styled.span<{
   variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
+  $size?: 'sm' | 'md';
 }>`
   display: inline-flex;
   align-items: center;
@@ -305,20 +310,38 @@ export const SidebarItemBadge = styled.span<{
     };
     return variants[props.variant || 'primary'];
   }}
+
+  ${props =>
+    props.$size === 'sm' &&
+    css`
+      min-width: 16px;
+      height: 16px;
+      font-size: 10px;
+      padding: 0 4px;
+    `}
 `;
 
-export const SidebarFavoriteButton = styled.button`
+export const SidebarFavoriteButton = styled.button<{
+  $isFavorited?: boolean;
+}>`
   background: none;
   border: none;
   padding: ${SPACING.sm};
   cursor: pointer;
-  color: ${COLORS.text.secondary};
+  color: ${props => props.$isFavorited ? COLORS.primary : COLORS.text.secondary};
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 4px;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
 
   &:hover {
     background: ${COLORS.border.light};
@@ -333,6 +356,7 @@ export const SidebarFavoriteButton = styled.button`
 export const StatusIndicator = styled.span<{
   status: 'online' | 'offline' | 'idle' | 'busy' | 'custom';
   color?: string;
+  $size?: string;
   pulsing?: boolean;
 }>`
   display: inline-block;

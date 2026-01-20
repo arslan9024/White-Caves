@@ -2,14 +2,6 @@
 import React, { useMemo } from 'react';
 import { BaseSidebar, SidebarSection, SidebarItem } from '../../shared/sidebars';
 import { useSidebarState } from '../../../hooks/useSidebarState';
-import {
-  HomeIcon,
-  SearchIcon,
-  UploadIcon,
-  HistoryIcon,
-  SettingsIcon,
-  StatsIcon,
-} from '../../icons'; // Import your icons or use simple strings
 import styled from 'styled-components';
 
 /**
@@ -35,7 +27,7 @@ export const MaryInventorySidebar: React.FC<MaryInventorySidebarProps> = ({
   activeFeature,
   className,
 }) => {
-  const { setActiveFeature, expandedSections, toggleSection } = useSidebarState();
+  const { setActive, toggleExpanded, isExpanded } = useSidebarState('mary-inventory');
 
   // Define sidebar structure with categories and items
   const sidebarStructure = useMemo(
@@ -136,7 +128,7 @@ export const MaryInventorySidebar: React.FC<MaryInventorySidebarProps> = ({
   );
 
   const handleItemClick = (featureId: string) => {
-    setActiveFeature(featureId);
+    setActive(featureId);
     if (onFeatureSelect) {
       onFeatureSelect(featureId);
     }
@@ -144,25 +136,26 @@ export const MaryInventorySidebar: React.FC<MaryInventorySidebarProps> = ({
 
   return (
     <SidebarContainer className={className}>
-      <BaseSidebar title="Mary Inventory" icon="🏠">
+      <BaseSidebar title="Mary Inventory" icon="🏠" name="mary-inventory">
         {sidebarStructure.map(section => (
           <SidebarSection
             key={section.id}
-            sectionId={section.id}
+            id={section.id}
             title={section.title}
-            isExpanded={expandedSections.has(section.id)}
-            onToggleExpand={() => toggleSection(section.id)}
+            sidebarName="mary-inventory"
+            defaultExpanded={isExpanded(section.id)}
+            onToggle={() => toggleExpanded(section.id)}
           >
             {section.items.map(item => (
               <SidebarItem
                 key={item.id}
-                itemId={item.id}
+                id={item.id}
                 label={item.label}
                 icon={item.icon}
-                badge={item.badge}
-                isActive={activeFeature === item.id}
+                badge={item.badge ? { text: item.badge, variant: 'primary' } : undefined}
+                isSelected={activeFeature === item.id}
+                sidebarName="mary-inventory"
                 onClick={() => handleItemClick(item.id)}
-                description={item.description}
               />
             ))}
           </SidebarSection>

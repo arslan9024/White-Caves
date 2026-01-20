@@ -51,7 +51,7 @@ export const CompanyDepartmentSidebar: React.FC<CompanyDepartmentSidebarProps> =
   activeDepartment,
   className,
 }) => {
-  const { setActiveFeature, expandedSections, toggleSection } = useSidebarState();
+  const { setActive, toggleExpanded, isExpanded } = useSidebarState('company-dept');
 
   // Organize departments by hierarchy
   const cSuite = useMemo(() => getDepartmentsByHierarchy(1), []);
@@ -59,14 +59,14 @@ export const CompanyDepartmentSidebar: React.FC<CompanyDepartmentSidebarProps> =
   const managers = useMemo(() => getDepartmentsByHierarchy(3), []);
 
   const handleDepartmentClick = (departmentId: string) => {
-    setActiveFeature(`dept-${departmentId}`);
+    setActive(`dept-${departmentId}`);
     if (onFeatureSelect) {
       onFeatureSelect(`dept-dashboard`, { department: departmentId });
     }
   };
 
   const handleServiceClick = (departmentId: string, serviceId: string) => {
-    setActiveFeature(`service-${serviceId}`);
+    setActive(`service-${serviceId}`);
     if (onFeatureSelect) {
       onFeatureSelect(serviceId, { department: departmentId });
     }
@@ -74,7 +74,7 @@ export const CompanyDepartmentSidebar: React.FC<CompanyDepartmentSidebarProps> =
 
   return (
     <SidebarContainer className={className}>
-      <BaseSidebar title="White Caves" icon="🏢" subtitle="Organization">
+      <BaseSidebar title="White Caves" icon="🏢">
         {/* C-SUITE SECTION */}
         {cSuite.length > 0 && (
           <DeptSection>
@@ -82,45 +82,47 @@ export const CompanyDepartmentSidebar: React.FC<CompanyDepartmentSidebarProps> =
             {cSuite.map(dept => (
               <SidebarSection
                 key={dept.id}
-                sectionId={dept.id}
+                id={dept.id}
                 title={dept.name}
-                isExpanded={expandedSections.has(dept.id)}
-                onToggleExpand={() => toggleSection(dept.id)}
-                iconColor={dept.color}
+                sidebarName="company-dept"
+                defaultExpanded={isExpanded(dept.id)}
+                onToggle={() => toggleExpanded(dept.id)}
               >
                 {/* Department Overview Item */}
                 <SidebarItem
-                  itemId={`dept-${dept.id}`}
+                  id={`dept-${dept.id}`}
                   label="Dashboard"
                   icon={dept.icon}
-                  isActive={activeFeature === `dept-${dept.id}` || activeDepartment === dept.id}
+                  isSelected={activeFeature === `dept-${dept.id}` || activeDepartment === dept.id}
+                  sidebarName="company-dept"
                   onClick={() => handleDepartmentClick(dept.id)}
-                  description={`${dept.head} - ${dept.headTitle}`}
                 />
 
                 {/* Department Services */}
                 {dept.services.map((serviceId, idx) => (
                   <SidebarItem
                     key={serviceId}
-                    itemId={`service-${serviceId}`}
+                    id={`service-${serviceId}`}
                     label={serviceId
                       .split('-')
                       .map(w => w.charAt(0).toUpperCase() + w.slice(1))
                       .join(' ')}
                     icon={['📊', '📈', '💼', '🔐', '📋'][idx % 5]}
-                    isActive={activeFeature === `service-${serviceId}`}
+                    isSelected={activeFeature === `service-${serviceId}`}
+                    sidebarName="company-dept"
                     onClick={() => handleServiceClick(dept.id, serviceId)}
                   />
                 ))}
 
                 {/* Department Team */}
                 <SidebarItem
-                  itemId={`team-${dept.id}`}
+                  id={`team-${dept.id}`}
                   label="Team"
                   icon="👥"
-                  isActive={activeFeature === `team-${dept.id}`}
+                  isSelected={activeFeature === `team-${dept.id}`}
+                  sidebarName="company-dept"
                   onClick={() => {
-                    setActiveFeature(`team-${dept.id}`);
+                    setActive(`team-${dept.id}`);
                     onFeatureSelect?.(`team-directory`, { department: dept.id });
                   }}
                 />
@@ -136,55 +138,58 @@ export const CompanyDepartmentSidebar: React.FC<CompanyDepartmentSidebarProps> =
             {directors.map(dept => (
               <SidebarSection
                 key={dept.id}
-                sectionId={dept.id}
+                id={dept.id}
                 title={dept.name}
-                isExpanded={expandedSections.has(dept.id)}
-                onToggleExpand={() => toggleSection(dept.id)}
-                iconColor={dept.color}
+                sidebarName="company-dept"
+                defaultExpanded={isExpanded(dept.id)}
+                onToggle={() => toggleExpanded(dept.id)}
               >
                 <SidebarItem
-                  itemId={`dept-${dept.id}`}
+                  id={`dept-${dept.id}`}
                   label="Dashboard"
                   icon={dept.icon}
-                  isActive={activeFeature === `dept-${dept.id}` || activeDepartment === dept.id}
+                  isSelected={activeFeature === `dept-${dept.id}` || activeDepartment === dept.id}
+                  sidebarName="company-dept"
                   onClick={() => handleDepartmentClick(dept.id)}
-                  description={`${dept.head} - ${dept.headTitle}`}
                 />
 
                 {dept.services.slice(0, 3).map(serviceId => (
                   <SidebarItem
                     key={serviceId}
-                    itemId={`service-${serviceId}`}
+                    id={`service-${serviceId}`}
                     label={serviceId
                       .split('-')
                       .map(w => w.charAt(0).toUpperCase() + w.slice(1))
                       .join(' ')}
                     icon="⚙️"
-                    isActive={activeFeature === `service-${serviceId}`}
+                    isSelected={activeFeature === `service-${serviceId}`}
+                    sidebarName="company-dept"
                     onClick={() => handleServiceClick(dept.id, serviceId)}
                   />
                 ))}
 
                 {dept.services.length > 3 && (
                   <SidebarItem
-                    itemId={`services-${dept.id}`}
+                    id={`services-${dept.id}`}
                     label={`+${dept.services.length - 3} More Services`}
                     icon="📋"
-                    isActive={false}
+                    isSelected={false}
+                    sidebarName="company-dept"
                     onClick={() => {
-                      setActiveFeature(`services-${dept.id}`);
+                      setActive(`services-${dept.id}`);
                       onFeatureSelect?.(`service-list`, { department: dept.id });
                     }}
                   />
                 )}
 
                 <SidebarItem
-                  itemId={`team-${dept.id}`}
+                  id={`team-${dept.id}`}
                   label="Team"
                   icon="👥"
-                  isActive={activeFeature === `team-${dept.id}`}
+                  isSelected={activeFeature === `team-${dept.id}`}
+                  sidebarName="company-dept"
                   onClick={() => {
-                    setActiveFeature(`team-${dept.id}`);
+                    setActive(`team-${dept.id}`);
                     onFeatureSelect?.(`team-directory`, { department: dept.id });
                   }}
                 />
@@ -200,42 +205,44 @@ export const CompanyDepartmentSidebar: React.FC<CompanyDepartmentSidebarProps> =
             {managers.map(dept => (
               <SidebarSection
                 key={dept.id}
-                sectionId={dept.id}
+                id={dept.id}
                 title={dept.name}
-                isExpanded={expandedSections.has(dept.id)}
-                onToggleExpand={() => toggleSection(dept.id)}
-                iconColor={dept.color}
+                sidebarName="company-dept"
+                defaultExpanded={isExpanded(dept.id)}
+                onToggle={() => toggleExpanded(dept.id)}
               >
                 <SidebarItem
-                  itemId={`dept-${dept.id}`}
+                  id={`dept-${dept.id}`}
                   label="Dashboard"
                   icon={dept.icon}
-                  isActive={activeFeature === `dept-${dept.id}` || activeDepartment === dept.id}
+                  isSelected={activeFeature === `dept-${dept.id}` || activeDepartment === dept.id}
+                  sidebarName="company-dept"
                   onClick={() => handleDepartmentClick(dept.id)}
-                  description={`${dept.head} - ${dept.headTitle}`}
                 />
 
                 {dept.services.map(serviceId => (
                   <SidebarItem
                     key={serviceId}
-                    itemId={`service-${serviceId}`}
+                    id={`service-${serviceId}`}
                     label={serviceId
                       .split('-')
                       .map(w => w.charAt(0).toUpperCase() + w.slice(1))
                       .join(' ')}
                     icon="⚙️"
-                    isActive={activeFeature === `service-${serviceId}`}
+                    isSelected={activeFeature === `service-${serviceId}`}
+                    sidebarName="company-dept"
                     onClick={() => handleServiceClick(dept.id, serviceId)}
                   />
                 ))}
 
                 <SidebarItem
-                  itemId={`team-${dept.id}`}
+                  id={`team-${dept.id}`}
                   label="Team"
                   icon="👥"
-                  isActive={activeFeature === `team-${dept.id}`}
+                  isSelected={activeFeature === `team-${dept.id}`}
+                  sidebarName="company-dept"
                   onClick={() => {
-                    setActiveFeature(`team-${dept.id}`);
+                    setActive(`team-${dept.id}`);
                     onFeatureSelect?.(`team-directory`, { department: dept.id });
                   }}
                 />
