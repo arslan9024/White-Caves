@@ -7,25 +7,40 @@ export const lightTheme = {
     primary: '#C41E3A', // Red/Crimson
     secondary: '#0EA5E9', // Sky Blue
     
-    // Backgrounds
-    background: '#FFFFFF',
+    // Backgrounds (nested structure for styled-components)
+    background: {
+      primary: '#FFFFFF',
+      secondary: '#F9FAFB',
+      tertiary: '#F3F4F6',
+    },
     backgroundAlt: '#F9FAFB',
     cardBg: '#FFFFFF',
     
-    // Text
+    // Text (nested structure)
+    text: {
+      primary: '#1F2937',
+      secondary: '#6B7280',
+      tertiary: '#9CA3AF',
+      inverse: '#FFFFFF',
+    },
     textPrimary: '#1F2937',
     textSecondary: '#6B7280',
     textTertiary: '#9CA3AF',
     textInverse: '#FFFFFF',
     
-    // Borders & Dividers
-    border: '#E5E7EB',
+    // Borders & Dividers (nested structure)
+    border: {
+      light: '#F3F4F6',
+      medium: '#E5E7EB',
+      dark: '#D1D5DB',
+    },
     borderLight: '#F3F4F6',
     divider: '#E5E7EB',
     
     // States
     success: '#10B981',
     warning: '#F59E0B',
+    danger: '#EF4444',
     error: '#EF4444',
     info: '#3B82F6',
     
@@ -43,6 +58,9 @@ export const lightTheme = {
     // Semantic
     activeBg: '#FCE4E6',
     hoverBg: '#F9FAFB',
+    
+    // Sidebar specific
+    sidebarBg: '#FFFFFF',
   },
   
   spacing: {
@@ -174,19 +192,34 @@ export const darkTheme = {
   ...lightTheme,
   colors: {
     ...lightTheme.colors,
-    background: '#0F172A',
+    background: {
+      primary: '#0F172A',
+      secondary: '#1E293B',
+      tertiary: '#334155',
+    },
     backgroundAlt: '#1E293B',
     cardBg: '#1E293B',
+    text: {
+      primary: '#F1F5F9',
+      secondary: '#CBD5E1',
+      tertiary: '#94A3B8',
+      inverse: '#0F172A',
+    },
     textPrimary: '#F1F5F9',
     textSecondary: '#CBD5E1',
     textTertiary: '#94A3B8',
-    border: '#334155',
+    border: {
+      light: '#1E293B',
+      medium: '#334155',
+      dark: '#475569',
+    },
     borderLight: '#1E293B',
     divider: '#334155',
     hover: '#1E293B',
     active: '#3D0A1A',
     hoverBg: '#1E293B',
     activeBg: '#3D0A1A',
+    sidebarBg: '#1E293B',
   },
 };
 
