@@ -43,7 +43,7 @@ const contactHistorySchema = new mongoose.Schema(
     properties: [{
       propertyId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'PropertyInventory',  // Changed from InventoryProperty
+        ref: 'InventoryProperty',  // Correct model name
       },
       interested: Boolean,
     }],
