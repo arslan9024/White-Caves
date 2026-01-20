@@ -1,14 +1,15 @@
 /**
- * Sales Department View - Enhanced with KPI Cards
- * Demonstrates the new KPI card and visualization system
+ * Sales Department View - Enhanced with Real API Integration
+ * Demonstrates KPI cards and visualization system with live API data
  */
 
 import React, { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import BaseDepartmentView from '../../../components/departmentViews/BaseDepartmentView';
 import { SalesKPIRenderer } from '../../../utils/departmentKPIRenderer';
 import { BarChart, LineChart } from '../../../components/charts/DataVisualization';
+import { useDepartmentData, useDepartmentKPIs, useDepartmentTrends } from '../../../hooks/useRealAPI';
+import { ErrorState, LoadingState } from '../../../components/shared';
 
 const SalesContentWrapper = styled.div`
   display: grid;
@@ -39,21 +40,18 @@ interface SalesDepartmentViewProps {
 
 /**
  * Sales Department View Component
- * Shows sales KPIs and performance charts
+ * Shows sales KPIs and performance charts with live API data
  */
 export const SalesDepartmentView: React.FC<SalesDepartmentViewProps> = ({
   serviceName = 'lead-pipeline',
   subitemId,
 }) => {
-  // Get sales data from Redux
-  const salesData = useSelector((state: any) => {
-    const dept = state.relationalSidebar?.departments?.find(
-      (d: any) => d.code === 'SALES'
-    );
-    return dept?.data || null;
-  });
+  // Fetch department data from real API
+  const { data: salesData, loading: dataLoading, error: dataError } = useDepartmentData('SALES');
+  const { kpis: salesKPIs, loading: kpiLoading, error: kpiError } = useDepartmentKPIs('SALES');
+  const { trends: salesTrends, loading: trendLoading } = useDepartmentTrends('SALES', 'monthly');
 
-  // Mock sales data for demo
+  // Fallback mock data if API data is not available
   const mockSalesData = useMemo(() => ({
     totalLeads: 245,
     activeDeals: 18,
@@ -72,12 +70,34 @@ export const SalesDepartmentView: React.FC<SalesDepartmentViewProps> = ({
     ],
   }), []);
 
+  // Use API data if available, fallback to mock data
+  const displayData = salesData || mockSalesData;
+
+  // Use API data if available, fallback to mock data
+  const displayData = salesData || mockSalesData;
+
+  // Handle loading state
+  if (dataLoading || kpiLoading) {
+    return <LoadingState message="Loading sales data..." />;
+  }
+
+  // Handle error state
+  if (dataError || kpiError) {
+    return (
+      <ErrorState 
+        title="Failed to Load Sales Data"
+        message={dataError?.message || kpiError?.message || 'Unable to fetch sales data. Using fallback data.'}
+        onRetry={() => window.location.reload()}
+      />
+    );
+  }
+
   const contentRenderer = (data: any) => (
     <SalesContentWrapper>
       <ChartCard>
         <h3>Leads by Source</h3>
         <BarChart
-          data={mockSalesData.leadSources}
+          data={displayData.leadSources || mockSalesData.leadSources}
           maxValue={150}
         />
       </ChartCard>
@@ -85,7 +105,7 @@ export const SalesDepartmentView: React.FC<SalesDepartmentViewProps> = ({
       <ChartCard>
         <h3>Monthly Sales Trend</h3>
         <LineChart
-          data={mockSalesData.monthlySales}
+          data={displayData.monthlySales || mockSalesData.monthlySales}
           color="#27ae60"
           maxValue={3000000}
         />
@@ -104,9 +124,11 @@ export const SalesDepartmentView: React.FC<SalesDepartmentViewProps> = ({
       }}
       serviceName={serviceName}
       subitemId={subitemId}
-      departmentData={salesData || mockSalesData}
+      departmentData={displayData}
       kpiRenderer={SalesKPIRenderer}
       contentRenderer={contentRenderer}
+      isLoading={dataLoading || kpiLoading || trendLoading}
+      error={dataError || kpiError}
     />
   );
 };

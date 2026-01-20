@@ -1,14 +1,15 @@
 /**
- * HR Department View - Enhanced with KPI Cards
- * Demonstrates HR metrics and employee analytics
+ * HR Department View - Enhanced with Real API Integration
+ * Demonstrates HR metrics and employee analytics with live API data
  */
 
 import React, { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import BaseDepartmentView from '../../../components/departmentViews/BaseDepartmentView';
 import { HRKPIRenderer } from '../../../utils/departmentKPIRenderer';
 import { BarChart, LineChart, ProgressRing } from '../../../components/charts/DataVisualization';
+import { useDepartmentData, useDepartmentKPIs, useDepartmentTrends } from '../../../hooks/useRealAPI';
+import { ErrorState, LoadingState } from '../../../components/shared';
 
 const HRContentWrapper = styled.div`
   display: grid;
@@ -46,19 +47,16 @@ interface HRDepartmentViewProps {
 
 /**
  * HR Department View Component
- * Shows HR KPIs and employee analytics
+ * Shows HR KPIs and employee analytics with live API data
  */
 export const HRDepartmentView: React.FC<HRDepartmentViewProps> = ({
   serviceName = 'employee-analytics',
   subitemId,
 }) => {
-  // Get HR data from Redux
-  const hrData = useSelector((state: any) => {
-    const dept = state.relationalSidebar?.departments?.find(
-      (d: any) => d.code === 'HR'
-    );
-    return dept?.data || null;
-  });
+  // Fetch department data from real API
+  const { data: hrData, loading: dataLoading, error: dataError } = useDepartmentData('HR');
+  const { kpis: hrKPIs, loading: kpiLoading, error: kpiError } = useDepartmentKPIs('HR');
+  const { trends: hrTrends, loading: trendLoading } = useDepartmentTrends('HR', 'monthly');
 
   // Mock HR data for demo
   const mockHRData = useMemo(() => ({
@@ -88,12 +86,31 @@ export const HRDepartmentView: React.FC<HRDepartmentViewProps> = ({
     ],
   }), []);
 
+  // Use API data if available, fallback to mock data
+  const displayData = hrData || mockHRData;
+
+  // Handle loading state
+  if (dataLoading || kpiLoading) {
+    return <LoadingState message="Loading HR data..." />;
+  }
+
+  // Handle error state
+  if (dataError || kpiError) {
+    return (
+      <ErrorState 
+        title="Failed to Load HR Data"
+        message={dataError?.message || kpiError?.message || 'Unable to fetch HR data. Using fallback data.'}
+        onRetry={() => window.location.reload()}
+      />
+    );
+  }
+
   const contentRenderer = (data: any) => (
     <HRContentWrapper>
       <ChartCard>
         <h3>Employees by Department</h3>
         <BarChart
-          data={mockHRData.employeesByDepartment}
+          data={displayData.employeesByDepartment || mockHRData.employeesByDepartment}
           maxValue={160}
         />
       </ChartCard>
@@ -101,7 +118,7 @@ export const HRDepartmentView: React.FC<HRDepartmentViewProps> = ({
       <ChartCard>
         <h3>Monthly Attendance Rate</h3>
         <LineChart
-          data={mockHRData.attendanceTrend}
+          data={displayData.attendanceTrend || mockHRData.attendanceTrend}
           color="#27ae60"
           maxValue={100}
         />
@@ -112,7 +129,7 @@ export const HRDepartmentView: React.FC<HRDepartmentViewProps> = ({
           <h3>Overall Attendance</h3>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <ProgressRing
-              value={94.5}
+              value={displayData.attendanceRate || mockHRData.attendanceRate}
               max={100}
               color="#27ae60"
               size={150}
@@ -124,7 +141,7 @@ export const HRDepartmentView: React.FC<HRDepartmentViewProps> = ({
         <ChartCard>
           <h3>Hires by Quarter</h3>
           <BarChart
-            data={mockHRData.hiresLastQuarter}
+            data={displayData.hiresLastQuarter || mockHRData.hiresLastQuarter}
             maxValue={60}
           />
         </ChartCard>
@@ -143,9 +160,11 @@ export const HRDepartmentView: React.FC<HRDepartmentViewProps> = ({
       }}
       serviceName={serviceName}
       subitemId={subitemId}
-      departmentData={hrData || mockHRData}
+      departmentData={displayData}
       kpiRenderer={HRKPIRenderer}
       contentRenderer={contentRenderer}
+      isLoading={dataLoading || kpiLoading || trendLoading}
+      error={dataError || kpiError}
     />
   );
 };

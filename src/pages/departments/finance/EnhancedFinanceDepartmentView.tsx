@@ -1,14 +1,15 @@
 /**
- * Finance Department View - Enhanced with KPI Cards
- * Demonstrates financial metrics and budget visualization
+ * Finance Department View - Enhanced with Real API Integration
+ * Demonstrates financial metrics and budget visualization with live API data
  */
 
 import React, { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import BaseDepartmentView from '../../../components/departmentViews/BaseDepartmentView';
 import { FinanceKPIRenderer } from '../../../utils/departmentKPIRenderer';
 import { BarChart, LineChart, ProgressRing } from '../../../components/charts/DataVisualization';
+import { useDepartmentData, useDepartmentKPIs, useDepartmentTrends } from '../../../hooks/useRealAPI';
+import { ErrorState, LoadingState } from '../../../components/shared';
 
 const FinanceContentWrapper = styled.div`
   display: grid;
@@ -46,19 +47,16 @@ interface FinanceDepartmentViewProps {
 
 /**
  * Finance Department View Component
- * Shows financial KPIs and budget allocation
+ * Shows financial KPIs and budget allocation with live API data
  */
 export const FinanceDepartmentView: React.FC<FinanceDepartmentViewProps> = ({
   serviceName = 'budget-overview',
   subitemId,
 }) => {
-  // Get finance data from Redux
-  const financeData = useSelector((state: any) => {
-    const dept = state.relationalSidebar?.departments?.find(
-      (d: any) => d.code === 'FINANCE'
-    );
-    return dept?.data || null;
-  });
+  // Fetch department data from real API
+  const { data: financeData, loading: dataLoading, error: dataError } = useDepartmentData('FINANCE');
+  const { kpis: financeKPIs, loading: kpiLoading, error: kpiError } = useDepartmentKPIs('FINANCE');
+  const { trends: financeTrends, loading: trendLoading } = useDepartmentTrends('FINANCE', 'monthly');
 
   // Mock finance data for demo
   const mockFinanceData = useMemo(() => ({
@@ -82,12 +80,31 @@ export const FinanceDepartmentView: React.FC<FinanceDepartmentViewProps> = ({
     ],
   }), []);
 
+  // Use API data if available, fallback to mock data
+  const displayData = financeData || mockFinanceData;
+
+  // Handle loading state
+  if (dataLoading || kpiLoading) {
+    return <LoadingState message="Loading finance data..." />;
+  }
+
+  // Handle error state
+  if (dataError || kpiError) {
+    return (
+      <ErrorState 
+        title="Failed to Load Finance Data"
+        message={dataError?.message || kpiError?.message || 'Unable to fetch finance data. Using fallback data.'}
+        onRetry={() => window.location.reload()}
+      />
+    );
+  }
+
   const contentRenderer = (data: any) => (
     <FinanceContentWrapper>
       <ChartCard>
         <h3>Budget Allocation by Department</h3>
         <BarChart
-          data={mockFinanceData.departmentBudgets}
+          data={displayData.departmentBudgets || mockFinanceData.departmentBudgets}
           maxValue={18000000}
         />
       </ChartCard>
@@ -95,7 +112,7 @@ export const FinanceDepartmentView: React.FC<FinanceDepartmentViewProps> = ({
       <ChartCard>
         <h3>Monthly Spending Trend</h3>
         <LineChart
-          data={mockFinanceData.monthlySpending}
+          data={displayData.monthlySpending || mockFinanceData.monthlySpending}
           color="#e74c3c"
           maxValue={5000000}
         />
@@ -106,7 +123,7 @@ export const FinanceDepartmentView: React.FC<FinanceDepartmentViewProps> = ({
           <h3>Budget Utilization</h3>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <ProgressRing
-              value={mockFinanceData.utilizationRate}
+              value={displayData.utilizationRate || mockFinanceData.utilizationRate}
               max={100}
               color="#3498db"
               size={150}
@@ -140,9 +157,11 @@ export const FinanceDepartmentView: React.FC<FinanceDepartmentViewProps> = ({
       }}
       serviceName={serviceName}
       subitemId={subitemId}
-      departmentData={financeData || mockFinanceData}
+      departmentData={displayData}
       kpiRenderer={FinanceKPIRenderer}
       contentRenderer={contentRenderer}
+      isLoading={dataLoading || kpiLoading || trendLoading}
+      error={dataError || kpiError}
     />
   );
 };
