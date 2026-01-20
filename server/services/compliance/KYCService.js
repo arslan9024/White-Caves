@@ -429,6 +429,294 @@ class KYCService {
     return profile;
   }
   
+  /**
+   * Process document with OCR and extract structured data
+   * @param {string} customerId - Customer ID
+   * @param {string} documentType - Type of document (emirates_id, passport, visa)
+   * @param {string} filePath - Path to document file
+   * @returns {Promise<object>} Processed document data with OCR results
+   */
+  static async processDocumentWithOCR(customerId, documentType, filePath) {
+    try {
+      // Import OCR libraries
+      const Tesseract = (await import('tesseract.js')).default;
+      const sharp = (await import('sharp')).default;
+      const fs = (await import('fs-extra')).default;
+      
+      // Verify file exists
+      if (!await fs.pathExists(filePath)) {
+        throw new Error(`Document file not found: ${filePath}`);
+      }
+
+      // Perform OCR
+      const startTime = Date.now();
+      const ocrResult = await Tesseract.recognize(filePath, ['ara', 'eng']);
+      const processingTime = Date.now() - startTime;
+      const confidence = Math.round(ocrResult.data.confidence);
+
+      // Analyze image quality
+      const image = sharp(filePath);
+      const metadata = await image.metadata();
+      const stats = await image.stats();
+      
+      const brightness = stats.channels[0].mean || 128;
+      const contrast = stats.channels[0].stdDev || 0;
+      const clarity = Math.min(100, Math.max(0, 100 - Math.abs(brightness - 130) / 1.3));
+      
+      const imageQuality = {
+        clarity: Math.round(clarity),
+        brightness: Math.round(brightness),
+        contrast: Math.round(contrast),
+        isReadable: clarity >= 40 && brightness >= 40 && brightness <= 220,
+        dimensions: { width: metadata.width, height: metadata.height }
+      };
+
+      // Extract data based on document type
+      let extractedData = {};
+      const ocrText = ocrResult.data.text;
+
+      switch (documentType) {
+        case 'emirates_id':
+          extractedData = this.extractEmiratesIdData(ocrText);
+          break;
+        case 'passport':
+          extractedData = this.extractPassportData(ocrText);
+          break;
+        case 'visa':
+          extractedData = this.extractVisaData(ocrText);
+          break;
+        default:
+          throw new Error(`Unsupported document type: ${documentType}`);
+      }
+
+      logger.info(`Document processed successfully for ${customerId}: ${documentType}`);
+
+      return {
+        documentType,
+        customerId,
+        ocrResult: {
+          text: ocrText,
+          confidence,
+          processingTime
+        },
+        imageQuality,
+        extractedData,
+        processingStatus: 'completed',
+        processedAt: new Date()
+      };
+    } catch (error) {
+      logger.error(`Document OCR processing failed: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Extract structured data from Emirates ID OCR text
+   */
+  static extractEmiratesIdData(ocrText) {
+    const extracted = {
+      fullName: null,
+      idNumber: null,
+      dateOfBirth: null,
+      nationality: 'UAE',
+      expiryDate: null,
+      emirate: null,
+      extractionConfidence: 0
+    };
+
+    let matchCount = 0;
+
+    const idMatch = ocrText.match(/784\d{8}/);
+    if (idMatch) { extracted.idNumber = idMatch[0]; matchCount++; }
+
+    const nameMatch = ocrText.match(/[A-Z\s]{10,}/);
+    if (nameMatch) { extracted.fullName = nameMatch[0].trim(); matchCount++; }
+
+    const dobMatch = ocrText.match(/(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);
+    if (dobMatch) {
+      try {
+        extracted.dateOfBirth = new Date(parseInt(dobMatch[3]), parseInt(dobMatch[2]) - 1, parseInt(dobMatch[1]));
+        matchCount++;
+      } catch (e) { logger.warn(`Date parsing: ${e.message}`); }
+    }
+
+    const emirateMatch = ocrText.match(/(Abu Dhabi|Dubai|Sharjah|Ajman|Fujairah|Ras Al Khaimah|Umm Al Quwain)/i);
+    if (emirateMatch) { extracted.emirate = emirateMatch[1]; matchCount++; }
+
+    const expiryMatch = ocrText.match(/Expiry[\s:]+(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/i);
+    if (expiryMatch) {
+      try {
+        extracted.expiryDate = new Date(parseInt(expiryMatch[3]), parseInt(expiryMatch[2]) - 1, parseInt(expiryMatch[1]));
+        matchCount++;
+      } catch (e) { logger.warn(`Expiry date: ${e.message}`); }
+    }
+
+    extracted.extractionConfidence = Math.round((matchCount / 5) * 100);
+    return extracted;
+  }
+
+  /**
+   * Extract structured data from Passport OCR text
+   */
+  static extractPassportData(ocrText) {
+    const extracted = {
+      fullName: null,
+      passportNumber: null,
+      nationality: null,
+      dateOfBirth: null,
+      gender: null,
+      expiryDate: null,
+      issuingCountry: null,
+      extractionConfidence: 0
+    };
+
+    let matchCount = 0;
+
+    const passportMatch = ocrText.match(/[A-Z]{1,2}\d{6,9}/i);
+    if (passportMatch) { extracted.passportNumber = passportMatch[0]; matchCount++; }
+
+    const nameMatch = ocrText.match(/(?:NAME|SUR NAME)[\s:]+([A-Z\s]+)/i);
+    if (nameMatch) { extracted.fullName = nameMatch[1].trim(); matchCount++; }
+
+    const nationalityMatch = ocrText.match(/NATIONALITY[\s:]+([A-Z]{3}|[A-Za-z\s]+)/i);
+    if (nationalityMatch) { extracted.nationality = nationalityMatch[1].trim(); matchCount++; }
+
+    const dobMatch = ocrText.match(/(?:DOB|DATE.*?BIRTH)[\s:]+(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/i);
+    if (dobMatch) {
+      try {
+        extracted.dateOfBirth = new Date(parseInt(dobMatch[3]), parseInt(dobMatch[2]) - 1, parseInt(dobMatch[1]));
+        matchCount++;
+      } catch (e) { logger.warn(`Date parsing: ${e.message}`); }
+    }
+
+    const genderMatch = ocrText.match(/(?:SEX|GENDER)[\s:]+([MF]|MALE|FEMALE)/i);
+    if (genderMatch) { extracted.gender = genderMatch[1].charAt(0).toUpperCase(); matchCount++; }
+
+    const expiryMatch = ocrText.match(/(?:EXPIRY|VALID|EXPIRES)[\s:]+(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/i);
+    if (expiryMatch) {
+      try {
+        extracted.expiryDate = new Date(parseInt(expiryMatch[3]), parseInt(expiryMatch[2]) - 1, parseInt(expiryMatch[1]));
+        matchCount++;
+      } catch (e) { logger.warn(`Expiry: ${e.message}`); }
+    }
+
+    extracted.extractionConfidence = Math.round((matchCount / 7) * 100);
+    return extracted;
+  }
+
+  /**
+   * Extract structured data from Visa OCR text
+   */
+  static extractVisaData(ocrText) {
+    const extracted = {
+      visaNumber: null,
+      visaType: null,
+      sponsorName: null,
+      sponsorId: null,
+      expiryDate: null,
+      entryType: null,
+      extractionConfidence: 0
+    };
+
+    let matchCount = 0;
+
+    const visaMatch = ocrText.match(/(?:VISA|VISA\s+NO|VISA\s+NUMBER)[\s:]+([A-Z0-9]+)/i);
+    if (visaMatch) { extracted.visaNumber = visaMatch[1]; matchCount++; }
+
+    const typeMatch = ocrText.match(/(Employment|Visit|Student|Family Sponsorship|Investor|Retirement|Freelance|Tourist)/i);
+    if (typeMatch) { extracted.visaType = typeMatch[1]; matchCount++; }
+
+    const sponsorMatch = ocrText.match(/SPONSOR[\s:]+([A-Z\s]+)/i);
+    if (sponsorMatch) { extracted.sponsorName = sponsorMatch[1].trim(); matchCount++; }
+
+    const sponsorIdMatch = ocrText.match(/(?:SPONSOR\s+ID|EMPLOYER\s+ID)[\s:]+([0-9]{6}|[A-Z0-9]{10})/i);
+    if (sponsorIdMatch) { extracted.sponsorId = sponsorIdMatch[1]; matchCount++; }
+
+    const expiryMatch = ocrText.match(/(?:EXPIRY|VALID|EXPIRES)[\s:]+(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/i);
+    if (expiryMatch) {
+      try {
+        extracted.expiryDate = new Date(parseInt(expiryMatch[3]), parseInt(expiryMatch[2]) - 1, parseInt(expiryMatch[1]));
+        matchCount++;
+      } catch (e) { logger.warn(`Expiry: ${e.message}`); }
+    }
+
+    const entryMatch = ocrText.match(/(Single|Multiple|Transit)/i);
+    if (entryMatch) { extracted.entryType = entryMatch[1]; matchCount++; }
+
+    extracted.extractionConfidence = Math.round((matchCount / 6) * 100);
+    return extracted;
+  }
+
+  /**
+   * Validate extracted data against regulatory requirements
+   */
+  static validateExtractedData(documentType, extractedData) {
+    const issues = [];
+    const checksPerformed = [];
+
+    switch (documentType) {
+      case 'emirates_id':
+        checksPerformed.push('id_number_format');
+        if (!extractedData.idNumber || !/^784\d{8}$/.test(extractedData.idNumber)) {
+          issues.push({ field: 'idNumber', issue: 'Invalid UAE ID format', severity: 'error' });
+        }
+        
+        checksPerformed.push('expiry_date_check');
+        if (extractedData.expiryDate && extractedData.expiryDate < new Date()) {
+          issues.push({ field: 'expiryDate', issue: 'ID has expired', severity: 'error' });
+        }
+        
+        checksPerformed.push('data_completeness');
+        if (!extractedData.fullName || !extractedData.dateOfBirth) {
+          issues.push({ field: 'completeness', issue: 'Missing required fields', severity: 'warning' });
+        }
+        break;
+
+      case 'passport':
+        checksPerformed.push('passport_format');
+        if (!extractedData.passportNumber) {
+          issues.push({ field: 'passportNumber', issue: 'Passport number not extracted', severity: 'error' });
+        }
+        
+        checksPerformed.push('expiry_date_check');
+        if (extractedData.expiryDate && extractedData.expiryDate < new Date()) {
+          issues.push({ field: 'expiryDate', issue: 'Passport has expired', severity: 'error' });
+        }
+        
+        checksPerformed.push('data_completeness');
+        if (!extractedData.fullName || !extractedData.nationality) {
+          issues.push({ field: 'completeness', issue: 'Missing required fields', severity: 'warning' });
+        }
+        break;
+
+      case 'visa':
+        checksPerformed.push('visa_format');
+        if (!extractedData.visaNumber) {
+          issues.push({ field: 'visaNumber', issue: 'Visa number not extracted', severity: 'error' });
+        }
+        
+        checksPerformed.push('expiry_date_check');
+        if (extractedData.expiryDate && extractedData.expiryDate < new Date()) {
+          issues.push({ field: 'expiryDate', issue: 'Visa has expired', severity: 'error' });
+        }
+        
+        checksPerformed.push('sponsor_check');
+        if (!extractedData.sponsorName || !extractedData.sponsorId) {
+          issues.push({ field: 'sponsor', issue: 'Missing sponsor information', severity: 'warning' });
+        }
+        break;
+    }
+
+    const isValid = issues.every(i => i.severity !== 'error');
+
+    return {
+      isValid,
+      validationStatus: issues.length === 0 ? 'passed' : (issues.some(i => i.severity === 'error') ? 'failed' : 'warnings'),
+      issues,
+      checksPerformed
+    };
+  }
+
   static async verifyDocument(customerId, documentType, verificationData, actor) {
     const profile = await KYCProfile.findOne({ customerId });
     if (!profile) throw new Error('KYC profile not found');
@@ -617,6 +905,50 @@ class KYCService {
   
   static async getAuditTrail(entityType, entityId, options = {}) {
     return ComplianceAudit.getAuditTrail(entityType, entityId, options);
+  }
+
+  /**
+   * Update document verification status and store extracted data
+   */
+  static async updateDocumentVerification(userId, documentData) {
+    try {
+      let profile = await KYCProfile.findOne({ userId });
+      
+      if (!profile) {
+        profile = new KYCProfile({ userId });
+      }
+
+      const document = {
+        type: documentData.documentType,
+        status: documentData.status,
+        ocrConfidence: documentData.ocrConfidence,
+        extractedData: documentData.extractedData,
+        validation: documentData.validationResult,
+        complianceReport: documentData.complianceReport,
+        uploadedAt: documentData.uploadedAt,
+        uploadedBy: documentData.uploadedBy
+      };
+
+      profile.documents.push(document);
+      
+      // Create audit entry
+      await ComplianceAudit.createEntry({
+        entityType: 'KYCProfile',
+        entityId: profile._id,
+        action: 'DOCUMENT_VERIFICATION',
+        actor: documentData.uploadedBy,
+        changes: {
+          documentType: documentData.documentType,
+          status: documentData.status
+        }
+      });
+
+      await profile.save();
+      return profile;
+    } catch (error) {
+      logger.error(`Error updating document verification: ${error.message}`);
+      throw new Error(`Failed to update document verification: ${error.message}`);
+    }
   }
 }
 

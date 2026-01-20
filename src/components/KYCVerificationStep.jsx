@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { 
   Shield, Upload, FileCheck, AlertTriangle, CheckCircle,
   User, CreditCard, Building, ChevronRight, X, Loader2
 } from 'lucide-react';
 import { addNotification } from '../store/slices/kycAmlSlice';
+import DocumentVerificationProcessor from './DocumentVerificationProcessor';
 import './KYCVerificationStep.css';
 
 const ROLES_REQUIRING_KYC = ['buyer', 'seller', 'landlord', 'tenant', 'investor', 'agent'];

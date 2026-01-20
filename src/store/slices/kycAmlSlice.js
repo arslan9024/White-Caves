@@ -164,6 +164,88 @@ export const resolveAMLAlert = createAsyncThunk(
   }
 );
 
+export const processDocumentOCR = createAsyncThunk(
+  'kycAml/processDocumentOCR',
+  async ({ customerId, documentType, filePath }, { rejectWithValue }) => {
+    try {
+      const response = await fetch('/api/compliance/documents/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customerId, documentType, filePath })
+      });
+      if (!response.ok) throw new Error('Document processing failed');
+      const data = await response.json();
+      return data.data || data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const validateDocumentData = createAsyncThunk(
+  'kycAml/validateDocumentData',
+  async ({ documentType, extractedData }, { rejectWithValue }) => {
+    try {
+      const response = await fetch('/api/compliance/documents/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documentType, extractedData })
+      });
+      if (!response.ok) throw new Error('Validation failed');
+      const data = await response.json();
+      return data.data || data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const submitDocumentVerification = createAsyncThunk(
+  'kycAml/submitDocumentVerification',
+  async ({ customerId, documentType, approved, confidence, ocrData, rejectionReason }, { rejectWithValue }) => {
+    try {
+      const response = await fetch('/api/compliance/documents/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customerId, documentType, approved, confidence, ocrData, rejectionReason })
+      });
+      if (!response.ok) throw new Error('Verification submission failed');
+      const data = await response.json();
+      return data.data || data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchCustomerDocuments = createAsyncThunk(
+  'kycAml/fetchCustomerDocuments',
+  async (customerId, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/api/compliance/documents/customer/${customerId}`);
+      if (!response.ok) throw new Error('Failed to fetch customer documents');
+      const data = await response.json();
+      return data.data || data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchDocumentStatus = createAsyncThunk(
+  'kycAml/fetchDocumentStatus',
+  async (documentId, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/api/compliance/documents/${documentId}/status`);
+      if (!response.ok) throw new Error('Failed to fetch document status');
+      const data = await response.json();
+      return data.data || data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const initialState = {
   profiles: {
     data: [],
@@ -392,6 +474,85 @@ const kycAmlSlice = createSlice({
         if (state.selectedAlert?.id === action.payload.id) {
           state.selectedAlert = action.payload;
         }
+      })
+      // Document Processing
+      .addCase(processDocumentOCR.pending, (state) => {
+        state.verificationQueue.loading = true;
+        state.verificationQueue.error = null;
+      })
+      .addCase(processDocumentOCR.fulfilled, (state, action) => {
+        state.verificationQueue.loading = false;
+        state.verificationQueue.currentProcessing = action.payload;
+      })
+      .addCase(processDocumentOCR.rejected, (state, action) => {
+        state.verificationQueue.loading = false;
+        state.verificationQueue.error = action.payload;
+      })
+      // Document Validation
+      .addCase(validateDocumentData.pending, (state) => {
+        state.verificationQueue.loading = true;
+        state.verificationQueue.error = null;
+      })
+      .addCase(validateDocumentData.fulfilled, (state, action) => {
+        state.verificationQueue.loading = false;
+        state.verificationQueue.validationResult = action.payload;
+      })
+      .addCase(validateDocumentData.rejected, (state, action) => {
+        state.verificationQueue.loading = false;
+        state.verificationQueue.error = action.payload;
+      })
+      // Document Verification Submission
+      .addCase(submitDocumentVerification.pending, (state) => {
+        state.verificationQueue.loading = true;
+        state.verificationQueue.error = null;
+      })
+      .addCase(submitDocumentVerification.fulfilled, (state, action) => {
+        state.verificationQueue.loading = false;
+        if (state.activeProfile && action.payload) {
+          state.activeProfile = action.payload;
+        }
+        state.notifications.unshift({
+          id: Date.now(),
+          type: 'success',
+          message: 'Document verified successfully',
+          timestamp: new Date().toISOString()
+        });
+      })
+      .addCase(submitDocumentVerification.rejected, (state, action) => {
+        state.verificationQueue.loading = false;
+        state.verificationQueue.error = action.payload;
+        state.notifications.unshift({
+          id: Date.now(),
+          type: 'error',
+          message: `Verification failed: ${action.payload}`,
+          timestamp: new Date().toISOString()
+        });
+      })
+      // Fetch Customer Documents
+      .addCase(fetchCustomerDocuments.pending, (state) => {
+        state.verificationQueue.loading = true;
+        state.verificationQueue.error = null;
+      })
+      .addCase(fetchCustomerDocuments.fulfilled, (state, action) => {
+        state.verificationQueue.loading = false;
+        state.verificationQueue.customerDocuments = action.payload;
+      })
+      .addCase(fetchCustomerDocuments.rejected, (state, action) => {
+        state.verificationQueue.loading = false;
+        state.verificationQueue.error = action.payload;
+      })
+      // Fetch Document Status
+      .addCase(fetchDocumentStatus.pending, (state) => {
+        state.verificationQueue.loading = true;
+        state.verificationQueue.error = null;
+      })
+      .addCase(fetchDocumentStatus.fulfilled, (state, action) => {
+        state.verificationQueue.loading = false;
+        state.verificationQueue.documentStatus = action.payload;
+      })
+      .addCase(fetchDocumentStatus.rejected, (state, action) => {
+        state.verificationQueue.loading = false;
+        state.verificationQueue.error = action.payload;
       });
   }
 });
