@@ -12,8 +12,8 @@ import {
   fetchDepartmentTrends,
   searchDepartmentData,
   exportDepartmentData,
-} from '../src/mocks/apiHandler';
-import { getDepartmentData, getAvailableDepartments } from '../src/mocks/departmentData';
+} from '../../src/mocks/apiHandler';
+import { getDepartmentData, getAvailableDepartments } from '../../src/mocks/departmentData';
 
 describe('Mock API Handler', () => {
   describe('fetchDepartmentDataFromApi', () => {
@@ -65,7 +65,7 @@ describe('Mock API Handler', () => {
       const availableCodes = getAvailableDepartments();
       
       if (response.success && response.data) {
-        availableCodes.forEach((code) => {
+        availableCodes.forEach((code: string) => {
           expect(response.data).toHaveProperty(code);
         });
       }
@@ -85,7 +85,7 @@ describe('Mock API Handler', () => {
       const response = await fetchDepartmentKPIs('FINANCE');
       
       if (response.success && Array.isArray(response.data)) {
-        response.data.forEach((kpi) => {
+        response.data.forEach((kpi: any) => {
           expect(kpi.label).toBeDefined();
           expect(kpi.value).toBeDefined();
         });
@@ -179,7 +179,7 @@ describe('Mock API Handler', () => {
       const response = await fetchAllDepartmentsDataFromApi();
       
       if (response.success && response.data) {
-        Object.entries(response.data).forEach(([code, dept]) => {
+        Object.entries(response.data).forEach(([code, dept]: [string, any]) => {
           expect(dept.departmentCode).toBe(code);
           expect(dept.departmentName).toBeDefined();
           expect(Array.isArray(dept.kpis)).toBe(true);
@@ -192,8 +192,8 @@ describe('Mock API Handler', () => {
       const response = await fetchAllDepartmentsDataFromApi();
       
       if (response.success && response.data) {
-        Object.values(response.data).forEach((dept) => {
-          dept.kpis.forEach((kpi) => {
+        Object.values(response.data).forEach((dept: any) => {
+          dept.kpis.forEach((kpi: any) => {
             expect(kpi.label).toBeDefined();
             expect(kpi.value).toBeDefined();
           });
@@ -218,7 +218,7 @@ describe('Mock API Handler', () => {
       );
       
       const responses = await Promise.all(requests);
-      responses.forEach((response) => {
+      responses.forEach((response: any) => {
         expect(response.success).toBe(true);
       });
     });
