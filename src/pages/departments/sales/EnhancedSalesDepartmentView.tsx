@@ -1,6 +1,6 @@
 /**
- * Sales Department View - Enhanced with Real API Integration
- * Demonstrates KPI cards and visualization system with live API data
+ * Sales Department View - Fully Optimized with Caching and Performance Monitoring
+ * Uses optimized API hooks with automatic caching, deduplication, and monitoring
  */
 
 import React, { useMemo } from 'react';
@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import BaseDepartmentView from '../../../components/departmentViews/BaseDepartmentView';
 import { SalesKPIRenderer } from '../../../utils/departmentKPIRenderer';
 import { BarChart, LineChart } from '../../../components/charts/DataVisualization';
-import { useDepartmentData, useDepartmentKPIs, useDepartmentTrends } from '../../../hooks/useRealAPI';
+import { useDepartmentDataOptimized, useDepartmentKPIsOptimized, useDepartmentTrendsOptimized } from '../../../hooks/useOptimizedAPI';
 import { ErrorState, LoadingState } from '../../../components/shared';
 
 const SalesContentWrapper = styled.div`
@@ -46,10 +46,10 @@ export const SalesDepartmentView: React.FC<SalesDepartmentViewProps> = ({
   serviceName = 'lead-pipeline',
   subitemId,
 }) => {
-  // Fetch department data from real API
-  const { data: salesData, loading: dataLoading, error: dataError } = useDepartmentData('SALES');
-  const { kpis: salesKPIs, loading: kpiLoading, error: kpiError } = useDepartmentKPIs('SALES');
-  const { trends: salesTrends, loading: trendLoading } = useDepartmentTrends('SALES', 'monthly');
+  // Fetch department data from optimized API with caching
+  const { data: salesData, loading: dataLoading, error: dataError } = useDepartmentDataOptimized('SALES');
+  const { kpis: salesKPIs, loading: kpiLoading, error: kpiError } = useDepartmentKPIsOptimized('SALES');
+  const { trends: salesTrends, loading: trendLoading } = useDepartmentTrendsOptimized('SALES', 'monthly');
 
   // Fallback mock data if API data is not available
   const mockSalesData = useMemo(() => ({

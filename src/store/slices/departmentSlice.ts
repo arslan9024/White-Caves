@@ -1,31 +1,31 @@
 /**
  * Department Redux Slice
- * State management for department data with real API integration
+ * State management for department data with optimized API integration
  */
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import {
-  departmentService,
   DepartmentData,
   KPI,
   DateRange,
   Trend,
   DepartmentSummary,
 } from '../../services/departmentService';
+import { apiIntegration } from '../../services/apiIntegration';
 
 /**
  * Async Thunks
  */
 
 /**
- * Fetch all available departments
+ * Fetch all available departments (with caching and dedup)
  */
 export const fetchAllDepartments = createAsyncThunk(
   'departments/fetchAll',
-  async (_, { rejectWithValue }) => {
+  async (forceRefresh = false, { rejectWithValue }) => {
     try {
-      console.log('[Redux] Fetching all departments...');
-      const departments = await departmentService.getAllDepartments();
+      console.log('[Redux] Fetching all departments (optimized)...');
+      const departments = await apiIntegration.getDepartments(forceRefresh);
       return departments;
     } catch (error: any) {
       console.error('[Redux] Error fetching departments:', error);
@@ -37,14 +37,17 @@ export const fetchAllDepartments = createAsyncThunk(
 );
 
 /**
- * Fetch department data (KPIs, trends, summary)
+ * Fetch department data (KPIs, trends, summary) with optimization
  */
 export const fetchDepartmentData = createAsyncThunk(
   'departments/fetchData',
-  async (code: string, { rejectWithValue }) => {
+  async (
+    { code, forceRefresh }: { code: string; forceRefresh?: boolean },
+    { rejectWithValue }
+  ) => {
     try {
-      console.log(`[Redux] Fetching data for department: ${code}`);
-      const data = await departmentService.getDepartmentData(code);
+      console.log(`[Redux] Fetching data for department: ${code} (optimized)...`);
+      const data = await apiIntegration.getDepartmentData(code, forceRefresh);
       return { [code]: data };
     } catch (error: any) {
       console.error('[Redux] Error fetching department data:', error);
@@ -56,18 +59,35 @@ export const fetchDepartmentData = createAsyncThunk(
 );
 
 /**
- * Fetch KPIs for a department
+ * Fetch KPIs for a department (with pagination and caching)
  */
 export const fetchDepartmentKPIs = createAsyncThunk(
   'departments/fetchKPIs',
   async (
-    { code, dateRange }: { code: string; dateRange?: DateRange },
+    {
+      code,
+      dateRange,
+      page = 1,
+      pageSize = 20,
+      forceRefresh,
+    }: {
+      code: string;
+      dateRange?: DateRange;
+      page?: number;
+      pageSize?: number;
+      forceRefresh?: boolean;
+    },
     { rejectWithValue }
   ) => {
     try {
-      console.log(`[Redux] Fetching KPIs for department: ${code}`);
-      const kpis = await departmentService.getDepartmentKPIs(code, dateRange);
-      return { code, kpis };
+      console.log(
+        `[Redux] Fetching KPIs for department: ${code} (optimized, page ${page})...`
+      );
+      const response = await apiIntegration.getDepartmentKPIs(code, {
+        page,
+        pageSize,
+      });
+      return { code, kpis: response.data, pagination: response.pagination };
     } catch (error: any) {
       console.error('[Redux] Error fetching KPIs:', error);
       return rejectWithValue(
@@ -78,7 +98,7 @@ export const fetchDepartmentKPIs = createAsyncThunk(
 );
 
 /**
- * Fetch trends for a department
+ * Fetch trends for a department (with pagination and caching)
  */
 export const fetchDepartmentTrends = createAsyncThunk(
   'departments/fetchTrends',
@@ -86,13 +106,32 @@ export const fetchDepartmentTrends = createAsyncThunk(
     {
       code,
       timeframe = 'monthly',
-    }: { code: string; timeframe?: 'daily' | 'weekly' | 'monthly' | 'yearly' },
+      page = 1,
+      pageSize = 50,
+      forceRefresh,
+    }: {
+      code: string;
+      timeframe?: 'daily' | 'weekly' | 'monthly' | 'yearly';
+      page?: number;
+      pageSize?: number;
+      forceRefresh?: boolean;
+    },
     { rejectWithValue }
   ) => {
     try {
-      console.log(`[Redux] Fetching trends for department: ${code}`);
-      const trends = await departmentService.getDepartmentTrends(code, timeframe);
-      return { code, trends };
+      console.log(
+        `[Redux] Fetching trends for department: ${code}, timeframe: ${timeframe} (optimized)...`
+      );
+      const response = await apiIntegration.getDepartmentTrends(code, timeframe, {
+        page,
+        pageSize,
+      });
+      return {
+        code,
+        trends: response.data,
+        timeframe,
+        pagination: response.pagination,
+      };
     } catch (error: any) {
       console.error('[Redux] Error fetching trends:', error);
       return rejectWithValue(
@@ -109,8 +148,10 @@ export const fetchDepartmentSummary = createAsyncThunk(
   'departments/fetchSummary',
   async (code: string, { rejectWithValue }) => {
     try {
-      console.log(`[Redux] Fetching summary for department: ${code}`);
-      const summary = await departmentService.getDepartmentSummary(code);
+      console.log(`[Redux] Fetching summary for department: ${code} (optimized)...`);
+      const summary = await apiIntegration
+        .getDepartmentData(code)
+        .then((data) => data?.summary);
       return { code, summary };
     } catch (error: any) {
       console.error('[Redux] Error fetching summary:', error);

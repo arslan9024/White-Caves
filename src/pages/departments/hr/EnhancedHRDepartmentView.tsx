@@ -1,6 +1,6 @@
 /**
- * HR Department View - Enhanced with Real API Integration
- * Demonstrates HR metrics and employee analytics with live API data
+ * HR Department View - Fully Optimized with Caching and Performance Monitoring
+ * Uses optimized API hooks with automatic caching, deduplication, and monitoring
  */
 
 import React, { useMemo } from 'react';
@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import BaseDepartmentView from '../../../components/departmentViews/BaseDepartmentView';
 import { HRKPIRenderer } from '../../../utils/departmentKPIRenderer';
 import { BarChart, LineChart, ProgressRing } from '../../../components/charts/DataVisualization';
-import { useDepartmentData, useDepartmentKPIs, useDepartmentTrends } from '../../../hooks/useRealAPI';
+import { useDepartmentDataOptimized, useDepartmentKPIsOptimized, useDepartmentTrendsOptimized } from '../../../hooks/useOptimizedAPI';
 import { ErrorState, LoadingState } from '../../../components/shared';
 
 const HRContentWrapper = styled.div`
@@ -54,9 +54,9 @@ export const HRDepartmentView: React.FC<HRDepartmentViewProps> = ({
   subitemId,
 }) => {
   // Fetch department data from real API
-  const { data: hrData, loading: dataLoading, error: dataError } = useDepartmentData('HR');
-  const { kpis: hrKPIs, loading: kpiLoading, error: kpiError } = useDepartmentKPIs('HR');
-  const { trends: hrTrends, loading: trendLoading } = useDepartmentTrends('HR', 'monthly');
+  const { data: hrData, loading: dataLoading, error: dataError } = useDepartmentDataOptimized('HR');
+  const { kpis: hrKPIs, loading: kpiLoading, error: kpiError } = useDepartmentKPIsOptimized('HR');
+  const { trends: hrTrends, loading: trendLoading } = useDepartmentTrendsOptimized('HR', 'monthly');
 
   // Mock HR data for demo
   const mockHRData = useMemo(() => ({

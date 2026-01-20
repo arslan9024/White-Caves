@@ -1,6 +1,6 @@
 /**
- * Finance Department View - Enhanced with Real API Integration
- * Demonstrates financial metrics and budget visualization with live API data
+ * Finance Department View - Fully Optimized with Caching and Performance Monitoring
+ * Uses optimized API hooks with automatic caching, deduplication, and monitoring
  */
 
 import React, { useMemo } from 'react';
@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import BaseDepartmentView from '../../../components/departmentViews/BaseDepartmentView';
 import { FinanceKPIRenderer } from '../../../utils/departmentKPIRenderer';
 import { BarChart, LineChart, ProgressRing } from '../../../components/charts/DataVisualization';
-import { useDepartmentData, useDepartmentKPIs, useDepartmentTrends } from '../../../hooks/useRealAPI';
+import { useDepartmentDataOptimized, useDepartmentKPIsOptimized, useDepartmentTrendsOptimized } from '../../../hooks/useOptimizedAPI';
 import { ErrorState, LoadingState } from '../../../components/shared';
 
 const FinanceContentWrapper = styled.div`
@@ -53,10 +53,10 @@ export const FinanceDepartmentView: React.FC<FinanceDepartmentViewProps> = ({
   serviceName = 'budget-overview',
   subitemId,
 }) => {
-  // Fetch department data from real API
-  const { data: financeData, loading: dataLoading, error: dataError } = useDepartmentData('FINANCE');
-  const { kpis: financeKPIs, loading: kpiLoading, error: kpiError } = useDepartmentKPIs('FINANCE');
-  const { trends: financeTrends, loading: trendLoading } = useDepartmentTrends('FINANCE', 'monthly');
+  // Fetch department data from optimized API with caching
+  const { data: financeData, loading: dataLoading, error: dataError } = useDepartmentDataOptimized('FINANCE');
+  const { kpis: financeKPIs, loading: kpiLoading, error: kpiError } = useDepartmentKPIsOptimized('FINANCE');
+  const { trends: financeTrends, loading: trendLoading } = useDepartmentTrendsOptimized('FINANCE', 'monthly');
 
   // Mock finance data for demo
   const mockFinanceData = useMemo(() => ({
