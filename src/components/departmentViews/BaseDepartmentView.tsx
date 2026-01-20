@@ -2,6 +2,9 @@ import React, { useEffect, useState, ReactNode } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { DashboardShell, DataCardGrid } from '../shared/dashboard';
+import { LoadingState } from '../shared/LoadingState';
+import { ErrorState } from '../shared/ErrorState';
+import { EmptyState } from '../shared/EmptyState';
 
 /**
  * BaseDepartmentView Component
@@ -38,21 +41,6 @@ const ViewContent = styled.div`
   padding: 24px;
   max-width: 1600px;
   margin: 0 auto;
-`;
-
-const ErrorContainer = styled.div`
-  padding: 24px;
-  background: #fee;
-  border: 1px solid #fcc;
-  border-radius: 8px;
-  color: #c33;
-  text-align: center;
-`;
-
-const LoadingContainer = styled.div`
-  padding: 48px 24px;
-  text-align: center;
-  color: #999;
 `;
 
 /**
@@ -105,11 +93,9 @@ export const BaseDepartmentView: React.FC<BaseDepartmentViewProps> = ({
         showBreadcrumb
       >
         <ViewContent>
-          {error && <ErrorContainer>{error}</ErrorContainer>}
+          {error && <ErrorState error={error} onRetry={() => window.location.reload()} />}
 
-          {loading && (
-            <LoadingContainer>Loading {config.departmentName} data...</LoadingContainer>
-          )}
+          {loading && <LoadingState message={`Loading ${config.departmentName} data...`} />}
 
           {!loading && !error && data && (
             <>
@@ -127,7 +113,13 @@ export const BaseDepartmentView: React.FC<BaseDepartmentViewProps> = ({
           )}
 
           {!loading && !error && !data && (
-            <LoadingContainer>No data available</LoadingContainer>
+            <EmptyState
+              icon="📊"
+              title="No Data Available"
+              description={`No data found for ${config.departmentName}`}
+              actionLabel="Refresh"
+              onAction={() => window.location.reload()}
+            />
           )}
         </ViewContent>
       </DashboardShell>

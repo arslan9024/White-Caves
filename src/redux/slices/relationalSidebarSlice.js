@@ -1,13 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { fetchDepartmentDataFromApi } from '../../mocks/apiHandler';
 
 // Thunk for fetching department-specific data
 export const fetchDepartmentData = createAsyncThunk(
   'relationalSidebar/fetchDepartmentData',
   async (departmentId, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/departments/${departmentId}`);
-      if (!response.ok) throw new Error('Failed to fetch department');
-      return await response.json();
+      // Use mock API for now, will be replaced with real API endpoint
+      const response = await fetchDepartmentDataFromApi(departmentId);
+      if (!response.success) throw new Error(response.error);
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -19,9 +21,17 @@ export const fetchAssistantData = createAsyncThunk(
   'relationalSidebar/fetchAssistantData',
   async (assistantId, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/assistants/${assistantId}`);
-      if (!response.ok) throw new Error('Failed to fetch assistant');
-      return await response.json();
+      // TODO: Replace with real API when available
+      // const response = await fetch(`/api/assistants/${assistantId}`);
+      // if (!response.ok) throw new Error('Failed to fetch assistant');
+      // return await response.json();
+      
+      // Mock response for now
+      return {
+        id: assistantId,
+        name: `Assistant ${assistantId}`,
+        status: 'active',
+      };
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -33,11 +43,19 @@ export const fetchContextualData = createAsyncThunk(
   'relationalSidebar/fetchContextualData',
   async ({ assistantId, context }, { rejectWithValue }) => {
     try {
-      const response = await fetch(
-        `/api/assistants/${assistantId}/contexts/${context}`
-      );
-      if (!response.ok) throw new Error('Failed to fetch contextual data');
-      return await response.json();
+      // TODO: Replace with real API when available
+      // const response = await fetch(
+      //   `/api/assistants/${assistantId}/contexts/${context}`
+      // );
+      // if (!response.ok) throw new Error('Failed to fetch contextual data');
+      // return await response.json();
+      
+      // Mock response for now
+      return {
+        context,
+        assistantId,
+        data: [],
+      };
     } catch (error) {
       return rejectWithValue(error.message);
     }
