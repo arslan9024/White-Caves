@@ -1,8 +1,10 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import PropertySourcingService from '../PropertySourcingServices';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import PropertySourcingService, { setPropertySourcingModels } from '../PropertySourcingServices';
+import { createMockModels } from '../../../test/utils/mockDatabase';
 
 describe('PropertySourcingService', () => {
   let service;
+  let mockModels;
   
   // Mock data matching ACTUAL ConversationAnalyzer output format
   const mockAnalysisResult = {
@@ -53,8 +55,26 @@ describe('PropertySourcingService', () => {
   };
 
   beforeEach(() => {
+    // Create fresh mock models for each test
+    mockModels = createMockModels();
+    
+    // Inject mock models into service
+    setPropertySourcingModels(mockModels);
+    
+    // Create new service instance
     service = new PropertySourcingService();
+    
+    // Clear all mocks
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    // Clear mock data after each test
+    if (mockModels) {
+      Object.values(mockModels).forEach(model => {
+        if (model.clear) model.clear();
+      });
+    }
   });
 
   // ============================================================
@@ -247,16 +267,13 @@ describe('PropertySourcingService', () => {
     });
 
     it('should reject invalid status transitions', async () => {
-      try {
-        await service.updateVerificationStatus(
-          opportunityId,
-          'invalid_status',
-          'agent-001'
-        );
-        expect(true).toBe(false); // Should not reach here
-      } catch (error) {
-        expect(error.message).toContain('Invalid status');
-      }
+      const result = await service.updateVerificationStatus(
+        opportunityId,
+        'invalid_status',
+        'agent-001'
+      );
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Invalid status');
     });
 
     it('should track status update timestamp', async () => {

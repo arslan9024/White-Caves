@@ -1,4 +1,5 @@
 import ConversationAnalyzer from './ConversationAnalyzer.js';
+import { normalizePhoneNumber } from '../utils/phoneNumberNormalizer.js';
 
 // Global references for MongoDB models
 // These will be injected via setModels() when running in production
@@ -33,7 +34,7 @@ class PropertySourcingService {
         sourceReference: conversationData.chatId,
         ownerInfo: {
           name: analysisResult.ownerIdentification?.name || 'Unknown',
-          phone: analysisResult.ownerIdentification?.whatsappNumber || null,
+          phone: normalizePhoneNumber(analysisResult.ownerIdentification?.whatsappNumber) || null,
           email: analysisResult.extractedEntities?.find(e => e.type === 'email')?.value || '',
           type: analysisResult.ownerIdentification?.ownershipType || 'uncertain'
         },
@@ -86,9 +87,10 @@ class PropertySourcingService {
       if (PropertyOpportunity && OwnerRelationship) {
         try {
           // Extract owner info from analysis result
-          const ownerPhone = analysisResult.ownerIdentification?.whatsappNumber || 
-                            analysisResult.extractedEntities?.find(e => e.type === 'phone')?.value ||
-                            null;
+          const rawOwnerPhone = analysisResult.ownerIdentification?.whatsappNumber || 
+                               analysisResult.extractedEntities?.find(e => e.type === 'phone')?.value ||
+                               null;
+          const ownerPhone = normalizePhoneNumber(rawOwnerPhone);
           const ownerEmail = analysisResult.extractedEntities?.find(e => e.type === 'email')?.value || '';
           
           let ownerRelationship = await OwnerRelationship.findOne({
@@ -198,7 +200,10 @@ class PropertySourcingService {
       ];
 
       if (!validStatuses.includes(newStatus)) {
-        throw new Error(`Invalid status: ${newStatus}`);
+        return {
+          success: false,
+          error: `Invalid status: ${newStatus}`
+        };
       }
 
       // Update in-memory store first
@@ -227,6 +232,7 @@ class PropertySourcingService {
         inMemoryStore.set(opportunityId, opportunity);
 
         return {
+          success: true,
           opportunityId,
           verificationStatus: opportunity.verificationStatus,
           lastStatusUpdate: opportunity.lastStatusUpdate,
@@ -236,12 +242,18 @@ class PropertySourcingService {
 
       // If not in memory, try database
       if (!PropertyOpportunity) {
-        throw new Error('Opportunity not found');
+        return {
+          success: false,
+          error: 'Opportunity not found'
+        };
       }
 
       const opportunity = await PropertyOpportunity.findById(opportunityId);
       if (!opportunity) {
-        throw new Error('Opportunity not found');
+        return {
+          success: false,
+          error: 'Opportunity not found'
+        };
       }
 
       opportunity.verificationStatus = newStatus;
@@ -267,6 +279,7 @@ class PropertySourcingService {
       await opportunity.save();
 
       return {
+        success: true,
         opportunityId: opportunity._id,
         verificationStatus: opportunity.verificationStatus,
         lastStatusUpdate: opportunity.lastStatusUpdate,
@@ -274,7 +287,10 @@ class PropertySourcingService {
       };
     } catch (error) {
       console.error('Error updating verification status:', error);
-      throw error;
+      return {
+        success: false,
+        error: error.message || 'Unknown error updating status'
+      };
     }
   }
 
@@ -399,6 +415,24 @@ class PropertySourcingService {
 
   async getSourcingStats(timeframe = 'month') {
     try {
+      // Check if database models are available
+      if (!PropertyOpportunity || !OwnerRelationship) {
+        return {
+          success: true,
+          totalOpportunities: inMemoryStore.size,
+          newOpportunities: inMemoryStore.size,
+          byStatus: {},
+          averageConfidence: 0,
+          topAreas: [],
+          ownerMetrics: { 
+            totalOwners: 0, 
+            activeOwners: 0, 
+            averagePropertiesPerOwner: 0, 
+            topOwners: [] 
+          }
+        };
+      }
+
       const dateFilter = this.getDateFilter(timeframe);
 
       const stats = {

@@ -4,6 +4,8 @@
  * Extracts entities, calculates confidence scores, and identifies property owners
  */
 
+import { normalizePhoneNumber, extractAndNormalizePhones } from '../utils/phoneNumberNormalizer.js';
+
 class ConversationAnalyzer {
   constructor() {
     // Property-related keywords organized by category
@@ -551,22 +553,8 @@ class ConversationAnalyzer {
     
     const textLower = String(text).toLowerCase();
     
-    // Phone patterns: +971501234567, 0501234567, 971501234567
-    const patterns = [
-      /\+?971[0-9]{9}/g,        // +971 format
-      /\+[1-9][0-9]{1,14}/g,    // International format
-      /0[0-9]{8,9}/g             // Local UAE format
-    ];
-    
-    const phones = new Set();
-    for (const pattern of patterns) {
-      const matches = textLower.match(pattern);
-      if (matches) {
-        matches.forEach(m => phones.add(m));
-      }
-    }
-    
-    return Array.from(phones);
+    // Use the phone number normalizer utility
+    return extractAndNormalizePhones(textLower);
   }
 
   /**
