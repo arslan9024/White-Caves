@@ -5,18 +5,48 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0f",
-  "theme_color": "#D4AF37",
+  "theme_color": "#D32F2F",
   "orientation": "portrait-primary",
   "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon",
+      "purpose": "any"
+    },
     {
       "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "categories": ["real estate", "property", "lifestyle"],
-  "screenshots": [],
+  "screenshots": [
+    {
+      "src": "/white-caves-logo.png",
+      "sizes": "1200x630",
+      "type": "image/png"
+    }
+  ],
   "shortcuts": [
     {
       "name": "Browse Properties",

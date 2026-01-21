@@ -277,6 +277,31 @@ const RelationalRightSidebar: React.FC<RelationalRightSidebarProps> = ({
     dispatch(fetchAssistants(filters));
   };
 
+  // Handle assistant action (message, assign, more)
+  const handleAssistantAction = (action: string, assistantId: string): void => {
+    try {
+      console.debug('[RelationalRightSidebar] Assistant action:', action, 'for assistant:', assistantId);
+      switch (action) {
+        case 'message':
+          console.log('Opening message interface for assistant:', assistantId);
+          // TODO: Open message dialog/modal
+          break;
+        case 'assign':
+          console.log('Opening task assignment dialog for assistant:', assistantId);
+          // TODO: Open assign task dialog/modal
+          break;
+        case 'more':
+          console.log('Opening more options menu for assistant:', assistantId);
+          // TODO: Open context menu with more actions
+          break;
+        default:
+          console.warn('Unknown action:', action);
+      }
+    } catch (error) {
+      console.error('Error handling assistant action:', error);
+    }
+  };
+
   // Get available contexts for selected assistant
   const availableContexts = selectedAssistant
     ? getContextsForAssistant(selectedAssistant)
