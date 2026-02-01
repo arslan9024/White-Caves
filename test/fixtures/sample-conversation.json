@@ -1,4 +1,5 @@
 {
+  "NOTE": "This is a test fixture file. Dates are set to January 2026 for testing purposes. When using this fixture in tests, consider whether dates should be dynamically generated.",
   "_id": "conv-fixture-001",
   "contactId": "+971501234567",
   "contactName": "Ahmed Al Maktoum",
