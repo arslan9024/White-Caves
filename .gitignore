@@ -130,3 +130,7 @@ dist
 .pnp.*
 .vercel
 .env*.local
+
+# WhatsApp Web.js authentication data
+.wwebjs_auth/
+.wwebjs_cache/

@@ -1,0 +1,129 @@
+{
+  "_id": "conv-fixture-001",
+  "contactId": "+971501234567",
+  "contactName": "Ahmed Al Maktoum",
+  "contactNumber": "+971501234567",
+  "conversationType": "property_sourcing",
+  "startDate": "2026-01-15T08:00:00.000Z",
+  "lastMessageDate": "2026-01-15T10:30:00.000Z",
+  "status": "active",
+  "messages": [
+    {
+      "id": "msg-001",
+      "from": "+971501234567",
+      "fromMe": false,
+      "body": "Hello, I have a villa to rent in Dubai Marina",
+      "timestamp": "2026-01-15T08:00:00.000Z",
+      "hasMedia": false,
+      "type": "chat"
+    },
+    {
+      "id": "msg-002",
+      "from": "me",
+      "fromMe": true,
+      "body": "Thank you for contacting White Caves! I'd love to hear more about your property. Could you please share some details?",
+      "timestamp": "2026-01-15T08:02:00.000Z",
+      "hasMedia": false,
+      "type": "chat"
+    },
+    {
+      "id": "msg-003",
+      "from": "+971501234567",
+      "fromMe": false,
+      "body": "Sure! It's a 4-bedroom villa with 5 bathrooms in Marina Heights. Fully furnished with private pool. Looking for 5000 AED per month.",
+      "timestamp": "2026-01-15T08:05:00.000Z",
+      "hasMedia": false,
+      "type": "chat"
+    },
+    {
+      "id": "msg-004",
+      "from": "me",
+      "fromMe": true,
+      "body": "That sounds wonderful! What's the size of the villa?",
+      "timestamp": "2026-01-15T08:07:00.000Z",
+      "hasMedia": false,
+      "type": "chat"
+    },
+    {
+      "id": "msg-005",
+      "from": "+971501234567",
+      "fromMe": false,
+      "body": "It's 3500 sqft built-up area with 5000 sqft plot",
+      "timestamp": "2026-01-15T08:10:00.000Z",
+      "hasMedia": false,
+      "type": "chat"
+    },
+    {
+      "id": "msg-006",
+      "from": "me",
+      "fromMe": true,
+      "body": "Perfect! Could you share some photos of the property?",
+      "timestamp": "2026-01-15T08:12:00.000Z",
+      "hasMedia": false,
+      "type": "chat"
+    },
+    {
+      "id": "msg-007",
+      "from": "+971501234567",
+      "fromMe": false,
+      "body": "",
+      "timestamp": "2026-01-15T08:15:00.000Z",
+      "hasMedia": true,
+      "mediaType": "image",
+      "type": "chat"
+    },
+    {
+      "id": "msg-008",
+      "from": "me",
+      "fromMe": true,
+      "body": "Beautiful property! My name is Ahmed, and you can reach me at +971501234567. When would be a good time for a viewing?",
+      "timestamp": "2026-01-15T08:20:00.000Z",
+      "hasMedia": false,
+      "type": "chat"
+    },
+    {
+      "id": "msg-009",
+      "from": "+971501234567",
+      "fromMe": false,
+      "body": "I'm available this weekend. Saturday at 10 AM works for me.",
+      "timestamp": "2026-01-15T10:30:00.000Z",
+      "hasMedia": false,
+      "type": "chat"
+    }
+  ],
+  "extractedData": {
+    "propertyType": "villa",
+    "location": "Dubai Marina",
+    "community": "Marina Heights",
+    "bedrooms": 4,
+    "bathrooms": 5,
+    "price": 5000,
+    "size": 3500,
+    "plotSize": 5000,
+    "furnishing": "furnished",
+    "amenities": ["private pool"],
+    "ownerInfo": {
+      "name": "Ahmed",
+      "phone": "+971501234567"
+    }
+  },
+  "aiAnalysis": {
+    "propertyDetected": true,
+    "confidenceScore": 95,
+    "sentiment": "positive",
+    "intent": "listing",
+    "completeness": 85
+  },
+  "tags": [
+    "property_sourcing",
+    "villa",
+    "dubai_marina",
+    "high_value"
+  ],
+  "metadata": {
+    "totalMessages": 9,
+    "hasMedia": true,
+    "averageResponseTime": 180,
+    "conversationDuration": 9000
+  }
+}

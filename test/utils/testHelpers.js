@@ -1,6 +1,7 @@
 import React from 'react';
 import { render as rtlRender, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { vi } from 'vitest';
 
 /**
  * Custom render function that wraps components with necessary providers
@@ -23,7 +24,7 @@ export const waitForAsync = () => new Promise((resolve) => setTimeout(resolve, 0
  * Mock fetch function with JSON response
  */
 export const mockFetch = (data, status = 200) => {
-  global.fetch = jest.fn(() =>
+  global.fetch = vi.fn(() =>
     Promise.resolve({
       ok: status >= 200 && status < 300,
       status,
@@ -72,14 +73,14 @@ export const waitForElement = async (callback, timeout = 3000) => {
 export const setupLocalStorageMock = () => {
   const store = {};
   global.localStorage = {
-    getItem: jest.fn((key) => store[key] || null),
-    setItem: jest.fn((key, value) => {
+    getItem: vi.fn((key) => store[key] || null),
+    setItem: vi.fn((key, value) => {
       store[key] = value.toString();
     }),
-    removeItem: jest.fn((key) => {
+    removeItem: vi.fn((key) => {
       delete store[key];
     }),
-    clear: jest.fn(() => {
+    clear: vi.fn(() => {
       Object.keys(store).forEach((key) => {
         delete store[key];
       });
@@ -91,6 +92,6 @@ export const setupLocalStorageMock = () => {
  * Reset all mocks
  */
 export const resetAllMocks = () => {
-  jest.clearAllMocks();
-  jest.resetAllMocks();
+  vi.clearAllMocks();
+  vi.resetAllMocks();
 };
