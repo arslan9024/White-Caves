@@ -1,13 +1,18 @@
-import { test, expect, chromium } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 test.describe('Performance & Load Testing', () => {
   const performanceResults: any[] = [];
 
   test.afterAll(async () => {
     // Save performance results
-    const reportPath = path.join(__dirname, '../../..', 'performance-report.json');
+    const reportPath = path.resolve(__dirname, '../../..', 'performance-report.json');
     fs.writeFileSync(reportPath, JSON.stringify(performanceResults, null, 2));
   });
 
@@ -46,7 +51,7 @@ test.describe('Performance & Load Testing', () => {
       return {
         fcp: (performance as any).getEntriesByName('first-contentful-paint')[0]?.startTime,
         lcp: (performance as any).getEntriesByName('largest-contentful-paint').pop()?.startTime,
-        cls: (performance as any).getEntriesByType('layout-shift').reduce((a, b) => a + (b as any).value, 0),
+        cls: (performance as any).getEntriesByType('layout-shift').reduce((a: number, b: any) => a + b.value, 0),
       };
     });
 
@@ -94,9 +99,8 @@ test.describe('Performance & Load Testing', () => {
     expect(searchTime).toBeLessThan(2000);
   });
 
-  test('should measure memory usage', async () => {
-    const browser = await chromium.launch();
-    const context = await browser.createContext();
+  test('should measure memory usage', async ({ browser }) => {
+    const context = await browser.newContext();
     const page = await context.newPage();
 
     await page.goto('http://localhost:5000');
@@ -119,7 +123,6 @@ test.describe('Performance & Load Testing', () => {
     });
 
     await context.close();
-    await browser.close();
   });
 
   test('should handle rapid navigation', async ({ page }) => {
