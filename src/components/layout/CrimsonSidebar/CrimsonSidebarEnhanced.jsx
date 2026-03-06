@@ -52,7 +52,8 @@ const AI_ASSISTANTS = getAllAssistants().map(a => ({
   name: a.name,
   desc: a.title.replace(' Manager', '').replace(' Engineer', '').replace(' & ', '/'),
   color: a.color,
-  department: a.department
+  department: a.department,
+  capabilities: a.capabilities || []
 }));
 
 const DEPARTMENT_CONFIG = Object.entries(DEPARTMENTS).reduce((acc, [key, dept]) => {
@@ -64,13 +65,16 @@ const DEPARTMENT_CONFIG = Object.entries(DEPARTMENTS).reduce((acc, [key, dept]) 
   return acc;
 }, {});
 
-const CrimsonSidebar = ({ 
+const CrimsonSidebarEnhanced = ({ 
   activeTab, 
   onTabChange, 
   collapsed = false, 
   onToggleCollapse,
   notifications = {}
 }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [departmentFilter, setDepartmentFilter] = useState('all');
+  const [showFilters, setShowFilters] = useState(false);
   const [expandedDepartments, setExpandedDepartments] = useState({
     communications: true,
     operations: true,
@@ -84,16 +88,28 @@ const CrimsonSidebar = ({
     intelligence: false
   });
 
+  // Filter assistants based on search and department
+  const filteredAssistants = useMemo(() => {
+    return AI_ASSISTANTS.filter(assistant => {
+      const matchesSearch = searchQuery === '' || 
+        assistant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        assistant.desc.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        assistant.department.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesDept = departmentFilter === 'all' || assistant.department === departmentFilter;
+      return matchesSearch && matchesDept;
+    });
+  }, [searchQuery, departmentFilter]);
+
   const assistantsByDepartment = useMemo(() => {
     const grouped = {};
-    AI_ASSISTANTS.forEach(assistant => {
+    filteredAssistants.forEach(assistant => {
       if (!grouped[assistant.department]) {
         grouped[assistant.department] = [];
       }
       grouped[assistant.department].push(assistant);
     });
     return grouped;
-  }, []);
+  }, [filteredAssistants]);
 
   const toggleDepartment = (dept) => {
     setExpandedDepartments(prev => ({
@@ -115,6 +131,11 @@ const CrimsonSidebar = ({
       }
     });
     return total;
+  };
+
+  const clearFilters = () => {
+    setSearchQuery('');
+    setDepartmentFilter('all');
   };
 
   const getAssistantIcon = (assistantId) => {
@@ -164,6 +185,8 @@ const CrimsonSidebar = ({
     );
   };
 
+  const hasActiveFilters = searchQuery !== '' || departmentFilter !== 'all';
+
   return (
     <aside className={`crimson-sidebar ${collapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-header">
@@ -187,6 +210,84 @@ const CrimsonSidebar = ({
         </button>
       </div>
 
+      {/* Search and Filter Bar */}
+      {!collapsed && (
+        <div className="sidebar-search-bar">
+          <div className="search-input-wrapper">
+            <Search size={16} className="search-icon" />
+            <input 
+              type="text" 
+              placeholder="Search departments, assistants..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input"
+            />
+            {searchQuery && (
+              <button className="search-clear" onClick={() => setSearchQuery('')}>
+                <X size={14} />
+              </button>
+            )}
+          </div>
+          <button 
+            className={`filter-toggle ${showFilters ? 'active' : ''}`}
+            onClick={() => setShowFilters(!showFilters)}
+            title="Filter by department"
+          >
+            <Filter size={16} />
+          </button>
+        </div>
+      )}
+
+      {/* Filter Dropdown */}
+      {!collapsed && showFilters && (
+        <div className="filter-dropdown">
+          <div className="filter-header">
+            <span>Filter by Department</span>
+            {hasActiveFilters && (
+              <button className="clear-filters" onClick={clearFilters}>
+                Clear all
+              </button>
+            )}
+          </div>
+          <div className="filter-options">
+            <button 
+              className={`filter-option ${departmentFilter === 'all' ? 'active' : ''}`}
+              onClick={() => setDepartmentFilter('all')}
+            >
+              All Departments
+            </button>
+            {Object.entries(DEPARTMENT_CONFIG).map(([key, config]) => (
+              <button 
+                key={key}
+                className={`filter-option ${departmentFilter === key ? 'active' : ''}`}
+                style={{ '--dept-color': config.color }}
+              >
+                <span className="dept-color-dot" style={{ background: config.color }} />
+                {config.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Active Filters Display */}
+      {!collapsed && hasActiveFilters && (
+        <div className="active-filters">
+          {searchQuery && (
+            <span className="filter-tag">
+              Search: "{searchQuery}"
+              <button onClick={() => setSearchQuery('')}><X size={12} /></button>
+            </span>
+          )}
+          {departmentFilter !== 'all' && (
+            <span className="filter-tag">
+              {DEPARTMENT_CONFIG[departmentFilter]?.label || departmentFilter}
+              <button onClick={() => setDepartmentFilter('all')}><X size={12} /></button>
+            </span>
+          )}
+        </div>
+      )}
+
       <div 
         className={`zoe-command-hub ${activeTab === 'zoe' ? 'active' : ''}`}
         onClick={() => onTabChange('zoe')}
@@ -207,7 +308,7 @@ const CrimsonSidebar = ({
               </span>
               <span className="hub-stat">
                 <Users size={12} />
-                24 assistants
+                {filteredAssistants.length} assistants
               </span>
             </div>
           </div>
@@ -229,10 +330,17 @@ const CrimsonSidebar = ({
           {!collapsed && (
             <div className="section-label">
               <span>AI Assistants</span>
-              <span className="section-count">{AI_ASSISTANTS.length}</span>
+              <span className="section-count">
+                {hasActiveFilters ? `${filteredAssistants.length}/${AI_ASSISTANTS.length}` : AI_ASSISTANTS.length}
+              </span>
             </div>
           )}
           <div className="departments-list">
+            {Object.keys(assistantsByDepartment).length === 0 && !collapsed && (
+              <div className="no-results">
+                No assistants match your filters
+              </div>
+            )}
             {Object.entries(assistantsByDepartment).map(([dept, assistants]) => {
               const deptConfig = DEPARTMENT_CONFIG[dept];
               if (!deptConfig) return null;
@@ -289,6 +397,7 @@ const CrimsonSidebar = ({
                               </div>
                               <div className="assistant-info">
                                 <span className="assistant-name">{assistant.name}</span>
+                                <span className="assistant-desc">{assistant.desc}</span>
                               </div>
                               {notifCount > 0 && (
                                 <span className="assistant-badge">{notifCount}</span>
@@ -342,4 +451,4 @@ const CrimsonSidebar = ({
   );
 };
 
-export default CrimsonSidebar;
+export default CrimsonSidebarEnhanced;

@@ -60,3 +60,28 @@
     padding: 12px;
   }
 }
+
+/* Right Panel Styles */
+.dashboard-shell.right-panel-open .dashboard-main {
+  margin-right: 360px;
+}
+
+.dashboard-shell.right-panel-open .dashboard-main {
+  margin-left: 280px;
+}
+
+.dashboard-shell.right-panel-open.sidebar-collapsed .dashboard-main {
+  margin-left: 72px;
+}
+
+@media (max-width: 1200px) {
+  .dashboard-shell.right-panel-open .dashboard-main {
+    margin-right: 320px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-shell.right-panel-open .dashboard-main {
+    margin-right: 0;
+  }
+}

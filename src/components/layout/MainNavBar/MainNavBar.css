@@ -628,3 +628,73 @@
 [data-theme="dark"] .empty-state {
   color: rgba(255, 255, 255, 0.5);
 }
+
+/* Sidebar Toggle Buttons */
+.sidebar-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #E0E0E0;
+  background: #FFFFFF;
+  color: #757575;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.sidebar-toggle:hover {
+  background: #F5F5F5;
+  border-color: #BDBDBD;
+  color: #212121;
+}
+
+.sidebar-toggle.active {
+  background: #D32F2F;
+  border-color: #D32F2F;
+  color: white;
+}
+
+.sidebar-toggle .toggle-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 8px;
+  font-weight: 700;
+  background: #D32F2F;
+  color: white;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.sidebar-toggle.active .toggle-badge {
+  background: white;
+  color: #D32F2F;
+}
+
+.left-toggle {
+  margin-right: 8px;
+}
+
+.right-toggle {
+  margin-right: 8px;
+}
+
+[data-theme="dark"] .sidebar-toggle {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="dark"] .sidebar-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .sidebar-toggle.active {
+  background: #D32F2F;
+  border-color: #D32F2F;
+  color: white;
+}

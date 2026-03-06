@@ -10,13 +10,13 @@ import './RoleSelectorDropdown.css';
 
 const REAL_ESTATE_ROLES = [
   {
-    id: 'company_owner',
-    name: 'Company Owner',
+    id: 'managing_director',
+    name: 'Managing Director',
     icon: Crown,
     color: '#FFD700',
     description: 'Full access to all features, analytics, and settings',
     permissions: ['*'],
-    dashboardPath: '/owner/dashboard',
+    dashboardPath: '/md/dashboard',
     category: 'executive'
   },
   {
@@ -252,7 +252,9 @@ const REAL_ESTATE_ROLES = [
 ];
 
 const ROLE_KEY_MAP = {
-  'owner': 'company_owner',
+  'owner': 'managing_director',
+  'md': 'managing_director',
+  'managing_director': 'managing_director',
   'leasing-agent': 'leasing_agent',
   'secondary-sales-agent': 'sales_agent',
   'property-manager': 'property_manager',
@@ -262,12 +264,12 @@ const ROLE_KEY_MAP = {
 };
 
 const normalizeRoleKey = (roleKey) => {
-  if (!roleKey) return 'company_owner';
+  if (!roleKey) return 'managing_director';
   if (ROLE_KEY_MAP[roleKey]) return ROLE_KEY_MAP[roleKey];
   return roleKey.replace(/-/g, '_');
 };
 
-const RoleSelectorDropdown = ({ currentRole = 'company_owner', onRoleChange, compact = false }) => {
+const RoleSelectorDropdown = ({ currentRole = 'managing_director', onRoleChange, compact = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const normalizedRole = normalizeRoleKey(currentRole);
   const [selectedRole, setSelectedRole] = useState(

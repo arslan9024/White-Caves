@@ -219,9 +219,16 @@ function App() {
           </ProtectedRoute>
         } />
         
-        <Route path="/tenant/dashboard" element={
+<Route path="/tenant/dashboard" element={
           <ProtectedRoute allowedRoles={['tenant']}>
             <AppLayout><TenantDashboardPage /></AppLayout>
+          </ProtectedRoute>
+        } />
+        
+        {/* Managing Director Dashboard Routes */}
+        <Route path="/md/dashboard" element={
+          <ProtectedRoute allowedRoles={['owner', 'md', 'managing_director']}>
+            <AppLayout><OwnerDashboardPage /></AppLayout>
           </ProtectedRoute>
         } />
         
