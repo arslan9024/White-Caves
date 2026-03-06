@@ -25,7 +25,13 @@
     "test:ui": "vitest --ui",
     "generate-pdf": "node scripts/generate-company-pdf.js",
     "validate": "node scripts/validate-code.js",
-    "verify-deploy": "node scripts/verify-deployment.js"
+    "verify-deploy": "node scripts/verify-deployment.js",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
+    "audit": "npm audit",
+    "audit:fix": "npm audit fix"
   },
   "keywords": [],
   "author": "",
@@ -34,6 +40,7 @@
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@vitejs/plugin-react": "^5.1.2",
+    "prettier": "^3.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "typescript": "^5.2.2",
