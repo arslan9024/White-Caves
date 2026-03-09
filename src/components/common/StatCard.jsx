@@ -13,7 +13,7 @@ export default function StatCard({
 }) {
   return (
     <div 
-      className={`stat-card-reusable ${variant} ${onClick ? 'clickable' : ''} ${className}`}
+      className={`stat-card-reusable corner-lg transition-fast ${variant} ${onClick ? 'clickable' : ''} ${className}`}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}

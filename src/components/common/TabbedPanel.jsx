@@ -31,12 +31,12 @@ export default function TabbedPanel({
   const activeTabContent = tabs.find(tab => tab.id === activeTab)?.content;
 
   return (
-    <div className={`tabbed-panel ${variant} ${className}`}>
-      <div className="tab-buttons" role="tablist">
+    <div className={`tabbed-panel flex-col--gap-lg ${variant} ${className}`}>
+      <div className="tab-buttons flex-row--xs" role="tablist">
         {tabs.map(tab => (
           <button
             key={tab.id}
-            className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+            className={`tab-btn flex-center-y transition-smooth ${activeTab === tab.id ? 'active' : ''}`}
             onClick={() => handleTabChange(tab.id)}
             role="tab"
             aria-selected={activeTab === tab.id}
@@ -45,7 +45,7 @@ export default function TabbedPanel({
             {tab.icon && <span className="tab-icon">{tab.icon}</span>}
             <span className="tab-label">{tab.label}</span>
             {tab.badge !== undefined && (
-              <span className="tab-badge">{tab.badge}</span>
+              <span className="tab-badge flex-center">{tab.badge}</span>
             )}
           </button>
         ))}

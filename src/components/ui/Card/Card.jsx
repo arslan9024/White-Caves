@@ -20,6 +20,8 @@ const Card = ({
     hoverable && 'wc-card--hoverable',
     bordered && 'wc-card--bordered',
     onClick && 'wc-card--clickable',
+    'corner-md',
+    'transition-smooth',
     className
   ].filter(Boolean).join(' ');
 
@@ -60,7 +62,7 @@ const StatCard = ({
 }) => (
   <Card variant="stat" className={className} {...props}>
     <div className="wc-stat-card-content">
-      <div className="wc-stat-card-info">
+      <div className="wc-stat-card-info flex-col flex-col--gap-xs">
         <span className="wc-stat-card-title">{title}</span>
         <span className="wc-stat-card-value">{value}</span>
         {change !== undefined && (
@@ -71,7 +73,7 @@ const StatCard = ({
       </div>
       {icon && (
         <div 
-          className="wc-stat-card-icon" 
+          className="wc-stat-card-icon flex-center corner-md" 
           style={{ backgroundColor: iconColor ? `${iconColor}15` : undefined, color: iconColor }}
         >
           {icon}

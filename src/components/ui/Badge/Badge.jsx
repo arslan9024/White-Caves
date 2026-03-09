@@ -19,7 +19,8 @@ const Badge = ({
     `wc-badge--${size}`,
     dot && 'wc-badge--dot',
     pulse && 'wc-badge--pulse',
-    rounded && 'wc-badge--rounded',
+    rounded && 'wc-badge--rounded corner-full',
+    !rounded && 'corner-sm',
     className
   ].filter(Boolean).join(' ');
 

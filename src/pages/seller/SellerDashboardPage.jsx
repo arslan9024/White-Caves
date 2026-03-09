@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import RolePageLayout from '../../components/layout/RolePageLayout';
+import { useSelector } from 'react-redux';
+import UnifiedDashboardLayout from '../../components/layout/UnifiedDashboardLayout';
 import {
   StatCard,
   StatCardGrid,
-  TabbedPanel,
   DataCard,
   DataCardGrid,
   DataList,
@@ -49,46 +49,87 @@ const MARKET_INSIGHTS = [
 
 export default function SellerDashboardPage() {
   const [activeTab, setActiveTab] = useState('overview');
+  const user = useSelector(state => state.auth?.user);
 
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: '📊' },
-    { id: 'listings', label: 'My Listings', icon: '🏠', badge: MY_LISTINGS.length },
-    { id: 'inquiries', label: 'Inquiries', icon: '💬', badge: RECENT_INQUIRIES.length },
-    { id: 'market', label: 'Market Insights', icon: '📈' },
-  ];
+  const handleLogout = () => {
+    console.log('Logout initiated');
+  };
 
-  return (
-    <RolePageLayout
-      title="Seller Dashboard"
-      subtitle="Track your property listings and buyer inquiries"
-      role="seller"
-      actions={
-        <ActionButton 
-          icon="➕" 
-          label="Add New Listing" 
-          to="/seller/add-listing" 
-          variant="primary"
-        />
-      }
-    >
-      <StatCardGrid columns={4}>
-        {SELLER_STATS.map((stat, index) => (
-          <StatCard key={index} {...stat} variant="seller" />
-        ))}
-      </StatCardGrid>
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    sessionStorage.setItem('sellerDashboardTab', tabId);
+  };
 
-      <QuickLinks title="Seller Tools" links={QUICK_LINKS} columns={4} />
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'overview':
+        return (
+          <div className="seller-dashboard-content">
+            <StatCardGrid columns={4}>
+              {SELLER_STATS.map((stat, index) => (
+                <StatCard key={index} {...stat} variant="seller" />
+              ))}
+            </StatCardGrid>
 
-      <TabbedPanel
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        storeKey="sellerDashboard"
-      />
+            <QuickLinks title="Seller Tools" links={QUICK_LINKS} columns={4} />
 
-      {activeTab === 'overview' && (
-        <DataCardGrid columns={2}>
-          <DataCard title="My Listings" viewAllLink="/seller/listings">
+            <DataCardGrid columns={2}>
+              <DataCard title="My Listings" viewAllLink="/seller/listings">
+                <DataList>
+                  {MY_LISTINGS.map(listing => (
+                    <PropertyListItem
+                      key={listing.id}
+                      title={listing.title}
+                      location={listing.location}
+                      price={listing.price}
+                      status={listing.status}
+                      views={listing.views}
+                      inquiries={listing.inquiries}
+                      daysListed={listing.daysListed}
+                    />
+                  ))}
+                </DataList>
+              </DataCard>
+
+              <DataCard title="Recent Inquiries" viewAllLink="/seller/inquiries">
+                <DataList>
+                  {RECENT_INQUIRIES.slice(0, 3).map(inquiry => (
+                    <DataListItem
+                      key={inquiry.id}
+                      avatarText={inquiry.buyer.charAt(0)}
+                      title={inquiry.buyer}
+                      subtitle={`${inquiry.property} - "${inquiry.message.substring(0, 30)}..."`}
+                      meta={inquiry.date}
+                      status={inquiry.qualified ? 'Qualified' : 'Unqualified'}
+                      statusColor={inquiry.qualified ? '16, 185, 129' : '107, 114, 128'}
+                    />
+                  ))}
+                </DataList>
+              </DataCard>
+
+              <DataCard title="Market Insights" viewAllLink="/seller/market" fullWidth>
+                <div className="market-grid">
+                  {MARKET_INSIGHTS.map((insight, index) => (
+                    <div key={index} className="market-item">
+                      <span className="market-area">{insight.area}</span>
+                      <span className="market-price">{insight.avgPrice}</span>
+                      <span className={`market-trend ${insight.trend.startsWith('+') ? 'positive' : 'negative'}`}>
+                        {insight.trend}
+                      </span>
+                      <span className={`market-demand demand-${insight.demand.toLowerCase().replace(' ', '-')}`}>
+                        {insight.demand}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </DataCard>
+            </DataCardGrid>
+          </div>
+        );
+
+      case 'listings':
+        return (
+          <DataCard title={`My Listings (${MY_LISTINGS.length})`}>
             <DataList>
               {MY_LISTINGS.map(listing => (
                 <PropertyListItem
@@ -104,27 +145,45 @@ export default function SellerDashboardPage() {
               ))}
             </DataList>
           </DataCard>
+        );
 
-          <DataCard title="Recent Inquiries" viewAllLink="/seller/inquiries">
+      case 'inquiries':
+        return (
+          <DataCard title={`All Inquiries (${RECENT_INQUIRIES.length})`}>
             <DataList>
-              {RECENT_INQUIRIES.slice(0, 3).map(inquiry => (
+              {RECENT_INQUIRIES.map(inquiry => (
                 <DataListItem
                   key={inquiry.id}
                   avatarText={inquiry.buyer.charAt(0)}
                   title={inquiry.buyer}
-                  subtitle={`${inquiry.property} - "${inquiry.message.substring(0, 30)}..."`}
+                  subtitle={`${inquiry.property} - "${inquiry.message}"`}
                   meta={inquiry.date}
                   status={inquiry.qualified ? 'Qualified' : 'Unqualified'}
                   statusColor={inquiry.qualified ? '16, 185, 129' : '107, 114, 128'}
+                  actions={
+                    <>
+                      <button className="btn btn-sm btn-secondary">View</button>
+                      <button className="btn btn-sm btn-primary">Respond</button>
+                    </>
+                  }
                 />
               ))}
             </DataList>
           </DataCard>
+        );
 
-          <DataCard title="Market Insights" viewAllLink="/seller/market" fullWidth>
-            <div className="market-grid">
+      case 'market':
+        return (
+          <DataCard title="Market Analysis">
+            <div className="market-table">
+              <div className="market-header">
+                <span>Area</span>
+                <span>Avg. Price</span>
+                <span>Trend</span>
+                <span>Demand</span>
+              </div>
               {MARKET_INSIGHTS.map((insight, index) => (
-                <div key={index} className="market-item">
+                <div key={index} className="market-row">
                   <span className="market-area">{insight.area}</span>
                   <span className="market-price">{insight.avgPrice}</span>
                   <span className={`market-trend ${insight.trend.startsWith('+') ? 'positive' : 'negative'}`}>
@@ -137,76 +196,22 @@ export default function SellerDashboardPage() {
               ))}
             </div>
           </DataCard>
-        </DataCardGrid>
-      )}
+        );
 
-      {activeTab === 'listings' && (
-        <DataCard title={`My Listings (${MY_LISTINGS.length})`}>
-          <DataList>
-            {MY_LISTINGS.map(listing => (
-              <PropertyListItem
-                key={listing.id}
-                title={listing.title}
-                location={listing.location}
-                price={listing.price}
-                status={listing.status}
-                views={listing.views}
-                inquiries={listing.inquiries}
-                daysListed={listing.daysListed}
-              />
-            ))}
-          </DataList>
-        </DataCard>
-      )}
+      default:
+        return null;
+    }
+  };
 
-      {activeTab === 'inquiries' && (
-        <DataCard title={`All Inquiries (${RECENT_INQUIRIES.length})`}>
-          <DataList>
-            {RECENT_INQUIRIES.map(inquiry => (
-              <DataListItem
-                key={inquiry.id}
-                avatarText={inquiry.buyer.charAt(0)}
-                title={inquiry.buyer}
-                subtitle={`${inquiry.property} - "${inquiry.message}"`}
-                meta={inquiry.date}
-                status={inquiry.qualified ? 'Qualified' : 'Unqualified'}
-                statusColor={inquiry.qualified ? '16, 185, 129' : '107, 114, 128'}
-                actions={
-                  <>
-                    <button className="btn btn-sm btn-secondary">View</button>
-                    <button className="btn btn-sm btn-primary">Respond</button>
-                  </>
-                }
-              />
-            ))}
-          </DataList>
-        </DataCard>
-      )}
-
-      {activeTab === 'market' && (
-        <DataCard title="Market Analysis">
-          <div className="market-table">
-            <div className="market-header">
-              <span>Area</span>
-              <span>Avg. Price</span>
-              <span>Trend</span>
-              <span>Demand</span>
-            </div>
-            {MARKET_INSIGHTS.map((insight, index) => (
-              <div key={index} className="market-row">
-                <span className="market-area">{insight.area}</span>
-                <span className="market-price">{insight.avgPrice}</span>
-                <span className={`market-trend ${insight.trend.startsWith('+') ? 'positive' : 'negative'}`}>
-                  {insight.trend}
-                </span>
-                <span className={`market-demand demand-${insight.demand.toLowerCase().replace(' ', '-')}`}>
-                  {insight.demand}
-                </span>
-              </div>
-            ))}
-          </div>
-        </DataCard>
-      )}
-    </RolePageLayout>
+  return (
+    <UnifiedDashboardLayout
+      user={user}
+      onLogout={handleLogout}
+      activeTab={activeTab}
+      onTabChange={handleTabChange}
+      role="seller"
+    >
+      {renderTabContent()}
+    </UnifiedDashboardLayout>
   );
 }

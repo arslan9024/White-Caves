@@ -1,0 +1,1712 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - img "White Caves" [ref=e7]
+          - generic [ref=e8]:
+            - heading "White Caves Support" [level=4] [ref=e9]
+            - generic [ref=e10]: Away - Leave a message
+        - button "×" [ref=e11] [cursor=pointer]
+      - generic [ref=e12]:
+        - paragraph [ref=e14]: Welcome to White Caves Real Estate! How can we assist you today?
+        - generic [ref=e15]:
+          - paragraph [ref=e16]: "Contact us via:"
+          - generic [ref=e17]:
+            - button "WhatsApp" [ref=e18] [cursor=pointer]:
+              - img [ref=e19]
+              - generic [ref=e22]: WhatsApp
+            - button "Botim" [ref=e23] [cursor=pointer]:
+              - img [ref=e24]
+              - generic [ref=e28]: Botim
+            - button "GoChat UAE" [ref=e29] [cursor=pointer]:
+              - img [ref=e30]
+              - generic [ref=e33]: GoChat UAE
+            - button "Call Us" [ref=e34] [cursor=pointer]:
+              - img [ref=e35]
+              - generic [ref=e38]: Call Us
+        - generic [ref=e39]:
+          - paragraph [ref=e40]: "Quick Messages:"
+          - button "Property Inquiry" [ref=e41] [cursor=pointer]
+          - button "Schedule Viewing" [ref=e42] [cursor=pointer]
+          - button "Rental Information" [ref=e43] [cursor=pointer]
+          - button "Investment Advice" [ref=e44] [cursor=pointer]
+          - button "General Inquiry" [ref=e45] [cursor=pointer]
+        - generic [ref=e46]:
+          - textbox "Type your message..." [ref=e47]
+          - button [disabled] [ref=e48]:
+            - img [ref=e49]
+        - generic [ref=e52]:
+          - paragraph [ref=e53]: Love our service? Leave us a review!
+          - generic [ref=e54]:
+            - generic [ref=e55] [cursor=pointer]: ★
+            - generic [ref=e56] [cursor=pointer]: ★
+            - generic [ref=e57] [cursor=pointer]: ★
+            - generic [ref=e58] [cursor=pointer]: ★
+            - generic [ref=e59] [cursor=pointer]: ★
+    - button "Close chat" [active] [ref=e60] [cursor=pointer]:
+      - img [ref=e61]
+  - generic [ref=e64]:
+    - banner [ref=e65]:
+      - generic [ref=e66]:
+        - link "White Caves White Caves" [ref=e68] [cursor=pointer]:
+          - /url: /
+          - img "White Caves" [ref=e69]
+          - generic [ref=e70]: White Caves
+        - navigation [ref=e71]:
+          - generic [ref=e72]:
+            - link "Home" [ref=e73] [cursor=pointer]:
+              - /url: /
+            - link "Properties" [ref=e74] [cursor=pointer]:
+              - /url: /properties
+            - link "Services" [ref=e75] [cursor=pointer]:
+              - /url: /services
+            - link "About" [ref=e76] [cursor=pointer]:
+              - /url: /about
+            - link "Contact" [ref=e77] [cursor=pointer]:
+              - /url: /contact
+        - link "Sign In" [ref=e80] [cursor=pointer]:
+          - /url: /signin
+    - main [ref=e81]:
+      - generic [ref=e82]:
+        - generic [ref=e83]:
+          - generic [ref=e88]:
+            - generic [ref=e89]:
+              - generic [ref=e90]: ★
+              - text: Trusted by 1000+ Clients in Dubai
+            - heading "Find Your Dream Luxury Home in Dubai" [level=1] [ref=e91]:
+              - text: Find Your Dream Luxury Home
+              - text: in Dubai
+            - paragraph [ref=e92]: Experience unparalleled luxury living in Dubai's most prestigious locations. White Caves Real Estate brings you exclusive properties with world-class amenities.
+            - generic [ref=e93]:
+              - button "Get Started" [ref=e94] [cursor=pointer]:
+                - text: Get Started
+                - img [ref=e95]
+              - button "View Properties" [ref=e97] [cursor=pointer]:
+                - img [ref=e98]
+                - text: View Properties
+            - generic [ref=e100]:
+              - generic [ref=e101]:
+                - generic [ref=e103]: 500+
+                - text: Premium Properties
+              - generic [ref=e104]:
+                - generic [ref=e106]: 1000+
+                - text: Happy Clients
+              - generic [ref=e107]:
+                - generic [ref=e109]: 15+
+                - text: Years Experience
+              - generic [ref=e110]:
+                - generic [ref=e112]: 50+
+                - text: Expert Agents
+            - generic [ref=e113]:
+              - generic [ref=e114]:
+                - generic [ref=e115]: 🛡
+                - text: Verified Properties
+              - generic [ref=e116]:
+                - generic [ref=e117]: ✅
+                - text: RERA Licensed
+              - generic [ref=e118]:
+                - generic [ref=e119]: 💰
+                - text: Best Value
+          - generic [ref=e120] [cursor=pointer]:
+            - img [ref=e121]
+            - generic [ref=e123]: Scroll to explore
+        - generic [ref=e125]:
+          - generic [ref=e126]:
+            - generic [ref=e127]: Our Services
+            - heading "Why Choose White Caves?" [level=2] [ref=e128]
+            - paragraph [ref=e129]: Comprehensive real estate solutions tailored to your needs in Dubai's luxury property market
+          - generic [ref=e131]:
+            - generic [ref=e132] [cursor=pointer]:
+              - img [ref=e134]
+              - heading "Premium Properties" [level=3] [ref=e137]
+              - paragraph [ref=e138]: Access exclusive listings in Dubai's most prestigious neighborhoods including Palm Jumeirah, Emirates Hills, and Downtown.
+              - link "Learn more →" [ref=e139]:
+                - /url: "#"
+                - text: Learn more
+                - generic [ref=e140]: →
+            - generic [ref=e141] [cursor=pointer]:
+              - img [ref=e143]
+              - heading "Rental Services" [level=3] [ref=e147]
+              - paragraph [ref=e148]: Find your perfect rental home with our comprehensive portfolio of furnished and unfurnished properties across Dubai.
+              - link "Learn more →" [ref=e149]:
+                - /url: "#"
+                - text: Learn more
+                - generic [ref=e150]: →
+            - generic [ref=e151] [cursor=pointer]:
+              - img [ref=e153]
+              - heading "Investment Advisory" [level=3] [ref=e156]
+              - paragraph [ref=e157]: Get expert guidance on property investments with market analysis, ROI projections, and portfolio management.
+              - link "Learn more →" [ref=e158]:
+                - /url: "#"
+                - text: Learn more
+                - generic [ref=e159]: →
+            - generic [ref=e160] [cursor=pointer]:
+              - img [ref=e162]
+              - heading "RERA Certified" [level=3] [ref=e164]
+              - paragraph [ref=e165]: Fully licensed and registered with Dubai Real Estate Regulatory Agency for your peace of mind.
+              - link "Learn more →" [ref=e166]:
+                - /url: "#"
+                - text: Learn more
+                - generic [ref=e167]: →
+            - generic [ref=e168] [cursor=pointer]:
+              - img [ref=e170]
+              - heading "Expert Agents" [level=3] [ref=e175]
+              - paragraph [ref=e176]: 50+ experienced professionals dedicated to helping you find the perfect property for your needs.
+              - link "Learn more →" [ref=e177]:
+                - /url: "#"
+                - text: Learn more
+                - generic [ref=e178]: →
+            - generic [ref=e179] [cursor=pointer]:
+              - img [ref=e181]
+              - heading "Financial Tools" [level=3] [ref=e183]
+              - paragraph [ref=e184]: Use our mortgage calculator, DLD fees estimator, and rent vs buy analyzer to make informed decisions.
+              - link "Learn more →" [ref=e185]:
+                - /url: "#"
+                - text: Learn more
+                - generic [ref=e186]: →
+            - generic [ref=e187] [cursor=pointer]:
+              - img [ref=e189]
+              - heading "Virtual Tours" [level=3] [ref=e192]
+              - paragraph [ref=e193]: Experience properties from anywhere in the world with our immersive 3D virtual tour technology.
+              - link "Learn more →" [ref=e194]:
+                - /url: "#"
+                - text: Learn more
+                - generic [ref=e195]: →
+            - generic [ref=e196] [cursor=pointer]:
+              - img [ref=e198]
+              - heading "Digital Contracts" [level=3] [ref=e201]
+              - paragraph [ref=e202]: Streamlined Ejari-compliant contract management with secure digital signatures and cloud storage.
+              - link "Learn more →" [ref=e203]:
+                - /url: "#"
+                - text: Learn more
+                - generic [ref=e204]: →
+        - generic [ref=e205]:
+          - generic [ref=e206]:
+            - heading "Explore Dubai Properties" [level=2] [ref=e207]
+            - paragraph [ref=e208]: Interactive map with all our listed properties across Dubai
+          - generic [ref=e209]:
+            - button "All Properties" [ref=e210] [cursor=pointer]
+            - button "Residential" [ref=e211] [cursor=pointer]
+            - button "Commercial" [ref=e212] [cursor=pointer]
+            - button "Luxury" [ref=e213] [cursor=pointer]
+          - generic [ref=e215]:
+            - img "Dubai Map" [ref=e216]
+            - img [ref=e218]:
+              - generic [ref=e219]:
+                - generic [ref=e220] [cursor=pointer]:
+                  - generic [ref=e223]: "2"
+                  - generic: Palm Jumeirah
+                - generic [ref=e224] [cursor=pointer]:
+                  - generic [ref=e227]: "1"
+                  - generic: Downtown Dubai
+                - generic [ref=e228] [cursor=pointer]:
+                  - generic [ref=e231]: "1"
+                  - generic: Dubai Marina
+                - generic [ref=e232] [cursor=pointer]:
+                  - generic [ref=e235]: "1"
+                  - generic: Business Bay
+                - generic [ref=e236] [cursor=pointer]:
+                  - generic: Jumeirah Village Circle
+                - generic [ref=e239] [cursor=pointer]:
+                  - generic [ref=e242]: "1"
+                  - generic: Dubai Hills
+                - generic [ref=e243] [cursor=pointer]:
+                  - generic: Dubai Creek Harbour
+                - generic [ref=e246] [cursor=pointer]:
+                  - generic: Emirates Hills
+                - generic [ref=e249] [cursor=pointer]:
+                  - generic: JBR
+                - generic [ref=e252] [cursor=pointer]:
+                  - generic: MBR City
+          - generic [ref=e255]:
+            - heading "Map Legend" [level=4] [ref=e256]
+            - generic [ref=e257]:
+              - generic [ref=e260]: Residential
+              - generic [ref=e263]: Commercial
+              - generic [ref=e266]: Luxury
+          - generic [ref=e267]:
+            - generic [ref=e268]:
+              - generic [ref=e269]: "6"
+              - generic [ref=e270]: Total Properties
+            - generic [ref=e271]:
+              - generic [ref=e272]: "10"
+              - generic [ref=e273]: Areas Covered
+            - generic [ref=e274]:
+              - generic [ref=e275]: "3"
+              - generic [ref=e276]: Luxury Listings
+        - generic [ref=e278]:
+          - generic [ref=e279]:
+            - generic [ref=e280]: Premier Locations
+            - heading "Explore Dubai's Finest Neighborhoods" [level=2] [ref=e281]
+            - paragraph [ref=e282]: Discover exclusive properties in the most sought-after locations across Dubai
+          - generic [ref=e284]:
+            - generic [ref=e285] [cursor=pointer]:
+              - generic [ref=e286]:
+                - img "Palm Jumeirah" [ref=e287]
+                - generic [ref=e289]:
+                  - generic [ref=e290]:
+                    - img [ref=e291]
+                    - text: 120 Properties
+                  - generic [ref=e295]:
+                    - img [ref=e296]
+                    - text: +12%
+              - generic [ref=e299]:
+                - generic [ref=e300]:
+                  - img [ref=e301]
+                  - heading "Palm Jumeirah" [level=3] [ref=e304]
+                - paragraph [ref=e305]: Iconic waterfront living with private beaches and stunning views
+                - generic [ref=e306]:
+                  - generic [ref=e307]:
+                    - generic [ref=e308]: Avg. Price
+                    - generic [ref=e309]: 15M AED
+                  - button "View Properties" [ref=e310]:
+                    - text: View Properties
+                    - img [ref=e311]
+            - generic [ref=e313] [cursor=pointer]:
+              - generic [ref=e314]:
+                - img "Downtown Dubai" [ref=e315]
+                - generic [ref=e317]:
+                  - generic [ref=e318]:
+                    - img [ref=e319]
+                    - text: 200 Properties
+                  - generic [ref=e323]:
+                    - img [ref=e324]
+                    - text: +8%
+              - generic [ref=e327]:
+                - generic [ref=e328]:
+                  - img [ref=e329]
+                  - heading "Downtown Dubai" [level=3] [ref=e332]
+                - paragraph [ref=e333]: Luxury apartments with Burj Khalifa views and world-class amenities
+                - generic [ref=e334]:
+                  - generic [ref=e335]:
+                    - generic [ref=e336]: Avg. Price
+                    - generic [ref=e337]: 8M AED
+                  - button "View Properties" [ref=e338]:
+                    - text: View Properties
+                    - img [ref=e339]
+            - generic [ref=e341] [cursor=pointer]:
+              - generic [ref=e342]:
+                - img "Emirates Hills" [ref=e343]
+                - generic [ref=e345]:
+                  - generic [ref=e346]:
+                    - img [ref=e347]
+                    - text: 45 Properties
+                  - generic [ref=e351]:
+                    - img [ref=e352]
+                    - text: +15%
+              - generic [ref=e355]:
+                - generic [ref=e356]:
+                  - img [ref=e357]
+                  - heading "Emirates Hills" [level=3] [ref=e360]
+                - paragraph [ref=e361]: Exclusive golf course villas in Dubai's most prestigious community
+                - generic [ref=e362]:
+                  - generic [ref=e363]:
+                    - generic [ref=e364]: Avg. Price
+                    - generic [ref=e365]: 35M AED
+                  - button "View Properties" [ref=e366]:
+                    - text: View Properties
+                    - img [ref=e367]
+            - generic [ref=e369] [cursor=pointer]:
+              - generic [ref=e370]:
+                - img "Dubai Marina" [ref=e371]
+                - generic [ref=e373]:
+                  - generic [ref=e374]:
+                    - img [ref=e375]
+                    - text: 180 Properties
+                  - generic [ref=e379]:
+                    - img [ref=e380]
+                    - text: +10%
+              - generic [ref=e383]:
+                - generic [ref=e384]:
+                  - img [ref=e385]
+                  - heading "Dubai Marina" [level=3] [ref=e388]
+                - paragraph [ref=e389]: Vibrant waterfront lifestyle with stunning marina views
+                - generic [ref=e390]:
+                  - generic [ref=e391]:
+                    - generic [ref=e392]: Avg. Price
+                    - generic [ref=e393]: 5M AED
+                  - button "View Properties" [ref=e394]:
+                    - text: View Properties
+                    - img [ref=e395]
+          - button "Explore All Locations" [ref=e398] [cursor=pointer]:
+            - text: Explore All Locations
+            - img [ref=e399]
+        - generic [ref=e401]:
+          - generic [ref=e402]:
+            - heading "Explore Properties by Location" [level=2] [ref=e403]
+            - paragraph [ref=e404]: 6 properties across 5 areas in Dubai
+          - generic [ref=e405]:
+            - generic [ref=e407]:
+              - img [ref=e408]
+              - generic [ref=e414]:
+                - button "2 Palm Jumeirah" [ref=e415] [cursor=pointer]:
+                  - generic [ref=e416]: "2"
+                  - generic: Palm Jumeirah
+                - button "1 Downtown Dubai" [ref=e417] [cursor=pointer]:
+                  - generic [ref=e418]: "1"
+                  - generic: Downtown Dubai
+                - button "1 Emirates Hills" [ref=e419] [cursor=pointer]:
+                  - generic [ref=e420]: "1"
+                  - generic: Emirates Hills
+                - button "1 Dubai Marina" [ref=e421] [cursor=pointer]:
+                  - generic [ref=e422]: "1"
+                  - generic: Dubai Marina
+                - button "1 DIFC" [ref=e423] [cursor=pointer]:
+                  - generic [ref=e424]: "1"
+                  - generic: DIFC
+            - generic [ref=e425]:
+              - heading "Dubai Areas" [level=3] [ref=e426]
+              - generic [ref=e427]:
+                - button "Palm Jumeirah 2 properties Avg. AED 36.5M" [ref=e428] [cursor=pointer]:
+                  - generic [ref=e429]:
+                    - heading "Palm Jumeirah" [level=4] [ref=e430]
+                    - paragraph [ref=e431]: 2 properties
+                  - generic [ref=e433]: Avg. AED 36.5M
+                - button "Downtown Dubai 1 property Avg. AED 35.0M" [ref=e434] [cursor=pointer]:
+                  - generic [ref=e435]:
+                    - heading "Downtown Dubai" [level=4] [ref=e436]
+                    - paragraph [ref=e437]: 1 property
+                  - generic [ref=e439]: Avg. AED 35.0M
+                - button "Emirates Hills 1 property Avg. AED 65.0M" [ref=e440] [cursor=pointer]:
+                  - generic [ref=e441]:
+                    - heading "Emirates Hills" [level=4] [ref=e442]
+                    - paragraph [ref=e443]: 1 property
+                  - generic [ref=e445]: Avg. AED 65.0M
+                - button "Dubai Marina 1 property Avg. AED 8.5M" [ref=e446] [cursor=pointer]:
+                  - generic [ref=e447]:
+                    - heading "Dubai Marina" [level=4] [ref=e448]
+                    - paragraph [ref=e449]: 1 property
+                  - generic [ref=e451]: Avg. AED 8.5M
+                - button "DIFC 1 property Avg. AED 22.0M" [ref=e452] [cursor=pointer]:
+                  - generic [ref=e453]:
+                    - heading "DIFC" [level=4] [ref=e454]
+                    - paragraph [ref=e455]: 1 property
+                  - generic [ref=e457]: Avg. AED 22.0M
+          - generic [ref=e458]:
+            - heading "Featured Properties" [level=3] [ref=e459]
+            - generic [ref=e460]:
+              - generic [ref=e463] [cursor=pointer]:
+                - heading "Beachfront Villa with Private Pool ..." [level=5] [ref=e464]
+                - paragraph [ref=e465]: Palm Jumeirah
+                - generic [ref=e466]: AED 45.0M
+              - generic [ref=e469] [cursor=pointer]:
+                - heading "Burj Khalifa View Penthouse - Downt..." [level=5] [ref=e470]
+                - paragraph [ref=e471]: Downtown Dubai
+                - generic [ref=e472]: AED 35.0M
+              - generic [ref=e475] [cursor=pointer]:
+                - heading "Mediterranean Style Mansion - Emira..." [level=5] [ref=e476]
+                - paragraph [ref=e477]: Emirates Hills
+                - generic [ref=e478]: AED 65.0M
+              - generic [ref=e481] [cursor=pointer]:
+                - heading "Marina Skyline Apartment - Dubai Ma..." [level=5] [ref=e482]
+                - paragraph [ref=e483]: Dubai Marina
+                - generic [ref=e484]: AED 8.5M
+              - generic [ref=e487] [cursor=pointer]:
+                - heading "Signature Villa - Palm Jumeirah..." [level=5] [ref=e488]
+                - paragraph [ref=e489]: Palm Jumeirah
+                - generic [ref=e490]: AED 28.0M
+              - generic [ref=e493] [cursor=pointer]:
+                - heading "Sky Collection Duplex - DIFC..." [level=5] [ref=e494]
+                - paragraph [ref=e495]: DIFC
+                - generic [ref=e496]: AED 22.0M
+        - generic [ref=e497]:
+          - generic [ref=e499]:
+            - heading "Compare Properties" [level=2] [ref=e500]
+            - paragraph [ref=e501]: Select up to 4 properties to compare side by side
+          - generic [ref=e502]:
+            - generic [ref=e503] [cursor=pointer]:
+              - generic [ref=e504]: +
+              - paragraph [ref=e505]: Add Property
+            - generic [ref=e506] [cursor=pointer]:
+              - generic [ref=e507]: +
+              - paragraph [ref=e508]: Add Property
+            - generic [ref=e509] [cursor=pointer]:
+              - generic [ref=e510]: +
+              - paragraph [ref=e511]: Add Property
+            - generic [ref=e512] [cursor=pointer]:
+              - generic [ref=e513]: +
+              - paragraph [ref=e514]: Add Property
+          - generic [ref=e515]:
+            - generic [ref=e516]: ⇄
+            - heading "Select at least 2 properties to compare" [level=3] [ref=e517]
+            - paragraph [ref=e518]: Click on the empty slots above to add properties for comparison
+        - generic [ref=e519]:
+          - generic [ref=e520]:
+            - heading "Smart Rent vs. Buy Calculator" [level=2] [ref=e521]
+            - paragraph [ref=e522]: Make an informed decision for your Dubai property investment
+          - generic [ref=e523]:
+            - generic [ref=e524]:
+              - generic [ref=e525]:
+                - heading "Property Details" [level=3] [ref=e526]
+                - generic [ref=e527]:
+                  - generic [ref=e528]: Property Price (AED)
+                  - spinbutton [ref=e529]: "2000000"
+                - generic [ref=e530]:
+                  - generic [ref=e531]: Down Payment (%)
+                  - spinbutton [ref=e532]: "20"
+                - generic [ref=e533]:
+                  - generic [ref=e534]: Mortgage Rate (%)
+                  - spinbutton [ref=e535]: "4.5"
+                - generic [ref=e536]:
+                  - generic [ref=e537]: Mortgage Term (years)
+                  - spinbutton [ref=e538]: "25"
+              - generic [ref=e539]:
+                - heading "Rental Comparison" [level=3] [ref=e540]
+                - generic [ref=e541]:
+                  - generic [ref=e542]: Monthly Rent (AED)
+                  - spinbutton [ref=e543]: "10000"
+                - generic [ref=e544]:
+                  - generic [ref=e545]: Annual Rent Increase (%)
+                  - spinbutton [ref=e546]: "5"
+              - generic [ref=e547]:
+                - heading "Growth Assumptions" [level=3] [ref=e548]
+                - generic [ref=e549]:
+                  - generic [ref=e550]: Property Appreciation (%/year)
+                  - spinbutton [ref=e551]: "3"
+                - generic [ref=e552]:
+                  - generic [ref=e553]: Investment Return (%/year)
+                  - spinbutton [ref=e554]: "7"
+                - generic [ref=e555]:
+                  - generic [ref=e556]: Maintenance Cost (%/year)
+                  - spinbutton [ref=e557]: "1"
+                - generic [ref=e558]:
+                  - generic [ref=e559]: Years to Compare
+                  - spinbutton [ref=e560]: "10"
+            - generic [ref=e561]:
+              - generic [ref=e562]:
+                - generic [ref=e563]: 🏠
+                - heading "Buying is Better!" [level=3] [ref=e564]
+                - paragraph [ref=e565]: After 10 years, you'll be AED 1,163,325.589 better off buying.
+              - generic [ref=e566]:
+                - generic [ref=e567]:
+                  - heading "Buying Summary" [level=4] [ref=e568]
+                  - generic [ref=e569]:
+                    - generic [ref=e570]: Monthly Mortgage
+                    - strong [ref=e571]: AED 8,893
+                  - generic [ref=e572]:
+                    - generic [ref=e573]: Down Payment
+                    - strong [ref=e574]: AED 400,000
+                  - generic [ref=e575]:
+                    - generic [ref=e576]: Buying Costs (DLD, Agency)
+                    - strong [ref=e577]: AED 128,000
+                  - generic [ref=e578]:
+                    - generic [ref=e579]: Property Value (Year 10)
+                    - strong [ref=e580]: AED 2,687,833
+                - generic [ref=e581]:
+                  - heading "Renting Summary" [level=4] [ref=e582]
+                  - generic [ref=e583]:
+                    - generic [ref=e584]: Monthly Rent (Current)
+                    - strong [ref=e585]: AED 10,000
+                  - generic [ref=e586]:
+                    - generic [ref=e587]: Initial Investment
+                    - strong [ref=e588]: AED 528,000
+                  - generic [ref=e589]:
+                    - generic [ref=e590]: Investment Value (Year 10)
+                    - strong [ref=e591]: AED 1,038,656
+              - generic [ref=e592]:
+                - heading "Year-by-Year Comparison" [level=4] [ref=e593]
+                - generic [ref=e594]:
+                  - generic [ref=e595]:
+                    - generic [ref=e596]:
+                      - 'generic "Buying: AED 674,720" [ref=e597] [cursor=pointer]'
+                      - 'generic "Renting: AED 120,000" [ref=e598] [cursor=pointer]'
+                    - generic [ref=e599]: Y1
+                  - generic [ref=e600]:
+                    - generic [ref=e601]:
+                      - 'generic "Buying: AED 821,440" [ref=e602] [cursor=pointer]'
+                      - 'generic "Renting: AED 246,000" [ref=e603] [cursor=pointer]'
+                    - generic [ref=e604]: Y2
+                  - generic [ref=e605]:
+                    - generic [ref=e606]:
+                      - 'generic "Buying: AED 968,160" [ref=e607] [cursor=pointer]'
+                      - 'generic "Renting: AED 378,300" [ref=e608] [cursor=pointer]'
+                    - generic [ref=e609]: Y3
+                  - generic [ref=e610]:
+                    - generic [ref=e611]:
+                      - 'generic "Buying: AED 1,114,879" [ref=e612] [cursor=pointer]'
+                      - 'generic "Renting: AED 517,215" [ref=e613] [cursor=pointer]'
+                    - generic [ref=e614]: Y4
+                  - generic [ref=e615]:
+                    - generic [ref=e616]:
+                      - 'generic "Buying: AED 1,261,599" [ref=e617] [cursor=pointer]'
+                      - 'generic "Renting: AED 663,076" [ref=e618] [cursor=pointer]'
+                    - generic [ref=e619]: Y5
+                  - generic [ref=e620]:
+                    - generic [ref=e621]:
+                      - 'generic "Buying: AED 1,408,319" [ref=e622] [cursor=pointer]'
+                      - 'generic "Renting: AED 816,230" [ref=e623] [cursor=pointer]'
+                    - generic [ref=e624]: Y6
+                  - generic [ref=e625]:
+                    - generic [ref=e626]:
+                      - 'generic "Buying: AED 1,555,039" [ref=e627] [cursor=pointer]'
+                      - 'generic "Renting: AED 977,041" [ref=e628] [cursor=pointer]'
+                    - generic [ref=e629]: Y7
+                  - generic [ref=e630]:
+                    - generic [ref=e631]:
+                      - 'generic "Buying: AED 1,701,759" [ref=e632] [cursor=pointer]'
+                      - 'generic "Renting: AED 1,145,893" [ref=e633] [cursor=pointer]'
+                    - generic [ref=e634]: Y8
+                  - generic [ref=e635]:
+                    - generic [ref=e636]:
+                      - 'generic "Buying: AED 1,848,479" [ref=e637] [cursor=pointer]'
+                      - 'generic "Renting: AED 1,323,188" [ref=e638] [cursor=pointer]'
+                    - generic [ref=e639]: Y9
+                  - generic [ref=e640]:
+                    - generic [ref=e641]:
+                      - 'generic "Buying: AED 1,995,198" [ref=e642] [cursor=pointer]'
+                      - 'generic "Renting: AED 1,509,347" [ref=e643] [cursor=pointer]'
+                    - generic [ref=e644]: Y10
+                - generic [ref=e645]:
+                  - generic [ref=e646]: Buying Costs
+                  - generic [ref=e647]: Renting Costs
+        - generic [ref=e648]:
+          - generic [ref=e649]:
+            - generic [ref=e650]:
+              - heading "Off-Plan Property Launches" [level=2] [ref=e651]
+              - paragraph [ref=e652]: Track upcoming developments and secure early-bird pricing
+            - generic [ref=e653]:
+              - generic [ref=e654]:
+                - generic [ref=e655]: "5"
+                - generic [ref=e656]: Projects
+              - generic [ref=e657]:
+                - generic [ref=e658]: 2,680
+                - generic [ref=e659]: Total Units
+          - generic [ref=e660]:
+            - button "All Projects" [ref=e661] [cursor=pointer]
+            - button "Residential" [ref=e662] [cursor=pointer]
+            - button "Luxury" [ref=e663] [cursor=pointer]
+            - button "Ultra Luxury" [ref=e664] [cursor=pointer]
+            - button "Commercial" [ref=e665] [cursor=pointer]
+          - generic [ref=e666]:
+            - generic [ref=e667]:
+              - generic [ref=e668]:
+                - img "Marina Vista" [ref=e669]
+                - generic [ref=e670]: launching soon
+                - generic [ref=e671]: luxury
+              - generic [ref=e672]:
+                - generic [ref=e673]:
+                  - generic [ref=e675]: E
+                  - generic [ref=e676]:
+                    - generic [ref=e677]: Emaar Properties
+                    - generic [ref=e678]: Dubai Marina
+                - heading "Marina Vista" [level=3] [ref=e679]
+                - generic [ref=e680]:
+                  - generic [ref=e681]: "Launch in:"
+                  - generic [ref=e682]:
+                    - generic [ref=e683]:
+                      - generic [ref=e684]: "0"
+                      - generic [ref=e685]: Days
+                    - generic [ref=e686]: ":"
+                    - generic [ref=e687]:
+                      - generic [ref=e688]: "0"
+                      - generic [ref=e689]: Hours
+                    - generic [ref=e690]: ":"
+                    - generic [ref=e691]:
+                      - generic [ref=e692]: "0"
+                      - generic [ref=e693]: Mins
+                    - generic [ref=e694]: ":"
+                    - generic [ref=e695]:
+                      - generic [ref=e696]: "0"
+                      - generic [ref=e697]: Secs
+                - generic [ref=e698]:
+                  - generic [ref=e699]:
+                    - generic [ref=e700]: Starting From
+                    - generic [ref=e701]: AED 2,500,000
+                  - generic [ref=e702]:
+                    - generic [ref=e703]: Payment Plan
+                    - generic [ref=e704]: 60/40
+                  - generic [ref=e705]:
+                    - generic [ref=e706]: Total Units
+                    - generic [ref=e707]: "450"
+                  - generic [ref=e708]:
+                    - generic [ref=e709]: Completion
+                    - generic [ref=e710]: Jun 2027
+                - generic [ref=e711]:
+                  - generic [ref=e712]: Sea View
+                  - generic [ref=e713]: Private Beach
+                  - generic [ref=e714]: Smart Home
+                - generic [ref=e715]:
+                  - button "Register Interest" [ref=e716] [cursor=pointer]
+                  - button "View Details" [ref=e717] [cursor=pointer]
+            - generic [ref=e718]:
+              - generic [ref=e719]:
+                - img "Creek Harbour Tower" [ref=e720]
+                - generic [ref=e721]: launching soon
+                - generic [ref=e722]: luxury
+              - generic [ref=e723]:
+                - generic [ref=e724]:
+                  - generic [ref=e726]: E
+                  - generic [ref=e727]:
+                    - generic [ref=e728]: Emaar Properties
+                    - generic [ref=e729]: Dubai Creek Harbour
+                - heading "Creek Harbour Tower" [level=3] [ref=e730]
+                - generic [ref=e731]:
+                  - generic [ref=e732]: "Launch in:"
+                  - generic [ref=e733]:
+                    - generic [ref=e734]:
+                      - generic [ref=e735]: "0"
+                      - generic [ref=e736]: Days
+                    - generic [ref=e737]: ":"
+                    - generic [ref=e738]:
+                      - generic [ref=e739]: "0"
+                      - generic [ref=e740]: Hours
+                    - generic [ref=e741]: ":"
+                    - generic [ref=e742]:
+                      - generic [ref=e743]: "0"
+                      - generic [ref=e744]: Mins
+                    - generic [ref=e745]: ":"
+                    - generic [ref=e746]:
+                      - generic [ref=e747]: "0"
+                      - generic [ref=e748]: Secs
+                - generic [ref=e749]:
+                  - generic [ref=e750]:
+                    - generic [ref=e751]: Starting From
+                    - generic [ref=e752]: AED 1,800,000
+                  - generic [ref=e753]:
+                    - generic [ref=e754]: Payment Plan
+                    - generic [ref=e755]: 80/20
+                  - generic [ref=e756]:
+                    - generic [ref=e757]: Total Units
+                    - generic [ref=e758]: "800"
+                  - generic [ref=e759]:
+                    - generic [ref=e760]: Completion
+                    - generic [ref=e761]: Mar 2028
+                - generic [ref=e762]:
+                  - generic [ref=e763]: Creek View
+                  - generic [ref=e764]: Burj Khalifa View
+                  - generic [ref=e765]: Premium Amenities
+                - generic [ref=e766]:
+                  - button "Register Interest" [ref=e767] [cursor=pointer]
+                  - button "View Details" [ref=e768] [cursor=pointer]
+            - generic [ref=e769]:
+              - generic [ref=e770]:
+                - img "Palm Residences II" [ref=e771]
+                - generic [ref=e772]: launching soon
+                - generic [ref=e773]: ultra luxury
+              - generic [ref=e774]:
+                - generic [ref=e775]:
+                  - generic [ref=e777]: "N"
+                  - generic [ref=e778]:
+                    - generic [ref=e779]: Nakheel
+                    - generic [ref=e780]: Palm Jumeirah
+                - heading "Palm Residences II" [level=3] [ref=e781]
+                - generic [ref=e782]:
+                  - generic [ref=e783]: "Launch in:"
+                  - generic [ref=e784]:
+                    - generic [ref=e785]:
+                      - generic [ref=e786]: "0"
+                      - generic [ref=e787]: Days
+                    - generic [ref=e788]: ":"
+                    - generic [ref=e789]:
+                      - generic [ref=e790]: "0"
+                      - generic [ref=e791]: Hours
+                    - generic [ref=e792]: ":"
+                    - generic [ref=e793]:
+                      - generic [ref=e794]: "0"
+                      - generic [ref=e795]: Mins
+                    - generic [ref=e796]: ":"
+                    - generic [ref=e797]:
+                      - generic [ref=e798]: "0"
+                      - generic [ref=e799]: Secs
+                - generic [ref=e800]:
+                  - generic [ref=e801]:
+                    - generic [ref=e802]: Starting From
+                    - generic [ref=e803]: AED 15,000,000
+                  - generic [ref=e804]:
+                    - generic [ref=e805]: Payment Plan
+                    - generic [ref=e806]: 50/50
+                  - generic [ref=e807]:
+                    - generic [ref=e808]: Total Units
+                    - generic [ref=e809]: "80"
+                  - generic [ref=e810]:
+                    - generic [ref=e811]: Completion
+                    - generic [ref=e812]: Dec 2027
+                - generic [ref=e813]:
+                  - generic [ref=e814]: Beach Access
+                  - generic [ref=e815]: Private Pool
+                  - generic [ref=e816]: Garden
+                - generic [ref=e817]:
+                  - button "Register Interest" [ref=e818] [cursor=pointer]
+                  - button "View Details" [ref=e819] [cursor=pointer]
+            - generic [ref=e820]:
+              - generic [ref=e821]:
+                - img "Business Bay Central" [ref=e822]
+                - generic [ref=e823]: pre registration
+                - generic [ref=e824]: commercial
+              - generic [ref=e825]:
+                - generic [ref=e826]:
+                  - generic [ref=e828]: D
+                  - generic [ref=e829]:
+                    - generic [ref=e830]: DAMAC
+                    - generic [ref=e831]: Business Bay
+                - heading "Business Bay Central" [level=3] [ref=e832]
+                - generic [ref=e833]:
+                  - generic [ref=e834]: "Launch in:"
+                  - generic [ref=e835]:
+                    - generic [ref=e836]:
+                      - generic [ref=e837]: "0"
+                      - generic [ref=e838]: Days
+                    - generic [ref=e839]: ":"
+                    - generic [ref=e840]:
+                      - generic [ref=e841]: "0"
+                      - generic [ref=e842]: Hours
+                    - generic [ref=e843]: ":"
+                    - generic [ref=e844]:
+                      - generic [ref=e845]: "0"
+                      - generic [ref=e846]: Mins
+                    - generic [ref=e847]: ":"
+                    - generic [ref=e848]:
+                      - generic [ref=e849]: "0"
+                      - generic [ref=e850]: Secs
+                - generic [ref=e851]:
+                  - generic [ref=e852]:
+                    - generic [ref=e853]: Starting From
+                    - generic [ref=e854]: AED 950,000
+                  - generic [ref=e855]:
+                    - generic [ref=e856]: Payment Plan
+                    - generic [ref=e857]: 70/30
+                  - generic [ref=e858]:
+                    - generic [ref=e859]: Total Units
+                    - generic [ref=e860]: "1200"
+                  - generic [ref=e861]:
+                    - generic [ref=e862]: Completion
+                    - generic [ref=e863]: Sep 2027
+                - generic [ref=e864]:
+                  - generic [ref=e865]: Office Space
+                  - generic [ref=e866]: Meeting Rooms
+                  - generic [ref=e867]: Parking
+                - generic [ref=e868]:
+                  - button "Register Interest" [ref=e869] [cursor=pointer]
+                  - button "View Details" [ref=e870] [cursor=pointer]
+            - generic [ref=e871]:
+              - generic [ref=e872]:
+                - img "Dubai Hills Villas" [ref=e873]
+                - generic [ref=e874]: launching soon
+                - generic [ref=e875]: residential
+              - generic [ref=e876]:
+                - generic [ref=e877]:
+                  - generic [ref=e879]: M
+                  - generic [ref=e880]:
+                    - generic [ref=e881]: Meraas
+                    - generic [ref=e882]: Dubai Hills Estate
+                - heading "Dubai Hills Villas" [level=3] [ref=e883]
+                - generic [ref=e884]:
+                  - generic [ref=e885]: "Launch in:"
+                  - generic [ref=e886]:
+                    - generic [ref=e887]:
+                      - generic [ref=e888]: "0"
+                      - generic [ref=e889]: Days
+                    - generic [ref=e890]: ":"
+                    - generic [ref=e891]:
+                      - generic [ref=e892]: "0"
+                      - generic [ref=e893]: Hours
+                    - generic [ref=e894]: ":"
+                    - generic [ref=e895]:
+                      - generic [ref=e896]: "0"
+                      - generic [ref=e897]: Mins
+                    - generic [ref=e898]: ":"
+                    - generic [ref=e899]:
+                      - generic [ref=e900]: "0"
+                      - generic [ref=e901]: Secs
+                - generic [ref=e902]:
+                  - generic [ref=e903]:
+                    - generic [ref=e904]: Starting From
+                    - generic [ref=e905]: AED 5,500,000
+                  - generic [ref=e906]:
+                    - generic [ref=e907]: Payment Plan
+                    - generic [ref=e908]: 60/40
+                  - generic [ref=e909]:
+                    - generic [ref=e910]: Total Units
+                    - generic [ref=e911]: "150"
+                  - generic [ref=e912]:
+                    - generic [ref=e913]: Completion
+                    - generic [ref=e914]: Dec 2026
+                - generic [ref=e915]:
+                  - generic [ref=e916]: Golf View
+                  - generic [ref=e917]: Private Garden
+                  - generic [ref=e918]: Smart Home
+                - generic [ref=e919]:
+                  - button "Register Interest" [ref=e920] [cursor=pointer]
+                  - button "View Details" [ref=e921] [cursor=pointer]
+        - generic [ref=e922]:
+          - generic [ref=e923]:
+            - heading "AI Neighborhood Analyzer" [level=2] [ref=e924]
+            - paragraph [ref=e925]: Data-driven insights for informed investment decisions
+          - generic [ref=e926]:
+            - button "Dubai Marina" [ref=e927] [cursor=pointer]
+            - button "Downtown Dubai" [ref=e928] [cursor=pointer]
+            - button "Palm Jumeirah" [ref=e929] [cursor=pointer]
+            - button "Dubai Hills Estate" [ref=e930] [cursor=pointer]
+            - button "Jumeirah Village Circle" [ref=e931] [cursor=pointer]
+          - generic [ref=e932]:
+            - generic [ref=e935]:
+              - heading "Dubai Marina" [level=3] [ref=e936]
+              - paragraph [ref=e937]: Premier waterfront community with stunning marina views and world-class amenities.
+              - generic [ref=e938]:
+                - generic [ref=e939]: "Score: 92/100"
+                - generic [ref=e940]: "Grade: A+"
+                - generic [ref=e941]: 📈 rising
+            - generic [ref=e942]:
+              - generic [ref=e943]:
+                - text: 💰
+                - generic [ref=e944]:
+                  - generic [ref=e945]: AED 1,850,000
+                  - generic [ref=e946]: Average Price
+              - generic [ref=e947]:
+                - text: 📐
+                - generic [ref=e948]:
+                  - generic [ref=e949]: AED 1,650
+                  - generic [ref=e950]: Price/Sq.Ft
+              - generic [ref=e951]:
+                - text: 📊
+                - generic [ref=e952]:
+                  - generic [ref=e953]: 6.8%
+                  - generic [ref=e954]: Rental Yield
+              - generic [ref=e955]:
+                - text: 📈
+                - generic [ref=e956]:
+                  - generic [ref=e957]: +8.5%
+                  - generic [ref=e958]: Annual Growth
+            - generic [ref=e959]:
+              - generic [ref=e960]:
+                - heading "Demographics" [level=4] [ref=e961]
+                - generic [ref=e962]:
+                  - generic [ref=e963]:
+                    - generic [ref=e964]: 45,000
+                    - text: Population
+                  - generic [ref=e965]:
+                    - generic [ref=e966]: "35"
+                    - text: Avg Age
+                  - generic [ref=e967]:
+                    - generic [ref=e968]: 85%
+                    - text: Expats
+                  - generic [ref=e969]:
+                    - generic [ref=e970]: 35%
+                    - text: Families
+              - generic [ref=e971]:
+                - heading "Amenities Score" [level=4] [ref=e972]
+                - generic [ref=e973]:
+                  - generic [ref=e974]:
+                    - generic [ref=e975]: Restaurants
+                    - generic [ref=e978]: "95"
+                  - generic [ref=e979]:
+                    - generic [ref=e980]: Schools
+                    - generic [ref=e983]: "8"
+                  - generic [ref=e984]:
+                    - generic [ref=e985]: Healthcare
+                    - generic [ref=e988]: "12"
+                  - generic [ref=e989]:
+                    - generic [ref=e990]: Shopping
+                    - generic [ref=e993]: "25"
+                  - generic [ref=e994]:
+                    - generic [ref=e995]: Parks
+                    - generic [ref=e998]: "6"
+              - generic [ref=e999]:
+                - heading "Transport & Accessibility" [level=4] [ref=e1000]
+                - generic [ref=e1001]:
+                  - generic [ref=e1002]:
+                    - generic [ref=e1003]: 🚇
+                    - generic [ref=e1004]: "2"
+                    - text: Metro Stations
+                  - generic [ref=e1005]:
+                    - generic [ref=e1006]: 🚌
+                    - generic [ref=e1007]: "15"
+                    - text: Bus Routes
+                  - generic [ref=e1008]:
+                    - generic [ref=e1009]: 🚶
+                    - generic [ref=e1010]: 88/100
+                    - text: Walkability
+              - generic [ref=e1011]:
+                - heading "Future Development" [level=4] [ref=e1012]
+                - generic [ref=e1013]:
+                  - generic [ref=e1014]:
+                    - generic [ref=e1015]: Marina Promenade Extension
+                    - generic [ref=e1016]: "2025"
+                  - generic [ref=e1017]:
+                    - generic [ref=e1018]: New Metro Station
+                    - generic [ref=e1019]: "2026"
+            - generic [ref=e1020]:
+              - generic [ref=e1021]:
+                - heading "Investment Insights" [level=4] [ref=e1022]
+                - list [ref=e1023]:
+                  - listitem [ref=e1024]: ✓ High demand from young professionals and investors
+                  - listitem [ref=e1025]: ✓ Strong rental market with consistent occupancy rates
+                  - listitem [ref=e1026]: ✓ Premium positioning attracts international buyers
+                  - listitem [ref=e1027]: ✓ Limited new supply keeps prices stable
+              - generic [ref=e1028]:
+                - heading "Potential Risks" [level=4] [ref=e1029]
+                - list [ref=e1030]:
+                  - listitem [ref=e1031]: ⚠ High competition
+                  - listitem [ref=e1032]: ⚠ Market saturation in some segments
+            - generic [ref=e1033]:
+              - button "View Properties in Dubai Marina" [ref=e1034] [cursor=pointer]
+              - button "Download Report" [ref=e1035] [cursor=pointer]
+              - button "Compare Areas" [ref=e1036] [cursor=pointer]
+        - generic [ref=e1037]:
+          - generic [ref=e1038]:
+            - generic [ref=e1039]:
+              - heading "Virtual Property Tours" [level=2] [ref=e1040]
+              - paragraph [ref=e1041]: Experience luxury properties with immersive 360 walkthroughs
+            - generic [ref=e1042]:
+              - button "Grid" [ref=e1043] [cursor=pointer]
+              - button "List" [ref=e1044] [cursor=pointer]
+          - generic [ref=e1045]:
+            - heading "Featured Virtual Tours" [level=3] [ref=e1046]
+            - generic [ref=e1047]:
+              - generic [ref=e1048] [cursor=pointer]:
+                - generic [ref=e1049]:
+                  - img "Luxury Penthouse - Downtown Dubai" [ref=e1050]
+                  - generic [ref=e1053]: "360"
+                  - generic [ref=e1054]:
+                    - generic [ref=e1055]: Drone View
+                    - generic [ref=e1056]: Video Tour
+                - generic [ref=e1057]:
+                  - heading "Luxury Penthouse - Downtown Dubai" [level=4] [ref=e1058]
+                  - paragraph [ref=e1059]: Downtown Dubai
+                  - generic [ref=e1060]:
+                    - generic [ref=e1061]: 4 Beds
+                    - generic [ref=e1062]: 5 Baths
+                    - generic [ref=e1063]: 8,500 sqft
+                  - generic [ref=e1064]:
+                    - generic [ref=e1065]: AED 15,000,000
+                    - generic [ref=e1066]: 1250 views
+              - generic [ref=e1067] [cursor=pointer]:
+                - generic [ref=e1068]:
+                  - img "Beachfront Villa - Palm Jumeirah" [ref=e1069]
+                  - generic [ref=e1072]: "360"
+                  - generic [ref=e1073]:
+                    - generic [ref=e1074]: Drone View
+                    - generic [ref=e1075]: Video Tour
+                - generic [ref=e1076]:
+                  - heading "Beachfront Villa - Palm Jumeirah" [level=4] [ref=e1077]
+                  - paragraph [ref=e1078]: Palm Jumeirah
+                  - generic [ref=e1079]:
+                    - generic [ref=e1080]: 6 Beds
+                    - generic [ref=e1081]: 7 Baths
+                    - generic [ref=e1082]: 12,000 sqft
+                  - generic [ref=e1083]:
+                    - generic [ref=e1084]: AED 45,000,000
+                    - generic [ref=e1085]: 2340 views
+              - generic [ref=e1086] [cursor=pointer]:
+                - generic [ref=e1087]:
+                  - img "Golf Course Villa - Emirates Hills" [ref=e1088]
+                  - generic [ref=e1091]: "360"
+                  - generic [ref=e1092]:
+                    - generic [ref=e1093]: Drone View
+                    - generic [ref=e1094]: Video Tour
+                - generic [ref=e1095]:
+                  - heading "Golf Course Villa - Emirates Hills" [level=4] [ref=e1096]
+                  - paragraph [ref=e1097]: Emirates Hills
+                  - generic [ref=e1098]:
+                    - generic [ref=e1099]: 5 Beds
+                    - generic [ref=e1100]: 6 Baths
+                    - generic [ref=e1101]: 9,500 sqft
+                  - generic [ref=e1102]:
+                    - generic [ref=e1103]: AED 28,000,000
+                    - generic [ref=e1104]: 1680 views
+              - generic [ref=e1105] [cursor=pointer]:
+                - generic [ref=e1106]:
+                  - img "Sky Collection Apartment - DIFC" [ref=e1107]
+                  - generic [ref=e1110]: "360"
+                  - generic [ref=e1111]:
+                    - generic [ref=e1112]: Drone View
+                    - generic [ref=e1113]: Video Tour
+                - generic [ref=e1114]:
+                  - heading "Sky Collection Apartment - DIFC" [level=4] [ref=e1115]
+                  - paragraph [ref=e1116]: DIFC
+                  - generic [ref=e1117]:
+                    - generic [ref=e1118]: 3 Beds
+                    - generic [ref=e1119]: 4 Baths
+                    - generic [ref=e1120]: 3,800 sqft
+                  - generic [ref=e1121]:
+                    - generic [ref=e1122]: AED 8,500,000
+                    - generic [ref=e1123]: 1120 views
+          - generic [ref=e1124]:
+            - heading "All Virtual Tours" [level=3] [ref=e1125]
+            - generic [ref=e1126]:
+              - generic [ref=e1127] [cursor=pointer]:
+                - generic [ref=e1128]:
+                  - img "Luxury Penthouse - Downtown Dubai" [ref=e1129]
+                  - generic [ref=e1132]: "360"
+                  - generic [ref=e1133]:
+                    - generic [ref=e1134]: Drone
+                    - generic [ref=e1135]: Video
+                  - generic [ref=e1136]: Penthouse
+                - generic [ref=e1137]:
+                  - heading "Luxury Penthouse - Downtown Dubai" [level=4] [ref=e1138]
+                  - paragraph [ref=e1139]: Downtown Dubai
+                  - generic [ref=e1140]:
+                    - generic [ref=e1141]: 4 Beds
+                    - generic [ref=e1142]: 5 Baths
+                    - generic [ref=e1143]: 8,500 sqft
+                  - generic [ref=e1144]:
+                    - generic [ref=e1145]: AED 15,000,000
+                    - generic [ref=e1146]: 1250 views
+              - generic [ref=e1147] [cursor=pointer]:
+                - generic [ref=e1148]:
+                  - img "Beachfront Villa - Palm Jumeirah" [ref=e1149]
+                  - generic [ref=e1152]: "360"
+                  - generic [ref=e1153]:
+                    - generic [ref=e1154]: Drone
+                    - generic [ref=e1155]: Video
+                  - generic [ref=e1156]: Villa
+                - generic [ref=e1157]:
+                  - heading "Beachfront Villa - Palm Jumeirah" [level=4] [ref=e1158]
+                  - paragraph [ref=e1159]: Palm Jumeirah
+                  - generic [ref=e1160]:
+                    - generic [ref=e1161]: 6 Beds
+                    - generic [ref=e1162]: 7 Baths
+                    - generic [ref=e1163]: 12,000 sqft
+                  - generic [ref=e1164]:
+                    - generic [ref=e1165]: AED 45,000,000
+                    - generic [ref=e1166]: 2340 views
+              - generic [ref=e1167] [cursor=pointer]:
+                - generic [ref=e1168]:
+                  - img "Modern Apartment - Dubai Marina" [ref=e1169]
+                  - generic [ref=e1172]: "360"
+                  - generic [ref=e1174]: Video
+                  - generic [ref=e1175]: Apartment
+                - generic [ref=e1176]:
+                  - heading "Modern Apartment - Dubai Marina" [level=4] [ref=e1177]
+                  - paragraph [ref=e1178]: Dubai Marina
+                  - generic [ref=e1179]:
+                    - generic [ref=e1180]: 2 Beds
+                    - generic [ref=e1181]: 3 Baths
+                    - generic [ref=e1182]: 1,800 sqft
+                  - generic [ref=e1183]:
+                    - generic [ref=e1184]: AED 3,500,000
+                    - generic [ref=e1185]: 890 views
+              - generic [ref=e1186] [cursor=pointer]:
+                - generic [ref=e1187]:
+                  - img "Golf Course Villa - Emirates Hills" [ref=e1188]
+                  - generic [ref=e1191]: "360"
+                  - generic [ref=e1192]:
+                    - generic [ref=e1193]: Drone
+                    - generic [ref=e1194]: Video
+                  - generic [ref=e1195]: Villa
+                - generic [ref=e1196]:
+                  - heading "Golf Course Villa - Emirates Hills" [level=4] [ref=e1197]
+                  - paragraph [ref=e1198]: Emirates Hills
+                  - generic [ref=e1199]:
+                    - generic [ref=e1200]: 5 Beds
+                    - generic [ref=e1201]: 6 Baths
+                    - generic [ref=e1202]: 9,500 sqft
+                  - generic [ref=e1203]:
+                    - generic [ref=e1204]: AED 28,000,000
+                    - generic [ref=e1205]: 1680 views
+              - generic [ref=e1206] [cursor=pointer]:
+                - generic [ref=e1207]:
+                  - img "Waterfront Townhouse - Dubai Creek" [ref=e1208]
+                  - generic [ref=e1211]: "360"
+                  - generic [ref=e1213]: Video
+                  - generic [ref=e1214]: Townhouse
+                - generic [ref=e1215]:
+                  - heading "Waterfront Townhouse - Dubai Creek" [level=4] [ref=e1216]
+                  - paragraph [ref=e1217]: Dubai Creek Harbour
+                  - generic [ref=e1218]:
+                    - generic [ref=e1219]: 4 Beds
+                    - generic [ref=e1220]: 4 Baths
+                    - generic [ref=e1221]: 3,200 sqft
+                  - generic [ref=e1222]:
+                    - generic [ref=e1223]: AED 5,800,000
+                    - generic [ref=e1224]: 720 views
+              - generic [ref=e1225] [cursor=pointer]:
+                - generic [ref=e1226]:
+                  - img "Sky Collection Apartment - DIFC" [ref=e1227]
+                  - generic [ref=e1230]: "360"
+                  - generic [ref=e1231]:
+                    - generic [ref=e1232]: Drone
+                    - generic [ref=e1233]: Video
+                  - generic [ref=e1234]: Apartment
+                - generic [ref=e1235]:
+                  - heading "Sky Collection Apartment - DIFC" [level=4] [ref=e1236]
+                  - paragraph [ref=e1237]: DIFC
+                  - generic [ref=e1238]:
+                    - generic [ref=e1239]: 3 Beds
+                    - generic [ref=e1240]: 4 Baths
+                    - generic [ref=e1241]: 3,800 sqft
+                  - generic [ref=e1242]:
+                    - generic [ref=e1243]: AED 8,500,000
+                    - generic [ref=e1244]: 1120 views
+        - generic [ref=e1246]:
+          - generic [ref=e1247]:
+            - img "White Caves Real Estate" [ref=e1248]
+            - generic [ref=e1249]:
+              - heading "White Caves Real Estate LLC" [level=2] [ref=e1250]
+              - paragraph [ref=e1251]: Dubai's Premier Luxury Property Partner
+          - generic [ref=e1252]:
+            - generic [ref=e1253]:
+              - generic [ref=e1254]: 🏢
+              - heading "Who We Are" [level=3] [ref=e1255]
+              - paragraph [ref=e1256]: White Caves Real Estate is a leading Dubai-based real estate agency specializing in luxury residential and commercial properties across the UAE. With over 15 years of experience, we've built a reputation for excellence, integrity, and exceptional client service.
+            - generic [ref=e1257]:
+              - generic [ref=e1258]: 🎯
+              - heading "Our Mission" [level=3] [ref=e1259]
+              - paragraph [ref=e1260]: To provide unparalleled real estate services that exceed expectations, connecting discerning clients with their dream properties while ensuring transparent, efficient, and personalized transactions.
+            - generic [ref=e1261]:
+              - generic [ref=e1262]: 🌟
+              - heading "Our Vision" [level=3] [ref=e1263]
+              - paragraph [ref=e1264]: To be the most trusted and innovative real estate company in the UAE, setting industry standards for customer satisfaction, technological advancement, and sustainable business practices.
+            - generic [ref=e1265]:
+              - generic [ref=e1266]: 📋
+              - heading "RERA Licensed" [level=3] [ref=e1267]
+              - paragraph [ref=e1268]: Fully licensed and regulated by the Real Estate Regulatory Agency (RERA) and Dubai Land Department (DLD), ensuring complete compliance with UAE real estate laws and regulations.
+          - generic [ref=e1269]:
+            - heading "Our Services" [level=3] [ref=e1270]
+            - generic [ref=e1271]:
+              - generic [ref=e1272]:
+                - generic [ref=e1273]: 🏠
+                - generic [ref=e1274]: Property Sales & Purchases
+              - generic [ref=e1275]:
+                - generic [ref=e1276]: 🔑
+                - generic [ref=e1277]: Residential Rentals
+              - generic [ref=e1278]:
+                - generic [ref=e1279]: 🏗️
+                - generic [ref=e1280]: Off-Plan Investments
+              - generic [ref=e1281]:
+                - generic [ref=e1282]: 🏢
+                - generic [ref=e1283]: Commercial Properties
+              - generic [ref=e1284]:
+                - generic [ref=e1285]: 📄
+                - generic [ref=e1286]: Property Management
+              - generic [ref=e1287]:
+                - generic [ref=e1288]: 💼
+                - generic [ref=e1289]: Investment Advisory
+              - generic [ref=e1290]:
+                - generic [ref=e1291]: 🏖️
+                - generic [ref=e1292]: Holiday Homes
+              - generic [ref=e1293]:
+                - generic [ref=e1294]: 📊
+                - generic [ref=e1295]: Market Analysis
+          - generic [ref=e1296]:
+            - generic [ref=e1297]:
+              - generic [ref=e1298]: 500+
+              - generic [ref=e1299]: Properties Listed
+            - generic [ref=e1300]:
+              - generic [ref=e1301]: 1000+
+              - generic [ref=e1302]: Happy Clients
+            - generic [ref=e1303]:
+              - generic [ref=e1304]: 15+
+              - generic [ref=e1305]: Years Experience
+            - generic [ref=e1306]:
+              - generic [ref=e1307]: 50+
+              - generic [ref=e1308]: Expert Agents
+          - generic [ref=e1309]:
+            - heading "Contact Information" [level=3] [ref=e1310]
+            - generic [ref=e1311]:
+              - generic [ref=e1312]:
+                - generic [ref=e1313]: 📍
+                - generic [ref=e1314]:
+                  - strong [ref=e1315]: Head Office
+                  - paragraph [ref=e1316]: Office D-72, El-Shaye-4, Port Saeed, Deira, Dubai, UAE
+              - generic [ref=e1317]:
+                - generic [ref=e1318]: 📞
+                - generic [ref=e1319]:
+                  - strong [ref=e1320]: Phone
+                  - paragraph [ref=e1321]: +971-56-361-6136
+              - generic [ref=e1322]:
+                - generic [ref=e1323]: 📱
+                - generic [ref=e1324]:
+                  - strong [ref=e1325]: WhatsApp
+                  - paragraph [ref=e1326]: +971-56-361-6136
+              - generic [ref=e1327]:
+                - generic [ref=e1328]: ✉️
+                - generic [ref=e1329]:
+                  - strong [ref=e1330]: Email
+                  - paragraph [ref=e1331]: admin@whitecaves.com
+          - generic [ref=e1332]:
+            - button "Download Company Profile (PDF)" [ref=e1333] [cursor=pointer]:
+              - img [ref=e1334]
+              - text: Download Company Profile (PDF)
+            - paragraph [ref=e1337]: Get our complete company brochure with detailed information
+        - generic [ref=e1339]:
+          - generic [ref=e1340]:
+            - generic [ref=e1341]: Our Team
+            - heading "Meet the Experts" [level=2] [ref=e1342]
+            - paragraph [ref=e1343]: Dedicated professionals committed to helping you find your perfect property
+          - generic [ref=e1345]:
+            - generic [ref=e1346]:
+              - generic [ref=e1347]:
+                - img "Ahmed Al Rashid" [ref=e1348]
+                - generic [ref=e1350]:
+                  - link [ref=e1351] [cursor=pointer]:
+                    - /url: "#"
+                    - img [ref=e1352]
+                  - link [ref=e1356] [cursor=pointer]:
+                    - /url: "#"
+                    - img [ref=e1357]
+                  - link [ref=e1359] [cursor=pointer]:
+                    - /url: mailto:ahmed@whitecaves.com
+                    - img [ref=e1360]
+              - generic [ref=e1363]:
+                - heading "Ahmed Al Rashid" [level=3] [ref=e1364]
+                - paragraph [ref=e1365]: CEO & Founder
+                - paragraph [ref=e1366]: 20+ years experience in Dubai real estate market
+                - generic [ref=e1367]:
+                  - generic [ref=e1368]: Strategic Planning
+                  - generic [ref=e1369]: Market Analysis
+                  - generic [ref=e1370]: Leadership
+            - generic [ref=e1371]:
+              - generic [ref=e1372]:
+                - img "Sarah Thompson" [ref=e1373]
+                - generic [ref=e1375]:
+                  - link [ref=e1376] [cursor=pointer]:
+                    - /url: "#"
+                    - img [ref=e1377]
+                  - link [ref=e1381] [cursor=pointer]:
+                    - /url: "#"
+                    - img [ref=e1382]
+                  - link [ref=e1384] [cursor=pointer]:
+                    - /url: mailto:sarah@whitecaves.com
+                    - img [ref=e1385]
+              - generic [ref=e1388]:
+                - heading "Sarah Thompson" [level=3] [ref=e1389]
+                - paragraph [ref=e1390]: Head of Sales
+                - paragraph [ref=e1391]: Specializing in luxury villa transactions
+                - generic [ref=e1392]:
+                  - generic [ref=e1393]: Negotiations
+                  - generic [ref=e1394]: Client Relations
+                  - generic [ref=e1395]: Sales
+            - generic [ref=e1396]:
+              - generic [ref=e1397]:
+                - img "Mohammed Hassan" [ref=e1398]
+                - generic [ref=e1400]:
+                  - link [ref=e1401] [cursor=pointer]:
+                    - /url: "#"
+                    - img [ref=e1402]
+                  - link [ref=e1406] [cursor=pointer]:
+                    - /url: "#"
+                    - img [ref=e1407]
+                  - link [ref=e1409] [cursor=pointer]:
+                    - /url: mailto:mohammed@whitecaves.com
+                    - img [ref=e1410]
+              - generic [ref=e1413]:
+                - heading "Mohammed Hassan" [level=3] [ref=e1414]
+                - paragraph [ref=e1415]: Senior Property Consultant
+                - paragraph [ref=e1416]: Expert in off-plan investments
+                - generic [ref=e1417]:
+                  - generic [ref=e1418]: Investment
+                  - generic [ref=e1419]: Property Valuation
+                  - generic [ref=e1420]: Market Trends
+            - generic [ref=e1421]:
+              - generic [ref=e1422]:
+                - img "Elena Rodriguez" [ref=e1423]
+                - generic [ref=e1425]:
+                  - link [ref=e1426] [cursor=pointer]:
+                    - /url: "#"
+                    - img [ref=e1427]
+                  - link [ref=e1431] [cursor=pointer]:
+                    - /url: "#"
+                    - img [ref=e1432]
+                  - link [ref=e1434] [cursor=pointer]:
+                    - /url: mailto:elena@whitecaves.com
+                    - img [ref=e1435]
+              - generic [ref=e1438]:
+                - heading "Elena Rodriguez" [level=3] [ref=e1439]
+                - paragraph [ref=e1440]: Marketing Director
+                - paragraph [ref=e1441]: Digital marketing strategist
+                - generic [ref=e1442]:
+                  - generic [ref=e1443]: Digital Marketing
+                  - generic [ref=e1444]: Branding
+                  - generic [ref=e1445]: Strategy
+          - generic [ref=e1446]:
+            - heading "Join Our Team" [level=3] [ref=e1447]
+            - paragraph [ref=e1448]: We're always looking for talented individuals to join our growing team
+            - link "View Open Positions" [ref=e1449] [cursor=pointer]:
+              - /url: /careers
+        - generic [ref=e1451]:
+          - generic [ref=e1452]:
+            - generic [ref=e1453]: Testimonials
+            - heading "What Our Clients Say" [level=2] [ref=e1454]
+            - paragraph [ref=e1455]: Hear from satisfied clients who found their dream properties with White Caves
+          - generic [ref=e1457]:
+            - button [ref=e1458] [cursor=pointer]:
+              - img [ref=e1459]
+            - generic [ref=e1462]:
+              - img [ref=e1464]
+              - generic [ref=e1467]:
+                - img [ref=e1468]
+                - img [ref=e1470]
+                - img [ref=e1472]
+                - img [ref=e1474]
+                - img [ref=e1476]
+              - blockquote [ref=e1478]: "\"White Caves made my property investment journey in Dubai seamless. Their team's expertise in the luxury market is unmatched. I found my perfect villa in Palm Jumeirah within weeks.\""
+              - generic [ref=e1479]:
+                - img "James Richardson" [ref=e1480]
+                - generic [ref=e1481]:
+                  - heading "James Richardson" [level=4] [ref=e1482]
+                  - paragraph [ref=e1483]: Property Investor
+                  - paragraph [ref=e1484]: Palm Jumeirah Villa
+            - button [ref=e1485] [cursor=pointer]:
+              - img [ref=e1486]
+          - generic [ref=e1488]:
+            - button [ref=e1489] [cursor=pointer]
+            - button [ref=e1490] [cursor=pointer]
+            - button [ref=e1491] [cursor=pointer]
+            - button [ref=e1492] [cursor=pointer]
+          - generic [ref=e1494]:
+            - heading "Share Your Experience!" [level=3] [ref=e1495]
+            - paragraph [ref=e1496]: Had a great experience with White Caves? We'd love to hear from you!
+            - generic [ref=e1497]:
+              - generic [ref=e1498]: "Rate us:"
+              - link [ref=e1499] [cursor=pointer]:
+                - /url: https://g.page/r/whitecaves/review
+                - img [ref=e1500]
+                - img [ref=e1502]
+                - img [ref=e1504]
+                - img [ref=e1506]
+                - img [ref=e1508]
+            - paragraph [ref=e1510]: Your feedback helps us serve you better!
+          - generic [ref=e1512]:
+            - generic [ref=e1513]: Trusted by leading companies worldwide
+            - generic [ref=e1514]:
+              - generic [ref=e1515]: RERA Licensed
+              - generic [ref=e1516]: DLD Registered
+              - generic [ref=e1517]: Dubai Chamber
+              - generic [ref=e1518]: UAE Certified
+        - generic [ref=e1520]:
+          - generic [ref=e1521]:
+            - heading "Real Estate Insights" [level=2] [ref=e1522]
+            - paragraph [ref=e1523]: Stay informed with the latest news, guides, and market analysis from Dubai's property experts
+          - generic [ref=e1524]:
+            - article [ref=e1525]:
+              - generic [ref=e1527]: Market Analysis
+              - generic [ref=e1528]:
+                - generic [ref=e1529]:
+                  - generic [ref=e1530]: Ahmed Hassan
+                  - generic [ref=e1531]: December 10, 2025
+                  - generic [ref=e1532]: 8 min read
+                - 'heading "Dubai Real Estate Market Trends 2025: What Buyers Need to Know" [level=3] [ref=e1533]'
+                - paragraph [ref=e1534]: The Dubai property market continues to show remarkable resilience and growth. Here's our comprehensive analysis of current trends and future predictions for investors.
+                - button "Read Article →" [ref=e1535] [cursor=pointer]
+            - article [ref=e1536]:
+              - generic [ref=e1538]: Buying Guide
+              - generic [ref=e1539]:
+                - generic [ref=e1540]:
+                  - generic [ref=e1541]: Sarah Al-Maktoum
+                  - generic [ref=e1542]: December 5, 2025
+                  - generic [ref=e1543]: 12 min read
+                - heading "Complete Guide to Buying Property in Palm Jumeirah" [level=3] [ref=e1544]
+                - paragraph [ref=e1545]: Everything you need to know about purchasing your dream villa or apartment on Dubai's iconic Palm Jumeirah island.
+                - button "Read Article →" [ref=e1546] [cursor=pointer]
+          - generic [ref=e1547]:
+            - button "All" [ref=e1548] [cursor=pointer]
+            - button "Market Analysis" [ref=e1549] [cursor=pointer]
+            - button "Buying Guide" [ref=e1550] [cursor=pointer]
+            - button "Investment" [ref=e1551] [cursor=pointer]
+            - button "Lifestyle" [ref=e1552] [cursor=pointer]
+            - button "Legal" [ref=e1553] [cursor=pointer]
+          - generic [ref=e1554]:
+            - article [ref=e1555]:
+              - generic [ref=e1557]: Investment
+              - generic [ref=e1558]:
+                - generic [ref=e1559]: November 28, 20256 min read
+                - heading "Understanding Dubai's Golden Visa Through Property Investment" [level=4] [ref=e1560]
+                - paragraph [ref=e1561]: Learn how property investment of AED 2 million or more can qualify you for the UAE's prestigious Golden Visa program.
+                - generic [ref=e1562]:
+                  - generic [ref=e1563]: By Mohammed Rashid
+                  - button "Read More →" [ref=e1564] [cursor=pointer]
+            - article [ref=e1565]:
+              - generic [ref=e1567]: Lifestyle
+              - generic [ref=e1568]:
+                - generic [ref=e1569]: November 20, 202510 min read
+                - heading "Top 10 Family-Friendly Communities in Dubai" [level=4] [ref=e1570]
+                - paragraph [ref=e1571]: Discover the best residential areas for families with children, featuring excellent schools, parks, and amenities.
+                - generic [ref=e1572]:
+                  - generic [ref=e1573]: By Fatima Khan
+                  - button "Read More →" [ref=e1574] [cursor=pointer]
+            - article [ref=e1575]:
+              - generic [ref=e1577]: Legal
+              - generic [ref=e1578]:
+                - generic [ref=e1579]: November 15, 20257 min read
+                - 'heading "EJARI Registration: Step-by-Step Guide for Tenants" [level=4] [ref=e1580]'
+                - paragraph [ref=e1581]: A comprehensive walkthrough of the EJARI registration process, required documents, and common pitfalls to avoid.
+                - generic [ref=e1582]:
+                  - generic [ref=e1583]: By Omar Khalid
+                  - button "Read More →" [ref=e1584] [cursor=pointer]
+            - article [ref=e1585]:
+              - generic [ref=e1587]: Investment
+              - generic [ref=e1588]:
+                - generic [ref=e1589]: November 10, 20259 min read
+                - 'heading "Rental Yields in Dubai: Best Areas for Investment Returns" [level=4] [ref=e1590]'
+                - paragraph [ref=e1591]: Analysis of rental yields across Dubai's top neighborhoods to help investors maximize their ROI.
+                - generic [ref=e1592]:
+                  - generic [ref=e1593]: By Ahmed Hassan
+                  - button "Read More →" [ref=e1594] [cursor=pointer]
+        - generic [ref=e1597]:
+          - generic [ref=e1598]:
+            - heading "Stay Updated on Dubai Real Estate" [level=2] [ref=e1599]
+            - paragraph [ref=e1600]: Get exclusive market insights, new listings, and investment opportunities delivered to your inbox weekly.
+            - list [ref=e1601]:
+              - listitem [ref=e1602]: 🏠 First access to new property listings
+              - listitem [ref=e1603]: 📊 Weekly market analysis & trends
+              - listitem [ref=e1604]: 💡 Investment tips from experts
+              - listitem [ref=e1605]: 🎁 Exclusive subscriber offers
+          - generic [ref=e1606]:
+            - generic [ref=e1608]:
+              - textbox "Enter your email address" [ref=e1609]
+              - button "Subscribe" [ref=e1610] [cursor=pointer]
+            - paragraph [ref=e1611]: By subscribing, you agree to our Privacy Policy. Unsubscribe anytime.
+            - generic [ref=e1612]:
+              - generic [ref=e1613]:
+                - img "Subscriber" [ref=e1614]
+                - img "Subscriber" [ref=e1615]
+                - img "Subscriber" [ref=e1616]
+                - generic [ref=e1617]: +
+              - generic [ref=e1618]:
+                - text: Join
+                - strong [ref=e1619]: 12,000+
+                - text: subscribers
+        - generic [ref=e1622]:
+          - generic [ref=e1623]:
+            - generic [ref=e1624]: Get In Touch
+            - heading "Ready to Find Your Dream Property?" [level=2] [ref=e1625]
+            - paragraph [ref=e1626]: Let our experts guide you through Dubai's luxury real estate market. Schedule a consultation today and take the first step toward your dream home.
+            - generic [ref=e1627]:
+              - link "Call Us +971 56 361 6136" [ref=e1628] [cursor=pointer]:
+                - /url: tel:+971563616136
+                - img [ref=e1630]
+                - generic [ref=e1632]:
+                  - generic [ref=e1633]: Call Us
+                  - generic [ref=e1634]: +971 56 361 6136
+              - link "Email Us admin@whitecaves.com" [ref=e1635] [cursor=pointer]:
+                - /url: mailto:admin@whitecaves.com
+                - img [ref=e1637]
+                - generic [ref=e1640]:
+                  - generic [ref=e1641]: Email Us
+                  - generic [ref=e1642]: admin@whitecaves.com
+              - link "Visit Us Office D-72, El-Shaye-4, Port Saeed, Dubai" [ref=e1643] [cursor=pointer]:
+                - /url: https://maps.google.com
+                - img [ref=e1645]
+                - generic [ref=e1648]:
+                  - generic [ref=e1649]: Visit Us
+                  - generic [ref=e1650]: Office D-72, El-Shaye-4, Port Saeed, Dubai
+            - generic [ref=e1651]:
+              - link "Browse Properties" [ref=e1652] [cursor=pointer]:
+                - /url: /properties
+                - img [ref=e1653]
+                - text: Browse Properties
+              - link "About White Caves" [ref=e1655] [cursor=pointer]:
+                - /url: /about
+                - img [ref=e1656]
+                - text: About White Caves
+          - generic [ref=e1659]:
+            - heading "Send Us a Message" [level=3] [ref=e1660]
+            - generic [ref=e1661]:
+              - textbox "Your Name" [ref=e1663]
+              - generic [ref=e1664]:
+                - textbox "Email Address" [ref=e1666]
+                - textbox "Phone Number" [ref=e1668]
+              - textbox "How can we help you?" [ref=e1670]
+              - button "Send Message" [ref=e1671] [cursor=pointer]:
+                - img [ref=e1672]
+                - text: Send Message
+        - generic [ref=e1676]:
+          - generic [ref=e1677]:
+            - heading "How can we assist you today?" [level=2] [ref=e1678]
+            - paragraph [ref=e1679]: Select your role to access personalized features and services
+          - generic [ref=e1681]:
+            - generic [ref=e1682] [cursor=pointer]:
+              - img [ref=e1684]
+              - generic [ref=e1687]:
+                - heading "Sell or List Property" [level=3] [ref=e1688]
+                - paragraph [ref=e1689]: List your property with us
+                - paragraph [ref=e1690]: Get property valuations, manage listings, and receive offers from qualified buyers.
+              - img [ref=e1692]
+            - generic [ref=e1694] [cursor=pointer]:
+              - img [ref=e1696]
+              - generic [ref=e1699]:
+                - heading "Buy a Property" [level=3] [ref=e1700]
+                - paragraph [ref=e1701]: Find your dream home
+                - paragraph [ref=e1702]: Browse listings, compare properties, and use our mortgage calculator.
+              - img [ref=e1704]
+            - generic [ref=e1706] [cursor=pointer]:
+              - img [ref=e1708]
+              - generic [ref=e1711]:
+                - heading "Rent or Lease" [level=3] [ref=e1712]
+                - paragraph [ref=e1713]: Find your next home
+                - paragraph [ref=e1714]: Browse rental properties, manage leases, and submit maintenance requests.
+              - img [ref=e1716]
+            - generic [ref=e1718] [cursor=pointer]:
+              - img [ref=e1720]
+              - generic [ref=e1723]:
+                - heading "I'm an Agent" [level=3] [ref=e1724]
+                - paragraph [ref=e1725]: Staff & Team Portal
+                - paragraph [ref=e1726]: Access performance dashboards, manage leads, and internal team tools.
+              - img [ref=e1728]
+          - paragraph [ref=e1731]:
+            - text: Not sure where to start?
+            - link "Contact our team" [ref=e1732] [cursor=pointer]:
+              - /url: /contact
+            - text: for guidance.
+        - generic [ref=e1733]:
+          - generic [ref=e1734]:
+            - generic [ref=e1735]:
+              - generic [ref=e1736]:
+                - img "White Caves" [ref=e1737]
+                - generic [ref=e1738]:
+                  - heading "White Caves Support" [level=4] [ref=e1739]
+                  - generic [ref=e1740]: Away - Leave a message
+              - button "×" [ref=e1741] [cursor=pointer]
+            - generic [ref=e1742]:
+              - paragraph [ref=e1744]: Welcome to White Caves Real Estate! How can we assist you today?
+              - generic [ref=e1745]:
+                - paragraph [ref=e1746]: "Contact us via:"
+                - generic [ref=e1747]:
+                  - button "WhatsApp" [ref=e1748] [cursor=pointer]:
+                    - img [ref=e1749]
+                    - generic [ref=e1752]: WhatsApp
+                  - button "Botim" [ref=e1753] [cursor=pointer]:
+                    - img [ref=e1754]
+                    - generic [ref=e1758]: Botim
+                  - button "GoChat UAE" [ref=e1759] [cursor=pointer]:
+                    - img [ref=e1760]
+                    - generic [ref=e1763]: GoChat UAE
+                  - button "Call Us" [ref=e1764] [cursor=pointer]:
+                    - img [ref=e1765]
+                    - generic [ref=e1768]: Call Us
+              - generic [ref=e1769]:
+                - paragraph [ref=e1770]: "Quick Messages:"
+                - button "Property Inquiry" [ref=e1771] [cursor=pointer]
+                - button "Schedule Viewing" [ref=e1772] [cursor=pointer]
+                - button "Rental Information" [ref=e1773] [cursor=pointer]
+                - button "Investment Advice" [ref=e1774] [cursor=pointer]
+                - button "General Inquiry" [ref=e1775] [cursor=pointer]
+              - generic [ref=e1776]:
+                - textbox "Type your message..." [ref=e1777]
+                - button [disabled] [ref=e1778]:
+                  - img [ref=e1779]
+              - generic [ref=e1782]:
+                - paragraph [ref=e1783]: Love our service? Leave us a review!
+                - generic [ref=e1784]:
+                  - generic [ref=e1785] [cursor=pointer]: ★
+                  - generic [ref=e1786] [cursor=pointer]: ★
+                  - generic [ref=e1787] [cursor=pointer]: ★
+                  - generic [ref=e1788] [cursor=pointer]: ★
+                  - generic [ref=e1789] [cursor=pointer]: ★
+          - button "Close chat" [ref=e1790] [cursor=pointer]:
+            - img [ref=e1791]
+        - generic [ref=e1794]:
+          - generic [ref=e1795]:
+            - generic [ref=e1796]:
+              - img "White Caves Real Estate LLC" [ref=e1797]
+              - paragraph [ref=e1798]: Your trusted partner in Dubai luxury real estate since 2010
+              - generic [ref=e1799]:
+                - paragraph [ref=e1800]:
+                  - generic [ref=e1801]: 📍
+                  - text: Office D-72, El-Shaye-4, Port Saeed, Dubai
+                - paragraph [ref=e1802]:
+                  - generic [ref=e1803]: 📞
+                  - text: "Office: +971 4 335 0592"
+                - paragraph [ref=e1804]:
+                  - generic [ref=e1805]: 📱
+                  - text: "Mobile: +971 56 361 6136"
+                - paragraph [ref=e1806]:
+                  - generic [ref=e1807]: 📧
+                  - text: admin@whitecaves.com
+                - paragraph [ref=e1808]:
+                  - generic [ref=e1809]: 🌐
+                  - text: www.whitecaves.com
+              - generic [ref=e1810]:
+                - paragraph [ref=e1811]: "Contact us on:"
+                - generic [ref=e1812]:
+                  - link "WhatsApp" [ref=e1813] [cursor=pointer]:
+                    - /url: https://wa.me/971563616136
+                  - link "Botim" [ref=e1814] [cursor=pointer]:
+                    - /url: botim://call?number=+971563616136
+                  - link "GoChat" [ref=e1815] [cursor=pointer]:
+                    - /url: https://gochat.me/+971563616136
+            - generic [ref=e1816]:
+              - heading "Quick Links" [level=3] [ref=e1817]
+              - list [ref=e1818]:
+                - listitem [ref=e1819]:
+                  - link "Home" [ref=e1820] [cursor=pointer]:
+                    - /url: /
+                - listitem [ref=e1821]:
+                  - link "Properties" [ref=e1822] [cursor=pointer]:
+                    - /url: /properties
+                - listitem [ref=e1823]:
+                  - link "About Us" [ref=e1824] [cursor=pointer]:
+                    - /url: /about
+                - listitem [ref=e1825]:
+                  - link "Services" [ref=e1826] [cursor=pointer]:
+                    - /url: /services
+                - listitem [ref=e1827]:
+                  - link "Careers" [ref=e1828] [cursor=pointer]:
+                    - /url: /careers
+                - listitem [ref=e1829]:
+                  - link "Contact" [ref=e1830] [cursor=pointer]:
+                    - /url: /contact
+            - generic [ref=e1831]:
+              - heading "Property Types" [level=3] [ref=e1832]
+              - list [ref=e1833]:
+                - listitem [ref=e1834]:
+                  - link "Villas" [ref=e1835] [cursor=pointer]:
+                    - /url: /properties?type=villa
+                - listitem [ref=e1836]:
+                  - link "Apartments" [ref=e1837] [cursor=pointer]:
+                    - /url: /properties?type=apartment
+                - listitem [ref=e1838]:
+                  - link "Penthouses" [ref=e1839] [cursor=pointer]:
+                    - /url: /properties?type=penthouse
+                - listitem [ref=e1840]:
+                  - link "Townhouses" [ref=e1841] [cursor=pointer]:
+                    - /url: /properties?type=townhouse
+                - listitem [ref=e1842]:
+                  - link "Commercial" [ref=e1843] [cursor=pointer]:
+                    - /url: /properties?type=commercial
+                - listitem [ref=e1844]:
+                  - link "Off-Plan" [ref=e1845] [cursor=pointer]:
+                    - /url: /properties?type=offplan
+            - generic [ref=e1846]:
+              - heading "Popular Areas" [level=3] [ref=e1847]
+              - list [ref=e1848]:
+                - listitem [ref=e1849]:
+                  - link "Palm Jumeirah" [ref=e1850] [cursor=pointer]:
+                    - /url: /properties?location=palm-jumeirah
+                - listitem [ref=e1851]:
+                  - link "Downtown Dubai" [ref=e1852] [cursor=pointer]:
+                    - /url: /properties?location=downtown
+                - listitem [ref=e1853]:
+                  - link "Emirates Hills" [ref=e1854] [cursor=pointer]:
+                    - /url: /properties?location=emirates-hills
+                - listitem [ref=e1855]:
+                  - link "Dubai Marina" [ref=e1856] [cursor=pointer]:
+                    - /url: /properties?location=dubai-marina
+                - listitem [ref=e1857]:
+                  - link "Jumeirah" [ref=e1858] [cursor=pointer]:
+                    - /url: /properties?location=jumeirah
+                - listitem [ref=e1859]:
+                  - link "Business Bay" [ref=e1860] [cursor=pointer]:
+                    - /url: /properties?location=business-bay
+            - generic [ref=e1861]:
+              - heading "Connect With Us" [level=3] [ref=e1862]
+              - generic [ref=e1863]:
+                - link "TikTok" [ref=e1864] [cursor=pointer]:
+                  - /url: https://www.tiktok.com/@the.white.caves?lang=en
+                  - img [ref=e1866]
+                - link "Instagram" [ref=e1868] [cursor=pointer]:
+                  - /url: https://www.instagram.com/the.white.caves/
+                  - img [ref=e1870]
+                - link "Facebook" [ref=e1872] [cursor=pointer]:
+                  - /url: https://www.facebook.com/the.white.caves/
+                  - img [ref=e1874]
+              - generic [ref=e1876]:
+                - paragraph [ref=e1877]: Love our service? Leave us a review!
+                - link "★★★★★" [ref=e1879] [cursor=pointer]:
+                  - /url: https://g.page/r/whitecaves/review
+              - generic [ref=e1880]:
+                - paragraph [ref=e1881]: RERA Licensed
+                - paragraph [ref=e1882]: Dubai Land Department Registered
+          - generic [ref=e1884]:
+            - paragraph [ref=e1885]: © 2026 White Caves Real Estate LLC. All rights reserved.
+            - generic [ref=e1886]:
+              - link "Privacy Policy" [ref=e1887] [cursor=pointer]:
+                - /url: /privacy-policy
+              - link "Terms of Service" [ref=e1888] [cursor=pointer]:
+                - /url: /terms
+```

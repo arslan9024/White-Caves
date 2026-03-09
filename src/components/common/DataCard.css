@@ -22,13 +22,9 @@
 }
 
 .data-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border-color);
   flex-wrap: wrap;
-  gap: 0.75rem;
 }
 
 .data-card-header h3 {
@@ -39,9 +35,7 @@
 }
 
 .header-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  /* Consolidated: flex-row--lg */
 }
 
 .view-all-link {
@@ -49,7 +43,6 @@
   color: var(--color-primary);
   text-decoration: none;
   font-weight: 500;
-  transition: all 0.2s ease;
 }
 
 .view-all-link:hover {
@@ -61,19 +54,13 @@
 }
 
 .data-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  /* Consolidated: flex-col--gap-sm */
 }
 
 .data-list-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
   padding: 0.875rem;
   background: var(--bg-hover);
   border-radius: 12px;
-  transition: all 0.2s ease;
 }
 
 .data-list-item.clickable {
@@ -88,11 +75,12 @@
 .item-avatar {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: white;
+  font-weight: 600;
+  overflow: hidden;
+  flex-shrink: 0;
+}
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -116,6 +104,7 @@
 .item-content {
   flex: 1;
   min-width: 0;
+  /* Consolidated: flex-col--gap-xs */
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
@@ -167,6 +156,7 @@
 }
 
 .item-actions {
+  /* Consolidated: flex-row--xs */
   display: flex;
   gap: 0.5rem;
 }

@@ -1,0 +1,97 @@
+import React, { useState } from 'react';
+import { useFinanceData } from '../hooks/useFinanceData';
+import OverviewTab from './OverviewTab';
+import InvoicesTab from './InvoicesTab';
+import PaymentsTab from './PaymentsTab';
+import ExpensesTab from './ExpensesTab';
+import ReportsTab from './ReportsTab';
+import '../TheodoraFinanceCRM.css';
+
+const TheodoraFinanceCRM = () => {
+  const [activeTab, setActiveTab] = useState('overview');
+  const {
+    invoices,
+    expenses,
+    selectedInvoice,
+    generatedMessage,
+    financeStats,
+    setSelectedInvoice,
+    handleGeneratePaymentMessage,
+    handleApproveExpense,
+    handleRejectExpense,
+    features
+  } = useFinanceData();
+
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: '📊' },
+    { id: 'invoices', label: 'Invoices', icon: '📄' },
+    { id: 'payments', label: 'Payments', icon: '💳' },
+    { id: 'expenses', label: 'Expenses', icon: '💰' },
+    { id: 'reports', label: 'Reports', icon: '📈' }
+  ];
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'overview':
+        return <OverviewTab financeStats={financeStats} />;
+      case 'invoices':
+        return <InvoicesTab invoices={invoices} onSelectInvoice={setSelectedInvoice} />;
+      case 'payments':
+        return <PaymentsTab selectedInvoice={selectedInvoice} generatedMessage={generatedMessage} onGenerateMessage={handleGeneratePaymentMessage} />;
+      case 'expenses':
+        return <ExpensesTab expenses={expenses} onApprove={handleApproveExpense} onReject={handleRejectExpense} />;
+      case 'reports':
+        return <ReportsTab invoices={invoices} expenses={expenses} />;
+      default:
+        return <OverviewTab financeStats={financeStats} />;
+    }
+  };
+
+  return (
+    <div className="crm-container finance-crm">
+      <div className="crm-header">
+        <div className="header-title">
+          <div className="avatar" style={{ background: 'linear-gradient(135deg, #F093FB 0%, #F5576C 100%)' }}>
+            <span>💰</span>
+          </div>
+          <div>
+            <h2>Theodora - Finance Director</h2>
+            <p>Manages invoice processing, payment tracking, financial reporting, and budget analysis</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="tab-navigation">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
+            onClick={() => setActiveTab(tab.id)}
+            aria-selected={activeTab === tab.id}
+          >
+            <span className="tab-icon">{tab.icon}</span>
+            <span className="tab-label">{tab.label}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="crm-content">
+        {renderContent()}
+      </div>
+
+      <div className="features-section">
+        <h3>Available Features</h3>
+        <ul className="features-list">
+          {features.map((feature, index) => (
+            <li key={index} className="feature-item">
+              <span className="feature-icon">✓</span>
+              <span className="feature-text">{feature}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+export default TheodoraFinanceCRM;

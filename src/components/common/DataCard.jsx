@@ -13,12 +13,12 @@ export default function DataCard({
 }) {
   return (
     <div className={`data-card ${fullWidth ? 'full-width' : ''} ${className}`}>
-      <div className="data-card-header">
+      <div className="data-card-header flex-between gap-sm">
         <h3>{title}</h3>
-        <div className="header-actions">
+        <div className="header-actions flex-row--lg">
           {headerActions}
           {viewAllLink && (
-            <Link to={viewAllLink} className="view-all-link">
+            <Link to={viewAllLink} className="view-all-link transition-smooth">
               {viewAllText} →
             </Link>
           )}
@@ -44,7 +44,7 @@ export function DataCardGrid({ children, columns = 2, className = '' }) {
 
 export function DataList({ children, className = '' }) {
   return (
-    <div className={`data-list ${className}`}>
+    <div className={`data-list flex-col--gap-sm ${className}`}>
       {children}
     </div>
   );
@@ -67,13 +67,13 @@ export function DataListItem({
 }) {
   return (
     <div 
-      className={`data-list-item ${onClick ? 'clickable' : ''} ${className}`}
+      className={`data-list-item flex-row--lg transition-smooth ${onClick ? 'clickable' : ''} ${className}`}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
     >
       {(icon || avatar || avatarText) && (
-        <div className="item-avatar">
+        <div className="item-avatar flex-center corner-full">
           {avatar ? (
             <img src={avatar} alt={title} />
           ) : avatarText ? (

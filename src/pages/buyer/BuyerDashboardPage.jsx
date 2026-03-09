@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import RolePageLayout from '../../components/layout/RolePageLayout';
+import { useSelector } from 'react-redux';
+import UnifiedDashboardLayout from '../../components/layout/UnifiedDashboardLayout';
 import {
   StatCard,
   StatCardGrid,
-  TabbedPanel,
   DataCard,
   DataCardGrid,
   DataList,
@@ -49,48 +49,86 @@ const PRICE_ALERTS = [
 
 export default function BuyerDashboardPage() {
   const [activeTab, setActiveTab] = useState('overview');
+  const user = useSelector(state => state.auth?.user);
 
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: '📊' },
-    { id: 'saved', label: 'Saved Properties', icon: '❤️', badge: SAVED_PROPERTIES.length },
-    { id: 'viewings', label: 'Viewings', icon: '📅', badge: UPCOMING_VIEWINGS.length },
-    { id: 'alerts', label: 'Price Alerts', icon: '🔔', badge: PRICE_ALERTS.length },
-  ];
+  const handleLogout = () => {
+    console.log('Logout initiated');
+    // Add your logout logic here
+  };
 
-  return (
-    <RolePageLayout
-      title="Buyer Dashboard"
-      subtitle="Find and track your perfect property in Dubai"
-      role="buyer"
-      actions={
-        <ActionButton 
-          icon="🔍" 
-          label="Search Properties" 
-          to="/properties" 
-          variant="primary"
-        />
-      }
-    >
-      <StatCardGrid columns={4}>
-        {BUYER_STATS.map((stat, index) => (
-          <StatCard key={index} {...stat} variant="buyer" />
-        ))}
-      </StatCardGrid>
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    sessionStorage.setItem('buyerDashboardTab', tabId);
+  };
 
-      <QuickLinks title="Quick Tools" links={QUICK_LINKS} columns={4} />
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'overview':
+        return (
+          <div className="buyer-dashboard-content">
+            <StatCardGrid columns={4}>
+              {BUYER_STATS.map((stat, index) => (
+                <StatCard key={index} {...stat} variant="buyer" />
+              ))}
+            </StatCardGrid>
 
-      <TabbedPanel
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        storeKey="buyerDashboard"
-      />
+            <QuickLinks title="Quick Tools" links={QUICK_LINKS} columns={4} />
 
-      {activeTab === 'overview' && (
-        <DataCardGrid columns={2}>
-          <DataCard title="Saved Properties" viewAllLink="/buyer/saved-properties">
+            <DataCardGrid columns={2}>
+              <DataCard title="Saved Properties" viewAllLink="/buyer/saved-properties">
+                <DataList>
+                  {SAVED_PROPERTIES.slice(0, 3).map(property => (
+                    <PropertyListItem
+                      key={property.id}
+                      title={property.title}
+                      location={property.location}
+                      price={property.price}
+                      status={property.status}
+                      views={property.views}
+                    />
+                  ))}
+                </DataList>
+              </DataCard>
+
+              <DataCard title="Upcoming Viewings" viewAllLink="/buyer/viewings">
+                <DataList>
+                  {UPCOMING_VIEWINGS.map(viewing => (
+                    <DataListItem
+                      key={viewing.id}
+                      icon="📅"
+                      title={viewing.property}
+                      subtitle={`${viewing.date} · Agent: ${viewing.agent}`}
+                      status={viewing.status}
+                      statusColor={viewing.status === 'Confirmed' ? '16, 185, 129' : '245, 158, 11'}
+                    />
+                  ))}
+                </DataList>
+              </DataCard>
+
+              <DataCard title="Recent Price Drops" viewAllLink="/buyer/price-alerts" fullWidth>
+                <DataList>
+                  {PRICE_ALERTS.map(alert => (
+                    <DataListItem
+                      key={alert.id}
+                      icon="📉"
+                      title={alert.property}
+                      subtitle={`${alert.oldPrice} → ${alert.newPrice}`}
+                      meta={alert.date}
+                      badge={alert.change}
+                      badgeColor="16, 185, 129"
+                    />
+                  ))}
+                </DataList>
+              </DataCard>
+            </DataCardGrid>
+          </div>
+        );
+
+      case 'saved':
+        return (
+          <DataCard title={`Saved Properties (${SAVED_PROPERTIES.length})`}>
             <DataList>
-              {SAVED_PROPERTIES.slice(0, 3).map(property => (
+              {SAVED_PROPERTIES.map(property => (
                 <PropertyListItem
                   key={property.id}
                   title={property.title}
@@ -102,120 +140,88 @@ export default function BuyerDashboardPage() {
               ))}
             </DataList>
           </DataCard>
+        );
 
-          <DataCard title="Upcoming Viewings" viewAllLink="/buyer/viewings">
+      case 'viewings':
+        return (
+          <DataCard 
+            title={`Upcoming Viewings (${UPCOMING_VIEWINGS.length})`}
+            headerActions={
+              <ActionButton 
+                icon="➕" 
+                label="Schedule Viewing" 
+                variant="secondary"
+                size="small"
+              />
+            }
+          >
             <DataList>
               {UPCOMING_VIEWINGS.map(viewing => (
                 <DataListItem
                   key={viewing.id}
-                  icon="📅"
+                  icon="🏠"
                   title={viewing.property}
                   subtitle={`${viewing.date} · Agent: ${viewing.agent}`}
                   status={viewing.status}
                   statusColor={viewing.status === 'Confirmed' ? '16, 185, 129' : '245, 158, 11'}
+                  actions={
+                    <>
+                      <button className="btn btn-sm btn-secondary">Reschedule</button>
+                      <button className="btn btn-sm btn-primary">Details</button>
+                    </>
+                  }
                 />
               ))}
             </DataList>
           </DataCard>
+        );
 
-          <DataCard title="Recent Price Drops" viewAllLink="/buyer/price-alerts" fullWidth>
+      case 'alerts':
+        return (
+          <DataCard 
+            title={`Price Alerts (${PRICE_ALERTS.length})`}
+            headerActions={
+              <ActionButton 
+                icon="➕" 
+                label="Add Alert" 
+                variant="secondary"
+                size="small"
+              />
+            }
+          >
             <DataList>
               {PRICE_ALERTS.map(alert => (
                 <DataListItem
                   key={alert.id}
                   icon="📉"
                   title={alert.property}
-                  subtitle={`${alert.oldPrice} → ${alert.newPrice}`}
+                  subtitle={`Price dropped from ${alert.oldPrice} to ${alert.newPrice}`}
                   meta={alert.date}
                   badge={alert.change}
                   badgeColor="16, 185, 129"
+                  actions={
+                    <button className="btn btn-sm btn-primary">View Property</button>
+                  }
                 />
               ))}
             </DataList>
           </DataCard>
-        </DataCardGrid>
-      )}
+        );
 
-      {activeTab === 'saved' && (
-        <DataCard title={`Saved Properties (${SAVED_PROPERTIES.length})`}>
-          <DataList>
-            {SAVED_PROPERTIES.map(property => (
-              <PropertyListItem
-                key={property.id}
-                title={property.title}
-                location={property.location}
-                price={property.price}
-                status={property.status}
-                views={property.views}
-              />
-            ))}
-          </DataList>
-        </DataCard>
-      )}
+      default:
+        return null;
+    }
+  };
 
-      {activeTab === 'viewings' && (
-        <DataCard 
-          title={`Upcoming Viewings (${UPCOMING_VIEWINGS.length})`}
-          headerActions={
-            <ActionButton 
-              icon="➕" 
-              label="Schedule Viewing" 
-              variant="secondary"
-              size="small"
-            />
-          }
-        >
-          <DataList>
-            {UPCOMING_VIEWINGS.map(viewing => (
-              <DataListItem
-                key={viewing.id}
-                icon="🏠"
-                title={viewing.property}
-                subtitle={`${viewing.date} · Agent: ${viewing.agent}`}
-                status={viewing.status}
-                statusColor={viewing.status === 'Confirmed' ? '16, 185, 129' : '245, 158, 11'}
-                actions={
-                  <>
-                    <button className="btn btn-sm btn-secondary">Reschedule</button>
-                    <button className="btn btn-sm btn-primary">Details</button>
-                  </>
-                }
-              />
-            ))}
-          </DataList>
-        </DataCard>
-      )}
-
-      {activeTab === 'alerts' && (
-        <DataCard 
-          title={`Price Alerts (${PRICE_ALERTS.length})`}
-          headerActions={
-            <ActionButton 
-              icon="➕" 
-              label="Add Alert" 
-              variant="secondary"
-              size="small"
-            />
-          }
-        >
-          <DataList>
-            {PRICE_ALERTS.map(alert => (
-              <DataListItem
-                key={alert.id}
-                icon="📉"
-                title={alert.property}
-                subtitle={`Price dropped from ${alert.oldPrice} to ${alert.newPrice}`}
-                meta={alert.date}
-                badge={alert.change}
-                badgeColor="16, 185, 129"
-                actions={
-                  <button className="btn btn-sm btn-primary">View Property</button>
-                }
-              />
-            ))}
-          </DataList>
-        </DataCard>
-      )}
-    </RolePageLayout>
+  return (
+    <UnifiedDashboardLayout
+      user={user}
+      onLogout={handleLogout}
+      activeTab={activeTab}
+      onTabChange={handleTabChange}
+      role="buyer"
+    >
+      {renderTabContent()}
+    </UnifiedDashboardLayout>
   );
 }

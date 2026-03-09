@@ -237,6 +237,87 @@
   border-color: #ef4444;
 }
 
+.profile-action-btn.admin {
+  background: linear-gradient(135deg, #D32F2F 0%, #B71C1C 100%);
+  color: white;
+  border-color: #D32F2F;
+  font-weight: 600;
+}
+
+.profile-action-btn.admin:hover {
+  background: linear-gradient(135deg, #B71C1C 0%, #A01A1A 100%);
+  border-color: #B71C1C;
+  color: white;
+}
+
+.profile-action-divider {
+  height: 1px;
+  background: var(--border-color);
+}
+
+.profile-panel-admin-section {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(211, 47, 47, 0.1) 0%, transparent 100%);
+  border: 1px solid rgba(211, 47, 47, 0.2);
+  border-radius: 12px;
+}
+
+.admin-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #D32F2F;
+}
+
+.admin-section-header svg {
+  width: 16px;
+  height: 16px;
+}
+
+.admin-quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.admin-quick-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid rgba(211, 47, 47, 0.3);
+  border-radius: 10px;
+  background: white;
+  color: #D32F2F;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.admin-quick-action svg {
+  width: 20px;
+  height: 20px;
+}
+
+.admin-quick-action:hover {
+  background: linear-gradient(135deg, rgba(211, 47, 47, 0.1) 0%, transparent 100%);
+  border-color: #D32F2F;
+  color: #B71C1C;
+}
+
+.profile-panel-role.super-user {
+  background: linear-gradient(135deg, rgba(255, 179, 0, 0.2) 0%, transparent 100%);
+  color: #FFB300;
+  border: 1px solid rgba(255, 179, 0, 0.3);
+}
+
 @media (max-width: 480px) {
   .profile-panel {
     width: 100vw;

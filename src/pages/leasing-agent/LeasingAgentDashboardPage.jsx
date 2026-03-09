@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import RolePageLayout from '../../components/layout/RolePageLayout';
+import { useSelector } from 'react-redux';
+import UnifiedDashboardLayout from '../../components/layout/UnifiedDashboardLayout';
 import {
   StatCard,
   StatCardGrid,
-  TabbedPanel,
   DataCard,
   DataCardGrid,
   DataList,
@@ -55,48 +55,111 @@ const RECENT_CONTRACTS = [
 
 export default function LeasingAgentDashboardPage() {
   const [activeTab, setActiveTab] = useState('overview');
+  const user = useSelector(state => state.auth?.user);
 
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: '📊' },
-    { id: 'leads', label: 'Leads', icon: '👥', badge: LEADS.length },
-    { id: 'listings', label: 'Listings', icon: '🏠', badge: MY_LISTINGS.length },
-    { id: 'viewings', label: 'Viewings', icon: '📅', badge: UPCOMING_VIEWINGS.length },
-  ];
+  const handleLogout = () => {
+    console.log('Logout initiated');
+  };
 
-  return (
-    <RolePageLayout
-      title="Leasing Agent Dashboard"
-      subtitle="Manage your rental listings and tenant leads"
-      role="leasing-agent"
-      actions={
-        <ActionButton 
-          icon="➕" 
-          label="Add Listing" 
-          to="/leasing-agent/add-listing" 
-          variant="primary"
-        />
-      }
-    >
-      <StatCardGrid columns={4}>
-        {AGENT_STATS.map((stat, index) => (
-          <StatCard key={index} {...stat} variant="leasing-agent" />
-        ))}
-      </StatCardGrid>
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    sessionStorage.setItem('leasingAgentDashboardTab', tabId);
+  };
 
-      <QuickLinks title="Agent Tools" links={QUICK_LINKS} columns={4} />
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'overview':
+        return (
+          <div className="leasing-agent-dashboard-content">
+            <StatCardGrid columns={4}>
+              {AGENT_STATS.map((stat, index) => (
+                <StatCard key={index} {...stat} variant="leasing-agent" />
+              ))}
+            </StatCardGrid>
 
-      <TabbedPanel
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        storeKey="leasingAgentDashboard"
-      />
+            <QuickLinks title="Agent Tools" links={QUICK_LINKS} columns={4} />
 
-      {activeTab === 'overview' && (
-        <DataCardGrid columns={2}>
-          <DataCard title="Top Leads" viewAllLink="/leasing-agent/leads">
+            <DataCardGrid columns={2}>
+              <DataCard title="Top Leads">
+                <DataList>
+                  {LEADS.slice(0, 3).map(lead => (
+                    <LeadListItem
+                      key={lead.id}
+                      name={lead.name}
+                      requirement={lead.requirement}
+                      budget={lead.budget}
+                      status={lead.status}
+                      score={lead.score}
+                    />
+                  ))}
+                </DataList>
+              </DataCard>
+
+              <DataCard title="Today's Viewings">
+                <DataList>
+                  {UPCOMING_VIEWINGS.map((viewing, index) => (
+                    <DataListItem
+                      key={index}
+                      icon="📅"
+                      title={viewing.property}
+                      subtitle={`${viewing.client} · ${viewing.time}`}
+                      status={viewing.status}
+                      statusColor={viewing.status === 'Confirmed' ? '16, 185, 129' : '245, 158, 11'}
+                    />
+                  ))}
+                </DataList>
+              </DataCard>
+
+              <DataCard title="My Listings">
+                <DataList>
+                  {MY_LISTINGS.map(listing => (
+                    <PropertyListItem
+                      key={listing.id}
+                      title={listing.title}
+                      location={listing.location}
+                      price={listing.price}
+                      views={listing.views}
+                      inquiries={listing.inquiries}
+                      daysListed={listing.daysListed}
+                    />
+                  ))}
+                </DataList>
+              </DataCard>
+
+              <DataCard title="Recent Contracts">
+                <DataList>
+                  {RECENT_CONTRACTS.map((contract, index) => (
+                    <DataListItem
+                      key={index}
+                      icon="📋"
+                      title={contract.property}
+                      subtitle={`Tenant: ${contract.tenant} · ${contract.rent}`}
+                      meta={contract.signedDate}
+                      status={contract.status}
+                      statusColor="16, 185, 129"
+                    />
+                  ))}
+                </DataList>
+              </DataCard>
+            </DataCardGrid>
+          </div>
+        );
+
+      case 'leads':
+        return (
+          <DataCard 
+            title={`All Leads (${LEADS.length})`}
+            headerActions={
+              <ActionButton 
+                icon="➕" 
+                label="Add Lead" 
+                variant="secondary"
+                size="small"
+              />
+            }
+          >
             <DataList>
-              {LEADS.slice(0, 3).map(lead => (
+              {LEADS.map(lead => (
                 <LeadListItem
                   key={lead.id}
                   name={lead.name}
@@ -104,27 +167,16 @@ export default function LeasingAgentDashboardPage() {
                   budget={lead.budget}
                   status={lead.status}
                   score={lead.score}
+                  onClick={() => console.log('View lead', lead.id)}
                 />
               ))}
             </DataList>
           </DataCard>
+        );
 
-          <DataCard title="Today's Viewings" viewAllLink="/leasing-agent/viewings">
-            <DataList>
-              {UPCOMING_VIEWINGS.map((viewing, index) => (
-                <DataListItem
-                  key={index}
-                  icon="📅"
-                  title={viewing.property}
-                  subtitle={`${viewing.client} · ${viewing.time}`}
-                  status={viewing.status}
-                  statusColor={viewing.status === 'Confirmed' ? '16, 185, 129' : '245, 158, 11'}
-                />
-              ))}
-            </DataList>
-          </DataCard>
-
-          <DataCard title="My Listings" viewAllLink="/leasing-agent/listings">
+      case 'listings':
+        return (
+          <DataCard title={`My Listings (${MY_LISTINGS.length})`}>
             <DataList>
               {MY_LISTINGS.map(listing => (
                 <PropertyListItem
@@ -139,104 +191,57 @@ export default function LeasingAgentDashboardPage() {
               ))}
             </DataList>
           </DataCard>
+        );
 
-          <DataCard title="Recent Contracts" viewAllLink="/leasing-agent/contracts">
+      case 'viewings':
+        return (
+          <DataCard 
+            title={`Scheduled Viewings (${UPCOMING_VIEWINGS.length})`}
+            headerActions={
+              <ActionButton 
+                icon="➕" 
+                label="Schedule Viewing" 
+                variant="secondary"
+                size="small"
+              />
+            }
+          >
             <DataList>
-              {RECENT_CONTRACTS.map((contract, index) => (
+              {UPCOMING_VIEWINGS.map((viewing, index) => (
                 <DataListItem
                   key={index}
-                  icon="📋"
-                  title={contract.property}
-                  subtitle={`Tenant: ${contract.tenant} · ${contract.rent}`}
-                  meta={contract.signedDate}
-                  status={contract.status}
-                  statusColor="16, 185, 129"
+                  icon="📅"
+                  title={viewing.property}
+                  subtitle={`Client: ${viewing.client} · Landlord: ${viewing.landlord}`}
+                  meta={viewing.time}
+                  status={viewing.status}
+                  statusColor={viewing.status === 'Confirmed' ? '16, 185, 129' : '245, 158, 11'}
+                  actions={
+                    <>
+                      <button className="btn btn-sm btn-secondary">Reschedule</button>
+                      <button className="btn btn-sm btn-primary">Start</button>
+                    </>
+                  }
                 />
               ))}
             </DataList>
           </DataCard>
-        </DataCardGrid>
-      )}
+        );
 
-      {activeTab === 'leads' && (
-        <DataCard 
-          title={`All Leads (${LEADS.length})`}
-          headerActions={
-            <ActionButton 
-              icon="➕" 
-              label="Add Lead" 
-              variant="secondary"
-              size="small"
-            />
-          }
-        >
-          <DataList>
-            {LEADS.map(lead => (
-              <LeadListItem
-                key={lead.id}
-                name={lead.name}
-                requirement={lead.requirement}
-                budget={lead.budget}
-                status={lead.status}
-                score={lead.score}
-                onClick={() => console.log('View lead', lead.id)}
-              />
-            ))}
-          </DataList>
-        </DataCard>
-      )}
+      default:
+        return null;
+    }
+  };
 
-      {activeTab === 'listings' && (
-        <DataCard title={`My Listings (${MY_LISTINGS.length})`}>
-          <DataList>
-            {MY_LISTINGS.map(listing => (
-              <PropertyListItem
-                key={listing.id}
-                title={listing.title}
-                location={listing.location}
-                price={listing.price}
-                views={listing.views}
-                inquiries={listing.inquiries}
-                daysListed={listing.daysListed}
-              />
-            ))}
-          </DataList>
-        </DataCard>
-      )}
-
-      {activeTab === 'viewings' && (
-        <DataCard 
-          title={`Scheduled Viewings (${UPCOMING_VIEWINGS.length})`}
-          headerActions={
-            <ActionButton 
-              icon="➕" 
-              label="Schedule Viewing" 
-              variant="secondary"
-              size="small"
-            />
-          }
-        >
-          <DataList>
-            {UPCOMING_VIEWINGS.map((viewing, index) => (
-              <DataListItem
-                key={index}
-                icon="📅"
-                title={viewing.property}
-                subtitle={`Client: ${viewing.client} · Landlord: ${viewing.landlord}`}
-                meta={viewing.time}
-                status={viewing.status}
-                statusColor={viewing.status === 'Confirmed' ? '16, 185, 129' : '245, 158, 11'}
-                actions={
-                  <>
-                    <button className="btn btn-sm btn-secondary">Reschedule</button>
-                    <button className="btn btn-sm btn-primary">Start</button>
-                  </>
-                }
-              />
-            ))}
-          </DataList>
-        </DataCard>
-      )}
-    </RolePageLayout>
+  return (
+    <UnifiedDashboardLayout
+      user={user}
+      onLogout={handleLogout}
+      activeTab={activeTab}
+      onTabChange={handleTabChange}
+      role="leasing-agent"
+    >
+      {renderTabContent()}
+    </UnifiedDashboardLayout>
   );
 }

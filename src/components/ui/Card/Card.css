@@ -1,8 +1,6 @@
 .wc-card {
   background: var(--color-background, #FFFFFF);
-  border-radius: 12px;
   overflow: hidden;
-  transition: all 0.2s ease;
 }
 
 .wc-card--bordered {
@@ -50,11 +48,7 @@
   align-items: flex-start;
 }
 
-.wc-stat-card-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
+.wc-stat-card-info {}
 
 .wc-stat-card-title {
   font-size: 13px;
@@ -79,12 +73,8 @@
 .wc-stat-card-change--neutral { color: var(--color-text-muted, #9CA3AF); }
 
 .wc-stat-card-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 48px;
   height: 48px;
-  border-radius: 12px;
   background: var(--color-primary-light, rgba(220, 38, 38, 0.1));
   color: var(--color-primary, #DC2626);
 }

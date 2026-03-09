@@ -25,17 +25,17 @@ const DashboardHeader = ({
 
   return (
     <header className="dashboard-header-new">
-      <div className="header-left">
-        <button className="mobile-menu-btn" onClick={onMenuToggle}>
+      <div className="header-left flex-row--lg">
+        <button className="mobile-menu-btn flex-center transition-smooth" onClick={onMenuToggle}>
           <Menu size={20} />
         </button>
-        <div className="header-title-group">
+        <div className="header-title-group flex-col--gap-xs">
           <h1 className="header-title">{title}</h1>
           <span className="header-subtitle">{subtitle}</span>
         </div>
       </div>
 
-      <div className="header-center">
+      <div className="header-center flex-center-x">
         <div className="search-wrapper">
           <Search size={18} className="search-icon" />
           <input

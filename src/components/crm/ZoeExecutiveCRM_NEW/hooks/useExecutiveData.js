@@ -1,0 +1,92 @@
+import { useState, useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { MEETINGS, TASKS, EXECUTIVES, ASSISTANT_COLORS } from '../data/executive';
+import { ZOE_EXECUTIVE_FEATURES } from '../data/features';
+import {
+  selectFilteredSuggestions,
+  selectUnreviewedSuggestionsCount,
+  selectCriticalSuggestions,
+  selectExecutiveSuggestions,
+  updateSuggestionStatus,
+  selectLeadFunnelMetrics,
+  selectComplianceMetrics,
+  selectConfidentialVault
+} from '../../../../store/slices/aiAssistantDashboardSlice';
+
+export const useExecutiveData = () => {
+  const dispatch = useDispatch();
+  const [activeTab, setActiveTab] = useState('suggestions');
+  const [selectedSuggestion, setSelectedSuggestion] = useState(null);
+  const [meetings, setMeetings] = useState(MEETINGS);
+  const [tasks, setTasks] = useState(TASKS);
+  const [executives, setExecutives] = useState(EXECUTIVES);
+  const [meetingSearch, setMeetingSearch] = useState('');
+  const [taskFilter, setTaskFilter] = useState('all');
+
+  // Redux selectors
+  const filteredSuggestions = useSelector(selectFilteredSuggestions);
+  const unreviewedCount = useSelector(selectUnreviewedSuggestionsCount);
+  const criticalSuggestions = useSelector(selectCriticalSuggestions);
+  const { filters } = useSelector(selectExecutiveSuggestions);
+  const funnelMetrics = useSelector(selectLeadFunnelMetrics);
+  const complianceMetrics = useSelector(selectComplianceMetrics);
+  const vault = useSelector(selectConfidentialVault);
+
+  const handleStatusChange = useCallback((suggestionId, status) => {
+    dispatch(updateSuggestionStatus({ id: suggestionId, status }));
+  }, [dispatch]);
+
+  const getUpcomingMeetings = useCallback(() => {
+    return meetings.filter(m => m.status === 'upcoming');
+  }, [meetings]);
+
+  const getHighPriorityTasks = useCallback(() => {
+    return tasks.filter(t => t.priority === 'high');
+  }, [tasks]);
+
+  const getTasksByStatus = useCallback((status) => {
+    if (status === 'all') return tasks;
+    return tasks.filter(t => t.status === status);
+  }, [tasks]);
+
+  const getAvailableExecutives = useCallback(() => {
+    return executives.filter(e => e.status === 'available');
+  }, [executives]);
+
+  const filteredMeetings = meetings.filter(meeting =>
+    meeting.title.toLowerCase().includes(meetingSearch.toLowerCase()) ||
+    meeting.location.toLowerCase().includes(meetingSearch.toLowerCase())
+  );
+
+  const filteredTasks = getTasksByStatus(taskFilter);
+
+  return {
+    activeTab,
+    setActiveTab,
+    selectedSuggestion,
+    setSelectedSuggestion,
+    meetings,
+    tasks,
+    executives,
+    meetingSearch,
+    setMeetingSearch,
+    taskFilter,
+    setTaskFilter,
+    filteredSuggestions,
+    unreviewedCount,
+    criticalSuggestions,
+    filters,
+    funnelMetrics,
+    complianceMetrics,
+    vault,
+    handleStatusChange,
+    getUpcomingMeetings,
+    getHighPriorityTasks,
+    getTasksByStatus,
+    getAvailableExecutives,
+    filteredMeetings,
+    filteredTasks,
+    assistantColors: ASSISTANT_COLORS,
+    features: ZOE_EXECUTIVE_FEATURES
+  };
+};

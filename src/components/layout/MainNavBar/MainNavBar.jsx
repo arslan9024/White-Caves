@@ -3,7 +3,8 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
   Search, Bell, Moon, Sun, ChevronDown, User,
-  Settings, LogOut, HelpCircle, Shield, CreditCard
+  Settings, LogOut, HelpCircle, Shield, CreditCard,
+  Zap, Activity, Users, Home, TrendingUp, AlertCircle, Command
 } from 'lucide-react';
 import './MainNavBar.css';
 
@@ -12,17 +13,26 @@ const MainNavBar = ({
   onThemeToggle,
   user = null,
   notifications = [],
-  onLogout
+  onLogout,
+  isSuperUser = false,
+  quickStats = null
 }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
   
   const notifRef = useRef(null);
   const profileRef = useRef(null);
+  const searchRef = useRef(null);
 
+  // Get user role from Redux or props
+  const userRole = useSelector(state => state.auth?.role || 'user');
+  const isSuperUserRole = useSelector(state => state.auth?.role === 'lion' || state.auth?.isSuperUser);
+  
+  const effectiveIsSuperUser = isSuperUser || isSuperUserRole;
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   useEffect(() => {
@@ -42,12 +52,16 @@ const MainNavBar = ({
     const handleKeyPress = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
-        document.querySelector('.main-nav-search-input')?.focus();
+        setShowCommandPalette(!showCommandPalette);
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+        e.preventDefault();
+        searchRef.current?.focus();
       }
     };
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, []);
+  }, [showCommandPalette]);
 
   const getUserInitials = () => {
     if (!user) return 'WC';
@@ -63,6 +77,9 @@ const MainNavBar = ({
   const handleProfileAction = (action) => {
     setShowProfileMenu(false);
     switch (action) {
+      case 'admin':
+        navigate('/lion/admin-dashboard');
+        break;
       case 'profile':
         navigate('/profile');
         break;
@@ -98,9 +115,37 @@ const MainNavBar = ({
       </div>
 
       <div className="main-nav-center">
+        {effectiveIsSuperUser && quickStats && (
+          <div className="quick-stats-bar">
+            <div className="stat-item">
+              <Home size={16} />
+              <span className="stat-label">Props</span>
+              <span className="stat-value">{quickStats.properties || 0}</span>
+            </div>
+            <div className="stat-item">
+              <Users size={16} />
+              <span className="stat-label">Users</span>
+              <span className="stat-value">{quickStats.users || 0}</span>
+            </div>
+            <div className="stat-item">
+              <TrendingUp size={16} />
+              <span className="stat-label">Leads</span>
+              <span className="stat-value">{quickStats.leads || 0}</span>
+            </div>
+            <div className="stat-item">
+              <Activity size={16} />
+              <span className="stat-label">Health</span>
+              <span className={`stat-value ${quickStats.systemHealth === 'good' ? 'good' : quickStats.systemHealth === 'warning' ? 'warning' : 'critical'}`}>
+                {quickStats.systemHealth?.toUpperCase() || 'OK'}
+              </span>
+            </div>
+          </div>
+        )}
+        
         <div className={`main-nav-search ${searchFocused ? 'focused' : ''}`}>
           <Search size={18} className="search-icon" />
           <input
+            ref={searchRef}
             type="text"
             className="main-nav-search-input"
             placeholder="Search assistants, properties, leads..."
@@ -182,10 +227,13 @@ const MainNavBar = ({
               ) : (
                 <span>{getUserInitials()}</span>
               )}
+              {effectiveIsSuperUser && <div className="super-user-badge" title="Super User" />}
             </div>
             <div className="user-info">
               <span className="user-name">{user?.displayName || 'Company Owner'}</span>
-              <span className="user-role">Owner</span>
+              <span className={`user-role ${effectiveIsSuperUser ? 'super-user' : ''}`}>
+                {effectiveIsSuperUser ? '👑 Super User' : 'Owner'}
+              </span>
             </div>
             <ChevronDown size={16} className={`chevron ${showProfileMenu ? 'open' : ''}`} />
           </button>
@@ -207,6 +255,15 @@ const MainNavBar = ({
               </div>
               <div className="dropdown-divider" />
               <div className="dropdown-content">
+                {effectiveIsSuperUser && (
+                  <>
+                    <button className="dropdown-item admin" onClick={() => handleProfileAction('admin')}>
+                      <Shield size={18} />
+                      <span>Admin Dashboard</span>
+                    </button>
+                    <div className="dropdown-divider" />
+                  </>
+                )}
                 <button className="dropdown-item" onClick={() => handleProfileAction('profile')}>
                   <User size={18} />
                   <span>My Profile</span>

@@ -54,6 +54,8 @@ const Input = forwardRef(({
     disabled && 'wc-input-wrapper--disabled',
     icon && iconPosition === 'left' && 'wc-input-wrapper--icon-left',
     icon && iconPosition === 'right' && 'wc-input-wrapper--icon-right',
+    'corner-sm',
+    'transition-smooth',
     className
   ].filter(Boolean).join(' ');
 

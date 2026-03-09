@@ -5,12 +5,10 @@
 }
 
 .dashboard-loading {
-  display: flex;
-  flex-direction: column;
+  @extend .flex-col--gap-md;
   align-items: center;
   justify-content: center;
   padding: 60px 20px;
-  gap: 16px;
 }
 
 .loading-spinner {
@@ -31,9 +29,7 @@
 }
 
 .dashboard-welcome {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+  @extend .flex-row--lg;
 }
 
 .user-avatar {
@@ -41,9 +37,7 @@
   height: 64px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary, #c9a962), #b08d4a);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @extend .flex-center;
   font-size: 1.75rem;
   font-weight: 700;
   color: white;
@@ -72,8 +66,7 @@
 }
 
 .dashboard-tabs {
-  display: flex;
-  gap: 8px;
+  @extend .flex-row--xs;
   border-bottom: 1px solid var(--border, rgba(0, 0, 0, 0.1));
   padding-bottom: 0;
   margin-bottom: 24px;
@@ -85,9 +78,7 @@
 }
 
 .dashboard-tab {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  @extend .flex-row--sm;
   padding: 12px 20px;
   background: none;
   border: none;
@@ -98,7 +89,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
-}
+}}
 
 [data-theme="dark"] .dashboard-tab {
   color: rgba(255, 255, 255, 0.6);

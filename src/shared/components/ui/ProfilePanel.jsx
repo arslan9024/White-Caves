@@ -1,11 +1,17 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, User, Mail, Phone, Shield, Settings, LogOut, Edit2 } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { X, User, Mail, Phone, Shield, Settings, LogOut, Edit2, BarChart3, Users, AlertCircle, Zap } from 'lucide-react';
 import { auth } from '../../../config/firebase';
 import './ProfilePanel.css';
 
-const ProfilePanel = ({ user, onClose }) => {
+const ProfilePanel = ({ user, onClose, isSuperUser = false }) => {
   const navigate = useNavigate();
+  
+  // Detect super user from Redux
+  const userRole = useSelector(state => state.auth?.role || 'user');
+  const reduxIsSuperUser = useSelector(state => state.auth?.role === 'lion' || state.auth?.isSuperUser);
+  const effectiveIsSuperUser = isSuperUser || reduxIsSuperUser;
 
   const handleSignOut = async () => {
     try {
@@ -25,6 +31,21 @@ const ProfilePanel = ({ user, onClose }) => {
 
   const handleSettings = () => {
     navigate('/settings');
+    onClose();
+  };
+
+  const handleAdminDashboard = () => {
+    navigate('/lion/admin-dashboard');
+    onClose();
+  };
+
+  const handleSystemHealth = () => {
+    navigate('/lion/system-health');
+    onClose();
+  };
+
+  const handleUserManagement = () => {
+    navigate('/lion/users');
     onClose();
   };
 
@@ -55,11 +76,34 @@ const ProfilePanel = ({ user, onClose }) => {
 
           <div className="profile-panel-info">
             <h4 className="profile-panel-name">{user?.name || user?.displayName || 'User'}</h4>
-            <span className="profile-panel-role">
+            <span className={`profile-panel-role ${effectiveIsSuperUser ? 'super-user' : ''}`}>
               <Shield size={14} />
-              {user?.role || 'Member'}
+              {effectiveIsSuperUser ? '👑 Super User' : (user?.role || 'Member')}
             </span>
           </div>
+
+          {effectiveIsSuperUser && (
+            <div className="profile-panel-admin-section">
+              <div className="admin-section-header">
+                <Zap size={16} />
+                <span>Admin Controls</span>
+              </div>
+              <div className="admin-quick-actions">
+                <button className="admin-quick-action" onClick={handleAdminDashboard} title="Admin Dashboard">
+                  <BarChart3 size={18} />
+                  <span>Admin</span>
+                </button>
+                <button className="admin-quick-action" onClick={handleSystemHealth} title="System Health">
+                  <AlertCircle size={18} />
+                  <span>Health</span>
+                </button>
+                <button className="admin-quick-action" onClick={handleUserManagement} title="User Management">
+                  <Users size={18} />
+                  <span>Users</span>
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="profile-panel-details">
             {user?.email && (
@@ -92,6 +136,15 @@ const ProfilePanel = ({ user, onClose }) => {
           </div>
 
           <div className="profile-panel-actions">
+            {effectiveIsSuperUser && (
+              <>
+                <button className="profile-action-btn admin" onClick={handleAdminDashboard}>
+                  <BarChart3 size={18} />
+                  Admin Dashboard
+                </button>
+                <div className="profile-action-divider" />
+              </>
+            )}
             <button className="profile-action-btn" onClick={handleEditProfile}>
               <Edit2 size={18} />
               Edit Profile

@@ -5,7 +5,7 @@ import {
   Users, Phone, XCircle, Star, MapPin, Eye, Image, 
   FileImage, Globe, Wrench
 } from 'lucide-react';
-import FullScreenDetailModal from '../../shared/components/ui/FullScreenDetailModal';
+import LazyFullScreenDetailModal from '../../shared/components/ui/LazyFullScreenDetailModal';
 import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
 import { MARY_FEATURES } from './data/assistantFeatures';
 import DataQualityIndicators from './inventory/DataQualityIndicators';
@@ -307,7 +307,7 @@ const MaryInventoryCRM = () => {
         />
       )}
 
-      <FullScreenDetailModal
+      <LazyFullScreenDetailModal
         isOpen={showDetailModal}
         onClose={() => setShowDetailModal(false)}
         title={selectedProperty?.pNumber || 'Property Details'}

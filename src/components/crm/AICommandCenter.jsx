@@ -17,18 +17,18 @@ import {
 } from '../../store/slices/aiAssistantDashboardSlice';
 import './AICommandCenter.css';
 
-const LindaWhatsAppCRM = lazy(() => import('./LindaWhatsAppCRM'));
-const MaryInventoryCRM = lazy(() => import('./MaryInventoryCRM'));
-const ClaraLeadsCRM = lazy(() => import('./ClaraLeadsCRM'));
-const NinaWhatsAppBotCRM = lazy(() => import('./NinaWhatsAppBotCRM'));
-const NancyHRCRM = lazy(() => import('./NancyHRCRM'));
-const SophiaSalesCRM = lazy(() => import('./SophiaSalesCRM'));
-const DaisyLeasingCRM = lazy(() => import('./DaisyLeasingCRM'));
-const TheodoraFinanceCRM = lazy(() => import('./TheodoraFinanceCRM'));
-const OliviaMarketingCRM = lazy(() => import('./OliviaMarketingCRM'));
-const ZoeExecutiveCRM = lazy(() => import('./ZoeExecutiveCRM'));
-const LailaComplianceCRM = lazy(() => import('./LailaComplianceCRM'));
-const AuroraCTODashboard = lazy(() => import('./AuroraCTODashboard'));
+const LindaWhatsAppCRM = lazy(() => import('./LindaWhatsAppCRM_NEW'));
+const MaryInventoryCRM = lazy(() => import('./MaryInventoryCRM_NEW'));
+const ClaraLeadsCRM = lazy(() => import('./ClaraLeadsCRM_NEW'));
+const NinaWhatsAppBotCRM = lazy(() => import('./NinaWhatsAppBotCRM_NEW'));
+const NancyHRCRM = lazy(() => import('./NancyHRCRM_NEW'));
+const SophiaSalesCRM = lazy(() => import('./SophiaSalesCRM_NEW'));
+const DaisyLeasingCRM = lazy(() => import('./DaisyLeasingCRM_NEW'));
+const TheodoraFinanceCRM = lazy(() => import('./TheodoraFinanceCRM_NEW'));
+const OliviaMarketingCRM = lazy(() => import('./OliviaMarketingCRM_NEW'));
+const ZoeExecutiveCRM = lazy(() => import('./ZoeExecutiveCRM_NEW'));
+const LailaComplianceCRM = lazy(() => import('./LailaComplianceCRM_NEW'));
+const AuroraCTODashboard = lazy(() => import('./AuroraCTODashboard_NEW'));
 
 const ASSISTANT_COMPONENTS = {
   linda: LindaWhatsAppCRM,

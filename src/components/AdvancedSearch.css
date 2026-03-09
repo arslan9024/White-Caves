@@ -5,9 +5,7 @@
 }
 
 .search-bar-container {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  @extend .flex-row--md;
   padding: 1rem 1.5rem;
   flex-wrap: wrap;
 }
@@ -36,7 +34,6 @@
   border-radius: var(--radius-md);
   background: var(--bg-primary);
   color: var(--text-primary);
-  transition: all 0.2s ease;
 }
 
 .search-input:focus {
@@ -50,9 +47,7 @@
 }
 
 .search-quick-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  @extend .flex-row--md;
   flex-wrap: wrap;
 }
 
@@ -69,6 +64,7 @@
   background-repeat: no-repeat;
   background-size: 1.25em 1.25em;
   cursor: pointer;
+  /* Consolidated: transition-smooth */
   transition: all 0.2s ease;
 }
 
@@ -78,8 +74,7 @@
 }
 
 .filter-toggle-btn {
-  display: flex;
-  align-items: center;
+  @extend .flex-center;
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
   font-size: 0.9rem;
@@ -182,6 +177,7 @@
 }
 
 .price-range-inputs {
+  /* Consolidated: flex-row--lg */
   display: flex;
   align-items: center;
   gap: 1rem;

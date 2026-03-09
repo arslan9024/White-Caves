@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@300;400;500;600;700&display=swap');
+@import url('./color-palette.css');
+@import url('./component-utilities.css');
 
 :root {
   /* Brand Colors - Primary Red */

@@ -1,0 +1,361 @@
+/* ============================================================================
+   SOPHIA SALES CRM STYLES
+   ============================================================================
+   
+   This file imports dashboard-base.css which contains all shared styles.
+   Only role-specific styles for Sales CRM are defined here.
+   
+   Savings: ~9.5 KB (67% reduction from 14.12 KB)
+   ============================================================================ */
+
+@import url('../../../styles/dashboard-base.css');
+
+.deals-table .table-header,
+.deals-table .table-row {
+  grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 1fr 0.5fr;
+}
+
+.leases-table .table-header,
+.leases-table .table-row {
+  grid-template-columns: 2fr 1.5fr 1fr 1fr 0.8fr 1fr;
+}
+
+.invoices-table .table-header,
+.invoices-table .table-row {
+  grid-template-columns: 1.2fr 1.5fr 1.5fr 1fr 1fr 1fr;
+}
+
+.campaigns-table .table-header,
+.campaigns-table .table-row {
+  grid-template-columns: 2fr 1fr 1.5fr 0.8fr 0.8fr 0.8fr 1fr;
+}
+
+.kyc-table .table-header,
+.kyc-table .table-row {
+  grid-template-columns: 1.5fr 0.8fr 0.8fr 0.8fr 1fr 1fr;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+/* .filter-btn: consolidated to crm-standard-utilities.css */
+
+.agent-cards, .social-cards, .inquiry-cards, .executive-cards, .contract-cards, .listing-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.agent-card, .social-card, .inquiry-card, .executive-card, .contract-card, .listing-card {
+  background: var(--rgba-white-05);
+  border: 1px solid var(--rgba-white-10);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s;
+}
+
+.agent-card:hover, .social-card:hover, .inquiry-card:hover, .executive-card:hover, .contract-card:hover, .listing-card:hover {
+  border-color: var(--rgba-white-20);
+  transform: translateY(-2px);
+}
+
+.agent-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.agent-avatar, .exec-avatar {
+  width: 48px;
+  height: 48px;
+  background: var(--rgba-purple-10);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.agent-info h4, .exec-info h4 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--color-very-light);
+}
+
+.agent-stats {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.agent-stats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--color-slate-very-light);
+}
+
+.meetings-list, .tasks-list, .maintenance-list, .expenses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meeting-card, .task-card, .maintenance-card, .expense-card, .aml-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--rgba-white-05);
+  border: 1px solid var(--rgba-white-10);
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.2s;
+}
+
+.meeting-card:hover, .task-card:hover {
+  border-color: var(--rgba-white-20);
+}
+
+.meeting-time {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+  padding: 12px;
+  background: var(--rgba-purple-10);
+  border-radius: 8px;
+}
+
+.meeting-time .time {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-very-light);
+}
+
+.meeting-time .duration {
+  font-size: 12px;
+  color: var(--color-slate-very-light);
+}
+
+.meeting-details {
+  flex: 1;
+}
+
+.meeting-details h4 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: var(--color-very-light);
+}
+
+.meeting-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--color-slate-very-light);
+}
+
+.meeting-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.meeting-type {
+  padding: 6px 12px;
+  background: var(--rgba-purple-10);
+  color: #A5B4FC;
+  border-radius: 6px;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.task-checkbox {
+  width: 24px;
+  height: 24px;
+  color: #10B981;
+}
+
+.task-checkbox .checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #64748B;
+  border-radius: 4px;
+}
+
+.task-details {
+  flex: 1;
+}
+
+.task-details h4 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  color: #F8FAFC;
+}
+
+.task-details h4.completed {
+  text-decoration: line-through;
+  color: #64748B;
+}
+
+.task-meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 12px;
+  color: #94A3B8;
+}
+
+.task-status {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.task-status.completed {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+}
+
+.task-status.in_progress {
+  background: rgba(14, 165, 233, 0.15);
+  color: #38BDF8;
+}
+
+.task-status.pending {
+  background: rgba(245, 158, 11, 0.15);
+  color: #F59E0B;
+}
+
+.compliance-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.compliance-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.compliance-item.passed {
+  color: #10B981;
+}
+
+.compliance-item.warning {
+  color: #F59E0B;
+}
+
+.compliance-item.failed {
+  color: #EF4444;
+}
+
+.forecast-summary, .finance-summary, .renewal-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.forecast-card, .summary-card, .renewal-stat {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.forecast-card h4, .summary-card h4 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: #94A3B8;
+}
+
+.forecast-value, .summary-value {
+  font-size: 28px;
+  font-weight: 600;
+  color: #F8FAFC;
+  margin-bottom: 8px;
+}
+
+.forecast-target, .summary-period {
+  font-size: 13px;
+  color: #64748B;
+}
+
+.forecast-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.forecast-progress .progress-bar {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.forecast-progress .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10B981 0%, #34D399 100%);
+  border-radius: 4px;
+}
+
+.renewal-stat .value {
+  font-size: 32px;
+  font-weight: 600;
+  color: #F8FAFC;
+}
+
+.renewal-stat .label {
+  font-size: 13px;
+  color: #94A3B8;
+}
+
+@media (max-width: 1024px) {
+  .quick-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .assistant-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .quick-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .assistant-tabs {
+    flex-wrap: wrap;
+  }
+
+  .view-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  .pipeline-stages {
+    flex-direction: column;
+  }
+
+  .stage-arrow {
+    display: none;
+  }
+}

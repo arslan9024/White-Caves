@@ -1,20 +1,16 @@
 .tabbed-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  /* Consolidated: flex-col--gap-lg */
 }
 
 .tab-buttons {
-  display: flex;
-  gap: 0.5rem;
+  /* Consolidated: flex-row--xs */
   flex-wrap: wrap;
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 0;
 }
 
 .tab-btn {
-  display: flex;
-  align-items: center;
+  /* Consolidated: flex-center-y + transition-smooth */
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
   background: transparent;
@@ -23,7 +19,6 @@
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
   position: relative;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
@@ -44,9 +39,7 @@
 }
 
 .tab-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  /* Consolidated: flex-center + corner-full (modified with min-width/padding) */
   min-width: 20px;
   height: 20px;
   padding: 0 6px;

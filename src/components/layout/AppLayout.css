@@ -1,7 +1,6 @@
 .app-layout {
+  /* Consolidated: flex-col */
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 
 .app-main {

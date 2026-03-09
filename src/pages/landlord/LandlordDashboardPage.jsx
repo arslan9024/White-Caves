@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import RolePageLayout from '../../components/layout/RolePageLayout';
+import { useSelector } from 'react-redux';
+import UnifiedDashboardLayout from '../../components/layout/UnifiedDashboardLayout';
 import {
   StatCard,
   StatCardGrid,
-  TabbedPanel,
   DataCard,
   DataCardGrid,
   DataList,
@@ -56,13 +56,16 @@ const UPCOMING_LEASE_EVENTS = [
 
 export default function LandlordDashboardPage() {
   const [activeTab, setActiveTab] = useState('overview');
+  const user = useSelector(state => state.auth?.user);
 
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: '📊' },
-    { id: 'properties', label: 'Properties', icon: '🏢', badge: PROPERTIES.length },
-    { id: 'maintenance', label: 'Maintenance', icon: '🔧', badge: MAINTENANCE_REQUESTS.filter(m => m.status !== 'Resolved').length },
-    { id: 'finances', label: 'Finances', icon: '💰' },
-  ];
+  const handleLogout = () => {
+    console.log('Logout initiated');
+  };
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    sessionStorage.setItem('landlordDashboardTab', tabId);
+  };
 
   const getPriorityColor = (priority) => {
     switch (priority.toLowerCase()) {
@@ -82,199 +85,201 @@ export default function LandlordDashboardPage() {
     }
   };
 
-  return (
-    <RolePageLayout
-      title="Landlord Dashboard"
-      subtitle="Manage your rental property portfolio"
-      role="landlord"
-      actions={
-        <ActionButton 
-          icon="➕" 
-          label="Add Property" 
-          to="/landlord/add-property" 
-          variant="primary"
-        />
-      }
-    >
-      <StatCardGrid columns={4}>
-        {LANDLORD_STATS.map((stat, index) => (
-          <StatCard key={index} {...stat} variant="landlord" />
-        ))}
-      </StatCardGrid>
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'overview':
+        return (
+          <div className="landlord-dashboard-content">
+            <StatCardGrid columns={4}>
+              {LANDLORD_STATS.map((stat, index) => (
+                <StatCard key={index} {...stat} variant="landlord" />
+              ))}
+            </StatCardGrid>
 
-      <QuickLinks title="Landlord Tools" links={QUICK_LINKS} columns={4} />
+            <QuickLinks title="Landlord Tools" links={QUICK_LINKS} columns={4} />
 
-      <TabbedPanel
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        storeKey="landlordDashboard"
-      />
+            <DataCardGrid columns={2}>
+              <DataCard title="My Properties" viewAllLink="/landlord/properties">
+                <DataList>
+                  {PROPERTIES.slice(0, 3).map(property => (
+                    <DataListItem
+                      key={property.id}
+                      icon="🏢"
+                      title={property.name}
+                      subtitle={`${property.location} · ${property.rent}`}
+                      status={property.status}
+                      statusColor={property.status === 'Occupied' ? '16, 185, 129' : '59, 130, 246'}
+                      meta={property.tenant !== '-' ? property.tenant : 'No tenant'}
+                    />
+                  ))}
+                </DataList>
+              </DataCard>
 
-      {activeTab === 'overview' && (
-        <DataCardGrid columns={2}>
-          <DataCard title="My Properties" viewAllLink="/landlord/properties">
+              <DataCard title="Maintenance Requests" viewAllLink="/landlord/maintenance">
+                <DataList>
+                  {MAINTENANCE_REQUESTS.map(request => (
+                    <DataListItem
+                      key={request.id}
+                      icon="🔧"
+                      title={request.issue}
+                      subtitle={`${request.property} · ${request.date}`}
+                      status={request.priority}
+                      statusColor={getPriorityColor(request.priority)}
+                    />
+                  ))}
+                </DataList>
+              </DataCard>
+
+              <DataCard title="Financial Summary" fullWidth>
+                <div className="financial-grid">
+                  <div className="financial-item">
+                    <span className="financial-label">Total Income</span>
+                    <span className="financial-value">{FINANCIAL_SUMMARY.totalIncome}</span>
+                  </div>
+                  <div className="financial-item collected">
+                    <span className="financial-label">Collected</span>
+                    <span className="financial-value">{FINANCIAL_SUMMARY.collected}</span>
+                  </div>
+                  <div className="financial-item pending">
+                    <span className="financial-label">Pending</span>
+                    <span className="financial-value">{FINANCIAL_SUMMARY.pending}</span>
+                  </div>
+                  <div className="financial-item expenses">
+                    <span className="financial-label">Expenses</span>
+                    <span className="financial-value">{FINANCIAL_SUMMARY.expenses}</span>
+                  </div>
+                  <div className="financial-item net">
+                    <span className="financial-label">Net Income</span>
+                    <span className="financial-value">{FINANCIAL_SUMMARY.netIncome}</span>
+                  </div>
+                </div>
+              </DataCard>
+
+              <DataCard title="Upcoming Lease Events" viewAllLink="/landlord/leases" fullWidth>
+                <DataList>
+                  {UPCOMING_LEASE_EVENTS.map((event, index) => (
+                    <DataListItem
+                      key={index}
+                      icon="📅"
+                      title={event.property}
+                      subtitle={`${event.event} on ${event.date}`}
+                      badge={`${event.daysLeft} days`}
+                      badgeColor={event.daysLeft <= 60 ? '239, 68, 68' : event.daysLeft <= 180 ? '245, 158, 11' : '16, 185, 129'}
+                    />
+                  ))}
+                </DataList>
+              </DataCard>
+            </DataCardGrid>
+          </div>
+        );
+
+      case 'properties':
+        return (
+          <DataCard title={`All Properties (${PROPERTIES.length})`}>
             <DataList>
-              {PROPERTIES.slice(0, 3).map(property => (
+              {PROPERTIES.map(property => (
                 <DataListItem
                   key={property.id}
                   icon="🏢"
                   title={property.name}
-                  subtitle={`${property.location} · ${property.rent}`}
-                  status={property.status}
-                  statusColor={property.status === 'Occupied' ? '16, 185, 129' : '59, 130, 246'}
-                  meta={property.tenant !== '-' ? property.tenant : 'No tenant'}
+                  subtitle={`${property.location} · Tenant: ${property.tenant}`}
+                  meta={property.rent}
+                  status={property.paymentStatus !== '-' ? property.paymentStatus : null}
+                  statusColor={getPaymentStatusColor(property.paymentStatus)}
+                  actions={
+                    <>
+                      <button className="btn btn-sm btn-secondary">View</button>
+                      <button className="btn btn-sm btn-primary">Manage</button>
+                    </>
+                  }
                 />
               ))}
             </DataList>
           </DataCard>
+        );
 
-          <DataCard title="Maintenance Requests" viewAllLink="/landlord/maintenance">
+      case 'maintenance':
+        return (
+          <DataCard 
+            title={`Maintenance Requests (${MAINTENANCE_REQUESTS.length})`}
+            headerActions={
+              <ActionButton 
+                icon="➕" 
+                label="New Request" 
+                variant="secondary"
+                size="small"
+              />
+            }
+          >
             <DataList>
               {MAINTENANCE_REQUESTS.map(request => (
                 <DataListItem
                   key={request.id}
                   icon="🔧"
                   title={request.issue}
-                  subtitle={`${request.property} · ${request.date}`}
-                  status={request.priority}
-                  statusColor={getPriorityColor(request.priority)}
+                  subtitle={`${request.property} · Reported: ${request.date}`}
+                  status={request.status}
+                  statusColor={request.status === 'Resolved' ? '16, 185, 129' : request.status === 'In Progress' ? '245, 158, 11' : '239, 68, 68'}
+                  actions={
+                    <button className="btn btn-sm btn-primary">
+                      {request.status === 'Resolved' ? 'View' : 'Update'}
+                    </button>
+                  }
                 />
               ))}
             </DataList>
           </DataCard>
+        );
 
-          <DataCard title="Financial Summary" fullWidth>
-            <div className="financial-grid">
-              <div className="financial-item">
-                <span className="financial-label">Total Income</span>
-                <span className="financial-value">{FINANCIAL_SUMMARY.totalIncome}</span>
+      case 'finances':
+        return (
+          <DataCardGrid columns={2}>
+            <DataCard title="Income Overview">
+              <div className="financial-summary-card">
+                <div className="summary-row">
+                  <span>Total Annual Income</span>
+                  <span className="value">{FINANCIAL_SUMMARY.totalIncome}</span>
+                </div>
+                <div className="summary-row collected">
+                  <span>Collected</span>
+                  <span className="value">{FINANCIAL_SUMMARY.collected}</span>
+                </div>
+                <div className="summary-row pending">
+                  <span>Pending</span>
+                  <span className="value">{FINANCIAL_SUMMARY.pending}</span>
+                </div>
               </div>
-              <div className="financial-item collected">
-                <span className="financial-label">Collected</span>
-                <span className="financial-value">{FINANCIAL_SUMMARY.collected}</span>
-              </div>
-              <div className="financial-item pending">
-                <span className="financial-label">Pending</span>
-                <span className="financial-value">{FINANCIAL_SUMMARY.pending}</span>
-              </div>
-              <div className="financial-item expenses">
-                <span className="financial-label">Expenses</span>
-                <span className="financial-value">{FINANCIAL_SUMMARY.expenses}</span>
-              </div>
-              <div className="financial-item net">
-                <span className="financial-label">Net Income</span>
-                <span className="financial-value">{FINANCIAL_SUMMARY.netIncome}</span>
-              </div>
-            </div>
-          </DataCard>
+            </DataCard>
 
-          <DataCard title="Upcoming Lease Events" viewAllLink="/landlord/leases" fullWidth>
-            <DataList>
-              {UPCOMING_LEASE_EVENTS.map((event, index) => (
-                <DataListItem
-                  key={index}
-                  icon="📅"
-                  title={event.property}
-                  subtitle={`${event.event} on ${event.date}`}
-                  badge={`${event.daysLeft} days`}
-                  badgeColor={event.daysLeft <= 60 ? '239, 68, 68' : event.daysLeft <= 180 ? '245, 158, 11' : '16, 185, 129'}
-                />
-              ))}
-            </DataList>
-          </DataCard>
-        </DataCardGrid>
-      )}
+            <DataCard title="Expenses & Net Income">
+              <div className="financial-summary-card">
+                <div className="summary-row expenses">
+                  <span>Total Expenses</span>
+                  <span className="value">{FINANCIAL_SUMMARY.expenses}</span>
+                </div>
+                <div className="summary-row net">
+                  <span>Net Income</span>
+                  <span className="value highlight">{FINANCIAL_SUMMARY.netIncome}</span>
+                </div>
+              </div>
+            </DataCard>
+          </DataCardGrid>
+        );
 
-      {activeTab === 'properties' && (
-        <DataCard title={`All Properties (${PROPERTIES.length})`}>
-          <DataList>
-            {PROPERTIES.map(property => (
-              <DataListItem
-                key={property.id}
-                icon="🏢"
-                title={property.name}
-                subtitle={`${property.location} · Tenant: ${property.tenant}`}
-                meta={property.rent}
-                status={property.paymentStatus !== '-' ? property.paymentStatus : null}
-                statusColor={getPaymentStatusColor(property.paymentStatus)}
-                actions={
-                  <>
-                    <button className="btn btn-sm btn-secondary">View</button>
-                    <button className="btn btn-sm btn-primary">Manage</button>
-                  </>
-                }
-              />
-            ))}
-          </DataList>
-        </DataCard>
-      )}
+      default:
+        return null;
+    }
+  };
 
-      {activeTab === 'maintenance' && (
-        <DataCard 
-          title={`Maintenance Requests (${MAINTENANCE_REQUESTS.length})`}
-          headerActions={
-            <ActionButton 
-              icon="➕" 
-              label="New Request" 
-              variant="secondary"
-              size="small"
-            />
-          }
-        >
-          <DataList>
-            {MAINTENANCE_REQUESTS.map(request => (
-              <DataListItem
-                key={request.id}
-                icon="🔧"
-                title={request.issue}
-                subtitle={`${request.property} · Reported: ${request.date}`}
-                status={request.status}
-                statusColor={request.status === 'Resolved' ? '16, 185, 129' : request.status === 'In Progress' ? '245, 158, 11' : '239, 68, 68'}
-                actions={
-                  <button className="btn btn-sm btn-primary">
-                    {request.status === 'Resolved' ? 'View' : 'Update'}
-                  </button>
-                }
-              />
-            ))}
-          </DataList>
-        </DataCard>
-      )}
-
-      {activeTab === 'finances' && (
-        <DataCardGrid columns={2}>
-          <DataCard title="Income Overview">
-            <div className="financial-summary-card">
-              <div className="summary-row">
-                <span>Total Annual Income</span>
-                <span className="value">{FINANCIAL_SUMMARY.totalIncome}</span>
-              </div>
-              <div className="summary-row collected">
-                <span>Collected</span>
-                <span className="value">{FINANCIAL_SUMMARY.collected}</span>
-              </div>
-              <div className="summary-row pending">
-                <span>Pending</span>
-                <span className="value">{FINANCIAL_SUMMARY.pending}</span>
-              </div>
-            </div>
-          </DataCard>
-
-          <DataCard title="Expenses & Net Income">
-            <div className="financial-summary-card">
-              <div className="summary-row expenses">
-                <span>Total Expenses</span>
-                <span className="value">{FINANCIAL_SUMMARY.expenses}</span>
-              </div>
-              <div className="summary-row net">
-                <span>Net Income</span>
-                <span className="value highlight">{FINANCIAL_SUMMARY.netIncome}</span>
-              </div>
-            </div>
-          </DataCard>
-        </DataCardGrid>
-      )}
-    </RolePageLayout>
+  return (
+    <UnifiedDashboardLayout
+      user={user}
+      onLogout={handleLogout}
+      activeTab={activeTab}
+      onTabChange={handleTabChange}
+      role="landlord"
+    >
+      {renderTabContent()}
+    </UnifiedDashboardLayout>
   );
 }

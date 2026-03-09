@@ -50,7 +50,7 @@ export const ToastProvider = ({ children }) => {
 
 const ToastContainer = ({ toasts, onRemove }) => {
   return (
-    <div className="toast-container">
+    <div className="toast-container flex-col--gap-md">
       {toasts.map(toast => (
         <Toast
           key={toast.id}
@@ -90,10 +90,10 @@ const Toast = ({ message, type, onClose }) => {
   };
 
   return (
-    <div className={`toast toast-${type} ${isVisible ? 'toast-visible' : ''}`}>
-      <div className="toast-icon">{getIcon()}</div>
+    <div className={`toast flex-row--md transition-smooth toast-${type} ${isVisible ? 'toast-visible' : ''}`}>
+      <div className="toast-icon flex-center corner-full">{getIcon()}</div>
       <div className="toast-message">{message}</div>
-      <button className="toast-close" onClick={handleClose}>×</button>
+      <button className="toast-close flex-center corner-full transition-smooth" onClick={handleClose}>×</button>
     </div>
   );
 };

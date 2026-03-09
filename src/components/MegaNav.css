@@ -19,15 +19,13 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 1.5rem;
-  display: flex;
-  align-items: center;
+  @extend .flex-row--lg;
   justify-content: space-between;
   height: 70px;
 }
 
 .mega-nav-logo {
-  display: flex;
-  align-items: center;
+  @extend .flex-row--sm;
   text-decoration: none;
 }
 
@@ -48,18 +46,14 @@ body.dark-mode .mega-nav-logo .logo-img {
 }
 
 .mega-nav-menu {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  @extend .flex-row--md;
 }
 
 .mega-nav-list {
-  display: flex;
-  align-items: center;
+  @extend .flex-row--xs;
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: 0.25rem;
 }
 
 .mega-nav-item {
@@ -68,9 +62,7 @@ body.dark-mode .mega-nav-logo .logo-img {
 
 .mega-nav-trigger,
 .mega-nav-link {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
+  @extend .flex-row--xs;
   padding: 0.625rem 1rem;
   font-size: 0.9375rem;
   font-weight: 500;

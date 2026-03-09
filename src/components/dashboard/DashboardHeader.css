@@ -18,9 +18,7 @@
 }
 
 .header-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+  /* Consolidated: flex-row--lg */
 }
 
 .mobile-menu-btn {
@@ -32,9 +30,6 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
 }
 
 .mobile-menu-btn:hover {
@@ -43,9 +38,7 @@
 }
 
 .header-title-group {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  /* Consolidated: flex-col--gap-xs */
 }
 
 .header-title {
@@ -63,9 +56,8 @@
 }
 
 .header-center {
+  /* Consolidated: flex-center-x */
   flex: 1;
-  display: flex;
-  justify-content: center;
   max-width: 500px;
   margin: 0 32px;
 }
@@ -90,10 +82,12 @@
   padding: 0 100px 0 44px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  /* Consolidated: corner-md */
   border-radius: 12px;
   color: #fff;
   font-size: 14px;
   outline: none;
+  /* Consolidated: transition-smooth */
   transition: all 0.2s ease;
 }
 
@@ -132,12 +126,14 @@
 }
 
 .header-right {
+  /* Consolidated: flex-row--md */
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
 .header-icon-btn {
+  /* Consolidated: flex-center + corner-sm */
   width: 40px;
   height: 40px;
   border-radius: 10px;
@@ -148,6 +144,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Consolidated: transition-smooth */
   transition: all 0.2s ease;
   position: relative;
 }

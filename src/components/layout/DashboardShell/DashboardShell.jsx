@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import MainNavBar from '../MainNavBar';
 import CrimsonSidebarEnhanced from '../CrimsonSidebar/CrimsonSidebarEnhanced';
+import AIAssistantsPanel from '../AIAssistantsPanel/AIAssistantsPanel';
 import './DashboardShell.css';
 
 const DashboardShell = ({ 
@@ -12,6 +13,7 @@ const DashboardShell = ({
   onLogout 
 }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [rightPanelOpen, setRightPanelOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState(() => {
     return document.documentElement.getAttribute('data-theme') || 'light';
@@ -26,6 +28,10 @@ const DashboardShell = ({
       if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
         e.preventDefault();
         setSidebarCollapsed(prev => !prev);
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+        e.preventDefault();
+        setRightPanelOpen(prev => !prev);
       }
     };
     window.addEventListener('keydown', handleKeyPress);
@@ -48,6 +54,13 @@ const DashboardShell = ({
     document.documentElement.setAttribute('data-theme', newTheme);
   };
 
+  const handleAssistantSelect = (assistant) => {
+    if (onTabChange) {
+      onTabChange(assistant.id);
+    }
+    setRightPanelOpen(false);
+  };
+
   const getAllNotifications = () => {
     const allNotifs = [];
     Object.entries(notifications).forEach(([assistantId, notifs]) => {
@@ -59,13 +72,15 @@ const DashboardShell = ({
   };
 
   return (
-    <div className={`dashboard-shell ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} data-theme={theme}>
+    <div className={`dashboard-shell ${sidebarCollapsed ? 'sidebar-collapsed' : ''} ${rightPanelOpen ? 'right-panel-open' : ''}`} data-theme={theme}>
       <MainNavBar
         theme={theme}
         onThemeToggle={handleThemeToggle}
         user={user}
         notifications={getAllNotifications()}
         onLogout={onLogout}
+        onAssistantPanelToggle={() => setRightPanelOpen(!rightPanelOpen)}
+        isAssistantPanelOpen={rightPanelOpen}
       />
 
       <CrimsonSidebarEnhanced
@@ -73,6 +88,13 @@ const DashboardShell = ({
         onTabChange={onTabChange}
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        notifications={notifications}
+      />
+
+      <AIAssistantsPanel
+        isOpen={rightPanelOpen}
+        onClose={() => setRightPanelOpen(false)}
+        onAssistantSelect={handleAssistantSelect}
         notifications={notifications}
       />
 

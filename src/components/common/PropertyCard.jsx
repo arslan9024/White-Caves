@@ -54,7 +54,7 @@ export default function PropertyCard({
         {status && <PropertyStatusBadge status={status} />}
         {showFavorite && (
           <button 
-            className={`favorite-btn ${isFavorite ? 'active' : ''}`}
+            className={`favorite-btn corner-full transition-smooth ${isFavorite ? 'active' : ''}`}
             onClick={handleFavoriteClick}
             aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           >
@@ -82,7 +82,7 @@ export default function PropertyCard({
 
   if (to) {
     return (
-      <Link to={to} className={`property-card-reusable ${className}`}>
+      <Link to={to} className={`property-card-reusable corner-lg transition-fast ${className}`}>
         {content}
       </Link>
     );
@@ -90,7 +90,7 @@ export default function PropertyCard({
 
   return (
     <div 
-      className={`property-card-reusable ${onClick ? 'clickable' : ''} ${className}`}
+      className={`property-card-reusable corner-lg transition-fast ${onClick ? 'clickable' : ''} ${className}`}
       onClick={onClick}
     >
       {content}
@@ -122,7 +122,7 @@ export function PropertyListItem({
 }) {
   return (
     <div 
-      className={`property-list-item ${onClick ? 'clickable' : ''} ${className}`}
+      className={`property-list-item transition-smooth ${onClick ? 'clickable' : ''} ${className}`}
       onClick={onClick}
     >
       <div className="property-icon">🏠</div>

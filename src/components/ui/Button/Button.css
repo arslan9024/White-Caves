@@ -13,6 +13,7 @@
   transition: all 0.2s ease;
   white-space: nowrap;
   user-select: none;
+  min-width: 96px;
 }
 
 .wc-button--xs {

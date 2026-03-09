@@ -9,7 +9,7 @@ export function LeadScoreBadge({ score, size = 'default' }) {
   };
 
   return (
-    <span className={`lead-score-badge ${getScoreLevel(score)} ${size}`}>
+    <span className={`lead-score-badge flex-center corner-full ${getScoreLevel(score)} ${size}`}>
       {score}
     </span>
   );
@@ -39,15 +39,15 @@ export default function LeadCard({
 }) {
   return (
     <div className={`lead-card-reusable ${className}`}>
-      <div className="lead-card-header">
-        <div className="lead-avatar">
+      <div className="lead-card-header flex-row--md">
+        <div className="lead-avatar flex-center corner-full">
           {avatar ? (
             <img src={avatar} alt={name} />
           ) : (
             <span>{name?.charAt(0) || '?'}</span>
           )}
         </div>
-        <div className="lead-header-info">
+        <div className="lead-header-info flex-col--gap-xs">
           <span className="lead-name">{name}</span>
           <LeadStatusBadge status={status} />
         </div>

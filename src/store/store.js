@@ -11,6 +11,20 @@ import inventoryReducer from './slices/inventorySlice';
 import aiAssistantDashboardReducer from './slices/aiAssistantDashboardSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 
+// Wrap middleware in error handling
+const safeEventBusMiddleware = (store) => {
+  return (next) => {
+    return (action) => {
+      try {
+        return eventBusMiddleware(store)(next)(action);
+      } catch (error) {
+        console.error('EventBus Middleware Error:', error);
+        return next(action);
+      }
+    };
+  };
+};
+
 export const store = configureStore({
   reducer: {
     properties: propertyReducer,
@@ -26,6 +40,12 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false
-    }).concat(eventBusMiddleware)
+      serializableCheck: {
+        ignore: ['aiAssistantDashboard', 'analytics']
+      },
+      immutableStateInvariant: {
+        ignoredPaths: ['aiAssistantDashboard.notifications']
+      }
+    }).concat(safeEventBusMiddleware),
+  devTools: true
 });

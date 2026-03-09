@@ -95,14 +95,14 @@ export default function BlogSection() {
           <p>Stay informed with the latest news, guides, and market analysis from Dubai's property experts</p>
         </div>
 
-        <div className="featured-posts">
+        <div className="featured-posts gap-lg">
           {featuredPosts.map(post => (
-            <article key={post.id} className="featured-post">
+            <article key={post.id} className="featured-post corner-lg shadow-md transition-smooth">
               <div className="featured-image" style={{ backgroundImage: `url(${post.image})` }}>
                 <span className="post-category">{post.category}</span>
               </div>
-              <div className="featured-content">
-                <div className="post-meta">
+              <div className="featured-content flex-col--gap-sm">
+                <div className="post-meta flex-row--md">
                   <span className="post-author">{post.author}</span>
                   <span className="post-date">{post.date}</span>
                   <span className="post-read-time">{post.readTime}</span>

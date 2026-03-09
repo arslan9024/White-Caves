@@ -12,6 +12,10 @@ export default function ContactUs() {
       <p>🌐 www.whitecaves.com</p>
       <p>🕐 Mon - Fri: 9:00 AM - 6:00 PM</p>
       <p>🕐 Sat: 10:00 AM - 4:00 PM</p>
+      
+      <div className="contact-methods flex-center-x gap-lg">
+        {/* Contact buttons would go here if defined */}
+      </div>
     </div>
   );
 }

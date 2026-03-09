@@ -33,9 +33,7 @@
   font-size: 14px;
 }
 
-.wc-badge--rounded {
-  border-radius: 9999px;
-}
+.wc-badge--rounded {}
 
 .wc-badge:not(.wc-badge--rounded) {
   border-radius: 6px;

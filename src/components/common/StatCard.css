@@ -23,8 +23,6 @@
   padding: 1.5rem;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
-  transition: all 0.3s ease;
 }
 
 .stat-card-reusable:hover {

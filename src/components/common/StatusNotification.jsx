@@ -52,14 +52,14 @@ const StatusItem = ({ notification, onDismiss }) => {
   };
 
   return (
-    <div className={`status-notification-item ${notification.type}`}>
-      <div className="status-icon">{getIcon()}</div>
-      <div className="status-content">
+    <div className={`status-notification-item flex-start gap-md transition-smooth ${notification.type}`}>
+      <div className="status-icon flex-center corner-sm">{getIcon()}</div>
+      <div className="status-content flex-col--gap-xs">
         {notification.title && <strong className="status-title">{notification.title}</strong>}
         <span className="status-message">{notification.message}</span>
       </div>
       <button 
-        className="status-dismiss" 
+        className="status-dismiss transition-smooth" 
         onClick={() => onDismiss(notification.id)}
         aria-label="Dismiss"
       >
@@ -122,7 +122,7 @@ export const StatusProvider = ({ children }) => {
   return (
     <StatusContext.Provider value={value}>
       {children}
-      <div className="status-notification-container">
+      <div className="status-notification-container flex-col--gap-md">
         {notifications.map(notification => (
           <StatusItem 
             key={notification.id} 

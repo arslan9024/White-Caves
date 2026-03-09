@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import RolePageLayout from '../../components/layout/RolePageLayout';
+import { useSelector } from 'react-redux';
+import UnifiedDashboardLayout from '../../components/layout/UnifiedDashboardLayout';
 import {
   StatCard,
   StatCardGrid,
-  TabbedPanel,
   DataCard,
   DataCardGrid,
   DataList,
@@ -61,169 +61,172 @@ const PIPELINE_STAGES = [
 
 export default function SalesAgentDashboardPage() {
   const [activeTab, setActiveTab] = useState('overview');
+  const user = useSelector(state => state.auth?.user);
 
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: '📊' },
-    { id: 'leads', label: 'Leads', icon: '👥', badge: LEADS.length },
-    { id: 'deals', label: 'Active Deals', icon: '🤝', badge: ACTIVE_DEALS.length },
-    { id: 'listings', label: 'Listings', icon: '🏢', badge: MY_LISTINGS.length },
-  ];
+  const handleLogout = () => {
+    console.log('Logout initiated');
+  };
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    sessionStorage.setItem('salesAgentDashboardTab', tabId);
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'overview':
+        return (
+          <div className="sales-agent-dashboard-content">
+            <StatCardGrid columns={4}>
+              {AGENT_STATS.map((stat, index) => (
+                <StatCard key={index} {...stat} variant="sales-agent" />
+              ))}
+            </StatCardGrid>
+
+            <QuickLinks title="Agent Tools" links={QUICK_LINKS} columns={4} />
+
+            <DataCard title="Sales Pipeline">
+              <PipelineBoard stages={PIPELINE_STAGES} />
+            </DataCard>
+
+            <DataCardGrid columns={2}>
+              <DataCard title="Top Leads">
+                <DataList>
+                  {LEADS.filter(l => l.status === 'Hot').slice(0, 3).map(lead => (
+                    <LeadListItem
+                      key={lead.id}
+                      name={lead.name}
+                      requirement={lead.requirement}
+                      budget={lead.budget}
+                      status={lead.status}
+                      score={lead.score}
+                    />
+                  ))}
+                </DataList>
+              </DataCard>
+
+              <DataCard title="Active Deals">
+                <DataList>
+                  {ACTIVE_DEALS.map(deal => (
+                    <div key={deal.id} className="deal-item">
+                      <div className="deal-info">
+                        <span className="deal-property">{deal.property}</span>
+                        <span className="deal-meta">{deal.buyer} · {deal.price}</span>
+                      </div>
+                      <DealProgressBar progress={deal.progress} stage={deal.stage} />
+                    </div>
+                  ))}
+                </DataList>
+              </DataCard>
+
+              <DataCard title="My Listings" fullWidth>
+                <DataList>
+                  {MY_LISTINGS.map(listing => (
+                    <PropertyListItem
+                      key={listing.id}
+                      title={listing.title}
+                      location={listing.location}
+                      price={listing.price}
+                      views={listing.views}
+                      inquiries={listing.inquiries}
+                      daysListed={listing.daysListed}
+                    />
+                  ))}
+                </DataList>
+              </DataCard>
+            </DataCardGrid>
+          </div>
+        );
+
+      case 'leads':
+        return (
+          <DataCard 
+            title={`All Leads (${LEADS.length})`}
+            headerActions={
+              <ActionButton 
+                icon="➕" 
+                label="Add Lead" 
+                variant="secondary"
+                size="small"
+              />
+            }
+          >
+            <DataList>
+              {LEADS.map(lead => (
+                <LeadListItem
+                  key={lead.id}
+                  name={lead.name}
+                  requirement={lead.requirement}
+                  budget={lead.budget}
+                  status={lead.status}
+                  score={lead.score}
+                  onClick={() => console.log('View lead', lead.id)}
+                />
+              ))}
+            </DataList>
+          </DataCard>
+        );
+
+      case 'deals':
+        return (
+          <DataCard title={`Active Deals (${ACTIVE_DEALS.length})`}>
+            <DataList>
+              {ACTIVE_DEALS.map(deal => (
+                <DataListItem
+                  key={deal.id}
+                  icon="🏠"
+                  title={deal.property}
+                  subtitle={`Buyer: ${deal.buyer} · Price: ${deal.price}`}
+                  status={deal.stage}
+                  statusColor={
+                    deal.progress >= 70 ? '16, 185, 129' : 
+                    deal.progress >= 40 ? '245, 158, 11' : '239, 68, 68'
+                  }
+                  actions={
+                    <>
+                      <button className="btn btn-sm btn-secondary">View</button>
+                      <button className="btn btn-sm btn-primary">Update</button>
+                    </>
+                  }
+                />
+              ))}
+            </DataList>
+          </DataCard>
+        );
+
+      case 'listings':
+        return (
+          <DataCard title={`My Listings (${MY_LISTINGS.length})`}>
+            <DataList>
+              {MY_LISTINGS.map(listing => (
+                <PropertyListItem
+                  key={listing.id}
+                  title={listing.title}
+                  location={listing.location}
+                  price={listing.price}
+                  views={listing.views}
+                  inquiries={listing.inquiries}
+                  daysListed={listing.daysListed}
+                />
+              ))}
+            </DataList>
+          </DataCard>
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
-    <RolePageLayout
-      title="Sales Agent Dashboard"
-      subtitle="Manage your property sales and buyer leads"
+    <UnifiedDashboardLayout
+      user={user}
+      onLogout={handleLogout}
+      activeTab={activeTab}
+      onTabChange={handleTabChange}
       role="secondary-sales-agent"
-      actions={
-        <ActionButton 
-          icon="➕" 
-          label="Add Listing" 
-          to="/secondary-sales-agent/add-listing" 
-          variant="primary"
-        />
-      }
     >
-      <StatCardGrid columns={4}>
-        {AGENT_STATS.map((stat, index) => (
-          <StatCard key={index} {...stat} variant="sales-agent" />
-        ))}
-      </StatCardGrid>
-
-      <QuickLinks title="Agent Tools" links={QUICK_LINKS} columns={4} />
-
-      <TabbedPanel
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        storeKey="salesAgentDashboard"
-      />
-
-      {activeTab === 'overview' && (
-        <>
-          <DataCard title="Sales Pipeline">
-            <PipelineBoard stages={PIPELINE_STAGES} />
-          </DataCard>
-
-          <DataCardGrid columns={2}>
-            <DataCard title="Top Leads" viewAllLink="/secondary-sales-agent/leads">
-              <DataList>
-                {LEADS.filter(l => l.status === 'Hot').slice(0, 3).map(lead => (
-                  <LeadListItem
-                    key={lead.id}
-                    name={lead.name}
-                    requirement={lead.requirement}
-                    budget={lead.budget}
-                    status={lead.status}
-                    score={lead.score}
-                  />
-                ))}
-              </DataList>
-            </DataCard>
-
-            <DataCard title="Active Deals" viewAllLink="/secondary-sales-agent/deals">
-              <DataList>
-                {ACTIVE_DEALS.map(deal => (
-                  <div key={deal.id} className="deal-item">
-                    <div className="deal-info">
-                      <span className="deal-property">{deal.property}</span>
-                      <span className="deal-meta">{deal.buyer} · {deal.price}</span>
-                    </div>
-                    <DealProgressBar progress={deal.progress} stage={deal.stage} />
-                  </div>
-                ))}
-              </DataList>
-            </DataCard>
-
-            <DataCard title="My Listings" viewAllLink="/secondary-sales-agent/listings" fullWidth>
-              <DataList>
-                {MY_LISTINGS.map(listing => (
-                  <PropertyListItem
-                    key={listing.id}
-                    title={listing.title}
-                    location={listing.location}
-                    price={listing.price}
-                    views={listing.views}
-                    inquiries={listing.inquiries}
-                    daysListed={listing.daysListed}
-                  />
-                ))}
-              </DataList>
-            </DataCard>
-          </DataCardGrid>
-        </>
-      )}
-
-      {activeTab === 'leads' && (
-        <DataCard 
-          title={`All Leads (${LEADS.length})`}
-          headerActions={
-            <ActionButton 
-              icon="➕" 
-              label="Add Lead" 
-              variant="secondary"
-              size="small"
-            />
-          }
-        >
-          <DataList>
-            {LEADS.map(lead => (
-              <LeadListItem
-                key={lead.id}
-                name={lead.name}
-                requirement={lead.requirement}
-                budget={lead.budget}
-                status={lead.status}
-                score={lead.score}
-                onClick={() => console.log('View lead', lead.id)}
-              />
-            ))}
-          </DataList>
-        </DataCard>
-      )}
-
-      {activeTab === 'deals' && (
-        <DataCard title={`Active Deals (${ACTIVE_DEALS.length})`}>
-          <DataList>
-            {ACTIVE_DEALS.map(deal => (
-              <DataListItem
-                key={deal.id}
-                icon="🏠"
-                title={deal.property}
-                subtitle={`Buyer: ${deal.buyer} · Price: ${deal.price}`}
-                status={deal.stage}
-                statusColor={
-                  deal.progress >= 70 ? '16, 185, 129' : 
-                  deal.progress >= 40 ? '245, 158, 11' : '239, 68, 68'
-                }
-                actions={
-                  <>
-                    <button className="btn btn-sm btn-secondary">View</button>
-                    <button className="btn btn-sm btn-primary">Update</button>
-                  </>
-                }
-              />
-            ))}
-          </DataList>
-        </DataCard>
-      )}
-
-      {activeTab === 'listings' && (
-        <DataCard title={`My Listings (${MY_LISTINGS.length})`}>
-          <DataList>
-            {MY_LISTINGS.map(listing => (
-              <PropertyListItem
-                key={listing.id}
-                title={listing.title}
-                location={listing.location}
-                price={listing.price}
-                views={listing.views}
-                inquiries={listing.inquiries}
-                daysListed={listing.daysListed}
-              />
-            ))}
-          </DataList>
-        </DataCard>
-      )}
-    </RolePageLayout>
+      {renderTabContent()}
+    </UnifiedDashboardLayout>
   );
 }

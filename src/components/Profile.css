@@ -27,9 +27,7 @@
 }
 
 .profile-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  @extend .flex-col--gap-lg;
   position: sticky;
   top: 2rem;
   height: fit-content;
@@ -67,9 +65,7 @@
   height: 36px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @extend .flex-center;
   cursor: pointer;
   color: white;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
@@ -129,10 +125,9 @@
 }
 
 .quick-stats {
-  display: flex;
+  @extend .flex-row--md;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
   padding: 1.25rem 0;
   border-top: 1px solid #e2e8f0;
   border-bottom: 1px solid #e2e8f0;

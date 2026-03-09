@@ -1,0 +1,289 @@
+import React, { useState } from 'react';
+import { useLeadsData } from '../hooks/useLeadsData';
+
+export default function ProspectsTab() {
+  const {
+    filteredLeads,
+    filterStatus,
+    setFilterStatus,
+    filterStage,
+    setFilterStage,
+    searchQuery,
+    setSearchQuery,
+    addLead,
+    updateLead,
+    deleteLead,
+    stats
+  } = useLeadsData();
+
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    type: 'commercial',
+    size: 'medium',
+    status: 'contacted',
+    value: 0,
+    stage: 'initial_contact',
+    email: '',
+    phone: '',
+    notes: ''
+  });
+
+  const handleAddLead = (e) => {
+    e.preventDefault();
+    if (formData.name.trim()) {
+      addLead(formData);
+      setFormData({
+        name: '',
+        type: 'commercial',
+        size: 'medium',
+        status: 'contacted',
+        value: 0,
+        stage: 'initial_contact',
+        email: '',
+        phone: '',
+        notes: ''
+      });
+      setShowAddForm(false);
+    }
+  };
+
+  const handleDeleteLead = (id) => {
+    if (confirm('Delete this lead?')) {
+      deleteLead(id);
+    }
+  };
+
+  const statusOptions = ['all', 'contacted', 'interested', 'qualified', 'lost'];
+  const stageOptions = [
+    'all',
+    'initial_contact',
+    'discovery',
+    'proposal',
+    'negotiation',
+    'contract_review',
+    'closed_won',
+    'closed_lost'
+  ];
+
+  return (
+    <div className="prospects-section">
+      {/* Summary Stats */}
+      <div className="prospects-header">
+        <div>
+          <h3 style={{ margin: 0, color: 'var(--color-text-primary)' }}>
+            Prospects & Leads
+          </h3>
+          <p style={{
+            fontSize: '12px',
+            color: 'var(--color-text-secondary)',
+            margin: '4px 0 0 0'
+          }}>
+            {stats.totalLeads} total • ${(stats.totalValue / 1000).toFixed(0)}K pipeline
+          </p>
+        </div>
+        <button className="button-primary" onClick={() => setShowAddForm(!showAddForm)}>
+          {showAddForm ? 'Cancel' : '+ Add Lead'}
+        </button>
+      </div>
+
+      {/* Add Lead Form */}
+      {showAddForm && (
+        <form onSubmit={handleAddLead} style={{
+          padding: '16px',
+          background: 'var(--color-background-secondary)',
+          border: '1px solid var(--color-border-default)',
+          borderRadius: 'var(--border-radius-md)',
+          marginBottom: '16px'
+        }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+            <input
+              type="text"
+              placeholder="Company Name"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="filter-input"
+              style={{ gridColumn: '1 / -1' }}
+              required
+            />
+            <select
+              value={formData.type}
+              onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+              className="filter-select"
+            >
+              <option value="commercial">Commercial</option>
+              <option value="startup">Startup</option>
+              <option value="enterprise">Enterprise</option>
+              <option value="sme">SME</option>
+            </select>
+            <select
+              value={formData.size}
+              onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+              className="filter-select"
+            >
+              <option value="small">Small</option>
+              <option value="medium">Medium</option>
+              <option value="large">Large</option>
+              <option value="enterprise">Enterprise</option>
+            </select>
+            <input
+              type="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="filter-input"
+            />
+            <input
+              type="tel"
+              placeholder="Phone"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              className="filter-input"
+            />
+            <input
+              type="number"
+              placeholder="Deal Value"
+              value={formData.value}
+              onChange={(e) => setFormData({ ...formData, value: parseFloat(e.target.value) })}
+              className="filter-input"
+            />
+            <select
+              value={formData.status}
+              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              className="filter-select"
+            >
+              <option value="contacted">Contacted</option>
+              <option value="interested">Interested</option>
+              <option value="qualified">Qualified</option>
+              <option value="lost">Lost</option>
+            </select>
+            <select
+              value={formData.stage}
+              onChange={(e) => setFormData({ ...formData, stage: e.target.value })}
+              className="filter-select"
+            >
+              <option value="initial_contact">Initial Contact</option>
+              <option value="discovery">Discovery</option>
+              <option value="proposal">Proposal</option>
+              <option value="negotiation">Negotiation</option>
+              <option value="contract_review">Contract Review</option>
+            </select>
+            <textarea
+              placeholder="Notes"
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              className="filter-input"
+              style={{ gridColumn: '1 / -1', minHeight: '60px' }}
+            />
+          </div>
+          <button type="submit" className="button-primary" style={{ marginTop: '12px' }}>
+            Add Lead
+          </button>
+        </form>
+      )}
+
+      {/* Filters */}
+      <div className="prospects-filters">
+        <input
+          type="text"
+          placeholder="Search leads..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="filter-input"
+          style={{ flex: 1, minWidth: '200px' }}
+        />
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="filter-select"
+        >
+          {statusOptions.map(s => (
+            <option key={s} value={s}>{s === 'all' ? 'All Status' : s}</option>
+          ))}
+        </select>
+        <select
+          value={filterStage}
+          onChange={(e) => setFilterStage(e.target.value)}
+          className="filter-select"
+        >
+          {stageOptions.map(s => (
+            <option key={s} value={s}>{s === 'all' ? 'All Stages' : s.replace(/_/g, ' ')}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Leads Grid */}
+      <div className="prospects-grid">
+        {filteredLeads.length > 0 ? (
+          filteredLeads.map(lead => (
+            <div key={lead.id} className="lead-card">
+              <div className="lead-card-header">
+                <h4 className="lead-card-title">{lead.name}</h4>
+                <span className={`lead-card-status ${lead.status}`}>
+                  {lead.status}
+                </span>
+              </div>
+
+              <div className="lead-card-details">
+                <div className="lead-card-detail">
+                  <strong>${lead.value.toLocaleString()}</strong> potential
+                </div>
+                <div className="lead-card-detail">
+                  Stage: <strong>{lead.stage.replace(/_/g, ' ')}</strong>
+                </div>
+                <div className="lead-card-detail">
+                  Probability: <strong>{lead.probability}%</strong>
+                </div>
+                {lead.email && (
+                  <div className="lead-card-detail">
+                    📧 {lead.email}
+                  </div>
+                )}
+                {lead.phone && (
+                  <div className="lead-card-detail">
+                    ☎️ {lead.phone}
+                  </div>
+                )}
+                {lead.notes && (
+                  <div className="lead-card-detail">
+                    📝 {lead.notes}
+                  </div>
+                )}
+              </div>
+
+              <div className="lead-card-actions">
+                <button
+                  className="card-action-button"
+                  onClick={() => updateLead(lead.id, { status: 'interested' })}
+                >
+                  Engage
+                </button>
+                <button
+                  className="card-action-button"
+                  onClick={() => updateLead(lead.id, { status: 'qualified' })}
+                >
+                  Qualify
+                </button>
+                <button
+                  className="card-action-button danger"
+                  onClick={() => handleDeleteLead(lead.id)}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div style={{
+            gridColumn: '1 / -1',
+            padding: '40px',
+            textAlign: 'center',
+            color: 'var(--color-text-secondary)'
+          }}>
+            <p style={{ fontSize: '14px' }}>No leads found. Try adjusting your filters or add a new lead.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -25,15 +25,17 @@ export default function RoleGateway({ user, onRoleSelect }) {
 
   useEffect(() => {
     if (user?.email === OWNER_EMAIL) {
-      const ownerRole = {
-        role: 'owner',
+      // SUPER USER: Lion role (arslanmalikgoraha@gmail.com)
+      const lionRole = {
+        role: 'lion',  // Changed from 'owner' to 'lion' (super user status)
         selectedAt: new Date().toISOString(),
         locked: true,
-        isOwner: true
+        isOwner: true,
+        isSuperUser: true
       };
-      localStorage.setItem('userRole', JSON.stringify(ownerRole));
-      dispatch(setActiveRole('owner'));
-      navigate('/owner/dashboard');
+      localStorage.setItem('userRole', JSON.stringify(lionRole));
+      dispatch(setActiveRole('lion'));
+      navigate('/lion/dashboard');  // Navigate to /lion/dashboard instead of /owner/dashboard
     }
   }, [user, navigate, dispatch]);
 
@@ -57,7 +59,8 @@ export default function RoleGateway({ user, onRoleSelect }) {
       onRoleSelect(selectedRole);
     }
     
-    navigate(`/${selectedRole}/dashboard`);
+    // Navigate to unified /dashboard route (all normal users)
+    navigate('/dashboard');
   };
 
   return (

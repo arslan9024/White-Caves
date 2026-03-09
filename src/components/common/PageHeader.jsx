@@ -12,12 +12,12 @@ export default function PageHeader({
   return (
     <div className={`page-header-reusable ${className}`}>
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <nav className="breadcrumbs" aria-label="Breadcrumb">
+        <nav className="breadcrumbs flex-row--xs" aria-label="Breadcrumb">
           {breadcrumbs.map((crumb, index) => (
             <React.Fragment key={crumb.path || index}>
               {index > 0 && <span className="breadcrumb-separator">/</span>}
               {crumb.path ? (
-                <Link to={crumb.path} className="breadcrumb-link">
+                <Link to={crumb.path} className="breadcrumb-link transition-smooth">
                   {crumb.label}
                 </Link>
               ) : (
@@ -28,14 +28,14 @@ export default function PageHeader({
         </nav>
       )}
       
-      <div className="header-main">
+      <div className="header-main flex-between">
         <div className="header-content">
           <h1>{title}</h1>
           {subtitle && <p className="header-subtitle">{subtitle}</p>}
         </div>
         
         {actions && (
-          <div className="header-actions">
+          <div className="header-actions flex-row--md">
             {actions}
           </div>
         )}
@@ -54,7 +54,7 @@ export function ActionButton({
   disabled = false,
   className = ''
 }) {
-  const buttonClass = `action-btn ${variant} ${size} ${className}`;
+  const buttonClass = `action-btn flex-center transition-smooth ${variant} ${size} ${className}`;
   
   const content = (
     <>
