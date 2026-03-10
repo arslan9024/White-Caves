@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from './store/userSlice';
 import { setTheme } from './store/navigationSlice';
 import { LanguageProvider } from './context/LanguageContext';
+import { ThemeProvider } from './styles/ThemeProvider';
 import AppLayout from './components/layout/AppLayout';
 import UniversalComponents from './components/layout/UniversalComponents';
 import RoleGateway from './components/RoleGateway';
@@ -154,14 +155,15 @@ function App() {
   };
 
   return (
-  <StatusProvider>
-  <LanguageProvider>
-    <BrowserRouter>
-      <SpeedInsights />
-      <WebVitalsTracker />
-      <UniversalComponents />
-      {user && <BiometricPrompt />}
-      <Routes>
+  <ThemeProvider>
+    <StatusProvider>
+      <LanguageProvider>
+        <BrowserRouter>
+          <SpeedInsights />
+          <WebVitalsTracker />
+          <UniversalComponents />
+          {user && <BiometricPrompt />}
+          <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/properties" element={
           <Suspense fallback={<SuspenseLoader />}>
@@ -531,8 +533,9 @@ function App() {
         } />
       </Routes>
     </BrowserRouter>
-  </LanguageProvider>
+    </LanguageProvider>
   </StatusProvider>
+  </ThemeProvider>
   );
 }
 
