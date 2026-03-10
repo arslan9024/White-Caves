@@ -5,6 +5,7 @@ import { ROLE_TAB_MAPPING, getTabsForRole, getRoleInfo } from '../config/ROLE_TA
 import SuspenseLoader from '../components/common/SuspenseLoader';
 import SidebarContainer from '../components/layout/SidebarContainer/SidebarContainer';
 import AIAssistantsPanel from '../components/layout/AIAssistantsPanel/AIAssistantsPanel';
+import DepartmentContentPanel from '../components/layout/DepartmentContentPanel/DepartmentContentPanel';
 import {
   toggleLeftSidebar,
   toggleRightSidebar,
@@ -103,6 +104,7 @@ export default function UnifiedDashboardPage() {
   const rightCollapsed = useSelector(state => state.sidebar?.rightCollapsed || false);
   const selectedAssistantRedux = useSelector(state => state.sidebar?.selectedAssistant);
   const showRightDrawer = useSelector(state => state.sidebar?.showRightDrawer || false);
+  const selectedDepartment = useSelector(state => state.sidebar?.selectedDepartment);
 
   // Sidebar action handlers
   const handleToggleLeftSidebar = () => dispatch(toggleLeftSidebar());
@@ -395,9 +397,16 @@ export default function UnifiedDashboardPage() {
           {/* Standard Tab View */}
           {!selectedCRMModule && (
             <>
-              {/* Tab Navigation */}
-              <div className="unified-dashboard-tabs">
-                <div className="tabs-scroll">
+              {/* Show Department Content if Department is Selected */}
+              {selectedDepartment ? (
+                <div className="unified-dashboard-content">
+                  <DepartmentContentPanel />
+                </div>
+              ) : (
+                <>
+                  {/* Tab Navigation */}
+                  <div className="unified-dashboard-tabs">
+                    <div className="tabs-scroll">
                   {availableTabs.map(tab => (
                     <button
                       key={tab.id}
@@ -446,6 +455,8 @@ export default function UnifiedDashboardPage() {
                   </Suspense>
                 )}
               </div>
+                </>
+              )}
             </>
           )}
         </div>
