@@ -5,7 +5,7 @@ import { setActiveRole } from '../../store/navigationSlice';
 import { UniversalNav } from '../common';
 import { UnifiedNavbar } from '../UnifiedNavbar';
 import { BiometricReminder } from '../../features/auth/components/BiometricLogin';
-import './AppLayout.css';
+import { AppLayoutContainer, AppMain } from './AppLayout/styles';
 
 const ROLE_PATHS = ['buyer', 'seller', 'landlord', 'tenant', 'leasing-agent', 'secondary-sales-agent', 'owner'];
 
@@ -38,7 +38,7 @@ export default function AppLayout({
   };
 
   return (
-    <div className="app-layout">
+    <AppLayoutContainer>
       <UnifiedNavbar 
         title={getPageTitle()}
         user={user}
@@ -46,10 +46,10 @@ export default function AppLayout({
         systemStatus="online"
       />
       {showNav && <UniversalNav {...navProps} />}
-      <main className={`app-main ${showNav ? 'with-nav' : ''}`} style={{ marginTop: '64px' }}>
+      <AppMain $withNav={showNav} style={{ marginTop: '64px' }}>
         <BiometricReminder />
         {children}
-      </main>
-    </div>
+      </AppMain>
+    </AppLayoutContainer>
   );
 }

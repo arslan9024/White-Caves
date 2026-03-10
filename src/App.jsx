@@ -1,15 +1,11 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import './styles/reset.css'
-import './App.css'
-import './styles/theme.css'
-import './styles/design-system.css'
-import './styles/rtl.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from './store/userSlice';
 import { setTheme } from './store/navigationSlice';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './styles/ThemeProvider';
+import GlobalStyle from './styles/globalStyles';
 import AppLayout from './components/layout/AppLayout';
 import UniversalComponents from './components/layout/UniversalComponents';
 import RoleGateway from './components/RoleGateway';
@@ -156,6 +152,7 @@ function App() {
 
   return (
   <ThemeProvider>
+    <GlobalStyle />
     <StatusProvider>
       <LanguageProvider>
         <BrowserRouter>

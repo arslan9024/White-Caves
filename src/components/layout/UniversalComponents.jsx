@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOnlineStatus, updateCurrentTime } from '../../store/navigationSlice';
 import ClickToChat from '../ClickToChat';
-import './UniversalComponents.css';
+import { TimeDisplayContainer, ConnectionStatus } from './UniversalComponents/styles';
 
 export default function UniversalComponents() {
   const dispatch = useDispatch();
@@ -57,15 +57,15 @@ export default function UniversalComponents() {
     <>
       <ClickToChat />
       
-      <div 
-        className={`universal-time-display ${isVisible ? 'visible' : 'hidden'}`}
+      <TimeDisplayContainer 
+        $isVisible={isVisible}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <span className={`connection-status ${isOnline ? 'online' : 'offline'}`}>
+        <ConnectionStatus $isOnline={isOnline}>
           {isOnline ? 'Connected' : 'Offline'}
-        </span>
-      </div>
+        </ConnectionStatus>
+      </TimeDisplayContainer>
     </>
   );
 }

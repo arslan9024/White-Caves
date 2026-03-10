@@ -8,7 +8,13 @@ import WeatherWidget from '../../shared/components/ui/WeatherWidget';
 import ProfilePanel from '../../shared/components/ui/ProfilePanel';
 import RoleSelectorDropdown from '../../shared/components/ui/RoleSelectorDropdown';
 import { useNavigate } from 'react-router-dom';
-import './RolePageLayout.css';
+import {
+  RolePageLayoutContainer,
+  RolePageContainer,
+  RolePageContent,
+  RolePageUniversalActions,
+  RolePageProfileButton
+} from './RolePageLayout/styles';
 
 export default function RolePageLayout({
   title,
@@ -59,7 +65,7 @@ export default function RolePageLayout({
   }, [role, dispatch]);
 
   const universalActions = (
-    <div className="role-page-universal-actions">
+    <RolePageUniversalActions>
       {showWeather && <WeatherWidget compact />}
       {showRoleSelector && (
         <RoleSelectorDropdown 
@@ -69,28 +75,27 @@ export default function RolePageLayout({
         />
       )}
       {showProfileButton && user && (
-        <button 
-          className="role-page-profile-btn"
+        <RolePageProfileButton
           onClick={() => setShowProfile(true)}
           title="View Profile"
         >
           {user.photo ? (
-            <img src={user.photo} alt={user.name} className="profile-avatar-img" />
+            <img src={user.photo} alt={user.name} />
           ) : (
-            <span className="profile-avatar-initial">
+            <span>
               {(user.name || 'U').charAt(0).toUpperCase()}
             </span>
           )}
-        </button>
+        </RolePageProfileButton>
       )}
       {actions}
-    </div>
+    </RolePageUniversalActions>
   );
 
   return (
-    <div className={`role-page-layout ${roleClasses[role] || ''} ${className}`}>
+    <RolePageLayoutContainer $role={role}>
       {showSubNav && <SubNavBar moduleId={role} onSubModuleChange={onSubModuleChange} />}
-      <div className="role-page-container">
+      <RolePageContainer>
         <DashboardHeader
           title={title}
           subtitle={subtitle}
@@ -99,10 +104,10 @@ export default function RolePageLayout({
           showStatusBar={showStatusBar}
           statusBarProps={statusBarProps}
         />
-        <div className="role-page-content">
+        <RolePageContent>
           {children}
-        </div>
-      </div>
+        </RolePageContent>
+      </RolePageContainer>
       
       {showProfile && (
         <ProfilePanel 
@@ -110,7 +115,7 @@ export default function RolePageLayout({
           onClose={() => setShowProfile(false)}
         />
       )}
-    </div>
+    </RolePageLayoutContainer>
   );
 }
 
