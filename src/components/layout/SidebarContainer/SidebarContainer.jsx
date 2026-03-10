@@ -18,7 +18,41 @@ import {
   Building2, Briefcase, DollarSign, Megaphone, Globe, Lock, Code, Scale
 } from 'lucide-react';
 import { selectDepartment, selectService } from '../../../store/slices/sidebarSlice';
-import './SidebarContainer.css';
+import {
+  SidebarContainerWrapper,
+  SidebarHeader,
+  SidebarLogo,
+  LogoBadge,
+  LogoText,
+  LogoTitle,
+  LogoSubtitle,
+  SidebarNav,
+  NavGroup,
+  GroupHeader,
+  GroupToggle,
+  GroupItems,
+  GroupItemsCollapsed,
+  NavItem,
+  NavIcon,
+  NavLabel,
+  NavItemIcon,
+  NavIconLarge,
+  NavTooltip,
+  DepartmentsList,
+  DepartmentItem,
+  DepartmentHeader,
+  DeptIcon,
+  DeptLabel,
+  DeptToggle,
+  DepartmentServices,
+  ServiceItem,
+  ServiceDot,
+  ServiceLabel,
+  DepartmentsCollapsed,
+  DeptIconBtn,
+  AdminGroupHeader,
+  AdminNavItem
+} from './styles';
 
 // Department definitions with services
 const DEPARTMENTS = {
@@ -173,180 +207,191 @@ const SidebarContainer = ({
 
   const menuGroups = getMenuItems();
 
+  const isAdminGroup = (group) => group.group === 'admin' && isSuperUser;
+
   return (
-    <aside className={`sidebar-container ${collapsed ? 'collapsed' : ''}`}>
+    <SidebarContainerWrapper $collapsed={collapsed}>
       {/* Header with Logo */}
-      <div className="sidebar-header">
-        <div className="sidebar-logo">
-          <div className="logo-badge">
+      <SidebarHeader>
+        <SidebarLogo>
+          <LogoBadge>
             <span>WC</span>
-          </div>
+          </LogoBadge>
           {!collapsed && (
-            <div className="logo-text">
-              <div className="logo-title">White Caves</div>
-              <div className="logo-subtitle">Real Estate</div>
-            </div>
+            <LogoText>
+              <LogoTitle>White Caves</LogoTitle>
+              <LogoSubtitle>Real Estate</LogoSubtitle>
+            </LogoText>
           )}
-        </div>
-      </div>
+        </SidebarLogo>
+      </SidebarHeader>
 
       {/* Navigation */}
-      <nav className="sidebar-nav">
-        {menuGroups.map(group => (
-          <div key={group.group} className="nav-group">
-            {/* Group Header */}
-            <button
-              className={`group-header ${expandedGroups[group.group] ? 'expanded' : ''}`}
-              onClick={() => !collapsed && toggleGroup(group.group)}
-              title={collapsed ? group.label : ''}
-            >
-              <span className="group-label">{group.label}</span>
-              {!collapsed && (
-                <ChevronRight
-                  size={16}
-                  className={`group-toggle ${expandedGroups[group.group] ? 'rotated' : ''}`}
-                />
+      <SidebarNav>
+        {menuGroups.map(group => {
+          const isAdmin = isAdminGroup(group);
+          const GroupHeaderComponent = isAdmin ? AdminGroupHeader : GroupHeader;
+
+          return (
+            <NavGroup key={group.group} className={group.group === 'departments' ? 'departments-group' : ''}>
+              {/* Group Header */}
+              <GroupHeaderComponent
+                $expanded={expandedGroups[group.group]}
+                $isDepartments={group.group === 'departments'}
+                onClick={() => !collapsed && toggleGroup(group.group)}
+                title={collapsed ? group.label : ''}
+              >
+                <span>{group.label}</span>
+                {!collapsed && (
+                  <GroupToggle $rotated={expandedGroups[group.group]}>
+                    <ChevronRight size={16} />
+                  </GroupToggle>
+                )}
+              </GroupHeaderComponent>
+
+              {/* Group Items */}
+              {expandedGroups[group.group] && !collapsed && (
+                <GroupItems>
+                  {group.items.map(item => {
+                    const IconComponent = item.icon;
+                    const ItemComponent = isAdmin ? AdminNavItem : NavItem;
+
+                    return (
+                      <ItemComponent
+                        key={item.id}
+                        $active={activeTab === item.id}
+                        onClick={() => onTabChange(item.id)}
+                        title={item.label}
+                      >
+                        <NavIcon>
+                          <IconComponent size={20} />
+                        </NavIcon>
+                        <NavLabel>{item.label}</NavLabel>
+                      </ItemComponent>
+                    );
+                  })}
+                </GroupItems>
               )}
-            </button>
 
-            {/* Group Items */}
-            {expandedGroups[group.group] && !collapsed && (
-              <div className="group-items">
-                {group.items.map(item => {
-                  const IconComponent = item.icon;
-                  return (
-                    <button
-                      key={item.id}
-                      className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
-                      onClick={() => onTabChange(item.id)}
-                      title={item.label}
-                    >
-                      <IconComponent size={20} className="nav-icon" />
-                      <span className="nav-label">{item.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Icon-Only Mode (Collapsed) */}
-            {collapsed && (
-              <div className="group-items-collapsed">
-                {group.items.map(item => {
-                  const IconComponent = item.icon;
-                  return (
-                    <button
-                      key={item.id}
-                      className={`nav-item-icon ${activeTab === item.id ? 'active' : ''}`}
-                      onClick={() => onTabChange(item.id)}
-                      title={item.label}
-                    >
-                      <IconComponent size={24} className="nav-icon-large" />
-                      <span className="nav-tooltip">{item.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        ))}
+              {/* Icon-Only Mode (Collapsed) */}
+              {collapsed && (
+                <GroupItemsCollapsed>
+                  {group.items.map(item => {
+                    const IconComponent = item.icon;
+                    return (
+                      <NavItemIcon
+                        key={item.id}
+                        $active={activeTab === item.id}
+                        onClick={() => onTabChange(item.id)}
+                        title={item.label}
+                      >
+                        <NavIconLarge>
+                          <IconComponent size={24} />
+                        </NavIconLarge>
+                        <NavTooltip>{item.label}</NavTooltip>
+                      </NavItemIcon>
+                    );
+                  })}
+                </GroupItemsCollapsed>
+              )}
+            </NavGroup>
+          );
+        })}
 
         {/* Departments Section */}
-        <div className="nav-group departments-group">
+        <NavGroup className="departments-group">
           {/* Departments Header */}
-          <button
-            className={`group-header departments-header ${expandedGroups.departments ? 'expanded' : ''}`}
+          <GroupHeader
+            $expanded={expandedGroups.departments}
+            $isDepartments={true}
             onClick={() => !collapsed && toggleGroup('departments')}
             title={collapsed ? 'Departments' : ''}
           >
-            <span className="group-label">Departments</span>
+            <span>Departments</span>
             {!collapsed && (
-              <ChevronRight
-                size={16}
-                className={`group-toggle ${expandedGroups.departments ? 'rotated' : ''}`}
-              />
+              <GroupToggle $rotated={expandedGroups.departments}>
+                <ChevronRight size={16} />
+              </GroupToggle>
             )}
-          </button>
+          </GroupHeader>
 
           {/* Departments List */}
           {expandedGroups.departments && !collapsed && (
-            <div className="departments-list">
+            <DepartmentsList>
               {Object.entries(DEPARTMENTS).map(([deptId, dept]) => {
                 const IconComponent = dept.icon;
                 const isExpanded = expandedDepartments[deptId];
                 const isSelected = selectedDepartment === deptId;
 
                 return (
-                  <div key={deptId} className="department-item">
+                  <DepartmentItem key={deptId}>
                     {/* Department Header */}
-                    <button
-                      className={`department-header ${isExpanded ? 'expanded' : ''} ${isSelected ? 'selected' : ''}`}
+                    <DepartmentHeader
+                      $selected={isSelected}
+                      $deptColor={dept.color}
                       onClick={() => handleDepartmentSelect(deptId)}
-                      style={{
-                        '--dept-color': dept.color
-                      }}
                       title={dept.label}
                     >
-                      <IconComponent size={18} className="dept-icon" />
-                      <span className="dept-label">{dept.label}</span>
-                      <ChevronRight
-                        size={14}
-                        className={`dept-toggle ${isExpanded ? 'rotated' : ''}`}
-                      />
-                    </button>
+                      <DeptIcon $deptColor={dept.color}>
+                        <IconComponent size={18} />
+                      </DeptIcon>
+                      <DeptLabel>{dept.label}</DeptLabel>
+                      <DeptToggle $rotated={isExpanded} $deptColor={dept.color}>
+                        <ChevronRight size={14} />
+                      </DeptToggle>
+                    </DepartmentHeader>
 
                     {/* Department Services */}
                     {isExpanded && (
-                      <div className="department-services">
+                      <DepartmentServices $deptColor={dept.color}>
                         {dept.services.map((service, idx) => (
-                          <button
+                          <ServiceItem
                             key={idx}
-                            className={`service-item ${selectedService === service ? 'active' : ''}`}
+                            $active={selectedService === service}
+                            $deptColor={dept.color}
                             onClick={() => {
                               dispatch(selectService({ department: deptId, service }));
                               onTabChange(`service-${deptId}-${idx}`);
                             }}
                             title={service}
                           >
-                            <span className="service-dot" style={{ backgroundColor: dept.color }}></span>
-                            <span className="service-label">{service}</span>
-                          </button>
+                            <ServiceDot $color={dept.color} />
+                            <ServiceLabel>{service}</ServiceLabel>
+                          </ServiceItem>
                         ))}
-                      </div>
+                      </DepartmentServices>
                     )}
-                  </div>
+                  </DepartmentItem>
                 );
               })}
-            </div>
+            </DepartmentsList>
           )}
 
           {/* Icon-Only Mode (Collapsed) - Department Icons */}
           {collapsed && (
-            <div className="departments-collapsed">
+            <DepartmentsCollapsed>
               {Object.entries(DEPARTMENTS).slice(0, 4).map(([deptId, dept]) => {
                 const IconComponent = dept.icon;
                 const isSelected = selectedDepartment === deptId;
 
                 return (
-                  <button
+                  <DeptIconBtn
                     key={deptId}
-                    className={`dept-icon-btn ${isSelected ? 'active' : ''}`}
+                    $active={isSelected}
+                    $deptColor={dept.color}
                     onClick={() => handleDepartmentSelect(deptId)}
                     title={dept.label}
-                    style={{
-                      '--dept-color': dept.color
-                    }}
                   >
                     <IconComponent size={20} />
-                    <span className="nav-tooltip">{dept.label}</span>
-                  </button>
+                    <NavTooltip>{dept.label}</NavTooltip>
+                  </DeptIconBtn>
                 );
               })}
-            </div>
+            </DepartmentsCollapsed>
           )}
-        </div>
-      </nav>
-    </aside>
+        </NavGroup>
+      </SidebarNav>
+    </SidebarContainerWrapper>
   );
 };
 
