@@ -5,6 +5,8 @@ const initialState = {
   rightCollapsed: false,
   selectedAssistant: null,
   showRightDrawer: false,
+  selectedDepartment: null,
+  selectedService: null,
 };
 
 const sidebarSlice = createSlice({
@@ -32,6 +34,18 @@ const sidebarSlice = createSlice({
     clearSelectedAssistant: (state) => {
       state.selectedAssistant = null;
     },
+    selectDepartment: (state, action) => {
+      state.selectedDepartment = action.payload;
+    },
+    selectService: (state, action) => {
+      const { department, service } = action.payload;
+      state.selectedDepartment = department;
+      state.selectedService = service;
+    },
+    clearDepartmentSelection: (state) => {
+      state.selectedDepartment = null;
+      state.selectedService = null;
+    },
   },
 });
 
@@ -43,6 +57,9 @@ export const {
   selectAssistant,
   setShowRightDrawer,
   clearSelectedAssistant,
+  selectDepartment,
+  selectService,
+  clearDepartmentSelection,
 } = sidebarSlice.actions;
 
 export default sidebarSlice.reducer;

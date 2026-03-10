@@ -11,12 +11,72 @@
  */
 
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   ChevronLeft, Home, BarChart3, Users2, MessageSquare, Settings,
-  Zap, TrendingUp, Command, ChevronRight, Shield, AlertCircle, Activity
+  Zap, TrendingUp, Command, ChevronRight, Shield, AlertCircle, Activity,
+  Building2, Briefcase, DollarSign, Megaphone, Globe, Lock, Code, Scale
 } from 'lucide-react';
+import { selectDepartment, selectService } from '../../../store/slices/sidebarSlice';
 import './SidebarContainer.css';
+
+// Department definitions with services
+const DEPARTMENTS = {
+  operations: {
+    icon: Building2,
+    label: 'Operations',
+    color: '#3B82F6',
+    services: ['Inventory Management', 'Properties', 'Asset Tracking', 'Data Management']
+  },
+  finance: {
+    icon: DollarSign,
+    label: 'Finance',
+    color: '#F59E0B',
+    services: ['Invoicing', 'Payment Tracking', 'Financial Reports', 'Budget Analysis']
+  },
+  sales: {
+    icon: TrendingUp,
+    label: 'Sales',
+    color: '#10B981',
+    services: ['Lead Management', 'Negotiations', 'Deal Tracking', 'Commission Tracking']
+  },
+  marketing: {
+    icon: Megaphone,
+    label: 'Marketing',
+    color: '#EC4899',
+    services: ['Campaigns', 'Content', 'Analytics', 'Lead Generation']
+  },
+  communications: {
+    icon: MessageSquare,
+    label: 'Communications',
+    color: '#8B5CF6',
+    services: ['Messages', 'Emails', 'Templates', 'Notifications']
+  },
+  executive: {
+    icon: Globe,
+    label: 'Executive',
+    color: '#DC2626',
+    services: ['Strategic Overview', 'KPIs', 'Reports', 'Insights']
+  },
+  compliance: {
+    icon: Lock,
+    label: 'Compliance',
+    color: '#059669',
+    services: ['Regulations', 'Audits', 'Policies', 'Documentation']
+  },
+  technology: {
+    icon: Code,
+    label: 'Technology',
+    color: '#06B6D4',
+    services: ['Systems', 'Integration', 'Support', 'Development']
+  },
+  legal: {
+    icon: Scale,
+    label: 'Legal',
+    color: '#7C3AED',
+    services: ['Contracts', 'Agreements', 'Compliance', 'Documentation']
+  }
+};
 
 const SidebarContainer = ({
   collapsed = false,
@@ -25,22 +85,41 @@ const SidebarContainer = ({
   onTabChange = () => {},
   role = 'owner'
 }) => {
+  const dispatch = useDispatch();
   const [expandedGroups, setExpandedGroups] = useState({
     dashboard: true,
     management: true,
+    departments: false,
     analytics: false,
     admin: false
   });
+  const [expandedDepartments, setExpandedDepartments] = useState({});
 
   // Get user role from Redux for super user detection
   const userRole = useSelector(state => state.auth?.role || 'user');
   const isSuperUser = userRole === 'lion' || useSelector(state => state.auth?.isSuperUser);
+  const selectedDepartment = useSelector(state => state.sidebar?.selectedDepartment);
+  const selectedService = useSelector(state => state.sidebar?.selectedService);
 
   const toggleGroup = (groupId) => {
     setExpandedGroups(prev => ({
       ...prev,
       [groupId]: !prev[groupId]
     }));
+  };
+
+  const toggleDepartment = (deptId) => {
+    setExpandedDepartments(prev => ({
+      ...prev,
+      [deptId]: !prev[deptId]
+    }));
+  };
+
+  const handleDepartmentSelect = (deptId) => {
+    dispatch(selectDepartment(deptId));
+    if (!collapsed) {
+      toggleDepartment(deptId);
+    }
   };
 
   // Define menu items for each role
@@ -172,6 +251,101 @@ const SidebarContainer = ({
             )}
           </div>
         ))}
+
+        {/* Departments Section */}
+        <div className="nav-group departments-group">
+          {/* Departments Header */}
+          <button
+            className={`group-header departments-header ${expandedGroups.departments ? 'expanded' : ''}`}
+            onClick={() => !collapsed && toggleGroup('departments')}
+            title={collapsed ? 'Departments' : ''}
+          >
+            <span className="group-label">Departments</span>
+            {!collapsed && (
+              <ChevronRight
+                size={16}
+                className={`group-toggle ${expandedGroups.departments ? 'rotated' : ''}`}
+              />
+            )}
+          </button>
+
+          {/* Departments List */}
+          {expandedGroups.departments && !collapsed && (
+            <div className="departments-list">
+              {Object.entries(DEPARTMENTS).map(([deptId, dept]) => {
+                const IconComponent = dept.icon;
+                const isExpanded = expandedDepartments[deptId];
+                const isSelected = selectedDepartment === deptId;
+
+                return (
+                  <div key={deptId} className="department-item">
+                    {/* Department Header */}
+                    <button
+                      className={`department-header ${isExpanded ? 'expanded' : ''} ${isSelected ? 'selected' : ''}`}
+                      onClick={() => handleDepartmentSelect(deptId)}
+                      style={{
+                        '--dept-color': dept.color
+                      }}
+                      title={dept.label}
+                    >
+                      <IconComponent size={18} className="dept-icon" />
+                      <span className="dept-label">{dept.label}</span>
+                      <ChevronRight
+                        size={14}
+                        className={`dept-toggle ${isExpanded ? 'rotated' : ''}`}
+                      />
+                    </button>
+
+                    {/* Department Services */}
+                    {isExpanded && (
+                      <div className="department-services">
+                        {dept.services.map((service, idx) => (
+                          <button
+                            key={idx}
+                            className={`service-item ${selectedService === service ? 'active' : ''}`}
+                            onClick={() => {
+                              dispatch(selectService({ department: deptId, service }));
+                              onTabChange(`service-${deptId}-${idx}`);
+                            }}
+                            title={service}
+                          >
+                            <span className="service-dot" style={{ backgroundColor: dept.color }}></span>
+                            <span className="service-label">{service}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Icon-Only Mode (Collapsed) - Department Icons */}
+          {collapsed && (
+            <div className="departments-collapsed">
+              {Object.entries(DEPARTMENTS).slice(0, 4).map(([deptId, dept]) => {
+                const IconComponent = dept.icon;
+                const isSelected = selectedDepartment === deptId;
+
+                return (
+                  <button
+                    key={deptId}
+                    className={`dept-icon-btn ${isSelected ? 'active' : ''}`}
+                    onClick={() => handleDepartmentSelect(deptId)}
+                    title={dept.label}
+                    style={{
+                      '--dept-color': dept.color
+                    }}
+                  >
+                    <IconComponent size={20} />
+                    <span className="nav-tooltip">{dept.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </nav>
 
       {/* Footer with Collapse Button */}
