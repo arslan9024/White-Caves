@@ -19,7 +19,12 @@ import {
 import { selectService } from '../../../store/slices/sidebarSlice';
 import { addNotification } from '../../../store/slices/notificationSlice';
 import useActionHandler from '../../../hooks/useActionHandler';
+import MetricsChart from '../../charts/MetricsChart';
+import TrendChart from '../../charts/TrendChart';
+import DistributionChart from '../../charts/DistributionChart';
+import EnhancedStatCard from '../../charts/EnhancedStatCard';
 import './DepartmentContentPanel.css';
+import '../../charts/charts.css';
 
 // Department content definitions
 const DEPARTMENT_CONTENT = {
@@ -737,18 +742,51 @@ const DepartmentContentPanel = () => {
               <h2>Key Metrics</h2>
               <div className="metrics-grid">
                 {deptContent.metrics.map((metric, idx) => (
-                  <div key={idx} className="metric-card">
-                    <div className="metric-label">{metric.label}</div>
-                    <div className="metric-value">{metric.value}</div>
-                    <div className={`metric-change ${metric.trend}`}>
-                      {metric.trend === 'up' && <TrendingUp size={14} />}
-                      {metric.trend === 'down' && <Activity size={14} style={{ transform: 'rotate(180deg)' }} />}
-                      {metric.trend === 'stable' && <AlertCircle size={14} />}
-                      <span>{metric.change}</span>
-                    </div>
-                  </div>
+                  <EnhancedStatCard
+                    key={idx}
+                    label={metric.label}
+                    value={metric.value}
+                    change={metric.change}
+                    trend={metric.trend}
+                    color={deptContent.color}
+                    backgroundColor={deptContent.bgGradient}
+                    sparklineData={[35, 42, 38, 51, 48, 60]}
+                  />
                 ))}
               </div>
+            </div>
+
+            {/* Analytics Charts */}
+            <div className="analytics-section">
+              <MetricsChart 
+                data={deptContent.metrics}
+                title={`${deptContent.name} Metrics Overview`}
+                color={deptContent.color}
+                height={350}
+              />
+              
+              <TrendChart
+                data={[
+                  { name: 'Week 1', value: 35, target: 40 },
+                  { name: 'Week 2', value: 42, target: 40 },
+                  { name: 'Week 3', value: 38, target: 40 },
+                  { name: 'Week 4', value: 51, target: 40 },
+                  { name: 'Week 5', value: 48, target: 40 },
+                  { name: 'Week 6', value: 60, target: 40 }
+                ]}
+                title={`${deptContent.name} Trend Analysis`}
+                color={deptContent.color}
+                height={350}
+              />
+              
+              <DistributionChart
+                data={Object.entries(deptContent.services).slice(0, 5).map(([name]) => ({
+                  name,
+                  value: Math.floor(Math.random() * 40) + 15
+                }))}
+                title={`${deptContent.name} Service Distribution`}
+                height={350}
+              />
             </div>
 
             {/* Available Services */}
