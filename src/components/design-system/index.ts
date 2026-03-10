@@ -30,6 +30,6 @@ export { Spinner, type SpinnerProps, type SpinnerSize, type SpinnerVariant } fro
 export { Avatar, type AvatarProps } from './Avatar';
 export { Breadcrumb, type BreadcrumbProps } from './Breadcrumb';
 export { Pagination, type PaginationProps } from './Pagination';
-export { Menu, type MenuProps } from './Menu';
+// export { Menu, type MenuProps } from './Menu';
 export { Tooltip, type TooltipProps } from './Tooltip';
 export { Tag, type TagProps } from './Tag';
