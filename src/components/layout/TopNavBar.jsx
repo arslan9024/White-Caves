@@ -13,7 +13,35 @@ import {
   setTheme
 } from '../../store/navigationSlice';
 import UniversalProfile from './UniversalProfile';
-import './TopNavBar.css';
+import {
+  TopNavBarHeader,
+  NavLeft,
+  NavLogo,
+  NavLinks,
+  NavLink,
+  NavCenter,
+  NavRight,
+  RoleDropdown,
+  RoleTrigger,
+  RoleIcon,
+  RoleLabel,
+  DropdownArrow,
+  DropdownMenuRole,
+  DropdownItem,
+  DropdownDivider,
+  DropdownSectionLabel,
+  WhatsappDropdown,
+  WhatsappTrigger,
+  WaIcon,
+  DropdownMenuWhatsapp,
+  ThemeToggle,
+  OnlineIndicator,
+  StatusDot,
+  StatusText,
+  DatetimeDisplay,
+  DateDisplay,
+  TimeDisplay,
+} from './TopNavBar/styles';
 
 const roleMenus = {
   'buyer': {
@@ -201,144 +229,147 @@ export default function TopNavBar() {
   };
 
   return (
-    <header className="top-nav-bar">
-      <div className="nav-left">
-        <Link to="/" className="nav-logo">
+    <TopNavBarHeader>
+      <NavLeft>
+        <NavLogo to="/">
           <img src="/company-logo.jpg" alt="White Caves" />
           <span className="logo-text">White Caves</span>
-        </Link>
+        </NavLogo>
 
-        <nav className="nav-links">
-          <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
+        <NavLinks>
+          <NavLink to="/" active={location.pathname === '/'}>
             Home
-          </Link>
-          <Link to="/properties" className={`nav-link ${location.pathname === '/properties' ? 'active' : ''}`}>
+          </NavLink>
+          <NavLink to="/properties" active={location.pathname === '/properties'}>
             Properties
-          </Link>
-          <Link to="/services" className={`nav-link ${location.pathname === '/services' ? 'active' : ''}`}>
+          </NavLink>
+          <NavLink to="/services" active={location.pathname === '/services'}>
             Services
-          </Link>
-          <Link to="/about" className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}>
+          </NavLink>
+          <NavLink to="/about" active={location.pathname === '/about'}>
             About
-          </Link>
-          <Link to="/contact" className={`nav-link ${location.pathname === '/contact' ? 'active' : ''}`}>
+          </NavLink>
+          <NavLink to="/contact" active={location.pathname === '/contact'}>
             Contact
-          </Link>
-        </nav>
-      </div>
+          </NavLink>
+        </NavLinks>
+      </NavLeft>
 
-      <div className="nav-center">
+      <NavCenter>
         {menu && (
-          <div className="role-dropdown" ref={menuRef}>
-            <button 
-              className="role-trigger"
+          <RoleDropdown ref={menuRef}>
+            <RoleTrigger 
               onClick={() => dispatch(toggleRoleMenu())}
               style={{ '--role-color': menu.color }}
             >
-              <span className="role-icon">{menu.icon}</span>
-              <span className="role-label">{menu.label} Portal</span>
-              <span className="dropdown-arrow">{roleMenuOpen ? '▲' : '▼'}</span>
-            </button>
+              <RoleIcon>{menu.icon}</RoleIcon>
+              <RoleLabel>{menu.label} Portal</RoleLabel>
+              <DropdownArrow>{roleMenuOpen ? '▲' : '▼'}</DropdownArrow>
+            </RoleTrigger>
             
             {roleMenuOpen && (
-              <div className="dropdown-menu role-menu">
+              <DropdownMenuRole>
                 {menu.items.map((item) => (
-                  <Link
+                  <DropdownItem
                     key={item.path}
+                    as={Link}
                     to={item.path}
-                    className={`dropdown-item ${location.pathname === item.path ? 'active' : ''}`}
+                    active={location.pathname === item.path}
                     onClick={() => dispatch(closeRoleMenu())}
                   >
                     <span className="item-icon">{item.icon}</span>
                     {item.label}
-                  </Link>
+                  </DropdownItem>
                 ))}
                 
                 {menu.browseAs && (
                   <>
-                    <div className="dropdown-divider"></div>
-                    <div className="dropdown-section-label">Browse as Client</div>
+                    <DropdownDivider></DropdownDivider>
+                    <DropdownSectionLabel>Browse as Client</DropdownSectionLabel>
                     {menu.browseAs.clients.map((item) => (
-                      <Link
+                      <DropdownItem
                         key={item.path}
+                        as={Link}
                         to={item.path}
-                        className={`dropdown-item browse-item ${location.pathname === item.path ? 'active' : ''}`}
+                        className="browse-item"
+                        active={location.pathname === item.path}
                         onClick={() => dispatch(closeRoleMenu())}
                       >
                         <span className="item-icon">{item.icon}</span>
                         {item.label}
-                      </Link>
+                      </DropdownItem>
                     ))}
-                    <div className="dropdown-section-label">Browse as Employee</div>
+                    <DropdownSectionLabel>Browse as Employee</DropdownSectionLabel>
                     {menu.browseAs.employees.map((item) => (
-                      <Link
+                      <DropdownItem
                         key={item.path}
+                        as={Link}
                         to={item.path}
-                        className={`dropdown-item browse-item ${location.pathname === item.path ? 'active' : ''}`}
+                        className="browse-item"
+                        active={location.pathname === item.path}
                         onClick={() => dispatch(closeRoleMenu())}
                       >
                         <span className="item-icon">{item.icon}</span>
                         {item.label}
-                      </Link>
+                      </DropdownItem>
                     ))}
                   </>
                 )}
-              </div>
+              </DropdownMenuRole>
             )}
-          </div>
+          </RoleDropdown>
         )}
 
         {menu?.whatsapp && (
-          <div className="whatsapp-dropdown" ref={whatsappRef}>
-            <button 
-              className="whatsapp-trigger"
+          <WhatsappDropdown ref={whatsappRef}>
+            <WhatsappTrigger 
               onClick={() => dispatch(toggleWhatsappMenu())}
             >
-              <span className="wa-icon">💬</span>
+              <WaIcon>💬</WaIcon>
               <span>WhatsApp</span>
-              <span className="dropdown-arrow">{whatsappMenuOpen ? '▲' : '▼'}</span>
-            </button>
+              <DropdownArrow>{whatsappMenuOpen ? '▲' : '▼'}</DropdownArrow>
+            </WhatsappTrigger>
             
             {whatsappMenuOpen && (
-              <div className="dropdown-menu whatsapp-menu">
+              <DropdownMenuWhatsapp>
                 {menu.whatsapp.map((item) => (
-                  <Link
+                  <DropdownItem
                     key={item.path}
+                    as={Link}
                     to={item.path}
-                    className={`dropdown-item ${location.pathname === item.path ? 'active' : ''}`}
+                    active={location.pathname === item.path}
                     onClick={() => dispatch(closeWhatsappMenu())}
                   >
                     <span className="item-icon">{item.icon}</span>
                     {item.label}
-                  </Link>
+                  </DropdownItem>
                 ))}
-              </div>
+              </DropdownMenuWhatsapp>
             )}
-          </div>
+          </WhatsappDropdown>
         )}
-      </div>
+      </NavCenter>
 
-      <div className="nav-right">
-        <button 
-          className="theme-toggle"
+      <NavRight>
+        <ThemeToggle 
           onClick={toggleTheme}
           aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
         >
           {theme === 'dark' ? '☀️' : '🌙'}
-        </button>
+        </ThemeToggle>
 
-        <div className="online-indicator">
-          <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>
-          <span className="status-text">{isOnline ? 'Online' : 'Offline'}</span>
-        </div>
+        <OnlineIndicator>
+          <StatusDot online={isOnline}></StatusDot>
+          <StatusText>{isOnline ? 'Online' : 'Offline'}</StatusText>
+        </OnlineIndicator>
 
-        <div className="datetime-display">
-          <div className="date">{formatDate(currentDateTime)}</div>
-          <div className="time">{formatTime(currentDateTime)}</div>
-        </div>
+        <DatetimeDisplay>
+          <DateDisplay>{formatDate(currentDateTime)}</DateDisplay>
+          <TimeDisplay>{formatTime(currentDateTime)}</TimeDisplay>
+        </DatetimeDisplay>
 
         <UniversalProfile />
-      </div>
-    </header>
+      </NavRight>
+    </TopNavBarHeader>
   );
 }
