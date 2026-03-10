@@ -11,11 +11,12 @@
  */
 
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   FileText, Download, Plus, Settings, TrendingUp, Users, AlertCircle,
   Clock, CheckCircle, Activity, Briefcase, BarChart3, MessageSquare
 } from 'lucide-react';
+import { selectService } from '../../../store/slices/sidebarSlice';
 import './DepartmentContentPanel.css';
 
 // Department content definitions
@@ -626,6 +627,7 @@ const DEPARTMENT_CONTENT = {
 };
 
 const DepartmentContentPanel = () => {
+  const dispatch = useDispatch();
   const selectedDepartment = useSelector(state => state.sidebar?.selectedDepartment);
   const selectedService = useSelector(state => state.sidebar?.selectedService);
 
@@ -637,6 +639,46 @@ const DepartmentContentPanel = () => {
   const serviceContent = deptContent && selectedService
     ? deptContent.services[selectedService]
     : null;
+
+  // Handle service card click
+  const handleServiceCardClick = (serviceName) => {
+    dispatch(selectService({ 
+      department: selectedDepartment, 
+      service: serviceName 
+    }));
+  };
+
+  // Handle quick action clicks
+  const handleActionClick = (actionLabel) => {
+    // Log action (in real app, would navigate or trigger specific action)
+    console.log(`Action clicked: ${actionLabel} in ${selectedService} (${selectedDepartment})`);
+    
+    // Show feedback (could be toast notification)
+    const message = `Opening ${actionLabel}...`;
+    console.log(message);
+    
+    // TODO: Add actual navigation/modal logic based on action type
+    switch(actionLabel.toLowerCase()) {
+      case actionLabel.includes('report') ? true : false:
+        // Navigate to reports
+        // navigate(`/dashboard/${selectedDepartment}/reports`);
+        break;
+      case actionLabel.includes('view') ? true : false:
+        // Navigate to service view
+        // navigate(`/dashboard/${selectedDepartment}/${selectedService}`);
+        break;
+      case actionLabel.includes('create') ? true : false:
+        // Open create modal
+        // dispatch(openModal({ type: 'create', service: selectedService }));
+        break;
+      case actionLabel.includes('export') ? true : false:
+        // Trigger export
+        // dispatch(exportData({ department: selectedDepartment, service: selectedService }));
+        break;
+      default:
+        break;
+    }
+  };
 
   if (!deptContent) {
     return (
@@ -690,7 +732,12 @@ const DepartmentContentPanel = () => {
                 {serviceContent.actions.map((action, idx) => {
                   const IconComponent = action.icon;
                   return (
-                    <button key={idx} className="action-button">
+                    <button 
+                      key={idx} 
+                      className="action-button"
+                      onClick={() => handleActionClick(action.label)}
+                      title={`${action.label} - ${selectedService}`}
+                    >
                       <IconComponent size={20} />
                       <span>{action.label}</span>
                     </button>
@@ -733,10 +780,27 @@ const DepartmentContentPanel = () => {
               <h2>Available Services</h2>
               <div className="services-grid">
                 {Object.entries(deptContent.services).map(([name, service], idx) => (
-                  <div key={idx} className="service-card">
+                  <div 
+                    key={idx} 
+                    className="service-card"
+                    onClick={() => handleServiceCardClick(name)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        handleServiceCardClick(name);
+                      }
+                    }}
+                  >
                     <div className="service-card-title">{name}</div>
                     <p className="service-card-description">{service.description}</p>
-                    <button className="service-card-action">
+                    <button 
+                      className="service-card-action"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleServiceCardClick(name);
+                      }}
+                    >
                       View Service →
                     </button>
                   </div>
