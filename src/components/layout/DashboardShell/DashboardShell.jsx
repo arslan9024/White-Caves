@@ -3,7 +3,12 @@ import { useSelector } from 'react-redux';
 import MainNavBar from '../MainNavBar';
 import CrimsonSidebarEnhanced from '../CrimsonSidebar/CrimsonSidebarEnhanced';
 import AIAssistantsPanel from '../AIAssistantsPanel/AIAssistantsPanel';
-import './DashboardShell.css';
+import {
+  DashboardShellContainer,
+  DashboardMain,
+  DashboardContent,
+  MobileOverlay
+} from './styles';
 
 const DashboardShell = ({ 
   children, 
@@ -72,7 +77,11 @@ const DashboardShell = ({
   };
 
   return (
-    <div className={`dashboard-shell ${sidebarCollapsed ? 'sidebar-collapsed' : ''} ${rightPanelOpen ? 'right-panel-open' : ''}`} data-theme={theme}>
+    <DashboardShellContainer
+      $sidebarCollapsed={sidebarCollapsed}
+      $rightPanelOpen={rightPanelOpen}
+      data-theme={theme}
+    >
       <MainNavBar
         theme={theme}
         onThemeToggle={handleThemeToggle}
@@ -99,18 +108,18 @@ const DashboardShell = ({
       />
 
       {mobileMenuOpen && (
-        <div 
-          className="mobile-overlay" 
-          onClick={() => setMobileMenuOpen(false)}
-        />
+        <MobileOverlay onClick={() => setMobileMenuOpen(false)} />
       )}
 
-      <main className="dashboard-main">
-        <div className="dashboard-content">
+      <DashboardMain
+        $sidebarCollapsed={sidebarCollapsed}
+        $rightPanelOpen={rightPanelOpen}
+      >
+        <DashboardContent>
           {children}
-        </div>
-      </main>
-    </div>
+        </DashboardContent>
+      </DashboardMain>
+    </DashboardShellContainer>
   );
 };
 
