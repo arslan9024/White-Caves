@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ROLE_TAB_MAPPING, getTabsForRole, getRoleInfo } from '../config/ROLE_TAB_MAPPING';
 import SuspenseLoader from '../components/common/SuspenseLoader';
+import MainNavBar from '../components/layout/MainNavBar/MainNavBar';
 import SidebarContainer from '../components/layout/SidebarContainer/SidebarContainer';
 import AIAssistantsPanel from '../components/layout/AIAssistantsPanel/AIAssistantsPanel';
 import DepartmentContentPanel from '../components/layout/DepartmentContentPanel/DepartmentContentPanel';
@@ -343,15 +344,26 @@ export default function UnifiedDashboardPage() {
   }
 
   return (
-    <div className="unified-dashboard-layout">
-      {/* Left Sidebar - Fixed Overlay (Desktop) / Drawer (Mobile) */}
-      <SidebarContainer
-        collapsed={leftCollapsed}
-        onToggleCollapse={handleToggleLeftSidebar}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        role={currentRole}
+    <>
+      {/* Main Navigation Bar */}
+      <MainNavBar
+        user={user}
+        leftSidebarCollapsed={leftCollapsed}
+        rightSidebarCollapsed={rightCollapsed}
+        onToggleLeftSidebar={handleToggleLeftSidebar}
+        onToggleRightSidebar={handleToggleRightSidebar}
       />
+
+      {/* Main Layout Container */}
+      <div className="unified-dashboard-layout">
+        {/* Left Sidebar - Fixed Overlay (Desktop) / Drawer (Mobile) */}
+        <SidebarContainer
+          collapsed={leftCollapsed}
+          onToggleCollapse={handleToggleLeftSidebar}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          role={currentRole}
+        />
 
       {/* Center Content Area */}
       <div className={`dashboard-center ${leftCollapsed ? 'left-collapsed' : ''}`}>
@@ -488,5 +500,6 @@ export default function UnifiedDashboardPage() {
         </div>
       )}
     </div>
+    </>
   );
 }

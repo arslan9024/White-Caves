@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   Search, Bell, Moon, Sun, ChevronDown, User,
   Settings, LogOut, HelpCircle, Shield, CreditCard,
-  Zap, Activity, Users, Home, TrendingUp, AlertCircle, Command
+  Zap, Activity, Users, Home, TrendingUp, AlertCircle, Command,
+  Menu, X
 } from 'lucide-react';
 import './MainNavBar.css';
 
@@ -15,7 +16,11 @@ const MainNavBar = ({
   notifications = [],
   onLogout,
   isSuperUser = false,
-  quickStats = null
+  quickStats = null,
+  leftSidebarCollapsed = false,
+  rightSidebarCollapsed = false,
+  onToggleLeftSidebar = () => {},
+  onToggleRightSidebar = () => {}
 }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
@@ -112,6 +117,15 @@ const MainNavBar = ({
             <span className="logo-subtitle">AI Command Center</span>
           </div>
         </div>
+
+        {/* Left Sidebar Toggle Button */}
+        <button
+          className="nav-icon-btn sidebar-toggle left-toggle"
+          onClick={onToggleLeftSidebar}
+          title={leftSidebarCollapsed ? 'Open left sidebar' : 'Close left sidebar'}
+        >
+          {leftSidebarCollapsed ? <Menu size={20} /> : <X size={20} />}
+        </button>
       </div>
 
       <div className="main-nav-center">
@@ -161,6 +175,15 @@ const MainNavBar = ({
       </div>
 
       <div className="main-nav-right">
+        {/* Right Sidebar Toggle Button */}
+        <button
+          className="nav-icon-btn sidebar-toggle right-toggle"
+          onClick={onToggleRightSidebar}
+          title={rightSidebarCollapsed ? 'Open right sidebar' : 'Close right sidebar'}
+        >
+          {rightSidebarCollapsed ? <Menu size={20} /> : <X size={20} />}
+        </button>
+
         <button
           className="nav-icon-btn theme-toggle"
           onClick={onThemeToggle}

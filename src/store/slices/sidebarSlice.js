@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  leftCollapsed: false,
-  rightCollapsed: false,
+  leftCollapsed: true,
+  rightCollapsed: true,
   selectedAssistant: null,
   showRightDrawer: false,
   selectedDepartment: null,

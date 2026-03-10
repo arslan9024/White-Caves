@@ -80,7 +80,6 @@ const DEPARTMENTS = {
 
 const SidebarContainer = ({
   collapsed = false,
-  onToggleCollapse = () => {},
   activeTab = 'overview',
   onTabChange = () => {},
   role = 'owner'
@@ -347,22 +346,6 @@ const SidebarContainer = ({
           )}
         </div>
       </nav>
-
-      {/* Footer with Collapse Button */}
-      <div className="sidebar-footer">
-        <button
-          className="collapse-toggle"
-          onClick={onToggleCollapse}
-          title={collapsed ? 'Expand sidebar (Cmd+B)' : 'Collapse sidebar (Cmd+B)'}
-        >
-          {collapsed ? (
-            <ChevronRight size={18} />
-          ) : (
-            <ChevronLeft size={18} />
-          )}
-          {!collapsed && <span>Collapse</span>}
-        </button>
-      </div>
     </aside>
   );
 };

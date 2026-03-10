@@ -8,6 +8,7 @@
   --sidebar-width-collapsed: 72px;
   --right-sidebar-width-full: 360px;
   --sidebar-transition: 0.3s ease;
+  --navbar-height: 64px;
 }
 
 /* ========================================
@@ -16,10 +17,11 @@
 
 .unified-dashboard-layout {
   display: flex;
-  min-height: 100vh;
+  min-height: calc(100vh - var(--navbar-height));
   background: var(--bg-primary, #f8f9fa);
   position: relative;
   width: 100%;
+  margin-top: var(--navbar-height);
 }
 
 /* ========================================
@@ -382,7 +384,7 @@
 /* MOBILE (< 768px) */
 @media (max-width: 768px) {
   :root {
-    --sidebar-width-full: 72px;
+    --sidebar-width-full: 0px;
     --sidebar-width-collapsed: 0px;
   }
 
@@ -390,10 +392,21 @@
     flex-direction: column;
   }
 
+  /* Hide sidebars on mobile - show drawers only via navbar toggles */
+  .sidebar-container {
+    display: none !important;
+  }
+
+  .ai-assistants-panel {
+    display: none !important;
+  }
+
   .dashboard-center {
-    margin-left: var(--sidebar-width-full);
+    margin-left: 0;
+    margin-right: 0;
     margin-top: 0;
     width: 100%;
+    flex: 1;
   }
 
   .dashboard-center.left-collapsed {
@@ -434,13 +447,32 @@
     border-radius: 4px;
   }
 
-  .right-drawer {
-    width: 85vw;
+  /* Drawer overlay styling */
+  .right-drawer-overlay {
+    position: fixed;
+    top: var(--navbar-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 299;
   }
 
-  /* Hide right sidebar on mobile (use drawer instead) */
-  .air-assistants-panel {
-    display: none !important;
+  .right-drawer {
+    position: fixed;
+    right: 0;
+    top: var(--navbar-height);
+    height: calc(100vh - var(--navbar-height));
+    width: 85vw;
+    max-width: 360px;
+    background: white;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+    z-index: 300;
+    overflow-y: auto;
+  }
+
+  [data-theme="dark"] .right-drawer {
+    background: #1E1E1E;
   }
 }
 
