@@ -7,7 +7,56 @@ import {
   Zap, Activity, Users, Home, TrendingUp, AlertCircle, Command,
   Menu, X
 } from 'lucide-react';
-import './MainNavBar.css';
+import {
+  NavBarContainer,
+  NavLeftSection,
+  LogoButton,
+  LogoIcon,
+  LogoLetter,
+  LogoText,
+  LogoTitle,
+  LogoSubtitle,
+  NavCenterSection,
+  QuickStatsBar,
+  StatItem,
+  StatLabel,
+  StatValue,
+  SearchContainer,
+  SearchIcon,
+  SearchInput,
+  SearchShortcut,
+  ShortcutKey,
+  NavRightSection,
+  NavIconButton,
+  NotificationBadge,
+  DropdownContainer,
+  DropdownMenu,
+  DropdownHeader,
+  MarkAllReadButton,
+  DropdownContent,
+  EmptyState,
+  NotificationItem,
+  NotifIcon,
+  NotifContent,
+  NotifTitle,
+  NotifTime,
+  ProfileTrigger,
+  UserAvatar,
+  SuperUserBadge,
+  UserInfo,
+  UserName,
+  UserRole,
+  ChevronIcon,
+  DropdownDivider,
+  DropdownItem,
+  ProfileHeader,
+  ProfileAvatar,
+  ProfileInfo,
+  ProfileName,
+  ProfileEmail,
+  DropdownFooter,
+  SidebarToggleButton
+} from './styles';
 
 const MainNavBar = ({
   theme = 'light',
@@ -106,215 +155,226 @@ const MainNavBar = ({
   };
 
   return (
-    <header className="main-nav-bar">
-      <div className="main-nav-left">
-        <div className="main-nav-logo" onClick={() => navigate('/')}>
-          <div className="logo-icon">
-            <span className="logo-letter">W</span>
-          </div>
-          <div className="logo-text">
-            <span className="logo-title">White Caves</span>
-            <span className="logo-subtitle">AI Command Center</span>
-          </div>
-        </div>
+    <NavBarContainer>
+      <NavLeftSection>
+        <LogoButton onClick={() => navigate('/')}>
+          <LogoIcon>
+            <LogoLetter>W</LogoLetter>
+          </LogoIcon>
+          <LogoText>
+            <LogoTitle>White Caves</LogoTitle>
+            <LogoSubtitle>AI Command Center</LogoSubtitle>
+          </LogoText>
+        </LogoButton>
 
         {/* Left Sidebar Toggle Button */}
-        <button
-          className="nav-icon-btn sidebar-toggle left-toggle"
+        <SidebarToggleButton
           onClick={onToggleLeftSidebar}
           title={leftSidebarCollapsed ? 'Open left sidebar' : 'Close left sidebar'}
         >
           {leftSidebarCollapsed ? <Menu size={20} /> : <X size={20} />}
-        </button>
-      </div>
+        </SidebarToggleButton>
+      </NavLeftSection>
 
-      <div className="main-nav-center">
+      <NavCenterSection>
         {effectiveIsSuperUser && quickStats && (
-          <div className="quick-stats-bar">
-            <div className="stat-item">
+          <QuickStatsBar>
+            <StatItem>
               <Home size={16} />
-              <span className="stat-label">Props</span>
-              <span className="stat-value">{quickStats.properties || 0}</span>
-            </div>
-            <div className="stat-item">
+              <StatLabel>Props</StatLabel>
+              <StatValue>{quickStats.properties || 0}</StatValue>
+            </StatItem>
+            <StatItem>
               <Users size={16} />
-              <span className="stat-label">Users</span>
-              <span className="stat-value">{quickStats.users || 0}</span>
-            </div>
-            <div className="stat-item">
+              <StatLabel>Users</StatLabel>
+              <StatValue>{quickStats.users || 0}</StatValue>
+            </StatItem>
+            <StatItem>
               <TrendingUp size={16} />
-              <span className="stat-label">Leads</span>
-              <span className="stat-value">{quickStats.leads || 0}</span>
-            </div>
-            <div className="stat-item">
+              <StatLabel>Leads</StatLabel>
+              <StatValue>{quickStats.leads || 0}</StatValue>
+            </StatItem>
+            <StatItem>
               <Activity size={16} />
-              <span className="stat-label">Health</span>
-              <span className={`stat-value ${quickStats.systemHealth === 'good' ? 'good' : quickStats.systemHealth === 'warning' ? 'warning' : 'critical'}`}>
+              <StatLabel>Health</StatLabel>
+              <StatValue
+                $status={
+                  quickStats.systemHealth === 'good'
+                    ? 'good'
+                    : quickStats.systemHealth === 'warning'
+                    ? 'warning'
+                    : 'critical'
+                }
+              >
                 {quickStats.systemHealth?.toUpperCase() || 'OK'}
-              </span>
-            </div>
-          </div>
+              </StatValue>
+            </StatItem>
+          </QuickStatsBar>
         )}
-        
-        <div className={`main-nav-search ${searchFocused ? 'focused' : ''}`}>
-          <Search size={18} className="search-icon" />
-          <input
+
+        <SearchContainer $focused={searchFocused}>
+          <SearchIcon>
+            <Search size={18} />
+          </SearchIcon>
+          <SearchInput
             ref={searchRef}
             type="text"
-            className="main-nav-search-input"
             placeholder="Search assistants, properties, leads..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
           />
-          <div className="search-shortcut">
-            <kbd>⌘</kbd><kbd>K</kbd>
-          </div>
-        </div>
-      </div>
+          <SearchShortcut>
+            <ShortcutKey>⌘</ShortcutKey>
+            <ShortcutKey>K</ShortcutKey>
+          </SearchShortcut>
+        </SearchContainer>
+      </NavCenterSection>
 
-      <div className="main-nav-right">
+      <NavRightSection>
         {/* Right Sidebar Toggle Button */}
-        <button
-          className="nav-icon-btn sidebar-toggle right-toggle"
+        <SidebarToggleButton
           onClick={onToggleRightSidebar}
           title={rightSidebarCollapsed ? 'Open right sidebar' : 'Close right sidebar'}
         >
           {rightSidebarCollapsed ? <Menu size={20} /> : <X size={20} />}
-        </button>
+        </SidebarToggleButton>
 
-        <button
-          className="nav-icon-btn theme-toggle"
+        <NavIconButton
           onClick={onThemeToggle}
           title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
         >
           {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-        </button>
+        </NavIconButton>
 
-        <div className="nav-dropdown-container" ref={notifRef}>
-          <button
-            className={`nav-icon-btn notifications-btn ${unreadCount > 0 ? 'has-unread' : ''}`}
+        <DropdownContainer ref={notifRef}>
+          <NavIconButton
+            $hasUnread={unreadCount > 0}
             onClick={() => setShowNotifications(!showNotifications)}
             title="Notifications"
           >
             <Bell size={20} />
             {unreadCount > 0 && (
-              <span className="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
+              <NotificationBadge>{unreadCount > 9 ? '9+' : unreadCount}</NotificationBadge>
             )}
-          </button>
+          </NavIconButton>
 
           {showNotifications && (
-            <div className="dropdown-menu notifications-dropdown">
-              <div className="dropdown-header">
+            <DropdownMenu>
+              <DropdownHeader>
                 <h4>Notifications</h4>
-                <button className="mark-all-read">Mark all read</button>
-              </div>
-              <div className="dropdown-content">
+                <MarkAllReadButton>Mark all read</MarkAllReadButton>
+              </DropdownHeader>
+              <DropdownContent>
                 {notifications.length === 0 ? (
-                  <div className="empty-state">
+                  <EmptyState>
                     <Bell size={32} strokeWidth={1.5} />
                     <p>No notifications</p>
-                  </div>
+                  </EmptyState>
                 ) : (
                   notifications.slice(0, 5).map((notif, idx) => (
-                    <div key={idx} className={`notification-item ${!notif.isRead ? 'unread' : ''}`}>
-                      <div className="notif-icon" style={{ background: notif.color || '#D32F2F' }}>
+                    <NotificationItem key={idx} $unread={!notif.isRead}>
+                      <NotifIcon $color={notif.color || '#D32F2F'}>
                         {notif.icon || <Bell size={14} />}
-                      </div>
-                      <div className="notif-content">
-                        <p className="notif-title">{notif.title}</p>
-                        <span className="notif-time">{notif.time || 'Just now'}</span>
-                      </div>
-                    </div>
+                      </NotifIcon>
+                      <NotifContent>
+                        <NotifTitle>{notif.title}</NotifTitle>
+                        <NotifTime>{notif.time || 'Just now'}</NotifTime>
+                      </NotifContent>
+                    </NotificationItem>
                   ))
                 )}
-              </div>
+              </DropdownContent>
               {notifications.length > 0 && (
-                <div className="dropdown-footer">
-                  <button onClick={() => navigate('/notifications')}>View all notifications</button>
-                </div>
+                <DropdownFooter>
+                  <button onClick={() => navigate('/notifications')}>
+                    View all notifications
+                  </button>
+                </DropdownFooter>
               )}
-            </div>
+            </DropdownMenu>
           )}
-        </div>
+        </DropdownContainer>
 
-        <div className="nav-dropdown-container profile-container" ref={profileRef}>
-          <button
-            className="profile-trigger"
-            onClick={() => setShowProfileMenu(!showProfileMenu)}
-          >
-            <div className="user-avatar">
+        <DropdownContainer ref={profileRef}>
+          <ProfileTrigger onClick={() => setShowProfileMenu(!showProfileMenu)}>
+            <UserAvatar>
               {user?.photoURL ? (
                 <img src={user.photoURL} alt={user.displayName || 'User'} />
               ) : (
                 <span>{getUserInitials()}</span>
               )}
-              {effectiveIsSuperUser && <div className="super-user-badge" title="Super User" />}
-            </div>
-            <div className="user-info">
-              <span className="user-name">{user?.displayName || 'Company Owner'}</span>
-              <span className={`user-role ${effectiveIsSuperUser ? 'super-user' : ''}`}>
+              {effectiveIsSuperUser && <SuperUserBadge title="Super User" />}
+            </UserAvatar>
+            <UserInfo>
+              <UserName>{user?.displayName || 'Company Owner'}</UserName>
+              <UserRole $isSuperUser={effectiveIsSuperUser}>
                 {effectiveIsSuperUser ? '👑 Super User' : 'Owner'}
-              </span>
-            </div>
-            <ChevronDown size={16} className={`chevron ${showProfileMenu ? 'open' : ''}`} />
-          </button>
+              </UserRole>
+            </UserInfo>
+            <ChevronIcon $open={showProfileMenu}>
+              <ChevronDown size={16} />
+            </ChevronIcon>
+          </ProfileTrigger>
 
           {showProfileMenu && (
-            <div className="dropdown-menu profile-dropdown">
-              <div className="profile-header">
-                <div className="profile-avatar">
+            <DropdownMenu>
+              <ProfileHeader>
+                <ProfileAvatar>
                   {user?.photoURL ? (
                     <img src={user.photoURL} alt={user.displayName || 'User'} />
                   ) : (
                     <span>{getUserInitials()}</span>
                   )}
-                </div>
-                <div className="profile-info">
-                  <span className="profile-name">{user?.displayName || 'Company Owner'}</span>
-                  <span className="profile-email">{user?.email || 'owner@whitecaves.ae'}</span>
-                </div>
-              </div>
-              <div className="dropdown-divider" />
-              <div className="dropdown-content">
+                </ProfileAvatar>
+                <ProfileInfo>
+                  <ProfileName>{user?.displayName || 'Company Owner'}</ProfileName>
+                  <ProfileEmail>{user?.email || 'owner@whitecaves.ae'}</ProfileEmail>
+                </ProfileInfo>
+              </ProfileHeader>
+              <DropdownDivider />
+              <DropdownContent>
                 {effectiveIsSuperUser && (
                   <>
-                    <button className="dropdown-item admin" onClick={() => handleProfileAction('admin')}>
+                    <DropdownItem
+                      $isAdmin={true}
+                      onClick={() => handleProfileAction('admin')}
+                    >
                       <Shield size={18} />
                       <span>Admin Dashboard</span>
-                    </button>
-                    <div className="dropdown-divider" />
+                    </DropdownItem>
+                    <DropdownDivider />
                   </>
                 )}
-                <button className="dropdown-item" onClick={() => handleProfileAction('profile')}>
+                <DropdownItem onClick={() => handleProfileAction('profile')}>
                   <User size={18} />
                   <span>My Profile</span>
-                </button>
-                <button className="dropdown-item" onClick={() => handleProfileAction('settings')}>
+                </DropdownItem>
+                <DropdownItem onClick={() => handleProfileAction('settings')}>
                   <Settings size={18} />
                   <span>Settings</span>
-                </button>
-                <button className="dropdown-item" onClick={() => handleProfileAction('billing')}>
+                </DropdownItem>
+                <DropdownItem onClick={() => handleProfileAction('billing')}>
                   <CreditCard size={18} />
                   <span>Billing</span>
-                </button>
-                <div className="dropdown-divider" />
-                <button className="dropdown-item" onClick={() => handleProfileAction('help')}>
+                </DropdownItem>
+                <DropdownDivider />
+                <DropdownItem onClick={() => handleProfileAction('help')}>
                   <HelpCircle size={18} />
                   <span>Help Center</span>
-                </button>
-                <div className="dropdown-divider" />
-                <button className="dropdown-item logout" onClick={() => handleProfileAction('logout')}>
+                </DropdownItem>
+                <DropdownDivider />
+                <DropdownItem $isLogout={true} onClick={() => handleProfileAction('logout')}>
                   <LogOut size={18} />
                   <span>Log Out</span>
-                </button>
-              </div>
-            </div>
+                </DropdownItem>
+              </DropdownContent>
+            </DropdownMenu>
           )}
-        </div>
-      </div>
-    </header>
+        </DropdownContainer>
+      </NavRightSection>
+    </NavBarContainer>
   );
 };
 
