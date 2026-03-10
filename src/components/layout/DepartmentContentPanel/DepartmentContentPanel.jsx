@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { selectService } from '../../../store/slices/sidebarSlice';
 import { addNotification } from '../../../store/slices/notificationSlice';
+import useActionHandler from '../../../hooks/useActionHandler';
 import './DepartmentContentPanel.css';
 
 // Department content definitions
@@ -629,6 +630,7 @@ const DEPARTMENT_CONTENT = {
 
 const DepartmentContentPanel = () => {
   const dispatch = useDispatch();
+  const { handleAction } = useActionHandler();
   const selectedDepartment = useSelector(state => state.sidebar?.selectedDepartment);
   const selectedService = useSelector(state => state.sidebar?.selectedService);
 
@@ -649,51 +651,9 @@ const DepartmentContentPanel = () => {
     }));
   };
 
-  // Handle quick action clicks
+  // Handle quick action clicks with new navigation system
   const handleActionClick = (actionLabel) => {
-    const action = actionLabel.toLowerCase();
-    
-    // Determine notification type and message
-    let notificationType = 'info';
-    let title = 'Action Initiated';
-    let message = `Opening ${actionLabel}...`;
-    
-    if (action.includes('view')) {
-      notificationType = 'info';
-      title = 'Loading...';
-      message = `Loading ${selectedService} details...`;
-    } else if (action.includes('create')) {
-      notificationType = 'info';
-      title = 'Preparing...';
-      message = `Opening ${actionLabel} dialog...`;
-    } else if (action.includes('export') || action.includes('download')) {
-      notificationType = 'info';
-      title = 'Exporting...';
-      message = `Preparing ${selectedService} data for export...`;
-    } else if (action.includes('report')) {
-      notificationType = 'info';
-      title = 'Generating...';
-      message = `Generating ${actionLabel}...`;
-    } else if (action.includes('add')) {
-      notificationType = 'info';
-      title = 'Opening Form...';
-      message = `Opening ${actionLabel} form...`;
-    } else if (action.includes('schedule')) {
-      notificationType = 'info';
-      title = 'Scheduling...';
-      message = `Opening scheduler for ${actionLabel.replace(/schedule\s*/i, '')}...`;
-    }
-    
-    // Dispatch notification
-    dispatch(addNotification({
-      type: notificationType,
-      title,
-      message,
-      duration: 3000
-    }));
-    
-    // Log for debugging
-    console.log(`Action clicked: ${actionLabel} in ${selectedService} (${selectedDepartment})`);
+    handleAction(actionLabel, selectedDepartment, selectedService);
   };
 
   if (!deptContent) {
