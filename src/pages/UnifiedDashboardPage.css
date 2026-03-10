@@ -1,11 +1,26 @@
 /* Unified Dashboard Page Styles */
 
+/* Main Layout with Sidebar */
+.unified-dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-primary, #f8f9fa);
+  position: relative;
+}
+
 .unified-dashboard {
   display: flex;
   flex-direction: column;
+  flex: 1;
   min-height: 100vh;
   background: var(--bg-primary, #f8f9fa);
   padding: 20px;
+  margin-left: 280px;
+  transition: margin-left 0.3s ease;
+}
+
+.unified-dashboard.sidebar-collapsed {
+  margin-left: 72px;
 }
 
 .unified-dashboard-header {
@@ -260,6 +275,11 @@
 @media (max-width: 768px) {
   .unified-dashboard {
     padding: 12px;
+    margin-left: 72px;
+  }
+
+  .unified-dashboard.sidebar-collapsed {
+    margin-left: 0;
   }
 
   .unified-dashboard-header {
@@ -291,6 +311,11 @@
 @media (max-width: 480px) {
   .unified-dashboard {
     padding: 8px;
+    margin-left: 72px;
+  }
+
+  .unified-dashboard.sidebar-collapsed {
+    margin-left: 0;
   }
 
   .dashboard-title h1 {

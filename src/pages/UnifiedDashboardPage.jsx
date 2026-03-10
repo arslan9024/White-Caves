@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ROLE_TAB_MAPPING, getTabsForRole, getRoleInfo } from '../config/ROLE_TAB_MAPPING';
 import SuspenseLoader from '../components/common/SuspenseLoader';
+import SidebarContainer from '../components/layout/SidebarContainer/SidebarContainer';
 import './UnifiedDashboardPage.css';
 
 // Import tab components (non-lazy for critical paths)
@@ -89,6 +90,7 @@ export default function UnifiedDashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCRMModule, setSelectedCRMModule] = useState(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Get available tabs for current role
   const availableTabs = getTabsForRole(currentRole);
@@ -295,7 +297,18 @@ export default function UnifiedDashboardPage() {
   }
 
   return (
-    <div className="unified-dashboard">
+    <div className="unified-dashboard-layout">
+      {/* Left Sidebar */}
+      <SidebarContainer
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        role={currentRole}
+      />
+
+      {/* Main Dashboard Content */}
+      <div className={`unified-dashboard ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       {/* Dashboard Header */}
       <div className="unified-dashboard-header">
         <div className="dashboard-title">
@@ -389,6 +402,7 @@ export default function UnifiedDashboardPage() {
           </div>
         </>
       )}
+      </div>
     </div>
   );
 }
