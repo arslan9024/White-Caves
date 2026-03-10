@@ -12,10 +12,34 @@
 
 import React, { useState, useMemo } from 'react';
 import {
-  X, Search, Filter, ChevronDown, ChevronRight, Bot
+  X, Search, ChevronRight, Bot
 } from 'lucide-react';
 import { getAllAssistants } from '../../../config/assistantRegistry';
-import './RightPanelContainer.css';
+import {
+  RightPanelRoot,
+  PanelHeader,
+  PanelTitle,
+  PanelCloseButton,
+  PanelSearchSection,
+  SearchInputWrapper,
+  SearchIcon,
+  SearchInput,
+  SearchClearButton,
+  PanelContent,
+  AssistantGroup,
+  GroupHeaderButton,
+  ToggleIcon,
+  GroupAssistants,
+  AssistantItemButton,
+  AssistantAvatar,
+  AssistantInfo,
+  AssistantName,
+  AssistantRole,
+  NotificationBadge,
+  PanelFooter,
+  FooterHint,
+  KeyboardKey
+} from './styles';
 
 const RightPanelContainer = ({
   isOpen = false,
@@ -83,105 +107,103 @@ const RightPanelContainer = ({
   if (!isOpen && !isMobile) return null;
 
   return (
-    <div className={`right-panel-container ${isMobile ? 'mobile-drawer' : ''} ${isTablet ? 'tablet-dock' : 'desktop-float'}`}>
+    <RightPanelRoot $isMobile={isMobile} $isTablet={isTablet} $isOpen={isOpen}>
       {/* Panel Header */}
-      <div className="panel-header">
-        <div className="panel-title">
+      <PanelHeader>
+        <PanelTitle>
           <Bot size={20} />
           <span>AI Assistants</span>
-        </div>
-        <button
-          className="panel-close"
+        </PanelTitle>
+        <PanelCloseButton
           onClick={onClose}
           title="Close (Esc)"
           aria-label="Close panel"
         >
           <X size={20} />
-        </button>
-      </div>
+        </PanelCloseButton>
+      </PanelHeader>
 
       {/* Search & Filter */}
-      <div className="panel-search">
-        <div className="search-input-wrapper">
-          <Search size={18} className="search-icon" />
-          <input
+      <PanelSearchSection>
+        <SearchInputWrapper>
+          <SearchIcon>
+            <Search size={18} />
+          </SearchIcon>
+          <SearchInput
             type="text"
             placeholder="Search assistants..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
           />
           {searchTerm && (
-            <button
-              className="search-clear"
+            <SearchClearButton
               onClick={() => setSearchTerm('')}
               aria-label="Clear search"
             >
               ×
-            </button>
+            </SearchClearButton>
           )}
-        </div>
-      </div>
+        </SearchInputWrapper>
+      </PanelSearchSection>
 
       {/* Assistant List */}
-      <div className="panel-content">
+      <PanelContent>
         {Object.entries(filteredAssistants).map(([groupId, group]) => {
           if (group.assistants.length === 0) return null;
 
           return (
-            <div key={groupId} className="assistant-group">
+            <AssistantGroup key={groupId}>
               {/* Group Header */}
-              <button
-                className={`group-header ${expandedGroups[groupId] ? 'expanded' : ''}`}
+              <GroupHeaderButton
+                $expanded={expandedGroups[groupId]}
                 onClick={() => toggleGroup(groupId)}
               >
                 <span>{group.label}</span>
-                <ChevronRight
-                  size={16}
-                  className={`toggle-icon ${expandedGroups[groupId] ? 'rotated' : ''}`}
-                />
-              </button>
+                <ToggleIcon $rotated={expandedGroups[groupId]}>
+                  <ChevronRight size={16} />
+                </ToggleIcon>
+              </GroupHeaderButton>
 
               {/* Assistants in Group */}
               {expandedGroups[groupId] && (
-                <div className="group-assistants">
+                <GroupAssistants>
                   {group.assistants.map(assistant => (
-                    <button
+                    <AssistantItemButton
                       key={assistant.id}
-                      className="assistant-item"
+                      $active={false}
                       onClick={() => {
                         onAssistantSelect(assistant);
                       }}
                       title={assistant.description}
                     >
-                      <div className="assistant-avatar">
+                      <AssistantAvatar>
                         {assistant.emoji || '🤖'}
-                      </div>
-                      <div className="assistant-info">
-                        <div className="assistant-name">{assistant.name}</div>
-                        <div className="assistant-role">{assistant.role}</div>
-                      </div>
+                      </AssistantAvatar>
+                      <AssistantInfo>
+                        <AssistantName>{assistant.name}</AssistantName>
+                        <AssistantRole>{assistant.role}</AssistantRole>
+                      </AssistantInfo>
                       {notifications[assistant.id]?.length > 0 && (
-                        <div className="notification-badge">
+                        <NotificationBadge>
                           {notifications[assistant.id].length}
-                        </div>
+                        </NotificationBadge>
                       )}
-                    </button>
+                    </AssistantItemButton>
                   ))}
-                </div>
+                </GroupAssistants>
               )}
-            </div>
+            </AssistantGroup>
           );
         })}
-      </div>
+      </PanelContent>
 
       {/* Panel Footer */}
-      <div className="panel-footer">
-        <div className="footer-hint">
-          <kbd>Cmd</kbd> + <kbd>A</kbd> to toggle
-        </div>
-      </div>
-    </div>
+      <PanelFooter>
+        <FooterHint>
+          <KeyboardKey>Cmd</KeyboardKey> + <KeyboardKey>A</KeyboardKey> to toggle
+        </FooterHint>
+      </PanelFooter>
+    </RightPanelRoot>
   );
 };
 
