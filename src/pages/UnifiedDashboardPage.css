@@ -1,26 +1,56 @@
-/* Unified Dashboard Page Styles */
+/* ========================================
+   UNIFIED DASHBOARD - 3 COLUMN LAYOUT
+   Left Sidebar | Content | Right Sidebar
+   ======================================== */
 
-/* Main Layout with Sidebar */
+:root {
+  --sidebar-width-full: 280px;
+  --sidebar-width-collapsed: 72px;
+  --right-sidebar-width-full: 360px;
+  --sidebar-transition: 0.3s ease;
+}
+
+/* ========================================
+   MAIN LAYOUT CONTAINER
+   ======================================== */
+
 .unified-dashboard-layout {
   display: flex;
   min-height: 100vh;
   background: var(--bg-primary, #f8f9fa);
   position: relative;
+  width: 100%;
 }
+
+/* ========================================
+   CENTER CONTENT AREA (Main Dashboard)
+   ======================================== */
+
+.dashboard-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100vh;
+  margin-left: var(--sidebar-width-full);
+  transition: margin-left var(--sidebar-transition);
+  position: relative;
+  z-index: 10;
+}
+
+.dashboard-center.left-collapsed {
+  margin-left: var(--sidebar-width-collapsed);
+}
+
+/* Main Dashboard Styles */
 
 .unified-dashboard {
   display: flex;
   flex-direction: column;
   flex: 1;
-  min-height: 100vh;
   background: var(--bg-primary, #f8f9fa);
   padding: 20px;
-  margin-left: 280px;
-  transition: margin-left 0.3s ease;
-}
-
-.unified-dashboard.sidebar-collapsed {
-  margin-left: 72px;
+  overflow-y: auto;
 }
 
 .unified-dashboard-header {
@@ -59,7 +89,10 @@
   border-radius: 4px;
 }
 
-/* Error Banner */
+/* ========================================
+   ERROR BANNER
+   ======================================== */
+
 .unified-dashboard-error-banner {
   display: flex;
   align-items: center;
@@ -92,7 +125,10 @@
   color: var(--text-secondary, #666);
 }
 
-/* Tabs Navigation */
+/* ========================================
+   TABS NAVIGATION
+   ======================================== */
+
 .unified-dashboard-tabs {
   background: white;
   border-radius: 8px;
@@ -151,7 +187,10 @@
   margin: 0 4px;
 }
 
-/* CRM Modules Dropdown */
+/* ========================================
+   CRM MODULES DROPDOWN
+   ======================================== */
+
 .crm-modules-dropdown {
   position: relative;
   display: inline-block;
@@ -227,13 +266,17 @@
   font-weight: 500;
 }
 
-/* Content Area */
+/* ========================================
+   CONTENT AREA
+   ======================================== */
+
 .unified-dashboard-content {
   background: white;
   border-radius: 8px;
   border: 1px solid var(--border-color, #e0e0e0);
   padding: 20px;
   min-height: 400px;
+  flex: 1;
 }
 
 .tab-loading-fallback {
@@ -243,7 +286,10 @@
   min-height: 300px;
 }
 
-/* CRM Module View */
+/* ========================================
+   CRM MODULE VIEW
+   ======================================== */
+
 .crm-module-view {
   position: relative;
   min-height: 500px;
@@ -271,21 +317,98 @@
   margin-top: 40px;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .unified-dashboard {
-    padding: 12px;
-    margin-left: 72px;
+/* ========================================
+   RIGHT DRAWER (Mobile - < 768px)
+   ======================================== */
+
+.right-drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+
+.right-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100vh;
+  background: white;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+  z-index: 2001;
+  animation: slideInRight 0.3s ease;
+  overflow-y: auto;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+/* TABLET (768px - 1024px) */
+@media (max-width: 1024px) {
+  .unified-dashboard-layout {
+    flex-wrap: wrap;
   }
 
-  .unified-dashboard.sidebar-collapsed {
+  /* Right sidebar hidden on tablet, shown as drawer */
+  .air-assistants-panel {
+    display: none !important;
+  }
+
+  .dashboard-center {
+    margin-left: var(--sidebar-width-full);
+  }
+
+  .dashboard-center.left-collapsed {
+    margin-left: var(--sidebar-width-collapsed);
+  }
+}
+
+/* MOBILE (< 768px) */
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width-full: 72px;
+    --sidebar-width-collapsed: 0px;
+  }
+
+  .unified-dashboard-layout {
+    flex-direction: column;
+  }
+
+  .dashboard-center {
+    margin-left: var(--sidebar-width-full);
+    margin-top: 0;
+    width: 100%;
+  }
+
+  .dashboard-center.left-collapsed {
     margin-left: 0;
+  }
+
+  .unified-dashboard {
+    padding: 12px;
   }
 
   .unified-dashboard-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+    margin-bottom: 16px;
   }
 
   .dashboard-title h1 {
@@ -302,40 +425,51 @@
     font-size: 12px;
   }
 
-  .unified-dashboard-content {
-    padding: 16px;
-    border-radius: 4px;
-  }
-}
-
-@media (max-width: 480px) {
-  .unified-dashboard {
-    padding: 8px;
-    margin-left: 72px;
-  }
-
-  .unified-dashboard.sidebar-collapsed {
-    margin-left: 0;
-  }
-
-  .dashboard-title h1 {
-    font-size: 20px;
-  }
-
-  .tab-button {
-    padding: 8px 10px;
-    font-size: 11px;
-  }
-
   .tab-label {
     display: none;
   }
 
-  .tab-icon {
-    font-size: 14px;
+  .unified-dashboard-content {
+    padding: 16px;
+    border-radius: 4px;
   }
 
-  .unified-dashboard-content {
-    padding: 12px;
+  .right-drawer {
+    width: 85vw;
+  }
+
+  /* Hide right sidebar on mobile (use drawer instead) */
+  .air-assistants-panel {
+    display: none !important;
   }
 }
+
+/* ========================================
+   DARK MODE SUPPORT
+   ======================================== */
+
+[data-theme="dark"] .unified-dashboard-tabs,
+[data-theme="dark"] .unified-dashboard-content,
+[data-theme="dark"] .crm-modules-menu {
+  background: #1E1E1E;
+  border-color: #333333;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .tab-button {
+  color: #999;
+}
+
+[data-theme="dark"] .tab-button:hover {
+  background: #2a2a2a;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .tab-button.active {
+  color: #00a0ff;
+}
+
+[data-theme="dark"] .right-drawer {
+  background: #1E1E1E;
+}
+

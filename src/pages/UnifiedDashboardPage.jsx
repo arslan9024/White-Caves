@@ -4,6 +4,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ROLE_TAB_MAPPING, getTabsForRole, getRoleInfo } from '../config/ROLE_TAB_MAPPING';
 import SuspenseLoader from '../components/common/SuspenseLoader';
 import SidebarContainer from '../components/layout/SidebarContainer/SidebarContainer';
+import AIAssistantsPanel from '../components/layout/AIAssistantsPanel/AIAssistantsPanel';
+import {
+  toggleLeftSidebar,
+  toggleRightSidebar,
+  selectAssistant,
+  setShowRightDrawer,
+} from '../store/slices/sidebarSlice';
 import './UnifiedDashboardPage.css';
 
 // Import tab components (non-lazy for critical paths)
@@ -90,7 +97,24 @@ export default function UnifiedDashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCRMModule, setSelectedCRMModule] = useState(null);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // Redux sidebar state
+  const leftCollapsed = useSelector(state => state.sidebar?.leftCollapsed || false);
+  const rightCollapsed = useSelector(state => state.sidebar?.rightCollapsed || false);
+  const selectedAssistantRedux = useSelector(state => state.sidebar?.selectedAssistant);
+  const showRightDrawer = useSelector(state => state.sidebar?.showRightDrawer || false);
+
+  // Sidebar action handlers
+  const handleToggleLeftSidebar = () => dispatch(toggleLeftSidebar());
+  const handleToggleRightSidebar = () => {
+    dispatch(toggleRightSidebar());
+    dispatch(setShowRightDrawer(!showRightDrawer));
+  };
+
+  const handleSelectAssistant = (assistant) => {
+    dispatch(selectAssistant(assistant));
+    // TODO: Open modal or navigate based on your needs
+  };
 
   // Get available tabs for current role
   const availableTabs = getTabsForRole(currentRole);
@@ -224,6 +248,26 @@ export default function UnifiedDashboardPage() {
     return () => clearInterval(interval);
   }, [currentRole, isSuperUser]);
 
+  // Keyboard shortcuts for sidebar toggles
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Ctrl+B or Cmd+B to toggle left sidebar
+      if ((e.ctrlKey || e.metaKey) && e.code === 'KeyB') {
+        e.preventDefault();
+        dispatch(toggleLeftSidebar());
+      }
+      // Ctrl+A or Cmd+A to toggle right sidebar
+      if ((e.ctrlKey || e.metaKey) && e.code === 'KeyA') {
+        e.preventDefault();
+        dispatch(toggleRightSidebar());
+        dispatch(setShowRightDrawer(!showRightDrawer));
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [dispatch, showRightDrawer]);
+
   // Helper: Render tab content based on activeTab
   const renderTabContent = () => {
     // Check if user selected a CRM module
@@ -298,111 +342,140 @@ export default function UnifiedDashboardPage() {
 
   return (
     <div className="unified-dashboard-layout">
-      {/* Left Sidebar */}
+      {/* Left Sidebar - Fixed Overlay (Desktop) / Drawer (Mobile) */}
       <SidebarContainer
-        collapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        collapsed={leftCollapsed}
+        onToggleCollapse={handleToggleLeftSidebar}
         activeTab={activeTab}
         onTabChange={setActiveTab}
         role={currentRole}
       />
 
-      {/* Main Dashboard Content */}
-      <div className={`unified-dashboard ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-      {/* Dashboard Header */}
-      <div className="unified-dashboard-header">
-        <div className="dashboard-title">
-          <h1>{roleInfo.label} Dashboard</h1>
-          <p className="dashboard-subtitle">{roleInfo.description}</p>
-        </div>
-        <div className="dashboard-info">
-          <span className="user-email">{user.email}</span>
-        </div>
-      </div>
-
-      {/* Error Message */}
-      {error && (
-        <div className="unified-dashboard-error-banner">
-          <p>{error}</p>
-          <button onClick={() => window.location.reload()}>Retry</button>
-        </div>
-      )}
-
-      {/* CRM Module View */}
-      {selectedCRMModule && CRM_MODULES[selectedCRMModule] && isSuperUser && (
-        <div className="crm-module-view">
-          <button className="crm-back-button" onClick={handleBackFromCRM}>
-            Back to Dashboard
-          </button>
-          <div className="crm-module-container">
-            <Suspense fallback={<TabLoadingFallback />}>
-              {React.createElement(CRM_MODULES[selectedCRMModule].Component, {
-                role: currentRole,
-                user,
-                data: dashboardData
-              })}
-            </Suspense>
-          </div>
-        </div>
-      )}
-
-      {/* Standard Tab View */}
-      {!selectedCRMModule && (
-        <>
-          {/* Tab Navigation */}
-          <div className="unified-dashboard-tabs">
-            <div className="tabs-scroll">
-              {availableTabs.map(tab => (
-                <button
-                  key={tab.id}
-                  className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
-                  onClick={() => setActiveTab(tab.id)}
-                >
-                  <span className="tab-icon">{tab.icon}</span>
-                  <span className="tab-label">{tab.label}</span>
-                </button>
-              ))}
-
-              {/* CRM Modules - Super User Only */}
-              {isSuperUser && (
-                <>
-                  <div className="tab-divider"></div>
-                  <div className="crm-modules-dropdown">
-                    <button className="crm-modules-button">
-                      <span className="tab-icon">bot</span>
-                      <span className="tab-label">AI CRM Modules</span>
-                      <span className="dropdown-arrow">▼</span>
-                    </button>
-                    <div className="crm-modules-menu">
-                      {Object.entries(CRM_MODULES).map(([key, module]) => (
-                        <button
-                          key={key}
-                          className="crm-module-option"
-                          onClick={() => handleCRMModuleSelect(key)}
-                        >
-                          {module.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              )}
+      {/* Center Content Area */}
+      <div className={`dashboard-center ${leftCollapsed ? 'left-collapsed' : ''}`}>
+        {/* Main Dashboard */}
+        <div className="unified-dashboard">
+          {/* Dashboard Header */}
+          <div className="unified-dashboard-header">
+            <div className="dashboard-title">
+              <h1>{roleInfo.label} Dashboard</h1>
+              <p className="dashboard-subtitle">{roleInfo.description}</p>
+            </div>
+            <div className="dashboard-info">
+              <span className="user-email">{user.email}</span>
             </div>
           </div>
 
-          {/* Tab Content */}
-          <div className="unified-dashboard-content">
-            {isLoading ? (
-              <TabLoadingFallback />
-            ) : (
-              <Suspense fallback={<TabLoadingFallback />}>
-                {renderTabContent()}
-              </Suspense>
-            )}
-          </div>
-        </>
-      )}
+          {/* Error Message */}
+          {error && (
+            <div className="unified-dashboard-error-banner">
+              <p>{error}</p>
+              <button onClick={() => window.location.reload()}>Retry</button>
+            </div>
+          )}
+
+          {/* CRM Module View */}
+          {selectedCRMModule && CRM_MODULES[selectedCRMModule] && isSuperUser && (
+            <div className="crm-module-view">
+              <button className="crm-back-button" onClick={handleBackFromCRM}>
+                Back to Dashboard
+              </button>
+              <div className="crm-module-container">
+                <Suspense fallback={<TabLoadingFallback />}>
+                  {React.createElement(CRM_MODULES[selectedCRMModule].Component, {
+                    role: currentRole,
+                    user,
+                    data: dashboardData
+                  })}
+                </Suspense>
+              </div>
+            </div>
+          )}
+
+          {/* Standard Tab View */}
+          {!selectedCRMModule && (
+            <>
+              {/* Tab Navigation */}
+              <div className="unified-dashboard-tabs">
+                <div className="tabs-scroll">
+                  {availableTabs.map(tab => (
+                    <button
+                      key={tab.id}
+                      className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
+                      onClick={() => setActiveTab(tab.id)}
+                    >
+                      <span className="tab-icon">{tab.icon}</span>
+                      <span className="tab-label">{tab.label}</span>
+                    </button>
+                  ))}
+
+                  {/* CRM Modules - Super User Only */}
+                  {isSuperUser && (
+                    <>
+                      <div className="tab-divider"></div>
+                      <div className="crm-modules-dropdown">
+                        <button className="crm-modules-button">
+                          <span className="tab-icon">bot</span>
+                          <span className="tab-label">AI CRM Modules</span>
+                          <span className="dropdown-arrow">▼</span>
+                        </button>
+                        <div className="crm-modules-menu">
+                          {Object.entries(CRM_MODULES).map(([key, module]) => (
+                            <button
+                              key={key}
+                              className="crm-module-option"
+                              onClick={() => handleCRMModuleSelect(key)}
+                            >
+                              {module.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Tab Content */}
+              <div className="unified-dashboard-content">
+                {isLoading ? (
+                  <TabLoadingFallback />
+                ) : (
+                  <Suspense fallback={<TabLoadingFallback />}>
+                    {renderTabContent()}
+                  </Suspense>
+                )}
+              </div>
+            </>
+          )}
+        </div>
       </div>
+
+      {/* Right Sidebar - Mirror of Left (with AI Assistants) */}
+      <AIAssistantsPanel
+        isOpen={!rightCollapsed}
+        onToggle={handleToggleRightSidebar}
+        onAssistantSelect={handleSelectAssistant}
+        collapsed={rightCollapsed}
+        selectedAssistant={selectedAssistantRedux}
+        role={currentRole}
+      />
+
+      {/* Right Drawer for Mobile (< 768px) */}
+      {showRightDrawer && (
+        <div className="right-drawer-overlay" onClick={handleToggleRightSidebar}>
+          <div className="right-drawer" onClick={(e) => e.stopPropagation()}>
+            <AIAssistantsPanel
+              isOpen={true}
+              onToggle={handleToggleRightSidebar}
+              onAssistantSelect={handleSelectAssistant}
+              collapsed={false}
+              selectedAssistant={selectedAssistantRedux}
+              role={currentRole}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
