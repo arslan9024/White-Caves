@@ -17,6 +17,7 @@ import {
   Clock, CheckCircle, Activity, Briefcase, BarChart3, MessageSquare
 } from 'lucide-react';
 import { selectService } from '../../../store/slices/sidebarSlice';
+import { addNotification } from '../../../store/slices/notificationSlice';
 import './DepartmentContentPanel.css';
 
 // Department content definitions
@@ -650,34 +651,49 @@ const DepartmentContentPanel = () => {
 
   // Handle quick action clicks
   const handleActionClick = (actionLabel) => {
-    // Log action (in real app, would navigate or trigger specific action)
-    console.log(`Action clicked: ${actionLabel} in ${selectedService} (${selectedDepartment})`);
+    const action = actionLabel.toLowerCase();
     
-    // Show feedback (could be toast notification)
-    const message = `Opening ${actionLabel}...`;
-    console.log(message);
+    // Determine notification type and message
+    let notificationType = 'info';
+    let title = 'Action Initiated';
+    let message = `Opening ${actionLabel}...`;
     
-    // TODO: Add actual navigation/modal logic based on action type
-    switch(actionLabel.toLowerCase()) {
-      case actionLabel.includes('report') ? true : false:
-        // Navigate to reports
-        // navigate(`/dashboard/${selectedDepartment}/reports`);
-        break;
-      case actionLabel.includes('view') ? true : false:
-        // Navigate to service view
-        // navigate(`/dashboard/${selectedDepartment}/${selectedService}`);
-        break;
-      case actionLabel.includes('create') ? true : false:
-        // Open create modal
-        // dispatch(openModal({ type: 'create', service: selectedService }));
-        break;
-      case actionLabel.includes('export') ? true : false:
-        // Trigger export
-        // dispatch(exportData({ department: selectedDepartment, service: selectedService }));
-        break;
-      default:
-        break;
+    if (action.includes('view')) {
+      notificationType = 'info';
+      title = 'Loading...';
+      message = `Loading ${selectedService} details...`;
+    } else if (action.includes('create')) {
+      notificationType = 'info';
+      title = 'Preparing...';
+      message = `Opening ${actionLabel} dialog...`;
+    } else if (action.includes('export') || action.includes('download')) {
+      notificationType = 'info';
+      title = 'Exporting...';
+      message = `Preparing ${selectedService} data for export...`;
+    } else if (action.includes('report')) {
+      notificationType = 'info';
+      title = 'Generating...';
+      message = `Generating ${actionLabel}...`;
+    } else if (action.includes('add')) {
+      notificationType = 'info';
+      title = 'Opening Form...';
+      message = `Opening ${actionLabel} form...`;
+    } else if (action.includes('schedule')) {
+      notificationType = 'info';
+      title = 'Scheduling...';
+      message = `Opening scheduler for ${actionLabel.replace(/schedule\s*/i, '')}...`;
     }
+    
+    // Dispatch notification
+    dispatch(addNotification({
+      type: notificationType,
+      title,
+      message,
+      duration: 3000
+    }));
+    
+    // Log for debugging
+    console.log(`Action clicked: ${actionLabel} in ${selectedService} (${selectedDepartment})`);
   };
 
   if (!deptContent) {

@@ -10,6 +10,7 @@ import featuresReducer from './featuresSlice';
 import inventoryReducer from './slices/inventorySlice';
 import aiAssistantDashboardReducer from './slices/aiAssistantDashboardSlice';
 import sidebarReducer from './slices/sidebarSlice';
+import notificationReducer from './slices/notificationSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 
 // Wrap middleware in error handling
@@ -38,7 +39,8 @@ export const store = configureStore({
     features: featuresReducer,
     inventory: inventoryReducer,
     aiAssistantDashboard: aiAssistantDashboardReducer,
-    sidebar: sidebarReducer
+    sidebar: sidebarReducer,
+    notifications: notificationReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
