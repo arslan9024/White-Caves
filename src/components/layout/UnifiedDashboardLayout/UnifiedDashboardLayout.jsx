@@ -24,7 +24,15 @@ import MainNavBar from '../MainNavBar';
 import SidebarContainer from '../SidebarContainer';
 import RightPanelContainer from '../RightPanelContainer';
 import useDashboardState from './useDashboardState';
-import './UnifiedDashboardLayout.css';
+import {
+  DashboardLayoutContainer,
+  DashboardNavBar,
+  DashboardSidebarContainer,
+  DashboardMainContent,
+  DashboardRightPanel,
+  DashboardContentWrapper,
+  DashboardOverlay
+} from './styles';
 
 const UnifiedDashboardLayout = ({
   children,
@@ -129,70 +137,71 @@ const UnifiedDashboardLayout = ({
   };
 
   return (
-    <div
-      className={`unified-dashboard-layout ${
-        sidebarCollapsed ? 'sidebar-collapsed' : ''
-      } ${rightPanelOpen ? 'right-panel-open' : ''} ${
-        isMobile ? 'mobile-layout' : isTablet ? 'tablet-layout' : 'desktop-layout'
-      }`}
+    <DashboardLayoutContainer
+      $sidebarCollapsed={sidebarCollapsed}
+      $rightPanelOpen={rightPanelOpen}
+      $isMobile={isMobile}
+      $isTablet={isTablet}
       data-theme={theme}
     >
       {/* Main Navigation Bar */}
-      <MainNavBar
-        theme={theme}
-        onThemeToggle={handleThemeToggle}
-        user={user}
-        notifications={getAllNotifications()}
-        onLogout={onLogout}
-        onAssistantPanelToggle={() => setRightPanelOpen(!rightPanelOpen)}
-        isAssistantPanelOpen={rightPanelOpen}
-        shortcuts={{ sidebar: 'Cmd+B', rightPanel: 'Cmd+A' }}
-        isSuperUser={role === 'lion'}
-        quickStats={role === 'lion' ? quickStats : null}
-      />
+      <DashboardNavBar>
+        <MainNavBar
+          theme={theme}
+          onThemeToggle={handleThemeToggle}
+          user={user}
+          notifications={getAllNotifications()}
+          onLogout={onLogout}
+          onAssistantPanelToggle={() => setRightPanelOpen(!rightPanelOpen)}
+          isAssistantPanelOpen={rightPanelOpen}
+          shortcuts={{ sidebar: 'Cmd+B', rightPanel: 'Cmd+A' }}
+          isSuperUser={role === 'lion'}
+          quickStats={role === 'lion' ? quickStats : null}
+        />
+      </DashboardNavBar>
 
       {/* Left Sidebar */}
-      <SidebarContainer
-        collapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        activeTab={activeTab}
-        onTabChange={onTabChange}
-        role={role}
-        notifications={notifications}
-      />
+      <DashboardSidebarContainer>
+        <SidebarContainer
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          activeTab={activeTab}
+          onTabChange={onTabChange}
+          role={role}
+          notifications={notifications}
+        />
+      </DashboardSidebarContainer>
 
       {/* Main Content Area */}
-      <main
-        className={`dashboard-main-content ${
-          isMobile ? 'full-width' : ''
-        }`}
-      >
-        <div className="dashboard-content-wrapper">
+      <DashboardMainContent>
+        <DashboardContentWrapper>
           {children}
-        </div>
-      </main>
+        </DashboardContentWrapper>
+      </DashboardMainContent>
 
       {/* Right Panel (Floating/Drawer) */}
-      <RightPanelContainer
-        isOpen={rightPanelOpen}
-        onClose={() => setRightPanelOpen(false)}
-        onAssistantSelect={handleAssistantSelect}
-        notifications={notifications}
-        isMobile={isMobile}
-        isTablet={isTablet}
-      />
+      <DashboardRightPanel>
+        <RightPanelContainer
+          isOpen={rightPanelOpen}
+          onClose={() => setRightPanelOpen(false)}
+          onAssistantSelect={handleAssistantSelect}
+          notifications={notifications}
+          isMobile={isMobile}
+          isTablet={isTablet}
+        />
+      </DashboardRightPanel>
 
       {/* Mobile Overlay */}
       {isMobile && rightPanelOpen && (
-        <div 
-          className="dashboard-overlay"
+        <DashboardOverlay
+          $isVisible={rightPanelOpen}
           onClick={() => setRightPanelOpen(false)}
           role="button"
           tabIndex={0}
           aria-label="Close right panel"
         />
       )}
-    </div>
+    </DashboardLayoutContainer>
   );
 };
 
