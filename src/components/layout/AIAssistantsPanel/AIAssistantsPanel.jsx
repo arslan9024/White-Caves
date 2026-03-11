@@ -6,7 +6,41 @@ import {
   Server, Palette, Database, Star, Command, Scale, Eye, Clock
 } from 'lucide-react';
 import { getAllAssistants } from '../../../config/assistantRegistry';
-import './AIAssistantsPanel.css';
+import {
+  PanelContainer,
+  PanelHeader,
+  PanelTitle,
+  PanelCloseButton,
+  PanelSearchContainer,
+  SearchInputWrapper,
+  SearchIcon,
+  SearchInput,
+  SearchClearButton,
+  PanelFilters,
+  FilterButton,
+  AssistantsList,
+  NoResults,
+  AssistantCard,
+  AssistantMain,
+  AssistantAvatar,
+  AssistantDetails,
+  AssistantNameRow,
+  AssistantName,
+  StatusBadge,
+  AssistantTitle,
+  AssistantDept,
+  NotificationBadge,
+  ExpandButton,
+  AssistantExpanded,
+  CapabilitiesList,
+  CapabilityTag,
+  QuickActions,
+  ActionButton,
+  PanelFooter,
+  FooterStats,
+  Stat,
+  StatDot
+} from './styles';
 
 const ICON_MAP = {
   MessageSquare, Building2, Target, Bot, Users, TrendingUp, Home,
@@ -85,61 +119,62 @@ const AIAssistantsPanel = ({
   if (!isOpen) return null;
 
   return (
-    <div className="ai-assistants-panel">
-      <div className="panel-header">
-        <div className="panel-title">
+    <PanelContainer>
+      <PanelHeader>
+        <PanelTitle>
           <Command size={20} />
           <span>AI Assistants</span>
-        </div>
-        <button className="panel-close" onClick={onClose}>
+        </PanelTitle>
+        <PanelCloseButton onClick={onClose}>
           <X size={18} />
-        </button>
-      </div>
+        </PanelCloseButton>
+      </PanelHeader>
 
-      <div className="panel-search">
-        <div className="search-input-wrapper">
-          <Search size={16} className="search-icon" />
-          <input 
+      <PanelSearchContainer>
+        <SearchInputWrapper>
+          <SearchIcon>
+            <Search size={16} />
+          </SearchIcon>
+          <SearchInput 
             type="text" 
             placeholder="Search assistants..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
           />
           {searchQuery && (
-            <button className="search-clear" onClick={() => setSearchQuery('')}>
+            <SearchClearButton onClick={() => setSearchQuery('')}>
               <X size={14} />
-            </button>
+            </SearchClearButton>
           )}
-        </div>
-      </div>
+        </SearchInputWrapper>
+      </PanelSearchContainer>
 
-      <div className="panel-filters">
-        <button 
-          className={`filter-btn ${statusFilter === 'all' ? 'active' : ''}`}
+      <PanelFilters>
+        <FilterButton 
+          isActive={statusFilter === 'all'}
           onClick={() => setStatusFilter('all')}
         >
           All ({AI_ASSISTANTS.length})
-        </button>
-        <button 
-          className={`filter-btn ${statusFilter === 'active' ? 'active' : ''}`}
+        </FilterButton>
+        <FilterButton 
+          isActive={statusFilter === 'active'}
           onClick={() => setStatusFilter('active')}
         >
           Active ({AI_ASSISTANTS.filter(a => a.status === 'active').length})
-        </button>
-        <button 
-          className={`filter-btn ${statusFilter === 'idle' ? 'active' : ''}`}
+        </FilterButton>
+        <FilterButton 
+          isActive={statusFilter === 'idle'}
           onClick={() => setStatusFilter('idle')}
         >
           Idle ({AI_ASSISTANTS.filter(a => a.status === 'idle').length})
-        </button>
-      </div>
+        </FilterButton>
+      </PanelFilters>
 
-      <div className="assistants-list">
+      <AssistantsList>
         {filteredAssistants.length === 0 ? (
-          <div className="no-results">
+          <NoResults>
             <p>No assistants found</p>
-          </div>
+          </NoResults>
         ) : (
           filteredAssistants.map(assistant => {
             const Icon = getAssistantIcon(assistant.id);
@@ -147,54 +182,51 @@ const AIAssistantsPanel = ({
             const isExpanded = expandedAssistant === assistant.id;
             
             return (
-              <div 
-                key={assistant.id} 
-                className={`assistant-card ${isExpanded ? 'expanded' : ''}`}
+              <AssistantCard 
+                key={assistant.id}
+                isExpanded={isExpanded}
               >
-                <button 
-                  className="assistant-main"
+                <AssistantMain 
                   onClick={() => handleAssistantClick(assistant)}
                 >
-                  <div 
-                    className="assistant-avatar"
+                  <AssistantAvatar 
                     style={{ background: assistant.color || '#D32F2F' }}
                   >
                     <Icon size={18} color="white" />
-                  </div>
-                  <div className="assistant-details">
-                    <div className="assistant-name-row">
-                      <span className="assistant-name">{assistant.name}</span>
-                      <span className={`status-badge ${assistant.status}`}>
+                  </AssistantAvatar>
+                  <AssistantDetails>
+                    <AssistantNameRow>
+                      <AssistantName>{assistant.name}</AssistantName>
+                      <StatusBadge status={assistant.status}>
                         {assistant.status}
-                      </span>
-                    </div>
-                    <span className="assistant-title">{assistant.title}</span>
-                    <span className="assistant-dept">{assistant.department}</span>
-                  </div>
+                      </StatusBadge>
+                    </AssistantNameRow>
+                    <AssistantTitle>{assistant.title}</AssistantTitle>
+                    <AssistantDept>{assistant.department}</AssistantDept>
+                  </AssistantDetails>
                   {notifCount > 0 && (
-                    <span className="notification-badge">{notifCount}</span>
+                    <NotificationBadge>{notifCount}</NotificationBadge>
                   )}
-                  <button 
-                    className="expand-btn"
+                  <ExpandButton 
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleExpand(assistant.id);
                     }}
                   >
                     {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                  </button>
-                </button>
+                  </ExpandButton>
+                </AssistantMain>
 
                 {isExpanded && (
-                  <div className="assistant-expanded">
-                    <div className="capabilities-list">
+                  <AssistantExpanded>
+                    <CapabilitiesList>
                       {(assistant.capabilities || []).slice(0, 5).map((cap, idx) => (
-                        <span key={idx} className="capability-tag">{cap}</span>
+                        <CapabilityTag key={idx}>{cap}</CapabilityTag>
                       ))}
-                    </div>
-                    <div className="quick-actions">
-                      <button 
-                        className="action-btn"
+                    </CapabilitiesList>
+                    <QuickActions>
+                      <ActionButton 
+                        isPrimary
                         onClick={(e) => {
                           e.stopPropagation();
                           handleAssistantClick(assistant);
@@ -202,36 +234,36 @@ const AIAssistantsPanel = ({
                       >
                         <MessageSquare size={14} />
                         Open
-                      </button>
-                      <button className="action-btn">
+                      </ActionButton>
+                      <ActionButton>
                         <Bell size={14} />
                         Alerts
-                      </button>
-                      <button className="action-btn">
+                      </ActionButton>
+                      <ActionButton>
                         <Settings size={14} />
-                      </button>
-                    </div>
-                  </div>
+                      </ActionButton>
+                    </QuickActions>
+                  </AssistantExpanded>
                 )}
-              </div>
+              </AssistantCard>
             );
           })
         )}
-      </div>
+      </AssistantsList>
 
-      <div className="panel-footer">
-        <div className="footer-stats">
-          <span className="stat">
-            <span className="stat-dot online" />
+      <PanelFooter>
+        <FooterStats>
+          <Stat>
+            <StatDot status="online" />
             {AI_ASSISTANTS.filter(a => a.status === 'active').length} Online
-          </span>
-          <span className="stat">
-            <span className="stat-dot idle" />
+          </Stat>
+          <Stat>
+            <StatDot status="idle" />
             {AI_ASSISTANTS.filter(a => a.status === 'idle').length} Idle
-          </span>
-        </div>
-      </div>
-    </div>
+          </Stat>
+        </FooterStats>
+      </PanelFooter>
+    </PanelContainer>
   );
 };
 
