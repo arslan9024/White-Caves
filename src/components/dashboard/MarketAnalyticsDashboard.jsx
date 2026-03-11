@@ -5,7 +5,7 @@ import {
   DollarSign, Calendar, BarChart3, PieChart, Activity,
   ArrowUpRight, ArrowDownRight, Target, Zap
 } from 'lucide-react';
-import './MarketAnalyticsDashboard.css';
+import * as S from './MarketAnalyticsDashboard.styles';
 
 const MarketAnalyticsDashboard = ({ data = {} }) => {
   const { t, formatNumber, formatCurrency, isRTL } = useLanguage();

@@ -1,6 +1,6 @@
 import React, { useState, forwardRef } from 'react';
 import { Eye, EyeOff, X, AlertCircle, Check } from 'lucide-react';
-import './Input.css';
+import * as S from './Input.styles';
 
 const Input = forwardRef(({
   type = 'text',
@@ -60,20 +60,28 @@ const Input = forwardRef(({
   ].filter(Boolean).join(' ');
 
   return (
-    <div className="wc-input-container">
+    <S.Container className={className}>
       {label && (
-        <label className="wc-input-label">
+        <S.Label>
           {label}
-          {required && <span className="wc-input-required">*</span>}
-        </label>
+          {required && <S.Required>*</S.Required>}
+        </S.Label>
       )}
       
-      <div className={wrapperClasses}>
+      <S.Wrapper
+        size={size}
+        focused={isFocused}
+        error={!!error}
+        success={!!success}
+        disabled={disabled}
+        iconLeft={icon && iconPosition === 'left'}
+        iconRight={icon && iconPosition === 'right'}
+      >
         {icon && iconPosition === 'left' && (
-          <span className="wc-input-icon wc-input-icon--left">{icon}</span>
+          <S.Icon position="left">{icon}</S.Icon>
         )}
         
-        <input
+        <S.Input
           ref={ref}
           type={inputType}
           value={value}
@@ -84,50 +92,48 @@ const Input = forwardRef(({
           disabled={disabled}
           readOnly={readOnly}
           maxLength={maxLength}
-          className="wc-input"
           {...props}
         />
         
-        <div className="wc-input-actions">
+        <S.Actions>
           {clearable && value && !disabled && (
-            <button type="button" className="wc-input-action" onClick={handleClear}>
+            <S.Action type="button" onClick={handleClear}>
               <X size={16} />
-            </button>
+            </S.Action>
           )}
           
           {isPassword && (
-            <button 
-              type="button" 
-              className="wc-input-action"
+            <S.Action 
+              type="button"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
+            </S.Action>
           )}
           
-          {error && <AlertCircle size={16} className="wc-input-status-icon wc-input-status-icon--error" />}
-          {success && !error && <Check size={16} className="wc-input-status-icon wc-input-status-icon--success" />}
-        </div>
+          {error && <S.StatusIcon type="error"><AlertCircle size={16} /></S.StatusIcon>}
+          {success && !error && <S.StatusIcon type="success"><Check size={16} /></S.StatusIcon>}
+        </S.Actions>
         
         {icon && iconPosition === 'right' && !clearable && !isPassword && (
-          <span className="wc-input-icon wc-input-icon--right">{icon}</span>
+          <S.Icon position="right">{icon}</S.Icon>
         )}
-      </div>
+      </S.Wrapper>
       
-      <div className="wc-input-footer">
+      <S.Footer>
         {(error || helperText) && (
-          <span className={`wc-input-helper ${error ? 'wc-input-helper--error' : ''}`}>
+          <S.HelperText type={error ? 'error' : undefined}>
             {error || helperText}
-          </span>
+          </S.HelperText>
         )}
         
         {showCount && maxLength && (
-          <span className="wc-input-count">
+          <S.CharCount>
             {(value?.length || 0)}/{maxLength}
-          </span>
+          </S.CharCount>
         )}
-      </div>
-    </div>
+      </S.Footer>
+    </S.Container>
   );
 });
 

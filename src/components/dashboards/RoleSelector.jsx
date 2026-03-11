@@ -1,5 +1,5 @@
 import React from 'react';
-import './RoleSelector.css';
+import * as S from './RoleSelector.styles';
 
 const roles = [
   { id: 'buyer', label: 'Buyer', icon: '🏠', description: 'Looking to purchase property' },
@@ -13,41 +13,40 @@ const roles = [
 export default function RoleSelector({ currentRole, onRoleChange, compact = false }) {
   if (compact) {
     return (
-      <div className="role-selector-compact">
-        <label>Your Role:</label>
-        <select 
+      <S.CompactContainer>
+        <S.CompactLabel>Your Role:</S.CompactLabel>
+        <S.RoleSelect 
           value={currentRole || 'buyer'} 
           onChange={(e) => onRoleChange(e.target.value)}
-          className="role-select"
         >
           {roles.map(role => (
             <option key={role.id} value={role.id}>
               {role.icon} {role.label}
             </option>
           ))}
-        </select>
-      </div>
+        </S.RoleSelect>
+      </S.CompactContainer>
     );
   }
 
   return (
-    <div className="role-selector">
-      <h2>Select Your Role</h2>
-      <p className="role-selector-subtitle">Choose how you want to use White Caves</p>
+    <S.Container>
+      <S.Title>Select Your Role</S.Title>
+      <S.Subtitle>Choose how you want to use White Caves</S.Subtitle>
       
-      <div className="roles-grid">
+      <S.RolesGrid>
         {roles.map(role => (
-          <button
+          <S.RoleCard
             key={role.id}
-            className={`role-card ${currentRole === role.id ? 'active' : ''}`}
+            active={currentRole === role.id}
             onClick={() => onRoleChange(role.id)}
           >
-            <span className="role-icon">{role.icon}</span>
-            <span className="role-label">{role.label}</span>
-            <span className="role-description">{role.description}</span>
-          </button>
+            <S.RoleIcon>{role.icon}</S.RoleIcon>
+            <S.RoleLabel>{role.label}</S.RoleLabel>
+            <S.RoleDescription>{role.description}</S.RoleDescription>
+          </S.RoleCard>
         ))}
-      </div>
+      </S.RolesGrid>
     </div>
   );
 }

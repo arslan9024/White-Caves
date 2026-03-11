@@ -14,7 +14,7 @@ import {
   getDepartmentOrder,
   getAllAssistants
 } from '../../config/assistantRegistry';
-import './AssistantNavSidebar.css';
+import * as S from './AssistantNavSidebar.styles';
 
 const ICON_MAP = {
   MessageSquare, Building2, Target, Bot, Users, TrendingUp, Home,

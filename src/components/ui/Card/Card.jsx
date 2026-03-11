@@ -1,5 +1,5 @@
 import React from 'react';
-import './Card.css';
+import * as S from './Card.styles';
 
 const Card = ({
   children,
@@ -12,42 +12,38 @@ const Card = ({
   onClick,
   ...props
 }) => {
-  const cardClasses = [
-    'wc-card',
-    `wc-card--${variant}`,
-    `wc-card--padding-${padding}`,
-    `wc-card--shadow-${shadow}`,
-    hoverable && 'wc-card--hoverable',
-    bordered && 'wc-card--bordered',
-    onClick && 'wc-card--clickable',
-    'corner-md',
-    'transition-smooth',
-    className
-  ].filter(Boolean).join(' ');
-
   return (
-    <div className={cardClasses} onClick={onClick} {...props}>
+    <S.CardContainer 
+      variant={variant}
+      padding={padding}
+      hoverable={hoverable}
+      bordered={bordered}
+      shadow={shadow}
+      onClick={onClick}
+      className={className}
+      {...props}
+    >
       {children}
-    </div>
+    </S.CardContainer>
   );
 };
 
 const CardHeader = ({ children, className = '', ...props }) => (
-  <div className={`wc-card-header ${className}`} {...props}>
+  <S.CardHeader className={className} {...props}>
     {children}
-  </div>
+  </S.CardHeader>
 );
 
 const CardBody = ({ children, className = '', ...props }) => (
-  <div className={`wc-card-body ${className}`} {...props}>
+  <S.CardBody className={className} {...props}>
     {children}
-  </div>
+  </S.CardBody>
 );
 
 const CardFooter = ({ children, className = '', ...props }) => (
-  <div className={`wc-card-footer ${className}`} {...props}>
+  <S.CardFooter className={className} {...props}>
     {children}
-  </div>
+  </S.CardFooter>
 );
 
 const StatCard = ({
@@ -61,25 +57,22 @@ const StatCard = ({
   ...props
 }) => (
   <Card variant="stat" className={className} {...props}>
-    <div className="wc-stat-card-content">
-      <div className="wc-stat-card-info flex-col flex-col--gap-xs">
-        <span className="wc-stat-card-title">{title}</span>
-        <span className="wc-stat-card-value">{value}</span>
+    <S.StatCardContent>
+      <S.StatCardInfo>
+        <S.StatCardTitle>{title}</S.StatCardTitle>
+        <S.StatCardValue>{value}</S.StatCardValue>
         {change !== undefined && (
-          <span className={`wc-stat-card-change wc-stat-card-change--${changeType}`}>
+          <S.StatCardChange type={changeType}>
             {changeType === 'positive' && '+'}{change}
-          </span>
+          </S.StatCardChange>
         )}
-      </div>
+      </S.StatCardInfo>
       {icon && (
-        <div 
-          className="wc-stat-card-icon flex-center corner-md" 
-          style={{ backgroundColor: iconColor ? `${iconColor}15` : undefined, color: iconColor }}
-        >
+        <S.StatCardIcon style={{ backgroundColor: iconColor ? `${iconColor}15` : undefined, color: iconColor }}>
           {icon}
-        </div>
+        </S.StatCardIcon>
       )}
-    </div>
+    </S.StatCardContent>
   </Card>
 );
 
@@ -101,35 +94,34 @@ const PropertyCard = ({
   ...props
 }) => (
   <Card variant="property" hoverable onClick={onClick} className={className} {...props}>
-    <div className="wc-property-card-image">
+    <S.PropertyCardImage>
       {image && <img src={image} alt={title} />}
       {status && (
-        <span className={`wc-property-card-status wc-property-card-status--${status}`}>
+        <S.PropertyCardStatus status={status}>
           {statusLabel || status}
-        </span>
+        </S.PropertyCardStatus>
       )}
       {onFavorite && (
-        <button 
-          className={`wc-property-card-favorite ${isFavorite ? 'wc-property-card-favorite--active' : ''}`}
+        <S.PropertyCardFavorite 
           onClick={(e) => { e.stopPropagation(); onFavorite(); }}
         >
           ♥
-        </button>
+        </S.PropertyCardFavorite>
       )}
-    </div>
-    <div className="wc-property-card-content">
-      <h3 className="wc-property-card-title">{title}</h3>
-      <p className="wc-property-card-location">{location}</p>
-      <div className="wc-property-card-specs">
-        {bedrooms !== undefined && <span>{bedrooms} Beds</span>}
-        {bathrooms !== undefined && <span>{bathrooms} Baths</span>}
-        {area && <span>{area}</span>}
-      </div>
-      <div className="wc-property-card-price">
-        <span className="wc-property-card-price-value">{price}</span>
-        {priceLabel && <span className="wc-property-card-price-label">{priceLabel}</span>}
-      </div>
-    </div>
+    </S.PropertyCardImage>
+    <S.PropertyCardContent>
+      <S.PropertyCardTitle>{title}</S.PropertyCardTitle>
+      <S.PropertyCardLocation>{location}</S.PropertyCardLocation>
+      <S.PropertyCardFeatures>
+        {bedrooms !== undefined && <S.PropertyCardFeature>{bedrooms} Beds</S.PropertyCardFeature>}
+        {bathrooms !== undefined && <S.PropertyCardFeature>{bathrooms} Baths</S.PropertyCardFeature>}
+        {area && <S.PropertyCardFeature>{area}</S.PropertyCardFeature>}
+      </S.PropertyCardFeatures>
+      <S.PropertyCardPrice>
+        <S.PropertyCardPriceValue>{price}</S.PropertyCardPriceValue>
+        {priceLabel && <S.PropertyCardPriceLabel>{priceLabel}</S.PropertyCardPriceLabel>}
+      </S.PropertyCardPrice>
+    </S.PropertyCardContent>
   </Card>
 );
 

@@ -4,7 +4,7 @@ import {
   Settings, HelpCircle, ChevronDown
 } from 'lucide-react';
 import RoleSelectorDropdown from '../../shared/components/ui/RoleSelectorDropdown';
-import './DashboardHeader.css';
+import * as S from './DashboardHeader.styles';
 
 const DashboardHeader = ({ 
   title = 'Executive Dashboard',
@@ -24,136 +24,133 @@ const DashboardHeader = ({
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   return (
-    <header className="dashboard-header-new">
-      <div className="header-left flex-row--lg">
-        <button className="mobile-menu-btn flex-center transition-smooth" onClick={onMenuToggle}>
+    <S.HeaderContainer>
+      <S.HeaderLeft>
+        <S.MobileMenuBtn onClick={onMenuToggle}>
           <Menu size={20} />
-        </button>
-        <div className="header-title-group flex-col--gap-xs">
-          <h1 className="header-title">{title}</h1>
-          <span className="header-subtitle">{subtitle}</span>
-        </div>
-      </div>
+        </S.MobileMenuBtn>
+        <S.TitleGroup>
+          <S.Title>{title}</S.Title>
+          <S.Subtitle>{subtitle}</S.Subtitle>
+        </S.TitleGroup>
+      </S.HeaderLeft>
 
-      <div className="header-center flex-center-x">
-        <div className="search-wrapper">
-          <Search size={18} className="search-icon" />
-          <input
+      <S.HeaderCenter>
+        <S.SearchWrapper>
+          <S.SearchIcon>
+            <Search size={18} />
+          </S.SearchIcon>
+          <S.SearchInput
             type="text"
             placeholder="Search assistants, features, data..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
           />
-          <span className="search-shortcut">
-            <kbd>⌘</kbd><kbd>K</kbd>
-          </span>
-        </div>
-      </div>
+          <S.SearchShortcut>
+            <S.ShortcutKey>⌘</S.ShortcutKey>
+            <S.ShortcutKey>K</S.ShortcutKey>
+          </S.SearchShortcut>
+        </S.SearchWrapper>
+      </S.HeaderCenter>
 
-      <div className="header-right">
-        <button 
-          className="header-icon-btn theme-toggle" 
+      <S.HeaderRight>
+        <S.IconButton 
           onClick={onThemeToggle}
           title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
         >
           {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-        </button>
+        </S.IconButton>
 
-        <div className="notifications-wrapper">
-          <button 
-            className="header-icon-btn"
+        <S.NotificationsWrapper>
+          <S.IconButton 
             onClick={() => setShowNotifications(!showNotifications)}
           >
             <Bell size={18} />
             {unreadCount > 0 && (
-              <span className="notification-indicator">{unreadCount}</span>
+              <S.NotificationIndicator>{unreadCount}</S.NotificationIndicator>
             )}
-          </button>
+          </S.IconButton>
           
           {showNotifications && (
-            <div className="notifications-dropdown">
-              <div className="dropdown-header">
+            <S.NotificationsDropdown>
+              <S.DropdownHeader>
                 <span>Notifications</span>
-                <button className="mark-all-read">Mark all read</button>
-              </div>
-              <div className="notifications-list">
+                <S.MarkAllReadBtn>Mark all read</S.MarkAllReadBtn>
+              </S.DropdownHeader>
+              <S.NotificationsList>
                 {notifications.length > 0 ? (
                   notifications.slice(0, 5).map((notif, index) => (
-                    <div key={index} className={`notification-item ${!notif.isRead ? 'unread' : ''}`}>
-                      <div className="notif-content">
-                        <p className="notif-message">{notif.message}</p>
-                        <span className="notif-time">{notif.timestamp}</span>
-                      </div>
-                    </div>
+                    <S.NotificationItem key={index} unread={!notif.isRead}>
+                      <S.NotifContent>
+                        <S.NotifMessage>{notif.message}</S.NotifMessage>
+                        <S.NotifTime>{notif.timestamp}</S.NotifTime>
+                      </S.NotifContent>
+                    </S.NotificationItem>
                   ))
                 ) : (
-                  <div className="empty-notifications">
+                  <S.EmptyNotifications>
                     <Bell size={24} />
                     <p>No new notifications</p>
-                  </div>
+                  </S.EmptyNotifications>
                 )}
-              </div>
-            </div>
+              </S.NotificationsList>
+            </S.NotificationsDropdown>
           )}
-        </div>
+        </S.NotificationsWrapper>
 
-        <div className="role-selector-wrapper">
+        <S.RoleSelectorWrapper>
           <RoleSelectorDropdown 
             currentRole={currentRole}
             onRoleChange={onRoleChange}
           />
-        </div>
+        </S.RoleSelectorWrapper>
 
-        <div className="user-menu-wrapper">
-          <button 
-            className="user-menu-btn"
+        <S.UserMenuWrapper>
+          <S.UserMenuBtn 
             onClick={() => setShowUserMenu(!showUserMenu)}
           >
-            <div className="user-avatar">
+            <S.UserAvatar>
               {user?.photoURL ? (
-                <img src={user.photoURL} alt={user.displayName || 'User'} />
+                <img src={user.photoURL} alt={user.displayName || 'User'} style={{ width: '100%', height: '100%', borderRadius: '8px', objectFit: 'cover' }} />
               ) : (
                 <User size={18} />
               )}
-            </div>
-            <ChevronDown size={14} className="chevron" />
-          </button>
+            </S.UserAvatar>
+            <ChevronDown size={14} />
+          </S.UserMenuBtn>
 
           {showUserMenu && (
-            <div className="user-dropdown">
-              <div className="user-info">
-                <div className="user-avatar large">
+            <S.UserDropdown>
+              <S.UserDropdownItem style={{ padding: '16px', justifyContent: 'flex-start', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <S.UserAvatar>
                   {user?.photoURL ? (
-                    <img src={user.photoURL} alt={user.displayName || 'User'} />
+                    <img src={user.photoURL} alt={user.displayName || 'User'} style={{ width: '100%', height: '100%', borderRadius: '8px', objectFit: 'cover' }} />
                   ) : (
                     <User size={24} />
                   )}
+                </S.UserAvatar>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <span style={{ fontWeight: 600, color: '#fff', fontSize: '14px' }}>{user?.displayName || 'Owner'}</span>
+                  <span style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '12px' }}>{user?.email || 'admin@whitecaves.ae'}</span>
                 </div>
-                <div className="user-details">
-                  <span className="user-name">{user?.displayName || 'Owner'}</span>
-                  <span className="user-email">{user?.email || 'admin@whitecaves.ae'}</span>
-                </div>
-              </div>
-              <div className="dropdown-divider" />
-              <button className="dropdown-item">
+              </S.UserDropdownItem>
+              <S.UserDropdownItem>
                 <Settings size={16} />
                 <span>Settings</span>
-              </button>
-              <button className="dropdown-item">
+              </S.UserDropdownItem>
+              <S.UserDropdownItem>
                 <HelpCircle size={16} />
                 <span>Help & Support</span>
-              </button>
-              <div className="dropdown-divider" />
-              <button className="dropdown-item danger">
+              </S.UserDropdownItem>
+              <S.UserDropdownItem style={{ color: '#ef4444' }}>
                 <LogOut size={16} />
                 <span>Sign Out</span>
-              </button>
-            </div>
+              </S.UserDropdownItem>
+            </S.UserDropdown>
           )}
-        </div>
-      </div>
-    </header>
+        </S.UserMenuWrapper>
+      </S.HeaderRight>
+    </S.HeaderContainer>
   );
 };
 

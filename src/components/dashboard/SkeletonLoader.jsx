@@ -1,56 +1,50 @@
 import React from 'react';
-import './SkeletonLoader.css';
+import * as S from './SkeletonLoader.styles';
 
 export const SkeletonText = ({ width = '100%', height = '16px', className = '' }) => (
-  <div 
-    className={`skeleton-text ${className}`}
-    style={{ width, height }}
-  />
+  <S.SkeletonText style={{ width, height }} className={className} />
 );
 
 export const SkeletonCircle = ({ size = '40px', className = '' }) => (
-  <div 
-    className={`skeleton-circle ${className}`}
-    style={{ width: size, height: size }}
-  />
+  <S.SkeletonCircle style={{ width: size, height: size }} className={className} />
 );
 
 export const SkeletonCard = ({ className = '' }) => (
-  <div className={`skeleton-card ${className}`}>
-    <div className="skeleton-card-header">
+  <S.SkeletonCard className={className}>
+    <S.SkeletonCardHeader>
       <SkeletonCircle size="48px" />
-      <div className="skeleton-card-title">
+      <S.SkeletonCardTitle>
         <SkeletonText width="120px" height="18px" />
         <SkeletonText width="80px" height="14px" />
-      </div>
-    </div>
-    <div className="skeleton-card-body">
+      </S.SkeletonCardTitle>
+    </S.SkeletonCardHeader>
+    <S.SkeletonCardBody>
       <SkeletonText width="100%" height="24px" />
       <SkeletonText width="60%" height="14px" />
-    </div>
-  </div>
+    </S.SkeletonCardBody>
+  </S.SkeletonCard>
 );
 
 export const SkeletonStatCard = ({ className = '' }) => (
-  <div className={`skeleton-stat-card ${className}`}>
+  <S.SkeletonStatCard className={className}>
     <SkeletonCircle size="40px" />
-    <div className="skeleton-stat-content">
+    <S.SkeletonStatContent>
       <SkeletonText width="80px" height="12px" />
       <SkeletonText width="60px" height="24px" />
-    </div>
-  </div>
+    </S.SkeletonStatContent>
+  </S.SkeletonStatCard>
 );
 
 export const SkeletonTable = ({ rows = 5, columns = 4, className = '' }) => (
-  <div className={`skeleton-table ${className}`}>
-    <div className="skeleton-table-header">
+  <S.SkeletonTable className={className}>
+    <S.SkeletonTableHeader>
       {Array.from({ length: columns }).map((_, i) => (
         <SkeletonText key={i} width="80px" height="14px" />
       ))}
-    </div>
-    <div className="skeleton-table-body">
+    </S.SkeletonTableHeader>
+    <S.SkeletonTableBody>
       {Array.from({ length: rows }).map((_, rowIdx) => (
-        <div key={rowIdx} className="skeleton-table-row">
+        <S.SkeletonTableRow key={rowIdx}>
           {Array.from({ length: columns }).map((_, colIdx) => (
             <SkeletonText 
               key={colIdx} 
@@ -58,31 +52,31 @@ export const SkeletonTable = ({ rows = 5, columns = 4, className = '' }) => (
               height="14px" 
             />
           ))}
-        </div>
+        </S.SkeletonTableRow>
       ))}
-    </div>
-  </div>
+    </S.SkeletonTableBody>
+  </S.SkeletonTable>
 );
 
 export const SkeletonDashboard = () => (
-  <div className="skeleton-dashboard">
-    <div className="skeleton-stats-row">
+  <S.SkeletonDashboardContainer>
+    <S.SkeletonStatsRow>
       <SkeletonStatCard />
       <SkeletonStatCard />
       <SkeletonStatCard />
       <SkeletonStatCard />
-    </div>
-    <div className="skeleton-content-row">
-      <div className="skeleton-main-content">
+    </S.SkeletonStatsRow>
+    <S.SkeletonContentRow>
+      <S.SkeletonMainContent>
         <SkeletonCard />
         <SkeletonTable rows={5} columns={4} />
-      </div>
-      <div className="skeleton-sidebar-content">
+      </S.SkeletonMainContent>
+      <S.SkeletonSidebarContent>
         <SkeletonCard />
         <SkeletonCard />
-      </div>
-    </div>
-  </div>
+      </S.SkeletonSidebarContent>
+    </S.SkeletonContentRow>
+  </S.SkeletonDashboardContainer>
 );
 
 export const EmptyState = ({ 
@@ -92,18 +86,18 @@ export const EmptyState = ({
   action,
   actionLabel = 'Get Started'
 }) => (
-  <div className="empty-state">
-    <div className="empty-state-icon">
+  <S.EmptyStateContainer>
+    <S.EmptyStateIcon>
       {Icon && <Icon size={48} />}
-    </div>
-    <h3 className="empty-state-title">{title}</h3>
-    <p className="empty-state-description">{description}</p>
+    </S.EmptyStateIcon>
+    <S.EmptyStateTitle>{title}</S.EmptyStateTitle>
+    <S.EmptyStateDescription>{description}</S.EmptyStateDescription>
     {action && (
-      <button className="empty-state-action" onClick={action}>
+      <S.EmptyStateAction onClick={action}>
         {actionLabel}
-      </button>
+      </S.EmptyStateAction>
     )}
-  </div>
+  </S.EmptyStateContainer>
 );
 
 export default {
