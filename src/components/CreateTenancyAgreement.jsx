@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import './CreateTenancyAgreement.css';
+import * as S from './CreateTenancyAgreement.styles';
 
 export default function CreateTenancyAgreement() {
   const currentUser = useSelector(state => state.user.currentUser);
@@ -135,37 +135,37 @@ export default function CreateTenancyAgreement() {
 
   if (!currentUser) {
     return (
-      <div className="create-agreement-container">
-        <div className="no-auth">
+      <S.Container>
+        <S.NoAuthContainer>
           <h2>Please log in to access this page</h2>
-        </div>
-      </div>
+        </S.NoAuthContainer>
+      </S.Container>
     );
   }
 
   if (!currentUser.roles.includes('EMPLOYEE') && !currentUser.roles.includes('AGENT')) {
     return (
-      <div className="create-agreement-container">
-        <div className="no-permission">
+      <S.Container>
+        <S.NoPermissionContainer>
           <h2>Access Denied</h2>
           <p>Only property managers can create tenancy agreements</p>
-        </div>
-      </div>
+        </S.NoPermissionContainer>
+      </S.Container>
     );
   }
 
   return (
-    <div className="create-agreement-container">
-      <div className="create-agreement-header">
+    <S.Container>
+      <S.Header>
         <h1>Create Tenancy Agreement</h1>
         <p>As a property manager, create binding tenancy agreements for your managed properties</p>
-      </div>
+      </S.Header>
 
-      <form onSubmit={handleSubmit} className="agreement-form">
-        <div className="form-section">
+      <S.Form onSubmit={handleSubmit}>
+        <S.FormSection>
           <h3>Property Details</h3>
           
-          <div className="form-group">
+          <S.FormGroup>
             <label htmlFor="propertyId">Select Property *</label>
             <select
               id="propertyId"
@@ -181,9 +181,9 @@ export default function CreateTenancyAgreement() {
                 </option>
               ))}
             </select>
-          </div>
+          </S.FormGroup>
 
-          <div className="form-group">
+          <S.FormGroup>
             <label htmlFor="propertyAddress">Property Address *</label>
             <input
               type="text"
@@ -194,13 +194,13 @@ export default function CreateTenancyAgreement() {
               placeholder="Property address"
               required
             />
-          </div>
-        </div>
+          </S.FormGroup>
+        </S.FormSection>
 
-        <div className="form-section">
+        <S.FormSection>
           <h3>Tenant Information</h3>
           
-          <div className="form-group">
+          <S.FormGroup>
             <label htmlFor="tenantId">Select Tenant *</label>
             <select
               id="tenantId"
@@ -216,9 +216,9 @@ export default function CreateTenancyAgreement() {
                 </option>
               ))}
             </select>
-          </div>
+          </S.FormGroup>
 
-          <div className="form-group">
+          <S.FormGroup>
             <label htmlFor="tenantEmail">Tenant Email *</label>
             <input
               type="email"
@@ -229,13 +229,13 @@ export default function CreateTenancyAgreement() {
               placeholder="Tenant's registered email"
               required
             />
-          </div>
-        </div>
+          </S.FormGroup>
+        </S.FormSection>
 
-        <div className="form-section">
+        <S.FormSection>
           <h3>Landlord Information</h3>
           
-          <div className="form-group">
+          <S.FormGroup>
             <label htmlFor="landlordEmail">Landlord Email *</label>
             <input
               type="email"
@@ -246,14 +246,14 @@ export default function CreateTenancyAgreement() {
               placeholder="Landlord's registered email"
               required
             />
-          </div>
-        </div>
+          </S.FormGroup>
+        </S.FormSection>
 
-        <div className="form-section">
+        <S.FormSection>
           <h3>Financial Terms</h3>
           
-          <div className="form-row">
-            <div className="form-group">
+          <S.FormRow>
+            <S.FormGroup>
               <label htmlFor="monthlyRent">Monthly Rent ($) *</label>
               <input
                 type="number"
@@ -265,9 +265,9 @@ export default function CreateTenancyAgreement() {
                 required
                 min="0"
               />
-            </div>
+            </S.FormGroup>
 
-            <div className="form-group">
+            <S.FormGroup>
               <label htmlFor="securityDeposit">Security Deposit ($) *</label>
               <input
                 type="number"
@@ -279,15 +279,15 @@ export default function CreateTenancyAgreement() {
                 required
                 min="0"
               />
-            </div>
-          </div>
-        </div>
+            </S.FormGroup>
+          </S.FormRow>
+        </S.FormSection>
 
-        <div className="form-section">
+        <S.FormSection>
           <h3>Lease Period</h3>
           
-          <div className="form-row">
-            <div className="form-group">
+          <S.FormRow>
+            <S.FormGroup>
               <label htmlFor="leaseStartDate">Lease Start Date *</label>
               <input
                 type="date"
@@ -297,9 +297,9 @@ export default function CreateTenancyAgreement() {
                 onChange={handleChange}
                 required
               />
-            </div>
+            </S.FormGroup>
 
-            <div className="form-group">
+            <S.FormGroup>
               <label htmlFor="leaseEndDate">Lease End Date *</label>
               <input
                 type="date"
@@ -309,14 +309,14 @@ export default function CreateTenancyAgreement() {
                 onChange={handleChange}
                 required
               />
-            </div>
-          </div>
-        </div>
+            </S.FormGroup>
+          </S.FormRow>
+        </S.FormSection>
 
-        <div className="form-section">
+        <S.FormSection>
           <h3>Additional Terms</h3>
           
-          <div className="form-group">
+          <S.FormGroup>
             <label htmlFor="terms">Terms and Conditions</label>
             <textarea
               id="terms"
@@ -324,21 +324,20 @@ export default function CreateTenancyAgreement() {
               value={formData.terms}
               onChange={handleChange}
               placeholder="Add any additional terms, conditions, or special clauses..."
-              rows="6"
+              rows={6}
             />
-          </div>
-        </div>
+          </S.FormGroup>
+        </S.FormSection>
 
-        <div className="form-actions">
-          <button 
-            type="submit" 
-            className="submit-btn"
+        <S.FormActions>
+          <S.SubmitBtn 
+            type="submit"
             disabled={loading}
           >
             {loading ? 'Creating Agreement...' : 'Create Tenancy Agreement'}
-          </button>
-        </div>
-      </form>
-    </div>
+          </S.SubmitBtn>
+        </S.FormActions>
+      </S.Form>
+    </S.Container>
   );
 }

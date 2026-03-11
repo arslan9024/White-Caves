@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setProperties } from '../store/propertySlice';
-import './AdminDashboard.css';
+import * as S from './AdminDashboard.styles';
 
 const emptyProperty = {
   title: '',
@@ -187,65 +187,65 @@ export default function AdminDashboard() {
 
   if (!isAdmin) {
     return (
-      <div className="admin-dashboard">
-        <div className="admin-access-denied">
+      <S.DashboardContainer>
+        <S.AccessDeniedContainer>
           <span className="access-icon">🔒</span>
           <h2>Admin Access Required</h2>
           <p>You need administrator privileges to access this section.</p>
-        </div>
-      </div>
+        </S.AccessDeniedContainer>
+      </S.DashboardContainer>
     );
   }
 
   return (
-    <div className="admin-dashboard">
+    <S.DashboardContainer>
       {notification && (
-        <div className={`admin-notification ${notification.type}`}>
+        <S.Notification type={notification.type}>
           {notification.message}
-        </div>
+        </S.Notification>
       )}
 
-      <div className="admin-header">
-        <div className="admin-title">
+      <S.Header>
+        <S.Title>
           <h2>Property Management</h2>
           <p>Manage your property listings</p>
-        </div>
-        <div className="admin-stats">
-          <div className="admin-stat">
-            <span className="stat-number">{properties.length}</span>
-            <span className="stat-label">Total Properties</span>
-          </div>
-          <div className="admin-stat">
-            <span className="stat-number">{properties.filter(p => p.type === 'Villa').length}</span>
-            <span className="stat-label">Villas</span>
-          </div>
-          <div className="admin-stat">
-            <span className="stat-number">{properties.filter(p => p.type === 'Apartment').length}</span>
-            <span className="stat-label">Apartments</span>
-          </div>
-        </div>
-      </div>
+        </S.Title>
+        <S.Stats>
+          <S.Stat>
+            <S.StatNumber>{properties.length}</S.StatNumber>
+            <S.StatLabel>Total Properties</S.StatLabel>
+          </S.Stat>
+          <S.Stat>
+            <S.StatNumber>{properties.filter(p => p.type === 'Villa').length}</S.StatNumber>
+            <S.StatLabel>Villas</S.StatLabel>
+          </S.Stat>
+          <S.Stat>
+            <S.StatNumber>{properties.filter(p => p.type === 'Apartment').length}</S.StatNumber>
+            <S.StatLabel>Apartments</S.StatLabel>
+          </S.Stat>
+        </S.Stats>
+      </S.Header>
 
-      <div className="admin-tabs">
-        <button 
-          className={`admin-tab ${activeTab === 'list' ? 'active' : ''}`}
+      <S.Tabs>
+        <S.Tab 
+          active={activeTab === 'list'}
           onClick={() => { setActiveTab('list'); handleCancel(); }}
         >
           📋 Property List
-        </button>
-        <button 
-          className={`admin-tab ${activeTab === 'form' ? 'active' : ''}`}
+        </S.Tab>
+        <S.Tab 
+          active={activeTab === 'form'}
           onClick={() => setActiveTab('form')}
         >
           {editingProperty ? '✏️ Edit Property' : '➕ Add Property'}
-        </button>
-      </div>
+        </S.Tab>
+      </S.Tabs>
 
-      <div className="admin-content">
+      <S.Content>
         {activeTab === 'list' && (
-          <div className="property-list-section">
-            <div className="list-controls">
-              <div className="search-box">
+          <S.ListSection>
+            <S.ListControls>
+              <S.SearchBox>
                 <input
                   type="text"
                   placeholder="Search properties..."
@@ -253,27 +253,25 @@ export default function AdminDashboard() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <span className="search-icon">🔍</span>
-              </div>
-              <select 
+              </S.SearchBox>
+              <S.TypeFilter
                 value={filterType} 
                 onChange={(e) => setFilterType(e.target.value)}
-                className="type-filter"
               >
                 <option value="all">All Types</option>
                 {propertyTypes.map(type => (
                   <option key={type} value={type}>{type}</option>
                 ))}
-              </select>
-              <button 
-                className="add-property-btn"
+              </S.TypeFilter>
+              <S.AddPropertyBtn
                 onClick={() => { setEditingProperty(null); setFormData(emptyProperty); setActiveTab('form'); }}
               >
                 ➕ Add New
-              </button>
-            </div>
+              </S.AddPropertyBtn>
+            </S.ListControls>
 
-            <div className="property-table-wrapper">
-              <table className="property-table">
+            <S.TableWrapper>
+              <S.PropertyTable>
                 <thead>
                   <tr>
                     <th>Property</th>
@@ -287,61 +285,60 @@ export default function AdminDashboard() {
                 <tbody>
                   {filteredProperties.map(property => (
                     <tr key={property.id}>
-                      <td className="property-cell">
-                        <div className="property-preview">
-                          <div 
-                            className="property-thumb"
+                      <S.PropertyCell>
+                        <S.PropertyPreview>
+                          <S.PropertyThumb
                             style={{ 
                               backgroundImage: `url(${property.images?.[0] || 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c'})`
                             }}
-                          ></div>
-                          <span className="property-title">{property.title}</span>
-                        </div>
-                      </td>
+                          />
+                          <S.PropertyTitle>{property.title}</S.PropertyTitle>
+                        </S.PropertyPreview>
+                      </S.PropertyCell>
                       <td>{property.location}</td>
                       <td>
-                        <span className={`type-badge ${property.type.toLowerCase()}`}>
+                        <S.TypeBadge type={property.type}>
                           {property.type}
-                        </span>
+                        </S.TypeBadge>
                       </td>
                       <td>{property.beds} / {property.baths}</td>
-                      <td className="price-cell">{formatPrice(property.price)}</td>
-                      <td className="actions-cell">
-                        <button 
-                          className="action-btn edit"
+                      <S.PriceCell>{formatPrice(property.price)}</S.PriceCell>
+                      <S.ActionsCell>
+                        <S.ActionBtn 
+                          variant="edit"
                           onClick={() => handleEdit(property)}
                           title="Edit"
                         >
                           ✏️
-                        </button>
-                        <button 
-                          className="action-btn delete"
+                        </S.ActionBtn>
+                        <S.ActionBtn 
+                          variant="delete"
                           onClick={() => setShowDeleteModal(property)}
                           title="Delete"
                         >
                           🗑️
-                        </button>
-                      </td>
+                        </S.ActionBtn>
+                      </S.ActionsCell>
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </S.PropertyTable>
               {filteredProperties.length === 0 && (
-                <div className="no-results">
+                <S.NoResults>
                   <span>🏠</span>
                   <p>No properties found matching your criteria</p>
-                </div>
+                </S.NoResults>
               )}
-            </div>
-          </div>
+            </S.TableWrapper>
+          </S.ListSection>
         )}
 
         {activeTab === 'form' && (
-          <form className="property-form" onSubmit={handleSubmit}>
-            <div className="form-section">
+          <S.PropertyForm onSubmit={handleSubmit}>
+            <S.FormSection>
               <h3>Basic Information</h3>
-              <div className="form-grid">
-                <div className="form-group full-width">
+              <S.FormGrid>
+                <S.FormGroup fullWidth>
                   <label htmlFor="title">Property Title *</label>
                   <input
                     type="text"
@@ -353,9 +350,9 @@ export default function AdminDashboard() {
                     className={formErrors.title ? 'error' : ''}
                     required
                   />
-                  {formErrors.title && <span className="form-error">{formErrors.title}</span>}
-                </div>
-                <div className="form-group">
+                  {formErrors.title && <S.FormError>{formErrors.title}</S.FormError>}
+                </S.FormGroup>
+                <S.FormGroup>
                   <label htmlFor="location">Location *</label>
                   <select
                     id="location"
@@ -370,9 +367,9 @@ export default function AdminDashboard() {
                       <option key={loc} value={loc}>{loc}</option>
                     ))}
                   </select>
-                  {formErrors.location && <span className="form-error">{formErrors.location}</span>}
-                </div>
-                <div className="form-group">
+                  {formErrors.location && <S.FormError>{formErrors.location}</S.FormError>}
+                </S.FormGroup>
+                <S.FormGroup>
                   <label htmlFor="type">Property Type *</label>
                   <select
                     id="type"
@@ -385,14 +382,14 @@ export default function AdminDashboard() {
                       <option key={type} value={type}>{type}</option>
                     ))}
                   </select>
-                </div>
-              </div>
-            </div>
+                </S.FormGroup>
+              </S.FormGrid>
+            </S.FormSection>
 
-            <div className="form-section">
+            <S.FormSection>
               <h3>Property Details</h3>
-              <div className="form-grid">
-                <div className="form-group">
+              <S.FormGrid>
+                <S.FormGroup>
                   <label htmlFor="beds">Bedrooms</label>
                   <input
                     type="number"
@@ -404,9 +401,9 @@ export default function AdminDashboard() {
                     max="20"
                     className={formErrors.beds ? 'error' : ''}
                   />
-                  {formErrors.beds && <span className="form-error">{formErrors.beds}</span>}
-                </div>
-                <div className="form-group">
+                  {formErrors.beds && <S.FormError>{formErrors.beds}</S.FormError>}
+                </S.FormGroup>
+                <S.FormGroup>
                   <label htmlFor="baths">Bathrooms</label>
                   <input
                     type="number"
@@ -418,9 +415,9 @@ export default function AdminDashboard() {
                     max="20"
                     className={formErrors.baths ? 'error' : ''}
                   />
-                  {formErrors.baths && <span className="form-error">{formErrors.baths}</span>}
-                </div>
-                <div className="form-group">
+                  {formErrors.baths && <S.FormError>{formErrors.baths}</S.FormError>}
+                </S.FormGroup>
+                <S.FormGroup>
                   <label htmlFor="sqft">Area (sqft)</label>
                   <input
                     type="number"
@@ -432,9 +429,9 @@ export default function AdminDashboard() {
                     step="100"
                     className={formErrors.sqft ? 'error' : ''}
                   />
-                  {formErrors.sqft && <span className="form-error">{formErrors.sqft}</span>}
-                </div>
-                <div className="form-group">
+                  {formErrors.sqft && <S.FormError>{formErrors.sqft}</S.FormError>}
+                </S.FormGroup>
+                <S.FormGroup>
                   <label htmlFor="price">Price (AED) *</label>
                   <input
                     type="number"
@@ -447,47 +444,47 @@ export default function AdminDashboard() {
                     className={formErrors.price ? 'error' : ''}
                     required
                   />
-                  {formErrors.price && <span className="form-error">{formErrors.price}</span>}
-                </div>
-              </div>
-            </div>
+                  {formErrors.price && <S.FormError>{formErrors.price}</S.FormError>}
+                </S.FormGroup>
+              </S.FormGrid>
+            </S.FormSection>
 
-            <div className="form-section">
+            <S.FormSection>
               <h3>Description</h3>
-              <div className="form-group full-width">
+              <S.FormGroup fullWidth>
                 <textarea
                   id="description"
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
                   placeholder="Enter a detailed description of the property..."
-                  rows="4"
+                  rows={4}
                 />
-              </div>
-            </div>
+              </S.FormGroup>
+            </S.FormSection>
 
-            <div className="form-section">
+            <S.FormSection>
               <h3>Amenities</h3>
-              <div className="amenities-grid">
+              <S.AmenitiesGrid>
                 {availableAmenities.map(amenity => (
-                  <label key={amenity} className="amenity-checkbox">
+                  <S.AmenityCheckbox key={amenity}>
                     <input
                       type="checkbox"
                       checked={formData.amenities.includes(amenity)}
                       onChange={() => handleAmenityToggle(amenity)}
                     />
                     <span>{amenity}</span>
-                  </label>
+                  </S.AmenityCheckbox>
                 ))}
-              </div>
-            </div>
+              </S.AmenitiesGrid>
+            </S.FormSection>
 
-            <div className="form-section">
+            <S.FormSection>
               <h3>Images</h3>
-              <div className="images-section">
-                <div className="image-list">
+              <S.ImagesSection>
+                <S.ImageList>
                   {formData.images.map((img, index) => (
-                    <div key={index} className="image-item">
+                    <S.ImageItem key={index}>
                       <img src={img} alt={`Property ${index + 1}`} />
                       <button 
                         type="button"
@@ -496,10 +493,10 @@ export default function AdminDashboard() {
                       >
                         ×
                       </button>
-                    </div>
+                    </S.ImageItem>
                   ))}
-                </div>
-                <div className="image-add-section">
+                </S.ImageList>
+                <S.ImageAddSection>
                   <input
                     type="text"
                     placeholder="Enter image URL (e.g., https://images.unsplash.com/...)"
@@ -507,47 +504,46 @@ export default function AdminDashboard() {
                     onChange={(e) => setNewImageUrl(e.target.value)}
                     className={formErrors.image ? 'error' : ''}
                   />
-                  <button 
+                  <S.AddImageBtn
                     type="button"
-                    className="add-image-btn-inline"
                     onClick={handleImageAdd}
                   >
                     Add Image
-                  </button>
-                </div>
-                {formErrors.image && <span className="form-error">{formErrors.image}</span>}
-              </div>
-            </div>
+                  </S.AddImageBtn>
+                </S.ImageAddSection>
+                {formErrors.image && <S.FormError>{formErrors.image}</S.FormError>}
+              </S.ImagesSection>
+            </S.FormSection>
 
-            <div className="form-actions">
-              <button type="button" className="cancel-btn" onClick={handleCancel}>
+            <S.FormActions>
+              <S.CancelBtn type="button" onClick={handleCancel}>
                 Cancel
-              </button>
-              <button type="submit" className="submit-btn">
+              </S.CancelBtn>
+              <S.SubmitBtn type="submit">
                 {editingProperty ? 'Update Property' : 'Create Property'}
-              </button>
-            </div>
-          </form>
+              </S.SubmitBtn>
+            </S.FormActions>
+          </S.PropertyForm>
         )}
       </div>
 
       {showDeleteModal && (
-        <div className="delete-modal-overlay" onClick={() => setShowDeleteModal(null)}>
-          <div className="delete-modal" onClick={e => e.stopPropagation()}>
+        <S.DeleteModalOverlay onClick={() => setShowDeleteModal(null)}>
+          <S.DeleteModal onClick={e => e.stopPropagation()}>
             <h3>Delete Property</h3>
             <p>Are you sure you want to delete "{showDeleteModal.title}"?</p>
             <p className="warning">This action cannot be undone.</p>
-            <div className="modal-actions">
-              <button className="cancel-btn" onClick={() => setShowDeleteModal(null)}>
+            <S.ModalActions>
+              <S.CancelBtn onClick={() => setShowDeleteModal(null)}>
                 Cancel
-              </button>
-              <button className="delete-btn" onClick={() => handleDelete(showDeleteModal.id)}>
+              </S.CancelBtn>
+              <S.DeleteBtn onClick={() => handleDelete(showDeleteModal.id)}>
                 Delete
-              </button>
-            </div>
-          </div>
-        </div>
+              </S.DeleteBtn>
+            </S.ModalActions>
+          </S.DeleteModal>
+        </S.DeleteModalOverlay>
       )}
-    </div>
+    </S.DashboardContainer>
   );
 }

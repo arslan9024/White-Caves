@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import './HomeButton.css';
+import * as S from './HomeButton.styles';
 
 const HomeIcon = () => (
   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
@@ -20,14 +20,14 @@ export default function HomeButton({ variant = 'default', showText = true, class
   };
 
   return (
-    <button 
-      className={`home-button home-button-${variant} ${className}`}
+    <S.HomeButtonContainer 
+      variant={variant as any}
       onClick={handleClick}
       title="Go to Home"
     >
       <HomeIcon />
       {showText && <span>Home</span>}
-    </button>
+    </S.HomeButtonContainer>
   );
 }
 
@@ -38,12 +38,11 @@ export function FloatingHomeButton() {
   if (location.pathname === '/') return null;
 
   return (
-    <button 
-      className="floating-home-button"
+    <S.FloatingHomeButtonContainer
       onClick={() => navigate('/')}
       title="Go to Home"
     >
       <HomeIcon />
-    </button>
+    </S.FloatingHomeButtonContainer>
   );
 }
