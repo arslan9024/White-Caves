@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Error.css';
+import {
+  ErrorContainer,
+  ErrorIcon,
+  ErrorTitle,
+  ErrorMessage,
+  RedirectNotice,
+  Countdown,
+  ErrorHomeBtn,
+} from './Error.styles';
 
 export default function Error({ message, redirectDelay = 5 }) {
   const [countdown, setCountdown] = useState(redirectDelay);
@@ -24,16 +32,16 @@ export default function Error({ message, redirectDelay = 5 }) {
   };
 
   return (
-    <div className="error-container">
-      <div className="error-icon">⚠️</div>
-      <h3>Error</h3>
-      <p>{message || 'Something went wrong. Please try again.'}</p>
-      <p className="redirect-notice">
-        Redirecting to home page in <span className="countdown">{countdown}</span> seconds...
-      </p>
-      <button onClick={handleGoHome} className="error-home-btn">
+    <ErrorContainer>
+      <ErrorIcon>⚠️</ErrorIcon>
+      <ErrorTitle>Error</ErrorTitle>
+      <ErrorMessage>{message || 'Something went wrong. Please try again.'}</ErrorMessage>
+      <RedirectNotice>
+        Redirecting to home page in <Countdown>{countdown}</Countdown> seconds...
+      </RedirectNotice>
+      <ErrorHomeBtn onClick={handleGoHome}>
         Go to Home Now
-      </button>
-    </div>
+      </ErrorHomeBtn>
+    </ErrorContainer>
   );
 }

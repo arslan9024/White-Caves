@@ -1,5 +1,17 @@
 import React from 'react';
-import './ErrorBoundary.css';
+import {
+  ErrorBoundaryContainer,
+  ErrorBoundaryContent,
+  ErrorIconBoundary,
+  ErrorTitle,
+  ErrorMessage,
+  RedirectNotice,
+  Countdown,
+  ErrorActions,
+  ErrorButton,
+  ErrorDetails,
+  ErrorStack,
+} from './ErrorBoundary.styles';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -82,38 +94,38 @@ class ErrorBoundary extends React.Component {
       }
 
       return (
-        <div className="error-boundary">
-          <div className="error-boundary-content">
-            <div className="error-icon">⚠️</div>
-            <h1>Oops! Something went wrong</h1>
-            <p>We're sorry for the inconvenience. An unexpected error has occurred.</p>
-            <p className="redirect-notice">
-              Redirecting to home page in <span className="countdown">{this.state.countdown}</span> seconds...
-            </p>
+        <ErrorBoundaryContainer>
+          <ErrorBoundaryContent>
+            <ErrorIconBoundary>⚠️</ErrorIconBoundary>
+            <ErrorTitle>Oops! Something went wrong</ErrorTitle>
+            <ErrorMessage>We're sorry for the inconvenience. An unexpected error has occurred.</ErrorMessage>
+            <RedirectNotice>
+              Redirecting to home page in <Countdown>{this.state.countdown}</Countdown> seconds...
+            </RedirectNotice>
             
-            <div className="error-actions">
-              <button onClick={this.handleReset} className="error-button primary">
+            <ErrorActions>
+              <ErrorButton $variant="primary" onClick={this.handleReset}>
                 Try Again
-              </button>
-              <button 
-                onClick={this.handleGoHome} 
-                className="error-button secondary"
+              </ErrorButton>
+              <ErrorButton 
+                $variant="secondary"
+                onClick={this.handleGoHome}
               >
                 Go to Home Now
-              </button>
-            </div>
+              </ErrorButton>
+            </ErrorActions>
 
             {process.env.NODE_ENV === 'development' && this.state.error && (
-              <details className="error-details">
+              <ErrorDetails>
                 <summary>Error Details (Development Only)</summary>
-                <pre className="error-stack">
+                <ErrorStack>
                   {this.state.error.toString()}
                   {this.state.errorInfo?.componentStack}
-                </pre>
-              </details>
+                </ErrorStack>
+              </ErrorDetails>
             )}
-          </div>
-        </div>
+          </ErrorBoundaryContent>
+        </ErrorBoundaryContainer>
       );
     }
 

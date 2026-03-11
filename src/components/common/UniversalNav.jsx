@@ -8,7 +8,33 @@ import {
   closeRoleMenu
 } from '../../store/navigationSlice';
 import UniversalProfile from '../layout/UniversalProfile';
-import './UniversalNav.css';
+import {
+  UniversalNavHeader,
+  NavContainer,
+  NavLeft,
+  NavLogo,
+  LogoText,
+  MobileMenuButton,
+  NavCenter,
+  NavLinks,
+  NavLink,
+  NavIcon,
+  RoleDropdownContainer,
+  RoleTrigger,
+  RoleIconSpan,
+  RoleLabel,
+  DropdownArrow,
+  DropdownMenu,
+  DropdownItem,
+  ItemIcon,
+  NavRight,
+  OnlineIndicator,
+  StatusDot,
+  StatusText,
+  DateTimeDisplay,
+  DateSpan,
+  TimeSpan,
+} from './UniversalNav.styles';
 
 const DEFAULT_NAV_LINKS = [
   { path: '/', label: 'Home' },
@@ -196,89 +222,88 @@ export default function UniversalNav({
   };
 
   return (
-    <header className={`universal-nav ${variant} ${className}`}>
-      <div className="universal-nav-container">
-        <div className="nav-left">
-          <Link to="/" className="nav-logo">
+    <UniversalNavHeader className={variant}>
+      <NavContainer>
+        <NavLeft>
+          <NavLogo to="/">
             <img src={logoPath} alt={logoText} />
-            <span className="logo-text">{logoText}</span>
-          </Link>
+            <LogoText>{logoText}</LogoText>
+          </NavLogo>
 
-          <button 
-            className={`mobile-menu-btn ${mobileMenuOpen ? 'open' : ''}`}
+          <MobileMenuButton 
+            $isOpen={mobileMenuOpen}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
             <span></span>
             <span></span>
             <span></span>
-          </button>
-        </div>
+          </MobileMenuButton>
+        </NavLeft>
 
-        <nav className={`nav-center ${mobileMenuOpen ? 'mobile-open' : ''}`}>
-          <div className="nav-links">
+        <NavCenter $mobileOpen={mobileMenuOpen}>
+          <NavLinks>
             {navLinks.map((link) => (
-              <Link 
+              <NavLink 
                 key={link.path}
                 to={link.path}
-                className={`nav-link ${location.pathname === link.path ? 'active' : ''}`}
+                $isActive={location.pathname === link.path}
               >
-                {link.icon && <span className="nav-icon">{link.icon}</span>}
+                {link.icon && <NavIcon>{link.icon}</NavIcon>}
                 {link.label}
-              </Link>
+              </NavLink>
             ))}
-          </div>
+          </NavLinks>
 
           {menu && !menu.isOwnerExclusive && (
-            <div className="role-dropdown" ref={menuRef}>
-              <button 
-                className="role-trigger"
+            <RoleDropdownContainer ref={menuRef}>
+              <RoleTrigger 
                 onClick={() => dispatch(toggleRoleMenu())}
                 style={{ '--role-color': menu.color }}
               >
-                <span className="role-icon">{menu.icon}</span>
-                <span className="role-label">{menu.label}</span>
-                <span className="dropdown-arrow">{roleMenuOpen ? '▲' : '▼'}</span>
-              </button>
+                <RoleIconSpan>{menu.icon}</RoleIconSpan>
+                <RoleLabel>{menu.label}</RoleLabel>
+                <DropdownArrow>{roleMenuOpen ? '▲' : '▼'}</DropdownArrow>
+              </RoleTrigger>
               
               {roleMenuOpen && (
-                <div className="dropdown-menu role-menu">
+                <DropdownMenu>
                   {menu.items.map((item) => (
-                    <Link
+                    <DropdownItem
                       key={item.path}
                       to={item.path}
-                      className={`dropdown-item ${location.pathname === item.path ? 'active' : ''}`}
+                      $isActive={location.pathname === item.path}
                       onClick={() => dispatch(closeRoleMenu())}
                     >
-                      <span className="item-icon">{item.icon}</span>
+                      <ItemIcon>{item.icon}</ItemIcon>
                       {item.label}
-                    </Link>
+                    </DropdownItem>
                   ))}
-                </div>
+                </DropdownMenu>
               )}
-            </div>
+            </RoleDropdownContainer>
           )}
-        </nav>
+        </NavCenter>
 
-        <div className="nav-right">
+        <NavRight>
           {showOnlineStatus && (
-            <div className="online-indicator">
-              <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>
-              <span className="status-text">{isOnline ? 'Online' : 'Offline'}</span>
-            </div>
+            <OnlineIndicator>
+              <StatusDot $isOnline={isOnline}></StatusDot>
+              <StatusText>{isOnline ? 'Online' : 'Offline'}</StatusText>
+            </OnlineIndicator>
           )}
 
           {showDateTime && (
-            <div className="datetime-display">
-              <span className="date">{formatDate(currentDateTime)}</span>
-              <span className="time">{formatTime(currentDateTime)}</span>
-            </div>
+            <DateTimeDisplay>
+              <DateSpan>{formatDate(currentDateTime)}</DateSpan>
+              <TimeSpan>{formatTime(currentDateTime)}</TimeSpan>
+            </DateTimeDisplay>
           )}
 
           <UniversalProfile variant="compact" />
-        </div>
-      </div>
-    </header>
+        </NavRight>
+      </NavContainer>
+    </UniversalNavHeader>
   );
 }
 

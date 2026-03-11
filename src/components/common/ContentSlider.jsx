@@ -1,5 +1,32 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import './ContentSlider.css';
+import {
+  ContentSliderContainer,
+  SliderHeader,
+  SliderTitle,
+  SliderSubtitle,
+  SliderWrapper,
+  SliderContainerElement,
+  SliderTrack,
+  SliderSlide,
+  SliderControl,
+  ControlIcon,
+  SliderDots,
+  SliderDot,
+  SliderPlayPause,
+  DefaultSlideCard,
+  SlideImageContainer,
+  SlideImage,
+  SlideBadge,
+  SlideContent,
+  SlideTitle,
+  SlideLocation,
+  LocationIcon,
+  SlideDescription,
+  SlideFeatures,
+  Feature,
+  FeatureIcon,
+  SlidePrice,
+} from './ContentSlider.styles';
 
 export default function ContentSlider({
   items = [],
@@ -106,27 +133,26 @@ export default function ContentSlider({
   }
 
   return (
-    <div className={`content-slider ${className}`}>
+    <ContentSliderContainer className={className}>
       {(title || subtitle) && (
-        <div className="slider-header">
-          {title && <h2 className="slider-title">{title}</h2>}
-          {subtitle && <p className="slider-subtitle">{subtitle}</p>}
-        </div>
+        <SliderHeader>
+          {title && <SliderTitle>{title}</SliderTitle>}
+          {subtitle && <SliderSubtitle>{subtitle}</SliderSubtitle>}
+        </SliderHeader>
       )}
 
-      <div className="slider-wrapper">
+      <SliderWrapper>
         {showControls && items.length > slidesToShow && (
-          <button 
-            className="slider-control prev"
+          <SliderControl 
+            $position="prev"
             onClick={goToPrev}
             aria-label="Previous slide"
           >
-            <span className="control-icon">‹</span>
-          </button>
+            <ControlIcon>‹</ControlIcon>
+          </SliderControl>
         )}
 
-        <div 
-          className="slider-container"
+        <SliderContainerElement 
           ref={sliderRef}
           onMouseDown={handleDragStart}
           onMouseMove={handleDragMove}
@@ -136,121 +162,118 @@ export default function ContentSlider({
           onTouchMove={handleDragMove}
           onTouchEnd={handleDragEnd}
         >
-          <div className="slider-track" style={containerStyle}>
+          <SliderTrack style={containerStyle}>
             {items.map((item, index) => (
-              <div 
+              <SliderSlide 
                 key={item.id || index}
-                className="slider-slide"
                 style={{ 
                   flex: `0 0 calc(${100 / slidesToShow}% - ${gap * (slidesToShow - 1) / slidesToShow}px)`,
                   minWidth: `calc(${100 / slidesToShow}% - ${gap * (slidesToShow - 1) / slidesToShow}px)`
                 }}
               >
                 {renderItem ? renderItem(item, index) : (
-                  <DefaultSlideCard item={item} />
+                  <DefaultSlideCardComponent item={item} />
                 )}
-              </div>
+              </SliderSlide>
             ))}
-          </div>
-        </div>
+          </SliderTrack>
+        </SliderContainerElement>
 
         {showControls && items.length > slidesToShow && (
-          <button 
-            className="slider-control next"
+          <SliderControl 
+            $position="next"
             onClick={goToNext}
             aria-label="Next slide"
           >
-            <span className="control-icon">›</span>
-          </button>
+            <ControlIcon>›</ControlIcon>
+          </SliderControl>
         )}
-      </div>
+      </SliderWrapper>
 
       {showDots && items.length > slidesToShow && (
-        <div className="slider-dots">
+        <SliderDots>
           {Array.from({ length: maxIndex + 1 }).map((_, index) => (
-            <button
+            <SliderDot
               key={index}
-              className={`slider-dot ${currentIndex === index ? 'active' : ''}`}
+              $isActive={currentIndex === index}
               onClick={() => goToSlide(index)}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
-        </div>
+        </SliderDots>
       )}
 
       {autoPlay && (
-        <button 
-          className="slider-play-pause"
+        <SliderPlayPause 
           onClick={() => setIsPlaying(!isPlaying)}
           aria-label={isPlaying ? 'Pause slideshow' : 'Play slideshow'}
         >
           {isPlaying ? '⏸️' : '▶️'}
-        </button>
+        </SliderPlayPause>
       )}
-    </div>
+    </ContentSliderContainer>
   );
 }
 
-function DefaultSlideCard({ item }) {
+function DefaultSlideCardComponent({ item }) {
   return (
-    <div className="default-slide-card">
+    <DefaultSlideCard>
       {item.images && item.images.length > 0 && (
-        <div className="slide-image-container">
-          <img 
+        <SlideImageContainer>
+          <SlideImage 
             src={item.images[0]} 
             alt={item.title || 'Slide image'}
-            className="slide-image"
             loading="lazy"
           />
           {item.type && (
-            <span className={`slide-badge ${item.type}`}>
+            <SlideBadge $type={item.type}>
               {item.type === 'sale' ? 'For Sale' : 'For Rent'}
-            </span>
+            </SlideBadge>
           )}
-        </div>
+        </SlideImageContainer>
       )}
       
-      <div className="slide-content">
-        {item.title && <h3 className="slide-title">{item.title}</h3>}
+      <SlideContent>
+        {item.title && <SlideTitle>{item.title}</SlideTitle>}
         {item.location && (
-          <p className="slide-location">
-            <span className="location-icon">📍</span>
+          <SlideLocation>
+            <LocationIcon>📍</LocationIcon>
             {item.location}
-          </p>
+          </SlideLocation>
         )}
         {item.description && (
-          <p className="slide-description">{item.description}</p>
+          <SlideDescription>{item.description}</SlideDescription>
         )}
         
         {(item.bedrooms || item.bathrooms || item.area) && (
-          <div className="slide-features">
+          <SlideFeatures>
             {item.bedrooms && (
-              <span className="feature">
-                <span className="feature-icon">🛏️</span>
+              <Feature>
+                <FeatureIcon>🛏️</FeatureIcon>
                 {item.bedrooms} Beds
-              </span>
+              </Feature>
             )}
             {item.bathrooms && (
-              <span className="feature">
-                <span className="feature-icon">🚿</span>
+              <Feature>
+                <FeatureIcon>🚿</FeatureIcon>
                 {item.bathrooms} Baths
-              </span>
+              </Feature>
             )}
             {item.area && (
-              <span className="feature">
-                <span className="feature-icon">📐</span>
+              <Feature>
+                <FeatureIcon>📐</FeatureIcon>
                 {item.area.toLocaleString()} sqft
-              </span>
+              </Feature>
             )}
-          </div>
+          </SlideFeatures>
         )}
         
         {item.priceFormatted && (
-          <p className="slide-price">{item.priceFormatted}</p>
+          <SlidePrice>{item.priceFormatted}</SlidePrice>
         )}
-      </div>
-    </div>
+      </SlideContent>
+    </DefaultSlideCard>
   );
 }
 
-export { DefaultSlideCard };
+export { DefaultSlideCardComponent };

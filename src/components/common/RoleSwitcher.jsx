@@ -3,7 +3,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setActiveRole, setCurrentModule, setCurrentSubModule } from '../../store/navigationSlice';
 import { getDefaultModule } from '../../features/featureRegistry';
-import './RoleSwitcher.css';
+import {
+  RoleSwitcherContainer,
+  RoleSwitcherToggle,
+  CurrentRoleIcon,
+  CurrentRoleLabel,
+  DropdownArrow,
+  RoleSwitcherDropdown,
+  DropdownHeader,
+  RoleOption,
+  RoleIcon,
+  RoleInfo,
+  RoleLabel,
+  RoleDescription,
+  RoleCheck,
+} from './RoleSwitcher.styles';
 
 const ROLE_OPTIONS = [
   { id: 'buyer', label: 'Buyer', icon: '🏠', description: 'Find your dream property' },
@@ -53,42 +67,40 @@ const RoleSwitcher = ({ compact = false }) => {
   const currentRoleOption = ROLE_OPTIONS.find(opt => opt.id === currentRole);
 
   return (
-    <div className="role-switcher" ref={dropdownRef}>
-      <button 
-        className={`role-switcher-toggle ${compact ? 'compact' : ''}`}
+    <RoleSwitcherContainer ref={dropdownRef}>
+      <RoleSwitcherToggle 
+        $compact={compact}
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Switch role"
         title="Switch User Role"
       >
-        <span className="current-role-icon">{currentRoleOption?.icon || '👤'}</span>
-        {!compact && (
-          <span className="current-role-label">{currentRoleOption?.label || 'Select Role'}</span>
-        )}
-        <span className={`dropdown-arrow ${isOpen ? 'open' : ''}`}>▼</span>
-      </button>
+        <CurrentRoleIcon>{currentRoleOption?.icon || '👤'}</CurrentRoleIcon>
+        <CurrentRoleLabel $compact={compact}>{currentRoleOption?.label || 'Select Role'}</CurrentRoleLabel>
+        <DropdownArrow $isOpen={isOpen}>▼</DropdownArrow>
+      </RoleSwitcherToggle>
       
       {isOpen && (
-        <div className="role-switcher-dropdown">
-          <div className="dropdown-header">Switch Role</div>
+        <RoleSwitcherDropdown>
+          <DropdownHeader>Switch Role</DropdownHeader>
           {ROLE_OPTIONS.map((option) => (
-            <button
+            <RoleOption
               key={option.id}
-              className={`role-option ${currentRole === option.id ? 'active' : ''}`}
+              $isActive={currentRole === option.id}
               onClick={() => handleRoleChange(option.id)}
             >
-              <span className="role-icon">{option.icon}</span>
-              <div className="role-info">
-                <span className="role-label">{option.label}</span>
-                <span className="role-description">{option.description}</span>
-              </div>
+              <RoleIcon $isActive={currentRole === option.id}>{option.icon}</RoleIcon>
+              <RoleInfo>
+                <RoleLabel>{option.label}</RoleLabel>
+                <RoleDescription>{option.description}</RoleDescription>
+              </RoleInfo>
               {currentRole === option.id && (
-                <span className="role-check">✓</span>
+                <RoleCheck>✓</RoleCheck>
               )}
-            </button>
+            </RoleOption>
           ))}
-        </div>
+        </RoleSwitcherDropdown>
       )}
-    </div>
+    </RoleSwitcherContainer>
   );
 };
 

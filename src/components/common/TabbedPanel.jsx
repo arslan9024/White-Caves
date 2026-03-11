@@ -1,7 +1,16 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setActiveTab } from '../../store/dashboardSlice';
-import './TabbedPanel.css';
+import {
+  TabbedPanelContainer,
+  TabButtons,
+  TabButton,
+  TabIcon,
+  TabLabel,
+  TabBadge,
+  TabContent,
+  TabPanelContent,
+} from './TabbedPanel.styles';
 
 export default function TabbedPanel({ 
   tabs, 
@@ -31,40 +40,40 @@ export default function TabbedPanel({
   const activeTabContent = tabs.find(tab => tab.id === activeTab)?.content;
 
   return (
-    <div className={`tabbed-panel flex-col--gap-lg ${variant} ${className}`}>
-      <div className="tab-buttons flex-row--xs" role="tablist">
+    <TabbedPanelContainer $variant={variant} className={className}>
+      <TabButtons $variant={variant} role="tablist">
         {tabs.map(tab => (
-          <button
+          <TabButton
             key={tab.id}
-            className={`tab-btn flex-center-y transition-smooth ${activeTab === tab.id ? 'active' : ''}`}
+            $isActive={activeTab === tab.id}
+            $variant={variant}
             onClick={() => handleTabChange(tab.id)}
             role="tab"
             aria-selected={activeTab === tab.id}
             aria-controls={`tabpanel-${tab.id}`}
           >
-            {tab.icon && <span className="tab-icon">{tab.icon}</span>}
-            <span className="tab-label">{tab.label}</span>
+            {tab.icon && <TabIcon>{tab.icon}</TabIcon>}
+            <TabLabel>{tab.label}</TabLabel>
             {tab.badge !== undefined && (
-              <span className="tab-badge flex-center">{tab.badge}</span>
+              <TabBadge $variant={variant} $isActive={activeTab === tab.id}>{tab.badge}</TabBadge>
             )}
-          </button>
+          </TabButton>
         ))}
-      </div>
-      <div 
-        className="tab-content"
+      </TabButtons>
+      <TabContent 
         role="tabpanel"
         id={`tabpanel-${activeTab}`}
       >
         {activeTabContent || children}
-      </div>
-    </div>
+      </TabContent>
+    </TabbedPanelContainer>
   );
 }
 
 export function TabPanel({ children, className = '' }) {
   return (
-    <div className={`tab-panel-content ${className}`}>
+    <TabPanelContent className={className}>
       {children}
-    </div>
+    </TabPanelContent>
   );
 }
