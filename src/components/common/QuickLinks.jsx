@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './QuickLinks.css';
 
 export default function QuickLinks({ title, links, columns = 4, className = '' }) {
   return (

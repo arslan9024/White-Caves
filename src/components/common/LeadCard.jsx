@@ -1,5 +1,4 @@
 import React from 'react';
-import './LeadCard.css';
 
 export function LeadScoreBadge({ score, size = 'default' }) {
   const getScoreLevel = (score) => {

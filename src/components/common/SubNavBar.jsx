@@ -2,7 +2,6 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentSubModule } from '../../store/navigationSlice';
 import { getSubNavItems, getModuleById } from '../../features/featureRegistry';
-import './SubNavBar.css';
 
 const SubNavBar = ({ moduleId, onSubModuleChange }) => {
   const dispatch = useDispatch();

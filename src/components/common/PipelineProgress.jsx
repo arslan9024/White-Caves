@@ -1,5 +1,4 @@
 import React from 'react';
-import './PipelineProgress.css';
 
 export default function PipelineProgress({ 
   stages, 

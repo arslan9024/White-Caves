@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToFavorites, removeFromFavorites, selectFavorites } from '../../store/dashboardSlice';
-import './PropertyCard.css';
 
 export function PropertyStatusBadge({ status }) {
   const statusLower = status?.toLowerCase().replace(/\s+/g, '-') || '';
