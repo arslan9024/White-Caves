@@ -1,5 +1,27 @@
 import React, { useState } from 'react';
-import './BlogSection.css';
+import {
+  BlogSectionContainer,
+  BlogContainer,
+  BlogHeader,
+  FeaturedPosts,
+  FeaturedPost,
+  FeaturedImage,
+  PostCategory,
+  FeaturedContent,
+  PostMeta,
+  PostAuthor,
+  ReadMoreBtn,
+  BlogFilters,
+  FilterBtn,
+  BlogGrid,
+  BlogCard,
+  BlogCardImage,
+  BlogCardContent,
+  BlogCardCategory,
+  BlogCardTitle,
+  BlogCardMeta,
+  LoadMoreBtn
+} from './BlogSection.styles';
 
 const blogPosts = [
   {

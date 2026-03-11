@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import './AppointmentScheduler.css';
+import { AppointmentSchedulerContainer, DatePickerWrapper, ScheduleButton } from './AppointmentScheduler.styles';
 
 export default function AppointmentScheduler({ propertyId, agentId }) {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -35,22 +35,23 @@ export default function AppointmentScheduler({ propertyId, agentId }) {
   };
 
   return (
-    <div className="appointment-scheduler">
+    <AppointmentSchedulerContainer>
       <h3>{isRescheduling ? 'Reschedule Viewing' : 'Schedule Viewing'}</h3>
-      <DatePicker
-        selected={selectedDate}
-        onChange={date => setSelectedDate(date)}
-        showTimeSelect
-        timeFormat="HH:mm"
-        timeIntervals={60}
-        dateFormat="MMMM d, yyyy h:mm aa"
-        minDate={new Date()}
-        placeholderText="Select date and time"
-        className="date-picker"
-      />
-      <button onClick={handleSchedule} disabled={!selectedDate}>
+      <DatePickerWrapper>
+        <DatePicker
+          selected={selectedDate}
+          onChange={date => setSelectedDate(date)}
+          showTimeSelect
+          timeFormat="HH:mm"
+          timeIntervals={60}
+          dateFormat="MMMM d, yyyy h:mm aa"
+          minDate={new Date()}
+          placeholderText="Select date and time"
+        />
+      </DatePickerWrapper>
+      <ScheduleButton onClick={handleSchedule} disabled={!selectedDate}>
         {isRescheduling ? 'Reschedule Appointment' : 'Schedule Appointment'}
-      </button>
-    </div>
+      </ScheduleButton>
+    </AppointmentSchedulerContainer>
   );
 }

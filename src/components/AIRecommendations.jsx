@@ -1,7 +1,29 @@
 import React, { useEffect } from 'react';
 import { useRecommendations, useUserBehavior } from '../hooks/useRecommendations';
 import OptimizedImage from './OptimizedImage';
-import './AIRecommendations.css';
+import {
+  AIRecommendationsContainer,
+  AIHeader,
+  AIIcon,
+  AIHeaderText,
+  RefreshBtn,
+  LoadingState,
+  LoadingSpinner,
+  ErrorState,
+  EmptyState,
+  RecommendationsGrid,
+  RecommendationCard,
+  MatchScore,
+  MatchScoreValue,
+  MatchScoreLabel,
+  CardImage,
+  VRBadge,
+  CardContent,
+  CardTitle,
+  CardPrice,
+  CardFeatures,
+  CardFeature
+} from './AIRecommendations.styles';
 
 export default function AIRecommendations({ onPropertyClick }) {
   const { recommendations, loading, error, refresh } = useRecommendations();
@@ -21,114 +43,113 @@ export default function AIRecommendations({ onPropertyClick }) {
 
   if (loading) {
     return (
-      <div className="ai-recommendations">
-        <div className="ai-header">
-          <div className="ai-icon">
+      <AIRecommendationsContainer>
+        <AIHeader>
+          <AIIcon>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/>
               <circle cx="12" cy="12" r="3"/>
             </svg>
-          </div>
+          </AIIcon>
           <h2>AI-Powered Recommendations</h2>
-        </div>
-        <div className="loading-state">
-          <div className="loading-spinner" />
+        </AIHeader>
+        <LoadingState>
+          <LoadingSpinner />
           <p>Analyzing your preferences...</p>
-        </div>
-      </div>
+        </LoadingState>
+      </AIRecommendationsContainer>
     );
   }
 
   if (error) {
     return (
-      <div className="ai-recommendations">
-        <div className="error-state">
+      <AIRecommendationsContainer>
+        <ErrorState>
           <p>Unable to load recommendations</p>
           <button onClick={refresh}>Try Again</button>
-        </div>
-      </div>
+        </ErrorState>
+      </AIRecommendationsContainer>
     );
   }
 
   if (recommendations.length === 0) {
     return (
-      <div className="ai-recommendations">
-        <div className="ai-header">
-          <div className="ai-icon">
+      <AIRecommendationsContainer>
+        <AIHeader>
+          <AIIcon>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/>
               <circle cx="12" cy="12" r="3"/>
             </svg>
-          </div>
+          </AIIcon>
           <h2>Personalized For You</h2>
-        </div>
-        <div className="empty-state">
+        </AIHeader>
+        <EmptyState>
           <p>Browse more properties to get personalized recommendations</p>
-        </div>
-      </div>
+        </EmptyState>
+      </AIRecommendationsContainer>
     );
   }
 
   return (
-    <div className="ai-recommendations">
-      <div className="ai-header">
-        <div className="ai-icon animated">
+    <AIRecommendationsContainer>
+      <AIHeader>
+        <AIIcon animated>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/>
             <circle cx="12" cy="12" r="3"/>
           </svg>
-        </div>
-        <div className="ai-header-text">
+        </AIIcon>
+        <AIHeaderText>
           <h2>AI-Powered Picks For You</h2>
           <p>Based on your preferences and browsing history</p>
-        </div>
-        <button className="refresh-btn" onClick={refresh}>
+        </AIHeaderText>
+        <RefreshBtn onClick={refresh}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M23 4v6h-6M1 20v-6h6"/>
             <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
           </svg>
-        </button>
-      </div>
+        </RefreshBtn>
+      </AIHeader>
 
-      <div className="recommendations-grid">
+      <RecommendationsGrid>
         {recommendations.map((property, index) => (
-          <div 
-            key={property._id} 
-            className="recommendation-card"
+          <RecommendationCard 
+            key={property._id}
+            delay={index * 0.1}
             onClick={() => handlePropertyClick(property)}
-            style={{ animationDelay: `${index * 0.1}s` }}
           >
-            <div className="match-score">
-              <span className="score">{property.matchScore}%</span>
-              <span className="label">Match</span>
-            </div>
+            <MatchScore>
+              <MatchScoreValue>{property.matchScore}%</MatchScoreValue>
+              <MatchScoreLabel>Match</MatchScoreLabel>
+            </MatchScore>
             
-            <div className="card-image">
+            <CardImage>
               <OptimizedImage
                 src={property.images?.[0] || '/placeholder-property.jpg'}
                 alt={property.title}
               />
               {property.virtualTour && (
-                <span className="vr-badge">360° Tour</span>
+                <VRBadge>360° Tour</VRBadge>
               )}
-            </div>
+            </CardImage>
 
-            <div className="card-content">
-              <div className="price">{formatPrice(property.price)}</div>
-              <h3 className="title">{property.title}</h3>
-              <p className="location">{property.location}</p>
+            <CardContent>
+              <CardPrice>{formatPrice(property.price)}</CardPrice>
+              <CardTitle>{property.title}</CardTitle>
+              <p>{property.location}</p>
 
-              <div className="specs">
-                <span>{property.bedrooms} Beds</span>
-                <span>{property.bathrooms} Baths</span>
-                <span>{property.area?.toLocaleString()} sqft</span>
-              </div>
+              <CardFeatures>
+                <CardFeature>{property.bedrooms} Beds</CardFeature>
+                <CardFeature>{property.bathrooms} Baths</CardFeature>
+                <CardFeature>{property.area?.toLocaleString()} sqft</CardFeature>
+              </CardFeatures>
 
               {property.matchReasons?.length > 0 && (
-                <div className="match-reasons">
+                <div>
                   {property.matchReasons.map((reason, i) => (
-                    <span key={i} className="reason">
-                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3">
+                    <span key={i} style={{ display: 'inline-block', marginRight: '8px', fontSize: '0.85rem' }}>
+                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3" style={{ display: 'inline', marginRight: '4px' }}>
                         <polyline points="20 6 9 17 4 12"/>
                       </svg>
                       {reason}
@@ -136,10 +157,10 @@ export default function AIRecommendations({ onPropertyClick }) {
                   ))}
                 </div>
               )}
-            </div>
-          </div>
+            </CardContent>
+          </RecommendationCard>
         ))}
-      </div>
-    </div>
+      </RecommendationsGrid>
+    </AIRecommendationsContainer>
   );
 }

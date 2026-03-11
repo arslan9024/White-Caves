@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import './Auth.css';
 import { 
   auth,
   signInWithGoogle,
@@ -19,6 +18,31 @@ import { setUser } from '../store/userSlice';
 import { useToast } from './Toast';
 import { useFormValidation } from '../hooks/useFormValidation';
 import FormField from './FormField';
+import {
+  AuthWrapper,
+  AuthContainer,
+  AuthHeader,
+  AuthLogo,
+  AuthLogoIcon,
+  AuthTitle,
+  AuthSubtitle,
+  AuthMethodSelector,
+  MethodBtn,
+  AuthContent,
+  AuthForm,
+  InputGroup,
+  InputLabel,
+  InputWrapper,
+  InputIcon,
+  AuthInput,
+  InputError,
+  AuthButton,
+  SocialButtons,
+  SocialButton,
+  AuthDivider,
+  AuthFooter,
+  BackButton
+} from './Auth.styles';
 
 const AUTH_TOKEN_KEY = 'whitecaves_auth_token';
 const AUTH_USER_KEY = 'whitecaves_user';

@@ -1,5 +1,30 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import './VirtualTour.css';
+import {
+  VirtualTourContainer,
+  TourHeader,
+  TourTitle,
+  TourBadge,
+  TourTitleText,
+  TourControlsHeader,
+  TourBtn,
+  TourViewport,
+  TourPanorama,
+  TourHotspot,
+  HotspotIcon,
+  HotspotLabel,
+  TourCompass,
+  CompassNeedle,
+  TourFooter,
+  ZoomControls,
+  ZoomBtn,
+  ZoomLevel,
+  RoomNavigator,
+  RoomThumb,
+  RoomName,
+  TourInfo,
+  TourInfoText,
+  ViewsCount
+} from './VirtualTour.styles';
 
 const VirtualTour = ({ 
   images = [], 

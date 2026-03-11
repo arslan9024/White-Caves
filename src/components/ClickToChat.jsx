@@ -1,5 +1,27 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import './ClickToChat.css';
+import {
+  ClickToChatContainer,
+  ChatTrigger,
+  ChatLabel,
+  WhatsAppIconSmall,
+  ChatPopup,
+  ChatHeader,
+  ChatHeaderInfo,
+  ChatAvatar,
+  ChatHeaderTitle,
+  OnlineStatus,
+  CloseChat,
+  ChatBody,
+  WelcomeMessage,
+  QuickMessages,
+  QuickLabel,
+  QuickMessageBtn,
+  CustomMessageForm,
+  MessageInput,
+  SendBtn,
+  ContactAppsContainer,
+  ChatAppBtn
+} from './ClickToChat.styles';
 
 export default function ClickToChat() {
   const [isExpanded, setIsExpanded] = useState(false);

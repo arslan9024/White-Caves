@@ -1,5 +1,32 @@
 import React, { useState } from 'react';
-import './VirtualTourGallery.css';
+import {
+  VirtualTourGalleryContainer,
+  GalleryHeader,
+  HeaderContent,
+  ViewControls,
+  ViewBtn,
+  FeaturedToursSection,
+  AllToursSection,
+  FeaturedSlider,
+  FeaturedTourCard,
+  TourThumbnail,
+  TourOverlay,
+  PlayButton,
+  TourBadges,
+  Badge,
+  TourType,
+  TourInfo,
+  TourLocation,
+  TourSpecs,
+  SpecItem,
+  TourPrice,
+  ViewTourBtn,
+  ToursGrid,
+  TourCard,
+  TourContent,
+  LoadMoreBtn,
+  EmptyState
+} from './VirtualTourGallery.styles';
 
 const VirtualTourGallery = () => {
   const [selectedTour, setSelectedTour] = useState(null);

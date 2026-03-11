@@ -1,25 +1,29 @@
-.virtual-tour-container {
-  position: relative;
+import styled from 'styled-components';
+import { keyframes } from 'styled-components';
+
+const pulse = keyframes`
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+  50% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
+`;
+
+export const VirtualTourContainer = styled.div<{ fullscreen?: boolean }>`
+  position: ${props => props.fullscreen ? 'fixed' : 'relative'};
   width: 100%;
-  height: 500px;
+  height: ${props => props.fullscreen ? '100vh' : '500px'};
   background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
-  border-radius: 16px;
+  border-radius: ${props => props.fullscreen ? '0' : '16px'};
   overflow: hidden;
   border: 1px solid rgba(212, 175, 55, 0.2);
-}
+  ${props => props.fullscreen ? `
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+  ` : ''}
+`;
 
-.virtual-tour-container.fullscreen {
-  height: 100vh;
-  border-radius: 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 9999;
-}
-
-.tour-header {
+export const TourHeader = styled.div`
   position: absolute;
   top: 0;
   left: 0;
@@ -30,15 +34,15 @@
   padding: 16px 20px;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
   z-index: 10;
-}
+`;
 
-.tour-title {
+export const TourTitle = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-}
+`;
 
-.tour-badge {
+export const TourBadge = styled.div`
   background: linear-gradient(135deg, #D4AF37, #B8860B);
   color: #0a0a0f;
   padding: 4px 12px;
@@ -46,21 +50,21 @@
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
-}
+`;
 
-.tour-title h3 {
+export const TourTitleText = styled.h3`
   color: white;
   margin: 0;
   font-size: 18px;
   font-weight: 500;
-}
+`;
 
-.tour-controls-header {
+export const TourControlsHeader = styled.div`
   display: flex;
   gap: 8px;
-}
+`;
 
-.tour-btn {
+export const TourBtn = styled.button<{ close?: boolean; active?: boolean }>`
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -74,24 +78,21 @@
   justify-content: center;
   font-size: 16px;
   transition: all 0.3s ease;
-}
 
-.tour-btn:hover {
-  background: rgba(212, 175, 55, 0.3);
-  border-color: #D4AF37;
-}
+  &:hover {
+    background: ${props => props.close 
+      ? 'rgba(255, 100, 100, 0.3)' 
+      : 'rgba(212, 175, 55, 0.3)'};
+    border-color: ${props => props.close ? '#ff6464' : '#D4AF37'};
+  }
 
-.tour-btn.active {
-  background: rgba(212, 175, 55, 0.4);
-  border-color: #D4AF37;
-}
+  ${props => props.active && `
+    background: rgba(212, 175, 55, 0.4);
+    border-color: #D4AF37;
+  `}
+`;
 
-.tour-btn.close-btn:hover {
-  background: rgba(255, 100, 100, 0.3);
-  border-color: #ff6464;
-}
-
-.tour-viewport {
+export const TourViewport = styled.div`
   position: absolute;
   top: 0;
   left: 0;
@@ -99,19 +100,21 @@
   bottom: 0;
   overflow: hidden;
   perspective: 1000px;
-}
+`;
 
-.tour-panorama {
+export const TourPanorama = styled.div<{ position?: number; zoom?: number }>`
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background-repeat: repeat-x;
+  background-position: ${props => props.position ? `${props.position}% center` : '0% center'};
+  background-size: ${props => props.zoom ? `${props.zoom * 100}% 100%` : '100% 100%'};
   transition: background-position 0.05s linear, background-size 0.1s ease;
-}
+`;
 
-.tour-hotspot {
+export const TourHotspot = styled.button`
   position: absolute;
   transform: translate(-50%, -50%);
   background: rgba(212, 175, 55, 0.9);
@@ -124,25 +127,25 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  animation: pulse 2s infinite;
+  animation: ${pulse} 2s infinite;
   z-index: 5;
   transition: all 0.3s ease;
-}
 
-.tour-hotspot:hover {
-  transform: translate(-50%, -50%) scale(1.2);
-  background: #D4AF37;
-}
+  &:hover {
+    transform: translate(-50%, -50%) scale(1.2);
+    background: #D4AF37;
+  }
 
-.tour-hotspot.info {
-  background: rgba(100, 149, 237, 0.9);
-}
+  &.info {
+    background: rgba(100, 149, 237, 0.9);
+  }
+`;
 
-.hotspot-icon {
+export const HotspotIcon = styled.span`
   font-size: 18px;
-}
+`;
 
-.hotspot-label {
+export const HotspotLabel = styled.div`
   position: absolute;
   bottom: -24px;
   white-space: nowrap;
@@ -153,18 +156,13 @@
   border-radius: 4px;
   opacity: 0;
   transition: opacity 0.3s ease;
-}
 
-.tour-hotspot:hover .hotspot-label {
-  opacity: 1;
-}
+  ${TourHotspot}:hover & {
+    opacity: 1;
+  }
+`;
 
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
-  50% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
-}
-
-.tour-compass {
+export const TourCompass = styled.div`
   position: absolute;
   top: 80px;
   right: 20px;
@@ -178,25 +176,26 @@
   align-items: center;
   justify-content: center;
   z-index: 5;
-}
+`;
 
-.compass-needle {
+export const CompassNeedle = styled.div<{ rotation?: number }>`
   width: 4px;
   height: 30px;
   background: linear-gradient(to bottom, #ff4444 50%, white 50%);
   border-radius: 2px;
+  transform: ${props => props.rotation ? `rotate(${props.rotation}deg)` : 'rotate(0deg)'};
   transition: transform 0.1s linear;
-}
+`;
 
-.compass-label {
+export const CompassLabel = styled.div`
   position: absolute;
   top: 4px;
   font-size: 10px;
   color: #ff4444;
   font-weight: bold;
-}
+`;
 
-.tour-footer {
+export const TourFooter = styled.div`
   position: absolute;
   bottom: 0;
   left: 0;
@@ -207,9 +206,9 @@
   justify-content: space-between;
   align-items: center;
   z-index: 10;
-}
+`;
 
-.zoom-controls {
+export const ZoomControls = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -217,9 +216,9 @@
   backdrop-filter: blur(10px);
   border-radius: 25px;
   padding: 4px;
-}
+`;
 
-.zoom-btn {
+export const ZoomBtn = styled.button`
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -229,57 +228,53 @@
   font-size: 18px;
   cursor: pointer;
   transition: background 0.3s ease;
-}
 
-.zoom-btn:hover {
-  background: rgba(212, 175, 55, 0.4);
-}
+  &:hover {
+    background: rgba(212, 175, 55, 0.4);
+  }
+`;
 
-.zoom-level {
+export const ZoomLevel = styled.span`
   color: white;
   font-size: 14px;
   min-width: 50px;
   text-align: center;
-}
+`;
 
-.room-navigator {
+export const RoomNavigator = styled.div`
   display: flex;
   gap: 8px;
   overflow-x: auto;
   padding: 4px;
   max-width: 50%;
-}
+`;
 
-.room-thumb {
+export const RoomThumb = styled.button<{ active?: boolean }>`
   flex-shrink: 0;
   width: 80px;
   height: 50px;
   border-radius: 8px;
   overflow: hidden;
-  border: 2px solid transparent;
+  border: 2px solid ${props => props.active ? '#D4AF37' : 'transparent'};
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
   background: none;
   padding: 0;
-}
+  box-shadow: ${props => props.active ? '0 0 10px rgba(212, 175, 55, 0.5)' : 'none'};
 
-.room-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
-.room-thumb.active {
-  border-color: #D4AF37;
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
-}
+  &:hover {
+    border-color: rgba(212, 175, 55, 0.5);
+  }
+`;
 
-.room-thumb:hover {
-  border-color: rgba(212, 175, 55, 0.5);
-}
-
-.room-name {
+export const RoomName = styled.div`
   position: absolute;
   bottom: 0;
   left: 0;
@@ -291,143 +286,21 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
+`;
 
-.tour-info {
+export const TourInfo = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 4px;
-}
+`;
 
-.current-room {
+export const TourInfoText = styled.div`
   color: white;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.room-count {
-  color: rgba(255, 255, 255, 0.6);
   font-size: 12px;
-}
+`;
 
-.tour-instructions {
-  position: absolute;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(10px);
-  padding: 8px 16px;
-  border-radius: 20px;
-  z-index: 5;
-  opacity: 0.7;
-  transition: opacity 0.3s ease;
-}
-
-.tour-instructions:hover {
-  opacity: 1;
-}
-
-.tour-instructions p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 12px;
-}
-
-.virtual-tour-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 400px;
-  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
-  border-radius: 16px;
-  border: 1px solid rgba(212, 175, 55, 0.2);
-  text-align: center;
-  padding: 40px;
-}
-
-.empty-icon {
-  font-size: 64px;
-  margin-bottom: 20px;
-  opacity: 0.5;
-}
-
-.virtual-tour-empty h3 {
-  color: white;
-  margin: 0 0 10px 0;
-  font-size: 24px;
-}
-
-.virtual-tour-empty p {
-  color: rgba(255, 255, 255, 0.6);
-  margin: 0;
-}
-
-@media (max-width: 768px) {
-  .virtual-tour-container {
-    height: 400px;
-    border-radius: 12px;
-  }
-
-  .tour-header {
-    padding: 12px 16px;
-  }
-
-  .tour-title h3 {
-    font-size: 14px;
-  }
-
-  .tour-badge {
-    font-size: 10px;
-    padding: 3px 8px;
-  }
-
-  .tour-btn {
-    width: 36px;
-    height: 36px;
-    font-size: 14px;
-  }
-
-  .tour-compass {
-    width: 50px;
-    height: 50px;
-    top: 70px;
-    right: 12px;
-  }
-
-  .compass-needle {
-    height: 24px;
-  }
-
-  .tour-footer {
-    flex-wrap: wrap;
-    gap: 12px;
-    padding: 12px 16px;
-  }
-
-  .room-navigator {
-    order: 1;
-    max-width: 100%;
-    width: 100%;
-    justify-content: center;
-  }
-
-  .room-thumb {
-    width: 60px;
-    height: 40px;
-  }
-
-  .zoom-controls {
-    order: 2;
-  }
-
-  .tour-info {
-    order: 3;
-  }
-
-  .tour-instructions {
-    bottom: 140px;
-  }
-}
+export const ViewsCount = styled.span`
+  color: #D4AF37;
+  font-weight: 600;
+`;
