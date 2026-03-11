@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import './UserDashboard.css';
+import * as S from './UserDashboard.styles';
 
 export default function UserDashboard() {
   const user = useSelector(state => state.user.currentUser);
@@ -125,304 +125,302 @@ export default function UserDashboard() {
 
   if (loading) {
     return (
-      <div className="user-dashboard">
-        <div className="dashboard-loading">
-          <div className="loading-spinner"></div>
+      <S.UserDashboard>
+        <S.DashboardLoading>
+          <S.LoadingSpinner></S.LoadingSpinner>
           <p>Loading your dashboard...</p>
-        </div>
-      </div>
+        </S.DashboardLoading>
+      </S.UserDashboard>
     );
   }
 
   return (
-    <div className="user-dashboard">
-      <div className="dashboard-header">
-        <div className="dashboard-welcome">
-          <div className="user-avatar">
+    <S.UserDashboard>
+      <S.DashboardHeader>
+        <S.DashboardWelcome>
+          <S.UserAvatar>
             {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
-          </div>
-          <div className="welcome-text">
+          </S.UserAvatar>
+          <S.WelcomeText>
             <h2>Welcome back, {user?.name || 'User'}!</h2>
             <p>Here's what's happening with your property search</p>
-          </div>
-        </div>
-      </div>
+          </S.WelcomeText>
+        </S.DashboardWelcome>
+      </S.DashboardHeader>
 
-      <div className="dashboard-tabs">
+      <S.DashboardTabs>
         {tabs.map(tab => (
-          <button
+          <S.DashboardTab
             key={tab.id}
-            className={`dashboard-tab ${activeTab === tab.id ? 'active' : ''}`}
+            isActive={activeTab === tab.id}
             onClick={() => setActiveTab(tab.id)}
           >
-            <span className="tab-icon">{tab.icon}</span>
-            <span className="tab-label">{tab.label}</span>
+            <S.TabIcon>{tab.icon}</S.TabIcon>
+            <S.TabLabel>{tab.label}</S.TabLabel>
             {tab.count !== undefined && (
-              <span className="tab-count">{tab.count}</span>
+              <S.TabCount>{tab.count}</S.TabCount>
             )}
-          </button>
+          </S.DashboardTab>
         ))}
-      </div>
+      </S.DashboardTabs>
 
-      <div className="dashboard-content">
+      <S.DashboardContent>
         {activeTab === 'overview' && (
-          <div className="overview-tab">
-            <div className="stats-grid">
-              <div className="stat-card">
-                <div className="stat-icon">👁️</div>
-                <div className="stat-info">
-                  <span className="stat-value">{stats.totalViews}</span>
-                  <span className="stat-label">Properties Viewed</span>
-                </div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-icon">💬</div>
-                <div className="stat-info">
-                  <span className="stat-value">{stats.totalInquiries}</span>
-                  <span className="stat-label">Inquiries Sent</span>
-                </div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-icon">📅</div>
-                <div className="stat-info">
-                  <span className="stat-value">{stats.scheduledViewings}</span>
-                  <span className="stat-label">Scheduled Viewings</span>
-                </div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-icon">❤️</div>
-                <div className="stat-info">
-                  <span className="stat-value">{favorites.length}</span>
-                  <span className="stat-label">Saved Properties</span>
-                </div>
-              </div>
-            </div>
+          <div>
+            <S.StatsGrid>
+              <S.StatCard>
+                <S.StatIcon>👁️</S.StatIcon>
+                <S.StatInfo>
+                  <S.StatValue>{stats.totalViews}</S.StatValue>
+                  <S.StatLabel>Properties Viewed</S.StatLabel>
+                </S.StatInfo>
+              </S.StatCard>
+              <S.StatCard>
+                <S.StatIcon>💬</S.StatIcon>
+                <S.StatInfo>
+                  <S.StatValue>{stats.totalInquiries}</S.StatValue>
+                  <S.StatLabel>Inquiries Sent</S.StatLabel>
+                </S.StatInfo>
+              </S.StatCard>
+              <S.StatCard>
+                <S.StatIcon>📅</S.StatIcon>
+                <S.StatInfo>
+                  <S.StatValue>{stats.scheduledViewings}</S.StatValue>
+                  <S.StatLabel>Scheduled Viewings</S.StatLabel>
+                </S.StatInfo>
+              </S.StatCard>
+              <S.StatCard>
+                <S.StatIcon>❤️</S.StatIcon>
+                <S.StatInfo>
+                  <S.StatValue>{favorites.length}</S.StatValue>
+                  <S.StatLabel>Saved Properties</S.StatLabel>
+                </S.StatInfo>
+              </S.StatCard>
+            </S.StatsGrid>
 
-            <div className="overview-sections">
-              <div className="overview-section">
+            <S.OverviewSections>
+              <S.OverviewSection>
                 <h3>Recent Favorites</h3>
                 {favorites.length > 0 ? (
-                  <div className="mini-property-list">
+                  <S.MiniPropertyList>
                     {favorites.slice(0, 3).map(fav => {
                       const property = getPropertyById(fav.propertyId);
                       return property ? (
-                        <div key={fav.propertyId} className="mini-property-card">
-                          <div className="mini-property-image" style={{
+                        <S.MiniPropertyCard key={fav.propertyId}>
+                          <S.MiniPropertyImage style={{
                             backgroundImage: `url(${property.images?.[0] || 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c'})`
-                          }}></div>
-                          <div className="mini-property-info">
+                          }}></S.MiniPropertyImage>
+                          <S.MiniPropertyInfo>
                             <h4>{property.title}</h4>
                             <p>{formatPrice(property.price)}</p>
-                          </div>
-                        </div>
+                          </S.MiniPropertyInfo>
+                        </S.MiniPropertyCard>
                       ) : null;
                     })}
-                  </div>
+                  </S.MiniPropertyList>
                 ) : (
-                  <p className="empty-message">No favorites yet. Start exploring!</p>
+                  <S.EmptyMessage>No favorites yet. Start exploring!</S.EmptyMessage>
                 )}
-              </div>
+              </S.OverviewSection>
 
-              <div className="overview-section">
+              <S.OverviewSection>
                 <h3>Active Alerts</h3>
                 {alerts.filter(a => a.active).length > 0 ? (
-                  <div className="alert-list">
+                  <S.AlertList>
                     {alerts.filter(a => a.active).slice(0, 3).map(alert => (
-                      <div key={alert._id} className="alert-item">
-                        <span className="alert-name">{alert.name}</span>
-                        <span className="alert-frequency">{alert.frequency}</span>
-                      </div>
+                      <S.AlertItem key={alert._id}>
+                        <S.AlertName>{alert.name}</S.AlertName>
+                        <S.AlertFrequency>{alert.frequency}</S.AlertFrequency>
+                      </S.AlertItem>
                     ))}
-                  </div>
+                  </S.AlertList>
                 ) : (
-                  <p className="empty-message">No active alerts. Set up notifications!</p>
+                  <S.EmptyMessage>No active alerts. Set up notifications!</S.EmptyMessage>
                 )}
-              </div>
-            </div>
+              </S.OverviewSection>
+            </S.OverviewSections>
           </div>
         )}
 
         {activeTab === 'favorites' && (
-          <div className="favorites-tab">
+          <div>
             <h3>Your Favorite Properties</h3>
             {favorites.length > 0 ? (
-              <div className="favorites-grid">
+              <S.FavoritesGrid>
                 {favorites.map(fav => {
                   const property = getPropertyById(fav.propertyId);
                   return property ? (
-                    <div key={fav.propertyId} className="favorite-card">
-                      <div className="favorite-image" style={{
+                    <S.FavoriteCard key={fav.propertyId}>
+                      <S.FavoriteImage style={{
                         backgroundImage: `url(${property.images?.[0] || 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c'})`
                       }}>
-                        <button 
-                          className="remove-favorite"
+                        <S.RemoveFavorite 
                           onClick={() => removeFavorite(fav.propertyId)}
                         >
                           ×
-                        </button>
-                      </div>
-                      <div className="favorite-details">
+                        </S.RemoveFavorite>
+                      </S.FavoriteImage>
+                      <S.FavoriteDetails>
                         <h4>{property.title}</h4>
-                        <p className="favorite-location">{property.location}</p>
-                        <div className="favorite-specs">
+                        <S.FavoriteLocation>{property.location}</S.FavoriteLocation>
+                        <S.FavoriteSpecs>
                           <span>🛏️ {property.beds}</span>
                           <span>🚿 {property.baths}</span>
                           <span>📏 {property.sqft.toLocaleString()} sqft</span>
-                        </div>
-                        <p className="favorite-price">{formatPrice(property.price)}</p>
-                        <p className="favorite-date">Saved {formatDate(fav.createdAt || new Date())}</p>
-                      </div>
-                    </div>
+                        </S.FavoriteSpecs>
+                        <S.FavoritePrice>{formatPrice(property.price)}</S.FavoritePrice>
+                        <S.FavoriteDate>Saved {formatDate(fav.createdAt || new Date())}</S.FavoriteDate>
+                      </S.FavoriteDetails>
+                    </S.FavoriteCard>
                   ) : null;
                 })}
-              </div>
+              </S.FavoritesGrid>
             ) : (
-              <div className="empty-state">
-                <span className="empty-icon">❤️</span>
+              <S.EmptyState>
+                <S.EmptyIcon>❤️</S.EmptyIcon>
                 <h4>No favorites yet</h4>
                 <p>Click the heart icon on properties you love to save them here</p>
-              </div>
+              </S.EmptyState>
             )}
           </div>
         )}
 
         {activeTab === 'searches' && (
-          <div className="searches-tab">
+          <div>
             <h3>Your Saved Searches</h3>
             {savedSearches.length > 0 ? (
-              <div className="searches-list">
+              <S.SearchesList>
                 {savedSearches.map(search => (
-                  <div key={search._id} className="search-card">
-                    <div className="search-info">
+                  <S.SearchCard key={search._id}>
+                    <S.SearchInfo>
                       <h4>{search.name}</h4>
-                      <div className="search-criteria">
+                      <S.SearchCriteria>
                         {search.criteria?.location && (
-                          <span className="criteria-tag">📍 {search.criteria.location}</span>
+                          <S.CriteriaTag>📍 {search.criteria.location}</S.CriteriaTag>
                         )}
                         {search.criteria?.propertyType && (
-                          <span className="criteria-tag">🏠 {search.criteria.propertyType}</span>
+                          <S.CriteriaTag>🏠 {search.criteria.propertyType}</S.CriteriaTag>
                         )}
                         {(search.criteria?.minPrice || search.criteria?.maxPrice) && (
-                          <span className="criteria-tag">
+                          <S.CriteriaTag>
                             💰 {search.criteria.minPrice ? formatPrice(search.criteria.minPrice) : 'Any'} - {search.criteria.maxPrice ? formatPrice(search.criteria.maxPrice) : 'Any'}
-                          </span>
+                          </S.CriteriaTag>
                         )}
                         {search.criteria?.beds && (
-                          <span className="criteria-tag">🛏️ {search.criteria.beds}+ beds</span>
+                          <S.CriteriaTag>🛏️ {search.criteria.beds}+ beds</S.CriteriaTag>
                         )}
-                      </div>
-                      <p className="search-date">Saved {formatDate(search.createdAt || new Date())}</p>
-                    </div>
-                    <div className="search-actions">
-                      <button className="run-search-btn">Run Search</button>
-                      <button 
-                        className="delete-search-btn"
+                      </S.SearchCriteria>
+                      <S.SearchDate>Saved {formatDate(search.createdAt || new Date())}</S.SearchDate>
+                    </S.SearchInfo>
+                    <S.SearchActions>
+                      <S.RunSearchBtn>Run Search</S.RunSearchBtn>
+                      <S.DeleteSearchBtn 
                         onClick={() => deleteSavedSearch(search._id)}
                       >
                         Delete
-                      </button>
-                    </div>
-                  </div>
+                      </S.DeleteSearchBtn>
+                    </S.SearchActions>
+                  </S.SearchCard>
                 ))}
-              </div>
+              </S.SearchesList>
             ) : (
-              <div className="empty-state">
-                <span className="empty-icon">🔍</span>
+              <S.EmptyState>
+                <S.EmptyIcon>🔍</S.EmptyIcon>
                 <h4>No saved searches</h4>
                 <p>Save your search criteria to quickly find matching properties later</p>
-              </div>
+              </S.EmptyState>
             )}
           </div>
         )}
 
         {activeTab === 'alerts' && (
-          <div className="alerts-tab">
+          <div>
             <h3>Price & Property Alerts</h3>
             {alerts.length > 0 ? (
-              <div className="alerts-list">
+              <S.AlertsList>
                 {alerts.map(alert => (
-                  <div key={alert._id} className={`alert-card ${alert.active ? 'active' : 'inactive'}`}>
-                    <div className="alert-info">
+                  <S.AlertCard key={alert._id} isInactive={!alert.active}>
+                    <S.AlertInfo>
                       <h4>{alert.name}</h4>
-                      <p className="alert-type">{alert.type} Alert</p>
-                      <div className="alert-criteria">
+                      <S.AlertType>{alert.type} Alert</S.AlertType>
+                      <S.AlertCriteria>
                         {alert.criteria?.location && (
                           <span>📍 {alert.criteria.location}</span>
                         )}
                         {alert.criteria?.maxPrice && (
                           <span>💰 Under {formatPrice(alert.criteria.maxPrice)}</span>
                         )}
-                      </div>
-                      <p className="alert-frequency-info">
+                      </S.AlertCriteria>
+                      <S.AlertFrequencyInfo>
                         {alert.frequency} notifications via {alert.notificationMethod || 'email'}
-                      </p>
-                    </div>
-                    <div className="alert-controls">
-                      <label className="alert-toggle">
+                      </S.AlertFrequencyInfo>
+                    </S.AlertInfo>
+                    <S.AlertControls>
+                      <S.AlertToggle>
                         <input 
                           type="checkbox" 
                           checked={alert.active}
                           onChange={() => toggleAlert(alert._id, alert.active)}
                         />
-                        <span className="toggle-slider"></span>
-                      </label>
-                    </div>
-                  </div>
+                        <S.ToggleSlider></S.ToggleSlider>
+                      </S.AlertToggle>
+                    </S.AlertControls>
+                  </S.AlertCard>
                 ))}
-              </div>
+              </S.AlertsList>
             ) : (
-              <div className="empty-state">
-                <span className="empty-icon">🔔</span>
+              <S.EmptyState>
+                <S.EmptyIcon>🔔</S.EmptyIcon>
                 <h4>No alerts set up</h4>
                 <p>Get notified when new properties match your criteria or prices drop</p>
-              </div>
+              </S.EmptyState>
             )}
           </div>
         )}
 
         {activeTab === 'activity' && (
-          <div className="activity-tab">
+          <div>
             <h3>Recent Activity</h3>
-            <div className="activity-timeline">
-              <div className="activity-item">
-                <div className="activity-icon">👁️</div>
-                <div className="activity-content">
+            <S.ActivityTimeline>
+              <S.ActivityItem>
+                <S.ActivityIcon>👁️</S.ActivityIcon>
+                <S.ActivityContent>
                   <p>Viewed <strong>Beachfront Villa - Palm Jumeirah</strong></p>
-                  <span className="activity-time">2 hours ago</span>
-                </div>
-              </div>
-              <div className="activity-item">
-                <div className="activity-icon">❤️</div>
-                <div className="activity-content">
+                  <S.ActivityTime>2 hours ago</S.ActivityTime>
+                </S.ActivityContent>
+              </S.ActivityItem>
+              <S.ActivityItem>
+                <S.ActivityIcon>❤️</S.ActivityIcon>
+                <S.ActivityContent>
                   <p>Saved <strong>Penthouse - Downtown Dubai</strong> to favorites</p>
-                  <span className="activity-time">Yesterday</span>
-                </div>
-              </div>
-              <div className="activity-item">
-                <div className="activity-icon">💬</div>
-                <div className="activity-content">
+                  <S.ActivityTime>Yesterday</S.ActivityTime>
+                </S.ActivityContent>
+              </S.ActivityItem>
+              <S.ActivityItem>
+                <S.ActivityIcon>💬</S.ActivityIcon>
+                <S.ActivityContent>
                   <p>Sent inquiry for <strong>Villa - Emirates Hills</strong></p>
-                  <span className="activity-time">3 days ago</span>
-                </div>
-              </div>
-              <div className="activity-item">
-                <div className="activity-icon">📅</div>
-                <div className="activity-content">
+                  <S.ActivityTime>3 days ago</S.ActivityTime>
+                </S.ActivityContent>
+              </S.ActivityItem>
+              <S.ActivityItem>
+                <S.ActivityIcon>📅</S.ActivityIcon>
+                <S.ActivityContent>
                   <p>Scheduled viewing for <strong>Apartment - Dubai Marina</strong></p>
-                  <span className="activity-time">1 week ago</span>
-                </div>
-              </div>
-              <div className="activity-item">
-                <div className="activity-icon">🔍</div>
-                <div className="activity-content">
+                  <S.ActivityTime>1 week ago</S.ActivityTime>
+                </S.ActivityContent>
+              </S.ActivityItem>
+              <S.ActivityItem>
+                <S.ActivityIcon>🔍</S.ActivityIcon>
+                <S.ActivityContent>
                   <p>Created saved search: <strong>Palm Jumeirah Villas</strong></p>
-                  <span className="activity-time">2 weeks ago</span>
-                </div>
-              </div>
-            </div>
+                  <S.ActivityTime>2 weeks ago</S.ActivityTime>
+                </S.ActivityContent>
+              </S.ActivityItem>
+            </S.ActivityTimeline>
           </div>
         )}
-      </div>
-    </div>
+      </S.DashboardContent>
+    </S.UserDashboard>
   );
 }

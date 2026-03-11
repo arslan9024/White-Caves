@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import './ImageGallery.css';
+import * as S from './ImageGallery.styles';
 
 const neighborhoodData = {
   'Palm Jumeirah': {
@@ -248,32 +248,31 @@ export default function ImageGallery({ property, isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="image-gallery-overlay" onClick={onClose}>
-      <div className="image-gallery-container" onClick={(e) => e.stopPropagation()}>
-        <button className="gallery-close-btn" onClick={onClose}>×</button>
+    <S.ImageGalleryOverlay onClick={onClose}>
+      <S.ImageGalleryContainer onClick={(e) => e.stopPropagation()}>
+        <S.GalleryCloseBtn onClick={onClose}>×</S.GalleryCloseBtn>
         
-        <div className="gallery-header">
+        <S.GalleryHeader>
           <h2>{property?.title || 'Property Gallery'}</h2>
-          <div className="gallery-tabs">
-            <button 
-              className={`gallery-tab ${!showNeighborhood ? 'active' : ''}`}
+          <S.GalleryTabs>
+            <S.GalleryTab 
+              isActive={!showNeighborhood}
               onClick={() => setShowNeighborhood(false)}
             >
               Photos
-            </button>
-            <button 
-              className={`gallery-tab ${showNeighborhood ? 'active' : ''}`}
+            </S.GalleryTab>
+            <S.GalleryTab 
+              isActive={showNeighborhood}
               onClick={() => setShowNeighborhood(true)}
             >
               Neighborhood
-            </button>
-          </div>
-        </div>
+            </S.GalleryTab>
+          </S.GalleryTabs>
+        </S.GalleryHeader>
 
         {!showNeighborhood ? (
-          <div className="gallery-content">
-            <div 
-              className="gallery-main"
+          <S.GalleryContent>
+            <S.GalleryMain
               ref={galleryRef}
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
@@ -283,124 +282,120 @@ export default function ImageGallery({ property, isOpen, onClose }) {
               onMouseUp={onMouseUp}
               onMouseLeave={onMouseLeave}
             >
-              <button className="gallery-nav prev" onClick={goToPrev}>‹</button>
-              <div 
-                className="gallery-image-wrapper"
-                style={{ transform: `translateX(${dragOffset}px)` }}
-              >
-                <img 
+              <S.GalleryNav position="prev" onClick={goToPrev}>‹</S.GalleryNav>
+              <S.GalleryImageWrapper dragOffset={dragOffset}>
+                <S.GalleryMainImage 
                   src={images[currentIndex]} 
                   alt={`Property view ${currentIndex + 1}`}
-                  className="gallery-main-image"
                   draggable={false}
                 />
-              </div>
-              <button className="gallery-nav next" onClick={goToNext}>›</button>
+              </S.GalleryImageWrapper>
+              <S.GalleryNav position="next" onClick={goToNext}>›</S.GalleryNav>
               
-              <div className="gallery-counter">
+              <S.GalleryCounter>
                 {currentIndex + 1} / {images.length}
-              </div>
-            </div>
+              </S.GalleryCounter>
+            </S.GalleryMain>
 
-            <div className="gallery-thumbnails">
+            <S.GalleryThumbnails>
               {images.map((img, index) => (
-                <button
+                <S.Thumbnail
                   key={index}
-                  className={`thumbnail ${index === currentIndex ? 'active' : ''}`}
+                  isActive={index === currentIndex}
                   onClick={() => goToSlide(index)}
                 >
                   <img src={img} alt={`Thumbnail ${index + 1}`} />
-                </button>
+                </S.Thumbnail>
               ))}
-            </div>
+            </S.GalleryThumbnails>
 
-            <div className="gallery-dots">
+            <S.GalleryDots>
               {images.map((_, index) => (
-                <button
+                <S.GalleryDot
                   key={index}
-                  className={`gallery-dot ${index === currentIndex ? 'active' : ''}`}
+                  isActive={index === currentIndex}
                   onClick={() => goToSlide(index)}
                 />
               ))}
-            </div>
+            </S.GalleryDots>
 
-            <div className="swipe-hint">
+            <S.SwipeHint>
               <span>← Swipe or drag to navigate →</span>
-            </div>
-          </div>
+            </S.SwipeHint>
+          </S.GalleryContent>
         ) : (
-          <div className="neighborhood-content">
-            <div className="neighborhood-header">
+          <S.NeighborhoodContent>
+            <S.NeighborhoodHeader>
               <h3>{property?.location || 'Downtown Dubai'}</h3>
-              <p className="neighborhood-description">{neighborhood.description}</p>
-            </div>
+              <p>{neighborhood.description}</p>
+            </S.NeighborhoodHeader>
 
-            <div className="neighborhood-scores">
-              <div className="score-card">
-                <div className="score-circle walk">
-                  <span className="score-value">{neighborhood.walkScore}</span>
-                </div>
-                <span className="score-label">Walk Score</span>
-              </div>
-              <div className="score-card">
-                <div className="score-circle transit">
-                  <span className="score-value">{neighborhood.transitScore}</span>
-                </div>
-                <span className="score-label">Transit Score</span>
-              </div>
-              <div className="score-card price-growth">
-                <span className="growth-value">{neighborhood.priceGrowth}</span>
-                <span className="score-label">Price Growth</span>
-              </div>
-            </div>
+            <S.NeighborhoodScores>
+              <S.ScoreCard>
+                <S.ScoreCircle type="walk">
+                  <S.ScoreValue>{neighborhood.walkScore}</S.ScoreValue>
+                </S.ScoreCircle>
+                <S.ScoreLabel>Walk Score</S.ScoreLabel>
+              </S.ScoreCard>
+              <S.ScoreCard>
+                <S.ScoreCircle type="transit">
+                  <S.ScoreValue>{neighborhood.transitScore}</S.ScoreValue>
+                </S.ScoreCircle>
+                <S.ScoreLabel>Transit Score</S.ScoreLabel>
+              </S.ScoreCard>
+              <S.ScoreCard className="price-growth">
+                <S.GrowthValue>{neighborhood.priceGrowth}</S.GrowthValue>
+                <S.ScoreLabel>Price Growth</S.ScoreLabel>
+              </S.ScoreCard>
+            </S.NeighborhoodScores>
 
-            <div className="neighborhood-grid">
-              <div className="neighborhood-section">
+            <S.NeighborhoodGrid>
+              <S.NeighborhoodSection>
                 <h4>🏫 Nearby Schools</h4>
                 <ul>
                   {neighborhood.schools.map((school, i) => (
                     <li key={i}>{school}</li>
                   ))}
                 </ul>
-              </div>
+              </S.NeighborhoodSection>
 
-              <div className="neighborhood-section">
+              <S.NeighborhoodSection>
                 <h4>🍽️ Dining</h4>
                 <ul>
                   {neighborhood.restaurants.map((restaurant, i) => (
                     <li key={i}>{restaurant}</li>
                   ))}
                 </ul>
-              </div>
+              </S.NeighborhoodSection>
 
-              <div className="neighborhood-section">
+              <S.NeighborhoodSection>
                 <h4>🛍️ Shopping</h4>
                 <ul>
                   {neighborhood.shopping.map((shop, i) => (
                     <li key={i}>{shop}</li>
                   ))}
                 </ul>
-              </div>
+              </S.NeighborhoodSection>
 
-              <div className="neighborhood-section">
+              <S.NeighborhoodSection>
                 <h4>🎯 Attractions</h4>
                 <ul>
                   {neighborhood.nearbyAttractions.map((attraction, i) => (
                     <li key={i}>{attraction}</li>
                   ))}
                 </ul>
-              </div>
-            </div>
+              </S.NeighborhoodSection>
+            </S.NeighborhoodGrid>
 
-            <div className="neighborhood-footer">
-              <div className="rent-info">
-                <span className="rent-label">Average Rent</span>
-                <span className="rent-value">{neighborhood.avgRent}</span>
-              </div>
-            </div>
-          </div>
+            <S.NeighborhoodFooter>
+              <S.RentInfo>
+                <S.RentLabel>Average Rent</S.RentLabel>
+                <S.RentValue>{neighborhood.avgRent}</S.RentValue>
+              </S.RentInfo>
+            </S.NeighborhoodFooter>
+          </S.NeighborhoodContent>
         )}
-      </div>
-    </div>
+      </S.ImageGalleryContainer>
+    </S.ImageGalleryOverlay>
   );
 }
