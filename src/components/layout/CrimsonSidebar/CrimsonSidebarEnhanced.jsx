@@ -12,7 +12,7 @@ import {
   DEPARTMENTS, 
   getAllAssistants 
 } from '../../../config/assistantRegistry';
-import './CrimsonSidebar.css';
+import * as S from './CrimsonSidebarEnhanced.styles';
 
 const ICON_MAP = {
   MessageSquare, Building2, Target, Bot, Users, TrendingUp, Home,
@@ -173,173 +173,175 @@ const CrimsonSidebarEnhanced = ({
     const isActive = activeTab === tab.id;
     
     return (
-      <button
+      <S.NavItem
         key={tab.id}
-        className={`nav-item ${isActive ? 'active' : ''}`}
+        $active={isActive}
+        $collapsed={collapsed}
         onClick={() => onTabChange(tab.id)}
         title={collapsed ? tab.label : undefined}
       >
-        <Icon size={20} className="nav-icon" />
-        {showLabel && !collapsed && <span className="nav-label">{tab.label}</span>}
-      </button>
+        <S.NavIcon>
+          <Icon size={20} />
+        </S.NavIcon>
+        {showLabel && !collapsed && <S.NavLabel>{tab.label}</S.NavLabel>}
+      </S.NavItem>
     );
   };
 
   const hasActiveFilters = searchQuery !== '' || departmentFilter !== 'all';
 
   return (
-    <aside className={`crimson-sidebar ${collapsed ? 'collapsed' : ''}`}>
-      <div className="sidebar-header">
-        <div className="sidebar-logo">
-          <div className="logo-mark">
+    <S.SidebarContainer $collapsed={collapsed}>
+      <S.SidebarHeader>
+        <S.SidebarLogo>
+          <S.LogoMark>
             <span>W</span>
-          </div>
+          </S.LogoMark>
           {!collapsed && (
-            <div className="logo-text">
-              <span className="logo-title">White Caves</span>
-              <span className="logo-tagline">Real Estate</span>
-            </div>
+            <S.LogoText>
+              <S.LogoTitle>White Caves</S.LogoTitle>
+              <S.LogoTagline>Real Estate</S.LogoTagline>
+            </S.LogoText>
           )}
-        </div>
-        <button 
-          className="collapse-toggle"
+        </S.SidebarLogo>
+        <S.CollapseToggle
           onClick={onToggleCollapse}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-        </button>
-      </div>
+        </S.CollapseToggle>
+      </S.SidebarHeader>
 
       {/* Search and Filter Bar */}
       {!collapsed && (
-        <div className="sidebar-search-bar">
-          <div className="search-input-wrapper">
-            <Search size={16} className="search-icon" />
-            <input 
+        <S.SearchBar>
+          <S.SearchInputWrapper>
+            <S.SearchIcon>
+              <Search size={16} />
+            </S.SearchIcon>
+            <S.SearchInput 
               type="text" 
               placeholder="Search departments, assistants..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
             />
             {searchQuery && (
-              <button className="search-clear" onClick={() => setSearchQuery('')}>
+              <S.SearchClear onClick={() => setSearchQuery('')}>
                 <X size={14} />
-              </button>
+              </S.SearchClear>
             )}
-          </div>
-          <button 
-            className={`filter-toggle ${showFilters ? 'active' : ''}`}
+          </S.SearchInputWrapper>
+          <S.FilterToggle 
+            $active={showFilters}
             onClick={() => setShowFilters(!showFilters)}
             title="Filter by department"
           >
             <Filter size={16} />
-          </button>
-        </div>
+          </S.FilterToggle>
+        </S.SearchBar>
       )}
 
       {/* Filter Dropdown */}
       {!collapsed && showFilters && (
-        <div className="filter-dropdown">
-          <div className="filter-header">
+        <S.FilterDropdown>
+          <S.FilterHeader>
             <span>Filter by Department</span>
             {hasActiveFilters && (
-              <button className="clear-filters" onClick={clearFilters}>
+              <S.ClearFiltersButton onClick={clearFilters}>
                 Clear all
-              </button>
+              </S.ClearFiltersButton>
             )}
-          </div>
-          <div className="filter-options">
-            <button 
-              className={`filter-option ${departmentFilter === 'all' ? 'active' : ''}`}
+          </S.FilterHeader>
+          <S.FilterOptions>
+            <S.FilterOption 
+              $active={departmentFilter === 'all'}
               onClick={() => setDepartmentFilter('all')}
             >
               All Departments
-            </button>
+            </S.FilterOption>
             {Object.entries(DEPARTMENT_CONFIG).map(([key, config]) => (
-              <button 
+              <S.FilterOption 
                 key={key}
-                className={`filter-option ${departmentFilter === key ? 'active' : ''}`}
-                style={{ '--dept-color': config.color }}
+                $active={departmentFilter === key}
+                onClick={() => setDepartmentFilter(key)}
               >
-                <span className="dept-color-dot" style={{ background: config.color }} />
+                <S.DeptColorDot $color={config.color} />
                 {config.label}
-              </button>
+              </S.FilterOption>
             ))}
-          </div>
-        </div>
+          </S.FilterOptions>
+        </S.FilterDropdown>
       )}
 
       {/* Active Filters Display */}
       {!collapsed && hasActiveFilters && (
-        <div className="active-filters">
+        <S.ActiveFilters>
           {searchQuery && (
-            <span className="filter-tag">
+            <S.FilterTag>
               Search: "{searchQuery}"
               <button onClick={() => setSearchQuery('')}><X size={12} /></button>
-            </span>
+            </S.FilterTag>
           )}
           {departmentFilter !== 'all' && (
-            <span className="filter-tag">
+            <S.FilterTag>
               {DEPARTMENT_CONFIG[departmentFilter]?.label || departmentFilter}
               <button onClick={() => setDepartmentFilter('all')}><X size={12} /></button>
-            </span>
+            </S.FilterTag>
           )}
-        </div>
+        </S.ActiveFilters>
       )}
 
-      <div 
-        className={`zoe-command-hub ${activeTab === 'zoe' ? 'active' : ''}`}
+      <S.ZoeCommandHub
+        $active={activeTab === 'zoe'}
+        $collapsed={collapsed}
         onClick={() => onTabChange('zoe')}
       >
-        <div className="hub-icon">
+        <S.HubIcon $collapsed={collapsed}>
           <Command size={collapsed ? 20 : 24} />
-        </div>
+        </S.HubIcon>
         {!collapsed && (
-          <div className="hub-content">
-            <div className="hub-header">
-              <span className="hub-title">AI COMMAND</span>
-              <span className="hub-status online">ONLINE</span>
-            </div>
-            <div className="hub-stats">
-              <span className="hub-stat">
+          <S.HubContent>
+            <S.HubHeader>
+              <S.HubTitle>AI COMMAND</S.HubTitle>
+              <S.HubStatus $online>ONLINE</S.HubStatus>
+            </S.HubHeader>
+            <S.HubStats>
+              <S.HubStat>
                 <Activity size={12} />
                 {getTotalAlerts()} alerts
-              </span>
-              <span className="hub-stat">
+              </S.HubStat>
+              <S.HubStat>
                 <Users size={12} />
                 {filteredAssistants.length} assistants
-              </span>
-            </div>
-          </div>
+              </S.HubStat>
+            </S.HubStats>
+          </S.HubContent>
         )}
         {collapsed && getTotalAlerts() > 0 && (
-          <span className="collapsed-badge">{getTotalAlerts()}</span>
+          <S.CollapsedBadge>{getTotalAlerts()}</S.CollapsedBadge>
         )}
-      </div>
+      </S.ZoeCommandHub>
 
-      <nav className="sidebar-nav">
-        <div className="nav-section">
-          {!collapsed && <div className="section-label">Dashboard</div>}
-          <div className="nav-list">
+      <S.SidebarNav>
+        <S.NavSection>
+          <S.SectionLabel $collapsed={collapsed}>Dashboard</S.SectionLabel>
+          <S.NavList>
             {DASHBOARD_TABS.map(tab => renderNavItem(tab))}
-          </div>
-        </div>
+          </S.NavList>
+        </S.NavSection>
 
-        <div className="nav-section">
-          {!collapsed && (
-            <div className="section-label">
-              <span>AI Assistants</span>
-              <span className="section-count">
-                {hasActiveFilters ? `${filteredAssistants.length}/${AI_ASSISTANTS.length}` : AI_ASSISTANTS.length}
-              </span>
-            </div>
-          )}
-          <div className="departments-list">
+        <S.NavSection>
+          <S.SectionLabel $collapsed={collapsed}>
+            <span>AI Assistants</span>
+            <S.SectionCount>
+              {hasActiveFilters ? `${filteredAssistants.length}/${AI_ASSISTANTS.length}` : AI_ASSISTANTS.length}
+            </S.SectionCount>
+          </S.SectionLabel>
+          <S.DepartmentsList>
             {Object.keys(assistantsByDepartment).length === 0 && !collapsed && (
-              <div className="no-results">
+              <S.NoResults>
                 No assistants match your filters
-              </div>
+              </S.NoResults>
             )}
             {Object.entries(assistantsByDepartment).map(([dept, assistants]) => {
               const deptConfig = DEPARTMENT_CONFIG[dept];
@@ -351,32 +353,31 @@ const CrimsonSidebarEnhanced = ({
               const deptNotifCount = assistants.reduce((sum, a) => sum + getNotificationCount(a.id), 0);
 
               return (
-                <div key={dept} className={`department-group ${hasActiveAssistant ? 'has-active' : ''}`}>
-                  <button
-                    className="department-header"
+                <S.DepartmentGroup key={dept} $hasActive={hasActiveAssistant}>
+                  <S.DepartmentHeader
+                    $collapsed={collapsed}
                     onClick={() => !collapsed && toggleDepartment(dept)}
                     title={collapsed ? deptConfig.label : undefined}
-                    style={{ '--dept-color': deptConfig.color }}
                   >
-                    <div className="dept-indicator" style={{ background: deptConfig.color }} />
+                    <S.DeptIndicator $collapsed={collapsed} style={{ background: deptConfig.color }} />
                     {collapsed ? (
                       <DeptIcon size={18} style={{ color: deptConfig.color }} />
                     ) : (
                       <>
-                        <span className="dept-label">{deptConfig.label}</span>
-                        <div className="dept-meta">
+                        <S.DeptLabel $collapsed={collapsed}>{deptConfig.label}</S.DeptLabel>
+                        <S.DeptMeta $collapsed={collapsed}>
                           {deptNotifCount > 0 && (
-                            <span className="dept-notif">{deptNotifCount}</span>
+                            <S.DeptNotif>{deptNotifCount}</S.DeptNotif>
                           )}
-                          <span className="dept-count">{assistants.length}</span>
+                          <S.DeptCount>{assistants.length}</S.DeptCount>
                           {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                        </div>
+                        </S.DeptMeta>
                       </>
                     )}
-                  </button>
+                  </S.DepartmentHeader>
                   
                   {!collapsed && isExpanded && (
-                    <ul className="assistant-list">
+                    <S.AssistantList>
                       {assistants.map(assistant => {
                         const Icon = getAssistantIcon(assistant.id);
                         const notifCount = getNotificationCount(assistant.id);
@@ -384,70 +385,69 @@ const CrimsonSidebarEnhanced = ({
                         
                         return (
                           <li key={assistant.id}>
-                            <button
-                              className={`assistant-item ${isActive ? 'active' : ''}`}
+                            <S.AssistantItem
+                              $active={isActive}
                               onClick={() => onTabChange(assistant.id)}
-                              style={{ '--assistant-color': assistant.color }}
                             >
-                              <div className="assistant-status">
-                                <span className="status-dot online" />
-                              </div>
-                              <div className="assistant-icon">
+                              <S.AssistantStatus>
+                                <S.StatusDot $status="online" />
+                              </S.AssistantStatus>
+                              <S.AssistantIcon $active={isActive}>
                                 <Icon size={16} />
-                              </div>
-                              <div className="assistant-info">
-                                <span className="assistant-name">{assistant.name}</span>
-                                <span className="assistant-desc">{assistant.desc}</span>
-                              </div>
+                              </S.AssistantIcon>
+                              <S.AssistantInfo>
+                                <S.AssistantName>{assistant.name}</S.AssistantName>
+                                <S.AssistantDesc>{assistant.desc}</S.AssistantDesc>
+                              </S.AssistantInfo>
                               {notifCount > 0 && (
-                                <span className="assistant-badge">{notifCount}</span>
+                                <S.AssistantBadge>{notifCount}</S.AssistantBadge>
                               )}
-                            </button>
+                            </S.AssistantItem>
                           </li>
                         );
                       })}
-                    </ul>
+                    </S.AssistantList>
                   )}
-                </div>
+                </S.DepartmentGroup>
               );
             })}
-          </div>
-        </div>
+          </S.DepartmentsList>
+        </S.NavSection>
 
-        <div className="nav-section">
-          {!collapsed && <div className="section-label">Management</div>}
-          <div className="nav-list">
+        <S.NavSection>
+          <S.SectionLabel $collapsed={collapsed}>Management</S.SectionLabel>
+          <S.NavList>
             {MANAGEMENT_TABS.map(tab => renderNavItem(tab))}
-          </div>
-        </div>
+          </S.NavList>
+        </S.NavSection>
 
-        <div className="nav-section">
-          {!collapsed && <div className="section-label">Integrations</div>}
-          <div className="nav-list">
+        <S.NavSection>
+          <S.SectionLabel $collapsed={collapsed}>Integrations</S.SectionLabel>
+          <S.NavList>
             {INTEGRATION_TABS.map(tab => renderNavItem(tab))}
-          </div>
-        </div>
+          </S.NavList>
+        </S.NavSection>
 
-        <div className="nav-section">
-          {!collapsed && <div className="section-label">System</div>}
-          <div className="nav-list">
+        <S.NavSection>
+          <S.SectionLabel $collapsed={collapsed}>System</S.SectionLabel>
+          <S.NavList>
             {SYSTEM_TABS.map(tab => renderNavItem(tab))}
-          </div>
-        </div>
-      </nav>
+          </S.NavList>
+        </S.NavSection>
+      </S.SidebarNav>
 
-      <div className="sidebar-footer">
+      <S.SidebarFooter>
         {!collapsed && (
-          <div className="footer-content">
-            <span className="version">v2.0.0</span>
-            <span className="footer-status">
-              <span className="status-indicator online" />
+          <S.FooterContent>
+            <S.Version>v2.0.0</S.Version>
+            <S.FooterStatus>
+              <S.StatusIndicator $online />
               All systems operational
-            </span>
-          </div>
+            </S.FooterStatus>
+          </S.FooterContent>
         )}
-      </div>
-    </aside>
+      </S.SidebarFooter>
+    </S.SidebarContainer>
   );
 };
 
