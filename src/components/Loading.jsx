@@ -1,12 +1,11 @@
-
 import React from 'react';
-import './Loading.css';
+import { LoadingContainer, LoadingSpinner } from './Loading.styles';
 
 export default function Loading() {
   return (
-    <div className="loading-container flex-center flex-col">
-      <div className="loading-spinner corner-full"></div>
+    <LoadingContainer>
+      <LoadingSpinner />
       <p>Loading...</p>
-    </div>
+    </LoadingContainer>
   );
 }

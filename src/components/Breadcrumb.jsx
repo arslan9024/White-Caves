@@ -1,6 +1,13 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import './Breadcrumb.css';
+import {
+  BreadcrumbNav,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbCurrent
+} from './Breadcrumb.styles';
 
 const routeLabels = {
   '': 'Home',
@@ -69,34 +76,34 @@ export default function Breadcrumb({ customItems, showHome = true }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <nav className="breadcrumb" aria-label="Breadcrumb">
-        <ol className="breadcrumb-list">
+      <BreadcrumbNav aria-label="Breadcrumb">
+        <BreadcrumbList>
           {showHome && (
-            <li className="breadcrumb-item">
-              <Link to="/" className="breadcrumb-link">
+            <BreadcrumbItem>
+              <BreadcrumbLink to="/">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
                 </svg>
                 <span>Home</span>
-              </Link>
-              <span className="breadcrumb-separator">/</span>
-            </li>
+              </BreadcrumbLink>
+              <BreadcrumbSeparator>/</BreadcrumbSeparator>
+            </BreadcrumbItem>
           )}
           {breadcrumbItems.map((item, index) => (
-            <li key={item.path} className="breadcrumb-item">
+            <BreadcrumbItem key={item.path}>
               {item.isLast ? (
-                <span className="breadcrumb-current" aria-current="page">
+                <BreadcrumbCurrent aria-current="page">
                   {item.label}
-                </span>
+                </BreadcrumbCurrent>
               ) : (
                 <>
-                  <Link to={item.path} className="breadcrumb-link">
+                  <BreadcrumbLink to={item.path}>
                     {item.label}
-                  </Link>
-                  <span className="breadcrumb-separator">/</span>
+                  </BreadcrumbLink>
+                  <BreadcrumbSeparator>/</BreadcrumbSeparator>
                 </>
               )}
-            </li>
+            </BreadcrumbItem>
           ))}
         </ol>
       </nav>

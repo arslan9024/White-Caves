@@ -1,5 +1,37 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import './AdvancedFilters.css';
+import {
+  AdvancedFiltersContainer,
+  FiltersHeader,
+  FilterIcon,
+  FilterCountBadge,
+  FiltersActions,
+  ResetBtn,
+  CloseFiltersBtn,
+  FiltersBody,
+  FilterSectionContainer,
+  SectionHeader,
+  Chevron,
+  SectionContent,
+  PriceInputsWrapper,
+  PriceInputGroupStyled,
+  InputLabel,
+  NumberInput,
+  Separator,
+  ListingTypeToggle,
+  ToggleBtn,
+  PropertyTypeGrid,
+  TypeBtn,
+  TypeIcon,
+  TypeLabel,
+  RoomSelector,
+  RoomLabel,
+  RoomButtonsGroup,
+  RoomBtn,
+  AmenitiesGrid,
+  AmenityBtn,
+  AmenityIcon,
+  ApplyBtn
+} from './AdvancedFilters.styles';
 
 const PROPERTY_TYPES = [
   { id: 'apartment', label: 'Apartment', icon: '🏢' },
@@ -160,27 +192,278 @@ const AdvancedFilters = ({
   if (!isOpen) return null;
 
   return (
-    <div className="advanced-filters">
-      <div className="filters-header">
+    <AdvancedFiltersContainer>
+      <FiltersHeader>
         <h3>
-          <span className="filter-icon">⚙️</span>
+          <FilterIcon>⚙️</FilterIcon>
           Advanced Filters
           {activeFilterCount > 0 && (
-            <span className="filter-count">{activeFilterCount}</span>
+            <FilterCountBadge>{activeFilterCount}</FilterCountBadge>
           )}
         </h3>
-        <div className="filters-actions">
-          <button className="reset-btn" onClick={handleReset}>
+        <FiltersActions>
+          <ResetBtn onClick={handleReset}>
             Reset All
-          </button>
+          </ResetBtn>
           {onClose && (
-            <button className="close-filters-btn" onClick={onClose}>✕</button>
+            <CloseFiltersBtn onClick={onClose}>✕</CloseFiltersBtn>
           )}
-        </div>
-      </div>
+        </FiltersActions>
+      </FiltersHeader>
 
-      <div className="filters-body">
-        <div className="filter-section">
+      <FiltersBody>
+        <FilterSectionContainer>
+          <SectionHeader onClick={() => toggleSection('price')}>
+            <span>💰 Price Range</span>
+            <Chevron open={expandedSections.price}>▼</Chevron>
+          </SectionHeader>
+          {expandedSections.price && (
+            <SectionContent>
+              <PriceInputsWrapper>
+                <PriceInputGroupStyled>
+                  <InputLabel>Min Price</InputLabel>
+                  <NumberInput
+                    type="number"
+                    value={localFilters.priceRange[0]}
+                    onChange={(e) => updateFilter('priceRange', [Number(e.target.value), localFilters.priceRange[1]])}
+                    placeholder="0"
+                  />
+                </PriceInputGroupStyled>
+                <Separator>to</Separator>
+                <PriceInputGroupStyled>
+                  <InputLabel>Max Price</InputLabel>
+                  <NumberInput
+                    type="number"
+                    value={localFilters.priceRange[1]}
+                    onChange={(e) => updateFilter('priceRange', [localFilters.priceRange[0], Number(e.target.value)])}
+                    placeholder="50,000,000"
+                  />
+                </PriceInputGroupStyled>
+              </PriceInputsWrapper>
+              <div style={{ position: 'relative', height: '40px', marginTop: '10px' }}>
+                <input
+                  type="range"
+                  min="0"
+                  max="50000000"
+                  step="100000"
+                  value={localFilters.priceRange[0]}
+                  onChange={(e) => updateFilter('priceRange', [Number(e.target.value), localFilters.priceRange[1]])}
+                  style={{ position: 'absolute', width: '100%', height: '6px', appearance: 'none', background: 'transparent', pointerEvents: 'none', zIndex: 1 }}
+                />
+                <input
+                  type="range"
+                  min="0"
+                  max="50000000"
+                  step="100000"
+                  value={localFilters.priceRange[1]}
+                  onChange={(e) => updateFilter('priceRange', [localFilters.priceRange[0], Number(e.target.value)])}
+                  style={{ position: 'absolute', width: '100%', height: '6px', appearance: 'none', background: 'transparent', pointerEvents: 'none', zIndex: 2 }}
+                />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px', color: 'rgba(255, 255, 255, 0.7)', fontSize: '13px' }}>
+                <span>{formatPrice(localFilters.priceRange[0])}</span>
+                <span>{formatPrice(localFilters.priceRange[1])}</span>
+              </div>
+            </SectionContent>
+          )}
+        </FilterSectionContainer>
+
+        <FilterSectionContainer>
+          <SectionHeader onClick={() => toggleSection('type')}>
+            <span>🏠 Property Type</span>
+            <Chevron open={expandedSections.type}>▼</Chevron>
+          </SectionHeader>
+          {expandedSections.type && (
+            <SectionContent>
+              <ListingTypeToggle>
+                {['all', 'buy', 'rent'].map(type => (
+                  <ToggleBtn
+                    key={type}
+                    active={localFilters.listingType === type}
+                    onClick={() => updateFilter('listingType', type)}
+                  >
+                    {type === 'all' ? 'All' : type === 'buy' ? 'For Sale' : 'For Rent'}
+                  </ToggleBtn>
+                ))}
+              </ListingTypeToggle>
+              <PropertyTypeGrid>
+                {PROPERTY_TYPES.map(type => (
+                  <TypeBtn
+                    key={type.id}
+                    active={localFilters.propertyTypes.includes(type.id)}
+                    onClick={() => toggleArrayItem('propertyTypes', type.id)}
+                  >
+                    <TypeIcon>{type.icon}</TypeIcon>
+                    <TypeLabel>{type.label}</TypeLabel>
+                  </TypeBtn>
+                ))}
+              </PropertyTypeGrid>
+            </SectionContent>
+          )}
+        </FilterSectionContainer>
+
+        <FilterSectionContainer>
+          <SectionHeader onClick={() => toggleSection('rooms')}>
+            <span>🛏️ Bedrooms & Bathrooms</span>
+            <Chevron open={expandedSections.rooms}>▼</Chevron>
+          </SectionHeader>
+          {expandedSections.rooms && (
+            <SectionContent>
+              <RoomSelector>
+                <RoomLabel>Bedrooms</RoomLabel>
+                <RoomButtonsGroup>
+                  {['Any', '1', '2', '3', '4', '5', '6+'].map(num => (
+                    <RoomBtn
+                      key={num}
+                      active={localFilters.bedrooms === (num === 'Any' ? null : num)}
+                      onClick={() => updateFilter('bedrooms', num === 'Any' ? null : num)}
+                    >
+                      {num}
+                    </RoomBtn>
+                  ))}
+                </RoomButtonsGroup>
+              </RoomSelector>
+              <RoomSelector>
+                <RoomLabel>Bathrooms</RoomLabel>
+                <RoomButtonsGroup>
+                  {['Any', '1', '2', '3', '4', '5+'].map(num => (
+                    <RoomBtn
+                      key={num}
+                      active={localFilters.bathrooms === (num === 'Any' ? null : num)}
+                      onClick={() => updateFilter('bathrooms', num === 'Any' ? null : num)}
+                    >
+                      {num}
+                    </RoomBtn>
+                  ))}
+                </RoomButtonsGroup>
+              </RoomSelector>
+            </SectionContent>
+          )}
+        </FilterSectionContainer>
+
+        <FilterSectionContainer>
+          <SectionHeader onClick={() => toggleSection('amenities')}>
+            <span>✨ Amenities {localFilters.amenities.length > 0 && `(${localFilters.amenities.length})`}</span>
+            <Chevron open={expandedSections.amenities}>▼</Chevron>
+          </SectionHeader>
+          {expandedSections.amenities && (
+            <SectionContent>
+              <AmenitiesGrid>
+                {AMENITIES.map(amenity => (
+                  <AmenityBtn
+                    key={amenity.id}
+                    active={localFilters.amenities.includes(amenity.id)}
+                    onClick={() => toggleArrayItem('amenities', amenity.id)}
+                  >
+                    <AmenityIcon>{amenity.icon}</AmenityIcon>
+                    {amenity.label}
+                  </AmenityBtn>
+                ))}
+              </AmenitiesGrid>
+            </SectionContent>
+          )}
+        </FilterSectionContainer>
+
+        <FilterSectionContainer>
+          <SectionHeader onClick={() => toggleSection('location')}>
+            <span>📍 Location {localFilters.areas.length > 0 && `(${localFilters.areas.length})`}</span>
+            <Chevron open={expandedSections.location}>▼</Chevron>
+          </SectionHeader>
+          {expandedSections.location && (
+            <SectionContent>
+              <AmenitiesGrid>
+                {DUBAI_AREAS.map(area => (
+                  <AmenityBtn
+                    key={area}
+                    active={localFilters.areas.includes(area)}
+                    onClick={() => toggleArrayItem('areas', area)}
+                  >
+                    {area}
+                  </AmenityBtn>
+                ))}
+              </AmenitiesGrid>
+              <div style={{ marginTop: '1rem' }}>
+                <RoomLabel>Search Radius</RoomLabel>
+                <RoomButtonsGroup>
+                  {[null, 1, 5, 10, 20].map(km => (
+                    <RoomBtn
+                      key={km ?? 'any'}
+                      active={localFilters.radius === km}
+                      onClick={() => updateFilter('radius', km)}
+                    >
+                      {km === null ? 'Any' : `${km} km`}
+                    </RoomBtn>
+                  ))}
+                </RoomButtonsGroup>
+              </div>
+            </SectionContent>
+          )}
+        </FilterSectionContainer>
+
+        <FilterSectionContainer>
+          <SectionHeader onClick={() => toggleSection('more')}>
+            <span>📐 Size & More</span>
+            <Chevron open={expandedSections.more}>▼</Chevron>
+          </SectionHeader>
+          {expandedSections.more && (
+            <SectionContent>
+              <PriceInputsWrapper>
+                <PriceInputGroupStyled>
+                  <InputLabel>Min Size (sq ft)</InputLabel>
+                  <NumberInput
+                    type="number"
+                    value={localFilters.sizeRange[0]}
+                    onChange={(e) => updateFilter('sizeRange', [Number(e.target.value), localFilters.sizeRange[1]])}
+                    placeholder="0"
+                  />
+                </PriceInputGroupStyled>
+                <Separator>to</Separator>
+                <PriceInputGroupStyled>
+                  <InputLabel>Max Size (sq ft)</InputLabel>
+                  <NumberInput
+                    type="number"
+                    value={localFilters.sizeRange[1]}
+                    onChange={(e) => updateFilter('sizeRange', [localFilters.sizeRange[0], Number(e.target.value)])}
+                    placeholder="20,000"
+                  />
+                </PriceInputGroupStyled>
+              </PriceInputsWrapper>
+              <div style={{ marginTop: '1rem' }}>
+                <InputLabel>Keywords</InputLabel>
+                <NumberInput
+                  type="text"
+                  value={localFilters.keywords}
+                  onChange={(e) => updateFilter('keywords', e.target.value)}
+                  placeholder="e.g., sea view, corner unit, renovated..."
+                />
+              </div>
+              <div style={{ marginTop: '1rem' }}>
+                <InputLabel>Sort By</InputLabel>
+                <select
+                  value={localFilters.sortBy}
+                  onChange={(e) => updateFilter('sortBy', e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', background: 'rgba(255, 255, 255, 0.1)', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: '8px', color: 'white' }}
+                >
+                  <option value="newest">Newest First</option>
+                  <option value="price_low">Price: Low to High</option>
+                  <option value="price_high">Price: High to Low</option>
+                  <option value="size_large">Size: Largest First</option>
+                  <option value="size_small">Size: Smallest First</option>
+                </select>
+              </div>
+            </SectionContent>
+          )}
+        </FilterSectionContainer>
+      </FiltersBody>
+
+      <div style={{ padding: '16px 24px', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+        <ApplyBtn onClick={handleApply}>
+          Apply Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
+        </ApplyBtn>
+      </div>
+    </AdvancedFiltersContainer>
+  );
+};
           <button 
             className="section-header"
             onClick={() => toggleSection('price')}

@@ -1,7 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useStripe, Elements, PaymentElement, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import './Checkout.css';
+import {
+  CheckoutContainerStyled,
+  CheckoutFormStyled,
+  PaymentDetailsSection,
+  PropertySummary,
+  ErrorMessage,
+  CheckoutActions,
+  SubmitBtn,
+  CancelBtn,
+  CheckoutLoadingContainer,
+  SpinnerStyled,
+  LoadingText,
+  CheckoutErrorContainer,
+  ConfigErrorText
+} from './Checkout.styles';
 
 let stripePromise;
 if (import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
@@ -50,39 +64,37 @@ const CheckoutForm = ({ property, amount, onSuccess, onCancel }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="checkout-form">
-      <div className="payment-details">
+    <CheckoutFormStyled onSubmit={handleSubmit}>
+      <PaymentDetailsSection>
         <h3>Payment Details</h3>
-        <div className="property-summary">
+        <PropertySummary>
           <p><strong>Property:</strong> {property?.title}</p>
           <p><strong>Amount:</strong> ${amount?.toLocaleString()}</p>
-        </div>
-      </div>
+        </PropertySummary>
+      </PaymentDetailsSection>
       
       <PaymentElement />
       
       {errorMessage && (
-        <div className="error-message">{errorMessage}</div>
+        <ErrorMessage>{errorMessage}</ErrorMessage>
       )}
       
-      <div className="checkout-actions">
-        <button 
+      <CheckoutActions>
+        <CancelBtn 
           type="button" 
           onClick={onCancel}
-          className="cancel-btn"
           disabled={isProcessing}
         >
           Cancel
-        </button>
-        <button 
+        </CancelBtn>
+        <SubmitBtn 
           type="submit" 
           disabled={!stripe || isProcessing}
-          className="submit-btn"
         >
           {isProcessing ? 'Processing...' : `Pay $${amount?.toLocaleString()}`}
-        </button>
-      </div>
-    </form>
+        </SubmitBtn>
+      </CheckoutActions>
+    </CheckoutFormStyled>
   );
 };
 
@@ -129,36 +141,36 @@ export default function Checkout({ property, amount, onSuccess, onCancel }) {
 
   if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
     return (
-      <div className="checkout-container">
-        <div className="checkout-error">
+      <CheckoutContainerStyled>
+        <CheckoutErrorContainer>
           <h3>Payment System Not Configured</h3>
-          <p>Stripe API keys are required to process payments. Please configure your environment variables.</p>
-          <button onClick={onCancel} className="cancel-btn">Close</button>
-        </div>
-      </div>
+          <ConfigErrorText>Stripe API keys are required to process payments. Please configure your environment variables.</ConfigErrorText>
+          <CancelBtn onClick={onCancel}>Close</CancelBtn>
+        </CheckoutErrorContainer>
+      </CheckoutContainerStyled>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="checkout-container">
-        <div className="checkout-loading">
-          <div className="spinner"></div>
-          <p>Initializing payment...</p>
-        </div>
-      </div>
+      <CheckoutContainerStyled>
+        <CheckoutLoadingContainer>
+          <SpinnerStyled />
+          <LoadingText>Initializing payment...</LoadingText>
+        </CheckoutLoadingContainer>
+      </CheckoutContainerStyled>
     );
   }
 
   if (error) {
     return (
-      <div className="checkout-container">
-        <div className="checkout-error">
+      <CheckoutContainerStyled>
+        <CheckoutErrorContainer>
           <h3>Error</h3>
           <p>{error}</p>
-          <button onClick={onCancel} className="cancel-btn">Close</button>
-        </div>
-      </div>
+          <CancelBtn onClick={onCancel}>Close</CancelBtn>
+        </CheckoutErrorContainer>
+      </CheckoutContainerStyled>
     );
   }
 
@@ -167,7 +179,7 @@ export default function Checkout({ property, amount, onSuccess, onCancel }) {
   }
 
   return (
-    <div className="checkout-container">
+    <CheckoutContainerStyled>
       <Elements stripe={stripePromise} options={{ clientSecret }}>
         <CheckoutForm 
           property={property} 
@@ -176,6 +188,6 @@ export default function Checkout({ property, amount, onSuccess, onCancel }) {
           onCancel={onCancel}
         />
       </Elements>
-    </div>
+    </CheckoutContainerStyled>
   );
 }

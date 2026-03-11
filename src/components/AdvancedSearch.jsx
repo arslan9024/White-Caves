@@ -1,7 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFilters, clearFilters, applyFilters } from '../store/propertySlice';
-import './AdvancedSearch.css';
+import {
+  SearchContainer,
+  SearchBarContainer,
+  SearchInputWrapper,
+  SearchIcon,
+  SearchInput,
+  SearchQuickActions,
+  SortSelect,
+  FilterToggleBtn,
+  FilterCount,
+  FiltersPanel,
+  FiltersTabs,
+  FilterTab,
+  FiltersContent,
+  FilterSection,
+  FilterTitle,
+  SearchButton,
+  ClearButton
+} from './AdvancedSearch.styles';
 
 const PROPERTY_TYPES = ['Villa', 'Apartment', 'Penthouse', 'Townhouse', 'Land'];
 const LOCATIONS = [
@@ -112,36 +130,34 @@ export default function AdvancedSearch({ isExpanded = false }) {
   };
 
   return (
-    <div className="advanced-search">
-      <div className="search-bar-container glass-card">
-        <div className="search-input-wrapper">
-          <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <SearchContainer>
+      <SearchBarContainer className="glass-card">
+        <SearchInputWrapper>
+          <SearchIcon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="11" cy="11" r="8"/>
             <path d="m21 21-4.35-4.35"/>
-          </svg>
-          <input
+          </SearchIcon>
+          <SearchInput
             type="text"
-            className="search-input"
             placeholder="Search by location, property type, or keyword..."
             value={localFilters.search}
             onChange={(e) => updateFilter('search', e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
           />
-        </div>
+        </SearchInputWrapper>
         
-        <div className="search-quick-actions">
-          <select 
-            className="sort-select"
+        <SearchQuickActions>
+          <SortSelect
             value={localFilters.sortBy}
             onChange={(e) => updateFilter('sortBy', e.target.value)}
           >
             {SORT_OPTIONS.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
-          </select>
+          </SortSelect>
           
-          <button 
-            className={`filter-toggle-btn ${showFilters ? 'active' : ''}`}
+          <FilterToggleBtn 
+            active={showFilters}
             onClick={() => setShowFilters(!showFilters)}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -149,77 +165,77 @@ export default function AdvancedSearch({ isExpanded = false }) {
             </svg>
             Filters
             {getActiveFiltersCount() > 0 && (
-              <span className="filter-count">{getActiveFiltersCount()}</span>
+              <FilterCount>{getActiveFiltersCount()}</FilterCount>
             )}
-          </button>
+          </FilterToggleBtn>
           
-          <button className="btn btn-primary search-btn" onClick={handleSearch}>
+          <SearchButton onClick={handleSearch}>
             Search
-          </button>
-        </div>
-      </div>
+          </SearchButton>
+        </SearchQuickActions>
+      </SearchBarContainer>
 
       {showFilters && (
-        <div className="filters-panel glass-card animate-fadeInDown">
-          <div className="filters-tabs">
-            <button 
-              className={`filter-tab ${activeTab === 'all' ? 'active' : ''}`}
+        <FiltersPanel className="glass-card animate-fadeInDown">
+          <FiltersTabs>
+            <FilterTab 
+              active={activeTab === 'all'}
               onClick={() => setActiveTab('all')}
             >
               All Filters
-            </button>
-            <button 
-              className={`filter-tab ${activeTab === 'price' ? 'active' : ''}`}
+            </FilterTab>
+            <FilterTab 
+              active={activeTab === 'price'}
               onClick={() => setActiveTab('price')}
             >
               Price
-            </button>
-            <button 
-              className={`filter-tab ${activeTab === 'rooms' ? 'active' : ''}`}
+            </FilterTab>
+            <FilterTab 
+              active={activeTab === 'rooms'}
               onClick={() => setActiveTab('rooms')}
             >
               Rooms
-            </button>
-            <button 
-              className={`filter-tab ${activeTab === 'type' ? 'active' : ''}`}
+            </FilterTab>
+            <FilterTab 
+              active={activeTab === 'type'}
               onClick={() => setActiveTab('type')}
             >
               Property Type
-            </button>
-            <button 
-              className={`filter-tab ${activeTab === 'amenities' ? 'active' : ''}`}
+            </FilterTab>
+            <FilterTab 
+              active={activeTab === 'amenities'}
               onClick={() => setActiveTab('amenities')}
             >
               Amenities
-            </button>
-          </div>
+            </FilterTab>
+          </FiltersTabs>
 
-          <div className="filters-content">
+          <FiltersContent>
             {(activeTab === 'all' || activeTab === 'price') && (
-              <div className="filter-section">
-                <h4 className="filter-title">Price Range (AED)</h4>
-                <div className="price-range-inputs">
-                  <div className="price-input-group">
+              <FilterSection>
+                <FilterTitle>Price Range (AED)</FilterTitle>
+                <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+                  <div style={{ flex: 1 }}>
                     <label>Min</label>
                     <input
                       type="text"
                       value={formatPrice(localFilters.minPrice)}
                       readOnly
-                      className="price-display"
+                      style={{ width: '100%', padding: '0.625rem 0.75rem', border: '2px solid var(--border-color)', borderRadius: 'var(--radius-md)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
                     />
                   </div>
-                  <span className="price-separator">—</span>
-                  <div className="price-input-group">
+                  <span style={{ alignSelf: 'flex-end', marginBottom: '0.625rem' }}>—</span>
+                  <div style={{ flex: 1 }}>
                     <label>Max</label>
                     <input
                       type="text"
                       value={formatPrice(localFilters.maxPrice)}
                       readOnly
-                      className="price-display"
+                      style={{ width: '100%', padding: '0.625rem 0.75rem', border: '2px solid var(--border-color)', borderRadius: 'var(--radius-md)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
                     />
                   </div>
                 </div>
-                <div className="dual-range-slider">
+                <div style={{ position: 'relative', height: '40px', padding: '10px 0' }}>
                   <input
                     type="range"
                     min="0"
@@ -230,7 +246,7 @@ export default function AdvancedSearch({ isExpanded = false }) {
                       const val = parseInt(e.target.value);
                       if (val < localFilters.maxPrice) updateFilter('minPrice', val);
                     }}
-                    className="range-slider range-min"
+                    style={{ position: 'absolute', width: '100%', height: '6px', appearance: 'none', background: 'transparent', pointerEvents: 'none' }}
                   />
                   <input
                     type="range"
@@ -242,62 +258,193 @@ export default function AdvancedSearch({ isExpanded = false }) {
                       const val = parseInt(e.target.value);
                       if (val > localFilters.minPrice) updateFilter('maxPrice', val);
                     }}
-                    className="range-slider range-max"
-                  />
-                  <div 
-                    className="range-track-fill"
-                    style={{
-                      left: `${(localFilters.minPrice / 100000000) * 100}%`,
-                      width: `${((localFilters.maxPrice - localFilters.minPrice) / 100000000) * 100}%`
-                    }}
+                    style={{ position: 'absolute', width: '100%', height: '6px', appearance: 'none', background: 'transparent', pointerEvents: 'none' }}
                   />
                 </div>
-                <div className="price-presets">
-                  <button onClick={() => { updateFilter('minPrice', 0); updateFilter('maxPrice', 5000000); }}>Under 5M</button>
-                  <button onClick={() => { updateFilter('minPrice', 5000000); updateFilter('maxPrice', 15000000); }}>5M - 15M</button>
-                  <button onClick={() => { updateFilter('minPrice', 15000000); updateFilter('maxPrice', 30000000); }}>15M - 30M</button>
-                  <button onClick={() => { updateFilter('minPrice', 30000000); updateFilter('maxPrice', 100000000); }}>30M+</button>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                  <button onClick={() => { updateFilter('minPrice', 0); updateFilter('maxPrice', 5000000); }} style={{ flex: 1, padding: '0.5rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', background: 'var(--bg-primary)', color: 'var(--text-primary)', cursor: 'pointer' }}>Under 5M</button>
+                  <button onClick={() => { updateFilter('minPrice', 5000000); updateFilter('maxPrice', 15000000); }} style={{ flex: 1, padding: '0.5rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', background: 'var(--bg-primary)', color: 'var(--text-primary)', cursor: 'pointer' }}>5M - 15M</button>
+                  <button onClick={() => { updateFilter('minPrice', 15000000); updateFilter('maxPrice', 30000000); }} style={{ flex: 1, padding: '0.5rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', background: 'var(--bg-primary)', color: 'var(--text-primary)', cursor: 'pointer' }}>15M - 30M</button>
+                  <button onClick={() => { updateFilter('minPrice', 30000000); updateFilter('maxPrice', 100000000); }} style={{ flex: 1, padding: '0.5rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', background: 'var(--bg-primary)', color: 'var(--text-primary)', cursor: 'pointer' }}>30M+</button>
                 </div>
-              </div>
+              </FilterSection>
             )}
 
             {(activeTab === 'all' || activeTab === 'rooms') && (
-              <div className="filter-section">
-                <h4 className="filter-title">Bedrooms & Bathrooms</h4>
-                <div className="counter-filters">
-                  <div className="counter-group">
-                    <label>Bedrooms</label>
-                    <div className="counter-controls">
+              <FilterSection>
+                <FilterTitle>Bedrooms & Bathrooms</FilterTitle>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '0.5rem' }}>Bedrooms</label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <button 
-                        className="counter-btn"
                         onClick={() => updateFilter('beds', Math.max(0, localFilters.beds - 1))}
                         disabled={localFilters.beds === 0}
+                        style={{ padding: '0.5rem 0.75rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', background: 'var(--bg-primary)', cursor: 'pointer' }}
                       >
                         −
                       </button>
-                      <span className="counter-value">{localFilters.beds === 0 ? 'Any' : `${localFilters.beds}+`}</span>
+                      <span style={{ flex: 1, textAlign: 'center' }}>{localFilters.beds === 0 ? 'Any' : `${localFilters.beds}+`}</span>
                       <button 
-                        className="counter-btn"
                         onClick={() => updateFilter('beds', localFilters.beds + 1)}
+                        style={{ padding: '0.5rem 0.75rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', background: 'var(--bg-primary)', cursor: 'pointer' }}
                       >
                         +
                       </button>
                     </div>
                   </div>
-                  <div className="counter-group">
-                    <label>Bathrooms</label>
-                    <div className="counter-controls">
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '0.5rem' }}>Bathrooms</label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <button 
-                        className="counter-btn"
                         onClick={() => updateFilter('baths', Math.max(0, localFilters.baths - 1))}
                         disabled={localFilters.baths === 0}
+                        style={{ padding: '0.5rem 0.75rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', background: 'var(--bg-primary)', cursor: 'pointer' }}
                       >
                         −
                       </button>
-                      <span className="counter-value">{localFilters.baths === 0 ? 'Any' : `${localFilters.baths}+`}</span>
+                      <span style={{ flex: 1, textAlign: 'center' }}>{localFilters.baths === 0 ? 'Any' : `${localFilters.baths}+`}</span>
                       <button 
-                        className="counter-btn"
                         onClick={() => updateFilter('baths', localFilters.baths + 1)}
+                        style={{ padding: '0.5rem 0.75rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', background: 'var(--bg-primary)', cursor: 'pointer' }}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  {[1, 2, 3, 4, 5, 6].map(num => (
+                    <button
+                      key={num}
+                      onClick={() => updateFilter('beds', num)}
+                      style={{ flex: 1, minWidth: '80px', padding: '0.5rem', border: localFilters.beds === num ? '2px solid var(--primary-color)' : '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', background: localFilters.beds === num ? 'rgba(196, 24, 53, 0.1)' : 'var(--bg-primary)', color: localFilters.beds === num ? 'var(--primary-color)' : 'var(--text-primary)', cursor: 'pointer' }}
+                    >
+                      {num}+ beds
+                    </button>
+                  ))}
+                </div>
+              </FilterSection>
+            )}
+
+            {(activeTab === 'all' || activeTab === 'type') && (
+              <FilterSection>
+                <FilterTitle>Property Type</FilterTitle>
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  {PROPERTY_TYPES.map(type => (
+                    <button
+                      key={type}
+                      onClick={() => toggleArrayFilter('propertyTypes', type)}
+                      style={{ padding: '0.75rem 1rem', border: localFilters.propertyTypes.includes(type) ? '2px solid var(--primary-color)' : '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', background: localFilters.propertyTypes.includes(type) ? 'rgba(196, 24, 53, 0.1)' : 'var(--bg-primary)', color: localFilters.propertyTypes.includes(type) ? 'var(--primary-color)' : 'var(--text-primary)', cursor: 'pointer' }}
+                    >
+                      {type === 'Villa' && '🏡 '}
+                      {type === 'Apartment' && '🏢 '}
+                      {type === 'Penthouse' && '✨ '}
+                      {type === 'Townhouse' && '🏘️ '}
+                      {type === 'Land' && '🌍 '}
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              </FilterSection>
+            )}
+
+            {(activeTab === 'all' || activeTab === 'location') && (
+              <FilterSection>
+                <FilterTitle>Location</FilterTitle>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
+                  {LOCATIONS.map(loc => (
+                    <label key={loc} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={localFilters.locations.includes(loc)}
+                        onChange={() => toggleArrayFilter('locations', loc)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <span>{loc}</span>
+                    </label>
+                  ))}
+                </div>
+              </FilterSection>
+            )}
+
+            {(activeTab === 'all' || activeTab === 'amenities') && (
+              <FilterSection>
+                <FilterTitle>Amenities</FilterTitle>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
+                  {AMENITIES.map(amenity => (
+                    <button
+                      key={amenity}
+                      onClick={() => toggleArrayFilter('amenities', amenity)}
+                      style={{ padding: '0.75rem', border: localFilters.amenities.includes(amenity) ? '2px solid var(--primary-color)' : '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', background: localFilters.amenities.includes(amenity) ? 'rgba(196, 24, 53, 0.1)' : 'var(--bg-primary)', color: localFilters.amenities.includes(amenity) ? 'var(--primary-color)' : 'var(--text-primary)', cursor: 'pointer', textAlign: 'left' }}
+                    >
+                      {amenity === 'Pool' && '🏊 '}
+                      {amenity === 'Beach Access' && '🏖️ '}
+                      {amenity === 'Garden' && '🌳 '}
+                      {amenity === 'Gym' && '💪 '}
+                      {amenity === 'Cinema' && '🎬 '}
+                      {amenity === 'Concierge' && '👔 '}
+                      {amenity === 'Security' && '🔒 '}
+                      {amenity === 'Parking' && '🚗 '}
+                      {amenity}
+                    </button>
+                  ))}
+                </div>
+              </FilterSection>
+            )}
+          </FiltersContent>
+
+          {getActiveFiltersCount() > 0 && (
+            <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid var(--border-color)', background: 'var(--bg-tertiary)' }}>
+              <span style={{ marginRight: '1rem', fontWeight: 500 }}>Active filters:</span>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+                {localFilters.beds > 0 && (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.75rem', background: 'var(--primary-color)', color: 'white', borderRadius: 'var(--radius-full)', fontSize: '0.875rem' }}>
+                    {localFilters.beds}+ beds
+                    <button onClick={() => updateFilter('beds', 0)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: '0', marginLeft: '0.25rem' }}>&times;</button>
+                  </span>
+                )}
+                {localFilters.baths > 0 && (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.75rem', background: 'var(--primary-color)', color: 'white', borderRadius: 'var(--radius-full)', fontSize: '0.875rem' }}>
+                    {localFilters.baths}+ baths
+                    <button onClick={() => updateFilter('baths', 0)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: '0', marginLeft: '0.25rem' }}>&times;</button>
+                  </span>
+                )}
+                {localFilters.propertyTypes.map(type => (
+                  <span key={type} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.75rem', background: 'var(--primary-color)', color: 'white', borderRadius: 'var(--radius-full)', fontSize: '0.875rem' }}>
+                    {type}
+                    <button onClick={() => toggleArrayFilter('propertyTypes', type)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: '0', marginLeft: '0.25rem' }}>&times;</button>
+                  </span>
+                ))}
+                {localFilters.locations.map(loc => (
+                  <span key={loc} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.75rem', background: 'var(--primary-color)', color: 'white', borderRadius: 'var(--radius-full)', fontSize: '0.875rem' }}>
+                    {loc}
+                    <button onClick={() => toggleArrayFilter('locations', loc)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: '0', marginLeft: '0.25rem' }}>&times;</button>
+                  </span>
+                ))}
+                {localFilters.amenities.map(amenity => (
+                  <span key={amenity} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.75rem', background: 'var(--primary-color)', color: 'white', borderRadius: 'var(--radius-full)', fontSize: '0.875rem' }}>
+                    {amenity}
+                    <button onClick={() => toggleArrayFilter('amenities', amenity)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: '0', marginLeft: '0.25rem' }}>&times;</button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: '1rem', padding: '1rem 1.5rem', borderTop: '1px solid var(--border-color)' }}>
+            <ClearButton onClick={handleClear}>
+              Clear All
+            </ClearButton>
+            <SearchButton onClick={handleSearch} style={{ flex: 1 }}>
+              Apply Filters
+            </SearchButton>
+          </div>
+        </FiltersPanel>
+      )}
+    </SearchContainer>
+  );
+}
                       >
                         +
                       </button>

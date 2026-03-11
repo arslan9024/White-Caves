@@ -1,4 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import {
+  LazyImageContainerStyled,
+  LazyImageElement,
+  LazyImagePlaceholder,
+  LazyImageSkeleton,
+  LazyImageError,
+  LazyBackgroundImageContainer
+} from './LazyImage.styles';
 
 export default function LazyImage({ 
   src, 
@@ -53,72 +61,53 @@ export default function LazyImage({
     if (onError) onError(e);
   };
 
-  const containerStyle = {
-    position: 'relative',
-    overflow: 'hidden',
-    aspectRatio: aspectRatio,
-    backgroundColor: 'var(--bg-tertiary, #e0e0e0)'
-  };
-
-  const imageStyle = {
-    width: '100%',
-    height: '100%',
-    objectFit: objectFit,
-    opacity: isLoaded ? 1 : 0,
-    transition: 'opacity 0.3s ease'
-  };
-
-  const placeholderStyle = {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    opacity: isLoaded ? 0 : 1,
-    transition: 'opacity 0.3s ease'
-  };
-
   return (
-    <div ref={imgRef} style={containerStyle} className={`lazy-image-container ${className}`}>
+    <LazyImageContainerStyled 
+      ref={imgRef} 
+      style={{ aspectRatio, backgroundColor: 'var(--bg-tertiary, #e0e0e0)' }}
+      className={className}
+    >
       {isInView && !hasError && (
-        <img
+        <LazyImageElement
           src={src}
           alt={alt}
-          style={imageStyle}
           onLoad={handleLoad}
           onError={handleError}
           loading="lazy"
           decoding="async"
+          style={{
+            opacity: isLoaded ? 1 : 0,
+            objectFit: objectFit,
+            width: '100%',
+            height: '100%'
+          }}
           {...props}
         />
       )}
       
       {!isLoaded && (
-        <div style={placeholderStyle}>
+        <LazyImagePlaceholder>
           {placeholder || (
-            <div className="lazy-image-skeleton">
+            <LazyImageSkeleton>
               <svg width="48" height="48" viewBox="0 0 24 24" fill="var(--text-muted, #999)">
                 <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
               </svg>
-            </div>
+            </LazyImageSkeleton>
           )}
-        </div>
+        </LazyImagePlaceholder>
       )}
       
       {hasError && (
-        <div style={placeholderStyle}>
-          <div className="lazy-image-error">
+        <LazyImagePlaceholder>
+          <LazyImageError>
             <svg width="48" height="48" viewBox="0 0 24 24" fill="var(--text-muted, #999)">
               <path d="M21 5v6.59l-3-3.01-4 4.01-4-4-4 4-3-3.01V5c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2zm-3 6.42l3 3.01V19c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2v-6.58l3 2.99 4-4 4 4 4-3.99z"/>
             </svg>
             <span>Image unavailable</span>
-          </div>
-        </div>
+          </LazyImageError>
+        </LazyImagePlaceholder>
       )}
-    </div>
+    </LazyImageContainerStyled>
   );
 }
 
@@ -168,17 +157,15 @@ export function LazyBackgroundImage({
     }
   }, [isInView, src]);
 
-  const style = {
-    backgroundImage: isLoaded ? `url(${src})` : 'none',
-    backgroundColor: isLoaded ? 'transparent' : fallbackColor,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    transition: 'background-image 0.3s ease'
-  };
-
   return (
-    <div ref={containerRef} className={className} style={style} {...props}>
+    <LazyBackgroundImageContainer 
+      ref={containerRef} 
+      src={isLoaded ? src : ''}
+      fallbackColor={fallbackColor}
+      className={className}
+      {...props}
+    >
       {children}
-    </div>
+    </LazyBackgroundImageContainer>
   );
 }
