@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import './PassportUpload.css';
 import Loading from './Loading';
 
 export default function PassportUpload({ userId, onUploadComplete }) {
