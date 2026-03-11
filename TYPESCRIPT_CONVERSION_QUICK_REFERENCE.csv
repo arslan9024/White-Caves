@@ -1,0 +1,246 @@
+FILEPATH | REASON | PRIORITY | IMPORTED_BY | IMPACT_COUNT
+
+# REDUX STORE FILES (16 files)
+src/store/store.js | Central Redux store configuration - ALL pages fail without this | HIGH | All pages using Redux | 36+ pages
+src/store/propertySlice.js | Property state management | HIGH | HomePage, PropertiesPage | 2 pages
+src/store/userSlice.js | User state management | HIGH | ProfilePage, UnifiedDashboardPage, SignInPage | 5 pages
+src/store/authSlice.js | Authentication state | HIGH | All auth pages | 4 pages
+src/store/dashboardSlice.js | Dashboard/favorites state | HIGH | PropertiesPage, dashboard pages | 6 pages
+src/store/contentSlice.js | Content/CRM state | HIGH | Dashboard/CRM pages | 8 pages
+src/store/roleSlice.js | Role management state | HIGH | Role-based pages | 12 pages
+src/store/crmDataSlice.js | CRM data state | HIGH | Owner/manager dashboards | 5 pages
+src/store/featuresSlice.js | Feature flags state | HIGH | DesignSystemTest, feature pages | 3 pages
+src/store/analyticsSlice.js | Analytics state | HIGH | Analytics pages | 3 pages
+src/store/managingDirectorDashboardSlice.js | Manager dashboard state | HIGH | Manager pages | 2 pages
+src/store/slices/inventorySlice.js | Inventory state | HIGH | Inventory pages | 2 pages
+src/store/slices/sidebarSlice.js | Sidebar state | HIGH | UnifiedDashboardPage, layout | 3 pages
+src/store/slices/aiAssistantDashboardSlice.js | AI assistant state | HIGH | UnifiedDashboardPage, owner | 4 pages
+src/store/slices/notificationSlice.ts | ALREADY CONVERTED | - | - | -
+src/store/middleware/eventBusMiddleware.js | Redux event bus middleware | HIGH | store.js setup | Critical
+
+# CONFIGURATION FILES (5 files)
+src/config/ROLE_TAB_MAPPING.js | Role tab mapping - IMPORTED BY UnifiedDashboardPage line 4 | HIGH | UnifiedDashboardPage | 1 page (but 15+ tabs)
+src/config/navigation.js | Navigation structure for all pages | HIGH | Layout components, pages | 30+ pages
+src/config/assistantRegistry.js | AI assistant definitions | HIGH | UnifiedDashboardPage, owner pages | 6 pages
+src/config/businessModel.js | Business model configuration | HIGH | Owner dashboard, settings | 4 pages
+src/config/platformFeatures.js | Platform features definitions | HIGH | DesignSystemTest, feature pages | 5 pages
+
+# LAYOUT COMPONENTS - DIRECTLY IMPORTED (15 files)
+src/components/layout/AppLayout.jsx | Homer, PropertiesPage, AboutPage, CareersPage, ContactPage, ServicesPage - line 4 | HIGH | 6 pages | 6 pages
+src/components/layout/AppLayout/index.js | Export wrapper for AppLayout | HIGH | Layout system | 1 page
+src/components/layout/MainNavBar/MainNavBar.jsx | Navigation bar import | HIGH | Layout pages | 5+ pages
+src/components/layout/MainNavBar/MainNavBarUpdated.jsx | Alternative MainNavBar | HIGH | Layout fallback | 3+ pages
+src/components/layout/MainNavBar/index.js | Export wrapper | HIGH | Module setup | 1 page
+src/components/layout/SidebarContainer/SidebarContainer.jsx | UnifiedDashboardPage line 7 - CRITICAL | HIGH | UnifiedDashboardPage | 1 page (but central)
+src/components/layout/SidebarContainer/index.js | Export wrapper | HIGH | Module setup | 1 page
+src/components/layout/AIAssistantsPanel/AIAssistantsPanel.jsx | UnifiedDashboardPage line 8 - CRITICAL | HIGH | UnifiedDashboardPage | 1 page (but central)
+src/components/layout/AIAssistantsPanel/index.js | Export wrapper | HIGH | Module setup | 1 page
+src/components/layout/DepartmentContentPanel/DepartmentContentPanel.jsx | UnifiedDashboardPage line 9 - CRITICAL | HIGH | UnifiedDashboardPage | 1 page (but central)
+src/components/layout/DepartmentContentPanel/index.js | Export wrapper | HIGH | Module setup | 1 page
+src/components/layout/UnifiedDashboardLayout/UnifiedDashboardLayout.jsx | BuyerDashboardPage, SellerDashboardPage, TenantDashboardPage line 3 | HIGH | 3 pages | 3 pages
+src/components/layout/UnifiedDashboardLayout/useDashboardState.js | Dashboard state hook - DEPENDENCY | HIGH | UnifiedDashboardLayout | 1 component
+src/components/layout/UnifiedDashboardLayout/index.js | Export wrapper | HIGH | Module setup | 1 page
+src/components/layout/RolePageLayout.jsx | Role page wrapper component | HIGH | Role pages | 5+ pages
+src/components/layout/RolePageLayout/index.js | Export wrapper | HIGH | Module setup | 1 page
+src/components/layout/TopNavBar.jsx | Top navigation bar | HIGH | Layout pages | 3+ pages
+src/components/layout/TopNavBar/index.js | Export wrapper | HIGH | Module setup | 1 page
+src/components/layout/UnifiedProfile/UnifiedProfile.jsx | Profile display component | HIGH | ProfilePage | 2 pages
+src/components/layout/UnifiedProfile/index.js | Export wrapper | HIGH | Module setup | 1 page
+src/components/layout/RightPanelContainer/RightPanelContainer.jsx | Right panel layout | HIGH | Dashboard pages | 2+ pages
+src/components/layout/RightPanelContainer/index.js | Export wrapper | HIGH | Module setup | 1 page
+src/components/layout/CrimsonSidebar/CrimsonSidebar.jsx | Sidebar component (legacy/backup) | HIGH | Layout pages | 2 pages
+src/components/layout/CrimsonSidebar/CrimsonSidebarEnhanced.jsx | Enhanced sidebar variant | MEDIUM | Sidebar pages | 2 pages
+src/components/layout/CrimsonSidebar/index.js | Export wrapper | HIGH | Module setup | 1 page
+src/components/layout/DashboardShell/DashboardShell.jsx | Dashboard wrapper | HIGH | Dashboard pages | 3+ pages
+src/components/layout/DashboardShell/DashboardShellUpdated.jsx | Alternative dashboard shell | MEDIUM | Dashboard pages | 2 pages
+src/components/layout/DashboardShell/index.js | Export wrapper | HIGH | Module setup | 1 page
+
+# HOMEPAGE COMPONENTS - MASS IMPORT (17 files)
+src/components/homepage/Hero/Hero.jsx | HomePage line 7 - HOME PAGE COMPONENT | HIGH | HomePage | 1 page
+src/components/homepage/Hero/index.js | Export wrapper | HIGH | Module setup | 1 page
+src/components/homepage/Features/Features.jsx | HomePage line 8 - HOME PAGE COMPONENT | HIGH | HomePage | 1 page
+src/components/homepage/Features/index.js | Export wrapper | HIGH | Module setup | 1 page
+src/components/homepage/Locations/Locations.jsx | HomePage line 9 - HOME PAGE COMPONENT | HIGH | HomePage | 1 page
+src/components/homepage/Locations/index.js | Export wrapper | HIGH | Module setup | 1 page
+src/components/homepage/Team/Team.jsx | HomePage line 10 - HOME PAGE COMPONENT | HIGH | HomePage | 1 page
+src/components/homepage/Team/index.js | Export wrapper | HIGH | Module setup | 1 page
+src/components/homepage/Testimonials/Testimonials.jsx | HomePage line 11 - HOME PAGE COMPONENT | HIGH | HomePage | 1 page
+src/components/homepage/Testimonials/index.js | Export wrapper | HIGH | Module setup | 1 page
+src/components/homepage/Contact/ContactCTA.jsx | HomePage line 12 - HOME PAGE COMPONENT | HIGH | HomePage | 1 page
+src/components/homepage/Contact/index.js | Export wrapper | HIGH | Module setup | 1 page
+src/components/InteractiveMap.jsx | HomePage line 13 - HOMEPAGE COMPONENT | HIGH | HomePage | 1 page
+src/components/PropertyComparison.jsx | HomePage line 14 - HOMEPAGE COMPONENT | HIGH | HomePage | 1 page
+src/components/OffPlanTracker.jsx | HomePage line 15 - HOMEPAGE COMPONENT | HIGH | HomePage | 1 page
+src/components/NeighborhoodAnalyzer.jsx | HomePage line 16 - HOMEPAGE COMPONENT | HIGH | HomePage | 1 page
+src/components/RentVsBuyCalculator.jsx | HomePage line 17 - HOMEPAGE COMPONENT | HIGH | HomePage | 1 page
+
+# CORE UI COMPONENTS (6 files)
+src/components/Footer.jsx | HomePage line 5, PropertiesPage, AboutPage, CareersPage, ContactPage, ServicesPage | HIGH | 6 pages | 6 pages
+src/components/ClickToChat.jsx | HomePage line 6, PropertiesPage, AboutPage, CareersPage, ContactPage, ServicesPage | HIGH | 6 pages | 6 pages
+src/components/ErrorBoundary.jsx | Error handling wrapper - CRITICAL | HIGH | App-level | ALL pages
+src/components/Error.jsx | Error display component | HIGH | Error pages | 2+ pages
+src/components/Auth.jsx | Authentication UI | HIGH | Auth pages | 3 pages
+src/components/RecentlyViewed.jsx | HomePage line 24 - IMPORTED | HIGH | HomePage | 1 page
+
+# SHARED COMPONENTS (3 files)
+src/shared/components/property/PropertyImageSlider.jsx | PropertiesPage line 9 - IMPORTED | HIGH | PropertiesPage | 1 page
+src/shared/components/property/PropertyDetailModal.jsx | PropertiesPage line 9 - IMPORTED | HIGH | PropertiesPage | 1 page
+src/shared/components/property/index.js | Export wrapper | HIGH | Module setup | 1 page
+src/shared/components/index.js | Shared components hub | HIGH | Property, dashboard pages | 2+ pages
+
+# COMMON COMPONENTS - HUB (17 files)
+src/components/common/index.js | CRITICAL HUB - exports DataCard, PageHeader, DataCardGrid, DataList, DataListItem, ActionButton, QuickLinks, etc. | HIGH | 30+ components | 20+ pages
+src/components/common/DataCard.jsx | TenantDashboardPage line 5 imports DataCard,DataCardGrid,DataList,DataListItem | HIGH | TenantDashboardPage, dashboards | 5 pages
+src/components/common/DataCard/index.js | Export wrapper | HIGH | Module setup | 1 component
+src/components/common/PageHeader.jsx | Header component for pages | HIGH | Layout, dashboard pages | 8+ pages
+src/components/common/PageHeader/index.js | Export wrapper | HIGH | Module setup | 1 component
+src/components/common/UniversalNav.jsx | Universal navigation component | HIGH | Layout pages | 6+ pages
+src/components/common/SuspenseLoader.jsx | UnifiedDashboardPage line 5 imports | HIGH | UnifiedDashboardPage | 1 page
+src/components/common/RoleSwitcher.jsx | Role switching UI | HIGH | Dashboard pages | 4 pages
+src/components/common/SubNavBar.jsx | Sub-navigation bar | HIGH | Dashboard pages | 3 pages
+src/components/common/TabbedPanel.jsx | Tab component for dashboards | HIGH | Dashboard pages | 5+ pages
+src/components/common/StatusNotification.jsx | Status notification system | HIGH | Multiple pages | 10+ pages
+src/components/common/QuickLinks.jsx | Quick links component | HIGH | Dashboard pages | 3 pages
+src/components/common/LeadCard.jsx | Lead card display | HIGH | LeadsTab, CRM pages | 4 pages
+src/components/common/PropertyCard.jsx | Property card display | HIGH | Properties, listings | 5 pages
+src/components/common/ContentSlider.jsx | Content slider component | HIGH | Content pages | 3 pages
+src/components/common/RequirePermission.jsx | Permission gate component | HIGH | Feature pages | 10+ pages
+
+# CUSTOM HOOKS (9 files)
+src/hooks/useRecentlyViewed.js | HomePage line 24 destructures useRecentlyViewed | HIGH | HomePage | 1 page
+src/hooks/useAdvancedFilters.js | Filter components use this | HIGH | PropertiesPage, filters | 3 pages
+src/hooks/usePermissions.js | Permission checking throughout | HIGH | Dashboard, protected pages | 10+ pages
+src/hooks/useApi.js | All data fetching components | HIGH | 20+ components | 25+ pages
+src/hooks/useActionHandler.js | Dashboard action handlers | HIGH | Dashboard pages, CRM | 8+ pages
+src/hooks/useVirtualTour.js | VirtualTourGallery component | HIGH | HomePage, property pages | 2 pages
+src/hooks/useRecommendations.js | Recommendation components | HIGH | HomePage, properties | 3 pages
+src/hooks/useSwipeGesture.js | Swipeable property cards | HIGH | Property pages | 2 pages
+src/hooks/usePWA.js | PWA functionality | HIGH | App-level | All pages
+
+# MEDIUM PRIORITY - OWNER/DASHBOARD TABS (8 files)
+src/components/owner/tabs/OverviewTab.jsx | UnifiedDashboardPage line 19 imports | MEDIUM | UnifiedDashboardPage | 1 page
+src/components/owner/tabs/PropertiesTab.jsx | UnifiedDashboardPage line 20 imports | MEDIUM | UnifiedDashboardPage | 1 page
+src/components/owner/tabs/AgentsTab.jsx | UnifiedDashboardPage line 21 imports | MEDIUM | UnifiedDashboardPage | 1 page
+src/components/owner/tabs/LeadsTab.jsx | UnifiedDashboardPage line 22 imports | MEDIUM | UnifiedDashboardPage | 1 page
+src/components/owner/tabs/ContractsTab.jsx | UnifiedDashboardPage line 23 imports | MEDIUM | UnifiedDashboardPage | 1 page
+src/components/owner/tabs/AnalyticsTab.jsx | UnifiedDashboardPage line 24 imports | MEDIUM | UnifiedDashboardPage | 1 page
+src/components/owner/tabs/SettingsTab.jsx | UnifiedDashboardPage line 25 imports | MEDIUM | UnifiedDashboardPage | 1 page
+src/components/owner/tabs/UsersTab.jsx | UnifiedDashboardPage line 26 imports | MEDIUM | UnifiedDashboardPage | 1 page
+
+# MEDIUM PRIORITY - CRM COMPONENTS (10 files)
+src/components/dashboard/DashboardHeader.jsx | Dashboard header component | MEDIUM | Dashboard pages | 3 pages
+src/components/dashboard/AssistantNavSidebar.jsx | Assistant navigation sidebar | MEDIUM | CRM pages | 2 pages
+src/components/dashboard/MarketAnalyticsDashboard.jsx | Market analytics display | MEDIUM | Analytics pages | 2 pages
+src/components/crm/AIAssistantHub.jsx | AI assistant interface | MEDIUM | Owner pages | 3 pages
+src/components/crm/AICommandCenter.jsx | Command center UI | MEDIUM | Owner pages | 2 pages
+src/components/crm/AIAssistantSelector.jsx | Assistant selection | MEDIUM | Dashboard pages | 2 pages
+src/components/crm/PropertyValuationModule.jsx | Property valuation | MEDIUM | Owner pages | 1 page
+src/components/crm/LeadScoringModule.jsx | Lead scoring | MEDIUM | CRM pages | 1 page
+src/components/crm/DLDIntegrationModule.jsx | DLD integration | MEDIUM | Owner pages | 1 page
+src/components/dashboards/RoleSelector.jsx | Role selection UI | MEDIUM | Dashboard pages | 2 pages
+
+# MEDIUM PRIORITY - SPECIALIZED DASHBOARDS (6 files)
+src/components/dashboards/TenantDashboard.jsx | Tenant-specific dashboard | MEDIUM | TenantDashboardPage | 1 page
+src/components/dashboards/LandlordDashboard.jsx | Landlord-specific dashboard | MEDIUM | LandlordDashboardPage | 1 page
+src/components/dashboards/BuyerDashboard.jsx | Buyer-specific dashboard | MEDIUM | BuyerDashboardPage | 1 page
+src/components/dashboards/SellerDashboard.jsx | Seller-specific dashboard | MEDIUM | SellerDashboardPage | 1 page
+src/components/dashboards/AgentDashboard.jsx | Agent-specific dashboard | MEDIUM | Agent pages | 1 page
+src/components/dashboards/TeamLeaderDashboard.jsx | Team leader dashboard | MEDIUM | Leader pages | 1 page
+
+# MEDIUM PRIORITY - FORM/INPUT COMPONENTS (5 files)
+src/components/ui/Input/Input.jsx | Form input component | MEDIUM | Form components | 8+ pages
+src/components/ui/Button/Button.jsx | Form button component | MEDIUM | Form components | 10+ pages
+src/components/ui/Card/Card.jsx | Card layout component | MEDIUM | Layout components | 5+ pages
+src/components/ui/Badge/Badge.jsx | Badge component | MEDIUM | Dashboard UI | 3 pages
+src/components/common/forms/* | Form utility components | MEDIUM | Form pages | 5 pages
+
+# MEDIUM PRIORITY - PROPERTY COMPONENTS (5 files)
+src/components/PropertyDetail.jsx | Property detail view | MEDIUM | PropertiesPage, details | 2 pages
+src/components/PropertySearch.jsx | Property search component | MEDIUM | PropertiesPage | 1 page
+src/components/SwipeablePropertyCards.jsx | Swipeable property cards | MEDIUM | HomePage, properties | 2 pages
+src/components/VirtualTourGallery.jsx | Virtual tour gallery | MEDIUM | HomePage, properties | 2 pages (already listed)
+src/components/DubaiMap.jsx | Dubai map display | MEDIUM | HomePage, map pages | 2 pages
+
+# LOW PRIORITY - OPTIONAL COMPONENTS
+src/components/Profile.jsx | User profile display | LOW | ProfilePage | 1 page
+src/components/RoleGateway.jsx | Role entry point | LOW | Auth pages | 1 page
+src/components/RoleNavigation.jsx | Role-based navigation | LOW | Role pages | 3 pages
+src/components/RoleSelector.jsx | Role selection UI | LOW | Role pages | 2 pages
+src/components/OnboardingGateway.jsx | Onboarding flow | LOW | HomePage (multi-section) | 1 page
+src/components/Breadcrumb.jsx | Breadcrumb navigation | LOW | Layout pages | 3 pages
+src/components/FeaturedAgents.jsx | Featured agents display | LOW | HomePage section | 1 page (part of HomePage)
+src/components/ThemeToggle.jsx | Theme switching | LOW | Navigation | 2 pages
+src/components/LanguageToggle.jsx | Language switching | LOW | Navigation | 2 pages
+src/components/Loading.jsx | Loading state | LOW | Loading pages | 2 pages
+src/components/PageLoader.jsx | Page loader | LOW | Loading pages | 2 pages
+src/components/SkeletonLoader.jsx | Skeleton loading | LOW | Dashboard pages | 3 pages
+src/components/TestimonialsCarousel.jsx | Testimonials carousel | LOW | HomePage (multi-section) | 1 page (part of HomePage)
+src/components/BlogSection.jsx | Blog section | LOW | HomePage section | 1 page (also has .tsx)
+src/components/LazyImage.jsx | Lazy loading images | LOW | Image pages | 2 pages
+src/components/OptimizedImage.jsx | Image optimization | LOW | Image pages | 2 pages
+src/components/ImageGallery.jsx | Image gallery | LOW | Gallery pages | 1 page
+src/components/Checkout.jsx | E-commerce checkout | LOW | Purchase pages | 1 page
+src/components/MortgageCalculator.jsx | Mortgage calculation tool | LOW | Buyer pages | 1 page
+src/components/TenancyContract.jsx | Contract display | LOW | Contract pages | 1 page
+src/components/TenancyAgreementSigning.jsx | Contract signing | LOW | Signing pages | 1 page
+src/components/PassportUpload.jsx | File upload | LOW | Onboarding | 1 page
+src/components/ProfileCompletion.jsx | Profile setup | LOW | Onboarding | 1 page
+src/components/SignaturePad.jsx | Signature input | LOW | Contract pages | 1 page
+src/components/ServiceTracker.jsx | Service tracking | LOW | Dashboard | 1 page
+src/components/PerformanceTracker.jsx | Performance tracking | LOW | Analytics | 1 page
+src/components/SEO.jsx | SEO metadata | LOW | All pages | All pages
+src/components/ExampleErrorHandling.jsx | Error handling example | LOW | Demo pages | 1 page
+src/components/CompanyProfile.jsx | Company profile | LOW | HomePage section | 1 page
+src/components/NewsletterSubscription.jsx | Newsletter signup | LOW | HomePage section | 1 page
+src/components/owner/FeatureExplorer.jsx | Feature browser | LOW | Owner pages | 1 page
+src/components/owner/tabs/WhatsAppTab.jsx | WhatsApp integration | LOW | Owner tab | 1 page
+src/components/owner/tabs/ChatbotTab.jsx | Chatbot features | LOW | Owner tab | 1 page
+src/components/owner/tabs/UAEPassTab.jsx | UAE Pass integration | LOW | Owner tab | 1 page
+src/components/crm/NancyHRCRM_NEW/* | HR CRM module | LOW | CRM pages | 1 module
+src/components/crm/ClaraLeadsCRM_NEW/* | Leads CRM module | LOW | CRM pages | 1 module
+src/components/crm/DaisyLeasingCRM_NEW/* | Leasing CRM module | LOW | CRM pages | 1 module
+src/components/crm/OliviaMarketingCRM_NEW/* | Marketing CRM module | LOW | CRM pages | 1 module
+src/components/crm/ZoeExecutiveCRM_NEW/* | Executive CRM module | LOW | CRM pages | 1 module
+src/components/crm/HazelFrontendCRM_NEW/* | Frontend CRM module | LOW | CRM pages | 1 module
+src/components/crm/WillowBackendCRM_NEW/* | Backend CRM module | LOW | CRM pages | 1 module
+src/components/crm/LailaComplianceCRM_NEW/* | Compliance CRM module | LOW | CRM pages | 1 module
+src/components/crm/MaryInventoryCRM_NEW/* | Inventory CRM module | LOW | CRM pages | 1 module
+src/components/crm/NinaWhatsAppBotCRM_NEW/* | WhatsApp bot CRM | LOW | CRM pages | 1 module
+src/components/crm/TheodoraFinanceCRM_NEW/* | Finance CRM module | LOW | CRM pages | 1 module
+src/components/crm/AuroraCTODashboard_NEW/* | CTO dashboard | LOW | CRM pages | 1 module
+src/components/crm/inventory/* | Inventory management | LOW | Inventory pages | 1 module
+src/components/crm/ClientsDashboard/* | Client dashboard | LOW | CRM pages | 1 module
+src/components/crm/AgentsDashboard/* | Agent dashboard | LOW | CRM pages | 1 module
+src/config/firebase.js | Firebase configuration | LOW | Auth | 3 pages
+src/features/featureRegistry.js | Feature registry | LOW | Feature system | 2 pages
+src/i18n/translations.js | i18n translations | LOW | All pages | All pages
+src/data/whatsappAgentsData.js | WhatsApp agents data | LOW | WhatsApp pages | 2 pages
+src/data/dummyLeads.js | Dummy lead data | LOW | Demo pages | 1 page
+
+
+# SUMMARY STATISTICS
+TOTAL_HIGH_PRIORITY_FILES=65
+TOTAL_MEDIUM_PRIORITY_FILES=35
+TOTAL_LOW_PRIORITY_FILES=35
+TOTAL_FILES_TO_CONVERT=150+
+TOTAL_PAGES_AFFECTED=36+
+ESTIMATED_HOURS_PHASE_1=25-30
+ESTIMATED_HOURS_PHASE_2=12-15
+ESTIMATED_HOURS_PHASE_3=12-15
+ESTIMATED_HOURS_TOTAL=50-60
+
+# EXECUTION ORDER FOR PHASE 1 (UNBLOCK ALL PAGES)
+1. src/store/store.js
+2. src/store/*.js (all slices - propertySlice, authSlice, userSlice, dashboardSlice, navigationSlice, contentSlice, roleSlice, crmDataSlice, featuresSlice, analyticsSlice, managingDirectorDashboardSlice)
+3. src/store/slices/*.js (inventorySlice, aiAssistantDashboardSlice, sidebarSlice, notificationSlice, eventBusMiddleware)
+4. src/config/*.js (ROLE_TAB_MAPPING, navigation, assistantRegistry, businessModel, platformFeatures)
+5. src/components/common/index.js (HUB FILE - DO FIRST IN COMPONENTS)
+6. src/components/layout/AppLayout.jsx
+7. src/components/layout/MainNavBar files
+8. src/components/layout/SidebarContainer, AIAssistantsPanel, DepartmentContentPanel, UnifiedDashboardLayout
+9. src/components/homepage/* (Hero, Features, Locations, Team, Testimonials, Contact folders)
+10. src/components/common/* (DataCard, PageHeader, all other common components)
+11. src/hooks/* (all custom hooks)
+12. src/components/Footer.jsx, ClickToChat.jsx, ErrorBoundary.jsx
+13. src/shared/components/property/*
+14. Remaining HIGH priority layout components

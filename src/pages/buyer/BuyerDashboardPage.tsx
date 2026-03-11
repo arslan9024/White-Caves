@@ -9,7 +9,7 @@ import {
   DataList,
   DataListItem,
   QuickLinks,
-  PropertyListItem,
+  PropertyCard,
   ActionButton
 } from '../../components/common';
 import './BuyerDashboard.css';
@@ -124,13 +124,14 @@ const BuyerDashboardPage: FC = () => {
               <DataCard title="Saved Properties" viewAllLink="/buyer/saved-properties">
                 <DataList>
                   {SAVED_PROPERTIES.slice(0, 3).map(property => (
-                    <PropertyListItem
+                    <DataListItem
                       key={property.id}
                       title={property.title}
-                      location={property.location}
-                      price={property.price}
+                      subtitle={property.location}
+                      meta={`AED ${property.price.toLocaleString()}`}
                       status={property.status}
-                      views={property.views}
+                      badge={property.views}
+                      badgeColor="primary"
                     />
                   ))}
                 </DataList>
@@ -175,13 +176,14 @@ const BuyerDashboardPage: FC = () => {
           <DataCard title={`Saved Properties (${SAVED_PROPERTIES.length})`}>
             <DataList>
               {SAVED_PROPERTIES.map(property => (
-                <PropertyListItem
+                <DataListItem
                   key={property.id}
                   title={property.title}
-                  location={property.location}
-                  price={property.price}
+                  subtitle={property.location}
+                  meta={`AED ${property.price.toLocaleString()}`}
                   status={property.status}
-                  views={property.views}
+                  badge={property.views}
+                  badgeColor="primary"
                 />
               ))}
             </DataList>

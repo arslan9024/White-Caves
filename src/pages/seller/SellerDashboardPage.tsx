@@ -9,7 +9,7 @@ import {
   DataList,
   DataListItem,
   QuickLinks,
-  PropertyListItem,
+  PropertyCard,
   ActionButton
 } from '../../components/common';
 import './SellerDashboard.css';
@@ -125,15 +125,13 @@ const SellerDashboardPage: FC = () => {
               <DataCard title="My Listings" viewAllLink="/seller/listings">
                 <DataList>
                   {MY_LISTINGS.map(listing => (
-                    <PropertyListItem
+                    <DataListItem
                       key={listing.id}
                       title={listing.title}
-                      location={listing.location}
-                      price={listing.price}
+                      subtitle={listing.location}
+                      meta={listing.price}
                       status={listing.status}
-                      views={listing.views}
-                      inquiries={listing.inquiries}
-                      daysListed={listing.daysListed}
+                      badge={`${listing.views} views`}
                     />
                   ))}
                 </DataList>
@@ -180,15 +178,13 @@ const SellerDashboardPage: FC = () => {
           <DataCard title={`My Listings (${MY_LISTINGS.length})`}>
             <DataList>
               {MY_LISTINGS.map(listing => (
-                <PropertyListItem
+                <DataListItem
                   key={listing.id}
                   title={listing.title}
-                  location={listing.location}
-                  price={listing.price}
+                  subtitle={listing.location}
+                  meta={listing.price}
                   status={listing.status}
-                  views={listing.views}
-                  inquiries={listing.inquiries}
-                  daysListed={listing.daysListed}
+                  badge={`${listing.views} views`}
                 />
               ))}
             </DataList>
