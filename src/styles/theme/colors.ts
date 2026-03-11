@@ -104,6 +104,13 @@ export const colors = {
   dangerDark: '#B71C1C',
   dangerLight: 'rgba(198, 40, 40, 0.15)',
   accentGold: '#F57F17',
+  primaryColor: '#D32F2F',
+  primaryDark: '#B71C1C',
+  glassBackground: 'rgba(255, 255, 255, 0.7)',
+  glassBorder: 'rgba(0, 0, 0, 0.08)',
+  radiusMd: '8px',
+  radiusLg: '12px',
+  radiusSm: '6px',
 };
 
 export type Colors = typeof colors;

@@ -1,16 +1,34 @@
 import React from 'react';
 import { FC, ReactNode } from 'react';
 import { X, AlertCircle, Info, CheckCircle, AlertTriangle } from 'lucide-react';
-import {
-  NotificationContainer,
-  NotificationContent,
-  NotificationIcon,
-  NotificationBody,
-  NotificationTitle,
-  NotificationMessage,
-  NotificationClose,
-  NotificationDismiss,
-} from './Notification.styles';
+// TODO: Move to Notification.styles once created
+import styled from 'styled-components';
+
+const NotificationContainer = styled.div`
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 1000;
+`;
+
+const NotificationContent = styled.div`
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin: 16px;
+`;
+
+const NotificationIcon = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const NotificationBody = styled.div``;
+const NotificationTitle = styled.h4``;
+const NotificationMessage = styled.p``;
+const NotificationClose = styled.button``;
+const NotificationDismiss = styled.div``;
 
 export type NotificationType = 'success' | 'error' | 'info' | 'warning';
 
