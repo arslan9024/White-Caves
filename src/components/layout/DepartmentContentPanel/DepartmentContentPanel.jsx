@@ -23,8 +23,8 @@ import MetricsChart from '../../charts/MetricsChart';
 import TrendChart from '../../charts/TrendChart';
 import DistributionChart from '../../charts/DistributionChart';
 import EnhancedStatCard from '../../charts/EnhancedStatCard';
-import './DepartmentContentPanel.css';
 import '../../charts/charts.css';
+import * as S from './styles';
 
 // Department content definitions
 const DEPARTMENT_CONTENT = {
@@ -663,84 +663,82 @@ const DepartmentContentPanel = () => {
 
   if (!deptContent) {
     return (
-      <div className="department-content-panel empty">
-        <div className="empty-state">
-          <Briefcase size={64} />
-          <h2>Select a Department</h2>
-          <p>Choose a department from the left sidebar to view content and manage operations</p>
-        </div>
-      </div>
+      <S.DepartmentPanel className="empty">
+        <S.EmptyState>
+          <S.EmptyStateIcon as={Briefcase} size={64} />
+          <S.EmptyStateHeading>Select a Department</S.EmptyStateHeading>
+          <S.EmptyStateText>Choose a department from the left sidebar to view content and manage operations</S.EmptyStateText>
+        </S.EmptyState>
+      </S.DepartmentPanel>
     );
   }
 
   return (
-    <div className="department-content-panel">
+    <S.DepartmentPanel>
       {/* Header */}
-      <div 
-        className="content-header" 
+      <S.ContentHeader 
         style={{ background: deptContent.bgGradient }}
       >
-        <div className="header-content">
-          <h1>{deptContent.name}</h1>
-          <p>{deptContent.description}</p>
-        </div>
-      </div>
+        <S.HeaderContent>
+          <S.HeaderTitle>{deptContent.name}</S.HeaderTitle>
+          <S.HeaderDescription>{deptContent.description}</S.HeaderDescription>
+        </S.HeaderContent>
+      </S.ContentHeader>
 
       {/* Main Content */}
-      <div className="content-body">
+      <S.ContentBody>
         {/* Service-Specific Content */}
         {serviceContent ? (
-          <div className="service-content">
-            <div className="service-header">
-              <h2>{selectedService}</h2>
-              <p>{serviceContent.description}</p>
-            </div>
+          <S.ServiceContent>
+            <S.ServiceHeader>
+              <S.ServiceTitle>{selectedService}</S.ServiceTitle>
+              <S.ServiceDescription>{serviceContent.description}</S.ServiceDescription>
+            </S.ServiceHeader>
 
             {/* Service Stats */}
-            <div className="stats-grid service-stats">
+            <S.StatsGrid isServiceStats={true}>
               {serviceContent.stats.map((stat, idx) => (
-                <div key={idx} className="stat-card">
-                  <div className="stat-label">{stat.label}</div>
-                  <div className="stat-value">{stat.value}</div>
-                </div>
+                <S.StatCard key={idx}>
+                  <S.StatLabel>{stat.label}</S.StatLabel>
+                  <S.StatValue>{stat.value}</S.StatValue>
+                </S.StatCard>
               ))}
-            </div>
+            </S.StatsGrid>
 
             {/* Service Actions */}
-            <div className="actions-section">
-              <h3>Quick Actions</h3>
-              <div className="actions-grid">
+            <S.ActionsSection>
+              <S.ActionsSectionHeading>Quick Actions</S.ActionsSectionHeading>
+              <S.ActionsGrid>
                 {serviceContent.actions.map((action, idx) => {
                   const IconComponent = action.icon;
                   return (
-                    <button 
+                    <S.ActionButton 
                       key={idx} 
-                      className="action-button"
                       onClick={() => handleActionClick(action.label)}
                       title={`${action.label} - ${selectedService}`}
                     >
                       <IconComponent size={20} />
                       <span>{action.label}</span>
-                    </button>
+                    </S.ActionButton>
                   );
                 })}
-              </div>
-            </div>
-          </div>
+              </S.ActionsGrid>
+            </S.ActionsSection>
+          </S.ServiceContent>
         ) : (
           <>
             {/* Department Overview */}
-            <div className="overview-section">
-              <h2>Department Overview</h2>
-              <p className="overview-text">
+            <S.OverviewSection>
+              <S.OverviewHeading>Department Overview</S.OverviewHeading>
+              <S.OverviewText>
                 Select a service from the left sidebar to view detailed information and manage operations.
-              </p>
-            </div>
+              </S.OverviewText>
+            </S.OverviewSection>
 
             {/* Department Metrics */}
-            <div className="metrics-section">
-              <h2>Key Metrics</h2>
-              <div className="metrics-grid">
+            <S.MetricsSection>
+              <S.MetricsSectionHeading>Key Metrics</S.MetricsSectionHeading>
+              <S.MetricsGrid>
                 {deptContent.metrics.map((metric, idx) => (
                   <EnhancedStatCard
                     key={idx}
@@ -753,11 +751,11 @@ const DepartmentContentPanel = () => {
                     sparklineData={[35, 42, 38, 51, 48, 60]}
                   />
                 ))}
-              </div>
-            </div>
+              </S.MetricsGrid>
+            </S.MetricsSection>
 
             {/* Analytics Charts */}
-            <div className="analytics-section">
+            <S.AnalyticsSection>
               <MetricsChart 
                 data={deptContent.metrics}
                 title={`${deptContent.name} Metrics Overview`}
@@ -787,16 +785,15 @@ const DepartmentContentPanel = () => {
                 title={`${deptContent.name} Service Distribution`}
                 height={350}
               />
-            </div>
+            </S.AnalyticsSection>
 
             {/* Available Services */}
-            <div className="services-section">
-              <h2>Available Services</h2>
-              <div className="services-grid">
+            <S.ServicesSection>
+              <S.ServicesSectionHeading>Available Services</S.ServicesSectionHeading>
+              <S.ServicesGrid>
                 {Object.entries(deptContent.services).map(([name, service], idx) => (
-                  <div 
+                  <S.ServiceCard 
                     key={idx} 
-                    className="service-card"
                     onClick={() => handleServiceCardClick(name)}
                     role="button"
                     tabIndex={0}
@@ -806,25 +803,24 @@ const DepartmentContentPanel = () => {
                       }
                     }}
                   >
-                    <div className="service-card-title">{name}</div>
-                    <p className="service-card-description">{service.description}</p>
-                    <button 
-                      className="service-card-action"
+                    <S.ServiceCardTitle>{name}</S.ServiceCardTitle>
+                    <S.ServiceCardDescription>{service.description}</S.ServiceCardDescription>
+                    <S.ServiceCardAction 
                       onClick={(e) => {
                         e.stopPropagation();
                         handleServiceCardClick(name);
                       }}
                     >
                       View Service →
-                    </button>
-                  </div>
+                    </S.ServiceCardAction>
+                  </S.ServiceCard>
                 ))}
-              </div>
-            </div>
+              </S.ServicesGrid>
+            </S.ServicesSection>
           </>
         )}
-      </div>
-    </div>
+      </S.ContentBody>
+    </S.DepartmentPanel>
   );
 };
 
