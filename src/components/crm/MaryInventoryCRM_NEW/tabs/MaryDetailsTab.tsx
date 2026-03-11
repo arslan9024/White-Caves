@@ -63,12 +63,14 @@ export default function MaryDetailsTab() {
   // Get property matrix data
   const propertyMatrix = useMemo(() => {
     const matrix: Record<string, InventoryProperty[]> = {};
-    properties?.forEach((prop: InventoryProperty) => {
-      if (!matrix[prop.cluster]) {
-        matrix[prop.cluster] = [];
-      }
-      matrix[prop.cluster].push(prop);
-    });
+    if (Array.isArray(properties)) {
+      properties.forEach((prop: InventoryProperty) => {
+        if (!matrix[prop.cluster]) {
+          matrix[prop.cluster] = [];
+        }
+        matrix[prop.cluster].push(prop);
+      });
+    }
     return matrix;
   }, [properties]);
 
