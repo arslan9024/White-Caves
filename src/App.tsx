@@ -1,0 +1,323 @@
+import React, { FC, useState, useEffect, lazy, Suspense, ReactNode } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useSelector, useDispatch, TypedUseSelectorHook } from 'react-redux';
+import { setUser } from './store/userSlice';
+import { setTheme } from './store/navigationSlice';
+import { LanguageProvider } from './context/LanguageContext';
+import { ThemeProvider } from './styles/ThemeProvider';
+import GlobalStyle from './styles/globalStyles';
+import AppLayout from './components/layout/AppLayout';
+import UniversalComponents from './components/layout/UniversalComponents';
+import RoleGateway from './components/RoleGateway';
+import SuspenseLoader from './components/common/SuspenseLoader';
+
+// Critical auth pages - loaded immediately (needed early)
+import SignInPage from './pages/auth/SignInPage';
+import ProfilePage from './pages/auth/ProfilePage';
+import PendingApprovalPage from './pages/auth/PendingApprovalPage';
+import HomePage from './pages/HomePage';
+
+// Type definitions
+interface UserData {
+  role: string;
+  selectedAt: string;
+  locked: boolean;
+  status?: 'pending' | 'active';
+}
+
+interface ProtectedRouteProps {
+  children: ReactNode;
+  allowedRoles?: string[];
+}
+
+interface RoleGatewayUser {
+  id: string;
+  email: string;
+  name?: string;
+  photo?: string;
+}
+
+const ProtectedRoute: FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
+  const user = useSelector((state: any) => state.user.currentUser);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect((): void => {
+    const stored = localStorage.getItem('userRole');
+    if (stored) {
+      try {
+        setUserData(JSON.parse(stored));
+      } catch (e) {
+        setUserData(null);
+      }
+    }
+    setIsLoading(false);
+  }, []);
+
+  if (isLoading) {
+    return <div className="loading-screen">Loading...</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (!userData) {
+    return <Navigate to="/select-role" replace />;
+  }
+
+  if (userData.status === 'pending') {
+    return <Navigate to="/pending-approval" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(userData.role)) {
+    return <Navigate to={`/${userData.role}/dashboard`} replace />;
+  }
+
+  return <>{children}</>;
+}
+
+// ==================== LAZY-LOADED PAGES ====================
+// These are split into separate chunks and loaded only when accessed
+
+// Buyer Pages
+const BuyerDashboardPage = lazy(() => import('./pages/buyer/BuyerDashboardPage'));
+const MortgageCalculatorPage = lazy(() => import('./pages/buyer/MortgageCalculatorPage'));
+const DLDFeesPage = lazy(() => import('./pages/buyer/DLDFeesPage'));
+const TitleDeedRegistrationPage = lazy(() => import('./pages/buyer/TitleDeedRegistrationPage'));
+
+// Seller Pages
+const SellerDashboardPage = lazy(() => import('./pages/seller/SellerDashboardPage'));
+const PricingToolsPage = lazy(() => import('./pages/seller/PricingToolsPage'));
+
+// Landlord Pages
+const LandlordDashboardPage = lazy(() => import('./pages/landlord/LandlordDashboardPage'));
+const RentalManagementPage = lazy(() => import('./pages/landlord/RentalManagementPage'));
+
+// Leasing Agent Pages
+const LeasingAgentDashboardPage = lazy(() => import('./pages/leasing-agent/LeasingAgentDashboardPage'));
+const TenantScreeningPage = lazy(() => import('./pages/leasing-agent/TenantScreeningPage'));
+const ContractManagementPage = lazy(() => import('./pages/leasing-agent/ContractManagementPage'));
+
+// Sales Agent Pages
+const SalesAgentDashboardPage = lazy(() => import('./pages/secondary-sales-agent/SalesAgentDashboardPage'));
+const SalesPipelinePage = lazy(() => import('./pages/secondary-sales-agent/SalesPipelinePage'));
+
+// Tenant Pages
+const TenantDashboardPage = lazy(() => import('./pages/tenant/TenantDashboardPage'));
+
+// Unified Dashboard (NEW - replaces role-specific dashboards)
+const UnifiedDashboardPage = lazy(() => import('./pages/UnifiedDashboardPage'));
+
+// Owner/MD Pages (Legacy - will be deprecated)
+const OwnerDashboardPage = lazy(() => import('./pages/owner/OwnerDashboardPage'));
+const BusinessModelPage = lazy(() => import('./pages/owner/BusinessModelPage'));
+const ClientServicesPage = lazy(() => import('./pages/owner/ClientServicesPage'));
+const SystemHealthPage = lazy(() => import('./pages/owner/SystemHealthPage'));
+const WhatsAppDashboardPage = lazy(() => import('./pages/owner/WhatsAppDashboardPage'));
+const WhatsAppChatbotPage = lazy(() => import('./pages/owner/WhatsAppChatbotPage'));
+const WhatsAppAnalyticsPage = lazy(() => import('./pages/owner/WhatsAppAnalyticsPage'));
+const WhatsAppSettingsPage = lazy(() => import('./pages/owner/WhatsAppSettingsPage'));
+
+// Public Pages (critical paths)
+const PropertiesPage = lazy(() => import('./pages/PropertiesPage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const ServicesPage = lazy(() => import('./pages/ServicesPage'));
+const CareersPage = lazy(() => import('./pages/CareersPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+
+// Auth Pages
+const UAEPassSuccessPage = lazy(() => import('./pages/auth/UAEPassSuccessPage'));
+const SignContractPage = lazy(() => import('./pages/SignContractPage'));
+const DesignSystemTest = lazy(() => import('./pages/DesignSystemTest'));
+
+// Analytics
+import { BiometricPrompt } from './features/auth/components/BiometricLogin';
+import { StatusProvider } from './components/common/StatusNotification';
+import { SpeedInsights } from '@vercel/speed-insights/react';
+import WebVitalsTracker from './components/analytics/WebVitalsTracker';
+
+const App: FC = () => {
+  const dispatch = useDispatch();
+  const user = useSelector((state: any) => state.user.currentUser);
+
+  useEffect((): void => {
+    const checkAuth = async (): Promise<void> => {
+      try {
+        const response = await fetch('/@me');
+        if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
+          const userData = await response.json();
+          dispatch(setUser(userData));
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+      }
+    };
+    checkAuth();
+  }, [dispatch]);
+
+  useEffect((): void => {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    dispatch(setTheme(savedTheme));
+  }, [dispatch]);
+
+  const handleRoleSelect = (role: string): void => {
+    localStorage.setItem('userRole', JSON.stringify({
+      role,
+      selectedAt: new Date().toISOString(),
+      locked: true
+    }));
+  };
+
+  return (
+    <ThemeProvider>
+      <GlobalStyle />
+      <StatusProvider>
+        <LanguageProvider>
+          <BrowserRouter>
+            <SpeedInsights />
+            <WebVitalsTracker />
+            <UniversalComponents />
+            {user && <BiometricPrompt />}
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/properties" element={
+                <Suspense fallback={<SuspenseLoader />}>
+                  <PropertiesPage />
+                </Suspense>
+              } />
+              <Route path="/about" element={
+                <Suspense fallback={<SuspenseLoader />}>
+                  <AboutPage />
+                </Suspense>
+              } />
+              <Route path="/services" element={
+                <Suspense fallback={<SuspenseLoader />}>
+                  <ServicesPage />
+                </Suspense>
+              } />
+              <Route path="/careers" element={
+                <Suspense fallback={<SuspenseLoader />}>
+                  <CareersPage />
+                </Suspense>
+              } />
+              <Route path="/contact" element={
+                <Suspense fallback={<SuspenseLoader />}>
+                  <ContactPage />
+                </Suspense>
+              } />
+              <Route path="/signin" element={user ? <Navigate to="/select-role" replace /> : <SignInPage />} />
+              <Route path="/auth/signin" element={<Navigate to="/signin" replace />} />
+              <Route path="/auth/uaepass-success" element={
+                <Suspense fallback={<SuspenseLoader />}>
+                  <UAEPassSuccessPage />
+                </Suspense>
+              } />
+              <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to="/signin" replace />} />
+              <Route path="/select-role" element={
+                user ? <RoleGateway user={user} onRoleSelect={handleRoleSelect} /> : <Navigate to="/signin" replace />
+              } />
+              <Route path="/pending-approval" element={user ? <PendingApprovalPage /> : <Navigate to="/signin" replace />} />
+
+              {/* ==================== UNIFIED DASHBOARD FOR ALL ROLES ==================== */}
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Suspense fallback={<SuspenseLoader />}>
+                      <UnifiedDashboardPage />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+
+              {/* ==================== BUYER ROUTES ==================== */}
+              <Route path="/buyer/dashboard" element={
+                <ProtectedRoute allowedRoles={['buyer']}>
+                  <AppLayout>
+                    <Suspense fallback={<SuspenseLoader />}>
+                      <BuyerDashboardPage />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/buyer/mortgage-calculator" element={
+                <ProtectedRoute allowedRoles={['buyer']}>
+                  <AppLayout>
+                    <Suspense fallback={<SuspenseLoader />}>
+                      <MortgageCalculatorPage />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/buyer/dld-fees" element={
+                <ProtectedRoute allowedRoles={['buyer']}>
+                  <AppLayout>
+                    <Suspense fallback={<SuspenseLoader />}>
+                      <DLDFeesPage />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/buyer/title-deed-registration" element={
+                <ProtectedRoute allowedRoles={['buyer']}>
+                  <AppLayout>
+                    <Suspense fallback={<SuspenseLoader />}>
+                      <TitleDeedRegistrationPage />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+
+              {/* ==================== SELLER ROUTES ==================== */}
+              <Route path="/seller/dashboard" element={
+                <ProtectedRoute allowedRoles={['seller']}>
+                  <AppLayout>
+                    <Suspense fallback={<SuspenseLoader />}>
+                      <SellerDashboardPage />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/seller/pricing-tools" element={
+                <ProtectedRoute allowedRoles={['seller']}>
+                  <AppLayout>
+                    <Suspense fallback={<SuspenseLoader />}>
+                      <PricingToolsPage />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+
+              {/* ==================== LANDLORD ROUTES ==================== */}
+              <Route path="/landlord/dashboard" element={
+                <ProtectedRoute allowedRoles={['landlord']}>
+                  <AppLayout>
+                    <Suspense fallback={<SuspenseLoader />}>
+                      <LandlordDashboardPage />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/landlord/rental-management" element={
+                <ProtectedRoute allowedRoles={['landlord']}>
+                  <AppLayout>
+                    <Suspense fallback={<SuspenseLoader />}>
+                      <RentalManagementPage />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+
+              {/* ==================== OTHER ROUTES ==================== */}
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </BrowserRouter>
+        </LanguageProvider>
+      </StatusProvider>
+    </ThemeProvider>
+  );
+}
+
+export default App;
