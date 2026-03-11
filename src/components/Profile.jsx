@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Profile.css';
+import * as S from './Profile.styles';
 import { updateUserProfile, updateUserEmail, updateUserPassword, verifyEmail, EmailAuthProvider, reauthenticateWithCredential } from '../config/firebase';
 import { useToast } from './Toast';
 

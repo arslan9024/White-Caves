@@ -1,5 +1,5 @@
 import React from 'react';
-import './Badge.css';
+import { StyledBadge, BadgeDot, BadgeIcon, BadgeContent } from './Badge.styles';
 
 const Badge = ({
   children,
@@ -13,17 +13,6 @@ const Badge = ({
   className = '',
   ...props
 }) => {
-  const badgeClasses = [
-    'wc-badge',
-    `wc-badge--${variant}`,
-    `wc-badge--${size}`,
-    dot && 'wc-badge--dot',
-    pulse && 'wc-badge--pulse',
-    rounded && 'wc-badge--rounded corner-full',
-    !rounded && 'corner-sm',
-    className
-  ].filter(Boolean).join(' ');
-
   const customStyle = color ? { 
     backgroundColor: `${color}20`, 
     color: color,
@@ -31,11 +20,18 @@ const Badge = ({
   } : {};
 
   return (
-    <span className={badgeClasses} style={customStyle} {...props}>
-      {dot && <span className="wc-badge-dot" style={color ? { backgroundColor: color } : {}} />}
-      {icon && <span className="wc-badge-icon">{icon}</span>}
-      {children && <span className="wc-badge-content">{children}</span>}
-    </span>
+    <StyledBadge 
+      $variant={variant}
+      $size={size}
+      $rounded={rounded}
+      style={customStyle}
+      className={className}
+      {...props}
+    >
+      {dot && <BadgeDot $pulse={pulse} style={color ? { backgroundColor: color } : {}} />}
+      {icon && <BadgeIcon>{icon}</BadgeIcon>}
+      {children && <BadgeContent>{children}</BadgeContent>}
+    </StyledBadge>
   );
 };
 

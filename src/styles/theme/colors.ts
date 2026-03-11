@@ -86,6 +86,24 @@ export const colors = {
     border: '#404040',
     shadow: 'rgba(0, 0, 0, 0.3)',
   },
+
+  // Utility Aliases for Component Compatibility
+  surface: '#FFFFFF',
+  surfaceAlt: '#F5F5F5', 
+  hover: '#F5F5F5',
+  cardBg: '#FFFFFF',
+  textColor: '#212121',
+  textPrimary: '#212121',
+  textSecondary: '#666666',
+  textMuted: '#999999',
+  borderColor: '#E0E0E0',
+  bgPrimary: '#F8F9FA',
+  bgSecondary: '#FFFFFF',
+  bgTertiary: '#F5F5F5',
+  danger: '#C62828',
+  dangerDark: '#B71C1C',
+  dangerLight: 'rgba(198, 40, 40, 0.15)',
+  accentGold: '#F57F17',
 };
 
 export type Colors = typeof colors;

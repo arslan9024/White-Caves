@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setActiveRole } from '../store/navigationSlice';
-import './RoleGateway.css';
+import * as S from './RoleGateway.styles';
 
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
 
@@ -64,41 +64,43 @@ export default function RoleGateway({ user, onRoleSelect }) {
   };
 
   return (
-    <div className="role-gateway">
-      <div className="role-gateway-container">
-        <div className="role-gateway-header">
+    <S.Container>
+      <S.ContainerContent>
+        <S.Header>
           <h1>Select Your Role</h1>
           <p>Please select your primary role to continue. This selection determines the content and features available to you.</p>
-          <p className="role-warning">Note: Your role cannot be changed after selection without admin approval.</p>
-        </div>
+          <S.Warning>Note: Your role cannot be changed after selection without admin approval.</S.Warning>
+        </S.Header>
 
-        <div className="roles-grid">
+        <S.RolesGrid>
           {ROLES.map((role) => (
-            <div
+            <S.RoleCard
               key={role.id}
-              className={`role-card ${selectedRole === role.id ? 'selected' : ''}`}
+              selected={selectedRole === role.id}
               onClick={() => handleRoleSelect(role.id)}
             >
-              <span className="role-icon">{role.icon}</span>
-              <h3>{role.label}</h3>
-              <p>{role.description}</p>
+              <S.RoleIcon>{role.icon}</S.RoleIcon>
+              <S.RoleTitle>{role.label}</S.RoleTitle>
+              <S.RoleDescription>{role.description}</S.RoleDescription>
               {selectedRole === role.id && (
-                <div className="role-checkmark">✓</div>
+                <span style={{ fontSize: '1.5rem', marginTop: '1rem' }}>✓</span>
               )}
-            </div>
+            </S.RoleCard>
           ))}
-        </div>
+        </S.RolesGrid>
 
         {selectedRole && (
-          <div className="role-confirm-section">
-            <p>You selected: <strong>{ROLES.find(r => r.id === selectedRole)?.label}</strong></p>
-            <button className="btn btn-primary btn-large" onClick={handleConfirm}>
+          <S.ActionButtons>
+            <p style={{ gridColumn: '1 / -1', textAlign: 'center', marginBottom: '1rem' }}>
+              You selected: <strong>{ROLES.find(r => r.id === selectedRole)?.label}</strong>
+            </p>
+            <S.Button variant="primary" onClick={handleConfirm}>
               Confirm Selection & Continue
-            </button>
-          </div>
+            </S.Button>
+          </S.ActionButtons>
         )}
-      </div>
-    </div>
+      </S.ContainerContent>
+    </S.Container>
   );
 }
 

@@ -3,7 +3,7 @@ import {
   ChevronLeft, ChevronRight, Maximize2, X, Grid, 
   Image, MapPin, Bed, Bath, Square, Tag
 } from 'lucide-react';
-import './PropertyComponents.css';
+import * as S from './PropertyComponents.styles';
 
 const PropertyMediaGallery = memo(({ 
   images = [],
@@ -29,18 +29,18 @@ const PropertyMediaGallery = memo(({
   
   if (images.length === 0) {
     return (
-      <div className="property-gallery empty">
+      <S.PropertyGallery $isEmpty>
         <Image size={48} />
         <span>No images available</span>
-      </div>
+      </S.PropertyGallery>
     );
   }
   
   return (
     <>
-      <div className="property-gallery">
-        <div className="gallery-main">
-          <img 
+      <S.PropertyGallery>
+        <S.GalleryMain>
+          <S.GalleryImage
             src={images[currentIndex]?.url || images[currentIndex]} 
             alt={`${title} - Image ${currentIndex + 1}`}
             onClick={() => setIsFullscreen(true)}
@@ -48,56 +48,55 @@ const PropertyMediaGallery = memo(({
           
           {images.length > 1 && (
             <>
-              <button className="gallery-nav prev" onClick={handlePrev}>
+              <S.GalleryNav $position="prev" onClick={handlePrev}>
                 <ChevronLeft size={20} />
-              </button>
-              <button className="gallery-nav next" onClick={handleNext}>
+              </S.GalleryNav>
+              <S.GalleryNav $position="next" onClick={handleNext}>
                 <ChevronRight size={20} />
-              </button>
+              </S.GalleryNav>
             </>
           )}
           
-          <button 
-            className="fullscreen-btn"
+          <S.FullscreenBtn 
             onClick={() => setIsFullscreen(true)}
           >
             <Maximize2 size={16} />
-          </button>
+          </S.FullscreenBtn>
           
-          <div className="image-counter">
+          <S.ImageCounter>
             {currentIndex + 1} / {images.length}
-          </div>
-        </div>
+          </S.ImageCounter>
+        </S.GalleryMain>
         
         {showThumbnails && images.length > 1 && (
-          <div className="gallery-thumbnails">
+          <S.GalleryThumbnails>
             {images.slice(0, maxThumbnails).map((image, index) => (
-              <button
+              <S.Thumbnail
                 key={index}
-                className={`thumbnail ${index === currentIndex ? 'active' : ''}`}
+                $active={index === currentIndex}
                 onClick={() => handleThumbnailClick(index)}
               >
                 <img 
                   src={image?.url || image} 
                   alt={`Thumbnail ${index + 1}`}
                 />
-              </button>
+              </S.Thumbnail>
             ))}
             {images.length > maxThumbnails && (
-              <button className="thumbnail more">
+              <S.Thumbnail $isMore>
                 <Grid size={16} />
                 <span>+{images.length - maxThumbnails}</span>
-              </button>
+              </S.Thumbnail>
             )}
-          </div>
+          </S.GalleryThumbnails>
         )}
-      </div>
+      </S.PropertyGallery>
       
       {isFullscreen && (
-        <div className="fullscreen-overlay" onClick={() => setIsFullscreen(false)}>
-          <button className="close-fullscreen" onClick={() => setIsFullscreen(false)}>
+        <S.FullscreenOverlay onClick={() => setIsFullscreen(false)}>
+          <S.CloseFullscreenBtn onClick={() => setIsFullscreen(false)}>
             <X size={24} />
-          </button>
+          </S.CloseFullscreenBtn>
           <img 
             src={images[currentIndex]?.url || images[currentIndex]} 
             alt={`${title} - Fullscreen`}
@@ -105,21 +104,21 @@ const PropertyMediaGallery = memo(({
           />
           {images.length > 1 && (
             <>
-              <button 
-                className="fullscreen-nav prev" 
+              <S.FullscreenNav 
+                $position="prev" 
                 onClick={(e) => { e.stopPropagation(); handlePrev(); }}
               >
                 <ChevronLeft size={32} />
-              </button>
-              <button 
-                className="fullscreen-nav next"
+              </S.FullscreenNav>
+              <S.FullscreenNav 
+                $position="next"
                 onClick={(e) => { e.stopPropagation(); handleNext(); }}
               >
                 <ChevronRight size={32} />
-              </button>
+              </S.FullscreenNav>
             </>
           )}
-        </div>
+        </S.FullscreenOverlay>
       )}
     </>
   );
@@ -139,17 +138,17 @@ const PropertySpecsGrid = memo(({ property }) => {
   ].filter(spec => spec.value);
   
   return (
-    <div className="property-specs-grid">
+    <S.PropertySpecsGrid>
       {specs.map((spec, index) => (
-        <div key={index} className="spec-item">
+        <S.SpecItem key={index}>
           <spec.icon size={18} />
-          <div className="spec-content">
-            <span className="spec-value">{spec.value}</span>
-            <span className="spec-label">{spec.label}</span>
-          </div>
-        </div>
+          <S.SpecContent>
+            <S.SpecValue>{spec.value}</S.SpecValue>
+            <S.SpecLabel>{spec.label}</S.SpecLabel>
+          </S.SpecContent>
+        </S.SpecItem>
       ))}
-    </div>
+    </S.PropertySpecsGrid>
   );
 });
 
@@ -164,27 +163,27 @@ const PropertyDetailContainer = memo(({
   if (!property) return null;
   
   return (
-    <div className="property-detail-container">
-      <div className="detail-header">
-        <div className="header-info">
+    <S.PropertyDetailContainer>
+      <S.DetailHeader>
+        <S.HeaderInfo>
           <h2>{property.title || property.unitNumber}</h2>
-          <p className="property-address">
+          <S.PropertyAddress>
             <MapPin size={14} />
             {property.location || property.address}
-          </p>
-        </div>
-        <div className="header-price">
-          <span className="price-label">{property.purpose || 'Price'}</span>
-          <span className="price-value">
+          </S.PropertyAddress>
+        </S.HeaderInfo>
+        <S.HeaderPrice>
+          <S.PriceLabel>{property.purpose || 'Price'}</S.PriceLabel>
+          <S.PriceValue>
             AED {property.price?.toLocaleString()}
-          </span>
-        </div>
+          </S.PriceValue>
+        </S.HeaderPrice>
         {onClose && (
-          <button className="close-btn" onClick={onClose}>
+          <S.CloseBtn onClick={onClose}>
             <X size={20} />
-          </button>
+          </S.CloseBtn>
         )}
-      </div>
+      </S.DetailHeader>
       
       <PropertyMediaGallery 
         images={property.images || []}
@@ -194,52 +193,52 @@ const PropertyDetailContainer = memo(({
       <PropertySpecsGrid property={property} />
       
       {showOwnerInfo && property.owner && (
-        <div className="owner-info-section">
+        <S.DetailSection>
           <h4>Owner Information</h4>
-          <div className="owner-card">
-            <div className="owner-avatar">
+          <S.OwnerCard>
+            <S.OwnerAvatar>
               {property.owner.avatar || property.owner.name?.charAt(0)}
-            </div>
-            <div className="owner-details">
-              <span className="owner-name">{property.owner.name}</span>
-              <span className="owner-contact">{property.owner.phone}</span>
-              <span className="owner-email">{property.owner.email}</span>
-            </div>
-          </div>
-        </div>
+            </S.OwnerAvatar>
+            <S.OwnerDetails>
+              <S.OwnerName>{property.owner.name}</S.OwnerName>
+              <S.OwnerContact>{property.owner.phone}</S.OwnerContact>
+              <S.OwnerContact>{property.owner.email}</S.OwnerContact>
+            </S.OwnerDetails>
+          </S.OwnerCard>
+        </S.DetailSection>
       )}
       
       {showFinancials && (
-        <div className="financial-section">
+        <S.DetailSection>
           <h4>Financial Details</h4>
-          <div className="financial-grid">
-            <div className="financial-item">
-              <span className="fin-label">List Price</span>
-              <span className="fin-value">AED {property.price?.toLocaleString()}</span>
-            </div>
+          <S.FinancialGrid>
+            <S.FinancialItem>
+              <S.FinLabel>List Price</S.FinLabel>
+              <S.FinValue>AED {property.price?.toLocaleString()}</S.FinValue>
+            </S.FinancialItem>
             {property.commission && (
-              <div className="financial-item">
-                <span className="fin-label">Commission</span>
-                <span className="fin-value">{property.commission}%</span>
-              </div>
+              <S.FinancialItem>
+                <S.FinLabel>Commission</S.FinLabel>
+                <S.FinValue>{property.commission}%</S.FinValue>
+              </S.FinancialItem>
             )}
             {property.serviceCharge && (
-              <div className="financial-item">
-                <span className="fin-label">Service Charge</span>
-                <span className="fin-value">AED {property.serviceCharge?.toLocaleString()}/yr</span>
-              </div>
+              <S.FinancialItem>
+                <S.FinLabel>Service Charge</S.FinLabel>
+                <S.FinValue>AED {property.serviceCharge?.toLocaleString()}/yr</S.FinValue>
+              </S.FinancialItem>
             )}
-          </div>
-        </div>
+          </S.FinancialGrid>
+        </S.DetailSection>
       )}
       
       {property.description && (
-        <div className="description-section">
+        <S.DescriptionSection>
           <h4>Description</h4>
           <p>{property.description}</p>
-        </div>
+        </S.DescriptionSection>
       )}
-    </div>
+    </S.PropertyDetailContainer>
   );
 });
 

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveRole } from '../store/navigationSlice';
 import { getRoleInfo } from '../config/ROLE_TAB_MAPPING';
-import './RoleSelector.css';
+import * as S from './RoleSelector.styles';
 
 const AVAILABLE_ROLES = [
   { id: 'lion', label: 'Super User', canAccess: true },
@@ -59,42 +59,41 @@ export default function RoleSelector() {
   const currentRoleInfo = getRoleInfo(currentRole);
   
   return (
-    <div className="role-selector">
-      <button
-        className="role-selector-button"
+    <S.Container>
+      <S.Button
         onClick={() => setIsOpen(!isOpen)}
         title={`Current role: ${currentRoleInfo.label}`}
       >
-        <span className="role-label">{currentRoleInfo.label}</span>
-        <span className={`role-dropdown-icon ${isOpen ? 'open' : ''}`}>▼</span>
-      </button>
+        <S.Label>{currentRoleInfo.label}</S.Label>
+        <S.DropdownIcon isOpen={isOpen}>▼</S.DropdownIcon>
+      </S.Button>
       
       {isOpen && (
-        <div className="role-dropdown">
-          <div className="role-dropdown-header">
+        <S.Dropdown>
+          <S.DropdownHeader>
             <h3>Switch Role</h3>
             <p>Select a different role to access other features</p>
-          </div>
+          </S.DropdownHeader>
           
-          <div className="role-dropdown-list">
+          <S.DropdownList>
             {availableRoles.map(role => (
-              <button
+              <S.DropdownOption
                 key={role.id}
-                className={`role-option ${currentRole === role.id ? 'active' : ''}`}
+                isActive={currentRole === role.id}
                 onClick={() => handleRoleChange(role.id)}
                 disabled={!role.canAccess}
               >
-                <span className="role-option-label">{role.label}</span>
-                {currentRole === role.id && <span className="role-option-checkmark">✓</span>}
-              </button>
+                <S.OptionLabel>{role.label}</S.OptionLabel>
+                {currentRole === role.id && <S.OptionCheckmark>✓</S.OptionCheckmark>}
+              </S.DropdownOption>
             ))}
-          </div>
+          </S.DropdownList>
           
-          <div className="role-dropdown-footer">
-            <p className="role-info">{currentRoleInfo.description}</p>
-          </div>
-        </div>
+          <S.DropdownFooter>
+            <S.RoleInfo>{currentRoleInfo.description}</S.RoleInfo>
+          </S.DropdownFooter>
+        </S.Dropdown>
       )}
-    </div>
+    </S.Container>
   );
 }

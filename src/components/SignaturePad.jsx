@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
-import './SignaturePad.css';
+import * as S from './SignaturePad.styles';
 
 export default function SignaturePad({ 
   onSave, 

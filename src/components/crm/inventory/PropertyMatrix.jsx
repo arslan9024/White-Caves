@@ -10,7 +10,21 @@ import {
   setFilter,
   selectFilters
 } from '../../../store/slices/inventorySlice';
-import './PropertyMatrix.css';
+import {
+  PropertyMatrixContainer,
+  MatrixHeader,
+  MatrixInfo,
+  MatrixSearch,
+  MatrixTableWrapper,
+  MatrixTable,
+  ClusterBadge,
+  AreaCell,
+  OwnersCell,
+  OwnerBadge,
+  MultiPhoneIcon,
+  MultiOwnerIndicator,
+  StatusBadge
+} from './PropertyMatrix.styles';
 
 const COLUMNS = [
   { key: 'unitNumber', label: 'Unit', sortable: true },

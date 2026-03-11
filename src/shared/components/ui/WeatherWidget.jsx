@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Cloud, Sun, CloudRain, CloudSnow, Wind, Thermometer } from 'lucide-react';
-import './WeatherWidget.css';
+import * as S from './WeatherWidget.styles';
 
 const WeatherWidget = ({ compact = false, location = 'Dubai', className = '' }) => {
   const [weather, setWeather] = useState({
@@ -50,30 +50,30 @@ const WeatherWidget = ({ compact = false, location = 'Dubai', className = '' }) 
 
   if (compact) {
     return (
-      <div className={`weather-widget compact ${className}`}>
-        <span className="weather-icon">{getWeatherIcon(weather.condition)}</span>
-        <span className="weather-temp">{weather.temp}°C</span>
-      </div>
+      <S.WeatherWidgetContainer $compact={compact} className={className}>
+        <S.WeatherIcon>{getWeatherIcon(weather.condition)}</S.WeatherIcon>
+        <S.WeatherTemp $compact={compact}>{weather.temp}°C</S.WeatherTemp>
+      </S.WeatherWidgetContainer>
     );
   }
 
   return (
-    <div className={`weather-widget ${className}`}>
-      <div className="weather-main">
-        <span className="weather-icon large">{getWeatherIcon(weather.condition)}</span>
-        <div className="weather-info">
-          <span className="weather-temp">{weather.temp}°C</span>
-          <span className="weather-description">{weather.description}</span>
-        </div>
-      </div>
-      <div className="weather-details">
-        <span className="weather-location">{location}</span>
-        <span className="weather-humidity">
+    <S.WeatherWidgetContainer className={className}>
+      <S.WeatherMain>
+        <S.WeatherIcon $large>{getWeatherIcon(weather.condition)}</S.WeatherIcon>
+        <S.WeatherInfo>
+          <S.WeatherTemp>{weather.temp}°C</S.WeatherTemp>
+          <S.WeatherDescription>{weather.description}</S.WeatherDescription>
+        </S.WeatherInfo>
+      </S.WeatherMain>
+      <S.WeatherDetails>
+        <S.WeatherLocation>{location}</S.WeatherLocation>
+        <S.WeatherHumidity>
           <Thermometer size={14} />
           {weather.humidity}% humidity
-        </span>
-      </div>
-    </div>
+        </S.WeatherHumidity>
+      </S.WeatherDetails>
+    </S.WeatherWidgetContainer>
   );
 };
 

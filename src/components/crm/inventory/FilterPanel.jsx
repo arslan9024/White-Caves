@@ -1,7 +1,14 @@
 import React from 'react';
 import { Filter, X, RotateCcw } from 'lucide-react';
 import FilterDropdown from './FilterDropdown';
-import './FilterPanel.css';
+import {
+  FilterPanelContainer,
+  FilterPanelHeader,
+  FilterTitle,
+  ActiveCount,
+  ClearFiltersBtn,
+  FilterGrid
+} from './FilterPanel.styles';
 
 const FilterPanel = ({ 
   filters, 
@@ -15,24 +22,24 @@ const FilterPanel = ({
   };
 
   return (
-    <div className="filter-panel">
-      <div className="filter-panel-header">
-        <div className="filter-title">
+    <FilterPanelContainer>
+      <FilterPanelHeader>
+        <FilterTitle>
           <Filter size={18} />
           <span>Filters</span>
           {activeFiltersCount > 0 && (
-            <span className="active-count">{activeFiltersCount}</span>
+            <ActiveCount>{activeFiltersCount}</ActiveCount>
           )}
-        </div>
+        </FilterTitle>
         {activeFiltersCount > 0 && (
-          <button className="clear-filters-btn" onClick={onClearFilters}>
+          <ClearFiltersBtn onClick={onClearFilters}>
             <RotateCcw size={14} />
             Clear All
-          </button>
+          </ClearFiltersBtn>
         )}
-      </div>
+      </FilterPanelHeader>
 
-      <div className="filter-grid">
+      <FilterGrid>
         <FilterDropdown
           label="Layout"
           value={filters.layout}
@@ -96,8 +103,8 @@ const FilterPanel = ({
           onChange={(val) => handleChange('masterProject', val)}
           placeholder="All Projects"
         />
-      </div>
-    </div>
+      </FilterGrid>
+    </FilterPanelContainer>
   );
 };
 

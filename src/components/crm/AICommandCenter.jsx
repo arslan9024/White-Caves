@@ -15,7 +15,22 @@ import {
   selectUI,
   setLayout
 } from '../../store/slices/aiAssistantDashboardSlice';
-import './AICommandCenter.css';
+import {
+  CommandCenterContainer,
+  CommandCenterHeader,
+  HeaderLeft,
+  CommandCenterTitle,
+  CommandCenterSubtitle,
+  HeaderControls,
+  ViewToggleContainer,
+  ToggleBtn,
+  HeaderAction,
+  NotificationBadge,
+  CommandCenterMain,
+  DashboardContainer,
+  ActivitySidebar,
+  LoadingContainer
+} from './AICommandCenter.styles';
 
 const LindaWhatsAppCRM = lazy(() => import('./LindaWhatsAppCRM_NEW'));
 const MaryInventoryCRM = lazy(() => import('./MaryInventoryCRM_NEW'));

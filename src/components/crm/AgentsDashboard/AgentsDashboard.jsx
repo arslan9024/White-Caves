@@ -12,7 +12,30 @@ import {
   setView
 } from '../../../store/managingDirectorDashboardSlice';
 import { Search, Grid3x3, List, Download } from 'lucide-react';
-import './AgentsDashboard.css';
+import {
+  AgentsDashboardWrapper,
+  AgentsDashboardHeader,
+  AgentsDashboardTitle,
+  AgentsDashboardSubtitle,
+  AgentsActionBtn,
+  AgentsFiltersBar,
+  AgentsSearchBox,
+  AgentsViewToggle,
+  AgentsViewBtn,
+  AgentsGrid,
+  AgentCard,
+  AgentAvatar,
+  AgentName,
+  AgentDepartment,
+  AgentStats,
+  Stat,
+  StatValue,
+  StatLabel,
+  AgentCommission,
+  AgentStatus,
+  AgentsTableWrapper,
+  AgentsTable
+} from './AgentsDashboard.styles';
 
 const AgentsDashboard = () => {
   const dispatch = useDispatch();
@@ -31,19 +54,19 @@ const AgentsDashboard = () => {
   );
 
   return (
-    <div className="agents-dashboard">
-      <div className="dashboard-header">
+    <AgentsDashboardWrapper>
+      <AgentsDashboardHeader>
         <div>
-          <h1>👨‍💼 Sales Team Performance</h1>
-          <p className="header-subtitle">{agents.length} agents total</p>
+          <AgentsDashboardTitle>👨‍💼 Sales Team Performance</AgentsDashboardTitle>
+          <AgentsDashboardSubtitle>{agents.length} agents total</AgentsDashboardSubtitle>
         </div>
-        <button className="action-btn export-btn">
+        <AgentsActionBtn>
           <Download size={18} /> Export
-        </button>
-      </div>
+        </AgentsActionBtn>
+      </AgentsDashboardHeader>
 
-      <div className="filters-bar">
-        <div className="search-box">
+      <AgentsFiltersBar>
+        <AgentsSearchBox>
           <Search size={18} />
           <input
             type="text"
@@ -51,57 +74,56 @@ const AgentsDashboard = () => {
             value={searchQuery}
             onChange={e => dispatch(setSearchQuery(e.target.value))}
           />
-        </div>
-        <div className="view-toggle">
-          <button
-            className={`view-btn ${viewType === 'grid' ? 'active' : ''}`}
+        </AgentsSearchBox>
+        <AgentsViewToggle>
+          <AgentsViewBtn
+            $active={viewType === 'grid'}
             onClick={() => dispatch(setView('grid'))}
           >
             <Grid3x3 size={18} />
-          </button>
-          <button
-            className={`view-btn ${viewType === 'list' ? 'active' : ''}`}
+          </AgentsViewBtn>
+          <AgentsViewBtn
+            $active={viewType === 'list'}
             onClick={() => dispatch(setView('list'))}
           >
             <List size={18} />
-          </button>
-        </div>
-      </div>
+          </AgentsViewBtn>
+        </AgentsViewToggle>
+      </AgentsFiltersBar>
 
       {viewType === 'grid' ? (
-        <div className="agents-grid">
+        <AgentsGrid>
           {filteredAgents.map(agent => (
-            <div key={agent.id} className="agent-card">
-              <div
-                className="agent-avatar"
+            <AgentCard key={agent.id}>
+              <AgentAvatar
                 style={{ backgroundColor: agent.avatar_color }}
               >
                 {agent.avatar}
-              </div>
-              <h3>{agent.name}</h3>
-              <p className="agent-department">{agent.department}</p>
-              <div className="agent-stats">
-                <div className="stat">
-                  <span className="stat-value">{agent.sales}</span>
-                  <span className="stat-label">Sales</span>
-                </div>
-                <div className="stat">
-                  <span className="stat-value">{agent.rating}</span>
-                  <span className="stat-label">Rating</span>
-                </div>
-              </div>
-              <p className="agent-commission">
+              </AgentAvatar>
+              <AgentName>{agent.name}</AgentName>
+              <AgentDepartment>{agent.department}</AgentDepartment>
+              <AgentStats>
+                <Stat>
+                  <StatValue>{agent.sales}</StatValue>
+                  <StatLabel>Sales</StatLabel>
+                </Stat>
+                <Stat>
+                  <StatValue>{agent.rating}</StatValue>
+                  <StatLabel>Rating</StatLabel>
+                </Stat>
+              </AgentStats>
+              <AgentCommission>
                 AED {(agent.commission / 1000).toFixed(0)}K
-              </p>
-              <span className={`agent-status ${agent.status}`}>
+              </AgentCommission>
+              <AgentStatus $status={agent.status}>
                 {agent.status === 'online' ? '🟢' : '⚪'} {agent.status.toUpperCase()}
-              </span>
-            </div>
+              </AgentStatus>
+            </AgentCard>
           ))}
-        </div>
+        </AgentsGrid>
       ) : (
-        <div className="agents-table-wrapper">
-          <table className="agents-table">
+        <AgentsTableWrapper>
+          <AgentsTable>
             <thead>
               <tr>
                 <th>Agent</th>

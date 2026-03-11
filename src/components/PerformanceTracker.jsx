@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import './PerformanceTracker.css';
+import * as S from './PerformanceTracker.styles';
 
 export default function PerformanceTracker({ userId }) {
   const [performance, setPerformance] = useState(null);

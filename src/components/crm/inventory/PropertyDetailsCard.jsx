@@ -3,7 +3,28 @@ import {
   Home, MapPin, Building2, Layers, Eye, DollarSign, 
   FileText, Hash, Calendar, Phone, Mail, User, Zap
 } from 'lucide-react';
-import './PropertyDetailsCard.css';
+import {
+  PropertyDetailsCardContainer,
+  CardHeader,
+  PropertyId,
+  StatusBadge,
+  SectionsContainer,
+  DetailsSection,
+  SectionTitle,
+  FieldsGrid,
+  FieldContent,
+  FieldLabel,
+  FieldValue,
+  OwnersSection,
+  OwnersList,
+  OwnerItem,
+  OwnerAvatar,
+  OwnerInfo,
+  OwnerName,
+  OwnerContacts,
+  ContactBadge,
+  MoreContacts
+} from './PropertyDetailsCard.styles';
 
 const FIELD_CONFIGS = [
   { key: 'pNumber', label: 'P-Number', icon: Hash, section: 'identification' },
@@ -55,19 +76,39 @@ const formatValue = (value, format) => {
   return String(value);
 };
 
-const FieldItem = ({ config, value }) => {
+const FieldItemRenderer = ({ config, value }) => {
   const Icon = config.icon;
   const displayValue = formatValue(value, config.format);
+  const isEmpty = displayValue === '-';
   
   return (
-    <div className={`field-item ${displayValue === '-' ? 'empty' : ''}`}>
-      <div className="field-icon">
+    <div style={{
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: '10px',
+      padding: '10px 12px',
+      background: 'var(--bg-secondary)',
+      borderRadius: '8px',
+      transition: 'all 0.2s ease',
+      opacity: isEmpty ? '0.5' : '1'
+    }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '28px',
+        height: '28px',
+        background: 'rgba(220, 38, 38, 0.1)',
+        borderRadius: '6px',
+        color: 'var(--primary)',
+        flexShrink: 0
+      }}>
         <Icon size={14} />
       </div>
-      <div className="field-content">
-        <span className="field-label">{config.label}</span>
-        <span className="field-value">{displayValue}</span>
-      </div>
+      <FieldContent>
+        <FieldLabel>{config.label}</FieldLabel>
+        <FieldValue>{displayValue}</FieldValue>
+      </FieldContent>
     </div>
   );
 };
@@ -85,77 +126,76 @@ const PropertyDetailsCard = ({ property, owners = [], onOwnerClick, compact = fa
     if (!hasValues && compact) return null;
     
     return (
-      <div key={section.id} className="details-section">
-        <h4 className="section-title">{section.label}</h4>
-        <div className="fields-grid">
+      <DetailsSection key={section.id}>
+        <SectionTitle>{section.label}</SectionTitle>
+        <FieldsGrid>
           {fields.map(config => (
-            <FieldItem 
+            <FieldItemRenderer 
               key={config.key} 
               config={config} 
               value={property[config.key]} 
             />
           ))}
-        </div>
-      </div>
+        </FieldsGrid>
+      </DetailsSection>
     );
   };
 
   return (
-    <div className={`property-details-card ${compact ? 'compact' : ''}`}>
-      <div className="card-header">
-        <div className="property-id">
+    <PropertyDetailsCardContainer>
+      <CardHeader>
+        <PropertyId>
           <Hash size={18} />
           <span>{property.pNumber || 'N/A'}</span>
-        </div>
+        </PropertyId>
         {property.status && (
-          <span className={`status-badge ${property.status.toLowerCase()}`}>
+          <StatusBadge $status={property.status.toLowerCase()}>
             {property.status}
-          </span>
+          </StatusBadge>
         )}
-      </div>
+      </CardHeader>
 
-      <div className="sections-container">
+      <SectionsContainer>
         {SECTIONS.map(renderSection)}
-      </div>
+      </SectionsContainer>
 
       {owners.length > 0 && (
-        <div className="owners-section">
-          <h4 className="section-title">
+        <OwnersSection>
+          <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 600, marginBottom: '12px', marginTop: 0 }}>
             <User size={16} />
             Owners ({owners.length})
           </h4>
-          <div className="owners-list">
+          <OwnersList>
             {owners.map((owner, idx) => (
-              <div 
-                key={owner.id || idx} 
-                className="owner-item"
+              <OwnerItem 
+                key={owner.id || idx}
                 onClick={() => onOwnerClick?.(owner)}
               >
-                <div className="owner-avatar">
+                <OwnerAvatar>
                   {(owner.name || 'U').charAt(0)}
-                </div>
-                <div className="owner-info">
-                  <span className="owner-name">{owner.name || 'Unknown'}</span>
+                </OwnerAvatar>
+                <OwnerInfo>
+                  <OwnerName>{owner.name || 'Unknown'}</OwnerName>
                   {owner.contacts?.length > 0 && (
-                    <div className="owner-contacts">
+                    <OwnerContacts>
                       {owner.contacts.slice(0, 2).map((c, i) => (
-                        <span key={i} className="contact-badge">
+                        <ContactBadge key={i}>
                           {c.type === 'email' ? <Mail size={10} /> : <Phone size={10} />}
                           {c.value}
-                        </span>
+                        </ContactBadge>
                       ))}
                       {owner.contacts.length > 2 && (
-                        <span className="more-contacts">+{owner.contacts.length - 2}</span>
+                        <MoreContacts>+{owner.contacts.length - 2}</MoreContacts>
                       )}
-                    </div>
+                    </OwnerContacts>
                   )}
-                </div>
-              </div>
+                </OwnerInfo>
+              </OwnerItem>
             ))}
-          </div>
-        </div>
+          </OwnersList>
+        </OwnersSection>
       )}
-    </div>
+    </PropertyDetailsCardContainer>
   );
 };
 

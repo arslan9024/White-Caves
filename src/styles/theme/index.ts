@@ -5,6 +5,7 @@
 
 export { colors, type Colors } from './colors';
 export { spacing, type Spacing } from './spacing';
+export { radius, type Radius } from './radius';
 export { typography, type Typography } from './typography';
 export { zIndex, type ZIndex } from './zIndex';
 export { breakpoints, mediaQueries, type Breakpoints, type MediaQueries } from './breakpoints';
@@ -14,16 +15,26 @@ export { transitions, keyframes, type Transitions, type Keyframes } from './tran
 // Combined theme object for ThemeProvider
 import { colors } from './colors';
 import { spacing } from './spacing';
+import { radius } from './radius';
 import { typography } from './typography';
 import { zIndex } from './zIndex';
 import { breakpoints, mediaQueries } from './breakpoints';
 import { shadows } from './shadows';
 import { transitions, keyframes } from './transitions';
 
+// Fonts alias for styled-components
+const fonts = {
+  heading: typography.fontFamily.primary,
+  body: typography.fontFamily.primary,
+  mono: typography.fontFamily.mono,
+};
+
 export const theme = {
   colors,
   spacing,
+  radius,
   typography,
+  fonts,
   zIndex,
   breakpoints,
   mediaQueries,

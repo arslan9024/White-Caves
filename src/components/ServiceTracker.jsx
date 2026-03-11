@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './ServiceTracker.css';
+import * as S from './ServiceTracker.styles';
 import Loading from './Loading';
 
 export default function ServiceTracker({ userId, userRole }) {

@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import './Button.css';
+import {
+  StyledButton,
+  ButtonContent,
+  ButtonIcon,
+  ButtonSpinner,
+  ButtonRipple
+} from './Button.styles';
 
 const Button = ({
   children,
@@ -31,51 +37,44 @@ const Button = ({
     onClick?.(e);
   };
 
-  const buttonClasses = [
-    'wc-button',
-    `wc-button--${variant}`,
-    `wc-button--${size}`,
-    gradient && 'wc-button--gradient',
-    fullWidth && 'wc-button--full-width',
-    loading && 'wc-button--loading',
-    disabled && 'wc-button--disabled',
-    icon && !children && 'wc-button--icon-only',
-    className
-  ].filter(Boolean).join(' ');
-
   return (
-    <button
+    <StyledButton
       type={type}
-      className={buttonClasses}
+      $variant={variant}
+      $size={size}
+      $gradient={gradient}
+      $fullWidth={fullWidth}
+      $loading={loading}
+      $disabled={disabled || loading}
       disabled={disabled || loading}
       onClick={handleClick}
+      className={className}
       {...props}
     >
       {ripple.show && (
-        <span 
-          className="wc-button__ripple"
+        <ButtonRipple
           style={{ left: ripple.x, top: ripple.y }}
         />
       )}
       
       {loading && (
-        <span className="wc-button__spinner">
+        <ButtonSpinner>
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeDasharray="31.416" strokeDashoffset="10" />
           </svg>
-        </span>
+        </ButtonSpinner>
       )}
       
       {!loading && icon && iconPosition === 'left' && (
-        <span className="wc-button__icon wc-button__icon--left">{icon}</span>
+        <ButtonIcon>{icon}</ButtonIcon>
       )}
       
-      {children && <span className="wc-button__content">{children}</span>}
+      {children && <ButtonContent>{children}</ButtonContent>}
       
       {!loading && icon && iconPosition === 'right' && (
-        <span className="wc-button__icon wc-button__icon--right">{icon}</span>
+        <ButtonIcon>{icon}</ButtonIcon>
       )}
-    </button>
+    </StyledButton>
   );
 };
 

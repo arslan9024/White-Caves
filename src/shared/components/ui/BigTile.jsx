@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronRight, ExternalLink } from 'lucide-react';
-import './BigTile.css';
+import * as S from './BigTile.styles';
 
 const BigTile = ({ 
   icon: Icon,
@@ -18,66 +18,64 @@ const BigTile = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const tileClasses = [
-    'big-tile',
-    `big-tile-${size}`,
-    isActive ? 'big-tile-active' : '',
-    isHovered ? 'big-tile-hovered' : ''
-  ].filter(Boolean).join(' ');
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div 
-      className={tileClasses}
+    <S.BigTileContainer 
+      $size={size}
+      $isActive={isActive}
+      $isHovered={isHovered}
+      $tileColor={color}
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ '--tile-color': color }}
     >
       {badge && (
-        <div className="tile-badge" style={{ backgroundColor: color }}>
+        <S.TileBadge $backgroundColor={color}>
           {badge}
-        </div>
+        </S.TileBadge>
       )}
       
-      <div className="tile-header">
-        <div 
-          className="tile-icon-container"
-          style={{ backgroundColor: `${color}15`, color: color }}
+      <S.TileHeader>
+        <S.TileIconContainer 
+          $backgroundColor={`${color}15`}
+          $color={color}
+          $size={size}
         >
           {Icon && <Icon size={size === 'large' ? 32 : size === 'small' ? 20 : 24} />}
-        </div>
+        </S.TileIconContainer>
         
-        <div className="tile-title-section">
-          <h3 className="tile-title">{title}</h3>
-          {subtitle && <span className="tile-subtitle">{subtitle}</span>}
-        </div>
-      </div>
+        <S.TileTitleSection>
+          <S.TileTitle $size={size}>{title}</S.TileTitle>
+          {subtitle && <S.TileSubtitle>{subtitle}</S.TileSubtitle>}
+        </S.TileTitleSection>
+      </S.TileHeader>
 
       {description && (
-        <p className="tile-description">{description}</p>
+        <S.TileDescription>{description}</S.TileDescription>
       )}
 
       {stats.length > 0 && (
-        <div className="tile-stats">
+        <S.TileStats>
           {stats.map((stat, index) => (
-            <div key={index} className="tile-stat">
-              <span className="stat-value" style={{ color }}>{stat.value}</span>
-              <span className="stat-label">{stat.label}</span>
-            </div>
+            <S.TileStat key={index}>
+              <S.StatValue $color={color}>{stat.value}</S.StatValue>
+              <S.StatLabel>{stat.label}</S.StatLabel>
+            </S.TileStat>
           ))}
-        </div>
+        </S.TileStats>
       )}
 
       {children && (
-        <div className="tile-content">
+        <S.TileContent>
           {children}
-        </div>
+        </S.TileContent>
       )}
 
-      <div className="tile-footer">
+      <S.TileFooter>
         {onLearnMore && (
-          <button 
-            className="tile-learn-more"
+          <S.LearnMoreButton 
+            $tileColor={color}
             onClick={(e) => {
               e.stopPropagation();
               onLearnMore();
@@ -85,19 +83,19 @@ const BigTile = ({
           >
             <span>Learn More</span>
             <ExternalLink size={14} />
-          </button>
+          </S.LearnMoreButton>
         )}
         
-        <div className="tile-arrow" style={{ color }}>
+        <S.TileArrow $tileColor={color} $isHovered={isHovered}>
           <ChevronRight size={20} />
-        </div>
-      </div>
+        </S.TileArrow>
+      </S.TileFooter>
 
-      <div 
-        className="tile-glow"
+      <S.TileGlow 
+        $isHovered={isHovered}
         style={{ background: `radial-gradient(circle at center, ${color}20 0%, transparent 70%)` }}
       />
-    </div>
+    </S.BigTileContainer>
   );
 };
 

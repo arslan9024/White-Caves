@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './ProfileCompletion.css';
+import * as S from './ProfileCompletion.styles';
 import { useToast } from './Toast';
 
 export default function ProfileCompletion({ user, token, onComplete, onSkip }) {

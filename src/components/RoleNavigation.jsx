@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useUserRole } from './RoleGateway';
-import './RoleNavigation.css';
+import * as S from './RoleNavigation.styles';
 
 const roleMenus = {
   'buyer': {

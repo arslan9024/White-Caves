@@ -207,7 +207,7 @@ export const ProgressBar = styled.div`
   overflow: hidden;
 `;
 
-export const ProgressFill = styled.div`
+export const ProgressFill = styled.div<{ width?: string | number }>`
   height: 100%;
   background: linear-gradient(90deg, #DC2626, #f97316);
   border-radius: 3px;

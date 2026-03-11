@@ -50,7 +50,7 @@ export const AIIcon = styled.div<{ animated?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: ${animated ? pulse : 'none'} 2s infinite;
+  animation: ${props => props.animated ? pulse : 'none'} 2s infinite;
 
   svg {
     width: 24px;

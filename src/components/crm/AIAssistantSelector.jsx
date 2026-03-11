@@ -21,7 +21,39 @@ import {
   toggleDropdown
 } from '../../store/slices/aiAssistantDashboardSlice';
 
-import './AIAssistantSelector.css';
+import {
+  SelectorContainer,
+  CurrentAssistantDisplay,
+  AssistantAvatar,
+  AvatarIcon,
+  AvatarStatus,
+  AssistantInfo,
+  AssistantName,
+  AssistantTitle,
+  DropdownArrow,
+  DropdownMenu,
+  DropdownSearch,
+  SearchIcon,
+  SearchInput,
+  ClearSearchBtn,
+  DepartmentFilter,
+  DeptBtn,
+  DropdownSection,
+  SectionHeader,
+  SectionCount,
+  SectionIcon,
+  AssistantItem,
+  ItemLeft,
+  ItemAvatar,
+  ItemInfo,
+  ItemName,
+  ItemTitle,
+  ItemMetrics,
+  Metric,
+  HealthBadge,
+  ItemRight,
+  FavoriteBtn
+} from './AIAssistantSelector.styles';
 
 const DEPARTMENTS = [
   { id: 'all', label: 'All Departments' },
@@ -123,74 +155,66 @@ const AIAssistantSelector = ({ onSelectAssistant, compact = false }) => {
   if (!currentAssistant) return null;
   
   return (
-    <div className={`ai-assistant-selector ${compact ? 'compact' : ''}`} ref={dropdownRef}>
-      <div 
-        className="current-assistant-display"
-        onClick={handleToggleDropdown}
-      >
-        <div className="assistant-avatar">
-          <div 
-            className="avatar-icon"
-            style={{ backgroundColor: currentAssistant.colorScheme }}
-          >
+    <SelectorContainer $compact={compact} ref={dropdownRef}>
+      <CurrentAssistantDisplay onClick={handleToggleDropdown}>
+        <AssistantAvatar>
+          <AvatarIcon style={{ backgroundColor: currentAssistant.colorScheme }}>
             {getAssistantIcon(currentAssistant.id)}
-          </div>
-          <div 
-            className="avatar-status"
+          </AvatarIcon>
+          <AvatarStatus
             style={{ 
               backgroundColor: currentAssistant.metrics.systemHealth === 'optimal' ? '#10B981' : 
                                currentAssistant.metrics.systemHealth === 'degraded' ? '#F59E0B' : '#EF4444'
             }}
           />
-        </div>
-        <div className="assistant-info">
-          <div className="assistant-name">{currentAssistant.name}</div>
-          <div className="assistant-title">{currentAssistant.title}</div>
-        </div>
-        <div className="dropdown-arrow">
+        </AssistantAvatar>
+        <AssistantInfo>
+          <AssistantName>{currentAssistant.name}</AssistantName>
+          <AssistantTitle>{currentAssistant.title}</AssistantTitle>
+        </AssistantInfo>
+        <DropdownArrow>
           {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-        </div>
-      </div>
+        </DropdownArrow>
+      </CurrentAssistantDisplay>
       
       {isOpen && (
-        <div className="assistant-dropdown-menu">
-          <div className="dropdown-search">
-            <Search className="search-icon" size={16} />
-            <input
+        <DropdownMenu>
+          <DropdownSearch>
+            <SearchIcon><Search size={16} /></SearchIcon>
+            <SearchInput
               type="text"
               placeholder="Search AI assistants..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-input"
               autoFocus
             />
             {searchTerm && (
-              <button className="clear-search" onClick={() => setSearchTerm('')}>
+              <ClearSearchBtn onClick={() => setSearchTerm('')}>
                 <X size={14} />
-              </button>
+              </ClearSearchBtn>
             )}
-          </div>
+          </DropdownSearch>
           
-          <div className="department-filter">
+          <DepartmentFilter>
             {DEPARTMENTS.map(dept => (
-              <button
+              <DeptBtn
                 key={dept.id}
-                className={`dept-btn ${selectedDepartment === dept.id ? 'active' : ''}`}
+                $active={selectedDepartment === dept.id}
                 onClick={() => handleDepartmentChange(dept.id)}
               >
                 {dept.label}
-              </button>
+              </DeptBtn>
             ))}
-          </div>
+          </DepartmentFilter>
           
           {favorites.length > 0 && !searchTerm && selectedDepartment === 'all' && (
-            <div className="dropdown-section">
-              <div className="section-header">
-                <Star className="section-icon" size={14} />
+            <DropdownSection>
+              <SectionHeader>
+                <SectionIcon><Star size={14} /></SectionIcon>
                 <span>Favorites</span>
-              </div>
+              </SectionHeader>
               {favoriteAssistants.map(assistant => (
-                <AssistantItem
+                <AssistantItemRenderer
                   key={assistant.id}
                   assistant={assistant}
                   isFavorite={true}
@@ -200,17 +224,17 @@ const AIAssistantSelector = ({ onSelectAssistant, compact = false }) => {
                   getIcon={getAssistantIcon}
                 />
               ))}
-            </div>
+            </DropdownSection>
           )}
           
           {recent.length > 0 && !searchTerm && selectedDepartment === 'all' && recentAssistants.length > 0 && (
-            <div className="dropdown-section">
-              <div className="section-header">
-                <Activity className="section-icon" size={14} />
+            <DropdownSection>
+              <SectionHeader>
+                <SectionIcon><Activity size={14} /></SectionIcon>
                 <span>Recently Used</span>
-              </div>
+              </SectionHeader>
               {recentAssistants.slice(0, 3).map(assistant => (
-                <AssistantItem
+                <AssistantItemRenderer
                   key={assistant.id}
                   assistant={assistant}
                   isFavorite={favorites.includes(assistant.id)}
@@ -220,17 +244,17 @@ const AIAssistantSelector = ({ onSelectAssistant, compact = false }) => {
                   getIcon={getAssistantIcon}
                 />
               ))}
-            </div>
+            </DropdownSection>
           )}
           
-          <div className="dropdown-section">
-            <div className="section-header">
-              <Users className="section-icon" size={14} />
+          <DropdownSection>
+            <SectionHeader>
+              <SectionIcon><Users size={14} /></SectionIcon>
               <span>{searchTerm ? 'Search Results' : 'All AI Assistants'}</span>
-              <span className="count">({searchTerm ? filteredBySearch.length : otherAssistants.length})</span>
-            </div>
+              <SectionCount>({searchTerm ? filteredBySearch.length : otherAssistants.length})</SectionCount>
+            </SectionHeader>
             {(searchTerm ? filteredBySearch : otherAssistants).map(assistant => (
-              <AssistantItem
+              <AssistantItemRenderer
                 key={assistant.id}
                 assistant={assistant}
                 isFavorite={favorites.includes(assistant.id)}
@@ -240,75 +264,49 @@ const AIAssistantSelector = ({ onSelectAssistant, compact = false }) => {
                 getIcon={getAssistantIcon}
               />
             ))}
-          </div>
-          
-          <div className="dropdown-footer">
-            <div className="quick-stats">
-              <div className="stat">
-                <TrendingUp className="stat-icon" size={14} />
-                <span>{allAssistants.length} Assistants</span>
-              </div>
-              <div className="stat">
-                <Activity className="stat-icon" size={14} />
-                <span>{allAssistants.filter(a => a.metrics.systemHealth === 'optimal').length} Active</span>
-              </div>
-              {performance?.criticalAlerts?.length > 0 && (
-                <div className="stat alert">
-                  <AlertCircle className="stat-icon" size={14} />
-                  <span>{performance.criticalAlerts.length} Alerts</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+          </DropdownSection>
+        </DropdownMenu>
       )}
-    </div>
+    </SelectorContainer>
   );
 };
 
-const AssistantItem = ({ assistant, isFavorite, isSelected, onSelect, onToggleFavorite, getIcon }) => {
+const AssistantItemRenderer = ({ assistant, isFavorite, isSelected, onSelect, onToggleFavorite, getIcon }) => {
   return (
-    <div 
-      className={`assistant-item ${isSelected ? 'selected' : ''}`}
-      onClick={onSelect}
-    >
-      <div className="item-left">
-        <div 
-          className="item-avatar"
-          style={{ backgroundColor: assistant.colorScheme }}
-        >
+    <AssistantItem $selected={isSelected} onClick={onSelect}>
+      <ItemLeft>
+        <ItemAvatar style={{ backgroundColor: assistant.colorScheme }}>
           {getIcon(assistant.id)}
-        </div>
-        <div className="item-info">
-          <div className="item-name">{assistant.name}</div>
-          <div className="item-title">{assistant.title}</div>
-          <div className="item-metrics">
-            <span className="metric">
+        </ItemAvatar>
+        <ItemInfo>
+          <ItemName>{assistant.name}</ItemName>
+          <ItemTitle>{assistant.title}</ItemTitle>
+          <ItemMetrics>
+            <Metric>
               <Activity size={10} />
               {assistant.metrics.activeUsers} users
-            </span>
-            <span className={`health-badge ${assistant.metrics.systemHealth}`}>
+            </Metric>
+            <HealthBadge $status={assistant.metrics.systemHealth}>
               {assistant.metrics.systemHealth}
-            </span>
-          </div>
-        </div>
-      </div>
-      <div className="item-right">
-        <button 
-          className={`favorite-btn ${isFavorite ? 'active' : ''}`}
+            </HealthBadge>
+          </ItemMetrics>
+        </ItemInfo>
+      </ItemLeft>
+      <ItemRight>
+        <FavoriteBtn 
           onClick={onToggleFavorite}
           title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
         >
           <Star size={14} fill={isFavorite ? 'currentColor' : 'none'} />
-        </button>
+        </FavoriteBtn>
         {assistant.quickStats && (
-          <div className="quick-stat">
-            <div className="stat-value">{assistant.quickStats.today.value}</div>
-            <div className="stat-label">{assistant.quickStats.today.label}</div>
+          <div style={{ fontSize: '11px' }}>
+            <div style={{ fontWeight: 700, color: 'var(--primary-color)' }}>{assistant.quickStats.today.value}</div>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '10px' }}>{assistant.quickStats.today.label}</div>
           </div>
         )}
-      </div>
-    </div>
+      </ItemRight>
+    </AssistantItem>
   );
 };
 

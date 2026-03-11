@@ -13,7 +13,27 @@ import {
 } from '../../../store/managingDirectorDashboardSlice';
 import { useDispatch } from 'react-redux';
 import { Search, Grid3x3, List, Download } from 'lucide-react';
-import './ClientsDashboard.css';
+import {
+  DashboardWrapper,
+  DashboardHeader,
+  DashboardTitle,
+  DashboardSubtitle,
+  ActionBtn,
+  FiltersBar,
+  SearchBox,
+  ViewToggle,
+  ViewBtn,
+  ClientsGrid,
+  ClientCard,
+  ClientAvatar,
+  ClientName,
+  ClientType,
+  ClientValue,
+  ClientStats,
+  ViewBtnSmall,
+  ClientsTableWrapper,
+  ClientsTable
+} from './ClientsDashboard.styles';
 
 const ClientsDashboard = () => {
   const dispatch = useDispatch();
@@ -32,19 +52,19 @@ const ClientsDashboard = () => {
   );
 
   return (
-    <div className="clients-dashboard">
-      <div className="dashboard-header">
+    <DashboardWrapper>
+      <DashboardHeader>
         <div>
-          <h1>👥 Active Clients</h1>
-          <p className="header-subtitle">{filteredClients.length} clients managed</p>
+          <DashboardTitle>👥 Active Clients</DashboardTitle>
+          <DashboardSubtitle>{filteredClients.length} clients managed</DashboardSubtitle>
         </div>
-        <button className="action-btn export-btn">
+        <ActionBtn $color="var(--color-green-600, #16a34a)">
           <Download size={18} /> Export
-        </button>
-      </div>
+        </ActionBtn>
+      </DashboardHeader>
 
-      <div className="filters-bar">
-        <div className="search-box">
+      <FiltersBar>
+        <SearchBox>
           <Search size={18} />
           <input
             type="text"
@@ -52,45 +72,44 @@ const ClientsDashboard = () => {
             value={searchQuery}
             onChange={e => dispatch(setSearchQuery(e.target.value))}
           />
-        </div>
-        <div className="view-toggle">
-          <button
-            className={`view-btn ${viewType === 'grid' ? 'active' : ''}`}
+        </SearchBox>
+        <ViewToggle>
+          <ViewBtn
+            $active={viewType === 'grid'}
             onClick={() => dispatch(setView('grid'))}
           >
             <Grid3x3 size={18} />
-          </button>
-          <button
-            className={`view-btn ${viewType === 'list' ? 'active' : ''}`}
+          </ViewBtn>
+          <ViewBtn
+            $active={viewType === 'list'}
             onClick={() => dispatch(setView('list'))}
           >
             <List size={18} />
-          </button>
-        </div>
-      </div>
+          </ViewBtn>
+        </ViewToggle>
+      </FiltersBar>
 
       {viewType === 'grid' ? (
-        <div className="clients-grid">
+        <ClientsGrid>
           {filteredClients.map(client => (
-            <div key={client.id} className="client-card">
-              <div
-                className="client-avatar"
+            <ClientCard key={client.id}>
+              <ClientAvatar
                 style={{ backgroundColor: client.avatar_color }}
-              ></div>
-              <h3>{client.name}</h3>
-              <p className="client-type">{client.type}</p>
-              <p className="client-value">AED {(client.total_value / 1000000).toFixed(1)}M</p>
-              <div className="client-stats">
+              ></ClientAvatar>
+              <ClientName>{client.name}</ClientName>
+              <ClientType>{client.type}</ClientType>
+              <ClientValue>AED {(client.total_value / 1000000).toFixed(1)}M</ClientValue>
+              <ClientStats>
                 <span>{client.properties_owned} Properties</span>
                 <span>{client.deals_count} Deals</span>
-              </div>
-              <button className="view-btn-small">View Details</button>
-            </div>
+              </ClientStats>
+              <ViewBtnSmall>View Details</ViewBtnSmall>
+            </ClientCard>
           ))}
-        </div>
+        </ClientsGrid>
       ) : (
-        <div className="clients-table-wrapper">
-          <table className="clients-table">
+        <ClientsTableWrapper>
+          <ClientsTable>
             <thead>
               <tr>
                 <th>Client Name</th>

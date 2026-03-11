@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import Button from '../ui/Button';
 import Flex from '../layout/Flex';
-import './DataTable.css';
+import * as S from './DataTable.styles';
 
 const DataTable = React.memo(({
   columns = [],
@@ -70,72 +70,73 @@ const DataTable = React.memo(({
 
   if (loading) {
     return (
-      <div className={`${classes} ${baseClass}--loading`}>
-        <div className={`${baseClass}__skeleton`}>
+      <S.DataTableWrapper>
+        <S.SkeletonWrapper>
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className={`${baseClass}__skeleton-row`}>
+            <S.SkeletonRow key={i}>
               {columns.map((col, j) => (
-                <div key={j} className={`${baseClass}__skeleton-cell`} />
+                <S.SkeletonCell key={j} />
               ))}
-            </div>
+            </S.SkeletonRow>
           ))}
-        </div>
-      </div>
+        </S.SkeletonWrapper>
+      </S.DataTableWrapper>
     );
   }
 
   if (!data || data.length === 0) {
     return (
-      <div className={`${baseClass}__empty`}>
+      <S.EmptyState>
         <p>{emptyMessage}</p>
-      </div>
+      </S.EmptyState>
     );
   }
 
   return (
-    <div className={classes}>
-      <div className={`${baseClass}__wrapper`}>
-        <table className={`${baseClass}__table`}>
-          <thead className={`${baseClass}__head`}>
+    <S.DataTableWrapper>
+      <S.DataTableContainer>
+        <S.StyledTable>
+          <S.TableHead>
             <tr>
               {selectable && (
-                <th className={`${baseClass}__th ${baseClass}__th--checkbox`}>
+                <S.TableHeader $width="40px">
                   <input
                     type="checkbox"
                     checked={selectedRows.length === data.length}
                     onChange={handleSelectAll}
                     aria-label="Select all rows"
                   />
-                </th>
+                </S.TableHeader>
               )}
               {columns.map((column) => (
-                <th
+                <S.TableHeader
                   key={column.key}
-                  className={`${baseClass}__th ${sortable ? `${baseClass}__th--sortable` : ''}`}
+                  $sortable={sortable}
+                  $width={column.width}
                   onClick={() => handleSort(column.key)}
-                  style={{ width: column.width }}
                 >
                   <Flex align="center" gap="small">
                     <span>{column.header}</span>
                     {sortable && sortConfig.key === column.key && (
-                      <span className={`${baseClass}__sort-icon`}>
+                      <S.SortIcon>
                         {sortConfig.direction === 'asc' ? '↑' : '↓'}
-                      </span>
+                      </S.SortIcon>
                     )}
                   </Flex>
-                </th>
+                </S.TableHeader>
               ))}
             </tr>
-          </thead>
-          <tbody className={`${baseClass}__body`}>
+          </S.TableHead>
+          <S.TableBody>
             {paginatedData.map((row) => (
-              <tr
+              <S.TableRow
                 key={row[rowKey]}
-                className={`${baseClass}__tr ${onRowClick ? `${baseClass}__tr--clickable` : ''} ${selectedRows.includes(row[rowKey]) ? `${baseClass}__tr--selected` : ''}`}
+                $clickable={!!onRowClick}
+                $selected={selectedRows.includes(row[rowKey])}
                 onClick={() => onRowClick?.(row)}
               >
                 {selectable && (
-                  <td className={`${baseClass}__td ${baseClass}__td--checkbox`}>
+                  <S.TableCell style={{ width: '40px' }}>
                     <input
                       type="checkbox"
                       checked={selectedRows.includes(row[rowKey])}
@@ -143,24 +144,24 @@ const DataTable = React.memo(({
                       onClick={(e) => e.stopPropagation()}
                       aria-label={`Select row ${row[rowKey]}`}
                     />
-                  </td>
+                  </S.TableCell>
                 )}
                 {columns.map((column) => (
-                  <td key={column.key} className={`${baseClass}__td`}>
+                  <S.TableCell key={column.key}>
                     {column.render ? column.render(row[column.key], row) : row[column.key]}
-                  </td>
+                  </S.TableCell>
                 ))}
-              </tr>
+              </S.TableRow>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </S.TableBody>
+        </S.StyledTable>
+      </S.DataTableContainer>
 
       {paginated && totalPages > 1 && (
-        <div className={`${baseClass}__pagination`}>
-          <span className={`${baseClass}__pagination-info`}>
+        <S.PaginationContainer>
+          <S.PaginationInfo>
             Page {currentPage} of {totalPages}
-          </span>
+          </S.PaginationInfo>
           <Flex gap="small">
             <Button
               variant="ghost"
@@ -179,9 +180,9 @@ const DataTable = React.memo(({
               Next
             </Button>
           </Flex>
-        </div>
+        </S.PaginationContainer>
       )}
-    </div>
+    </S.DataTableWrapper>
   );
 });
 

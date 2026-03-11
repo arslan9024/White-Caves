@@ -7,7 +7,17 @@ import {
   selectOwnersWithMultipleProperties,
   selectOwnersWithMultiplePhones
 } from '../../../store/slices/inventorySlice';
-import './DataQualityIndicators.css';
+import {
+  DataQualityIndicatorsContainer,
+  IndicatorsHeader,
+  IndicatorsGrid,
+  IndicatorCard,
+  IndicatorIcon,
+  IndicatorContent,
+  IndicatorValue,
+  IndicatorLabel,
+  IndicatorDesc
+} from './DataQualityIndicators.styles';
 
 const DataQualityIndicators = ({ onFilterClick }) => {
   const stats = useSelector(selectInventoryStats);
@@ -46,31 +56,30 @@ const DataQualityIndicators = ({ onFilterClick }) => {
   ];
 
   return (
-    <div className="data-quality-indicators">
-      <div className="indicators-header">
+    <DataQualityIndicatorsContainer>
+      <IndicatorsHeader>
         <AlertTriangle size={18} />
         <h3>Data Quality Insights</h3>
-      </div>
-      <div className="indicators-grid">
+      </IndicatorsHeader>
+      <IndicatorsGrid>
         {indicators.map(indicator => (
-          <button
+          <IndicatorCard
             key={indicator.id}
-            className="indicator-card"
+            $accentColor={indicator.color}
             onClick={() => onFilterClick?.(indicator.filterKey)}
-            style={{ '--accent-color': indicator.color }}
           >
-            <div className="indicator-icon">
+            <IndicatorIcon>
               <indicator.icon size={24} />
-            </div>
-            <div className="indicator-content">
-              <span className="indicator-value">{indicator.value.toLocaleString()}</span>
-              <span className="indicator-label">{indicator.label}</span>
-              <span className="indicator-desc">{indicator.description}</span>
-            </div>
-          </button>
+            </IndicatorIcon>
+            <IndicatorContent>
+              <IndicatorValue>{indicator.value.toLocaleString()}</IndicatorValue>
+              <IndicatorLabel>{indicator.label}</IndicatorLabel>
+              <IndicatorDesc>{indicator.description}</IndicatorDesc>
+            </IndicatorContent>
+          </IndicatorCard>
         ))}
-      </div>
-    </div>
+      </IndicatorsGrid>
+    </DataQualityIndicatorsContainer>
   );
 };
 
