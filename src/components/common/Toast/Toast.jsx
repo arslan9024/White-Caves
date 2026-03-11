@@ -13,7 +13,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Check, AlertCircle, AlertTriangle, Info, X } from 'lucide-react';
-import { removeNotification } from '../../store/slices/notificationSlice';
+import { removeNotification } from '../../../store/slices/notificationSlice';
 import {
   ToastContainer,
   ToastWrapper,
