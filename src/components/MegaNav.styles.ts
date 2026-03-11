@@ -7,13 +7,12 @@ export const MegaNavHeader = styled.header`
   left: 0;
   right: 0;
   z-index: 1000;
-  background: ${({ theme }) => theme?.glassBackground || 'rgba(255, 255, 255, 0.7)'};
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid ${({ theme }) => theme?.glassBorder || 'rgba(0, 0, 0, 0.1)'};
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   
-  /* Dark theme support */
   [data-theme='dark'] & {
     background: rgba(0, 0, 0, 0.6);
     border-bottom-color: rgba(255, 255, 255, 0.1);
@@ -113,12 +112,12 @@ export const HamburgerIcon = styled.span<{ $open?: boolean }>`
     display: block;
     width: 100%;
     height: 2px;
-    background: ${({ theme }) => theme?.textColor || '#333'};
+    background: #333;
     border-radius: 2px;
     transition: all 0.3s ease;
     
     [data-theme='dark'] & {
-      background: ${({ theme }) => theme?.darkTextColor || '#fff'};
+      background: #fff;
     }
   }
   
@@ -153,7 +152,7 @@ export const MegaNavMenu = styled.div<{ $mobileOpen?: boolean }>`
     bottom: 0;
     flex-direction: column;
     align-items: stretch;
-    background: ${({ theme }) => theme?.backgroundColor || '#fff'};
+    background: #fff;
     padding: 1rem;
     transform: translateX(${({ $mobileOpen }) => ($mobileOpen ? 0 : 100)}%);
     transition: transform 0.3s ease;
@@ -161,7 +160,7 @@ export const MegaNavMenu = styled.div<{ $mobileOpen?: boolean }>`
     z-index: 999;
     
     [data-theme='dark'] & {
-      background: ${({ theme }) => theme?.darkBackgroundColor || '#1a1a2e'};
+      background: #1a1a2e;
     }
   }
 `;
@@ -187,7 +186,7 @@ export const MegaNavItem = styled.li<{ $isSimple?: boolean }>`
   position: relative;
   
   @media (max-width: 768px) {
-    border-bottom: 1px solid ${({ theme }) => theme?.borderColor || '#e0e0e0'};
+    border-bottom: 1px solid #e0e0e0;
     
     [data-theme='dark'] & {
       border-bottom-color: rgba(255, 255, 255, 0.1);
@@ -203,26 +202,26 @@ export const MegaNavTrigger = styled.button`
   padding: 0.625rem 1rem;
   font-size: 0.9375rem;
   font-weight: 500;
-  color: ${({ theme }) => theme?.textColor || '#333'};
+  color: #333;
   background: transparent;
   border: none;
-  border-radius: ${({ theme }) => theme?.radiusMd || '8px'};
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
   white-space: nowrap;
   
   [data-theme='dark'] & {
-    color: ${({ theme }) => theme?.darkTextColor || '#fff'};
+    color: #fff;
   }
   
   &:hover {
-    background: ${({ theme }) => theme?.backgroundColor || '#f5f5f5'};
-    color: ${({ theme }) => theme?.primaryColor || '#c41835'};
+    background: #f5f5f5;
+    color: #c41835;
     
     [data-theme='dark'] & {
       background: rgba(255, 255, 255, 0.08);
-      color: ${({ theme }) => theme?.darkPrimaryColor || '#ff6b6b'};
+      color: #ff6b6b;
     }
   }
   
@@ -241,26 +240,26 @@ export const MegaNavLink = styled(Link)`
   padding: 0.625rem 1rem;
   font-size: 0.9375rem;
   font-weight: 500;
-  color: ${({ theme }) => theme?.textColor || '#333'};
+  color: #333;
   background: transparent;
   border: none;
-  border-radius: ${({ theme }) => theme?.radiusMd || '8px'};
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
   white-space: nowrap;
   
   [data-theme='dark'] & {
-    color: ${({ theme }) => theme?.darkTextColor || '#fff'};
+    color: #fff;
   }
   
   &:hover {
-    background: ${({ theme }) => theme?.backgroundColor || '#f5f5f5'};
-    color: ${({ theme }) => theme?.primaryColor || '#c41835'};
+    background: #f5f5f5;
+    color: #c41835;
     
     [data-theme='dark'] & {
       background: rgba(255, 255, 255, 0.08);
-      color: ${({ theme }) => theme?.darkPrimaryColor || '#ff6b6b'};
+      color: #ff6b6b;
     }
   }
   
@@ -307,17 +306,17 @@ export const MegaDropdown = styled.div<{ $active?: boolean }>`
 `;
 
 export const MegaDropdownContent = styled.div`
-  background: ${({ theme }) => theme?.backgroundColor || '#fff'};
-  border-radius: ${({ theme }) => theme?.radiusLg || '12px'};
+  background: #fff;
+  border-radius: 12px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  border: 1px solid ${({ theme }) => theme?.borderColor || '#e0e0e0'};
+  border: 1px solid #e0e0e0;
   display: grid;
   grid-template-columns: 1.5fr repeat(3, 1fr) 1fr;
   min-width: 800px;
   overflow: hidden;
   
   [data-theme='dark'] & {
-    background: ${({ theme }) => theme?.darkSecondaryBackground || '#2a2a3e'};
+    background: #2a2a3e;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     border-color: rgba(255, 255, 255, 0.1);
   }
@@ -344,7 +343,7 @@ export const MegaCol = styled.div`
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: ${({ theme }) => theme?.textMuted || '#999'};
+    color: #999;
     margin-bottom: 1rem;
     margin-top: 0;
     
@@ -355,17 +354,17 @@ export const MegaCol = styled.div`
 `;
 
 export const MegaFeatured = styled(MegaCol)`
-  background: ${({ theme }) => theme?.backgroundColor || '#f9f9f9'};
-  border-right: 1px solid ${({ theme }) => theme?.borderColor || '#e0e0e0'};
+  background: #f9f9f9;
+  border-right: 1px solid #e0e0e0;
   
   [data-theme='dark'] & {
-    background: ${({ theme }) => theme?.darkTertiaryBackground || '#3a3a4e'};
+    background: #3a3a4e;
     border-right-color: rgba(255, 255, 255, 0.1);
   }
   
   @media (max-width: 768px) {
     border-right: none;
-    border-bottom: 1px solid ${({ theme }) => theme?.borderColor || '#e0e0e0'};
+    border-bottom: 1px solid #e0e0e0;
     
     [data-theme='dark'] & {
       border-bottom-color: rgba(255, 255, 255, 0.1);
@@ -384,16 +383,16 @@ export const FeaturedItem = styled.a`
   align-items: flex-start;
   gap: 0.75rem;
   padding: 0.75rem;
-  border-radius: ${({ theme }) => theme?.radiusMd || '8px'};
+  border-radius: 8px;
   text-decoration: none;
   transition: all 0.2s ease;
   cursor: pointer;
   
   &:hover {
-    background: ${({ theme }) => theme?.backgroundColor || '#fff'};
+    background: #fff;
     
     [data-theme='dark'] & {
-      background: ${({ theme }) => theme?.darkSecondaryBackground || '#2a2a3e'};
+      background: #2a2a3e;
     }
   }
 `;
@@ -405,12 +404,12 @@ export const FeaturedIcon = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${({ theme }) => theme?.backgroundColor || '#fff'};
-  border-radius: ${({ theme }) => theme?.radiusMd || '8px'};
+  background: #fff;
+  border-radius: 8px;
   flex-shrink: 0;
   
   [data-theme='dark'] & {
-    background: ${({ theme }) => theme?.darkSecondaryBackground || '#2a2a3e'};
+    background: #2a2a3e;
   }
 `;
 
@@ -423,16 +422,16 @@ export const FeaturedText = styled.div`
 export const FeaturedTitle = styled.span`
   font-size: 0.9375rem;
   font-weight: 600;
-  color: ${({ theme }) => theme?.textColor || '#333'};
+  color: #333;
   
   [data-theme='dark'] & {
-    color: ${({ theme }) => theme?.darkTextColor || '#fff'};
+    color: #fff;
   }
 `;
 
 export const FeaturedDesc = styled.span`
   font-size: 0.8125rem;
-  color: ${({ theme }) => theme?.textMuted || '#999'};
+  color: #999;
   
   [data-theme='dark'] & {
     color: rgba(255, 255, 255, 0.6);
@@ -451,9 +450,9 @@ export const MegaLinks = styled.ul`
       display: block;
       padding: 0.5rem 0.75rem;
       font-size: 0.9375rem;
-      color: ${({ theme }) => theme?.textSecondary || '#666'};
+      color: #666;
       text-decoration: none;
-      border-radius: ${({ theme }) => theme?.radiusSm || '6px'};
+      border-radius: 6px;
       transition: all 0.2s ease;
       
       [data-theme='dark'] & {
@@ -461,13 +460,13 @@ export const MegaLinks = styled.ul`
       }
       
       &:hover {
-        background: ${({ theme }) => theme?.backgroundColor || '#f5f5f5'};
-        color: ${({ theme }) => theme?.primaryColor || '#c41835'};
+        background: #f5f5f5;
+        color: #c41835;
         padding-left: 1rem;
         
         [data-theme='dark'] & {
           background: rgba(255, 255, 255, 0.08);
-          color: ${({ theme }) => theme?.darkPrimaryColor || '#ff6b6b'};
+          color: #ff6b6b;
         }
       }
     }
@@ -475,7 +474,7 @@ export const MegaLinks = styled.ul`
 `;
 
 export const MegaCTA = styled.div`
-  background: linear-gradient(135deg, ${({ theme }) => theme?.primaryColor || '#c41835'} 0%, ${({ theme }) => theme?.primaryDark || '#8b0d2e'} 100%);
+  background: linear-gradient(135deg, #c41835 0%, #8b0d2e 100%);
   padding: 1.5rem;
   display: flex;
   align-items: center;
@@ -507,9 +506,9 @@ export const MegaCTAContent = styled.div`
   
   a {
     background: white;
-    color: ${({ theme }) => theme?.primaryColor || '#c41835'};
+    color: #c41835;
     padding: 0.75rem 1.5rem;
-    border-radius: ${({ theme }) => theme?.radiusMd || '8px'};
+    border-radius: 8px;
     text-decoration: none;
     font-weight: 600;
     font-size: 0.9375rem;
@@ -519,7 +518,7 @@ export const MegaCTAContent = styled.div`
     cursor: pointer;
     
     &:hover {
-      background: ${({ theme }) => theme?.backgroundColor || '#f5f5f5'};
+      background: #f5f5f5;
       transform: translateY(-2px);
     }
   }
@@ -535,7 +534,7 @@ export const MegaNavActions = styled.div`
   @media (max-width: 768px) {
     margin: 1rem 0 0;
     padding-top: 1rem;
-    border-top: 1px solid ${({ theme }) => theme?.borderColor || '#e0e0e0'};
+    border-top: 1px solid #e0e0e0;
     justify-content: center;
     width: 100%;
     
