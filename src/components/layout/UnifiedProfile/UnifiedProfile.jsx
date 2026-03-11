@@ -1,7 +1,34 @@
 import React, { useState } from 'react';
 import { User, Settings, HelpCircle, LogOut, ChevronDown, Bell } from 'lucide-react';
 import { useProfile } from '../../../contexts/ProfileContext';
-import './UnifiedProfile.css';
+import {
+  UnifiedProfileContainer,
+  UnifiedProfileMain,
+  UnifiedProfileAvatar,
+  NotificationBadge,
+  UnifiedProfileInfo,
+  UnifiedProfileName,
+  UnifiedProfileEmail,
+  UnifiedProfileRole,
+  UnifiedProfileTrigger,
+  Chevron,
+  UnifiedProfileStats,
+  UnifiedProfileStat,
+  StatValue,
+  StatLabel,
+  UnifiedProfileActions,
+  UnifiedProfileAction,
+  UnifiedProfileDropdown,
+  DropdownHeader,
+  DropdownInfo,
+  DropdownDivider,
+  DropdownMenu,
+  DropdownItem,
+  DropdownBadge,
+  UnifiedProfileSkeleton,
+  SkeletonAvatar,
+  SkeletonText,
+} from './styles';
 
 const UnifiedProfile = ({ 
   variant = 'sidebar',
@@ -48,12 +75,12 @@ const UnifiedProfile = ({
 
   if (loading) {
     return (
-      <div className={`unified-profile unified-profile--${variant} unified-profile--loading`}>
-        <div className="unified-profile-skeleton">
-          <div className="skeleton-avatar" />
-          {config.showName && <div className="skeleton-text" />}
-        </div>
-      </div>
+      <UnifiedProfileContainer $variant={variant}>
+        <UnifiedProfileSkeleton>
+          <SkeletonAvatar />
+          {config.showName && <SkeletonText />}
+        </UnifiedProfileSkeleton>
+      </UnifiedProfileContainer>
     );
   }
 
@@ -63,128 +90,129 @@ const UnifiedProfile = ({
   const photoURL = userProfile?.photoURL;
 
   return (
-    <div className={`unified-profile unified-profile--${variant}`}>
-      <div className="unified-profile-main">
-        <div className={`unified-profile-avatar unified-profile-avatar--${config.avatarSize}`}>
+    <UnifiedProfileContainer $variant={variant}>
+      <UnifiedProfileMain>
+        <UnifiedProfileAvatar $size={config.avatarSize}>
           {photoURL ? (
             <img src={photoURL} alt={displayName} />
           ) : (
             <span>{displayName.charAt(0).toUpperCase()}</span>
           )}
           {unreadCount > 0 && variant === 'navbar' && (
-            <span className="unified-profile-notification-badge">{unreadCount}</span>
+            <NotificationBadge>{unreadCount}</NotificationBadge>
           )}
-        </div>
+        </UnifiedProfileAvatar>
         
         {config.showName && (
-          <div className="unified-profile-info">
-            <h3 className="unified-profile-name">{displayName}</h3>
+          <UnifiedProfileInfo>
+            <UnifiedProfileName>{displayName}</UnifiedProfileName>
             {config.showEmail && (
-              <p className="unified-profile-email">{email}</p>
+              <UnifiedProfileEmail>{email}</UnifiedProfileEmail>
             )}
             {config.showRole && (
-              <span className="unified-profile-role">{role}</span>
+              <UnifiedProfileRole>{role}</UnifiedProfileRole>
             )}
-          </div>
+          </UnifiedProfileInfo>
         )}
         
         {config.dropdown && (
-          <button 
-            className="unified-profile-trigger"
+          <UnifiedProfileTrigger 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-expanded={isMenuOpen}
           >
-            <div className={`unified-profile-avatar unified-profile-avatar--${config.avatarSize}`}>
+            <UnifiedProfileAvatar $size={config.avatarSize}>
               {photoURL ? (
                 <img src={photoURL} alt={displayName} />
               ) : (
                 <User size={16} />
               )}
-            </div>
-            <ChevronDown size={14} className={`chevron ${isMenuOpen ? 'chevron--open' : ''}`} />
-          </button>
+            </UnifiedProfileAvatar>
+            <Chevron $open={isMenuOpen}>
+              <ChevronDown size={14} />
+            </Chevron>
+          </UnifiedProfileTrigger>
         )}
-      </div>
+      </UnifiedProfileMain>
       
       {config.showStats && (
-        <div className="unified-profile-stats">
-          <div className="unified-profile-stat">
-            <span className="unified-profile-stat-value">12</span>
-            <span className="unified-profile-stat-label">Listings</span>
-          </div>
-          <div className="unified-profile-stat">
-            <span className="unified-profile-stat-value">8</span>
-            <span className="unified-profile-stat-label">Active</span>
-          </div>
-          <div className="unified-profile-stat">
-            <span className="unified-profile-stat-value">4</span>
-            <span className="unified-profile-stat-label">Pending</span>
-          </div>
-        </div>
+        <UnifiedProfileStats>
+          <UnifiedProfileStat>
+            <StatValue>12</StatValue>
+            <StatLabel>Listings</StatLabel>
+          </UnifiedProfileStat>
+          <UnifiedProfileStat>
+            <StatValue>8</StatValue>
+            <StatLabel>Active</StatLabel>
+          </UnifiedProfileStat>
+          <UnifiedProfileStat>
+            <StatValue>4</StatValue>
+            <StatLabel>Pending</StatLabel>
+          </UnifiedProfileStat>
+        </UnifiedProfileStats>
       )}
       
       {config.expanded && (
-        <div className="unified-profile-actions">
-          <button className="unified-profile-action" onClick={onSettingsClick}>
+        <UnifiedProfileActions>
+          <UnifiedProfileAction onClick={onSettingsClick}>
             <Settings size={16} />
             <span>Settings</span>
-          </button>
-          <button className="unified-profile-action" onClick={onHelpClick}>
+          </UnifiedProfileAction>
+          <UnifiedProfileAction onClick={onHelpClick}>
             <HelpCircle size={16} />
             <span>Help & Support</span>
-          </button>
-          <button className="unified-profile-action unified-profile-action--danger" onClick={onLogout}>
+          </UnifiedProfileAction>
+          <UnifiedProfileAction $danger onClick={onLogout}>
             <LogOut size={16} />
             <span>Sign Out</span>
-          </button>
-        </div>
+          </UnifiedProfileAction>
+        </UnifiedProfileActions>
       )}
       
       {config.dropdown && isMenuOpen && (
-        <div className="unified-profile-dropdown">
-          <div className="unified-profile-dropdown-header">
-            <div className="unified-profile-avatar unified-profile-avatar--md">
+        <UnifiedProfileDropdown>
+          <DropdownHeader>
+            <UnifiedProfileAvatar $size="md">
               {photoURL ? (
                 <img src={photoURL} alt={displayName} />
               ) : (
                 <span>{displayName.charAt(0).toUpperCase()}</span>
               )}
-            </div>
-            <div className="unified-profile-dropdown-info">
-              <span className="unified-profile-name">{displayName}</span>
-              <span className="unified-profile-email">{email}</span>
-            </div>
-          </div>
+            </UnifiedProfileAvatar>
+            <DropdownInfo>
+              <UnifiedProfileName>{displayName}</UnifiedProfileName>
+              <UnifiedProfileEmail>{email}</UnifiedProfileEmail>
+            </DropdownInfo>
+          </DropdownHeader>
           
-          <div className="unified-profile-dropdown-divider" />
+          <DropdownDivider />
           
-          <div className="unified-profile-dropdown-menu">
-            <button className="unified-profile-dropdown-item" onClick={onSettingsClick}>
+          <DropdownMenu>
+            <DropdownItem onClick={onSettingsClick}>
               <Settings size={16} />
               <span>Account Settings</span>
-            </button>
-            <button className="unified-profile-dropdown-item">
+            </DropdownItem>
+            <DropdownItem>
               <Bell size={16} />
               <span>Notifications</span>
               {unreadCount > 0 && (
-                <span className="unified-profile-dropdown-badge">{unreadCount}</span>
+                <DropdownBadge>{unreadCount}</DropdownBadge>
               )}
-            </button>
-            <button className="unified-profile-dropdown-item" onClick={onHelpClick}>
+            </DropdownItem>
+            <DropdownItem onClick={onHelpClick}>
               <HelpCircle size={16} />
               <span>Help & Support</span>
-            </button>
-          </div>
+            </DropdownItem>
+          </DropdownMenu>
           
-          <div className="unified-profile-dropdown-divider" />
+          <DropdownDivider />
           
-          <button className="unified-profile-dropdown-item unified-profile-dropdown-item--danger" onClick={onLogout}>
+          <DropdownItem $danger onClick={onLogout}>
             <LogOut size={16} />
             <span>Sign Out</span>
-          </button>
-        </div>
+          </DropdownItem>
+        </UnifiedProfileDropdown>
       )}
-    </div>
+    </UnifiedProfileContainer>
   );
 };
 
