@@ -5,7 +5,22 @@
 
 import React from 'react';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import './EnhancedStatCard.css';
+import {
+  StatCardWrapper,
+  StatCardHeader,
+  StatCardLabel,
+  TrendIcon,
+  StatCardValue,
+  StatValue,
+  StatUnit,
+  StatCardFooter,
+  Sparkline,
+  SparklinePath,
+  SparklineFill,
+  StatCardComparison,
+  ChangeValue,
+  ComparisonText
+} from './EnhancedStatCard.styles';
 
 const EnhancedStatCard = ({
   label = 'Metric',
@@ -23,11 +38,11 @@ const EnhancedStatCard = ({
   const getTrendIcon = () => {
     switch (trend) {
       case 'up':
-        return <TrendingUp size={20} className="trend-icon up" />;
+        return <TrendingUp size={20} />;
       case 'down':
-        return <TrendingDown size={20} className="trend-icon down" />;
+        return <TrendingDown size={20} />;
       default:
-        return <Minus size={20} className="trend-icon stable" />;
+        return <Minus size={20} />;
     }
   };
 
@@ -64,49 +79,46 @@ const EnhancedStatCard = ({
     }).join(' ');
 
     return (
-      <svg width={width} height={height} className="sparkline" viewBox={`0 0 ${width} ${height}`}>
-        <polyline points={pathPoints} className="sparkline-path" />
-        <polyline points={pathPoints} className="sparkline-fill" />
-      </svg>
+      <Sparkline width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+        <SparklinePath points={pathPoints} />
+        <SparklineFill points={pathPoints} />
+      </Sparkline>
     );
   };
 
   return (
-    <div
-      className="enhanced-stat-card"
-      style={{
-        backgroundColor,
-        borderLeftColor: color,
-        cursor: onClick ? 'pointer' : 'default'
-      }}
+    <StatCardWrapper
+      backgroundColor={backgroundColor}
+      borderColor={color}
+      isClickable={!!onClick}
       onClick={onClick}
       title={label}
     >
-      <div className="stat-card-header">
-        <div className="stat-card-label">
+      <StatCardHeader>
+        <StatCardLabel>
           {Icon && <Icon size={16} style={{ color, marginRight: '8px' }} />}
           <span>{label}</span>
-        </div>
-        {getTrendIcon()}
-      </div>
+        </StatCardLabel>
+        <TrendIcon as={trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus} trendType={trend} size={20} />
+      </StatCardHeader>
 
-      <div className="stat-card-value">
-        <span className="value" style={{ color }}>
+      <StatCardValue>
+        <StatValue style={{ color }}>
           {value}
-        </span>
-        {unit && <span className="unit">{unit}</span>}
-      </div>
+        </StatValue>
+        {unit && <StatUnit>{unit}</StatUnit>}
+      </StatCardValue>
 
-      <div className="stat-card-footer">
+      <StatCardFooter>
         {sparklineData.length > 0 && renderSparkline()}
-        <div className="stat-card-comparison">
-          <span className="change" style={{ color: getTrendColor() }}>
+        <StatCardComparison>
+          <ChangeValue style={{ color: getTrendColor() }}>
             {change}
-          </span>
-          <span className="comparison-text">{comparison}</span>
-        </div>
-      </div>
-    </div>
+          </ChangeValue>
+          <ComparisonText>{comparison}</ComparisonText>
+        </StatCardComparison>
+      </StatCardFooter>
+    </StatCardWrapper>
   );
 };
 

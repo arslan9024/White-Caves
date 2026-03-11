@@ -1,5 +1,36 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import './DubaiMap.css';
+import {
+  DubaiMapContainer,
+  MapHeader,
+  MapTitle,
+  MapSubtitle,
+  MapFilters,
+  FilterButton,
+  MapWrapper,
+  MapBackground,
+  DubaiBaseMap,
+  InteractiveMapOverlay,
+  MapSVG,
+  MapInfoWindow,
+  InfoHeader,
+  InfoTitle,
+  AreaType,
+  InfoProperties,
+  PropertyPreview,
+  PropertyImage,
+  PreviewInfo,
+  PreviewTitle,
+  PreviewPrice,
+  PreviewDetails,
+  NoProperties,
+  ViewAllButton,
+  CloseButton,
+  MapLegend,
+  LegendTitle,
+  LegendItems,
+  LegendItem,
+  LegendDot,
+} from './DubaiMap.styles';
 
 const DubaiMap = ({ properties = [], onPropertySelect }) => {
   const [selectedMarker, setSelectedMarker] = useState(null);
@@ -58,50 +89,52 @@ const DubaiMap = ({ properties = [], onPropertySelect }) => {
   }, []);
 
   return (
-    <div className="dubai-map-container">
-      <div className="map-header">
-        <h2>Explore Dubai Properties</h2>
-        <p>Interactive map with all our listed properties across Dubai</p>
-      </div>
+    <DubaiMapContainer>
+      <MapHeader>
+        <MapTitle>Explore Dubai Properties</MapTitle>
+        <MapSubtitle>Interactive map with all our listed properties across Dubai</MapSubtitle>
+      </MapHeader>
 
-      <div className="map-filters">
-        <button 
-          className={`filter-btn ${activeFilter === 'all' ? 'active' : ''}`}
+      <MapFilters>
+        <FilterButton 
+          isActive={activeFilter === 'all'}
           onClick={() => setActiveFilter('all')}
         >
           All Properties
-        </button>
-        <button 
-          className={`filter-btn residential ${activeFilter === 'residential' ? 'active' : ''}`}
+        </FilterButton>
+        <FilterButton 
+          isActive={activeFilter === 'residential'}
+          variant="residential"
           onClick={() => setActiveFilter('residential')}
         >
           Residential
-        </button>
-        <button 
-          className={`filter-btn commercial ${activeFilter === 'commercial' ? 'active' : ''}`}
+        </FilterButton>
+        <FilterButton 
+          isActive={activeFilter === 'commercial'}
+          variant="commercial"
           onClick={() => setActiveFilter('commercial')}
         >
           Commercial
-        </button>
-        <button 
-          className={`filter-btn luxury ${activeFilter === 'luxury' ? 'active' : ''}`}
+        </FilterButton>
+        <FilterButton 
+          isActive={activeFilter === 'luxury'}
+          variant="luxury"
           onClick={() => setActiveFilter('luxury')}
         >
           Luxury
-        </button>
-      </div>
+        </FilterButton>
+      </MapFilters>
 
-      <div className="map-wrapper">
-        <div className="map-background">
-          <img 
+      <MapWrapper>
+        <MapBackground>
+          <DubaiBaseMap 
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Dubai_location.svg/1200px-Dubai_location.svg.png"
             alt="Dubai Map"
-            className="dubai-base-map"
             style={{ opacity: 0.15 }}
           />
           
-          <div className="interactive-map-overlay">
-            <svg viewBox="0 0 800 600" className="map-svg">
+          <InteractiveMapOverlay>
+            <MapSVG viewBox="0 0 800 600">
               <g className="map-markers">
                 {filteredAreas.map((area) => {
                   const x = ((area.lng - 54.9) / (55.5 - 54.9)) * 800;
@@ -111,7 +144,10 @@ const DubaiMap = ({ properties = [], onPropertySelect }) => {
                   return (
                     <g 
                       key={area.id}
-                      className={`marker-group ${selectedMarker?.id === area.id ? 'active' : ''}`}
+                      style={{
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s ease',
+                      }}
                       onClick={() => handleMarkerClick(area)}
                     >
                       <circle
@@ -120,14 +156,18 @@ const DubaiMap = ({ properties = [], onPropertySelect }) => {
                         r={properties.length > 0 ? 12 + properties.length * 3 : 8}
                         fill={getMarkerColor(area.type)}
                         opacity={0.2}
-                        className="marker-pulse"
+                        style={{
+                          animation: 'pulse 2s infinite',
+                        }}
                       />
                       <circle
                         cx={x}
                         cy={y}
                         r={properties.length > 0 ? 8 + properties.length * 2 : 6}
                         fill={getMarkerColor(area.type)}
-                        className="marker-dot"
+                        style={{
+                          transition: 'all 0.2s ease',
+                        }}
                       />
                       {properties.length > 0 && (
                         <text
@@ -148,7 +188,10 @@ const DubaiMap = ({ properties = [], onPropertySelect }) => {
                         fill="#1a365d"
                         fontSize="11"
                         fontWeight="600"
-                        className="marker-label"
+                        style={{
+                          pointerEvents: 'none',
+                          textShadow: '1px 1px 2px white, -1px -1px 2px white',
+                        }}
                       >
                         {area.name}
                       </text>
@@ -156,77 +199,61 @@ const DubaiMap = ({ properties = [], onPropertySelect }) => {
                   );
                 })}
               </g>
-            </svg>
-          </div>
-        </div>
+            </MapSVG>
+          </InteractiveMapOverlay>
+        </MapBackground>
 
         {selectedMarker && (
-          <div className="map-info-window">
-            <button className="close-info" onClick={closeInfoWindow}>x</button>
-            <div className="info-header">
-              <h4>{selectedMarker.name}</h4>
-              <span className={`area-type ${selectedMarker.type}`}>{selectedMarker.type}</span>
-            </div>
-            <div className="info-properties">
+          <MapInfoWindow>
+            <CloseButton onClick={closeInfoWindow}>×</CloseButton>
+            <InfoHeader>
+              <InfoTitle>{selectedMarker.name}</InfoTitle>
+              <AreaType type={selectedMarker.type}>{selectedMarker.type}</AreaType>
+            </InfoHeader>
+            <InfoProperties>
               {getPropertiesForArea(selectedMarker.id).length > 0 ? (
                 getPropertiesForArea(selectedMarker.id).map(property => (
-                  <div 
-                    key={property.id} 
-                    className="property-preview"
+                  <PropertyPreview 
+                    key={property.id}
                     onClick={() => onPropertySelect && onPropertySelect(property)}
                   >
-                    <img src={property.image} alt={property.title} />
-                    <div className="preview-info">
-                      <h5>{property.title}</h5>
-                      <p className="preview-price">AED {property.price.toLocaleString()}</p>
-                      {property.beds > 0 && <span>{property.beds} Beds</span>}
-                    </div>
-                  </div>
+                    <PropertyImage src={property.image} alt={property.title} />
+                    <PreviewInfo>
+                      <PreviewTitle>{property.title}</PreviewTitle>
+                      <PreviewPrice>AED {property.price.toLocaleString()}</PreviewPrice>
+                      {property.beds > 0 && <PreviewDetails>{property.beds} Beds</PreviewDetails>}
+                    </PreviewInfo>
+                  </PropertyPreview>
                 ))
               ) : (
-                <p className="no-properties">No properties currently listed in this area.</p>
+                <NoProperties>No properties currently listed in this area.</NoProperties>
               )}
-            </div>
-            <button className="view-all-btn">
+            </InfoProperties>
+            <ViewAllButton>
               View All in {selectedMarker.name}
-            </button>
-          </div>
+            </ViewAllButton>
+          </MapInfoWindow>
         )}
-      </div>
+      </MapWrapper>
 
-      <div className="map-legend">
-        <h4>Map Legend</h4>
-        <div className="legend-items">
-          <div className="legend-item">
-            <span className="legend-dot residential"></span>
+      <MapLegend>
+        <LegendTitle>Map Legend</LegendTitle>
+        <LegendItems>
+          <LegendItem>
+            <LegendDot color="#38a169" />
             <span>Residential</span>
-          </div>
-          <div className="legend-item">
-            <span className="legend-dot commercial"></span>
+          </LegendItem>
+          <LegendItem>
+            <LegendDot color="#1a365d" />
             <span>Commercial</span>
-          </div>
-          <div className="legend-item">
-            <span className="legend-dot luxury"></span>
+          </LegendItem>
+          <LegendItem>
+            <LegendDot color="#c53030" />
             <span>Luxury</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="map-stats">
-        <div className="stat-item">
-          <span className="stat-number">{sampleProperties.length}</span>
-          <span className="stat-label">Total Properties</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-number">{dubaiAreas.length}</span>
-          <span className="stat-label">Areas Covered</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-number">{sampleProperties.filter(p => p.type === 'luxury').length}</span>
-          <span className="stat-label">Luxury Listings</span>
-        </div>
-      </div>
-    </div>
+          </LegendItem>
+        </LegendItems>
+      </MapLegend>
+    </DubaiMapContainer>
   );
 };
 

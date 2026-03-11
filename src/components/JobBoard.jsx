@@ -1,6 +1,33 @@
 
 import React, { useState, useEffect } from 'react';
-import './JobBoard.css';
+import {
+  JobBoardContainer,
+  BoardTitle,
+  JobsList,
+  JobCard,
+  JobTitle,
+  JobDescription,
+  JobDetails,
+  DetailBadge,
+  SubmitButton,
+  ApplicationForm,
+  FormSelect,
+  FormInput,
+  FormTextarea,
+  FormSubmitButton,
+  FormGroup,
+  FormLabel,
+  ErrorMessage,
+  SuccessMessage,
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateTitle,
+  EmptyStateDescription,
+  FilterBar,
+  FilterButton,
+  SortDropdown,
+  JobCount,
+} from './JobBoard.styles';
 
 export default function JobBoard() {
   const [jobs, setJobs] = useState([]);

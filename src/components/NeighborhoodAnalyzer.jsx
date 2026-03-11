@@ -1,5 +1,33 @@
 import React, { useState } from 'react';
-import './NeighborhoodAnalyzer.css';
+import {
+  NeighborhoodAnalyzerContainer,
+  AnalyzerHeader,
+  AnalyzerTitle,
+  AnalyzerSubtitle,
+  AreaSelector,
+  AreaButton,
+  AnalyzerContent,
+  AreaHero,
+  HeroOverlay,
+  HeroContent,
+  HeroTitle,
+  HeroDescription,
+  HeroBadges,
+  Badge,
+  MetricsGrid,
+  MetricCard,
+  MetricLabel,
+  MetricValue,
+  InsightsSection,
+  InsightsTitle,
+  InsightsList,
+  InsightItem,
+  RisksSection,
+  RisksTitle,
+  RisksList,
+  RiskItem,
+  SectionDivider,
+} from './NeighborhoodAnalyzer.styles';
 
 const NeighborhoodAnalyzer = () => {
   const [selectedArea, setSelectedArea] = useState('dubai-marina');

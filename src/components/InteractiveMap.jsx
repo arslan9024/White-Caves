@@ -1,6 +1,31 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import './InteractiveMap.css';
+import {
+  InteractiveMapContainer,
+  MapHeader,
+  MapTitle,
+  MapSubtitle,
+  MapVisualContainer,
+  DubaiMapVisual,
+  MapBackground,
+  DubaiOutlineSVG,
+  LocationMarkers,
+  LocationMarker,
+  MarkerCount,
+  SidePanel,
+  LocationList,
+  LocationItem,
+  LocationName,
+  PropertyCount,
+  PropertiesGrid,
+  PropertyCard,
+  PropertyImage,
+  PropertyInfo,
+  PropertyTitle,
+  PropertyPrice,
+  PropertyDetails,
+  DetailBadge,
+} from './InteractiveMap.styles';
 
 const dubaiCoordinates = {
   'Palm Jumeirah': { lat: 25.1124, lng: 55.1390 },
@@ -58,16 +83,16 @@ const InteractiveMap = ({ onPropertySelect }) => {
   };
 
   return (
-    <div className="interactive-map-container">
-      <div className="map-header">
-        <h2>Explore Properties by Location</h2>
-        <p>{filteredProperties.length} properties across {locations.length} areas in Dubai</p>
-      </div>
+    <InteractiveMapContainer>
+      <MapHeader>
+        <MapTitle>Explore Properties by Location</MapTitle>
+        <MapSubtitle>{filteredProperties.length} properties across {locations.length} areas in Dubai</MapSubtitle>
+      </MapHeader>
 
-      <div className="map-visual-container">
-        <div className="dubai-map-visual">
-          <div className="map-background">
-            <svg viewBox="0 0 800 500" className="dubai-outline">
+      <MapVisualContainer>
+        <DubaiMapVisual>
+          <MapBackground>
+            <DubaiOutlineSVG viewBox="0 0 800 500">
               <defs>
                 <linearGradient id="waterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" style={{stopColor:'#a8d4e6', stopOpacity:0.6}} />
@@ -83,9 +108,9 @@ const InteractiveMap = ({ onPropertySelect }) => {
               <path d="M150,200 L180,180 L200,190 L220,175 L200,200 L180,210 Z" fill="#f0e8d8" stroke="#d4c4a8" strokeWidth="1" />
               <ellipse cx="200" cy="210" rx="40" ry="25" fill="#c8e0f0" opacity="0.5" />
               <path d="M350,180 L380,165 L400,175 L380,195 Z" fill="#f0e8d8" stroke="#d4c4a8" strokeWidth="1" />
-            </svg>
+            </DubaiOutlineSVG>
             
-            <div className="location-markers">
+            <LocationMarkers>
               {locations.map((location) => {
                 const coords = dubaiCoordinates[location] || defaultCoords;
                 
@@ -94,107 +119,98 @@ const InteractiveMap = ({ onPropertySelect }) => {
                 const propertyCount = propertiesByLocation[location].length;
                 
                 return (
-                  <button
+                  <LocationMarker
                     key={location}
-                    className={`location-marker ${selectedLocation === location ? 'active' : ''}`}
+                    isActive={selectedLocation === location}
                     style={{ left: `${Math.min(Math.max(x, 5), 95)}%`, top: `${Math.min(Math.max(y, 10), 85)}%` }}
                     onClick={() => handleLocationClick(location)}
                   >
-                    <span className="marker-count">{propertyCount}</span>
-                    <span className="marker-label">{location}</span>
-                  </button>
+                    <MarkerCount>{propertyCount}</MarkerCount>
+                  </LocationMarker>
                 );
               })}
-            </div>
-          </div>
-        </div>
+            </LocationMarkers>
+          </MapBackground>
+        </DubaiMapVisual>
 
-        <div className="location-list-panel">
-          <h3>Dubai Areas</h3>
-          <div className="location-list">
+        <SidePanel>
+          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: '600' }}>Dubai Areas</h3>
+          <LocationList>
             {locations.map((location) => {
               const properties = propertiesByLocation[location];
               const avgPrice = properties.reduce((sum, p) => sum + p.price, 0) / properties.length;
               
               return (
-                <button
+                <LocationItem
                   key={location}
-                  className={`location-list-item ${selectedLocation === location ? 'active' : ''}`}
+                  isSelected={selectedLocation === location}
                   onClick={() => handleLocationClick(location)}
                 >
-                  <div className="location-info">
-                    <h4>{location}</h4>
-                    <p>{properties.length} {properties.length === 1 ? 'property' : 'properties'}</p>
-                  </div>
-                  <div className="location-avg-price">
-                    <span>Avg. {formatPrice(avgPrice)}</span>
-                  </div>
-                </button>
+                  <LocationName>{location}</LocationName>
+                  <PropertyCount>{properties.length} {properties.length === 1 ? 'property' : 'properties'}</PropertyCount>
+                  <DetailBadge>Avg. {formatPrice(avgPrice)}</DetailBadge>
+                </LocationItem>
               );
             })}
-          </div>
-        </div>
-      </div>
+          </LocationList>
+        </SidePanel>
+      </MapVisualContainer>
 
       {selectedLocation && (
-        <div className="selected-location-properties">
-          <div className="section-header">
-            <h3>Properties in {selectedLocation}</h3>
-            <span>{propertiesByLocation[selectedLocation].length} listings</span>
+        <div style={{ marginTop: '2rem' }}>
+          <div style={{ marginBottom: '2rem' }}>
+            <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.2rem', fontWeight: '600' }}>Properties in {selectedLocation}</h3>
+            <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{propertiesByLocation[selectedLocation].length} listings</span>
           </div>
-          <div className="property-cards-grid">
+          <PropertiesGrid>
             {propertiesByLocation[selectedLocation].map((property) => (
-              <div 
+              <PropertyCard 
                 key={property.id}
-                className={`map-property-card-full ${selectedProperty?.id === property.id ? 'selected' : ''}`}
                 onClick={() => handlePropertyClick(property)}
               >
-                <div 
-                  className="card-image"
-                  style={{ backgroundImage: `url(${property.images?.[0] || ''})` }}
-                >
-                  <span className="property-type-badge">{property.type}</span>
-                </div>
-                <div className="card-content">
-                  <h4>{property.title}</h4>
-                  <div className="property-specs">
-                    <span>{property.beds} Beds</span>
-                    <span>{property.baths} Baths</span>
-                    <span>{property.sqft?.toLocaleString()} sqft</span>
-                  </div>
-                  <div className="property-price">{formatPrice(property.price)}</div>
-                </div>
-              </div>
+                <PropertyImage 
+                  src={property.images?.[0] || 'https://via.placeholder.com/300x200'}
+                  alt={property.title}
+                />
+                <PropertyInfo>
+                  <PropertyTitle>{property.title}</PropertyTitle>
+                  <PropertyDetails>
+                    {property.beds && <DetailBadge>{property.beds} Beds</DetailBadge>}
+                    {property.baths && <DetailBadge>{property.baths} Baths</DetailBadge>}
+                    {property.sqft && <DetailBadge>{property.sqft.toLocaleString()} sqft</DetailBadge>}
+                  </PropertyDetails>
+                  <PropertyPrice>{formatPrice(property.price)}</PropertyPrice>
+                </PropertyInfo>
+              </PropertyCard>
             ))}
-          </div>
+          </PropertiesGrid>
         </div>
       )}
 
       {!selectedLocation && filteredProperties.length > 0 && (
-        <div className="featured-properties-section">
-          <h3>Featured Properties</h3>
-          <div className="map-property-list">
+        <div style={{ marginTop: '2rem' }}>
+          <h3 style={{ margin: '0 0 1.5rem 0', fontSize: '1.2rem', fontWeight: '600' }}>Featured Properties</h3>
+          <PropertiesGrid>
             {filteredProperties.slice(0, 6).map((property) => (
-              <div 
+              <PropertyCard 
                 key={property.id}
-                className="map-property-card"
                 onClick={() => handlePropertyClick(property)}
               >
-                <div 
-                  className="map-property-image"
-                  style={{ backgroundImage: `url(${property.images?.[0] || ''})` }}
+                <PropertyImage 
+                  src={property.images?.[0] || 'https://via.placeholder.com/300x200'}
+                  alt={property.title}
                 />
-                <div className="map-property-info">
-                  <h5>{property.title?.substring(0, 35)}...</h5>
-                  <p>{property.location}</p>
-                  <span className="map-property-price">{formatPrice(property.price)}</span>
-                </div>
-              </div>
+                <PropertyInfo>
+                  <PropertyTitle>{property.title?.substring(0, 35)}...</PropertyTitle>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{property.location}</span>
+                  <PropertyPrice>{formatPrice(property.price)}</PropertyPrice>
+                </PropertyInfo>
+              </PropertyCard>
             ))}
-          </div>
+          </PropertiesGrid>
         </div>
       )}
-    </div>
+    </InteractiveMapContainer>
   );
 };
 
