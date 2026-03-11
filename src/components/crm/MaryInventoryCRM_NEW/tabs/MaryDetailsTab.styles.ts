@@ -1,0 +1,574 @@
+import styled from 'styled-components';
+
+export const MaryDetailsTabContainer = styled.div`
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  [data-theme='dark'] & {
+  }
+`;
+
+export const TabHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  background: var(--bg-secondary, #f9fafb);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  [data-theme='dark'] & {
+    background: var(--bg-secondary, #2a2a3e);
+    border-color: var(--border-color, #3a3a5a);
+  }
+`;
+
+export const HeaderContent = styled.div`
+  flex: 1;
+
+  h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary, #1f2937);
+
+    [data-theme='dark'] & {
+      color: white;
+    }
+  }
+`;
+
+export const HeaderSubtitle = styled.p`
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: var(--text-secondary, #6b7280);
+
+  [data-theme='dark'] & {
+    color: var(--text-secondary, #a0a0a0);
+  }
+`;
+
+export const DetailsViewTabs = styled.div`
+  display: flex;
+  gap: 8px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  overflow-x: auto;
+
+  [data-theme='dark'] & {
+    background: var(--bg-primary, #1a1a2e);
+    border-color: var(--border-color, #3a3a5a);
+  }
+`;
+
+export const ViewTab = styled.button<{ $isActive: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  color: var(--text-secondary);
+
+  &:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+
+  ${props =>
+    props.$isActive &&
+    `
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--primary);
+  `}
+
+  [data-theme='dark'] & {
+    color: var(--text-secondary, #a0a0a0);
+
+    &:hover {
+      background: var(--bg-secondary, #2a2a3e);
+      color: white;
+    }
+
+    ${props =>
+      props.$isActive &&
+      `
+      background: var(--bg-secondary, #2a2a3e);
+      color: white;
+      border-color: var(--primary, #dc2626);
+    `}
+  }
+`;
+
+export const DetailsViewContent = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+
+    &:hover {
+      background: var(--text-muted);
+    }
+  }
+
+  [data-theme='dark'] & {
+  }
+`;
+
+export const GuideSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  [data-theme='dark'] & {
+  }
+`;
+
+export const InfoCard = styled.div`
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  border-left: 4px solid #3b82f6;
+
+  h4 {
+    margin: 0 0 8px 0;
+    color: var(--text-primary);
+    font-size: 15px;
+    font-weight: 600;
+
+    [data-theme='dark'] & {
+      color: white;
+    }
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+
+    [data-theme='dark'] & {
+      color: var(--text-secondary, #a0a0a0);
+    }
+  }
+
+  svg {
+    flex-shrink: 0;
+    color: #3b82f6;
+    margin-top: 2px;
+  }
+
+  [data-theme='dark'] & {
+    background: var(--bg-secondary, #2a2a3e);
+    border-color: var(--border-color, #3a3a5a);
+  }
+`;
+
+export const GuideContent = styled.div`
+  h4 {
+    margin: 0 0 12px 0;
+    color: var(--text-primary);
+    font-size: 15px;
+    font-weight: 600;
+
+    &.mt-6 {
+      margin-top: 24px;
+    }
+
+    [data-theme='dark'] & {
+      color: white;
+    }
+  }
+`;
+
+export const GuideList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  li {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+    padding-left: 24px;
+    position: relative;
+
+    &::before {
+      content: '•';
+      position: absolute;
+      left: 8px;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    strong {
+      color: var(--text-primary);
+      font-weight: 600;
+
+      [data-theme='dark'] & {
+        color: white;
+      }
+    }
+
+    [data-theme='dark'] & {
+      color: var(--text-secondary, #a0a0a0);
+    }
+  }
+
+  [data-theme='dark'] & {
+  }
+`;
+
+export const SelectedPropertySection = styled.div`
+  [data-theme='dark'] & {
+  }
+`;
+
+export const PropertyDetails = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+
+  [data-theme='dark'] & {
+  }
+`;
+
+export const DetailGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    [data-theme='dark'] & {
+      color: var(--text-muted, #808080);
+    }
+  }
+
+  > div,
+  > p {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+
+    [data-theme='dark'] & {
+      color: white;
+    }
+  }
+
+  [data-theme='dark'] & {
+    background: var(--bg-secondary, #2a2a3e);
+    border-color: var(--border-color, #3a3a5a);
+  }
+`;
+
+export const StatusBadge = styled.span`
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+
+  [data-theme='dark'] & {
+    background: rgba(34, 197, 94, 0.2);
+  }
+`;
+
+export const OwnersList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  li {
+    color: var(--text-secondary);
+    font-size: 14px;
+    padding-left: 16px;
+    position: relative;
+
+    &::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+    }
+
+    [data-theme='dark'] & {
+      color: var(--text-secondary, #a0a0a0);
+    }
+  }
+
+  [data-theme='dark'] & {
+  }
+`;
+
+export const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+
+  svg {
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    width: 48px;
+    height: 48px;
+  }
+
+  h4 {
+    margin: 0 0 8px 0;
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 600;
+
+    [data-theme='dark'] & {
+      color: white;
+    }
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+    max-width: 400px;
+
+    [data-theme='dark'] & {
+      color: var(--text-secondary, #a0a0a0);
+    }
+  }
+
+  [data-theme='dark'] & {
+  }
+`;
+
+export const MatrixSection = styled.div`
+  [data-theme='dark'] & {
+  }
+`;
+
+export const MatrixInfo = styled.div`
+  padding: 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-bottom: 20px;
+
+  p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+
+    [data-theme='dark'] & {
+      color: var(--text-secondary, #a0a0a0);
+    }
+  }
+
+  [data-theme='dark'] & {
+    background: var(--bg-secondary, #2a2a3e);
+    border-color: var(--border-color, #3a3a5a);
+  }
+`;
+
+export const ClustersContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  [data-theme='dark'] & {
+  }
+`;
+
+export const ClusterBlock = styled.div`
+  [data-theme='dark'] & {
+  }
+`;
+
+export const ClusterTitle = styled.h4`
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+
+  [data-theme='dark'] & {
+    color: white;
+  }
+`;
+
+export const PropertiesGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+
+  [data-theme='dark'] & {
+  }
+`;
+
+export const PropertyCard = styled.div<{ $isSelected: boolean }>`
+  padding: 12px;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  ${props =>
+    props.$isSelected &&
+    `
+    border-color: var(--primary);
+    background: rgba(var(--primary-rgb, 196, 30, 58), 0.05);
+  `}
+
+  &:hover {
+    border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  [data-theme='dark'] & {
+    background: var(--bg-secondary, #2a2a3e);
+    border-color: var(--border-color, #3a3a5a);
+
+    &:hover {
+      border-color: var(--primary, #dc2626);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    ${props =>
+      props.$isSelected &&
+      `
+      border-color: var(--primary, #dc2626);
+      background: rgba(220, 38, 38, 0.1);
+    `}
+  }
+`;
+
+export const CardHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  gap: 8px;
+
+  [data-theme='dark'] & {
+  }
+`;
+
+export const PNumber = styled.span`
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+
+  [data-theme='dark'] & {
+    color: white;
+  }
+`;
+
+export const CardBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+
+  p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+
+    &.card-project {
+      font-weight: 500;
+      color: var(--text-primary);
+
+      [data-theme='dark'] & {
+        color: white;
+      }
+    }
+
+    [data-theme='dark'] & {
+      color: var(--text-secondary, #a0a0a0);
+    }
+  }
+
+  [data-theme='dark'] & {
+  }
+`;
+
+export const CardFooter = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
+  font-size: 12px;
+  color: var(--text-muted);
+
+  [data-theme='dark'] & {
+    color: var(--text-muted, #808080);
+    border-color: var(--border-color, #3a3a5a);
+  }
+`;
+
+export const EmptyMatrix = styled.div`
+  padding: 40px;
+  text-align: center;
+  color: var(--text-muted);
+
+  p {
+    margin: 0;
+    font-size: 14px;
+
+    [data-theme='dark'] & {
+      color: var(--text-muted, #808080);
+    }
+  }
+
+  [data-theme='dark'] & {
+  }
+`;
