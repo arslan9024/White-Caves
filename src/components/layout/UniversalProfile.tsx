@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, FC } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from '../../store/userSlice';
@@ -26,11 +26,22 @@ import {
   ProfileArrowDark,
 } from './UniversalProfile/styles';
 
-export default function UniversalProfile({ variant = 'default', showSignIn = true }) {
+interface UniversalProfileProps {
+  variant?: 'default' | 'compact';
+  showSignIn?: boolean;
+}
+
+interface RoleInfo {
+  label: string;
+  icon: string;
+  color: string;
+}
+
+const UniversalProfile: FC<UniversalProfileProps> = ({ variant = 'default', showSignIn = true }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const user = useSelector(state => state.user.currentUser);
-  const { activeRole, theme } = useSelector(state => state.navigation);
+  const user = useSelector((state: any) => state.user?.currentUser);
+  const { activeRole, theme } = useSelector((state: any) => state.navigation);
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
@@ -38,11 +49,11 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
   };
   
   const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setMenuOpen(false);
       }
     }
@@ -50,7 +61,7 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const getInitials = (name, email) => {
+  const getInitials = (name?: string, email?: string): string => {
     if (name) {
       return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
     }
@@ -60,8 +71,8 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
     return '?';
   };
 
-  const getRoleInfo = (role) => {
-    const roles = {
+  const getRoleInfo = (role?: string | null): RoleInfo | null => {
+    const roles: Record<string, RoleInfo> = {
       'buyer': { label: 'Buyer', icon: '🏠', color: '#3b82f6' },
       'seller': { label: 'Seller', icon: '💰', color: '#10b981' },
       'landlord': { label: 'Landlord', icon: '🔑', color: '#8b5cf6' },
@@ -70,7 +81,7 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
       'secondary-sales-agent': { label: 'Sales Agent', icon: '🏢', color: '#ef4444' },
       'owner': { label: 'Owner', icon: '👑', color: '#ffd700' },
     };
-    return roles[role] || null;
+    return role ? (roles[role] || null) : null;
   };
 
   const handleLogout = async () => {
@@ -109,14 +120,14 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
         className={variant === 'compact' ? 'compact' : ''}
       >
         <ProfileAvatar>
-          {user.photoURL || user.photo ? (
+          {user.photoURL || (user as any).photo ? (
             <AvatarImg 
-              src={user.photoURL || user.photo} 
-              alt={user.displayName || user.name || 'User'} 
+              src={user.photoURL || (user as any).photo} 
+              alt={user.displayName || (user as any).name || 'User'} 
             />
           ) : (
             <AvatarInitials>
-              {getInitials(user.displayName || user.name, user.email)}
+              {getInitials(user.displayName || (user as any).name, user.email || '')}
             </AvatarInitials>
           )}
         </ProfileAvatar>
@@ -129,19 +140,19 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
         <ProfileDropdown>
           <ProfileDropdownHeader>
             <ProfileAvatar $large>
-              {user.photoURL || user.photo ? (
+              {user.photoURL || (user as any).photo ? (
                 <AvatarImg 
-                  src={user.photoURL || user.photo} 
-                  alt={user.displayName || user.name || 'User'} 
+                  src={user.photoURL || (user as any).photo} 
+                  alt={user.displayName || (user as any).name || 'User'} 
                 />
               ) : (
                 <AvatarInitials $large>
-                  {getInitials(user.displayName || user.name, user.email)}
+                  {getInitials(user.displayName || (user as any).name, user.email || '')}
                 </AvatarInitials>
               )}
             </ProfileAvatar>
             <ProfileInfo>
-              <ProfileName>{user.displayName || user.name || 'User'}</ProfileName>
+              <ProfileName>{user.displayName || (user as any).name || 'User'}</ProfileName>
               <ProfileEmail>{user.email}</ProfileEmail>
               {roleInfo && (
                 <ProfileRole style={{ color: roleInfo.color }}>
@@ -199,4 +210,6 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
       )}
     </UniversalProfileContainer>
   );
-}
+};
+
+export default UniversalProfile;

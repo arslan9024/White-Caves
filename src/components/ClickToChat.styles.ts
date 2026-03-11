@@ -102,7 +102,7 @@ export const ChatHeaderTitle = styled.h4`
   font-weight: 600;
 `;
 
-export const OnlineStatus = styled.div<{ online?: boolean }>`
+export const OnlineStatus = styled.div<{ $isOnline?: boolean }>`
   font-size: 0.75rem;
   opacity: 0.9;
   display: flex;
@@ -113,7 +113,7 @@ export const OnlineStatus = styled.div<{ online?: boolean }>`
     content: '';
     width: 8px;
     height: 8px;
-    background: ${props => props.online ? '#90EE90' : '#ffa500'};
+    background: ${props => props.$isOnline ? '#90EE90' : '#ffa500'};
     border-radius: 50%;
     display: inline-block;
   }
@@ -262,9 +262,9 @@ export const ContactAppsContainer = styled.div`
   margin-top: 12px;
 `;
 
-export const ChatAppBtn = styled.button<{ color?: string }>`
+export const ChatAppBtn = styled.button<{ $appColor?: string }>`
   padding: 10px;
-  background: ${props => props.color || '#25D366'};
+  background: ${props => props.$appColor || '#25D366'};
   border: none;
   border-radius: 8px;
   color: white;

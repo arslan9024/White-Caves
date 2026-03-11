@@ -1,10 +1,10 @@
 import { useState, useCallback } from 'react';
 import { ERROR_MESSAGES } from '../utils/errorMessages';
 
-export const useFormValidation = (initialValues = {}, validationRules = {}) => {
-  const [values, setValues] = useState(initialValues);
-  const [errors, setErrors] = useState({});
-  const [touched, setTouched] = useState({});
+export const useFormValidation = <T extends Record<string, any> = Record<string, any>>(initialValues: T = {} as T, validationRules: any = {}) => {
+  const [values, setValues] = useState<T>(initialValues);
+  const [errors, setErrors] = useState<Record<string, string | null>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const validateField = useCallback(
     (name, value) => {

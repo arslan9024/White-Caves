@@ -176,31 +176,31 @@ export const BlogFilters = styled.div`
   flex-wrap: wrap;
 `;
 
-export const FilterBtn = styled.button<{ active?: boolean }>`
+export const FilterBtn = styled.button<{ $isActive?: boolean }>`
   padding: 10px 24px;
-  background: ${props => props.active ? 'var(--primary, #c9a962)' : 'var(--surface-alt, #f5f5f7)'};
+  background: ${props => props.$isActive ? 'var(--primary, #c9a962)' : 'var(--surface-alt, #f5f5f7)'};
   border: none;
   border-radius: 25px;
-  color: ${props => props.active ? 'white' : 'var(--text-secondary, #6b7280)'};
+  color: ${props => props.$isActive ? 'white' : 'var(--text-secondary, #6b7280)'};
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 
   @media (prefers-color-scheme: dark) {
-    background: ${props => props.active 
+    background: ${props => props.$isActive 
       ? 'var(--primary, #c9a962)' 
       : 'rgba(255, 255, 255, 0.05)'};
-    color: ${props => props.active ? 'black' : 'rgba(255, 255, 255, 0.7)'};
+    color: ${props => props.$isActive ? 'black' : 'rgba(255, 255, 255, 0.7)'};
   }
 
   &:hover {
-    background: ${props => props.active 
+    background: ${props => props.$isActive 
       ? '#b08d4a' 
       : 'var(--surface-hover, #e5e5e7)'};
 
     @media (prefers-color-scheme: dark) {
-      background: ${props => props.active 
+      background: ${props => props.$isActive 
         ? '#b08d4a' 
         : 'rgba(255, 255, 255, 0.1)'};
     }

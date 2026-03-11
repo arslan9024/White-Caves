@@ -356,10 +356,10 @@ export const LegendItem = styled.div`
   font-size: 0.875rem;
 `;
 
-export const LegendDot = styled.div<{ color: string }>`
+export const LegendDot = styled.div<{ $color: string }>`
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: ${props => props.color};
+  background: ${props => props.$color};
   flex-shrink: 0;
 `;
