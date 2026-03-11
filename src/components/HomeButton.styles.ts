@@ -76,6 +76,61 @@ export const HomeButtonContainer = styled.button<{ variant?: 'default' | 'primar
     ${props => props.variant === 'icon-only' && 'display: none;'}
   }
 
+  /* Light mode theme support */
+  [data-theme='light'] & {
+    background: ${props => {
+      switch (props.variant) {
+        case 'primary':
+          return 'linear-gradient(135deg, #D4AF37, #B8860B)';
+        case 'minimal':
+          return 'transparent';
+        case 'icon-only':
+          return 'rgba(0, 0, 0, 0.05)';
+        default:
+          return 'rgba(0, 0, 0, 0.05)';
+      }
+    }};
+    border-color: ${props => {
+      switch (props.variant) {
+        case 'primary': return 'none';
+        case 'minimal': return 'none';
+        case 'icon-only': return 'rgba(0, 0, 0, 0.1)';
+        default: return 'rgba(0, 0, 0, 0.1)';
+      }
+    }};
+    color: ${props => {
+      switch (props.variant) {
+        case 'primary': return '#0a0a0f';
+        case 'minimal': return '#666';
+        default: return '#333';
+      }
+    }};
+
+    &:hover {
+      ${props => {
+        switch (props.variant) {
+          case 'primary':
+            return `
+              transform: translateY(-2px);
+              box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+              color: #0a0a0f;
+            `;
+          case 'minimal':
+            return `
+              background: rgba(0, 0, 0, 0.05);
+              color: #B8860B;
+            `;
+          default:
+            return `
+              background: rgba(212, 175, 55, 0.1);
+              border-color: #B8860B;
+              color: #B8860B;
+            `;
+        }
+      }}
+    }
+  }
+
   @media (max-width: 768px) {
     padding: ${props => {
       switch (props.variant) {

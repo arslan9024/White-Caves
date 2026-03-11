@@ -1,5 +1,17 @@
 import React from 'react';
-import './FeaturedAgents.css';
+import {
+  StyledFeaturedAgentsSection,
+  StyledAgentsTitle,
+  StyledAgentsGrid,
+  StyledAgentCard,
+  StyledAgentPhoto,
+  StyledAgentName,
+  StyledSpecialization,
+  StyledExperience,
+  StyledLanguagesContainer,
+  StyledLanguageTag,
+  StyledContactAgentButton,
+} from './FeaturedAgents.styles';
 
 export default function FeaturedAgents() {
   const agents = [
@@ -27,24 +39,24 @@ export default function FeaturedAgents() {
   ];
 
   return (
-    <section className="featured-agents">
-      <h2>Meet Our Expert Agents</h2>
-      <div className="agents-grid">
+    <StyledFeaturedAgentsSection>
+      <StyledAgentsTitle>Meet Our Expert Agents</StyledAgentsTitle>
+      <StyledAgentsGrid>
         {agents.map((agent, index) => (
-          <div key={index} className="agent-card">
-            <img src={agent.photo} alt={agent.name} className="agent-photo" />
-            <h3>{agent.name}</h3>
-            <p className="specialization">{agent.specialization}</p>
-            <p className="experience">{agent.experience} experience</p>
-            <div className="languages">
+          <StyledAgentCard key={index}>
+            <StyledAgentPhoto src={agent.photo} alt={agent.name} />
+            <StyledAgentName>{agent.name}</StyledAgentName>
+            <StyledSpecialization>{agent.specialization}</StyledSpecialization>
+            <StyledExperience>{agent.experience} experience</StyledExperience>
+            <StyledLanguagesContainer>
               {agent.languages.map(lang => (
-                <span key={lang} className="language-tag">{lang}</span>
+                <StyledLanguageTag key={lang}>{lang}</StyledLanguageTag>
               ))}
-            </div>
-            <button className="contact-agent">Contact Agent</button>
-          </div>
+            </StyledLanguagesContainer>
+            <StyledContactAgentButton>Contact Agent</StyledContactAgentButton>
+          </StyledAgentCard>
         ))}
-      </div>
-    </section>
+      </StyledAgentsGrid>
+    </StyledFeaturedAgentsSection>
   );
 }

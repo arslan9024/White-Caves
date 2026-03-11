@@ -1,6 +1,24 @@
 
 import React, { useState, useEffect } from 'react';
-import './JobApplicants.css';
+import {
+  StyledJobApplicants,
+  StyledJobTitle,
+  StyledFilters,
+  StyledFilterButton,
+  StyledApplicationsGrid,
+  StyledApplicationCard,
+  StyledApplicationHeader,
+  StyledStatusBadge,
+  StyledApplicationDetails,
+  StyledApplicationActions,
+  StyledDownloadResume,
+  StyledQuickActions,
+  StyledReviewBtn,
+  StyledAcceptBtn,
+  StyledRejectBtn,
+  StyledDetailModal,
+  StyledDetailModalContent,
+} from './JobApplicants.styles';
 
 export default function JobApplicants() {
   const [applications, setApplications] = useState([]);
@@ -66,130 +84,135 @@ export default function JobApplicants() {
   };
 
   return (
-    <div className="job-applicants">
-      <h2>Job Applications</h2>
+    <StyledJobApplicants>
+      <StyledJobTitle>Job Applications</StyledJobTitle>
       
-      <div className="filters">
-        <button 
+      <StyledFilters>
+        <StyledFilterButton 
           className={filter === 'all' ? 'active' : ''}
           onClick={() => setFilter('all')}
         >
           All ({applications.length})
-        </button>
-        <button 
+        </StyledFilterButton>
+        <StyledFilterButton 
           className={filter === 'PENDING' ? 'active' : ''}
           onClick={() => setFilter('PENDING')}
         >
           Pending ({applications.filter(a => a.status === 'PENDING').length})
-        </button>
-        <button 
+        </StyledFilterButton>
+        <StyledFilterButton 
           className={filter === 'REVIEWING' ? 'active' : ''}
           onClick={() => setFilter('REVIEWING')}
         >
           Reviewing ({applications.filter(a => a.status === 'REVIEWING').length})
-        </button>
-        <button 
+        </StyledFilterButton>
+        <StyledFilterButton 
           className={filter === 'ACCEPTED' ? 'active' : ''}
           onClick={() => setFilter('ACCEPTED')}
         >
           Accepted ({applications.filter(a => a.status === 'ACCEPTED').length})
-        </button>
-        <button 
+        </StyledFilterButton>
+        <StyledFilterButton 
           className={filter === 'REJECTED' ? 'active' : ''}
           onClick={() => setFilter('REJECTED')}
         >
           Rejected ({applications.filter(a => a.status === 'REJECTED').length})
-        </button>
-      </div>
+        </StyledFilterButton>
+      </StyledFilters>
 
-      <div className="applications-grid">
+      <StyledApplicationsGrid>
         {filteredApplications.map(application => (
-          <div key={application._id} className="application-card">
-            <div className="application-header">
+          <StyledApplicationCard key={application._id}>
+            <StyledApplicationHeader>
               <h3>{application.applicantName}</h3>
-              <span 
-                className="status-badge" 
-                style={{ backgroundColor: getStatusColor(application.status) }}
-              >
+              <StyledStatusBadge backgroundColor={getStatusColor(application.status)}>
                 {application.status}
-              </span>
-            </div>
+              </StyledStatusBadge>
+            </StyledApplicationHeader>
             
-            <div className="application-details">
+            <StyledApplicationDetails>
               <p><strong>Role:</strong> {getRoleName(application.role)}</p>
               <p><strong>Experience:</strong> {application.experience} years</p>
               <p><strong>Languages:</strong> {application.languages}</p>
               <p><strong>Licenses:</strong> {application.licenses}</p>
               <p><strong>Work Location:</strong> {application.workLocation}</p>
               <p><strong>Applied:</strong> {new Date(application.createdAt).toLocaleDateString()}</p>
-            </div>
+            </StyledApplicationDetails>
 
-            <div className="application-actions">
+            <StyledApplicationActions>
               <button onClick={() => setSelectedApplication(application)}>
                 View Details
               </button>
               {application.resume && (
-                <a 
+                <StyledDownloadResume 
                   href={application.resume} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="download-resume"
                 >
                   Download Resume
-                </a>
+                </StyledDownloadResume>
               )}
-            </div>
+            </StyledApplicationActions>
 
             {application.status === 'PENDING' && (
-              <div className="quick-actions">
-                <button 
-                  className="review-btn"
+              <StyledQuickActions>
+                <StyledReviewBtn
                   onClick={() => updateApplicationStatus(application._id, 'REVIEWING')}
                 >
                   Start Review
-                </button>
-                <button 
-                  className="accept-btn"
+                </StyledReviewBtn>
+                <StyledAcceptBtn
                   onClick={() => updateApplicationStatus(application._id, 'ACCEPTED')}
                 >
                   Accept
-                </button>
-                <button 
-                  className="reject-btn"
+                </StyledAcceptBtn>
+                <StyledRejectBtn
                   onClick={() => updateApplicationStatus(application._id, 'REJECTED')}
                 >
                   Reject
-                </button>
-              </div>
+                </StyledRejectBtn>
+              </StyledQuickActions>
             )}
 
             {application.status === 'REVIEWING' && (
-              <div className="quick-actions">
-                <button 
-                  className="accept-btn"
+              <StyledQuickActions>
+                <StyledAcceptBtn
                   onClick={() => updateApplicationStatus(application._id, 'ACCEPTED')}
                 >
                   Accept
-                </button>
-                <button 
-                  className="reject-btn"
+                </StyledAcceptBtn>
+                <StyledRejectBtn
                   onClick={() => updateApplicationStatus(application._id, 'REJECTED')}
                 >
                   Reject
-                </button>
-              </div>
+                </StyledRejectBtn>
+              </StyledQuickActions>
             )}
-          </div>
+          </StyledApplicationCard>
         ))}
-      </div>
+      </StyledApplicationsGrid>
 
       {selectedApplication && (
-        <div className="application-modal" onClick={() => setSelectedApplication(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <StyledDetailModal onClick={() => setSelectedApplication(null)}>
+          <StyledDetailModalContent onClick={(e) => e.stopPropagation()}>
             <h2>Application Details</h2>
-            <button className="close-modal" onClick={() => setSelectedApplication(null)}>×</button>
+            <button 
+              style={{
+                position: 'absolute',
+                top: '1rem',
+                right: '1rem',
+                background: 'none',
+                border: 'none',
+                fontSize: '2rem',
+                cursor: 'pointer',
+                color: 'inherit'
+              }}
+              onClick={() => setSelectedApplication(null)}
+            >
+              ×
+            </button>
             
-            <div className="modal-body">
+            <div style={{ marginTop: '1.5rem' }}>
               <p><strong>Applicant:</strong> {selectedApplication.applicantName}</p>
               <p><strong>Email:</strong> {selectedApplication.applicantEmail}</p>
               <p><strong>Role:</strong> {getRoleName(selectedApplication.role)}</p>
@@ -201,15 +224,15 @@ export default function JobApplicants() {
               <p><strong>Applied On:</strong> {new Date(selectedApplication.createdAt).toLocaleString()}</p>
               
               {selectedApplication.coverLetter && (
-                <div className="cover-letter">
+                <div style={{ marginTop: '1.5rem' }}>
                   <h3>Cover Letter</h3>
                   <p>{selectedApplication.coverLetter}</p>
                 </div>
               )}
             </div>
-          </div>
-        </div>
+          </StyledDetailModalContent>
+        </StyledDetailModal>
       )}
-    </div>
+    </StyledJobApplicants>
   );
 }

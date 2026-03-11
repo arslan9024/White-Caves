@@ -3,7 +3,15 @@ import { useToast } from './Toast';
 import { useFormValidation } from '../hooks/useFormValidation';
 import { apiClient } from '../utils/apiClient';
 import FormField from './FormField';
-import './ExampleErrorHandling.css';
+import {
+  StyledExampleErrorHandling,
+  StyledErrorTitle,
+  StyledErrorDescription,
+  StyledTestSection,
+  StyledButtonGroup,
+  StyledButton,
+  StyledInfoBox,
+} from './ExampleErrorHandling.styles';
 
 const ExampleErrorHandling = () => {
   const toast = useToast();
@@ -84,29 +92,29 @@ const ExampleErrorHandling = () => {
   };
 
   return (
-    <div className="example-error-handling">
-      <h2>Error Handling Examples</h2>
-      <p>This page demonstrates the error handling system</p>
+    <StyledExampleErrorHandling>
+      <StyledErrorTitle>Error Handling Examples</StyledErrorTitle>
+      <StyledErrorDescription>This page demonstrates the error handling system</StyledErrorDescription>
 
-      <section className="test-section">
+      <StyledTestSection>
         <h3>Toast Notifications</h3>
-        <div className="button-group">
-          <button onClick={testSuccessToast} className="btn btn-success">
+        <StyledButtonGroup>
+          <StyledButton variant="success" onClick={testSuccessToast}>
             Success Toast
-          </button>
-          <button onClick={testNetworkError} className="btn btn-error">
+          </StyledButton>
+          <StyledButton variant="error" onClick={testNetworkError}>
             Error Toast
-          </button>
-          <button onClick={testWarningToast} className="btn btn-warning">
+          </StyledButton>
+          <StyledButton variant="warning" onClick={testWarningToast}>
             Warning Toast
-          </button>
-          <button onClick={testInfoToast} className="btn btn-info">
+          </StyledButton>
+          <StyledButton variant="info" onClick={testInfoToast}>
             Info Toast
-          </button>
-        </div>
-      </section>
+          </StyledButton>
+        </StyledButtonGroup>
+      </StyledTestSection>
 
-      <section className="test-section">
+      <StyledTestSection>
         <h3>Form Validation</h3>
         <form onSubmit={testFormValidation}>
           <FormField
@@ -135,43 +143,43 @@ const ExampleErrorHandling = () => {
             placeholder="Enter amount"
           />
 
-          <button type="submit" className="btn btn-primary">
+          <StyledButton type="submit" variant="primary">
             Validate Form
-          </button>
+          </StyledButton>
         </form>
-      </section>
+      </StyledTestSection>
 
-      <section className="test-section">
+      <StyledTestSection>
         <h3>API Error Handling</h3>
-        <div className="button-group">
-          <button 
-            onClick={testPaymentStatus} 
-            className="btn btn-secondary"
+        <StyledButtonGroup>
+          <StyledButton 
+            variant="secondary"
+            onClick={testPaymentStatus}
           >
             Check Payment Status
-          </button>
-          <button 
-            onClick={testPaymentAPI} 
-            className="btn btn-primary"
+          </StyledButton>
+          <StyledButton 
+            variant="primary"
+            onClick={testPaymentAPI}
             disabled={loading}
           >
             {loading ? 'Processing...' : 'Test Payment API'}
-          </button>
-        </div>
-      </section>
+          </StyledButton>
+        </StyledButtonGroup>
+      </StyledTestSection>
 
-      <section className="test-section">
+      <StyledTestSection>
         <h3>Error Information</h3>
-        <div className="info-box">
+        <StyledInfoBox>
           <p><strong>Missing Configuration:</strong></p>
           <ul>
             <li>STRIPE_SECRET_KEY - Payment processing unavailable</li>
             <li>MONGODB_URI - Database features unavailable</li>
           </ul>
           <p>Try the "Check Payment Status" button to see configuration error handling.</p>
-        </div>
-      </section>
-    </div>
+        </StyledInfoBox>
+      </StyledTestSection>
+    </StyledExampleErrorHandling>
   );
 };
 

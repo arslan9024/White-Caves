@@ -1,6 +1,25 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './OnboardingGateway.css';
+import {
+  StyledOnboardingGateway,
+  StyledGatewayContainer,
+  StyledGatewayHeader,
+  StyledGatewayTitle,
+  StyledGatewaySubtitle,
+  StyledGatewayDivider,
+  StyledRoleTilesGrid,
+  StyledOnboardingRoleTile,
+  StyledTileAccentBar,
+  StyledTileIconWrapper,
+  StyledTileTextContent,
+  StyledTileTitle,
+  StyledTileSubtitle,
+  StyledTileDescription,
+  StyledTileArrow,
+  StyledGatewayFooter,
+  StyledFooterText,
+  StyledFooterLink,
+} from './OnboardingGateway.styles';
 
 const OnboardingGateway = () => {
   const navigate = useNavigate();
@@ -88,50 +107,49 @@ const OnboardingGateway = () => {
   };
 
   return (
-    <section className="onboarding-gateway">
-      <div className="gateway-container">
-        <div className="gateway-header">
-          <h2 className="gateway-title">How can we assist you today?</h2>
-          <p className="gateway-subtitle">
+    <StyledOnboardingGateway>
+      <StyledGatewayContainer>
+        <StyledGatewayHeader>
+          <StyledGatewayTitle>How can we assist you today?</StyledGatewayTitle>
+          <StyledGatewaySubtitle>
             Select your role to access personalized features and services
-          </p>
-          <div className="gateway-divider"></div>
-        </div>
+          </StyledGatewaySubtitle>
+          <StyledGatewayDivider></StyledGatewayDivider>
+        </StyledGatewayHeader>
 
-        <div className="role-tiles-grid">
+        <StyledRoleTilesGrid>
           {roles.map((role, index) => (
-            <div
+            <StyledOnboardingRoleTile
               key={role.id}
-              className={`onboarding-role-tile ${selectedRole === role.id ? 'selected' : ''} ${isAnimating && selectedRole !== role.id ? 'fade-out' : ''}`}
+              roleColor={role.color}
+              isSelected={selectedRole === role.id}
+              isFadingOut={isAnimating && selectedRole !== role.id}
+              animationDelay={`${index * 100}ms`}
               onClick={() => handleRoleClick(role)}
-              style={{ 
-                '--role-color': role.color,
-                animationDelay: `${index * 100}ms`
-              }}
             >
-              <div className="tile-accent-bar"></div>
-              <div className="tile-icon-wrapper" style={{ background: role.color }}>
+              <StyledTileAccentBar roleColor={role.color} />
+              <StyledTileIconWrapper backgroundColor={role.color}>
                 {role.icon}
-              </div>
-              <div className="tile-text-content">
-                <h3 className="tile-title">{role.title}</h3>
-                <p className="tile-subtitle">{role.subtitle}</p>
-                <p className="tile-description">{role.description}</p>
-              </div>
-              <div className="tile-arrow">
+              </StyledTileIconWrapper>
+              <StyledTileTextContent>
+                <StyledTileTitle>{role.title}</StyledTileTitle>
+                <StyledTileSubtitle roleColor={role.color}>{role.subtitle}</StyledTileSubtitle>
+                <StyledTileDescription>{role.description}</StyledTileDescription>
+              </StyledTileTextContent>
+              <StyledTileArrow roleColor={role.color}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                 </svg>
-              </div>
-            </div>
+              </StyledTileArrow>
+            </StyledOnboardingRoleTile>
           ))}
-        </div>
+        </StyledRoleTilesGrid>
 
-        <div className="gateway-footer">
-          <p>Not sure where to start? <a href="/contact">Contact our team</a> for guidance.</p>
-        </div>
-      </div>
-    </section>
+        <StyledGatewayFooter>
+          <StyledFooterText>Not sure where to start? <StyledFooterLink href="/contact">Contact our team</StyledFooterLink> for guidance.</StyledFooterText>
+        </StyledGatewayFooter>
+      </StyledGatewayContainer>
+    </StyledOnboardingGateway>
   );
 };
 

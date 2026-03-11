@@ -1,5 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import './OptimizedImage.css';
+import {
+  StyledOptimizedImageContainer,
+  StyledImagePlaceholder,
+  StyledImage,
+  StyledImageError,
+  StyledLazyBackground,
+} from './OptimizedImage.styles';
 
 export default function OptimizedImage({ 
   src, 
@@ -59,25 +65,45 @@ export default function OptimizedImage({
   };
 
   return (
-    <div 
+    <StyledOptimizedImageContainer 
       ref={imgRef}
-      className={`optimized-image-container ${className} ${isLoaded ? 'loaded' : ''}`}
+      className={`${className} ${isLoaded ? 'loaded' : ''}`}
       style={placeholderStyle}
       onClick={onClick}
     >
       {placeholder === 'blur' && !isLoaded && (
-        <div className="image-placeholder blur" />
+        <StyledImagePlaceholder type="blur" />
       )}
       {placeholder === 'skeleton' && !isLoaded && (
-        <div className="image-placeholder skeleton" />
+        <StyledImagePlaceholder type="skeleton" />
       )}
       {error ? (
-        <div className="image-error">
+        <StyledImageError>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
             <circle cx="8.5" cy="8.5" r="1.5"/>
             <polyline points="21 15 16 10 5 21"/>
           </svg>
+          <span>Image unavailable</span>
+        </StyledImageError>
+      ) : isInView ? (
+        <StyledImage
+          src={src}
+          alt={alt}
+          className={isLoaded ? 'visible' : ''}
+          onLoad={handleLoad}
+          onError={handleError}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+        />
+      ) : null}
+    </StyledOptimizedImageContainer>
+  );
+}
+
+export function LazyBackground({ src, className = '', children, priority = false }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isInView, setIsInView] = useState(priority);
           <span>Image unavailable</span>
         </div>
       ) : isInView ? (

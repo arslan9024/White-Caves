@@ -1,5 +1,14 @@
 import React from 'react';
-import './FormField.css';
+import {
+  StyledFormField,
+  StyledLabel,
+  StyledRequired,
+  StyledInput,
+  StyledTextArea,
+  StyledSelect,
+  StyledErrorField,
+  StyledErrorMessage,
+} from './FormField.styles';
 
 const FormField = ({
   label,
@@ -17,18 +26,19 @@ const FormField = ({
   ...props
 }) => {
   const hasError = touched && error;
+  const FieldComponent = hasError ? StyledErrorField : StyledFormField;
 
   return (
-    <div className={`form-field ${hasError ? 'form-field-error' : ''} ${className}`}>
+    <FieldComponent className={className}>
       {label && (
-        <label htmlFor={name} className="form-label">
+        <StyledLabel htmlFor={name}>
           {label}
-          {required && <span className="form-required">*</span>}
-        </label>
+          {required && <StyledRequired>*</StyledRequired>}
+        </StyledLabel>
       )}
       
       {type === 'textarea' ? (
-        <textarea
+        <StyledTextArea
           id={name}
           name={name}
           value={value}
@@ -36,24 +46,22 @@ const FormField = ({
           onBlur={onBlur}
           placeholder={placeholder}
           disabled={disabled}
-          className="form-input"
           {...props}
         />
       ) : type === 'select' ? (
-        <select
+        <StyledSelect
           id={name}
           name={name}
           value={value}
           onChange={onChange}
           onBlur={onBlur}
           disabled={disabled}
-          className="form-input"
           {...props}
         >
           {props.children}
-        </select>
+        </StyledSelect>
       ) : (
-        <input
+        <StyledInput
           id={name}
           name={name}
           type={type}
@@ -62,15 +70,14 @@ const FormField = ({
           onBlur={onBlur}
           placeholder={placeholder}
           disabled={disabled}
-          className="form-input"
           {...props}
         />
       )}
       
       {hasError && (
-        <span className="form-error-message">{error}</span>
+        <StyledErrorMessage>{error}</StyledErrorMessage>
       )}
-    </div>
+    </FieldComponent>
   );
 };
 

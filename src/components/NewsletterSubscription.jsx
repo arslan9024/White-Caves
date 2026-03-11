@@ -1,5 +1,22 @@
 import React, { useState } from 'react';
-import './NewsletterSubscription.css';
+import {
+  StyledNewsletterSection,
+  StyledNewsletterContainer,
+  StyledNewsletterContent,
+  StyledNewsletterText,
+  StyledNewsletterBenefits,
+  StyledNewsletterFormWrapper,
+  StyledNewsletterForm,
+  StyledFormGroup,
+  StyledNewsletterInput,
+  StyledNewsletterButton,
+  StyledSpinner,
+  StyledFormMessage,
+  StyledPrivacyNote,
+  StyledSubscriberCount,
+  StyledSubscriberAvatars,
+  StyledMoreSubscribers,
+} from './NewsletterSubscription.styles';
 
 export default function NewsletterSubscription() {
   const [email, setEmail] = useState('');
@@ -30,24 +47,24 @@ export default function NewsletterSubscription() {
   };
 
   return (
-    <section className="newsletter-section">
-      <div className="newsletter-container">
-        <div className="newsletter-content">
-          <div className="newsletter-text">
+    <StyledNewsletterSection>
+      <StyledNewsletterContainer>
+        <StyledNewsletterContent>
+          <StyledNewsletterText>
             <h2>Stay Updated on Dubai Real Estate</h2>
             <p>Get exclusive market insights, new listings, and investment opportunities delivered to your inbox weekly.</p>
-            <ul className="newsletter-benefits">
+            <StyledNewsletterBenefits>
               <li>🏠 First access to new property listings</li>
               <li>📊 Weekly market analysis & trends</li>
               <li>💡 Investment tips from experts</li>
               <li>🎁 Exclusive subscriber offers</li>
-            </ul>
-          </div>
+            </StyledNewsletterBenefits>
+          </StyledNewsletterText>
           
-          <div className="newsletter-form-wrapper">
-            <form onSubmit={handleSubmit} className="newsletter-form">
-              <div className="form-group">
-                <input
+          <StyledNewsletterFormWrapper>
+            <StyledNewsletterForm onSubmit={handleSubmit}>
+              <StyledFormGroup>
+                <StyledNewsletterInput
                   type="email"
                   placeholder="Enter your email address"
                   value={email}
@@ -55,40 +72,39 @@ export default function NewsletterSubscription() {
                   disabled={status === 'loading'}
                   className={status === 'error' ? 'error' : ''}
                 />
-                <button 
+                <StyledNewsletterButton 
                   type="submit" 
                   disabled={status === 'loading'}
-                  className={status === 'loading' ? 'loading' : ''}
                 >
                   {status === 'loading' ? (
-                    <span className="spinner"></span>
+                    <StyledSpinner />
                   ) : (
                     'Subscribe'
                   )}
-                </button>
-              </div>
+                </StyledNewsletterButton>
+              </StyledFormGroup>
               
               {message && (
-                <p className={`form-message ${status}`}>{message}</p>
+                <StyledFormMessage status={status}>{message}</StyledFormMessage>
               )}
-            </form>
+            </StyledNewsletterForm>
             
-            <p className="privacy-note">
+            <StyledPrivacyNote>
               By subscribing, you agree to our Privacy Policy. Unsubscribe anytime.
-            </p>
+            </StyledPrivacyNote>
 
-            <div className="subscriber-count">
-              <div className="subscriber-avatars">
+            <StyledSubscriberCount>
+              <StyledSubscriberAvatars>
                 <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=50&q=80" alt="Subscriber" />
                 <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=50&q=80" alt="Subscriber" />
                 <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=50&q=80" alt="Subscriber" />
-                <span className="more-subscribers">+</span>
-              </div>
+                <StyledMoreSubscribers>+</StyledMoreSubscribers>
+              </StyledSubscriberAvatars>
               <span>Join <strong>12,000+</strong> subscribers</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+            </StyledSubscriberCount>
+          </StyledNewsletterFormWrapper>
+        </StyledNewsletterContent>
+      </StyledNewsletterContainer>
+    </StyledNewsletterSection>
   );
 }
