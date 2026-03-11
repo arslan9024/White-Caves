@@ -1,0 +1,145 @@
+import styled from 'styled-components';
+import { theme } from '../../../styles/theme';
+
+export const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.xs};
+  width: 100%;
+`;
+
+export const Label = styled.label<{ required?: boolean }>`
+  font-size: ${theme.typography.sizes.sm};
+  font-weight: 500;
+  color: ${theme.colors.text.primary};
+  transition: ${theme.transitions.all};
+
+  &[data-theme='dark'] {
+    color: ${theme.colors.dark.text};
+  }
+`;
+
+export const Required = styled.span`
+  color: ${theme.colors.error};
+  margin-left: 4px;
+`;
+
+export const Wrapper = styled.div<{
+  size?: 'sm' | 'md' | 'lg';
+  focused?: boolean;
+  error?: boolean;
+  disabled?: boolean;
+}>`
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: ${theme.colors.background.secondary};
+  border: 2px solid ${theme.colors.border};
+  border-radius: ${theme.radius.md};
+  transition: ${theme.transitions.all};
+  padding: ${props => {
+    switch (props.size) {
+      case 'sm':
+        return `${theme.spacing.xs} ${theme.spacing.sm}`;
+      case 'lg':
+        return `${theme.spacing.md} ${theme.spacing.md}`;
+      default:
+        return `${theme.spacing.sm} ${theme.spacing.sm}`;
+    }
+  }};
+
+  &[data-theme='dark'] {
+    background: ${theme.colors.dark.bgSecondary};
+    border-color: ${theme.colors.dark.border};
+  }
+
+  ${props => props.focused && `
+    border-color: ${theme.colors.primary};
+    box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+
+    &[data-theme='dark'] {
+      box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.2);
+    }
+  `}
+
+  ${props => props.error && `
+    border-color: ${theme.colors.error};
+    
+    &:focus-within {
+      box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
+    }
+
+    &[data-theme='dark'] {
+      &:focus-within {
+        box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.2);
+      }
+    }
+  `}
+
+  ${props => props.disabled && `
+    background: ${theme.colors.background.tertiary};
+    border-color: ${theme.colors.border};
+    opacity: 0.6;
+    cursor: not-allowed;
+
+    &[data-theme='dark'] {
+      background: ${theme.colors.dark.bgTertiary};
+      opacity: 0.5;
+    }
+  `}
+`;
+
+export const Input = styled.input`
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: ${theme.typography.sizes.sm};
+  color: ${theme.colors.text.primary};
+  font-family: inherit;
+  width: 100%;
+  cursor: pointer;
+
+  &::placeholder {
+    color: ${theme.colors.text.tertiary};
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    color: ${theme.colors.text.disabled};
+  }
+
+  &[data-theme='dark'] {
+    color: ${theme.colors.dark.text};
+
+    &::placeholder {
+      color: ${theme.colors.dark.textSecondary};
+    }
+
+    &:disabled {
+      color: ${theme.colors.dark.textSecondary};
+    }
+  }
+`;
+
+export const CalendarIcon = styled.span`
+  margin-right: 8px;
+  color: ${theme.colors.text.secondary};
+  font-size: 16px;
+  flex-shrink: 0;
+
+  &[data-theme='dark'] {
+    color: ${theme.colors.dark.textSecondary};
+  }
+`;
+
+export const HelperText = styled.span<{ error?: boolean }>`
+  font-size: 12px;
+  color: ${props => props.error ? theme.colors.error : theme.colors.text.tertiary};
+  margin-top: 4px;
+  transition: ${theme.transitions.all};
+
+  &[data-theme='dark'] {
+    color: ${props => props.error ? theme.colors.errorLight : theme.colors.dark.textSecondary};
+  }
+`;
