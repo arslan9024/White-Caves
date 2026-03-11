@@ -1,5 +1,11 @@
 import React from 'react';
-import './SuspenseLoader.css';
+import {
+  SuspenseLoaderContainer,
+  SuspenseLoaderOverlay,
+  SuspenseLoaderSpinner,
+  SpinnerCircle,
+  SpinnerText,
+} from './SuspenseLoader.styles';
 
 /**
  * SuspenseLoader Component
@@ -8,13 +14,13 @@ import './SuspenseLoader.css';
  */
 export default function SuspenseLoader() {
   return (
-    <div className="suspense-loader">
-      <div className="suspense-loader-overlay">
-        <div className="suspense-loader-spinner">
-          <div className="spinner-circle"></div>
-          <p className="spinner-text">Loading page...</p>
-        </div>
-      </div>
-    </div>
+    <SuspenseLoaderContainer>
+      <SuspenseLoaderOverlay>
+        <SuspenseLoaderSpinner>
+          <SpinnerCircle />
+          <SpinnerText>Loading page...</SpinnerText>
+        </SuspenseLoaderSpinner>
+      </SuspenseLoaderOverlay>
+    </SuspenseLoaderContainer>
   );
 }

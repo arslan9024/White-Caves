@@ -1,6 +1,20 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './PageHeader.css';
+import {
+  PageHeaderWrapper,
+  Breadcrumbs,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbCurrent,
+  HeaderMain,
+  HeaderContent,
+  HeaderSubtitle,
+  HeaderActions,
+  StyledActionButton,
+  ActionButtonLink,
+  ButtonIcon,
+  ButtonLabel,
+} from './PageHeader.styles';
 
 export default function PageHeader({ 
   title, 
@@ -10,37 +24,37 @@ export default function PageHeader({
   className = ''
 }) {
   return (
-    <div className={`page-header-reusable ${className}`}>
+    <PageHeaderWrapper className={className}>
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <nav className="breadcrumbs flex-row--xs" aria-label="Breadcrumb">
+        <Breadcrumbs aria-label="Breadcrumb">
           {breadcrumbs.map((crumb, index) => (
             <React.Fragment key={crumb.path || index}>
-              {index > 0 && <span className="breadcrumb-separator">/</span>}
+              {index > 0 && <BreadcrumbSeparator>/</BreadcrumbSeparator>}
               {crumb.path ? (
-                <Link to={crumb.path} className="breadcrumb-link transition-smooth">
+                <BreadcrumbLink to={crumb.path}>
                   {crumb.label}
-                </Link>
+                </BreadcrumbLink>
               ) : (
-                <span className="breadcrumb-current">{crumb.label}</span>
+                <BreadcrumbCurrent>{crumb.label}</BreadcrumbCurrent>
               )}
             </React.Fragment>
           ))}
-        </nav>
+        </Breadcrumbs>
       )}
       
-      <div className="header-main flex-between">
-        <div className="header-content">
+      <HeaderMain>
+        <HeaderContent>
           <h1>{title}</h1>
-          {subtitle && <p className="header-subtitle">{subtitle}</p>}
-        </div>
+          {subtitle && <HeaderSubtitle>{subtitle}</HeaderSubtitle>}
+        </HeaderContent>
         
         {actions && (
-          <div className="header-actions flex-row--md">
+          <HeaderActions>
             {actions}
-          </div>
+          </HeaderActions>
         )}
-      </div>
-    </div>
+      </HeaderMain>
+    </PageHeaderWrapper>
   );
 }
 
@@ -54,31 +68,31 @@ export function ActionButton({
   disabled = false,
   className = ''
 }) {
-  const buttonClass = `action-btn flex-center transition-smooth ${variant} ${size} ${className}`;
-  
   const content = (
     <>
-      {icon && <span className="btn-icon">{icon}</span>}
-      <span className="btn-label">{label}</span>
+      {icon && <ButtonIcon>{icon}</ButtonIcon>}
+      <ButtonLabel>{label}</ButtonLabel>
     </>
   );
 
   if (to) {
     return (
-      <Link to={to} className={buttonClass}>
+      <ActionButtonLink to={to} className={className} $variant={variant} $size={size}>
         {content}
-      </Link>
+      </ActionButtonLink>
     );
   }
 
   return (
-    <button 
-      className={buttonClass} 
+    <StyledActionButton 
+      className={className} 
       onClick={onClick}
       disabled={disabled}
       type="button"
+      $variant={variant}
+      $size={size}
     >
       {content}
-    </button>
+    </StyledActionButton>
   );
 }

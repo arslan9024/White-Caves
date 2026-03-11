@@ -1,5 +1,14 @@
 import React from 'react';
-import './StatCard.css';
+import {
+  StatCardGridContainer,
+  StatCardWrapper,
+  StatIconWrapper,
+  StatIcon,
+  StatInfo,
+  StatValue,
+  StatLabel,
+  StatChange,
+} from './StatCard.styles';
 
 export default function StatCard({ 
   icon, 
@@ -12,35 +21,37 @@ export default function StatCard({
   className = ''
 }) {
   return (
-    <div 
-      className={`stat-card-reusable corner-lg transition-fast ${variant} ${onClick ? 'clickable' : ''} ${className}`}
+    <StatCardWrapper 
+      className={className}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
+      $variant={variant}
+      $clickable={!!onClick}
     >
-      <div className={`stat-icon-wrapper ${variant}`}>
-        <span className="stat-icon">{icon}</span>
-      </div>
-      <div className="stat-info">
-        <span className="stat-value">{value}</span>
-        <span className="stat-label">{label}</span>
+      <StatIconWrapper $variant={variant}>
+        <StatIcon>{icon}</StatIcon>
+      </StatIconWrapper>
+      <StatInfo>
+        <StatValue>{value}</StatValue>
+        <StatLabel>{label}</StatLabel>
         {change && (
-          <span className={`stat-change ${positive ? 'positive' : 'negative'}`}>
+          <StatChange $positive={positive}>
             {change}
-          </span>
+          </StatChange>
         )}
-      </div>
-    </div>
+      </StatInfo>
+    </StatCardWrapper>
   );
 }
 
 export function StatCardGrid({ children, columns = 4, className = '' }) {
   return (
-    <div 
-      className={`stat-card-grid ${className}`}
-      style={{ '--grid-columns': columns }}
+    <StatCardGridContainer 
+      className={className}
+      $columns={columns}
     >
       {children}
-    </div>
+    </StatCardGridContainer>
   );
 }

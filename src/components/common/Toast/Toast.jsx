@@ -14,7 +14,15 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Check, AlertCircle, AlertTriangle, Info, X } from 'lucide-react';
 import { removeNotification } from '../../store/slices/notificationSlice';
-import './Toast.css';
+import {
+  ToastContainer,
+  ToastWrapper,
+  ToastIcon,
+  ToastContent,
+  ToastTitle,
+  ToastMessage,
+  ToastClose,
+} from './styles';
 
 const Toast = () => {
   const dispatch = useDispatch();
@@ -53,31 +61,30 @@ const Toast = () => {
   };
 
   return (
-    <div className="toast-container">
+    <ToastContainer>
       {notifications.map(notif => (
-        <div
+        <ToastWrapper
           key={notif.id}
-          className={`toast toast-${notif.type}`}
+          $type={notif.type}
           role="alert"
           aria-live="polite"
         >
-          <div className="toast-icon">
+          <ToastIcon $type={notif.type}>
             {getIcon(notif.type)}
-          </div>
-          <div className="toast-content">
-            {notif.title && <div className="toast-title">{notif.title}</div>}
-            {notif.message && <div className="toast-message">{notif.message}</div>}
-          </div>
-          <button
-            className="toast-close"
+          </ToastIcon>
+          <ToastContent>
+            {notif.title && <ToastTitle>{notif.title}</ToastTitle>}
+            {notif.message && <ToastMessage>{notif.message}</ToastMessage>}
+          </ToastContent>
+          <ToastClose
             onClick={() => dispatch(removeNotification(notif.id))}
             aria-label="Close notification"
           >
             <X size={18} />
-          </button>
-        </div>
+          </ToastClose>
+        </ToastWrapper>
       ))}
-    </div>
+    </ToastContainer>
   );
 };
 

@@ -1,5 +1,14 @@
 import React, { useState, useEffect, createContext, useContext, useCallback } from 'react';
-import './StatusNotification.css';
+import {
+  StatusNotificationContainer,
+  StatusNotificationItem,
+  StatusIcon,
+  StatusContent,
+  StatusTitle,
+  StatusMessage,
+  StatusDismiss,
+  StatusProgress,
+} from './StatusNotification.styles';
 
 const StatusContext = createContext(null);
 
@@ -52,26 +61,25 @@ const StatusItem = ({ notification, onDismiss }) => {
   };
 
   return (
-    <div className={`status-notification-item flex-start gap-md transition-smooth ${notification.type}`}>
-      <div className="status-icon flex-center corner-sm">{getIcon()}</div>
-      <div className="status-content flex-col--gap-xs">
-        {notification.title && <strong className="status-title">{notification.title}</strong>}
-        <span className="status-message">{notification.message}</span>
-      </div>
-      <button 
-        className="status-dismiss transition-smooth" 
+    <StatusNotificationItem $type={notification.type}>
+      <StatusIcon $type={notification.type}>{getIcon()}</StatusIcon>
+      <StatusContent>
+        {notification.title && <StatusTitle>{notification.title}</StatusTitle>}
+        <StatusMessage>{notification.message}</StatusMessage>
+      </StatusContent>
+      <StatusDismiss 
         onClick={() => onDismiss(notification.id)}
         aria-label="Dismiss"
       >
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
           <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
         </svg>
-      </button>
-      <div 
-        className="status-progress" 
-        style={{ animationDuration: `${notification.duration || 5000}ms` }}
+      </StatusDismiss>
+      <StatusProgress 
+        $type={notification.type}
+        $duration={notification.duration || 5000}
       />
-    </div>
+    </StatusNotificationItem>
   );
 };
 
@@ -122,7 +130,7 @@ export const StatusProvider = ({ children }) => {
   return (
     <StatusContext.Provider value={value}>
       {children}
-      <div className="status-notification-container flex-col--gap-md">
+      <StatusNotificationContainer>
         {notifications.map(notification => (
           <StatusItem 
             key={notification.id} 
@@ -130,7 +138,7 @@ export const StatusProvider = ({ children }) => {
             onDismiss={removeNotification}
           />
         ))}
-      </div>
+      </StatusNotificationContainer>
     </StatusContext.Provider>
   );
 };
