@@ -3,7 +3,35 @@ import {
   Image, Download, Search, Loader2, CheckCircle, 
   XCircle, Grid, List, ExternalLink, Plus, Trash2
 } from 'lucide-react';
-import './DamacAssetFetcher.css';
+import {
+  DamacFetcherContainer,
+  FetcherHeader,
+  HeaderInfo,
+  ViewToggle,
+  ViewToggleButton,
+  FetcherInputs,
+  InputGroup,
+  InputLabel,
+  AutoFillButton,
+  TextArea,
+  FetcherActions,
+  FetchButton,
+  SpinningIcon,
+  ResultsSummary,
+  SummaryItem,
+  AssetsGrid,
+  AssetCard,
+  AssetImage,
+  SelectionBadge,
+  AssetInfo,
+  AssetSD,
+  AssetRegistration,
+  AssetType,
+  OpenLink,
+  NotFoundSection,
+  NotFoundList,
+  NotFoundItem
+} from './DamacAssetFetcher.styles';
 
 const DAMAC_BASE_URL = 'https://s3.eu-west-1.amazonaws.com/damac-inv/otp/';
 
@@ -106,68 +134,68 @@ const DamacAssetFetcher = ({ selectedProperty }) => {
   };
 
   return (
-    <div className="damac-fetcher">
-      <div className="fetcher-header">
-        <div className="header-info">
+    <DamacFetcherContainer>
+      <FetcherHeader>
+        <HeaderInfo>
           <Image size={24} />
           <div>
             <h3>DAMAC Asset Fetcher</h3>
             <span>Fetch property images from DAMAC S3 bucket</span>
           </div>
-        </div>
-        <div className="view-toggle">
-          <button 
-            className={viewMode === 'grid' ? 'active' : ''} 
+        </HeaderInfo>
+        <ViewToggle>
+          <ViewToggleButton 
+            $active={viewMode === 'grid'}
             onClick={() => setViewMode('grid')}
           >
             <Grid size={16} />
-          </button>
-          <button 
-            className={viewMode === 'list' ? 'active' : ''} 
+          </ViewToggleButton>
+          <ViewToggleButton 
+            $active={viewMode === 'list'}
             onClick={() => setViewMode('list')}
           >
             <List size={16} />
-          </button>
-        </div>
-      </div>
+          </ViewToggleButton>
+        </ViewToggle>
+      </FetcherHeader>
 
-      <div className="fetcher-inputs">
-        <div className="input-group">
-          <label>
+      <FetcherInputs>
+        <InputGroup>
+          <InputLabel>
             SD Numbers (one per line)
             {selectedProperty && (
-              <button className="auto-fill-btn" onClick={populateFromProperty}>
+              <AutoFillButton onClick={populateFromProperty}>
                 <Plus size={12} /> From Property
-              </button>
+              </AutoFillButton>
             )}
-          </label>
-          <textarea
+          </InputLabel>
+          <TextArea
             value={sdNumbers}
             onChange={(e) => setSdNumbers(e.target.value)}
             placeholder="SD348&#10;SD349&#10;SD205"
             rows={4}
           />
-        </div>
-        <div className="input-group">
-          <label>Registration Numbers (optional, one per line)</label>
-          <textarea
+        </InputGroup>
+        <InputGroup>
+          <InputLabel>Registration Numbers (optional, one per line)</InputLabel>
+          <TextArea
             value={regNumbers}
             onChange={(e) => setRegNumbers(e.target.value)}
             placeholder="XG1349B&#10;XG1350A"
             rows={4}
           />
-        </div>
-      </div>
+        </InputGroup>
+      </FetcherInputs>
 
-      <div className="fetcher-actions">
-        <button 
-          className="fetch-btn primary" 
+      <FetcherActions>
+        <FetchButton 
+          $variant="primary"
           onClick={handleFetch}
           disabled={loading || !sdNumbers.trim()}
         >
           {loading ? (
             <>
-              <Loader2 size={18} className="spinning" />
+              <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
               Fetching {progress.current}/{progress.total}
             </>
           ) : (
@@ -176,84 +204,83 @@ const DamacAssetFetcher = ({ selectedProperty }) => {
               Fetch Assets
             </>
           )}
-        </button>
+        </FetchButton>
         
         {selectedAssets.length > 0 && (
-          <button className="fetch-btn" onClick={downloadSelected}>
+          <FetchButton onClick={downloadSelected}>
             <Download size={18} />
             Download Selected ({selectedAssets.length})
-          </button>
+          </FetchButton>
         )}
 
         {assets.length > 0 && (
-          <button className="fetch-btn danger" onClick={() => { setAssets([]); setSelectedAssets([]); }}>
+          <FetchButton $variant="danger" onClick={() => { setAssets([]); setSelectedAssets([]); }}>
             <Trash2 size={18} />
             Clear Results
-          </button>
+          </FetchButton>
         )}
-      </div>
+      </FetcherActions>
 
       {assets.length > 0 && (
-        <div className="results-summary">
-          <div className="summary-item success">
+        <ResultsSummary>
+          <SummaryItem $variant="success">
             <CheckCircle size={16} />
             <span>{validAssets.length} Found</span>
-          </div>
-          <div className="summary-item error">
+          </SummaryItem>
+          <SummaryItem $variant="error">
             <XCircle size={16} />
             <span>{invalidAssets.length} Not Found</span>
-          </div>
-        </div>
+          </SummaryItem>
+        </ResultsSummary>
       )}
 
       {validAssets.length > 0 && (
-        <div className={`assets-grid ${viewMode}`}>
+        <AssetsGrid $viewMode={viewMode}>
           {validAssets.map(asset => (
-            <div 
-              key={asset.id} 
-              className={`asset-card ${selectedAssets.includes(asset.id) ? 'selected' : ''}`}
+            <AssetCard 
+              key={asset.id}
+              $selected={selectedAssets.includes(asset.id)}
               onClick={() => toggleAssetSelection(asset.id)}
             >
-              <div className="asset-image">
+              <AssetImage>
                 <img src={asset.url} alt={asset.sdNumber} loading="lazy" />
                 {selectedAssets.includes(asset.id) && (
-                  <div className="selection-badge">
+                  <SelectionBadge>
                     <CheckCircle size={20} />
-                  </div>
+                  </SelectionBadge>
                 )}
-              </div>
-              <div className="asset-info">
-                <span className="asset-sd">{asset.sdNumber}</span>
-                {asset.regNumber && <span className="asset-reg">{asset.regNumber}</span>}
-                <span className={`asset-type ${asset.type}`}>{asset.type}</span>
-              </div>
-              <a 
+              </AssetImage>
+              <AssetInfo>
+                <AssetSD>{asset.sdNumber}</AssetSD>
+                {asset.regNumber && <AssetRegistration>{asset.regNumber}</AssetRegistration>}
+                <AssetType $type={asset.type}>{asset.type}</AssetType>
+              </AssetInfo>
+              <OpenLink 
                 href={asset.url} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="open-link"
                 onClick={(e) => e.stopPropagation()}
               >
                 <ExternalLink size={14} />
-              </a>
-            </div>
+              </OpenLink>
+            </AssetCard>
           ))}
-        </div>
+        </AssetsGrid>
       )}
 
       {invalidAssets.length > 0 && (
-        <div className="not-found-section">
+        <NotFoundSection>
           <h4>Not Found ({invalidAssets.length})</h4>
-          <div className="not-found-list">
+          <NotFoundList>
             {invalidAssets.map(asset => (
-              <span key={asset.id} className="not-found-item">
+              <NotFoundItem key={asset.id}>
                 {asset.sdNumber}{asset.regNumber ? `/${asset.regNumber}` : ''}
-              </span>
+              </NotFoundItem>
             ))}
-          </div>
-        </div>
+          </NotFoundList>
+        </NotFoundSection>
       )}
-    </div>
+    </DamacFetcherContainer>
   );
 };
 

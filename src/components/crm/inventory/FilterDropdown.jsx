@@ -1,6 +1,12 @@
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
-import './FilterDropdown.css';
+import {
+  FilterDropdownContainer,
+  FilterLabel,
+  SelectWrapper,
+  Select,
+  DropdownIcon
+} from './FilterDropdown.styles';
 
 const FilterDropdown = ({ 
   label, 
@@ -12,10 +18,10 @@ const FilterDropdown = ({
   disabled = false 
 }) => {
   return (
-    <div className={`filter-dropdown ${disabled ? 'disabled' : ''}`}>
-      <label className="filter-label">{label}</label>
-      <div className="select-wrapper">
-        <select 
+    <FilterDropdownContainer $disabled={disabled}>
+      <FilterLabel>{label}</FilterLabel>
+      <SelectWrapper>
+        <Select 
           value={value || ''} 
           onChange={(e) => onChange(e.target.value || null)}
           disabled={disabled}
@@ -31,10 +37,12 @@ const FilterDropdown = ({
               </option>
             );
           })}
-        </select>
-        <ChevronDown className="dropdown-icon" size={16} />
-      </div>
-    </div>
+        </Select>
+        <DropdownIcon>
+          <ChevronDown size={16} />
+        </DropdownIcon>
+      </SelectWrapper>
+    </FilterDropdownContainer>
   );
 };
 

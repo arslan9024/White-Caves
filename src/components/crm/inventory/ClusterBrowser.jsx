@@ -1,13 +1,20 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { FolderOpen, Grid, List } from 'lucide-react';
+import { FolderOpen } from 'lucide-react';
 import { 
   selectUniqueClusters, 
   selectSheetsMeta,
   selectFilteredProperties,
   setFilter 
 } from '../../../store/slices/inventorySlice';
-import './ClusterBrowser.css';
+import {
+  ClusterBrowserContainer,
+  ClusterHeader,
+  ClusterTitle,
+  ClusterCount,
+  ClusterGrid,
+  ClusterChip
+} from './ClusterBrowser.styles';
 
 const ClusterBrowser = ({ selectedCluster, onClusterSelect }) => {
   const dispatch = useDispatch();
@@ -29,30 +36,30 @@ const ClusterBrowser = ({ selectedCluster, onClusterSelect }) => {
   const validClusters = clusters.filter(c => c && c !== '.');
 
   return (
-    <div className="cluster-browser">
-      <div className="cluster-header">
+    <ClusterBrowserContainer>
+      <ClusterHeader>
         <FolderOpen size={18} />
-        <h3>Clusters / Projects</h3>
-        <span className="cluster-count">{validClusters.length} clusters</span>
-      </div>
-      <div className="cluster-grid">
-        <button
-          className={`cluster-chip ${selectedCluster === 'all' ? 'active' : ''}`}
+        <ClusterTitle>Clusters / Projects</ClusterTitle>
+        <ClusterCount>{validClusters.length} clusters</ClusterCount>
+      </ClusterHeader>
+      <ClusterGrid>
+        <ClusterChip
+          $active={selectedCluster === 'all'}
           onClick={() => handleClusterClick('all')}
         >
           All ({properties.length.toLocaleString()})
-        </button>
+        </ClusterChip>
         {validClusters.map(cluster => (
-          <button
+          <ClusterChip
             key={cluster}
-            className={`cluster-chip ${selectedCluster === cluster ? 'active' : ''}`}
+            $active={selectedCluster === cluster}
             onClick={() => handleClusterClick(cluster)}
           >
             {cluster} ({clusterCounts[cluster] || 0})
-          </button>
+          </ClusterChip>
         ))}
-      </div>
-    </div>
+      </ClusterGrid>
+    </ClusterBrowserContainer>
   );
 };
 

@@ -2,7 +2,23 @@ import React, { memo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { ChevronRight, Star, Bell, Settings, HelpCircle } from 'lucide-react';
 import { selectCurrentAssistant, selectFavorites, toggleFavorite } from '../../../store/slices/aiAssistantDashboardSlice';
-import './SharedComponents.css';
+import {
+  AssistantSidebarContainer,
+  SidebarHeader,
+  AssistantAvatar,
+  AssistantInfo,
+  AssistantTitle,
+  FavoriteButton,
+  SidebarNav,
+  SidebarDivider,
+  SidebarSection,
+  SidebarItem,
+  ItemLabel,
+  ItemBadge,
+  ItemArrow,
+  SidebarFooter,
+  QuickActionButton
+} from './AssistantSidebar.styles';
 
 const AssistantSidebar = memo(({ 
   items = [],
@@ -27,73 +43,72 @@ const AssistantSidebar = memo(({
   const assistantColor = currentAssistant?.colorScheme || '#0EA5E9';
   
   return (
-    <div 
-      className={`assistant-sidebar ${collapsed ? 'collapsed' : ''}`}
-      style={{ '--sidebar-accent': assistantColor }}
-    >
+    <AssistantSidebarContainer $collapsed={collapsed} $sidebarAccent={assistantColor}>
       {showHeader && currentAssistant && (
-        <div className="sidebar-header">
-          <div className="assistant-avatar" style={{ background: `${assistantColor}20` }}>
+        <SidebarHeader>
+          <AssistantAvatar $background={`${assistantColor}20`}>
             <span>{currentAssistant.avatar}</span>
-          </div>
+          </AssistantAvatar>
           {!collapsed && (
-            <div className="assistant-info">
+            <AssistantInfo>
               <h3>{currentAssistant.name}</h3>
-              <span className="assistant-title">{currentAssistant.title}</span>
-            </div>
+              <AssistantTitle>{currentAssistant.title}</AssistantTitle>
+            </AssistantInfo>
           )}
-          <button 
-            className={`favorite-btn ${isFavorite ? 'active' : ''}`}
+          <FavoriteButton 
+            $isFavorite={isFavorite}
             onClick={handleToggleFavorite}
             title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           >
             <Star size={16} fill={isFavorite ? assistantColor : 'none'} />
-          </button>
-        </div>
+          </FavoriteButton>
+        </SidebarHeader>
       )}
       
-      <nav className="sidebar-nav">
+      <SidebarNav>
         {items.map((item, index) => (
           <React.Fragment key={item.id || index}>
-            {item.divider && <div className="sidebar-divider" />}
+            {item.divider && <SidebarDivider />}
             {item.section && !collapsed && (
-              <div className="sidebar-section">{item.section}</div>
+              <SidebarSection>{item.section}</SidebarSection>
             )}
             {!item.divider && !item.section && (
-              <button
-                className={`sidebar-item ${activeItem === item.id ? 'active' : ''}`}
+              <SidebarItem
+                $active={activeItem === item.id}
                 onClick={() => onItemClick?.(item.id)}
               >
                 {item.icon && <item.icon size={18} />}
                 {!collapsed && (
                   <>
-                    <span className="item-label">{item.label}</span>
+                    <ItemLabel>{item.label}</ItemLabel>
                     {item.badge !== undefined && (
-                      <span className="item-badge">{item.badge}</span>
+                      <ItemBadge>{item.badge}</ItemBadge>
                     )}
-                    <ChevronRight size={14} className="item-arrow" />
+                    <ItemArrow>
+                      <ChevronRight size={14} />
+                    </ItemArrow>
                   </>
                 )}
-              </button>
+              </SidebarItem>
             )}
           </React.Fragment>
         ))}
-      </nav>
+      </SidebarNav>
       
       {showQuickActions && !collapsed && (
-        <div className="sidebar-footer">
-          <button className="quick-action" title="Notifications">
+        <SidebarFooter>
+          <QuickActionButton title="Notifications">
             <Bell size={18} />
-          </button>
-          <button className="quick-action" title="Settings">
+          </QuickActionButton>
+          <QuickActionButton title="Settings">
             <Settings size={18} />
-          </button>
-          <button className="quick-action" title="Help">
+          </QuickActionButton>
+          <QuickActionButton title="Help">
             <HelpCircle size={18} />
-          </button>
-        </div>
+          </QuickActionButton>
+        </SidebarFooter>
       )}
-    </div>
+    </AssistantSidebarContainer>
   );
 });
 

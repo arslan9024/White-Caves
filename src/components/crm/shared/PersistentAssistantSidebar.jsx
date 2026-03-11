@@ -1,9 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
-  ChevronLeft, ChevronRight, Bell, Settings, 
-  MessageSquare, FileText, Target, Bot, Users2,
-  DollarSign, Megaphone, Briefcase, Shield, Users, Home, Server
+  ChevronLeft, ChevronRight, Settings, Bell
 } from 'lucide-react';
 import NotificationBadge from './NotificationBadge';
 import StatusIndicator from './StatusIndicator';
@@ -16,21 +14,39 @@ import {
   collapseSidebar,
   DEPARTMENT_COLORS
 } from '../../../store/slices/aiAssistantDashboardSlice';
-import './PersistentAssistantSidebar.css';
+import {
+  PersistentSidebarContainer,
+  SidebarHeader,
+  CollapseButton,
+  SidebarTitle,
+  SidebarContent,
+  DepartmentGroup,
+  DepartmentHeader,
+  DepartmentAssistants,
+  AssistantTileContainer,
+  TileAvatar,
+  TileEmoji,
+  TileInfo,
+  TileName,
+  TileTitle,
+  TileAction,
+  NotificationBadgeContainer,
+  SidebarFooter
+} from './PersistentAssistantSidebar.styles';
 
 const ASSISTANT_ICONS = {
-  linda: MessageSquare,
-  mary: FileText,
-  clara: Target,
-  nina: Bot,
-  nancy: Users2,
-  theodora: DollarSign,
-  olivia: Megaphone,
-  zoe: Briefcase,
-  laila: Shield,
-  sophia: Users,
-  daisy: Home,
-  aurora: Server
+  linda: 'MessageSquare',
+  mary: 'FileText',
+  clara: 'Target',
+  nina: 'Bot',
+  nancy: 'Users2',
+  theodora: 'DollarSign',
+  olivia: 'Megaphone',
+  zoe: 'Briefcase',
+  laila: 'Shield',
+  sophia: 'Users',
+  daisy: 'Home',
+  aurora: 'Server'
 };
 
 const getAssistantStatus = (assistant) => {
@@ -47,45 +63,46 @@ const AssistantTile = memo(({
   onClick,
   collapsed
 }) => {
-  const IconComponent = ASSISTANT_ICONS[assistant.id] || FileText;
   const status = getAssistantStatus(assistant);
   
   const hasCritical = notificationCount > 0;
   
   return (
-    <button
-      className={`assistant-tile ${isActive ? 'active' : ''} ${collapsed ? 'collapsed' : ''}`}
+    <AssistantTileContainer
+      $active={isActive}
+      $tileColor={assistant.colorScheme || '#3B82F6'}
       onClick={() => onClick(assistant.id)}
-      style={{ '--tile-color': assistant.colorScheme }}
       title={collapsed ? `${assistant.name} - ${assistant.title}` : undefined}
+      className={collapsed ? 'collapsed' : ''}
     >
-      <div className="tile-avatar">
-        <span className="tile-emoji">{assistant.avatar}</span>
+      <TileAvatar>
+        <TileEmoji>{assistant.avatar}</TileEmoji>
         <StatusIndicator status={status} size="small" />
-      </div>
+      </TileAvatar>
       
       {!collapsed && (
-        <div className="tile-info">
-          <span className="tile-name">{assistant.name}</span>
-          <span className="tile-title">{assistant.title}</span>
-        </div>
+        <TileInfo>
+          <TileName>{assistant.name}</TileName>
+          <TileTitle>{assistant.title}</TileTitle>
+        </TileInfo>
       )}
       
       {notificationCount > 0 && (
-        <NotificationBadge 
-          count={notificationCount} 
-          severity={hasCritical ? 'warning' : 'info'}
-          size={collapsed ? 'small' : 'medium'}
-          pulse={hasCritical}
-        />
+        <NotificationBadgeContainer 
+          $size={collapsed ? 'small' : 'medium'}
+          $severity={hasCritical ? 'warning' : 'info'}
+          $pulse={hasCritical}
+        >
+          {notificationCount}
+        </NotificationBadgeContainer>
       )}
       
       {!collapsed && (
-        <button className="tile-action" title="Quick action">
+        <TileAction title="Quick action">
           <Bell size={14} />
-        </button>
+        </TileAction>
       )}
-    </button>
+    </AssistantTileContainer>
   );
 });
 
@@ -128,43 +145,44 @@ const PersistentAssistantSidebar = memo(({
   if (!isOpen) return null;
   
   return (
-    <aside className={`persistent-sidebar ${isCollapsed ? 'collapsed' : ''}`}>
-      <div className="sidebar-header">
-        <button 
-          className="collapse-btn"
+    <PersistentSidebarContainer $collapsed={isCollapsed}>
+      <SidebarHeader>
+        <CollapseButton
           onClick={handleToggleCollapse}
           title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {isCollapsed ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
-        </button>
+        </CollapseButton>
         
         {!isCollapsed && (
           <>
-            <h3 className="sidebar-title">AI Assistants</h3>
+            <SidebarTitle>AI Assistants</SidebarTitle>
             {totalUnread > 0 && (
-              <NotificationBadge count={totalUnread} severity="warning" size="small" />
+              <NotificationBadgeContainer 
+                $size="small"
+                $severity="warning"
+              >
+                {totalUnread}
+              </NotificationBadgeContainer>
             )}
           </>
         )}
-      </div>
+      </SidebarHeader>
       
-      <div className="sidebar-content">
+      <SidebarContent>
         {departmentOrder.map(dept => {
           const deptAssistants = groupedAssistants[dept];
           if (!deptAssistants || deptAssistants.length === 0) return null;
           
           return (
-            <div key={dept} className="department-group">
+            <DepartmentGroup key={dept}>
               {!isCollapsed && (
-                <div 
-                  className="department-header"
-                  style={{ background: DEPARTMENT_COLORS[dept] }}
-                >
+                <DepartmentHeader $departmentColor={DEPARTMENT_COLORS[dept]}>
                   {dept.charAt(0).toUpperCase() + dept.slice(1)}
-                </div>
+                </DepartmentHeader>
               )}
               
-              <div className="department-assistants">
+              <DepartmentAssistants>
                 {deptAssistants.map(assistant => (
                   <AssistantTile
                     key={assistant.id}
@@ -175,21 +193,20 @@ const PersistentAssistantSidebar = memo(({
                     collapsed={isCollapsed}
                   />
                 ))}
-              </div>
-            </div>
+              </DepartmentAssistants>
+            </DepartmentGroup>
           );
         })}
-      </div>
+      </SidebarContent>
       
       {!isCollapsed && (
-        <div className="sidebar-footer">
-          <button className="footer-action" title="Settings">
+        <SidebarFooter>
+          <TileAction title="Settings">
             <Settings size={18} />
-            <span>Settings</span>
-          </button>
-        </div>
+          </TileAction>
+        </SidebarFooter>
       )}
-    </aside>
+    </PersistentSidebarContainer>
   );
 });
 
