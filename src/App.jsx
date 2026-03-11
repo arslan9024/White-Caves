@@ -60,31 +60,23 @@ function ProtectedRoute({ children, allowedRoles }) {
 // ==================== LAZY-LOADED PAGES ====================
 // These are split into separate chunks and loaded only when accessed
 
-// Buyer Pages
-const BuyerDashboardPage = lazy(() => import('./pages/buyer/BuyerDashboardPage'));
+// Buyer Sub-Pages (dashboard handled by UnifiedDashboardPage)
 const MortgageCalculatorPage = lazy(() => import('./pages/buyer/MortgageCalculatorPage'));
 const DLDFeesPage = lazy(() => import('./pages/buyer/DLDFeesPage'));
 const TitleDeedRegistrationPage = lazy(() => import('./pages/buyer/TitleDeedRegistrationPage'));
 
-// Seller Pages
-const SellerDashboardPage = lazy(() => import('./pages/seller/SellerDashboardPage'));
+// Seller Sub-Pages
 const PricingToolsPage = lazy(() => import('./pages/seller/PricingToolsPage'));
 
-// Landlord Pages
-const LandlordDashboardPage = lazy(() => import('./pages/landlord/LandlordDashboardPage'));
+// Landlord Sub-Pages
 const RentalManagementPage = lazy(() => import('./pages/landlord/RentalManagementPage'));
 
-// Leasing Agent Pages
-const LeasingAgentDashboardPage = lazy(() => import('./pages/leasing-agent/LeasingAgentDashboardPage'));
+// Leasing Agent Sub-Pages
 const TenantScreeningPage = lazy(() => import('./pages/leasing-agent/TenantScreeningPage'));
 const ContractManagementPage = lazy(() => import('./pages/leasing-agent/ContractManagementPage'));
 
-// Sales Agent Pages
-const SalesAgentDashboardPage = lazy(() => import('./pages/secondary-sales-agent/SalesAgentDashboardPage'));
+// Sales Agent Sub-Pages
 const SalesPipelinePage = lazy(() => import('./pages/secondary-sales-agent/SalesPipelinePage'));
-
-// Tenant Pages
-const TenantDashboardPage = lazy(() => import('./pages/tenant/TenantDashboardPage'));
 
 // Unified Dashboard (NEW - replaces role-specific dashboards)
 const UnifiedDashboardPage = lazy(() => import('./pages/UnifiedDashboardPage'));
@@ -213,16 +205,8 @@ function App() {
           </ProtectedRoute>
         } />
         
-        {/* ==================== BUYER ROUTES ==================== */}
-        <Route path="/buyer/dashboard" element={
-          <ProtectedRoute allowedRoles={['buyer']}>
-            <AppLayout>
-              <Suspense fallback={<SuspenseLoader />}>
-                <BuyerDashboardPage />
-              </Suspense>
-            </AppLayout>
-          </ProtectedRoute>
-        } />
+        {/* ==================== ROLE-SPECIFIC SUB-PAGES ==================== */}
+        {/* Dashboard routes unified below — these are supplementary pages */}
         <Route path="/buyer/mortgage-calculator" element={
           <ProtectedRoute allowedRoles={['buyer']}>
             <AppLayout>
@@ -250,17 +234,6 @@ function App() {
             </AppLayout>
           </ProtectedRoute>
         } />
-        
-        {/* ==================== SELLER ROUTES ==================== */}
-        <Route path="/seller/dashboard" element={
-          <ProtectedRoute allowedRoles={['seller']}>
-            <AppLayout>
-              <Suspense fallback={<SuspenseLoader />}>
-                <SellerDashboardPage />
-              </Suspense>
-            </AppLayout>
-          </ProtectedRoute>
-        } />
         <Route path="/seller/pricing-tools" element={
           <ProtectedRoute allowedRoles={['seller']}>
             <AppLayout>
@@ -270,33 +243,11 @@ function App() {
             </AppLayout>
           </ProtectedRoute>
         } />
-        
-        {/* ==================== LANDLORD ROUTES ==================== */}
-        <Route path="/landlord/dashboard" element={
-          <ProtectedRoute allowedRoles={['landlord']}>
-            <AppLayout>
-              <Suspense fallback={<SuspenseLoader />}>
-                <LandlordDashboardPage />
-              </Suspense>
-            </AppLayout>
-          </ProtectedRoute>
-        } />
         <Route path="/landlord/rental-management" element={
           <ProtectedRoute allowedRoles={['landlord']}>
             <AppLayout>
               <Suspense fallback={<SuspenseLoader />}>
                 <RentalManagementPage />
-              </Suspense>
-            </AppLayout>
-          </ProtectedRoute>
-        } />
-        
-        {/* ==================== LEASING AGENT ROUTES ==================== */}
-        <Route path="/leasing-agent/dashboard" element={
-          <ProtectedRoute allowedRoles={['leasing-agent']}>
-            <AppLayout>
-              <Suspense fallback={<SuspenseLoader />}>
-                <LeasingAgentDashboardPage />
               </Suspense>
             </AppLayout>
           </ProtectedRoute>
@@ -319,17 +270,6 @@ function App() {
             </AppLayout>
           </ProtectedRoute>
         } />
-        
-        {/* ==================== SALES AGENT ROUTES ==================== */}
-        <Route path="/secondary-sales-agent/dashboard" element={
-          <ProtectedRoute allowedRoles={['secondary-sales-agent']}>
-            <AppLayout>
-              <Suspense fallback={<SuspenseLoader />}>
-                <SalesAgentDashboardPage />
-              </Suspense>
-            </AppLayout>
-          </ProtectedRoute>
-        } />
         <Route path="/secondary-sales-agent/sales-pipeline" element={
           <ProtectedRoute allowedRoles={['secondary-sales-agent']}>
             <AppLayout>
@@ -340,19 +280,8 @@ function App() {
           </ProtectedRoute>
         } />
         
-        {/* ==================== TENANT ROUTES ==================== */}
-        <Route path="/tenant/dashboard" element={
-          <ProtectedRoute allowedRoles={['tenant']}>
-            <AppLayout>
-              <Suspense fallback={<SuspenseLoader />}>
-                <TenantDashboardPage />
-              </Suspense>
-            </AppLayout>
-          </ProtectedRoute>
-        } />
-        
-        {/* ==================== UNIFIED DASHBOARD (NEW) ==================== */}
-        {/* Lion/Owner Super User Dashboard - All features accessible */}
+        {/* ==================== ALL DASHBOARD ROUTES → UNIFIED ==================== */}
+        {/* Every role goes through UnifiedDashboardPage which renders role-specific tabs */}
         <Route path="/lion/dashboard" element={
           <ProtectedRoute allowedRoles={['lion', 'owner']}>
             <AppLayout>
@@ -362,8 +291,6 @@ function App() {
             </AppLayout>
           </ProtectedRoute>
         } />
-
-        {/* Backward compatibility redirects to /lion/dashboard */}
         <Route path="/owner/dashboard" element={
           <ProtectedRoute allowedRoles={['owner', 'lion']}>
             <AppLayout>
@@ -373,7 +300,6 @@ function App() {
             </AppLayout>
           </ProtectedRoute>
         } />
-
         <Route path="/md/dashboard" element={
           <ProtectedRoute allowedRoles={['owner', 'md', 'managing_director', 'lion']}>
             <AppLayout>
@@ -383,8 +309,6 @@ function App() {
             </AppLayout>
           </ProtectedRoute>
         } />
-        
-        {/* Other buyer role dashboards - using UnifiedDashboard for all roles */}
         <Route path="/buyer/dashboard" element={
           <ProtectedRoute allowedRoles={['buyer']}>
             <AppLayout>
@@ -394,7 +318,6 @@ function App() {
             </AppLayout>
           </ProtectedRoute>
         } />
-
         <Route path="/seller/dashboard" element={
           <ProtectedRoute allowedRoles={['seller']}>
             <AppLayout>
@@ -404,7 +327,6 @@ function App() {
             </AppLayout>
           </ProtectedRoute>
         } />
-
         <Route path="/landlord/dashboard" element={
           <ProtectedRoute allowedRoles={['landlord']}>
             <AppLayout>
@@ -414,7 +336,6 @@ function App() {
             </AppLayout>
           </ProtectedRoute>
         } />
-
         <Route path="/leasing-agent/dashboard" element={
           <ProtectedRoute allowedRoles={['leasing-agent']}>
             <AppLayout>
@@ -424,7 +345,6 @@ function App() {
             </AppLayout>
           </ProtectedRoute>
         } />
-
         <Route path="/secondary-sales-agent/dashboard" element={
           <ProtectedRoute allowedRoles={['secondary-sales-agent']}>
             <AppLayout>
@@ -434,7 +354,6 @@ function App() {
             </AppLayout>
           </ProtectedRoute>
         } />
-
         <Route path="/tenant/dashboard" element={
           <ProtectedRoute allowedRoles={['tenant']}>
             <AppLayout>

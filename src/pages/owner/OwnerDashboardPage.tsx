@@ -5,7 +5,8 @@ import './OwnerDashboardPage.css';
 
 interface OwnerDashboardPageProps {}
 
-const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
+// Role-based access: owner and lion roles (checked by ProtectedRoute in App.jsx)
+const OWNER_ROLES = ['owner', 'lion', 'md', 'managing_director'];
 
 const OwnerDashboardPage: FC<OwnerDashboardPageProps> = () => {
   const navigate = useNavigate();
@@ -16,7 +17,18 @@ const OwnerDashboardPage: FC<OwnerDashboardPageProps> = () => {
   const [dashboardData, setDashboardData] = useState<any>({});
 
   useEffect(() => {
-    if (!user || user.email !== OWNER_EMAIL) {
+    // Role-based check instead of hardcoded email
+    const stored = localStorage.getItem('userRole');
+    if (stored) {
+      try {
+        const userData = JSON.parse(stored);
+        if (!OWNER_ROLES.includes(userData.role)) {
+          navigate('/');
+        }
+      } catch {
+        navigate('/');
+      }
+    } else if (!user) {
       navigate('/');
     }
   }, [user, navigate]);
