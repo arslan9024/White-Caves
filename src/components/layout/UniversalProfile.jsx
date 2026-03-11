@@ -5,7 +5,26 @@ import { setUser } from '../../store/userSlice';
 import { setActiveRole, closeAllMenus, setTheme } from '../../store/navigationSlice';
 import { auth } from '../../config/firebase';
 import { signOut } from 'firebase/auth';
-import './UniversalProfile.css';
+import {
+  UniversalProfileContainer,
+  ProfileSignInBtn,
+  ProfileTrigger,
+  ProfileAvatar,
+  AvatarImg,
+  AvatarInitials,
+  ProfileArrow,
+  ProfileDropdown,
+  ProfileDropdownHeader,
+  ProfileInfo,
+  ProfileName,
+  ProfileEmail,
+  ProfileRole,
+  ProfileDropdownDivider,
+  ProfileDropdownItem,
+  ProfileDropdownItemLink,
+  DropdownIcon,
+  ProfileArrowDark,
+} from './UniversalProfile/styles';
 
 export default function UniversalProfile({ variant = 'default', showSignIn = true }) {
   const navigate = useNavigate();
@@ -74,116 +93,110 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
     if (!showSignIn) return null;
     
     return (
-      <div className={`universal-profile ${variant}`}>
-        <Link to="/signin" className="profile-signin-btn">
+      <UniversalProfileContainer>
+        <ProfileSignInBtn to="/signin">
           Sign In
-        </Link>
-      </div>
+        </ProfileSignInBtn>
+      </UniversalProfileContainer>
     );
   }
 
   return (
-    <div className={`universal-profile ${variant}`} ref={menuRef}>
-      <button 
-        className="profile-trigger"
+    <UniversalProfileContainer $compact={variant === 'compact'} ref={menuRef}>
+      <ProfileTrigger 
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label="User menu"
+        className={variant === 'compact' ? 'compact' : ''}
       >
-        <div className="profile-avatar">
+        <ProfileAvatar>
           {user.photoURL || user.photo ? (
-            <img 
+            <AvatarImg 
               src={user.photoURL || user.photo} 
               alt={user.displayName || user.name || 'User'} 
-              className="avatar-img" 
             />
           ) : (
-            <span className="avatar-initials">
+            <AvatarInitials>
               {getInitials(user.displayName || user.name, user.email)}
-            </span>
+            </AvatarInitials>
           )}
-        </div>
+        </ProfileAvatar>
         {variant !== 'compact' && (
-          <span className="profile-arrow">{menuOpen ? '▲' : '▼'}</span>
+          <ProfileArrow>{menuOpen ? '▲' : '▼'}</ProfileArrow>
         )}
-      </button>
+      </ProfileTrigger>
 
       {menuOpen && (
-        <div className="profile-dropdown">
-          <div className="profile-dropdown-header">
-            <div className="profile-avatar large">
+        <ProfileDropdown>
+          <ProfileDropdownHeader>
+            <ProfileAvatar $large>
               {user.photoURL || user.photo ? (
-                <img 
+                <AvatarImg 
                   src={user.photoURL || user.photo} 
                   alt={user.displayName || user.name || 'User'} 
-                  className="avatar-img" 
                 />
               ) : (
-                <span className="avatar-initials">
+                <AvatarInitials $large>
                   {getInitials(user.displayName || user.name, user.email)}
-                </span>
+                </AvatarInitials>
               )}
-            </div>
-            <div className="profile-info">
-              <span className="profile-name">{user.displayName || user.name || 'User'}</span>
-              <span className="profile-email">{user.email}</span>
+            </ProfileAvatar>
+            <ProfileInfo>
+              <ProfileName>{user.displayName || user.name || 'User'}</ProfileName>
+              <ProfileEmail>{user.email}</ProfileEmail>
               {roleInfo && (
-                <span className="profile-role" style={{ color: roleInfo.color }}>
+                <ProfileRole style={{ color: roleInfo.color }}>
                   {roleInfo.icon} {roleInfo.label}
-                </span>
+                </ProfileRole>
               )}
-            </div>
-          </div>
+            </ProfileInfo>
+          </ProfileDropdownHeader>
 
-          <div className="profile-dropdown-divider"></div>
+          <ProfileDropdownDivider />
 
-          <button 
-            className="profile-dropdown-item theme-toggle-item"
+          <ProfileDropdownItem 
             onClick={toggleTheme}
           >
-            <span className="dropdown-icon">{theme === 'dark' ? '☀️' : '🌙'}</span>
+            <DropdownIcon>{theme === 'dark' ? '☀️' : '🌙'}</DropdownIcon>
             {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-          </button>
+          </ProfileDropdownItem>
 
-          <Link 
+          <ProfileDropdownItemLink 
             to="/profile" 
-            className="profile-dropdown-item"
             onClick={() => setMenuOpen(false)}
           >
-            <span className="dropdown-icon">👤</span>
+            <DropdownIcon>👤</DropdownIcon>
             My Profile
-          </Link>
+          </ProfileDropdownItemLink>
 
-          <Link 
+          <ProfileDropdownItemLink 
             to="/select-role" 
-            className="profile-dropdown-item"
             onClick={() => setMenuOpen(false)}
           >
-            <span className="dropdown-icon">🔄</span>
+            <DropdownIcon>🔄</DropdownIcon>
             {activeRole ? 'Switch Role' : 'Select Role'}
-          </Link>
+          </ProfileDropdownItemLink>
 
           {activeRole && (
-            <Link 
+            <ProfileDropdownItemLink 
               to={`/${activeRole}/dashboard`} 
-              className="profile-dropdown-item"
               onClick={() => setMenuOpen(false)}
             >
-              <span className="dropdown-icon">📊</span>
+              <DropdownIcon>📊</DropdownIcon>
               Dashboard
-            </Link>
+            </ProfileDropdownItemLink>
           )}
 
-          <div className="profile-dropdown-divider"></div>
+          <ProfileDropdownDivider />
 
-          <button 
-            className="profile-dropdown-item logout"
+          <ProfileDropdownItem 
+            $logout
             onClick={handleLogout}
           >
-            <span className="dropdown-icon">🚪</span>
+            <DropdownIcon>🚪</DropdownIcon>
             Sign Out
-          </button>
-        </div>
+          </ProfileDropdownItem>
+        </ProfileDropdown>
       )}
-    </div>
+    </UniversalProfileContainer>
   );
 }
