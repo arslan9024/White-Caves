@@ -1,24 +1,26 @@
 import React from 'react';
-import './layout.css';
+import { StyledContainer } from './Container.styles';
 
 const Container = React.memo(({
   children,
   size = 'default',
   fluid = false,
+  paddingX,
+  paddingY,
   className = '',
   ...props
 }) => {
-  const baseClass = 'wc-container';
-  const classes = [
-    baseClass,
-    fluid ? `${baseClass}--fluid` : `${baseClass}--${size}`,
-    className
-  ].filter(Boolean).join(' ');
-
   return (
-    <div className={classes} {...props}>
+    <StyledContainer
+      $size={fluid ? 'default' : size}
+      $fluid={fluid}
+      $paddingX={paddingX}
+      $paddingY={paddingY}
+      className={className}
+      {...props}
+    >
       {children}
-    </div>
+    </StyledContainer>
   );
 });
 

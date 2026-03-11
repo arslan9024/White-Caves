@@ -1,5 +1,5 @@
 import React from 'react';
-import './layout.css';
+import { StyledGrid } from './Grid.styles';
 
 const Grid = React.memo(({
   children,
@@ -11,26 +11,20 @@ const Grid = React.memo(({
   style = {},
   ...props
 }) => {
-  const baseClass = 'wc-grid';
-  const classes = [
-    baseClass,
-    `${baseClass}--gap-${gap}`,
-    className
-  ].filter(Boolean).join(' ');
-
-  const gridStyle = {
-    '--grid-cols-mobile': columns.mobile || 1,
-    '--grid-cols-tablet': columns.tablet || 2,
-    '--grid-cols-desktop': columns.desktop || columns.tablet || 3,
-    alignItems,
-    justifyItems,
-    ...style
-  };
-
   return (
-    <div className={classes} style={gridStyle} {...props}>
+    <StyledGrid
+      $gap={gap}
+      $alignItems={alignItems}
+      $justifyItems={justifyItems}
+      $colsMobile={columns.mobile}
+      $colsTablet={columns.tablet}
+      $colsDesktop={columns.desktop}
+      className={className}
+      style={style}
+      {...props}
+    >
       {children}
-    </div>
+    </StyledGrid>
   );
 });
 

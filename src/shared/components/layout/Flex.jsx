@@ -1,5 +1,5 @@
 import React from 'react';
-import './layout.css';
+import { StyledFlex } from './Flex.styles';
 
 const Flex = React.memo(({
   children,
@@ -8,30 +8,35 @@ const Flex = React.memo(({
   justify = 'flex-start',
   align = 'stretch',
   gap = 'medium',
+  flex,
+  grow,
+  shrink,
+  basis,
+  inline = false,
   className = '',
   style = {},
   as: Component = 'div',
   ...props
 }) => {
-  const baseClass = 'wc-flex';
-  const classes = [
-    baseClass,
-    `${baseClass}--${direction}`,
-    `${baseClass}--gap-${gap}`,
-    className
-  ].filter(Boolean).join(' ');
-
-  const flexStyle = {
-    flexWrap: wrap,
-    justifyContent: justify,
-    alignItems: align,
-    ...style
-  };
-
   return (
-    <Component className={classes} style={flexStyle} {...props}>
+    <StyledFlex
+      as={Component}
+      $direction={direction}
+      $wrap={wrap}
+      $justify={justify}
+      $align={align}
+      $gap={gap}
+      $flex={flex}
+      $grow={grow}
+      $shrink={shrink}
+      $basis={basis}
+      $inline={inline}
+      className={className}
+      style={style}
+      {...props}
+    >
       {children}
-    </Component>
+    </StyledFlex>
   );
 });
 

@@ -1,5 +1,13 @@
 import React from 'react';
-import './layout.css';
+import {
+  StyledSection,
+  SectionHeader,
+  SectionHeaderText,
+  SectionTitle,
+  SectionSubtitle,
+  SectionHeaderActions,
+  SectionContent,
+} from './Section.styles';
 
 const Section = React.memo(({
   children,
@@ -7,37 +15,38 @@ const Section = React.memo(({
   subtitle,
   padding = 'large',
   background = 'transparent',
+  minHeight,
+  maxWidth,
   className = '',
   headerActions,
   ...props
 }) => {
-  const baseClass = 'wc-section';
-  const classes = [
-    baseClass,
-    `${baseClass}--padding-${padding}`,
-    `${baseClass}--bg-${background}`,
-    className
-  ].filter(Boolean).join(' ');
-
   return (
-    <section className={classes} {...props}>
+    <StyledSection
+      $padding={padding}
+      $background={background}
+      $minHeight={minHeight}
+      $maxWidth={maxWidth}
+      className={className}
+      {...props}
+    >
       {(title || subtitle || headerActions) && (
-        <div className={`${baseClass}__header`}>
-          <div className={`${baseClass}__header-text`}>
-            {title && <h2 className={`${baseClass}__title`}>{title}</h2>}
-            {subtitle && <p className={`${baseClass}__subtitle`}>{subtitle}</p>}
-          </div>
+        <SectionHeader>
+          <SectionHeaderText>
+            {title && <SectionTitle>{title}</SectionTitle>}
+            {subtitle && <SectionSubtitle>{subtitle}</SectionSubtitle>}
+          </SectionHeaderText>
           {headerActions && (
-            <div className={`${baseClass}__header-actions`}>
+            <SectionHeaderActions>
               {headerActions}
-            </div>
+            </SectionHeaderActions>
           )}
-        </div>
+        </SectionHeader>
       )}
-      <div className={`${baseClass}__content`}>
+      <SectionContent>
         {children}
-      </div>
-    </section>
+      </SectionContent>
+    </StyledSection>
   );
 });
 
