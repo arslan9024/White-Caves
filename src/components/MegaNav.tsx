@@ -1,18 +1,42 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect, FC } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import ThemeToggle from './ThemeToggle';
 import UniversalProfile from './layout/UniversalProfile';
-import './MegaNav.css';
+import * as S from './MegaNav.styles';
 
-export default function MegaNav({ user }) {
+interface MenuItemSubmenu {
+  featured?: Array<{ title: string; desc: string; icon: string }>;
+  propertyTypes?: string[];
+  developers?: string[];
+  locations: string[];
+  priceRanges?: string[];
+  paymentPlans?: string[];
+}
+
+interface MenuItem {
+  label: string;
+  submenu: MenuItemSubmenu;
+}
+
+interface SimpleLink {
+  label: string;
+  href: string;
+  isRoute: boolean;
+}
+
+interface MegaNavProps {
+  user?: any;
+}
+
+const MegaNav: FC<MegaNavProps> = ({ user }) => {
   const navigate = useNavigate();
   const { isDark, setIsDark } = useTheme();
-  const [activeMenu, setActiveMenu] = useState(null);
+  const [activeMenu, setActiveMenu] = useState<number | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const navRef = useRef(null);
+  const navRef = useRef<HTMLElement>(null);
 
-  const menuItems = [
+  const menuItems: MenuItem[] = [
     {
       label: 'Buy',
       submenu: {
@@ -67,7 +91,7 @@ export default function MegaNav({ user }) {
     },
   ];
 
-  const simpleLinks = [
+  const simpleLinks: SimpleLink[] = [
     { label: 'About', href: '/about', isRoute: true },
     { label: 'Services', href: '/services', isRoute: true },
     { label: 'Careers', href: '/careers', isRoute: true },
@@ -75,8 +99,8 @@ export default function MegaNav({ user }) {
   ];
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (navRef.current && !navRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
         setActiveMenu(null);
       }
     };
@@ -84,7 +108,7 @@ export default function MegaNav({ user }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleMenuEnter = (index) => {
+  const handleMenuEnter = (index: number) => {
     setActiveMenu(index);
   };
 
@@ -93,111 +117,112 @@ export default function MegaNav({ user }) {
   };
 
   return (
-    <header className="mega-nav-header" ref={navRef}>
-      <nav className="mega-nav">
-        <div className="mega-nav-container">
-          <Link to="/" className="mega-nav-logo">
-            <img src="/company-logo.jpg" alt="White Caves" className="logo-img" />
-          </Link>
+    <S.MegaNavHeader ref={navRef}>
+      <S.MegaNav>
+        <S.MegaNavContainer>
+          <S.MegaNavLogo to="/">
+            <S.LogoImage src="/company-logo.jpg" alt="White Caves" />
+          </S.MegaNavLogo>
 
-          <button className="mobile-menu-btn" onClick={() => setMobileOpen(!mobileOpen)}>
-            <span className={`hamburger-icon ${mobileOpen ? 'open' : ''}`}>
+          <S.MobileMenuButton onClick={() => setMobileOpen(!mobileOpen)}>
+            <S.HamburgerIcon $open={mobileOpen}>
               <span></span>
               <span></span>
               <span></span>
-            </span>
-          </button>
+            </S.HamburgerIcon>
+          </S.MobileMenuButton>
 
-          <div className={`mega-nav-menu ${mobileOpen ? 'mobile-open' : ''}`}>
-            <ul className="mega-nav-list">
+          <S.MegaNavMenu $mobileOpen={mobileOpen}>
+            <S.MegaNavList>
               {menuItems.map((item, index) => (
-                <li 
+                <S.MegaNavItem 
                   key={item.label}
-                  className={`mega-nav-item ${activeMenu === index ? 'active' : ''}`}
                   onMouseEnter={() => handleMenuEnter(index)}
                   onMouseLeave={handleMenuLeave}
                 >
-                  <button className="mega-nav-trigger">
+                  <S.MegaNavTrigger>
                     {item.label}
-                    <svg className="dropdown-arrow" viewBox="0 0 20 20" fill="currentColor">
+                    <S.DropdownArrow viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </button>
+                    </S.DropdownArrow>
+                  </S.MegaNavTrigger>
 
-                  <div className="mega-dropdown">
-                    <div className="mega-dropdown-content">
-                      <div className="mega-col mega-featured">
+                  <S.MegaDropdown $active={activeMenu === index}>
+                    <S.MegaDropdownContent>
+                      <S.MegaFeatured>
                         <h4>Featured</h4>
-                        <div className="featured-list">
-                          {item.submenu.featured.map((feat) => (
-                            <a href="#" key={feat.title} className="featured-item">
-                              <span className="featured-icon">{feat.icon}</span>
-                              <div className="featured-text">
-                                <span className="featured-title">{feat.title}</span>
-                                <span className="featured-desc">{feat.desc}</span>
-                              </div>
-                            </a>
+                        <S.FeaturedList>
+                          {item.submenu.featured?.map((feat) => (
+                            <S.FeaturedItem href="#" key={feat.title}>
+                              <S.FeaturedIcon>{feat.icon}</S.FeaturedIcon>
+                              <S.FeaturedText>
+                                <S.FeaturedTitle>{feat.title}</S.FeaturedTitle>
+                                <S.FeaturedDesc>{feat.desc}</S.FeaturedDesc>
+                              </S.FeaturedText>
+                            </S.FeaturedItem>
                           ))}
-                        </div>
-                      </div>
+                        </S.FeaturedList>
+                      </S.MegaFeatured>
 
-                      <div className="mega-col">
+                      <S.MegaCol>
                         <h4>{item.submenu.propertyTypes ? 'Property Types' : 'Developers'}</h4>
-                        <ul className="mega-links">
+                        <S.MegaLinks>
                           {(item.submenu.propertyTypes || item.submenu.developers || []).map((type) => (
                             <li key={type}><a href="#">{type}</a></li>
                           ))}
-                        </ul>
-                      </div>
+                        </S.MegaLinks>
+                      </S.MegaCol>
 
-                      <div className="mega-col">
+                      <S.MegaCol>
                         <h4>Locations</h4>
-                        <ul className="mega-links">
+                        <S.MegaLinks>
                           {item.submenu.locations.map((loc) => (
                             <li key={loc}><a href="#">{loc}</a></li>
                           ))}
-                        </ul>
-                      </div>
+                        </S.MegaLinks>
+                      </S.MegaCol>
 
-                      <div className="mega-col">
+                      <S.MegaCol>
                         <h4>{item.submenu.priceRanges ? 'Price Range' : 'Payment Plans'}</h4>
-                        <ul className="mega-links">
+                        <S.MegaLinks>
                           {(item.submenu.priceRanges || item.submenu.paymentPlans || []).map((val) => (
                             <li key={val}><a href="#">{val}</a></li>
                           ))}
-                        </ul>
-                      </div>
+                        </S.MegaLinks>
+                      </S.MegaCol>
 
-                      <div className="mega-cta">
-                        <div className="mega-cta-content">
+                      <S.MegaCTA>
+                        <S.MegaCTAContent>
                           <h4>Need Help Finding a Property?</h4>
                           <p>Our experts are ready to assist you</p>
-                          <a href="#contact" className="btn btn-primary">Contact Us</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </li>
+                          <a href="#contact">Contact Us</a>
+                        </S.MegaCTAContent>
+                      </S.MegaCTA>
+                    </S.MegaDropdownContent>
+                  </S.MegaDropdown>
+                </S.MegaNavItem>
               ))}
 
               {simpleLinks.map((link) => (
-                <li key={link.label} className="mega-nav-item simple">
+                <S.MegaNavItem key={link.label} $isSimple>
                   {link.isRoute ? (
-                    <Link to={link.href} className="mega-nav-link">{link.label}</Link>
+                    <S.MegaNavLink to={link.href}>{link.label}</S.MegaNavLink>
                   ) : (
-                    <a href={link.href} className="mega-nav-link">{link.label}</a>
+                    <S.MegaNavTrigger as="a" href={link.href}>{link.label}</S.MegaNavTrigger>
                   )}
-                </li>
+                </S.MegaNavItem>
               ))}
-            </ul>
+            </S.MegaNavList>
 
-            <div className="mega-nav-actions">
+            <S.MegaNavActions>
               <ThemeToggle />
               <UniversalProfile />
-            </div>
-          </div>
-        </div>
-      </nav>
-    </header>
+            </S.MegaNavActions>
+          </S.MegaNavMenu>
+        </S.MegaNavContainer>
+      </S.MegaNav>
+    </S.MegaNavHeader>
   );
-}
+};
+
+export default MegaNav;

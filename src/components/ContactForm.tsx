@@ -1,16 +1,29 @@
 
-import React, { useState } from 'react';
+import React, { useState, FC, ChangeEvent, FormEvent } from 'react';
+import * as S from './ContactForm.styles';
 
-export default function ContactForm() {
-  const [formData, setFormData] = useState({
+interface FormData {
+  name: string;
+  email: string;
+  message: string;
+}
+
+interface FormErrors {
+  name?: string;
+  email?: string;
+  message?: string;
+}
+
+const ContactForm: FC = () => {
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     message: ''
   });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<FormErrors>({});
 
-  const validateForm = () => {
-    const newErrors = {};
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
     }
@@ -26,7 +39,7 @@ export default function ContactForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     if (validateForm()) {
       // Handle form submission
@@ -35,14 +48,14 @@ export default function ContactForm() {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+    const { name, value } = e.currentTarget;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
     // Clear error when user starts typing
-    if (errors[name]) {
+    if (errors[name as keyof FormErrors]) {
       setErrors(prev => ({
         ...prev,
         [name]: ''
@@ -51,8 +64,8 @@ export default function ContactForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="contact-form">
-      <div className="form-group">
+    <S.FormContainer onSubmit={handleSubmit}>
+      <S.FormGroup>
         <input
           type="text"
           name="name"
@@ -60,9 +73,9 @@ export default function ContactForm() {
           value={formData.name}
           onChange={handleChange}
         />
-        {errors.name && <span className="error">{errors.name}</span>}
-      </div>
-      <div className="form-group">
+        {errors.name && <S.ErrorMessage>{errors.name}</S.ErrorMessage>}
+      </S.FormGroup>
+      <S.FormGroup>
         <input
           type="email"
           name="email"
@@ -70,19 +83,21 @@ export default function ContactForm() {
           value={formData.email}
           onChange={handleChange}
         />
-        {errors.email && <span className="error">{errors.email}</span>}
-      </div>
-      <div className="form-group">
+        {errors.email && <S.ErrorMessage>{errors.email}</S.ErrorMessage>}
+      </S.FormGroup>
+      <S.FormGroup>
         <textarea
           name="message"
           placeholder="Your Message"
           value={formData.message}
           onChange={handleChange}
-          rows="5"
-        ></textarea>
-        {errors.message && <span className="error">{errors.message}</span>}
-      </div>
-      <button type="submit" className="cta-button">Send Message</button>
-    </form>
+          rows={5}
+        />
+        {errors.message && <S.ErrorMessage>{errors.message}</S.ErrorMessage>}
+      </S.FormGroup>
+      <S.SubmitButton type="submit">Send Message</S.SubmitButton>
+    </S.FormContainer>
   );
-}
+};
+
+export default ContactForm;
