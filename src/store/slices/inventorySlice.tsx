@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk, createSelector, PayloadAction } from '@reduxjs/toolkit';
 
-// JSON data is loaded dynamically to avoid bundling ~10MB into the main chunk
-// Use dynamic import() instead of static imports
+// JSON data loaded at runtime from public/ via fetch — never bundled into JS
 
 interface InventoryData {
   properties: {
@@ -57,17 +56,12 @@ export const loadInventoryData = createAsyncThunk<
   'inventory/loadData',
   async (_, { rejectWithValue }) => {
     try {
-      // Dynamic imports - JSON files are loaded on demand, not bundled into main chunk
-      const [
-        { default: propertiesData },
-        { default: ownersData },
-        { default: ownershipsData },
-        { default: manifestData }
-      ] = await Promise.all([
-        import('../../data/damacHills2/properties.json'),
-        import('../../data/damacHills2/owners.json'),
-        import('../../data/damacHills2/ownerships.json'),
-        import('../../data/damacHills2/manifest.json')
+      // Fetch JSON data from public/ at runtime — zero bundle size impact
+      const [propertiesData, ownersData, ownershipsData, manifestData] = await Promise.all([
+        fetch('/data/damacHills2/properties.json').then(r => r.json()),
+        fetch('/data/damacHills2/owners.json').then(r => r.json()),
+        fetch('/data/damacHills2/ownerships.json').then(r => r.json()),
+        fetch('/data/damacHills2/manifest.json').then(r => r.json())
       ]);
 
       const propertiesById: Record<string, any> = {};

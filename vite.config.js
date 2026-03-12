@@ -100,7 +100,17 @@ export default defineConfig({
         }
       }
     },
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1000,
+    // Suppress esbuild CSS nesting warnings from styled-components output
+    cssMinify: 'esbuild'
+  },
+  css: {
+    devSourcemap: true
+  },
+  esbuild: {
+    logOverride: {
+      'css-syntax-error': 'silent'
+    }
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom']

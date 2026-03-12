@@ -13,11 +13,11 @@ import SuspenseLoader from './components/common/SuspenseLoader';
 import type { RootState, AppDispatch } from './store/store';
 import type { RoleKey } from './config/ROLE_TAB_MAPPING';
 
-// Critical auth pages - loaded immediately (needed early)
-import SignInPage from './pages/auth/SignInPage';
-import ProfilePage from './pages/auth/ProfilePage';
-import PendingApprovalPage from './pages/auth/PendingApprovalPage';
-import HomePage from './pages/HomePage';
+// All pages lazy-loaded for optimal bundle splitting
+const SignInPage = lazy(() => import('./pages/auth/SignInPage'));
+const ProfilePage = lazy(() => import('./pages/auth/ProfilePage'));
+const PendingApprovalPage = lazy(() => import('./pages/auth/PendingApprovalPage'));
+const HomePage = lazy(() => import('./pages/HomePage'));
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -120,11 +120,11 @@ const UAEPassSuccessPage = lazy(() => import('./pages/auth/UAEPassSuccessPage'))
 const SignContractPage = lazy(() => import('./pages/SignContractPage'));
 const DesignSystemTest = lazy(() => import('./pages/DesignSystemTest'));
 
-// Analytics
-import { BiometricPrompt } from './features/auth/components/BiometricLogin';
+// Analytics & utilities - lazy-loaded to reduce initial bundle
+const BiometricPrompt = lazy(() => import('./features/auth/components/BiometricLogin').then(m => ({ default: m.BiometricPrompt })));
+const WebVitalsTracker = lazy(() => import('./components/analytics/WebVitalsTracker'));
 import { StatusProvider } from './components/common/StatusNotification';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import WebVitalsTracker from './components/analytics/WebVitalsTracker';
 
 // ─── App Component ──────────────────────────────────────────────────────
 
@@ -168,11 +168,17 @@ function App(): React.JSX.Element {
         <LanguageProvider>
           <BrowserRouter>
             <SpeedInsights />
-            <WebVitalsTracker />
+            <Suspense fallback={null}>
+              <WebVitalsTracker />
+            </Suspense>
             <UniversalComponents />
-            {user && <BiometricPrompt />}
+            {user && <Suspense fallback={null}><BiometricPrompt /></Suspense>}
             <Routes>
-              <Route path="/" element={<HomePage />} />
+              <Route path="/" element={
+                <Suspense fallback={<SuspenseLoader />}>
+                  <HomePage />
+                </Suspense>
+              } />
               <Route path="/properties" element={
                 <Suspense fallback={<SuspenseLoader />}>
                   <PropertiesPage />
@@ -198,18 +204,18 @@ function App(): React.JSX.Element {
                   <ContactPage />
                 </Suspense>
               } />
-              <Route path="/signin" element={user ? <Navigate to="/select-role" replace /> : <SignInPage />} />
+              <Route path="/signin" element={user ? <Navigate to="/select-role" replace /> : <Suspense fallback={<SuspenseLoader />}><SignInPage /></Suspense>} />
               <Route path="/auth/signin" element={<Navigate to="/signin" replace />} />
               <Route path="/auth/uaepass-success" element={
                 <Suspense fallback={<SuspenseLoader />}>
                   <UAEPassSuccessPage />
                 </Suspense>
               } />
-              <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to="/signin" replace />} />
+              <Route path="/profile" element={user ? <Suspense fallback={<SuspenseLoader />}><ProfilePage /></Suspense> : <Navigate to="/signin" replace />} />
               <Route path="/select-role" element={
                 user ? <RoleGateway user={user} onRoleSelect={handleRoleSelect} /> : <Navigate to="/signin" replace />
               } />
-              <Route path="/pending-approval" element={user ? <PendingApprovalPage /> : <Navigate to="/signin" replace />} />
+              <Route path="/pending-approval" element={user ? <Suspense fallback={<SuspenseLoader />}><PendingApprovalPage /></Suspense> : <Navigate to="/signin" replace />} />
 
               {/* ==================== UNIFIED DASHBOARD ==================== */}
               <Route path="/dashboard" element={
