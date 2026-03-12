@@ -81,8 +81,7 @@ const SalesPipelinePage = lazy(() => import('./pages/secondary-sales-agent/Sales
 // Unified Dashboard (NEW - replaces role-specific dashboards)
 const UnifiedDashboardPage = lazy(() => import('./pages/UnifiedDashboardPage'));
 
-// Owner/MD Pages (Legacy - will be deprecated)
-const OwnerDashboardPage = lazy(() => import('./pages/owner/OwnerDashboardPage'));
+// Owner/MD Sub-Pages (dashboard handled by UnifiedDashboardPage)
 const BusinessModelPage = lazy(() => import('./pages/owner/BusinessModelPage'));
 const ClientServicesPage = lazy(() => import('./pages/owner/ClientServicesPage'));
 const SystemHealthPage = lazy(() => import('./pages/owner/SystemHealthPage'));

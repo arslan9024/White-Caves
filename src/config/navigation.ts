@@ -1,4 +1,51 @@
-export const PUBLIC_NAV = {
+// ============================================================================
+// Navigation Configuration - TypeScript
+// Converted from navigation.js with full type safety
+// ============================================================================
+
+// ---------------------------------------------------------------------------
+// Interfaces
+// ---------------------------------------------------------------------------
+
+export interface NavItem {
+  readonly label: string;
+  readonly path: string;
+  readonly icon: string;
+}
+
+export interface NavItemWithDescription extends NavItem {
+  readonly description: string;
+}
+
+export interface QuickAction extends NavItem {
+  readonly primary?: boolean;
+}
+
+export interface BrowseAsConfig {
+  readonly clients: readonly NavItemWithDescription[];
+  readonly employees: readonly NavItemWithDescription[];
+}
+
+export interface RoleNavConfig {
+  readonly label: string;
+  readonly icon: string;
+  readonly dashboard: string;
+  readonly links: readonly NavItem[];
+  readonly browseAs?: BrowseAsConfig;
+}
+
+export type RoleCategory = 'visitor' | 'client' | 'staff' | 'admin';
+
+export type ClientRole = 'buyer' | 'seller' | 'landlord' | 'tenant';
+export type StaffRole = 'leasing-agent' | 'secondary-sales-agent' | 'team-leader';
+export type AdminRole = 'owner' | 'admin';
+export type UserRole = ClientRole | StaffRole | AdminRole;
+
+// ---------------------------------------------------------------------------
+// Public Navigation
+// ---------------------------------------------------------------------------
+
+export const PUBLIC_NAV: Record<string, readonly NavItem[]> = {
   main: [
     { label: 'Home', path: '/', icon: '🏠' },
     { label: 'Properties', path: '/properties', icon: '🏢' },
@@ -28,9 +75,13 @@ export const PUBLIC_NAV = {
     { label: 'Careers', path: '/careers', icon: '💼' },
     { label: 'Contact Us', path: '/contact', icon: '📞' }
   ]
-};
+} as const;
 
-export const ROLE_NAV = {
+// ---------------------------------------------------------------------------
+// Role-Based Navigation
+// ---------------------------------------------------------------------------
+
+export const ROLE_NAV: Record<string, RoleNavConfig> = {
   buyer: {
     label: 'Buyer',
     icon: '🏠',
@@ -151,7 +202,11 @@ export const ROLE_NAV = {
   }
 };
 
-export const QUICK_ACTIONS = {
+// ---------------------------------------------------------------------------
+// Quick Actions
+// ---------------------------------------------------------------------------
+
+export const QUICK_ACTIONS: Record<RoleCategory, readonly QuickAction[]> = {
   visitor: [
     { label: 'Sign In', path: '/signin', icon: '🔐', primary: true },
     { label: 'Browse Properties', path: '/properties', icon: '🔍' },
@@ -174,7 +229,11 @@ export const QUICK_ACTIONS = {
   ]
 };
 
-export const BREADCRUMB_LABELS = {
+// ---------------------------------------------------------------------------
+// Breadcrumb Labels
+// ---------------------------------------------------------------------------
+
+export const BREADCRUMB_LABELS: Record<string, string> = {
   '/': 'Home',
   '/properties': 'Properties',
   '/services': 'Services',
@@ -201,22 +260,26 @@ export const BREADCRUMB_LABELS = {
   '/owner/client-services': 'Client Services'
 };
 
-export function getRoleCategory(role) {
-  const clientRoles = ['buyer', 'seller', 'landlord', 'tenant'];
-  const staffRoles = ['leasing-agent', 'secondary-sales-agent', 'team-leader'];
-  const adminRoles = ['owner', 'admin'];
-  
+// ---------------------------------------------------------------------------
+// Helper Functions
+// ---------------------------------------------------------------------------
+
+export function getRoleCategory(role: string): RoleCategory {
+  const clientRoles: readonly string[] = ['buyer', 'seller', 'landlord', 'tenant'];
+  const staffRoles: readonly string[] = ['leasing-agent', 'secondary-sales-agent', 'team-leader'];
+  const adminRoles: readonly string[] = ['owner', 'admin'];
+
   if (clientRoles.includes(role)) return 'client';
   if (staffRoles.includes(role)) return 'staff';
   if (adminRoles.includes(role)) return 'admin';
   return 'visitor';
 }
 
-export function getNavForRole(role) {
+export function getNavForRole(role: string): RoleNavConfig | null {
   return ROLE_NAV[role] || null;
 }
 
-export function getQuickActionsForRole(role) {
+export function getQuickActionsForRole(role: string): readonly QuickAction[] {
   const category = getRoleCategory(role);
   return QUICK_ACTIONS[category] || QUICK_ACTIONS.visitor;
 }

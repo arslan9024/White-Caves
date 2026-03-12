@@ -1,4 +1,95 @@
-export const DEPARTMENTS = {
+// ============================================================================
+// AI Assistant Registry - TypeScript
+// Converted from assistantRegistry.js with full type safety
+// ============================================================================
+
+// ---------------------------------------------------------------------------
+// Interfaces
+// ---------------------------------------------------------------------------
+
+export interface Department {
+  id: string;
+  label: string;
+  color: string;
+  gradient: string;
+  icon: string;
+}
+
+export type DepartmentId =
+  | 'communications'
+  | 'operations'
+  | 'sales'
+  | 'finance'
+  | 'marketing'
+  | 'executive'
+  | 'compliance'
+  | 'technology'
+  | 'legal'
+  | 'intelligence';
+
+export type AssistantId =
+  | 'linda'
+  | 'nina'
+  | 'mary'
+  | 'nancy'
+  | 'daisy'
+  | 'clara'
+  | 'sophia'
+  | 'theodora'
+  | 'olivia'
+  | 'zoe'
+  | 'laila'
+  | 'aurora'
+  | 'hazel'
+  | 'willow'
+  | 'evangeline'
+  | 'sentinel'
+  | 'hunter'
+  | 'henry'
+  | 'cipher'
+  | 'atlas'
+  | 'vesta'
+  | 'juno'
+  | 'kairos'
+  | 'maven';
+
+export type DataAccessLevel = 'full' | 'departmental';
+
+export interface AssistantPermissions {
+  viewableBy: string[];
+  accessibleBy: string[];
+  dataAccessLevel: DataAccessLevel;
+}
+
+export interface AssistantDataFlows {
+  outputs: string[];
+  inputs: string[];
+}
+
+export interface Assistant {
+  id: AssistantId;
+  name: string;
+  title: string;
+  department: DepartmentId;
+  icon: string;
+  color: string;
+  avatar: string;
+  description: string;
+  capabilities: string[];
+  permissions: AssistantPermissions;
+  apiEndpoints: string[];
+  dataFlows: AssistantDataFlows;
+}
+
+export interface NavigationItem extends Department {
+  assistants: Assistant[];
+}
+
+// ---------------------------------------------------------------------------
+// Department Registry
+// ---------------------------------------------------------------------------
+
+export const DEPARTMENTS: Record<DepartmentId, Department> = {
   communications: { 
     id: 'communications',
     label: 'Communications', 
@@ -71,7 +162,11 @@ export const DEPARTMENTS = {
   }
 };
 
-export const AI_ASSISTANTS = {
+// ---------------------------------------------------------------------------
+// AI Assistants Registry
+// ---------------------------------------------------------------------------
+
+export const AI_ASSISTANTS: Record<AssistantId, Assistant> = {
   linda: {
     id: 'linda',
     name: 'Linda',
@@ -578,29 +673,35 @@ export const AI_ASSISTANTS = {
   }
 };
 
-export const getAssistantById = (id) => AI_ASSISTANTS[id] || null;
+// ---------------------------------------------------------------------------
+// Accessor Functions
+// ---------------------------------------------------------------------------
 
-export const getAssistantsByDepartment = (departmentId) => {
+export const getAssistantById = (id: AssistantId): Assistant | null =>
+  AI_ASSISTANTS[id] || null;
+
+export const getAssistantsByDepartment = (departmentId: DepartmentId): Assistant[] => {
   return Object.values(AI_ASSISTANTS).filter(
     assistant => assistant.department === departmentId
   );
 };
 
-export const getAllAssistants = () => Object.values(AI_ASSISTANTS);
+export const getAllAssistants = (): Assistant[] => Object.values(AI_ASSISTANTS);
 
-export const getAllDepartments = () => Object.values(DEPARTMENTS);
+export const getAllDepartments = (): Department[] => Object.values(DEPARTMENTS);
 
-export const getDepartmentById = (id) => DEPARTMENTS[id] || null;
+export const getDepartmentById = (id: DepartmentId): Department | null =>
+  DEPARTMENTS[id] || null;
 
-export const getAssistantCount = () => Object.keys(AI_ASSISTANTS).length;
+export const getAssistantCount = (): number => Object.keys(AI_ASSISTANTS).length;
 
-export const getDepartmentCount = () => Object.keys(DEPARTMENTS).length;
+export const getDepartmentCount = (): number => Object.keys(DEPARTMENTS).length;
 
-export const ASSISTANT_IDS = Object.keys(AI_ASSISTANTS);
+export const ASSISTANT_IDS: AssistantId[] = Object.keys(AI_ASSISTANTS) as AssistantId[];
 
-export const DEPARTMENT_IDS = Object.keys(DEPARTMENTS);
+export const DEPARTMENT_IDS: DepartmentId[] = Object.keys(DEPARTMENTS) as DepartmentId[];
 
-export const getDepartmentOrder = () => [
+export const getDepartmentOrder = (): DepartmentId[] => [
   'communications',
   'operations', 
   'sales',
@@ -613,7 +714,7 @@ export const getDepartmentOrder = () => [
   'intelligence'
 ];
 
-export const getNavigationStructure = () => {
+export const getNavigationStructure = (): NavigationItem[] => {
   const order = getDepartmentOrder();
   return order.map(deptId => ({
     ...DEPARTMENTS[deptId],
@@ -621,7 +722,7 @@ export const getNavigationStructure = () => {
   }));
 };
 
-export const getDataFlowsForAssistant = (assistantId) => {
+export const getDataFlowsForAssistant = (assistantId: AssistantId): AssistantDataFlows => {
   const assistant = AI_ASSISTANTS[assistantId];
   if (!assistant?.dataFlows) return { inputs: [], outputs: [] };
   return {
@@ -629,6 +730,10 @@ export const getDataFlowsForAssistant = (assistantId) => {
     outputs: assistant.dataFlows.outputs || []
   };
 };
+
+// ---------------------------------------------------------------------------
+// Default Export (matches original)
+// ---------------------------------------------------------------------------
 
 export default {
   AI_ASSISTANTS,

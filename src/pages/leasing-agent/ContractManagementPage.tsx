@@ -1,7 +1,6 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
 import '../RolePages.css';
-import './ContractManagementPage.css';
 
 interface ContractData {
   contractNumber: string;

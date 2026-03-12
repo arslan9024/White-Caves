@@ -1,4 +1,117 @@
-export const BUSINESS_MODEL_CONFIG = {
+// ============================================================================
+// Business Model Configuration - TypeScript
+// Converted from businessModel.js with full type safety
+// ============================================================================
+
+// ---------------------------------------------------------------------------
+// Interfaces
+// ---------------------------------------------------------------------------
+
+export interface CompanyHeadquarters {
+  address: string;
+  area: string;
+  city: string;
+  country: string;
+}
+
+export interface CompanyInfo {
+  name: string;
+  tagline: string;
+  license: string;
+  rera: string;
+  established: number;
+  headquarters: CompanyHeadquarters;
+}
+
+export interface AssistantConfig {
+  name: string;
+  role: string;
+  primaryFunction: string;
+  kpis: string[];
+  integrations: string[];
+  ownerOnly: boolean;
+}
+
+export type BusinessAssistantId = 'linda' | 'mary' | 'clara' | 'nina' | 'nancy';
+
+export interface AIAssistantEcosystem {
+  description: string;
+  assistants: Record<BusinessAssistantId, AssistantConfig>;
+}
+
+export type AutomationLevel = 'semi-automatic' | 'ai-powered' | 'fully-automatic' | 'manual';
+
+export interface FeatureFlow {
+  flow: string[];
+  automation: AutomationLevel;
+  timeToComplete: string;
+}
+
+export type FeatureName = 'leadCapture' | 'propertyMatching' | 'viewingSchedule' | 'salesClosure';
+
+export interface FeatureMapping extends Record<FeatureName, FeatureFlow> {}
+
+export interface RevenueStream {
+  id: string;
+  name: string;
+  description: string;
+  rate: string;
+  target: string;
+  aiSupport: string[];
+}
+
+export interface ConversionFunnel {
+  inquiry: number;
+  qualified: number;
+  viewing: number;
+  negotiation: number;
+  closed: number;
+}
+
+export interface CustomerAcquisition {
+  leadSources: string[];
+  conversionFunnel: ConversionFunnel;
+}
+
+export interface InventoryMetrics {
+  totalUnits: number;
+  focus: string;
+  dataFields: number;
+  updateFrequency: string;
+}
+
+export interface TeamMetrics {
+  totalEmployees: number;
+  departments: string[];
+  avgPerformance: number;
+}
+
+export interface OperationalMetrics {
+  customerAcquisition: CustomerAcquisition;
+  inventory: InventoryMetrics;
+  team: TeamMetrics;
+}
+
+export interface AccessControl {
+  ownerExclusive: string[];
+  managerAccess: string[];
+  agentAccess: string[];
+}
+
+export interface BusinessModelConfig {
+  company: CompanyInfo;
+  aiAssistantEcosystem: AIAssistantEcosystem;
+  featureMapping: FeatureMapping;
+  revenueStreams: RevenueStream[];
+  operationalMetrics: OperationalMetrics;
+  accessControl: AccessControl;
+}
+
+// ---------------------------------------------------------------------------
+// Configuration Data
+// ---------------------------------------------------------------------------
+
+export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
   company: {
     name: 'White Caves Real Estate LLC',
     tagline: 'Luxury Living in Dubai',
@@ -164,15 +277,19 @@ export const BUSINESS_MODEL_CONFIG = {
   }
 };
 
-export const getAssistantConfig = (assistantId) => {
+// ---------------------------------------------------------------------------
+// Accessor Functions
+// ---------------------------------------------------------------------------
+
+export const getAssistantConfig = (assistantId: BusinessAssistantId): AssistantConfig | null => {
   return BUSINESS_MODEL_CONFIG.aiAssistantEcosystem.assistants[assistantId] || null;
 };
 
-export const getRevenueStream = (streamId) => {
+export const getRevenueStream = (streamId: string): RevenueStream | null => {
   return BUSINESS_MODEL_CONFIG.revenueStreams.find(s => s.id === streamId) || null;
 };
 
-export const isOwnerOnlyFeature = (featureName) => {
+export const isOwnerOnlyFeature = (featureName: string): boolean => {
   return BUSINESS_MODEL_CONFIG.accessControl.ownerExclusive.includes(featureName);
 };
 

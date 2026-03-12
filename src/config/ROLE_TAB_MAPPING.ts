@@ -1,11 +1,45 @@
 /**
  * ROLE TAB MAPPING CONFIGURATION
  * Defines which tabs are available for each role in the UnifiedDashboard
- * 
+ *
  * This is the source of truth for role-based UI rendering
  */
 
-export const ROLE_TAB_MAPPING = {
+// ─── Types ──────────────────────────────────────────────────────────────
+
+export type RoleKey =
+  | 'lion'
+  | 'owner'
+  | 'buyer'
+  | 'seller'
+  | 'landlord'
+  | 'leasing-agent'
+  | 'secondary-sales-agent'
+  | 'tenant';
+
+export interface RoleTab {
+  id: string;
+  label: string;
+  icon: string;
+}
+
+export interface RoleConfig {
+  label: string;
+  tabs: RoleTab[];
+  description: string;
+}
+
+export interface RoleInfo {
+  label: string;
+  description: string;
+  isSuperUser: boolean;
+}
+
+export type RoleTabMapping = Record<RoleKey, RoleConfig>;
+
+// ─── Configuration ──────────────────────────────────────────────────────
+
+export const ROLE_TAB_MAPPING: RoleTabMapping = {
   lion: {
     label: 'Super User (Owner)',
     tabs: [
@@ -107,22 +141,16 @@ export const ROLE_TAB_MAPPING = {
   },
 };
 
-/**
- * Get tabs for a specific role
- * @param {string} role - The user's role
- * @returns {Array} Array of tab objects for this role
- */
-export const getTabsForRole = (role) => {
-  return ROLE_TAB_MAPPING[role]?.tabs || [];
+// ─── Helper Functions ───────────────────────────────────────────────────
+
+/** Get tabs for a specific role */
+export const getTabsForRole = (role: string): RoleTab[] => {
+  return ROLE_TAB_MAPPING[role as RoleKey]?.tabs || [];
 };
 
-/**
- * Get role info including label and description
- * @param {string} role - The user's role
- * @returns {Object} Role information object
- */
-export const getRoleInfo = (role) => {
-  const roleData = ROLE_TAB_MAPPING[role];
+/** Get role info including label and description */
+export const getRoleInfo = (role: string): RoleInfo => {
+  const roleData = ROLE_TAB_MAPPING[role as RoleKey];
   return {
     label: roleData?.label || 'Unknown Role',
     description: roleData?.description || 'Access denied',
@@ -130,13 +158,18 @@ export const getRoleInfo = (role) => {
   };
 };
 
-/**
- * Check if role can access specific feature
- * @param {string} role - The user's role
- * @param {string} featureId - Feature identifier
- * @returns {boolean} Whether role can access feature
- */
-export const canAccessFeature = (role, featureId) => {
+/** Check if role can access specific feature */
+export const canAccessFeature = (role: string, featureId: string): boolean => {
   const tabs = getTabsForRole(role);
-  return tabs.some(tab => tab.id === featureId);
+  return tabs.some((tab) => tab.id === featureId);
+};
+
+/** Type guard to check if a string is a valid role key */
+export const isValidRole = (role: string): role is RoleKey => {
+  return role in ROLE_TAB_MAPPING;
+};
+
+/** Get all available role keys */
+export const getAllRoles = (): RoleKey[] => {
+  return Object.keys(ROLE_TAB_MAPPING) as RoleKey[];
 };
