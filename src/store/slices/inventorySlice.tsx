@@ -1,9 +1,7 @@
 import { createSlice, createAsyncThunk, createSelector, PayloadAction } from '@reduxjs/toolkit';
 
-import propertiesData from '../../data/damacHills2/properties.json';
-import ownersData from '../../data/damacHills2/owners.json';
-import ownershipsData from '../../data/damacHills2/ownerships.json';
-import manifestData from '../../data/damacHills2/manifest.json';
+// JSON data is loaded dynamically to avoid bundling ~10MB into the main chunk
+// Use dynamic import() instead of static imports
 
 interface InventoryData {
   properties: {
@@ -59,6 +57,19 @@ export const loadInventoryData = createAsyncThunk<
   'inventory/loadData',
   async (_, { rejectWithValue }) => {
     try {
+      // Dynamic imports - JSON files are loaded on demand, not bundled into main chunk
+      const [
+        { default: propertiesData },
+        { default: ownersData },
+        { default: ownershipsData },
+        { default: manifestData }
+      ] = await Promise.all([
+        import('../../data/damacHills2/properties.json'),
+        import('../../data/damacHills2/owners.json'),
+        import('../../data/damacHills2/ownerships.json'),
+        import('../../data/damacHills2/manifest.json')
+      ]);
+
       const propertiesById: Record<string, any> = {};
       const propertyIds: string[] = [];
       propertiesData.forEach((p: any) => {
