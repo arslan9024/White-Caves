@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, lazy, Suspense, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setProperties } from '../store/propertySlice';
 import AppLayout from '../components/layout/AppLayout';
@@ -6,23 +6,32 @@ import Footer from '../components/Footer';
 import ClickToChat from '../components/ClickToChat';
 import Hero from '../components/homepage/Hero';
 import Features from '../components/homepage/Features';
-import Locations from '../components/homepage/Locations';
-import Team from '../components/homepage/Team';
-import Testimonials from '../components/homepage/Testimonials';
-import ContactCTA from '../components/homepage/Contact';
-import InteractiveMap from '../components/InteractiveMap';
-import PropertyComparison from '../components/PropertyComparison';
-import OffPlanTracker from '../components/OffPlanTracker';
-import NeighborhoodAnalyzer from '../components/NeighborhoodAnalyzer';
-import RentVsBuyCalculator from '../components/RentVsBuyCalculator';
-import VirtualTourGallery from '../components/VirtualTourGallery';
-import DubaiMap from '../components/DubaiMap';
-import CompanyProfile from '../components/CompanyProfile';
-import BlogSection from '../components/BlogSection';
-import NewsletterSubscription from '../components/NewsletterSubscription';
-import OnboardingGateway from '../components/OnboardingGateway';
 import { useRecentlyViewed } from '../components/RecentlyViewed';
 import './HomePage.css';
+
+// Below-the-fold: lazy-loaded for faster initial paint
+const Locations = lazy(() => import('../components/homepage/Locations'));
+const Team = lazy(() => import('../components/homepage/Team'));
+const Testimonials = lazy(() => import('../components/homepage/Testimonials'));
+const ContactCTA = lazy(() => import('../components/homepage/Contact'));
+const InteractiveMap = lazy(() => import('../components/InteractiveMap'));
+const PropertyComparison = lazy(() => import('../components/PropertyComparison'));
+const OffPlanTracker = lazy(() => import('../components/OffPlanTracker'));
+const NeighborhoodAnalyzer = lazy(() => import('../components/NeighborhoodAnalyzer'));
+const RentVsBuyCalculator = lazy(() => import('../components/RentVsBuyCalculator'));
+const VirtualTourGallery = lazy(() => import('../components/VirtualTourGallery'));
+const DubaiMap = lazy(() => import('../components/DubaiMap'));
+const CompanyProfile = lazy(() => import('../components/CompanyProfile'));
+const BlogSection = lazy(() => import('../components/BlogSection'));
+const NewsletterSubscription = lazy(() => import('../components/NewsletterSubscription'));
+const OnboardingGateway = lazy(() => import('../components/OnboardingGateway'));
+
+/** Minimal placeholder while lazy chunks load */
+const SectionLoader: FC = () => (
+  <div style={{ minHeight: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5 }}>
+    <div style={{ width: 32, height: 32, border: '3px solid #e5e7eb', borderTop: '3px solid #6366f1', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+  </div>
+);
 
 interface Property {
   id: number;
@@ -132,23 +141,28 @@ const HomePage: FC = () => {
   return (
     <AppLayout>
       <div className="home-page">
+        {/* Above the fold — eagerly loaded */}
         <Hero onPropertyClick={handlePropertyClick} />
         <Features />
-        <DubaiMap onLocationClick={handlePropertyClick} />
-        <Locations />
-        <InteractiveMap />
-        <PropertyComparison />
-        <RentVsBuyCalculator />
-        <OffPlanTracker />
-        <NeighborhoodAnalyzer />
-        <VirtualTourGallery />
-        <CompanyProfile />
-        <Team />
-        <Testimonials />
-        <BlogSection />
-        <NewsletterSubscription />
-        <ContactCTA />
-        <OnboardingGateway />
+
+        {/* Below the fold — lazy-loaded for faster initial paint */}
+        <Suspense fallback={<SectionLoader />}>
+          <DubaiMap onLocationClick={handlePropertyClick} />
+          <Locations />
+          <InteractiveMap />
+          <PropertyComparison />
+          <RentVsBuyCalculator />
+          <OffPlanTracker />
+          <NeighborhoodAnalyzer />
+          <VirtualTourGallery />
+          <CompanyProfile />
+          <Team />
+          <Testimonials />
+          <BlogSection />
+          <NewsletterSubscription />
+          <ContactCTA />
+          <OnboardingGateway />
+        </Suspense>
         <ClickToChat />
         <Footer />
       </div>

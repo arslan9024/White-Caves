@@ -4,7 +4,7 @@ import {
   ChevronDown, ChevronUp, MoreVertical, UserCheck, UserX,
   Download, Upload, RefreshCw
 } from 'lucide-react';
-import { REAL_ESTATE_ROLES } from '../../../shared/components/ui/RoleSelectorDropdown';
+import { REAL_ESTATE_ROLES } from '../../../config/roles';
 import './UsersTab.css';
 
 const DUMMY_USERS = [

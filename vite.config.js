@@ -94,7 +94,36 @@ export default defineConfig({
           if (id.includes('src/components/dashboard/') || id.includes('src/components/dashboards/')) {
             return 'dashboards';
           }
-          if (id.includes('src/features/') || id.includes('src/components/layout/')) {
+          // Auth feature — large, lazy-loaded on login routes
+          if (id.includes('src/features/auth/')) {
+            return 'auth';
+          }
+          // Charts — used across dashboards, not on initial load
+          if (id.includes('src/components/charts/')) {
+            return 'charts';
+          }
+          // Design system — tokens, primitives
+          if (id.includes('src/components/design-system/')) {
+            return 'design-system';
+          }
+          // Shared UI & layout primitives
+          if (id.includes('src/shared/components/')) {
+            return 'shared-ui';
+          }
+          // Common reusable components
+          if (id.includes('src/components/common/')) {
+            return 'common-ui';
+          }
+          // Homepage components (lazy-loaded sections)
+          if (id.includes('src/components/homepage/')) {
+            return 'homepage';
+          }
+          // Core layout shell (always loaded)
+          if (id.includes('src/components/layout/')) {
+            return 'app-core';
+          }
+          // Remaining features (admin, registry)
+          if (id.includes('src/features/')) {
             return 'app-core';
           }
         }
