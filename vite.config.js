@@ -88,42 +88,31 @@ export default defineConfig({
             if (id.includes('/SophiaSalesCRM_NEW/')) return 'crm-sales';
             if (id.includes('/DaisyLeasingCRM_NEW/')) return 'crm-leasing';
             if (id.includes('/ZoeExecutiveCRM_NEW/')) return 'crm-executive';
-            // Shared + misc combined into one chunk to avoid circular deps
+            // CRM data files (pure data, no component deps)
+            if (id.includes('/data/')) return 'crm-data';
+            // Shared + standalone modules in one chunk (avoid circular deps)
             return 'crm-shared';
           }
           if (id.includes('src/components/dashboard/') || id.includes('src/components/dashboards/')) {
             return 'dashboards';
           }
-          // Auth feature — large, lazy-loaded on login routes
-          if (id.includes('src/features/auth/')) {
-            return 'auth';
-          }
-          // Charts — used across dashboards, not on initial load
-          if (id.includes('src/components/charts/')) {
-            return 'charts';
-          }
-          // Design system — tokens, primitives
-          if (id.includes('src/components/design-system/')) {
-            return 'design-system';
-          }
           // Shared UI & layout primitives
           if (id.includes('src/shared/components/')) {
             return 'shared-ui';
-          }
-          // Common reusable components
-          if (id.includes('src/components/common/')) {
-            return 'common-ui';
           }
           // Homepage components (lazy-loaded sections)
           if (id.includes('src/components/homepage/')) {
             return 'homepage';
           }
-          // Core layout shell (always loaded)
-          if (id.includes('src/components/layout/')) {
-            return 'app-core';
-          }
-          // Remaining features (admin, registry)
-          if (id.includes('src/features/')) {
+          // Core app shell: layout + common-ui + auth + features + charts + design-system
+          // Merged to eliminate circular dependencies between tightly-coupled modules
+          if (
+            id.includes('src/components/layout/') ||
+            id.includes('src/components/common/') ||
+            id.includes('src/components/charts/') ||
+            id.includes('src/components/design-system/') ||
+            id.includes('src/features/')
+          ) {
             return 'app-core';
           }
         }
