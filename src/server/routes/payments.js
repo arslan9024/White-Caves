@@ -1,7 +1,7 @@
 
 import express from 'express';
 import Stripe from 'stripe';
-import { ConfigurationError, PaymentError, ValidationError } from '../../utils/errors.js';
+import { ConfigurationError, PaymentError, ValidationError } from '../../utils/errors';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { validateAmount, validateRequired } from '../middleware/validation.js';
 

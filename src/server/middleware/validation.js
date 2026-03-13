@@ -1,4 +1,4 @@
-import { ValidationError } from '../../utils/errors.js';
+import { ValidationError } from '../../utils/errors';
 
 export const validateEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
