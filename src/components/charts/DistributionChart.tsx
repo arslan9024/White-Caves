@@ -9,7 +9,21 @@ import {
 } from 'recharts';
 import './charts.css';
 
-const DistributionChart = ({
+interface DistributionChartData {
+  name: string;
+  value: number;
+  [key: string]: any;
+}
+
+interface DistributionChartProps {
+  data?: DistributionChartData[];
+  title?: string;
+  height?: number;
+  innerRadius?: number;
+  colors?: string[];
+}
+
+const DistributionChart: React.FC<DistributionChartProps> = ({
   data = [],
   title = 'Distribution',
   height = 300,

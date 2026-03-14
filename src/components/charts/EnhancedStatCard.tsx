@@ -22,7 +22,21 @@ import {
   ComparisonText
 } from './EnhancedStatCard.styles';
 
-const EnhancedStatCard = ({
+interface EnhancedStatCardProps {
+  label?: string;
+  value?: string;
+  unit?: string;
+  change?: string;
+  trend?: 'up' | 'down' | 'stable';
+  comparison?: string;
+  icon?: React.ReactNode;
+  color?: string;
+  backgroundColor?: string;
+  sparklineData?: number[];
+  onClick?: () => void;
+}
+
+const EnhancedStatCard: React.FC<EnhancedStatCardProps> = ({
   label = 'Metric',
   value = '0',
   unit = '',

@@ -1,8 +1,8 @@
 import React, { type ReactNode, type CSSProperties } from 'react';
 import { StyledBadge, BadgeDot, BadgeIcon, BadgeContent } from './Badge.styles';
 
-type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info' | string;
-type BadgeSize = 'xs' | 'sm' | 'md' | 'lg' | string;
+type BadgeVariant = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info';
+type BadgeSize = 'xs' | 'sm' | 'md' | 'lg';
 
 interface BadgeProps {
   children?: ReactNode;
@@ -65,7 +65,7 @@ interface StatusBadgeProps extends Omit<BadgeProps, 'variant' | 'dot'> {
 }
 
 const StatusBadge: React.FC<StatusBadgeProps> = ({ status, children, ...props }) => {
-  const statusConfig: Record<string, { variant: string; dot: boolean; pulse?: boolean }> = {
+  const statusConfig: Record<string, { variant: BadgeVariant; dot: boolean; pulse?: boolean }> = {
     success: { variant: 'success', dot: true },
     warning: { variant: 'warning', dot: true },
     error: { variant: 'error', dot: true },
@@ -76,7 +76,17 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, children, ...props })
   };
 
   const config = statusConfig[status] || statusConfig.info;
-  return <Badge {...config} {...props}>{children || status}</Badge>;
+  const displayText: string = (children as string) || status;
+  return (
+    <Badge 
+      variant={config.variant}
+      dot={config.dot}
+      pulse={config.pulse}
+      {...props}
+    >
+      {displayText}
+    </Badge>
+  );
 };
 
 interface PropertyStatusBadgeProps extends Omit<BadgeProps, 'color'> {

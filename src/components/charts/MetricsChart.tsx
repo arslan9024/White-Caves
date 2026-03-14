@@ -5,8 +5,21 @@ import {
 } from 'recharts';
 import './charts.css';
 
-const MetricsChart = ({ 
-  data = [], 
+interface MetricItem {
+  label: string;
+  value: string;
+}
+
+interface MetricsChartProps {
+  data?: MetricItem[];
+  title?: string;
+  color?: string;
+  height?: number;
+  dataKeys?: string[];
+}
+
+const MetricsChart: React.FC<MetricsChartProps> = ({
+  data = [],
   title = 'Metrics Overview',
   color = '#3B82F6',
   height = 300,

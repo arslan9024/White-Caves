@@ -9,8 +9,8 @@ import {
 
 interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
   children?: ReactNode;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline' | string;
-  size?: 'xs' | 'sm' | 'md' | 'lg' | string;
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline' | 'success';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
   loading?: boolean;

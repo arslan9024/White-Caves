@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import PropertyCard from '../PropertyCard';
 import type { PropertyCardData, ViewMode } from '../PropertyCard/PropertyCard';
-import Grid from '../../layout/Grid';
+import Grid, { type GridGapSize } from '../../layout/Grid';
 import Flex from '../../layout/Flex';
 import Button from '../../ui/Button';
 import './PropertyList.css';
@@ -16,7 +16,7 @@ export interface PropertyListProps {
   properties?: PropertyCardData[];
   viewMode?: ViewMode;
   columns?: GridColumns;
-  gap?: 'small' | 'medium' | 'large' | string;
+  gap?: GridGapSize;
   showActions?: boolean;
   emptyMessage?: string;
   loading?: boolean;

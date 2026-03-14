@@ -10,7 +10,25 @@ import {
 } from 'recharts';
 import './charts.css';
 
-const TrendChart = ({
+interface TrendChartData {
+  name: string;
+  value: number;
+  target?: number;
+  [key: string]: any;
+}
+
+interface TrendChartProps {
+  data?: TrendChartData[];
+  title?: string;
+  color?: string;
+  height?: number;
+  showArea?: boolean;
+  xAxisKey?: string;
+  yAxisKey?: string;
+  animate?: boolean;
+}
+
+const TrendChart: React.FC<TrendChartProps> = ({
   data = [],
   title = 'Trend Analysis',
   color = '#3B82F6',

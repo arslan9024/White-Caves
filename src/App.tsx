@@ -172,7 +172,7 @@ function App(): React.JSX.Element {
               <WebVitalsTracker />
             </Suspense>
             <UniversalComponents />
-            {user && <Suspense fallback={null}><BiometricPrompt /></Suspense>}
+            {user && <Suspense fallback={null}><BiometricPrompt onClose={() => {}} /></Suspense>}
             <Routes>
               <Route path="/" element={
                 <Suspense fallback={<SuspenseLoader />}>

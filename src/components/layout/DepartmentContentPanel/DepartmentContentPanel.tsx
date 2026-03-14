@@ -686,15 +686,19 @@ const DepartmentContentPanel: React.FC = () => {
 
   // Handle service card click
   const handleServiceCardClick = (serviceName: string) => {
-    dispatch(selectService({ 
-      department: selectedDepartment, 
-      service: serviceName 
-    }));
+    if (selectedDepartment) {
+      dispatch(selectService({ 
+        department: selectedDepartment, 
+        service: serviceName 
+      }));
+    }
   };
 
   // Handle quick action clicks with new navigation system
   const handleActionClick = (actionLabel: string) => {
-    handleAction(actionLabel, selectedDepartment, selectedService);
+    if (selectedDepartment) {
+      handleAction(actionLabel, selectedDepartment, selectedService || '');
+    }
   };
 
   if (!deptContent) {

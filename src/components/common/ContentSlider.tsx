@@ -261,7 +261,7 @@ function DefaultSlideCardComponent({ item }: DefaultSlideCardComponentProps) {
             loading="lazy"
           />
           {item.type && (
-            <SlideBadge $type={item.type}>
+            <SlideBadge $type={item.type as 'sale' | 'rent'}>
               {item.type === 'sale' ? 'For Sale' : 'For Rent'}
             </SlideBadge>
           )}
