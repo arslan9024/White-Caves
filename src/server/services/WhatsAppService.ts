@@ -16,6 +16,54 @@ import Redis from 'redis';
 import { EventEmitter } from 'events';
 import type WhatsAppSessionModel from '../models/WhatsAppSession';
 
+// Custom Error Types
+export class WhatsAppError extends Error {
+  constructor(
+    public code: string,
+    message: string,
+    public details?: any
+  ) {
+    super(message);
+    this.name = 'WhatsAppError';
+  }
+}
+
+export class WhatsAppAuthenticationError extends WhatsAppError {
+  constructor(message: string, details?: any) {
+    super('AUTH_ERROR', message, details);
+    this.name = 'WhatsAppAuthenticationError';
+  }
+}
+
+export class WhatsAppConnectionError extends WhatsAppError {
+  constructor(message: string, details?: any) {
+    super('CONNECTION_ERROR', message, details);
+    this.name = 'WhatsAppConnectionError';
+  }
+}
+
+export class WhatsAppMessageError extends WhatsAppError {
+  constructor(message: string, details?: any) {
+    super('MESSAGE_ERROR', message, details);
+    this.name = 'WhatsAppMessageError';
+  }
+}
+
+// Message Queue Types
+interface QueuedMessage {
+  id: string;
+  phoneNumber: string;
+  content: string;
+  mediaPath?: string;
+  caption?: string;
+  options?: any;
+  type: 'text' | 'media';
+  createdAt: Date;
+  retryCount: number;
+  maxRetries: number;
+  priority: 'high' | 'normal' | 'low';
+}
+
 interface WhatsAppServiceConfig {
   sessionId: string;
   ownerEmail: string;
@@ -25,6 +73,9 @@ interface WhatsAppServiceConfig {
   retryDelayMs?: number;
   heartbeatIntervalMs?: number;
   messageDeduplicationTTL?: number;
+  messageQueueMaxSize?: number;
+  messageRetryMaxAttempts?: number;
+  messageRetryDelayMs?: number;
 }
 
 interface ReconnectConfig {
@@ -47,7 +98,9 @@ export class WhatsAppService extends EventEmitter {
   private config: WhatsAppServiceConfig;
   private reconnectConfig: ReconnectConfig;
   private heartbeatInterval: NodeJS.Timer | null = null;
-  private messageQueue: Map<string, Promise<any>> = new Map();
+  private messageQueue: Map<string, QueuedMessage> = new Map();
+  private processingMessages: Set<string> = new Set();
+  private messageProcessingTimer: NodeJS.Timer | null = null;
   private redisClient: Redis.RedisClient | null = null;
   private sessionModel: typeof WhatsAppSessionModel | null = null;
   private sessionStatus: SessionStatus = {
@@ -58,6 +111,8 @@ export class WhatsAppService extends EventEmitter {
     messagesReceived: 0,
     uptime: 0
   };
+  private lastErrorTime: Date | null = null;
+  private errorCount: number = 0;
 
   constructor(config: WhatsAppServiceConfig) {
     super();
@@ -77,6 +132,11 @@ export class WhatsAppService extends EventEmitter {
 
     this.redisClient = config.redisClient || null;
     this.sessionModel = config.mongoSessionModel || null;
+    
+    // Set message queue defaults
+    if (!this.config.messageQueueMaxSize) this.config.messageQueueMaxSize = 1000;
+    if (!this.config.messageRetryMaxAttempts) this.config.messageRetryMaxAttempts = 3;
+    if (!this.config.messageRetryDelayMs) this.config.messageRetryDelayMs = 5000;
   }
 
   /**
@@ -113,9 +173,13 @@ export class WhatsAppService extends EventEmitter {
 
       // Start heartbeat monitoring
       this.startHeartbeat();
+      
+      // Start message queue processor
+      this.startMessageQueueProcessor();
 
       // Reset reconnect counter on successful initialization
       this.reconnectConfig.currentAttempt = 0;
+      this.errorCount = 0;
 
       this.emit('initialized');
     } catch (error) {
@@ -211,29 +275,37 @@ export class WhatsAppService extends EventEmitter {
 
     // Authentication failure
     this.client.on(Events.AUTHENTICATION_FAILURE, async () => {
-      console.error(`[WhatsApp] Authentication failed for session: ${this.config.sessionId}`);
+      const error = new WhatsAppAuthenticationError(
+        `Authentication failed for session: ${this.config.sessionId}`
+      );
+      console.error(`[WhatsApp] ${error.message}`);
       this.sessionStatus.authenticated = false;
+      this.incrementErrorCount();
 
       if (this.sessionModel) {
-        await this.updateSessionStatus('disconnected', { error: 'Authentication failed' });
+        await this.updateSessionStatus('disconnected', { error: error.message });
       }
 
       this.handleDisconnection();
-      this.emit('authentication-failed');
+      this.emit('authentication-failed', { error });
     });
 
     // Client disconnected
     this.client.on(Events.DISCONNECTED, async (reason: any) => {
-      console.warn(`[WhatsApp] Disconnected: ${reason}`);
+      const error = new WhatsAppConnectionError(
+        `Client disconnected: ${reason}`
+      );
+      console.warn(`[WhatsApp] ${error.message}`);
       this.sessionStatus.connected = false;
       this.sessionStatus.authenticated = false;
+      this.incrementErrorCount();
 
       if (this.sessionModel) {
         await this.updateSessionStatus('disconnected', { lastDisconnectReason: reason });
       }
 
       this.handleDisconnection();
-      this.emit('disconnected', { reason });
+      this.emit('disconnected', { reason, error });
     });
 
     // Remote session logged out
@@ -309,11 +381,55 @@ export class WhatsAppService extends EventEmitter {
   }
 
   /**
-   * Send a message with deduplication support
+   * Send a message with deduplication and retry support
    */
-  async sendMessage(phoneNumber: string, message: string, options?: any): Promise<string> {
+  async sendMessage(
+    phoneNumber: string,
+    message: string,
+    options?: any,
+    priority: 'high' | 'normal' | 'low' = 'normal'
+  ): Promise<string> {
+    if (!this.client) {
+      throw new WhatsAppConnectionError('WhatsApp client not initialized');
+    }
+
+    // Queue the message if not authenticated yet
+    if (!this.sessionStatus.authenticated) {
+      return this.queueMessage({
+        phoneNumber,
+        content: message,
+        options,
+        type: 'text',
+        priority
+      });
+    }
+
+    try {
+      const messageId = await this.sendMessageDirect(phoneNumber, message, options);
+      return messageId;
+    } catch (error) {
+      // Queue for retry if direct send fails
+      console.warn(`[WhatsApp] Direct send failed, queuing for retry:`, error);
+      return this.queueMessage({
+        phoneNumber,
+        content: message,
+        options,
+        type: 'text',
+        priority
+      });
+    }
+  }
+
+  /**
+   * Send message directly (internal)
+   */
+  private async sendMessageDirect(
+    phoneNumber: string,
+    message: string,
+    options?: any
+  ): Promise<string> {
     if (!this.client || !this.sessionStatus.authenticated) {
-      throw new Error('WhatsApp client not authenticated');
+      throw new WhatsAppConnectionError('WhatsApp client not authenticated');
     }
 
     try {
@@ -321,6 +437,7 @@ export class WhatsAppService extends EventEmitter {
       const result = await this.client.sendMessage(contactId, message, options);
 
       this.sessionStatus.messagesSent++;
+      this.errorCount = 0; // Reset error count on successful send
 
       // Store message ID for deduplication
       if (this.redisClient) {
@@ -335,16 +452,166 @@ export class WhatsAppService extends EventEmitter {
       return result.id._serialized;
     } catch (error) {
       console.error(`[WhatsApp] Failed to send message to ${phoneNumber}:`, error);
-      throw error;
+      this.incrementErrorCount();
+      throw new WhatsAppMessageError(
+        `Failed to send message to ${phoneNumber}`,
+        { originalError: error, phoneNumber }
+      );
+    }
+  }
+
+  /**
+   * Queue a message for later delivery
+   */
+  private queueMessage(message: Omit<QueuedMessage, 'id' | 'createdAt' | 'retryCount' | 'maxRetries'>): string {
+    if (this.messageQueue.size >= this.config.messageQueueMaxSize!) {
+      throw new WhatsAppMessageError(
+        `Message queue full (${this.messageQueue.size}/${this.config.messageQueueMaxSize})`,
+        { phoneNumber: message.phoneNumber }
+      );
+    }
+
+    const messageId = `queue-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const queuedMessage: QueuedMessage = {
+      id: messageId,
+      createdAt: new Date(),
+      retryCount: 0,
+      maxRetries: this.config.messageRetryMaxAttempts!,
+      ...message
+    };
+
+    this.messageQueue.set(messageId, queuedMessage);
+    console.log(`[WhatsApp] Message queued: ${messageId} (queue size: ${this.messageQueue.size})`);
+    this.emit('message-queued', { messageId, phoneNumber: message.phoneNumber });
+
+    return messageId;
+  }
+
+  /**
+   * Start message queue processor
+   */
+  private startMessageQueueProcessor(): void {
+    if (this.messageProcessingTimer) {
+      clearInterval(this.messageProcessingTimer);
+    }
+
+    this.messageProcessingTimer = setInterval(() => {
+      this.processMessageQueue().catch(error => {
+        console.error(`[WhatsApp] Message queue processing error:`, error);
+      });
+    }, this.config.messageRetryDelayMs);
+  }
+
+  /**
+   * Process queued messages
+   */
+  private async processMessageQueue(): Promise<void> {
+    if (!this.sessionStatus.authenticated || this.messageQueue.size === 0) {
+      return;
+    }
+
+    // Sort by priority and creation time
+    const sorted = Array.from(this.messageQueue.values()).sort((a, b) => {
+      const priorityOrder: { [key: string]: number } = { high: 1, normal: 2, low: 3 };
+      if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+        return priorityOrder[a.priority] - priorityOrder[b.priority];
+      }
+      return a.createdAt.getTime() - b.createdAt.getTime();
+    });
+
+    for (const message of sorted) {
+      if (this.processingMessages.has(message.id)) continue;
+
+      try {
+        this.processingMessages.add(message.id);
+
+        if (message.type === 'text') {
+          await this.sendMessageDirect(
+            message.phoneNumber,
+            message.content,
+            message.options
+          );
+        } else if (message.type === 'media') {
+          await this.sendMediaMessageDirect(
+            message.phoneNumber,
+            message.mediaPath!,
+            message.caption
+          );
+        }
+
+        // Remove from queue on success
+        this.messageQueue.delete(message.id);
+        this.emit('message-sent-from-queue', { messageId: message.id });
+        console.log(`[WhatsApp] Message successfully sent from queue: ${message.id}`);
+      } catch (error) {
+        message.retryCount++;
+        if (message.retryCount >= message.maxRetries) {
+          this.messageQueue.delete(message.id);
+          this.emit('message-failed', { messageId: message.id, error });
+          console.error(
+            `[WhatsApp] Message failed after ${message.maxRetries} retries: ${message.id}`
+          );
+        } else {
+          console.warn(
+            `[WhatsApp] Message retry ${message.retryCount}/${message.maxRetries}: ${message.id}`
+          );
+        }
+      } finally {
+        this.processingMessages.delete(message.id);
+      }
     }
   }
 
   /**
    * Send a message with media
    */
-  async sendMediaMessage(phoneNumber: string, mediaPath: string, caption?: string): Promise<string> {
+  async sendMediaMessage(
+    phoneNumber: string,
+    mediaPath: string,
+    caption?: string,
+    priority: 'high' | 'normal' | 'low' = 'normal'
+  ): Promise<string> {
+    if (!this.client) {
+      throw new WhatsAppConnectionError('WhatsApp client not initialized');
+    }
+
+    if (!this.sessionStatus.authenticated) {
+      return this.queueMessage({
+        phoneNumber,
+        content: '',
+        mediaPath,
+        caption,
+        type: 'media',
+        priority
+      });
+    }
+
+    try {
+      const messageId = await this.sendMediaMessageDirect(phoneNumber, mediaPath, caption);
+      return messageId;
+    } catch (error) {
+      console.warn(`[WhatsApp] Direct media send failed, queuing for retry:`, error);
+      return this.queueMessage({
+        phoneNumber,
+        content: '',
+        mediaPath,
+        caption,
+        type: 'media',
+        priority
+      });
+    }
+  }
+
+  /**
+   * Send media message directly (internal)
+   */
+  private async sendMediaMessageDirect(
+    phoneNumber: string,
+    mediaPath: string,
+    caption?: string
+  ): Promise<string> {
     if (!this.client || !this.sessionStatus.authenticated) {
-      throw new Error('WhatsApp client not authenticated');
+      throw new WhatsAppConnectionError('WhatsApp client not authenticated');
     }
 
     try {
@@ -353,12 +620,53 @@ export class WhatsAppService extends EventEmitter {
       const result = await this.client.sendMessage(contactId, media, { caption });
 
       this.sessionStatus.messagesSent++;
+      this.errorCount = 0;
       console.log(`[WhatsApp] Media message sent to ${phoneNumber}`);
       return result.id._serialized;
     } catch (error) {
       console.error(`[WhatsApp] Failed to send media to ${phoneNumber}:`, error);
-      throw error;
+      this.incrementErrorCount();
+      throw new WhatsAppMessageError(
+        `Failed to send media to ${phoneNumber}`,
+        { originalError: error, phoneNumber, mediaPath }
+      );
     }
+  }
+
+  /**
+   * Increment error count and check for circuit breaker
+   */
+  private incrementErrorCount(): void {
+    this.errorCount++;
+    this.lastErrorTime = new Date();
+
+    // Circuit breaker: if too many errors in short time, trigger reconnection
+    if (this.errorCount >= 5) {
+      console.warn(
+        `[WhatsApp] Circuit breaker triggered (${this.errorCount} errors), initiating reconnection`
+      );
+      this.handleDisconnection();
+    }
+  }
+
+  /**
+   * Get queue status
+   */
+  getQueueStatus() {
+    return {
+      queueSize: this.messageQueue.size,
+      maxQueueSize: this.config.messageQueueMaxSize,
+      processing: this.processingMessages.size,
+      messages: Array.from(this.messageQueue.values()).map(m => ({
+        id: m.id,
+        phoneNumber: m.phoneNumber,
+        type: m.type,
+        retryCount: m.retryCount,
+        maxRetries: m.maxRetries,
+        priority: m.priority,
+        createdAt: m.createdAt
+      }))
+    };
   }
 
   /**
@@ -441,6 +749,24 @@ export class WhatsAppService extends EventEmitter {
       clearInterval(this.heartbeatInterval);
     }
 
+    if (this.messageProcessingTimer) {
+      clearInterval(this.messageProcessingTimer);
+    }
+
+    // Store queued messages to Redis for recovery
+    if (this.redisClient && this.messageQueue.size > 0) {
+      try {
+        await this.redisClient.setex(
+          `whatsapp:queue:${this.config.sessionId}`,
+          86400, // 24 hours
+          JSON.stringify(Array.from(this.messageQueue.values()))
+        );
+        console.log(`[WhatsApp] Queued messages saved to Redis: ${this.messageQueue.size} messages`);
+      } catch (error) {
+        console.warn(`[WhatsApp] Failed to save queue to Redis:`, error);
+      }
+    }
+
     if (this.client) {
       try {
         await this.client.disconnect();
@@ -450,6 +776,8 @@ export class WhatsAppService extends EventEmitter {
     }
 
     this.client = null;
+    this.messageQueue.clear();
+    this.processingMessages.clear();
     this.emit('shutdown');
   }
 
