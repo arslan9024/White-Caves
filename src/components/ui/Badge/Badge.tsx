@@ -76,7 +76,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, children, ...props })
   };
 
   const config = statusConfig[status] || statusConfig.info;
-  const displayText: string = (children as string) || status;
+  const displayText: ReactNode = children || status;
   return (
     <Badge 
       variant={config.variant}
