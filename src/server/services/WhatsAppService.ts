@@ -839,4 +839,8 @@ export class WhatsAppServiceManager {
   static removeInstance(sessionId: string): void {
     this.instances.delete(sessionId);
   }
+
+  static getAllInstances(): WhatsAppService[] {
+    return Array.from(this.instances.values());
+  }
 }

@@ -13,6 +13,7 @@ import inventoryReducer from './slices/inventorySlice';
 import aiAssistantDashboardReducer from './slices/aiAssistantDashboardSlice';
 import sidebarReducer from './slices/sidebarSlice';
 import notificationReducer from './slices/notificationSlice';
+import whatsappReducer from './slices/whatsappSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 
 // Wrap middleware in error handling
@@ -42,7 +43,8 @@ export const store = configureStore({
     inventory: inventoryReducer,
     aiAssistantDashboard: aiAssistantDashboardReducer,
     sidebar: sidebarReducer,
-    notifications: notificationReducer
+    notifications: notificationReducer,
+    whatsapp: whatsappReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

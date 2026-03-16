@@ -4,13 +4,27 @@
  */
 
 import express, { Router, Request, Response } from 'express';
-import { WhatsAppServiceManager, WhatsAppService } from '../services/WhatsAppService';
+import { WhatsAppServiceManager, WhatsAppService, WhatsAppConnectionError, WhatsAppAuthenticationError, WhatsAppMessageError } from '../services/WhatsAppService';
 import WhatsAppSession from '../models/WhatsAppSession';
 import type { RedisClientType } from 'redis';
 
 const router: Router = express.Router();
 
+/**
+ * Custom request types with WhatsApp context
+ */
+interface WhatsAppRequest extends Request {
+  sessionId?: string;
+  whatsAppService?: WhatsAppService;
+}
+
+// ================================
 // Middleware
+// ================================
+
+/**
+ * Owner authentication middleware
+ */
 const ownerMiddleware = async (req: Request, res: Response, next: express.NextFunction) => {
   const userEmail = (req as any).user?.email;
   const ownerEmail = process.env.WHATSAPP_OWNER_EMAIL || 'arslanmalikgoraha@gmail.com';
@@ -19,6 +33,62 @@ const ownerMiddleware = async (req: Request, res: Response, next: express.NextFu
     return res.status(403).json({ error: 'Access denied. Owner only.' });
   }
   next();
+};
+
+/**
+ * Extract and validate session ID from params
+ */
+const extractSessionId = (req: WhatsAppRequest, res: Response, next: express.NextFunction) => {
+  const { sessionId } = req.params;
+  
+  if (!sessionId) {
+    return res.status(400).json({
+      error: 'SESSION_ID_REQUIRED',
+      message: 'Session ID is required'
+    });
+  }
+
+  req.sessionId = sessionId;
+  req.whatsAppService = WhatsAppServiceManager.getInstance(sessionId);
+  next();
+};
+
+/**
+ * Global error handler for WhatsApp errors
+ */
+const handleWhatsAppError = (err: any, req: Request, res: Response, next: express.NextFunction) => {
+  console.error('[WhatsApp API] Error:', err.code || err.message);
+
+  if (err instanceof WhatsAppConnectionError) {
+    return res.status(503).json({
+      error: 'CONNECTION_ERROR',
+      message: 'WhatsApp client not connected',
+      details: err.details
+    });
+  }
+
+  if (err instanceof WhatsAppAuthenticationError) {
+    return res.status(401).json({
+      error: 'AUTH_ERROR',
+      message: 'WhatsApp authentication failed',
+      details: err.details
+    });
+  }
+
+  if (err instanceof WhatsAppMessageError) {
+    return res.status(400).json({
+      error: 'MESSAGE_ERROR',
+      message: 'Failed to send message',
+      details: err.details
+    });
+  }
+
+  // Default error
+  res.status(500).json({
+    error: 'INTERNAL_ERROR',
+    message: 'An unexpected error occurred',
+    details: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
 };
 
 /**
@@ -309,5 +379,276 @@ router.get('/service-health', ownerMiddleware, async (req: Request, res: Respons
     res.status(500).json({ error: 'Failed to check health', healthy: false });
   }
 });
+
+// ================================
+// Enhanced Message Queue Routes
+// ================================
+
+/**
+ * GET /api/whatsapp/queue-status
+ * Get detailed message queue status for current session
+ */
+router.get('/queue-status', ownerMiddleware, async (req: Request, res: Response) => {
+  try {
+    const ownerEmail = process.env.WHATSAPP_OWNER_EMAIL || 'arslanmalikgoraha@gmail.com';
+    const session = await WhatsAppSession.findOne({ ownerEmail });
+
+    if (!session) {
+      return res.status(404).json({ error: 'Session not found' });
+    }
+
+    const service = WhatsAppServiceManager.getInstance(session.sessionId);
+    const queueStatus = service.getQueueStatus();
+
+    res.json({
+      success: true,
+      sessionId: session.sessionId,
+      queue: {
+        size: queueStatus.queueSize,
+        maxSize: queueStatus.maxQueueSize,
+        processing: queueStatus.processing,
+        messages: queueStatus.messages.slice(0, 20) // Show first 20
+      },
+      priorities: {
+        high: queueStatus.messages.filter((m: any) => m.priority === 'high').length,
+        normal: queueStatus.messages.filter((m: any) => m.priority === 'normal').length,
+        low: queueStatus.messages.filter((m: any) => m.priority === 'low').length
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching queue status:', error);
+    res.status(500).json({ error: 'Failed to fetch queue status' });
+  }
+});
+
+/**
+ * GET /api/whatsapp/sessions/:sessionId/queue
+ * Get queue status for specific session
+ */
+router.get('/sessions/:sessionId/queue', extractSessionId, ownerMiddleware, (req: WhatsAppRequest, res: Response) => {
+  try {
+    const service = req.whatsAppService!;
+    const queueStatus = service.getQueueStatus();
+
+    res.json({
+      success: true,
+      sessionId: req.sessionId,
+      queue: queueStatus
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve queue status' });
+  }
+});
+
+// ================================
+// Enhanced Contact Routes  
+// ================================
+
+/**
+ * GET /api/whatsapp/contacts
+ * Get list of contacts (chats) for current session
+ */
+router.get('/contacts', ownerMiddleware, async (req: Request, res: Response) => {
+  try {
+    const ownerEmail = process.env.WHATSAPP_OWNER_EMAIL || 'arslanmalikgoraha@gmail.com';
+    const session = await WhatsAppSession.findOne({ ownerEmail });
+
+    if (!session) {
+      return res.status(404).json({ error: 'Session not found' });
+    }
+
+    if (!session.connectionStatus || session.connectionStatus !== 'authenticated') {
+      return res.status(503).json({
+        error: 'NOT_AUTHENTICATED',
+        message: 'Please connect WhatsApp first'
+      });
+    }
+
+    // Placeholder: In real implementation, fetch from WhatsApp client
+    res.json({
+      success: true,
+      sessionId: session.sessionId,
+      contacts: [],
+      message: 'Feature coming soon'
+    });
+  } catch (error) {
+    console.error('Error fetching contacts:', error);
+    res.status(500).json({ error: 'Failed to fetch contacts' });
+  }
+});
+
+// ================================
+// Message History Routes
+// ================================
+
+/**
+ * GET /api/whatsapp/messages
+ * Get message history for current session
+ */
+router.get('/messages', ownerMiddleware, async (req: Request, res: Response) => {
+  try {
+    const limit = parseInt(req.query.limit as string) || 50;
+    const offset = parseInt(req.query.offset as string) || 0;
+
+    const ownerEmail = process.env.WHATSAPP_OWNER_EMAIL || 'arslanmalikgoraha@gmail.com';
+    const session = await WhatsAppSession.findOne({ ownerEmail });
+
+    if (!session) {
+      return res.status(404).json({ error: 'Session not found' });
+    }
+
+    // Placeholder: Message history storage
+    res.json({
+      success: true,
+      sessionId: session.sessionId,
+      messages: [],
+      pagination: {
+        limit,
+        offset,
+        total: 0
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+    res.status(500).json({ error: 'Failed to fetch messages' });
+  }
+});
+
+// ================================
+// Multi-Session Management
+// ================================
+
+/**
+ * GET /api/whatsapp/all-sessions
+ * Get all WhatsApp sessions (admin only)
+ */
+router.get('/all-sessions', ownerMiddleware, async (req: Request, res: Response) => {
+  try {
+    const sessions = await WhatsAppSession.find({});
+    
+    res.json({
+      success: true,
+      count: sessions.length,
+      sessions: sessions.map(session => ({
+        sessionId: session.sessionId,
+        ownerEmail: session.ownerEmail,
+        phoneNumber: session.phoneNumber,
+        connectionStatus: session.connectionStatus,
+        connectedAt: session.connectedAt,
+        messageCount: session.messageCount
+      }))
+    });
+  } catch (error) {
+    console.error('Error fetching all sessions:', error);
+    res.status(500).json({ error: 'Failed to fetch sessions' });
+  }
+});
+
+/**
+ * POST /api/whatsapp/sessions/:sessionId/reconnect
+ * Manually trigger reconnection for a session
+ */
+router.post('/sessions/:sessionId/reconnect', extractSessionId, ownerMiddleware, async (req: WhatsAppRequest, res: Response, next: express.NextFunction) => {
+  try {
+    const service = req.whatsAppService!;
+    await service.reconnect();
+
+    res.json({
+      success: true,
+      message: 'Reconnection initiated',
+      sessionId: req.sessionId,
+      status: service.getStatus()
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// ================================
+// Statistics & Monitoring
+// ================================
+
+/**
+ * GET /api/whatsapp/stats
+ * Get WhatsApp statistics for current session
+ */
+router.get('/stats', ownerMiddleware, async (req: Request, res: Response) => {
+  try {
+    const ownerEmail = process.env.WHATSAPP_OWNER_EMAIL || 'arslanmalikgoraha@gmail.com';
+    const session = await WhatsAppSession.findOne({ ownerEmail });
+
+    if (!session) {
+      return res.status(404).json({ error: 'Session not found' });
+    }
+
+    const service = WhatsAppServiceManager.getInstance(session.sessionId);
+    const status = service.getStatus();
+    const queueStatus = service.getQueueStatus();
+
+    res.json({
+      success: true,
+      stats: {
+        connection: {
+          connected: status.connected,
+          authenticated: status.authenticated,
+          phoneNumber: session.phoneNumber,
+          uptime: status.uptime
+        },
+        messaging: {
+          messagesSent: status.messagesSent,
+          messagesReceived: status.messagesReceived,
+          queued: queueStatus.queueSize
+        },
+        timestamps: {
+          connectedAt: session.connectedAt,
+          lastMessageAt: session.lastMessageAt,
+          lastHeartbeat: status.lastHeartbeat
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching statistics:', error);
+    res.status(500).json({ error: 'Failed to fetch statistics' });
+  }
+});
+
+// ================================
+// Global Health & Status Routes
+// ================================
+
+/**
+ * GET /api/whatsapp/health
+ * Check global WhatsApp service health
+ */
+router.get('/health', (req: Request, res: Response) => {
+  try {
+    const sessions = WhatsAppServiceManager.getAllInstances();
+    const authenticatedCount = sessions.filter((s: WhatsAppService) => s.isAuthenticated()).length;
+
+    res.json({
+      success: true,
+      service: 'WhatsApp Integration',
+      timestamp: new Date().toISOString(),
+      health: {
+        status: 'operational',
+        activeSessions: sessions.length,
+        authenticatedSessions: authenticatedCount,
+        uptime: process.uptime()
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      service: 'WhatsApp Integration',
+      health: { status: 'degraded' }
+    });
+  }
+});
+
+// ================================
+// Error Handler (Must be last)
+// ================================
+
+router.use(handleWhatsAppError);
 
 export default router;
