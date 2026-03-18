@@ -38,7 +38,14 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
     "audit": "npm audit",
-    "audit:fix": "npm audit fix"
+    "audit:fix": "npm audit fix",
+    "server:api": "tsx server/index.ts",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:generate": "npx prisma generate",
+    "db:push": "npx prisma db push"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "keywords": [],
   "author": "",

@@ -17,7 +17,7 @@ import authMiddleware from './middleware/auth';
 dotenv.config();
 
 const app: Express = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 // ============================================================================
 // MIDDLEWARE SETUP
@@ -26,7 +26,7 @@ const PORT = process.env.PORT || 5000;
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5000',
   credentials: true,
 }));
 
@@ -60,8 +60,21 @@ app.get('/health', (req: Request, res: Response) => {
 // Authentication routes
 app.use('/api/auth', require('./routes/auth').default);
 
-// Protected routes (require authentication)
-app.use('/api', authMiddleware);
+// Protected routes (require authentication in production, optional in development)
+if (process.env.NODE_ENV === 'production') {
+  app.use('/api', authMiddleware);
+} else {
+  // In dev mode, attach a default user if no token provided
+  app.use('/api', (req: Request, res: Response, next: NextFunction) => {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (token) {
+      return authMiddleware(req, res, next);
+    }
+    // Dev fallback: attach owner user
+    (req as any).user = { id: 'dev-owner', email: 'owner@whitecaves.ae', role: 'owner' };
+    next();
+  });
+}
 
 // Leads API (Clara - Lead Manager)
 app.use('/api/leads', require('./routes/leads').default);
@@ -71,6 +84,9 @@ app.use('/api/properties', require('./routes/properties').default);
 
 // Agents API
 app.use('/api/agents', require('./routes/agents').default);
+
+// Users API — alias for /api/agents (frontend calls /api/users?role=agent)
+app.use('/api/users', require('./routes/agents').default);
 
 // Transactions API (Sophia - Pipeline, Theodora - Finance)
 app.use('/api/transactions', require('./routes/transactions').default);
@@ -96,6 +112,9 @@ app.use('/api/dashboard', require('./routes/reporting').default);
 
 // Compliance API (Laila - Compliance Officer)
 app.use('/api/compliance', require('./routes/compliance').default);
+
+// CRM General API (Search, Analytics, Dashboard, Export)
+app.use('/api/crm', require('./routes/crm').default);
 
 // ============================================================================
 // ERROR HANDLING

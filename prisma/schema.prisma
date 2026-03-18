@@ -4,33 +4,165 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
+// ─── USER & AUTH ────────────────────────────────────────────────────────
+
 model User {
-  id        String     @id @default(uuid())
-  email     String     @unique
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
   name      String?
   photoUrl  String?
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  properties Property[]
+  role      String   @default("agent") // owner, agent, viewer
+  phone     String?
+  department String?
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  properties    Property[]
+  leadsAssigned Lead[]       @relation("AssignedAgent")
+  leadsCreated  Lead[]       @relation("CreatedBy")
+  activities    Activity[]
+  commissions   Commission[]
 }
 
+// ─── PROPERTY ───────────────────────────────────────────────────────────
+
 model Property {
-  id          String   @id @default(uuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String?
+  type        String   @default("apartment") // villa, apartment, penthouse, commercial, land, townhouse
+  status      String   @default("available")  // available, reserved, sold, rented, off_market
   price       Float
-  beds        Int
-  baths       Int
-  sqft        Int
+  bedrooms    Int      @default(0)
+  bathrooms   Int      @default(0)
+  sqft        Int      @default(0)
   location    String
+  area        String?
   amenities   String[]
   images      String[]
+  featured    Boolean  @default(false)
+  agentName   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  userId      String
+
+  // Relations
+  userId      String   @db.ObjectId
   user        User     @relation(fields: [userId], references: [id])
+  leads       Lead[]
+  commissions Commission[]
+}
+
+// ─── LEAD ───────────────────────────────────────────────────────────────
+
+model Lead {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  email       String?
+  phone       String?
+  company     String?
+  status      String   @default("new") // new, contacted, qualified, hot, warm, cold, won, lost
+  source      String   @default("direct") // whatsapp, website, phone, referral, marketing, direct
+  budget      Float?
+  score       Int      @default(0) // 0-100 lead score
+  notes       String?
+  tags        String[]
+  lastContact DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  assignedToId String?  @db.ObjectId
+  assignedTo   User?    @relation("AssignedAgent", fields: [assignedToId], references: [id])
+  createdById  String?  @db.ObjectId
+  createdBy    User?    @relation("CreatedBy", fields: [createdById], references: [id])
+  propertyId   String?  @db.ObjectId
+  property     Property? @relation(fields: [propertyId], references: [id])
+  activities   Activity[]
+  commissions  Commission[]
+}
+
+// ─── COMMISSION ─────────────────────────────────────────────────────────
+
+model Commission {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  amount      Float
+  percentage  Float?
+  status      String   @default("pending") // pending, approved, paid, cancelled
+  type        String   @default("sale") // sale, rental, referral
+  notes       String?
+  paidAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  agentId     String   @db.ObjectId
+  agent       User     @relation(fields: [agentId], references: [id])
+  leadId      String?  @db.ObjectId
+  lead        Lead?    @relation(fields: [leadId], references: [id])
+  propertyId  String?  @db.ObjectId
+  property    Property? @relation(fields: [propertyId], references: [id])
+}
+
+// ─── ACTIVITY ───────────────────────────────────────────────────────────
+
+model Activity {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  type        String   // lead, property, deal, commission, agent, client, system
+  action      String   // created, updated, deleted, status_changed, note_added, call, email, visit
+  description String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  userId      String?  @db.ObjectId
+  user        User?    @relation(fields: [userId], references: [id])
+  leadId      String?  @db.ObjectId
+  lead        Lead?    @relation(fields: [leadId], references: [id])
+}
+
+// ─── TRANSACTION ────────────────────────────────────────────────────────
+
+model Transaction {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  type          String   @default("sale")  // sale, rental, lease
+  status        String   @default("draft") // draft, pending, in_progress, completed, cancelled
+  amount        Float
+  closingDate   DateTime?
+  notes         String?
+  documents     String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  propertyId    String?  @db.ObjectId
+  leadId        String?  @db.ObjectId
+  agentId       String?  @db.ObjectId
+}
+
+// ─── TENANT ─────────────────────────────────────────────────────────────
+
+model Tenant {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  email         String?
+  phone         String?
+  nationality   String?
+  emiratesId    String?
+  status        String   @default("active") // active, inactive, pending
+  moveInDate    DateTime?
+  moveOutDate   DateTime?
+  monthlyRent   Float?
+  deposit       Float?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  propertyId    String?  @db.ObjectId
 }
