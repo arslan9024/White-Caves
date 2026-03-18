@@ -4,6 +4,7 @@ import {
   ChevronDown, ChevronUp, MoreVertical, UserCheck, UserX,
   Download, Upload, RefreshCw
 } from 'lucide-react';
+import { Pagination, Badge } from '../../../components/ui';
 import { REAL_ESTATE_ROLES } from '../../../config/roles';
 import './UsersTab.css';
 
@@ -291,6 +292,8 @@ export default function UsersTab({ onAction }) {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState('table');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   const getRoleInfo = (roleId) => {
     return REAL_ESTATE_ROLES.find(r => r.id === roleId) || { name: roleId, color: '#666' };
@@ -351,19 +354,30 @@ export default function UsersTab({ onAction }) {
   };
 
   const getStatusBadge = (status) => {
-    const styles = {
-      active: { background: '#dcfce7', color: '#166534' },
-      pending: { background: '#fef3c7', color: '#92400e' },
-      inactive: { background: '#fee2e2', color: '#991b1b' }
+    const statusVariants = {
+      active: 'success',
+      pending: 'warning',
+      inactive: 'danger'
     };
     return (
-      <span className="status-badge" style={styles[status]}>
+      <Badge variant={statusVariants[status] || 'secondary'} size="sm">
         {status === 'active' && <UserCheck size={12} />}
         {status === 'inactive' && <UserX size={12} />}
         {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
+      </Badge>
     );
   };
+
+  // Pagination logic
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+
+  // Reset to page 1 when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedRole, selectedStatus, selectedCategory]);
 
   const usersByCategory = REAL_ESTATE_ROLES.reduce((acc, role) => {
     const cat = role.category || 'other';
@@ -509,7 +523,7 @@ export default function UsersTab({ onAction }) {
             </tr>
           </thead>
           <tbody>
-            {filteredUsers.map(user => {
+            {paginatedUsers.map(user => {
               const roleInfo = getRoleInfo(user.role);
               return (
                 <tr key={user.id} className={selectedUsers.includes(user.id) ? 'selected' : ''}>
@@ -580,12 +594,16 @@ export default function UsersTab({ onAction }) {
       </div>
 
       <div className="table-footer">
-        <span>Showing {filteredUsers.length} of {users.length} users</span>
-        <div className="pagination">
-          <button disabled>Previous</button>
-          <span className="page-number active">1</span>
-          <button disabled>Next</button>
-        </div>
+        <span>Showing {paginatedUsers.length} of {filteredUsers.length} users</span>
+        {totalPages > 1 && (
+          <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            variant="minimal"
+            size="sm"
+          />
+        )}
       </div>
     </div>
   );

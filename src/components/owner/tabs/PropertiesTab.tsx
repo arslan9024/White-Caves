@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { Badge, Pagination } from '../../../components/ui';
 import './TabStyles.css';
 
 const PropertiesTab = ({ data, loading, onAction }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   const properties = data?.properties || [
     { id: 1, code: 'WC-PAL-001', title: 'Luxury Villa Palm Jumeirah', type: 'Villa', location: 'Palm Jumeirah', price: 15000000, status: 'available', agent: 'Ahmed Ali', beds: 5, baths: 6, area: 8500, image: null },
@@ -26,15 +29,26 @@ const PropertiesTab = ({ data, loading, onAction }) => {
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      'available': { color: '#22C55E', text: 'Available' },
-      'reserved': { color: '#F59E0B', text: 'Reserved' },
-      'under_contract': { color: '#8B5CF6', text: 'Under Contract' },
-      'sold': { color: '#EF4444', text: 'Sold' },
-      'off_market': { color: '#6B7280', text: 'Off Market' }
+      'available': { color: '#22C55E', text: 'Available', variant: 'success' },
+      'reserved': { color: '#F59E0B', text: 'Reserved', variant: 'warning' },
+      'under_contract': { color: '#8B5CF6', text: 'Under Contract', variant: 'info' },
+      'sold': { color: '#EF4444', text: 'Sold', variant: 'danger' },
+      'off_market': { color: '#6B7280', text: 'Off Market', variant: 'secondary' }
     };
-    const config = statusConfig[status] || { color: '#6B7280', text: status };
-    return <span className="status-badge" style={{ backgroundColor: `${config.color}20`, color: config.color }}>{config.text}</span>;
+    const config = statusConfig[status] || { color: '#6B7280', text: status, variant: 'secondary' };
+    return <Badge variant={config.variant} size="sm">{config.text}</Badge>;
   };
+
+  // Pagination logic
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const endIdx = startIdx + itemsPerPage;
+  const paginatedProperties = filteredProperties.slice(startIdx, endIdx);
+  const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
+
+  // Reset page when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, typeFilter]);
 
   return (
     <div className="properties-tab">
@@ -87,7 +101,7 @@ const PropertiesTab = ({ data, loading, onAction }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredProperties.map((prop) => (
+            {paginatedProperties.map((prop) => (
               <tr key={prop.id}>
                 <td>
                   <div className="property-cell">

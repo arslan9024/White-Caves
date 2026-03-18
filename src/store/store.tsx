@@ -44,7 +44,7 @@ export const store = configureStore({
     aiAssistantDashboard: aiAssistantDashboardReducer,
     sidebar: sidebarReducer,
     notifications: notificationReducer,
-    whatsapp: whatsappReducer
+    whatsapp: whatsappReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

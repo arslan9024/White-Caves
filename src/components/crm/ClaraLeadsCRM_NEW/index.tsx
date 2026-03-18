@@ -1,5 +1,6 @@
 import React, { Suspense, lazy, useState } from 'react';
 import SuspenseLoader from '../../common/SuspenseLoader';
+import { Tabs, Badge, ProgressBar } from '../../../components/ui';
 import './ClaraLeadsCRM.css';
 
 // Lazy-load all tabs
@@ -12,6 +13,23 @@ const FeaturesTab = lazy(() => import('./tabs/FeaturesTab'));
 
 export default function ClaraLeadsCRM() {
   const [activeTab, setActiveTab] = useState('prospects');
+
+  // Mock data for badges and metrics
+  const tabCounts = {
+    prospects: 24,
+    deals: 8,
+    tasks: 12,
+    activity: 45,
+    insights: 3,
+    features: 6
+  };
+
+  const pipelineMetrics = {
+    prospectRate: 100,
+    dealRate: 33,
+    conversionRate: 8,
+    completionRate: 67
+  };
 
   const tabs = [
     {
@@ -63,16 +81,51 @@ export default function ClaraLeadsCRM() {
 
   return (
     <div className="clara-leads-crm">
-      {/* Tab Navigation */}
-      <div className="clara-tabs-nav">
+      {/* Pipeline Metrics with ProgressBar */}
+      <div style={{ marginBottom: '2rem', padding: '0 1rem' }}>
+        <h3 style={{ marginBottom: '1rem' }}>Pipeline Progression</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500' }}>
+              Prospect Progress: {Math.round(pipelineMetrics.prospectRate)}%
+            </label>
+            <ProgressBar variant="info" value={pipelineMetrics.prospectRate} animated />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500' }}>
+              Deal Progress: {Math.round(pipelineMetrics.dealRate)}%
+            </label>
+            <ProgressBar variant="warning" value={pipelineMetrics.dealRate} />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500' }}>
+              Conversion Rate: {Math.round(pipelineMetrics.conversionRate)}%
+            </label>
+            <ProgressBar variant="success" value={pipelineMetrics.conversionRate} />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500' }}>
+              Task Completion: {Math.round(pipelineMetrics.completionRate)}%
+            </label>
+            <ProgressBar variant="primary" value={pipelineMetrics.completionRate} striped animated />
+          </div>
+        </div>
+      </div>
+
+      {/* Tab Navigation with Badges */}
+      <div className="clara-tabs-nav" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0 1rem', marginBottom: '1rem' }}>
         {visibleTabs.map(tab => (
           <button
             key={tab.id}
             className={`tab-nav-button ${activeTab === tab.id ? 'active' : ''}`}
             onClick={() => setActiveTab(tab.id)}
             title={tab.description}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
           >
             {tab.label}
+            <Badge variant="secondary" size="sm">
+              {tabCounts[tab.id] || 0}
+            </Badge>
           </button>
         ))}
       </div>

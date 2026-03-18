@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Pagination from '../../ui/Pagination';
 import './TabStyles.css';
 
 const LeadsTab = ({ data, loading, onAction }) => {
   const [sourceFilter, setSourceFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const leads = data?.leads || [
     { id: 1, name: 'Khalid Al Maktoum', phone: '+971 50 111 2222', email: 'khalid@email.com', source: 'whatsapp', propertyInterest: 'Palm Jumeirah Villa', priority: 'high', status: 'new', createdAt: new Date().toISOString(), agent: 'Ahmed Ali' },
@@ -21,6 +24,16 @@ const LeadsTab = ({ data, loading, onAction }) => {
     const matchesPriority = priorityFilter === 'all' || lead.priority === priorityFilter;
     return matchesSource && matchesStatus && matchesPriority;
   });
+
+  const totalPages = Math.ceil(filteredLeads.length / itemsPerPage);
+  const paginatedLeads = filteredLeads.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [sourceFilter, statusFilter, priorityFilter]);
 
   const getSourceIcon = (source) => {
     const icons = { whatsapp: '💬', website: '🌐', chatbot: '🤖', referral: '👥' };
@@ -126,7 +139,7 @@ const LeadsTab = ({ data, loading, onAction }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredLeads.map((lead) => (
+            {paginatedLeads.map((lead) => (
               <tr key={lead.id}>
                 <td>
                   <div className="lead-cell">
@@ -162,6 +175,12 @@ const LeadsTab = ({ data, loading, onAction }) => {
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

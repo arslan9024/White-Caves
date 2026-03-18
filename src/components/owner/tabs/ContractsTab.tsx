@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Pagination from '../../ui/Pagination';
 import './TabStyles.css';
 
 const ContractsTab = ({ data, loading, onAction }) => {
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const contracts = data?.contracts || [
     { id: 1, contractNumber: 'TC-2024-001', type: 'tenancy', tenant: 'John Smith', landlord: 'Mohammed Al Rashid', property: 'Marina View Apt 1502', startDate: '2024-01-01', endDate: '2024-12-31', amount: 95000, status: 'active', ejariStatus: 'registered' },
@@ -19,6 +22,16 @@ const ContractsTab = ({ data, loading, onAction }) => {
     const matchesStatus = statusFilter === 'all' || contract.status === statusFilter;
     return matchesType && matchesStatus;
   });
+
+  const totalPages = Math.ceil(filteredContracts.length / itemsPerPage);
+  const paginatedContracts = filteredContracts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [typeFilter, statusFilter]);
 
   const getStatusBadge = (status) => {
     const config = {
@@ -116,7 +129,7 @@ const ContractsTab = ({ data, loading, onAction }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredContracts.map((contract) => (
+            {paginatedContracts.map((contract) => (
               <tr key={contract.id}>
                 <td><strong>{contract.contractNumber}</strong></td>
                 <td>
@@ -165,6 +178,12 @@ const ContractsTab = ({ data, loading, onAction }) => {
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

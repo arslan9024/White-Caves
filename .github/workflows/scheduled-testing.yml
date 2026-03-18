@@ -1,0 +1,210 @@
+name: Scheduled Testing & Monitoring
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+    - cron: '0 10 * * 0' # Weekly on Sunday at 10 AM UTC
+
+jobs:
+  comprehensive-test-suite:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Run all unit tests with coverage
+        run: npm test -- --run --coverage
+      
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+      
+      - name: Run all E2E tests
+        run: npx playwright test --reporter=html
+      
+      - name: Generate test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: comprehensive-test-report
+          path: playwright-report/
+          retention-days: 90
+      
+      - name: Notify test results
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            Scheduled comprehensive test suite: ${{ job.status }}
+            Coverage: Check artifacts for details
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  dependency-audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+      
+      - name: Check for outdated packages
+        run: npm outdated
+        continue-on-error: true
+      
+      - name: Security scanning with Snyk
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true
+      
+      - name: Notify security scan results
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: 'Security audit and dependency check completed'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  performance-benchmark:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+      
+      - name: Run performance baselines
+        run: npx playwright test e2e/performance-baseline.spec.ts --reporter=json > performance-results.json
+        continue-on-error: true
+      
+      - name: Compare with baseline
+        run: |
+          echo "Performance metrics recorded"
+          # Add comparison logic here if needed
+      
+      - name: Upload performance data
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-results
+          path: performance-results.json
+          retention-days: 90
+      
+      - name: Notify performance results
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: 'Performance benchmark complete - check artifacts'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  code-quality-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run ESLint
+        run: npm run lint --if-present
+        continue-on-error: true
+      
+      - name: Run TypeScript type check
+        run: npx tsc --noEmit
+        continue-on-error: true
+      
+      - name: Build check
+        run: npm run build
+      
+      - name: SonarQube scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        continue-on-error: true
+      
+      - name: Notify code quality results
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: 'Code quality check complete'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  accessibility-audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Run accessibility compliance tests
+        run: npx playwright test e2e/accessibility-compliance.spec.ts --reporter=html
+        continue-on-error: true
+      
+      - name: Upload accessibility audit
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: accessibility-audit
+          path: playwright-report/
+          retention-days: 90
+      
+      - name: Notify accessibility results
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: 'Accessibility audit complete'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}

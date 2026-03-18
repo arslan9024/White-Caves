@@ -1,0 +1,118 @@
+# Helm Chart for White Caves CRM Platform
+# Package and deploy application across multiple environments
+
+apiVersion: v2
+name: white-caves
+description: A Helm chart for the White Caves CRM Platform
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+home: https://white-caves.com
+sources:
+  - https://github.com/white-caves/platform
+maintainers:
+  - name: Platform Team
+    email: platform@white-caves.com
+keywords:
+  - crm
+  - platform
+  - deployment
+icon: https://white-caves.com/logo.png
+
+# Default values for white-caves
+replicaCount: 3
+
+image:
+  repository: white-caves-backend
+  pullPolicy: Always
+  tag: "1.0.0"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 5000
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  hosts:
+    - host: white-caves.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: white-caves-tls
+      hosts:
+        - white-caves.com
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 5000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 5000
+  initialDelaySeconds: 10
+  periodSeconds: 5
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - white-caves
+          topologyKey: kubernetes.io/hostname
+
+mongodb:
+  enabled: true
+  auth:
+    username: white_caves_admin
+    password: changeme
+  persistence:
+    size: 10Gi
+
+redis:
+  enabled: true
+  password: changeme
+  persistence:
+    size: 5Gi
+
+environment:
+  NODE_ENV: production
+  LOG_LEVEL: info
+  CORS_ORIGIN: https://white-caves.com

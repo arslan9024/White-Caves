@@ -4,6 +4,7 @@ import {
   Users, Settings, Activity, TrendingUp, AlertCircle, BarChart3,
   Clock, CheckCircle, Download
 } from 'lucide-react';
+import { Alert, Pagination } from '../../components/ui';
 import * as S from './AdminDashboard.styles';
 
 /**
@@ -20,9 +21,25 @@ import * as S from './AdminDashboard.styles';
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [filterPeriod, setFilterPeriod] = useState('7d');
+  const [currentActivityPage, setCurrentActivityPage] = useState(1);
+  const [currentUsersPage, setCurrentUsersPage] = useState(1);
+  const [activitiesPerPage] = useState(5);
+  const [usersPerPage] = useState(10);
   
   // Get user info from Redux
   const user = useSelector(state => state.auth?.user);
+
+  // Pagination logic for activities
+  const activitiesStartIdx = (currentActivityPage - 1) * activitiesPerPage;
+  const activitiesEndIdx = activitiesStartIdx + activitiesPerPage;
+  const paginatedActivities = recentActivities.slice(activitiesStartIdx, activitiesEndIdx);
+  const activitiesTotalPages = Math.ceil(recentActivities.length / activitiesPerPage);
+
+  // Pagination logic for users
+  const usersStartIdx = (currentUsersPage - 1) * usersPerPage;
+  const usersEndIdx = usersStartIdx + usersPerPage;
+  const paginatedUsers = users.slice(usersStartIdx, usersEndIdx);
+  const usersTotalPages = Math.ceil(users.length / usersPerPage);
 
   // Mock data - replace with real API calls
   const systemMetrics = {
@@ -192,7 +209,7 @@ const AdminDashboard = () => {
               </S.StatusGrid>
             </S.StatusSection>
 
-            {/* Alerts Section */}
+            {/* Alerts Section - Using Alert Component */}
             {alerts.length > 0 && (
               <S.AlertsSection>
                 <S.SectionHeader>
@@ -202,16 +219,14 @@ const AdminDashboard = () => {
                 
                 <S.AlertsList>
                   {alerts.map(alert => (
-                    <S.AlertItem key={alert.id} severity={alert.severity}>
-                      <S.AlertIcon>
-                        <AlertCircle size={16} />
-                      </S.AlertIcon>
-                      <S.AlertContent>
-                        <S.AlertMessage>{alert.message}</S.AlertMessage>
-                        <S.AlertStatus>{alert.status}</S.AlertStatus>
-                      </S.AlertContent>
-                      <S.AlertClose>×</S.AlertClose>
-                    </S.AlertItem>
+                    <Alert
+                      key={alert.id}
+                      type={alert.severity === 'warning' ? 'warning' : alert.severity === 'error' ? 'error' : 'info'}
+                      title={alert.message}
+                      dismissible
+                      onDismiss={() => {}}
+                      style={{ marginBottom: '1rem' }}
+                    />
                   ))}
                 </S.AlertsList>
               </S.AlertsSection>
@@ -225,7 +240,7 @@ const AdminDashboard = () => {
               </S.SectionHeader>
               
               <S.ActivitiesList>
-                {recentActivities.map(activity => (
+                {paginatedActivities.map(activity => (
                   <S.ActivityItem key={activity.id}>
                     <S.ActivityIcon>
                       {activity.type === 'create' && <CheckCircle size={16} />}
@@ -241,6 +256,18 @@ const AdminDashboard = () => {
                   </S.ActivityItem>
                 ))}
               </S.ActivitiesList>
+              
+              {activitiesTotalPages > 1 && (
+                <div style={{ marginTop: '1rem', textAlign: 'right' }}>
+                  <Pagination 
+                    currentPage={currentActivityPage}
+                    totalPages={activitiesTotalPages}
+                    onPageChange={setCurrentActivityPage}
+                    variant="minimal"
+                    size="sm"
+                  />
+                </div>
+              )}
             </S.ActivitySection>
           </S.AdminOverview>
         )}
@@ -264,7 +291,7 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {users.map(user => (
+                {paginatedUsers.map(user => (
                   <tr key={user.id}>
                     <td>{user.name}</td>
                     <td><S.RoleBadge role={user.role}>{user.role}</S.RoleBadge></td>
@@ -280,6 +307,18 @@ const AdminDashboard = () => {
                 ))}
               </tbody>
             </S.UsersTable>
+            
+            {usersTotalPages > 1 && (
+              <div style={{ marginTop: '1rem', textAlign: 'right' }}>
+                <Pagination 
+                  currentPage={currentUsersPage}
+                  totalPages={usersTotalPages}
+                  onPageChange={setCurrentUsersPage}
+                  variant="minimal"
+                  size="sm"
+                />
+              </div>
+            )}
           </S.AdminUsers>
         )}
 
