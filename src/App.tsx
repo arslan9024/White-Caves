@@ -107,6 +107,12 @@ const WhatsAppChatbotPage = lazy(() => import('./pages/owner/WhatsAppChatbotPage
 const WhatsAppAnalyticsPage = lazy(() => import('./pages/owner/WhatsAppAnalyticsPage'));
 const WhatsAppSettingsPage = lazy(() => import('./pages/owner/WhatsAppSettingsPage'));
 
+// CRM Management Pages
+const CRMHubPage = lazy(() => import('./pages/crm/CRMHubPage'));
+const LeadManagementPage = lazy(() => import('./pages/crm/LeadManagementPage'));
+const PropertyManagementPage = lazy(() => import('./pages/crm/PropertyManagementPage'));
+const AgentPerformancePage = lazy(() => import('./pages/crm/AgentPerformancePage'));
+
 // Public Pages
 const PropertiesPage = lazy(() => import('./pages/PropertiesPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
@@ -445,6 +451,44 @@ function App(): React.JSX.Element {
                   <AppLayout>
                     <Suspense fallback={<SuspenseLoader />}>
                       <WhatsAppSettingsPage />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+
+              {/* ==================== CRM MANAGEMENT ROUTES ==================== */}
+              <Route path="/owner/crm" element={
+                <ProtectedRoute allowedRoles={['owner']}>
+                  <AppLayout>
+                    <Suspense fallback={<SuspenseLoader />}>
+                      <CRMHubPage />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/owner/crm/leads" element={
+                <ProtectedRoute allowedRoles={['owner']}>
+                  <AppLayout>
+                    <Suspense fallback={<SuspenseLoader />}>
+                      <LeadManagementPage />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/owner/crm/properties" element={
+                <ProtectedRoute allowedRoles={['owner']}>
+                  <AppLayout>
+                    <Suspense fallback={<SuspenseLoader />}>
+                      <PropertyManagementPage />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/owner/crm/agents" element={
+                <ProtectedRoute allowedRoles={['owner']}>
+                  <AppLayout>
+                    <Suspense fallback={<SuspenseLoader />}>
+                      <AgentPerformancePage />
                     </Suspense>
                   </AppLayout>
                 </ProtectedRoute>

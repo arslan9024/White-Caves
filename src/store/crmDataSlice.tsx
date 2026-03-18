@@ -1,9 +1,10 @@
 /**
  * CRM Data Redux Slice
  * Manages: leads, clients, agents, commissions, activities
+ * Now with async thunks for backend API integration
  */
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import {
   DUMMY_ALL_LEADS,
   DUMMY_CLIENTS,
@@ -85,6 +86,131 @@ const initialState: CRMDataState = {
 
   lastUpdated: new Date().toISOString()
 };
+
+// ============================================================================
+// ASYNC THUNKS — Backend API Integration
+// ============================================================================
+
+/** Fetch all leads from the backend API, falls back to dummy data on error */
+export const fetchLeadsFromAPI = createAsyncThunk(
+  'crmData/fetchLeads',
+  async (params: { page?: number; pageSize?: number; status?: string; source?: string } = {}, { rejectWithValue }) => {
+    try {
+      const query = new URLSearchParams();
+      if (params.page) query.set('page', String(params.page));
+      if (params.pageSize) query.set('pageSize', String(params.pageSize));
+      if (params.status) query.set('status', params.status);
+      if (params.source) query.set('source', params.source);
+      const response = await fetch(`/api/leads?${query.toString()}`);
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to fetch leads');
+    }
+  }
+);
+
+/** Fetch all properties from the backend API */
+export const fetchPropertiesFromAPI = createAsyncThunk(
+  'crmData/fetchProperties',
+  async (params: { page?: number; status?: string; type?: string } = {}, { rejectWithValue }) => {
+    try {
+      const query = new URLSearchParams();
+      if (params.page) query.set('page', String(params.page));
+      if (params.status) query.set('status', params.status);
+      if (params.type) query.set('type', params.type);
+      const response = await fetch(`/api/properties?${query.toString()}`);
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to fetch properties');
+    }
+  }
+);
+
+/** Fetch all agents from the backend API */
+export const fetchAgentsFromAPI = createAsyncThunk(
+  'crmData/fetchAgents',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch('/api/users?role=agent');
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to fetch agents');
+    }
+  }
+);
+
+/** Fetch dashboard overview from the backend API */
+export const fetchDashboardOverview = createAsyncThunk(
+  'crmData/fetchDashboardOverview',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch('/api/dashboard/summary');
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to fetch dashboard overview');
+    }
+  }
+);
+
+/** Create a new lead via API */
+export const createLeadAPI = createAsyncThunk(
+  'crmData/createLead',
+  async (leadData: Record<string, any>, { rejectWithValue }) => {
+    try {
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(leadData),
+      });
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to create lead');
+    }
+  }
+);
+
+/** Update a lead via API */
+export const updateLeadAPI = createAsyncThunk(
+  'crmData/updateLeadAPI',
+  async ({ id, ...updates }: { id: string | number } & Record<string, any>, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/api/leads/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to update lead');
+    }
+  }
+);
+
+/** Delete a lead via API */
+export const deleteLeadAPI = createAsyncThunk(
+  'crmData/deleteLeadAPI',
+  async (id: string | number, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/api/leads/${id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      return id;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to delete lead');
+    }
+  }
+);
 
 const crmDataSlice = createSlice({
   name: 'crmData',
@@ -257,6 +383,108 @@ const crmDataSlice = createSlice({
       state.overview = action.payload;
       state.lastUpdated = new Date().toISOString();
     }
+  },
+
+  // ============== EXTRA REDUCERS — Async Thunk Handlers ==============
+  extraReducers: (builder) => {
+    // --- Fetch Leads ---
+    builder
+      .addCase(fetchLeadsFromAPI.pending, (state) => {
+        state.leads.loading = true;
+        state.leads.error = null;
+      })
+      .addCase(fetchLeadsFromAPI.fulfilled, (state, action) => {
+        state.leads.loading = false;
+        if (Array.isArray(action.payload)) {
+          state.leads.items = action.payload;
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(fetchLeadsFromAPI.rejected, (state, action) => {
+        state.leads.loading = false;
+        state.leads.error = (action.payload as string) || 'Failed to fetch leads';
+      });
+
+    // --- Fetch Properties ---
+    builder
+      .addCase(fetchPropertiesFromAPI.pending, (state) => {
+        // Properties handled via propertySlice mainly, but track loading here
+      })
+      .addCase(fetchPropertiesFromAPI.fulfilled, (state, action) => {
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(fetchPropertiesFromAPI.rejected, (state) => {
+        // Silent fail — properties have fallback
+      });
+
+    // --- Fetch Agents ---
+    builder
+      .addCase(fetchAgentsFromAPI.pending, (state) => {
+        state.agents.loading = true;
+        state.agents.error = null;
+      })
+      .addCase(fetchAgentsFromAPI.fulfilled, (state, action) => {
+        state.agents.loading = false;
+        if (Array.isArray(action.payload)) {
+          state.agents.items = action.payload;
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(fetchAgentsFromAPI.rejected, (state, action) => {
+        state.agents.loading = false;
+        state.agents.error = (action.payload as string) || 'Failed to fetch agents';
+      });
+
+    // --- Fetch Dashboard Overview ---
+    builder
+      .addCase(fetchDashboardOverview.pending, (state) => {
+        // Silent — dashboard loads from API in background
+      })
+      .addCase(fetchDashboardOverview.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.overview = { ...state.overview, ...action.payload };
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(fetchDashboardOverview.rejected, (state) => {
+        // Silent fail — overview retains dummy data as fallback
+      });
+
+    // --- Create Lead ---
+    builder
+      .addCase(createLeadAPI.pending, (state) => {
+        state.leads.loading = true;
+      })
+      .addCase(createLeadAPI.fulfilled, (state, action) => {
+        state.leads.loading = false;
+        if (action.payload) {
+          state.leads.items.unshift(action.payload);
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(createLeadAPI.rejected, (state, action) => {
+        state.leads.loading = false;
+        state.leads.error = (action.payload as string) || 'Failed to create lead';
+      });
+
+    // --- Update Lead ---
+    builder
+      .addCase(updateLeadAPI.fulfilled, (state, action) => {
+        if (action.payload) {
+          const idx = state.leads.items.findIndex(l => l.id === action.payload.id);
+          if (idx > -1) {
+            state.leads.items[idx] = { ...state.leads.items[idx], ...action.payload };
+          }
+        }
+        state.lastUpdated = new Date().toISOString();
+      });
+
+    // --- Delete Lead ---
+    builder
+      .addCase(deleteLeadAPI.fulfilled, (state, action) => {
+        state.leads.items = state.leads.items.filter(l => l.id !== action.payload);
+        state.lastUpdated = new Date().toISOString();
+      });
   }
 });
 

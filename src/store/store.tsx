@@ -14,6 +14,7 @@ import aiAssistantDashboardReducer from './slices/aiAssistantDashboardSlice';
 import sidebarReducer from './slices/sidebarSlice';
 import notificationReducer from './slices/notificationSlice';
 import whatsappReducer from './slices/whatsappSlice';
+import crmDataReducer from './crmDataSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 
 // Wrap middleware in error handling
@@ -45,6 +46,7 @@ export const store = configureStore({
     sidebar: sidebarReducer,
     notifications: notificationReducer,
     whatsapp: whatsappReducer,
+    crmData: crmDataReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
