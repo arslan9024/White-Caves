@@ -4,10 +4,22 @@
  * Route: /owner/crm/properties
  */
 
-import React, { FC, useState, useMemo, useCallback } from 'react';
+import React, { FC, useState, useMemo, useCallback, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Badge, Modal, Pagination } from '../../components/ui';
+import type { AppDispatch } from '../../store/store';
+import {
+  selectAllProperties,
+  selectPropertiesLoading,
+  selectPropertiesError,
+  fetchPropertiesFromAPI,
+  createPropertyAPI,
+  updatePropertyAPI,
+  deletePropertyAPI,
+  addActivity,
+} from '../../store/crmDataSlice';
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -457,9 +469,21 @@ const ITEMS_PER_PAGE = 9;
 
 const PropertyManagementPage: FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
-  // State
-  const [properties, setProperties] = useState<Property[]>(MOCK_PROPERTIES);
+  // Redux state (backend-powered)
+  const allProperties = useSelector(selectAllProperties) as Property[];
+  const loading = useSelector(selectPropertiesLoading);
+  const error = useSelector(selectPropertiesError);
+
+  // Fetch properties from API on mount — fallback to MOCK_PROPERTIES if empty
+  useEffect(() => {
+    dispatch(fetchPropertiesFromAPI({}));
+  }, [dispatch]);
+
+  // Use Redux data or fall back to mock if API returns empty (offline/dev mode)
+  const properties = allProperties.length > 0 ? allProperties : MOCK_PROPERTIES;
+
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
@@ -523,8 +547,7 @@ const PropertyManagementPage: FC = () => {
   }, []);
 
   const handleCreate = () => {
-    const newProperty: Property = {
-      id: Date.now(),
+    const propertyData = {
       title: formData.title,
       type: formData.type,
       status: formData.status,
@@ -538,7 +561,16 @@ const PropertyManagementPage: FC = () => {
       featured: formData.featured,
       created_at: new Date().toISOString(),
     };
-    setProperties(prev => [newProperty, ...prev]);
+    dispatch(createPropertyAPI(propertyData)).then((result) => {
+      if (createPropertyAPI.fulfilled.match(result)) {
+        dispatch(addActivity({
+          id: Date.now(),
+          type: 'property',
+          description: `New property listed: ${formData.title}`,
+          timestamp: new Date().toISOString(),
+        }));
+      }
+    });
     setShowCreateModal(false);
     resetForm();
   };
@@ -563,17 +595,24 @@ const PropertyManagementPage: FC = () => {
 
   const handleSaveEdit = () => {
     if (selectedProperty) {
-      setProperties(prev => prev.map(p =>
-        p.id === selectedProperty.id ? {
-          ...p,
-          ...formData,
-          price: Number(formData.price) || 0,
-          bedrooms: Number(formData.bedrooms) || 0,
-          bathrooms: Number(formData.bathrooms) || 0,
-          sqft: Number(formData.sqft) || 0,
-          updated_at: new Date().toISOString(),
-        } : p
-      ));
+      dispatch(updatePropertyAPI({
+        id: selectedProperty.id,
+        ...formData,
+        price: Number(formData.price) || 0,
+        bedrooms: Number(formData.bedrooms) || 0,
+        bathrooms: Number(formData.bathrooms) || 0,
+        sqft: Number(formData.sqft) || 0,
+        updated_at: new Date().toISOString(),
+      })).then((result) => {
+        if (updatePropertyAPI.fulfilled.match(result)) {
+          dispatch(addActivity({
+            id: Date.now(),
+            type: 'property',
+            description: `Property updated: ${formData.title}`,
+            timestamp: new Date().toISOString(),
+          }));
+        }
+      });
     }
     setShowEditModal(false);
     setSelectedProperty(null);
@@ -582,7 +621,16 @@ const PropertyManagementPage: FC = () => {
 
   const handleDelete = () => {
     if (selectedProperty) {
-      setProperties(prev => prev.filter(p => p.id !== selectedProperty.id));
+      dispatch(deletePropertyAPI(selectedProperty.id)).then((result) => {
+        if (deletePropertyAPI.fulfilled.match(result)) {
+          dispatch(addActivity({
+            id: Date.now(),
+            type: 'property',
+            description: `Property removed: ${selectedProperty.title}`,
+            timestamp: new Date().toISOString(),
+          }));
+        }
+      });
     }
     setShowDeleteConfirm(false);
     setSelectedProperty(null);
@@ -709,6 +757,19 @@ const PropertyManagementPage: FC = () => {
           ➕ Add Property
         </PrimaryButton>
       </PageHeader>
+
+      {/* Loading & Error States */}
+      {loading && (
+        <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 8, padding: '0.75rem 1rem', marginBottom: '1rem', fontSize: '0.85rem', color: '#1D4ED8' }}>
+          ⏳ Loading properties from server...
+        </div>
+      )}
+      {error && (
+        <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, padding: '0.75rem 1rem', marginBottom: '1rem', fontSize: '0.85rem', color: '#DC2626', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>⚠️ {error} — showing fallback data</span>
+          <button onClick={() => dispatch(fetchPropertiesFromAPI({}))} style={{ background: 'white', border: '1px solid #ddd', borderRadius: 6, padding: '0.35rem 0.75rem', fontSize: '0.8rem', cursor: 'pointer' }}>Retry</button>
+        </div>
+      )}
 
       {/* Stats */}
       <StatsRow>

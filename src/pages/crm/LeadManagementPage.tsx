@@ -4,7 +4,7 @@
  * Route: /owner/crm/leads
  */
 
-import React, { FC, useState, useMemo, useCallback } from 'react';
+import React, { FC, useState, useMemo, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -13,9 +13,11 @@ import type { AppDispatch } from '../../store/store';
 import {
   selectAllLeads,
   selectLeadsLoading,
-  addLead,
-  updateLead,
-  deleteLead,
+  selectLeadsError,
+  fetchLeadsFromAPI,
+  createLeadAPI,
+  updateLeadAPI,
+  deleteLeadAPI,
   selectLead,
   addActivity,
 } from '../../store/crmDataSlice';
@@ -349,6 +351,12 @@ const LeadManagementPage: FC = () => {
   const navigate = useNavigate();
   const allLeads = useSelector(selectAllLeads) as Lead[];
   const loading = useSelector(selectLeadsLoading);
+  const error = useSelector(selectLeadsError);
+
+  // Fetch leads from API on mount
+  useEffect(() => {
+    dispatch(fetchLeadsFromAPI({}));
+  }, [dispatch]);
 
   // Local state
   const [search, setSearch] = useState('');
@@ -416,22 +424,24 @@ const LeadManagementPage: FC = () => {
     });
   }, []);
 
-  // Create lead
+  // Create lead — via API
   const handleCreate = () => {
-    const newLead = {
-      id: Date.now(),
+    const leadData = {
       ...formData,
       budget: formData.budget ? Number(formData.budget) : undefined,
       created_at: new Date().toISOString(),
       last_activity: new Date().toISOString(),
     };
-    dispatch(addLead(newLead));
-    dispatch(addActivity({
-      id: Date.now(),
-      type: 'lead',
-      description: `New lead created: ${formData.name} (${formData.company || 'No company'})`,
-      timestamp: new Date().toISOString(),
-    }));
+    dispatch(createLeadAPI(leadData)).then((result) => {
+      if (createLeadAPI.fulfilled.match(result)) {
+        dispatch(addActivity({
+          id: Date.now(),
+          type: 'lead',
+          description: `New lead created: ${formData.name} (${formData.company || 'No company'})`,
+          timestamp: new Date().toISOString(),
+        }));
+      }
+    });
     setShowCreateModal(false);
     resetForm();
   };
@@ -452,37 +462,43 @@ const LeadManagementPage: FC = () => {
     setShowEditModal(true);
   };
 
-  // Save edit
+  // Save edit — via API
   const handleSaveEdit = () => {
     if (selectedLead) {
-      dispatch(updateLead({
-        ...selectedLead,
+      dispatch(updateLeadAPI({
+        id: selectedLead.id,
         ...formData,
         budget: formData.budget ? Number(formData.budget) : undefined,
         last_activity: new Date().toISOString(),
-      }));
-      dispatch(addActivity({
-        id: Date.now(),
-        type: 'lead',
-        description: `Lead updated: ${formData.name}`,
-        timestamp: new Date().toISOString(),
-      }));
+      })).then((result) => {
+        if (updateLeadAPI.fulfilled.match(result)) {
+          dispatch(addActivity({
+            id: Date.now(),
+            type: 'lead',
+            description: `Lead updated: ${formData.name}`,
+            timestamp: new Date().toISOString(),
+          }));
+        }
+      });
     }
     setShowEditModal(false);
     setSelectedLead(null);
     resetForm();
   };
 
-  // Delete lead
+  // Delete lead — via API
   const handleDelete = () => {
     if (selectedLead) {
-      dispatch(deleteLead(selectedLead.id));
-      dispatch(addActivity({
-        id: Date.now(),
-        type: 'lead',
-        description: `Lead deleted: ${selectedLead.name}`,
-        timestamp: new Date().toISOString(),
-      }));
+      dispatch(deleteLeadAPI(selectedLead.id)).then((result) => {
+        if (deleteLeadAPI.fulfilled.match(result)) {
+          dispatch(addActivity({
+            id: Date.now(),
+            type: 'lead',
+            description: `Lead deleted: ${selectedLead.name}`,
+            timestamp: new Date().toISOString(),
+          }));
+        }
+      });
     }
     setShowDeleteConfirm(false);
     setSelectedLead(null);
@@ -610,6 +626,19 @@ const LeadManagementPage: FC = () => {
           ➕ New Lead
         </PrimaryButton>
       </PageHeader>
+
+      {/* Loading & Error States */}
+      {loading && (
+        <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 8, padding: '0.75rem 1rem', marginBottom: '1rem', fontSize: '0.85rem', color: '#1D4ED8' }}>
+          ⏳ Loading leads from server...
+        </div>
+      )}
+      {error && (
+        <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, padding: '0.75rem 1rem', marginBottom: '1rem', fontSize: '0.85rem', color: '#DC2626', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>⚠️ {error} — showing cached data</span>
+          <SecondaryButton onClick={() => dispatch(fetchLeadsFromAPI({}))}>Retry</SecondaryButton>
+        </div>
+      )}
 
       {/* Pipeline Status Bar */}
       <PipelineBar>

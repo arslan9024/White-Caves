@@ -4,15 +4,18 @@
  * Route: /owner/crm/agents
  */
 
-import React, { FC, useState, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import React, { FC, useState, useMemo, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Badge } from '../../components/ui';
+import type { AppDispatch } from '../../store/store';
 import {
   selectAllAgents,
+  selectAgentsLoading,
   selectAllLeads,
   selectAllCommissions,
+  fetchAgentsFromAPI,
 } from '../../store/crmDataSlice';
 
 // ─── Types ──────────────────────────────────────────────────────────────
@@ -337,9 +340,16 @@ const formatCurrency = (amount: number) => `AED ${(amount / 1000000).toFixed(1)}
 
 const AgentPerformancePage: FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
   const reduxAgents = useSelector(selectAllAgents) as Agent[];
   const reduxLeads = useSelector(selectAllLeads);
   const reduxCommissions = useSelector(selectAllCommissions);
+  const loading = useSelector(selectAgentsLoading);
+
+  // Fetch agents from API on mount
+  useEffect(() => {
+    dispatch(fetchAgentsFromAPI());
+  }, [dispatch]);
 
   // Merge Redux data with mock data
   const agents = useMemo(() => {
@@ -382,6 +392,13 @@ const AgentPerformancePage: FC = () => {
           </span>
         </div>
       </PageHeader>
+
+      {/* Loading State */}
+      {loading && (
+        <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 8, padding: '0.75rem 1rem', marginBottom: '1rem', fontSize: '0.85rem', color: '#1D4ED8' }}>
+          ⏳ Loading agent data from server...
+        </div>
+      )}
 
       {/* Team Stats */}
       <StatsRow>

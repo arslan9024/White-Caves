@@ -42,6 +42,7 @@ interface CRMDataState {
   leads: CRMCollection<CRMItem>;
   clients: CRMCollection<CRMItem>;
   agents: CRMCollection<CRMItem>;
+  properties: CRMCollection<CRMItem>;
   commissions: CommissionCollection;
   activities: ActivityCollection;
   overview: any;
@@ -65,6 +66,13 @@ const initialState: CRMDataState = {
 
   agents: {
     items: DUMMY_AGENTS,
+    selected: null,
+    loading: false,
+    error: null
+  },
+
+  properties: {
+    items: [],
     selected: null,
     loading: false,
     error: null
@@ -212,6 +220,58 @@ export const deleteLeadAPI = createAsyncThunk(
   }
 );
 
+/** Create a new property via API */
+export const createPropertyAPI = createAsyncThunk(
+  'crmData/createProperty',
+  async (propertyData: Record<string, any>, { rejectWithValue }) => {
+    try {
+      const response = await fetch('/api/properties', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(propertyData),
+      });
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to create property');
+    }
+  }
+);
+
+/** Update a property via API */
+export const updatePropertyAPI = createAsyncThunk(
+  'crmData/updateProperty',
+  async ({ id, ...updates }: { id: string | number } & Record<string, any>, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/api/properties/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to update property');
+    }
+  }
+);
+
+/** Delete a property via API */
+export const deletePropertyAPI = createAsyncThunk(
+  'crmData/deleteProperty',
+  async (id: string | number, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/api/properties/${id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      return id;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to delete property');
+    }
+  }
+);
+
 const crmDataSlice = createSlice({
   name: 'crmData',
   initialState,
@@ -340,6 +400,52 @@ const crmDataSlice = createSlice({
       state.agents.error = action.payload;
     },
 
+    // ============== PROPERTIES ==============
+    setProperties: (state, action: PayloadAction<CRMItem[]>) => {
+      state.properties.items = action.payload;
+      state.lastUpdated = new Date().toISOString();
+    },
+
+    addProperty: (state, action: PayloadAction<CRMItem>) => {
+      state.properties.items.unshift({
+        ...action.payload,
+        id: action.payload.id || Date.now(),
+      });
+      state.lastUpdated = new Date().toISOString();
+    },
+
+    updateProperty: (state, action: PayloadAction<CRMItem>) => {
+      const propIndex = state.properties.items.findIndex(
+        p => p.id === action.payload.id
+      );
+      if (propIndex > -1) {
+        state.properties.items[propIndex] = {
+          ...state.properties.items[propIndex],
+          ...action.payload,
+        };
+      }
+      state.lastUpdated = new Date().toISOString();
+    },
+
+    deleteProperty: (state, action: PayloadAction<string | number>) => {
+      state.properties.items = state.properties.items.filter(
+        p => p.id !== action.payload
+      );
+      state.lastUpdated = new Date().toISOString();
+    },
+
+    selectProperty: (state, action: PayloadAction<CRMItem | null>) => {
+      state.properties.selected = action.payload;
+    },
+
+    setPropertiesLoading: (state, action: PayloadAction<boolean>) => {
+      state.properties.loading = action.payload;
+    },
+
+    setPropertiesError: (state, action: PayloadAction<string | null>) => {
+      state.properties.error = action.payload;
+    },
+
     // ============== COMMISSIONS ==============
     setCommissions: (state, action: PayloadAction<CRMItem[]>) => {
       state.commissions.items = action.payload;
@@ -408,13 +514,19 @@ const crmDataSlice = createSlice({
     // --- Fetch Properties ---
     builder
       .addCase(fetchPropertiesFromAPI.pending, (state) => {
-        // Properties handled via propertySlice mainly, but track loading here
+        state.properties.loading = true;
+        state.properties.error = null;
       })
       .addCase(fetchPropertiesFromAPI.fulfilled, (state, action) => {
+        state.properties.loading = false;
+        if (Array.isArray(action.payload)) {
+          state.properties.items = action.payload;
+        }
         state.lastUpdated = new Date().toISOString();
       })
-      .addCase(fetchPropertiesFromAPI.rejected, (state) => {
-        // Silent fail — properties have fallback
+      .addCase(fetchPropertiesFromAPI.rejected, (state, action) => {
+        state.properties.loading = false;
+        state.properties.error = (action.payload as string) || 'Failed to fetch properties';
       });
 
     // --- Fetch Agents ---
@@ -485,6 +597,58 @@ const crmDataSlice = createSlice({
         state.leads.items = state.leads.items.filter(l => l.id !== action.payload);
         state.lastUpdated = new Date().toISOString();
       });
+
+    // --- Create Property ---
+    builder
+      .addCase(createPropertyAPI.pending, (state) => {
+        state.properties.loading = true;
+      })
+      .addCase(createPropertyAPI.fulfilled, (state, action) => {
+        state.properties.loading = false;
+        if (action.payload) {
+          state.properties.items.unshift(action.payload);
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(createPropertyAPI.rejected, (state, action) => {
+        state.properties.loading = false;
+        state.properties.error = (action.payload as string) || 'Failed to create property';
+      });
+
+    // --- Update Property ---
+    builder
+      .addCase(updatePropertyAPI.pending, (state) => {
+        state.properties.loading = true;
+      })
+      .addCase(updatePropertyAPI.fulfilled, (state, action) => {
+        state.properties.loading = false;
+        if (action.payload) {
+          const idx = state.properties.items.findIndex(p => p.id === action.payload.id);
+          if (idx > -1) {
+            state.properties.items[idx] = { ...state.properties.items[idx], ...action.payload };
+          }
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(updatePropertyAPI.rejected, (state, action) => {
+        state.properties.loading = false;
+        state.properties.error = (action.payload as string) || 'Failed to update property';
+      });
+
+    // --- Delete Property ---
+    builder
+      .addCase(deletePropertyAPI.pending, (state) => {
+        state.properties.loading = true;
+      })
+      .addCase(deletePropertyAPI.fulfilled, (state, action) => {
+        state.properties.loading = false;
+        state.properties.items = state.properties.items.filter(p => p.id !== action.payload);
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(deletePropertyAPI.rejected, (state, action) => {
+        state.properties.loading = false;
+        state.properties.error = (action.payload as string) || 'Failed to delete property';
+      });
   }
 });
 
@@ -509,6 +673,13 @@ export const {
   updateAgent,
   setAgentsLoading,
   setAgentsError,
+  setProperties,
+  addProperty,
+  updateProperty,
+  deleteProperty,
+  selectProperty,
+  setPropertiesLoading,
+  setPropertiesError,
   setCommissions,
   updateCommission,
   setCommissionsLoading,
@@ -528,6 +699,7 @@ export const selectColdLeads = (state: any) =>
   state.crmData?.leads?.items?.filter((l: CRMItem) => l.status === 'cold') || [];
 export const selectSelectedLead = (state: any) => state.crmData?.leads?.selected;
 export const selectLeadsLoading = (state: any) => state.crmData?.leads?.loading;
+export const selectLeadsError = (state: any) => state.crmData?.leads?.error;
 
 // Clients
 export const selectAllClients = (state: any) => state.crmData?.clients?.items || [];
@@ -545,6 +717,16 @@ export const selectOnlineAgents = (state: any) =>
 
 export const selectAgentById = (state: any, agentId: string | number) =>
   state.crmData?.agents?.items?.find((a: CRMItem) => a.id === agentId);
+
+// Properties
+export const selectAllProperties = (state: any) => state.crmData?.properties?.items || [];
+export const selectSelectedProperty = (state: any) => state.crmData?.properties?.selected;
+export const selectPropertiesLoading = (state: any) => state.crmData?.properties?.loading;
+export const selectPropertiesError = (state: any) => state.crmData?.properties?.error;
+export const selectAvailableProperties = (state: any) =>
+  state.crmData?.properties?.items?.filter((p: CRMItem) => p.status === 'available') || [];
+export const selectPropertyById = (state: any, propertyId: string | number) =>
+  state.crmData?.properties?.items?.find((p: CRMItem) => p.id === propertyId);
 
 // Commissions
 export const selectAllCommissions = (state: any) =>
