@@ -484,7 +484,6 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
     details: [
       'Transfer fee calculation',
       'Registration fees',
-      'Agent commission',
       'Total cost breakdown',
     ],
     implementedDate: '2024-02-10',

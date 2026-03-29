@@ -278,7 +278,6 @@ export const ROLE_KEY_MAP: Record<string, string> = {
   'sales-agent': 'sales_agent',
   'admin': 'super_admin',
   'seller': 'landlord',
-  'freelancer': 'affiliated_agent',
 };
 
 /** Normalize a role key to a canonical role ID */
