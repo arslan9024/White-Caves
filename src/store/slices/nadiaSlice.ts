@@ -4,7 +4,7 @@
  */
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import type { RootState } from '@/store';
+import type { RootState } from '@/store/store';
 import nadiaAPI from '@/services/nadiaAPI';
 import {
   Conversation,
@@ -342,7 +342,7 @@ export const selectSelectedConversationId = (state: RootState) =>
   state.nadia.selectedConversationId;
 export const selectSelectedConversation = (state: RootState) => {
   const id = state.nadia.selectedConversationId;
-  return state.nadia.conversations.find((c) => c.id === id) || null;
+  return state.nadia.conversations.find((c: any) => c.id === id) || null;
 };
 export const selectNadiaLoading = (state: RootState) => state.nadia.loading;
 export const selectNadiaError = (state: RootState) => state.nadia.error;
@@ -359,11 +359,11 @@ export const selectUrgentCount = (state: RootState) =>
 export const selectHighPriorityCount = (state: RootState) =>
   state.nadia.stats.byPriority.HIGH;
 export const selectActiveConversations = (state: RootState) =>
-  state.nadia.conversations.filter((c) => c.status === 'ACTIVE');
+  state.nadia.conversations.filter((c: any) => c.status === 'ACTIVE');
 export const selectHotLeads = (state: RootState) =>
   state.nadia.conversations
-    .filter((c) => c.leadScore >= 75)
-    .sort((a, b) => b.leadScore - a.leadScore);
+    .filter((c: any) => c.leadScore >= 75)
+    .sort((a: any, b: any) => b.leadScore - a.leadScore);
 
 /**
  * Reducer Export

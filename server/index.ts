@@ -31,6 +31,8 @@ import reportingRoutes from './routes/reporting.js';
 import complianceRoutes from './routes/compliance.js';
 import crmRoutes from './routes/crm.js';
 import nadiaRoutes from './routes/nadia.js';
+import lindaRoutes from './routes/linda.js';
+import metaWebhookRoutes from './routes/meta-webhook.js';
 
 // Load environment variables
 dotenv.config();
@@ -189,6 +191,12 @@ app.use('/api/communications', communicationsRoutes);
 
 // NADIA WhatsApp CRM API (Conversation management, message routing, lead scoring)
 app.use('/api/nadia', nadiaRoutes);
+
+// Linda LocalAuth WhatsApp Integration (alternative channel)
+app.use('/api/linda', lindaRoutes);
+
+// Meta Business API Webhooks and Sending (production scale channel)
+app.use('/api/webhooks/meta', metaWebhookRoutes);
 
 // WhatsApp Webhook (public endpoint — requires webhook secret for verification)
 app.post('/api/whatsapp/webhook', asyncHandler(async (req: Request, res: Response) => {
