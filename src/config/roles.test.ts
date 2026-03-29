@@ -75,8 +75,9 @@ describe('roles config', () => {
       expect(ROLE_KEY_MAP['seller']).toBe('landlord');
     });
 
-    it('maps freelancer to affiliated_agent', () => {
-      expect(ROLE_KEY_MAP['freelancer']).toBe('affiliated_agent');
+    it('maps freelancer to affiliated_agent (removed in Phase 0)', () => {
+      // freelancer role was removed during Phase 0 — commission/freelancer cleanup
+      expect(ROLE_KEY_MAP['freelancer']).toBeUndefined();
     });
 
     it('maps dashed keys to underscored canonical IDs', () => {

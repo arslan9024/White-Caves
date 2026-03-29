@@ -78,7 +78,7 @@ describe('Store — Reducer Composition', () => {
   it('does not include unexpected slices', () => {
     const state = store.getState();
     const keys = Object.keys(state);
-    expect(keys.length).toBe(14);
+    expect(keys.length).toBe(15);
   });
 
   it('each slice has a defined initial state (not undefined)', () => {

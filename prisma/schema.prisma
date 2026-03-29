@@ -30,6 +30,7 @@ model User {
   leadsCreated  Lead[]       @relation("CreatedBy")
   activities    Activity[]
   transactions  Transaction[] @relation("TransactionAgent")
+  commissions   Commission[]
 
   @@index([role])
   @@index([status])
@@ -65,6 +66,7 @@ model Property {
   leads       Lead[]
   transactions Transaction[]
   tenants      Tenant[]
+  commissions  Commission[]
 
   @@index([status])
   @@index([type])
@@ -102,6 +104,7 @@ model Lead {
   property     Property? @relation(fields: [propertyId], references: [id])
   activities   Activity[]
   transactions Transaction[]
+  commissions  Commission[]
 
   @@index([status])
   @@index([source])
@@ -265,4 +268,34 @@ model NadiaConversationQueue {
   @@index([status])
   @@index([priority])
   @@index([queuedAt])
+}
+
+// ─── COMMISSION ─────────────────────────────────────────────────────────
+
+model Commission {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  amount      Float
+  percentage  Float?   // Commission percentage (0-100), optional
+  type        String   @default("sale")      // sale, rental, referral
+  status      String   @default("pending")   // pending, approved, paid, cancelled
+  notes       String?
+  paidAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  agentId     String   @db.ObjectId
+  agent       User     @relation(fields: [agentId], references: [id])
+  leadId      String?  @db.ObjectId
+  lead        Lead?    @relation(fields: [leadId], references: [id])
+  propertyId  String?  @db.ObjectId
+  property    Property? @relation(fields: [propertyId], references: [id])
+
+  @@index([agentId])
+  @@index([status])
+  @@index([type])
+  @@index([createdAt])
+  @@index([agentId, status])  // Composite for agent performance queries
+  @@index([propertyId])
+  @@index([leadId])
 }
