@@ -56,7 +56,7 @@ const createMockStore = (userOverrides: Record<string, unknown> = {}) => {
         loading: false,
         error: null,
         ...userOverrides,
-      } as ReturnType<typeof userReducer>,
+      } as unknown as ReturnType<typeof userReducer>,
     },
   });
 };

@@ -2,7 +2,7 @@
  * PropertyMap.tsx — Comprehensive Unit Tests
  * Batch 37 | Google Maps embed with Dubai location lookup + fallback
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterAll } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 

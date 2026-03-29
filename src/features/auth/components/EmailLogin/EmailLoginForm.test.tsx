@@ -286,7 +286,7 @@ describe('EmailLoginForm', () => {
     errorCases.forEach(({ code, expected }) => {
       it(`maps ${code} to "${expected}"`, async () => {
         const err = new Error('Firebase error');
-        (err as Record<string, unknown>).code = code;
+        (err as unknown as Record<string, unknown>).code = code;
         mockSignIn.mockRejectedValue(err);
         const onError = vi.fn();
 
@@ -307,7 +307,7 @@ describe('EmailLoginForm', () => {
 
     it('uses error message as fallback for unknown code', async () => {
       const err = new Error('Some custom error');
-      (err as Record<string, unknown>).code = 'auth/unknown';
+      (err as unknown as Record<string, unknown>).code = 'auth/unknown';
       mockSignIn.mockRejectedValue(err);
       const onError = vi.fn();
 

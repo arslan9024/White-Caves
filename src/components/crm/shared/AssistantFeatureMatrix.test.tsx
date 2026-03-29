@@ -198,14 +198,14 @@ describe('AssistantFeatureMatrix', () => {
 
     it('renders category chips', () => {
       const { container } = render(<AssistantFeatureMatrix features={testFeatures} />);
-      const chipSection = container.querySelector('.category-overview')!;
+      const chipSection = container.querySelector('.category-overview')! as HTMLElement;
       expect(within(chipSection).getByText('Communication')).toBeInTheDocument();
       expect(within(chipSection).getByText('Sales')).toBeInTheDocument();
     });
 
     it('toggles category on chip click', () => {
       const { container } = render(<AssistantFeatureMatrix features={testFeatures} />);
-      const chipSection = container.querySelector('.category-overview')!;
+      const chipSection = container.querySelector('.category-overview')! as HTMLElement;
       // Click Communication chip to filter
       const commChip = within(chipSection).getByText('Communication').closest('button')!;
       fireEvent.click(commChip);

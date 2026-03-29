@@ -4,7 +4,7 @@
  * access denied, dashboard configs, metric rendering, callback
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';

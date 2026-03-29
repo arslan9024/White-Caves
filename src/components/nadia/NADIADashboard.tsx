@@ -135,7 +135,7 @@ const NADIADashboard: React.FC = () => {
    * Get selected conversation object
    */
   const selectedConversation = selectedConversationId
-    ? conversations.find((c) => c.id === selectedConversationId)
+    ? conversations.find((c) => c.id === selectedConversationId) ?? null
     : null;
 
   return (

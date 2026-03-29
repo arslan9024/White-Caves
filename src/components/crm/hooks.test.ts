@@ -6,7 +6,7 @@
  * Covers: state management, RBAC access control, CSV/JSON export, metrics toggle
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -43,7 +43,7 @@ function createMockStore(role: string = 'admin') {
 function wrapper(role: string = 'admin') {
   const store = createMockStore(role);
   return ({ children }: { children: React.ReactNode }) =>
-    React.createElement(Provider, { store }, children);
+    React.createElement(Provider, { store } as any, children);
 }
 
 // ═════════════════════════════════════════════════════════════════
@@ -285,7 +285,7 @@ describe('CRM Dashboard Hooks', () => {
           return { href: '', download: '', click: clickSpy } as any;
         }
         return originalCreateElement(tag, options);
-      });
+      }) as any;
     });
 
     afterEach(() => {

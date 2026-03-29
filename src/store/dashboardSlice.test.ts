@@ -53,7 +53,7 @@ const getInitialState = () => dashboardReducer(undefined, { type: 'unknown' });
 
 function createTestStore(preloadedState?: Record<string, unknown>) {
   return configureStore({
-    reducer: { dashboard: dashboardReducer },
+    reducer: { dashboard: dashboardReducer } as any,
     ...(preloadedState ? { preloadedState } : {}),
   });
 }

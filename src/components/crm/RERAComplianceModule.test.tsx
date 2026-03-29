@@ -125,7 +125,6 @@ describe('RERAComplianceModule', () => {
     });
 
     // With mock data: 3 total, 1 valid, 1 expired, 1 pending
-    const summaryValues = screen.getAllByClassName ? undefined : undefined;
     // Check the numbers in summary cards
     expect(screen.getByText('3')).toBeDefined(); // total agents
   });

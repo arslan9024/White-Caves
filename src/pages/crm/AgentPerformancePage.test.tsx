@@ -278,7 +278,7 @@ describe('AgentPerformancePage', () => {
   it('shows pagination when agents exceed page size', () => {
     // Create 15 agents to trigger pagination
     const manyAgents = Array.from({ length: 15 }, (_, i) => ({
-      id: `a${i}`, name: `Agent ${i}`, email: `a${i}@wc.ae`,
+      id: `a${i}`, name: `Agent ${i}`, email: `a${i}@wc.ae`, phone: '+971501234567',
       role: 'Agent', department: 'Sales', status: 'online',
       performance: 90 - i, deals_closed: 10 + i, revenue_generated: 1000000 + i * 100000,
       leads_assigned: 20 + i, conversion_rate: 30 - i,
@@ -293,7 +293,7 @@ describe('AgentPerformancePage', () => {
 
   it('navigates to next page', () => {
     const manyAgents = Array.from({ length: 15 }, (_, i) => ({
-      id: `a${i}`, name: `Agent ${i}`, email: `a${i}@wc.ae`,
+      id: `a${i}`, name: `Agent ${i}`, email: `a${i}@wc.ae`, phone: '+971501234567',
       role: 'Agent', department: 'Sales', status: 'online',
       performance: 90 - i, deals_closed: 10, revenue_generated: 1000000,
       leads_assigned: 20, conversion_rate: 30,
@@ -306,7 +306,7 @@ describe('AgentPerformancePage', () => {
 
   it('disables Previous on first page', () => {
     const manyAgents = Array.from({ length: 15 }, (_, i) => ({
-      id: `a${i}`, name: `Agent ${i}`, email: `a${i}@wc.ae`,
+      id: `a${i}`, name: `Agent ${i}`, email: `a${i}@wc.ae`, phone: '+971501234567',
       role: 'Agent', department: 'Sales', status: 'online',
       performance: 90 - i, deals_closed: 10, revenue_generated: 1000000,
       leads_assigned: 20, conversion_rate: 30,
@@ -319,7 +319,7 @@ describe('AgentPerformancePage', () => {
 
   it('disables Next on last page', () => {
     const manyAgents = Array.from({ length: 15 }, (_, i) => ({
-      id: `a${i}`, name: `Agent ${i}`, email: `a${i}@wc.ae`,
+      id: `a${i}`, name: `Agent ${i}`, email: `a${i}@wc.ae`, phone: '+971501234567',
       role: 'Agent', department: 'Sales', status: 'online',
       performance: 90 - i, deals_closed: 10, revenue_generated: 1000000,
       leads_assigned: 20, conversion_rate: 30,
