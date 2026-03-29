@@ -181,7 +181,8 @@ export class NinaEngine {
     // Apply context boost
     for (const recentIntent of context.recentIntents.slice(0, 3)) {
       const current = scores.get(recentIntent) || 0;
-      scores.set(recentIntent, current * 1.15); // 15% boost for recent intents
+      // Give a meaningful boost: add base 0.2 + 50% multiplier for recent intents
+      scores.set(recentIntent, Math.max(current * 1.5, current + 0.2));
     }
 
     // Find top intent
@@ -219,8 +220,8 @@ export class NinaEngine {
       if (intent === primaryIntent) continue;
 
       const score = this.scoreMatch(message, keywords, intent);
-      if (score > 0.3) {
-        // Only include if at least 30% match
+      if (score > 0.05) {
+        // Only include if at least 5% keyword match
         scores.push({ intent, score });
       }
     }
@@ -354,7 +355,7 @@ export class NinaEngine {
     }
 
     // Normalize sentiment to -1.0 to 1.0
-    const normalizedScore = Math.max(-1, Math.min(1, score / 10));
+    const normalizedScore = Math.max(-1, Math.min(1, score / 3));
 
     // Determine sentiment label
     let sentiment: 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
@@ -396,6 +397,9 @@ export class NinaEngine {
 
   /**
    * Score match between message and keywords
+   * Uses hit-count scoring: each keyword match adds a fixed weight.
+   * More matches = higher score, normalized to approx 0-1 range.
+   * A single keyword match gives 0.3, two matches 0.6, three 0.9, etc.
    */
   private scoreMatch(message: string, keywords: string[], intent: Intent): number {
     const normalized = message.toLowerCase();
@@ -407,8 +411,9 @@ export class NinaEngine {
       }
     }
 
-    // Normalize match score (0-1)
-    return Math.min(1, matches / Math.max(1, keywords.length));
+    // Each keyword hit contributes 0.3 (capped at 1.0)
+    // This avoids penalizing intents with many keywords
+    return Math.min(1, matches * 0.3);
   }
 
   /**
