@@ -12,6 +12,7 @@ import aiAssistantDashboardReducer from './slices/aiAssistantDashboardSlice';
 import sidebarReducer from './slices/sidebarSlice';
 import notificationReducer from './slices/notificationSlice';
 import whatsappReducer from './slices/whatsappSlice';
+import nadiaReducer from './slices/nadiaSlice';
 import crmDataReducer from './crmDataSlice';
 import roleReducer from './roleSlice';
 import featuresReducer from './featuresSlice';
@@ -47,6 +48,7 @@ export const store = configureStore({
     sidebar: sidebarReducer,
     notifications: notificationReducer,
     whatsapp: whatsappReducer,
+    nadia: nadiaReducer,
     crmData: crmDataReducer,
     role: roleReducer,
     features: featuresReducer,
