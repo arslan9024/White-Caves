@@ -15,6 +15,7 @@ import {
   generateBotResponse,
 } from '../services/nadia/messageProcessor.js';
 import { getQueuedConversations, assignFromQueue } from '../services/nadia/queueManager.js';
+import { requirePermission } from '../middleware/rbac';
 
 const router = Router();
 
@@ -28,6 +29,7 @@ const router = Router();
  */
 router.post(
   '/conversations',
+  requirePermission('access_whatsapp_business'),
   asyncHandler(async (req: Request, res: Response) => {
     const { wabaId, customerPhone, initialMessage } = req.body;
 
@@ -107,6 +109,7 @@ router.post(
  */
 router.get(
   '/conversations/:conversationId',
+  requirePermission('access_whatsapp_business'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId } = req.params;
 
@@ -137,6 +140,7 @@ router.get(
  */
 router.get(
   '/conversations',
+  requirePermission('access_whatsapp_business'),
   asyncHandler(async (req: Request, res: Response) => {
     const {
       status,
@@ -205,6 +209,7 @@ router.get(
  */
 router.patch(
   '/conversations/:conversationId',
+  requirePermission('access_whatsapp_business'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId } = req.params;
     const { status, agentPhone, closedReason } = req.body;
@@ -253,6 +258,7 @@ router.patch(
  */
 router.delete(
   '/conversations/:conversationId',
+  requirePermission('access_whatsapp_business'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId } = req.params;
     const { reason } = req.body;
@@ -296,6 +302,7 @@ router.delete(
  */
 router.post(
   '/conversations/:conversationId/messages',
+  requirePermission('access_whatsapp_business'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId } = req.params;
     const { content, senderType = 'customer', senderPhone } = req.body;
@@ -366,6 +373,7 @@ router.post(
  */
 router.get(
   '/conversations/:conversationId/messages',
+  requirePermission('access_whatsapp_business'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId } = req.params;
     const { limit = 50, offset = 0 } = req.query;
@@ -403,6 +411,7 @@ router.get(
  */
 router.get(
   '/queue',
+  requirePermission('access_whatsapp_business'),
   asyncHandler(async (req: Request, res: Response) => {
     const { limit = 10 } = req.query;
 
@@ -423,6 +432,7 @@ router.get(
  */
 router.patch(
   '/queue/:queueId/assign',
+  requirePermission('access_whatsapp_business'),
   asyncHandler(async (req: Request, res: Response) => {
     const { queueId } = req.params;
     const { agentPhone } = req.body;
@@ -454,6 +464,7 @@ router.patch(
  */
 router.get(
   '/health',
+  requirePermission('access_whatsapp_business'),
   asyncHandler(async (_req: Request, res: Response) => {
     const conversationCount = await prisma.nadiaConversation.count();
     const messageCount = await prisma.nadiaMessage.count();

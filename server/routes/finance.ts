@@ -10,17 +10,16 @@ import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { validateIdParam } from '../utils/validate';
 import { sanitizeString } from '../utils/sanitize';
+import { requirePermission } from '../middleware/rbac';
 
 const router = Router();
 
 // ─── GET /api/finance/summary ───────────────────────────────────────────
 router.get(
   '/summary',
-  asyncHandler(async (req: Request, res: Response) => {    // Authorization: Only managers/finance can access financial summary
-    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
-    if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
-      throw new AppError('Access denied — financial summary requires manager or finance role', 403);
-    }    const [
+  requirePermission('view_payments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const [
       totalCommissions,
       paidCommissions,
       pendingCommissions,
@@ -65,11 +64,8 @@ router.get(
 // ─── GET /api/finance/commissions ───────────────────────────────────────
 router.get(
   '/commissions',
-  asyncHandler(async (req: Request, res: Response) => {    // AUTHORIZATION: Commission data restricted to managers/finance
-    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — commission data requires manager or finance role', 403);
-    }
+  requirePermission('view_payments'),
+  asyncHandler(async (req: Request, res: Response) => {
     const {
       page = '1', pageSize = '20',
       status, type, agentId,
@@ -114,13 +110,8 @@ router.get(
 // ─── GET /api/finance/commissions/:id ───────────────────────────────────
 router.get(
   '/commissions/:id',
+  requirePermission('view_payments'),
   asyncHandler(async (req: Request, res: Response) => {
-    // AUTHORIZATION: Commission details restricted to managers/finance/agent-owner
-    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — commission details require manager or finance role', 403);
-    }
-
     validateIdParam(req.params.id, 'Commission ID');
     const commission = await prisma.commission.findUnique({
       where: { id: req.params.id },
@@ -140,13 +131,8 @@ router.get(
 // ─── POST /api/finance/commissions ──────────────────────────────────────
 router.post(
   '/commissions',
+  requirePermission('process_payments'),
   asyncHandler(async (req: Request, res: Response) => {
-    // AUTHORIZATION: Only owner/finance manager can create commissions
-    const isAuthorized = ['owner', 'manager', 'finance'].includes(req.user?.role || '');
-    if (!isAuthorized) {
-      throw new AppError('Only finance managers can create commission entries', 403);
-    }
-
     const { agentId, amount, percentage, type, notes, leadId, propertyId } = req.body;
 
     if (!agentId) throw new AppError('Agent ID is required', 400);
@@ -220,6 +206,7 @@ router.post(
 // ─── PATCH /api/finance/commissions/:id ─────────────────────────────────
 router.patch(
   '/commissions/:id',
+  requirePermission('process_payments'),
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     validateIdParam(id, 'Commission ID');
@@ -289,13 +276,8 @@ router.patch(
 // Bulk-pay approved commissions
 router.post(
   '/payments',
+  requirePermission('process_payments'),
   asyncHandler(async (req: Request, res: Response) => {
-    // AUTHORIZATION: Only owner/finance manager can process payments
-    const isAuthorized = ['owner', 'manager', 'finance'].includes(req.user?.role || '');
-    if (!isAuthorized) {
-      throw new AppError('Only finance managers can process commission payments', 403);
-    }
-
     const { commissionIds } = req.body;
 
     if (!Array.isArray(commissionIds) || commissionIds.length === 0) {

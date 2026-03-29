@@ -117,14 +117,10 @@ describe('Agents Routes — /api/agents', () => {
       expect(res.body.error).toMatch(/access denied/i);
     });
 
-    it('returns 200 for finance role', async () => {
-      mockPrisma.user.findMany.mockResolvedValueOnce([]);
-      mockPrisma.user.count.mockResolvedValueOnce(0);
-      mockPrisma.lead.groupBy.mockResolvedValue([]);
-      mockPrisma.commission.groupBy.mockResolvedValueOnce([]);
+    it('returns 403 for finance role (no manage_agents permission)', async () => {
       const res = await request(createApp('finance'))
         .get('/api/agents');
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(403);
     });
 
     it('supports search filter', async () => {

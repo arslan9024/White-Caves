@@ -9,12 +9,14 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { validateIdParam } from '../utils/validate';
+import { requirePermission, requireRole } from '../middleware/rbac';
 
 const router = Router();
 
 // ─── GET /api/agents ────────────────────────────────────────────────────
 router.get(
   '/',
+  requirePermission('manage_agents'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Agent list with performance data restricted to managers+
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
@@ -120,6 +122,7 @@ router.get(
 // ─── GET /api/agents/stats ──────────────────────────────────────────────
 router.get(
   '/stats',
+  requirePermission('manage_agents'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only managers+ can view aggregated agent statistics
     const allowedRoles = ['owner', 'manager', 'admin'];

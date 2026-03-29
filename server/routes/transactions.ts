@@ -12,12 +12,14 @@ import { prisma } from '../database.js';
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { sanitizeString } from '../utils/sanitize';
+import { requirePermission } from '../middleware/rbac';
 
 const router = Router();
 
 // ─── GET /api/transactions ──────────────────────────────────────────────
 router.get(
   '/',
+  requirePermission('view_payments'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Transactions visible to owner/manager/admin/finance/agent
     const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'agent'];
@@ -64,6 +66,7 @@ router.get(
 // ─── GET /api/transactions/stats ────────────────────────────────────────
 router.get(
   '/stats',
+  requirePermission('view_payments'),
   asyncHandler(async (req: Request, res: Response) => {    // Authorization: Only managers+ can view transaction statistics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
@@ -98,6 +101,7 @@ router.get(
 // ─── GET /api/transactions/:id ──────────────────────────────────────────
 router.get(
   '/:id',
+  requirePermission('view_payments'),
   asyncHandler(async (req: Request, res: Response) => {
     validateIdParam(req.params.id, 'Transaction ID');
 
@@ -119,6 +123,7 @@ router.get(
 // ─── POST /api/transactions ─────────────────────────────────────────────
 router.post(
   '/',
+  requirePermission('process_payments'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only owner, manager, finance, or agents can create transactions
     const allowedRoles = ['owner', 'manager', 'finance', 'agent'];
@@ -177,6 +182,7 @@ router.post(
 // ─── PATCH /api/transactions/:id ────────────────────────────────────────
 router.patch(
   '/:id',
+  requirePermission('process_payments'),
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     validateIdParam(id, 'Transaction ID');
@@ -247,6 +253,7 @@ router.patch(
 // ─── DELETE /api/transactions/:id ───────────────────────────────────────
 router.delete(
   '/:id',
+  requirePermission('process_payments'),
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     validateIdParam(id, 'Transaction ID');

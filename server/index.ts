@@ -33,6 +33,7 @@ import crmRoutes from './routes/crm.js';
 import nadiaRoutes from './routes/nadia.js';
 import lindaRoutes from './routes/linda.js';
 import metaWebhookRoutes from './routes/meta-webhook.js';
+import { requireRole, requirePermission } from './middleware/rbac.js';
 
 // Load environment variables
 dotenv.config();
@@ -237,42 +238,42 @@ app.use('/api/crm', crmRoutes);
 // ============================================================================
 
 // WhatsApp API stubs (WhatsAppSettingsPage, WhatsAppDashboardPage, WhatsAppChatbotPage)
-app.get('/api/whatsapp/stats', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
+app.get('/api/whatsapp/stats', authMiddleware, requirePermission('access_whatsapp_business'), asyncHandler(async (_req: Request, res: Response) => {
   res.status(200).json({ success: true, data: { totalMessages: 0, sentToday: 0, received: 0, activeChats: 0, sessions: [] } });
 }));
-app.get('/api/whatsapp/settings', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
+app.get('/api/whatsapp/settings', authMiddleware, requirePermission('access_whatsapp_business'), asyncHandler(async (_req: Request, res: Response) => {
   res.status(200).json({ success: true, data: { phoneNumber: '', connected: false, autoReply: false, businessHours: null } });
 }));
-app.put('/api/whatsapp/settings', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
+app.put('/api/whatsapp/settings', authMiddleware, requireRole('owner'), asyncHandler(async (_req: Request, res: Response) => {
   res.status(200).json({ success: true, message: 'Settings updated (stub)' });
 }));
-app.post('/api/whatsapp/session', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
+app.post('/api/whatsapp/session', authMiddleware, requireRole('owner'), asyncHandler(async (_req: Request, res: Response) => {
   res.status(200).json({ success: true, data: { sessionId: 'stub-session', status: 'pending' } });
 }));
-app.post('/api/whatsapp/init', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
+app.post('/api/whatsapp/init', authMiddleware, requireRole('owner'), asyncHandler(async (_req: Request, res: Response) => {
   res.status(200).json({ success: true, message: 'WhatsApp initialization pending — configure phone number first' });
 }));
-app.post('/api/whatsapp/disconnect', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
+app.post('/api/whatsapp/disconnect', authMiddleware, requireRole('owner'), asyncHandler(async (_req: Request, res: Response) => {
   res.status(200).json({ success: true, message: 'WhatsApp disconnected' });
 }));
-app.post('/api/whatsapp/message', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
+app.post('/api/whatsapp/message', authMiddleware, requirePermission('access_whatsapp_business'), asyncHandler(async (_req: Request, res: Response) => {
   res.status(200).json({ success: true, data: { id: Date.now().toString(), status: 'queued' } });
 }));
-app.get('/api/whatsapp/chatbot/messages', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
+app.get('/api/whatsapp/chatbot/messages', authMiddleware, requirePermission('access_whatsapp_business'), asyncHandler(async (_req: Request, res: Response) => {
   res.status(200).json({ success: true, data: [] });
 }));
-app.post('/api/whatsapp/chatbot/messages', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
+app.post('/api/whatsapp/chatbot/messages', authMiddleware, requirePermission('access_whatsapp_business'), asyncHandler(async (_req: Request, res: Response) => {
   res.status(200).json({ success: true, data: { id: Date.now().toString(), role: 'user', createdAt: new Date() } });
 }));
-app.delete('/api/whatsapp/chatbot/messages/:id', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
+app.delete('/api/whatsapp/chatbot/messages/:id', authMiddleware, requirePermission('access_whatsapp_business'), asyncHandler(async (_req: Request, res: Response) => {
   res.status(200).json({ success: true });
 }));
 
 // Contracts API stubs (ContractManagementPage)
-app.get('/api/contracts', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
+app.get('/api/contracts', authMiddleware, requirePermission('view_contracts'), asyncHandler(async (_req: Request, res: Response) => {
   res.status(200).json({ success: true, data: [], pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 } });
 }));
-app.post('/api/contracts', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
+app.post('/api/contracts', authMiddleware, requirePermission('create_contracts'), asyncHandler(async (_req: Request, res: Response) => {
   res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
 }));
 
@@ -336,13 +337,8 @@ app.post('/api/valuation/estimate', authMiddleware, asyncHandler(async (req: Req
   res.status(501).json({ success: false, error: 'Valuation engine not yet available' });
 }));
 
-// System Health API stub (SystemHealthPage)
-// AUTHORIZATION: Restrict server internals to admin roles only
-app.get('/api/system/health', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  const allowedRoles = ['owner', 'manager', 'admin'];
-  if (!allowedRoles.includes(req.user?.role || '')) {
-    throw new AppError('Access denied — system health requires admin role', 403);
-  }
+// System Health API (SystemHealthPage)
+app.get('/api/system/health', authMiddleware, requirePermission('view_system_health'), asyncHandler(async (req: Request, res: Response) => {
 
   const uptime = process.uptime();
   res.status(200).json({
@@ -371,11 +367,7 @@ app.get('/api/system/health', authMiddleware, asyncHandler(async (req: Request, 
 
 // Admin Role Management stubs (RoleSelectionForm, RoleApprovalQueue)
 // TODO: Add Prisma model for RoleRequest when role management module is prioritised
-app.post('/api/users/role', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  const allowedRoles = ['owner', 'manager', 'admin'];
-  if (!allowedRoles.includes(req.user?.role || '')) {
-    throw new AppError('Access denied — role assignment requires admin role', 403);
-  }
+app.post('/api/users/role', authMiddleware, requirePermission('manage_users'), asyncHandler(async (req: Request, res: Response) => {
   const { userId, role } = req.body;
   if (!userId || !role) throw new AppError('userId and role are required', 400);
   const updated = await prisma.user.update({
@@ -394,25 +386,13 @@ app.post('/api/users/role-request', authMiddleware, asyncHandler(async (req: Req
   logger.info('Role request submitted (stub)', { userId: req.user?.id, requestedRole });
   res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
 }));
-app.get('/api/admin/role-requests', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  const allowedRoles = ['owner', 'manager', 'admin'];
-  if (!allowedRoles.includes(req.user?.role || '')) {
-    throw new AppError('Access denied — admin role required', 403);
-  }
+app.get('/api/admin/role-requests', authMiddleware, requirePermission('manage_users'), asyncHandler(async (_req: Request, res: Response) => {
   res.status(200).json({ success: true, data: { requests: [] } });
 }));
-app.post('/api/admin/role-requests/:id/approve', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  const allowedRoles = ['owner', 'manager', 'admin'];
-  if (!allowedRoles.includes(req.user?.role || '')) {
-    throw new AppError('Access denied — admin role required', 403);
-  }
+app.post('/api/admin/role-requests/:id/approve', authMiddleware, requirePermission('manage_users'), asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json({ success: true, data: { id: req.params.id, status: 'approved', reviewedBy: req.user?.id } });
 }));
-app.post('/api/admin/role-requests/:id/reject', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  const allowedRoles = ['owner', 'manager', 'admin'];
-  if (!allowedRoles.includes(req.user?.role || '')) {
-    throw new AppError('Access denied — admin role required', 403);
-  }
+app.post('/api/admin/role-requests/:id/reject', authMiddleware, requirePermission('manage_users'), asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json({ success: true, data: { id: req.params.id, status: 'rejected', reviewedBy: req.user?.id, reason: req.body?.reason } });
 }));
 

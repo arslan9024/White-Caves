@@ -9,6 +9,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
+import { requirePermission, requireMinRole } from '../middleware/rbac';
 
 const router = Router();
 
@@ -16,6 +17,7 @@ const router = Router();
 // Overall compliance health check
 router.get(
   '/status',
+  requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only managers/finance can view compliance status
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
@@ -56,6 +58,7 @@ router.get(
 // UAE RERA compliance requirement checklist
 router.get(
   '/requirements',
+  requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only managers/finance can view compliance requirements
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
@@ -82,6 +85,7 @@ router.get(
 // Audit trail from activity log — RESTRICTED to owner/manager roles
 router.get(
   '/audit-logs',
+  requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: audit logs contain sensitive info — owner/manager only
     const userRole = req.user?.role || '';
@@ -130,6 +134,7 @@ router.get(
 // Submit a compliance report — RESTRICTED to owner/manager roles
 router.post(
   '/reports',
+  requireMinRole('agent'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: compliance report submission requires elevated privileges
     const userRole = req.user?.role || '';

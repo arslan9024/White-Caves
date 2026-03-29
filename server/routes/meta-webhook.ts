@@ -7,6 +7,7 @@
 
 import { Router, Request, Response } from 'express';
 import { createMetaAPIClient, MetaAPIClient, WebhookEvent } from '../services/whatsapp/metaAPI';
+import { requireRole } from '../middleware/rbac';
 
 const router = Router();
 
@@ -188,7 +189,7 @@ async function handleStatusUpdate(status: any): Promise<void> {
  * Send message via Meta API (internal helper)
  * Body: { to: string, message: string, conversationId: string }
  */
-router.post('/send', async (req: Request, res: Response) => {
+router.post('/send', requireRole('owner'), async (req: Request, res: Response) => {
   try {
     const { to, message, conversationId } = req.body;
 
@@ -227,7 +228,7 @@ router.post('/send', async (req: Request, res: Response) => {
  * Send template message via Meta API
  * Body: { to: string, template: string, parameters?: string[], conversationId: string }
  */
-router.post('/template', async (req: Request, res: Response) => {
+router.post('/template', requireRole('owner'), async (req: Request, res: Response) => {
   try {
     const { to, template, parameters, conversationId } = req.body;
 
@@ -265,7 +266,7 @@ router.post('/template', async (req: Request, res: Response) => {
  * GET /api/webhooks/meta/status
  * Check Meta API connectivity
  */
-router.get('/status', async (req: Request, res: Response) => {
+router.get('/status', requireRole('owner'), async (req: Request, res: Response) => {
   try {
     const meta = getMetaClient();
     const stats = meta.getStats();
@@ -298,7 +299,7 @@ router.get('/status', async (req: Request, res: Response) => {
  * Send image via Meta API
  * Body: { to: string, imageUrl: string, conversationId: string }
  */
-router.post('/image', async (req: Request, res: Response) => {
+router.post('/image', requireRole('owner'), async (req: Request, res: Response) => {
   try {
     const { to, imageUrl, conversationId } = req.body;
 

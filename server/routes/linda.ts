@@ -9,6 +9,7 @@
 
 import { Router, Request, Response } from 'express';
 import { LindaClient, WhatsAppMessage, getLindaClient } from '../services/whatsapp/lindaClient';
+import { requirePermission } from '../middleware/rbac';
 
 const router = Router();
 let lindaClient: LindaClient | null = null;
@@ -39,7 +40,7 @@ async function initializeLinda(): Promise<LindaClient> {
  * GET /api/linda/status
  * Check Linda connection status
  */
-router.get('/status', async (req: Request, res: Response) => {
+router.get('/status', requirePermission('access_whatsapp_business'), async (req: Request, res: Response) => {
   try {
     const linda = await initializeLinda();
     const stats = linda.getStats();
@@ -67,7 +68,7 @@ router.get('/status', async (req: Request, res: Response) => {
  * Send message via WhatsApp
  * Body: { phoneNumber: string, message: string }
  */
-router.post('/send/:conversationId', async (req: Request, res: Response) => {
+router.post('/send/:conversationId', requirePermission('access_whatsapp_business'), async (req: Request, res: Response) => {
   try {
     const { phoneNumber, message } = req.body;
     const { conversationId } = req.params;
@@ -118,7 +119,7 @@ router.post('/send/:conversationId', async (req: Request, res: Response) => {
  * Receive messages from WhatsApp (via polling simulation)
  * In real implementation, Linda polls for new messages periodically
  */
-router.post('/webhook', async (req: Request, res: Response) => {
+router.post('/webhook', requirePermission('access_whatsapp_business'), async (req: Request, res: Response) => {
   try {
     const linda = await initializeLinda();
     const messages = linda.getMessageQueue();
@@ -166,7 +167,7 @@ router.post('/webhook', async (req: Request, res: Response) => {
  * GET /api/linda/conversations
  * Get list of active conversations
  */
-router.get('/conversations', async (req: Request, res: Response) => {
+router.get('/conversations', requirePermission('access_whatsapp_business'), async (req: Request, res: Response) => {
   try {
     const linda = await initializeLinda();
     const conversations = await linda.getConversations();
@@ -191,7 +192,7 @@ router.get('/conversations', async (req: Request, res: Response) => {
  * GET /api/linda/conversations/:phoneNumber/history
  * Get conversation history
  */
-router.get('/conversations/:phoneNumber/history', async (req: Request, res: Response) => {
+router.get('/conversations/:phoneNumber/history', requirePermission('access_whatsapp_business'), async (req: Request, res: Response) => {
   try {
     const { phoneNumber } = req.params;
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
