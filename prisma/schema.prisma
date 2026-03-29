@@ -20,7 +20,7 @@ model User {
   department   String?
   status       String   @default("active")
   passwordHash String?  // bcrypt hash — null means password not set yet
-  firebaseUid  String?  @unique // Firebase UID for social/phone auth sync
+  firebaseUid  String?  // Firebase UID for social/phone auth sync (optional, indexed but not unique)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -35,6 +35,7 @@ model User {
   @@index([status])
   @@index([department])
   @@index([createdAt])
+  @@index([firebaseUid])
 }
 
 // ─── PROPERTY ───────────────────────────────────────────────────────────
@@ -189,4 +190,79 @@ model Tenant {
   @@index([status])
   @@index([propertyId])
   @@index([createdAt])
+}
+
+// ─── NADIA: WHATSAPP WEBHOOK & ROUTING ──────────────────────────────────────
+
+model NadiaConversation {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  wabaId      String   // Meta WABA ID
+  customerPhone String  // Customer's WhatsApp number
+  agentPhone  String?  // Assigned agent phone (if assigned)
+  
+  // Message history
+  messages    NadiaMessage[]
+  queue       NadiaConversationQueue?
+  
+  // NLP & Routing
+  intent      String?  // From Nina: property_search, schedule_tour, etc.
+  leadScore   Int      @default(0) // 0-100 from Nina
+  timeline    String?  // From Nina: ASAP, 1-3mo, etc.
+  
+  // Status
+  status      String   @default("active") // active, assigned_to_agent, in_bot_flow, closed
+  routedAt    DateTime?
+  closedAt    DateTime?
+  closedReason String?  // why conversation closed
+  
+  // Metadata
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([customerPhone])
+  @@index([status])
+  @@index([leadScore])
+  @@index([createdAt])
+  @@index([agentPhone])
+}
+
+model NadiaMessage {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  conversationId String @db.ObjectId
+  conversation NadiaConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  waMessageId String   // Message ID from Meta WhatsApp
+  direction   String   // inbound | outbound
+  body        String
+  messageType String   @default("text") // text, image, document, audio, video
+  
+  status      String   @default("sent") // sent, delivered, read, failed
+  
+  timestamp   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([conversationId])
+  @@index([status])
+  @@index([timestamp])
+}
+
+model NadiaConversationQueue {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  conversationId  String   @unique @db.ObjectId
+  conversation    NadiaConversation @relation(fields: [conversationId], references: [id])
+  
+  priority        Int      // 1-10, higher = better
+  status          String   @default("waiting") // waiting, assigned, completed
+  assignedTo      String?  // Agent phone if assigned
+  assignedAt      DateTime?
+  queuedAt        DateTime @default(now())
+  completedAt     DateTime?
+  
+  // SLA tracking
+  responseTime    Int?     // milliseconds
+  
+  @@index([status])
+  @@index([priority])
+  @@index([queuedAt])
 }
