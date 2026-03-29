@@ -118,7 +118,7 @@ const DaisyLeasingCRM = () => {
         )}
 
         {activeTab === 'renewals' && (
-          <RenewalsTab renewalStats={renewalStats} />
+          <RenewalsTab renewalStats={renewalStats} renewalList={[]} />
         )}
       </div>
     </div>

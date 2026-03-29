@@ -1,11 +1,24 @@
 import React from 'react';
 
-const MaintenanceTab = ({ requests }) => {
+interface MaintenanceRequest {
+  id: string | number;
+  unit: string;
+  priority: string;
+  issue: string;
+  status: string;
+  created: string;
+}
+
+interface MaintenanceTabProps {
+  requests: MaintenanceRequest[];
+}
+
+const MaintenanceTab: React.FC<MaintenanceTabProps> = ({ requests }) => {
   return (
     <div className="maintenance-view">
       <h3>Maintenance Requests</h3>
       <div className="maintenance-list">
-        {requests.map(request => (
+        {requests.map((request: MaintenanceRequest) => (
           <div key={request.id} className={`maintenance-card ${request.priority}`}>
             <div className="maintenance-header">
               <span className="unit">{request.unit}</span>

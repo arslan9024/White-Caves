@@ -21,6 +21,9 @@ import {
   toggleDropdown
 } from '../../store/slices/aiAssistantDashboardSlice';
 
+import type { AIAssistant } from '../../store/slices/aiAssistant/types';
+import type { LucideIcon } from 'lucide-react';
+
 import {
   SelectorContainer,
   CurrentAssistantDisplay,
@@ -67,13 +70,13 @@ const DEPARTMENTS = [
   { id: 'technology', label: 'Technology' }
 ];
 
-const ASSISTANT_ICONS = {
+const ASSISTANT_ICONS: Record<string, LucideIcon> = {
   mary: FileText,
   theodora: DollarSign,
   olivia: Megaphone,
   zoe: Briefcase,
   laila: Shield,
-  linda: MessageSquare,
+  nadia: MessageSquare,
   sophia: Users,
   daisy: Home,
   clara: Target,
@@ -82,7 +85,12 @@ const ASSISTANT_ICONS = {
   aurora: Server
 };
 
-const AIAssistantSelector = ({ onSelectAssistant, compact = false }) => {
+interface AIAssistantSelectorProps {
+  onSelectAssistant?: (assistantId: string) => void;
+  compact?: boolean;
+}
+
+const AIAssistantSelector = ({ onSelectAssistant, compact = false }: AIAssistantSelectorProps) => {
   const dispatch = useDispatch();
   const dropdownRef = useRef(null);
   
@@ -100,8 +108,8 @@ const AIAssistantSelector = ({ onSelectAssistant, compact = false }) => {
   const currentAssistant = allAssistants.find(a => a.id === ui?.selectedAssistant);
   
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !(dropdownRef.current as HTMLElement).contains(event.target as Node)) {
         dispatch(closeDropdown());
       }
     };
@@ -114,11 +122,11 @@ const AIAssistantSelector = ({ onSelectAssistant, compact = false }) => {
     dispatch(setSearchQuery(searchTerm));
   }, [searchTerm, dispatch]);
   
-  const handleDepartmentChange = (deptId) => {
+  const handleDepartmentChange = (deptId: string) => {
     dispatch(setDepartmentFilter(deptId));
   };
   
-  const handleSelectAssistant = (assistantId) => {
+  const handleSelectAssistant = (assistantId: string) => {
     dispatch(selectAssistant(assistantId));
     dispatch(closeDropdown());
     setSearchTerm('');
@@ -131,12 +139,12 @@ const AIAssistantSelector = ({ onSelectAssistant, compact = false }) => {
     dispatch(toggleDropdown());
   };
   
-  const handleToggleFavorite = (e, assistantId) => {
+  const handleToggleFavorite = (e: React.MouseEvent, assistantId: string) => {
     e.stopPropagation();
     dispatch(toggleFavorite(assistantId));
   };
   
-  const getAssistantIcon = (assistantId) => {
+  const getAssistantIcon = (assistantId: string): React.ReactNode => {
     const IconComponent = ASSISTANT_ICONS[assistantId] || Users;
     return <IconComponent size={20} />;
   };
@@ -271,7 +279,16 @@ const AIAssistantSelector = ({ onSelectAssistant, compact = false }) => {
   );
 };
 
-const AssistantItemRenderer = ({ assistant, isFavorite, isSelected, onSelect, onToggleFavorite, getIcon }) => {
+interface AssistantItemRendererProps {
+  assistant: AIAssistant;
+  isFavorite: boolean;
+  isSelected: boolean;
+  onSelect: () => void;
+  onToggleFavorite: (e: React.MouseEvent) => void;
+  getIcon: (assistantId: string) => React.ReactNode;
+}
+
+const AssistantItemRenderer = ({ assistant, isFavorite, isSelected, onSelect, onToggleFavorite, getIcon }: AssistantItemRendererProps) => {
   return (
     <AssistantItem $selected={isSelected} onClick={onSelect}>
       <ItemLeft>
@@ -301,8 +318,8 @@ const AssistantItemRenderer = ({ assistant, isFavorite, isSelected, onSelect, on
         </FavoriteBtn>
         {assistant.quickStats && (
           <div style={{ fontSize: '11px' }}>
-            <div style={{ fontWeight: 700, color: 'var(--primary-color)' }}>{assistant.quickStats.today.value}</div>
-            <div style={{ color: 'var(--text-secondary)', fontSize: '10px' }}>{assistant.quickStats.today.label}</div>
+            <div style={{ fontWeight: 700, color: 'var(--primary-color)' }}>{String((assistant.quickStats as any).today?.value ?? assistant.quickStats.value ?? '')}</div>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '10px' }}>{String((assistant.quickStats as any).today?.label ?? assistant.quickStats.label ?? '')}</div>
           </div>
         )}
       </ItemRight>

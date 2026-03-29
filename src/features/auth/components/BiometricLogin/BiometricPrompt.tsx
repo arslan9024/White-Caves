@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import type { RootState } from '../../../../store/store';
 import { useNavigate } from 'react-router-dom';
+import { createLogger } from '../../../../utils/logger';
+
+const log = createLogger('BiometricPrompt');
 import { 
   isPlatformAuthenticatorAvailable, 
   hasBiometricCredentials,
@@ -11,15 +15,24 @@ import './BiometricLogin.css';
 
 const PROMPT_SHOWN_KEY = 'biometric_prompt_shown';
 
-const BiometricPrompt = ({ onClose }) => {
+interface BiometricPromptProps {
+  onClose?: () => void;
+}
+
+const BiometricPrompt = ({ onClose }: BiometricPromptProps) => {
   const navigate = useNavigate();
-  const currentUser = useSelector(state => state.user?.currentUser);
-  const authUser = useSelector(state => state.auth?.user);
-  const token = useSelector(state => state.auth?.token);
+  const currentUser = useSelector((state: RootState) => state.user?.currentUser);
+  const authUser = useSelector((state: RootState) => state.auth?.user);
+  const token = useSelector((state: RootState) => state.auth?.token);
   const user = currentUser || authUser;
-  const [show, setShow] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null);
+  const [show, setShow] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<{ type: string; text: string } | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    return () => clearTimeout(timerRef.current);
+  }, []);
 
   useEffect(() => {
     const checkShouldShow = async () => {
@@ -35,11 +48,12 @@ const BiometricPrompt = ({ onClose }) => {
       
       if (!shownBefore) {
         sessionStorage.setItem(promptKey, 'true');
-        setTimeout(() => setShow(true), 1500);
+        timerRef.current = setTimeout(() => setShow(true), 1500);
       }
     };
 
     checkShouldShow();
+    return () => clearTimeout(timerRef.current);
   }, [user]);
 
   const handleSetup = async () => {
@@ -53,27 +67,25 @@ const BiometricPrompt = ({ onClose }) => {
       const userEmail = user.email;
       const userName = user.name || user.displayName || user.email;
       
-      console.log('BiometricPrompt: Registering for:', { userId, userEmail, userName });
-      
       const result = await registerBiometric(userId, userEmail, userName);
 
       if (result.success) {
         const sessionUser = {
-          uid: userId,
-          email: userEmail,
-          displayName: userName,
+          id: String(userId || ''),
+          email: String(userEmail || ''),
+          name: String(userName || ''),
           photoURL: user.photoURL || user.photo,
         };
-        saveBiometricSession(sessionUser, token);
+        saveBiometricSession(sessionUser, token || '');
         setMessage({ type: 'success', text: 'Biometric login enabled!' });
-        setTimeout(() => {
+        timerRef.current = setTimeout(() => {
           setShow(false);
           onClose?.();
         }, 1500);
       }
-    } catch (error) {
-      console.error('BiometricPrompt setup error:', error);
-      setMessage({ type: 'error', text: error.message || 'Failed to enable biometric login' });
+    } catch (error: unknown) {
+      log.error('BiometricPrompt setup error:', error);
+      setMessage({ type: 'error', text: error instanceof Error ? error.message : 'Failed to enable biometric login' });
     } finally {
       setLoading(false);
     }

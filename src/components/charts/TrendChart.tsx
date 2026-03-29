@@ -14,7 +14,7 @@ interface TrendChartData {
   name: string;
   value: number;
   target?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface TrendChartProps {
@@ -50,13 +50,13 @@ const TrendChart: React.FC<TrendChartProps> = ({
 
   const chartData = data.length > 0 ? data : defaultData;
 
-  const CustomTooltip = ({ active, payload, label }) => {
+  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ dataKey?: string; name?: string; color?: string; value?: number }>; label?: string }) => {
     if (active && payload && payload.length) {
       return (
         <div className="trend-chart-tooltip">
           <p className="tooltip-label">{label}</p>
-          {payload.map((entry, index) => (
-            <p key={index} style={{ color: entry.color }}>
+          {payload.map((entry: { dataKey?: string; name?: string; color?: string; value?: number }) => (
+            <p key={entry.dataKey || entry.name} style={{ color: entry.color }}>
               {entry.name}: {entry.value}
             </p>
           ))}
@@ -85,7 +85,7 @@ const TrendChart: React.FC<TrendChartProps> = ({
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(200, 200, 200, 0.2)" />
           <XAxis dataKey={xAxisKey} tick={{ fontSize: 12 }} />
           <YAxis tick={{ fontSize: 12 }} />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<CustomTooltip active={false} payload={[]} label="" />} />
           <Legend />
           {showArea ? (
             <>

@@ -8,6 +8,7 @@ import React, { FC, useState, useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { formatCurrencyAbbreviated } from '../../utils';
 import { Badge } from '../../components/ui';
 import type { AppDispatch } from '../../store/store';
 import {
@@ -34,43 +35,10 @@ interface Agent {
   revenue_generated?: number;
   leads_assigned?: number;
   conversion_rate?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
-// ─── Mock Agents (extend Redux data if sparse) ─────────────────────────
-
-const MOCK_AGENTS: Agent[] = [
-  {
-    id: 1, name: 'Ahmed Al Rashid', email: 'ahmed@whitecaves.ae', phone: '+971 50 123 4567',
-    role: 'Senior Agent', department: 'Luxury Sales', status: 'online',
-    performance: 94, deals_closed: 18, revenue_generated: 45000000, leads_assigned: 32,
-    conversion_rate: 56,
-  },
-  {
-    id: 2, name: 'Fatima Hassan', email: 'fatima@whitecaves.ae', phone: '+971 55 234 5678',
-    role: 'Sales Agent', department: 'Residential', status: 'online',
-    performance: 88, deals_closed: 14, revenue_generated: 28000000, leads_assigned: 28,
-    conversion_rate: 50,
-  },
-  {
-    id: 3, name: 'Omar Khalid', email: 'omar@whitecaves.ae', phone: '+971 52 345 6789',
-    role: 'Senior Agent', department: 'Commercial', status: 'busy',
-    performance: 91, deals_closed: 12, revenue_generated: 52000000, leads_assigned: 20,
-    conversion_rate: 60,
-  },
-  {
-    id: 4, name: 'Sara Al Mansouri', email: 'sara@whitecaves.ae', phone: '+971 54 456 7890',
-    role: 'Junior Agent', department: 'Residential', status: 'offline',
-    performance: 72, deals_closed: 6, revenue_generated: 8500000, leads_assigned: 18,
-    conversion_rate: 33,
-  },
-  {
-    id: 5, name: 'Khalid Ibrahim', email: 'khalid@whitecaves.ae', phone: '+971 56 567 8901',
-    role: 'Sales Agent', department: 'Off-Plan', status: 'online',
-    performance: 85, deals_closed: 10, revenue_generated: 22000000, leads_assigned: 24,
-    conversion_rate: 42,
-  },
-];
+// Mock data removed — all agent data is fetched from the API via Redux
 
 // ─── Styled Components ──────────────────────────────────────────────────
 
@@ -321,10 +289,10 @@ const AVATAR_COLORS = [
 ];
 
 const getInitials = (name: string) => {
-  const parts = name.split(' ');
+  const parts = name.trim().split(' ').filter(p => p.length > 0);
   return parts.length >= 2
     ? `${parts[0][0]}${parts[parts.length - 1][0]}`
-    : name.slice(0, 2).toUpperCase();
+    : name.trim().slice(0, 2).toUpperCase() || '?';
 };
 
 const getPerformanceColor = (score: number) => {
@@ -334,7 +302,7 @@ const getPerformanceColor = (score: number) => {
   return '#EF4444';
 };
 
-const formatCurrency = (amount: number) => `AED ${(amount / 1000000).toFixed(1)}M`;
+const formatCurrency = (amount: number) => formatCurrencyAbbreviated(amount);
 
 // ─── Component ──────────────────────────────────────────────────────────
 
@@ -345,17 +313,17 @@ const AgentPerformancePage: FC = () => {
   const reduxLeads = useSelector(selectAllLeads);
   const reduxCommissions = useSelector(selectAllCommissions);
   const loading = useSelector(selectAgentsLoading);
+  const [currentPage, setCurrentPage] = useState(1);
+  const AGENTS_PER_PAGE = 12;
 
   // Fetch agents from API on mount
   useEffect(() => {
-    dispatch(fetchAgentsFromAPI());
+    const promise = dispatch(fetchAgentsFromAPI());
+    return () => { promise.abort?.(); };
   }, [dispatch]);
 
-  // Merge Redux data with mock data
-  const agents = useMemo(() => {
-    if (reduxAgents.length > 0) return reduxAgents;
-    return MOCK_AGENTS;
-  }, [reduxAgents]);
+  // Use Redux data exclusively — no hardcoded fallback
+  const agents = reduxAgents;
 
   // Sort by performance
   const rankedAgents = useMemo(() => {
@@ -376,6 +344,18 @@ const AgentPerformancePage: FC = () => {
 
     return { totalDeals, totalRevenue, avgPerformance, avgConversion, onlineCount, total: agents.length };
   }, [agents]);
+
+  // Paginate ranked agents
+  const totalPages = Math.max(1, Math.ceil(rankedAgents.length / AGENTS_PER_PAGE));
+  const paginatedAgents = useMemo(() => {
+    const start = (currentPage - 1) * AGENTS_PER_PAGE;
+    return rankedAgents.slice(start, start + AGENTS_PER_PAGE);
+  }, [rankedAgents, currentPage]);
+
+  // Reset to page 1 when agents change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [agents.length]);
 
   return (
     <PageContainer>
@@ -424,13 +404,24 @@ const AgentPerformancePage: FC = () => {
         </StatCard>
       </StatsRow>
 
+      {/* Empty State */}
+      {!loading && agents.length === 0 && (
+        <div style={{ background: '#FEF3C7', border: '1px solid #FCD34D', borderRadius: 12, padding: '2rem', textAlign: 'center', marginBottom: '1.5rem' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>👥</div>
+          <div style={{ fontWeight: 600, color: '#92400E', marginBottom: '0.25rem' }}>No Agents Found</div>
+          <div style={{ fontSize: '0.85rem', color: '#A16207' }}>Agent data will appear here once agents are added to the system.</div>
+        </div>
+      )}
+
       {/* Agent Cards */}
-      <SectionTitle>🏆 Agent Rankings</SectionTitle>
+      {agents.length > 0 && <SectionTitle>🏆 Agent Rankings (Page {currentPage} of {totalPages})</SectionTitle>}
       <AgentGrid>
-        {rankedAgents.map((agent, idx) => (
-          <AgentCard key={agent.id} $rank={idx + 1}>
+        {paginatedAgents.map((agent, idx) => {
+          const globalIdx = (currentPage - 1) * AGENTS_PER_PAGE + idx;
+          return (
+          <AgentCard key={agent.id} $rank={globalIdx + 1}>
             <AgentHeader>
-              <Avatar $color={AVATAR_COLORS[idx % AVATAR_COLORS.length]}>
+              <Avatar $color={AVATAR_COLORS[globalIdx % AVATAR_COLORS.length]}>
                 {getInitials(agent.name || 'NA')}
               </Avatar>
               <AgentInfo>
@@ -479,8 +470,32 @@ const AgentPerformancePage: FC = () => {
               </BarTrack>
             </PerformanceBar>
           </AgentCard>
-        ))}
+          );
+        })}
       </AgentGrid>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.75rem', margin: '1.5rem 0' }}>
+          <button
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            style={{ padding: '0.5rem 1rem', borderRadius: 8, border: '1px solid #ddd', background: currentPage === 1 ? '#f3f4f6' : '#fff', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', fontSize: '0.85rem' }}
+          >
+            ← Previous
+          </button>
+          <span style={{ fontSize: '0.85rem', color: '#555' }}>
+            Page {currentPage} of {totalPages} ({rankedAgents.length} agents)
+          </span>
+          <button
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            style={{ padding: '0.5rem 1rem', borderRadius: 8, border: '1px solid #ddd', background: currentPage === totalPages ? '#f3f4f6' : '#fff', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', fontSize: '0.85rem' }}
+          >
+            Next →
+          </button>
+        </div>
+      )}
 
       {/* Leaderboard Table */}
       <SectionTitle>📊 Detailed Leaderboard</SectionTitle>
@@ -500,14 +515,16 @@ const AgentPerformancePage: FC = () => {
             </tr>
           </thead>
           <tbody>
-            {rankedAgents.map((agent, idx) => (
+            {paginatedAgents.map((agent, idx) => {
+              const globalIdx = (currentPage - 1) * AGENTS_PER_PAGE + idx;
+              return (
               <LTr key={agent.id}>
-                <LTd style={{ fontWeight: 600, color: idx < 3 ? '#F59E0B' : '#888' }}>
-                  {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`}
+                <LTd style={{ fontWeight: 600, color: globalIdx < 3 ? '#F59E0B' : '#888' }}>
+                  {globalIdx === 0 ? '🥇' : globalIdx === 1 ? '🥈' : globalIdx === 2 ? '🥉' : `#${globalIdx + 1}`}
                 </LTd>
                 <LTd>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Avatar $color={AVATAR_COLORS[idx % AVATAR_COLORS.length]} style={{ width: 32, height: 32, fontSize: '0.7rem', borderRadius: 8 }}>
+                    <Avatar $color={AVATAR_COLORS[globalIdx % AVATAR_COLORS.length]} style={{ width: 32, height: 32, fontSize: '0.7rem', borderRadius: 8 }}>
                       {getInitials(agent.name || 'NA')}
                     </Avatar>
                     <div>
@@ -538,7 +555,8 @@ const AgentPerformancePage: FC = () => {
                   </span>
                 </LTd>
               </LTr>
-            ))}
+              );
+            })}
           </tbody>
         </LeaderboardTable>
       </div>

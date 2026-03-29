@@ -1,3 +1,5 @@
+import type { Auth } from 'firebase/auth';
+
 declare module './firebase' {
-  export const auth: any;
+  export const auth: Auth | null;
 }

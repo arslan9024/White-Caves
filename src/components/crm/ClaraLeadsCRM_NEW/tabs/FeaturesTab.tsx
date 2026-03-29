@@ -4,7 +4,7 @@ import { CLARA_FEATURES, getFeatureCategories, searchFeatures } from '../data/fe
 export default function FeaturesTab() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedFeature, setExpandedFeature] = useState(null);
+  const [expandedFeature, setExpandedFeature] = useState<string | number | null>(null);
 
   // Filter features
   let filteredFeatures = CLARA_FEATURES;
@@ -14,11 +14,15 @@ export default function FeaturesTab() {
   }
 
   if (searchQuery) {
-    filteredFeatures = searchFeatures(searchQuery);
+    const q = searchQuery.toLowerCase();
+    filteredFeatures = filteredFeatures.filter(f =>
+      f.name?.toLowerCase().includes(q) ||
+      f.description?.toLowerCase().includes(q)
+    );
   }
 
   const categories = ['all', ...getFeatureCategories()];
-  const categoryLabels = {
+  const categoryLabels: Record<string, string> = {
     all: 'All Features',
     intelligence: '🧠 Intelligence',
     analytics: '📊 Analytics',
@@ -172,8 +176,8 @@ export default function FeaturesTab() {
                     lineHeight: '1.6',
                     color: 'var(--color-text-secondary)'
                   }}>
-                    {feature.benefits.map((benefit, idx) => (
-                      <li key={idx}>✓ {benefit}</li>
+                    {feature.benefits.map((benefit) => (
+                      <li key={benefit}>✓ {benefit}</li>
                     ))}
                   </ul>
 
@@ -198,13 +202,13 @@ export default function FeaturesTab() {
                         lineHeight: '1.6'
                       }}>
                         {Object.entries(feature.demoData).map(([key, value]) => {
-                          if (typeof value === 'object' && !Array.isArray(value)) {
+                          if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
                             return (
                               <div key={key} style={{ marginBottom: '6px' }}>
                                 <strong>{key}:</strong><br />
-                                {Object.entries(value).map(([k, v]) => (
+                                {Object.entries(value as Record<string, unknown>).map(([k, v]) => (
                                   <div key={k} style={{ marginLeft: '12px' }}>
-                                    {k}: {v}
+                                    {k}: {String(v)}
                                   </div>
                                 ))}
                               </div>
@@ -212,7 +216,7 @@ export default function FeaturesTab() {
                           }
                           return (
                             <div key={key} style={{ marginBottom: '4px' }}>
-                              <strong>{key}:</strong> {value}
+                              <strong>{key}:</strong> {String(value)}
                             </div>
                           );
                         })}

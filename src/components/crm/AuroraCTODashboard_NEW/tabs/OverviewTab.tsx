@@ -1,7 +1,20 @@
 import React from 'react';
 import { Server, Activity, CheckCircle, AlertTriangle, Users, Box } from 'lucide-react';
 
-const OverviewTab = ({ stats, systemStatus }) => {
+interface CTOStats {
+  systemHealth: number;
+  totalAssistants: number;
+  activeAssistants: number;
+  totalModules: number;
+  productionModules: number;
+}
+
+interface OverviewTabProps {
+  stats: CTOStats;
+  systemStatus: string;
+}
+
+const OverviewTab: React.FC<OverviewTabProps> = ({ stats, systemStatus }) => {
   return (
     <div className="overview-view">
       <h3>Executive Overview</h3>

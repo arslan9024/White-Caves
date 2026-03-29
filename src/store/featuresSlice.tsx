@@ -1,14 +1,31 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit';
 import { PLATFORM_FEATURES, FEATURE_CATEGORIES, getFeatureStats } from '../config/platformFeatures';
+import type { PlatformFeature, FeatureStats } from '../config/platformFeatures';
+import type { RootState } from './store';
 
+/** Mutable version of PlatformFeature for Redux state */
 interface Feature {
   id: string;
   name: string;
   description: string;
   category: string;
   details: string[];
-  [key: string]: any;
+  [key: string]: unknown;
 }
+
+/** Convert readonly PlatformFeature to mutable Feature */
+const toFeatures = (features: readonly PlatformFeature[]): Feature[] =>
+  features.map(f => ({
+    id: f.id,
+    name: f.name,
+    description: f.description,
+    category: f.category,
+    details: [...f.details],
+    status: f.status,
+    icon: f.icon,
+    implementedDate: f.implementedDate,
+    files: [...f.files],
+  }));
 
 interface FeaturesState {
   features: Feature[];
@@ -17,11 +34,11 @@ interface FeaturesState {
   selectedCategory: string | null;
   searchQuery: string;
   viewMode: string;
-  stats: any;
+  stats: FeatureStats;
 }
 
 const initialState: FeaturesState = {
-  features: PLATFORM_FEATURES,
+  features: toFeatures(PLATFORM_FEATURES),
   categories: Object.values(FEATURE_CATEGORIES),
   selectedFeatureId: null,
   selectedCategory: null,
@@ -55,26 +72,28 @@ const featuresSlice = createSlice({
   },
 });
 
-export const selectFilteredFeatures = (state: any): Feature[] => {
-  let features = state.features.features;
-  
-  if (state.features.selectedCategory) {
-    features = features.filter((f: Feature) => f.category === state.features.selectedCategory);
+export const selectFilteredFeatures = createSelector(
+  (state: RootState) => state.features.features,
+  (state: RootState) => state.features.selectedCategory,
+  (state: RootState) => state.features.searchQuery,
+  (features, category, search): Feature[] => {
+    let filtered = features;
+    if (category) {
+      filtered = filtered.filter((f: Feature) => f.category === category);
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      filtered = filtered.filter((f: Feature) =>
+        f.name.toLowerCase().includes(q) ||
+        f.description.toLowerCase().includes(q) ||
+        f.details.some((d: string) => d.toLowerCase().includes(q))
+      );
+    }
+    return filtered;
   }
-  
-  if (state.features.searchQuery) {
-    const query = state.features.searchQuery.toLowerCase();
-    features = features.filter((f: Feature) => 
-      f.name.toLowerCase().includes(query) ||
-      f.description.toLowerCase().includes(query) ||
-      f.details.some((d: string) => d.toLowerCase().includes(query))
-    );
-  }
-  
-  return features;
-};
+);
 
-export const selectSelectedFeature = (state: any): Feature | null => {
+export const selectSelectedFeature = (state: RootState): Feature | null => {
   if (!state.features.selectedFeatureId) return null;
   return state.features.features.find((f: Feature) => f.id === state.features.selectedFeatureId) || null;
 };

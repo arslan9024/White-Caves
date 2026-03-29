@@ -1,7 +1,29 @@
 import React from 'react';
 import { TrendingUp, DollarSign, Users, AlertTriangle } from 'lucide-react';
 
-const ReportsTab = ({ funnelMetrics, complianceMetrics, vault }) => {
+interface FunnelMetrics {
+  totalLeads?: number;
+  conversionRate?: string | number;
+  pipelineValue?: string | number;
+}
+
+interface ComplianceMetrics {
+  score?: string | number;
+  activeReviews?: number;
+  issuesFound?: number;
+}
+
+interface Vault {
+  [key: string]: unknown;
+}
+
+interface ReportsTabProps {
+  funnelMetrics: FunnelMetrics | null;
+  complianceMetrics: ComplianceMetrics | null;
+  vault: Vault;
+}
+
+const ReportsTab: React.FC<ReportsTabProps> = ({ funnelMetrics, complianceMetrics, vault }) => {
   return (
     <div className="reports-view">
       <h3>Intelligence Reports</h3>

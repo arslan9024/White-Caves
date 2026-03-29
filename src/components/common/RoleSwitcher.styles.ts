@@ -60,7 +60,7 @@ export const RoleSwitcherDropdown = styled.div`
   border: 1px solid var(--border-color, #e5e7eb);
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: var(--z-dropdown, 100);
   overflow: hidden;
   animation: dropdownSlide 0.2s ease;
 

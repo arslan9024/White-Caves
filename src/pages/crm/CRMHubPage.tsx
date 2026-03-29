@@ -5,6 +5,7 @@
  */
 
 import React, { FC, useState, useEffect, lazy, Suspense } from 'react';
+import ErrorBoundary from '../../components/ErrorBoundary';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -31,7 +32,7 @@ const SophiaSalesCRM = lazy(() => import('../../components/crm/SophiaSalesCRM_NE
 const ZoeExecutiveCRM = lazy(() => import('../../components/crm/ZoeExecutiveCRM_NEW'));
 const TheodoraFinanceCRM = lazy(() => import('../../components/crm/TheodoraFinanceCRM_NEW'));
 const DaisyLeasingCRM = lazy(() => import('../../components/crm/DaisyLeasingCRM_NEW'));
-const LindaWhatsAppCRM = lazy(() => import('../../components/crm/LindaWhatsAppCRM_NEW'));
+const NadiaWhatsAppCRM = lazy(() => import('../../components/crm/NadiaWhatsAppCRM'));
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -40,7 +41,7 @@ interface CRMModuleDef {
   label: string;
   icon: string;
   description: string;
-  Component: FC<any>;
+  Component: FC<Record<string, unknown>>;
   color: string;
 }
 
@@ -312,11 +313,11 @@ const CRM_MODULES: CRMModuleDef[] = [
     color: '#EC4899',
   },
   {
-    id: 'linda',
+    id: 'nadia',
     label: 'WhatsApp CRM',
     icon: '💬',
     description: 'WhatsApp conversations, templates, campaigns',
-    Component: LindaWhatsAppCRM,
+    Component: NadiaWhatsAppCRM,
     color: '#25D366',
   },
   {
@@ -343,7 +344,7 @@ const CRMHubPage: FC = () => {
   const allClients = useSelector(selectAllClients);
   const allAgents = useSelector(selectAllAgents);
   const commissions = useSelector(selectAllCommissions);
-  const recentActivities = useSelector((state: any) => selectRecentActivities(state, 8));
+  const recentActivities = useSelector((state: RootState) => selectRecentActivities(state, 8));
   const overview = useSelector(selectOverviewData);
 
   // Active module state
@@ -353,9 +354,15 @@ const CRMHubPage: FC = () => {
 
   // Try to fetch from API on mount (silently falls back to dummy data)
   useEffect(() => {
-    dispatch(fetchLeadsFromAPI({}));
-    dispatch(fetchAgentsFromAPI());
-    dispatch(fetchDashboardOverview());
+    const leadsPromise = dispatch(fetchLeadsFromAPI({}));
+    const agentsPromise = dispatch(fetchAgentsFromAPI());
+    const overviewPromise = dispatch(fetchDashboardOverview());
+
+    return () => {
+      leadsPromise.abort?.();
+      agentsPromise.abort?.();
+      overviewPromise.abort?.();
+    };
   }, [dispatch]);
 
   // Sync URL params
@@ -381,8 +388,11 @@ const CRMHubPage: FC = () => {
   const totalAgents = allAgents.length;
   const totalCommissions = commissions.length;
   const hotLeadCount = hotLeads.length;
-  const pipelineValue = overview?.metrics?.pipelineValue ||
-    allLeads.reduce((sum: number, l: any) => sum + (l.value || l.budget || 0), 0);
+  const overviewMetrics = (overview as Record<string, Record<string, unknown>> | null)?.metrics;
+  const rawPipelineValue = overviewMetrics?.pipelineValue;
+  const pipelineValue = rawPipelineValue !== undefined && rawPipelineValue !== null
+    ? Number(rawPipelineValue)
+    : allLeads.reduce((sum: number, l) => sum + (Number(l.value) || Number(l.budget) || 0), 0);
 
   // If a module is selected, show it full-screen
   if (activeModule) {
@@ -403,9 +413,11 @@ const CRMHubPage: FC = () => {
               <Badge variant="success" size="small">Active</Badge>
             </ContentHeader>
             <div style={{ padding: '0' }}>
-              <Suspense fallback={<SuspenseLoader />}>
-                <ModuleComponent role="owner" user={user} />
-              </Suspense>
+              <ErrorBoundary>
+                <Suspense fallback={<SuspenseLoader />}>
+                  <ModuleComponent role="owner" user={user} />
+                </Suspense>
+              </ErrorBoundary>
             </div>
           </ContentArea>
         </HubContainer>
@@ -453,7 +465,7 @@ const CRMHubPage: FC = () => {
         <QuickAction $color="#F59E0B" onClick={() => navigate('/owner/crm/agents')}>
           👥 Agent Performance
         </QuickAction>
-        <QuickAction $color="#25D366" onClick={() => handleModuleSelect('linda')}>
+        <QuickAction $color="#25D366" onClick={() => handleModuleSelect('nadia')}>
           💬 WhatsApp CRM
         </QuickAction>
         <QuickAction $color="#8B5CF6" onClick={() => handleModuleSelect('theodora')}>
@@ -470,7 +482,6 @@ const CRMHubPage: FC = () => {
           <StatLabel>Total Leads</StatLabel>
           <StatValue $color="#3B82F6">
             {totalLeads}
-            <StatChange $positive={true}>+12%</StatChange>
           </StatValue>
         </StatCard>
 
@@ -478,7 +489,6 @@ const CRMHubPage: FC = () => {
           <StatLabel>Hot Leads</StatLabel>
           <StatValue $color="#EF4444">
             {hotLeadCount}
-            <StatChange $positive={true}>+5</StatChange>
           </StatValue>
         </StatCard>
 
@@ -529,14 +539,14 @@ const CRMHubPage: FC = () => {
       <ActivityFeed>
         <ActivityTitle>Recent Activity</ActivityTitle>
         {recentActivities.length > 0 ? (
-          recentActivities.map((activity: any, index: number) => (
-            <ActivityItem key={activity.id || index}>
-              <ActivityDot $color={activityColors[activity.type] || '#6B7280'} />
+          recentActivities.map((activity, index: number) => (
+            <ActivityItem key={String(activity.id) || index}>
+              <ActivityDot $color={activityColors[String(activity.type)] || '#6B7280'} />
               <div>
                 <ActivityText>
-                  {activity.description || activity.action || `${activity.type} activity`}
+                  {String(activity.description || activity.action || `${activity.type} activity`)}
                 </ActivityText>
-                <ActivityTime>{formatTimeAgo(activity.timestamp)}</ActivityTime>
+                <ActivityTime>{formatTimeAgo(String(activity.timestamp))}</ActivityTime>
               </div>
             </ActivityItem>
           ))

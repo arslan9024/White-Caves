@@ -24,7 +24,7 @@ const teamMembers: TeamMember[] = [
     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
     bio: '20+ years experience in Dubai real estate market',
     skills: ['Strategic Planning', 'Market Analysis', 'Leadership'],
-    social: { linkedin: '#', twitter: '#', email: 'ahmed@whitecaves.com' }
+    social: { linkedin: 'https://linkedin.com/company/whitecaves', twitter: 'https://twitter.com/whitecaves', email: 'ahmed@whitecaves.com' }
   },
   {
     name: 'Sarah Thompson',
@@ -32,7 +32,7 @@ const teamMembers: TeamMember[] = [
     image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400',
     bio: 'Specializing in luxury villa transactions',
     skills: ['Negotiations', 'Client Relations', 'Sales'],
-    social: { linkedin: '#', twitter: '#', email: 'sarah@whitecaves.com' }
+    social: { linkedin: 'https://linkedin.com/company/whitecaves', twitter: 'https://twitter.com/whitecaves', email: 'sarah@whitecaves.com' }
   },
   {
     name: 'Mohammed Hassan',
@@ -40,7 +40,7 @@ const teamMembers: TeamMember[] = [
     image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
     bio: 'Expert in off-plan investments',
     skills: ['Investment', 'Property Valuation', 'Market Trends'],
-    social: { linkedin: '#', twitter: '#', email: 'mohammed@whitecaves.com' }
+    social: { linkedin: 'https://linkedin.com/company/whitecaves', twitter: 'https://twitter.com/whitecaves', email: 'mohammed@whitecaves.com' }
   },
   {
     name: 'Elena Rodriguez',
@@ -48,7 +48,7 @@ const teamMembers: TeamMember[] = [
     image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400',
     bio: 'Digital marketing strategist',
     skills: ['Digital Marketing', 'Branding', 'Strategy'],
-    social: { linkedin: '#', twitter: '#', email: 'elena@whitecaves.com' }
+    social: { linkedin: 'https://linkedin.com/company/whitecaves', twitter: 'https://twitter.com/whitecaves', email: 'elena@whitecaves.com' }
   }
 ];
 
@@ -95,9 +95,9 @@ const Team: React.FC = () => {
           whileInView="visible"
           viewport={{ once: true }}
         >
-          {teamMembers.map((member, index) => (
+          {teamMembers.map((member) => (
             <motion.div 
-              key={index}
+              key={member.name}
               className="team-card"
               variants={cardVariants}
               whileHover={{ y: -10 }}
@@ -107,20 +107,27 @@ const Team: React.FC = () => {
                   src={member.image} 
                   alt={member.name}
                   className="team-image"
+                  loading="lazy"
                 />
                 <div className="team-overlay">
                   <div className="team-social">
                     <motion.a 
                       href={member.social.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       whileHover={{ scale: 1.2 }}
                       className="social-link"
+                      aria-label={`${member.name} LinkedIn profile`}
                     >
                       <Linkedin size={18} />
                     </motion.a>
                     <motion.a 
                       href={member.social.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       whileHover={{ scale: 1.2 }}
                       className="social-link"
+                      aria-label={`${member.name} Twitter profile`}
                     >
                       <Twitter size={18} />
                     </motion.a>
@@ -141,8 +148,8 @@ const Team: React.FC = () => {
                 <p className="team-bio">{member.bio}</p>
                 
                 <div className="team-skills">
-                  {member.skills.map((skill, idx) => (
-                    <span key={idx} className="skill-tag">{skill}</span>
+                  {member.skills.map((skill) => (
+                    <span key={skill} className="skill-tag">{skill}</span>
                   ))}
                 </div>
               </div>

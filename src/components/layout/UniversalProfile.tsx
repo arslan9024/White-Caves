@@ -1,9 +1,14 @@
 import React, { useState, useRef, useEffect, FC } from 'react';
+import { createLogger } from '../../utils/logger';
+
+const log = createLogger('UniversalProfile');
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import type { RootState } from '../../store/store';
 import { setUser } from '../../store/userSlice';
 import { setActiveRole, closeAllMenus, setTheme } from '../../store/navigationSlice';
 import { auth } from '../../config/firebase';
+import { safeStorage } from '../../utils/safeStorage';
 import { signOut } from 'firebase/auth';
 import {
   UniversalProfileContainer,
@@ -40,8 +45,8 @@ interface RoleInfo {
 const UniversalProfile: FC<UniversalProfileProps> = ({ variant = 'default', showSignIn = true }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.user?.currentUser);
-  const { activeRole, theme } = useSelector((state: any) => state.navigation);
+  const user = useSelector((state: RootState) => state.user?.currentUser);
+  const { activeRole, theme } = useSelector((state: RootState) => state.navigation);
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
@@ -63,7 +68,8 @@ const UniversalProfile: FC<UniversalProfileProps> = ({ variant = 'default', show
 
   const getInitials = (name?: string, email?: string): string => {
     if (name) {
-      return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+      const parts = name.trim().split(' ').filter(p => p.length > 0);
+      return parts.map(n => n.charAt(0)).join('').toUpperCase().substring(0, 2) || '?';
     }
     if (email) {
       return email.charAt(0).toUpperCase();
@@ -87,14 +93,14 @@ const UniversalProfile: FC<UniversalProfileProps> = ({ variant = 'default', show
   const handleLogout = async () => {
     setMenuOpen(false);
     try {
-      await signOut(auth);
-      localStorage.removeItem('userRole');
+      if (auth) await signOut(auth);
+      safeStorage.remove('userRole');
       dispatch(setUser(null));
       dispatch(setActiveRole(null));
       dispatch(closeAllMenus());
       navigate('/');
     } catch (error) {
-      console.error('Logout error:', error);
+      log.error('Logout error:', error);
     }
   };
 
@@ -120,14 +126,14 @@ const UniversalProfile: FC<UniversalProfileProps> = ({ variant = 'default', show
         className={variant === 'compact' ? 'compact' : ''}
       >
         <ProfileAvatar>
-          {user.photoURL || (user as any).photo ? (
+          {user.photoURL || (user as Record<string, unknown>).photo ? (
             <AvatarImg 
-              src={user.photoURL || (user as any).photo} 
-              alt={user.displayName || (user as any).name || 'User'} 
+              src={(user.photoURL || (user as Record<string, unknown>).photo) as string} 
+              alt={(user.displayName || (user as Record<string, unknown>).name || 'User') as string} 
             />
           ) : (
             <AvatarInitials>
-              {getInitials(user.displayName || (user as any).name, user.email || '')}
+              {getInitials((user.displayName || (user as Record<string, unknown>).name) as string | undefined, user.email || '')}
             </AvatarInitials>
           )}
         </ProfileAvatar>
@@ -140,19 +146,19 @@ const UniversalProfile: FC<UniversalProfileProps> = ({ variant = 'default', show
         <ProfileDropdown>
           <ProfileDropdownHeader>
             <ProfileAvatar $large>
-              {user.photoURL || (user as any).photo ? (
+              {user.photoURL || (user as Record<string, unknown>).photo ? (
                 <AvatarImg 
-                  src={user.photoURL || (user as any).photo} 
-                  alt={user.displayName || (user as any).name || 'User'} 
+                  src={(user.photoURL || (user as Record<string, unknown>).photo) as string} 
+                  alt={(user.displayName || (user as Record<string, unknown>).name || 'User') as string} 
                 />
               ) : (
                 <AvatarInitials $large>
-                  {getInitials(user.displayName || (user as any).name, user.email || '')}
+                  {getInitials((user.displayName || (user as Record<string, unknown>).name) as string | undefined, user.email || '')}
                 </AvatarInitials>
               )}
             </ProfileAvatar>
             <ProfileInfo>
-              <ProfileName>{user.displayName || (user as any).name || 'User'}</ProfileName>
+              <ProfileName>{String(user.displayName || (user as Record<string, unknown>).name || 'User')}</ProfileName>
               <ProfileEmail>{user.email}</ProfileEmail>
               {roleInfo && (
                 <ProfileRole style={{ color: roleInfo.color }}>

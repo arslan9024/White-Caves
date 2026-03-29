@@ -1,12 +1,25 @@
 import React from 'react';
 import { Home, DollarSign, Calendar, Phone, Mail } from 'lucide-react';
 
-const InquiriesTab = ({ inquiries }) => {
+interface Inquiry {
+  id: string | number;
+  name: string;
+  status: string;
+  property: string;
+  budget: string | number;
+  date: string;
+}
+
+interface InquiriesTabProps {
+  inquiries: Inquiry[];
+}
+
+const InquiriesTab: React.FC<InquiriesTabProps> = ({ inquiries }) => {
   return (
     <div className="inquiries-view">
       <h3>Rental Inquiries</h3>
       <div className="inquiry-cards">
-        {inquiries.map(inquiry => (
+        {inquiries.map((inquiry: Inquiry) => (
           <div key={inquiry.id} className="inquiry-card">
             <div className="inquiry-header">
               <h4>{inquiry.name}</h4>

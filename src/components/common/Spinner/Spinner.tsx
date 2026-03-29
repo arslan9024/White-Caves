@@ -42,7 +42,7 @@ export const Spinner: FC<SpinnerProps> = ({
         return (
           <SpinnerRing $size={size} $variant="bars">
             {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} style={{ '--bar-index': i } as React.CSSProperties} />
+              <div key={`spinner-bar-${i}`} style={{ '--bar-index': i } as React.CSSProperties} />
             ))}
           </SpinnerRing>
         );

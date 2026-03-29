@@ -94,17 +94,17 @@ test.describe('Commission Tracking E2E Workflow', () => {
       await formModal.waitFor({ state: 'visible', timeout: 5000 });
 
       // Fill form fields
-      const freelancerSelect = page.locator('select[name="freelancerId"], [data-testid="freelancer-select"]');
+      const agentSelect = page.locator('select[name="agentId"], [data-testid="agent-select"], select[name="freelancerId"], [data-testid="freelancer-select"]');
       const amountInput = page.locator('input[name="amount"], [data-testid="amount-input"]');
       const rateInput = page.locator('input[name="commissionRate"], [data-testid="rate-input"]');
       const dateInput = page.locator('input[name="dueDate"], [data-testid="due-date-input"]');
 
       // Interactive form filling
-      if (await freelancerSelect.isVisible()) {
-        const options = freelancerSelect.locator('option');
+      if (await agentSelect.isVisible()) {
+        const options = agentSelect.locator('option');
         const optionCount = await options.count();
         if (optionCount > 1) {
-          await freelancerSelect.selectOption({ index: 1 });
+          await agentSelect.selectOption({ index: 1 });
         }
       }
 

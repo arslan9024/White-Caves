@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setOnlineStatus, updateCurrentTime } from '../../store/navigationSlice';
+import { setOnlineStatus } from '../../store/navigationSlice';
 import ClickToChat from '../ClickToChat';
 import { TimeDisplayContainer, ConnectionStatus } from './UniversalComponents/styles';
 
@@ -26,12 +26,8 @@ export default function UniversalComponents(): React.ReactElement {
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      dispatch(updateCurrentTime(new Date().toISOString()));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [dispatch]);
+  // Clock dispatch removed — no components consume state.navigation.currentTime
+  // Online status tracking is handled below
 
   useEffect(() => {
     const handleOnline = () => dispatch(setOnlineStatus(true));

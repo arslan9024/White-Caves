@@ -23,7 +23,7 @@ export const PLATFORM_MODULES: PlatformModuleCategory[] = [
     { name: 'WhatsApp Integration', description: 'Business API + Chatbot', status: 'production' },
     { name: 'Lead Scoring', description: 'AI-powered qualification', status: 'production' },
     { name: 'Smart Assignment', description: 'Auto-assign leads to agents', status: 'production' },
-    { name: 'Agent Task Assignment', description: 'Linda agent routing system', status: 'production' },
+    { name: 'Agent Task Assignment', description: 'Nadia agent routing system', status: 'production' },
     { name: 'Bot Session Manager', description: 'QR code session management', status: 'production' },
     { name: 'Olivia Automation', description: 'Property sync + market intelligence', status: 'production' },
     { name: 'Website Monitoring', description: 'Bayut, Property Finder, Dubizzle', status: 'production' },

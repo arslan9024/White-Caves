@@ -5,17 +5,22 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
+import type { AuthRequest } from '../middleware/auth';
+import { prisma } from '../database.js';
+import { validateIdParam } from '../utils/validate';
+import { sanitizeString } from '../utils/sanitize';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // ─── GET /api/finance/summary ───────────────────────────────────────────
 router.get(
   '/summary',
-  asyncHandler(async (req: Request, res: Response) => {
-    const [
+  asyncHandler(async (req: Request, res: Response) => {    // Authorization: Only managers/finance can access financial summary
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
+      throw new AppError('Access denied — financial summary requires manager or finance role', 403);
+    }    const [
       totalCommissions,
       paidCommissions,
       pendingCommissions,
@@ -47,7 +52,7 @@ router.get(
           pending: { count: pendingCommissions._count._all, value: pendingCommissions._sum.amount || 0 },
           approved: { count: approvedCommissions._count._all, value: approvedCommissions._sum.amount || 0 },
         },
-        byType: commissionsByType.map((c: any) => ({
+        byType: commissionsByType.map((c) => ({
           type: c.type,
           count: c._count._all,
           value: c._sum.amount || 0,
@@ -60,24 +65,28 @@ router.get(
 // ─── GET /api/finance/commissions ───────────────────────────────────────
 router.get(
   '/commissions',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response) => {    // AUTHORIZATION: Commission data restricted to managers/finance
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — commission data requires manager or finance role', 403);
+    }
     const {
       page = '1', pageSize = '20',
       status, type, agentId,
       sortBy = 'createdAt', sortOrder = 'desc',
     } = req.query;
 
-    const pageNum = Math.max(1, parseInt(page as string));
-    const limit = Math.min(100, Math.max(1, parseInt(pageSize as string)));
+    const pageNum = Math.max(1, parseInt(page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 20));
 
-    const where: any = {};
+    const where: Record<string, unknown> = {};
     if (status && status !== 'all') where.status = status as string;
     if (type && type !== 'all') where.type = type as string;
     if (agentId) where.agentId = agentId as string;
 
     const validSorts = ['createdAt', 'amount', 'status'];
     const field = validSorts.includes(sortBy as string) ? (sortBy as string) : 'createdAt';
-    const orderBy: any = { [field]: sortOrder === 'asc' ? 'asc' : 'desc' };
+    const orderBy: Record<string, 'asc' | 'desc'> = { [field]: sortOrder === 'asc' ? 'asc' : 'desc' };
 
     const [commissions, total] = await Promise.all([
       prisma.commission.findMany({
@@ -106,6 +115,13 @@ router.get(
 router.get(
   '/commissions/:id',
   asyncHandler(async (req: Request, res: Response) => {
+    // AUTHORIZATION: Commission details restricted to managers/finance/agent-owner
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — commission details require manager or finance role', 403);
+    }
+
+    validateIdParam(req.params.id, 'Commission ID');
     const commission = await prisma.commission.findUnique({
       where: { id: req.params.id },
       include: {
@@ -125,20 +141,58 @@ router.get(
 router.post(
   '/commissions',
   asyncHandler(async (req: Request, res: Response) => {
+    // AUTHORIZATION: Only owner/finance manager can create commissions
+    const isAuthorized = ['owner', 'manager', 'finance'].includes(req.user?.role || '');
+    if (!isAuthorized) {
+      throw new AppError('Only finance managers can create commission entries', 403);
+    }
+
     const { agentId, amount, percentage, type, notes, leadId, propertyId } = req.body;
 
     if (!agentId) throw new AppError('Agent ID is required', 400);
-    if (!amount || amount <= 0) throw new AppError('Valid commission amount is required', 400);
+
+    // Validate and parse amount — catch NaN
+    const MAX_COMMISSION = 100_000_000; // 100M AED
+    const parsedAmount = typeof amount === 'string' ? parseFloat(amount) : Number(amount);
+    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0 || parsedAmount > MAX_COMMISSION) {
+      throw new AppError(`Commission amount must be between 1 and ${MAX_COMMISSION.toLocaleString('en-US')} AED`, 400);
+    }
+
+    // Validate commission type enum
+    const VALID_COMMISSION_TYPES = ['sale', 'rental', 'referral'];
+    if (type && !VALID_COMMISSION_TYPES.includes(type)) {
+      throw new AppError(`Commission type must be one of: ${VALID_COMMISSION_TYPES.join(', ')}`, 400);
+    }
+
+    // Validate percentage range if provided
+    let validatedPercentage: number | null = null;
+    if (percentage !== undefined && percentage !== null) {
+      const parsedPct = typeof percentage === 'string' ? parseFloat(percentage) : Number(percentage);
+      if (!Number.isFinite(parsedPct) || parsedPct < 0 || parsedPct > 100) {
+        throw new AppError('Commission percentage must be between 0 and 100', 400);
+      }
+      validatedPercentage = parsedPct;
+    }
 
     // Verify agent exists
     const agent = await prisma.user.findUnique({ where: { id: agentId } });
     if (!agent) throw new AppError('Agent not found', 404);
 
+    // Validate referenced entities
+    if (leadId) {
+      const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+      if (!lead) throw new AppError('Referenced lead not found', 400);
+    }
+    if (propertyId) {
+      const property = await prisma.property.findUnique({ where: { id: propertyId } });
+      if (!property) throw new AppError('Referenced property not found', 400);
+    }
+
     const commission = await prisma.commission.create({
       data: {
         agentId,
-        amount: parseFloat(amount),
-        percentage: percentage ? parseFloat(percentage) : null,
+        amount: parsedAmount,
+        percentage: validatedPercentage,
         type: type || 'sale',
         status: 'pending',
         notes: notes || null,
@@ -154,8 +208,8 @@ router.post(
       data: {
         type: 'commission',
         action: 'created',
-        description: `Commission AED ${commission.amount.toLocaleString()} created for ${agent.name || agent.email}`,
-        userId: (req as any).user?.id || null,
+        description: `Commission AED ${commission.amount.toLocaleString()} created for ${agent.name || agent.email} by ${req.user?.email}`,
+        userId: req.user?.id || null,
       },
     });
 
@@ -168,30 +222,61 @@ router.patch(
   '/commissions/:id',
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
+    validateIdParam(id, 'Commission ID');
     const { status, amount, notes } = req.body;
 
     const existing = await prisma.commission.findUnique({
       where: { id },
-      include: { agent: { select: { name: true, email: true } } },
+      include: { agent: { select: { id: true, name: true, email: true } } },
     });
     if (!existing) throw new AppError('Commission not found', 404);
 
-    const data: any = {};
-    if (status !== undefined) data.status = status;
-    if (amount !== undefined) data.amount = parseFloat(amount);
-    if (notes !== undefined) data.notes = notes;
+    // AUTHORIZATION: Role-based access for different operations
+    const isAdmin = ['owner', 'manager', 'finance'].includes(req.user?.role || '');
+    const isAgentOwner = existing.agentId === req.user?.id;
+
+    // Agents can only edit notes; cannot change status/amount
+    if (!isAdmin && isAgentOwner) {
+      if (status !== undefined || amount !== undefined) {
+        throw new AppError('Agents can only add notes to their commissions. Status and amount changes require manager approval.', 403);
+      }
+    }
+    // Non-admin, non-owner cannot access at all
+    if (!isAdmin && !isAgentOwner) {
+      throw new AppError('You do not have permission to modify this commission', 403);
+    }
+
+    const data: Record<string, unknown> = {};
+    if (status !== undefined) {
+      const validStatuses = ['pending', 'approved', 'paid', 'cancelled'];
+      if (!validStatuses.includes(status)) {
+        throw new AppError(`Invalid commission status. Allowed: ${validStatuses.join(', ')}`, 400);
+      }
+      // Only admins can approve/mark as paid
+      if (['approved', 'paid'].includes(status) && !isAdmin) {
+        throw new AppError('Only finance managers can approve or mark commissions as paid', 403);
+      }
+      data.status = status;
+    }
+    if (amount !== undefined) {
+      if (!isAdmin) throw new AppError('Only admins can modify commission amounts', 403);
+      const parsed = parseFloat(amount);
+      if (isNaN(parsed) || parsed < 0) throw new AppError('Amount must be a valid non-negative number', 400);
+      data.amount = parsed;
+    }
+    if (notes !== undefined) data.notes = notes ? sanitizeString(String(notes)) : null;
     if (status === 'paid') data.paidAt = new Date();
 
     const commission = await prisma.commission.update({ where: { id }, data });
 
-    const statusChanged = status && status !== existing.status;
+    const statusChanged = status !== undefined && status !== null && status !== existing.status;
     if (statusChanged) {
       await prisma.activity.create({
         data: {
           type: 'commission',
           action: 'status_changed',
-          description: `Commission for ${existing.agent.name || existing.agent.email}: ${existing.status} → ${status}`,
-          userId: (req as any).user?.id || null,
+          description: `Commission for ${existing.agent.name || existing.agent.email}: ${existing.status} → ${status} (by ${req.user?.email})`,
+          userId: req.user?.id || null,
         },
       });
     }
@@ -205,14 +290,25 @@ router.patch(
 router.post(
   '/payments',
   asyncHandler(async (req: Request, res: Response) => {
+    // AUTHORIZATION: Only owner/finance manager can process payments
+    const isAuthorized = ['owner', 'manager', 'finance'].includes(req.user?.role || '');
+    if (!isAuthorized) {
+      throw new AppError('Only finance managers can process commission payments', 403);
+    }
+
     const { commissionIds } = req.body;
 
     if (!Array.isArray(commissionIds) || commissionIds.length === 0) {
       throw new AppError('Provide an array of commission IDs', 400);
     }
 
+    const MONGO_ID_REGEX = /^[a-f\d]{24}$/i;
+    if (!commissionIds.every((id: unknown) => typeof id === 'string' && MONGO_ID_REGEX.test(id))) {
+      throw new AppError('All commission IDs must be valid 24-character hex strings', 400);
+    }
+
     const result = await prisma.commission.updateMany({
-      where: { id: { in: commissionIds }, status: { in: ['approved', 'pending'] } },
+      where: { id: { in: commissionIds }, status: 'approved' },
       data: { status: 'paid', paidAt: new Date() },
     });
 
@@ -221,7 +317,7 @@ router.post(
         type: 'commission',
         action: 'paid',
         description: `${result.count} commission(s) marked as paid`,
-        userId: (req as any).user?.id || null,
+        userId: req.user?.id || null,
       },
     });
 

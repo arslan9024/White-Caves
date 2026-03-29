@@ -1,10 +1,31 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
+import { logout } from './authSlice';
+import { authFetch } from '../utils/authFetch';
+
+export interface FavoriteItem {
+  id: string;
+  title: string;
+  location: string;
+  price: string;
+  image?: string;
+}
+
+export interface RecentlyViewedItem {
+  id: string;
+  title: string;
+  location: string;
+  price: string;
+  image?: string;
+  viewedAt: string;
+}
 
 interface Notification {
   id: string;
   message: string;
   read: boolean;
-  [key: string]: any;
+  type?: string;
+  timestamp?: string;
+  title?: string;
 }
 
 interface NotificationState {
@@ -20,24 +41,24 @@ interface LoadingState {
 }
 
 interface Metrics {
-  buyer: any | null;
-  seller: any | null;
-  landlord: any | null;
-  tenant: any | null;
-  leasingAgent: any | null;
-  salesAgent: any | null;
-  owner: any | null;
-  [key: string]: any;
+  buyer: Record<string, unknown> | null;
+  seller: Record<string, unknown> | null;
+  landlord: Record<string, unknown> | null;
+  tenant: Record<string, unknown> | null;
+  leasingAgent: Record<string, unknown> | null;
+  salesAgent: Record<string, unknown> | null;
+  owner: Record<string, unknown> | null;
+  [key: string]: Record<string, unknown> | null | undefined;
 }
 
 interface DashboardState {
   activeTabs: { [key: string]: string };
-  filters: { [key: string]: any };
+  filters: { [key: string]: unknown };
   metrics: Metrics;
   loading: LoadingState;
   error: string | null;
-  favorites: any[];
-  recentlyViewed: any[];
+  favorites: FavoriteItem[];
+  recentlyViewed: RecentlyViewedItem[];
   notifications: NotificationState;
   pipelineStages: {
     leasing: string[];
@@ -77,7 +98,7 @@ const initialState: DashboardState = {
 
 interface FetchMetricsPayload {
   role: string;
-  data: any;
+  data: Record<string, unknown>;
 }
 
 export const fetchDashboardMetrics = createAsyncThunk<
@@ -88,13 +109,14 @@ export const fetchDashboardMetrics = createAsyncThunk<
   'dashboard/fetchMetrics',
   async (role, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/dashboard/${role}/metrics`);
+      const response = await authFetch(`/api/dashboard/${role}/metrics`);
       if (!response.ok) {
         throw new Error('Failed to fetch metrics');
       }
       return { role, data: await response.json() };
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch metrics');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to fetch metrics';
+      return rejectWithValue(message);
     }
   }
 );
@@ -107,33 +129,33 @@ const dashboardSlice = createSlice({
       const { key, tab } = action.payload;
       state.activeTabs[key] = tab;
     },
-    setFilter: (state, action: PayloadAction<{ key: string; filter: any }>) => {
+    setFilter: (state, action: PayloadAction<{ key: string; filter: Record<string, unknown> }>) => {
       const { key, filter } = action.payload;
-      state.filters[key] = { ...state.filters[key], ...filter };
+      state.filters[key] = { ...((state.filters[key] as Record<string, unknown>) || {}), ...filter };
     },
     clearFilter: (state, action: PayloadAction<{ key: string }>) => {
       const { key } = action.payload;
       delete state.filters[key];
     },
-    setMetrics: (state, action: PayloadAction<{ role: string; data: any }>) => {
+    setMetrics: (state, action: PayloadAction<{ role: string; data: Record<string, unknown> }>) => {
       const { role, data } = action.payload;
       state.metrics[role] = data;
     },
-    addToFavorites: (state, action: PayloadAction<any>) => {
+    addToFavorites: (state, action: PayloadAction<FavoriteItem>) => {
       const property = action.payload;
-      if (!state.favorites.find((f: any) => f.id === property.id)) {
+      if (!state.favorites.find((f) => f.id === property.id)) {
         state.favorites.push(property);
       }
     },
-    removeFromFavorites: (state, action: PayloadAction<string | number>) => {
+    removeFromFavorites: (state, action: PayloadAction<string>) => {
       const propertyId = action.payload;
-      state.favorites = state.favorites.filter((f: any) => f.id !== propertyId);
+      state.favorites = state.favorites.filter((f) => f.id !== propertyId);
     },
-    addToRecentlyViewed: (state, action: PayloadAction<any>) => {
+    addToRecentlyViewed: (state, action: PayloadAction<RecentlyViewedItem>) => {
       const property = action.payload;
       state.recentlyViewed = [
         property,
-        ...state.recentlyViewed.filter((p: any) => p.id !== property.id)
+        ...state.recentlyViewed.filter((p) => p.id !== property.id)
       ].slice(0, 10);
     },
     setNotifications: (state, action: PayloadAction<NotificationState>) => {
@@ -176,7 +198,8 @@ const dashboardSlice = createSlice({
       .addCase(fetchDashboardMetrics.rejected, (state, action) => {
         state.loading.metrics = false;
         state.error = action.payload || 'Unknown error';
-      });
+      })
+      .addCase(logout, () => initialState);
   },
 });
 
@@ -196,12 +219,13 @@ export const {
   clearError,
 } = dashboardSlice.actions;
 
-export const selectActiveTab = (key: string) => (state: any) => state.dashboard?.activeTabs?.[key];
-export const selectFilter = (key: string) => (state: any) => state.dashboard?.filters?.[key];
-export const selectMetrics = (role: string) => (state: any) => state.dashboard?.metrics?.[role];
-export const selectFavorites = (state: any) => state.dashboard?.favorites || [];
-export const selectRecentlyViewed = (state: any) => state.dashboard?.recentlyViewed || [];
-export const selectNotifications = (state: any) => state.dashboard?.notifications;
-export const selectIsLoading = (key: string) => (state: any) => state.dashboard?.loading?.[key];
+export const selectFavorites = createSelector(
+  (state: { dashboard?: DashboardState }) => state.dashboard?.favorites,
+  (favorites): FavoriteItem[] => favorites || []
+);
+export const selectNotifications = (state: { dashboard?: DashboardState }) => state.dashboard?.notifications;
+
+// NOTE: Unused selectors removed in Round 124 dead-code cleanup.
+// Re-add if needed: selectActiveTab, selectFilter, selectMetrics, selectRecentlyViewed, selectIsLoading
 
 export default dashboardSlice.reducer;

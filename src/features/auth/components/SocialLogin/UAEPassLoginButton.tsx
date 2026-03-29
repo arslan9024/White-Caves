@@ -1,11 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginStart, loginFailure } from '../../../../store/authSlice';
+import { createLogger } from '../../../../utils/logger';
+import { safeExternalRedirect } from '../../../../utils/safeRedirect';
 import './SocialLogin.css';
 
-const UAEPassLoginButton = ({ onSuccess, onError, disabled }) => {
+const log = createLogger('UAEPassLogin');
+
+interface UAEPassLoginButtonProps {
+  onSuccess?: (data: unknown) => void;
+  onError?: (error: unknown) => void;
+  disabled?: boolean;
+}
+
+const UAEPassLoginButton = ({ onSuccess, onError, disabled }: UAEPassLoginButtonProps) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   const handleUAEPassLogin = async () => {
     if (disabled || loading) return;
@@ -15,6 +32,9 @@ const UAEPassLoginButton = ({ onSuccess, onError, disabled }) => {
     
     try {
       const response = await fetch('/api/auth/uaepass/initiate');
+      if (!response.ok) {
+        throw new Error(`UAE Pass initiation failed (HTTP ${response.status})`);
+      }
       const data = await response.json();
       
       if (!data.success) {
@@ -27,17 +47,24 @@ const UAEPassLoginButton = ({ onSuccess, onError, disabled }) => {
         iframe.src = data.deepLink;
         document.body.appendChild(iframe);
         
-        setTimeout(() => {
-          document.body.removeChild(iframe);
-          window.location.href = data.authUrl;
+        timerRef.current = setTimeout(() => {
+          try {
+            if (iframe.parentNode) {
+              iframe.parentNode.removeChild(iframe);
+            }
+          } catch (e) {
+            // iframe already removed — safe to ignore
+          }
+          safeExternalRedirect(data.authUrl);
         }, 2000);
       } else {
-        window.location.href = data.authUrl;
+        safeExternalRedirect(data.authUrl);
       }
       
-    } catch (error) {
-      console.error('UAE Pass login error:', error);
-      dispatch(loginFailure(error.message));
+    } catch (error: unknown) {
+      log.error('UAE Pass login error:', error);
+      const msg = error instanceof Error ? error.message : 'UAE Pass login failed';
+      dispatch(loginFailure(msg));
       onError?.(error);
       setLoading(false);
     }

@@ -5,7 +5,7 @@ export interface SpacerProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Which axis to apply spacing on */
   axis?: 'horizontal' | 'vertical' | 'both';
   /** Spacing size token */
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | string;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
   /** Custom size value (overrides size token) */
   customSize?: string;
   /** Whether the spacer is flexible (uses flex-grow) */

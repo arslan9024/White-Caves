@@ -1,0 +1,55 @@
+# Dependencies (rebuilt in container)
+node_modules
+npm-debug.log*
+
+# Build outputs (rebuilt in container)
+dist
+.cache
+
+# Version control
+.git
+.gitignore
+
+# IDE / Editor
+.vscode
+.idea
+*.swp
+*.swo
+
+# Environment (secrets — NEVER bake into image)
+.env
+.env.local
+.env.production
+
+# Documentation & planning (not needed at runtime)
+*.md
+plans/
+archives/
+_build_logs/
+attached_assets/
+
+# Test files
+__tests__
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+coverage/
+playwright-report/
+test-results/
+
+# Config files not needed at runtime
+cypress.config.ts
+playwright.config.ts
+vitest.config.js
+jest.config.js
+jest.config.database.js
+eslint-ui-enforcement-rules.js
+.eslintrc*
+.prettierrc*
+
+# Miscellaneous
+*.txt
+*.ps1
+Makefile
+LICENSE

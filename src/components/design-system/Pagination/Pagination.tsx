@@ -41,6 +41,10 @@ export const Pagination: React.FC<PaginationProps> = ({
   maxButtons = 5,
   className = '',
 }) => {
+  // Guard: don't render pagination when there are no pages
+  const safeTotalPages = Math.max(0, totalPages);
+  if (safeTotalPages <= 1) return null;
+
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
     const halfMax = Math.floor(maxButtons / 2);

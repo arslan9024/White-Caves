@@ -1,7 +1,11 @@
-import React, { FC, useState, useRef, useEffect } from 'react';
+import React, { FC, useState, useRef, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import SignatureCanvas from 'react-signature-canvas';
 import { useTheme } from '../context/ThemeContext';
+import { useToast } from '../components/Toast';
+import { formatCurrency, formatDate } from '../utils';
+import { authFetch } from '../utils/authFetch';
 import './SignContractPage.css';
 
 interface ContractData {
@@ -14,10 +18,12 @@ interface ContractData {
 interface SignContractPageProps {}
 
 const SignContractPage: FC<SignContractPageProps> = () => {
+  useDocumentTitle('Sign Contract');
   const { token } = useParams<{token: string}>();
   const navigate = useNavigate();
   const { isDark } = useTheme();
-  const sigRef = useRef<any>(null);
+  const toast = useToast();
+  const sigRef = useRef<SignatureCanvas | null>(null);
   
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,13 +33,29 @@ const SignContractPage: FC<SignContractPageProps> = () => {
   const [isSigning, setIsSigning] = useState<boolean>(false);
   const [signed, setSigned] = useState<boolean>(false);
 
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   useEffect(() => {
-    fetchContractData();
+    if (!token) return;
+    // Validate token format to prevent path traversal and injection
+    if (!/^[a-zA-Z0-9_-]{8,256}$/.test(token)) {
+      setError('Invalid contract link. Please check the URL and try again.');
+      setLoading(false);
+      return;
+    }
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    fetchContractData(controller.signal);
+    return () => { controller.abort(); };
   }, [token]);
 
-  const fetchContractData = async (): Promise<void> => {
+  const fetchContractData = useCallback(async (signal?: AbortSignal): Promise<void> => {
     try {
-      const response = await fetch(`/api/signature/${token}`);
+      const response = await authFetch(`/api/signature/${token}`, { signal });
+      if (!response.ok) {
+        throw new Error(`Failed to load contract (HTTP ${response.status})`);
+      }
       const data = await response.json();
       
       if (!data.success) {
@@ -45,32 +67,44 @@ const SignContractPage: FC<SignContractPageProps> = () => {
       setRole(data.role);
       setSignerName(data.signerName || '');
     } catch (err) {
-      setError('Failed to load contract. Please try again.');
+      if (err instanceof DOMException && err.name === 'AbortError') return;
+      setError(err instanceof Error ? err.message : 'Failed to load contract. Please try again.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
   const clearSignature = (): void => {
     sigRef.current?.clear();
   };
 
   const handleSign = async (): Promise<void> => {
-    if (sigRef.current?.isEmpty()) {
-      alert('Please provide your signature before submitting.');
+    if (!signerName.trim()) {
+      toast.warning('Please enter your full name before signing.');
       return;
     }
 
+    const sigCanvas = sigRef.current;
+    if (!sigCanvas || sigCanvas.isEmpty()) {
+      toast.warning('Please provide your signature before submitting.');
+      return;
+    }
+
+    // Capture signature data synchronously BEFORE any async state updates
+    const signature = sigCanvas.toDataURL('image/png');
     setIsSigning(true);
     
     try {
-      const signature = sigRef.current.toDataURL('image/png');
       
-      const response = await fetch(`/api/signature/${token}/sign`, {
+      const response = await authFetch(`/api/signature/${token}/sign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ signature, signerName })
+        body: JSON.stringify({ signature, signerName: signerName.trim() })
       });
+      
+      if (!response.ok) {
+        throw new Error(`Signature submission failed (HTTP ${response.status})`);
+      }
       
       const data = await response.json();
       
@@ -84,20 +118,6 @@ const SignContractPage: FC<SignContractPageProps> = () => {
     } finally {
       setIsSigning(false);
     }
-  };
-
-  const formatDate = (dateString: string | null | undefined): string => {
-    if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('en-AE', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
-  };
-
-  const formatCurrency = (amount: number | null | undefined): string => {
-    if (!amount) return '-';
-    return `AED ${Number(amount).toLocaleString()}`;
   };
 
   if (loading) {
@@ -153,7 +173,29 @@ const SignContractPage: FC<SignContractPageProps> = () => {
           </div>
         )}
         
-        {error && <div className="error-message">{error}</div>}
+        {error && (
+          <div className="error-message">
+            <p>{error}</p>
+            <div className="error-actions" style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem' }}>
+              <button
+                className="btn-clear"
+                onClick={() => {
+                  setError(null);
+                  setLoading(true);
+                  abortControllerRef.current?.abort();
+                  const controller = new AbortController();
+                  abortControllerRef.current = controller;
+                  fetchContractData(controller.signal);
+                }}
+              >
+                Retry
+              </button>
+              <button className="btn-clear" onClick={() => navigate('/')}>
+                Go Home
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

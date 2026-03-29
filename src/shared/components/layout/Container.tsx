@@ -5,7 +5,7 @@ export interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Child elements */
   children?: React.ReactNode;
   /** Container size preset */
-  size?: 'small' | 'default' | 'large' | 'xlarge' | string;
+  size?: 'small' | 'default' | 'large' | 'xlarge';
   /** Whether the container is full-width (fluid) */
   fluid?: boolean;
   /** Horizontal padding override */
@@ -25,7 +25,7 @@ const Container = React.memo<ContainerProps>(({
 }) => {
   return (
     <StyledContainer
-      $size={fluid ? 'default' : size}
+      $size={fluid ? 'default' : (size as 'small' | 'default' | 'large')}
       $fluid={fluid}
       $paddingX={paddingX}
       $paddingY={paddingY}

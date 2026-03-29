@@ -1,11 +1,20 @@
 import React, { memo } from 'react';
 import './SharedComponents.css';
 
+type StatusType = 'active' | 'idle' | 'busy' | 'offline' | 'online';
+type SizeType = 'small' | 'medium' | 'large';
+
+interface StatusIndicatorProps {
+  status?: StatusType;
+  size?: SizeType;
+  showLabel?: boolean;
+}
+
 const StatusIndicator = memo(({ 
   status = 'idle',
   size = 'medium',
   showLabel = false
-}) => {
+}: StatusIndicatorProps) => {
   const statusConfig = {
     active: { color: '#10B981', label: 'Active' },
     idle: { color: '#6B7280', label: 'Idle' },

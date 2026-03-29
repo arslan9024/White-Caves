@@ -1,4 +1,4 @@
-import React, { memo, useState, useMemo, useCallback } from 'react';
+import React, { memo, useState, useMemo, useCallback, useEffect } from 'react';
 import { Search, Filter, ChevronUp, ChevronDown, MoreHorizontal } from 'lucide-react';
 import {
   DataGridViewContainer,
@@ -24,12 +24,12 @@ interface DataColumn {
   label: string;
   width?: string;
   sortable?: boolean;
-  render?: (value: any, row: DataRow) => React.ReactNode;
+  render?: (value: unknown, row: DataRow) => React.ReactNode;
 }
 
 interface DataRow {
   id: string | number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface DataGridViewProps {
@@ -65,6 +65,11 @@ const DataGridView = memo(
     const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'asc' });
     const [currentPage, setCurrentPage] = useState(1);
 
+    // Reset pagination when search or data changes
+    useEffect(() => {
+      setCurrentPage(1);
+    }, [searchQuery, data]);
+
     const handleSort = useCallback(
       (key: string) => {
         if (!sortable) return;
@@ -90,12 +95,13 @@ const DataGridView = memo(
       }
 
       if (sortConfig.key && sortable) {
+        const sortKey = sortConfig.key;
         result.sort((a, b) => {
-          const aVal = a[sortConfig.key!];
-          const bVal = b[sortConfig.key!];
+          const aVal = a[sortKey] as string | number | null;
+          const bVal = b[sortKey] as string | number | null;
 
-          if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-          if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+          if ((aVal ?? '') < (bVal ?? '')) return sortConfig.direction === 'asc' ? -1 : 1;
+          if ((aVal ?? '') > (bVal ?? '')) return sortConfig.direction === 'asc' ? 1 : -1;
           return 0;
         });
       }
@@ -175,7 +181,7 @@ const DataGridView = memo(
                   >
                     {columns.map(col => (
                       <GridTableCell key={col.key}>
-                        {col.render ? col.render(row[col.key], row) : row[col.key]}
+                        {col.render ? col.render(row[col.key], row) : String(row[col.key] ?? '')}
                       </GridTableCell>
                     ))}
                     <ActionsColumn>

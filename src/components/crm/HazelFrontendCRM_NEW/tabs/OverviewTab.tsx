@@ -1,7 +1,30 @@
 import React from 'react';
 import { Package, TrendingUp, Zap, Accessibility, BarChart3 } from 'lucide-react';
 
-const OverviewTab = ({ componentStats, accessibilityStats, performanceMetrics }) => {
+interface ComponentStats {
+  stable: number;
+  new: number;
+  total: number;
+}
+
+interface PerformanceMetric {
+  metric: string;
+  value: string;
+  trend: string;
+}
+
+interface AccessibilityStats {
+  avgScore: number;
+  totalIssues: number;
+}
+
+interface OverviewTabProps {
+  componentStats: ComponentStats;
+  accessibilityStats: AccessibilityStats;
+  performanceMetrics: PerformanceMetric[];
+}
+
+const OverviewTab: React.FC<OverviewTabProps> = ({ componentStats, accessibilityStats, performanceMetrics }) => {
   return (
     <div className="overview-view">
       <h3>Frontend System Overview</h3>
@@ -28,7 +51,7 @@ const OverviewTab = ({ componentStats, accessibilityStats, performanceMetrics })
         <div className="overview-section">
           <h4><Zap size={16} /> Performance Summary</h4>
           <div className="metrics-list">
-            {performanceMetrics.slice(0, 3).map(m => (
+            {performanceMetrics.slice(0, 3).map((m: PerformanceMetric) => (
               <div key={m.metric} className="metric-row">
                 <span className="metric-name">{m.metric}</span>
                 <span className={`metric-value trend-${m.trend}`}>{m.value}</span>

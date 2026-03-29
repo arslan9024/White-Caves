@@ -233,10 +233,10 @@ export const ServiceDescription = styled.p`
 // STATS GRID
 // ==============================================================================
 
-export const StatsGrid = styled.div<{ isServiceStats?: boolean }>`
+export const StatsGrid = styled.div<{ $isServiceStats?: boolean }>`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: ${props => (props.isServiceStats ? '12px' : '16px')};
+  gap: ${props => (props.$isServiceStats ? '12px' : '16px')};
 
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
@@ -379,14 +379,14 @@ export const MetricValue = styled.div`
   }
 `;
 
-export const MetricChange = styled.div<{ trend?: 'up' | 'down' | 'stable' }>`
+export const MetricChange = styled.div<{ $trend?: 'up' | 'down' | 'stable' }>`
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 12px;
   font-weight: 600;
   color: ${props => {
-    switch (props.trend) {
+    switch (props.$trend) {
       case 'up':
         return '#10B981';
       case 'down':

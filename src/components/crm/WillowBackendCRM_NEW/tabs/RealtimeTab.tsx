@@ -1,8 +1,25 @@
 import React from 'react';
 import { Wifi, Activity, TrendingUp } from 'lucide-react';
 
-const RealtimeTab = ({ connections, realtimeStats }) => {
-  const getStatusColor = (status) => {
+interface RealtimeConnection {
+  type: string;
+  status: string;
+  active: number;
+  peak: number;
+}
+
+interface RealtimeStats {
+  totalActive: number;
+  totalPeak: number;
+}
+
+interface RealtimeTabProps {
+  connections: RealtimeConnection[];
+  realtimeStats: RealtimeStats;
+}
+
+const RealtimeTab: React.FC<RealtimeTabProps> = ({ connections, realtimeStats }) => {
+  const getStatusColor = (status: string): string => {
     switch (status) {
       case 'healthy': return '#10B981';
       case 'degraded': return '#F59E0B';
@@ -32,8 +49,8 @@ const RealtimeTab = ({ connections, realtimeStats }) => {
       </div>
 
       <div className="connections-list">
-        {connections.map((conn, index) => (
-          <div key={index} className="connection-card" style={{ borderLeftColor: getStatusColor(conn.status) }}>
+        {connections.map((conn: RealtimeConnection) => (
+          <div key={conn.type} className="connection-card" style={{ borderLeftColor: getStatusColor(conn.status) }}>
             <div className="connection-header">
               <h4>{conn.type}</h4>
               <span 

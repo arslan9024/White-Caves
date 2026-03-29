@@ -3,7 +3,8 @@
  * Handles sidebar width management and localStorage persistence
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { safeStorage } from '../utils/safeStorage';
 
 const SIDEBAR_STORAGE_KEY = {
   LEFT: 'sidebar_width_left',
@@ -18,15 +19,28 @@ const DEFAULT_WIDTHS = {
 const MIN_WIDTH = 200;
 const MAX_WIDTH = 500;
 
-export const useResizableSidebar = (side: 'left' | 'right') => {
+interface UseResizableSidebarReturn {
+  width: number;
+  setWidth: (newWidth: number) => void;
+  isResizing: boolean;
+  setIsResizing: React.Dispatch<React.SetStateAction<boolean>>;
+  resetWidth: () => void;
+  MIN_WIDTH: number;
+  MAX_WIDTH: number;
+}
+
+export const useResizableSidebar = (side: 'left' | 'right'): UseResizableSidebarReturn => {
   const storageKey = SIDEBAR_STORAGE_KEY[side.toUpperCase() as 'LEFT' | 'RIGHT'];
   const defaultWidth = DEFAULT_WIDTHS[side.toUpperCase() as 'LEFT' | 'RIGHT'];
 
   const [width, setWidth] = useState<number>(() => {
     // Try to get saved width from localStorage
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(storageKey);
-      return saved ? parseInt(saved, 10) : defaultWidth;
+      const saved = safeStorage.get(storageKey);
+      if (saved) {
+        const parsed = parseInt(saved, 10);
+        return Number.isFinite(parsed) ? Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, parsed)) : defaultWidth;
+      }
     }
     return defaultWidth;
   });
@@ -36,7 +50,7 @@ export const useResizableSidebar = (side: 'left' | 'right') => {
   // Save width to localStorage when it changes
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem(storageKey, width.toString());
+      safeStorage.set(storageKey, width.toString());
     }
   }, [width, storageKey]);
 

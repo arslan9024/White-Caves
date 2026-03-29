@@ -18,7 +18,7 @@
   height: 100vh;
   background: var(--bg-primary);
   box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: var(--z-overlay, 600);
   display: flex;
   flex-direction: column;
   animation: slideInRight 0.3s ease;
@@ -238,15 +238,15 @@
 }
 
 .profile-action-btn.admin {
-  background: linear-gradient(135deg, #D32F2F 0%, #B71C1C 100%);
+  background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
   color: white;
-  border-color: #D32F2F;
+  border-color: #D4AF37;
   font-weight: 600;
 }
 
 .profile-action-btn.admin:hover {
-  background: linear-gradient(135deg, #B71C1C 0%, #A01A1A 100%);
-  border-color: #B71C1C;
+  background: linear-gradient(135deg, #B8860B 0%, #9A7B0A 100%);
+  border-color: #B8860B;
   color: white;
 }
 
@@ -258,8 +258,8 @@
 .profile-panel-admin-section {
   width: 100%;
   padding: 16px;
-  background: linear-gradient(135deg, rgba(211, 47, 47, 0.1) 0%, transparent 100%);
-  border: 1px solid rgba(211, 47, 47, 0.2);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%);
+  border: 1px solid rgba(212, 175, 55, 0.2);
   border-radius: 12px;
 }
 
@@ -270,7 +270,7 @@
   margin-bottom: 12px;
   font-size: 13px;
   font-weight: 600;
-  color: #D32F2F;
+  color: #D4AF37;
 }
 
 .admin-section-header svg {
@@ -291,10 +291,10 @@
   justify-content: center;
   gap: 6px;
   padding: 12px;
-  border: 1px solid rgba(211, 47, 47, 0.3);
+  border: 1px solid rgba(212, 175, 55, 0.3);
   border-radius: 10px;
   background: white;
-  color: #D32F2F;
+  color: #D4AF37;
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
@@ -307,9 +307,9 @@
 }
 
 .admin-quick-action:hover {
-  background: linear-gradient(135deg, rgba(211, 47, 47, 0.1) 0%, transparent 100%);
-  border-color: #D32F2F;
-  color: #B71C1C;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%);
+  border-color: #D4AF37;
+  color: #B8860B;
 }
 
 .profile-panel-role.super-user {

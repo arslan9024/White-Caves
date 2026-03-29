@@ -20,7 +20,10 @@ import {
   BlogCardCategory,
   BlogCardTitle,
   BlogCardMeta,
-  LoadMoreBtn
+  LoadMoreBtn,
+  CardFooter,
+  ReadMoreLink,
+  LoadMoreContainer
 } from './BlogSection.styles';
 
 interface BlogPost {
@@ -134,7 +137,7 @@ const BlogSection: FC<BlogSectionProps> = () => {
         <FeaturedPosts>
           {featuredPosts.map(post => (
             <FeaturedPost key={post.id}>
-              <FeaturedImage style={{ backgroundImage: `url(${post.image})` }}>
+              <FeaturedImage $bgImage={post.image}>
                 <PostCategory>{post.category}</PostCategory>
               </FeaturedImage>
               <FeaturedContent>
@@ -166,7 +169,7 @@ const BlogSection: FC<BlogSectionProps> = () => {
         <BlogGrid>
           {regularPosts.slice(0, visiblePosts).map(post => (
             <BlogCard key={post.id}>
-              <BlogCardImage style={{ backgroundImage: `url(${post.image})` }}>
+              <BlogCardImage $bgImage={post.image}>
                 <BlogCardCategory>{post.category}</BlogCardCategory>
               </BlogCardImage>
               <BlogCardContent>
@@ -176,21 +179,21 @@ const BlogSection: FC<BlogSectionProps> = () => {
                 </BlogCardMeta>
                 <BlogCardTitle>{post.title}</BlogCardTitle>
                 <p>{post.excerpt}</p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
+                <CardFooter>
                   <PostAuthor>By {post.author}</PostAuthor>
-                  <a href="#" style={{ color: 'var(--primary-color)', textDecoration: 'none' }}>Read More →</a>
-                </div>
+                  <ReadMoreLink href="#">Read More →</ReadMoreLink>
+                </CardFooter>
               </BlogCardContent>
             </BlogCard>
           ))}
         </BlogGrid>
 
         {regularPosts.length > visiblePosts && (
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+          <LoadMoreContainer>
             <LoadMoreBtn onClick={loadMore}>
               Load More Articles
             </LoadMoreBtn>
-          </div>
+          </LoadMoreContainer>
         )}
       </BlogContainer>
     </BlogSectionContainer>

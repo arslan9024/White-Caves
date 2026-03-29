@@ -6,7 +6,16 @@ import LinkedInLoginButton from './LinkedInLoginButton';
 import UAEPassLoginButton from './UAEPassLoginButton';
 import './SocialLogin.css';
 
-const SocialLoginButtons = ({ 
+interface SocialLoginButtonsProps {
+  onSuccess: (data: unknown) => void;
+  onError: (error: unknown) => void;
+  disabled?: boolean;
+  showLinkedIn?: boolean;
+  showUAEPass?: boolean;
+  layout?: 'vertical' | 'horizontal';
+}
+
+const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({ 
   onSuccess, 
   onError, 
   disabled = false,

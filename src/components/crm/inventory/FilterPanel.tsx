@@ -10,14 +10,22 @@ import {
   FilterGrid
 } from './FilterPanel.styles';
 
+interface FilterPanelProps {
+  filters: Record<string, string>;
+  filterOptions: Record<string, string[]>;
+  onFilterChange: (key: string, value: string | null) => void;
+  onClearFilters: () => void;
+  activeFiltersCount?: number;
+}
+
 const FilterPanel = ({ 
   filters, 
   filterOptions, 
   onFilterChange, 
   onClearFilters,
   activeFiltersCount = 0 
-}) => {
-  const handleChange = (key, value) => {
+}: FilterPanelProps) => {
+  const handleChange = (key: string, value: string | null) => {
     onFilterChange(key, value);
   };
 

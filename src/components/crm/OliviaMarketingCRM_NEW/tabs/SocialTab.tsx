@@ -1,10 +1,17 @@
 import React from 'react';
 import { Instagram, Facebook, Linkedin, Youtube, Users, Heart, MessageCircle } from 'lucide-react';
 
-export default function SocialTab({ state }) {
+interface SocialTabProps {
+  state: {
+    socialStats: Array<{ platform: string; followers: number; growth: number; engagement: number; posts?: number }>;
+    socialMetrics?: Record<string, unknown>;
+  };
+}
+
+export default function SocialTab({ state }: SocialTabProps) {
   const { socialStats, socialMetrics } = state;
 
-  const getPlatformIcon = (platform) => {
+  const getPlatformIcon = (platform: string) => {
     switch (platform.toLowerCase()) {
       case 'instagram': return <Instagram size={20} />;
       case 'facebook': return <Facebook size={20} />;
@@ -25,21 +32,21 @@ export default function SocialTab({ state }) {
         <div className="overview-card">
           <Users size={20} />
           <div>
-            <span className="metric-value">{(socialMetrics.totalFollowers / 1000).toFixed(0)}K</span>
+            <span className="metric-value">{((Number(socialMetrics?.totalFollowers) || 0) / 1000).toFixed(0)}K</span>
             <span className="metric-label">Total Followers</span>
           </div>
         </div>
         <div className="overview-card">
           <MessageCircle size={20} />
           <div>
-            <span className="metric-value">{socialMetrics.avgEngagement}%</span>
+            <span className="metric-value">{String(socialMetrics?.avgEngagement ?? 0)}%</span>
             <span className="metric-label">Avg Engagement</span>
           </div>
         </div>
         <div className="overview-card">
           <Heart size={20} />
           <div>
-            <span className="metric-value">{socialMetrics.totalPosts}</span>
+            <span className="metric-value">{String(socialMetrics?.totalPosts ?? 0)}</span>
             <span className="metric-label">Total Posts</span>
           </div>
         </div>
@@ -47,8 +54,8 @@ export default function SocialTab({ state }) {
 
       <div className="social-platforms">
         <h4>Platform Performance</h4>
-        {socialStats.map((platform, idx) => (
-          <div key={idx} className="platform-card">
+        {socialStats.map((platform) => (
+          <div key={platform.platform} className="platform-card">
             <div className="platform-header">
               {getPlatformIcon(platform.platform)}
               <div className="platform-info">
@@ -67,7 +74,7 @@ export default function SocialTab({ state }) {
               </div>
               <div className="metric">
                 <span className="label">Posts</span>
-                <span className="value">{platform.posts}</span>
+                <span className="value">{platform.posts ?? 0}</span>
               </div>
             </div>
             <button className="btn btn-secondary">View Details</button>

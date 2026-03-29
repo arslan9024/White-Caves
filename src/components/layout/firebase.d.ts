@@ -1,3 +1,4 @@
 declare module '../../config/firebase' {
-  export const auth: any;
+  import type { Auth } from 'firebase/auth';
+  export const auth: Auth | null;
 }

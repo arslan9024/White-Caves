@@ -1,7 +1,23 @@
 import React from 'react';
 import { CheckCircle, AlertTriangle, Clock, Eye, User } from 'lucide-react';
 
-const KYCTab = ({ verifications, onApprove, onReject }) => {
+interface KYCVerification {
+  id: string | number;
+  name: string;
+  type: string;
+  status: string;
+  riskLevel: string;
+  documents: string[];
+  date: string;
+}
+
+interface KYCTabProps {
+  verifications: KYCVerification[];
+  onApprove: (id: string | number) => void;
+  onReject: (id: string | number) => void;
+}
+
+const KYCTab: React.FC<KYCTabProps> = ({ verifications, onApprove, onReject }) => {
   return (
     <div className="kyc-view">
       <h3>KYC Verification Management</h3>
@@ -26,7 +42,7 @@ const KYCTab = ({ verifications, onApprove, onReject }) => {
           </tr>
         </thead>
         <tbody>
-          {verifications.map((v) => (
+          {verifications.map((v: KYCVerification) => (
             <tr key={v.id} className={`status-${v.status}`}>
               <td>
                 <div className="client-name">

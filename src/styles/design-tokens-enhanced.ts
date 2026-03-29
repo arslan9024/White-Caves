@@ -1,9 +1,9 @@
 export const colorTokens = {
   primary: {
-    main: '#DC2626',
-    hover: '#B91C1C',
-    light: 'rgba(220, 38, 38, 0.1)',
-    dark: '#991B1B'
+    main: '#D4AF37',
+    hover: '#B8860B',
+    light: 'rgba(212, 175, 55, 0.1)',
+    dark: '#B8860B'
   },
   secondary: {
     main: '#6B7280',
@@ -222,7 +222,7 @@ export const shadowTokens = {
 };
 
 export const gradientTokens = {
-  primary: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
+  primary: 'linear-gradient(135deg, #D4AF37 0%, #B8860B 100%)',
   success: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
   warning: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
   info: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
@@ -252,7 +252,7 @@ export const departmentColors = {
   executive: '#10B981',
   compliance: '#6366F1',
   technology: '#0EA5E9',
-  legal: '#DC2626',
+  legal: '#D4AF37',
   records: '#7C3AED',
   intelligence: '#0D9488'
 };

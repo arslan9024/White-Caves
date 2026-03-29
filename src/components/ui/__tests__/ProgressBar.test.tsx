@@ -15,9 +15,9 @@ describe('ProgressBar Component', () => {
       expect(screen.getByText('75%')).toBeInTheDocument();
     });
 
-    it('should render with label', () => {
-      render(<ProgressBar value={60} label="Download progress" />);
-      expect(screen.getByText('Download progress')).toBeInTheDocument();
+    it('should render with showLabel', () => {
+      render(<ProgressBar value={60} showLabel />);
+      expect(screen.getByText('60%')).toBeInTheDocument();
     });
   });
 
@@ -45,22 +45,22 @@ describe('ProgressBar Component', () => {
     });
   });
 
-  describe('Colors', () => {
-    it('should support different colors', () => {
+  describe('Variants', () => {
+    it('should support different variants', () => {
       const { container: successContainer } = render(
-        <ProgressBar value={50} color="success" />
+        <ProgressBar value={50} variant="success" />
       );
       expect(successContainer.firstChild).toBeInTheDocument();
 
       const { container: warningContainer } = render(
-        <ProgressBar value={50} color="warning" />
+        <ProgressBar value={50} variant="warning" />
       );
       expect(warningContainer.firstChild).toBeInTheDocument();
 
-      const { container: dangerContainer } = render(
-        <ProgressBar value={50} color="danger" />
+      const { container: errorContainer } = render(
+        <ProgressBar value={50} variant="error" />
       );
-      expect(dangerContainer.firstChild).toBeInTheDocument();
+      expect(errorContainer.firstChild).toBeInTheDocument();
     });
   });
 
@@ -102,17 +102,17 @@ describe('ProgressBar Component', () => {
 
     it('should have aria-label', () => {
       const { container } = render(
-        <ProgressBar value={50} aria-label="Upload progress" />
+        <ProgressBar value={50} ariaLabel="Upload progress" />
       );
       const progressBar = container.querySelector('[role="progressbar"]');
       expect(progressBar).toHaveAttribute('aria-label', 'Upload progress');
     });
   });
 
-  describe('Height', () => {
-    it('should support different heights', () => {
+  describe('Size', () => {
+    it('should support different sizes', () => {
       const { container } = render(
-        <ProgressBar value={50} height="lg" />
+        <ProgressBar value={50} size="large" />
       );
       expect(container.firstChild).toBeInTheDocument();
     });

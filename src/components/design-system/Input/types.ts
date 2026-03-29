@@ -7,7 +7,7 @@ import React from 'react';
 export type InputType = 'text' | 'email' | 'password' | 'number' | 'search' | 'url' | 'tel';
 export type InputSize = 'sm' | 'md' | 'lg';
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   /** Input type */
   type?: InputType;
   /** Size variant */

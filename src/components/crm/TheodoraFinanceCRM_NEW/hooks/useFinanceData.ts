@@ -38,7 +38,9 @@ export const useFinanceData = () => {
 
   const handleRejectExpense = useCallback((expenseId: number) => {
     setExpenses(prev =>
-      prev.filter(exp => exp.id !== expenseId)
+      prev.map(exp =>
+        exp.id === expenseId ? { ...exp, status: 'rejected' } : exp
+      )
     );
   }, []);
 

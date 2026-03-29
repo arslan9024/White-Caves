@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import PropertyImageSlider from './PropertyImageSlider';
+import { formatPrice } from '../../../utils';
+import { Config } from '../../../config/constants';
 import './PropertyDetailModal.css';
 
 const AMENITY_ICONS: Record<string, LucideIcon> = {
@@ -53,26 +55,21 @@ export default function PropertyDetailModal({ property, onClose, onContact, onFa
 
   if (!property) return null;
 
-  const formatPrice = (price: number, priceType?: string): string => {
-    if (priceType === 'yearly') {
-      return `AED ${price.toLocaleString()}/year`;
-    }
-    return `AED ${price.toLocaleString()}`;
-  };
+  // Use imported formatPrice utility (no local shadow)
 
   const handleWhatsApp = (): void => {
     const message = `Hi, I'm interested in the property: ${property.title} in ${property.location}`;
-    window.open(`https://wa.me/971563616136?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/${Config.COMPANY.WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   };
 
   const handleCall = (): void => {
-    window.open('tel:+971563616136', '_self');
+    window.open(`tel:${Config.COMPANY.PHONE.replace(/\s/g, '')}`, '_self');
   };
 
   const handleEmail = (): void => {
     const subject = `Inquiry: ${property.title}`;
     const body = `Hi,\n\nI'm interested in the property: ${property.title} located in ${property.location}.\n\nPlease contact me with more details.\n\nThank you.`;
-    window.open(`mailto:info@whitecaves.ae?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_self');
+    window.open(`mailto:${Config.COMPANY.EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_self');
   };
 
   const tabs: Array<{ id: string; label: string }> = [
@@ -83,7 +80,7 @@ export default function PropertyDetailModal({ property, onClose, onContact, onFa
   ];
 
   return (
-    <div className="property-detail-modal-overlay" onClick={onClose}>
+    <div className="property-detail-modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label="Property details">
       <div className="property-detail-modal" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
         <button className="modal-close-btn" onClick={onClose}>
           <X size={24} />
@@ -119,7 +116,7 @@ export default function PropertyDetailModal({ property, onClose, onContact, onFa
                 </p>
               </div>
               <div className="header-price">
-                <span className="price">{formatPrice(property.price, property.priceType)}</span>
+                <span className="price">{formatPrice(property.price, { priceType: property.priceType })}</span>
                 {property.pricePerSqft && (
                   <span className="price-sqft">AED {property.pricePerSqft}/sqft</span>
                 )}
@@ -200,7 +197,7 @@ Residents will enjoy world-class amenities and the convenience of being close to
                     {property.amenities?.map((amenity, index) => {
                       const IconComponent = AMENITY_ICONS[amenity] || Building;
                       return (
-                        <div key={index} className="amenity-item">
+                        <div key={amenity} className="amenity-item">
                           <IconComponent size={20} />
                           <span>{amenity}</span>
                         </div>
@@ -307,6 +304,9 @@ Residents will enjoy world-class amenities and the convenience of being close to
                 src="https://randomuser.me/api/portraits/men/32.jpg" 
                 alt="Agent" 
                 className="agent-avatar"
+                loading="lazy"
+                width={48}
+                height={48}
               />
               <div className="agent-info">
                 <h4>Mohammed Al Rashid</h4>
@@ -320,8 +320,10 @@ Residents will enjoy world-class amenities and the convenience of being close to
 
             <div className="schedule-card">
               <h4>Schedule a Viewing</h4>
-              <input type="date" className="date-input" />
-              <select className="time-select">
+              <label htmlFor="viewing-date" className="sr-only">Preferred date</label>
+              <input id="viewing-date" type="date" className="date-input" aria-required="true" />
+              <label htmlFor="viewing-time" className="sr-only">Preferred time</label>
+              <select id="viewing-time" className="time-select" aria-required="true">
                 <option>Select preferred time</option>
                 <option>10:00 AM</option>
                 <option>11:00 AM</option>

@@ -17,7 +17,7 @@ import { ToastConfig, ToastType, ToastPosition } from './advancedUI.types';
 
 const ToastContainer = styled.div<{ $position: ToastPosition }>`
   position: fixed;
-  z-index: 9999;
+  z-index: var(--z-toast, 400);
   ${(props) => {
     const [vertical, horizontal] = props.$position.split('-');
     return `
@@ -188,7 +188,7 @@ const ProgressBar = styled.div<{ $duration: number; $type: ToastType }>`
     };
     return colors[props.$type];
   }};
-  animation: progress ${(props) => props.$duration}ms linear forwrads;
+  animation: progress ${(props) => props.$duration}ms linear forwards;
 
   @keyframes progress {
     from {
@@ -224,14 +224,20 @@ const ToastItemComponent: FC<ToastItemProps> = ({ toast, onRemove }) => {
       return undefined; // Persistent toast
     }
 
+    let exitTimer: ReturnType<typeof setTimeout> | null = null;
     const timer = setTimeout(() => {
       setIsExiting(true);
-      setTimeout(() => {
+      exitTimer = setTimeout(() => {
         onRemove(toast.id);
       }, 300);
     }, toast.duration || 5000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      if (exitTimer !== null) {
+        clearTimeout(exitTimer);
+      }
+    };
   }, [toast.duration, toast.id, onRemove]);
 
   const handleClose = () => {

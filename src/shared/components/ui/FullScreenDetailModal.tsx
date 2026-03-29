@@ -1,8 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { X, ChevronLeft, ChevronRight, Maximize2, Minimize2, Share2, Heart, Download } from 'lucide-react';
+import React, { useEffect, useState, ReactNode } from 'react';
+import { X, ChevronLeft, ChevronRight, Maximize2, Minimize2, Share2, Heart, Download, type LucideIcon } from 'lucide-react';
 import './FullScreenDetailModal.css';
 
-const FullScreenDetailModal = ({
+interface ModalTab {
+  label: string;
+  icon?: LucideIcon;
+  content: ReactNode;
+}
+
+interface ModalAction {
+  label: string;
+  onClick: () => void;
+  primary?: boolean;
+  danger?: boolean;
+  disabled?: boolean;
+  icon?: LucideIcon;
+}
+
+interface FullScreenDetailModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  subtitle?: string;
+  images?: string[];
+  children?: ReactNode;
+  actions?: ModalAction[];
+  sidebar?: ReactNode;
+  tabs?: ModalTab[];
+  defaultTab?: number;
+}
+
+const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
   isOpen,
   onClose,
   title,
@@ -19,6 +47,13 @@ const FullScreenDetailModal = ({
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [isFavorite, setIsFavorite] = useState(false);
 
+  // Reset activeTab when tabs array changes to prevent out-of-bounds access
+  useEffect(() => {
+    if (tabs.length > 0 && activeTab >= tabs.length) {
+      setActiveTab(0);
+    }
+  }, [tabs.length]); // eslint-disable-line react-hooks/exhaustive-deps — only react to tabs length changes
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -31,7 +66,7 @@ const FullScreenDetailModal = ({
   }, [isOpen]);
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;
       if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowLeft') prevImage();
@@ -39,7 +74,7 @@ const FullScreenDetailModal = ({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, currentImageIndex]);
+  }, [isOpen, currentImageIndex, onClose, images.length]); // Include all dependencies used in handler
 
   const nextImage = () => {
     if (images.length > 0) {
@@ -66,7 +101,7 @@ const FullScreenDetailModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fullscreen-modal-overlay" onClick={onClose}>
+    <div className="fullscreen-modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label={title || 'Detail modal'}>
       <div className="fullscreen-modal" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="modal-header">
@@ -76,19 +111,19 @@ const FullScreenDetailModal = ({
           </div>
           
           <div className="modal-header-actions">
-            <button className="header-action-btn" onClick={() => setIsFavorite(!isFavorite)}>
-              <Heart size={20} fill={isFavorite ? '#dc2626' : 'none'} color={isFavorite ? '#dc2626' : 'currentColor'} />
+            <button className="header-action-btn" onClick={() => setIsFavorite(!isFavorite)} aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'} aria-pressed={isFavorite}>
+              <Heart size={20} fill={isFavorite ? '#D4AF37' : 'none'} color={isFavorite ? '#D4AF37' : 'currentColor'} />
             </button>
-            <button className="header-action-btn">
+            <button className="header-action-btn" aria-label="Share">
               <Share2 size={20} />
             </button>
-            <button className="header-action-btn">
+            <button className="header-action-btn" aria-label="Download">
               <Download size={20} />
             </button>
-            <button className="header-action-btn" onClick={toggleFullscreen}>
+            <button className="header-action-btn" onClick={toggleFullscreen} aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}>
               {isFullscreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
             </button>
-            <button className="close-btn" onClick={onClose}>
+            <button className="close-btn" onClick={onClose} aria-label="Close modal">
               <X size={24} />
             </button>
           </div>
@@ -102,16 +137,19 @@ const FullScreenDetailModal = ({
               <div className="gallery-main">
                 <img 
                   src={images[currentImageIndex]} 
-                  alt={`View ${currentImageIndex + 1}`}
+                  alt={`${title || 'Property'} — image ${currentImageIndex + 1} of ${images.length}`}
                   className="gallery-main-image"
+                  loading="lazy"
+                  width={400}
+                  height={300}
                 />
                 
                 {images.length > 1 && (
                   <>
-                    <button className="gallery-nav prev" onClick={prevImage}>
+                    <button className="gallery-nav prev" onClick={prevImage} aria-label="Previous image">
                       <ChevronLeft size={24} />
                     </button>
-                    <button className="gallery-nav next" onClick={nextImage}>
+                    <button className="gallery-nav next" onClick={nextImage} aria-label="Next image">
                       <ChevronRight size={24} />
                     </button>
                   </>
@@ -126,11 +164,11 @@ const FullScreenDetailModal = ({
                 <div className="gallery-thumbnails">
                   {images.map((img, idx) => (
                     <button
-                      key={idx}
+                      key={img ?? `thumb-${idx}`}
                       className={`thumbnail ${idx === currentImageIndex ? 'active' : ''}`}
                       onClick={() => setCurrentImageIndex(idx)}
                     >
-                      <img src={img} alt={`Thumbnail ${idx + 1}`} />
+                      <img src={img} alt={`${title || 'Property'} thumbnail ${idx + 1}`} loading="lazy" />
                     </button>
                   ))}
                 </div>
@@ -145,7 +183,7 @@ const FullScreenDetailModal = ({
               <div className="modal-tabs">
                 {tabs.map((tab, idx) => (
                   <button
-                    key={idx}
+                    key={tab.label ?? `tab-${idx}`}
                     className={`modal-tab ${idx === activeTab ? 'active' : ''}`}
                     onClick={() => setActiveTab(idx)}
                   >
@@ -175,7 +213,7 @@ const FullScreenDetailModal = ({
           <div className="modal-footer">
             {actions.map((action, idx) => (
               <button
-                key={idx}
+                key={action.label ?? `action-${idx}`}
                 className={`footer-action-btn ${action.primary ? 'primary' : ''} ${action.danger ? 'danger' : ''}`}
                 onClick={action.onClick}
                 disabled={action.disabled}

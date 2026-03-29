@@ -7,14 +7,35 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
+
+// Default password for all seeded users (dev only — override via SEED_PASSWORD env var)
+const DEFAULT_PASSWORD = process.env.SEED_PASSWORD || 'password123';
+const hashPassword = async (pw: string) => bcrypt.hash(pw, 12);
 
 async function main() {
   console.log('🌱 Seeding White Caves CRM database...\n');
 
+  // ─── 0. CLEANUP ────────────────────────────────────────────────────────
+  // Use raw MongoDB drop to handle corrupt data (non-ObjectID IDs from earlier schema)
+  console.log('🧹 Cleaning existing data (raw drop)...');
+  const collections = ['Activity', 'Commission', 'Transaction', 'Tenant', 'Lead', 'Property', 'User'];
+  for (const col of collections) {
+    try {
+      await prisma.$runCommandRaw({ drop: col });
+      console.log(`  ✅ Dropped collection: ${col}`);
+    } catch (e: any) {
+      // Collection might not exist — that's fine
+      console.log(`  ℹ️  Collection ${col}: ${e.message?.includes('ns not found') ? 'does not exist' : e.message || 'skipped'}`);
+    }
+  }
+  console.log('  ✅ All collections cleaned\n');
+
   // ─── 1. USERS (Agents & Owner) ─────────────────────────────────────────
   console.log('👤 Creating users...');
+  const defaultHash = await hashPassword(DEFAULT_PASSWORD);
   const owner = await prisma.user.upsert({
     where: { email: 'owner@whitecaves.ae' },
     update: {},
@@ -25,6 +46,7 @@ async function main() {
       phone: '+971501234567',
       department: 'Executive',
       status: 'active',
+      passwordHash: defaultHash,
     },
   });
 
@@ -39,6 +61,7 @@ async function main() {
         phone: '+971502345678',
         department: 'Sales',
         status: 'active',
+        passwordHash: defaultHash,
       },
     }),
     prisma.user.upsert({
@@ -51,6 +74,7 @@ async function main() {
         phone: '+971503456789',
         department: 'Inventory',
         status: 'active',
+        passwordHash: defaultHash,
       },
     }),
     prisma.user.upsert({
@@ -63,6 +87,7 @@ async function main() {
         phone: '+971504567890',
         department: 'Sales',
         status: 'active',
+        passwordHash: defaultHash,
       },
     }),
     prisma.user.upsert({
@@ -75,6 +100,7 @@ async function main() {
         phone: '+971505678901',
         department: 'Leasing',
         status: 'active',
+        passwordHash: defaultHash,
       },
     }),
     prisma.user.upsert({
@@ -87,6 +113,7 @@ async function main() {
         phone: '+971506789012',
         department: 'Finance',
         status: 'active',
+        passwordHash: defaultHash,
       },
     }),
   ]);

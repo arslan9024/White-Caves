@@ -13,7 +13,6 @@ export { default as Toast } from './Toast';
 export { default as Spinner } from './Spinner';
 
 // Additional Components
-export { default as Modal } from './Modal';
 export { default as Popover } from './Popover';
 export { default as Tooltip } from './Tooltip';
 export { default as Tabs } from './Tabs';
@@ -47,11 +46,6 @@ export type {
 
 // Types - Additional Components
 export type {
-  ModalSize,
-  ModalProps,
-} from './Modal';
-
-export type {
   PopoverPlacement,
   PopoverTrigger,
   PopoverProps,
@@ -80,11 +74,11 @@ export type {
 
 // Types - Toast System
 export type {
-  Toast,
+  Toast as ToastData,
   ToastContextType,
   ToastType,
   ToastPosition,
-} from '../context/ToastContext';
+} from '../../context/ToastContext';
 
 // Constants
 export {

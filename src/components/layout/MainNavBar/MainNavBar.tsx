@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import type { RootState } from '../../../store/store';
 import { useNavigate } from 'react-router-dom';
 import {
   Search, Bell, Moon, Sun, ChevronDown, User,
@@ -69,12 +70,13 @@ interface UserProp {
 }
 
 interface NotificationItem_T {
+  id?: string | number;
   isRead: boolean;
   title: string;
   time?: string;
   color?: string;
   icon?: React.ReactNode;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface QuickStats {
@@ -98,15 +100,6 @@ interface MainNavBarProps {
   onToggleRightSidebar?: () => void;
   onAssistantPanelToggle?: () => void;
   isAssistantPanelOpen?: boolean;
-}
-
-interface AuthState {
-  role?: string;
-  isSuperUser?: boolean;
-}
-
-interface RootState {
-  auth?: AuthState;
 }
 
 type ProfileAction = 'admin' | 'profile' | 'settings' | 'billing' | 'help' | 'logout';
@@ -140,8 +133,8 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
   const searchRef = useRef<HTMLInputElement>(null);
 
   // Get user role from Redux or props
-  const userRole = useSelector((state: RootState) => state.auth?.role || 'user');
-  const isSuperUserRole = useSelector((state: RootState) => state.auth?.role === 'lion' || state.auth?.isSuperUser);
+  const userRole = useSelector((state: RootState) => state.auth?.user?.role || 'user');
+  const isSuperUserRole = useSelector((state: RootState) => state.auth?.user?.role === 'lion');
   
   const effectiveIsSuperUser = isSuperUser || isSuperUserRole;
   const unreadCount = notifications.filter((n: NotificationItem_T) => !n.isRead).length;
@@ -163,7 +156,7 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
     const handleKeyPress = (e: KeyboardEvent): void => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
-        setShowCommandPalette(!showCommandPalette);
+        setShowCommandPalette(prev => !prev);
       }
       if ((e.ctrlKey || e.metaKey) && e.key === '/') {
         e.preventDefault();
@@ -172,14 +165,14 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
     };
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [showCommandPalette]);
+  }, []);
 
   const getUserInitials = (): string => {
     if (!user) return 'WC';
-    if (user.displayName) {
-      return user.displayName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+    if (user.displayName && user.displayName.length > 0) {
+      return user.displayName.split(' ').filter((n: string) => n.length > 0).map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || 'WC';
     }
-    if (user.email) {
+    if (user.email && user.email.length > 0) {
       return user.email[0].toUpperCase();
     }
     return 'WC';
@@ -201,7 +194,7 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
         navigate('/billing');
         break;
       case 'help':
-        window.open('https://help.whitecaves.ae', '_blank');
+        window.open('https://help.whitecaves.ae', '_blank', 'noopener,noreferrer');
         break;
       case 'logout':
         onLogout?.();
@@ -331,7 +324,7 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
                   </EmptyState>
                 ) : (
                   notifications.slice(0, 5).map((notif: NotificationItem_T, idx: number) => (
-                    <NotificationItem key={idx} $unread={!notif.isRead}>
+                    <NotificationItem key={notif.id ?? `${notif.title}-${idx}`} $unread={!notif.isRead}>
                       <NotifIcon $color={notif.color || '#D32F2F'}>
                         {notif.icon || <Bell size={14} />}
                       </NotifIcon>
@@ -358,7 +351,7 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
           <ProfileTrigger onClick={() => setShowProfileMenu(!showProfileMenu)}>
             <UserAvatar>
               {user?.photoURL ? (
-                <img src={user.photoURL} alt={user.displayName || 'User'} />
+                <img src={user.photoURL} alt={user.displayName || 'User'} loading="lazy" width={40} height={40} />
               ) : (
                 <span>{getUserInitials()}</span>
               )}
@@ -380,7 +373,7 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
               <ProfileHeader>
                 <ProfileAvatar>
                   {user?.photoURL ? (
-                    <img src={user.photoURL} alt={user.displayName || 'User'} />
+                    <img src={user.photoURL} alt={user.displayName || 'User'} loading="lazy" width={48} height={48} />
                   ) : (
                     <span>{getUserInitials()}</span>
                   )}

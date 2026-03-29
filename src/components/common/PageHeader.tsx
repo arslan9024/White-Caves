@@ -41,7 +41,7 @@ export default function PageHeader({
       {breadcrumbs && breadcrumbs.length > 0 && (
         <Breadcrumbs aria-label="Breadcrumb">
           {breadcrumbs.map((crumb, index) => (
-            <React.Fragment key={crumb.path || index}>
+            <React.Fragment key={`breadcrumb-${crumb.path || crumb.label}-${index}`}>
               {index > 0 && <BreadcrumbSeparator>/</BreadcrumbSeparator>}
               {crumb.path ? (
                 <BreadcrumbLink to={crumb.path}>

@@ -3,7 +3,7 @@
  * Wraps sidebar content with drag-to-resize functionality
  */
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
 import { useResizableSidebar } from '../../hooks/useResizableSidebar';
@@ -113,22 +113,26 @@ export const ResizableSidebar: React.FC<ResizableSidebarProps> = ({
   const { width, setWidth, isResizing, setIsResizing, resetWidth, MIN_WIDTH, MAX_WIDTH } =
     useResizableSidebar(side);
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsResizing(true);
+  // Track drag start position with refs to avoid stale closures
+  const startXRef = useRef(0);
+  const startWidthRef = useRef(width);
 
-    const startX = e.clientX;
-    const startWidth = width;
+  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    startXRef.current = e.clientX;
+    startWidthRef.current = width;
+    setIsResizing(true);
+  }, [width, setIsResizing]);
+
+  // Manage document-level event listeners safely in useEffect
+  useEffect(() => {
+    if (!isResizing) return;
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
-      const delta = moveEvent.clientX - startX;
-      let newWidth: number;
-
-      if (side === 'right') {
-        newWidth = startWidth - delta; // Right sidebar: resize from left edge
-      } else {
-        newWidth = startWidth + delta; // Left sidebar: resize from right edge
-      }
+      const delta = moveEvent.clientX - startXRef.current;
+      const newWidth = side === 'right'
+        ? startWidthRef.current - delta
+        : startWidthRef.current + delta;
 
       setWidth(newWidth);
       onResize?.(newWidth);
@@ -136,13 +140,16 @@ export const ResizableSidebar: React.FC<ResizableSidebarProps> = ({
 
     const handleMouseUp = () => {
       setIsResizing(false);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
     };
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-  };
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing, side, setWidth, setIsResizing, onResize]);
 
   return (
     <SidebarContainer $width={width} $isResizing={isResizing} className={className}>

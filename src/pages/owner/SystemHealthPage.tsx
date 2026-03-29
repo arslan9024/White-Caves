@@ -1,6 +1,11 @@
 import React, { FC, useState, useEffect } from 'react';
+import { createLogger } from '../../utils/logger';
+import { authFetch } from '../../utils/authFetch';
+
+const log = createLogger('SystemHealth');
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import type { RootState } from '../../store/store';
 import './SystemHealthPage.css';
 
 interface HealthStatus {
@@ -12,38 +17,46 @@ interface HealthStatus {
 
 interface SystemHealthPageProps {}
 
-const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
-
 const SystemHealthPage: FC<SystemHealthPageProps> = () => {
   const navigate = useNavigate();
-  const user = useSelector((state: any) => state.user.currentUser);
+  const user = useSelector((state: RootState) => state.user.currentUser);
   const [healthStatus, setHealthStatus] = useState<HealthStatus[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [overallStatus, setOverallStatus] = useState<'operational' | 'degraded' | 'down'>('operational');
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user || user.email !== OWNER_EMAIL) {
+    if (!user || (user.role !== 'owner' && user.role !== 'admin')) {
       navigate('/');
     }
   }, [user, navigate]);
 
   useEffect(() => {
-    fetchSystemHealth();
-    const interval = setInterval(fetchSystemHealth, 60000);
-    return () => clearInterval(interval);
+    const controller = new AbortController();
+    const doFetch = () => fetchSystemHealth(controller.signal);
+    doFetch();
+    const interval = setInterval(doFetch, 60000);
+    return () => { clearInterval(interval); controller.abort(); };
   }, []);
 
-  const fetchSystemHealth = async (): Promise<void> => {
+  const fetchSystemHealth = async (signal?: AbortSignal): Promise<void> => {
     try {
       setLoading(true);
-      const response = await fetch('/api/system/health');
+      setFetchError(null);
+      const response = await authFetch('/api/system/health', { signal });
       if (response.ok) {
         const data = await response.json();
         setHealthStatus(data.services || []);
         setOverallStatus(data.overall || 'operational');
+      } else {
+        const statusText = response.statusText || 'Unknown error';
+        setFetchError(`Failed to fetch system health: ${response.status} ${statusText}`);
+        setOverallStatus('down');
       }
     } catch (error) {
-      console.error('Error fetching system health:', error);
+      if (error instanceof DOMException && error.name === 'AbortError') return;
+      log.error('Error fetching system health:', error);
+      setFetchError('Unable to connect to health monitoring service.');
       setOverallStatus('down');
     } finally {
       setLoading(false);
@@ -101,9 +114,9 @@ const SystemHealthPage: FC<SystemHealthPageProps> = () => {
         ) : (
           <div className="sh-services-grid">
             {healthStatus.length > 0 ? (
-              healthStatus.map((service, index) => (
+              healthStatus.map((service) => (
                 <div
-                  key={index}
+                  key={service.service}
                   className={`sh-service-card sh-service-${service.status}`}
                   style={{ borderLeftColor: getStatusColor(service.status) }}
                 >
@@ -156,7 +169,7 @@ const SystemHealthPage: FC<SystemHealthPageProps> = () => {
         </div>
 
         <div className="sh-actions">
-          <button onClick={fetchSystemHealth} className="sh-btn-refresh">
+          <button onClick={() => fetchSystemHealth()} className="sh-btn-refresh">
             🔄 Refresh Status
           </button>
         </div>

@@ -17,7 +17,7 @@ export type TagProps = {
 };
 
 const getVariantColor = (variant: string) => {
-  const colors = {
+  const colors: Record<string, string> = {
     primary: `background: ${theme.colors.primary}; color: white;`,
     secondary: `background: ${theme.colors.secondary}; color: white;`,
     success: `background: ${theme.colors.success}; color: white;`,

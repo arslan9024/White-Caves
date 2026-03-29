@@ -1,5 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import type { RootState } from '../store/store';
+import type { Property } from '../store/propertySlice';
 import {
   InteractiveMapContainer,
   MapHeader,
@@ -26,8 +28,9 @@ import {
   PropertyDetails,
   DetailBadge,
 } from './InteractiveMap.styles';
+import { formatPrice } from '../utils';
 
-const dubaiCoordinates = {
+const dubaiCoordinates: Record<string, { lat: number; lng: number }> = {
   'Palm Jumeirah': { lat: 25.1124, lng: 55.1390 },
   'Downtown Dubai': { lat: 25.1972, lng: 55.2744 },
   'Emirates Hills': { lat: 25.0657, lng: 55.1568 },
@@ -44,21 +47,20 @@ const dubaiCoordinates = {
 
 const defaultCoords = { lat: 25.15, lng: 55.20 };
 
-const formatPrice = (price) => {
-  if (price >= 1000000) {
-    return `AED ${(price / 1000000).toFixed(1)}M`;
-  }
-  return `AED ${(price / 1000).toFixed(0)}K`;
-};
+// formatPrice imported from ../utils
 
-const InteractiveMap = ({ onPropertySelect }) => {
-  const { filteredProperties } = useSelector((state) => state.properties);
-  const [selectedProperty, setSelectedProperty] = useState(null);
-  const [selectedLocation, setSelectedLocation] = useState(null);
+interface InteractiveMapProps {
+  onPropertySelect?: (property: Property) => void;
+}
+
+const InteractiveMap = ({ onPropertySelect }: InteractiveMapProps) => {
+  const { filteredProperties } = useSelector((state: RootState) => state.properties);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
 
   const propertiesByLocation = useMemo(() => {
-    const grouped = {};
-    filteredProperties.forEach((property) => {
+    const grouped: Record<string, Property[]> = {};
+    filteredProperties.forEach((property: Property) => {
       const loc = property.location;
       if (!grouped[loc]) {
         grouped[loc] = [];
@@ -70,12 +72,12 @@ const InteractiveMap = ({ onPropertySelect }) => {
 
   const locations = Object.keys(propertiesByLocation);
 
-  const handleLocationClick = (location) => {
+  const handleLocationClick = (location: string) => {
     setSelectedLocation(location === selectedLocation ? null : location);
     setSelectedProperty(null);
   };
 
-  const handlePropertyClick = (property) => {
+  const handlePropertyClick = (property: Property) => {
     setSelectedProperty(property);
     if (onPropertySelect) {
       onPropertySelect(property);
@@ -121,7 +123,7 @@ const InteractiveMap = ({ onPropertySelect }) => {
                 return (
                   <LocationMarker
                     key={location}
-                    isActive={selectedLocation === location}
+                    $isActive={selectedLocation === location}
                     style={{ left: `${Math.min(Math.max(x, 5), 95)}%`, top: `${Math.min(Math.max(y, 10), 85)}%` }}
                     onClick={() => handleLocationClick(location)}
                   >
@@ -138,12 +140,14 @@ const InteractiveMap = ({ onPropertySelect }) => {
           <LocationList>
             {locations.map((location) => {
               const properties = propertiesByLocation[location];
-              const avgPrice = properties.reduce((sum, p) => sum + p.price, 0) / properties.length;
+              const avgPrice = properties.length > 0
+                ? properties.reduce((sum, p) => sum + (p.price ?? 0), 0) / properties.length
+                : 0;
               
               return (
                 <LocationItem
                   key={location}
-                  isSelected={selectedLocation === location}
+                  $isSelected={selectedLocation === location}
                   onClick={() => handleLocationClick(location)}
                 >
                   <LocationName>{location}</LocationName>
@@ -169,7 +173,7 @@ const InteractiveMap = ({ onPropertySelect }) => {
                 onClick={() => handlePropertyClick(property)}
               >
                 <PropertyImage 
-                  src={property.images?.[0] || 'https://via.placeholder.com/300x200'}
+                  src={(property.images as string[])?.[0] || 'https://via.placeholder.com/300x200'}
                   alt={property.title}
                 />
                 <PropertyInfo>
@@ -197,7 +201,7 @@ const InteractiveMap = ({ onPropertySelect }) => {
                 onClick={() => handlePropertyClick(property)}
               >
                 <PropertyImage 
-                  src={property.images?.[0] || 'https://via.placeholder.com/300x200'}
+                  src={(property.images as string[])?.[0] || 'https://via.placeholder.com/300x200'}
                   alt={property.title}
                 />
                 <PropertyInfo>

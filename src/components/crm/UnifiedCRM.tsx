@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { RootState, AppDispatch } from '../../store/store';
@@ -217,22 +217,22 @@ const ViewSelectorContainer = styled.div`
   }
 `;
 
-const ViewButton = styled.button<{ isActive: boolean; isDisabled: boolean }>`
+const ViewButton = styled.button<{ $isActive: boolean; $isDisabled: boolean }>`
   padding: 10px 14px;
-  border: 2px solid ${(props) => (props.isActive ? '#1976d2' : '#ddd')};
-  background: ${(props) => (props.isActive ? '#1976d2' : 'white')};
-  color: ${(props) => (props.isActive ? 'white' : '#333')};
+  border: 2px solid ${(props) => (props.$isActive ? '#1976d2' : '#ddd')};
+  background: ${(props) => (props.$isActive ? '#1976d2' : 'white')};
+  color: ${(props) => (props.$isActive ? 'white' : '#333')};
   border-radius: 6px;
-  cursor: ${(props) => (props.isDisabled ? 'not-allowed' : 'pointer')};
+  cursor: ${(props) => (props.$isDisabled ? 'not-allowed' : 'pointer')};
   font-weight: 500;
   font-size: 13px;
   white-space: nowrap;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  opacity: ${(props) => (props.isDisabled ? 0.5 : 1)};
+  opacity: ${(props) => (props.$isDisabled ? 0.5 : 1)};
 
   &:hover:not(:disabled) {
     border-color: #1976d2;
-    background: ${(props) => (props.isActive ? '#1565c0' : '#f0f8ff')};
+    background: ${(props) => (props.$isActive ? '#1565c0' : '#f0f8ff')};
     transform: translateY(-2px);
     box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
   }
@@ -353,7 +353,7 @@ const LoadingSpinner = styled.div`
 // COMPONENT
 // ============================================================================
 
-interface UnifiedCRMProps {
+export interface UnifiedCRMProps {
   defaultView?: DashboardView;
   onViewChange?: (view: DashboardView) => void;
 }
@@ -379,6 +379,12 @@ const UnifiedCRM: React.FC<UnifiedCRMProps> = ({ defaultView = 'company', onView
   }, [currentView]);
 
   // Handle view change
+  const viewTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    return () => clearTimeout(viewTimerRef.current);
+  }, []);
+
   const handleViewChange = useCallback(
     (view: DashboardView) => {
       setLoading(true);
@@ -386,7 +392,8 @@ const UnifiedCRM: React.FC<UnifiedCRMProps> = ({ defaultView = 'company', onView
       onViewChange?.(view);
 
       // Simulate loading delay
-      setTimeout(() => {
+      clearTimeout(viewTimerRef.current);
+      viewTimerRef.current = setTimeout(() => {
         setLoading(false);
       }, 500);
     },
@@ -434,8 +441,8 @@ const UnifiedCRM: React.FC<UnifiedCRMProps> = ({ defaultView = 'company', onView
           {availableDashboards.map((config) => (
             <ViewButton
               key={config.id}
-              isActive={currentView === config.id}
-              isDisabled={loading}
+              $isActive={currentView === config.id}
+              $isDisabled={loading}
               onClick={() => handleViewChange(config.id)}
               title={config.description}
             >
@@ -456,7 +463,7 @@ const UnifiedCRM: React.FC<UnifiedCRMProps> = ({ defaultView = 'company', onView
               <div className="metric-label">{metric.replace(/_/g, ' ').toUpperCase()}</div>
               <div className="metric-value">
                 {metric.includes('revenue') || metric.includes('commission') ? '$' : ''}
-                {Math.floor(Math.random() * 1000 * (metric.includes('revenue') ? 10 : 1)).toLocaleString()}
+                {(metric.includes('revenue') ? 250000 : metric.includes('commission') ? 45000 : 1250).toLocaleString()}
               </div>
             </MetricCard>
           ))}

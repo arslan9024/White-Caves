@@ -1,38 +1,52 @@
 import React, { useState } from 'react';
+import type { AnalyticsTabProps } from './types';
 import './TabStyles.css';
 
-const AnalyticsTab = ({ data, loading }) => {
+const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ data, loading }) => {
   const [timeRange, setTimeRange] = useState('month');
 
-  const metrics = [
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="analytics-tab">
+        <div className="tab-loading-state" role="status" aria-label="Loading analytics">
+          <div className="loading-spinner" />
+          <p>Loading analytics...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Only show sample metrics in development — production uses API data from props
+  const metrics = import.meta.env.DEV ? [
     { label: 'Conversion Rate', value: '4.8%', change: '+0.5%', trend: 'up' },
     { label: 'Average Deal Size', value: 'AED 2.1M', change: '+12%', trend: 'up' },
     { label: 'Lead Response Time', value: '15 min', change: '-5 min', trend: 'up' },
     { label: 'Customer Satisfaction', value: '4.7/5', change: '+0.2', trend: 'up' },
-  ];
+  ] : [];
 
-  const revenueByEmirate = [
+  const revenueByEmirate = import.meta.env.DEV ? [
     { emirate: 'Dubai', revenue: 18500000, percentage: 72 },
     { emirate: 'Abu Dhabi', revenue: 4200000, percentage: 16 },
     { emirate: 'Sharjah', revenue: 1800000, percentage: 7 },
     { emirate: 'Ajman', revenue: 800000, percentage: 3 },
     { emirate: 'RAK', revenue: 500000, percentage: 2 },
-  ];
+  ] : [];
 
-  const propertyPerformance = [
+  const propertyPerformance = import.meta.env.DEV ? [
     { type: 'Apartments', views: 12500, inquiries: 890, deals: 45 },
     { type: 'Villas', views: 8200, inquiries: 620, deals: 28 },
     { type: 'Townhouses', views: 4500, inquiries: 320, deals: 18 },
     { type: 'Commercial', views: 2800, inquiries: 180, deals: 8 },
     { type: 'Land', views: 1200, inquiries: 85, deals: 4 },
-  ];
+  ] : [];
 
-  const topAgents = [
+  const topAgents = import.meta.env.DEV ? [
     { name: 'Ahmed Ali', deals: 12, revenue: 3200000 },
     { name: 'Sara Khan', deals: 22, revenue: 1800000 },
     { name: 'Mohammed Hassan', deals: 8, revenue: 2100000 },
     { name: 'Fatima Ahmed', deals: 28, revenue: 1500000 },
-  ];
+  ] : [];
 
   return (
     <div className="analytics-tab">
@@ -52,8 +66,8 @@ const AnalyticsTab = ({ data, loading }) => {
       </div>
 
       <div className="metrics-grid">
-        {metrics.map((metric, index) => (
-          <div key={index} className="metric-card">
+        {metrics.map((metric) => (
+          <div key={metric.label} className="metric-card">
             <div className="metric-header">
               <span className="metric-label">{metric.label}</span>
               <span className={`metric-change ${metric.trend}`}>
@@ -70,7 +84,7 @@ const AnalyticsTab = ({ data, loading }) => {
           <h4>Revenue by Emirate</h4>
           <div className="emirate-chart">
             {revenueByEmirate.map((item, index) => (
-              <div key={index} className="emirate-bar-container">
+              <div key={item.emirate} className="emirate-bar-container">
                 <div className="emirate-info">
                   <span className="emirate-name">{item.emirate}</span>
                   <span className="emirate-value">AED {(item.revenue / 1000000).toFixed(1)}M</span>
@@ -91,7 +105,7 @@ const AnalyticsTab = ({ data, loading }) => {
           <h4>Top Performing Agents</h4>
           <div className="top-agents-list">
             {topAgents.map((agent, index) => (
-              <div key={index} className="agent-row">
+              <div key={agent.name || `agent-${index}`} className="agent-row">
                 <div className="agent-rank">#{index + 1}</div>
                 <div className="agent-info">
                   <span className="agent-name">{agent.name}</span>
@@ -107,7 +121,7 @@ const AnalyticsTab = ({ data, loading }) => {
       <div className="analytics-card full-width">
         <h4>Property Type Performance</h4>
         <div className="performance-table">
-          <table>
+          <table aria-label="Property type performance metrics">
             <thead>
               <tr>
                 <th>Property Type</th>
@@ -118,8 +132,8 @@ const AnalyticsTab = ({ data, loading }) => {
               </tr>
             </thead>
             <tbody>
-              {propertyPerformance.map((item, index) => (
-                <tr key={index}>
+              {propertyPerformance.map((item) => (
+                <tr key={item.type}>
                   <td><strong>{item.type}</strong></td>
                   <td>{item.views.toLocaleString()}</td>
                   <td>{item.inquiries}</td>
@@ -147,8 +161,8 @@ const AnalyticsTab = ({ data, loading }) => {
               { source: 'Chatbot', leads: 28, color: '#8B5CF6' },
               { source: 'Referral', leads: 18, color: '#F59E0B' },
               { source: 'Social Media', leads: 12, color: '#EC4899' },
-            ].map((item, index) => (
-              <div key={index} className="source-item">
+            ].map((item) => (
+              <div key={item.source} className="source-item">
                 <div className="source-dot" style={{ backgroundColor: item.color }} />
                 <span className="source-name">{item.source}</span>
                 <span className="source-leads">{item.leads} leads</span>
@@ -161,7 +175,7 @@ const AnalyticsTab = ({ data, loading }) => {
           <h4>Monthly Trend</h4>
           <div className="trend-chart">
             {[65, 78, 72, 85, 82, 95, 88, 102, 98, 115, 108, 125].map((value, i) => (
-              <div key={i} className="trend-bar-container">
+              <div key={`bar-${i}`} className="trend-bar-container">
                 <div 
                   className="trend-bar" 
                   style={{ height: `${(value / 130) * 100}%` }}
@@ -171,7 +185,7 @@ const AnalyticsTab = ({ data, loading }) => {
           </div>
           <div className="trend-labels">
             {['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'].map((m, i) => (
-              <span key={i}>{m}</span>
+              <span key={`month-${i}`}>{m}</span>
             ))}
           </div>
         </div>
@@ -180,4 +194,4 @@ const AnalyticsTab = ({ data, loading }) => {
   );
 };
 
-export default AnalyticsTab;
+export default React.memo(AnalyticsTab);

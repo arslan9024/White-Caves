@@ -1,19 +1,27 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { createLogger } from '../../../../utils/logger';
+
+const log = createLogger('RoleApprovalQueue');
 import { useDispatch, useSelector } from 'react-redux';
+import type { RootState } from '../../../../store/store';
+import type { RoleRequest } from '../../../../store/roleSlice';
 import { approveRoleRequest, rejectRoleRequest, setPendingRequests } from '../../../../store/roleSlice';
 import { apiClient } from '../../../../utils/apiClient';
+import { useToast } from '../../../../components/Toast';
 import './Approvals.css';
+import { formatDate as formatDateUtil } from '../../../../utils';
 
 const RoleApprovalQueue = () => {
   const dispatch = useDispatch();
-  const { pendingRequests } = useSelector((state) => state.role);
-  const { user, token } = useSelector((state) => state.auth);
-  const [filter, setFilter] = useState('pending');
-  const [selectedRequest, setSelectedRequest] = useState(null);
-  const [rejectionReason, setRejectionReason] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [fetchError, setFetchError] = useState(null);
-  const [initialLoading, setInitialLoading] = useState(true);
+  const { pendingRequests } = useSelector((state: RootState) => state.role);
+  const { user, token } = useSelector((state: RootState) => state.auth);
+  const [filter, setFilter] = useState<string>('pending');
+  const [selectedRequest, setSelectedRequest] = useState<RoleRequest | null>(null);
+  const [rejectionReason, setRejectionReason] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const toast = useToast();
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
 
   const fetchPendingRequests = useCallback(async () => {
     if (!token) return;
@@ -21,11 +29,11 @@ const RoleApprovalQueue = () => {
     try {
       setFetchError(null);
       apiClient.setAuthToken(token);
-      const data = await apiClient.get('/admin/role-requests');
+      const data = await apiClient.get('/admin/role-requests') as { requests?: RoleRequest[] };
       dispatch(setPendingRequests(data.requests || []));
-    } catch (error) {
-      console.error('Failed to fetch role requests:', error);
-      setFetchError(error.message || 'Failed to load role requests');
+    } catch (error: unknown) {
+      log.error('Failed to fetch role requests:', error);
+      setFetchError(error instanceof Error ? error.message : 'Failed to load role requests');
     } finally {
       setInitialLoading(false);
     }
@@ -40,58 +48,59 @@ const RoleApprovalQueue = () => {
     return req.status === filter;
   });
 
-  const handleApprove = async (request) => {
+  const handleApprove = async (request: RoleRequest) => {
     setLoading(true);
     try {
-      apiClient.setAuthToken(token);
+      apiClient.setAuthToken(token!);
       await apiClient.post(`/admin/role-requests/${request.id}/approve`, { 
-        reviewedBy: user?.uid 
+        reviewedBy: user?.id 
       });
       
       dispatch(approveRoleRequest({
         requestId: request.id,
-        reviewedBy: user?.uid,
+        reviewedBy: user?.id ?? '',
       }));
-    } catch (error) {
-      console.error('Approval error:', error);
-      alert(error.message || 'Failed to approve request');
+      toast.success(`Role request for ${request.displayName || request.userName || 'user'} approved successfully`);
+    } catch (error: unknown) {
+      log.error('Approval error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to approve request');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleReject = async (request) => {
+  const handleReject = async (request: RoleRequest) => {
     if (!rejectionReason.trim()) {
-      alert('Please provide a reason for rejection');
+      toast.warning('Please provide a reason for rejection');
       return;
     }
 
     setLoading(true);
     try {
-      apiClient.setAuthToken(token);
+      apiClient.setAuthToken(token!);
       await apiClient.post(`/admin/role-requests/${request.id}/reject`, { 
-        reviewedBy: user?.uid,
+        reviewedBy: user?.id,
         reason: rejectionReason,
       });
       
       dispatch(rejectRoleRequest({
         requestId: request.id,
-        reviewedBy: user?.uid,
+        reviewedBy: user?.id ?? '',
         reason: rejectionReason,
       }));
 
       setSelectedRequest(null);
       setRejectionReason('');
-    } catch (error) {
-      console.error('Rejection error:', error);
-      alert(error.message || 'Failed to reject request');
+    } catch (error: unknown) {
+      log.error('Rejection error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to reject request');
     } finally {
       setLoading(false);
     }
   };
 
-  const getRoleLabel = (role) => {
-    const labels = {
+  const getRoleLabel = (role: string): string => {
+    const labels: Record<string, string> = {
       buyer: 'Buyer',
       tenant: 'Tenant',
       seller: 'Seller',
@@ -102,8 +111,8 @@ const RoleApprovalQueue = () => {
     return labels[role] || role;
   };
 
-  const getStatusBadge = (status) => {
-    const badges = {
+  const getStatusBadge = (status: string): { class: string; label: string } => {
+    const badges: Record<string, { class: string; label: string }> = {
       pending: { class: 'pending', label: 'Pending' },
       approved: { class: 'approved', label: 'Approved' },
       rejected: { class: 'rejected', label: 'Rejected' },
@@ -111,15 +120,13 @@ const RoleApprovalQueue = () => {
     return badges[status] || badges.pending;
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+  const formatDate = (dateString: string): string => formatDateUtil(dateString, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
   return (
     <div className="role-approval-queue">
@@ -220,8 +227,8 @@ const RoleApprovalQueue = () => {
       )}
 
       {selectedRequest && (
-        <div className="rejection-modal-overlay" onClick={() => setSelectedRequest(null)}>
-          <div className="rejection-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="rejection-modal-overlay" onClick={() => setSelectedRequest(null)} role="presentation">
+          <div className="rejection-modal" role="alertdialog" aria-modal="true" aria-label="Reject role request" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => { if (e.key === 'Escape') setSelectedRequest(null); }}>
             <h3>Reject Role Request</h3>
             <p>
               Please provide a reason for rejecting {selectedRequest.userName || 'this user'}'s 

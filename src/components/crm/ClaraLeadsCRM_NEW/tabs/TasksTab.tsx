@@ -50,18 +50,18 @@ export default function TasksTab() {
 
   filteredTasks.sort((a, b) => {
     // Priority order: high > medium > low
-    const priorityOrder = { high: 0, medium: 1, low: 2 };
+    const priorityOrder: Record<string, number> = { high: 0, medium: 1, low: 2 };
     if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
       return priorityOrder[a.priority] - priorityOrder[b.priority];
     }
     // Then by due date
-    return a.dueDate - b.dueDate;
+    return a.dueDate.getTime() - b.dueDate.getTime();
   });
 
   const completedCount = tasks.filter(t => t.completed).length;
   const completionRate = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
 
-  const formatDueDate = (date) => {
+  const formatDueDate = (date: Date): string => {
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -176,7 +176,7 @@ export default function TasksTab() {
         {filteredTasks.length > 0 ? (
           filteredTasks.map(task => (
             <div key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
-              <input type="checkbox" className="task-checkbox" defaultChecked={task.completed} />
+              <input type="checkbox" className="task-checkbox" defaultChecked={task.completed} aria-label={`Mark task "${task.title}" as complete`} />
               <div className="task-content">
                 <div className="task-title">{task.title}</div>
                 <div className="task-description">→ {task.leadName}</div>

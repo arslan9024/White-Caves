@@ -1,8 +1,23 @@
 import React from 'react';
 import { CheckCircle, AlertCircle, Clock, Plus, Filter } from 'lucide-react';
 
-const TasksTab = ({ tasks, filterStatus, onFilterChange }) => {
-  const getStatusIcon = (status) => {
+interface Task {
+  id: string | number;
+  title: string;
+  status: string;
+  priority: string;
+  dueDate: string;
+  assignee: string;
+}
+
+interface TasksTabProps {
+  tasks: Task[];
+  filterStatus: string;
+  onFilterChange: (status: string) => void;
+}
+
+const TasksTab = ({ tasks, filterStatus, onFilterChange }: TasksTabProps) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed': return <CheckCircle size={16} className="status-completed" />;
       case 'in_progress': return <Clock size={16} className="status-in-progress" />;
@@ -11,7 +26,7 @@ const TasksTab = ({ tasks, filterStatus, onFilterChange }) => {
     }
   };
 
-  const getPriorityColor = (priority) => {
+  const getPriorityColor = (priority: string): string => {
     switch (priority) {
       case 'high': return '#EF4444';
       case 'medium': return '#F59E0B';

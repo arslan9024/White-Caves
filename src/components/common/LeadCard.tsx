@@ -45,7 +45,7 @@ interface LeadCardProps {
   className?: string;
 }
 
-export default function LeadCard({
+function LeadCard({
   name,
   avatar,
   requirement,
@@ -62,7 +62,7 @@ export default function LeadCard({
     <LeadCardContainer className={className}>
       <LeadCardHeader>
         <LeadAvatar>
-          {avatar ? <img src={avatar} alt={name} /> : <span>{name?.charAt(0) || '?'}</span>}
+          {avatar ? <img src={avatar} alt={name} loading="lazy" width={40} height={40} /> : <span>{name?.charAt(0) || '?'}</span>}
         </LeadAvatar>
         <LeadHeaderInfo>
           <LeadName>{name}</LeadName>
@@ -132,3 +132,5 @@ export function LeadListItem({
     </LeadListItemContainer>
   );
 }
+
+export default React.memo(LeadCard);

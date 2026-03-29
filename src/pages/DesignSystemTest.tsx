@@ -8,11 +8,26 @@ const DesignSystemTest: FC<DesignSystemTestProps> = () => {
   const [inputValue, setInputValue] = useState<string>('');
   const [passwordValue, setPasswordValue] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const timerRef = React.useRef<ReturnType<typeof setTimeout>>();
+
+  React.useEffect(() => {
+    return () => clearTimeout(timerRef.current);
+  }, []);
 
   const handleLoadingClick = (): void => {
     setLoading(true);
-    setTimeout(() => setLoading(false), 2000);
+    timerRef.current = setTimeout(() => setLoading(false), 2000);
   };
+
+  // Gate this page to development mode only
+  if (!import.meta.env.DEV) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <h2>Design System Test</h2>
+        <p>This page is only available in development mode.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="design-system-test">

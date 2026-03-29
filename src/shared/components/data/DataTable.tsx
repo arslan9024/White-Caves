@@ -3,11 +3,11 @@ import Button from '../ui/Button';
 import Flex from '../layout/Flex';
 import * as S from './DataTable.styles';
 
-export interface DataTableColumn {
+export interface DataTableColumn<T = Record<string, unknown>> {
   key: string;
   header: string;
   width?: string;
-  render?: (value: any, row: Record<string, any>) => React.ReactNode; // TODO: Replace `any` with proper generic type
+  render?: (value: unknown, row: T) => React.ReactNode;
 }
 
 export interface SortConfig {
@@ -15,9 +15,9 @@ export interface SortConfig {
   direction: 'asc' | 'desc';
 }
 
-export interface DataTableProps {
-  columns?: DataTableColumn[];
-  data?: Record<string, any>[]; // TODO: Replace `any` with proper generic type
+export interface DataTableProps<T = Record<string, unknown>> {
+  columns?: DataTableColumn<T>[];
+  data?: T[];
   loading?: boolean;
   emptyMessage?: string;
   sortable?: boolean;
@@ -26,7 +26,7 @@ export interface DataTableProps {
   selectable?: boolean;
   selectedRows?: Array<string | number>;
   onSelectionChange?: (selectedIds: Array<string | number>) => void;
-  onRowClick?: (row: Record<string, any>) => void; // TODO: Replace `any` with proper generic type
+  onRowClick?: (row: T) => void;
   rowKey?: string;
   className?: string;
 }
@@ -60,10 +60,10 @@ const DataTable = React.memo<DataTableProps>(({
   const sortedData = useMemo(() => {
     if (!sortConfig.key) return data;
     return [...data].sort((a, b) => {
-      const aVal = a[sortConfig.key!];
-      const bVal = b[sortConfig.key!];
-      if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+      const aVal = a[sortConfig.key!] as string | number | undefined;
+      const bVal = b[sortConfig.key!] as string | number | undefined;
+      if ((aVal ?? '') < (bVal ?? '')) return sortConfig.direction === 'asc' ? -1 : 1;
+      if ((aVal ?? '') > (bVal ?? '')) return sortConfig.direction === 'asc' ? 1 : -1;
       return 0;
     });
   }, [data, sortConfig]);
@@ -78,7 +78,7 @@ const DataTable = React.memo<DataTableProps>(({
 
   const handleSelectAll = useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.checked) {
-      onSelectionChange?.(data.map(row => row[rowKey]));
+      onSelectionChange?.(data.map(row => row[rowKey] as string | number));
     } else {
       onSelectionChange?.([]);
     }
@@ -101,9 +101,9 @@ const DataTable = React.memo<DataTableProps>(({
       <S.DataTableWrapper>
         <S.SkeletonWrapper>
           {Array.from({ length: 5 }).map((_, i) => (
-            <S.SkeletonRow key={i}>
+            <S.SkeletonRow key={`skeleton-row-${i}`}>
               {columns.map((col, j) => (
-                <S.SkeletonCell key={j} />
+                <S.SkeletonCell key={`skeleton-cell-${j}`} />
               ))}
             </S.SkeletonRow>
           ))}
@@ -158,17 +158,17 @@ const DataTable = React.memo<DataTableProps>(({
           <S.TableBody>
             {paginatedData.map((row) => (
               <S.TableRow
-                key={row[rowKey]}
+                key={row[rowKey] as string | number}
                 $clickable={!!onRowClick}
-                $selected={selectedRows.includes(row[rowKey])}
+                $selected={selectedRows.includes(row[rowKey] as string | number)}
                 onClick={() => onRowClick?.(row)}
               >
                 {selectable && (
                   <S.TableCell style={{ width: '40px' }}>
                     <input
                       type="checkbox"
-                      checked={selectedRows.includes(row[rowKey])}
-                      onChange={() => handleSelectRow(row[rowKey])}
+                      checked={selectedRows.includes(row[rowKey] as string | number)}
+                      onChange={() => handleSelectRow(row[rowKey] as string | number)}
                       onClick={(e: React.MouseEvent) => e.stopPropagation()}
                       aria-label={`Select row ${row[rowKey]}`}
                     />
@@ -176,7 +176,7 @@ const DataTable = React.memo<DataTableProps>(({
                 )}
                 {columns.map((column) => (
                   <S.TableCell key={column.key}>
-                    {column.render ? column.render(row[column.key], row) : row[column.key]}
+                    {column.render ? column.render(row[column.key], row) : String(row[column.key] ?? '')}
                   </S.TableCell>
                 ))}
               </S.TableRow>

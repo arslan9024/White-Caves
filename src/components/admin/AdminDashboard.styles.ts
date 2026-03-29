@@ -52,7 +52,7 @@ export const UserName = styled.span`
 
 export const UserRole = styled.span`
   font-size: 12px;
-  color: #D32F2F;
+  color: #D4AF37;
   font-weight: 500;
 `;
 
@@ -65,15 +65,15 @@ export const AdminTabs = styled.div`
   overflow-x: auto;
 `;
 
-export const Tab = styled.button<{ active?: boolean }>`
+export const Tab = styled.button<{ $active?: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 16px 24px;
   background: none;
   border: none;
-  border-bottom: 3px solid ${props => props.active ? '#D32F2F' : 'transparent'};
-  color: ${props => props.active ? '#D32F2F' : '#757575'};
+  border-bottom: 3px solid ${props => props.$active ? '#D4AF37' : 'transparent'};
+  color: ${props => props.$active ? '#D4AF37' : '#757575'};
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -82,7 +82,7 @@ export const Tab = styled.button<{ active?: boolean }>`
 
   &:hover {
     color: #212121;
-    border-bottom-color: ${props => props.active ? '#D32F2F' : '#E0E0E0'};
+    border-bottom-color: ${props => props.$active ? '#D4AF37' : '#E0E0E0'};
   }
 `;
 
@@ -123,7 +123,7 @@ export const MetricHeader = styled.div`
   align-items: center;
   gap: 12px;
   margin-bottom: 16px;
-  color: #D32F2F;
+  color: #D4AF37;
 
   svg {
     flex-shrink: 0;
@@ -158,18 +158,18 @@ export const MetricBar = styled.div`
   overflow: hidden;
 `;
 
-export const MetricBarFill = styled.div<{ color?: string }>`
+export const MetricBarFill = styled.div<{ $color?: string }>`
   height: 100%;
-  background: ${props => props.color || '#D32F2F'};
+  background: ${props => props.$color || '#D4AF37'};
   border-radius: 2px;
   transition: width 0.3s ease;
 `;
 
-export const MetricStatus = styled.div<{ status?: string }>`
+export const MetricStatus = styled.div<{ $status?: string }>`
   font-size: 20px;
   font-weight: 700;
   color: ${props => {
-    switch (props.status) {
+    switch (props.$status) {
       case 'excellent': return '#4CAF50';
       case 'good': return '#2196F3';
       case 'warning': return '#FF9800';
@@ -217,7 +217,7 @@ export const SectionHeader = styled.div`
   }
 
   svg {
-    color: #D32F2F;
+    color: #D4AF37;
   }
 
   button {
@@ -237,22 +237,22 @@ export const SectionHeader = styled.div`
 export const AlertsList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 1rem;
 `;
 
-export const AlertItem = styled.div<{ severity?: 'warning' | 'info' }>`
+export const AlertItem = styled.div<{ $severity?: 'warning' | 'info' }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: ${props => props.severity === 'warning' ? '#FFF3E0' : '#E3F2FD'};
-  border-left: 4px solid ${props => props.severity === 'warning' ? '#FF9800' : '#2196F3'};
+  background: ${props => props.$severity === 'warning' ? '#FFF3E0' : '#E3F2FD'};
+  border-left: 4px solid ${props => props.$severity === 'warning' ? '#FF9800' : '#2196F3'};
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background: ${props => props.severity === 'warning' ? '#FFE0B2' : '#BBDEFB'};
+    background: ${props => props.$severity === 'warning' ? '#FFE0B2' : '#BBDEFB'};
   }
 `;
 
@@ -269,14 +269,14 @@ export const AlertMessage = styled.span`
   font-weight: 500;
 `;
 
-export const AlertStatus = styled.span<{ status?: string }>`
+export const AlertStatus = styled.span<{ $status?: string }>`
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  background: ${props => props.status === 'active' ? '#FFCDD2' : '#E0E0E0'};
-  color: ${props => props.status === 'active' ? '#C62828' : '#616161'};
+  background: ${props => props.$status === 'active' ? '#FFCDD2' : '#E0E0E0'};
+  color: ${props => props.$status === 'active' ? '#C62828' : '#616161'};
 `;
 
 export const ActivitySection = styled.div`
@@ -400,21 +400,21 @@ export const UsersTable = styled.div`
   }
 `;
 
-export const RoleBadge = styled.span<{ role?: string }>`
+export const RoleBadge = styled.span<{ $role?: string }>`
   display: inline-block;
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 12px;
   font-weight: 600;
   background: ${props => {
-    switch (props.role) {
+    switch (props.$role) {
       case 'agent': return '#E3F2FD';
       case 'admin': return '#FCE4EC';
       default: return '#F0F0F0';
     }
   }};
   color: ${props => {
-    switch (props.role) {
+    switch (props.$role) {
       case 'agent': return '#1976D2';
       case 'admin': return '#C2185B';
       default: return '#616161';
@@ -422,17 +422,17 @@ export const RoleBadge = styled.span<{ role?: string }>`
   }};
 `;
 
-export const StatusBadge = styled.span<{ status?: string }>`
+export const StatusBadge = styled.span<{ $status?: string }>`
   display: inline-block;
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 12px;
   font-weight: 600;
-  background: ${props => props.status === 'active' ? '#E8F5E9' : '#FFEBEE'};
-  color: ${props => props.status === 'active' ? '#388E3C' : '#D32F2F'};
+  background: ${props => props.$status === 'active' ? '#E8F5E9' : '#FFEBEE'};
+  color: ${props => props.$status === 'active' ? '#388E3C' : '#D32F2F'};
 `;
 
-export const ActionBtn = styled.button<{ danger?: boolean }>`
+export const ActionBtn = styled.button<{ $danger?: boolean }>`
   padding: 8px 16px;
   margin-right: 8px;
   border: none;
@@ -440,12 +440,12 @@ export const ActionBtn = styled.button<{ danger?: boolean }>`
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  background: ${props => props.danger ? '#FFEBEE' : '#E3F2FD'};
-  color: ${props => props.danger ? '#D32F2F' : '#1976D2'};
+  background: ${props => props.$danger ? '#FFEBEE' : '#E3F2FD'};
+  color: ${props => props.$danger ? '#D32F2F' : '#1976D2'};
   transition: all 0.2s;
 
   &:hover {
-    background: ${props => props.danger ? '#FFCDD2' : '#BBDEFB'};
+    background: ${props => props.$danger ? '#FFCDD2' : '#BBDEFB'};
   }
 `;
 
@@ -486,6 +486,10 @@ export const StatusValue = styled.div`
   font-size: 20px;
   font-weight: 700;
   color: #212121;
+`;
+
+export const StatusValueSuccess = styled(StatusValue)`
+  color: #4CAF50;
 `;
 
 export const SettingsGroups = styled.div`
@@ -536,7 +540,7 @@ export const SettingItem = styled.div`
 
     &:focus {
       outline: none;
-      border-color: #D32F2F;
+      border-color: #D4AF37;
     }
   }
 
@@ -548,7 +552,7 @@ export const SettingItem = styled.div`
 
 export const BtnPrimary = styled.button`
   padding: 12px 24px;
-  background: #D32F2F;
+  background: #D4AF37;
   color: white;
   border: none;
   border-radius: 4px;
@@ -558,8 +562,8 @@ export const BtnPrimary = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: #B71C1C;
-    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+    background: #B8860B;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
   }
 `;
 
@@ -598,7 +602,7 @@ export const FilterSelect = styled.select`
 
   &:focus {
     outline: none;
-    border-color: #D32F2F;
+    border-color: #D4AF37;
   }
 `;
 
@@ -630,15 +634,21 @@ export const ChartPlaceholder = styled.div`
   padding: 16px 0;
 `;
 
-export const ChartBar = styled.div`
+export const ChartBar = styled.div<{ $height?: string }>`
   width: 20%;
-  background: linear-gradient(180deg, #D32F2F, #B71C1C);
+  height: ${props => props.$height || '50%'};
+  background: linear-gradient(180deg, #D4AF37, #B8860B);
   border-radius: 4px 4px 0 0;
   transition: all 0.2s;
 
   &:hover {
     opacity: 0.8;
   }
+`;
+
+export const PaginationContainer = styled.div`
+  margin-top: 1rem;
+  text-align: right;
 `;
 
 export const ReportActions = styled.div`
@@ -677,7 +687,7 @@ export const AlertClose = styled.button`
 
 export const SaveBtn = styled.button`
   padding: 12px 24px;
-  background: #D32F2F;
+  background: #D4AF37;
   color: white;
   border: none;
   border-radius: 4px;
@@ -688,7 +698,7 @@ export const SaveBtn = styled.button`
   margin-top: 12px;
 
   &:hover {
-    background: #B71C1C;
-    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+    background: #B8860B;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
   }
 `;

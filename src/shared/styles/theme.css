@@ -1,45 +1,18 @@
 /* ==========================================
    WHITE CAVES - DYNAMIC THEME SYSTEM
    ==========================================
-   CSS Variables for Light and Dark themes
-   with proper color contrast for accessibility
+   Extended CSS Variables for Light and Dark themes.
+   Canonical color variables are defined in src/styles/theme.css.
+   This file extends with additional component-specific variables
+   and legacy aliases for backward compatibility.
    ========================================== */
 
 :root {
-  /* Primary Brand Colors */
-  --primary-color: #dc2626;
-  --primary-hover: #b91c1c;
-  --primary-light: #fef2f2;
-  --primary-dark: #991b1b;
-  
-  /* Secondary Colors */
-  --secondary-color: #1f2937;
-  --secondary-hover: #374151;
-  
-  /* Accent Colors */
-  --accent-gold: #f59e0b;
-  --accent-green: #10b981;
-  --accent-blue: #3b82f6;
-  --accent-purple: #8b5cf6;
-  --accent-pink: #ec4899;
-  --accent-cyan: #06b6d4;
-  
-  /* Status Colors */
-  --success-color: #22c55e;
-  --success-bg: #dcfce7;
-  --success-border: #86efac;
-  
-  --warning-color: #f59e0b;
-  --warning-bg: #fef3c7;
-  --warning-border: #fcd34d;
-  
-  --error-color: #ef4444;
-  --error-bg: #fee2e2;
-  --error-border: #fca5a5;
-  
-  --info-color: #3b82f6;
-  --info-bg: #dbeafe;
-  --info-border: #93c5fd;
+  /* Status Colors (extended — canonical aliases from theme.css) */
+  --success-color: var(--color-success, #22c55e);
+  --warning-color: var(--color-warning, #f59e0b);
+  --error-color: var(--color-error, #ef4444);
+  --info-color: var(--color-info, #3b82f6);
 }
 
 /* ==========================================
@@ -62,14 +35,14 @@
   --text-tertiary: #6b7280;
   --text-muted: #9ca3af;
   --text-inverse: #ffffff;
-  --text-link: #dc2626;
-  --text-link-hover: #b91c1c;
+  --text-link: #D4AF37;
+  --text-link-hover: #B8860B;
   
   /* Border Colors */
   --border-color: #e5e7eb;
   --border-light: #f3f4f6;
   --border-dark: #d1d5db;
-  --border-focus: #dc2626;
+  --border-focus: #D4AF37;
   
   /* Shadow Colors */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -81,7 +54,7 @@
   /* Input Colors */
   --input-bg: #ffffff;
   --input-border: #d1d5db;
-  --input-focus-border: #dc2626;
+  --input-focus-border: #D4AF37;
   --input-placeholder: #9ca3af;
   
   /* Table Colors */
@@ -92,7 +65,7 @@
   /* Sidebar/Nav Colors */
   --nav-bg: #ffffff;
   --nav-text: #374151;
-  --nav-text-active: #dc2626;
+  --nav-text-active: #D4AF37;
   --nav-bg-active: #fef2f2;
   
   /* Badge/Tag Colors */

@@ -8,6 +8,18 @@ import {
   DropdownIcon
 } from './FilterDropdown.styles';
 
+type FilterOption = string | { value: string; label: string; count?: number };
+
+interface FilterDropdownProps {
+  label: string;
+  value: string | null;
+  options: FilterOption[];
+  onChange: (value: string | null) => void;
+  placeholder?: string;
+  showCount?: boolean;
+  disabled?: boolean;
+}
+
 const FilterDropdown = ({ 
   label, 
   value, 
@@ -16,7 +28,7 @@ const FilterDropdown = ({
   placeholder = 'All',
   showCount = false,
   disabled = false 
-}) => {
+}: FilterDropdownProps) => {
   return (
     <FilterDropdownContainer $disabled={disabled}>
       <FilterLabel>{label}</FilterLabel>

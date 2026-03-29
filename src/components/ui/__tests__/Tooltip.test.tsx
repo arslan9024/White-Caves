@@ -7,7 +7,7 @@ describe('Tooltip Component', () => {
   describe('Rendering', () => {
     it('should render trigger element', () => {
       render(
-        <Tooltip text="Tooltip text">
+        <Tooltip content="Tooltip text">
           <button>Hover me</button>
         </Tooltip>
       );
@@ -18,7 +18,7 @@ describe('Tooltip Component', () => {
     it('should show tooltip on hover', async () => {
       const user = userEvent.setup();
       render(
-        <Tooltip text="Helpful text">
+        <Tooltip content="Helpful text">
           <button>Trigger</button>
         </Tooltip>
       );
@@ -33,7 +33,7 @@ describe('Tooltip Component', () => {
     it('should hide tooltip on unhover', async () => {
       const user = userEvent.setup();
       const { container } = render(
-        <Tooltip text="Helpful text">
+        <Tooltip content="Helpful text">
           <button>Trigger</button>
         </Tooltip>
       );
@@ -50,7 +50,7 @@ describe('Tooltip Component', () => {
   describe('Positioning', () => {
     it('should support different positions', () => {
       const { rerender } = render(
-        <Tooltip text="Text" position="top">
+        <Tooltip content="Text" placement="top">
           <button>Trigger</button>
         </Tooltip>
       );
@@ -58,7 +58,7 @@ describe('Tooltip Component', () => {
       expect(screen.getByText('Trigger')).toBeInTheDocument();
       
       rerender(
-        <Tooltip text="Text" position="bottom">
+        <Tooltip content="Text" placement="bottom">
           <button>Trigger</button>
         </Tooltip>
       );
@@ -71,7 +71,7 @@ describe('Tooltip Component', () => {
     it('should have proper ARIA attributes', async () => {
       const user = userEvent.setup();
       const { container } = render(
-        <Tooltip text="Tooltip text">
+        <Tooltip content="Tooltip text">
           <button>Trigger</button>
         </Tooltip>
       );

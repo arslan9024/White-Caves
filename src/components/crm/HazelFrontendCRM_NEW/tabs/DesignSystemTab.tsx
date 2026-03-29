@@ -1,7 +1,19 @@
 import React, { useState } from 'react';
 import { Palette, Code, Sun, Moon } from 'lucide-react';
 
-const DesignSystemTab = ({ designTokens, themeMode, onThemeChange }) => {
+interface DesignTokens {
+  colors: Record<string, string>;
+  typography: Record<string, string>;
+  spacing: string[];
+}
+
+interface DesignSystemTabProps {
+  designTokens: DesignTokens;
+  themeMode: string;
+  onThemeChange: (mode: string) => void;
+}
+
+const DesignSystemTab: React.FC<DesignSystemTabProps> = ({ designTokens, themeMode, onThemeChange }) => {
   return (
     <div className="design-system-view">
       <h3>Design System</h3>
@@ -9,7 +21,7 @@ const DesignSystemTab = ({ designTokens, themeMode, onThemeChange }) => {
       <div className="token-section">
         <h4><Palette size={16} /> Color Tokens</h4>
         <div className="color-tokens">
-          {Object.entries(designTokens.colors).map(([name, value]) => (
+          {Object.entries(designTokens.colors).map(([name, value]: [string, string]) => (
             <div key={name} className="color-token">
               <div 
                 className="color-swatch" 
@@ -26,7 +38,7 @@ const DesignSystemTab = ({ designTokens, themeMode, onThemeChange }) => {
       <div className="token-section">
         <h4><Code size={16} /> Typography</h4>
         <div className="typography-tokens">
-          {Object.entries(designTokens.typography).map(([role, font]) => (
+          {Object.entries(designTokens.typography).map(([role, font]: [string, string]) => (
             <div key={role} className="typography-token">
               <span className="token-name">{role}</span>
               <span className="token-value" style={{ fontFamily: font }}>
@@ -40,7 +52,7 @@ const DesignSystemTab = ({ designTokens, themeMode, onThemeChange }) => {
       <div className="token-section">
         <h4><Palette size={16} /> Spacing Scale</h4>
         <div className="spacing-tokens">
-          {designTokens.spacing.map((value, idx) => (
+          {designTokens.spacing.map((value: string, idx: number) => (
             <div key={value} className="spacing-token">
               <div 
                 className="spacing-demo" 

@@ -1,32 +1,39 @@
 import React, { useState } from 'react';
+import type { UAEPassTabProps, UAEPassVerificationStatus, UAEPassRole } from './types';
 import './TabStyles.css';
 
-const UAEPassTab = ({ data, loading, onAction }) => {
+const UAEPassTab: React.FC<UAEPassTabProps> = ({ data, loading, onAction }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="uaepass-tab">
+        <div className="tab-loading-state" role="status" aria-label="Loading UAE Pass data">
+          <div className="loading-spinner" />
+          <p>Loading UAE Pass data...</p>
+        </div>
+      </div>
+    );
+  }
+
   const stats = data?.uaepassStats || {
-    totalUsers: 234,
-    verifiedUsers: 198,
-    pendingVerification: 36,
-    thisMonth: 45,
-    conversionRate: 84.6
+    totalUsers: 0,
+    verifiedUsers: 0,
+    pendingVerification: 0,
+    thisMonth: 0,
+    conversionRate: 0
   };
 
-  const users = data?.uaepassUsers || [
-    { id: 1, name: 'Ahmed Al Maktoum', emiratesId: '784-XXXX-XXXXXXX-X', email: 'ahmed.m@email.com', phone: '+971 50 123 4567', status: 'verified', role: 'buyer', registeredAt: '2024-03-15', lastLogin: '2024-03-25' },
-    { id: 2, name: 'Fatima Al Rashid', emiratesId: '784-XXXX-XXXXXXX-X', email: 'fatima.r@email.com', phone: '+971 55 234 5678', status: 'verified', role: 'seller', registeredAt: '2024-03-10', lastLogin: '2024-03-24' },
-    { id: 3, name: 'Mohammed Hassan', emiratesId: '784-XXXX-XXXXXXX-X', email: 'mohammed.h@email.com', phone: '+971 52 345 6789', status: 'pending', role: 'tenant', registeredAt: '2024-03-24', lastLogin: null },
-    { id: 4, name: 'Sara Al Ali', emiratesId: '784-XXXX-XXXXXXX-X', email: 'sara.a@email.com', phone: '+971 54 456 7890', status: 'verified', role: 'landlord', registeredAt: '2024-02-28', lastLogin: '2024-03-22' },
-    { id: 5, name: 'Omar Khalid', emiratesId: '784-XXXX-XXXXXXX-X', email: 'omar.k@email.com', phone: '+971 56 567 8901', status: 'verified', role: 'buyer', registeredAt: '2024-03-20', lastLogin: '2024-03-25' },
-  ];
+  const users = data?.uaepassUsers || [];
 
   const filteredUsers = users.filter(user =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const getStatusBadge = (status) => {
-    const config = {
+  const getStatusBadge = (status: string) => {
+    const config: Record<string, { color: string; text: string }> = {
       verified: { color: '#22C55E', text: '✓ Verified' },
       pending: { color: '#F59E0B', text: '⏳ Pending' },
       rejected: { color: '#EF4444', text: '✕ Rejected' }
@@ -35,8 +42,8 @@ const UAEPassTab = ({ data, loading, onAction }) => {
     return <span className="status-badge" style={{ backgroundColor: `${c.color}20`, color: c.color }}>{c.text}</span>;
   };
 
-  const getRoleBadge = (role) => {
-    const colors = {
+  const getRoleBadge = (role: string) => {
+    const colors: Record<string, string> = {
       buyer: '#3B82F6',
       seller: '#8B5CF6',
       landlord: '#F59E0B',
@@ -139,7 +146,7 @@ const UAEPassTab = ({ data, loading, onAction }) => {
       </div>
 
       <div className="data-table">
-        <table>
+        <table aria-label="UAE Pass verified users">
           <thead>
             <tr>
               <th>User</th>
@@ -187,4 +194,4 @@ const UAEPassTab = ({ data, loading, onAction }) => {
   );
 };
 
-export default UAEPassTab;
+export default React.memo(UAEPassTab);

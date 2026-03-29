@@ -76,7 +76,7 @@ export default function ClaraLeadsCRM() {
     }
   ];
 
-  const visibleTabs = tabs.filter(t => !t.hidden);
+  const visibleTabs = tabs;
   const ActiveTabComponent = tabs.find(t => t.id === activeTab)?.component;
 
   return (
@@ -123,8 +123,8 @@ export default function ClaraLeadsCRM() {
             style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
           >
             {tab.label}
-            <Badge variant="secondary" size="sm">
-              {tabCounts[tab.id] || 0}
+            <Badge variant="secondary" size="small">
+              {tabCounts[tab.id as keyof typeof tabCounts] || 0}
             </Badge>
           </button>
         ))}
@@ -132,7 +132,7 @@ export default function ClaraLeadsCRM() {
 
       {/* Tab Content with Suspense */}
       <div className="clara-tabs-content">
-        <Suspense fallback={<SuspenseLoader message="Loading leads..." />}>
+        <Suspense fallback={<SuspenseLoader />}>
           {ActiveTabComponent && <ActiveTabComponent />}
         </Suspense>
       </div>

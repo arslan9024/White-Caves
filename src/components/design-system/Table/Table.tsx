@@ -8,20 +8,22 @@ import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 import { Checkbox } from '../Checkbox';
 
+export type TableRow = Record<string, unknown>;
+
 export type TableColumn = {
   key: string;
   header: string;
-  render?: (value: any, row: any) => React.ReactNode;
+  render?: (value: unknown, row: TableRow) => React.ReactNode;
   sortable?: boolean;
   width?: string;
 };
 
 export type TableProps = {
   columns: TableColumn[];
-  data: any[];
+  data: TableRow[];
   selectable?: boolean;
-  onSelectChange?: (selected: any[]) => void;
-  onRowClick?: (row: any) => void;
+  onSelectChange?: (selected: TableRow[]) => void;
+  onRowClick?: (row: TableRow) => void;
   striped?: boolean;
   hoverable?: boolean;
 };
@@ -99,19 +101,37 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps>(
     },
     ref
   ) => {
-    const [selected, setSelected] = useState<any[]>([]);
+    const [selectedIds, setSelectedIds] = useState<Set<unknown>>(new Set());
+
+    // Derive a stable row key (prefer 'id', fall back to '_id', then index)
+    const getRowKey = (row: TableRow, index?: number): unknown =>
+      row.id ?? row._id ?? index;
 
     const handleSelectAll = (checked: boolean) => {
-      const newSelected = checked ? data : [];
-      setSelected(newSelected);
-      onSelectChange?.(newSelected);
+      if (checked) {
+        const allIds = new Set(data.map((row, i) => getRowKey(row, i)));
+        setSelectedIds(allIds);
+        onSelectChange?.(data);
+      } else {
+        setSelectedIds(new Set());
+        onSelectChange?.([]);
+      }
     };
 
-    const handleSelectRow = (row: any, checked: boolean) => {
-      const newSelected = checked ? [...selected, row] : selected.filter((r) => r !== row);
-      setSelected(newSelected);
-      onSelectChange?.(newSelected);
+    const handleSelectRow = (row: TableRow, rowIndex: number, checked: boolean) => {
+      const key = getRowKey(row, rowIndex);
+      const next = new Set(selectedIds);
+      if (checked) {
+        next.add(key);
+      } else {
+        next.delete(key);
+      }
+      setSelectedIds(next);
+      onSelectChange?.(data.filter((r, i) => next.has(getRowKey(r, i))));
     };
+
+    const isRowSelected = (row: TableRow, index: number): boolean =>
+      selectedIds.has(getRowKey(row, index));
 
     return (
       <TableWrapper>
@@ -121,7 +141,7 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps>(
               {selectable && (
                 <TableHeaderCell>
                   <Checkbox
-                    checked={selected.length === data.length && data.length > 0}
+                    checked={selectedIds.size === data.length && data.length > 0}
                     onChange={(e) => handleSelectAll(e.currentTarget.checked)}
                   />
                 </TableHeaderCell>
@@ -139,15 +159,15 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps>(
                 {selectable && (
                   <TableCell>
                     <Checkbox
-                      checked={selected.includes(row)}
-                      onChange={(e) => handleSelectRow(row, e.currentTarget.checked)}
+                      checked={isRowSelected(row, rowIndex)}
+                      onChange={(e) => handleSelectRow(row, rowIndex, e.currentTarget.checked)}
                       onClick={(e) => e.stopPropagation()}
                     />
                   </TableCell>
                 )}
                 {columns.map((col) => (
                   <TableCell key={col.key} style={{ width: col.width }}>
-                    {col.render ? col.render(row[col.key], row) : row[col.key]}
+                    {col.render ? col.render(row[col.key], row) : String(row[col.key] ?? '')}
                   </TableCell>
                 ))}
               </TableRow>

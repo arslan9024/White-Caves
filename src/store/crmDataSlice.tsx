@@ -1,22 +1,26 @@
-/**
+﻿/**
  * CRM Data Redux Slice
  * Manages: leads, clients, agents, commissions, activities
  * Now with async thunks for backend API integration
  */
 
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createSelector, PayloadAction } from '@reduxjs/toolkit';
+import { authFetch, extractApiError } from '../utils/authFetch';
+import { logout } from './authSlice';
+import type { RootState } from './store';
+// In production, async thunks fetch real data from the API.
+// Dummy data is only used as fallback initial state in dev mode.
 import {
   DUMMY_ALL_LEADS,
   DUMMY_CLIENTS,
   DUMMY_AGENTS,
-  DUMMY_COMMISSIONS,
   DUMMY_ACTIVITIES,
   DUMMY_OVERVIEW_DATA
 } from '../data/dummyLeads';
 
 interface CRMItem {
   id: string | number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface CRMCollection<T extends CRMItem> {
@@ -45,27 +49,27 @@ interface CRMDataState {
   properties: CRMCollection<CRMItem>;
   commissions: CommissionCollection;
   activities: ActivityCollection;
-  overview: any;
+  overview: Record<string, unknown> | null;
   lastUpdated: string;
 }
 
 const initialState: CRMDataState = {
   leads: {
-    items: DUMMY_ALL_LEADS,
+    items: import.meta.env.DEV ? DUMMY_ALL_LEADS : [],
     selected: null,
     loading: false,
     error: null
   },
 
   clients: {
-    items: DUMMY_CLIENTS,
+    items: import.meta.env.DEV ? DUMMY_CLIENTS : [],
     selected: null,
     loading: false,
     error: null
   },
 
   agents: {
-    items: DUMMY_AGENTS,
+    items: import.meta.env.DEV ? DUMMY_AGENTS : [],
     selected: null,
     loading: false,
     error: null
@@ -79,24 +83,24 @@ const initialState: CRMDataState = {
   },
 
   commissions: {
-    items: DUMMY_COMMISSIONS,
+    items: [],
     loading: false,
     error: null
   },
 
   activities: {
-    items: DUMMY_ACTIVITIES,
+    items: import.meta.env.DEV ? DUMMY_ACTIVITIES : [],
     loading: false,
     error: null
   },
 
-  overview: DUMMY_OVERVIEW_DATA,
+  overview: import.meta.env.DEV ? DUMMY_OVERVIEW_DATA : null,
 
   lastUpdated: new Date().toISOString()
 };
 
 // ============================================================================
-// ASYNC THUNKS — Backend API Integration
+// ASYNC THUNKS â€” Backend API Integration
 // ============================================================================
 
 /** Fetch all leads from the backend API, falls back to dummy data on error */
@@ -109,12 +113,12 @@ export const fetchLeadsFromAPI = createAsyncThunk(
       if (params.pageSize) query.set('pageSize', String(params.pageSize));
       if (params.status) query.set('status', params.status);
       if (params.source) query.set('source', params.source);
-      const response = await fetch(`/api/leads?${query.toString()}`);
-      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      const response = await authFetch(`/api/leads?${query.toString()}`);
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to fetch leads'));
       const data = await response.json();
       return data.data || data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch leads');
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch leads');
     }
   }
 );
@@ -128,12 +132,12 @@ export const fetchPropertiesFromAPI = createAsyncThunk(
       if (params.page) query.set('page', String(params.page));
       if (params.status) query.set('status', params.status);
       if (params.type) query.set('type', params.type);
-      const response = await fetch(`/api/properties?${query.toString()}`);
-      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      const response = await authFetch(`/api/properties?${query.toString()}`);
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to fetch properties'));
       const data = await response.json();
       return data.data || data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch properties');
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch properties');
     }
   }
 );
@@ -143,12 +147,12 @@ export const fetchAgentsFromAPI = createAsyncThunk(
   'crmData/fetchAgents',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/users?role=agent');
-      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      const response = await authFetch('/api/users?role=agent');
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to fetch agents'));
       const data = await response.json();
       return data.data || data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch agents');
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch agents');
     }
   }
 );
@@ -158,12 +162,12 @@ export const fetchDashboardOverview = createAsyncThunk(
   'crmData/fetchDashboardOverview',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/dashboard/summary');
-      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      const response = await authFetch('/api/dashboard/summary');
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to fetch dashboard'));
       const data = await response.json();
       return data.data || data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch dashboard overview');
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch dashboard overview');
     }
   }
 );
@@ -171,18 +175,18 @@ export const fetchDashboardOverview = createAsyncThunk(
 /** Create a new lead via API */
 export const createLeadAPI = createAsyncThunk(
   'crmData/createLead',
-  async (leadData: Record<string, any>, { rejectWithValue }) => {
+  async (leadData: Record<string, unknown>, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/leads', {
+      const response = await authFetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(leadData),
       });
-      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to create lead'));
       const data = await response.json();
       return data.data || data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to create lead');
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to create lead');
     }
   }
 );
@@ -190,18 +194,18 @@ export const createLeadAPI = createAsyncThunk(
 /** Update a lead via API */
 export const updateLeadAPI = createAsyncThunk(
   'crmData/updateLeadAPI',
-  async ({ id, ...updates }: { id: string | number } & Record<string, any>, { rejectWithValue }) => {
+  async ({ id, ...updates }: { id: string | number } & Record<string, unknown>, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/leads/${id}`, {
+      const response = await authFetch(`/api/leads/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates),
       });
-      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to update lead'));
       const data = await response.json();
       return data.data || data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to update lead');
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to update lead');
     }
   }
 );
@@ -211,11 +215,11 @@ export const deleteLeadAPI = createAsyncThunk(
   'crmData/deleteLeadAPI',
   async (id: string | number, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/leads/${id}`, { method: 'DELETE' });
-      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      const response = await authFetch(`/api/leads/${id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to delete lead'));
       return id;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to delete lead');
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to delete lead');
     }
   }
 );
@@ -223,18 +227,18 @@ export const deleteLeadAPI = createAsyncThunk(
 /** Create a new property via API */
 export const createPropertyAPI = createAsyncThunk(
   'crmData/createProperty',
-  async (propertyData: Record<string, any>, { rejectWithValue }) => {
+  async (propertyData: Record<string, unknown>, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/properties', {
+      const response = await authFetch('/api/properties', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(propertyData),
       });
-      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to create property'));
       const data = await response.json();
       return data.data || data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to create property');
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to create property');
     }
   }
 );
@@ -242,18 +246,18 @@ export const createPropertyAPI = createAsyncThunk(
 /** Update a property via API */
 export const updatePropertyAPI = createAsyncThunk(
   'crmData/updateProperty',
-  async ({ id, ...updates }: { id: string | number } & Record<string, any>, { rejectWithValue }) => {
+  async ({ id, ...updates }: { id: string | number } & Record<string, unknown>, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/properties/${id}`, {
+      const response = await authFetch(`/api/properties/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates),
       });
-      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to update property'));
       const data = await response.json();
       return data.data || data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to update property');
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to update property');
     }
   }
 );
@@ -263,11 +267,11 @@ export const deletePropertyAPI = createAsyncThunk(
   'crmData/deleteProperty',
   async (id: string | number, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/properties/${id}`, { method: 'DELETE' });
-      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      const response = await authFetch(`/api/properties/${id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to delete property'));
       return id;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to delete property');
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to delete property');
     }
   }
 );
@@ -286,7 +290,7 @@ const crmDataSlice = createSlice({
     addLead: (state, action: PayloadAction<CRMItem>) => {
       state.leads.items.push({
         ...action.payload,
-        id: Math.max(...state.leads.items.map(l => typeof l.id === 'number' ? l.id : 0)) + 1
+        id: action.payload.id || `local_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
       });
       state.lastUpdated = new Date().toISOString();
     },
@@ -308,6 +312,9 @@ const crmDataSlice = createSlice({
       state.leads.items = state.leads.items.filter(
         l => l.id !== action.payload
       );
+      if (state.leads.selected?.id === action.payload) {
+        state.leads.selected = null;
+      }
       state.lastUpdated = new Date().toISOString();
     },
 
@@ -332,7 +339,7 @@ const crmDataSlice = createSlice({
     addClient: (state, action: PayloadAction<CRMItem>) => {
       state.clients.items.push({
         ...action.payload,
-        id: Math.max(...state.clients.items.map(c => typeof c.id === 'number' ? c.id : 0)) + 1
+        id: action.payload.id || `local_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
       });
       state.lastUpdated = new Date().toISOString();
     },
@@ -354,6 +361,9 @@ const crmDataSlice = createSlice({
       state.clients.items = state.clients.items.filter(
         c => c.id !== action.payload
       );
+      if (state.clients.selected?.id === action.payload) {
+        state.clients.selected = null;
+      }
       state.lastUpdated = new Date().toISOString();
     },
 
@@ -431,6 +441,9 @@ const crmDataSlice = createSlice({
       state.properties.items = state.properties.items.filter(
         p => p.id !== action.payload
       );
+      if (state.properties.selected?.id === action.payload) {
+        state.properties.selected = null;
+      }
       state.lastUpdated = new Date().toISOString();
     },
 
@@ -478,20 +491,20 @@ const crmDataSlice = createSlice({
     addActivity: (state, action: PayloadAction<CRMItem>) => {
       state.activities.items.unshift({
         ...action.payload,
-        id: Math.max(...state.activities.items.map(a => typeof a.id === 'number' ? a.id : 0), 0) + 1,
+        id: action.payload.id || `local_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
         timestamp: new Date().toISOString()
       });
       state.lastUpdated = new Date().toISOString();
     },
 
     // ============== OVERVIEW ==============
-    setOverviewData: (state, action: PayloadAction<any>) => {
+    setOverviewData: (state, action: PayloadAction<Record<string, unknown>>) => {
       state.overview = action.payload;
       state.lastUpdated = new Date().toISOString();
     }
   },
 
-  // ============== EXTRA REDUCERS — Async Thunk Handlers ==============
+  // ============== EXTRA REDUCERS â€” Async Thunk Handlers ==============
   extraReducers: (builder) => {
     // --- Fetch Leads ---
     builder
@@ -508,7 +521,7 @@ const crmDataSlice = createSlice({
       })
       .addCase(fetchLeadsFromAPI.rejected, (state, action) => {
         state.leads.loading = false;
-        state.leads.error = (action.payload as string) || 'Failed to fetch leads';
+        state.leads.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to fetch leads';
       });
 
     // --- Fetch Properties ---
@@ -526,7 +539,7 @@ const crmDataSlice = createSlice({
       })
       .addCase(fetchPropertiesFromAPI.rejected, (state, action) => {
         state.properties.loading = false;
-        state.properties.error = (action.payload as string) || 'Failed to fetch properties';
+        state.properties.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to fetch properties';
       });
 
     // --- Fetch Agents ---
@@ -544,28 +557,35 @@ const crmDataSlice = createSlice({
       })
       .addCase(fetchAgentsFromAPI.rejected, (state, action) => {
         state.agents.loading = false;
-        state.agents.error = (action.payload as string) || 'Failed to fetch agents';
+        state.agents.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to fetch agents';
       });
 
     // --- Fetch Dashboard Overview ---
     builder
       .addCase(fetchDashboardOverview.pending, (state) => {
-        // Silent — dashboard loads from API in background
+        state.overview = { ...state.overview, loading: true, error: null };
       })
       .addCase(fetchDashboardOverview.fulfilled, (state, action) => {
         if (action.payload) {
-          state.overview = { ...state.overview, ...action.payload };
+          state.overview = { ...state.overview, ...action.payload, loading: false, error: null };
+        } else {
+          state.overview = { ...state.overview, loading: false };
         }
         state.lastUpdated = new Date().toISOString();
       })
-      .addCase(fetchDashboardOverview.rejected, (state) => {
-        // Silent fail — overview retains dummy data as fallback
+      .addCase(fetchDashboardOverview.rejected, (state, action) => {
+        state.overview = {
+          ...state.overview,
+          loading: false,
+          error: (typeof action.payload === 'string' ? action.payload : null) || 'Failed to load dashboard overview',
+        };
       });
 
     // --- Create Lead ---
     builder
       .addCase(createLeadAPI.pending, (state) => {
         state.leads.loading = true;
+        state.leads.error = null;
       })
       .addCase(createLeadAPI.fulfilled, (state, action) => {
         state.leads.loading = false;
@@ -576,12 +596,17 @@ const crmDataSlice = createSlice({
       })
       .addCase(createLeadAPI.rejected, (state, action) => {
         state.leads.loading = false;
-        state.leads.error = (action.payload as string) || 'Failed to create lead';
+        state.leads.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to create lead';
       });
 
     // --- Update Lead ---
     builder
+      .addCase(updateLeadAPI.pending, (state) => {
+        state.leads.loading = true;
+        state.leads.error = null;
+      })
       .addCase(updateLeadAPI.fulfilled, (state, action) => {
+        state.leads.loading = false;
         if (action.payload) {
           const idx = state.leads.items.findIndex(l => l.id === action.payload.id);
           if (idx > -1) {
@@ -589,19 +614,36 @@ const crmDataSlice = createSlice({
           }
         }
         state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(updateLeadAPI.rejected, (state, action) => {
+        state.leads.loading = false;
+        state.leads.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to update lead';
       });
 
     // --- Delete Lead ---
     builder
+      .addCase(deleteLeadAPI.pending, (state) => {
+        state.leads.loading = true;
+        state.leads.error = null;
+      })
       .addCase(deleteLeadAPI.fulfilled, (state, action) => {
+        state.leads.loading = false;
         state.leads.items = state.leads.items.filter(l => l.id !== action.payload);
+        if (state.leads.selected?.id === action.payload) {
+          state.leads.selected = null;
+        }
         state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(deleteLeadAPI.rejected, (state, action) => {
+        state.leads.loading = false;
+        state.leads.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to delete lead';
       });
 
     // --- Create Property ---
     builder
       .addCase(createPropertyAPI.pending, (state) => {
         state.properties.loading = true;
+        state.properties.error = null;
       })
       .addCase(createPropertyAPI.fulfilled, (state, action) => {
         state.properties.loading = false;
@@ -612,13 +654,14 @@ const crmDataSlice = createSlice({
       })
       .addCase(createPropertyAPI.rejected, (state, action) => {
         state.properties.loading = false;
-        state.properties.error = (action.payload as string) || 'Failed to create property';
+        state.properties.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to create property';
       });
 
     // --- Update Property ---
     builder
       .addCase(updatePropertyAPI.pending, (state) => {
         state.properties.loading = true;
+        state.properties.error = null;
       })
       .addCase(updatePropertyAPI.fulfilled, (state, action) => {
         state.properties.loading = false;
@@ -632,7 +675,7 @@ const crmDataSlice = createSlice({
       })
       .addCase(updatePropertyAPI.rejected, (state, action) => {
         state.properties.loading = false;
-        state.properties.error = (action.payload as string) || 'Failed to update property';
+        state.properties.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to update property';
       });
 
     // --- Delete Property ---
@@ -643,12 +686,18 @@ const crmDataSlice = createSlice({
       .addCase(deletePropertyAPI.fulfilled, (state, action) => {
         state.properties.loading = false;
         state.properties.items = state.properties.items.filter(p => p.id !== action.payload);
+        if (state.properties.selected?.id === action.payload) {
+          state.properties.selected = null;
+        }
         state.lastUpdated = new Date().toISOString();
       })
       .addCase(deletePropertyAPI.rejected, (state, action) => {
         state.properties.loading = false;
-        state.properties.error = (action.payload as string) || 'Failed to delete property';
+        state.properties.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to delete property';
       });
+
+    // --- SECURITY: Reset all CRM data on logout to prevent data leaks ---
+    builder.addCase(logout, () => initialState);
   }
 });
 
@@ -688,84 +737,144 @@ export const {
   setOverviewData
 } = crmDataSlice.actions;
 
-// ============== SELECTORS ==============
-// Leads
-export const selectAllLeads = (state: any) => state.crmData?.leads?.items || [];
-export const selectHotLeads = (state: any) =>
-  state.crmData?.leads?.items?.filter((l: CRMItem) => l.status === 'hot') || [];
-export const selectWarmLeads = (state: any) =>
-  state.crmData?.leads?.items?.filter((l: CRMItem) => l.status === 'warm') || [];
-export const selectColdLeads = (state: any) =>
-  state.crmData?.leads?.items?.filter((l: CRMItem) => l.status === 'cold') || [];
-export const selectSelectedLead = (state: any) => state.crmData?.leads?.selected;
-export const selectLeadsLoading = (state: any) => state.crmData?.leads?.loading;
-export const selectLeadsError = (state: any) => state.crmData?.leads?.error;
+// ============== SELECTORS (memoized with createSelector) ==============
 
-// Clients
-export const selectAllClients = (state: any) => state.crmData?.clients?.items || [];
-export const selectSelectedClient = (state: any) => state.crmData?.clients?.selected;
-export const selectClientsLoading = (state: any) => state.crmData?.clients?.loading;
+// ── Base selectors (stable references — no new objects) ──
+const selectLeadsSlice = (state: RootState) => state.crmData?.leads;
+const selectClientsSlice = (state: RootState) => state.crmData?.clients;
+const selectAgentsSlice = (state: RootState) => state.crmData?.agents;
+const selectPropertiesSlice = (state: RootState) => state.crmData?.properties;
+const selectCommissionsSlice = (state: RootState) => state.crmData?.commissions;
+const selectActivitiesSlice = (state: RootState) => state.crmData?.activities;
 
-// Agents
-export const selectAllAgents = (state: any) => state.crmData?.agents?.items || [];
-export const selectSelectedAgent = (state: any) => state.crmData?.agents?.selected;
-export const selectAgentsLoading = (state: any) => state.crmData?.agents?.loading;
+// ── Leads ──
+export const selectAllLeads = createSelector(
+  selectLeadsSlice,
+  (leads) => leads?.items || []
+);
+export const selectHotLeads = createSelector(
+  selectAllLeads,
+  (items) => items.filter((l: CRMItem) => l.status === 'hot')
+);
+export const selectWarmLeads = createSelector(
+  selectAllLeads,
+  (items) => items.filter((l: CRMItem) => l.status === 'warm')
+);
+export const selectColdLeads = createSelector(
+  selectAllLeads,
+  (items) => items.filter((l: CRMItem) => l.status === 'cold')
+);
+export const selectSelectedLead = (state: RootState) => state.crmData?.leads?.selected;
+export const selectLeadsLoading = (state: RootState) => state.crmData?.leads?.loading;
+export const selectLeadsError = (state: RootState) => state.crmData?.leads?.error;
 
-// Agents by status
-export const selectOnlineAgents = (state: any) =>
-  state.crmData?.agents?.items?.filter((a: CRMItem) => a.status === 'online') || [];
+// ── Clients ──
+export const selectAllClients = createSelector(
+  selectClientsSlice,
+  (clients) => clients?.items || []
+);
+export const selectSelectedClient = (state: RootState) => state.crmData?.clients?.selected;
+export const selectClientsLoading = (state: RootState) => state.crmData?.clients?.loading;
 
-export const selectAgentById = (state: any, agentId: string | number) =>
+// ── Agents ──
+export const selectAllAgents = createSelector(
+  selectAgentsSlice,
+  (agents) => agents?.items || []
+);
+export const selectSelectedAgent = (state: RootState) => state.crmData?.agents?.selected;
+export const selectAgentsLoading = (state: RootState) => state.crmData?.agents?.loading;
+export const selectAgentsError = (state: RootState) => state.crmData?.agents?.error;
+
+export const selectOnlineAgents = createSelector(
+  selectAllAgents,
+  (items) => items.filter((a: CRMItem) => a.status === 'online')
+);
+
+export const selectAgentById = (state: RootState, agentId: string | number) =>
   state.crmData?.agents?.items?.find((a: CRMItem) => a.id === agentId);
 
-// Properties
-export const selectAllProperties = (state: any) => state.crmData?.properties?.items || [];
-export const selectSelectedProperty = (state: any) => state.crmData?.properties?.selected;
-export const selectPropertiesLoading = (state: any) => state.crmData?.properties?.loading;
-export const selectPropertiesError = (state: any) => state.crmData?.properties?.error;
-export const selectAvailableProperties = (state: any) =>
-  state.crmData?.properties?.items?.filter((p: CRMItem) => p.status === 'available') || [];
-export const selectPropertyById = (state: any, propertyId: string | number) =>
+// ── Properties ──
+export const selectAllProperties = createSelector(
+  selectPropertiesSlice,
+  (properties) => properties?.items || []
+);
+export const selectSelectedProperty = (state: RootState) => state.crmData?.properties?.selected;
+export const selectPropertiesLoading = (state: RootState) => state.crmData?.properties?.loading;
+export const selectPropertiesError = (state: RootState) => state.crmData?.properties?.error;
+
+export const selectAvailableProperties = createSelector(
+  selectAllProperties,
+  (items) => items.filter((p: CRMItem) => p.status === 'available')
+);
+
+export const selectPropertyById = (state: RootState, propertyId: string | number) =>
   state.crmData?.properties?.items?.find((p: CRMItem) => p.id === propertyId);
 
-// Commissions
-export const selectAllCommissions = (state: any) =>
-  state.crmData?.commissions?.items || [];
-export const selectPendingCommissions = (state: any) =>
-  state.crmData?.commissions?.items?.filter((c: CRMItem) => c.status === 'pending') || [];
-export const selectPaidCommissions = (state: any) =>
-  state.crmData?.commissions?.items?.filter((c: CRMItem) => c.status === 'paid') || [];
+// ── Commissions ──
+export const selectAllCommissions = createSelector(
+  selectCommissionsSlice,
+  (commissions) => commissions?.items || []
+);
+export const selectPendingCommissions = createSelector(
+  selectAllCommissions,
+  (items) => items.filter((c: CRMItem) => c.status === 'pending')
+);
+export const selectPaidCommissions = createSelector(
+  selectAllCommissions,
+  (items) => items.filter((c: CRMItem) => c.status === 'paid')
+);
 
-// Commissions by agent
-export const selectCommissionsByAgent = (state: any, agentId: string | number) =>
+export const selectCommissionsByAgent = (state: RootState, agentId: string | number) =>
   state.crmData?.commissions?.items?.filter((c: CRMItem) => c.agent_id === agentId) || [];
 
-// Activities
-export const selectAllActivities = (state: any) =>
-  state.crmData?.activities?.items || [];
-export const selectRecentActivities = (state: any, count: number = 10) =>
-  state.crmData?.activities?.items?.slice(0, count) || [];
+// ── Activities ──
+export const selectAllActivities = createSelector(
+  selectActivitiesSlice,
+  (activities) => activities?.items || []
+);
+export const selectRecentActivities = createSelector(
+  (state: RootState) => state.crmData?.activities?.items,
+  (_state: RootState, count: number = 10) => count,
+  (items, count) => items ? items.slice(0, count) : []
+);
 
-// Overview
-export const selectOverviewData = (state: any) => state.crmData?.overview || {};
-export const selectOverviewMetrics = (state: any) =>
-  state.crmData?.overview?.metrics || {};
+// ── Overview ──
+const EMPTY_OVERVIEW: Record<string, unknown> = Object.freeze({});
+const EMPTY_METRICS: Record<string, unknown> = Object.freeze({});
+export const selectOverviewData = (state: RootState) => state.crmData?.overview ?? EMPTY_OVERVIEW;
+export const selectOverviewMetrics = (state: RootState) =>
+  state.crmData?.overview?.metrics ?? EMPTY_METRICS;
 
-// Summary stats
-export const selectTopAgents = (state: any, count: number = 5) =>
-  state.crmData?.agents?.items?.sort((a: CRMItem, b: CRMItem) => {
+// ── Summary stats (memoized — uses spread copy to avoid mutating state) ──
+export const selectTopAgents = createSelector(
+  selectAllAgents,
+  (_state: RootState, count: number = 5) => count,
+  (items, count) => [...items].sort((a: CRMItem, b: CRMItem) => {
     const bSales = typeof b.sales === 'number' ? b.sales : 0;
     const aSales = typeof a.sales === 'number' ? a.sales : 0;
     return bSales - aSales;
-  }).slice(0, count) || [];
+  }).slice(0, count)
+);
 
-export const selectLeadsByAgent = (state: any, agentId: string | number) =>
+export const makeSelectLeadsByAgent = (agentId: string | number) =>
+  createSelector(
+    (state: RootState) => state.crmData?.leads?.items,
+    (items) => items?.filter((l: CRMItem) => l.agent_id === agentId) ?? []
+  );
+/** @deprecated Use makeSelectLeadsByAgent(agentId) instead for memoized results */
+export const selectLeadsByAgent = (state: RootState, agentId: string | number) =>
   state.crmData?.leads?.items?.filter((l: CRMItem) => l.agent_id === agentId) || [];
 
-export const selectClientsByAgent = (state: any, agentId: string | number) =>
+export const makeSelectClientsByAgent = (agentId: string | number) =>
+  createSelector(
+    (state: RootState) => state.crmData?.clients?.items,
+    (items) => items?.filter((c: CRMItem) => c.agent_id === agentId) ?? []
+  );
+/** @deprecated Use makeSelectClientsByAgent(agentId) instead for memoized results */
+export const selectClientsByAgent = (state: RootState, agentId: string | number) =>
   state.crmData?.clients?.items?.filter((c: CRMItem) => c.agent_id === agentId) || [];
 
 // Last updated
-export const selectLastUpdated = (state: any) => state.crmData?.lastUpdated;
+export const selectLastUpdated = (state: RootState) => state.crmData?.lastUpdated;
 
 export default crmDataSlice.reducer;

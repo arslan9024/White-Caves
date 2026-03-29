@@ -9,7 +9,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import { configureStore, PreloadedState } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import React from 'react';
 
 // Mock commission reducer for testing
@@ -194,11 +194,11 @@ const ClientEditModal: React.FC<ClientEditModalProps> = ({
 /**
  * Helper to create test store
  */
-function createTestStore(preloadedState?: PreloadedState<any>) {
+function createTestStore(preloadedState?: Record<string, unknown>) {
   return configureStore({
     reducer: {
       commissions: mockCommissionReducer,
-    },
+    } as any,
     preloadedState,
   });
 }
@@ -463,9 +463,9 @@ describe('ClientEditModal Component Tests', () => {
       };
 
       const onClose = vi.fn();
-      const onSubmit = vi.fn(
+      const onSubmit: ClientEditModalProps['onSubmit'] = vi.fn(
         () =>
-          new Promise((resolve) => {
+          new Promise<void>((resolve) => {
             setTimeout(resolve, 100);
           })
       );
@@ -505,9 +505,9 @@ describe('ClientEditModal Component Tests', () => {
       };
 
       const onClose = vi.fn();
-      const onSubmit = vi.fn(
+      const onSubmit: ClientEditModalProps['onSubmit'] = vi.fn(
         () =>
-          new Promise((resolve) => {
+          new Promise<void>((resolve) => {
             setTimeout(resolve, 50);
           })
       );

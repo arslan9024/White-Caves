@@ -1,7 +1,21 @@
 import React from 'react';
 import { CreditCard, CheckCircle, Clock } from 'lucide-react';
 
-const PaymentsTab = ({ selectedInvoice, generatedMessage, onGenerateMessage }) => {
+interface Invoice {
+  id: string | number;
+  client: string;
+  amount: number;
+  status: string;
+  dueDate: string;
+}
+
+interface PaymentsTabProps {
+  selectedInvoice: Invoice | null;
+  generatedMessage: string;
+  onGenerateMessage: () => void;
+}
+
+const PaymentsTab: React.FC<PaymentsTabProps> = ({ selectedInvoice, generatedMessage, onGenerateMessage }) => {
   if (!selectedInvoice) {
     return (
       <div className="payments-view">

@@ -35,7 +35,7 @@ import {
 } from './PersistentAssistantSidebar.styles';
 
 const ASSISTANT_ICONS = {
-  linda: 'MessageSquare',
+  nadia: 'MessageSquare',
   mary: 'FileText',
   clara: 'Target',
   nina: 'Bot',
@@ -49,12 +49,31 @@ const ASSISTANT_ICONS = {
   aurora: 'Server'
 };
 
-const getAssistantStatus = (assistant) => {
+interface AssistantData {
+  id: string;
+  name: string;
+  title: string;
+  avatar: string;
+  colorScheme?: string;
+  department: string;
+  metrics?: { systemHealth?: string };
+  capabilities?: string[];
+}
+
+const getAssistantStatus = (assistant: AssistantData | null): 'active' | 'idle' | 'busy' | 'offline' => {
   if (!assistant) return 'offline';
   if (assistant.metrics?.systemHealth === 'optimal') return 'active';
   if (assistant.metrics?.systemHealth === 'degraded') return 'busy';
   return 'idle';
 };
+
+interface AssistantTileProps {
+  assistant: AssistantData;
+  notificationCount: number;
+  isActive: boolean;
+  onClick: (id: string) => void;
+  collapsed: boolean;
+}
 
 const AssistantTile = memo(({ 
   assistant, 
@@ -62,7 +81,7 @@ const AssistantTile = memo(({
   isActive, 
   onClick,
   collapsed
-}) => {
+}: AssistantTileProps) => {
   const status = getAssistantStatus(assistant);
   
   const hasCritical = notificationCount > 0;
@@ -108,10 +127,15 @@ const AssistantTile = memo(({
 
 AssistantTile.displayName = 'AssistantTile';
 
+interface PersistentAssistantSidebarProps {
+  onSelectAssistant?: (assistantId: string) => void;
+  activeAssistantId?: string;
+}
+
 const PersistentAssistantSidebar = memo(({ 
   onSelectAssistant,
   activeAssistantId 
-}) => {
+}: PersistentAssistantSidebarProps) => {
   const dispatch = useDispatch();
   const assistants = useSelector(selectAllAssistantsArray);
   const sidebar = useSelector(selectSidebar);
@@ -124,7 +148,7 @@ const PersistentAssistantSidebar = memo(({
     dispatch(collapseSidebar(!isCollapsed));
   }, [dispatch, isCollapsed]);
   
-  const handleSelectAssistant = useCallback((assistantId) => {
+  const handleSelectAssistant = useCallback((assistantId: string) => {
     dispatch(selectAssistant(assistantId));
     if (onSelectAssistant) {
       onSelectAssistant(assistantId);
@@ -133,10 +157,10 @@ const PersistentAssistantSidebar = memo(({
   
   const totalUnread = Object.values(unreadCounts).reduce((a, b) => a + b, 0);
   
-  const groupedAssistants = assistants.reduce((acc, assistant) => {
+  const groupedAssistants = assistants.reduce<Record<string, AssistantData[]>>((acc, assistant) => {
     const dept = assistant.department;
     if (!acc[dept]) acc[dept] = [];
-    acc[dept].push(assistant);
+    acc[dept].push(assistant as AssistantData);
     return acc;
   }, {});
   

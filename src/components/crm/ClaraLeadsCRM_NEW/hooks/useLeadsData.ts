@@ -1,4 +1,9 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import { createLogger } from '../../../../utils/logger';
+import { safeStorage } from '../../../../utils/safeStorage';
+import { useDebouncedValue } from '../../../../hooks/useDebouncedValue';
+
+const log = createLogger('LeadsData');
 
 const LEADS_STORAGE_KEY = 'clara_leads_data';
 
@@ -117,12 +122,8 @@ const INITIAL_LEADS: Lead[] = [
 
 export function useLeadsData() {
   const [leads, setLeads] = useState<Lead[]>(() => {
-    try {
-      const stored = localStorage.getItem(LEADS_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : INITIAL_LEADS;
-    } catch {
-      return INITIAL_LEADS;
-    }
+    const stored = safeStorage.getJSON<Lead[]>(LEADS_STORAGE_KEY);
+    return stored ?? INITIAL_LEADS;
   });
 
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -131,14 +132,16 @@ export function useLeadsData() {
   const [sortBy, setSortBy] = useState<string>('lastContact');
   const [sortOrder, setSortOrder] = useState<string>('desc');
 
-  // Persist leads to localStorage
-  const persistLeads = useCallback((newLeads: Lead[]) => {
+  // Debounced auto-persistence — avoids blocking the main thread on rapid mutations
+  const debouncedLeads = useDebouncedValue(leads, 500);
+
+  useEffect(() => {
     try {
-      localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(newLeads));
+      safeStorage.setJSON(LEADS_STORAGE_KEY, debouncedLeads);
     } catch (err) {
-      console.error('Failed to persist leads:', err);
+      log.error('Failed to persist leads:', err);
     }
-  }, []);
+  }, [debouncedLeads]);
 
   // Add new lead
   const addLead = useCallback((leadData: Partial<Lead>) => {
@@ -149,28 +152,25 @@ export function useLeadsData() {
       deals: 0,
       tasks: 0,
       probability: 25
-    };
-    const updated = [...leads, newLead];
-    setLeads(updated);
-    persistLeads(updated);
+    } as Lead;
+    setLeads(prev => [...prev, newLead]);
     return newLead;
-  }, [leads, persistLeads]);
+  }, []);
 
   // Update existing lead
   const updateLead = useCallback((id: string, updates: Partial<Lead>) => {
-    const updated = leads.map(lead =>
+    setLeads(prev => prev.map(lead =>
       lead.id === id ? { ...lead, ...updates } : lead
-    );
-    setLeads(updated);
-    persistLeads(updated);
-  }, [leads, persistLeads]);
+    ));
+  }, []);
 
   // Delete lead
   const deleteLead = useCallback((id: string) => {
-    const updated = leads.filter(lead => lead.id !== id);
-    setLeads(updated);
-    persistLeads(updated);
-  }, [leads, persistLeads]);
+    setLeads(prev => prev.filter(lead => lead.id !== id));
+  }, []);
+
+  // Debounce the search query to avoid excessive filtering on every keystroke
+  const debouncedSearch = useDebouncedValue(searchQuery, 300);
 
   // Filtered and sorted leads
   const filteredLeads = useMemo(() => {
@@ -186,21 +186,21 @@ export function useLeadsData() {
       result = result.filter(lead => lead.stage === filterStage);
     }
 
-    // Apply search
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+    // Apply search (debounced)
+    if (debouncedSearch) {
+      const query = debouncedSearch.toLowerCase();
       result = result.filter(lead =>
-        lead.name.toLowerCase().includes(query) ||
-        lead.email.toLowerCase().includes(query) ||
-        lead.phone.includes(query) ||
-        lead.notes.toLowerCase().includes(query)
+        (lead.name?.toLowerCase() || '').includes(query) ||
+        (lead.email?.toLowerCase() || '').includes(query) ||
+        (lead.phone || '').includes(query) ||
+        (lead.notes?.toLowerCase() || '').includes(query)
       );
     }
 
-    // Apply sort
-    result.sort((a, b) => {
-      let aVal = a[sortBy];
-      let bVal = b[sortBy];
+    // Apply sort — always copy to avoid mutating the source array
+    return [...result].sort((a, b) => {
+      let aVal = (a as any)[sortBy];
+      let bVal = (b as any)[sortBy];
 
       if (sortBy === 'lastContact' || sortBy === 'createdAt') {
         aVal = new Date(aVal).getTime();
@@ -213,9 +213,7 @@ export function useLeadsData() {
         return aVal < bVal ? 1 : -1;
       }
     });
-
-    return result;
-  }, [leads, filterStatus, filterStage, searchQuery, sortBy, sortOrder]);
+  }, [leads, filterStatus, filterStage, debouncedSearch, sortBy, sortOrder]);
 
   // Statistics
   const stats = useMemo(() => ({

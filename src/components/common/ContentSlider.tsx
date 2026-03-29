@@ -100,17 +100,21 @@ export default function ContentSlider({
     return () => window.removeEventListener('resize', updateSlidesToShow);
   }, [updateSlidesToShow]);
 
+  // maxIndex is used for rendering controls — keep for UI
   const maxIndex = Math.max(0, items.length - slidesToShow);
 
   useEffect(() => {
     if (!isPlaying || !autoPlay || items.length <= slidesToShow) return;
 
+    // Calculate maxIndex inside useEffect to avoid stale closure in setInterval
+    const currentMaxIndex = Math.max(0, items.length - slidesToShow);
+
     const timer = setInterval(() => {
-      setCurrentIndex(prev => (prev >= maxIndex ? 0 : prev + 1));
+      setCurrentIndex(prev => (prev >= currentMaxIndex ? 0 : prev + 1));
     }, autoPlayInterval);
 
     return () => clearInterval(timer);
-  }, [isPlaying, autoPlay, autoPlayInterval, maxIndex, items.length, slidesToShow]);
+  }, [isPlaying, autoPlay, autoPlayInterval, items.length, slidesToShow]);
 
   const goToSlide = (index: number) => {
     setCurrentIndex(Math.max(0, Math.min(index, maxIndex)));
@@ -127,16 +131,25 @@ export default function ContentSlider({
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     setIsDragging(true);
     setIsPlaying(false);
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientX = 'touches' in e && e.touches.length > 0 ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
     setStartX(clientX);
   };
 
   const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
     if (!isDragging) return;
-    const currentX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const currentX = 'touches' in e && e.touches.length > 0 ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
     const diff = currentX - startX;
     setTranslateX(diff);
   };
+
+  const dragResumeRef = useRef<ReturnType<typeof setTimeout>>();
+
+  // Clean up drag resume timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (dragResumeRef.current) clearTimeout(dragResumeRef.current);
+    };
+  }, []);
 
   const handleDragEnd = () => {
     if (!isDragging) return;
@@ -150,7 +163,8 @@ export default function ContentSlider({
     }
     
     setTranslateX(0);
-    setTimeout(() => setIsPlaying(autoPlay), 1000);
+    if (dragResumeRef.current) clearTimeout(dragResumeRef.current);
+    dragResumeRef.current = setTimeout(() => setIsPlaying(autoPlay), 1000);
   };
 
   const containerStyle: CSSProperties = {
@@ -225,7 +239,7 @@ export default function ContentSlider({
         <SliderDots>
           {Array.from({ length: maxIndex + 1 }).map((_, index) => (
             <SliderDot
-              key={index}
+              key={`dot-${index}`}
               $isActive={currentIndex === index}
               onClick={() => goToSlide(index)}
               aria-label={`Go to slide ${index + 1}`}

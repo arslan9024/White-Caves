@@ -9,7 +9,7 @@ export const MobileNavOverlay = styled.div<{ $isOpen: boolean }>`
   background: rgba(0, 0, 0, ${({ $isOpen }) => ($isOpen ? 0.6 : 0)});
   backdrop-filter: blur(${({ $isOpen }) => ($isOpen ? 4 : 0)}px);
   -webkit-backdrop-filter: blur(${({ $isOpen }) => ($isOpen ? 4 : 0)}px);
-  z-index: 9998;
+  z-index: var(--z-modalBackdrop, 400);
   opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
   visibility: ${({ $isOpen }) => ($isOpen ? 'visible' : 'hidden')};
   transition: all 0.3s ease;
@@ -24,7 +24,7 @@ export const MobileNavContainer = styled.div<{ $isOpen: boolean }>`
   width: 300px;
   max-width: 85vw;
   background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
-  z-index: 9999;
+  z-index: var(--z-overlay, 600);
   transform: translateX(${({ $isOpen }) => ($isOpen ? 0 : 100)}%);
   transition: transform 0.3s ease;
   display: flex;

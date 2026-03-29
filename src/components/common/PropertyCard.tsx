@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToFavorites, removeFromFavorites, selectFavorites } from '../../store/dashboardSlice';
+import { addToFavorites, removeFromFavorites, selectFavorites, type FavoriteItem } from '../../store/dashboardSlice';
 import {
   PropertyCardContainer,
   PropertyCardDiv,
@@ -37,7 +37,7 @@ interface PropertyCardProps {
   className?: string;
 }
 
-export default function PropertyCard({
+function PropertyCard({
   id,
   image,
   title,
@@ -54,9 +54,8 @@ export default function PropertyCard({
   className = '',
 }: PropertyCardProps) {
   const dispatch = useDispatch();
-  // @ts-ignore - dashboardSlice is JS, not TS
-  const favorites: any[] = useSelector(selectFavorites) || [];
-  const isFavorite = favorites.some((f: any) => f?.id === id);
+  const favorites: FavoriteItem[] = useSelector(selectFavorites) || [];
+  const isFavorite = favorites.some((f) => f?.id === id);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -72,7 +71,7 @@ export default function PropertyCard({
     <>
       <PropertyCardImage>
         {image ? (
-          <img src={image} alt={title} />
+          <img src={image} alt={title} loading="lazy" width={400} height={260} />
         ) : (
           <PropertyPlaceholder>🏠</PropertyPlaceholder>
         )}
@@ -95,10 +94,10 @@ export default function PropertyCard({
           {price}
           {type === 'rent' && <PriceSuffix>/year</PriceSuffix>}
         </PropertyPrice>
-        {(beds || baths || area) && (
+        {(beds != null && beds > 0 || baths != null && baths > 0 || area) && (
           <PropertySpecs>
-            {beds && <span>🛏️ {beds}</span>}
-            {baths && <span>🚿 {baths}</span>}
+            {beds != null && beds > 0 && <span>🛏️ {beds}</span>}
+            {baths != null && baths > 0 && <span>🚿 {baths}</span>}
             {area && <span>📐 {area}</span>}
           </PropertySpecs>
         )}
@@ -120,3 +119,5 @@ export default function PropertyCard({
     </PropertyCardDiv>
   );
 }
+
+export default React.memo(PropertyCard);

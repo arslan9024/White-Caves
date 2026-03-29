@@ -42,7 +42,7 @@ export default function TabbedPanel({
 }: TabbedPanelProps) {
   const dispatch = useDispatch();
   const storedActiveTab = useSelector((state: RootState) => 
-    storeKey ? (state as any).dashboard?.activeTabs?.[storeKey] : null
+    storeKey ? state.dashboard?.activeTabs?.[storeKey] : null
   );
   
   const activeTab = controlledActiveTab ?? storedActiveTab ?? tabs[0]?.id;

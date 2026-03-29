@@ -1,5 +1,20 @@
-import React, { memo, useState, useCallback } from 'react';
+import React, { memo, useState, useCallback, type ReactNode } from 'react';
 import './SharedComponents.css';
+
+interface Tab {
+  id: string;
+  label: string;
+  icon?: React.ComponentType<{ size: number }>;
+  badge?: number;
+}
+
+interface TabPanelProps {
+  tabs: Tab[];
+  defaultTab?: string;
+  onTabChange?: (tabId: string) => void;
+  color?: string;
+  children: ReactNode;
+}
 
 const TabPanel = memo(({ 
   tabs, 
@@ -7,20 +22,20 @@ const TabPanel = memo(({
   onTabChange,
   color = 'var(--assistant-color, #0EA5E9)',
   children 
-}) => {
-  const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.id);
+}: TabPanelProps) => {
+  const [activeTab, setActiveTab] = useState<string>(defaultTab || tabs[0]?.id);
   
-  const handleTabClick = useCallback((tabId) => {
+  const handleTabClick = useCallback((tabId: string) => {
     setActiveTab(tabId);
     onTabChange?.(tabId);
   }, [onTabChange]);
   
   const activeChild = React.Children.toArray(children).find(
-    child => child.props?.tabId === activeTab
+    (child): child is React.ReactElement<{ tabId?: string }> => React.isValidElement(child) && (child.props as { tabId?: string })?.tabId === activeTab
   );
   
   return (
-    <div className="tab-panel" style={{ '--tab-accent': color }}>
+    <div className="tab-panel" style={{ '--tab-accent': color } as React.CSSProperties}>
       <div className="tab-buttons">
         {tabs.map(tab => (
           <button
@@ -43,7 +58,12 @@ const TabPanel = memo(({
   );
 });
 
-export const TabContent = memo(({ tabId, children }) => {
+interface TabContentProps {
+  tabId: string;
+  children: ReactNode;
+}
+
+export const TabContent = memo(({ tabId, children }: TabContentProps) => {
   return <div className="tab-pane">{children}</div>;
 });
 

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { ACTIVE_LEASES, MAINTENANCE_REQUESTS, RENTAL_INQUIRIES, ActiveLease } from '../data/leasing';
 import { DAISY_LEASING_FEATURES } from '../data/features';
 
@@ -22,6 +22,7 @@ export const useLeasingData = () => {
   }, [leases]);
 
   const getOccupancyRate = useCallback((): string => {
+    if (leases.length === 0) return '0.0';
     const occupied = leases.filter(l => l.status === 'active').length;
     return ((occupied / leases.length) * 100).toFixed(1);
   }, [leases]);
@@ -30,12 +31,12 @@ export const useLeasingData = () => {
     return leases.filter(l => l.status === 'active').length;
   }, [leases]);
 
-  const filteredLeases = leases.filter(lease => {
+  const filteredLeases = useMemo(() => leases.filter(lease => {
     const matchesSearch = lease.unit.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          lease.tenant.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = filterStatus === 'all' || lease.status === filterStatus;
     return matchesSearch && matchesStatus;
-  });
+  }), [leases, searchQuery, filterStatus]);
 
   return {
     activeTab,

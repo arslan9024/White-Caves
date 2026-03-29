@@ -9,7 +9,7 @@ export { default as PipelineProgress, PipelineBoard, DealProgressBar } from './P
 export { default as UniversalNav, ROLE_MENUS, DEFAULT_NAV_LINKS } from './UniversalNav';
 export { default as SubNavBar } from './SubNavBar';
 export { default as RoleSwitcher } from './RoleSwitcher';
-export { default as ContentSlider, DefaultSlideCard } from './ContentSlider';
+export { default as ContentSlider, DefaultSlideCardComponent as DefaultSlideCard } from './ContentSlider';
 export { 
   default as RequirePermission, 
   OwnerOnly, 

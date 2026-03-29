@@ -1,8 +1,24 @@
 import React from 'react';
 import { Calendar, Clock, MapPin, Users, Video, Phone } from 'lucide-react';
 
-const CalendarTab = ({ meetings, searchQuery, onSearchChange }) => {
-  const upcomingMeetings = meetings.filter(m => m.status === 'upcoming');
+interface Meeting {
+  id: string | number;
+  title: string;
+  time: string;
+  duration: string;
+  location: string;
+  attendees: number;
+  status: string;
+}
+
+interface CalendarTabProps {
+  meetings: Meeting[];
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+}
+
+const CalendarTab: React.FC<CalendarTabProps> = ({ meetings, searchQuery, onSearchChange }) => {
+  const upcomingMeetings = meetings.filter((m: Meeting) => m.status === 'upcoming');
 
   return (
     <div className="calendar-view">
@@ -12,13 +28,13 @@ const CalendarTab = ({ meetings, searchQuery, onSearchChange }) => {
             type="text" 
             placeholder="Search meetings..."
             value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
           />
         </div>
       </div>
       <div className="meetings-list">
         <h3>Upcoming Meetings ({upcomingMeetings.length})</h3>
-        {upcomingMeetings.map(meeting => (
+        {upcomingMeetings.map((meeting: Meeting) => (
           <div key={meeting.id} className="meeting-card">
             <div className="meeting-time">
               <Clock size={16} />

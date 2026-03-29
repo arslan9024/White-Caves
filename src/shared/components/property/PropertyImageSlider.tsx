@@ -91,11 +91,11 @@ export default function PropertyImageSlider({
         <div className="slider-track">
           {imageList.map((img, index) => (
             <div 
-              key={index}
+              key={img ?? `slide-${index}`}
               className={`slide ${index === currentIndex ? 'active' : ''}`}
               style={{ transform: `translateX(${(index - currentIndex) * 100}%)` }}
             >
-              <img src={img} alt={`${title} - Image ${index + 1}`} loading="lazy" />
+              <img src={img} alt={`${title} - Image ${index + 1}`} loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
             </div>
           ))}
         </div>
@@ -112,7 +112,7 @@ export default function PropertyImageSlider({
             <div className="slide-dots">
               {imageList.map((_, index) => (
                 <button
-                  key={index}
+                  key={imageList[index] ?? `dot-${index}`}
                   className={`dot ${index === currentIndex ? 'active' : ''}`}
                   onClick={(e: React.MouseEvent) => { e.stopPropagation(); goToSlide(index); }}
                   aria-label={`Go to slide ${index + 1}`}
@@ -153,11 +153,11 @@ export default function PropertyImageSlider({
         <div className="thumbnail-strip">
           {imageList.map((img, index) => (
             <button
-              key={index}
+              key={img ?? `thumb-${index}`}
               className={`thumbnail ${index === currentIndex ? 'active' : ''}`}
               onClick={() => goToSlide(index)}
             >
-              <img src={img} alt={`Thumbnail ${index + 1}`} />
+              <img src={img} alt={`${title || 'Property'} thumbnail ${index + 1}`} loading="lazy" />
             </button>
           ))}
         </div>
@@ -180,7 +180,10 @@ export default function PropertyImageSlider({
           <div className="fullscreen-content" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
             <img 
               src={imageList[currentIndex]} 
-              alt={`${title} - Image ${currentIndex + 1}`} 
+              alt={`${title} - Image ${currentIndex + 1}`}
+              loading="lazy"
+              width={400}
+              height={300}
             />
             
             {imageList.length > 1 && (
@@ -198,11 +201,11 @@ export default function PropertyImageSlider({
           <div className="fullscreen-thumbnails">
             {imageList.map((img, index) => (
               <button
-                key={index}
+                key={img ?? `fs-thumb-${index}`}
                 className={`fs-thumbnail ${index === currentIndex ? 'active' : ''}`}
                 onClick={(e: React.MouseEvent) => { e.stopPropagation(); goToSlide(index); }}
               >
-                <img src={img} alt={`Thumbnail ${index + 1}`} />
+                <img src={img} alt={`${title || 'Property'} fullscreen thumbnail ${index + 1}`} loading="lazy" />
               </button>
             ))}
           </div>

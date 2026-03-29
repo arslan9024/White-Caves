@@ -28,7 +28,7 @@ export const ModalOverlay = styled.div`
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  z-index: 1000;
+  z-index: var(--z-overlay, 600);
   animation: ${modalFadeIn} 0.2s ease;
 `;
 
@@ -104,12 +104,12 @@ export const ModalCloseButton = styled.button`
   }
 
   &:hover {
-    background: rgba(220, 38, 38, 0.1);
-    color: var(--primary-red, #dc2626);
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--primary-gold, #D4AF37);
   }
 
   &:focus {
-    outline: 2px solid var(--primary-red, #dc2626);
+    outline: 2px solid var(--primary-gold, #D4AF37);
     outline-offset: 2px;
   }
 `;

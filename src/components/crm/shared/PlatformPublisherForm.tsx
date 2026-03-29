@@ -5,13 +5,29 @@ import {
 } from 'lucide-react';
 import './PlatformPublisher.css';
 
-const PLATFORMS = [
+interface Platform {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  status: string;
+}
+
+interface FormField {
+  id: string;
+  label: string;
+  type: 'text' | 'textarea' | 'number' | 'select';
+  required?: boolean;
+  options?: string[];
+}
+
+const PLATFORMS: Platform[] = [
   { id: 'bayut', name: 'Bayut', icon: '🏠', color: '#00A0E3', status: 'connected' },
   { id: 'property_finder', name: 'Property Finder', icon: '🔍', color: '#E4002B', status: 'connected' },
   { id: 'dubizzle', name: 'Dubizzle', icon: '📱', color: '#1A1A2E', status: 'pending' }
 ];
 
-const PROPERTY_FIELDS = {
+const PROPERTY_FIELDS: Record<string, FormField[]> = {
   common: [
     { id: 'title', label: 'Property Title', type: 'text', required: true },
     { id: 'description', label: 'Description', type: 'textarea', required: true },
@@ -35,22 +51,28 @@ const PROPERTY_FIELDS = {
   ]
 };
 
+interface PlatformPublisherFormProps {
+  property?: Record<string, unknown>;
+  onPublish?: (data: Record<string, unknown>, platforms: string[]) => void;
+  onSaveDraft?: (data: Record<string, unknown>) => void;
+}
+
 const PlatformPublisherForm = memo(({ 
   property,
   onPublish,
   onSaveDraft
-}) => {
-  const [formData, setFormData] = useState(property || {});
-  const [selectedPlatforms, setSelectedPlatforms] = useState(['bayut', 'property_finder']);
-  const [publishing, setPublishing] = useState({});
-  const [publishResults, setPublishResults] = useState({});
-  const [expandedSections, setExpandedSections] = useState({ common: true });
+}: PlatformPublisherFormProps) => {
+  const [formData, setFormData] = useState<Record<string, string>>(property as Record<string, string> || {});
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['bayut', 'property_finder']);
+  const [publishing, setPublishing] = useState<Record<string, boolean>>({});
+  const [publishResults, setPublishResults] = useState<Record<string, { success: boolean; message: string }>>({});
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({ common: true });
   
-  const handleFieldChange = useCallback((fieldId, value) => {
+  const handleFieldChange = useCallback((fieldId: string, value: string) => {
     setFormData(prev => ({ ...prev, [fieldId]: value }));
   }, []);
   
-  const togglePlatform = useCallback((platformId) => {
+  const togglePlatform = useCallback((platformId: string) => {
     setSelectedPlatforms(prev => 
       prev.includes(platformId) 
         ? prev.filter(p => p !== platformId)
@@ -58,7 +80,7 @@ const PlatformPublisherForm = memo(({
     );
   }, []);
   
-  const toggleSection = useCallback((section) => {
+  const toggleSection = useCallback((section: string) => {
     setExpandedSections(prev => ({
       ...prev,
       [section]: !prev[section]
@@ -83,7 +105,7 @@ const PlatformPublisherForm = memo(({
     }
   }, [formData, selectedPlatforms, onPublish]);
   
-  const renderField = (field) => {
+  const renderField = (field: FormField): React.ReactNode => {
     if (field.type === 'textarea') {
       return (
         <textarea
@@ -102,7 +124,7 @@ const PlatformPublisherForm = memo(({
           onChange={(e) => handleFieldChange(field.id, e.target.value)}
         >
           <option value="">Select {field.label}</option>
-          {field.options.map(opt => (
+          {field.options?.map(opt => (
             <option key={opt} value={opt}>{opt}</option>
           ))}
         </select>
@@ -246,7 +268,7 @@ const PlatformPublisherForm = memo(({
       </div>
       
       <div className="publisher-actions">
-        <button className="btn secondary" onClick={onSaveDraft}>
+        <button className="btn secondary" onClick={() => onSaveDraft?.(formData)}>
           Save as Draft
         </button>
         <button 

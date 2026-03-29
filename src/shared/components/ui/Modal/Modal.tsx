@@ -1,6 +1,12 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import * as S from './Modal.styles';
+
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+// Global counter: only restore body scroll when ALL modals are closed
+let openModalCount = 0;
 
 /* ── Modal ────────────────────────────────────────────── */
 
@@ -14,7 +20,7 @@ export interface ModalProps {
   /** Modal title displayed in the header */
   title?: string;
   /** Modal size preset */
-  size?: 'small' | 'medium' | 'large' | 'fullscreen' | string;
+  size?: 'small' | 'medium' | 'large' | 'fullscreen' | 'full';
   /** Whether to show the close button in the header */
   showCloseButton?: boolean;
   /** Whether clicking the overlay closes the modal */
@@ -37,11 +43,30 @@ const ModalBase = React.memo<ModalProps>(({
   className = '',
   ...props
 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
   const handleEscape = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape' && closeOnEscape && onClose) {
       onClose();
     }
   }, [closeOnEscape, onClose]);
+
+  // Focus trap: keep Tab cycling within the modal
+  const handleTabTrap = useCallback((e: KeyboardEvent) => {
+    if (e.key !== 'Tab' || !containerRef.current) return;
+    const focusable = containerRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }, []);
 
   const handleOverlayClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget && closeOnOverlayClick && onClose) {
@@ -51,14 +76,35 @@ const ModalBase = React.memo<ModalProps>(({
 
   useEffect(() => {
     if (isOpen) {
+      // Save previously focused element to restore on close
+      previousFocusRef.current = document.activeElement as HTMLElement;
       document.addEventListener('keydown', handleEscape);
+      document.addEventListener('keydown', handleTabTrap);
+      openModalCount++;
       document.body.style.overflow = 'hidden';
+      // Auto-focus first focusable element inside modal
+      requestAnimationFrame(() => {
+        const el = containerRef.current?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+        el?.focus();
+      });
+    } else {
+      // Modal just closed — restore focus to the element that opened it
+      if (previousFocusRef.current) {
+        previousFocusRef.current.focus();
+        previousFocusRef.current = null;
+      }
     }
     return () => {
       document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleTabTrap);
+      if (isOpen) {
+        openModalCount = Math.max(0, openModalCount - 1);
+      }
+      if (openModalCount === 0) {
+        document.body.style.overflow = '';
+      }
     };
-  }, [isOpen, handleEscape]);
+  }, [isOpen, handleEscape, handleTabTrap]);
 
   if (!isOpen) return null;
 
@@ -69,7 +115,7 @@ const ModalBase = React.memo<ModalProps>(({
       aria-modal="true"
       aria-labelledby={title ? 'modal-title' : undefined}
     >
-      <S.ModalContainer $size={size} {...props}>
+      <S.ModalContainer ref={containerRef} $size={size === 'fullscreen' ? 'full' : size} {...props}>
         {(title || showCloseButton) && (
           <S.ModalHeader>
             {title && <S.ModalTitle id="modal-title">{title}</S.ModalTitle>}

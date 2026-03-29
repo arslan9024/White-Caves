@@ -1,14 +1,29 @@
 import React from 'react';
 import { FileText, CheckCircle, Clock, Eye, Download } from 'lucide-react';
 
-const ContractsTab = ({ contracts, onApprove }) => {
+interface Contract {
+  id: string | number;
+  title: string;
+  type: string;
+  parties: string;
+  value: number;
+  status: string;
+  date: string;
+}
+
+interface ContractsTabProps {
+  contracts: Contract[];
+  onApprove: (id: string | number) => void;
+}
+
+const ContractsTab: React.FC<ContractsTabProps> = ({ contracts, onApprove }) => {
   return (
     <div className="contracts-view">
       <h3>Contract Review & Management</h3>
       
       <div className="contracts-toolbar">
         <div className="search-bar">
-          <input type="text" placeholder="Search contracts..." />
+          <input type="text" placeholder="Search contracts..." aria-label="Search contracts" />
         </div>
         <button className="btn-new">+ New Contract</button>
       </div>
@@ -26,7 +41,7 @@ const ContractsTab = ({ contracts, onApprove }) => {
           </tr>
         </thead>
         <tbody>
-          {contracts.map((c) => (
+          {contracts.map((c: Contract) => (
             <tr key={c.id} className={`status-${c.status}`}>
               <td>
                 <div className="contract-title">

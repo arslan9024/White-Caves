@@ -1,6 +1,9 @@
 import React from 'react';
 import * as LucideIcons from 'lucide-react';
+import { createLogger } from '../../../../utils/logger';
 import './Icon.css';
+
+const iconLog = createLogger('Icon');
 
 export interface IconProps {
   /** Lucide icon name (PascalCase, e.g. "Home", "Settings", "ChevronDown") */
@@ -34,7 +37,9 @@ const Icon = React.memo<IconProps>(({
   const IconComponent = (LucideIcons as unknown as LucideIconMap)[name];
 
   if (!IconComponent) {
-    console.warn(`Icon "${name}" not found in lucide-react`);
+    if (import.meta.env.DEV) {
+      iconLog.warn(`Icon "${name}" not found in lucide-react`);
+    }
     return null;
   }
 

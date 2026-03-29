@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useBackendData } from '../hooks/useBackendData';
+import type { BackendFeature } from '../data/features';
 import OverviewTab from './OverviewTab';
 import APIsTab from './APIsTab';
 import DatabaseTab from './DatabaseTab';
@@ -12,10 +13,15 @@ const WillowBackendCRM = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const {
     apiStats,
-    dbHealth,
-    cacheHealth,
-    securityStatus,
-    realtimeStats,
+    apis,
+    databaseMetrics,
+    cacheStats,
+    securityChecks,
+    realtimeConnections,
+    getSecurityStatus,
+    getRealtimeStats,
+    getCacheHealthPercentage,
+    getDatabaseHealth,
     features
   } = useBackendData();
 
@@ -29,29 +35,34 @@ const WillowBackendCRM = () => {
   ];
 
   const renderContent = () => {
+    const securityStatus = getSecurityStatus();
+    const realtimeStats = getRealtimeStats();
+    const dbHealth = getDatabaseHealth();
+    const cacheHealth = parseFloat(getCacheHealthPercentage());
+
     switch (activeTab) {
       case 'overview':
         return (
           <OverviewTab
-            apiStats={apiStats}
-            dbHealth={dbHealth}
+            apiStats={apiStats as any}
+            dbHealth={dbHealth as any}
             cacheHealth={cacheHealth}
             securityStatus={securityStatus}
             realtimeStats={realtimeStats}
           />
         );
       case 'apis':
-        return <APIsTab apiStats={apiStats} />;
+        return <APIsTab endpoints={apis} apiStats={apiStats as any} />;
       case 'database':
-        return <DatabaseTab dbHealth={dbHealth} />;
+        return <DatabaseTab metrics={databaseMetrics as any} dbHealth={dbHealth as any} />;
       case 'caching':
-        return <CachingTab cacheHealth={cacheHealth} />;
+        return <CachingTab cacheStats={cacheStats as any} cacheHealth={cacheHealth} />;
       case 'security':
-        return <SecurityTab securityStatus={securityStatus} />;
+        return <SecurityTab checks={securityChecks} securityStatus={securityStatus} />;
       case 'realtime':
-        return <RealtimeTab realtimeStats={realtimeStats} />;
+        return <RealtimeTab connections={realtimeConnections} realtimeStats={realtimeStats} />;
       default:
-        return <OverviewTab apiStats={apiStats} dbHealth={dbHealth} cacheHealth={cacheHealth} securityStatus={securityStatus} realtimeStats={realtimeStats} />;
+        return <OverviewTab apiStats={apiStats as any} dbHealth={dbHealth as any} cacheHealth={cacheHealth} securityStatus={securityStatus} realtimeStats={realtimeStats} />;
     }
   };
 
@@ -83,10 +94,10 @@ const WillowBackendCRM = () => {
       <div className="features-section">
         <h3>Available Features</h3>
         <ul className="features-list">
-          {features.map((feature, index) => (
-            <li key={index} className="feature-item">
+          {features.map((feature: BackendFeature) => (
+            <li key={feature.id} className="feature-item">
               <span className="feature-icon">✓</span>
-              <span className="feature-text">{feature}</span>
+              <span className="feature-text">{feature.name}</span>
             </li>
           ))}
         </ul>

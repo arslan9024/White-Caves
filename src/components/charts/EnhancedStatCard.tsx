@@ -29,10 +29,10 @@ interface EnhancedStatCardProps {
   change?: string;
   trend?: 'up' | 'down' | 'stable';
   comparison?: string;
-  icon?: React.ReactNode;
+  icon?: React.ComponentType<{ size?: number; color?: string }> | null;
   color?: string;
   backgroundColor?: string;
-  sparklineData?: number[];
+  sparklineData?: (number | { value: number })[];
   onClick?: () => void;
 }
 
@@ -46,8 +46,8 @@ const EnhancedStatCard: React.FC<EnhancedStatCardProps> = ({
   icon: Icon = null,
   color = '#3B82F6',
   backgroundColor = 'rgba(59, 130, 246, 0.1)',
-  sparklineData = [],
-  onClick = null
+  sparklineData = [] as (number | { value: number })[],
+  onClick = undefined as (() => void) | undefined
 }) => {
   const getTrendIcon = () => {
     switch (trend) {
@@ -102,22 +102,22 @@ const EnhancedStatCard: React.FC<EnhancedStatCardProps> = ({
 
   return (
     <StatCardWrapper
-      backgroundColor={backgroundColor}
-      borderColor={color}
-      isClickable={!!onClick}
+      $backgroundColor={backgroundColor}
+      $borderColor={color}
+      $isClickable={!!onClick}
       onClick={onClick}
       title={label}
     >
       <StatCardHeader>
         <StatCardLabel>
-          {Icon && <Icon size={16} style={{ color, marginRight: '8px' }} />}
+          {Icon && <Icon size={16} color={color} />}
           <span>{label}</span>
         </StatCardLabel>
-        <TrendIcon as={trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus} trendType={trend} size={20} />
+        <TrendIcon as={trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus} $trendType={trend} size={20} />
       </StatCardHeader>
 
       <StatCardValue>
-        <StatValue style={{ color }}>
+        <StatValue $color={color}>
           {value}
         </StatValue>
         {unit && <StatUnit>{unit}</StatUnit>}
@@ -126,7 +126,7 @@ const EnhancedStatCard: React.FC<EnhancedStatCardProps> = ({
       <StatCardFooter>
         {sparklineData.length > 0 && renderSparkline()}
         <StatCardComparison>
-          <ChangeValue style={{ color: getTrendColor() }}>
+          <ChangeValue $color={getTrendColor()}>
             {change}
           </ChangeValue>
           <ComparisonText>{comparison}</ComparisonText>
@@ -136,4 +136,4 @@ const EnhancedStatCard: React.FC<EnhancedStatCardProps> = ({
   );
 };
 
-export default EnhancedStatCard;
+export default React.memo(EnhancedStatCard);

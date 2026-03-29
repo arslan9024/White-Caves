@@ -1,13 +1,14 @@
 
 import React from 'react';
 import { WhatsAppFloatingBtn, WhatsAppIcon } from './WhatsAppButton.styles';
+import { Config } from '../config/constants';
 
 export default function WhatsAppButton() {
-  const phoneNumber = '+971563616136';
+  const phoneNumber = Config.COMPANY.WHATSAPP;
   const message = encodeURIComponent('Hello! I would like to inquire about White Caves Real Estate services.');
   
   const handleWhatsAppClick = () => {
-    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank', 'noopener,noreferrer');
   };
 
   return (

@@ -1,8 +1,10 @@
-import React, { FC, useState, useEffect, useCallback, ChangeEvent } from 'react';
+import React, { FC, useState, useEffect, useCallback, useMemo, ChangeEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
-import { RootState, AppDispatch } from '../store';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { RootState, AppDispatch } from '../store/store';
 import { addToFavorites, removeFromFavorites, selectFavorites } from '../store/dashboardSlice';
+import { selectAllProperties, selectPropertiesLoading, fetchPropertiesFromAPI } from '../store/crmDataSlice';
 import AppLayout from '../components/layout/AppLayout';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
@@ -11,7 +13,7 @@ import { Search, SlidersHorizontal, Grid, List, MapPin, Bed, Bath, Maximize, X, 
 import './PropertiesPage.css';
 
 interface PropertyType {
-  id: number;
+  id: string;
   title: string;
   location: string;
   type: string;
@@ -30,65 +32,82 @@ interface PropertyType {
 
 interface PropertiesPageProps {}
 
-const SAMPLE_PROPERTIES: PropertyType[] = [
-  {
-    id: 1,
-    title: "Beachfront Villa with Private Pool",
-    location: "Palm Jumeirah",
-    type: "Villa",
-    purpose: "buy",
-    beds: 6,
-    baths: 7,
-    sqft: 12000,
-    price: 45000000,
-    images: [
-      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800",
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800",
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800",
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800"
-    ],
-    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800",
-    amenities: ["Pool", "Beach Access", "Parking", "Security", "Garden", "Gym"],
-    featured: true,
-    yearBuilt: 2022
-  },
-  {
-    id: 2,
-    title: "Burj Khalifa View Penthouse",
-    location: "Downtown Dubai",
-    type: "Penthouse",
-    purpose: "buy",
-    beds: 4,
-    baths: 5,
-    sqft: 6500,
-    price: 35000000,
-    images: [
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800",
-      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800",
-      "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?w=800"
-    ],
-    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800",
-    amenities: ["Gym", "Parking", "Concierge", "Pool", "Security"],
-    featured: true,
-    yearBuilt: 2021
-  }
-];
+/** Default placeholder image when property has no images */
+const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800';
+
+/** Map a CRM API property to the display format */
+function mapApiProperty(p: Record<string, unknown>): PropertyType {
+  const images = Array.isArray(p.images) && p.images.length > 0
+    ? (p.images as string[])
+    : [PLACEHOLDER_IMAGE];
+  return {
+    id: String(p.id || ''),
+    // NOTE: Using string IDs to match MongoDB/Prisma ObjectId format
+    title: String(p.title || 'Untitled Property'),
+    location: String(p.location || p.area || 'Dubai'),
+    type: String(p.type || 'Apartment'),
+    purpose: (p.purpose as 'buy' | 'rent') || 'buy',
+    beds: Number(p.bedrooms ?? p.beds ?? 0),
+    baths: Number(p.bathrooms ?? p.baths ?? 0),
+    sqft: Number(p.sqft ?? 0),
+    price: Number(p.price ?? 0),
+    priceType: p.priceType ? String(p.priceType) : undefined,
+    images,
+    image: images[0],
+    amenities: Array.isArray(p.amenities) ? (p.amenities as string[]) : [],
+    featured: Boolean(p.featured),
+    yearBuilt: Number(p.yearBuilt ?? p.year_built ?? new Date().getFullYear()),
+  };
+}
 
 const PropertiesPage: FC<PropertiesPageProps> = () => {
+  useDocumentTitle('Properties');
   const [searchParams] = useSearchParams();
   const dispatch = useDispatch<AppDispatch>();
   const favorites = useSelector((state: RootState) => selectFavorites(state));
+  const apiProperties = useSelector(selectAllProperties) as Record<string, unknown>[];
+  const loading = useSelector(selectPropertiesLoading);
   
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedProperty, setSelectedProperty] = useState<PropertyType | null>(null);
 
-  const handleFavoriteToggle = useCallback((propertyId: number) => {
-    const isFavorited = favorites.includes(propertyId);
+  // Fetch properties from API on mount
+  useEffect(() => {
+    const promise = dispatch(fetchPropertiesFromAPI({}));
+    return () => { promise.abort?.(); };
+  }, [dispatch]);
+
+  // Map API properties to display format
+  const properties = useMemo(
+    () => apiProperties.map(mapApiProperty),
+    [apiProperties]
+  );
+
+  // Filter by search term
+  const filteredProperties = useMemo(() => {
+    if (!searchTerm.trim()) return properties;
+    const term = searchTerm.toLowerCase();
+    return properties.filter(
+      (p) =>
+        p.title.toLowerCase().includes(term) ||
+        p.location.toLowerCase().includes(term) ||
+        p.type.toLowerCase().includes(term)
+    );
+  }, [properties, searchTerm]);
+
+  const handleFavoriteToggle = useCallback((property: PropertyType) => {
+    const isFavorited = favorites.some(f => f.id === property.id);
     if (isFavorited) {
-      dispatch(removeFromFavorites(propertyId));
+      dispatch(removeFromFavorites(property.id));
     } else {
-      dispatch(addToFavorites(propertyId));
+      dispatch(addToFavorites({
+        id: property.id,
+        title: property.title,
+        location: property.location,
+        price: property.price.toLocaleString(),
+        image: property.image,
+      }));
     }
   }, [favorites, dispatch]);
 
@@ -133,14 +152,28 @@ const PropertiesPage: FC<PropertiesPageProps> = () => {
           </div>
 
           <div className={`properties-grid ${view}`}>
-            {SAMPLE_PROPERTIES.map(property => (
+            {loading && (
+              <div className="properties-loading" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem 1rem' }}>
+                <p style={{ fontSize: '1.1rem', color: '#555' }}>⏳ Loading properties...</p>
+              </div>
+            )}
+            {!loading && filteredProperties.length === 0 && (
+              <div className="properties-empty" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem 1rem' }}>
+                <p style={{ fontSize: '1.5rem' }}>🏠</p>
+                <p style={{ fontSize: '1.1rem', fontWeight: 600, color: '#333' }}>No Properties Found</p>
+                <p style={{ fontSize: '0.9rem', color: '#888' }}>
+                  {searchTerm ? 'Try adjusting your search terms.' : 'Properties will appear here once they are listed.'}
+                </p>
+              </div>
+            )}
+            {filteredProperties.map(property => (
               <div
                 key={property.id}
                 className="property-item"
                 onClick={() => setSelectedProperty(property)}
               >
                 <div className="property-image">
-                  <img src={property.image} alt={property.title} />
+                  <img src={property.image} alt={property.title} loading="lazy" width={400} height={260} />
                 </div>
                 <div className="property-info">
                   <h3>{property.title}</h3>
@@ -162,8 +195,8 @@ const PropertiesPage: FC<PropertiesPageProps> = () => {
           <PropertyDetailModal
             property={selectedProperty}
             onClose={() => setSelectedProperty(null)}
-            isFavorited={favorites.includes(selectedProperty.id)}
-            onFavoriteToggle={() => handleFavoriteToggle(selectedProperty.id)}
+            isFavorite={favorites.some(f => f.id === selectedProperty.id)}
+            onFavorite={() => handleFavoriteToggle(selectedProperty)}
           />
         )}
 

@@ -11,8 +11,8 @@ export const useBackendData = () => {
 
   const apiStats = useMemo(() => ({
     totalCalls: apis.reduce((sum, e) => sum + e.calls, 0),
-    avgResponseTime: Math.round(apis.reduce((sum, e) => sum + e.avgTime, 0) / apis.length),
-    avgSuccessRate: (apis.reduce((sum, e) => sum + e.successRate, 0) / apis.length).toFixed(2),
+    avgResponseTime: apis.length > 0 ? Math.round(apis.reduce((sum, e) => sum + e.avgTime, 0) / apis.length) : 0,
+    avgSuccessRate: apis.length > 0 ? (apis.reduce((sum, e) => sum + e.successRate, 0) / apis.length).toFixed(2) : '0.00',
     cachedEndpoints: apis.filter(e => e.cached).length
   }), [apis]);
 
@@ -21,7 +21,7 @@ export const useBackendData = () => {
     return {
       passed,
       total: securityChecks.length,
-      percentage: Math.round((passed / securityChecks.length) * 100)
+      percentage: securityChecks.length > 0 ? Math.round((passed / securityChecks.length) * 100) : 0
     };
   }, [securityChecks]);
 

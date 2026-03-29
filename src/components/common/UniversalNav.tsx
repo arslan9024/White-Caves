@@ -1,9 +1,10 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import type { RootState } from '../../store/store';
+import { formatDate as formatDateUtil } from '../../utils';
 import {
   setOnlineStatus,
-  updateCurrentTime,
   toggleRoleMenu,
   closeRoleMenu
 } from '../../store/navigationSlice';
@@ -67,7 +68,7 @@ interface UniversalNavProps {
   className?: string;
 }
 
-const DEFAULT_NAV_LINKS: NavLinkItem[] = [
+export const DEFAULT_NAV_LINKS: NavLinkItem[] = [
   { path: '/', label: 'Home' },
   { path: '/properties', label: 'Properties' },
   { path: '/services', label: 'Services' },
@@ -130,7 +131,7 @@ const OWNER_MENU: RoleMenu = {
   ],
 };
 
-const ROLE_MENUS: Record<string, RoleMenu> = {
+export const ROLE_MENUS: Record<string, RoleMenu> = {
   ...PUBLIC_ROLE_MENUS,
   'owner': OWNER_MENU
 };
@@ -147,7 +148,7 @@ const UniversalNav: FC<UniversalNavProps> = ({
   const location = useLocation();
   const dispatch = useDispatch();
   
-  const navigationState = useSelector((state: any) => state.navigation);
+  const navigationState = useSelector((state: RootState) => state.navigation);
   const { isOnline, currentTime, roleMenuOpen, activeRole } = navigationState || {
     isOnline: true,
     currentTime: new Date().toISOString(),
@@ -160,12 +161,8 @@ const UniversalNav: FC<UniversalNavProps> = ({
 
   const menu = activeRole ? ROLE_MENUS[activeRole] : null;
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      dispatch(updateCurrentTime(new Date().toISOString()));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [dispatch]);
+  // Clock dispatch removed — handled by UniversalComponents globally
+  // No duplicate setInterval needed here
 
   useEffect(() => {
     const handleOnline = () => dispatch(setOnlineStatus(true));
@@ -196,10 +193,9 @@ const UniversalNav: FC<UniversalNavProps> = ({
 
   const currentDateTime = new Date(currentTime);
   
-  const formatDate = (date: Date): string => {
-    const options: Intl.DateTimeFormatOptions = { weekday: 'short', day: 'numeric', month: 'short' };
-    return date.toLocaleDateString('en-AE', options);
-  };
+  const formatDate = (date: Date): string => formatDateUtil(date, {
+    weekday: 'short', day: 'numeric', month: 'short'
+  });
 
   const formatTime = (date: Date): string => {
     return date.toLocaleTimeString('en-AE', { 
@@ -214,7 +210,7 @@ const UniversalNav: FC<UniversalNavProps> = ({
       <NavContainer>
         <NavLeft>
           <NavLogo to="/">
-            <img src={logoPath} alt={logoText} />
+            <img src={logoPath} alt={logoText} width={40} height={40} loading="lazy" />
             <LogoText>{logoText}</LogoText>
           </NavLogo>
 
@@ -247,6 +243,11 @@ const UniversalNav: FC<UniversalNavProps> = ({
             <RoleDropdownContainer ref={menuRef}>
               <RoleTrigger 
                 onClick={() => dispatch(toggleRoleMenu())}
+                role="button"
+                tabIndex={0}
+                aria-expanded={roleMenuOpen}
+                aria-label={`${menu.label} menu`}
+                onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); dispatch(toggleRoleMenu()); } }}
               >
                 <RoleIconSpan>{menu.icon}</RoleIconSpan>
                 <RoleLabel>{menu.label}</RoleLabel>

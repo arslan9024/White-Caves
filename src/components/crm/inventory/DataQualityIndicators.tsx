@@ -19,7 +19,7 @@ import {
   IndicatorDesc
 } from './DataQualityIndicators.styles';
 
-const DataQualityIndicators = ({ onFilterClick }) => {
+const DataQualityIndicators = ({ onFilterClick }: { onFilterClick?: (filterKey: string) => void }) => {
   const stats = useSelector(selectInventoryStats);
   const multiOwnerProps = useSelector(selectMultiOwnerProperties);
   const multiPropertyOwners = useSelector(selectOwnersWithMultipleProperties);

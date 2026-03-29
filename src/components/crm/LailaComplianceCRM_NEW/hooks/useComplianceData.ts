@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { KYC_VERIFICATIONS, CONTRACTS, AML_ALERTS, KYCVerification, Contract, AMLAlert } from '../data/compliance';
 import { COMPLIANCE_FEATURES } from '../data/features';
 
@@ -7,15 +7,15 @@ export const useComplianceData =() => {
   const [contracts, setContracts] = useState<Contract[]>(CONTRACTS);
   const [amlAlerts, setAmlAlerts] = useState<AMLAlert[]>(AML_ALERTS);
 
-  const complianceStats = {
-    verified: 156,
-    verifiedChange: 12,
-    pending: 23,
-    amlAlerts: 3,
-    contracts: contracts.length
-  };
+  // Derive stats from actual data instead of hardcoded values
+  const complianceStats = useMemo(() => ({
+    verified: kycVerifications.filter(v => v.status === 'verified').length,
+    pending: kycVerifications.filter(v => v.status === 'pending').length,
+    amlAlerts: amlAlerts.filter(a => a.status !== 'cleared').length,
+    contracts: contracts.length,
+  }), [kycVerifications, amlAlerts, contracts]);
 
-  const handleApproveVerification = useCallback((verificationId: number) => {
+  const handleApproveVerification = useCallback((verificationId: string | number) => {
     setKycVerifications(prev =>
       prev.map(v =>
         v.id === verificationId ? { ...v, status: 'verified' } : v
@@ -23,7 +23,7 @@ export const useComplianceData =() => {
     );
   }, []);
 
-  const handleRejectVerification = useCallback((verificationId: number) => {
+  const handleRejectVerification = useCallback((verificationId: string | number) => {
     setKycVerifications(prev =>
       prev.map(v =>
         v.id === verificationId ? { ...v, status: 'rejected' } : v
@@ -31,7 +31,7 @@ export const useComplianceData =() => {
     );
   }, []);
 
-  const handleApproveContract = useCallback((contractId: number) => {
+  const handleApproveContract = useCallback((contractId: string | number) => {
     setContracts(prev =>
       prev.map(c =>
         c.id === contractId ? { ...c, status: 'approved' } : c
@@ -39,7 +39,7 @@ export const useComplianceData =() => {
     );
   }, []);
 
-  const handleAlertResolution = useCallback((alertId: number) => {
+  const handleAlertResolution = useCallback((alertId: string | number) => {
     setAmlAlerts(prev =>
       prev.map(a =>
         a.id === alertId ? { ...a, status: 'cleared' } : a

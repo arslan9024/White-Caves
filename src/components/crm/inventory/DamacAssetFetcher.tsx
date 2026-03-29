@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { 
   Image, Download, Search, Loader2, CheckCircle, 
   XCircle, Grid, List, ExternalLink, Plus, Trash2
@@ -35,17 +35,43 @@ import {
 
 const DAMAC_BASE_URL = 'https://s3.eu-west-1.amazonaws.com/damac-inv/otp/';
 
-const DamacAssetFetcher = ({ selectedProperty }) => {
+interface DamacAsset {
+  id: string;
+  sdNumber: string;
+  regNumber: string | null;
+  url: string;
+  type: string;
+  found?: boolean;
+  error?: string;
+  valid?: boolean;
+  status?: string;
+}
+
+interface DamacAssetFetcherProps {
+  selectedProperty?: {
+    id: string;
+    name?: string;
+    sdNumbers?: string[];
+    registrationNumbers?: string[];
+  } | null;
+}
+
+const DamacAssetFetcher: React.FC<DamacAssetFetcherProps> = ({ selectedProperty }) => {
   const [sdNumbers, setSdNumbers] = useState('');
   const [regNumbers, setRegNumbers] = useState('');
-  const [assets, setAssets] = useState([]);
+  const [assets, setAssets] = useState<DamacAsset[]>([]);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0 });
-  const [viewMode, setViewMode] = useState('grid');
-  const [selectedAssets, setSelectedAssets] = useState([]);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
+  const isCancelledRef = useRef(false);
 
-  const buildUrls = useCallback((sdList, regList) => {
-    const urls = [];
+  useEffect(() => {
+    return () => { isCancelledRef.current = true; };
+  }, []);
+
+  const buildUrls = useCallback((sdList: string, regList: string): DamacAsset[] => {
+    const urls: DamacAsset[] = [];
     const sds = sdList.split('\n').map(s => s.trim()).filter(Boolean);
     const regs = regList.split('\n').map(s => s.trim()).filter(Boolean);
 
@@ -74,7 +100,7 @@ const DamacAssetFetcher = ({ selectedProperty }) => {
     return urls;
   }, []);
 
-  const checkImageUrl = async (urlObj) => {
+  const checkImageUrl = async (urlObj: DamacAsset): Promise<DamacAsset> => {
     return new Promise((resolve) => {
       const img = new window.Image();
       img.onload = () => resolve({ ...urlObj, status: 'found', valid: true });
@@ -86,24 +112,29 @@ const DamacAssetFetcher = ({ selectedProperty }) => {
   const handleFetch = async () => {
     if (!sdNumbers.trim()) return;
     
+    isCancelledRef.current = false;
     setLoading(true);
     setAssets([]);
     
     const urlsToCheck = buildUrls(sdNumbers, regNumbers);
     setProgress({ current: 0, total: urlsToCheck.length });
     
-    const results = [];
+    const results: DamacAsset[] = [];
     for (let i = 0; i < urlsToCheck.length; i++) {
+      if (isCancelledRef.current) break;
       const result = await checkImageUrl(urlsToCheck[i]);
+      if (isCancelledRef.current) break;
       results.push(result);
       setProgress({ current: i + 1, total: urlsToCheck.length });
       setAssets([...results]);
     }
     
-    setLoading(false);
+    if (!isCancelledRef.current) {
+      setLoading(false);
+    }
   };
 
-  const toggleAssetSelection = (assetId) => {
+  const toggleAssetSelection = (assetId: string) => {
     setSelectedAssets(prev => 
       prev.includes(assetId) 
         ? prev.filter(id => id !== assetId)
@@ -115,7 +146,7 @@ const DamacAssetFetcher = ({ selectedProperty }) => {
     selectedAssets.forEach(assetId => {
       const asset = assets.find(a => a.id === assetId);
       if (asset?.valid) {
-        window.open(asset.url, '_blank');
+        window.open(asset.url, '_blank', 'noopener,noreferrer');
       }
     });
   };
@@ -125,7 +156,7 @@ const DamacAssetFetcher = ({ selectedProperty }) => {
 
   const populateFromProperty = () => {
     if (selectedProperty) {
-      const pNumber = selectedProperty.pNumber || '';
+      const pNumber = (selectedProperty as Record<string, unknown>).pNumber as string || '';
       const sdMatch = pNumber.match(/SD\d+/i);
       if (sdMatch) {
         setSdNumbers(sdMatch[0]);

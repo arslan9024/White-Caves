@@ -1,4 +1,8 @@
+import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+import { createLogger } from '../utils/logger';
+
+const log = createLogger('ActionHandler');
 import { useNavigate } from 'react-router-dom';
 import { addNotification } from '../store/slices/notificationSlice';
 
@@ -6,14 +10,20 @@ import { addNotification } from '../store/slices/notificationSlice';
  * Custom hook for handling quick action clicks across the dashboard
  * Manages navigation, notifications, and action routing
  */
-export const useActionHandler = () => {
+
+interface UseActionHandlerReturn {
+  handleAction: (actionLabel: string, department: string, service?: string) => void;
+  getActionRoute: (action: string, department: string, service?: string) => string | null;
+}
+
+export const useActionHandler = (): UseActionHandlerReturn => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   /**
    * Route action to appropriate handler/page based on department and service
    */
-  const getActionRoute = (action: string, department: string, service?: string): string | null => {
+  const getActionRoute = useCallback((action: string, department: string, service?: string): string | null => {
     // Sales Department
     if (department === 'sales') {
       if (action.includes('lead')) {
@@ -97,12 +107,12 @@ export const useActionHandler = () => {
     }
 
     return null;
-  };
+  }, []);
 
   /**
    * Handle action click with intelligent routing based on action type
    */
-  const handleAction = (actionLabel: string, department: string, service?: string): void => {
+  const handleAction = useCallback((actionLabel: string, department: string, service?: string): void => {
     try {
       const action = actionLabel.toLowerCase();
 
@@ -138,7 +148,7 @@ export const useActionHandler = () => {
         }));
       }
     } catch (error) {
-      console.error('Action error:', error);
+      log.error('Action error:', error);
       dispatch(addNotification({
         type: 'error',
         title: 'Error',
@@ -146,7 +156,7 @@ export const useActionHandler = () => {
         duration: 4000
       }));
     }
-  };
+  }, [dispatch, navigate, getActionRoute]);
 
   return {
     handleAction,

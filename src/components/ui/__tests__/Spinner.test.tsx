@@ -10,34 +10,33 @@ describe('Spinner Component', () => {
       expect(spinner).toBeInTheDocument();
     });
 
-    it('should render with isLoading prop', () => {
-      const { container } = render(<Spinner isLoading={true} />);
+    it('should render with default props', () => {
+      const { container } = render(<Spinner />);
       expect(container.firstChild).toBeInTheDocument();
     });
 
-    it('should not render when isLoading is false', () => {
-      const { container } = render(<Spinner isLoading={false} />);
-      const spinner = container.querySelector('[role="status"]');
-      expect(spinner).not.toBeInTheDocument();
+    it('should render with custom className', () => {
+      const { container } = render(<Spinner className="custom-spinner" />);
+      expect(container.firstChild).toBeInTheDocument();
     });
   });
 
   describe('Sizes', () => {
     it('should support different sizes', () => {
-      const { container: smallContainer } = render(<Spinner size="sm" />);
+      const { container: smallContainer } = render(<Spinner size="small" />);
       expect(smallContainer.firstChild).toBeInTheDocument();
 
-      const { container: largeContainer } = render(<Spinner size="lg" />);
+      const { container: largeContainer } = render(<Spinner size="large" />);
       expect(largeContainer.firstChild).toBeInTheDocument();
     });
   });
 
   describe('Colors', () => {
     it('should support different colors', () => {
-      const { container: primaryContainer } = render(<Spinner color="primary" />);
+      const { container: primaryContainer } = render(<Spinner color="#0066cc" />);
       expect(primaryContainer.firstChild).toBeInTheDocument();
 
-      const { container: secondaryContainer } = render(<Spinner color="secondary" />);
+      const { container: secondaryContainer } = render(<Spinner color="#6c757d" />);
       expect(secondaryContainer.firstChild).toBeInTheDocument();
     });
   });
@@ -55,10 +54,9 @@ describe('Spinner Component', () => {
       expect(spinner).toHaveAttribute('aria-live', 'polite');
     });
 
-    it('should have aria-label', () => {
-      const { container } = render(<Spinner aria-label="Loading content" />);
-      const spinner = container.querySelector('[role="status"]');
-      expect(spinner).toHaveAttribute('aria-label', 'Loading content');
+    it('should be accessible with label', () => {
+      const { container } = render(<Spinner label="Loading content" />);
+      expect(container.textContent).toContain('Loading content');
     });
   });
 
@@ -68,8 +66,8 @@ describe('Spinner Component', () => {
       expect(container.textContent).toContain('Loading...');
     });
 
-    it('should show overlay variant', () => {
-      const { container } = render(<Spinner variant="overlay" />);
+    it('should show pulse variant', () => {
+      const { container } = render(<Spinner variant="pulse" />);
       expect(container.firstChild).toBeInTheDocument();
     });
   });

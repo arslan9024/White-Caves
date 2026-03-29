@@ -98,8 +98,8 @@ interface PipelineBoardProps {
 export function PipelineBoard({ stages, className = '' }: PipelineBoardProps) {
   return (
     <PipelineBoardContainer className={className}>
-      {stages.map((stage, index) => (
-        <PipelineColumn key={stage.name || index}>
+      {stages.map((stage) => (
+        <PipelineColumn key={stage.name}>
           <ColumnHeader>
             <ColumnName>{stage.name}</ColumnName>
             {stage.count !== undefined && <ColumnCount>{stage.count}</ColumnCount>}
@@ -107,8 +107,8 @@ export function PipelineBoard({ stages, className = '' }: PipelineBoardProps) {
           {stage.value && <ColumnValue>{stage.value}</ColumnValue>}
           {stage.items && stage.items.length > 0 && (
             <ColumnItems>
-              {stage.items.map((item, itemIndex) => (
-                <PipelineItemContainer key={item.id || itemIndex}>
+              {stage.items.map((item) => (
+                <PipelineItemContainer key={item.id || item.name || item.title}>
                   <ItemName>{item.name || item.title}</ItemName>
                   {item.value && <ItemValue>{item.value}</ItemValue>}
                 </PipelineItemContainer>

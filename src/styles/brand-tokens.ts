@@ -1,16 +1,24 @@
 export const brand = {
   colors: {
     primary: {
-      50: '#FFEBEE',
-      100: '#FFCDD2',
-      200: '#EF9A9A',
-      300: '#E57373',
-      400: '#EF5350',
-      500: '#D32F2F',
-      600: '#C62828',
-      700: '#B71C1C',
-      800: '#8E1414',
-      900: '#6B0F0F',
+      50: '#FFF8E1',
+      100: '#FFECB3',
+      200: '#FFE082',
+      300: '#FFD54F',
+      400: '#FFCA28',
+      500: '#D4AF37',
+      600: '#C9A030',
+      700: '#B8860B',
+      800: '#9A7209',
+      900: '#7A5B07',
+    },
+    accent: {
+      emerald: '#2E5A4F',
+      emeraldLight: '#3D7A6B',
+      sand: '#F5E6D3',
+      sandLight: '#FBF3EA',
+      charcoal: '#2C2C2C',
+      charcoalLight: '#3D3D3D',
     },
     neutrals: {
       white: '#FFFFFF',
@@ -32,7 +40,7 @@ export const brand = {
       successLight: '#E8F5E9',
       warning: '#F57C00',
       warningLight: '#FFF3E0',
-      error: '#C62828',
+      error: '#D32F2F',
       errorLight: '#FFEBEE',
       info: '#1565C0',
       infoLight: '#E3F2FD',
@@ -45,7 +53,7 @@ export const brand = {
       marketing: '#EC4899',
       executive: '#10B981',
       compliance: '#6366F1',
-      legal: '#DC2626',
+      legal: '#D4AF37',
       technology: '#0EA5E9',
       intelligence: '#0D9488',
     },
@@ -54,7 +62,7 @@ export const brand = {
   typography: {
     fontFamily: {
       primary: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-      heading: "'Montserrat', 'Inter', -apple-system, sans-serif",
+      heading: "'Poppins', 'Inter', -apple-system, sans-serif",
       mono: "'JetBrains Mono', 'Fira Code', monospace",
     },
     scale: {
@@ -85,7 +93,7 @@ export const brand = {
 
   spacing: {
     unit: 8,
-    get: (multiplier) => `${multiplier * 8}px`,
+    get: (multiplier: number): string => `${multiplier * 8}px`,
     xs: '4px',
     sm: '8px',
     md: '16px',
@@ -105,9 +113,9 @@ export const brand = {
 
   elevation: {
     none: 'none',
-    low: '0 2px 4px rgba(211, 47, 47, 0.08)',
-    medium: '0 4px 12px rgba(211, 47, 47, 0.12)',
-    high: '0 8px 24px rgba(211, 47, 47, 0.16)',
+    low: '0 2px 4px rgba(212, 175, 55, 0.08)',
+    medium: '0 4px 12px rgba(212, 175, 55, 0.12)',
+    high: '0 8px 24px rgba(212, 175, 55, 0.16)',
     overlay: '0 16px 48px rgba(0, 0, 0, 0.2)',
     card: '0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06)',
     cardHover: '0 4px 12px rgba(0, 0, 0, 0.12)',

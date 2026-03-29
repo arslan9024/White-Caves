@@ -1,13 +1,27 @@
 import React, { memo } from 'react';
 import './SharedComponents.css';
 
+interface TabCategory {
+  id: string;
+  label: string;
+  icon?: React.ComponentType<{ size: number }>;
+}
+
+interface DualCategoryTabStripProps {
+  categories?: TabCategory[];
+  activeCategory?: string;
+  onCategoryChange: (categoryId: string) => void;
+  counts?: Record<string, number>;
+  colorScheme?: 'default' | 'red' | 'green' | 'amber';
+}
+
 const DualCategoryTabStrip = memo(({ 
   categories = [],
   activeCategory,
   onCategoryChange,
   counts = {},
   colorScheme = 'default'
-}) => {
+}: DualCategoryTabStripProps) => {
   const colors = {
     default: { active: '#3B82F6', inactive: '#64748B' },
     red: { active: '#EF4444', inactive: '#64748B' },
@@ -27,7 +41,7 @@ const DualCategoryTabStrip = memo(({
           style={{
             '--tab-active-color': scheme.active,
             '--tab-inactive-color': scheme.inactive
-          }}
+          } as React.CSSProperties}
         >
           {category.icon && <category.icon size={16} />}
           <span className="tab-label">{category.label}</span>

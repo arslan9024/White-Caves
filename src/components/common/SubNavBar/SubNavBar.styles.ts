@@ -16,7 +16,7 @@ export const SubNavBarWrapper = styled.div`
   padding: 0;
   position: sticky;
   top: 64px;
-  z-index: 90;
+  z-index: var(--z-sticky, 200);
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
 

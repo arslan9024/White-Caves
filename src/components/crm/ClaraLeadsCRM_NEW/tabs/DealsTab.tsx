@@ -25,8 +25,8 @@ export default function DealsTab() {
     closed_lost: 'Closed Lost'
   };
 
-  const stageTotals = Object.entries(dealsByStage).reduce((acc, [stage, deals]) => {
-    acc[stage] = deals.reduce((sum, d) => sum + d.value, 0);
+  const stageTotals = Object.entries(dealsByStage).reduce<Record<string, number>>((acc, [stage, deals]) => {
+    acc[stage] = deals.reduce((sum: number, d) => sum + d.value, 0);
     return acc;
   }, {});
 
@@ -75,7 +75,7 @@ export default function DealsTab() {
         {Object.entries(dealsByStage).map(([stage, deals]) => (
           <div key={stage} className="deal-column">
             <div className="deal-column-title">
-              {stageLabels[stage]}
+              {(stageLabels as any)[stage]}
               <div style={{
                 fontSize: '12px',
                 color: 'var(--color-text-secondary)',

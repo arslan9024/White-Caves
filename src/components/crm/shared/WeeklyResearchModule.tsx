@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { 
   Search, Calendar, Clock, Play, Pause, CheckCircle, 
@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { addExecutiveSuggestion } from '../../../store/slices/aiAssistantDashboardSlice';
 
-const RESEARCH_TEMPLATES = {
+const RESEARCH_TEMPLATES: Record<string, { name: string; department: string; topics: string[] }> = {
   clara: {
     name: 'Clara',
     department: 'sales',
@@ -68,8 +68,8 @@ const RESEARCH_TEMPLATES = {
       'Off-plan property tracking systems'
     ]
   },
-  linda: {
-    name: 'Linda',
+  nadia: {
+    name: 'Nadia',
     department: 'communications',
     topics: [
       'WhatsApp Business API updates',
@@ -96,6 +96,16 @@ const SCHEDULE_OPTIONS = [
   { value: 'monthly', label: 'Monthly', days: 30 }
 ];
 
+interface WeeklyResearchModuleProps {
+  assistantId?: string;
+  lastResearch?: string | null;
+  schedule?: string;
+  isActive?: boolean;
+  onScheduleChange?: (schedule: string) => void;
+  onToggle?: (active: boolean) => void;
+  compact?: boolean;
+}
+
 const WeeklyResearchModule = ({ 
   assistantId = 'clara',
   lastResearch = null,
@@ -104,13 +114,18 @@ const WeeklyResearchModule = ({
   onScheduleChange,
   onToggle,
   compact = false
-}) => {
+}: WeeklyResearchModuleProps) => {
   const dispatch = useDispatch();
   const [isExpanded, setIsExpanded] = useState(!compact);
   const [isRunning, setIsRunning] = useState(false);
   const [selectedTopics, setSelectedTopics] = useState(
     RESEARCH_TEMPLATES[assistantId]?.topics || []
   );
+  const researchTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    return () => clearTimeout(researchTimerRef.current);
+  }, []);
   
   const template = RESEARCH_TEMPLATES[assistantId] || RESEARCH_TEMPLATES.clara;
   
@@ -120,7 +135,7 @@ const WeeklyResearchModule = ({
     const scheduleOption = SCHEDULE_OPTIONS.find(s => s.value === schedule);
     const nextDate = new Date(lastDate.getTime() + (scheduleOption?.days || 7) * 24 * 60 * 60 * 1000);
     const now = new Date();
-    const diff = nextDate - now;
+    const diff = nextDate.getTime() - now.getTime();
     if (diff < 0) return 'Overdue';
     const days = Math.floor(diff / (24 * 60 * 60 * 1000));
     const hours = Math.floor((diff % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
@@ -128,7 +143,7 @@ const WeeklyResearchModule = ({
     return `In ${hours}h`;
   }, [lastResearch, schedule]);
 
-  const formatTimeAgo = (timestamp) => {
+  const formatTimeAgo = (timestamp: string | null): string => {
     if (!timestamp) return 'Never';
     const diff = Date.now() - new Date(timestamp).getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -140,10 +155,10 @@ const WeeklyResearchModule = ({
 
   const handleRunResearch = useCallback(() => {
     setIsRunning(true);
-    setTimeout(() => {
+    researchTimerRef.current = setTimeout(() => {
       setIsRunning(false);
       const suggestionTypes = ['process_improvement', 'new_opportunity', 'cost_saving', 'risk_alert'];
-      const priorities = ['low', 'medium', 'high'];
+      const priorities: Array<'low' | 'medium' | 'high'> = ['low', 'medium', 'high'];
       
       dispatch(addExecutiveSuggestion({
         fromAssistant: assistantId,
@@ -152,24 +167,24 @@ const WeeklyResearchModule = ({
         type: suggestionTypes[Math.floor(Math.random() * suggestionTypes.length)],
         title: `${template.name}'s Weekly Research Finding`,
         analysis: `Automated research completed on ${selectedTopics.length} topics. Key insights identified for strategic review.`,
-        dataPoints: selectedTopics.slice(0, 2).map(t => `Research: ${t}`),
+        dataPoints: selectedTopics.slice(0, 2).map((t: string) => `Research: ${t}`),
         projectedImpact: 'Strategic insight for executive review',
         confidence: 0.7 + Math.random() * 0.25
       }));
     }, 2000);
   }, [dispatch, assistantId, template, selectedTopics]);
 
-  const toggleTopic = useCallback((topic) => {
-    setSelectedTopics(prev => 
+  const toggleTopic = useCallback((topic: string) => {
+    setSelectedTopics((prev: string[]) => 
       prev.includes(topic) 
-        ? prev.filter(t => t !== topic)
+        ? prev.filter((t: string) => t !== topic)
         : [...prev, topic]
     );
   }, []);
 
   if (compact && !isExpanded) {
     return (
-      <div className="research-module compact" onClick={() => setIsExpanded(true)}>
+      <div className="research-module compact" onClick={() => setIsExpanded(true)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsExpanded(true); } }} aria-label="Expand weekly research module">
         <div className="compact-header">
           <Search size={14} />
           <span>Weekly Research</span>
@@ -184,7 +199,7 @@ const WeeklyResearchModule = ({
 
   return (
     <div className="research-module">
-      <div className="module-header" onClick={() => compact && setIsExpanded(!isExpanded)}>
+      <div className="module-header" onClick={() => compact && setIsExpanded(!isExpanded)} role={compact ? 'button' : undefined} tabIndex={compact ? 0 : undefined} onKeyDown={compact ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsExpanded(!isExpanded); } } : undefined} aria-expanded={compact ? isExpanded : undefined}>
         <div className="header-left">
           <Search size={18} className="module-icon" />
           <div className="header-text">
@@ -195,7 +210,7 @@ const WeeklyResearchModule = ({
         <div className="header-right">
           <button 
             className={`toggle-btn ${isActive ? 'active' : ''}`}
-            onClick={(e) => { e.stopPropagation(); onToggle?.(); }}
+            onClick={(e) => { e.stopPropagation(); onToggle?.(!isActive); }}
           >
             {isActive ? <Pause size={14} /> : <Play size={14} />}
             {isActive ? 'Pause' : 'Start'}
@@ -245,6 +260,10 @@ const WeeklyResearchModule = ({
                 key={topic} 
                 className={`topic-item ${selectedTopics.includes(topic) ? 'selected' : ''}`}
                 onClick={() => toggleTopic(topic)}
+                role="checkbox"
+                aria-checked={selectedTopics.includes(topic)}
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTopic(topic); } }}
               >
                 <span className="topic-checkbox">
                   {selectedTopics.includes(topic) ? <CheckCircle size={12} /> : null}

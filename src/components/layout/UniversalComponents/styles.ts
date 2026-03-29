@@ -5,7 +5,7 @@ export const TimeDisplayContainer = styled.div<{ $isVisible?: boolean }>`
   position: fixed;
   bottom: 20px;
   left: 20px;
-  z-index: 999;
+  z-index: var(--z-toast, 810);
   display: flex;
   align-items: center;
   gap: 8px;

@@ -1,7 +1,23 @@
 import React from 'react';
 import { TrendingUp, Clock, AlertCircle } from 'lucide-react';
 
-const OverviewTab = ({ financeStats }) => {
+interface FinanceStats {
+  totalRevenue: number;
+  revenueTrend: number;
+  pendingAmount: number;
+  pendingCount: number;
+  overdueAmount: number;
+  overdueCount: number;
+  totalExpenses: number;
+  approvedExpenses: number;
+  pendingExpenses: number;
+}
+
+interface OverviewTabProps {
+  financeStats: FinanceStats;
+}
+
+const OverviewTab: React.FC<OverviewTabProps> = ({ financeStats }) => {
   return (
     <div className="overview-view">
       <h3>Financial Overview</h3>

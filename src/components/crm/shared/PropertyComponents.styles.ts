@@ -212,7 +212,7 @@ export const FullscreenOverlay = styled.div`
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.95);
-  z-index: 1000;
+  z-index: var(--z-overlay, 600);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -240,7 +240,7 @@ export const CloseFullscreenBtn = styled.button`
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  z-index: 1001;
+  z-index: var(--z-overlay, 600);
 
   &:hover {
     background: rgba(255, 255, 255, 0.2);
@@ -267,7 +267,7 @@ export const FullscreenNav = styled.button<{ $position?: 'prev' | 'next' }>`
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  z-index: 1001;
+  z-index: var(--z-overlay, 600);
 
   ${(props) => (props.$position === 'prev' ? `left: 2rem;` : `right: 2rem;`)}
 

@@ -15,10 +15,10 @@ const RentVsBuyCalculator = () => {
     yearsToCompare: 10
   });
 
-  const handleInputChange = (field, value) => {
+  const handleInputChange = (field: keyof typeof inputs, value: string) => {
     setInputs(prev => ({
       ...prev,
-      [field]: parseFloat(value) || 0
+      [field]: Math.max(0, parseFloat(value) || 0)
     }));
   };
 
@@ -39,11 +39,19 @@ const RentVsBuyCalculator = () => {
     const downPaymentAmount = propertyPrice * (downPayment / 100);
     const loanAmount = propertyPrice - downPaymentAmount;
     const monthlyRate = mortgageRate / 100 / 12;
-    const totalPayments = mortgageTerm * 12;
+    const safeTerm = Math.max(1, mortgageTerm);
+    const totalPayments = safeTerm * 12;
 
-    const monthlyMortgage = loanAmount * 
-      (monthlyRate * Math.pow(1 + monthlyRate, totalPayments)) / 
-      (Math.pow(1 + monthlyRate, totalPayments) - 1);
+    // Guard against division by zero when mortgage rate is 0 (cash purchase)
+    // or loan amount is 0 (100% down payment)
+    let monthlyMortgage: number;
+    if (loanAmount <= 0 || monthlyRate <= 0) {
+      monthlyMortgage = loanAmount > 0 ? loanAmount / totalPayments : 0;
+    } else {
+      monthlyMortgage = loanAmount * 
+        (monthlyRate * Math.pow(1 + monthlyRate, totalPayments)) / 
+        (Math.pow(1 + monthlyRate, totalPayments) - 1);
+    }
 
     const dldFee = propertyPrice * 0.04;
     const agencyFee = propertyPrice * 0.02;
@@ -75,7 +83,7 @@ const RentVsBuyCalculator = () => {
       
       currentRent = currentRent * (1 + rentIncrease / 100);
 
-      const equityBuilt = propertyValue - loanAmount + (downPaymentAmount * year / mortgageTerm);
+      const equityBuilt = propertyValue - loanAmount + (downPaymentAmount * year / safeTerm);
       
       yearlyComparison.push({
         year,
@@ -84,7 +92,9 @@ const RentVsBuyCalculator = () => {
         propertyValue,
         investmentValue,
         equityBuilt,
-        netWorthBuying: propertyValue - buyingTotalCost + equityBuilt,
+        // Net worth = equity in the home (asset minus remaining debt) minus non-equity costs
+        // equityBuilt already includes propertyValue, so do NOT add propertyValue again
+        netWorthBuying: equityBuilt - (buyingTotalCost - downPaymentAmount),
         netWorthRenting: investmentValue - rentingTotalCost
       });
     }
@@ -124,16 +134,18 @@ const RentVsBuyCalculator = () => {
           <div className="input-group">
             <h3>Property Details</h3>
             <div className="input-field">
-              <label>Property Price (AED)</label>
+              <label htmlFor="calc-property-price">Property Price (AED)</label>
               <input
+                id="calc-property-price"
                 type="number"
                 value={inputs.propertyPrice}
                 onChange={(e) => handleInputChange('propertyPrice', e.target.value)}
               />
             </div>
             <div className="input-field">
-              <label>Down Payment (%)</label>
+              <label htmlFor="calc-down-payment">Down Payment (%)</label>
               <input
+                id="calc-down-payment"
                 type="number"
                 value={inputs.downPayment}
                 onChange={(e) => handleInputChange('downPayment', e.target.value)}
@@ -142,8 +154,9 @@ const RentVsBuyCalculator = () => {
               />
             </div>
             <div className="input-field">
-              <label>Mortgage Rate (%)</label>
+              <label htmlFor="calc-mortgage-rate">Mortgage Rate (%)</label>
               <input
+                id="calc-mortgage-rate"
                 type="number"
                 value={inputs.mortgageRate}
                 onChange={(e) => handleInputChange('mortgageRate', e.target.value)}
@@ -151,8 +164,9 @@ const RentVsBuyCalculator = () => {
               />
             </div>
             <div className="input-field">
-              <label>Mortgage Term (years)</label>
+              <label htmlFor="calc-mortgage-term">Mortgage Term (years)</label>
               <input
+                id="calc-mortgage-term"
                 type="number"
                 value={inputs.mortgageTerm}
                 onChange={(e) => handleInputChange('mortgageTerm', e.target.value)}
@@ -163,16 +177,18 @@ const RentVsBuyCalculator = () => {
           <div className="input-group">
             <h3>Rental Comparison</h3>
             <div className="input-field">
-              <label>Monthly Rent (AED)</label>
+              <label htmlFor="calc-monthly-rent">Monthly Rent (AED)</label>
               <input
+                id="calc-monthly-rent"
                 type="number"
                 value={inputs.monthlyRent}
                 onChange={(e) => handleInputChange('monthlyRent', e.target.value)}
               />
             </div>
             <div className="input-field">
-              <label>Annual Rent Increase (%)</label>
+              <label htmlFor="calc-rent-increase">Annual Rent Increase (%)</label>
               <input
+                id="calc-rent-increase"
                 type="number"
                 value={inputs.rentIncrease}
                 onChange={(e) => handleInputChange('rentIncrease', e.target.value)}
@@ -183,32 +199,36 @@ const RentVsBuyCalculator = () => {
           <div className="input-group">
             <h3>Growth Assumptions</h3>
             <div className="input-field">
-              <label>Property Appreciation (%/year)</label>
+              <label htmlFor="calc-property-appreciation">Property Appreciation (%/year)</label>
               <input
+                id="calc-property-appreciation"
                 type="number"
                 value={inputs.propertyAppreciation}
                 onChange={(e) => handleInputChange('propertyAppreciation', e.target.value)}
               />
             </div>
             <div className="input-field">
-              <label>Investment Return (%/year)</label>
+              <label htmlFor="calc-investment-return">Investment Return (%/year)</label>
               <input
+                id="calc-investment-return"
                 type="number"
                 value={inputs.investmentReturn}
                 onChange={(e) => handleInputChange('investmentReturn', e.target.value)}
               />
             </div>
             <div className="input-field">
-              <label>Maintenance Cost (%/year)</label>
+              <label htmlFor="calc-maintenance-cost">Maintenance Cost (%/year)</label>
               <input
+                id="calc-maintenance-cost"
                 type="number"
                 value={inputs.maintenanceCost}
                 onChange={(e) => handleInputChange('maintenanceCost', e.target.value)}
               />
             </div>
             <div className="input-field">
-              <label>Years to Compare</label>
+              <label htmlFor="calc-years-compare">Years to Compare</label>
               <input
+                id="calc-years-compare"
                 type="number"
                 value={inputs.yearsToCompare}
                 onChange={(e) => handleInputChange('yearsToCompare', e.target.value)}
@@ -288,14 +308,14 @@ const RentVsBuyCalculator = () => {
                     <div 
                       className="chart-bar buying"
                       style={{ 
-                        height: `${(year.buyingCost / calculations.yearlyComparison[calculations.yearlyComparison.length-1].buyingCost) * 150}px` 
+                        height: `${(year.buyingCost / (calculations.yearlyComparison[calculations.yearlyComparison.length-1]?.buyingCost || 1)) * 150}px` 
                       }}
                       title={`Buying: AED ${year.buyingCost.toLocaleString(undefined, {maximumFractionDigits: 0})}`}
                     />
                     <div 
                       className="chart-bar renting"
                       style={{ 
-                        height: `${(year.rentingCost / calculations.yearlyComparison[calculations.yearlyComparison.length-1].buyingCost) * 150}px` 
+                        height: `${(year.rentingCost / (calculations.yearlyComparison[calculations.yearlyComparison.length-1]?.buyingCost || 1)) * 150}px` 
                       }}
                       title={`Renting: AED ${year.rentingCost.toLocaleString(undefined, {maximumFractionDigits: 0})}`}
                     />

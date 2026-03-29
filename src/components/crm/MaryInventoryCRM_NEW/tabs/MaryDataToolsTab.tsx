@@ -3,16 +3,19 @@ import { Database, FileImage, Globe, Search, Settings } from 'lucide-react';
 import DamacAssetFetcher from '../../inventory/DamacAssetFetcher';
 import ImageDataExtractor from '../../inventory/ImageDataExtractor';
 import WebDataHarvester from '../../inventory/WebDataHarvester';
+import { createLogger } from '../../../../utils/logger';
+
+const log = createLogger('MaryDataToolsTab');
 
 export default function MaryDataToolsTab() {
   const [activeToolTab, setActiveToolTab] = useState('assets');
 
-  const handleDataExtracted = (data) => {
-    console.log('Data extracted:', data);
+  const handleDataExtracted = (data: unknown) => {
+    log.debug('Data extracted:', data);
   };
 
-  const handleDataHarvested = (data) => {
-    console.log('Data harvested:', data);
+  const handleDataHarvested = (data: unknown) => {
+    log.debug('Data harvested:', data);
   };
 
   return (

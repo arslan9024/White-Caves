@@ -1,0 +1,248 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`BlogSection > snapshot > matches default snapshot 1`] = `
+<section
+  id="blog"
+>
+  <div>
+    <div>
+      <h2>
+        Real Estate Insights
+      </h2>
+      <p>
+        Stay informed with the latest news, guides, and market analysis from Dubai's property experts
+      </p>
+    </div>
+    <div>
+      <article>
+        <div>
+          <span>
+            Market Analysis
+          </span>
+        </div>
+        <div>
+          <div>
+            <span>
+              Ahmed Hassan
+            </span>
+            <span>
+              December 10, 2025
+            </span>
+            <span>
+              8 min read
+            </span>
+          </div>
+          <h3>
+            Dubai Real Estate Market Trends 2025: What Buyers Need to Know
+          </h3>
+          <p>
+            The Dubai property market continues to show remarkable resilience and growth. Here's our comprehensive analysis of current trends and future predictions for investors.
+          </p>
+          <button>
+            Read Article →
+          </button>
+        </div>
+      </article>
+      <article>
+        <div>
+          <span>
+            Buying Guide
+          </span>
+        </div>
+        <div>
+          <div>
+            <span>
+              Sarah Al-Maktoum
+            </span>
+            <span>
+              December 5, 2025
+            </span>
+            <span>
+              12 min read
+            </span>
+          </div>
+          <h3>
+            Complete Guide to Buying Property in Palm Jumeirah
+          </h3>
+          <p>
+            Everything you need to know about purchasing your dream villa or apartment on Dubai's iconic Palm Jumeirah island.
+          </p>
+          <button>
+            Read Article →
+          </button>
+        </div>
+      </article>
+    </div>
+    <div>
+      <button
+        data-active="true"
+      >
+        All
+      </button>
+      <button
+        data-active="false"
+      >
+        Market Analysis
+      </button>
+      <button
+        data-active="false"
+      >
+        Buying Guide
+      </button>
+      <button
+        data-active="false"
+      >
+        Investment
+      </button>
+      <button
+        data-active="false"
+      >
+        Lifestyle
+      </button>
+      <button
+        data-active="false"
+      >
+        Legal
+      </button>
+    </div>
+    <div>
+      <article>
+        <div>
+          <span>
+            Investment
+          </span>
+        </div>
+        <div>
+          <div>
+            <span>
+              November 28, 2025
+            </span>
+            <span>
+              6 min read
+            </span>
+          </div>
+          <h3>
+            Understanding Dubai's Golden Visa Through Property Investment
+          </h3>
+          <p>
+            Learn how property investment of AED 2 million or more can qualify you for the UAE's prestigious Golden Visa program.
+          </p>
+          <div>
+            <span>
+              By 
+              Mohammed Rashid
+            </span>
+            <a
+              href="#"
+            >
+              Read More →
+            </a>
+          </div>
+        </div>
+      </article>
+      <article>
+        <div>
+          <span>
+            Lifestyle
+          </span>
+        </div>
+        <div>
+          <div>
+            <span>
+              November 20, 2025
+            </span>
+            <span>
+              10 min read
+            </span>
+          </div>
+          <h3>
+            Top 10 Family-Friendly Communities in Dubai
+          </h3>
+          <p>
+            Discover the best residential areas for families with children, featuring excellent schools, parks, and amenities.
+          </p>
+          <div>
+            <span>
+              By 
+              Fatima Khan
+            </span>
+            <a
+              href="#"
+            >
+              Read More →
+            </a>
+          </div>
+        </div>
+      </article>
+      <article>
+        <div>
+          <span>
+            Legal
+          </span>
+        </div>
+        <div>
+          <div>
+            <span>
+              November 15, 2025
+            </span>
+            <span>
+              7 min read
+            </span>
+          </div>
+          <h3>
+            EJARI Registration: Step-by-Step Guide for Tenants
+          </h3>
+          <p>
+            A comprehensive walkthrough of the EJARI registration process, required documents, and common pitfalls to avoid.
+          </p>
+          <div>
+            <span>
+              By 
+              Omar Khalid
+            </span>
+            <a
+              href="#"
+            >
+              Read More →
+            </a>
+          </div>
+        </div>
+      </article>
+      <article>
+        <div>
+          <span>
+            Investment
+          </span>
+        </div>
+        <div>
+          <div>
+            <span>
+              November 10, 2025
+            </span>
+            <span>
+              9 min read
+            </span>
+          </div>
+          <h3>
+            Rental Yields in Dubai: Best Areas for Investment Returns
+          </h3>
+          <p>
+            Analysis of rental yields across Dubai's top neighborhoods to help investors maximize their ROI.
+          </p>
+          <div>
+            <span>
+              By 
+              Ahmed Hassan
+            </span>
+            <a
+              href="#"
+            >
+              Read More →
+            </a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+`;

@@ -1,21 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
+import { RecaptchaVerifier, signInWithPhoneNumber, type ConfirmationResult } from 'firebase/auth';
 import { auth } from '../../../../config/firebase';
 import { loginSuccess, loginStart, loginFailure } from '../../../../store/authSlice';
+import { createLogger } from '../../../../utils/logger';
+
+// Extend Window for Firebase RecaptchaVerifier
+declare global {
+  interface Window {
+    recaptchaVerifier: RecaptchaVerifier | null;
+  }
+}
+
+const log = createLogger('MobileLogin');
 import OTPVerification from './OTPVerification';
 import './MobileLogin.css';
 
-const MobileLoginForm = ({ onSuccess, onError }) => {
+interface MobileLoginFormProps {
+  onSuccess?: (user: Record<string, unknown>) => void;
+  onError?: (error: unknown) => void;
+}
+
+interface CountryCodeOption {
+  code: string;
+  country: string;
+}
+
+interface FirebaseAuthError extends Error {
+  code?: string;
+}
+
+const MobileLoginForm: React.FC<MobileLoginFormProps> = ({ onSuccess, onError }) => {
   const dispatch = useDispatch();
   const [step, setStep] = useState('phone');
   const [loading, setLoading] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [countryCode, setCountryCode] = useState('+971');
-  const [confirmationResult, setConfirmationResult] = useState(null);
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   const [error, setError] = useState('');
 
-  const countryCodes = [
+  // Clean up RecaptchaVerifier when component unmounts
+  useEffect(() => {
+    return () => {
+      if (window.recaptchaVerifier) {
+        try {
+          window.recaptchaVerifier.clear();
+        } catch {
+          // Verifier may already be invalid
+        }
+        window.recaptchaVerifier = null;
+      }
+    };
+  }, []);
+
+  const countryCodes: CountryCodeOption[] = [
     { code: '+971', country: 'UAE' },
     { code: '+966', country: 'Saudi Arabia' },
     { code: '+973', country: 'Bahrain' },
@@ -28,6 +66,7 @@ const MobileLoginForm = ({ onSuccess, onError }) => {
   ];
 
   const setupRecaptcha = () => {
+    if (!auth) return;
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         size: 'invisible',
@@ -39,7 +78,7 @@ const MobileLoginForm = ({ onSuccess, onError }) => {
     }
   };
 
-  const handleSendOTP = async (e) => {
+  const handleSendOTP = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     
     if (!phoneNumber || phoneNumber.length < 9) {
@@ -54,14 +93,15 @@ const MobileLoginForm = ({ onSuccess, onError }) => {
     try {
       setupRecaptcha();
       const fullPhoneNumber = `${countryCode}${phoneNumber}`;
-      const result = await signInWithPhoneNumber(auth, fullPhoneNumber, window.recaptchaVerifier);
+      const result = await signInWithPhoneNumber(auth!, fullPhoneNumber, window.recaptchaVerifier!);
       setConfirmationResult(result);
       setStep('otp');
     } catch (error) {
-      console.error('Send OTP error:', error);
-      setError(error.message || 'Failed to send OTP');
-      dispatch(loginFailure(error.message));
-      onError?.(error);
+      const authError = error as FirebaseAuthError;
+      log.error('Send OTP error:', authError);
+      setError(authError.message || 'Failed to send OTP');
+      dispatch(loginFailure(authError.message || 'Failed to send OTP'));
+      onError?.(authError);
       
       if (window.recaptchaVerifier) {
         window.recaptchaVerifier.clear();
@@ -72,7 +112,12 @@ const MobileLoginForm = ({ onSuccess, onError }) => {
     }
   };
 
-  const handleVerifyOTP = async (otp) => {
+  const handleVerifyOTP = async (otp: string): Promise<void> => {
+    if (!confirmationResult) {
+      setError('Session expired. Please request a new OTP.');
+      setStep('phone');
+      return;
+    }
     setLoading(true);
     setError('');
     
@@ -81,11 +126,12 @@ const MobileLoginForm = ({ onSuccess, onError }) => {
       const user = result.user;
       
       const userData = {
+        id: user.uid,
         uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        phoneNumber: user.phoneNumber,
-        photoURL: user.photoURL,
+        email: user.email || '',
+        displayName: user.displayName || undefined,
+        phone: user.phoneNumber || undefined,
+        photoURL: user.photoURL || undefined,
         provider: 'phone',
       };
       
@@ -98,16 +144,17 @@ const MobileLoginForm = ({ onSuccess, onError }) => {
       
       onSuccess?.(userData);
     } catch (error) {
-      console.error('Verify OTP error:', error);
+      const authError = error as FirebaseAuthError;
+      log.error('Verify OTP error:', authError);
       setError('Invalid OTP. Please try again.');
-      dispatch(loginFailure(error.message));
-      onError?.(error);
+      dispatch(loginFailure(authError.message || 'OTP verification failed'));
+      onError?.(authError);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleResendOTP = async () => {
+  const handleResendOTP = async (): Promise<void> => {
     setStep('phone');
     setConfirmationResult(null);
     if (window.recaptchaVerifier) {

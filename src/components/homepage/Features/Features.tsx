@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { 
   Home, 
   Key, 
@@ -25,7 +25,7 @@ const features: Feature[] = [
     icon: Home,
     title: 'Premium Properties',
     description: 'Access exclusive listings in Dubai\'s most prestigious neighborhoods including Palm Jumeirah, Emirates Hills, and Downtown.',
-    color: '#DC2626'
+    color: '#D4AF37'
   },
   {
     icon: Key,
@@ -82,7 +82,7 @@ const containerVariants = {
   }
 };
 
-const cardVariants: Record<string, any> = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
@@ -117,9 +117,9 @@ const Features: React.FC = () => {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
         >
-          {features.map((feature, index) => (
+          {features.map((feature) => (
             <motion.div 
-              key={index}
+              key={feature.title}
               className="feature-card"
               variants={cardVariants}
               whileHover={{ 
@@ -135,14 +135,15 @@ const Features: React.FC = () => {
               </div>
               <h3 className="feature-title">{feature.title}</h3>
               <p className="feature-description">{feature.description}</p>
-              <motion.a 
-                href="#" 
+              <motion.span 
                 className="feature-link"
                 whileHover={{ x: 5 }}
+                role="text"
+                aria-label={`Learn more about ${feature.title}`}
               >
                 Learn more
                 <span className="arrow">&#8594;</span>
-              </motion.a>
+              </motion.span>
             </motion.div>
           ))}
         </motion.div>

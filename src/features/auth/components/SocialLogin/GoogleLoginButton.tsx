@@ -3,9 +3,18 @@ import { useDispatch } from 'react-redux';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../../../../config/firebase';
 import { loginSuccess, loginStart, loginFailure } from '../../../../store/authSlice';
+import { createLogger } from '../../../../utils/logger';
+
+const log = createLogger('GoogleLogin');
 import './SocialLogin.css';
 
-const GoogleLoginButton = ({ onSuccess, onError, disabled }) => {
+interface GoogleLoginButtonProps {
+  onSuccess?: (data: unknown) => void;
+  onError?: (error: unknown) => void;
+  disabled?: boolean;
+}
+
+const GoogleLoginButton = ({ onSuccess, onError, disabled }: GoogleLoginButtonProps) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
@@ -20,14 +29,15 @@ const GoogleLoginButton = ({ onSuccess, onError, disabled }) => {
       provider.addScope('email');
       provider.addScope('profile');
       
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth!, provider);
       const user = result.user;
       
       const userData = {
+        id: user.uid,
         uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
+        email: user.email || '',
+        displayName: user.displayName || undefined,
+        photoURL: user.photoURL || undefined,
         emailVerified: user.emailVerified,
         provider: 'google',
       };
@@ -40,9 +50,10 @@ const GoogleLoginButton = ({ onSuccess, onError, disabled }) => {
       }));
       
       onSuccess?.(userData);
-    } catch (error) {
-      console.error('Google login error:', error);
-      dispatch(loginFailure(error.message));
+    } catch (error: unknown) {
+      log.error('Google login error:', error);
+      const msg = error instanceof Error ? error.message : 'Google login failed';
+      dispatch(loginFailure(msg));
       onError?.(error);
     } finally {
       setLoading(false);

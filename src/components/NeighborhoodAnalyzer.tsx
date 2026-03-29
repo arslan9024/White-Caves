@@ -218,7 +218,7 @@ const NeighborhoodAnalyzer: React.FC = () => {
           {(Object.keys(neighborhoods) as NeighborhoodKey[]).map((key) => (
             <AreaButton
               key={key}
-              active={selectedArea === key}
+              $isActive={selectedArea === key}
               onClick={() => setSelectedArea(key)}
             >
               {neighborhoods[key].name}
@@ -228,15 +228,15 @@ const NeighborhoodAnalyzer: React.FC = () => {
       </AnalyzerHeader>
 
       <AnalyzerContent>
-        <AreaHero style={{ backgroundImage: `url(${current.image})` }}>
+        <AreaHero $backgroundImage={current.image}>
           <HeroOverlay />
           <HeroContent>
             <HeroTitle>{current.name}</HeroTitle>
             <HeroDescription>{current.description}</HeroDescription>
             <HeroBadges>
-              <Badge className="score">Score: {current.score}/100</Badge>
-              <Badge className="grade">{current.investmentGrade}</Badge>
-              <Badge className={`trend ${current.trend}`}>{current.trend}</Badge>
+              <Badge $variant="score">Score: {current.score}/100</Badge>
+              <Badge $variant="grade">{current.investmentGrade}</Badge>
+              <Badge $variant="trend" $trend={current.trend as any}>{current.trend}</Badge>
             </HeroBadges>
           </HeroContent>
         </AreaHero>
@@ -281,8 +281,8 @@ const NeighborhoodAnalyzer: React.FC = () => {
         <InsightsSection>
           <InsightsTitle>Investment Insights</InsightsTitle>
           <InsightsList>
-            {current.insights.map((insight, idx) => (
-              <InsightItem key={idx}>✓ {insight}</InsightItem>
+            {current.insights.map((insight) => (
+              <InsightItem key={insight}>✓ {insight}</InsightItem>
             ))}
           </InsightsList>
         </InsightsSection>
@@ -290,8 +290,8 @@ const NeighborhoodAnalyzer: React.FC = () => {
         <RisksSection>
           <RisksTitle>Considerations</RisksTitle>
           <RisksList>
-            {current.risks.map((risk, idx) => (
-              <RiskItem key={idx}>⚠ {risk}</RiskItem>
+            {current.risks.map((risk) => (
+              <RiskItem key={risk}>⚠ {risk}</RiskItem>
             ))}
           </RisksList>
         </RisksSection>

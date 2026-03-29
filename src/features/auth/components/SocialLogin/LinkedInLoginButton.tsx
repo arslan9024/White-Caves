@@ -1,9 +1,19 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginStart, loginFailure } from '../../../../store/authSlice';
+import { createLogger } from '../../../../utils/logger';
+import { safeExternalRedirect } from '../../../../utils/safeRedirect';
 import './SocialLogin.css';
 
-const LinkedInLoginButton = ({ onSuccess, onError, disabled }) => {
+const log = createLogger('LinkedInLogin');
+
+interface LinkedInLoginButtonProps {
+  onSuccess?: (data: unknown) => void;
+  onError?: (error: unknown) => void;
+  disabled?: boolean;
+}
+
+const LinkedInLoginButton = ({ onSuccess, onError, disabled }: LinkedInLoginButtonProps) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
@@ -25,11 +35,19 @@ const LinkedInLoginButton = ({ onSuccess, onError, disabled }) => {
       }
       
       const { authUrl, state } = await response.json();
-      sessionStorage.setItem('linkedin_auth_state', state);
-      window.location.href = authUrl;
-    } catch (error) {
-      console.error('LinkedIn login error:', error);
-      dispatch(loginFailure(error.message));
+      if (typeof state !== 'string' || !state) {
+        throw new Error('Invalid OAuth state received from server');
+      }
+      try {
+        sessionStorage.setItem('linkedin_auth_state', state);
+      } catch {
+        // Private browsing or storage quota exceeded — proceed without state persistence
+      }
+      safeExternalRedirect(authUrl);
+    } catch (error: unknown) {
+      log.error('LinkedIn login error:', error);
+      const msg = error instanceof Error ? error.message : 'LinkedIn login failed';
+      dispatch(loginFailure(msg));
       onError?.(error);
       setLoading(false);
     }

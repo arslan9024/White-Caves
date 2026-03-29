@@ -1,4 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { logout } from './authSlice';
+import { authFetch } from '../utils/authFetch';
 
 interface WebVital {
   value: number;
@@ -31,7 +33,7 @@ interface PerformanceData {
 }
 
 interface AnalyticsEvent {
-  [key: string]: any;
+  [key: string]: unknown;
   timestamp: number;
 }
 
@@ -83,11 +85,12 @@ export const fetchAnalytics = createAsyncThunk<
   'analytics/fetchAnalytics',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/analytics/overview');
+      const response = await authFetch('/api/dashboard/summary');
       if (!response.ok) throw new Error('Failed to fetch analytics');
-      return await response.json();
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch analytics');
+      const raw = await response.json();
+      return raw.data || raw;
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch analytics');
     }
   }
 );
@@ -171,7 +174,7 @@ const analyticsSlice = createSlice({
     updateTraffic: (state, action: PayloadAction<Partial<TrafficData>>) => {
       state.traffic = { ...state.traffic, ...action.payload };
     },
-    addEvent: (state, action: PayloadAction<any>) => {
+    addEvent: (state, action: PayloadAction<Omit<AnalyticsEvent, 'timestamp'>>) => {
       state.recentEvents.unshift({
         ...action.payload,
         timestamp: Date.now(),
@@ -191,16 +194,17 @@ const analyticsSlice = createSlice({
       .addCase(fetchAnalytics.fulfilled, (state, action) => {
         state.loading = false;
         if (action.payload.traffic) {
-          state.traffic = { ...state.traffic, ...action.payload.traffic };
+          Object.assign(state.traffic, action.payload.traffic);
         }
         if (action.payload.webVitals) {
-          state.webVitals = { ...state.webVitals, ...action.payload.webVitals };
+          Object.assign(state.webVitals, action.payload.webVitals);
         }
       })
       .addCase(fetchAnalytics.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Unknown error';
-      });
+      })
+      .addCase(logout, () => initialState);
   },
 });
 

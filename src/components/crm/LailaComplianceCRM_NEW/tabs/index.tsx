@@ -70,29 +70,32 @@ const LailaComplianceCRM = () => {
         </div>
       </div>
 
-      <div className="tab-navigation">
+      <div className="tab-navigation" role="tablist" aria-label="Compliance sections">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
             onClick={() => setActiveTab(tab.id)}
+            role="tab"
             aria-selected={activeTab === tab.id}
+            aria-controls={`tabpanel-${tab.id}`}
+            id={`tab-${tab.id}`}
           >
-            <span className="tab-icon">{tab.icon}</span>
+            <span className="tab-icon" aria-hidden="true">{tab.icon}</span>
             <span className="tab-label">{tab.label}</span>
           </button>
         ))}
       </div>
 
-      <div className="crm-content">
+      <div className="crm-content" role="tabpanel" id={`tabpanel-${activeTab}`} aria-labelledby={`tab-${activeTab}`}>
         {renderContent()}
       </div>
 
       <div className="features-section">
         <h3>Available Features</h3>
         <ul className="features-list">
-          {features.map((feature, index) => (
-            <li key={index} className="feature-item">
+          {features.map((feature) => (
+            <li key={feature} className="feature-item">
               <span className="feature-icon">✓</span>
               <span className="feature-text">{feature}</span>
             </li>

@@ -393,7 +393,7 @@ export interface Report {
 }
 
 // ============================================================================
-// WHATSAPP TYPES (Linda - WhatsApp CRM, Nina - Bot)
+// WHATSAPP TYPES (Nadia - WhatsApp CRM, Nina - Bot)
 // ============================================================================
 
 export interface WhatsAppMessage {

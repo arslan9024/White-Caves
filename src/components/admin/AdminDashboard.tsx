@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { createLogger } from '../../utils/logger';
+import type { RootState } from '../../store/store';
 import {
   Users, Settings, Activity, TrendingUp, AlertCircle, BarChart3,
   Clock, CheckCircle, Download
@@ -27,19 +29,7 @@ const AdminDashboard = () => {
   const [usersPerPage] = useState(10);
   
   // Get user info from Redux
-  const user = useSelector(state => state.auth?.user);
-
-  // Pagination logic for activities
-  const activitiesStartIdx = (currentActivityPage - 1) * activitiesPerPage;
-  const activitiesEndIdx = activitiesStartIdx + activitiesPerPage;
-  const paginatedActivities = recentActivities.slice(activitiesStartIdx, activitiesEndIdx);
-  const activitiesTotalPages = Math.ceil(recentActivities.length / activitiesPerPage);
-
-  // Pagination logic for users
-  const usersStartIdx = (currentUsersPage - 1) * usersPerPage;
-  const usersEndIdx = usersStartIdx + usersPerPage;
-  const paginatedUsers = users.slice(usersStartIdx, usersEndIdx);
-  const usersTotalPages = Math.ceil(users.length / usersPerPage);
+  const user = useSelector((state: RootState) => state.auth?.user);
 
   // Mock data - replace with real API calls
   const systemMetrics = {
@@ -91,6 +81,18 @@ const AdminDashboard = () => {
     },
   ];
 
+  // Pagination logic for activities (MUST be after data declarations)
+  const activitiesStartIdx = (currentActivityPage - 1) * activitiesPerPage;
+  const activitiesEndIdx = activitiesStartIdx + activitiesPerPage;
+  const paginatedActivities = recentActivities.slice(activitiesStartIdx, activitiesEndIdx);
+  const activitiesTotalPages = Math.ceil(recentActivities.length / activitiesPerPage);
+
+  // Pagination logic for users (MUST be after data declarations)
+  const usersStartIdx = (currentUsersPage - 1) * usersPerPage;
+  const usersEndIdx = usersStartIdx + usersPerPage;
+  const paginatedUsers = users.slice(usersStartIdx, usersEndIdx);
+  const usersTotalPages = Math.ceil(users.length / usersPerPage);
+
 
   return (
     <S.AdminContainer>
@@ -107,28 +109,28 @@ const AdminDashboard = () => {
 
       <S.AdminTabs>
         <S.Tab 
-          active={activeTab === 'overview'}
+          $active={activeTab === 'overview'}
           onClick={() => setActiveTab('overview')}
         >
           <Activity size={20} />
           Overview
         </S.Tab>
         <S.Tab 
-          active={activeTab === 'users'}
+          $active={activeTab === 'users'}
           onClick={() => setActiveTab('users')}
         >
           <Users size={20} />
           Users
         </S.Tab>
         <S.Tab 
-          active={activeTab === 'analytics'}
+          $active={activeTab === 'analytics'}
           onClick={() => setActiveTab('analytics')}
         >
           <BarChart3 size={20} />
           Analytics
         </S.Tab>
         <S.Tab 
-          active={activeTab === 'settings'}
+          $active={activeTab === 'settings'}
           onClick={() => setActiveTab('settings')}
         >
           <Settings size={20} />
@@ -172,7 +174,7 @@ const AdminDashboard = () => {
               </S.MetricCard>
 
               {/* System Health */}
-              <S.MetricCard healthStatus="excellent">
+              <S.MetricCard>
                 <S.MetricHeader>
                   <Activity size={24} />
                   <S.MetricTitle>System Health</S.MetricTitle>
@@ -204,7 +206,7 @@ const AdminDashboard = () => {
                 </S.StatusItem>
                 <S.StatusItem>
                   <S.StatusLabel>Database Status</S.StatusLabel>
-                  <S.StatusValue style={{ color: '#4CAF50' }}>Connected</S.StatusValue>
+                  <S.StatusValueSuccess>Connected</S.StatusValueSuccess>
                 </S.StatusItem>
               </S.StatusGrid>
             </S.StatusSection>
@@ -222,10 +224,9 @@ const AdminDashboard = () => {
                     <Alert
                       key={alert.id}
                       type={alert.severity === 'warning' ? 'warning' : alert.severity === 'error' ? 'error' : 'info'}
-                      title={alert.message}
-                      dismissible
-                      onDismiss={() => {}}
-                      style={{ marginBottom: '1rem' }}
+                      message={alert.message}
+                      closable
+                      onClose={() => {}}
                     />
                   ))}
                 </S.AlertsList>
@@ -258,15 +259,14 @@ const AdminDashboard = () => {
               </S.ActivitiesList>
               
               {activitiesTotalPages > 1 && (
-                <div style={{ marginTop: '1rem', textAlign: 'right' }}>
+                <S.PaginationContainer>
                   <Pagination 
                     currentPage={currentActivityPage}
-                    totalPages={activitiesTotalPages}
+                    totalItems={activitiesTotalPages * 10}
+                    itemsPerPage={10}
                     onPageChange={setCurrentActivityPage}
-                    variant="minimal"
-                    size="sm"
                   />
-                </div>
+                </S.PaginationContainer>
               )}
             </S.ActivitySection>
           </S.AdminOverview>
@@ -294,13 +294,13 @@ const AdminDashboard = () => {
                 {paginatedUsers.map(user => (
                   <tr key={user.id}>
                     <td>{user.name}</td>
-                    <td><S.RoleBadge role={user.role}>{user.role}</S.RoleBadge></td>
-                    <td><S.StatusBadge status={user.status}>{user.status}</S.StatusBadge></td>
+                    <td><S.RoleBadge $role={user.role}>{user.role}</S.RoleBadge></td>
+                    <td><S.StatusBadge $status={user.status}>{user.status}</S.StatusBadge></td>
                     <td>{user.lastActive}</td>
                     <td>
                       <S.ActionBtn>Edit</S.ActionBtn>
                       {user.status === 'active' && (
-                        <S.ActionBtn danger>Suspend</S.ActionBtn>
+                        <S.ActionBtn $danger>Suspend</S.ActionBtn>
                       )}
                     </td>
                   </tr>
@@ -309,15 +309,14 @@ const AdminDashboard = () => {
             </S.UsersTable>
             
             {usersTotalPages > 1 && (
-              <div style={{ marginTop: '1rem', textAlign: 'right' }}>
+              <S.PaginationContainer>
                 <Pagination 
                   currentPage={currentUsersPage}
-                  totalPages={usersTotalPages}
+                  totalItems={usersTotalPages * 10}
+                  itemsPerPage={10}
                   onPageChange={setCurrentUsersPage}
-                  variant="minimal"
-                  size="sm"
                 />
-              </div>
+              </S.PaginationContainer>
             )}
           </S.AdminUsers>
         )}
@@ -343,22 +342,22 @@ const AdminDashboard = () => {
               <S.ChartContainer>
                 <h4>User Growth Trend</h4>
                 <S.ChartPlaceholder>
-                  <S.ChartBar style={{ height: '60%' }} />
-                  <S.ChartBar style={{ height: '75%' }} />
-                  <S.ChartBar style={{ height: '85%' }} />
-                  <S.ChartBar style={{ height: '95%' }} />
-                  <S.ChartBar style={{ height: '100%' }} />
+                  <S.ChartBar $height="60%" />
+                  <S.ChartBar $height="75%" />
+                  <S.ChartBar $height="85%" />
+                  <S.ChartBar $height="95%" />
+                  <S.ChartBar $height="100%" />
                 </S.ChartPlaceholder>
               </S.ChartContainer>
 
               <S.ChartContainer>
                 <h4>Transaction Volume</h4>
                 <S.ChartPlaceholder>
-                  <S.ChartBar style={{ height: '70%' }} />
-                  <S.ChartBar style={{ height: '80%' }} />
-                  <S.ChartBar style={{ height: '65%' }} />
-                  <S.ChartBar style={{ height: '85%' }} />
-                  <S.ChartBar style={{ height: '90%' }} />
+                  <S.ChartBar $height="70%" />
+                  <S.ChartBar $height="80%" />
+                  <S.ChartBar $height="65%" />
+                  <S.ChartBar $height="85%" />
+                  <S.ChartBar $height="90%" />
                 </S.ChartPlaceholder>
               </S.ChartContainer>
             </S.AnalyticsCharts>
@@ -384,47 +383,53 @@ const AdminDashboard = () => {
               <h3>System Settings</h3>
             </S.SectionHeader>
             
-            <S.SettingsGroups>
+            <S.SettingsGroups as="form" onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              const settings = Object.fromEntries(formData.entries());
+              // TODO: POST settings to /api/admin/settings
+              createLogger('AdminDashboard').info('Settings form submitted (backend pending):', settings);
+            }}>
               <S.SettingGroup>
                 <h4>General Settings</h4>
                 <S.SettingItem>
-                  <label>Platform Name</label>
-                  <input type="text" defaultValue="White Caves" />
+                  <label htmlFor="admin-platform-name">Platform Name</label>
+                  <input id="admin-platform-name" name="platformName" type="text" defaultValue="White Caves" required maxLength={100} />
                 </S.SettingItem>
                 <S.SettingItem>
-                  <label>Support Email</label>
-                  <input type="email" defaultValue="support@whitecaves.ae" />
+                  <label htmlFor="admin-support-email">Support Email</label>
+                  <input id="admin-support-email" name="supportEmail" type="email" defaultValue="support@whitecaves.ae" required maxLength={254} />
                 </S.SettingItem>
               </S.SettingGroup>
 
               <S.SettingGroup>
                 <h4>Performance Settings</h4>
                 <S.SettingItem>
-                  <label>Cache Enabled</label>
-                  <input type="checkbox" defaultChecked />
+                  <label htmlFor="admin-cache-enabled">Cache Enabled</label>
+                  <input id="admin-cache-enabled" name="cacheEnabled" type="checkbox" defaultChecked />
                 </S.SettingItem>
                 <S.SettingItem>
-                  <label>Auto-backup Interval (hours)</label>
-                  <input type="number" defaultValue="24" />
+                  <label htmlFor="admin-backup-interval">Auto-backup Interval (hours)</label>
+                  <input id="admin-backup-interval" name="backupInterval" type="number" defaultValue="24" min={1} max={168} required />
                 </S.SettingItem>
               </S.SettingGroup>
 
               <S.SettingGroup>
                 <h4>Security Settings</h4>
                 <S.SettingItem>
-                  <label>Two-Factor Authentication</label>
-                  <select defaultValue="enabled">
+                  <label htmlFor="admin-2fa">Two-Factor Authentication</label>
+                  <select id="admin-2fa" name="twoFactorAuth" defaultValue="enabled">
                     <option value="enabled">Enabled</option>
                     <option value="disabled">Disabled</option>
                   </select>
                 </S.SettingItem>
                 <S.SettingItem>
-                  <label>Session Timeout (minutes)</label>
-                  <input type="number" defaultValue="30" />
+                  <label htmlFor="admin-session-timeout">Session Timeout (minutes)</label>
+                  <input id="admin-session-timeout" name="sessionTimeout" type="number" defaultValue="30" min={5} max={1440} required />
                 </S.SettingItem>
               </S.SettingGroup>
 
-              <S.SaveBtn>Save Settings</S.SaveBtn>
+              <S.SaveBtn type="submit">Save Settings</S.SaveBtn>
             </S.SettingsGroups>
           </S.AdminSettings>
         )}

@@ -1,7 +1,22 @@
 import React from 'react';
 import { Receipt, CheckCircle, Clock, X } from 'lucide-react';
 
-const ExpensesTab = ({ expenses, onApprove, onReject }) => {
+interface Expense {
+  id: string | number;
+  description: string;
+  category: string;
+  amount: number;
+  date: string;
+  status: string;
+}
+
+interface ExpensesTabProps {
+  expenses: Expense[];
+  onApprove: (id: string | number) => void;
+  onReject: (id: string | number) => void;
+}
+
+const ExpensesTab: React.FC<ExpensesTabProps> = ({ expenses, onApprove, onReject }) => {
   return (
     <div className="expenses-view">
       <h3>Expense Management</h3>
@@ -28,7 +43,7 @@ const ExpensesTab = ({ expenses, onApprove, onReject }) => {
           </tr>
         </thead>
         <tbody>
-          {expenses.map((expense) => (
+          {expenses.map((expense: Expense) => (
             <tr key={expense.id} className={`status-${expense.status}`}>
               <td>
                 <div className="expense-desc">

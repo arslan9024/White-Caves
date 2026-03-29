@@ -26,7 +26,14 @@ interface SimpleLink {
 }
 
 interface MegaNavProps {
-  user?: any;
+  user?: {
+    id: string;
+    name?: string;
+    displayName?: string;
+    email: string;
+    role?: string;
+    photoURL?: string;
+  } | null;
 }
 
 const MegaNav: FC<MegaNavProps> = ({ user }) => {
@@ -153,7 +160,7 @@ const MegaNav: FC<MegaNavProps> = ({ user }) => {
                         <h4>Featured</h4>
                         <S.FeaturedList>
                           {item.submenu.featured?.map((feat) => (
-                            <S.FeaturedItem href="#" key={feat.title}>
+                            <S.FeaturedItem as="div" role="menuitem" tabIndex={0} key={feat.title} style={{ cursor: 'pointer' }}>
                               <S.FeaturedIcon>{feat.icon}</S.FeaturedIcon>
                               <S.FeaturedText>
                                 <S.FeaturedTitle>{feat.title}</S.FeaturedTitle>
@@ -168,7 +175,7 @@ const MegaNav: FC<MegaNavProps> = ({ user }) => {
                         <h4>{item.submenu.propertyTypes ? 'Property Types' : 'Developers'}</h4>
                         <S.MegaLinks>
                           {(item.submenu.propertyTypes || item.submenu.developers || []).map((type) => (
-                            <li key={type}><a href="#">{type}</a></li>
+                            <li key={type} role="none"><a href={`/properties?type=${encodeURIComponent(type)}`} role="menuitem">{type}</a></li>
                           ))}
                         </S.MegaLinks>
                       </S.MegaCol>
@@ -177,7 +184,7 @@ const MegaNav: FC<MegaNavProps> = ({ user }) => {
                         <h4>Locations</h4>
                         <S.MegaLinks>
                           {item.submenu.locations.map((loc) => (
-                            <li key={loc}><a href="#">{loc}</a></li>
+                            <li key={loc} role="none"><a href={`/properties?location=${encodeURIComponent(loc)}`} role="menuitem">{loc}</a></li>
                           ))}
                         </S.MegaLinks>
                       </S.MegaCol>
@@ -186,7 +193,7 @@ const MegaNav: FC<MegaNavProps> = ({ user }) => {
                         <h4>{item.submenu.priceRanges ? 'Price Range' : 'Payment Plans'}</h4>
                         <S.MegaLinks>
                           {(item.submenu.priceRanges || item.submenu.paymentPlans || []).map((val) => (
-                            <li key={val}><a href="#">{val}</a></li>
+                            <li key={val} role="none"><a href={`/properties?filter=${encodeURIComponent(val)}`} role="menuitem">{val}</a></li>
                           ))}
                         </S.MegaLinks>
                       </S.MegaCol>

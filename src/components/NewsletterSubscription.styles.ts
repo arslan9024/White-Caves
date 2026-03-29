@@ -178,17 +178,17 @@ export const StyledSpinner = styled.span`
   animation: ${spin} 0.8s linear infinite;
 `;
 
-export const StyledFormMessage = styled.p<{ status?: 'success' | 'error' }>`
+export const StyledFormMessage = styled.p<{ $status?: 'success' | 'error' }>`
   margin: 12px 0 0 0;
   padding: 12px;
   border-radius: 8px;
   font-size: 0.9rem;
   text-align: center;
-  background: ${props => props.status === 'success' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'};
-  color: ${props => props.status === 'success' ? '#10b981' : '#ef4444'};
+  background: ${props => props.$status === 'success' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'};
+  color: ${props => props.$status === 'success' ? '#10b981' : '#ef4444'};
 
   [data-theme='dark'] & {
-    background: ${props => props.status === 'success' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)'};
+    background: ${props => props.$status === 'success' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)'};
   }
 `;
 

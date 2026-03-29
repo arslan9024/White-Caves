@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Check } from 'lucide-react';
-import { REAL_ESTATE_ROLES, normalizeRoleKey } from '../../../config/roles';
+import { REAL_ESTATE_ROLES, normalizeRoleKey, type RoleDefinition } from '../../../config/roles';
 import './RoleSelectorDropdown.css';
 
 /**
  * RoleSelectorDropdown - Dashboard role switcher UI component
  * Role data centralized in src/config/roles.ts (single source of truth)
  */
-const RoleSelectorDropdown = ({ currentRole = 'managing_director', onRoleChange, compact = false }) => {
+interface RoleSelectorDropdownProps {
+  currentRole?: string;
+  onRoleChange?: (role: RoleDefinition) => void;
+  compact?: boolean;
+}
+
+const RoleSelectorDropdown = ({ currentRole = 'managing_director', onRoleChange, compact = false }: RoleSelectorDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const normalizedRole = normalizeRoleKey(currentRole);
   const [selectedRole, setSelectedRole] = useState(
@@ -24,7 +30,7 @@ const RoleSelectorDropdown = ({ currentRole = 'managing_director', onRoleChange,
     }
   }, [currentRole]);
 
-  const handleRoleSelect = (role) => {
+  const handleRoleSelect = (role: RoleDefinition) => {
     setSelectedRole(role);
     setIsOpen(false);
     if (onRoleChange) {
@@ -65,7 +71,7 @@ const RoleSelectorDropdown = ({ currentRole = 'managing_director', onRoleChange,
 
       {isOpen && (
         <>
-          <div className="role-selector-backdrop" onClick={() => setIsOpen(false)} />
+          <div className="role-selector-backdrop" onClick={() => setIsOpen(false)} role="presentation" aria-hidden="true" />
           <div className="role-selector-dropdown">
             <div className="dropdown-header">
               <span>Switch Dashboard View</span>

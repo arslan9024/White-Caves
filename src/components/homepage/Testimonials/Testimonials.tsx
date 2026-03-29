@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Star, Quote } from 'lucide-react';
 import './Testimonials.css';
@@ -63,6 +63,13 @@ const Testimonials: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [direction, setDirection] = useState<number>(0);
   const [autoplay, setAutoplay] = useState<boolean>(true);
+  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (!autoplay) return;
@@ -73,8 +80,10 @@ const Testimonials: React.FC = () => {
     return () => clearInterval(timer);
   }, [autoplay]);
 
-  const navigate = (dir: number): void => {
+  const navigateCarousel = (dir: number): void => {
     setAutoplay(false);
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = setTimeout(() => setAutoplay(true), 10000);
     setDirection(dir);
     setActiveIndex((prev) => {
       if (dir === 1) return (prev + 1) % testimonials.length;
@@ -120,9 +129,10 @@ const Testimonials: React.FC = () => {
         <div className="testimonials-carousel">
           <motion.button 
             className="carousel-nav prev"
-            onClick={() => navigate(-1)}
+            onClick={() => navigateCarousel(-1)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
+            aria-label="Previous testimonial"
           >
             <ChevronLeft size={24} />
           </motion.button>
@@ -145,7 +155,7 @@ const Testimonials: React.FC = () => {
                 
                 <div className="testimonial-rating">
                   {[...Array(current.rating)].map((_, i) => (
-                    <Star key={i} size={20} fill="#FFB300" color="#FFB300" />
+                    <Star key={`star-${i}`} size={20} fill="#FFB300" color="#FFB300" />
                   ))}
                 </div>
 
@@ -158,6 +168,7 @@ const Testimonials: React.FC = () => {
                     src={current.avatar} 
                     alt={current.name}
                     className="testimonial-avatar"
+                    loading="lazy"
                   />
                   <div className="testimonial-author">
                     <h4 className="author-name">{current.name}</h4>
@@ -171,24 +182,28 @@ const Testimonials: React.FC = () => {
 
           <motion.button 
             className="carousel-nav next"
-            onClick={() => navigate(1)}
+            onClick={() => navigateCarousel(1)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
+            aria-label="Next testimonial"
           >
             <ChevronRight size={24} />
           </motion.button>
         </div>
 
-        <div className="carousel-indicators">
-          {testimonials.map((_, index) => (
+        <div className="carousel-indicators" role="tablist" aria-label="Testimonial navigation">
+          {testimonials.map((testimonial, index) => (
             <motion.button
-              key={index}
+              key={testimonial.name}
               className={`indicator ${index === activeIndex ? 'active' : ''}`}
               onClick={() => {
                 setActiveIndex(index);
                 setAutoplay(false);
               }}
               whileHover={{ scale: 1.2 }}
+              aria-label={`Go to testimonial ${index + 1}`}
+              aria-current={index === activeIndex ? 'true' : undefined}
+              role="tab"
             />
           ))}
         </div>

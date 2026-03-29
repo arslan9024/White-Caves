@@ -1,5 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
+import { createLogger } from '../utils/logger';
+import { authFetch } from '../utils/authFetch';
+import { useToast } from './Toast';
+
+const log = createLogger('JobBoard');
 import {
   JobBoardContainer,
   BoardTitle,
@@ -29,11 +34,31 @@ import {
   JobCount,
 } from './JobBoard.styles';
 
-export default function JobBoard() {
-  const [jobs, setJobs] = useState([]);
-  const [selectedJob, setSelectedJob] = useState(null);
+interface Job {
+  _id: string;
+  title: string;
+  description: string;
+  type: string;
+  location: string;
+}
 
-  const [applicationForm, setApplicationForm] = useState({
+interface ApplicationFormState {
+  role: string;
+  resume: File | null;
+  experience: string;
+  licenses: string;
+  languages: string;
+  workLocation?: string;
+}
+
+export default function JobBoard() {
+  const toast = useToast();
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const [applicationForm, setApplicationForm] = useState<ApplicationFormState>({
     role: '',
     resume: null,
     experience: '',
@@ -41,40 +66,79 @@ export default function JobBoard() {
     languages: ''
   });
 
-  const handleFileChange = (e) => {
-    setApplicationForm({
-      ...applicationForm,
-      resume: e.target.files[0]
-    });
+  const MAX_RESUME_SIZE = 5 * 1024 * 1024; // 5MB
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setApplicationForm({ ...applicationForm, resume: null });
+      return;
+    }
+    // Validate file size
+    if (file.size > MAX_RESUME_SIZE) {
+      setSubmitError(`File size exceeds ${MAX_RESUME_SIZE / (1024 * 1024)}MB limit`);
+      e.target.value = ''; // Reset file input
+      return;
+    }
+    // Validate MIME type
+    const validMimes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!validMimes.includes(file.type)) {
+      setSubmitError('Invalid file type. Only PDF, DOC, DOCX allowed.');
+      e.target.value = '';
+      return;
+    }
+    setSubmitError(null);
+    setApplicationForm({ ...applicationForm, resume: file });
   };
 
-  const handleApply = async (jobId) => {
+  const handleApply = async (jobId: string): Promise<void> => {
+    if (isSubmitting) return; // Guard against double-submit
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
     try {
       const formData = new FormData();
       formData.append('jobId', jobId);
       formData.append('role', applicationForm.role);
-      formData.append('resume', applicationForm.resume);
+      if (applicationForm.resume) {
+        formData.append('resume', applicationForm.resume);
+      }
       formData.append('experience', applicationForm.experience);
       formData.append('licenses', applicationForm.licenses);
       formData.append('languages', applicationForm.languages);
 
-      const response = await fetch('/api/job-applications', {
+      const response = await authFetch('/api/job-applications', {
         method: 'POST',
         body: formData
       });
-      
-      if (response.ok) {
-        alert('Application submitted successfully!');
-        setApplicationForm({
-          role: '',
-          resume: null,
-          experience: '',
-          licenses: '',
-          languages: ''
-        });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          (errorData as { message?: string }).message ||
+          `HTTP ${response.status}: ${response.statusText}`
+        );
       }
+
+      toast.success('Application submitted successfully!');
+      setApplicationForm({
+        role: '',
+        resume: null,
+        experience: '',
+        licenses: '',
+        languages: ''
+      });
     } catch (error) {
-      console.error('Error submitting application:', error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to submit application. Please try again.';
+      log.error('Error submitting application:', error);
+      setSubmitError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -122,6 +186,7 @@ export default function JobBoard() {
                 type="file" 
                 accept=".pdf,.doc,.docx"
                 onChange={handleFileChange}
+                aria-label="Upload resume (PDF, DOC, DOCX)"
                 required
               />
               
@@ -130,6 +195,7 @@ export default function JobBoard() {
                 placeholder="Years of Experience"
                 value={applicationForm.experience}
                 onChange={(e) => setApplicationForm({...applicationForm, experience: e.target.value})}
+                aria-label="Years of experience"
                 required
               />
               
@@ -138,6 +204,7 @@ export default function JobBoard() {
                 placeholder="Real Estate Licenses"
                 value={applicationForm.licenses}
                 onChange={(e) => setApplicationForm({...applicationForm, licenses: e.target.value})}
+                aria-label="Real estate licenses"
                 required
               />
               
@@ -146,10 +213,23 @@ export default function JobBoard() {
                 placeholder="Languages Spoken"
                 value={applicationForm.languages}
                 onChange={(e) => setApplicationForm({...applicationForm, languages: e.target.value})}
+                aria-label="Languages spoken"
                 required
               />
               
-              <button type="submit">Submit Application</button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                aria-busy={isSubmitting}
+                aria-label={isSubmitting ? 'Submitting application...' : 'Submit application'}
+              >
+                {isSubmitting ? 'Submitting...' : 'Submit Application'}
+              </button>
+              {submitError && (
+                <div className="error-message" role="alert" style={{ color: '#dc3545', marginTop: '0.5rem' }}>
+                  {submitError}
+                </div>
+              )}
             </form>
           </div>
         ))}

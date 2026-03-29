@@ -28,7 +28,7 @@ export type DepartmentId =
   | 'intelligence';
 
 export type AssistantId =
-  | 'linda'
+  | 'nadia'
   | 'nina'
   | 'mary'
   | 'nancy'
@@ -149,8 +149,8 @@ export const DEPARTMENTS: Record<DepartmentId, Department> = {
   legal: {
     id: 'legal',
     label: 'Legal',
-    color: '#DC2626',
-    gradient: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+    color: '#D4AF37',
+    gradient: 'linear-gradient(135deg, #D4AF37 0%, #B8860B 100%)',
     icon: 'Scale'
   },
   intelligence: {
@@ -167,9 +167,9 @@ export const DEPARTMENTS: Record<DepartmentId, Department> = {
 // ---------------------------------------------------------------------------
 
 export const AI_ASSISTANTS: Record<AssistantId, Assistant> = {
-  linda: {
-    id: 'linda',
-    name: 'Linda',
+  nadia: {
+    id: 'nadia',
+    name: 'Nadia',
     title: 'WhatsApp CRM Manager',
     department: 'communications',
     icon: 'MessageSquare',
@@ -205,7 +205,7 @@ export const AI_ASSISTANTS: Record<AssistantId, Assistant> = {
     },
     apiEndpoints: ['/api/bots', '/api/flows', '/api/sessions'],
     dataFlows: {
-      outputs: ['linda'],
+      outputs: ['nadia'],
       inputs: []
     }
   },
@@ -226,7 +226,7 @@ export const AI_ASSISTANTS: Record<AssistantId, Assistant> = {
     },
     apiEndpoints: ['/api/inventory', '/api/properties', '/api/assets'],
     dataFlows: {
-      outputs: ['clara', 'linda', 'olivia'],
+      outputs: ['clara', 'nadia', 'olivia'],
       inputs: ['clara', 'sentinel']
     }
   },
@@ -289,8 +289,8 @@ export const AI_ASSISTANTS: Record<AssistantId, Assistant> = {
     },
     apiEndpoints: ['/api/leads', '/api/pipeline', '/api/activities'],
     dataFlows: {
-      outputs: ['mary', 'sophia', 'linda'],
-      inputs: ['linda', 'mary', 'hunter']
+      outputs: ['mary', 'sophia', 'nadia'],
+      inputs: ['nadia', 'mary', 'hunter']
     }
   },
   sophia: {
@@ -467,7 +467,7 @@ export const AI_ASSISTANTS: Record<AssistantId, Assistant> = {
     title: 'Legal Risk Analyst',
     department: 'legal',
     icon: 'Scale',
-    color: '#DC2626',
+    color: '#D4AF37',
     avatar: '👩‍⚖️',
     description: 'Proactively identifies, documents, and helps resolve legal issues. Monitors contracts, regulations, and transaction compliance',
     capabilities: ['legal_risk_analysis', 'contract_monitoring', 'regulatory_tracking', 'dispute_prevention', 'best_practices_library'],
@@ -604,7 +604,7 @@ export const AI_ASSISTANTS: Record<AssistantId, Assistant> = {
     },
     apiEndpoints: ['/api/construction', '/api/snagging', '/api/handover'],
     dataFlows: {
-      outputs: ['mary', 'linda'],
+      outputs: ['mary', 'nadia'],
       inputs: ['atlas', 'mary']
     }
   },
@@ -646,7 +646,7 @@ export const AI_ASSISTANTS: Record<AssistantId, Assistant> = {
     },
     apiEndpoints: ['/api/concierge', '/api/vip', '/api/lifestyle'],
     dataFlows: {
-      outputs: ['clara', 'linda'],
+      outputs: ['clara', 'nadia'],
       inputs: ['clara', 'sophia']
     }
   },

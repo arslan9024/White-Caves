@@ -33,8 +33,8 @@ export default function QuickLinks({ title, links, columns = 4, className = '' }
     <QuickLinksContainerStyled className={className}>
       {title && <QuickLinksTitle>{title}</QuickLinksTitle>}
       <QuickLinksGrid $columns={columns}>
-        {links.map((link, index) => (
-          <QuickLinkCard key={link.path || index} {...link} />
+        {links.map((link) => (
+          <QuickLinkCard key={link.path || link.title} {...link} />
         ))}
       </QuickLinksGrid>
     </QuickLinksContainerStyled>

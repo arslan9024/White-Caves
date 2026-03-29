@@ -24,7 +24,7 @@ export function RequirePermission({
   fallback = null,
   children 
 }: RequirePermissionProps): ReactNode {
-  const activeRole = useSelector((state: RootState) => state.navigation?.activeRole);
+  const activeRole = useSelector((state: RootState) => state.navigation?.activeRole) ?? '';
   
   if (ownerOnly && !isOwner(activeRole)) {
     return fallback;

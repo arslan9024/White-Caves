@@ -1,4 +1,6 @@
 import React, { ReactNode, ReactElement } from 'react';
+import { createLogger } from '../utils/logger';
+import { safeRedirect } from '../utils/safeRedirect';
 import {
   ErrorBoundaryContainer,
   ErrorBoundaryContent,
@@ -27,8 +29,7 @@ interface ErrorBoundaryState {
 }
 
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  private redirectTimer: NodeJS.Timeout | null = null;
-  private countdownInterval: NodeJS.Timer | null = null;
+  private countdownInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(props: ErrorBoundaryProps) {
     super(props);
@@ -50,7 +51,8 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    const log = createLogger('ErrorBoundary');
+    log.error('Caught an error:', error, errorInfo);
     this.setState({
       error,
       errorInfo,
@@ -65,22 +67,18 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       this.setState((prev: Readonly<ErrorBoundaryState>) => {
         if (prev.countdown <= 1) {
           this.clearTimers();
-          window.location.href = '/';
+          safeRedirect('/');
           return prev;
         }
         return { ...prev, countdown: prev.countdown - 1 };
       });
-    }, 1000) as unknown as NodeJS.Timeout;
+    }, 1000);
   };
 
   clearTimers = () => {
     if (this.countdownInterval) {
-      clearInterval(this.countdownInterval as NodeJS.Timeout);
+      clearInterval(this.countdownInterval);
       this.countdownInterval = null;
-    }
-    if (this.redirectTimer) {
-      clearTimeout(this.redirectTimer as NodeJS.Timeout);
-      this.redirectTimer = null;
     }
   };
 
@@ -103,7 +101,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 
   handleGoHome = () => {
     this.clearTimers();
-    window.location.href = '/';
+    safeRedirect('/');
   };
 
   render() {
@@ -134,7 +132,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
               </ErrorButton>
             </ErrorActions>
 
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {import.meta.env.DEV && this.state.error && (
               <ErrorDetails>
                 <summary>Error Details (Development Only)</summary>
                 <ErrorStack>

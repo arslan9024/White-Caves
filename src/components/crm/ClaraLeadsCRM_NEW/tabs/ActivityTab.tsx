@@ -1,51 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useLeadsData } from '../hooks/useLeadsData';
 
 export default function ActivityTab() {
   const { leads } = useLeadsData();
   const [filterType, setFilterType] = useState('all');
 
-  // Generate mock activity from leads
-  const activities = leads.flatMap(lead => [
-    {
-      id: `activity_${lead.id}_1`,
-      type: 'email_sent',
-      leadName: lead.name,
-      description: `Email sent: "${lead.nextAction}"`,
-      timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000)
-    },
-    {
-      id: `activity_${lead.id}_2`,
-      type: 'call_completed',
-      leadName: lead.name,
-      description: 'Call completed - 32 minutes',
-      timestamp: new Date(Date.now() - (Math.random() * 14 + 1) * 24 * 60 * 60 * 1000)
-    },
-    {
-      id: `activity_${lead.id}_3`,
-      type: 'meeting_scheduled',
-      leadName: lead.name,
-      description: 'Meeting scheduled for next week',
-      timestamp: new Date(Date.now() - Math.random() * 3 * 24 * 60 * 60 * 1000)
-    },
-    {
-      id: `activity_${lead.id}_4`,
-      type: 'status_changed',
-      leadName: lead.name,
-      description: `Status changed to "${lead.status}"`,
-      timestamp: new Date(Date.now() - Math.random() * 10 * 24 * 60 * 60 * 1000)
-    }
-  ]);
+  // Generate deterministic activity from leads (stable across renders)
+  const activities = useMemo(() => leads.flatMap(lead => {
+    const baseTime = new Date(lead.lastContact || Date.now()).getTime();
+    return [
+      {
+        id: `activity_${lead.id}_1`,
+        type: 'email_sent',
+        leadName: lead.name,
+        description: `Email sent: "${lead.nextAction || 'Follow up'}"`,
+        timestamp: new Date(baseTime - 1 * 24 * 60 * 60 * 1000)
+      },
+      {
+        id: `activity_${lead.id}_2`,
+        type: 'call_completed',
+        leadName: lead.name,
+        description: 'Call completed - 32 minutes',
+        timestamp: new Date(baseTime - 3 * 24 * 60 * 60 * 1000)
+      },
+      {
+        id: `activity_${lead.id}_3`,
+        type: 'meeting_scheduled',
+        leadName: lead.name,
+        description: 'Meeting scheduled for next week',
+        timestamp: new Date(baseTime - 5 * 24 * 60 * 60 * 1000)
+      },
+      {
+        id: `activity_${lead.id}_4`,
+        type: 'status_changed',
+        leadName: lead.name,
+        description: `Status changed to "${lead.status}"`,
+        timestamp: new Date(baseTime - 7 * 24 * 60 * 60 * 1000)
+      }
+    ];
+  }), [leads]);
 
   // Sort by most recent
-  let filteredActivities = [...activities].sort((a, b) => b.timestamp - a.timestamp);
+  let filteredActivities = [...activities].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 
   if (filterType !== 'all') {
     filteredActivities = filteredActivities.filter(a => a.type === filterType);
   }
 
-  const getActivityIcon = (type) => {
-    const icons = {
+  const getActivityIcon = (type: string): string => {
+    const icons: Record<string, string> = {
       email_sent: '✉️',
       call_completed: '☎️',
       meeting_scheduled: '📅',
@@ -56,8 +59,8 @@ export default function ActivityTab() {
     return icons[type] || '📌';
   };
 
-  const getActivityLabel = (type) => {
-    const labels = {
+  const getActivityLabel = (type: string): string => {
+    const labels: Record<string, string> = {
       email_sent: 'Email Sent',
       call_completed: 'Call Completed',
       meeting_scheduled: 'Meeting Scheduled',
@@ -68,9 +71,9 @@ export default function ActivityTab() {
     return labels[type] || 'Activity';
   };
 
-  const formatTimeAgo = (date) => {
+  const formatTimeAgo = (date: Date): string => {
     const now = new Date();
-    const diff = now - date;
+    const diff = now.getTime() - date.getTime();
     const mins = Math.floor(diff / 60000);
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);

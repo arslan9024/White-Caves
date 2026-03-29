@@ -1,7 +1,38 @@
 import React from 'react';
 import { BarChart3, Server, Database, AlertCircle, CheckCircle } from 'lucide-react';
 
-const ArchitectureTab = ({ modules, techStack, systemComponents }) => {
+interface ArchModule {
+  name: string;
+  description: string;
+  status: string;
+}
+
+interface ModuleCategory {
+  category: string;
+  modules: ArchModule[];
+}
+
+interface ComponentMetrics {
+  cpu: number;
+  memory: number;
+  uptime: number;
+}
+
+interface SystemComponent {
+  id: string | number;
+  name: string;
+  type: string;
+  status: string;
+  metrics: ComponentMetrics;
+}
+
+interface ArchitectureTabProps {
+  modules: ModuleCategory[];
+  techStack: Record<string, string[]>;
+  systemComponents: SystemComponent[];
+}
+
+const ArchitectureTab: React.FC<ArchitectureTabProps> = ({ modules, techStack, systemComponents }) => {
   return (
     <div className="architecture-view">
       <h3>Platform Architecture</h3>
@@ -9,12 +40,12 @@ const ArchitectureTab = ({ modules, techStack, systemComponents }) => {
       <div className="platforms-section">
         <h4><BarChart3 size={16} /> Platform Modules</h4>
         <div className="categories-grid">
-          {modules.map((category, idx) => (
-            <div key={idx} className="category-section">
+          {modules.map((category: ModuleCategory) => (
+            <div key={category.category} className="category-section">
               <h5>{category.category}</h5>
               <div className="modules-list">
-                {category.modules.map((module, midx) => (
-                  <div key={midx} className={`module-item status-${module.status}`}>
+                {category.modules.map((module: ArchModule) => (
+                  <div key={module.name} className={`module-item status-${module.status}`}>
                     <div className="module-icon">
                       {module.status === 'production' ? (
                         <CheckCircle size={14} style={{ color: '#10B981' }} />
@@ -37,12 +68,12 @@ const ArchitectureTab = ({ modules, techStack, systemComponents }) => {
       <div className="tech-stack-section">
         <h4><Server size={16} /> Technology Stack</h4>
         <div className="tech-grid">
-          {Object.entries(techStack).map(([category, items]) => (
+          {Object.entries(techStack).map(([category, items]: [string, string[]]) => (
             <div key={category} className="tech-category">
               <h5>{category.replace(/([A-Z])/g, ' $1').toUpperCase().trim()}</h5>
               <ul className="tech-list">
-                {items.map((item, idx) => (
-                  <li key={idx} className="tech-item">
+                {items.map((item: string) => (
+                  <li key={item} className="tech-item">
                     <span className="tech-name">{item}</span>
                   </li>
                 ))}
@@ -55,7 +86,7 @@ const ArchitectureTab = ({ modules, techStack, systemComponents }) => {
       <div className="system-components-section">
         <h4><Database size={16} /> System Components</h4>
         <div className="components-grid">
-          {systemComponents.map(component => (
+          {systemComponents.map((component: SystemComponent) => (
             <div key={component.id} className={`component-card status-${component.status}`}>
               <div className="component-header">
                 <h5>{component.name}</h5>

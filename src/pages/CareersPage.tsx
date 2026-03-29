@@ -1,5 +1,6 @@
-import React, { FC, useState, ChangeEvent, FormEvent } from 'react';
+import React, { FC, useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import AppLayout from '../components/layout/AppLayout';
 import './CareersPage.css';
 
@@ -29,6 +30,7 @@ interface ApplicationFormData {
 interface CareersPageProps {}
 
 const CareersPage: FC<CareersPageProps> = () => {
+  useDocumentTitle('Careers');
   const [selectedJob, setSelectedJob] = useState<JobPosition | null>(null);
   const [showForm, setShowForm] = useState<boolean>(false);
   const [formData, setFormData] = useState<ApplicationFormData>({
@@ -43,6 +45,11 @@ const CareersPage: FC<CareersPageProps> = () => {
     heardFrom: ''
   });
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    return () => clearTimeout(scrollTimerRef.current);
+  }, []);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>): void => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -52,17 +59,19 @@ const CareersPage: FC<CareersPageProps> = () => {
     setSelectedJob(job);
     setFormData({ ...formData, position: job.title });
     setShowForm(true);
-    setTimeout(() => {
+    clearTimeout(scrollTimerRef.current);
+    scrollTimerRef.current = setTimeout(() => {
       document.getElementById('application-form')?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    console.log('Application submitted:', formData);
+    // TODO: Wire to backend API (POST /api/careers/apply)
     setSubmitted(true);
     setShowForm(false);
-    setTimeout(() => {
+    clearTimeout(scrollTimerRef.current);
+    scrollTimerRef.current = setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
   };

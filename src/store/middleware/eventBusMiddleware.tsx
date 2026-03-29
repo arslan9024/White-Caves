@@ -1,5 +1,5 @@
-import { Middleware, AnyAction, Dispatch } from 'redux';
-import { RootState } from '../index';
+import { Middleware, Dispatch, UnknownAction } from 'redux';
+import type { RootState } from '../store';
 
 // Event Types
 interface EventTypesRecord {
@@ -41,14 +41,14 @@ interface EventRoutingRecord {
 
 const EVENT_ROUTING: EventRoutingRecord = {
   [EVENT_TYPES.LEAD_CAPTURED]: ['clara', 'zoe'],
-  [EVENT_TYPES.LEAD_QUALIFIED]: ['sophia', 'linda', 'zoe'],
+  [EVENT_TYPES.LEAD_QUALIFIED]: ['sophia', 'nadia', 'zoe'],
   [EVENT_TYPES.LEAD_CONVERTED]: ['theodora', 'zoe', 'olivia'],
-  [EVENT_TYPES.PROPERTY_LISTED]: ['olivia', 'linda', 'hunter'],
+  [EVENT_TYPES.PROPERTY_LISTED]: ['olivia', 'nadia', 'hunter'],
   [EVENT_TYPES.PROPERTY_STATUS_UPDATED]: ['clara', 'olivia', 'daisy'],
   [EVENT_TYPES.PROPERTY_VIEWED]: ['olivia', 'zoe'],
   [EVENT_TYPES.DEAL_STARTED]: ['theodora', 'laila', 'zoe'],
   [EVENT_TYPES.DEAL_CLOSED]: ['theodora', 'zoe', 'nancy', 'olivia'],
-  [EVENT_TYPES.DEAL_STALLED]: ['sophia', 'linda', 'zoe'],
+  [EVENT_TYPES.DEAL_STALLED]: ['sophia', 'nadia', 'zoe'],
   [EVENT_TYPES.INVOICE_CREATED]: ['zoe'],
   [EVENT_TYPES.PAYMENT_RECEIVED]: ['zoe', 'daisy'],
   [EVENT_TYPES.KYC_SUBMITTED]: ['laila', 'evangeline'],
@@ -85,7 +85,8 @@ interface AuditEntry {
 }
 
 // Extended Action Type
-interface ActionWithMeta extends AnyAction {
+interface ActionWithMeta {
+  type: string;
   meta?: {
     actor?: string;
     assistantId?: string;
@@ -129,30 +130,31 @@ const summarizeChanges = (prevState: RootState, nextState: RootState): AuditChan
 const eventBusMiddleware: Middleware<
   {}, 
   RootState, 
-  Dispatch<AnyAction>
-> = (store) => (next) => (action: AnyAction) => {
+  Dispatch<UnknownAction>
+> = (store) => (next) => (action) => {
+  const typedAction = action as ActionWithMeta;
   const prevState = store.getState();
   const result = next(action);
   const nextState = store.getState();
 
   // Audit logging for AIAssistant actions
-  if (action.type?.startsWith('aiAssistantDashboard/')) {
+  if (typedAction.type?.startsWith('aiAssistantDashboard/')) {
     const auditEntry = createAuditEntry(
-      action as ActionWithMeta,
+      typedAction,
       prevState,
       nextState
     );
     auditLog.push(auditEntry);
 
-    // Keep audit log bounded
-    if (auditLog.length > 1000) {
-      auditLog.shift();
+    // Keep audit log bounded — bulk trim for O(1) amortized instead of O(n) shift()
+    if (auditLog.length > 500) {
+      auditLog.splice(0, auditLog.length - 250);
     }
   }
 
   // Event bus emit handling
-  if (action.type === 'eventBus/emit') {
-    const payload = action.payload as {
+  if (typedAction.type === 'eventBus/emit') {
+    const payload = typedAction.payload as {
       eventType: string;
       payload: unknown;
       source: string;
@@ -190,7 +192,7 @@ export const emitEvent = (
   eventType: string,
   payload: unknown,
   source: string
-): AnyAction => ({
+): UnknownAction => ({
   type: 'eventBus/emit',
   payload: { eventType, payload, source }
 });

@@ -19,7 +19,7 @@ export const ProfileSignInBtn = styled(RouterLink)`
   align-items: center;
   gap: 8px;
   padding: 10px 24px;
-  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+  background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
   color: #ffffff;
   font-size: 0.9rem;
   font-weight: 600;
@@ -30,9 +30,9 @@ export const ProfileSignInBtn = styled(RouterLink)`
   cursor: pointer;
 
   &:hover {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    background: linear-gradient(135deg, #FFCA28 0%, #D4AF37 100%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
   }
 `;
 
@@ -68,7 +68,7 @@ export const ProfileAvatar = styled.div<{ $large?: boolean }>`
   width: ${props => (props.$large ? '50px' : '42px')};
   height: ${props => (props.$large ? '50px' : '42px')};
   border-radius: 50%;
-  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+  background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -78,7 +78,7 @@ export const ProfileAvatar = styled.div<{ $large?: boolean }>`
   flex-shrink: 0;
 
   ${ProfileTrigger}:hover & {
-    border-color: #dc2626;
+    border-color: #D4AF37;
     transform: scale(1.05);
   }
 
@@ -129,7 +129,7 @@ export const ProfileDropdown = styled.div`
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
   overflow: hidden;
   animation: profileDropdownFade 0.2s ease;
-  z-index: 1001;
+  z-index: var(--z-dropdown, 100);
 
   @keyframes profileDropdownFade {
     from {
@@ -159,10 +159,10 @@ export const ProfileDropdownHeader = styled.div`
   align-items: center;
   gap: 12px;
   padding: 16px;
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(212, 175, 55, 0.1);
 
   @media (prefers-color-scheme: light) {
-    background: rgba(220, 38, 38, 0.05);
+    background: rgba(212, 175, 55, 0.05);
   }
 
   @media (max-width: 768px) {
@@ -249,7 +249,7 @@ export const ProfileDropdownItem = styled.button<{ $logout?: boolean }>`
     background: ${props =>
       props.$logout
         ? 'rgba(239, 68, 68, 0.15)'
-        : 'rgba(220, 38, 38, 0.15)'};
+        : 'rgba(212, 175, 55, 0.15)'};
     color: ${props =>
       props.$logout ? '#ef4444' : 'var(--text-primary, #ffffff)'};
   }
@@ -261,7 +261,7 @@ export const ProfileDropdownItem = styled.button<{ $logout?: boolean }>`
       background: ${props =>
         props.$logout
           ? 'rgba(239, 68, 68, 0.2)'
-          : 'rgba(220, 38, 38, 0.1)'};
+          : 'rgba(212, 175, 55, 0.1)'};
       color: ${props => (props.$logout ? '#ef4444' : '#1f2937')};
     }
   }
@@ -283,7 +283,7 @@ export const ProfileDropdownItemLink = styled(RouterLink)`
   text-align: left;
 
   &:hover {
-    background: rgba(220, 38, 38, 0.15);
+    background: rgba(212, 175, 55, 0.15);
     color: var(--text-primary, #ffffff);
   }
 
@@ -291,7 +291,7 @@ export const ProfileDropdownItemLink = styled(RouterLink)`
     color: #374151;
 
     &:hover {
-      background: rgba(220, 38, 38, 0.1);
+      background: rgba(212, 175, 55, 0.1);
       color: #1f2937;
     }
   }

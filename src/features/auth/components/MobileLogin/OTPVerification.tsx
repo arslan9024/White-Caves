@@ -1,10 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './MobileLogin.css';
 
-const OTPVerification = ({ phoneNumber, onVerify, onResend, loading, error }) => {
+interface OTPVerificationProps {
+  phoneNumber: string;
+  onVerify: (otp: string) => void;
+  onResend: () => void;
+  loading: boolean;
+  error: string;
+}
+
+const OTPVerification: React.FC<OTPVerificationProps> = ({ phoneNumber, onVerify, onResend, loading, error }) => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [resendTimer, setResendTimer] = useState(60);
-  const inputRefs = useRef([]);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     if (resendTimer > 0) {
@@ -17,7 +25,7 @@ const OTPVerification = ({ phoneNumber, onVerify, onResend, loading, error }) =>
     inputRefs.current[0]?.focus();
   }, []);
 
-  const handleChange = (index, value) => {
+  const handleChange = (index: number, value: string): void => {
     if (value.length > 1) {
       const digits = value.split('').slice(0, 6);
       const newOtp = [...otp];
@@ -43,13 +51,13 @@ const OTPVerification = ({ phoneNumber, onVerify, onResend, loading, error }) =>
     }
   };
 
-  const handleKeyDown = (index, e) => {
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
-  const handlePaste = (e) => {
+  const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>): void => {
     e.preventDefault();
     const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
     if (pastedData) {
@@ -62,7 +70,7 @@ const OTPVerification = ({ phoneNumber, onVerify, onResend, loading, error }) =>
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     const otpString = otp.join('');
     if (otpString.length === 6) {
@@ -70,7 +78,7 @@ const OTPVerification = ({ phoneNumber, onVerify, onResend, loading, error }) =>
     }
   };
 
-  const handleResend = () => {
+  const handleResend = (): void => {
     setResendTimer(60);
     setOtp(['', '', '', '', '', '']);
     onResend();
@@ -88,7 +96,7 @@ const OTPVerification = ({ phoneNumber, onVerify, onResend, loading, error }) =>
       <div className="otp-inputs" onPaste={handlePaste}>
         {otp.map((digit, index) => (
           <input
-            key={index}
+            key={`otp-${index}`}
             ref={(el) => (inputRefs.current[index] = el)}
             type="text"
             inputMode="numeric"

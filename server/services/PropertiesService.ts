@@ -5,6 +5,43 @@
 
 import { prisma } from '../database';
 
+/** Input for creating a property listing */
+interface CreatePropertyInput {
+  title: string;
+  type: string;
+  location: string;
+  price: number;
+  status?: string;
+  description?: string;
+  bedrooms?: number;
+  bathrooms?: number;
+  area?: number;
+  images?: string[];
+}
+
+/** Input for updating a property listing */
+interface UpdatePropertyInput {
+  title?: string;
+  type?: string;
+  location?: string;
+  price?: number;
+  status?: string;
+  description?: string;
+  bedrooms?: number;
+  bathrooms?: number;
+  area?: number;
+  images?: string[];
+}
+
+/** Filters for property search */
+interface PropertySearchFilters {
+  type?: string;
+  status?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  location?: string;
+}
+
 export class PropertiesService {
   /**
    * Get all properties with filters
@@ -25,7 +62,7 @@ export class PropertiesService {
   /**
    * Create new property listing
    */
-  async createProperty(propertyData: any) {
+  async createProperty(propertyData: CreatePropertyInput) {
     // Implementation pending
     return null;
   }
@@ -33,7 +70,7 @@ export class PropertiesService {
   /**
    * Update property
    */
-  async updateProperty(id: string, updateData: any) {
+  async updateProperty(id: string, updateData: UpdatePropertyInput) {
     // Implementation pending
     return null;
   }
@@ -60,7 +97,7 @@ export class PropertiesService {
   /**
    * Search properties
    */
-  async searchProperties(query: string, filters?: any) {
+  async searchProperties(query: string, filters?: PropertySearchFilters) {
     // Implementation pending
     return [];
   }

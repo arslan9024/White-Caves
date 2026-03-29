@@ -40,17 +40,17 @@ const PopoverTriggerElement = styled.div`
   display: inline-block;
 `;
 
-const PopoverContent = styled.div<{ isVisible: boolean; placement: PopoverPlacement }>`
+const PopoverContent = styled.div<{ $isVisible: boolean; $placement: PopoverPlacement }>`
   position: absolute;
   background-color: white;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 10px 15px rgba(0, 0, 0, 0.1);
   padding: 12px 16px;
-  z-index: 10;
-  opacity: ${props => (props.isVisible ? 1 : 0)};
-  visibility: ${props => (props.isVisible ? 'visible' : 'hidden')};
-  pointer-events: ${props => (props.isVisible ? 'auto' : 'none')};
+  z-index: var(--z-tooltip, 800);
+  opacity: ${props => (props.$isVisible ? 1 : 0)};
+  visibility: ${props => (props.$isVisible ? 'visible' : 'hidden')};
+  pointer-events: ${props => (props.$isVisible ? 'auto' : 'none')};
   transition: opacity 0.2s ease, visibility 0.2s ease;
   max-width: 100%;
 
@@ -62,7 +62,7 @@ const PopoverContent = styled.div<{ isVisible: boolean; placement: PopoverPlacem
     border-style: solid;
 
     ${props => {
-      switch (props.placement) {
+      switch (props.$placement) {
         case 'top':
           return `
             bottom: -6px;
@@ -102,7 +102,7 @@ const PopoverContent = styled.div<{ isVisible: boolean; placement: PopoverPlacem
   }
 
   ${props => {
-    switch (props.placement) {
+    switch (props.$placement) {
       case 'top':
         return 'bottom: 100%; margin-bottom: 12px; left: 50%; transform: translateX(-50%);';
       case 'bottom':
@@ -181,10 +181,16 @@ export const Popover: React.FC<PopoverProps> = ({
   if (trigger === 'click') {
     return (
       <PopoverWrapper ref={wrapperRef}>
-        <PopoverTriggerElement onClick={handleTriggerClick}>
+        <PopoverTriggerElement
+          onClick={handleTriggerClick}
+          onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleTriggerClick(); } }}
+          role="button"
+          tabIndex={0}
+          aria-expanded={isVisible}
+        >
           {children}
         </PopoverTriggerElement>
-        <PopoverContent isVisible={isVisible} placement={placement} style={{ maxWidth }}>
+        <PopoverContent $isVisible={isVisible} $placement={placement} style={{ maxWidth }}>
           {content}
         </PopoverContent>
       </PopoverWrapper>
@@ -196,9 +202,11 @@ export const Popover: React.FC<PopoverProps> = ({
       ref={wrapperRef}
       onMouseEnter={() => handleTriggerHover(true)}
       onMouseLeave={() => handleTriggerHover(false)}
+      onFocus={() => handleTriggerHover(true)}
+      onBlur={() => handleTriggerHover(false)}
     >
       <PopoverTriggerElement>{children}</PopoverTriggerElement>
-      <PopoverContent isVisible={isVisible} placement={placement} style={{ maxWidth }}>
+      <PopoverContent $isVisible={isVisible} $placement={placement} style={{ maxWidth }}>
         {content}
       </PopoverContent>
     </PopoverWrapper>

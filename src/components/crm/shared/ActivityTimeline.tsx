@@ -2,7 +2,24 @@ import React, { memo, useMemo } from 'react';
 import { CheckCircle, AlertCircle, Clock, Zap, User } from 'lucide-react';
 import './SharedComponents.css';
 
-const getStatusIcon = (type) => {
+interface Activity {
+  id?: string | number;
+  type?: string;
+  status?: string;
+  action: string;
+  target?: string;
+  timestamp: string | number | Date;
+}
+
+interface ActivityTimelineProps {
+  activities: Activity[];
+  maxItems?: number;
+  showTimestamp?: boolean;
+  compact?: boolean;
+  color?: string;
+}
+
+const getStatusIcon = (type: string) => {
   switch (type) {
     case 'success': return <CheckCircle size={14} className="status-success" />;
     case 'warning': 
@@ -13,7 +30,7 @@ const getStatusIcon = (type) => {
   }
 };
 
-const formatTimeAgo = (timestamp) => {
+const formatTimeAgo = (timestamp: string | number | Date): string => {
   const now = Date.now();
   const then = new Date(timestamp).getTime();
   const diff = now - then;
@@ -34,7 +51,7 @@ const ActivityTimeline = memo(({
   showTimestamp = true,
   compact = false,
   color = 'var(--assistant-color, #0EA5E9)'
-}) => {
+}: ActivityTimelineProps) => {
   const displayActivities = useMemo(() => 
     activities.slice(0, maxItems),
     [activities, maxItems]
@@ -49,11 +66,11 @@ const ActivityTimeline = memo(({
   }
   
   return (
-    <div className={`activity-timeline ${compact ? 'compact' : ''}`} style={{ '--timeline-accent': color }}>
+    <div className={`activity-timeline ${compact ? 'compact' : ''}`} style={{ '--timeline-accent': color } as React.CSSProperties}>
       {displayActivities.map((activity, index) => (
         <div key={activity.id || index} className="activity-item">
           <div className="activity-indicator">
-            {getStatusIcon(activity.type || activity.status)}
+            {getStatusIcon(activity.type || activity.status || 'default')}
             {index < displayActivities.length - 1 && <div className="activity-line" />}
           </div>
           <div className="activity-content">

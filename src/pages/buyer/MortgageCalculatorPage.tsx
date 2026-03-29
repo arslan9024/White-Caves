@@ -1,13 +1,15 @@
 import React, { FC, useState, useMemo } from 'react';
+import { formatCurrency } from '../../utils';
+import { Config } from '../../config/constants';
 import '../RolePages.css';
 
 interface MortgageCalculatorPageProps {}
 
 const MortgageCalculatorPage: FC<MortgageCalculatorPageProps> = () => {
-  const [propertyPrice, setPropertyPrice] = useState<number>(5000000);
-  const [downPayment, setDownPayment] = useState<number>(25);
-  const [interestRate, setInterestRate] = useState<number>(4.99);
-  const [loanTerm, setLoanTerm] = useState<number>(25);
+  const [propertyPrice, setPropertyPrice] = useState<number>(Config.REAL_ESTATE.DEFAULT_PROPERTY_PRICE);
+  const [downPayment, setDownPayment] = useState<number>(Config.MORTGAGE.DEFAULT_DOWN_PAYMENT);
+  const [interestRate, setInterestRate] = useState<number>(Config.MORTGAGE.DEFAULT_INTEREST_RATE);
+  const [loanTerm, setLoanTerm] = useState<number>(Config.MORTGAGE.DEFAULT_LOAN_TERM);
   const [showAmortization, setShowAmortization] = useState<boolean>(false);
 
   interface AmortizationSchedule {
@@ -31,9 +33,11 @@ const MortgageCalculatorPage: FC<MortgageCalculatorPageProps> = () => {
     const monthlyRate = interestRate / 100 / 12;
     const numberOfPayments = loanTerm * 12;
     
-    const monthlyPayment = loanAmount * 
-      (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / 
-      (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+    const monthlyPayment = monthlyRate === 0
+      ? loanAmount / numberOfPayments
+      : loanAmount * 
+        (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / 
+        (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
     
     const totalPayment = monthlyPayment * numberOfPayments;
     const totalInterest = totalPayment - loanAmount;
@@ -67,14 +71,6 @@ const MortgageCalculatorPage: FC<MortgageCalculatorPageProps> = () => {
       amortization
     };
   }, [propertyPrice, downPayment, interestRate, loanTerm]);
-
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-AE', {
-      style: 'currency',
-      currency: 'AED',
-      maximumFractionDigits: 0
-    }).format(amount);
-  };
 
   return (
     <div className="role-page no-sidebar">

@@ -1,13 +1,41 @@
 import React, { useState } from 'react';
 import { Badge, Pagination } from '../../../components/ui';
+import type { PropertiesTabProps, PropertyStatus } from './types';
 import './TabStyles.css';
 
-const PropertiesTab = ({ data, loading, onAction }) => {
+const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error, onAction }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="properties-tab">
+        <div className="tab-loading-state" role="status" aria-label="Loading properties">
+          <div className="loading-spinner" />
+          <p>Loading properties...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state with retry
+  if (error) {
+    return (
+      <div className="properties-tab">
+        <div className="tab-error-state" role="alert">
+          <span className="error-icon">⚠️</span>
+          <p>Failed to load properties: {error}</p>
+          <button className="primary-btn" onClick={() => onAction?.('retryFetch')}>
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const properties = data?.properties || [
     { id: 1, code: 'WC-PAL-001', title: 'Luxury Villa Palm Jumeirah', type: 'Villa', location: 'Palm Jumeirah', price: 15000000, status: 'available', agent: 'Ahmed Ali', beds: 5, baths: 6, area: 8500, image: null },
@@ -27,16 +55,16 @@ const PropertiesTab = ({ data, loading, onAction }) => {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  const getStatusBadge = (status) => {
-    const statusConfig = {
+  const getStatusBadge = (status: string) => {
+    const statusConfig: Record<string, { color: string; text: string; variant: string }> = {
       'available': { color: '#22C55E', text: 'Available', variant: 'success' },
       'reserved': { color: '#F59E0B', text: 'Reserved', variant: 'warning' },
       'under_contract': { color: '#8B5CF6', text: 'Under Contract', variant: 'info' },
-      'sold': { color: '#EF4444', text: 'Sold', variant: 'danger' },
+      'sold': { color: '#EF4444', text: 'Sold', variant: 'error' },
       'off_market': { color: '#6B7280', text: 'Off Market', variant: 'secondary' }
     };
     const config = statusConfig[status] || { color: '#6B7280', text: status, variant: 'secondary' };
-    return <Badge variant={config.variant} size="sm">{config.text}</Badge>;
+    return <Badge variant={config.variant as any} size="small">{config.text}</Badge>;
   };
 
   // Pagination logic
@@ -88,7 +116,7 @@ const PropertiesTab = ({ data, loading, onAction }) => {
       </div>
 
       <div className="data-table">
-        <table>
+        <table aria-label="Properties list">
           <thead>
             <tr>
               <th>Property</th>
@@ -131,17 +159,19 @@ const PropertiesTab = ({ data, loading, onAction }) => {
       </div>
 
       <div className="table-footer">
-        <span>Showing {filteredProperties.length} of {properties.length} properties</span>
-        <div className="pagination">
-          <button className="page-btn">←</button>
-          <button className="page-btn active">1</button>
-          <button className="page-btn">2</button>
-          <button className="page-btn">3</button>
-          <button className="page-btn">→</button>
-        </div>
+        <span>Showing {paginatedProperties.length} of {filteredProperties.length} properties</span>
+        {totalPages > 1 && (
+          <div className="pagination">
+            <button className="page-btn" disabled={currentPage <= 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))}>←</button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              <button key={`page-${page}`} className={`page-btn ${page === currentPage ? 'active' : ''}`} onClick={() => setCurrentPage(page)}>{page}</button>
+            ))}
+            <button className="page-btn" disabled={currentPage >= totalPages} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}>→</button>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default PropertiesTab;
+export default React.memo(PropertiesTab);

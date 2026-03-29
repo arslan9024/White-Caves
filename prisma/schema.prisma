@@ -11,16 +11,18 @@ datasource db {
 // ─── USER & AUTH ────────────────────────────────────────────────────────
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
-  name      String?
-  photoUrl  String?
-  role      String   @default("agent") // owner, agent, viewer
-  phone     String?
-  department String?
-  status    String   @default("active")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  email        String   @unique
+  name         String?
+  photoUrl     String?
+  role         String   @default("agent") // owner, agent, viewer
+  phone        String?
+  department   String?
+  status       String   @default("active")
+  passwordHash String?  // bcrypt hash — null means password not set yet
+  firebaseUid  String?  @unique // Firebase UID for social/phone auth sync
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // Relations
   properties    Property[]
@@ -28,6 +30,12 @@ model User {
   leadsCreated  Lead[]       @relation("CreatedBy")
   activities    Activity[]
   commissions   Commission[]
+  transactions  Transaction[] @relation("TransactionAgent")
+
+  @@index([role])
+  @@index([status])
+  @@index([department])
+  @@index([createdAt])
 }
 
 // ─── PROPERTY ───────────────────────────────────────────────────────────
@@ -56,6 +64,16 @@ model Property {
   user        User     @relation(fields: [userId], references: [id])
   leads       Lead[]
   commissions Commission[]
+  transactions Transaction[]
+  tenants      Tenant[]
+
+  @@index([status])
+  @@index([type])
+  @@index([featured])
+  @@index([createdAt])
+  @@index([price])
+  @@index([userId])
+  @@index([area])
 }
 
 // ─── LEAD ───────────────────────────────────────────────────────────────
@@ -85,6 +103,15 @@ model Lead {
   property     Property? @relation(fields: [propertyId], references: [id])
   activities   Activity[]
   commissions  Commission[]
+  transactions Transaction[]
+
+  @@index([status])
+  @@index([source])
+  @@index([assignedToId])
+  @@index([createdById])
+  @@index([createdAt])
+  @@index([score])
+  @@index([propertyId])
 }
 
 // ─── COMMISSION ─────────────────────────────────────────────────────────
@@ -107,6 +134,13 @@ model Commission {
   lead        Lead?    @relation(fields: [leadId], references: [id])
   propertyId  String?  @db.ObjectId
   property    Property? @relation(fields: [propertyId], references: [id])
+
+  @@index([agentId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([leadId])
+  @@index([propertyId])
+  @@index([agentId, leadId, propertyId])  // Composite index for duplicate detection
 }
 
 // ─── ACTIVITY ───────────────────────────────────────────────────────────
@@ -124,6 +158,13 @@ model Activity {
   user        User?    @relation(fields: [userId], references: [id])
   leadId      String?  @db.ObjectId
   lead        Lead?    @relation(fields: [leadId], references: [id])
+
+  @@index([type])
+  @@index([action])
+  @@index([type, action])  // Composite for filtered queries
+  @@index([userId])
+  @@index([leadId])
+  @@index([createdAt])
 }
 
 // ─── TRANSACTION ────────────────────────────────────────────────────────
@@ -141,8 +182,18 @@ model Transaction {
 
   // Relations
   propertyId    String?  @db.ObjectId
+  property      Property? @relation(fields: [propertyId], references: [id])
   leadId        String?  @db.ObjectId
+  lead          Lead?     @relation(fields: [leadId], references: [id])
   agentId       String?  @db.ObjectId
+  agent         User?     @relation("TransactionAgent", fields: [agentId], references: [id])
+
+  @@index([status])
+  @@index([type])
+  @@index([createdAt])
+  @@index([propertyId])
+  @@index([agentId])
+  @@index([leadId])
 }
 
 // ─── TENANT ─────────────────────────────────────────────────────────────
@@ -165,4 +216,9 @@ model Tenant {
 
   // Relations
   propertyId    String?  @db.ObjectId
+  property      Property? @relation(fields: [propertyId], references: [id])
+
+  @@index([status])
+  @@index([propertyId])
+  @@index([createdAt])
 }

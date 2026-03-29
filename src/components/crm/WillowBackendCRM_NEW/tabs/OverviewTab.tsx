@@ -1,6 +1,37 @@
 import React from 'react';
 
-const OverviewTab = ({ apiStats, dbHealth, cacheHealth, securityStatus, realtimeStats }) => {
+interface APIStats {
+  totalCalls: number;
+  avgResponseTime: number;
+  avgSuccessRate: number;
+  cachedEndpoints: number;
+}
+
+interface DBHealth {
+  connections: number;
+  storage: string;
+  storagePercentage: number;
+}
+
+interface SecurityStatus {
+  percentage: number;
+  passed: number;
+  total: number;
+}
+
+interface RealtimeStats {
+  totalActive: number;
+}
+
+interface OverviewTabProps {
+  apiStats: APIStats;
+  dbHealth: DBHealth;
+  cacheHealth: number;
+  securityStatus: SecurityStatus;
+  realtimeStats: RealtimeStats;
+}
+
+const OverviewTab: React.FC<OverviewTabProps> = ({ apiStats, dbHealth, cacheHealth, securityStatus, realtimeStats }) => {
   return (
     <div className="overview-view">
       <h3>System Overview</h3>

@@ -368,7 +368,7 @@ test.describe('WhatsApp Front-End Integration (Phase A3)', () => {
         wsConnected = true;
         console.log('[TEST] WebSocket opened:', ws.url());
         
-        ws.on('error', (err) => {
+        ws.on('socketerror', (err: string) => {
           wsError = true;
           console.log('[TEST] WebSocket error:', err);
         });
@@ -419,7 +419,7 @@ test.describe('WhatsApp Front-End Integration (Phase A3)', () => {
         await page.route('**/api/whatsapp/init', async (route) => {
           await route.fulfill({
             status: 200,
-            bodyContent: JSON.stringify({ sessionId: 'test_session' })
+            body: JSON.stringify({ sessionId: 'test_session' })
           });
         });
         

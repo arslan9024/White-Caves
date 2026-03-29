@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { Pagination, Badge } from '../../../components/ui';
 import { REAL_ESTATE_ROLES } from '../../../config/roles';
+import type { UsersTabProps } from './types';
 import './UsersTab.css';
 
 const DUMMY_USERS = [
@@ -209,7 +210,7 @@ const DUMMY_USERS = [
     name: 'Ali Kazim',
     email: 'ali.k@whitecaves.ae',
     phone: '+971 50 666 7777',
-    role: 'freelancer',
+    role: 'affiliated_agent',
     status: 'pending',
     joinDate: '2024-01-02',
     lastActive: '2024-01-08',
@@ -281,22 +282,23 @@ const ROLE_CATEGORIES = {
   client: 'Clients'
 };
 
-export default function UsersTab({ onAction }) {
-  const [users, setUsers] = useState(DUMMY_USERS);
+function UsersTab({ onAction }: UsersTabProps) {
+  // Only use dummy data in development — production fetches from API
+  const [users, setUsers] = useState(import.meta.env.DEV ? DUMMY_USERS : []);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRole, setSelectedRole] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
-  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState('table');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
-  const getRoleInfo = (roleId) => {
-    return REAL_ESTATE_ROLES.find(r => r.id === roleId) || { name: roleId, color: '#666' };
+  const getRoleInfo = (roleId: string) => {
+    return REAL_ESTATE_ROLES.find(r => r.id === roleId) || { name: roleId, color: '#666', category: 'support' as const };
   };
 
   const filteredUsers = users.filter(user => {
@@ -317,7 +319,7 @@ export default function UsersTab({ onAction }) {
         comparison = a.role.localeCompare(b.role);
         break;
       case 'joinDate':
-        comparison = new Date(a.joinDate) - new Date(b.joinDate);
+        comparison = (new Date(a.joinDate || 0).getTime()) - (new Date(b.joinDate || 0).getTime());
         break;
       case 'deals':
         comparison = a.deals - b.deals;
@@ -328,7 +330,7 @@ export default function UsersTab({ onAction }) {
     return sortOrder === 'asc' ? comparison : -comparison;
   });
 
-  const handleSort = (field) => {
+  const handleSort = (field: string) => {
     if (sortBy === field) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
@@ -345,7 +347,7 @@ export default function UsersTab({ onAction }) {
     }
   };
 
-  const handleSelectUser = (userId) => {
+  const handleSelectUser = (userId: number) => {
     if (selectedUsers.includes(userId)) {
       setSelectedUsers(selectedUsers.filter(id => id !== userId));
     } else {
@@ -353,14 +355,14 @@ export default function UsersTab({ onAction }) {
     }
   };
 
-  const getStatusBadge = (status) => {
-    const statusVariants = {
+  const getStatusBadge = (status: string) => {
+    const statusVariants: Record<string, string> = {
       active: 'success',
       pending: 'warning',
-      inactive: 'danger'
+      inactive: 'error'
     };
     return (
-      <Badge variant={statusVariants[status] || 'secondary'} size="sm">
+      <Badge variant={statusVariants[status] as any || 'secondary'} size="small">
         {status === 'active' && <UserCheck size={12} />}
         {status === 'inactive' && <UserX size={12} />}
         {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -379,7 +381,7 @@ export default function UsersTab({ onAction }) {
     setCurrentPage(1);
   }, [searchQuery, selectedRole, selectedStatus, selectedCategory]);
 
-  const usersByCategory = REAL_ESTATE_ROLES.reduce((acc, role) => {
+  const usersByCategory = REAL_ESTATE_ROLES.reduce<Record<string, { count: number; roles: Array<Record<string, unknown>> }>>((acc, role) => {
     const cat = role.category || 'other';
     if (!acc[cat]) acc[cat] = { count: 0, roles: [] };
     const roleUsers = users.filter(u => u.role === role.id);
@@ -398,10 +400,10 @@ export default function UsersTab({ onAction }) {
           <p>Manage all users across {REAL_ESTATE_ROLES.length} different roles</p>
         </div>
         <div className="header-actions">
-          <button className="btn-secondary" onClick={() => {}}>
+          <button className="btn-secondary" disabled title="Export coming soon">
             <Download size={16} /> Export
           </button>
-          <button className="btn-secondary" onClick={() => {}}>
+          <button className="btn-secondary" disabled title="Import coming soon">
             <Upload size={16} /> Import
           </button>
           <button className="btn-primary" onClick={() => onAction?.('addUser')}>
@@ -483,15 +485,15 @@ export default function UsersTab({ onAction }) {
       {selectedUsers.length > 0 && (
         <div className="bulk-actions">
           <span>{selectedUsers.length} users selected</span>
-          <button className="btn-sm" onClick={() => {}}>Activate</button>
-          <button className="btn-sm" onClick={() => {}}>Deactivate</button>
-          <button className="btn-sm danger" onClick={() => {}}>Delete</button>
+          <button className="btn-sm" onClick={() => onAction?.('bulkActivate', { userIds: selectedUsers })}>Activate</button>
+          <button className="btn-sm" onClick={() => onAction?.('bulkDeactivate', { userIds: selectedUsers })}>Deactivate</button>
+          <button className="btn-sm danger" onClick={() => { if (window.confirm(`Delete ${selectedUsers.length} selected user(s)? This cannot be undone.`)) onAction?.('bulkDelete', { userIds: selectedUsers }); }}>Delete</button>
           <button className="btn-sm" onClick={() => setSelectedUsers([])}>Clear</button>
         </div>
       )}
 
       <div className="users-table-container">
-        <table className="users-table">
+        <table className="users-table" aria-label="Team members and users">
           <thead>
             <tr>
               <th>
@@ -536,7 +538,7 @@ export default function UsersTab({ onAction }) {
                   </td>
                   <td>
                     <div className="user-cell">
-                      <img src={user.avatar} alt={user.name} className="user-avatar" />
+                      <img src={user.avatar} alt={user.name} className="user-avatar" loading="lazy" width={40} height={40} />
                       <div className="user-info">
                         <span className="user-name">{user.name}</span>
                         <span className="user-email">{user.email}</span>
@@ -557,22 +559,22 @@ export default function UsersTab({ onAction }) {
                   </td>
                   <td>
                     <div className="contact-cell">
-                      <a href={`mailto:${user.email}`}><Mail size={14} /></a>
-                      <a href={`tel:${user.phone}`}><Phone size={14} /></a>
+                      <a href={`mailto:${user.email}`} aria-label={`Email ${user.email}`} title={`Email ${user.email}`}><Mail size={14} /></a>
+                      <a href={`tel:${user.phone}`} aria-label={`Call ${user.phone}`} title={`Call ${user.phone}`}><Phone size={14} /></a>
                     </div>
                   </td>
                   <td>{getStatusBadge(user.status)}</td>
-                  <td className="date-cell">{new Date(user.joinDate).toLocaleDateString()}</td>
+                  <td className="date-cell">{user.joinDate ? new Date(user.joinDate).toLocaleDateString() : 'N/A'}</td>
                   <td className="deals-cell">{user.deals}</td>
                   <td>
                     <div className="action-buttons">
-                      <button className="action-btn" title="View" onClick={() => onAction?.('viewUser', user.id)}>
+                      <button className="action-btn" title="View" onClick={() => onAction?.('viewUser', { id: user.id })}>
                         <Eye size={14} />
                       </button>
-                      <button className="action-btn" title="Edit" onClick={() => onAction?.('editUser', user.id)}>
+                      <button className="action-btn" title="Edit" onClick={() => onAction?.('editUser', { id: user.id })}>
                         <Edit2 size={14} />
                       </button>
-                      <button className="action-btn danger" title="Delete" onClick={() => onAction?.('deleteUser', user.id)}>
+                      <button className="action-btn danger" title="Delete" onClick={() => onAction?.('deleteUser', { id: user.id })}>
                         <Trash2 size={14} />
                       </button>
                     </div>
@@ -598,13 +600,14 @@ export default function UsersTab({ onAction }) {
         {totalPages > 1 && (
           <Pagination 
             currentPage={currentPage}
-            totalPages={totalPages}
+            totalItems={filteredUsers.length}
+            itemsPerPage={itemsPerPage}
             onPageChange={setCurrentPage}
-            variant="minimal"
-            size="sm"
           />
         )}
       </div>
     </div>
   );
 }
+
+export default React.memo(UsersTab);

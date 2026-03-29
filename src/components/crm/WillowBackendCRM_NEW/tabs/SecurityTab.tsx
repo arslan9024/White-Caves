@@ -1,8 +1,25 @@
 import React from 'react';
 import { CheckCircle, AlertTriangle, Shield } from 'lucide-react';
 
-const SecurityTab = ({ checks, securityStatus }) => {
-  const getStatusIcon = (status) => {
+interface SecurityCheck {
+  name: string;
+  status: string;
+  lastCheck: string;
+}
+
+interface SecurityStatus {
+  percentage: number;
+  passed: number;
+  total: number;
+}
+
+interface SecurityTabProps {
+  checks: SecurityCheck[];
+  securityStatus: SecurityStatus;
+}
+
+const SecurityTab: React.FC<SecurityTabProps> = ({ checks, securityStatus }) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pass': return <CheckCircle size={16} className="status-pass" />;
       case 'warning': return <AlertTriangle size={16} className="status-warning" />;
@@ -24,8 +41,8 @@ const SecurityTab = ({ checks, securityStatus }) => {
         </div>
       </div>
       <div className="security-checks">
-        {checks.map((check, index) => (
-          <div key={index} className={`security-check ${check.status}`}>
+        {checks.map((check: SecurityCheck) => (
+          <div key={check.name} className={`security-check ${check.status}`}>
             <div className="check-icon">
               {getStatusIcon(check.status)}
             </div>

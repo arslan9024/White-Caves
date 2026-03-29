@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode, Dispatch, SetStateAction, FC } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode, Dispatch, SetStateAction, FC } from 'react';
 import translations from '../i18n/translations';
+import { safeStorage } from '../utils/safeStorage';
 
 export const LANGUAGES = {
   EN: 'en',
@@ -7,6 +8,10 @@ export const LANGUAGES = {
 } as const;
 
 export type LanguageType = typeof LANGUAGES[keyof typeof LANGUAGES];
+
+/** Recursive translation value: either a string leaf or nested object */
+type TranslationValue = string | { [key: string]: TranslationValue };
+type TranslationRecord = Record<string, TranslationValue>;
 
 interface LanguageContextType {
   language: LanguageType;
@@ -17,7 +22,7 @@ interface LanguageContextType {
   formatNumber: (number: number) => string;
   formatCurrency: (amount: number, currency?: string) => string;
   formatDate: (date: Date | string, options?: Intl.DateTimeFormatOptions) => string;
-  translations: any;
+  translations: TranslationRecord;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -29,7 +34,10 @@ interface LanguageProviderProps {
 export const LanguageProvider: FC<LanguageProviderProps> = ({ children }) => {
   const [language, setLanguageState] = useState<LanguageType>(() => {
     if (typeof window !== 'undefined') {
-      return (localStorage.getItem('whitecaves_language') as LanguageType) || LANGUAGES.EN;
+      const stored = safeStorage.get('whitecaves_language');
+      if (stored === LANGUAGES.EN || stored === LANGUAGES.AR) {
+        return stored;
+      }
     }
     return LANGUAGES.EN;
   });
@@ -45,7 +53,7 @@ export const LanguageProvider: FC<LanguageProviderProps> = ({ children }) => {
         : "'Montserrat', 'Open Sans', sans-serif";
     }
     if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('whitecaves_language', language);
+      safeStorage.set('whitecaves_language', language);
     }
   }, [language, isRTL]);
 
@@ -61,17 +69,18 @@ export const LanguageProvider: FC<LanguageProviderProps> = ({ children }) => {
 
   const t = useCallback((key: string, params: Record<string, string | number> = {}): string => {
     const keys = key.split('.');
-    let value: any = (translations as any)[language];
+    const langTranslations = (translations as Record<string, TranslationRecord>)[language];
+    let value: TranslationValue | undefined = langTranslations;
     
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {
-        value = value[k];
+        value = (value as TranslationRecord)[k];
       } else {
-        const fallback = (translations as any)[LANGUAGES.EN];
-        let fallbackValue: any = fallback;
+        const fallback: TranslationRecord | undefined = (translations as Record<string, TranslationRecord>)[LANGUAGES.EN];
+        let fallbackValue: TranslationValue | undefined = fallback;
         for (const fk of keys) {
           if (fallbackValue && typeof fallbackValue === 'object' && fk in fallbackValue) {
-            fallbackValue = fallbackValue[fk];
+            fallbackValue = (fallbackValue as TranslationRecord)[fk];
           } else {
             return key;
           }
@@ -87,7 +96,9 @@ export const LanguageProvider: FC<LanguageProviderProps> = ({ children }) => {
 
     let result = value;
     Object.keys(params).forEach(param => {
-      result = result.replace(new RegExp(`{${param}}`, 'g'), String(params[param]));
+      // Escape regex special chars in param name to prevent SyntaxError
+      const escaped = param.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      result = result.replace(new RegExp(`{${escaped}}`, 'g'), String(params[param]));
     });
 
     return result;
@@ -109,8 +120,10 @@ export const LanguageProvider: FC<LanguageProviderProps> = ({ children }) => {
   }, [language]);
 
   const formatDate = useCallback((date: Date | string | undefined, options: Intl.DateTimeFormatOptions = {}): string => {
-    if (!date) return '';
+    if (date === null || date === undefined) return '';
     const dateObj = date instanceof Date ? date : new Date(date);
+    // Guard against Invalid Date — new Date('garbage') produces NaN
+    if (isNaN(dateObj.getTime())) return '';
     return new Intl.DateTimeFormat(language === LANGUAGES.AR ? 'ar-AE' : 'en-AE', {
       year: 'numeric',
       month: 'long',
@@ -119,7 +132,7 @@ export const LanguageProvider: FC<LanguageProviderProps> = ({ children }) => {
     }).format(dateObj);
   }, [language]);
 
-  const value: LanguageContextType = {
+  const value: LanguageContextType = useMemo(() => ({
     language,
     setLanguage,
     toggleLanguage,
@@ -128,8 +141,8 @@ export const LanguageProvider: FC<LanguageProviderProps> = ({ children }) => {
     formatNumber,
     formatCurrency,
     formatDate,
-    translations: (translations as any)[language]
-  };
+    translations: ((translations as Record<string, TranslationRecord>)[language]) || {}
+  }), [language, setLanguage, toggleLanguage, isRTL, t, formatNumber, formatCurrency, formatDate]);
 
   return (
     <LanguageContext.Provider value={value}>

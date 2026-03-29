@@ -5,7 +5,7 @@
   right: 0;
   bottom: 0;
   background: var(--bg-overlay, rgba(0, 0, 0, 0.8));
-  z-index: 9999;
+  z-index: var(--z-fullscreen, 700);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -90,8 +90,8 @@
 
 .header-action-btn:hover {
   background: var(--bg-hover, #f3f4f6);
-  color: var(--primary-color, #dc2626);
-  border-color: var(--primary-color, #dc2626);
+  color: var(--primary-color, #D4AF37);
+  border-color: var(--primary-color, #D4AF37);
 }
 
 .close-btn {
@@ -168,7 +168,7 @@
 }
 
 .gallery-nav:hover {
-  background: var(--primary-color, #dc2626);
+  background: var(--primary-color, #D4AF37);
   color: white;
 }
 

@@ -3,31 +3,59 @@ import { useDispatch } from 'react-redux';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { auth } from '../../../../config/firebase';
 import { loginSuccess, loginStart, loginFailure } from '../../../../store/authSlice';
+import { createLogger } from '../../../../utils/logger';
+
+const log = createLogger('EmailAuth');
 import './EmailLogin.css';
 
-const EmailLoginForm = ({ mode = 'login', onSuccess, onError, onModeChange }) => {
+interface EmailLoginFormProps {
+  mode?: 'login' | 'signup';
+  onSuccess?: (user: Record<string, unknown>) => void;
+  onError?: (error: unknown) => void;
+  onModeChange?: (mode: 'login' | 'signup') => void;
+}
+
+interface FormData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface FormErrors {
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+}
+
+interface FirebaseAuthError extends Error {
+  code?: string;
+}
+
+const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ mode = 'login', onSuccess, onError, onModeChange }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
     confirmPassword: '',
   });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<FormErrors>({});
 
-  const validateForm = () => {
-    const newErrors = {};
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
     
     if (!formData.email) {
       newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email';
     }
     
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+    } else if (mode === 'signup' && (!/[a-zA-Z]/.test(formData.password) || !/[0-9]/.test(formData.password))) {
+      newErrors.password = 'Password must contain at least one letter and one number';
     }
     
     if (mode === 'signup' && formData.password !== formData.confirmPassword) {
@@ -38,15 +66,15 @@ const EmailLoginForm = ({ mode = 'login', onSuccess, onError, onModeChange }) =>
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name]) {
+    if (errors[name as keyof FormErrors]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     
     if (!validateForm()) return;
@@ -55,6 +83,7 @@ const EmailLoginForm = ({ mode = 'login', onSuccess, onError, onModeChange }) =>
     dispatch(loginStart());
     
     try {
+      if (!auth) throw new Error('Authentication not initialized');
       let result;
       
       if (mode === 'signup') {
@@ -66,10 +95,10 @@ const EmailLoginForm = ({ mode = 'login', onSuccess, onError, onModeChange }) =>
       
       const user = result.user;
       const userData = {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
+      id: user.uid,
+        email: user.email || '',
+        displayName: user.displayName || undefined,
+        photoURL: user.photoURL || undefined,
         emailVerified: user.emailVerified,
         provider: 'email',
       };
@@ -83,10 +112,11 @@ const EmailLoginForm = ({ mode = 'login', onSuccess, onError, onModeChange }) =>
       
       onSuccess?.(userData);
     } catch (error) {
-      console.error('Email auth error:', error);
+      const authError = error as FirebaseAuthError;
+      log.error('Email auth error:', authError);
       let errorMessage = 'Authentication failed';
       
-      switch (error.code) {
+      switch (authError.code) {
         case 'auth/user-not-found':
           errorMessage = 'No account found with this email';
           break;
@@ -103,11 +133,11 @@ const EmailLoginForm = ({ mode = 'login', onSuccess, onError, onModeChange }) =>
           errorMessage = 'Invalid email address';
           break;
         default:
-          errorMessage = error.message;
+          errorMessage = authError.message || 'Authentication failed';
       }
       
       dispatch(loginFailure(errorMessage));
-      onError?.(error);
+      onError?.(authError);
     } finally {
       setLoading(false);
     }

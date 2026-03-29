@@ -1,7 +1,32 @@
 import React from 'react';
 import { Eye, MessageSquare, Star, Home, Edit, Trash2 } from 'lucide-react';
 
-export default function ListingsTab({ state }) {
+interface Listing {
+  id: string | number;
+  property: string;
+  quality: number;
+  views: number;
+  inquiries: number;
+  available: number;
+}
+
+interface ListingStats {
+  totalViews: number;
+  totalInquiries: number;
+  avgQuality: number;
+  availableListings: number;
+}
+
+interface ListingsState {
+  listings: Listing[];
+  listingStats: ListingStats;
+}
+
+interface ListingsTabProps {
+  state: ListingsState;
+}
+
+export default function ListingsTab({ state }: ListingsTabProps) {
   const { listings, listingStats } = state;
 
   return (
@@ -43,7 +68,7 @@ export default function ListingsTab({ state }) {
       </div>
 
       <div className="listings-grid">
-        {listings.map(listing => (
+        {listings.map((listing: Listing) => (
           <div key={listing.id} className="listing-card">
             <div className="card-header">
               <h4>{listing.property}</h4>
@@ -70,8 +95,8 @@ export default function ListingsTab({ state }) {
 
             <div className="card-actions">
               <button className="btn btn-secondary">View Listing</button>
-              <button className="icon-btn"><Edit size={16} /></button>
-              <button className="icon-btn danger"><Trash2 size={16} /></button>
+              <button className="icon-btn" aria-label={`Edit listing ${listing.property}`}><Edit size={16} /></button>
+              <button className="icon-btn danger" aria-label={`Delete listing ${listing.property}`}><Trash2 size={16} /></button>
             </div>
           </div>
         ))}

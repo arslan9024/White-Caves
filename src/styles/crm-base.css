@@ -415,7 +415,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: var(--z-overlay, 600);
 }
 
 .modal-content {
@@ -866,7 +866,7 @@
 }
 
 /* ============================================================================
-   TIER 2B CONSOLIDATION: Custom CRM Files (Clara, Linda, Mary, Nancy, Nina, Olivia)
+   TIER 2B CONSOLIDATION: Custom CRM Files (Clara, Nadia, Mary, Nancy, Nina, Olivia)
    ============================================================================
    
    Consolidates 10.3 KB of duplicated patterns across 6 custom CRM files.
@@ -875,7 +875,7 @@
    ============================================================================ */
 
 /* ============================================================================
-   CRM CUSTOM HEADERS (Clara, Linda, Mary, Nancy, Nina, Olivia)
+   CRM CUSTOM HEADERS (Clara, Nadia, Mary, Nancy, Nina, Olivia)
    ============================================================================ */
 
 .crm-header-container {
@@ -937,7 +937,7 @@
 }
 
 /* ============================================================================
-   CRM CARD CONTAINERS (Clara, Linda, Mary, Nancy, Nina, Olivia)
+   CRM CARD CONTAINERS (Clara, Nadia, Mary, Nancy, Nina, Olivia)
    ============================================================================ */
 
 .crm-card {

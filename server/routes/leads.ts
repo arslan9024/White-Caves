@@ -5,19 +5,24 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
+import type { AuthRequest } from '../middleware/auth';
+import { prisma } from '../database.js';
+import { sanitizeString } from '../utils/sanitize';
+
+// Unified lead status enum — single source of truth for all lead endpoints
+const VALID_LEAD_STATUSES = ['new', 'contacted', 'qualified', 'viewing', 'offered', 'negotiating', 'won', 'lost'] as const;
+import { validate, rules, validateIdParam } from '../utils/validate';
+import { parsePagination } from '../config/pagination';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // ─── GET /api/leads ─────────────────────────────────────────────────────
 router.get(
   '/',
   asyncHandler(async (req: Request, res: Response) => {
     const {
-      page = '1',
-      pageSize = '20',
       status,
       source,
       search,
@@ -28,9 +33,10 @@ router.get(
       assignedTo,
     } = req.query;
 
-    const pageNum = Math.max(1, parseInt(page as string));
-    const limit = Math.min(100, Math.max(1, parseInt(pageSize as string)));
-    const skip = (pageNum - 1) * limit;
+    const { page: pageNum, limit, skip } = parsePagination({
+      page: req.query.page as string,
+      limit: req.query.pageSize as string,
+    });
 
     // Build where clause
     const where: Prisma.LeadWhereInput = {};
@@ -46,8 +52,14 @@ router.get(
     }
     if (minScore || maxScore) {
       where.score = {};
-      if (minScore) (where.score as any).gte = parseInt(minScore as string);
-      if (maxScore) (where.score as any).lte = parseInt(maxScore as string);
+      if (minScore) {
+        const parsed = parseInt(minScore as string, 10);
+        if (!isNaN(parsed)) where.score.gte = parsed;
+      }
+      if (maxScore) {
+        const parsed = parseInt(maxScore as string, 10);
+        if (!isNaN(parsed)) where.score.lte = parsed;
+      }
     }
     if (search) {
       const s = search as string;
@@ -62,7 +74,7 @@ router.get(
     // Build orderBy
     const validSortFields = ['createdAt', 'updatedAt', 'name', 'status', 'score', 'budget'];
     const field = validSortFields.includes(sortBy as string) ? (sortBy as string) : 'createdAt';
-    const orderBy: any = { [field]: sortOrder === 'asc' ? 'asc' : 'desc' };
+    const orderBy: Prisma.LeadOrderByWithRelationInput = { [field]: sortOrder === 'asc' ? 'asc' : 'desc' };
 
     const [leads, total] = await Promise.all([
       prisma.lead.findMany({
@@ -96,6 +108,12 @@ router.get(
 router.get(
   '/stats',
   asyncHandler(async (req: Request, res: Response) => {
+    // AUTHORIZATION: Only managers+ can view aggregated lead statistics
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — lead statistics require manager role', 403);
+    }
+
     const [total, byStatus, bySource, avgScore] = await Promise.all([
       prisma.lead.count(),
       prisma.lead.groupBy({ by: ['status'], _count: { _all: true } }),
@@ -126,6 +144,11 @@ router.get(
 router.get(
   '/analytics/conversion',
   asyncHandler(async (req: Request, res: Response) => {
+    // Authorization: Only managers+ can view conversion analytics
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
+      throw new AppError('Access denied — conversion analytics require manager role', 403);
+    }
     const [total, won, lost] = await Promise.all([
       prisma.lead.count(),
       prisma.lead.count({ where: { status: 'won' } }),
@@ -146,18 +169,23 @@ router.get(
 router.get(
   '/:id',
   asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Lead ID');
     const lead = await prisma.lead.findUnique({
       where: { id: req.params.id },
       include: {
         assignedTo: { select: { id: true, name: true, email: true, phone: true } },
         createdBy: { select: { id: true, name: true, email: true } },
-        property: true,
+        property: { select: { id: true, title: true, type: true, status: true, price: true, location: true } },
         activities: {
           orderBy: { createdAt: 'desc' },
           take: 20,
           include: { user: { select: { id: true, name: true } } },
         },
-        commissions: true,
+        commissions: {
+          select: { id: true, amount: true, status: true, percentage: true, createdAt: true },
+          take: 10,
+          orderBy: { createdAt: 'desc' },
+        },
       },
     });
 
@@ -174,22 +202,34 @@ router.post(
     const { name, email, phone, company, status, source, budget, score, notes, tags,
       assignedToId, propertyId } = req.body;
 
-    if (!name || !name.trim()) throw new AppError('Lead name is required', 400);
+    validate(req.body, {
+      name:         rules.requiredStringWithMax('Lead name', 255),
+      email:        rules.optionalEmail('Email'),
+      phone:        rules.optionalStringWithMax('Phone', 50),
+      company:      rules.optionalStringWithMax('Company', 255),
+      status:       rules.oneOf('Status', [...VALID_LEAD_STATUSES]),
+      source:       rules.oneOf('Source', ['direct', 'website', 'referral', 'social', 'portal', 'cold_call', 'event', 'other']),
+      budget:       rules.optionalPositiveNumber('Budget'),
+      assignedToId: rules.optionalMongoId('Assigned agent ID'),
+      propertyId:   rules.optionalMongoId('Property ID'),
+      tags:         rules.optionalArray('Tags'),
+      notes:        rules.optionalStringWithMax('Notes', 5000),
+    });
 
     const lead = await prisma.lead.create({
       data: {
-        name: name.trim(),
-        email: email?.trim() || null,
+        name: sanitizeString(name.trim()),
+        email: email?.trim()?.toLowerCase() || null,
         phone: phone?.trim() || null,
-        company: company?.trim() || null,
+        company: company ? sanitizeString(company.trim()) : null,
         status: status || 'new',
         source: source || 'direct',
         budget: budget ? parseFloat(budget) : null,
-        score: score ? parseInt(score) : 0,
-        notes: notes || null,
-        tags: tags || [],
+        score: score ? Math.max(0, Math.min(100, parseInt(String(score), 10) || 0)) : 0,
+        notes: notes ? sanitizeString(notes) : null,
+        tags: (tags || []).map((t: unknown) => typeof t === 'string' ? sanitizeString(t) : String(t)),
         assignedToId: assignedToId || null,
-        createdById: (req as any).user?.id || null,
+        createdById: req.user?.id || null,
         propertyId: propertyId || null,
       },
       include: { assignedTo: { select: { id: true, name: true, email: true } } },
@@ -199,7 +239,7 @@ router.post(
       data: {
         type: 'lead', action: 'created',
         description: `New lead created: ${lead.name}${lead.company ? ` (${lead.company})` : ''}`,
-        userId: (req as any).user?.id || null,
+        userId: req.user?.id || null,
         leadId: lead.id,
       },
     });
@@ -213,27 +253,52 @@ router.patch(
   '/:id',
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
+    validateIdParam(id, 'Lead ID');
     const { name, email, phone, company, status, source, budget, score, notes, tags,
       assignedToId, propertyId } = req.body;
+
+    validate(req.body, {
+      name:         rules.optionalStringWithMax('Lead name', 255),
+      email:        rules.optionalEmail('Email'),
+      phone:        rules.optionalStringWithMax('Phone', 50),
+      company:      rules.optionalStringWithMax('Company', 255),
+      notes:        rules.optionalStringWithMax('Notes', 5000),
+      status:       rules.oneOf('Status', [...VALID_LEAD_STATUSES]),
+      source:       rules.oneOf('Source', ['direct', 'website', 'referral', 'social', 'portal', 'cold_call', 'event', 'other']),
+      budget:       rules.optionalPositiveNumber('Budget'),
+      assignedToId: rules.optionalMongoId('Assigned agent ID'),
+      propertyId:   rules.optionalMongoId('Property ID'),
+      tags:         rules.optionalArray('Tags'),
+    });
 
     const existing = await prisma.lead.findUnique({ where: { id } });
     if (!existing) throw new AppError('Lead not found', 404);
 
-    const data: any = {};
-    if (name !== undefined) data.name = name.trim();
-    if (email !== undefined) data.email = email?.trim() || null;
-    if (phone !== undefined) data.phone = phone?.trim() || null;
-    if (company !== undefined) data.company = company?.trim() || null;
+    // AUTHORIZATION: Only admins, managers, or lead creator can update
+    const isAdmin = ['owner', 'manager'].includes(req.user?.role || '');
+    const isLeadCreator = existing.createdById === req.user?.id;
+    if (!isAdmin && !isLeadCreator) {
+      throw new AppError('You do not have permission to update this lead', 403);
+    }
+
+    const data: Record<string, unknown> = {};
+    if (name !== undefined) data.name = sanitizeString(String(name).trim());
+    if (email !== undefined) data.email = email ? String(email).trim().toLowerCase() : null;
+    if (phone !== undefined) data.phone = phone ? String(phone).trim() : null;
+    if (company !== undefined) data.company = company ? sanitizeString(String(company).trim()) : null;
     if (status !== undefined) data.status = status;
     if (source !== undefined) data.source = source;
     if (budget !== undefined) data.budget = budget ? parseFloat(budget) : null;
-    if (score !== undefined) data.score = parseInt(score);
-    if (notes !== undefined) data.notes = notes;
-    if (tags !== undefined) data.tags = tags;
+    if (score !== undefined) {
+      const parsed = parseInt(score as string, 10);
+      data.score = !isNaN(parsed) ? Math.max(0, Math.min(100, parsed)) : 0;
+    }
+    if (notes !== undefined) data.notes = notes ? sanitizeString(notes) : null;
+    if (tags !== undefined) data.tags = Array.isArray(tags) ? tags.map((t: unknown) => typeof t === 'string' ? sanitizeString(t) : String(t)) : [];
     if (assignedToId !== undefined) data.assignedToId = assignedToId || null;
     if (propertyId !== undefined) data.propertyId = propertyId || null;
 
-    const statusChanged = status && status !== existing.status;
+    const statusChanged = status !== undefined && status !== null && status !== existing.status;
 
     const lead = await prisma.lead.update({
       where: { id },
@@ -248,7 +313,7 @@ router.patch(
         description: statusChanged
           ? `Lead "${lead.name}" status: ${existing.status} → ${status}`
           : `Lead "${lead.name}" updated`,
-        userId: (req as any).user?.id || null,
+        userId: req.user?.id || null,
         leadId: lead.id,
         metadata: statusChanged ? { oldStatus: existing.status, newStatus: status } : undefined,
       },
@@ -263,19 +328,31 @@ router.delete(
   '/:id',
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
+    validateIdParam(id, 'Lead ID');
 
     const existing = await prisma.lead.findUnique({ where: { id } });
     if (!existing) throw new AppError('Lead not found', 404);
 
-    await prisma.activity.deleteMany({ where: { leadId: id } });
-    await prisma.lead.delete({ where: { id } });
+    // AUTHORIZATION: Only admins, managers, or lead creator can delete
+    const isAdmin = ['owner', 'manager'].includes(req.user?.role || '');
+    const isLeadCreator = existing.createdById === req.user?.id;
+    if (!isAdmin && !isLeadCreator) {
+      throw new AppError('You do not have permission to delete this lead', 403);
+    }
 
-    await prisma.activity.create({
-      data: {
-        type: 'lead', action: 'deleted',
-        description: `Lead deleted: ${existing.name}`,
-        userId: (req as any).user?.id || null,
-      },
+    await prisma.$transaction(async (tx) => {
+      // Clean up references to avoid orphaned records
+      await tx.commission.updateMany({ where: { leadId: id }, data: { leadId: null } });
+      await tx.activity.deleteMany({ where: { leadId: id } });
+      await tx.lead.delete({ where: { id } });
+
+      await tx.activity.create({
+        data: {
+          type: 'lead', action: 'deleted',
+          description: `Lead deleted: ${existing.name} (by ${req.user?.email})`,
+          userId: req.user?.id || null,
+        },
+      });
     });
 
     res.status(200).json({ success: true, message: `Lead "${existing.name}" deleted` });
@@ -287,17 +364,33 @@ router.post(
   '/:id/activities',
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
+    validateIdParam(id, 'Lead ID');
     const { type, action, description } = req.body;
 
     const lead = await prisma.lead.findUnique({ where: { id } });
     if (!lead) throw new AppError('Lead not found', 404);
 
+    // AUTHORIZATION: Only the assigned agent, creator, or managers can add activities
+    const userRole = req.user?.role || '';
+    const userId = req.user?.id || '';
+    const isManagerOrAbove = ['owner', 'manager', 'admin'].includes(userRole);
+    if (!isManagerOrAbove && lead.assignedToId !== userId && lead.createdById !== userId) {
+      throw new AppError('Access denied — you can only add activities to your own leads', 403);
+    }
+
+    // Validate type and action against known enums
+    const VALID_TYPES = ['lead', 'property', 'deal', 'commission', 'agent', 'client', 'system'];
+    const VALID_ACTIONS = ['created', 'updated', 'deleted', 'status_changed', 'note_added', 'call', 'email', 'visit'];
+    const resolvedType = VALID_TYPES.includes(type) ? type : 'lead';
+    const resolvedAction = VALID_ACTIONS.includes(action) ? action : 'note_added';
+    const sanitizedDesc = sanitizeString((description || 'Activity logged').substring(0, 2000));
+
     const activity = await prisma.activity.create({
       data: {
-        type: type || 'lead',
-        action: action || 'note_added',
-        description: description || 'Activity logged',
-        userId: (req as any).user?.id || null,
+        type: resolvedType,
+        action: resolvedAction,
+        description: sanitizedDesc,
+        userId: req.user?.id || null,
         leadId: id,
       },
       include: { user: { select: { id: true, name: true } } },
@@ -313,9 +406,10 @@ router.post(
 router.get(
   '/:id/activities',
   asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Lead ID');
     const { page = '1', pageSize = '20' } = req.query;
-    const pageNum = Math.max(1, parseInt(page as string));
-    const limit = Math.min(50, Math.max(1, parseInt(pageSize as string)));
+    const pageNum = Math.max(1, parseInt(page as string) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(pageSize as string) || 20));
 
     const [activities, total] = await Promise.all([
       prisma.activity.findMany({
@@ -343,18 +437,23 @@ router.post(
     if (!Array.isArray(leads) || leads.length === 0) throw new AppError('Provide an array of leads', 400);
     if (leads.length > 500) throw new AppError('Maximum 500 leads per batch', 400);
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Validate phone format (international E.164-ish)
+    const phoneRegex = /^\+?[\d\s\-()]{7,20}$/;
+
     const results = await prisma.lead.createMany({
-      data: leads.map((l: any) => ({
-        name: l.name?.trim() || 'Unknown',
-        email: l.email?.trim() || null,
-        phone: l.phone?.trim() || null,
-        company: l.company?.trim() || null,
-        status: l.status || 'new',
-        source: l.source || 'direct',
-        budget: l.budget ? parseFloat(l.budget) : null,
-        score: l.score ? parseInt(l.score) : 0,
-        notes: l.notes || null,
-        tags: l.tags || [],
+      data: leads.map((l: Record<string, string | number | string[] | null>) => ({
+        name: sanitizeString((typeof l.name === 'string' ? l.name.trim() : 'Unknown').slice(0, 200)),
+        email: typeof l.email === 'string' && emailRegex.test(l.email.trim()) ? l.email.trim().toLowerCase().slice(0, 254) : null,
+        phone: typeof l.phone === 'string' && phoneRegex.test(l.phone.trim()) ? l.phone.trim().slice(0, 20) : null,
+        company: sanitizeString((typeof l.company === 'string' ? l.company.trim() : '').slice(0, 200)) || null,
+        status: typeof l.status === 'string' && VALID_LEAD_STATUSES.includes(l.status as typeof VALID_LEAD_STATUSES[number]) ? l.status : 'new',
+        source: typeof l.source === 'string' ? sanitizeString(l.source.trim().slice(0, 100)) : 'direct',
+        budget: typeof l.budget === 'number' ? l.budget : (typeof l.budget === 'string' ? parseFloat(l.budget) || null : null),
+        score: typeof l.score === 'number' ? Math.min(Math.max(Math.round(l.score), 0), 100) : 0,
+        notes: sanitizeString((typeof l.notes === 'string' ? l.notes : '').slice(0, 5000)) || null,
+        tags: Array.isArray(l.tags) ? l.tags.slice(0, 20).map(t => String(t).slice(0, 50)) : [],
       })),
     });
 

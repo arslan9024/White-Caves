@@ -24,10 +24,10 @@ const trendDown = keyframes`
 `;
 
 // Enhanced Stat Card
-export const StatCardWrapper = styled.div<{ backgroundColor: string; borderColor: string; isClickable?: boolean }>`
-  background: ${props => props.backgroundColor};
+export const StatCardWrapper = styled.div<{ $backgroundColor: string; $borderColor: string; $isClickable?: boolean }>`
+  background: ${props => props.$backgroundColor};
   border-radius: 12px;
-  border-left: 4px solid ${props => props.borderColor};
+  border-left: 4px solid ${props => props.$borderColor};
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -36,7 +36,7 @@ export const StatCardWrapper = styled.div<{ backgroundColor: string; borderColor
   gap: 12px;
   position: relative;
   overflow: hidden;
-  cursor: ${props => props.isClickable ? 'pointer' : 'default'};
+  cursor: ${props => props.$isClickable ? 'pointer' : 'default'};
 
   &::before {
     content: '';
@@ -59,7 +59,7 @@ export const StatCardWrapper = styled.div<{ backgroundColor: string; borderColor
     transform: translateY(-2px);
   }
 
-  ${props => props.isClickable && `
+  ${props => props.$isClickable && `
     &:hover {
       box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
       transform: translateY(-4px);
@@ -102,6 +102,11 @@ export const StatCardLabel = styled.div`
   text-transform: uppercase;
   letter-spacing: 0.5px;
 
+  svg {
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+
   @media (prefers-color-scheme: dark) {
     color: rgba(255, 255, 255, 0.7);
   }
@@ -112,18 +117,18 @@ export const StatCardLabel = styled.div`
 `;
 
 // Trend Icon
-export const TrendIcon = styled.svg<{ trendType?: 'up' | 'down' | 'stable' }>`
+export const TrendIcon = styled.svg<{ $trendType?: 'up' | 'down' | 'stable' }>`
   width: 20px;
   height: 20px;
   flex-shrink: 0;
   color: ${props => {
-    switch (props.trendType) {
+    switch (props.$trendType) {
       case 'up': return '#10B981';
       case 'down': return '#EF4444';
       default: return '#6B7280';
     }
   }};
-  animation: ${props => props.trendType === 'up' ? trendUp : props.trendType === 'down' ? trendDown : 'none'} 0.6s ease-out;
+  animation: ${props => props.$trendType === 'up' ? trendUp : props.$trendType === 'down' ? trendDown : 'none'} 0.6s ease-out;
 `;
 
 // Value Section
@@ -133,10 +138,11 @@ export const StatCardValue = styled.div`
   gap: 8px;
 `;
 
-export const StatValue = styled.div`
+export const StatValue = styled.div<{ $color?: string }>`
   font-size: 28px;
   font-weight: 700;
   letter-spacing: -0.5px;
+  color: ${props => props.$color || 'inherit'};
 
   @media (max-width: 768px) {
     font-size: 24px;
@@ -190,9 +196,10 @@ export const StatCardComparison = styled.div`
   font-size: 12px;
 `;
 
-export const ChangeValue = styled.span`
+export const ChangeValue = styled.span<{ $color?: string }>`
   font-weight: 600;
   font-size: 13px;
+  color: ${props => props.$color || 'inherit'};
 `;
 
 export const ComparisonText = styled.span`

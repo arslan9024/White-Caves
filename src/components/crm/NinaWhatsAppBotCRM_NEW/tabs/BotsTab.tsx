@@ -1,7 +1,33 @@
 import React from 'react';
 import { Plus, Trash2, Power, Activity, MoreVertical, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 
-export const BotsTab = ({ data }) => {
+interface Bot {
+  id: string | number;
+  name: string;
+  number: string;
+  status: string;
+  messagesProcessed: number;
+  responseRate: number;
+  avgResponseTime: string;
+  uptime: string;
+  features: string[];
+}
+
+interface BotsData {
+  filteredBots: Bot[];
+  selectedBot: Bot | null;
+  setSelectedBot: (bot: Bot | null) => void;
+  handleAddBot: () => void;
+  handleDeleteBot: (id: string | number) => void;
+  handleToggleBotStatus: (id: string | number) => void;
+  getStatusColor: (status: string) => string;
+}
+
+interface BotsTabProps {
+  data: BotsData;
+}
+
+export const BotsTab: React.FC<BotsTabProps> = ({ data }) => {
   const { filteredBots, selectedBot, setSelectedBot, handleAddBot, handleDeleteBot, handleToggleBotStatus, getStatusColor } = data;
 
   return (
@@ -14,7 +40,7 @@ export const BotsTab = ({ data }) => {
       </div>
 
       <div className="bots-grid">
-        {filteredBots.map(bot => (
+        {filteredBots.map((bot: Bot) => (
           <div key={bot.id} className={`bot-card ${selectedBot?.id === bot.id ? 'selected' : ''}`}>
             <div className="bot-header">
               <h4>{bot.name}</h4>
@@ -53,7 +79,7 @@ export const BotsTab = ({ data }) => {
             </div>
 
             <div className="bot-features">
-              {bot.features.map(feature => (
+              {bot.features.map((feature: string) => (
                 <span key={feature} className="feature-tag">{feature}</span>
               ))}
             </div>

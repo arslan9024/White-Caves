@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:5000';
+
 export default defineConfig({
   testDir: './src/e2e',
   testMatch: '**/*.spec.ts',
@@ -9,7 +11,7 @@ export default defineConfig({
   workers: process.env.CI ? 4 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:5000',
+    baseURL: BASE_URL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -32,7 +34,7 @@ export default defineConfig({
 
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:5000',
+    url: BASE_URL,
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },

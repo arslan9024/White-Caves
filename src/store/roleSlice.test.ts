@@ -8,73 +8,72 @@ import roleReducer, {
   approveRoleRequest,
   rejectRoleRequest,
 } from './roleSlice';
+import type { RoleRequest } from './roleSlice';
 
 describe('roleSlice', () => {
-  const initialState = {
-    availableRoles: [],
-    userRoles: [],
-    activeRole: null,
-    pendingRequests: [],
-    userRoleRequest: {
-      isRequesting: false,
-      lastRequestStatus: 'idle',
-      errorMessage: null,
-    },
-    statusHistory: [],
-  };
+  // Use undefined to get actual initial state from the reducer
+  const getInitialState = () => roleReducer(undefined, { type: 'unknown' });
+
+  const createMockRequest = (overrides: Partial<RoleRequest> = {}): RoleRequest => ({
+    id: 'req1',
+    userId: 'user1',
+    currentRole: 'buyer',
+    requestedRole: 'agent',
+    reason: 'Test reason',
+    status: 'pending',
+    requestedAt: new Date().toISOString(),
+    reviewedAt: null,
+    reviewedBy: null,
+    ...overrides,
+  });
 
   it('should return the initial state', () => {
-    expect(roleReducer(undefined, { type: 'unknown' })).toMatchObject({
+    expect(getInitialState()).toMatchObject({
       userRoles: [],
       activeRole: null,
     });
   });
 
   it('should handle setUserRoles', () => {
-    const state = roleReducer(initialState, setUserRoles(['buyer', 'tenant']));
+    const state = roleReducer(getInitialState(), setUserRoles(['buyer', 'tenant']));
     expect(state.userRoles).toEqual(['buyer', 'tenant']);
   });
 
   it('should handle setActiveRole', () => {
-    const state = roleReducer(initialState, setActiveRole('buyer'));
+    const state = roleReducer(getInitialState(), setActiveRole('buyer'));
     expect(state.activeRole).toBe('buyer');
   });
 
   it('should handle addUserRole', () => {
-    const state = roleReducer(initialState, addUserRole('seller'));
+    const state = roleReducer(getInitialState(), addUserRole('seller'));
     expect(state.userRoles).toContain('seller');
   });
 
   it('should not duplicate roles when adding', () => {
-    const stateWithRole = { ...initialState, userRoles: ['buyer'] };
-    const state = roleReducer(stateWithRole, addUserRole('buyer'));
+    const baseState = roleReducer(getInitialState(), addUserRole('buyer'));
+    const state = roleReducer(baseState, addUserRole('buyer'));
     expect(state.userRoles.filter(r => r === 'buyer')).toHaveLength(1);
   });
 
   it('should handle removeUserRole', () => {
-    const stateWithRoles = { ...initialState, userRoles: ['buyer', 'seller'] };
-    const state = roleReducer(stateWithRoles, removeUserRole('seller'));
+    let state = roleReducer(getInitialState(), addUserRole('buyer'));
+    state = roleReducer(state, addUserRole('seller'));
+    state = roleReducer(state, removeUserRole('seller'));
     expect(state.userRoles).toEqual(['buyer']);
   });
 
   it('should handle setPendingRequests', () => {
-    const requests = [
-      { id: 'req1', status: 'pending', requestedRole: 'agent' },
-    ];
-    const state = roleReducer(initialState, setPendingRequests(requests));
+    const requests = [createMockRequest()];
+    const state = roleReducer(getInitialState(), setPendingRequests(requests));
     expect(state.pendingRequests).toEqual(requests);
   });
 
   it('should handle approveRoleRequest', () => {
-    const stateWithRequests = {
-      ...initialState,
-      pendingRequests: [
-        { id: 'req1', status: 'pending', requestedRole: 'agent' },
-      ],
-    };
+    const request = createMockRequest({ id: 'req1', status: 'pending' });
+    let state = roleReducer(getInitialState(), setPendingRequests([request]));
     
-    const state = roleReducer(
-      stateWithRequests,
+    state = roleReducer(
+      state,
       approveRoleRequest({ requestId: 'req1', reviewedBy: 'admin1' })
     );
     
@@ -83,15 +82,11 @@ describe('roleSlice', () => {
   });
 
   it('should handle rejectRoleRequest', () => {
-    const stateWithRequests = {
-      ...initialState,
-      pendingRequests: [
-        { id: 'req1', status: 'pending', requestedRole: 'agent' },
-      ],
-    };
+    const request = createMockRequest({ id: 'req1', status: 'pending' });
+    let state = roleReducer(getInitialState(), setPendingRequests([request]));
     
-    const state = roleReducer(
-      stateWithRequests,
+    state = roleReducer(
+      state,
       rejectRoleRequest({ 
         requestId: 'req1', 
         reviewedBy: 'admin1', 

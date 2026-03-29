@@ -3,9 +3,18 @@ import { useDispatch } from 'react-redux';
 import { signInWithPopup, OAuthProvider } from 'firebase/auth';
 import { auth } from '../../../../config/firebase';
 import { loginSuccess, loginStart, loginFailure } from '../../../../store/authSlice';
+import { createLogger } from '../../../../utils/logger';
+
+const log = createLogger('AppleLogin');
 import './SocialLogin.css';
 
-const AppleLoginButton = ({ onSuccess, onError, disabled }) => {
+interface AppleLoginButtonProps {
+  onSuccess?: (data: unknown) => void;
+  onError?: (error: unknown) => void;
+  disabled?: boolean;
+}
+
+const AppleLoginButton = ({ onSuccess, onError, disabled }: AppleLoginButtonProps) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
@@ -20,14 +29,15 @@ const AppleLoginButton = ({ onSuccess, onError, disabled }) => {
       provider.addScope('email');
       provider.addScope('name');
       
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth!, provider);
       const user = result.user;
       
       const userData = {
+        id: user.uid,
         uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
+        email: user.email || '',
+        displayName: user.displayName || undefined,
+        photoURL: user.photoURL || undefined,
         emailVerified: user.emailVerified,
         provider: 'apple',
       };
@@ -40,9 +50,10 @@ const AppleLoginButton = ({ onSuccess, onError, disabled }) => {
       }));
       
       onSuccess?.(userData);
-    } catch (error) {
-      console.error('Apple login error:', error);
-      dispatch(loginFailure(error.message));
+    } catch (error: unknown) {
+      log.error('Apple login error:', error);
+      const msg = error instanceof Error ? error.message : 'Apple login failed';
+      dispatch(loginFailure(msg));
       onError?.(error);
     } finally {
       setLoading(false);

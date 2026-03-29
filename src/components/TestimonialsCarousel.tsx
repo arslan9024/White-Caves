@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import * as S from './TestimonialsCarousel.styles';
 
 const testimonials = [
@@ -52,6 +52,14 @@ const testimonials = [
 export default function TestimonialsCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup resume timers on unmount
+  useEffect(() => {
+    return () => {
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (!isAutoPlaying) return;
@@ -63,29 +71,32 @@ export default function TestimonialsCarousel() {
     return () => clearInterval(interval);
   }, [isAutoPlaying]);
 
+  const pauseAutoPlay = () => {
+    setIsAutoPlaying(false);
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = setTimeout(() => setIsAutoPlaying(true), 10000);
+  };
+
   const goToSlide = (index: number) => {
     setCurrentIndex(index);
-    setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
+    pauseAutoPlay();
   };
 
   const goToPrev = () => {
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-    setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
+    pauseAutoPlay();
   };
 
   const goToNext = () => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-    setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
+    pauseAutoPlay();
   };
 
   const renderStars = (rating: number) => {
     return Array(5)
       .fill(0)
       .map((_, i) => (
-        <S.Star key={i} $filled={i < rating}>
+        <S.Star key={`star-${i}`} $filled={i < rating}>
           ★
         </S.Star>
       ));
@@ -141,9 +152,9 @@ export default function TestimonialsCarousel() {
         </S.CarouselWrapper>
 
         <S.CarouselDots>
-          {testimonials.map((_, index) => (
+          {testimonials.map((testimonial, index) => (
             <S.Dot
-              key={index}
+              key={testimonial.id}
               $active={index === currentIndex}
               onClick={() => goToSlide(index)}
             />

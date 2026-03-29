@@ -6,20 +6,20 @@ const pulse = keyframes`
   50% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
 `;
 
-export const VirtualTourContainer = styled.div<{ fullscreen?: boolean }>`
-  position: ${props => props.fullscreen ? 'fixed' : 'relative'};
+export const VirtualTourContainer = styled.div<{ $fullscreen?: boolean }>`
+  position: ${props => props.$fullscreen ? 'fixed' : 'relative'};
   width: 100%;
-  height: ${props => props.fullscreen ? '100vh' : '500px'};
+  height: ${props => props.$fullscreen ? '100vh' : '500px'};
   background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
-  border-radius: ${props => props.fullscreen ? '0' : '16px'};
+  border-radius: ${props => props.$fullscreen ? '0' : '16px'};
   overflow: hidden;
   border: 1px solid rgba(212, 175, 55, 0.2);
-  ${props => props.fullscreen ? `
+  ${props => props.$fullscreen ? `
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 9999;
+    z-index: var(--z-fullscreen, 700);
   ` : ''}
 `;
 
@@ -64,7 +64,7 @@ export const TourControlsHeader = styled.div`
   gap: 8px;
 `;
 
-export const TourBtn = styled.button<{ close?: boolean; active?: boolean }>`
+export const TourBtn = styled.button<{ $close?: boolean; $active?: boolean }>`
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -80,13 +80,13 @@ export const TourBtn = styled.button<{ close?: boolean; active?: boolean }>`
   transition: all 0.3s ease;
 
   &:hover {
-    background: ${props => props.close 
+    background: ${props => props.$close 
       ? 'rgba(255, 100, 100, 0.3)' 
       : 'rgba(212, 175, 55, 0.3)'};
-    border-color: ${props => props.close ? '#ff6464' : '#D4AF37'};
+    border-color: ${props => props.$close ? '#ff6464' : '#D4AF37'};
   }
 
-  ${props => props.active && `
+  ${props => props.$active && `
     background: rgba(212, 175, 55, 0.4);
     border-color: #D4AF37;
   `}
@@ -102,15 +102,15 @@ export const TourViewport = styled.div`
   perspective: 1000px;
 `;
 
-export const TourPanorama = styled.div<{ position?: number; zoom?: number }>`
+export const TourPanorama = styled.div<{ $position?: number; $zoom?: number }>`
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background-repeat: repeat-x;
-  background-position: ${props => props.position ? `${props.position}% center` : '0% center'};
-  background-size: ${props => props.zoom ? `${props.zoom * 100}% 100%` : '100% 100%'};
+  background-position: ${props => props.$position ? `${props.$position}% center` : '0% center'};
+  background-size: ${props => props.$zoom ? `${props.$zoom * 100}% 100%` : '100% 100%'};
   transition: background-position 0.05s linear, background-size 0.1s ease;
 `;
 
@@ -178,12 +178,12 @@ export const TourCompass = styled.div`
   z-index: 5;
 `;
 
-export const CompassNeedle = styled.div<{ rotation?: number }>`
+export const CompassNeedle = styled.div<{ $rotation?: number }>`
   width: 4px;
   height: 30px;
   background: linear-gradient(to bottom, #ff4444 50%, white 50%);
   border-radius: 2px;
-  transform: ${props => props.rotation ? `rotate(${props.rotation}deg)` : 'rotate(0deg)'};
+  transform: ${props => props.$rotation ? `rotate(${props.$rotation}deg)` : 'rotate(0deg)'};
   transition: transform 0.1s linear;
 `;
 
@@ -249,19 +249,19 @@ export const RoomNavigator = styled.div`
   max-width: 50%;
 `;
 
-export const RoomThumb = styled.button<{ active?: boolean }>`
+export const RoomThumb = styled.button<{ $active?: boolean }>`
   flex-shrink: 0;
   width: 80px;
   height: 50px;
   border-radius: 8px;
   overflow: hidden;
-  border: 2px solid ${props => props.active ? '#D4AF37' : 'transparent'};
+  border: 2px solid ${props => props.$active ? '#D4AF37' : 'transparent'};
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
   background: none;
   padding: 0;
-  box-shadow: ${props => props.active ? '0 0 10px rgba(212, 175, 55, 0.5)' : 'none'};
+  box-shadow: ${props => props.$active ? '0 0 10px rgba(212, 175, 55, 0.5)' : 'none'};
 
   img {
     width: 100%;

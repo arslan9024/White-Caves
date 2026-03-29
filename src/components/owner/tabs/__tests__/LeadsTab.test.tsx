@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import LeadsTab from '../../../owner/tabs/LeadsTab';
 
 describe('LeadsTab Integration', () => {
-  const mockProps = {
+  const mockProps: import('../types').LeadsTabProps = {
     data: {
       leads: [
         {
@@ -13,7 +13,7 @@ describe('LeadsTab Integration', () => {
           phone: '+971 50 111 2222',
           email: 'khalid@email.com',
           source: 'whatsapp',
-          propertyInterest: 'Palm Jumeirah Villa',
+          interest: 'Palm Jumeirah Villa',
           priority: 'high',
           status: 'new',
           createdAt: new Date().toISOString(),
@@ -25,7 +25,7 @@ describe('LeadsTab Integration', () => {
           phone: '+44 7700 123456',
           email: 'emily.w@email.com',
           source: 'website',
-          propertyInterest: 'Downtown Apartment',
+          interest: 'Downtown Apartment',
           priority: 'medium',
           status: 'contacted',
           createdAt: new Date(Date.now() - 86400000).toISOString(),
@@ -37,7 +37,7 @@ describe('LeadsTab Integration', () => {
           phone: '+86 138 0000 1234',
           email: 'chen.wei@email.com',
           source: 'chatbot',
-          propertyInterest: 'Investment Properties',
+          interest: 'Investment Properties',
           priority: 'high',
           status: 'qualified',
           createdAt: new Date(Date.now() - 172800000).toISOString(),
@@ -171,9 +171,9 @@ describe('LeadsTab Integration', () => {
       
       render(<LeadsTab {...mockProps} onAction={handleAction} />);
       
-      const actionButton = screen.queryByRole('button');
-      if (actionButton) {
-        await user.click(actionButton);
+      const actionButtons = screen.queryAllByRole('button');
+      if (actionButtons.length > 0) {
+        await user.click(actionButtons[0]);
         // Action should be triggered
       }
     });
@@ -184,9 +184,9 @@ describe('LeadsTab Integration', () => {
       
       render(<LeadsTab {...mockProps} onAction={handleAction} />);
       
-      const callButton = screen.queryByText('📞');
-      if (callButton?.closest('button')) {
-        await user.click(callButton.closest('button') as HTMLElement);
+      const callButtons = screen.queryAllByText('📞');
+      if (callButtons.length > 0 && callButtons[0].closest('button')) {
+        await user.click(callButtons[0].closest('button') as HTMLElement);
       }
     });
 
@@ -196,9 +196,9 @@ describe('LeadsTab Integration', () => {
       
       render(<LeadsTab {...mockProps} onAction={handleAction} />);
       
-      const whatsappButton = screen.queryByText('💬');
-      if (whatsappButton?.closest('button')) {
-        await user.click(whatsappButton.closest('button') as HTMLElement);
+      const whatsappButtons = screen.queryAllByText('💬');
+      if (whatsappButtons.length > 0 && whatsappButtons[0].closest('button')) {
+        await user.click(whatsappButtons[0].closest('button') as HTMLElement);
       }
     });
   });
@@ -233,8 +233,8 @@ describe('LeadsTab Integration', () => {
         data: {
           leads: [
             {
-              ...mockProps.data.leads[0],
-              agent: null
+              ...mockProps.data.leads![0],
+              agent: ''
             }
           ]
         }

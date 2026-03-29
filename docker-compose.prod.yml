@@ -17,10 +17,10 @@ services:
       - PORT=5000
       - MONGODB_URI=${MONGODB_URI:-mongodb://mongodb:27017/whitecaves}
       - REDIS_URL=${REDIS_URL:-redis://redis:6379}
-      - JWT_SECRET=${JWT_SECRET:-your-secret-key-change-in-production}
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET must be set for production}
       - WHATSAPP_OWNER_EMAIL=${WHATSAPP_OWNER_EMAIL:-arslanmalikgoraha@gmail.com}
       - API_URL=${API_URL:-http://localhost:5000}
-      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5000}
     depends_on:
       mongodb:
         condition: service_healthy
@@ -50,9 +50,9 @@ services:
     environment:
       - MONGO_INITDB_DATABASE=whitecaves
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME:-admin}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-password}
-    ports:
-      - "27017:27017"
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:?MONGO_PASSWORD must be set for production}
+    # SECURITY: No host port mapping — only accessible via internal Docker network
+    # To debug, temporarily add: ports: ["127.0.0.1:27017:27017"]
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
@@ -74,12 +74,13 @@ services:
   redis:
     image: redis:7-alpine
     container_name: white-caves-redis
-    command: redis-server --requirepass ${REDIS_PASSWORD:-redis-password-change-me}
-    ports:
-      - "6379:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD must be set for production}
+    # SECURITY: No host port mapping — only accessible via internal Docker network
+    # To debug, temporarily add: ports: ["127.0.0.1:6379:6379"]
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      # Use REDISCLI_AUTH env var instead of -a flag to avoid leaking password in process list
+      test: ["CMD-SHELL", "REDISCLI_AUTH=$REDIS_PASSWORD redis-cli ping"]
       interval: 10s
       timeout: 5s
       retries: 5

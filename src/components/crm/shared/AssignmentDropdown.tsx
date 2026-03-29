@@ -2,6 +2,24 @@ import React, { memo, useState, useCallback, useRef, useEffect } from 'react';
 import { ChevronDown, Check, Search, User, X } from 'lucide-react';
 import './SharedComponents.css';
 
+interface Agent {
+  id: string;
+  name?: string;
+  phone?: string;
+  status?: string;
+  [key: string]: unknown;
+}
+
+interface AssignmentDropdownProps {
+  agents?: Agent[];
+  selectedAgentId?: string | null;
+  onSelect: (agentId: string | null) => void;
+  placeholder?: string;
+  searchable?: boolean;
+  showStatus?: boolean;
+  disabled?: boolean;
+}
+
 const AssignmentDropdown = memo(({ 
   agents = [],
   selectedAgentId,
@@ -10,7 +28,7 @@ const AssignmentDropdown = memo(({
   searchable = true,
   showStatus = true,
   disabled = false
-}) => {
+}: AssignmentDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef(null);
@@ -24,20 +42,20 @@ const AssignmentDropdown = memo(({
       )
     : agents;
   
-  const handleSelect = useCallback((agentId) => {
+  const handleSelect = useCallback((agentId: string) => {
     onSelect(agentId);
     setIsOpen(false);
     setSearchQuery('');
   }, [onSelect]);
   
-  const handleClear = useCallback((e) => {
+  const handleClear = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     onSelect(null);
   }, [onSelect]);
   
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !(dropdownRef.current as HTMLElement).contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -46,7 +64,7 @@ const AssignmentDropdown = memo(({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
   
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string): string => {
     switch (status) {
       case 'active': return '#10B981';
       case 'busy': return '#F59E0B';
@@ -65,13 +83,13 @@ const AssignmentDropdown = memo(({
         {selectedAgent ? (
           <div className="selected-agent">
             <div className="agent-avatar">
-              {selectedAgent.avatar || <User size={14} />}
+              {(selectedAgent.avatar as React.ReactNode) || <User size={14} />}
             </div>
             <span className="agent-name">{selectedAgent.name}</span>
             {showStatus && (
               <span 
                 className="agent-status-dot"
-                style={{ backgroundColor: getStatusColor(selectedAgent.status) }}
+                style={{ backgroundColor: getStatusColor(selectedAgent.status || '') }}
               />
             )}
             <button className="clear-btn" onClick={handleClear}>
@@ -110,7 +128,7 @@ const AssignmentDropdown = memo(({
                   onClick={() => handleSelect(agent.id)}
                 >
                   <div className="agent-avatar">
-                    {agent.avatar || <User size={14} />}
+                    {(agent.avatar as React.ReactNode) || <User size={14} />}
                   </div>
                   <div className="agent-info">
                     <span className="agent-name">{agent.name}</span>
@@ -119,7 +137,7 @@ const AssignmentDropdown = memo(({
                   {showStatus && (
                     <span 
                       className="agent-status-dot"
-                      style={{ backgroundColor: getStatusColor(agent.status) }}
+                      style={{ backgroundColor: getStatusColor(agent.status || '') }}
                     />
                   )}
                   {selectedAgentId === agent.id && (

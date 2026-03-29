@@ -1,13 +1,30 @@
 import React from 'react';
 import { Users, CheckCircle, Mail, MessageSquare } from 'lucide-react';
 
-const AssistantsTab = ({ assistants, departments, selectedAssistant, onSelectAssistant }) => {
+interface Assistant {
+  id: string | number;
+  name: string;
+  title: string;
+  department: string;
+  status: string;
+  features: string[];
+  connections: string[];
+}
+
+interface AssistantsTabProps {
+  assistants: Assistant[];
+  departments: string[];
+  selectedAssistant: Assistant | null;
+  onSelectAssistant: (assistant: Assistant) => void;
+}
+
+const AssistantsTab: React.FC<AssistantsTabProps> = ({ assistants, departments, selectedAssistant, onSelectAssistant }) => {
   return (
     <div className="assistants-view">
       <h3>AI Assistants Registry</h3>
       
       <div className="assistants-grid">
-        {assistants.map(assistant => (
+        {assistants.map((assistant: Assistant) => (
           <div
             key={assistant.id}
             className={`assistant-card ${selectedAssistant?.id === assistant.id ? 'selected' : ''}`}
@@ -29,8 +46,8 @@ const AssistantsTab = ({ assistants, departments, selectedAssistant, onSelectAss
               <span className="department">{assistant.department}</span>
             </div>
             <div className="assistant-features">
-              {assistant.features.slice(0, 2).map((feature, idx) => (
-                <div key={idx} className="feature-tag">{feature}</div>
+              {assistant.features.slice(0, 2).map((feature: string) => (
+                <div key={feature} className="feature-tag">{feature}</div>
               ))}
               {assistant.features.length > 2 && (
                 <div className="feature-tag more">+{assistant.features.length - 2}</div>
@@ -66,8 +83,8 @@ const AssistantsTab = ({ assistants, departments, selectedAssistant, onSelectAss
           <div className="features-list">
             <h5>Features:</h5>
             <ul>
-              {selectedAssistant.features.map((f, i) => (
-                <li key={i}><CheckCircle size={14} /> {f}</li>
+              {selectedAssistant.features.map((f) => (
+                <li key={f}><CheckCircle size={14} /> {f}</li>
               ))}
             </ul>
           </div>

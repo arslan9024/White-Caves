@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import type { RootState } from '../../../../store/store';
+import { createLogger } from '../../../../utils/logger';
+
+const log = createLogger('BiometricSetup');
 import { 
   isPlatformAuthenticatorAvailable, 
   registerBiometric,
@@ -9,21 +13,30 @@ import {
 } from '../../../../services/webAuthnService';
 import './BiometricLogin.css';
 
+interface BiometricCredential {
+  id: string;
+  rawId?: string;
+  userId?: string;
+  createdAt?: string;
+  lastUsed?: string | null;
+  [key: string]: unknown;
+}
+
 const BiometricSetup = () => {
-  const currentUser = useSelector(state => state.user?.currentUser);
-  const authUser = useSelector(state => state.auth?.user);
-  const token = useSelector(state => state.auth?.token);
+  const currentUser = useSelector((state: RootState) => state.user?.currentUser);
+  const authUser = useSelector((state: RootState) => state.auth?.user);
+  const token = useSelector((state: RootState) => state.auth?.token);
   const user = currentUser || authUser;
-  const [available, setAvailable] = useState(false);
-  const [credentials, setCredentials] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null);
+  const [available, setAvailable] = useState<boolean>(false);
+  const [credentials, setCredentials] = useState<BiometricCredential[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<{ type: string; text: string } | null>(null);
 
   useEffect(() => {
     const checkAvailability = async () => {
       const platformAvailable = await isPlatformAuthenticatorAvailable();
       setAvailable(platformAvailable);
-      setCredentials(getBiometricCredentials());
+      setCredentials(getBiometricCredentials() as BiometricCredential[]);
     };
     checkAvailability();
   }, []);
@@ -38,37 +51,34 @@ const BiometricSetup = () => {
     setMessage(null);
 
     try {
-      const userId = user.uid || user.id || user.email;
-      const userEmail = user.email;
-      const userName = user.displayName || user.name || user.email;
-      
-      console.log('Registering biometric for:', { userId, userEmail, userName });
+      const userId = user.id || user.email;
+      const userEmail = user.email || '';
+      const userName = user.displayName || user.name || user.email || 'User';
       
       const result = await registerBiometric(userId, userEmail, userName);
 
       if (result.success) {
         const sessionUser = {
-          uid: userId,
+          id: userId,
           email: userEmail,
-          displayName: userName,
-          photoURL: user.photoURL || user.photo,
+          name: userName,
         };
-        saveBiometricSession(sessionUser, token);
-        setCredentials(getBiometricCredentials());
+        saveBiometricSession(sessionUser, token || '');
+        setCredentials(getBiometricCredentials() as BiometricCredential[]);
         setMessage({ type: 'success', text: 'Biometric login enabled successfully!' });
       }
-    } catch (error) {
-      console.error('Biometric setup error:', error);
-      setMessage({ type: 'error', text: error.message || 'Failed to enable biometric login' });
+    } catch (error: unknown) {
+      log.error('Biometric setup error:', error);
+      setMessage({ type: 'error', text: error instanceof Error ? error.message : 'Failed to enable biometric login' });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRemove = async (credentialId) => {
-    const userId = user?.uid || user?.id || user?.email;
+  const handleRemove = async (credentialId: string) => {
+    const userId = user?.id || user?.email || '';
     await removeCredential(credentialId, userId);
-    setCredentials(getBiometricCredentials());
+    setCredentials(getBiometricCredentials() as BiometricCredential[]);
     setMessage({ type: 'success', text: 'Biometric credential removed' });
   };
 
@@ -137,7 +147,7 @@ const BiometricSetup = () => {
                 </div>
                 <div className="biometric-credential-details">
                   <h4>This Device</h4>
-                  <span>Added {new Date(cred.createdAt).toLocaleDateString()}</span>
+                  <span>Added {cred.createdAt ? new Date(cred.createdAt).toLocaleDateString() : 'Unknown'}</span>
                 </div>
               </div>
               <button 

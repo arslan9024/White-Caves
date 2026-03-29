@@ -1,7 +1,19 @@
 import React from 'react';
 import { Package, FileCode } from 'lucide-react';
 
-const ComponentsTab = ({ components }) => {
+interface ComponentItem {
+  name: string;
+  status: string;
+  category: string;
+  usage: number;
+  a11y: string;
+}
+
+interface ComponentsTabProps {
+  components: ComponentItem[];
+}
+
+const ComponentsTab: React.FC<ComponentsTabProps> = ({ components }) => {
   return (
     <div className="components-view">
       <h3>Component Library</h3>
@@ -13,7 +25,7 @@ const ComponentsTab = ({ components }) => {
       </div>
 
       <div className="components-grid">
-        {components.map(component => (
+        {components.map((component: ComponentItem) => (
           <div key={component.name} className={`component-card status-${component.status}`}>
             <div className="component-header">
               <FileCode size={18} />

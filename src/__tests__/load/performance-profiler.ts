@@ -50,7 +50,7 @@ export class PerformanceProfiler {
   private metrics: SystemMetrics[] = [];
   private startTime: Date;
   private testName: string;
-  private collectionInterval: NodeJS.Timer | null = null;
+  private collectionInterval: ReturnType<typeof setInterval> | null = null;
   private cpuUsageBuffer: number[] = [];
   private lastCpuTime: number | null = null;
 

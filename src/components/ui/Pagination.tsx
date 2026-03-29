@@ -25,23 +25,23 @@ const PaginationContainer = styled.nav`
   padding: 16px 0;
 `;
 
-const PaginationButton = styled.button<{ isActive?: boolean; isDisabled?: boolean }>`
+const PaginationButton = styled.button<{ $isActive?: boolean; $isDisabled?: boolean }>`
   min-width: 40px;
   height: 40px;
   padding: 0 8px;
-  border: 1px solid ${props => (props.isActive ? '#3b82f6' : '#e5e7eb')};
-  background-color: ${props => (props.isActive ? '#3b82f6' : 'white')};
-  color: ${props => (props.isActive ? 'white' : '#1f2937')};
+  border: 1px solid ${props => (props.$isActive ? '#3b82f6' : '#e5e7eb')};
+  background-color: ${props => (props.$isActive ? '#3b82f6' : 'white')};
+  color: ${props => (props.$isActive ? 'white' : '#1f2937')};
   border-radius: 4px;
-  cursor: ${props => (props.isDisabled ? 'not-allowed' : 'pointer')};
+  cursor: ${props => (props.$isDisabled ? 'not-allowed' : 'pointer')};
   font-size: 14px;
-  font-weight: ${props => (props.isActive ? '600' : '500')};
+  font-weight: ${props => (props.$isActive ? '600' : '500')};
   transition: all 0.2s ease;
-  opacity: ${props => (props.isDisabled ? '0.5' : '1')};
+  opacity: ${props => (props.$isDisabled ? '0.5' : '1')};
 
   &:hover:not(:disabled) {
     border-color: #3b82f6;
-    ${props => !props.isActive && 'background-color: #f3f4f6;'}
+    ${props => !props.$isActive && 'background-color: #f3f4f6;'}
   }
 
   &:focus {
@@ -128,7 +128,8 @@ export const Pagination: React.FC<PaginationProps> = ({
       {showFirstLast && (
         <PaginationButton
           onClick={() => onPageChange(1)}
-          isDisabled={currentPage === 1}
+          disabled={currentPage <= 1}
+          $isDisabled={currentPage <= 1}
           aria-label="First page"
         >
           «
@@ -138,7 +139,8 @@ export const Pagination: React.FC<PaginationProps> = ({
       {showPrevNext && (
         <PaginationButton
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-          isDisabled={currentPage === 1}
+          disabled={currentPage <= 1}
+          $isDisabled={currentPage <= 1}
           aria-label="Previous page"
         >
           ‹
@@ -158,7 +160,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           <PaginationButton
             key={page}
             onClick={() => onPageChange(page as number)}
-            isActive={currentPage === page}
+            $isActive={currentPage === page}
             aria-current={currentPage === page ? 'page' : undefined}
             aria-label={`Page ${page}`}
           >
@@ -170,7 +172,8 @@ export const Pagination: React.FC<PaginationProps> = ({
       {showPrevNext && (
         <PaginationButton
           onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-          isDisabled={currentPage === totalPages}
+          disabled={currentPage >= totalPages || totalPages <= 0}
+          $isDisabled={currentPage >= totalPages || totalPages <= 0}
           aria-label="Next page"
         >
           ›
@@ -180,7 +183,8 @@ export const Pagination: React.FC<PaginationProps> = ({
       {showFirstLast && (
         <PaginationButton
           onClick={() => onPageChange(totalPages)}
-          isDisabled={currentPage === totalPages}
+          disabled={currentPage >= totalPages || totalPages <= 0}
+          $isDisabled={currentPage >= totalPages || totalPages <= 0}
           aria-label="Last page"
         >
           »

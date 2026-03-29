@@ -4,14 +4,19 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('ErrorHandler');
 
 export interface CustomError extends Error {
   statusCode?: number;
   isOperational?: boolean;
 }
 
+type AsyncRouteHandler = (req: Request, res: Response, next: NextFunction) => Promise<void> | void;
+
 // Async handler wrapper to catch errors
-export const asyncHandler = (fn: Function) => (
+export const asyncHandler = (fn: AsyncRouteHandler) => (
   req: Request,
   res: Response,
   next: NextFunction
@@ -42,10 +47,10 @@ export const errorHandler = (
   const statusCode = (err as CustomError).statusCode || 500;
   const message = err.message || 'Internal Server Error';
 
-  console.error(`[ERROR] ${statusCode}: ${message}`);
+  log.error(`${statusCode}: ${message}`);
 
   if (process.env.NODE_ENV === 'development') {
-    console.error(err);
+    log.error('Stack trace', { stack: err.stack });
   }
 
   res.status(statusCode).json({
@@ -58,8 +63,8 @@ export const errorHandler = (
 
 // Common error responses
 export const errors = {
-  UNAUTHORIZED: new AppError('Unauthorized', 401),
-  FORBIDDEN: new AppError('Forbidden', 403),
+  UNAUTHORIZED: () => new AppError('Unauthorized', 401),
+  FORBIDDEN: () => new AppError('Forbidden', 403),
   NOT_FOUND: (resource: string) => new AppError(`${resource} not found`, 404),
   BAD_REQUEST: (message: string) => new AppError(message, 400),
   INTERNAL_SERVER_ERROR: () => new AppError('Internal server error', 500),

@@ -1,26 +1,27 @@
 /**
  * Color Palette - White Caves Brand Colors
  * All colors used throughout the application, organized by purpose
+ * 2026 Gold Rebrand: Red (#D32F2F) → Gold (#D4AF37)
  */
 
 export const colors = {
-  // Primary Brand Colors
-  primary: '#D32F2F',
-  primaryDark: '#B71C1C',
-  primaryLight: '#EF5350',
-  primaryVeryLight: '#FFEBEE',
+  // Primary Brand Colors (GOLD)
+  primary: '#D4AF37',
+  primaryDark: '#B8860B',
+  primaryLight: '#FFCA28',
+  primaryVeryLight: '#FFF8E1',
 
   // Secondary Colors
-  secondary: '#1976D2',
-  secondaryDark: '#1565C0',
-  secondaryLight: '#42A5F5',
+  secondary: '#2E5A4F',
+  secondaryDark: '#1E3A32',
+  secondaryLight: '#3D7A6B',
 
   // Semantic Colors
   success: '#388E3C',
   successLight: '#81C784',
   warning: '#F57F17',
   warningLight: '#FFB74D',
-  error: '#C62828',
+  error: '#D32F2F',
   errorLight: '#EF5350',
   info: '#0288D1',
   infoLight: '#4FC3F7',
@@ -100,10 +101,13 @@ export const colors = {
   bgPrimary: '#F8F9FA',
   bgSecondary: '#FFFFFF',
   bgTertiary: '#F5F5F5',
-  danger: '#C62828',
+  danger: '#D32F2F',
   dangerDark: '#B71C1C',
-  dangerLight: 'rgba(198, 40, 40, 0.15)',
-  accentGold: '#F57F17',
+  dangerLight: 'rgba(211, 47, 47, 0.15)',
+  accentGold: '#D4AF37',
+  accentEmerald: '#2E5A4F',
+  accentSand: '#F5E6D3',
+  accentCharcoal: '#2C2C2C',
   glassBackground: 'rgba(255, 255, 255, 0.7)',
   glassBorder: 'rgba(0, 0, 0, 0.08)',
   radiusMd: '8px',

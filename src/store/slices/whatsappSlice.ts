@@ -8,8 +8,10 @@
  * - UI state (modals, loading states)
  */
 
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import type { RootState } from './index';
+import { createSlice, createAsyncThunk, createSelector, PayloadAction } from '@reduxjs/toolkit';
+import { logout } from '../authSlice';
+import type { RootState } from '../store';
+import { authFetch } from '../../utils/authFetch';
 
 // ================================
 // Types
@@ -104,6 +106,26 @@ const initialState: WhatsAppState = {
 };
 
 // ================================
+// Helpers
+// ================================
+
+/** Safely extract error message from a non-OK fetch Response */
+async function extractErrorMessage(response: Response): Promise<string> {
+  let errorData: Record<string, unknown> = {};
+  try {
+    const contentType = response.headers.get('content-type');
+    if (contentType?.includes('application/json')) {
+      errorData = await response.json();
+    }
+  } catch {
+    // Response body not parseable — use default message
+  }
+  return (typeof errorData?.message === 'string' ? errorData.message : '') ||
+         (typeof errorData?.error === 'string' ? errorData.error : '') ||
+         `Request failed with status ${response.status}`;
+}
+
+// ================================
 // Async Thunks
 // ================================
 
@@ -114,20 +136,32 @@ export const initializeWhatsAppSession = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await fetch('/api/whatsapp/sessions', {
+      const response = await authFetch('/api/whatsapp/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, ownerEmail })
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        return rejectWithValue(error.message);
+        let errorData: Record<string, unknown> = {};
+        try {
+          const contentType = response.headers.get('content-type');
+          if (contentType?.includes('application/json')) {
+            errorData = await response.json();
+          }
+        } catch {
+          // Response body not parseable — use default message
+        }
+        const msg = (typeof errorData?.message === 'string' ? errorData.message : '') ||
+                    (typeof errorData?.error === 'string' ? errorData.error : '') ||
+                    `Request failed with status ${response.status}`;
+        return rejectWithValue(msg);
       }
 
       return await response.json();
-    } catch (error) {
-      return rejectWithValue((error as Error).message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      return rejectWithValue(message);
     }
   }
 );
@@ -136,20 +170,21 @@ export const connectWhatsApp = createAsyncThunk(
   'whatsapp/connect',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/whatsapp/connect', {
+      const response = await authFetch('/api/whatsapp/connect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ connectionMethod: 'qr' })
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        return rejectWithValue(error.message);
+        const msg = await extractErrorMessage(response);
+        return rejectWithValue(msg);
       }
 
       return await response.json();
-    } catch (error) {
-      return rejectWithValue((error as Error).message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      return rejectWithValue(message);
     }
   }
 );
@@ -158,16 +193,17 @@ export const getSessionStatus = createAsyncThunk(
   'whatsapp/getSessionStatus',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/whatsapp/session');
+      const response = await authFetch('/api/whatsapp/session');
 
       if (!response.ok) {
-        const error = await response.json();
-        return rejectWithValue(error.message);
+        const msg = await extractErrorMessage(response);
+        return rejectWithValue(msg);
       }
 
       return await response.json();
-    } catch (error) {
-      return rejectWithValue((error as Error).message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      return rejectWithValue(message);
     }
   }
 );
@@ -179,20 +215,21 @@ export const sendMessage = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await fetch('/api/whatsapp/send-message', {
+      const response = await authFetch('/api/whatsapp/send-message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phoneNumber, message, priority })
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        return rejectWithValue(error.message);
+        const msg = await extractErrorMessage(response);
+        return rejectWithValue(msg);
       }
 
       return await response.json();
-    } catch (error) {
-      return rejectWithValue((error as Error).message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      return rejectWithValue(message);
     }
   }
 );
@@ -201,16 +238,17 @@ export const getQueueStatus = createAsyncThunk(
   'whatsapp/getQueueStatus',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/whatsapp/queue-status');
+      const response = await authFetch('/api/whatsapp/queue-status');
 
       if (!response.ok) {
-        const error = await response.json();
-        return rejectWithValue(error.message);
+        const msg = await extractErrorMessage(response);
+        return rejectWithValue(msg);
       }
 
       return await response.json();
-    } catch (error) {
-      return rejectWithValue((error as Error).message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      return rejectWithValue(message);
     }
   }
 );
@@ -219,19 +257,20 @@ export const disconnectWhatsApp = createAsyncThunk(
   'whatsapp/disconnect',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/whatsapp/disconnect', {
+      const response = await authFetch('/api/whatsapp/disconnect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        return rejectWithValue(error.message);
+        const msg = await extractErrorMessage(response);
+        return rejectWithValue(msg);
       }
 
       return await response.json();
-    } catch (error) {
-      return rejectWithValue((error as Error).message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      return rejectWithValue(message);
     }
   }
 );
@@ -240,16 +279,17 @@ export const getServiceHealth = createAsyncThunk(
   'whatsapp/getServiceHealth',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/whatsapp/health');
+      const response = await authFetch('/api/whatsapp/health');
 
       if (!response.ok) {
-        const error = await response.json();
-        return rejectWithValue(error.message);
+        const msg = await extractErrorMessage(response);
+        return rejectWithValue(msg);
       }
 
       return await response.json();
-    } catch (error) {
-      return rejectWithValue((error as Error).message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      return rejectWithValue(message);
     }
   }
 );
@@ -311,7 +351,14 @@ const whatsappSlice = createSlice({
       })
       .addCase(initializeWhatsAppSession.fulfilled, (state, action) => {
         state.loading.connecting = false;
-        state.session = action.payload.sessionId ? { ...initialState.session, sessionId: action.payload.sessionId, ownerEmail: action.payload.ownerEmail } as WhatsAppSession : null;
+        state.session = action.payload.sessionId ? {
+          sessionId: action.payload.sessionId,
+          ownerEmail: action.payload.ownerEmail,
+          connectionStatus: 'connecting' as const,
+          messageCount: 0,
+          autoReplyEnabled: false,
+          chatbotEnabled: false,
+        } : null;
         state.success = 'Session initialized';
       })
       .addCase(initializeWhatsAppSession.rejected, (state, action) => {
@@ -395,6 +442,9 @@ const whatsappSlice = createSlice({
       .addCase(getServiceHealth.rejected, (state, action) => {
         state.error = action.payload as string;
       });
+
+    // --- SECURITY: Reset all WhatsApp data on logout ---
+    builder.addCase(logout, () => initialState);
   }
 });
 
@@ -422,10 +472,11 @@ export const selectWhatsAppLoading = (state: RootState) => state.whatsapp.loadin
 export const selectWhatsAppError = (state: RootState) => state.whatsapp.error;
 export const selectWhatsAppSuccess = (state: RootState) => state.whatsapp.success;
 export const selectWhatsAppQRCode = (state: RootState) => state.whatsapp.qrCode;
-export const selectWhatsAppModal = (state: RootState) => ({
-  show: state.whatsapp.showModal,
-  type: state.whatsapp.modalType
-});
+export const selectWhatsAppModal = createSelector(
+  (state: RootState) => state.whatsapp.showModal,
+  (state: RootState) => state.whatsapp.modalType,
+  (show, type) => ({ show, type })
+);
 export const selectWhatsAppIsConnected = (state: RootState) => 
   state.whatsapp.session?.connectionStatus === 'authenticated';
 export const selectWhatsAppIsConnecting = (state: RootState) => 

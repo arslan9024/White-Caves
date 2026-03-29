@@ -92,7 +92,7 @@ export const AppButtons = styled.div`
   }
 `;
 
-export const AppBtn = styled.a<{ platform?: 'whatsapp' | 'botim' | 'gochat' }>`
+export const AppBtn = styled.a<{ $platform?: 'whatsapp' | 'botim' | 'gochat' }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -104,7 +104,7 @@ export const AppBtn = styled.a<{ platform?: 'whatsapp' | 'botim' | 'gochat' }>`
   color: white;
   transition: all 0.2s ease;
   background: ${props => {
-    switch (props.platform) {
+    switch (props.$platform) {
       case 'whatsapp': return '#25D366';
       case 'botim': return '#00C853';
       case 'gochat': return '#FF6B00';
@@ -134,7 +134,7 @@ export const FooterSection = styled.div`
       left: 0;
       width: 30px;
       height: 2px;
-      background: var(--color-primary, #DC2626);
+      background: var(--color-primary, #D4AF37);
 
       @media (max-width: 768px) {
         left: 50%;

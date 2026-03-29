@@ -6,7 +6,8 @@
 export const typography = {
   fontFamily: {
     primary: '"Inter", "Segoe UI", "Roboto", sans-serif',
-    mono: '"Courier New", monospace',
+    heading: '"Poppins", "Inter", "Segoe UI", sans-serif',
+    mono: '"JetBrains Mono", "Fira Code", "Courier New", monospace',
   },
 
   sizes: {

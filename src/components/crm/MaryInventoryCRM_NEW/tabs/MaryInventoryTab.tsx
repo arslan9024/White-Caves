@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import type { RootState, AppDispatch } from '../../../../store/store';
+import type { InventoryProperty, InventoryOwner } from '../../../../store/slices/inventorySlice';
+import type { InventoryFilters } from '../../../../store/slices/inventorySlice';
 import { 
   Building2, Plus, Download, Home, Users, Phone, XCircle, Eye, MapPin
 } from 'lucide-react';
@@ -39,48 +42,49 @@ import '../MaryInventoryCRM.css';
  * @returns {JSX.Element} Rendered inventory tab
  */
 const MaryInventoryTab = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const properties = useSelector(selectFilteredProperties);
   const stats = useSelector(selectInventoryStats);
   const filters = useSelector(selectFilters);
   const owners = useSelector(selectOwners);
   const filterOptions = useSelector(selectFilterOptions);
   const activeFiltersCount = useSelector(selectActiveFiltersCount);
-  const loading = useSelector(state => state.inventory?.loading);
+  const loading = useSelector((state: RootState) => state.inventory?.loading);
   
   // Local state
-  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [selectedProperty, setSelectedProperty] = useState<InventoryProperty | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [selectedOwner, setSelectedOwner] = useState(null);
+  const [selectedOwner, setSelectedOwner] = useState<InventoryOwner | null>(null);
   const [showOwnerDrawer, setShowOwnerDrawer] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
   const [selectedCluster, setSelectedCluster] = useState('all');
 
   // Load inventory data on mount
   useEffect(() => {
-    dispatch(loadInventoryData());
+    const promise = dispatch(loadInventoryData());
+    return () => { promise.abort?.(); };
   }, [dispatch]);
 
   // Handlers
-  const handlePropertyClick = (property) => {
+  const handlePropertyClick = (property: InventoryProperty) => {
     setSelectedProperty(property);
     setShowDetailModal(true);
   };
 
-  const handleOwnerClick = (owner) => {
+  const handleOwnerClick = (owner: InventoryOwner) => {
     setSelectedOwner(owner);
     setShowOwnerDrawer(true);
   };
 
-  const handleFilterChange = (key, value) => {
-    dispatch(setFilter({ key, value }));
+  const handleFilterChange = (key: string, value: string | null) => {
+    dispatch(setFilter({ key: key as keyof InventoryFilters, value }));
   };
 
   const handleClearFilters = () => {
     dispatch(clearFilters());
   };
 
-  const handleFilterToggle = (filterKey) => {
+  const handleFilterToggle = (filterKey: string) => {
     switch (filterKey) {
       case 'showMultiOwner':
         dispatch(toggleMultiOwnerFilter());
@@ -96,7 +100,7 @@ const MaryInventoryTab = () => {
     }
   };
 
-  const getOwnerProperties = (ownerId) => {
+  const getOwnerProperties = (ownerId: string): InventoryProperty[] => {
     const propertyIds = owners.byId?.[ownerId]?.properties || [];
     return propertyIds.map(id => {
       const prop = properties.find(p => p.pNumber === id);
@@ -104,9 +108,10 @@ const MaryInventoryTab = () => {
     });
   };
 
-  const getPropertyOwners = (property) => {
-    if (!property?.owners) return [];
-    return property.owners.map(ownerId => owners.byId?.[ownerId]).filter(Boolean);
+  const getPropertyOwners = (property: InventoryProperty): InventoryOwner[] => {
+    const ownerIds = property?.owners;
+    if (!Array.isArray(ownerIds)) return [];
+    return ownerIds.map((ownerId: string) => owners.byId?.[ownerId]).filter((o): o is InventoryOwner => Boolean(o));
   };
 
   return (
@@ -147,8 +152,8 @@ const MaryInventoryTab = () => {
         {/* Filter Panel */}
         {showFilters && (
           <FilterPanel
-            filters={filters}
-            filterOptions={filterOptions}
+            filters={filters as unknown as Record<string, string>}
+            filterOptions={filterOptions as unknown as Record<string, string[]>}
             onFilterChange={handleFilterChange}
             onClearFilters={handleClearFilters}
             activeFiltersCount={activeFiltersCount}
@@ -158,7 +163,7 @@ const MaryInventoryTab = () => {
         {/* Cluster Browser */}
         <ClusterBrowser 
           selectedCluster={selectedCluster}
-          onClusterSelect={(cluster) => {
+          onClusterSelect={(cluster: string) => {
             setSelectedCluster(cluster);
             handleFilterChange('cluster', cluster === 'all' ? null : cluster);
           }}
@@ -198,36 +203,36 @@ const MaryInventoryTab = () => {
 
         {/* Active Filters Display */}
         {activeFiltersCount > 0 && (
-          <div className="active-filters">
+          <div className="active-filters" role="list" aria-label="Active filters">
             {filters.showMultiOwner && (
-              <span className="filter-tag" onClick={() => dispatch(toggleMultiOwnerFilter())}>
-                Multi-Owner Only <XCircle size={14} />
-              </span>
+              <button className="filter-tag" role="listitem" onClick={() => dispatch(toggleMultiOwnerFilter())} aria-label="Remove multi-owner filter">
+                Multi-Owner Only <XCircle size={14} aria-hidden="true" />
+              </button>
             )}
             {filters.showMultiPhone && (
-              <span className="filter-tag" onClick={() => dispatch(toggleMultiPhoneFilter())}>
-                Multi-Phone Only <XCircle size={14} />
-              </span>
+              <button className="filter-tag" role="listitem" onClick={() => dispatch(toggleMultiPhoneFilter())} aria-label="Remove multi-phone filter">
+                Multi-Phone Only <XCircle size={14} aria-hidden="true" />
+              </button>
             )}
             {filters.showMultiProperty && (
-              <span className="filter-tag" onClick={() => dispatch(toggleMultiPropertyFilter())}>
-                Multi-Property Owners <XCircle size={14} />
-              </span>
+              <button className="filter-tag" role="listitem" onClick={() => dispatch(toggleMultiPropertyFilter())} aria-label="Remove multi-property filter">
+                Multi-Property Owners <XCircle size={14} aria-hidden="true" />
+              </button>
             )}
             {filters.layout && (
-              <span className="filter-tag" onClick={() => handleFilterChange('layout', null)}>
-                Layout: {filters.layout} <XCircle size={14} />
-              </span>
+              <button className="filter-tag" role="listitem" onClick={() => handleFilterChange('layout', null)} aria-label={`Remove layout: ${filters.layout} filter`}>
+                Layout: {filters.layout} <XCircle size={14} aria-hidden="true" />
+              </button>
             )}
             {filters.status && (
-              <span className="filter-tag" onClick={() => handleFilterChange('status', null)}>
-                Status: {filters.status} <XCircle size={14} />
-              </span>
+              <button className="filter-tag" role="listitem" onClick={() => handleFilterChange('status', null)} aria-label={`Remove status: ${filters.status} filter`}>
+                Status: {filters.status} <XCircle size={14} aria-hidden="true" />
+              </button>
             )}
             {filters.view && (
-              <span className="filter-tag" onClick={() => handleFilterChange('view', null)}>
-                View: {filters.view} <XCircle size={14} />
-              </span>
+              <button className="filter-tag" role="listitem" onClick={() => handleFilterChange('view', null)} aria-label={`Remove view: ${filters.view} filter`}>
+                View: {filters.view} <XCircle size={14} aria-hidden="true" />
+              </button>
             )}
           </div>
         )}
@@ -242,13 +247,13 @@ const MaryInventoryTab = () => {
       {/* Owner Detail Drawer */}
       {showOwnerDrawer && selectedOwner && (
         <OwnerDetailDrawer
-          owner={selectedOwner}
-          properties={getOwnerProperties(selectedOwner.id)}
+          owner={selectedOwner as { id: string; name: string; contacts?: Array<{ type: 'mobile' | 'phone' | 'email'; value: string; isPrimary?: boolean }> }}
+          properties={getOwnerProperties(selectedOwner.id) as Array<{ pNumber: string; project: string; area: string; status: string }>}
           onClose={() => {
             setShowOwnerDrawer(false);
             setSelectedOwner(null);
           }}
-          onPropertyClick={handlePropertyClick}
+          onPropertyClick={(p) => handlePropertyClick(p as unknown as InventoryProperty)}
         />
       )}
 
@@ -301,11 +306,11 @@ const MaryInventoryTab = () => {
                       </div>
                       <div className="detail-item">
                         <span className="label">Building</span>
-                        <span className="value">{selectedProperty.building || '-'}</span>
+                        <span className="value">{String(selectedProperty.building || '-')}</span>
                       </div>
                       <div className="detail-item">
                         <span className="label">Unit Number</span>
-                        <span className="value">{selectedProperty.unitNumber || '-'}</span>
+                        <span className="value">{String(selectedProperty.unitNumber || '-')}</span>
                       </div>
                       <div className="detail-item">
                         <span className="label">Floor</span>
@@ -313,7 +318,7 @@ const MaryInventoryTab = () => {
                       </div>
                       <div className="detail-item">
                         <span className="label">Municipality No</span>
-                        <span className="value">{selectedProperty.municipalityNo || '-'}</span>
+                        <span className="value">{String(selectedProperty.municipalityNo || '-')}</span>
                       </div>
                     </div>
                   </div>
@@ -328,11 +333,18 @@ const MaryInventoryTab = () => {
                   <h3>Property Owners ({selectedProperty.owners?.length || 0})</h3>
                   <div className="owners-list">
                     {getPropertyOwners(selectedProperty).map(owner => (
-                      <div key={owner.id} className="owner-card" onClick={() => handleOwnerClick(owner)}>
+                      <div
+                        key={owner.id}
+                        className="owner-card"
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => handleOwnerClick(owner)}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleOwnerClick(owner); } }}
+                      >
                         <div className="owner-avatar">{(owner.name || 'U').charAt(0)}</div>
                         <div className="owner-info">
                           <span className="owner-name">{owner.name}</span>
-                          <span className="owner-contacts">{owner.email || '-'}</span>
+                          <span className="owner-contacts">{String(owner.email || '-')}</span>
                         </div>
                       </div>
                     ))}

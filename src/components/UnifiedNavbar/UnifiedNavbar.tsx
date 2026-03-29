@@ -18,7 +18,7 @@ export type UnifiedNavbarProps = {
     email: string;
     avatar?: string;
     initials?: string;
-    role?: 'admin' | 'super_user' | 'freelancer' | 'client';
+    role?: 'admin' | 'super_user' | 'agent' | 'client';
   };
   notifications?: Array<{
     id: string;

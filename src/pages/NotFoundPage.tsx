@@ -1,10 +1,12 @@
 import React, { FC, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import './NotFoundPage.css';
 
 interface NotFoundPageProps {}
 
 const NotFoundPage: FC<NotFoundPageProps> = () => {
+  useDocumentTitle('Page Not Found');
   const [countdown, setCountdown] = useState<number>(5);
   const navigate = useNavigate();
 

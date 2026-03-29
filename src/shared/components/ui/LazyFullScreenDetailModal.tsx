@@ -27,7 +27,7 @@ function ModalLoadingFallback() {
  * Wrapper Component
  * Provides Suspense boundary for lazy-loaded modal
  */
-export default function LazyFullScreenDetailModal(props) {
+export default function LazyFullScreenDetailModal(props: React.ComponentProps<typeof LazyFullScreenDetailModalComponent>) {
   return (
     <Suspense fallback={<ModalLoadingFallback />}>
       <LazyFullScreenDetailModalComponent {...props} />

@@ -126,7 +126,7 @@ const TooltipText = styled.span`
     font-size: 12px;
     font-weight: 400;
     white-space: nowrap;
-    z-index: 1000;
+    z-index: var(--z-tooltip, 800);
     pointer-events: none;
   }
 
@@ -141,7 +141,7 @@ const TooltipText = styled.span`
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
     border-top: 5px solid #333;
-    z-index: 1000;
+    z-index: var(--z-tooltip, 800);
     pointer-events: none;
   }
 `;

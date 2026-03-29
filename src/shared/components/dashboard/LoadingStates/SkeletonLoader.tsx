@@ -30,7 +30,7 @@ export default function SkeletonLoader({
       case 'avatar':
         return (
           <div 
-            key={index}
+            key={`skeleton-avatar-${index}`}
             className={`skeleton skeleton-avatar ${animated ? 'animated' : ''} ${className}`}
             style={style}
           />
@@ -38,7 +38,7 @@ export default function SkeletonLoader({
       
       case 'card':
         return (
-          <div key={index} className={`skeleton-card ${animated ? 'animated' : ''} ${className}`}>
+          <div key={`skeleton-card-${index}`} className={`skeleton-card ${animated ? 'animated' : ''} ${className}`}>
             <div className="skeleton skeleton-image" />
             <div className="skeleton-card-content">
               <div className="skeleton skeleton-title" />
@@ -50,7 +50,7 @@ export default function SkeletonLoader({
       
       case 'stat':
         return (
-          <div key={index} className={`skeleton-stat ${animated ? 'animated' : ''} ${className}`}>
+          <div key={`skeleton-stat-${index}`} className={`skeleton-stat ${animated ? 'animated' : ''} ${className}`}>
             <div className="skeleton skeleton-stat-icon" />
             <div className="skeleton-stat-content">
               <div className="skeleton skeleton-stat-value" />
@@ -61,7 +61,7 @@ export default function SkeletonLoader({
       
       case 'table-row':
         return (
-          <div key={index} className={`skeleton-table-row ${animated ? 'animated' : ''} ${className}`}>
+          <div key={`skeleton-row-${index}`} className={`skeleton-table-row ${animated ? 'animated' : ''} ${className}`}>
             <div className="skeleton skeleton-cell" style={{ width: '15%' }} />
             <div className="skeleton skeleton-cell" style={{ width: '25%' }} />
             <div className="skeleton skeleton-cell" style={{ width: '20%' }} />
@@ -72,7 +72,7 @@ export default function SkeletonLoader({
       
       case 'list-item':
         return (
-          <div key={index} className={`skeleton-list-item ${animated ? 'animated' : ''} ${className}`}>
+          <div key={`skeleton-listitem-${index}`} className={`skeleton-list-item ${animated ? 'animated' : ''} ${className}`}>
             <div className="skeleton skeleton-avatar small" />
             <div className="skeleton-list-content">
               <div className="skeleton skeleton-text" />
@@ -85,7 +85,7 @@ export default function SkeletonLoader({
       default:
         return (
           <div 
-            key={index}
+            key={`skeleton-text-${index}`}
             className={`skeleton skeleton-text ${animated ? 'animated' : ''} ${className}`}
             style={style}
           />
@@ -125,7 +125,7 @@ export function ContentPlaceholder({
         <div className="placeholder-text">
           {Array.from({ length: rows }, (_, i) => (
             <div 
-              key={i}
+              key={`placeholder-text-${i}`}
               className={`skeleton skeleton-text animated ${i === rows - 1 ? 'short' : ''}`}
             />
           ))}

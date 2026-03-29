@@ -1,10 +1,20 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
+import { createLogger } from '../../utils/logger';
+import { authFetch } from '../../utils/authFetch';
+
+const log = createLogger('ContractManagement');
 import SignatureCanvas from 'react-signature-canvas';
+import { useToast } from '../../components/Toast';
 import '../RolePages.css';
 
 interface ContractData {
+  id?: string;
   contractNumber: string;
-  [key: string]: any;
+  lessorName?: string;
+  tenantName?: string;
+  propertyType?: string;
+  annualRent?: number | string;
+  [key: string]: unknown;
 }
 
 interface FormDataType {
@@ -23,7 +33,10 @@ const ContractManagementPage: FC<ContractManagementPageProps> = () => {
   const [selectedContract, setSelectedContract] = useState<ContractData | null>(null);
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
   const [showSignatureModal, setShowSignatureModal] = useState<boolean>(false);
-  const sigRef = useRef<any>(null);
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const sigRef = useRef<SignatureCanvas | null>(null);
+  const isMountedRef = useRef(true);
+  const toast = useToast();
 
   const initialFormData: FormDataType = {
     ownerName: '',
@@ -39,20 +52,34 @@ const ContractManagementPage: FC<ContractManagementPageProps> = () => {
   const [formData, setFormData] = useState<FormDataType>(initialFormData);
 
   useEffect(() => {
-    fetchContracts();
+    isMountedRef.current = true;
+    const controller = new AbortController();
+    fetchContracts(controller.signal);
+    return () => {
+      controller.abort();
+      isMountedRef.current = false;
+    };
   }, []);
 
-  const fetchContracts = async (): Promise<void> => {
+  const fetchContracts = async (signal?: AbortSignal): Promise<void> => {
     try {
-      const response = await fetch('/api/contracts');
+      const response = await authFetch('/api/contracts', { signal });
+      if (!isMountedRef.current) return;
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({ error: 'Failed to fetch contracts' }));
+        log.error('Failed to fetch contracts:', errData.error || response.statusText);
+        if (isMountedRef.current) toast.error(errData.error || 'Failed to fetch contracts');
+        return;
+      }
       const data = await response.json();
-      if (data.success) {
+      if (data.success && isMountedRef.current) {
         setContracts(data.contracts);
       }
     } catch (error) {
-      console.error('Error fetching contracts:', error);
+      if (error instanceof DOMException && error.name === 'AbortError') return;
+      log.error('Error fetching contracts:', error);
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) setLoading(false);
     }
   };
 
@@ -62,23 +89,50 @@ const ContractManagementPage: FC<ContractManagementPageProps> = () => {
   };
 
   const handleCreateContract = async (): Promise<void> => {
+    if (submitting) return;
+    if (!formData.lessorName?.trim()) {
+      toast.warning('Lessor name is required');
+      return;
+    }
+    if (!formData.tenantName?.trim()) {
+      toast.warning('Tenant name is required');
+      return;
+    }
+    if (!formData.annualRent || parseFloat(formData.annualRent) <= 0) {
+      toast.warning('Annual rent must be greater than 0');
+      return;
+    }
+    setSubmitting(true);
     try {
-      const response = await fetch('/api/contracts', {
+      // Trim all string fields before sending to API
+      const trimmedData = Object.fromEntries(
+        Object.entries(formData).map(([key, val]) => [key, typeof val === 'string' ? val.trim() : val])
+      );
+      const response = await authFetch('/api/contracts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(trimmedData)
       });
       
+      if (!isMountedRef.current) return;
+      
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({ error: 'Failed to create contract' }));
+        if (isMountedRef.current) toast.error(errData.error || `Failed to create contract (${response.status})`);
+        return;
+      }
       const data = await response.json();
-      if (data.success) {
+      if (data.success && isMountedRef.current) {
         setContracts(prev => [data.contract, ...prev]);
         setShowCreateForm(false);
         setFormData(initialFormData);
-        alert(`Contract created successfully!`);
+        toast.success('Contract created successfully!');
       }
     } catch (error) {
-      console.error('Error creating contract:', error);
-      alert('Failed to create contract. Please try again.');
+      log.error('Error creating contract:', error);
+      if (isMountedRef.current) toast.error('Failed to create contract. Please try again.');
+    } finally {
+      if (isMountedRef.current) setSubmitting(false);
     }
   };
 
@@ -149,7 +203,7 @@ const ContractManagementPage: FC<ContractManagementPageProps> = () => {
               </div>
             </div>
             <div className="form-actions">
-              <button className="btn-primary" onClick={handleCreateContract}>Create Contract</button>
+              <button className="btn-primary" onClick={handleCreateContract} disabled={submitting}>{submitting ? 'Creating...' : 'Create Contract'}</button>
               <button className="btn-secondary" onClick={() => setShowCreateForm(false)}>Cancel</button>
             </div>
           </div>
@@ -161,7 +215,7 @@ const ContractManagementPage: FC<ContractManagementPageProps> = () => {
             <p>No contracts created yet. Create one to get started.</p>
           ) : (
             contracts.map((contract, index) => (
-              <div key={index} className="contract-item">
+              <div key={contract.id ?? `${contract.lessorName}-${contract.tenantName}`} className="contract-item">
                 <h4>{contract.lessorName} - {contract.tenantName}</h4>
                 <p>{contract.propertyType} • AED {contract.annualRent}/year</p>
                 <div className="contract-actions">

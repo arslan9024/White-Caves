@@ -1,8 +1,14 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
+import type { RootState } from '../../store/store';
 import { setUser } from '../../store/userSlice';
 import { auth } from '../../config/firebase';
+import { createLogger } from '../../utils/logger';
+import { safeStorage } from '../../utils/safeStorage';
+
+const log = createLogger('PendingApproval');
 import { signOut } from 'firebase/auth';
 import './AuthPages.css';
 
@@ -25,9 +31,10 @@ interface RoleLabels {
 }
 
 const PendingApprovalPage: FC = () => {
+  useDocumentTitle('Pending Approval');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.user.currentUser) as PendingApprovalUser | null;
+  const user = useSelector((state: RootState) => state.user.currentUser) as PendingApprovalUser | null;
   const [userData, setUserData] = useState<UserData | null>(null);
 
   useEffect((): void => {
@@ -36,25 +43,24 @@ const PendingApprovalPage: FC = () => {
       return;
     }
     
-    const stored = localStorage.getItem('userRole');
+    const stored = safeStorage.getJSON<UserData>('userRole');
     if (stored) {
-      const parsed = JSON.parse(stored);
-      if (parsed.status !== 'pending') {
-        navigate(`/${parsed.role}/dashboard`);
+      if (stored.status !== 'pending') {
+        navigate(`/${stored.role}/dashboard`);
         return;
       }
-      setUserData(parsed);
+      setUserData(stored);
     }
   }, [user, navigate]);
 
   const handleLogout = async (): Promise<void> => {
     try {
-      await signOut(auth);
-      localStorage.removeItem('userRole');
+      if (auth) await signOut(auth);
+      safeStorage.remove('userRole');
       dispatch(setUser(null));
       navigate('/');
     } catch (error) {
-      console.error('Logout error:', error);
+      log.error('Logout error:', error);
     }
   };
 
@@ -75,7 +81,7 @@ const PendingApprovalPage: FC = () => {
     <div className="auth-page">
       <div className="auth-container">
         <Link to="/" className="auth-logo">
-          <img src="/company-logo.jpg" alt="White Caves" />
+          <img src="/company-logo.jpg" alt="White Caves" width={60} height={60} loading="lazy" />
           <span>White Caves</span>
         </Link>
 

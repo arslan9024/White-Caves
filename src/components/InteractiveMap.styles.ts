@@ -99,7 +99,7 @@ export const LocationMarkers = styled.div`
   height: 100%;
 `;
 
-export const LocationMarker = styled.button<{ isActive?: boolean }>`
+export const LocationMarker = styled.button<{ $isActive?: boolean }>`
   position: absolute;
   transform: translate(-50%, -50%);
   background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
@@ -120,7 +120,7 @@ export const LocationMarker = styled.button<{ isActive?: boolean }>`
   color: white;
 
   &:hover,
-  ${props => props.isActive && `
+  ${props => props.$isActive && `
     background: linear-gradient(135deg, var(--accent-gold) 0%, #b8943f 100%);
     transform: translate(-50%, -50%) scale(1.15);
     z-index: 10;
@@ -157,10 +157,10 @@ export const LocationList = styled.div`
   }
 `;
 
-export const LocationItem = styled.div<{ isSelected?: boolean }>`
+export const LocationItem = styled.div<{ $isSelected?: boolean }>`
   padding: 1rem;
   background: var(--bg-primary);
-  border: 2px solid ${props => props.isSelected ? 'var(--primary-color)' : 'var(--border-color)'};
+  border: 2px solid ${props => props.$isSelected ? 'var(--primary-color)' : 'var(--border-color)'};
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;

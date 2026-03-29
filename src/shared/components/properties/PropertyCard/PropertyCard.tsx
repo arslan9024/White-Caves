@@ -4,6 +4,7 @@ import Card from '../../ui/Card';
 import Badge from '../../ui/Badge';
 import Button from '../../ui/Button';
 import Flex from '../../layout/Flex';
+import { formatPrice } from '../../../../utils';
 import './PropertyCard.css';
 
 export interface PropertyCardData {

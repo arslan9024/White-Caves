@@ -1,8 +1,8 @@
 import React, { type ReactNode, type CSSProperties } from 'react';
 import { StyledBadge, BadgeDot, BadgeIcon, BadgeContent } from './Badge.styles';
 
-type BadgeVariant = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info';
-type BadgeSize = 'xs' | 'sm' | 'md' | 'lg';
+export type BadgeVariant = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info';
+export type BadgeSize = 'xs' | 'sm' | 'md' | 'lg';
 
 interface BadgeProps {
   children?: ReactNode;
@@ -14,7 +14,6 @@ interface BadgeProps {
   pulse?: boolean;
   rounded?: boolean;
   className?: string;
-  [key: string]: unknown;
 }
 
 interface BadgeComponent extends React.FC<BadgeProps> {

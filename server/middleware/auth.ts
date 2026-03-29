@@ -6,6 +6,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { AppError } from './errorHandler';
+import { JWT_SECRET } from '../config/env';
 
 export interface AuthRequest extends Request {
   user?: {
@@ -14,8 +15,6 @@ export interface AuthRequest extends Request {
     role: string;
   };
 }
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 const authMiddleware = (
   req: AuthRequest,
@@ -26,7 +25,7 @@ const authMiddleware = (
     const token = req.headers.authorization?.replace('Bearer ', '');
 
     if (!token) {
-      throw new AppError('No token provided', 401);
+      return next(new AppError('No token provided', 401));
     }
 
     const decoded = jwt.verify(token, JWT_SECRET) as {
@@ -39,12 +38,12 @@ const authMiddleware = (
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
-      throw new AppError('Token expired', 401);
+      return next(new AppError('Token expired', 401));
     }
     if (error instanceof jwt.JsonWebTokenError) {
-      throw new AppError('Invalid token', 401);
+      return next(new AppError('Invalid token', 401));
     }
-    throw new AppError('Authentication failed', 401);
+    return next(new AppError('Authentication failed', 401));
   }
 };
 

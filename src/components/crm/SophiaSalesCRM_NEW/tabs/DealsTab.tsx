@@ -1,7 +1,25 @@
 import React from 'react';
 import { Search, Plus, Eye } from 'lucide-react';
 
-const DealsTab = ({ deals, searchQuery, onSearchChange, filterAgent, onFilterChange }) => {
+interface Deal {
+  id: string | number;
+  property: string;
+  client: string;
+  value: number;
+  stage: string;
+  probability: number;
+  agent: string;
+}
+
+interface DealsTabProps {
+  deals: Deal[];
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  filterAgent: string;
+  onFilterChange: (agent: string) => void;
+}
+
+const DealsTab: React.FC<DealsTabProps> = ({ deals, searchQuery, onSearchChange, filterAgent, onFilterChange }) => {
   return (
     <div className="deals-view">
       <div className="view-header">
@@ -11,7 +29,7 @@ const DealsTab = ({ deals, searchQuery, onSearchChange, filterAgent, onFilterCha
             type="text" 
             placeholder="Search deals..."
             value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
           />
         </div>
         <button className="add-btn"><Plus size={16} /> Add Deal</button>
@@ -26,7 +44,7 @@ const DealsTab = ({ deals, searchQuery, onSearchChange, filterAgent, onFilterCha
           <span>Agent</span>
           <span>Actions</span>
         </div>
-        {deals.map(deal => (
+        {deals.map((deal: Deal) => (
           <div key={deal.id} className="table-row">
             <span className="property-name">{deal.property}</span>
             <span>{deal.client}</span>

@@ -10,7 +10,7 @@ describe('Pagination Component', () => {
       render(
         <Pagination
           currentPage={1}
-          totalPages={5}
+          totalItems={50}
           onPageChange={handlePageChange}
         />
       );
@@ -22,7 +22,7 @@ describe('Pagination Component', () => {
       render(
         <Pagination
           currentPage={1}
-          totalPages={3}
+          totalItems={30}
           onPageChange={handlePageChange}
         />
       );
@@ -35,7 +35,7 @@ describe('Pagination Component', () => {
       const { container } = render(
         <Pagination
           currentPage={2}
-          totalPages={5}
+          totalItems={50}
           onPageChange={handlePageChange}
         />
       );
@@ -51,7 +51,7 @@ describe('Pagination Component', () => {
       render(
         <Pagination
           currentPage={1}
-          totalPages={5}
+          totalItems={50}
           onPageChange={handlePageChange}
         />
       );
@@ -68,7 +68,7 @@ describe('Pagination Component', () => {
       render(
         <Pagination
           currentPage={1}
-          totalPages={5}
+          totalItems={50}
           onPageChange={handlePageChange}
         />
       );
@@ -86,7 +86,7 @@ describe('Pagination Component', () => {
       render(
         <Pagination
           currentPage={3}
-          totalPages={5}
+          totalItems={50}
           onPageChange={handlePageChange}
         />
       );
@@ -105,7 +105,7 @@ describe('Pagination Component', () => {
       render(
         <Pagination
           currentPage={1}
-          totalPages={5}
+          totalItems={50}
           onPageChange={handlePageChange}
         />
       );
@@ -121,7 +121,7 @@ describe('Pagination Component', () => {
       render(
         <Pagination
           currentPage={5}
-          totalPages={5}
+          totalItems={50}
           onPageChange={handlePageChange}
         />
       );
@@ -139,7 +139,7 @@ describe('Pagination Component', () => {
       render(
         <Pagination
           currentPage={1}
-          totalPages={1}
+          totalItems={10}
           onPageChange={handlePageChange}
         />
       );
@@ -153,7 +153,7 @@ describe('Pagination Component', () => {
       render(
         <Pagination
           currentPage={1}
-          totalPages={5}
+          totalItems={50}
           onPageChange={handlePageChange}
         />
       );
@@ -168,7 +168,7 @@ describe('Pagination Component', () => {
       render(
         <Pagination
           currentPage={1}
-          totalPages={5}
+          totalItems={50}
           onPageChange={handlePageChange}
         />
       );

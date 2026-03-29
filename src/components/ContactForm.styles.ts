@@ -40,8 +40,8 @@ export const FormGroup = styled.div`
 
     &:focus {
       outline: none;
-      border-color: var(--primary-color, #d32f2f);
-      box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+      border-color: var(--primary-color, #d4af37);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
       background: var(--bg-primary, #ffffff);
     }
 
@@ -96,7 +96,7 @@ export const ErrorMessage = styled.span`
 
 export const SubmitButton = styled.button`
   padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, var(--primary-color, #d32f2f), #b71c1c);
+  background: linear-gradient(135deg, var(--primary-color, #d4af37), #b8860b);
   color: white;
   border: none;
   border-radius: 6px;
@@ -108,12 +108,12 @@ export const SubmitButton = styled.button`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
   }
 
   &:active {
     transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(211, 47, 47, 0.2);
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.2);
   }
 
   &:disabled {
@@ -123,11 +123,11 @@ export const SubmitButton = styled.button`
   }
 
   &[data-theme='dark'] {
-    background: linear-gradient(135deg, #ff6b6b, #d32f2f);
-    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2);
+    background: linear-gradient(135deg, #f0d060, #d4af37);
+    box-shadow: 0 4px 12px rgba(240, 208, 96, 0.2);
 
     &:hover {
-      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+      box-shadow: 0 4px 12px rgba(240, 208, 96, 0.4);
     }
   }
 

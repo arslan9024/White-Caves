@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useState } from 'react';
+import React, { FC, ReactNode, useState, useRef, useEffect } from 'react';
 import {
   TooltipWrapper,
   TooltipContent,
@@ -44,10 +44,20 @@ export const Tooltip: FC<TooltipProps> = ({
     top: 0,
     left: 0,
   });
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  // Cleanup timer on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      clearTimeout(timerRef.current);
+    };
+  }, []);
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-    const timer = setTimeout(() => {
-      const rect = e.currentTarget.getBoundingClientRect();
+    clearTimeout(timerRef.current);
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    timerRef.current = setTimeout(() => {
       const offset = 8;
 
       let top = 0;
@@ -75,16 +85,13 @@ export const Tooltip: FC<TooltipProps> = ({
       setPosition({ top, left });
       setVisible(true);
     }, delayShow);
-
-    return () => clearTimeout(timer);
   };
 
   const handleMouseLeave = () => {
-    const timer = setTimeout(() => {
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
       setVisible(false);
     }, delayHide);
-
-    return () => clearTimeout(timer);
   };
 
   return (

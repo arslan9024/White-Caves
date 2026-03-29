@@ -1,7 +1,13 @@
 import React, { FC, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createLogger } from '../../utils/logger';
+import { authFetch } from '../../utils/authFetch';
 import { useSelector } from 'react-redux';
+import type { RootState } from '../../store/store';
+import { useToast } from '../../components/Toast';
 import './WhatsAppChatbotPage.css';
+
+const log = createLogger('WhatsAppChatbot');
 
 interface ChatbotMessage {
   id: string;
@@ -12,11 +18,10 @@ interface ChatbotMessage {
 
 interface WhatsAppChatbotPageProps {}
 
-const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
-
 const WhatsAppChatbotPage: FC<WhatsAppChatbotPageProps> = () => {
   const navigate = useNavigate();
-  const user = useSelector((state: any) => state.user.currentUser);
+  const user = useSelector((state: RootState) => state.user.currentUser);
+  const toast = useToast();
   const [chatbotMessages, setChatbotMessages] = useState<ChatbotMessage[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>('messages');
@@ -24,25 +29,28 @@ const WhatsAppChatbotPage: FC<WhatsAppChatbotPageProps> = () => {
   const [newResponse, setNewResponse] = useState<string>('');
 
   useEffect(() => {
-    if (!user || user.email !== OWNER_EMAIL) {
+    if (!user || (user.role !== 'owner' && user.role !== 'admin')) {
       navigate('/');
     }
   }, [user, navigate]);
 
   useEffect(() => {
-    fetchChatbotMessages();
+    const controller = new AbortController();
+    fetchChatbotMessages(controller.signal);
+    return () => controller.abort();
   }, []);
 
-  const fetchChatbotMessages = async (): Promise<void> => {
+  const fetchChatbotMessages = async (signal?: AbortSignal): Promise<void> => {
     try {
       setLoading(true);
-      const response = await fetch('/api/whatsapp/chatbot/messages');
+      const response = await authFetch('/api/whatsapp/chatbot/messages', { signal });
       if (response.ok) {
         const data = await response.json();
         setChatbotMessages(data.messages || []);
       }
     } catch (error) {
-      console.error('Error fetching chatbot messages:', error);
+      if (error instanceof DOMException && error.name === 'AbortError') return;
+      log.error('Error fetching chatbot messages:', error);
     } finally {
       setLoading(false);
     }
@@ -50,12 +58,12 @@ const WhatsAppChatbotPage: FC<WhatsAppChatbotPageProps> = () => {
 
   const handleAddMessage = async (): Promise<void> => {
     if (!newTrigger.trim() || !newResponse.trim()) {
-      alert('Please fill in both trigger and response');
+      toast.warning('Please fill in both trigger and response');
       return;
     }
 
     try {
-      const response = await fetch('/api/whatsapp/chatbot/messages', {
+      const response = await authFetch('/api/whatsapp/chatbot/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ trigger: newTrigger, response: newResponse })
@@ -64,23 +72,27 @@ const WhatsAppChatbotPage: FC<WhatsAppChatbotPageProps> = () => {
       if (response.ok) {
         setNewTrigger('');
         setNewResponse('');
-        fetchChatbotMessages();
+        await fetchChatbotMessages();
+      } else {
+        toast.error('Failed to add chatbot message');
       }
     } catch (error) {
-      console.error('Error adding chatbot message:', error);
+      log.error('Error adding chatbot message:', error);
+      toast.error('Failed to add chatbot message');
     }
   };
 
   const handleToggleMessage = async (id: string, enabled: boolean): Promise<void> => {
     try {
-      await fetch(`/api/whatsapp/chatbot/messages/${id}`, {
+      await authFetch(`/api/whatsapp/chatbot/messages/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ enabled: !enabled })
       });
-      fetchChatbotMessages();
+      await fetchChatbotMessages();
     } catch (error) {
-      console.error('Error toggling message:', error);
+      log.error('Error toggling message:', error);
+      toast.error('Failed to toggle message');
     }
   };
 
@@ -165,20 +177,20 @@ const WhatsAppChatbotPage: FC<WhatsAppChatbotPageProps> = () => {
             <h3>Chatbot Settings</h3>
             <div className="chatbot-settings">
               <div className="setting-item">
-                <label>
-                  <input type="checkbox" defaultChecked /> Enable chatbot
+                <label htmlFor="chatbot-enable">
+                  <input id="chatbot-enable" type="checkbox" defaultChecked /> Enable chatbot
                 </label>
               </div>
               <div className="setting-item">
-                <label>
-                  <input type="checkbox" defaultChecked /> Respond to unknown messages
+                <label htmlFor="chatbot-unknown">
+                  <input id="chatbot-unknown" type="checkbox" defaultChecked /> Respond to unknown messages
                 </label>
               </div>
               <div className="setting-item">
-                <label>Default Response for Unknown Messages:</label>
-                <textarea placeholder="Enter default response..." rows={3} />
+                <label htmlFor="chatbot-default-response">Default Response for Unknown Messages:</label>
+                <textarea id="chatbot-default-response" placeholder="Enter default response..." rows={3} aria-label="Default response message" />
               </div>
-              <button className="btn-save">Save Settings</button>
+              <button className="btn-save" type="button">Save Settings</button>
             </div>
           </div>
         )}

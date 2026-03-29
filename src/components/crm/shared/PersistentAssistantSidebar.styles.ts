@@ -17,7 +17,7 @@ export const PersistentSidebarContainer = styled.div<{ $collapsed?: boolean }>`
   border-left: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
-  z-index: 100;
+  z-index: var(--z-sidebar, 310);
   transition: width 0.3s ease;
 
   @media (prefers-color-scheme: dark) {

@@ -73,9 +73,9 @@ export const SidebarHeader = styled.div`
   align-items: center;
   justify-content: center;
   padding: ${theme.spacing.md};
-  border-bottom: 2px solid #d32f2f;
+  border-bottom: 2px solid #d4af37;
   min-height: 80px;
-  background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+  background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
   color: white;
   flex-shrink: 0;
 `;
@@ -189,7 +189,7 @@ export const GroupHeader = styled.button<{ $expanded?: boolean; $isDepartments?:
   font-size: 12px;
   font-weight: 600;
   color: ${props =>
-    props.$isDepartments ? 'white' : props.$expanded ? '#d32f2f' : theme.colors.text.secondary};
+    props.$isDepartments ? 'white' : props.$expanded ? '#d4af37' : theme.colors.text.secondary};
   text-transform: uppercase;
   letter-spacing: 0.5px;
   transition: all 0.2s ease;
@@ -200,7 +200,7 @@ export const GroupHeader = styled.button<{ $expanded?: boolean; $isDepartments?:
       props.$isDepartments
         ? 'linear-gradient(135deg, #5568d3 0%, #6a3f95 100%)'
         : theme.colors.background.tertiary};
-    color: ${props => (props.$isDepartments ? 'white' : '#d32f2f')};
+    color: ${props => (props.$isDepartments ? 'white' : '#d4af37')};
     ${props => props.$isDepartments && 'transform: translateY(-1px);'}
   }
 
@@ -253,28 +253,28 @@ export const NavItem = styled.button<{ $active?: boolean }>`
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
-  color: ${props => (props.$active ? '#d32f2f' : theme.colors.text.primary)};
+  color: ${props => (props.$active ? '#d4af37' : theme.colors.text.primary)};
   transition: all 0.2s ease;
   user-select: none;
   text-align: left;
   position: relative;
-  border-left: ${props => (props.$active ? '3px solid #d32f2f' : '3px solid transparent')};
+  border-left: ${props => (props.$active ? '3px solid #d4af37' : '3px solid transparent')};
   padding-left: ${props => (props.$active ? 'calc(16px - 3px)' : '16px')};
   background: ${props => (props.$active ? '#ffebee' : 'transparent')};
   font-weight: ${props => (props.$active ? '600' : 'normal')};
 
   &:hover {
     background: ${props => (props.$active ? '#ffebee' : theme.colors.background.tertiary)};
-    color: #d32f2f;
+    color: #d4af37;
     transform: translateX(4px);
   }
 
   @media (prefers-color-scheme: dark) {
     &:hover {
-      background: ${props => (props.$active ? 'rgba(211, 47, 47, 0.15)' : '#333333')};
+      background: ${props => (props.$active ? 'rgba(212, 175, 55, 0.15)' : '#333333')};
     }
 
-    background: ${props => (props.$active ? 'rgba(211, 47, 47, 0.15)' : 'transparent')};
+    background: ${props => (props.$active ? 'rgba(212, 175, 55, 0.15)' : 'transparent')};
   }
 `;
 
@@ -310,19 +310,19 @@ export const NavItemIcon = styled.button<{ $active?: boolean }>`
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  color: ${props => (props.$active ? '#d32f2f' : theme.colors.text.secondary)};
+  color: ${props => (props.$active ? '#d4af37' : theme.colors.text.secondary)};
   transition: all 0.2s ease;
   user-select: none;
   position: relative;
 
   &:hover {
     background: theme.colors.background.tertiary;
-    color: #d32f2f;
+    color: #d4af37;
     transform: scale(1.05);
   }
 
   @media (prefers-color-scheme: dark) {
-    background: ${props => (props.$active ? 'rgba(211, 47, 47, 0.15)' : 'transparent')};
+    background: ${props => (props.$active ? 'rgba(212, 175, 55, 0.15)' : 'transparent')};
 
     &:hover {
       background: #333333;
@@ -347,7 +347,7 @@ export const NavTooltip = styled.span`
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
-  z-index: 200;
+  z-index: var(--z-tooltip, 700);
   transition: opacity 0.2s ease;
 
   ${NavItemIcon}:hover & {
@@ -549,39 +549,39 @@ export const DeptIconBtn = styled.button<{ $active?: boolean; $deptColor?: strin
 
 /* Admin Section (Last Group) */
 export const AdminGroupHeader = styled(GroupHeader)`
-  background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+  background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
   color: white;
   margin: 8px 0;
 
   &:hover {
-    background: linear-gradient(135deg, #b71c1c 0%, #a01a1a 100%);
+    background: linear-gradient(135deg, #b8860b 0%, #9A7209 100%);
     transform: translateY(-1px);
   }
 `;
 
 export const AdminNavItem = styled(NavItem)`
   border-left: 3px solid transparent;
-  color: #d32f2f;
+  color: #d4af37;
 
   &:hover {
     background: #ffebee;
-    border-left-color: #d32f2f;
+    border-left-color: #d4af37;
   }
 
   &.active {
     background: #ffcccc;
-    color: #b71c1c;
-    border-left-color: #b71c1c;
+    color: #b8860b;
+    border-left-color: #b8860b;
   }
 
   @media (prefers-color-scheme: dark) {
     &:hover {
-      background: rgba(211, 47, 47, 0.15);
+      background: rgba(212, 175, 55, 0.15);
     }
 
     &.active {
-      background: rgba(211, 47, 47, 0.25);
-      color: #ff6b6b;
+      background: rgba(212, 175, 55, 0.25);
+      color: #f0d060;
     }
   }
 `;

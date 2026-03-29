@@ -35,13 +35,13 @@ const AuroraCTODashboard = () => {
       case 'overview':
         return <OverviewTab stats={stats} systemStatus={systemStatus} />;
       case 'assistants':
-        return <AssistantsTab assistants={assistants} departments={departments} selectedAssistant={selectedAssistant} onSelectAssistant={onSelectAssistant} />;
+        return <AssistantsTab assistants={assistants as any} departments={Object.keys(departments)} selectedAssistant={selectedAssistant as any} onSelectAssistant={onSelectAssistant as any} />;
       case 'architecture':
-        return <ArchitectureTab modules={modules} techStack={techStack} systemComponents={systemComponents} />;
+        return <ArchitectureTab modules={modules} techStack={techStack as any} systemComponents={systemComponents as any} />;
       case 'applications':
-        return <ApplicationsTab systemComponents={systemComponents} />;
+        return <ApplicationsTab systemComponents={systemComponents as any} />;
       case 'api-performance':
-        return <APIPerformanceTab systemComponents={systemComponents} />;
+        return <APIPerformanceTab systemComponents={systemComponents as any} />;
       default:
         return <OverviewTab stats={stats} systemStatus={systemStatus} />;
     }
@@ -96,8 +96,8 @@ const AuroraCTODashboard = () => {
       <div className="features-section">
         <h3>Available Features</h3>
         <ul className="features-list">
-          {features.map((feature, index) => (
-            <li key={index} className="feature-item">
+          {features.map((feature) => (
+            <li key={feature} className="feature-item">
               <span className="feature-icon">✓</span>
               <span className="feature-text">{feature}</span>
             </li>

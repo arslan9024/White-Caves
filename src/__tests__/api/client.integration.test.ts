@@ -42,27 +42,27 @@ class HttpClient {
   }
 
   async get<T>(url: string, config?: any): Promise<T> {
-    const response = await this.axiosInstance.get<T>(url, config);
+    const response = await this.axiosInstance.get(url, config);
     return response.data;
   }
 
   async post<T>(url: string, data?: any, config?: any): Promise<T> {
-    const response = await this.axiosInstance.post<T>(url, data, config);
+    const response = await this.axiosInstance.post(url, data, config);
     return response.data;
   }
 
   async put<T>(url: string, data?: any, config?: any): Promise<T> {
-    const response = await this.axiosInstance.put<T>(url, data, config);
+    const response = await this.axiosInstance.put(url, data, config);
     return response.data;
   }
 
   async patch<T>(url: string, data?: any, config?: any): Promise<T> {
-    const response = await this.axiosInstance.patch<T>(url, data, config);
+    const response = await this.axiosInstance.patch(url, data, config);
     return response.data;
   }
 
   async delete<T>(url: string, config?: any): Promise<T> {
-    const response = await this.axiosInstance.delete<T>(url, config);
+    const response = await this.axiosInstance.delete(url, config);
     return response.data;
   }
 }
@@ -229,7 +229,7 @@ describe('ClientApiService Integration Tests', () => {
       // Assert
       expect(mockInstance.post).toHaveBeenCalledWith('/clients', createPayload, undefined);
       expect(result).toEqual(mockResponse.data);
-      expect(result.id).toBe('123');
+      expect((result as any).id).toBe('123');
     });
 
     it('should reject client creation without name', async () => {
@@ -303,7 +303,7 @@ describe('ClientApiService Integration Tests', () => {
         updatePayload,
         undefined
       );
-      expect(result.company).toBe('New Company Name');
+      expect((result as any).company).toBe('New Company Name');
     });
 
     it('should reject update without client ID', async () => {
@@ -344,7 +344,7 @@ describe('ClientApiService Integration Tests', () => {
 
       // Assert
       expect(mockInstance.delete).toHaveBeenCalledWith(`/clients/${clientId}`, undefined);
-      expect(result.success).toBe(true);
+      expect((result as any).success).toBe(true);
     });
 
     it('should reject delete without client ID', async () => {
@@ -370,7 +370,7 @@ describe('ClientApiService Integration Tests', () => {
       const result = await clientApi.deleteClient(clientId);
 
       // Assert
-      expect(result.relatedRecordsDeleted).toBe(5);
+      expect((result as any).relatedRecordsDeleted).toBe(5);
       expect(mockInstance.delete).toHaveBeenCalledTimes(1);
     });
   });
@@ -467,9 +467,9 @@ describe('ClientApiService Integration Tests', () => {
       const deleted = await clientApi.deleteClient('999');
 
       // Assert
-      expect(created.id).toBe('999');
-      expect(updated.company).toBe('Updated');
-      expect(deleted.success).toBe(true);
+      expect((created as any).id).toBe('999');
+      expect((updated as any).company).toBe('Updated');
+      expect((deleted as any).success).toBe(true);
       expect(mockInstance.post).toHaveBeenCalledTimes(1);
       expect(mockInstance.put).toHaveBeenCalledTimes(1);
       expect(mockInstance.delete).toHaveBeenCalledTimes(1);

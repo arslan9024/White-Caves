@@ -1,6 +1,20 @@
-import React, { memo } from 'react';
+import React, { memo, type ReactNode } from 'react';
 import { MoreVertical, ExternalLink } from 'lucide-react';
 import './SharedComponents.css';
+
+interface BigTileCardProps {
+  title: string;
+  subtitle?: string;
+  icon?: React.ComponentType<{ size: number }>;
+  value?: ReactNode;
+  status?: string;
+  statusColor?: string;
+  actions?: boolean;
+  children?: ReactNode;
+  onClick?: () => void;
+  color?: string;
+  variant?: 'default' | 'highlight' | 'compact';
+}
 
 const BigTileCard = memo(({ 
   title, 
@@ -14,11 +28,11 @@ const BigTileCard = memo(({
   onClick,
   color = 'var(--assistant-color, #0EA5E9)',
   variant = 'default'
-}) => {
+}: BigTileCardProps) => {
   return (
     <div 
       className={`big-tile-card ${variant} ${onClick ? 'clickable' : ''}`}
-      style={{ '--tile-accent': color }}
+      style={{ '--tile-accent': color } as React.CSSProperties}
       onClick={onClick}
     >
       <div className="tile-header">

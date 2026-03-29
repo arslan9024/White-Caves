@@ -1,5 +1,8 @@
 import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../../../store/store';
+import { useAppDispatch } from '../../../../store/store';
+import type { InventoryFilters } from '../../../../store/slices/inventorySlice';
 import {
   loadInventoryData,
   selectFilteredProperties,
@@ -20,7 +23,7 @@ import {
  * Consolidates Redux selectors, dispatchers, and derived data
  */
 export function useInventoryData() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   
   // Redux selectors
   const properties = useSelector(selectFilteredProperties);
@@ -29,7 +32,7 @@ export function useInventoryData() {
   const owners = useSelector(selectOwners);
   const filterOptions = useSelector(selectFilterOptions);
   const activeFiltersCount = useSelector(selectActiveFiltersCount);
-  const loading = useSelector(state => state.inventory?.loading);
+  const loading = useSelector((state: RootState) => state.inventory?.loading);
 
   // Load data on mount
   useEffect(() => {
@@ -37,7 +40,7 @@ export function useInventoryData() {
   }, [dispatch]);
 
   // Helper functions
-  const handleFilterChange = (key, value) => {
+  const handleFilterChange = (key: keyof InventoryFilters, value: string | boolean | null) => {
     dispatch(setFilter({ key, value }));
   };
 
@@ -45,7 +48,7 @@ export function useInventoryData() {
     dispatch(clearFilters());
   };
 
-  const handleFilterToggle = (filterKey) => {
+  const handleFilterToggle = (filterKey: string) => {
     switch (filterKey) {
       case 'showMultiOwner':
         dispatch(toggleMultiOwnerFilter());
@@ -61,7 +64,7 @@ export function useInventoryData() {
     }
   };
 
-  const getOwnerProperties = (ownerId) => {
+  const getOwnerProperties = (ownerId: string) => {
     const propertyIds = owners.byId?.[ownerId]?.properties || [];
     return propertyIds.map(id => {
       const prop = properties.find(p => p.pNumber === id);
@@ -69,7 +72,7 @@ export function useInventoryData() {
     });
   };
 
-  const getPropertyOwners = (property) => {
+  const getPropertyOwners = (property: { owners?: string[] }) => {
     if (!property?.owners) return [];
     return property.owners.map(ownerId => owners.byId?.[ownerId]).filter(Boolean);
   };
@@ -78,7 +81,7 @@ export function useInventoryData() {
   /**
    * Get properties by cluster
    */
-  const getPropertiesByCluster = (cluster) => {
+  const getPropertiesByCluster = (cluster: string) => {
     if (!cluster || cluster === 'all') return properties;
     return properties.filter(p => p.cluster === cluster);
   };
@@ -102,12 +105,12 @@ export function useInventoryData() {
   /**
    * Get property statistics by cluster
    */
-  const getClusterStats = (cluster) => {
+  const getClusterStats = (cluster: string) => {
     const clusterProps = getPropertiesByCluster(cluster);
     return {
       totalProperties: clusterProps.length,
       totalOwners: new Set(clusterProps.flatMap(p => p.owners || [])).size,
-      multiOwnerCount: clusterProps.filter(p => p.owners?.length > 1).length,
+      multiOwnerCount: clusterProps.filter(p => (p.owners?.length ?? 0) > 1).length,
       averageOwnersPerProperty: clusterProps.length > 0 
         ? (clusterProps.reduce((sum, p) => sum + (p.owners?.length || 0), 0) / clusterProps.length).toFixed(1)
         : 0
@@ -142,8 +145,8 @@ export function useInventoryData() {
       link.click();
       window.URL.revokeObjectURL(url);
       return { success: true, message: `Exported ${selectedProperties.length} properties` };
-    } catch (error) {
-      return { success: false, message: `Export failed: ${error.message}` };
+    } catch (error: unknown) {
+      return { success: false, message: `Export failed: ${error instanceof Error ? error.message : 'Unknown error'}` };
     }
   };
 
@@ -156,7 +159,7 @@ export function useInventoryData() {
       missingCluster: properties.filter(p => !p.cluster),
       missingProject: properties.filter(p => !p.project),
       missingOwners: properties.filter(p => !p.owners || p.owners.length === 0),
-      invalidOwnerRefs: []
+      invalidOwnerRefs: [] as Array<{ property: string; ownerId: string }>
     };
 
     // Check for invalid owner references
@@ -178,21 +181,21 @@ export function useInventoryData() {
   /**
    * Get property by ID
    */
-  const getPropertyById = (pNumber) => {
+  const getPropertyById = (pNumber: string) => {
     return properties.find(p => p.pNumber === pNumber);
   };
 
   /**
    * Get owner by ID
    */
-  const getOwnerById = (ownerId) => {
+  const getOwnerById = (ownerId: string) => {
     return owners.byId?.[ownerId] || null;
   };
 
   /**
    * Search properties by term (project, cluster, area, building, unit)
    */
-  const searchProperties = (searchTerm) => {
+  const searchProperties = (searchTerm: string) => {
     if (!searchTerm) return properties;
     const term = searchTerm.toLowerCase();
     return properties.filter(p => 
@@ -200,8 +203,8 @@ export function useInventoryData() {
       (p.project?.toLowerCase().includes(term)) ||
       (p.cluster?.toLowerCase().includes(term)) ||
       (p.area?.toLowerCase().includes(term)) ||
-      (p.building?.toLowerCase().includes(term)) ||
-      (p.unitNumber?.toLowerCase().includes(term))
+      (String(p.building || '').toLowerCase().includes(term)) ||
+      (String(p.unitNumber || '').toLowerCase().includes(term))
     );
   };
 

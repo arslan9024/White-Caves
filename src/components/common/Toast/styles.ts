@@ -4,7 +4,7 @@ export const ToastContainer = styled.div`
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 9999;
+  z-index: var(--z-toast, 400);
   display: flex;
   flex-direction: column;
   gap: 12px;

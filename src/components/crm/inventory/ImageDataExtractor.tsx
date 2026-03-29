@@ -1,16 +1,51 @@
 import React, { useState, useCallback, useRef } from 'react';
+import { createLogger } from '../../../utils/logger';
 import { 
   Upload, FileImage, Loader2, CheckCircle, Edit3, 
   Download, Trash2, Copy, Eye, X, AlertCircle
 } from 'lucide-react';
 import * as S from './ImageDataExtractor.styles';
 
-const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: any[]) => void }) => {
-  const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
-  const [extractedData, setExtractedData] = useState<any[]>([]);
+/** Parsed data extracted from an image */
+interface ParsedData {
+  phones: string[];
+  emails: string[];
+  unitNumbers: string[];
+  sdNumbers: string[];
+  names: string[];
+  [key: string]: string[];
+}
+
+/** A single extraction result from one image */
+interface ExtractedDataItem {
+  id: number;
+  fileName: string;
+  imageUrl: string | ArrayBuffer | null;
+  rawText: string;
+  parsed: ParsedData;
+}
+
+/** Upload tracking entry */
+interface UploadEntry {
+  id: number;
+  file: File;
+  name: string;
+  status: 'processing' | 'complete' | 'error';
+}
+
+/** Editing state for a single cell */
+interface EditingCell {
+  dataId: number;
+  field: string;
+  index: number;
+}
+
+const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: ExtractedDataItem[]) => void }) => {
+  const [uploadedFiles, setUploadedFiles] = useState<UploadEntry[]>([]);
+  const [extractedData, setExtractedData] = useState<ExtractedDataItem[]>([]);
   const [processing, setProcessing] = useState(false);
   const [dragOver, setDragOver] = useState(false);
-  const [editingCell, setEditingCell] = useState<any>(null);
+  const [editingCell, setEditingCell] = useState<EditingCell | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -52,33 +87,51 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: any[
     });
   };
 
+  const MAX_FILE_SIZE_MB = 10;
+  const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
   const handleFiles = useCallback(async (files: FileList) => {
-    const validFiles = Array.from(files).filter(f => 
+    const allFiles = Array.from(files);
+
+    // Filter by type
+    const typeValidFiles = allFiles.filter(f => 
       f.type.startsWith('image/') || f.type === 'application/pdf'
     );
+
+    // Filter by size and collect oversized names
+    const oversized = typeValidFiles.filter(f => f.size > MAX_FILE_SIZE_BYTES);
+    const validFiles = typeValidFiles.filter(f => f.size <= MAX_FILE_SIZE_BYTES);
+
+    if (oversized.length > 0) {
+      // Notify user about oversized files (silently skip them)
+      const log = createLogger('ImageDataExtractor');
+      log.warn(
+        `Skipped ${oversized.length} file(s) exceeding ${MAX_FILE_SIZE_MB}MB limit: ${oversized.map(f => f.name).join(', ')}`
+      );
+    }
     
     if (validFiles.length === 0) return;
     
     setProcessing(true);
-    const newUploads = validFiles.map(f => ({
+    const newUploads: UploadEntry[] = validFiles.map(f => ({
       id: Date.now() + Math.random(),
       file: f,
       name: f.name,
-      status: 'processing'
+      status: 'processing' as const
     }));
     
     setUploadedFiles(prev => [...prev, ...newUploads]);
     
-    const processedData: Record<string, any>[] = [];
+    const processedData: ExtractedDataItem[] = [];
     for (const upload of newUploads) {
-      const result: any = await processImage(upload.file);
+      const result = await processImage(upload.file) as ExtractedDataItem;
       processedData.push(result);
       setUploadedFiles(prev => 
-        prev.map(u => u.id === upload.id ? { ...u, status: 'complete' } : u)
+        prev.map(u => u.id === upload.id ? { ...u, status: 'complete' as const } : u)
       );
     }
     
-    setExtractedData(prev => [...prev, ...(processedData as any[])]);
+    setExtractedData(prev => [...prev, ...processedData]);
     setProcessing(false);
   }, []);
 
@@ -139,9 +192,9 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: any[
     URL.revokeObjectURL(url);
   };
 
-  const copyToClipboard = (data: any) => {
+  const copyToClipboard = (data: ExtractedDataItem) => {
     const text = Object.entries(data.parsed)
-      .map(([key, values]: [string, any]) => `${key}: ${values.join(', ')}`)
+      .map(([key, values]) => `${key}: ${(values as string[]).join(', ')}`)
       .join('\n');
     navigator.clipboard.writeText(text);
   };
@@ -206,7 +259,7 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: any[
 
       {uploadedFiles.length > 0 && (
         <S.UploadedFiles>
-          {uploadedFiles.map((file: any) => (
+          {uploadedFiles.map((file: UploadEntry) => (
             <S.FileChip key={file.id}>
               {file.status === 'processing' ? (
                 <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
@@ -223,12 +276,12 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: any[
         <S.ExtractedResults>
           <h4>Extracted Data ({extractedData.length} sources)</h4>
           
-          {extractedData.map((data: any) => (
+          {extractedData.map((data: ExtractedDataItem) => (
             <S.ResultCard key={data.id}>
               <S.ResultHeader>
                 <S.ResultSource>
                   <S.PreviewBtn 
-                    onClick={() => setPreviewImage(data.imageUrl)}
+                    onClick={() => setPreviewImage(typeof data.imageUrl === 'string' ? data.imageUrl : null)}
                   >
                     <Eye size={14} />
                   </S.PreviewBtn>
@@ -251,15 +304,15 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: any[
                       <label>{field}</label>
                       <S.FieldValues>
                         {values.map((value: string, idx: number) => (
-                          <S.ValueChip key={idx}>
-                            {editingCell?.id === data.id && editingCell?.field === field && editingCell?.idx === idx ? (
+                          <S.ValueChip key={`${field}-${idx}`}>
+                            {editingCell?.dataId === data.id && editingCell?.field === field && editingCell?.index === idx ? (
                               <input
                                 autoFocus
                                 defaultValue={value}
                                 onBlur={(e) => handleEdit(data.id, field, idx, e.target.value)}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter') {
-                                    handleEdit(data.id, field, idx, (e.target as any).value);
+                                    handleEdit(data.id, field, idx, (e.target as HTMLInputElement).value);
                                   }
                                 }}
                               />
@@ -267,7 +320,7 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: any[
                               <>
                                 <span>{value}</span>
                                 <S.EditBtn 
-                                  onClick={() => setEditingCell({ id: data.id, field, idx })}
+                                  onClick={() => setEditingCell({ dataId: data.id, field, index: idx })}
                                 >
                                   <Edit3 size={10} />
                                 </S.EditBtn>
@@ -303,7 +356,7 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: any[
             <S.ClosePreviewBtn onClick={() => setPreviewImage(null)}>
               <X size={24} />
             </S.ClosePreviewBtn>
-            <img src={previewImage} alt="Preview" />
+            <img src={previewImage} alt="Preview" loading="lazy" width={400} height={300} />
           </S.PreviewContent>
         </S.ImagePreviewModal>
       )}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type ChangeEvent, type FocusEvent, type ReactNode } from 'react';
 import {
   StyledFormField,
   StyledLabel,
@@ -10,7 +10,29 @@ import {
   StyledErrorMessage,
 } from './FormField.styles';
 
-const FormField = ({
+interface FormFieldProps {
+  label?: string;
+  name: string;
+  type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'textarea' | 'select';
+  value?: string | number;
+  error?: string;
+  touched?: boolean;
+  required?: boolean;
+  placeholder?: string;
+  onChange?: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  onBlur?: (e: FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  disabled?: boolean;
+  className?: string;
+  children?: ReactNode;
+  rows?: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  maxLength?: number;
+  autoComplete?: string;
+}
+
+const FormField: React.FC<FormFieldProps> = ({
   label,
   name,
   type = 'text',
@@ -23,6 +45,7 @@ const FormField = ({
   onBlur,
   disabled = false,
   className = '',
+  children,
   ...props
 }) => {
   const hasError = touched && error;
@@ -58,7 +81,7 @@ const FormField = ({
           disabled={disabled}
           {...props}
         >
-          {props.children}
+          {children}
         </StyledSelect>
       ) : (
         <StyledInput

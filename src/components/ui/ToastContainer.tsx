@@ -7,16 +7,17 @@
 
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useToast, type Toast as ToastType } from '../../context/useToast';
-import ToastComponent from './Toast';
+import { useToast } from '../../context/useToast';
+import type { Toast as ToastType } from '../../context/ToastContext';
+import { Info, CheckCircle, AlertCircle, XCircle, X } from 'lucide-react';
 
-const ToastContainerWrapper = styled.div<{ position: string }>`
+const ToastContainerWrapper = styled.div<{ $position: string }>`
   position: fixed;
   pointer-events: none;
-  z-index: 9999;
+  z-index: var(--z-toast, 400);
 
   ${props => {
-    switch (props.position) {
+    switch (props.$position) {
       case 'top-left':
         return 'top: 20px; left: 20px;';
       case 'top-center':
@@ -42,6 +43,128 @@ const ToastStack = styled.div`
   pointer-events: auto;
 `;
 
+const ToastItemWrapper = styled.div<{ $type: string; $isExiting: boolean }>`
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  border-left: 4px solid ${props => {
+    const colors: Record<string, string> = {
+      info: '#2196f3', success: '#4caf50', warning: '#ff9800', error: '#f44336',
+    };
+    return colors[props.$type] || '#2196f3';
+  }};
+  animation: ${props => (props.$isExiting ? 'toastSlideOut' : 'toastSlideIn')} 0.3s ease-in-out;
+  max-width: 400px;
+
+  @keyframes toastSlideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes toastSlideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
+`;
+
+const ToastIconWrapper = styled.div<{ $type: string }>`
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  color: ${props => {
+    const colors: Record<string, string> = {
+      info: '#2196f3', success: '#4caf50', warning: '#ff9800', error: '#f44336',
+    };
+    return colors[props.$type] || '#2196f3';
+  }};
+  svg { width: 20px; height: 20px; }
+`;
+
+const ToastMessage = styled.div`
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  line-height: 1.4;
+  align-self: center;
+`;
+
+const ToastActionBtn = styled.button`
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  color: #0066cc;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  &:hover { color: #0052a3; text-decoration: underline; }
+`;
+
+const ToastCloseBtn = styled.button`
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #999;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  &:hover { color: #333; background-color: #f5f5f5; }
+  svg { width: 16px; height: 16px; }
+`;
+
+const ICONS: Record<string, React.ReactNode> = {
+  info: <Info size={20} />,
+  success: <CheckCircle size={20} />,
+  warning: <AlertCircle size={20} />,
+  error: <XCircle size={20} />,
+};
+
+/** Single toast item with auto-dismiss */
+const SingleToastItem: React.FC<{
+  toast: ToastType;
+  onClose: () => void;
+}> = ({ toast, onClose }) => {
+  const [isExiting, setIsExiting] = useState(false);
+
+  useEffect(() => {
+    if (!toast.duration || toast.duration <= 0) return undefined;
+
+    const timer = setTimeout(() => {
+      setIsExiting(true);
+      setTimeout(onClose, 300);
+    }, toast.duration);
+
+    return () => clearTimeout(timer);
+  }, [toast.duration, onClose]);
+
+  const handleClose = () => {
+    setIsExiting(true);
+    setTimeout(onClose, 300);
+  };
+
+  return (
+    <ToastItemWrapper $type={toast.type} $isExiting={isExiting} role="alert" aria-live="polite">
+      <ToastIconWrapper $type={toast.type}>
+        {ICONS[toast.type] || ICONS.info}
+      </ToastIconWrapper>
+      <ToastMessage>{toast.message}</ToastMessage>
+      {toast.action && (
+        <ToastActionBtn onClick={toast.action.onClick}>
+          {toast.action.label}
+        </ToastActionBtn>
+      )}
+      <ToastCloseBtn onClick={handleClose} aria-label="Close notification" title="Close">
+        <X />
+      </ToastCloseBtn>
+    </ToastItemWrapper>
+  );
+};
+
 /**
  * Toast Container Component
  * Manages rendering of all active toasts
@@ -49,7 +172,6 @@ const ToastStack = styled.div`
 export const ToastContainer: React.FC = () => {
   const { toasts, dismiss } = useToast();
 
-  // Group toasts by position
   const positions = [
     'top-left',
     'top-center',
@@ -67,15 +189,12 @@ export const ToastContainer: React.FC = () => {
         if (toastsAtPosition.length === 0) return null;
 
         return (
-          <ToastContainerWrapper key={position} position={position}>
+          <ToastContainerWrapper key={position} $position={position}>
             <ToastStack>
               {toastsAtPosition.map(toast => (
-                <ToastComponent
+                <SingleToastItem
                   key={toast.id}
-                  message={toast.message}
-                  type={toast.type}
-                  duration={toast.duration}
-                  action={toast.action}
+                  toast={toast}
                   onClose={() => {
                     dismiss(toast.id);
                     toast.onClose?.();

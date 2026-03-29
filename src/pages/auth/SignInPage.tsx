@@ -1,18 +1,23 @@
-import React, { FC, useState, ChangeEvent, FormEvent, ReactNode } from 'react';
+import React, { FC, useState, useRef, useEffect, ChangeEvent, FormEvent, ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { setUser } from '../../store/userSlice';
 import { 
   signInWithGoogle, 
   signInWithFacebook, 
   signInWithApple,
-  signInWithEmail,
-  signUpWithEmail,
   signInWithPhone,
   createRecaptchaVerifier
 } from '../../config/firebase';
+import {
+  loginWithEmail as backendLogin,
+  registerWithEmail as backendRegister,
+  syncFirebaseUser,
+} from '../../services/authService';
 import { BiometricLoginButton } from '../../features/auth/components/BiometricLogin';
 import './AuthPages.css';
+import { safeStorage } from '../../utils/safeStorage';
 
 // Type definitions
 interface UserCategory {
@@ -38,7 +43,7 @@ interface PendingUser {
 }
 
 interface ConfirmationResult {
-  confirm: (otp: string) => Promise<{ user: any }>;
+  confirm: (otp: string) => Promise<{ user: { uid: string; email: string | null; displayName: string | null; photoURL: string | null } }>;
 }
 
 interface SignInPageState {
@@ -93,6 +98,7 @@ const STAFF_ROLES: UserRole[] = [
 ];
 
 const SignInPage: FC = () => {
+  useDocumentTitle('Sign In');
   const navigate = useNavigate();
   const dispatch = useDispatch();
   
@@ -118,45 +124,45 @@ const SignInPage: FC = () => {
   
   const [pendingUser, setPendingUser] = useState<PendingUser | null>(null);
 
+  // Ref for navigation timers to prevent memory leaks on unmount
+  const navTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(navTimerRef.current);
+    };
+  }, []);
+
   const saveUserData = (category: string, role: string, status: string = 'active'): void => {
-    localStorage.setItem('userRole', JSON.stringify({ 
+    safeStorage.setJSON('userRole', { 
       category, 
       role, 
       status,
       locked: true 
-    }));
+    });
   };
 
-  const handleSignInSuccess = (user: any): void => {
+  const handleSignInSuccess = (user: { id: string; email: string | null; name: string | null; role?: string; photoUrl?: string | null; department?: string | null }): void => {
     dispatch(setUser({
-      id: user.uid,
-      email: user.email,
-      name: user.displayName,
-      photo: user.photoURL
+      id: user.id,
+      email: user.email || '',
+      name: user.name || undefined,
+      role: user.role,
+      photoURL: user.photoUrl || undefined,
     }));
     
-    const existingData = localStorage.getItem('userRole');
-    if (existingData) {
-      const parsed = JSON.parse(existingData);
-      if (parsed.status === 'pending') {
-        setSuccess('Your staff account is pending approval.');
-        setTimeout(() => navigate('/pending-approval'), 1000);
-      } else {
-        setSuccess('Sign in successful!');
-        setTimeout(() => navigate(`/${parsed.role}/dashboard`), 1000);
-      }
-    } else {
-      setSuccess('Sign in successful!');
-      setTimeout(() => navigate('/select-role'), 1000);
-    }
+    // Backend JWT is already stored by authService
+    const userRole = user.role || 'agent';
+    setSuccess('Sign in successful!');
+    navTimerRef.current = setTimeout(() => navigate(`/${userRole}/dashboard`), 1000);
   };
 
-  const handleSignUpSuccess = (user: any): void => {
+  const handleSignUpSuccess = (user: { id: string; email: string | null; name: string | null; role?: string; photoUrl?: string | null }): void => {
     setPendingUser({
-      id: user.uid,
-      email: user.email,
-      name: user.displayName || fullName,
-      photo: user.photoURL
+      id: user.id,
+      email: user.email || '',
+      name: user.name || fullName,
+      photo: user.photoUrl || undefined,
     });
     setStep(2);
   };
@@ -178,15 +184,21 @@ const SignInPage: FC = () => {
     
     const status = selectedCategory === 'staff' ? 'pending' : 'active';
     
-    dispatch(setUser(pendingUser));
+    dispatch(setUser({
+      id: pendingUser?.id || '',
+      email: pendingUser?.email || '',
+      name: pendingUser?.name || undefined,
+      role: selectedRole,
+      status,
+    }));
     saveUserData(selectedCategory, selectedRole, status);
     
     if (selectedCategory === 'staff') {
       setSuccess('Registration submitted! Your account is pending approval.');
-      setTimeout(() => navigate('/pending-approval'), 1500);
+      navTimerRef.current = setTimeout(() => navigate('/pending-approval'), 1500);
     } else {
       setSuccess('Account created successfully!');
-      setTimeout(() => navigate(`/${selectedRole}/dashboard`), 1000);
+      navTimerRef.current = setTimeout(() => navigate(`/${selectedRole}/dashboard`), 1000);
     }
   };
 
@@ -209,13 +221,35 @@ const SignInPage: FC = () => {
           throw new Error('Invalid provider');
       }
       
-      if (mode === 'signup') {
-        handleSignUpSuccess(result.user);
-      } else {
-        handleSignInSuccess(result.user);
+      // Sync Firebase user with backend to get JWT
+      try {
+        const backendResponse = await syncFirebaseUser(result.user);
+        if (!backendResponse?.data?.user) {
+          throw new Error('Invalid backend response: missing user data');
+        }
+        const backendUser = backendResponse.data.user;
+        
+        if (mode === 'signup') {
+          handleSignUpSuccess(backendUser);
+        } else {
+          handleSignInSuccess(backendUser);
+        }
+      } catch {
+        // Backend unavailable — fall back to Firebase-only auth
+        const firebaseUser = result.user;
+        const fallbackUser = {
+          id: firebaseUser.uid,
+          email: firebaseUser.email,
+          name: firebaseUser.displayName,
+        };
+        if (mode === 'signup') {
+          handleSignUpSuccess(fallbackUser);
+        } else {
+          handleSignInSuccess(fallbackUser);
+        }
       }
-    } catch (err: any) {
-      setError(err.message || 'Authentication failed');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Authentication failed');
     } finally {
       setLoading(false);
     }
@@ -231,18 +265,34 @@ const SignInPage: FC = () => {
       setLoading(false);
       return;
     }
+
+    // Client-side password validation (mirrors backend rules)
+    if (mode === 'signup') {
+      if (password.length < 8) {
+        setError('Password must be at least 8 characters');
+        setLoading(false);
+        return;
+      }
+      if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+        setError('Password must contain at least one letter and one number');
+        setLoading(false);
+        return;
+      }
+    }
     
     try {
-      let result;
       if (mode === 'signup') {
-        result = await signUpWithEmail(email, password);
-        handleSignUpSuccess(result.user);
+        const response = await backendRegister(email, password, fullName || undefined);
+        if (!response?.data?.user) throw new Error('Invalid response: missing user data');
+        handleSignUpSuccess(response.data.user);
       } else {
-        result = await signInWithEmail(email, password);
-        handleSignInSuccess(result.user);
+        const response = await backendLogin(email, password);
+        if (!response?.data?.user) throw new Error('Invalid response: missing user data');
+        handleSignInSuccess(response.data.user);
       }
-    } catch (err: any) {
-      setError(err.message || 'Authentication failed');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Authentication failed';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -259,8 +309,8 @@ const SignInPage: FC = () => {
       setConfirmationResult(result);
       setShowOtpInput(true);
       setSuccess('OTP sent to your phone');
-    } catch (err: any) {
-      setError(err.message || 'Failed to send OTP');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to send OTP');
     } finally {
       setLoading(false);
     }
@@ -273,13 +323,35 @@ const SignInPage: FC = () => {
     
     try {
       const result = await confirmationResult?.confirm(otp);
-      if (mode === 'signup') {
-        handleSignUpSuccess(result?.user);
-      } else {
-        handleSignInSuccess(result?.user);
+      if (!result?.user) {
+        throw new Error('OTP verification failed');
       }
-    } catch (err: any) {
-      setError(err.message || 'Invalid OTP');
+
+      // Sync Firebase phone-auth user with backend for JWT
+      try {
+        const backendResponse = await syncFirebaseUser(result.user);
+        const backendUser = backendResponse.data.user;
+        if (mode === 'signup') {
+          handleSignUpSuccess(backendUser);
+        } else {
+          handleSignInSuccess(backendUser);
+        }
+      } catch {
+        // Backend unavailable — fall back to Firebase-only
+        const firebaseUser = result.user;
+        const fallbackUser = {
+          id: firebaseUser.uid,
+          email: firebaseUser.email,
+          name: firebaseUser.displayName,
+        };
+        if (mode === 'signup') {
+          handleSignUpSuccess(fallbackUser);
+        } else {
+          handleSignInSuccess(fallbackUser);
+        }
+      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Invalid OTP');
     } finally {
       setLoading(false);
     }
@@ -302,7 +374,7 @@ const SignInPage: FC = () => {
     <div className="auth-page">
       <div className="auth-container">
         <Link to="/" className="auth-logo">
-          <img src="/company-logo.jpg" alt="White Caves" />
+          <img src="/company-logo.jpg" alt="White Caves" width={60} height={60} />
           <span>White Caves</span>
         </Link>
 
@@ -321,8 +393,16 @@ const SignInPage: FC = () => {
 
               {mode === 'signin' && (
                 <BiometricLoginButton 
-                  onSuccess={(user: any) => handleSignInSuccess(user)}
-                  onError={(error: any) => setError(error.message)}
+                  onSuccess={(user: unknown) => {
+                    const u = user as Record<string, unknown>;
+                    handleSignInSuccess({
+                      id: String(u.uid || u.id || ''),
+                      email: String(u.email || ''),
+                      name: String(u.displayName || u.name || ''),
+                      photoUrl: u.photoURL ? String(u.photoURL) : undefined,
+                    });
+                  }}
+                  onError={(error: unknown) => setError(error instanceof Error ? error.message : 'Login failed')}
                   disabled={loading}
                 />
               )}
@@ -390,45 +470,53 @@ const SignInPage: FC = () => {
                   <form onSubmit={handleEmailSubmit} className="auth-form">
                     {mode === 'signup' && (
                       <div className="form-group">
-                        <label>Full Name</label>
+                        <label htmlFor="signin-fullname">Full Name</label>
                         <input 
+                          id="signin-fullname"
                           type="text" 
                           value={fullName}
                           onChange={(e: ChangeEvent<HTMLInputElement>) => setFullName(e.target.value)}
                           placeholder="Enter your full name"
                           required
+                          autoComplete="name"
                         />
                       </div>
                     )}
                     <div className="form-group">
-                      <label>Email Address</label>
+                      <label htmlFor="signin-email">Email Address</label>
                       <input 
+                        id="signin-email"
                         type="email" 
                         value={email}
                         onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                         placeholder="Enter your email"
                         required
+                        autoComplete="email"
                       />
                     </div>
                     <div className="form-group">
-                      <label>Password</label>
+                      <label htmlFor="signin-password">Password</label>
                       <input 
+                        id="signin-password"
                         type="password" 
                         value={password}
                         onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                         placeholder="Enter your password"
                         required
+                        autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                       />
                     </div>
                     {mode === 'signup' && (
                       <div className="form-group">
-                        <label>Confirm Password</label>
+                        <label htmlFor="signin-confirm-password">Confirm Password</label>
                         <input 
+                          id="signin-confirm-password"
                           type="password" 
                           value={confirmPassword}
                           onChange={(e: ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
                           placeholder="Confirm your password"
                           required
+                          autoComplete="new-password"
                         />
                       </div>
                     )}
@@ -444,24 +532,28 @@ const SignInPage: FC = () => {
                       <form onSubmit={handlePhoneSubmit}>
                         {mode === 'signup' && (
                           <div className="form-group">
-                            <label>Full Name</label>
+                            <label htmlFor="phone-fullname">Full Name</label>
                             <input 
+                              id="phone-fullname"
                               type="text" 
                               value={fullName}
                               onChange={(e: ChangeEvent<HTMLInputElement>) => setFullName(e.target.value)}
                               placeholder="Enter your full name"
                               required
+                              autoComplete="name"
                             />
                           </div>
                         )}
                         <div className="form-group">
-                          <label>Phone Number</label>
+                          <label htmlFor="phone-number">Phone Number</label>
                           <input 
+                            id="phone-number"
                             type="tel" 
                             value={phone}
                             onChange={(e: ChangeEvent<HTMLInputElement>) => setPhone(e.target.value)}
                             placeholder="+971 50 123 4567"
                             required
+                            autoComplete="tel"
                           />
                           <span className="input-hint">Include country code (e.g., +971)</span>
                         </div>
@@ -473,14 +565,17 @@ const SignInPage: FC = () => {
                     ) : (
                       <form onSubmit={handleOtpVerify}>
                         <div className="form-group">
-                          <label>Enter OTP</label>
+                          <label htmlFor="otp-code">Enter OTP</label>
                           <input 
+                            id="otp-code"
                             type="text" 
                             value={otp}
                             onChange={(e: ChangeEvent<HTMLInputElement>) => setOtp(e.target.value)}
                             placeholder="Enter 6-digit code"
                             maxLength={6}
                             required
+                            autoComplete="one-time-code"
+                            inputMode="numeric"
                           />
                           <span className="input-hint">Enter the code sent to {phone}</span>
                         </div>
@@ -597,8 +692,9 @@ const SignInPage: FC = () => {
 
               {selectedCategory === 'staff' && (
                 <div className="form-group" style={{ marginBottom: '1rem' }}>
-                  <label>Employee ID (Optional)</label>
+                  <label htmlFor="employee-id">Employee ID (Optional)</label>
                   <input 
+                    id="employee-id"
                     type="text" 
                     value={employeeId}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setEmployeeId(e.target.value)}
@@ -629,7 +725,7 @@ const SignInPage: FC = () => {
         </div>
 
         <p className="auth-footer">
-          By continuing, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+          By continuing, you agree to our <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a> and <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
         </p>
       </div>
     </div>

@@ -1,19 +1,31 @@
 export const ROLES = {
+  // Backend CRM roles (primary — these match the database)
+  OWNER: 'owner',
+  MANAGER: 'manager',
+  ADMIN: 'admin',
+  AGENT: 'agent',
+  FINANCE: 'finance',
+  VIEWER: 'viewer',
+  // Customer-facing real-estate roles
   BUYER: 'buyer',
   SELLER: 'seller',
   LANDLORD: 'landlord',
   TENANT: 'tenant',
   LEASING_AGENT: 'leasing-agent',
   SALES_AGENT: 'secondary-sales-agent',
-  OWNER: 'owner'
 };
 
 export const ROLE_HIERARCHY = {
   [ROLES.OWNER]: 100,
+  [ROLES.MANAGER]: 90,
+  [ROLES.ADMIN]: 80,
+  [ROLES.FINANCE]: 70,
+  [ROLES.AGENT]: 50,
   [ROLES.SALES_AGENT]: 50,
   [ROLES.LEASING_AGENT]: 50,
   [ROLES.LANDLORD]: 30,
   [ROLES.SELLER]: 20,
+  [ROLES.VIEWER]: 10,
   [ROLES.TENANT]: 10,
   [ROLES.BUYER]: 10
 };
@@ -130,6 +142,74 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.CONFIGURE_CHATBOT,
     PERMISSIONS.VIEW_ALL_REPORTS,
     PERMISSIONS.MODIFY_SETTINGS
+  ],
+  // ── Backend CRM roles ──────────────────────────────────────
+  [ROLES.MANAGER]: [
+    PERMISSIONS.VIEW_DASHBOARD,
+    PERMISSIONS.EDIT_PROFILE,
+    PERMISSIONS.VIEW_PROPERTIES,
+    PERMISSIONS.CREATE_PROPERTY,
+    PERMISSIONS.EDIT_PROPERTY,
+    PERMISSIONS.DELETE_PROPERTY,
+    PERMISSIONS.VIEW_LEADS,
+    PERMISSIONS.MANAGE_LEADS,
+    PERMISSIONS.VIEW_CONTRACTS,
+    PERMISSIONS.CREATE_CONTRACTS,
+    PERMISSIONS.VIEW_PAYMENTS,
+    PERMISSIONS.PROCESS_PAYMENTS,
+    PERMISSIONS.VIEW_ANALYTICS,
+    PERMISSIONS.VIEW_SYSTEM_HEALTH,
+    PERMISSIONS.MANAGE_AGENTS,
+    PERMISSIONS.VIEW_ALL_REPORTS,
+    PERMISSIONS.MODIFY_SETTINGS
+  ],
+  [ROLES.ADMIN]: [
+    PERMISSIONS.VIEW_DASHBOARD,
+    PERMISSIONS.EDIT_PROFILE,
+    PERMISSIONS.VIEW_PROPERTIES,
+    PERMISSIONS.CREATE_PROPERTY,
+    PERMISSIONS.EDIT_PROPERTY,
+    PERMISSIONS.DELETE_PROPERTY,
+    PERMISSIONS.VIEW_LEADS,
+    PERMISSIONS.MANAGE_LEADS,
+    PERMISSIONS.VIEW_CONTRACTS,
+    PERMISSIONS.CREATE_CONTRACTS,
+    PERMISSIONS.VIEW_PAYMENTS,
+    PERMISSIONS.VIEW_ANALYTICS,
+    PERMISSIONS.VIEW_SYSTEM_HEALTH,
+    PERMISSIONS.MANAGE_USERS,
+    PERMISSIONS.MANAGE_AGENTS,
+    PERMISSIONS.VIEW_ALL_REPORTS
+  ],
+  [ROLES.AGENT]: [
+    PERMISSIONS.VIEW_DASHBOARD,
+    PERMISSIONS.EDIT_PROFILE,
+    PERMISSIONS.VIEW_PROPERTIES,
+    PERMISSIONS.CREATE_PROPERTY,
+    PERMISSIONS.EDIT_PROPERTY,
+    PERMISSIONS.VIEW_LEADS,
+    PERMISSIONS.MANAGE_LEADS,
+    PERMISSIONS.VIEW_CONTRACTS,
+    PERMISSIONS.CREATE_CONTRACTS,
+    PERMISSIONS.VIEW_PAYMENTS,
+    PERMISSIONS.VIEW_ANALYTICS
+  ],
+  [ROLES.FINANCE]: [
+    PERMISSIONS.VIEW_DASHBOARD,
+    PERMISSIONS.EDIT_PROFILE,
+    PERMISSIONS.VIEW_PAYMENTS,
+    PERMISSIONS.PROCESS_PAYMENTS,
+    PERMISSIONS.VIEW_ANALYTICS,
+    PERMISSIONS.VIEW_ALL_REPORTS
+  ],
+  [ROLES.VIEWER]: [
+    PERMISSIONS.VIEW_DASHBOARD,
+    PERMISSIONS.EDIT_PROFILE,
+    PERMISSIONS.VIEW_PROPERTIES,
+    PERMISSIONS.VIEW_LEADS,
+    PERMISSIONS.VIEW_CONTRACTS,
+    PERMISSIONS.VIEW_PAYMENTS,
+    PERMISSIONS.VIEW_ANALYTICS
   ]
 };
 
@@ -173,7 +253,15 @@ export function isOwner(userRole: string | null): boolean {
 }
 
 export function isAgent(userRole: string | null): boolean {
-  return userRole === ROLES.LEASING_AGENT || userRole === ROLES.SALES_AGENT;
+  return userRole === ROLES.AGENT || userRole === ROLES.LEASING_AGENT || userRole === ROLES.SALES_AGENT;
+}
+
+export function isManager(userRole: string | null): boolean {
+  return userRole === ROLES.OWNER || userRole === ROLES.MANAGER;
+}
+
+export function isAdmin(userRole: string | null): boolean {
+  return userRole === ROLES.OWNER || userRole === ROLES.MANAGER || userRole === ROLES.ADMIN;
 }
 
 export function canAccessFeature(userRole: string | null, featureId: string): boolean {
@@ -187,27 +275,8 @@ export function getRoleLevel(userRole: string): number {
   return ROLE_HIERARCHY[userRole] || 0;
 }
 
-export function canManageRole(managerRole: string, targetRole: string): boolean {
-  return getRoleLevel(managerRole) > getRoleLevel(targetRole);
-}
+const EMPTY_PERMISSIONS: string[] = [];
 
 export function getPermissionsForRole(role: string): string[] {
-  return ROLE_PERMISSIONS[role] || [];
-}
-
-export function getRolesWithPermission(permission: string): string[] {
-  return Object.entries(ROLE_PERMISSIONS)
-    .filter(([_, permissions]) => permissions.includes(permission))
-    .map(([role]) => role);
-}
-
-export function getVisibleRolesForNav(currentRole: string): string[] {
-  if (isOwner(currentRole)) {
-    return Object.values(ROLES);
-  }
-  return PUBLIC_ROLES;
-}
-
-export function getNavRolesExcludingOwner(): string[] {
-  return PUBLIC_ROLES;
+  return ROLE_PERMISSIONS[role] || EMPTY_PERMISSIONS;
 }

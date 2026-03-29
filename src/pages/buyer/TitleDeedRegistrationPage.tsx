@@ -104,8 +104,8 @@ const TitleDeedRegistrationPage: FC<TitleDeedRegistrationPageProps> = () => {
                   <div className="step-documents">
                     <strong>Required:</strong>
                     <ul>
-                      {step.documents.map((doc, index) => (
-                        <li key={index}>{doc}</li>
+                      {step.documents.map((doc) => (
+                        <li key={doc}>{doc}</li>
                       ))}
                     </ul>
                   </div>
@@ -119,7 +119,7 @@ const TitleDeedRegistrationPage: FC<TitleDeedRegistrationPageProps> = () => {
           <h3>Document Checklist</h3>
           <div className="documents-grid">
             {requiredDocuments.map((doc, index) => (
-              <div key={index} className="document-category">
+              <div key={doc.category} className="document-category">
                 <h4>{doc.category}</h4>
                 <ul>
                   {doc.items.map((item, itemIndex) => (
@@ -137,8 +137,8 @@ const TitleDeedRegistrationPage: FC<TitleDeedRegistrationPageProps> = () => {
         <div className="fees-section">
           <h3>Transfer Fees Summary</h3>
           <div className="fees-table">
-            {feesSummary.map((fee, index) => (
-              <div key={index} className="fee-row">
+            {feesSummary.map((fee) => (
+              <div key={fee.item} className="fee-row">
                 <span className="fee-name">{fee.item}</span>
                 <span className="fee-amount">{fee.amount}</span>
               </div>

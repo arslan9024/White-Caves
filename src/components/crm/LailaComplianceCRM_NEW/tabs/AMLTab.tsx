@@ -1,7 +1,21 @@
 import React from 'react';
 import { AlertTriangle, CheckCircle, Clock, Shield } from 'lucide-react';
 
-const AMLTab = ({ alerts, onResolve }) => {
+interface AMLAlert {
+  id: string | number;
+  client: string;
+  type: string;
+  amount: number;
+  date: string;
+  status: string;
+}
+
+interface AMLTabProps {
+  alerts: AMLAlert[];
+  onResolve: (id: string | number) => void;
+}
+
+const AMLTab: React.FC<AMLTabProps> = ({ alerts, onResolve }) => {
   return (
     <div className="aml-view">
       <h3>AML & Sanctions Monitoring</h3>
@@ -10,12 +24,12 @@ const AMLTab = ({ alerts, onResolve }) => {
         <div className="summary-card">
           <Shield size={20} />
           <span>Active Investigations</span>
-          <strong>{alerts.filter(a => a.status === 'investigating').length}</strong>
+          <strong>{alerts.filter((a: AMLAlert) => a.status === 'investigating').length}</strong>
         </div>
         <div className="summary-card">
           <CheckCircle size={20} />
           <span>Cleared Alerts</span>
-          <strong>{alerts.filter(a => a.status === 'cleared').length}</strong>
+          <strong>{alerts.filter((a: AMLAlert) => a.status === 'cleared').length}</strong>
         </div>
       </div>
 
@@ -31,7 +45,7 @@ const AMLTab = ({ alerts, onResolve }) => {
           </tr>
         </thead>
         <tbody>
-          {alerts.map((alert) => (
+          {alerts.map((alert: AMLAlert) => (
             <tr key={alert.id} className={`status-${alert.status}`}>
               <td>
                 <div className="alert-client">

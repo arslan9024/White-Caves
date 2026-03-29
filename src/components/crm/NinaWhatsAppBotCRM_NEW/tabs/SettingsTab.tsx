@@ -1,7 +1,16 @@
 import React from 'react';
 import { Settings, Save as SaveIcon, Bell, Lock, Zap, AlertCircle } from 'lucide-react';
 
-export const NinaSettingsTab = ({ data }) => {
+interface NinaSettingsData {
+  showSettings: boolean;
+  setShowSettings: (show: boolean) => void;
+}
+
+interface NinaSettingsTabProps {
+  data: NinaSettingsData;
+}
+
+export const NinaSettingsTab: React.FC<NinaSettingsTabProps> = ({ data }) => {
   const { showSettings, setShowSettings } = data;
 
   return (
@@ -19,13 +28,13 @@ export const NinaSettingsTab = ({ data }) => {
               <span>Auto-reply enabled</span>
             </div>
             <label className="toggle">
-              <input type="checkbox" defaultChecked />
-              <span className="toggle-slider"></span>
+              <input type="checkbox" defaultChecked aria-label="Toggle auto-reply" />
+              <span className="toggle-slider" aria-hidden="true"></span>
             </label>
           </div>
           <div className="setting-item">
-            <label>Message response delay (ms)</label>
-            <input type="number" defaultValue="2000" min="1000" max="10000" step="500" />
+            <label htmlFor="nina-response-delay">Message response delay (ms)</label>
+            <input id="nina-response-delay" type="number" defaultValue="2000" min="1000" max="10000" step="500" aria-label="Message response delay in milliseconds" />
           </div>
         </div>
 
@@ -37,8 +46,8 @@ export const NinaSettingsTab = ({ data }) => {
               <span>Connection alerts</span>
             </div>
             <label className="toggle">
-              <input type="checkbox" defaultChecked />
-              <span className="toggle-slider"></span>
+              <input type="checkbox" defaultChecked aria-label="Toggle connection alerts" />
+              <span className="toggle-slider" aria-hidden="true"></span>
             </label>
           </div>
           <div className="setting-item">
@@ -47,8 +56,8 @@ export const NinaSettingsTab = ({ data }) => {
               <span>Error notifications</span>
             </div>
             <label className="toggle">
-              <input type="checkbox" defaultChecked />
-              <span className="toggle-slider"></span>
+              <input type="checkbox" defaultChecked aria-label="Toggle error notifications" />
+              <span className="toggle-slider" aria-hidden="true"></span>
             </label>
           </div>
         </div>
@@ -61,13 +70,13 @@ export const NinaSettingsTab = ({ data }) => {
               <span>Message encryption</span>
             </div>
             <label className="toggle">
-              <input type="checkbox" defaultChecked />
-              <span className="toggle-slider"></span>
+              <input type="checkbox" defaultChecked aria-label="Toggle message encryption" />
+              <span className="toggle-slider" aria-hidden="true"></span>
             </label>
           </div>
           <div className="setting-item">
-            <label>Session timeout (minutes)</label>
-            <input type="number" defaultValue="30" min="5" max="120" />
+            <label htmlFor="nina-session-timeout">Session timeout (minutes)</label>
+            <input id="nina-session-timeout" type="number" defaultValue="30" min="5" max="120" aria-label="Session timeout in minutes" />
           </div>
         </div>
 
@@ -82,7 +91,13 @@ export const NinaSettingsTab = ({ data }) => {
       </div>
 
       <div className="settings-actions">
-        <button className="save-btn">
+        <button
+          className="save-btn"
+          onClick={() => {
+            // TODO: POST settings to /api/whatsapp/nina/settings
+            alert('Nina settings saved (API integration pending)');
+          }}
+        >
           <SaveIcon size={18} /> Save Settings
         </button>
       </div>

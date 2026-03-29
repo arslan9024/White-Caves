@@ -57,7 +57,7 @@ interface RuntimeAssistant extends Assistant {
 
 interface Notification {
   isRead: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface NotificationsByAssistant {
@@ -91,7 +91,7 @@ const AI_ASSISTANTS: RuntimeAssistant[] = getAllAssistants() as RuntimeAssistant
 
 const getAssistantIcon = (assistantId: string): LucideIcon => {
   const iconMap: Record<string, LucideIcon> = {
-    linda: MessageSquare,
+    nadia: MessageSquare,
     nina: Bot,
     mary: Building2,
     nancy: Users,
@@ -194,19 +194,19 @@ const AIAssistantsPanel: React.FC<AIAssistantsPanelProps> = ({
 
       <PanelFilters>
         <FilterButton 
-          isActive={statusFilter === 'all'}
+          $isActive={statusFilter === 'all'}
           onClick={() => setStatusFilter('all')}
         >
           All ({AI_ASSISTANTS.length})
         </FilterButton>
         <FilterButton 
-          isActive={statusFilter === 'active'}
+          $isActive={statusFilter === 'active'}
           onClick={() => setStatusFilter('active')}
         >
           Active ({AI_ASSISTANTS.filter((a: RuntimeAssistant) => a.status === 'active').length})
         </FilterButton>
         <FilterButton 
-          isActive={statusFilter === 'idle'}
+          $isActive={statusFilter === 'idle'}
           onClick={() => setStatusFilter('idle')}
         >
           Idle ({AI_ASSISTANTS.filter((a: RuntimeAssistant) => a.status === 'idle').length})
@@ -227,7 +227,7 @@ const AIAssistantsPanel: React.FC<AIAssistantsPanelProps> = ({
             return (
               <AssistantCard 
                 key={assistant.id}
-                isExpanded={isExpanded}
+                $isExpanded={isExpanded}
               >
                 <AssistantMain 
                   onClick={() => handleAssistantClick(assistant)}
@@ -240,7 +240,7 @@ const AIAssistantsPanel: React.FC<AIAssistantsPanelProps> = ({
                   <AssistantDetails>
                     <AssistantNameRow>
                       <AssistantName>{assistant.name}</AssistantName>
-                      <StatusBadge status={assistant.status || 'idle'}>
+                      <StatusBadge $status={assistant.status || 'idle'}>
                         {assistant.status}
                       </StatusBadge>
                     </AssistantNameRow>
@@ -263,13 +263,13 @@ const AIAssistantsPanel: React.FC<AIAssistantsPanelProps> = ({
                 {isExpanded && (
                   <AssistantExpanded>
                     <CapabilitiesList>
-                      {(assistant.capabilities || []).slice(0, 5).map((cap: string, idx: number) => (
-                        <CapabilityTag key={idx}>{cap}</CapabilityTag>
+                      {(assistant.capabilities || []).slice(0, 5).map((cap: string) => (
+                        <CapabilityTag key={cap}>{cap}</CapabilityTag>
                       ))}
                     </CapabilitiesList>
                     <QuickActions>
                       <ActionButton 
-                        isPrimary
+                        $isPrimary
                         onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                           e.stopPropagation();
                           handleAssistantClick(assistant);
@@ -297,11 +297,11 @@ const AIAssistantsPanel: React.FC<AIAssistantsPanelProps> = ({
       <PanelFooter>
         <FooterStats>
           <Stat>
-            <StatDot status="online" />
+            <StatDot $status="online" />
             {AI_ASSISTANTS.filter((a: RuntimeAssistant) => a.status === 'active').length} Online
           </Stat>
           <Stat>
-            <StatDot status="idle" />
+            <StatDot $status="idle" />
             {AI_ASSISTANTS.filter((a: RuntimeAssistant) => a.status === 'idle').length} Idle
           </Stat>
         </FooterStats>

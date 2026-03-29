@@ -27,20 +27,31 @@ import {
 } from './CompanyProfile.styles';
 
 export default function CompanyProfile() {
-  const handleDownloadPDF = useCallback(() => {
+  const handleDownloadPDF = useCallback(async () => {
     if (typeof window === 'undefined' || typeof document === 'undefined') {
       return;
     }
     const baseUrl = import.meta.env.BASE_URL || '/';
     const pdfUrl = `${baseUrl}White-Caves-Company-Profile.pdf`.replace('//', '/');
     
-    const link = document.createElement('a');
-    link.href = pdfUrl;
-    link.download = 'White-Caves-Company-Profile.pdf';
-    link.target = '_blank';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      // Verify the file exists before attempting download
+      const response = await fetch(pdfUrl, { method: 'HEAD' });
+      if (!response.ok) {
+        alert('Company profile PDF is not available at this time. Please contact support.');
+        return;
+      }
+      
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.download = 'White-Caves-Company-Profile.pdf';
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch {
+      alert('Unable to download the company profile. Please check your connection and try again.');
+    }
   }, []);
 
   return (

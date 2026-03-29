@@ -35,20 +35,21 @@ import {
 
 interface InventoryProperty {
   pNumber: string;
-  project: string;
-  cluster: string;
-  area: string;
+  project?: string;
+  cluster?: string;
+  area?: string;
   building?: string;
   unitNumber?: string;
-  floor?: string;
-  status: string;
+  floor?: string | number;
+  status?: string;
   owners?: string[];
+  [key: string]: unknown;
 }
 
 interface DetailsView {
   id: string;
   label: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ size?: number | string }>;
 }
 
 /**
@@ -65,10 +66,11 @@ export default function MaryDetailsTab() {
     const matrix: Record<string, InventoryProperty[]> = {};
     if (Array.isArray(properties)) {
       properties.forEach((prop: InventoryProperty) => {
-        if (!matrix[prop.cluster]) {
-          matrix[prop.cluster] = [];
+        const key = prop.cluster || 'Unknown';
+        if (!matrix[key]) {
+          matrix[key] = [];
         }
-        matrix[prop.cluster].push(prop);
+        matrix[key].push(prop);
       });
     }
     return matrix;
@@ -206,7 +208,7 @@ export default function MaryDetailsTab() {
                   <label>Owners ({selectedProperty.owners?.length || 0})</label>
                   <OwnersList>
                     {selectedProperty.owners && selectedProperty.owners.length > 0 ? (
-                      selectedProperty.owners.map((ownerId, idx) => <li key={idx}>{ownerId}</li>)
+                      selectedProperty.owners.map((ownerId) => <li key={ownerId}>{ownerId}</li>)
                     ) : (
                       <li>No owners assigned</li>
                     )}

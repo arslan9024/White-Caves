@@ -46,7 +46,7 @@ const DropdownContent = styled.div<{
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: var(--z-dropdown, 100);
   min-width: 200px;
   max-height: ${(props) => (props.$maxHeight ? `${props.$maxHeight}px` : '400px')};
   overflow-y: auto;
@@ -294,6 +294,7 @@ const Dropdown: FC<DropdownProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onClick={(e) => e.stopPropagation()}
+              aria-label="Search dropdown options"
             />
           </div>
         )}
@@ -301,7 +302,7 @@ const Dropdown: FC<DropdownProps> = ({
         <DropdownMenu>
           {filteredItems.map((item, index) => {
             if (item.divider) {
-              return <DividerItem key={`divider-${index}`} />;
+              return <DividerItem key={`divider-${item.id || index}`} />;
             }
 
             return (
@@ -315,7 +316,7 @@ const Dropdown: FC<DropdownProps> = ({
                 role="menuitem"
                 aria-disabled={item.disabled}
               >
-                <DropdownMenuItem $withSubmenu={!!item.submenu}>
+                <MenuItemContent $withSubmenu={!!item.submenu}>
                   {item.icon && <span>{item.icon}</span>}
                   <ItemLabel>{item.label}</ItemLabel>
                   {item.badge && (
@@ -326,7 +327,7 @@ const Dropdown: FC<DropdownProps> = ({
                     </ItemBadge>
                   )}
                   {item.submenu && <SubmenuIndicator />}
-                </DropdownMenuItem>
+                </MenuItemContent>
               </DropdownMenuItem>
             );
           })}

@@ -13,6 +13,8 @@ interface Property {
   sqft: number;
   pricePerSqft?: number;
   images?: string[];
+  /** Index signature for dynamic field access in comparison table */
+  [key: string]: string | number | string[] | undefined;
 }
 
 interface ComparisonField {
@@ -67,7 +69,7 @@ const PropertyComparison: React.FC = () => {
     { key: 'beds', label: 'Bedrooms', format: (v) => v as number },
     { key: 'baths', label: 'Bathrooms', format: (v) => v as number },
     { key: 'sqft', label: 'Size (sqft)', format: (v) => (v as number)?.toLocaleString() },
-    { key: 'pricePerSqft', label: 'Price per sqft', format: (v, p) => p ? formatPrice(Math.round(p.price / p.sqft)) : '' }
+    { key: 'pricePerSqft', label: 'Price per sqft', format: (v, p) => p && p.sqft > 0 ? formatPrice(Math.round(p.price / p.sqft)) : 'N/A' }
   ];
 
   const getHighlight = (field: string, value: unknown, allValues: unknown[]): string => {
@@ -143,7 +145,7 @@ const PropertyComparison: React.FC = () => {
 
       {selectedProperties.length >= 2 && (
         <div className="comparison-table-wrapper">
-          <table className="comparison-table">
+          <table className="comparison-table" aria-label="Property comparison">
             <thead>
               <tr>
                 <th className="feature-col">Feature</th>
@@ -157,7 +159,7 @@ const PropertyComparison: React.FC = () => {
             <tbody>
               {comparisonFields.map((field) => {
                 const values = selectedProperties.map((p) => 
-                  field.key === 'pricePerSqft' ? p.price / p.sqft : (p as unknown as Record<string, unknown>)[field.key]
+                  field.key === 'pricePerSqft' ? (p.sqft > 0 ? p.price / p.sqft : 0) : p[field.key]
                 );
                 
                 return (

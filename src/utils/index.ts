@@ -5,65 +5,90 @@
 
 /**
  * Format date for display
+ * Accepts Date, string, null, or undefined — returns fallback for invalid input
  */
-export const formatDate = (date: Date): string => {
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
+export const formatDate = (
+  date: Date | string | null | undefined,
+  options?: Intl.DateTimeFormatOptions,
+  locale: string = 'en-AE'
+): string => {
+  if (!date) return '—';
+  try {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    if (isNaN(d.getTime())) return '—';
+    return d.toLocaleDateString(locale, options ?? {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  } catch {
+    return '—';
+  }
 };
 
 /**
- * Format currency
+ * Format currency — handles null/undefined, configurable locale & fractions
  */
-export const formatCurrency = (amount: number, currency: string = 'AED'): string => {
-  return new Intl.NumberFormat('en-US', {
+export const formatCurrency = (
+  amount: number | null | undefined,
+  currency: string = 'AED',
+  options?: { locale?: string; maximumFractionDigits?: number }
+): string => {
+  if (amount == null || isNaN(amount)) return `${currency} 0`;
+  const locale = options?.locale ?? 'en-AE';
+  const maxFrac = options?.maximumFractionDigits ?? 0;
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: currency
+    currency,
+    maximumFractionDigits: maxFrac,
   }).format(amount);
 };
 
 /**
- * Format phone number
+ * Format currency abbreviated (e.g., "AED 2.5M")
  */
-export const formatPhoneNumber = (phone: string): string => {
-  // Remove all non-digits
-  const cleaned = phone.replace(/\D/g, '');
-  // Format as (XXX) XXX-XXXX or +XX XXX XXX XXXX
-  if (cleaned.length === 10) {
-    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+export const formatCurrencyAbbreviated = (amount: number, currency: string = 'AED'): string => {
+  if (amount >= 1_000_000_000) return `${currency} ${(amount / 1_000_000_000).toFixed(1)}B`;
+  if (amount >= 1_000_000) return `${currency} ${(amount / 1_000_000).toFixed(1)}M`;
+  if (amount >= 1_000) return `${currency} ${(amount / 1_000).toFixed(0)}K`;
+  return `${currency} ${amount.toLocaleString()}`;
+};
+
+/**
+ * Format price — unified function for all property/service price display.
+ *
+ * - Abbreviated by default: "AED 2.5M", "AED 450K", "AED 1,200"
+ * - With priceType: "AED 120,000/year", "AED 8,000/month"
+ * - Handles null/undefined → "Price on Request"
+ */
+export const formatPrice = (
+  price?: number | null,
+  options?: { priceType?: string; unit?: string; fallback?: string }
+): string => {
+  if (price == null || isNaN(price)) return options?.fallback ?? 'Price on Request';
+
+  // If a priceType or unit suffix is specified, use full locale format
+  if (options?.priceType || options?.unit) {
+    const formatted = new Intl.NumberFormat('en-AE', {
+      style: 'currency',
+      currency: 'AED',
+      maximumFractionDigits: 0,
+    }).format(price);
+    const suffix = options.priceType
+      ? `/${options.priceType}`
+      : options.unit
+        ? ` ${options.unit}`
+        : '';
+    return `${formatted}${suffix}`;
   }
-  return phone;
-};
 
-/**
- * Calculate commission
- */
-export const calculateCommission = (transactionAmount: number, percentage: number): number => {
-  return (transactionAmount * percentage) / 100;
-};
-
-/**
- * Calculate days between dates
- */
-export const daysBetween = (date1: Date, date2: Date): number => {
-  const d1 = new Date(date1);
-  const d2 = new Date(date2);
-  const diffTime = Math.abs(d2.getTime() - d1.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays;
-};
-
-/**
- * Check if date is in the past
- */
-export const isPastDate = (date: Date): boolean => {
-  return new Date(date) < new Date();
+  // Default: abbreviated
+  return formatCurrencyAbbreviated(price);
 };
 
 /**
  * Generate random ID
+ * NOTE: Kept but currently unused — planned for Phase 6 form components
  */
 export const generateId = (prefix: string = ''): string => {
   return prefix + Math.random().toString(36).substring(2, 11);
@@ -72,75 +97,25 @@ export const generateId = (prefix: string = ''): string => {
 /**
  * Validate email
  */
-export const isValidEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-/**
- * Validate phone number
- */
-export const isValidPhone = (phone: string): boolean => {
-  const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
-  return phoneRegex.test(phone);
-};
-
-/**
- * Truncate string
- */
-export const truncateString = (str: string, length: number = 50): string => {
-  return str.length > length ? str.substring(0, length) + '...' : str;
-};
+export { isValidEmail } from './validation';
 
 /**
  * Get initials from name
  */
 export const getInitials = (name: string): string => {
   return name
+    .trim()
     .split(' ')
+    .filter((part) => part.length > 0)
     .map((part) => part.charAt(0).toUpperCase())
     .join('')
-    .substring(0, 2);
+    .substring(0, 2) || '?';
 };
 
 /**
- * Debounce function
+ * Sort array by property — type-safe with proper comparisons
  */
-export const debounce = <T extends (...args: any[]) => any>(
-  func: T,
-  wait: number
-): ((...args: Parameters<T>) => void) => {
-  let timeoutId: NodeJS.Timeout;
-  return function debounced(...args: Parameters<T>) {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func(...args), wait);
-  };
-};
-
-/**
- * Group array by property
- */
-export const groupBy = <T extends Record<string, any>>(
-  array: T[],
-  key: keyof T
-): Record<string, T[]> => {
-  return array.reduce(
-    (acc, obj) => {
-      const group = obj[key] as string | number;
-      if (!acc[group]) {
-        acc[group] = [];
-      }
-      acc[group].push(obj);
-      return acc;
-    },
-    {} as Record<string, T[]>
-  );
-};
-
-/**
- * Sort array by property
- */
-export const sortBy = <T extends Record<string, any>>(
+export const sortBy = <T extends Record<string, unknown>>(
   array: T[],
   key: keyof T,
   order: 'asc' | 'desc' = 'asc'
@@ -148,7 +123,16 @@ export const sortBy = <T extends Record<string, any>>(
   return [...array].sort((a, b) => {
     const aVal = a[key];
     const bVal = b[key];
-    const comparison = aVal > bVal ? 1 : -1;
+    // Handle null/undefined
+    if (aVal == null && bVal == null) return 0;
+    if (aVal == null) return order === 'asc' ? -1 : 1;
+    if (bVal == null) return order === 'asc' ? 1 : -1;
+    // String comparison
+    if (typeof aVal === 'string' && typeof bVal === 'string') {
+      return order === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+    }
+    // Numeric / Date comparison
+    const comparison = (aVal as number) > (bVal as number) ? 1 : (aVal as number) < (bVal as number) ? -1 : 0;
     return order === 'asc' ? comparison : -comparison;
   });
 };

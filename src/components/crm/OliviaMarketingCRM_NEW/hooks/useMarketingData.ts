@@ -16,7 +16,7 @@ export const useMarketingData = () => {
   const [oliviaActive, setOliviaActive] = useState<boolean>(true);
 
   // Filter campaigns
-  const filteredCampaigns = useCallback(() => {
+  const filteredCampaigns = useMemo(() => {
     return campaigns.filter(c => {
       const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = filterCampaignStatus === 'all' || c.status === filterCampaignStatus;
@@ -37,19 +37,25 @@ export const useMarketingData = () => {
 
   // Calculate social stats
   const socialMetrics = useMemo(() => {
+    const count = socialStats.length;
     return {
       totalFollowers: socialStats.reduce((sum, s) => sum + s.followers, 0),
-      avgEngagement: (socialStats.reduce((sum, s) => sum + s.engagement, 0) / socialStats.length).toFixed(1),
+      avgEngagement: count > 0
+        ? (socialStats.reduce((sum, s) => sum + s.engagement, 0) / count).toFixed(1)
+        : '0.0',
       totalPosts: socialStats.reduce((sum, s) => sum + s.posts, 0)
     };
   }, [socialStats]);
 
   // Calculate listing stats
   const listingStats = useMemo(() => {
+    const count = listings.length;
     return {
       totalViews: listings.reduce((sum, l) => sum + l.views, 0),
       totalInquiries: listings.reduce((sum, l) => sum + l.inquiries, 0),
-      avgQuality: (listings.reduce((sum, l) => sum + l.quality, 0) / listings.length).toFixed(0),
+      avgQuality: count > 0
+        ? (listings.reduce((sum, l) => sum + l.quality, 0) / count).toFixed(0)
+        : '0',
       availableListings: listings.filter(l => l.available > 0).length
     };
   }, [listings]);
@@ -68,27 +74,28 @@ export const useMarketingData = () => {
     return status === 'healthy' ? '#10b981' : status === 'degraded' ? '#f59e0b' : '#ef4444';
   };
 
-  // CRUD operations
+  // CRUD operations (using functional setState to prevent stale closures)
   const addCampaign = useCallback((newCampaign: Partial<Campaign>) => {
+    const newId = Date.now();
     const campaign = {
-      id: campaigns.length + 1,
+      id: newId,
       ...newCampaign
-    };
-    setCampaigns([...campaigns, campaign]);
+    } as Campaign;
+    setCampaigns(prev => [...prev, campaign]);
     return campaign;
-  }, [campaigns]);
+  }, []);
 
   const updateCampaign = useCallback((id: number, updates: Partial<Campaign>) => {
-    setCampaigns(campaigns.map(c => c.id === id ? { ...c, ...updates } : c));
-  }, [campaigns]);
+    setCampaigns(prev => prev.map(c => c.id === id ? { ...c, ...updates } : c));
+  }, []);
 
   const deleteCampaign = useCallback((id: number) => {
-    setCampaigns(campaigns.filter(c => c.id !== id));
-  }, [campaigns]);
+    setCampaigns(prev => prev.filter(c => c.id !== id));
+  }, []);
 
   const updateListing = useCallback((id: number, updates: Partial<Listing>) => {
-    setListings(listings.map(l => l.id === id ? { ...l, ...updates } : l));
-  }, [listings]);
+    setListings(prev => prev.map(l => l.id === id ? { ...l, ...updates } : l));
+  }, []);
 
   return {
     // Data
@@ -99,7 +106,7 @@ export const useMarketingData = () => {
     marketInsights,
     
     // Filtered data
-    filteredCampaigns: filteredCampaigns(),
+    filteredCampaigns,
     
     // Stats
     campaignStats,

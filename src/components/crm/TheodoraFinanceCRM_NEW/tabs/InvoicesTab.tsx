@@ -1,14 +1,29 @@
 import React from 'react';
 import { FileText, Download, Search, Filter } from 'lucide-react';
 
-const InvoicesTab = ({ invoices, onSelectInvoice }) => {
+interface Invoice {
+  id: string | number;
+  client: string;
+  property: string;
+  amount: number;
+  status: string;
+  date: string;
+  dueDate: string;
+}
+
+interface InvoicesTabProps {
+  invoices: Invoice[];
+  onSelectInvoice: (invoice: Invoice) => void;
+}
+
+const InvoicesTab: React.FC<InvoicesTabProps> = ({ invoices, onSelectInvoice }) => {
   return (
     <div className="invoices-view">
       <h3>Invoice Management</h3>
       <div className="tab-toolbar">
         <div className="search-bar">
           <Search size={16} />
-          <input type="text" placeholder="Search invoices..." />
+          <input type="text" placeholder="Search invoices..." aria-label="Search invoices" />
         </div>
         <button className="filter-btn">
           <Filter size={16} /> Filter
@@ -32,7 +47,7 @@ const InvoicesTab = ({ invoices, onSelectInvoice }) => {
           </tr>
         </thead>
         <tbody>
-          {invoices.map((invoice) => (
+          {invoices.map((invoice: Invoice) => (
             <tr key={invoice.id} className={`status-${invoice.status}`}>
               <td>
                 <div className="invoice-id">

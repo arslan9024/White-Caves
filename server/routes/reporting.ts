@@ -5,17 +5,25 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-import { asyncHandler } from '../middleware/errorHandler';
+import { asyncHandler, AppError } from '../middleware/errorHandler';
+import type { AuthRequest } from '../middleware/auth';
+import { prisma } from '../database.js';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // ─── GET /api/dashboard/summary  &  /api/dashboard/overview ─────────────
 // Main dashboard overview used by CRM Hub  (frontend calls /summary)
+// Also handles role-based routes: /admin/summary, /:role/summary
 router.get(
-  ['/summary', '/overview'],
+  ['/summary', '/overview', '/admin/summary', '/:role/summary'],
   asyncHandler(async (req: Request, res: Response) => {
+    // AUTHORIZATION: Financial metrics restricted to managers/owners
+    const userRole = req.user?.role || '';
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(userRole)) {
+      throw new AppError('Access denied — dashboard summary requires manager or higher role', 403);
+    }
+
     const [
       totalLeads, hotLeads, wonLeads,
       totalProperties, availableProperties,
@@ -25,7 +33,7 @@ router.get(
       pipelineValue,
     ] = await Promise.all([
       prisma.lead.count(),
-      prisma.lead.count({ where: { status: 'hot' } }),
+      prisma.lead.count({ where: { status: 'qualified' } }),
       prisma.lead.count({ where: { status: 'won' } }),
       prisma.property.count(),
       prisma.property.count({ where: { status: 'available' } }),
@@ -59,7 +67,7 @@ router.get(
           paidCommissionValue: paidCommissions._sum.amount || 0,
           pipelineValue: pipelineValue._sum.budget || 0,
         },
-        recentActivities: recentActivities.map((a: any) => ({
+        recentActivities: recentActivities.map((a) => ({
           id: a.id,
           type: a.type,
           action: a.action,
@@ -77,11 +85,17 @@ router.get(
 router.get(
   '/activities',
   asyncHandler(async (req: Request, res: Response) => {
-    const { page = '1', pageSize = '20', type } = req.query;
-    const pageNum = Math.max(1, parseInt(page as string));
-    const limit = Math.min(50, Math.max(1, parseInt(pageSize as string)));
+    // AUTHORIZATION: Only managers+ can access global activity feed
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — activity feed requires manager or above role', 403);
+    }
 
-    const where: any = {};
+    const { page = '1', pageSize = '20', type } = req.query;
+    const pageNum = Math.max(1, parseInt(page as string) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(pageSize as string) || 20));
+
+    const where: Record<string, unknown> = {};
     if (type && type !== 'all') where.type = type as string;
 
     const [activities, total] = await Promise.all([
@@ -100,7 +114,7 @@ router.get(
 
     res.status(200).json({
       success: true,
-      data: activities.map((a: any) => ({
+      data: activities.map((a) => ({
         id: a.id,
         type: a.type,
         action: a.action,
@@ -119,6 +133,11 @@ router.get(
 router.get(
   '/executive',
   asyncHandler(async (req: Request, res: Response) => {
+    // AUTHORIZATION: Only managers+ can access executive analytics
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — executive analytics requires manager or above role', 403);
+    }
     const [
       leadsByStatus, leadsBySource,
       propertiesByStatus, propertiesByType,
@@ -133,7 +152,7 @@ router.get(
       prisma.property.aggregate({ _sum: { price: true } }),
     ]);
 
-    const toMap = (arr: any[], keyField: string) => {
+    const toMap = (arr: Array<{ _count: { _all: number }; [key: string]: unknown }>, keyField: string) => {
       const map: Record<string, number> = {};
       arr.forEach(item => { map[item[keyField]] = item._count._all; });
       return map;
@@ -144,7 +163,7 @@ router.get(
       data: {
         leads: { byStatus: toMap(leadsByStatus, 'status'), bySource: toMap(leadsBySource, 'source') },
         properties: { byStatus: toMap(propertiesByStatus, 'status'), byType: toMap(propertiesByType, 'type') },
-        commissions: commissionsByStatus.map((c: any) => ({
+        commissions: commissionsByStatus.map((c) => ({
           status: c.status, count: c._count._all, totalValue: c._sum.amount || 0,
         })),
         portfolioValue: portfolioValue._sum.price || 0,
@@ -157,6 +176,12 @@ router.get(
 router.get(
   '/kpis',
   asyncHandler(async (req: Request, res: Response) => {
+    // AUTHORIZATION: Only managers+ can access KPI metrics
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — KPI data requires manager or above role', 403);
+    }
+
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 

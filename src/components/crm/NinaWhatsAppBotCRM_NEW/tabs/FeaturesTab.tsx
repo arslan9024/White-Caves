@@ -1,10 +1,26 @@
 import React from 'react';
 import { Zap, CheckCircle, AlertCircle } from 'lucide-react';
 
-export const NinaFeaturesTab = ({ data }) => {
+interface Feature {
+  id: string | number;
+  name: string;
+  description: string;
+  category: string;
+  status: string;
+}
+
+interface NinaFeaturesData {
+  features: Feature[];
+}
+
+interface NinaFeaturesTabProps {
+  data: NinaFeaturesData;
+}
+
+export const NinaFeaturesTab: React.FC<NinaFeaturesTabProps> = ({ data }) => {
   const { features } = data;
 
-  const categories = [...new Set(features.map(f => f.category))];
+  const categories = [...new Set(features.map((f: Feature) => f.category))];
 
   return (
     <div className="features-tab">
@@ -14,11 +30,11 @@ export const NinaFeaturesTab = ({ data }) => {
       </div>
 
       <div className="features-sections">
-        {categories.map(category => (
+        {categories.map((category: string) => (
           <div key={category} className="feature-category">
             <h4>{category}</h4>
             <div className="features-list">
-              {features.filter(f => f.category === category).map(feature => (
+              {features.filter((f: Feature) => f.category === category).map((feature: Feature) => (
                 <div key={feature.id} className="feature-item">
                   <div className="feature-icon">
                     {feature.status === 'active' ? (

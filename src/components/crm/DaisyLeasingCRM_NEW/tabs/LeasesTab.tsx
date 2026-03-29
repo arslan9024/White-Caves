@@ -1,7 +1,23 @@
 import React from 'react';
 import { Search, Plus } from 'lucide-react';
 
-const LeasesTab = ({ leases, searchQuery, onSearchChange }) => {
+interface Lease {
+  id: string | number;
+  unit: string;
+  tenant: string;
+  rent: number;
+  endDate: string;
+  daysRemaining: number;
+  status: string;
+}
+
+interface LeasesTabProps {
+  leases: Lease[];
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+}
+
+const LeasesTab: React.FC<LeasesTabProps> = ({ leases, searchQuery, onSearchChange }) => {
   return (
     <div className="leases-view">
       <div className="view-header">
@@ -11,7 +27,7 @@ const LeasesTab = ({ leases, searchQuery, onSearchChange }) => {
             type="text" 
             placeholder="Search leases..."
             value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
           />
         </div>
         <button className="add-btn"><Plus size={16} /> New Lease</button>
@@ -25,7 +41,7 @@ const LeasesTab = ({ leases, searchQuery, onSearchChange }) => {
           <span>Days Left</span>
           <span>Status</span>
         </div>
-        {leases.map(lease => (
+        {leases.map((lease: Lease) => (
           <div key={lease.id} className="table-row">
             <span className="unit-name">{lease.unit}</span>
             <span>{lease.tenant}</span>

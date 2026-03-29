@@ -8,6 +8,8 @@ import {
   DollarSign, Megaphone, Shield, FileText, Users2,
   Star, AlertCircle, Server
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import type { AIAssistant } from '../../store/slices/aiAssistant/types';
 import {
   selectAllAssistantsArray,
   selectUI,
@@ -22,8 +24,8 @@ import {
 import AIAssistantSelector from './AIAssistantSelector';
 import './AIAssistantHub.css';
 
-const ASSISTANT_ICONS = {
-  linda: MessageSquare,
+const ASSISTANT_ICONS: Record<string, LucideIcon> = {
+  nadia: MessageSquare,
   mary: FileText,
   clara: Target,
   nina: Bot,
@@ -41,7 +43,7 @@ const FEATURE_FLOWS = [
   {
     id: 'whatsapp_lead_capture',
     name: 'WhatsApp Lead Capture',
-    source: 'linda',
+    source: 'nadia',
     target: 'clara',
     description: 'Qualified leads from WhatsApp conversations are automatically transferred to the Leads CRM',
     automationLevel: 'full'
@@ -58,14 +60,14 @@ const FEATURE_FLOWS = [
     id: 'bot_conversation_routing',
     name: 'Bot Conversation Routing',
     source: 'nina',
-    target: 'linda',
-    description: 'Complex conversations from bots are escalated to human agents via Linda',
+    target: 'nadia',
+    description: 'Complex conversations from bots are escalated to human agents via Nadia',
     automationLevel: 'full'
   },
   {
     id: 'sales_lead_handoff',
     name: 'Sales Lead Handoff',
-    source: 'linda',
+    source: 'nadia',
     target: 'sophia',
     description: 'Hot leads from WhatsApp are handed off to the sales pipeline',
     automationLevel: 'semi-auto'
@@ -120,7 +122,11 @@ const FEATURE_FLOWS = [
   }
 ];
 
-const AIAssistantHub = ({ onSelectAssistant }) => {
+interface AIAssistantHubProps {
+  onSelectAssistant?: (assistantId: string) => void;
+}
+
+const AIAssistantHub = ({ onSelectAssistant }: AIAssistantHubProps) => {
   const dispatch = useDispatch();
   const assistants = useSelector(selectAllAssistantsArray);
   const ui = useSelector(selectUI);
@@ -129,10 +135,10 @@ const AIAssistantHub = ({ onSelectAssistant }) => {
   const performance = useSelector(selectPerformance);
   const currentAssistant = useSelector(selectCurrentAssistant);
   
-  const [activeView, setActiveView] = useState('overview');
-  const [selectedFlow, setSelectedFlow] = useState(null);
+  const [activeView, setActiveView] = useState<string>('overview');
+  const [selectedFlow, setSelectedFlow] = useState<string | null>(null);
 
-  const handleAssistantClick = (assistantId) => {
+  const handleAssistantClick = (assistantId: string): void => {
     dispatch(selectAssistant(assistantId));
     dispatch(addActivity({
       assistantId: assistantId,
@@ -145,17 +151,17 @@ const AIAssistantHub = ({ onSelectAssistant }) => {
     }
   };
 
-  const formatTime = (timestamp) => {
+  const formatTime = (timestamp: string | number): string => {
     const date = new Date(timestamp);
     const now = new Date();
-    const diff = Math.floor((now - date) / 60000);
+    const diff = Math.floor((now.getTime() - date.getTime()) / 60000);
     if (diff < 1) return 'Just now';
     if (diff < 60) return `${diff}m ago`;
     if (diff < 1440) return `${Math.floor(diff / 60)}h ago`;
     return date.toLocaleDateString();
   };
 
-  const getStatusColor = (type) => {
+  const getStatusColor = (type: string): string => {
     switch (type) {
       case 'success': return '#10B981';
       case 'active': return '#3B82F6';
@@ -166,7 +172,7 @@ const AIAssistantHub = ({ onSelectAssistant }) => {
     }
   };
 
-  const renderAssistantCard = (assistant) => {
+  const renderAssistantCard = (assistant: AIAssistant) => {
     const Icon = ASSISTANT_ICONS[assistant.id] || Users;
     const isFavorite = favorites.includes(assistant.id);
     const isSelected = ui?.selectedAssistant === assistant.id;
@@ -175,7 +181,7 @@ const AIAssistantHub = ({ onSelectAssistant }) => {
       <div 
         key={assistant.id}
         className={`assistant-card ${isSelected ? 'active' : ''}`}
-        style={{ '--assistant-color': assistant.colorScheme }}
+        style={{ '--assistant-color': assistant.colorScheme } as React.CSSProperties}
         onClick={() => handleAssistantClick(assistant.id)}
       >
         <div className="assistant-header">
@@ -193,7 +199,7 @@ const AIAssistantHub = ({ onSelectAssistant }) => {
           <div className="card-status">
             <span 
               className={`status-dot ${assistant.metrics.systemHealth}`}
-              title={assistant.metrics.systemHealth}
+              title={String(assistant.metrics.systemHealth)}
             />
           </div>
         </div>
@@ -203,8 +209,8 @@ const AIAssistantHub = ({ onSelectAssistant }) => {
         <div className="assistant-stats">
           {assistant.quickStats && (
             <div className="stat-item highlight">
-              <span className="stat-value">{assistant.quickStats.today.value}</span>
-              <span className="stat-label">{assistant.quickStats.today.label}</span>
+              <span className="stat-value">{String((assistant.quickStats as unknown as Record<string, unknown>)?.value ?? '')}</span>
+              <span className="stat-label">{String((assistant.quickStats as unknown as Record<string, unknown>)?.label ?? '')}</span>
             </div>
           )}
           <div className="stat-item">
@@ -389,7 +395,7 @@ const AIAssistantHub = ({ onSelectAssistant }) => {
   );
 
   const groupedAssistants = useMemo(() => {
-    return assistants.reduce((acc, assistant) => {
+    return assistants.reduce<Record<string, AIAssistant[]>>((acc, assistant) => {
       const dept = assistant.department;
       if (!acc[dept]) acc[dept] = [];
       acc[dept].push(assistant);

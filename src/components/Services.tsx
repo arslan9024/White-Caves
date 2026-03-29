@@ -38,14 +38,14 @@ const Services: FC = () => {
     <S.ServicesSection>
       <S.SectionTitle>Our Services</S.SectionTitle>
       <S.ServicesContainer>
-        {services.map((service, index) => (
-          <S.ServiceCard key={`${service.title}-${index}`}>
+        {services.map((service) => (
+          <S.ServiceCard key={service.title}>
             <S.ServiceIcon className={service.icon} />
             <S.ServiceTitle>{service.title}</S.ServiceTitle>
             <S.ServiceDescription>{service.description}</S.ServiceDescription>
             <S.ServiceList>
-              {service.items.map((item, itemIndex) => (
-                <S.ServiceListItem key={`${item}-${itemIndex}`}>
+              {service.items.map((item) => (
+                <S.ServiceListItem key={item}>
                   {item}
                 </S.ServiceListItem>
               ))}

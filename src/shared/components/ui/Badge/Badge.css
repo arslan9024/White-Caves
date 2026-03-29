@@ -14,8 +14,8 @@
 }
 
 .wc-badge--primary {
-  background: rgba(220, 38, 38, 0.1);
-  color: var(--primary-red, #DC2626);
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--primary-gold, #D4AF37);
 }
 
 .wc-badge--success {

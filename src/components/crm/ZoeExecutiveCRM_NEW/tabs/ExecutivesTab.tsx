@@ -1,8 +1,20 @@
 import React from 'react';
 import { Phone, Mail, Video, MessageCircle, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 
-const ExecutivesTab = ({ executives }) => {
-  const getStatusIcon = (status) => {
+interface Executive {
+  id: string | number;
+  name: string;
+  role: string;
+  avatar: string;
+  status: string;
+}
+
+interface ExecutivesTabProps {
+  executives: Executive[];
+}
+
+const ExecutivesTab = ({ executives }: ExecutivesTabProps) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case 'available': return <CheckCircle size={16} className="status-available" />;
       case 'in_meeting': return <Clock size={16} className="status-in-meeting" />;
@@ -11,7 +23,7 @@ const ExecutivesTab = ({ executives }) => {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string): string => {
     switch (status) {
       case 'available': return '#10B981';
       case 'in_meeting': return '#F59E0B';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { useLeadsData } from '../hooks/useLeadsData';
 
 export default function ProspectsTab() {
@@ -29,7 +29,7 @@ export default function ProspectsTab() {
     notes: ''
   });
 
-  const handleAddLead = (e) => {
+  const handleAddLead = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (formData.name.trim()) {
       addLead(formData);
@@ -48,7 +48,7 @@ export default function ProspectsTab() {
     }
   };
 
-  const handleDeleteLead = (id) => {
+  const handleDeleteLead = (id: string) => {
     if (confirm('Delete this lead?')) {
       deleteLead(id);
     }
@@ -144,7 +144,10 @@ export default function ProspectsTab() {
               type="number"
               placeholder="Deal Value"
               value={formData.value}
-              onChange={(e) => setFormData({ ...formData, value: parseFloat(e.target.value) })}
+              onChange={(e) => {
+                const parsed = parseFloat(e.target.value);
+                setFormData({ ...formData, value: Number.isNaN(parsed) ? 0 : parsed });
+              }}
               className="filter-input"
             />
             <select

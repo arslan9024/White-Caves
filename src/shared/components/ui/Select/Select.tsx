@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useId } from 'react';
 import './Select.css';
 
 export interface SelectOption {
@@ -56,7 +56,8 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(({
   ...props
 }, ref) => {
   const baseClass = 'wc-select';
-  const selectId = id || name || `select-${Math.random().toString(36).substr(2, 9)}`;
+  const generatedId = useId();
+  const selectId = id || name || `${generatedId}-select`;
 
   const wrapperClasses = [
     `${baseClass}-wrapper`,

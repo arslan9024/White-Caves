@@ -1,7 +1,28 @@
 import React from 'react';
 import { ChevronDown, ChevronRight, FileCode, Copy, Edit2, Folder } from 'lucide-react';
 
-export const CodeModulesTab = ({ data }) => {
+interface ModuleFile {
+  name: string;
+  lines: number;
+}
+
+interface CodeModule {
+  name: string;
+  expanded: boolean;
+  files: ModuleFile[];
+}
+
+interface CodeModulesData {
+  codeModules: CodeModule[];
+  expandedModule: string | null;
+  handleToggleModule: (moduleName: string) => void;
+}
+
+interface CodeModulesTabProps {
+  data: CodeModulesData;
+}
+
+export const CodeModulesTab: React.FC<CodeModulesTabProps> = ({ data }) => {
   const { codeModules, expandedModule, handleToggleModule } = data;
 
   return (
@@ -12,7 +33,7 @@ export const CodeModulesTab = ({ data }) => {
       </div>
 
       <div className="modules-tree">
-        {codeModules.map(module => (
+        {codeModules.map((module: CodeModule) => (
           <div key={module.name} className="module-group">
             <div
               className="module-header"
@@ -29,7 +50,7 @@ export const CodeModulesTab = ({ data }) => {
 
             {module.expanded && (
               <div className="files-list">
-                {module.files.map(file => (
+                {module.files.map((file: ModuleFile) => (
                   <div key={file.name} className="file-item">
                     <FileCode size={16} className="file-icon" />
                     <div className="file-info">
@@ -56,7 +77,7 @@ export const CodeModulesTab = ({ data }) => {
         </div>
         <div className="stat">
           <span className="label">Total Files</span>
-          <span className="value">{codeModules.reduce((sum, m) => sum + m.files.length, 0)}</span>
+          <span className="value">{codeModules.reduce((sum: number, m: CodeModule) => sum + m.files.length, 0)}</span>
         </div>
         <div className="stat">
           <span className="label">Total Lines of Code</span>

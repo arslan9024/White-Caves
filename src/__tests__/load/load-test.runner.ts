@@ -209,12 +209,12 @@ export class LoadTestRunner {
       failedRequests: metrics.failed,
       successRate: Math.round(successRate * 100) / 100,
       throughput,
-      avgResponseTime: Math.round(
+      avgResponseTime: metrics.responseTimes.length > 0 ? Math.round(
         metrics.responseTimes.reduce((a, b) => a + b, 0) /
           metrics.responseTimes.length
-      ),
-      minResponseTime: Math.min(...metrics.responseTimes),
-      maxResponseTime: Math.max(...metrics.responseTimes),
+      ) : 0,
+      minResponseTime: metrics.responseTimes.length > 0 ? Math.min(...metrics.responseTimes) : 0,
+      maxResponseTime: metrics.responseTimes.length > 0 ? Math.max(...metrics.responseTimes) : 0,
       p50ResponseTime: Math.round(this.calculatePercentile(metrics.responseTimes, 50)),
       p95ResponseTime: Math.round(this.calculatePercentile(metrics.responseTimes, 95)),
       p99ResponseTime: Math.round(this.calculatePercentile(metrics.responseTimes, 99)),
@@ -372,5 +372,3 @@ async function main() {
 if (require.main === module) {
   main();
 }
-
-export { LoadTestRunner };

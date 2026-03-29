@@ -1,21 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import Pagination from '../../ui/Pagination';
+import type { ContractsTabProps, ContractStatus, EjariStatus } from './types';
 import './TabStyles.css';
 
-const ContractsTab = ({ data, loading, onAction }) => {
+const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading, onAction }) => {
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  const contracts = data?.contracts || [
-    { id: 1, contractNumber: 'TC-2024-001', type: 'tenancy', tenant: 'John Smith', landlord: 'Mohammed Al Rashid', property: 'Marina View Apt 1502', startDate: '2024-01-01', endDate: '2024-12-31', amount: 95000, status: 'active', ejariStatus: 'registered' },
-    { id: 2, contractNumber: 'TC-2024-002', type: 'tenancy', tenant: 'Sarah Wilson', landlord: 'Ahmed Hassan', property: 'JBR Tower A - 2301', startDate: '2024-02-15', endDate: '2025-02-14', amount: 120000, status: 'active', ejariStatus: 'registered' },
-    { id: 3, contractNumber: 'SC-2024-001', type: 'sale', buyer: 'Chen Wei', seller: 'Dubai Properties LLC', property: 'Downtown Villa 45', amount: 4500000, status: 'pending', completionDate: '2024-06-30' },
-    { id: 4, contractNumber: 'TC-2024-003', type: 'tenancy', tenant: 'Emily Brown', landlord: 'Fatima Al Maktoum', property: 'Palm Jumeirah Villa 12', startDate: '2024-03-01', endDate: '2025-02-28', amount: 350000, status: 'pending', ejariStatus: 'pending' },
-    { id: 5, contractNumber: 'SC-2024-002', type: 'sale', buyer: 'Rashid Khan', seller: 'White Caves RE', property: 'Business Bay Tower 1201', amount: 2800000, status: 'completed', completionDate: '2024-04-15' },
-    { id: 6, contractNumber: 'TC-2024-004', type: 'tenancy', tenant: 'David Lee', landlord: 'Omar Trading', property: 'Silicon Oasis Apt 305', startDate: '2023-06-01', endDate: '2024-05-31', amount: 45000, status: 'expired', ejariStatus: 'registered' },
-  ];
+  // Reset pagination when filters change (must be before early returns — Rules of Hooks)
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [typeFilter, statusFilter]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="contracts-tab">
+        <div className="tab-loading-state" role="status" aria-label="Loading contracts">
+          <div className="loading-spinner" />
+          <p>Loading contracts...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const contracts = data?.contracts || [];
 
   const filteredContracts = contracts.filter(contract => {
     const matchesType = typeFilter === 'all' || contract.type === typeFilter;
@@ -29,12 +40,8 @@ const ContractsTab = ({ data, loading, onAction }) => {
     currentPage * itemsPerPage
   );
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [typeFilter, statusFilter]);
-
-  const getStatusBadge = (status) => {
-    const config = {
+  const getStatusBadge = (status: string) => {
+    const config: Record<string, { color: string; text: string }> = {
       active: { color: '#22C55E', text: 'Active' },
       pending: { color: '#F59E0B', text: 'Pending' },
       completed: { color: '#3B82F6', text: 'Completed' },
@@ -45,7 +52,7 @@ const ContractsTab = ({ data, loading, onAction }) => {
     return <span className="status-badge" style={{ backgroundColor: `${c.color}20`, color: c.color }}>{c.text}</span>;
   };
 
-  const getEjariBadge = (status) => {
+  const getEjariBadge = (status: string) => {
     if (!status) return null;
     const isRegistered = status === 'registered';
     return (
@@ -114,7 +121,7 @@ const ContractsTab = ({ data, loading, onAction }) => {
       </div>
 
       <div className="data-table">
-        <table>
+        <table aria-label="Contracts list">
           <thead>
             <tr>
               <th>Contract No.</th>
@@ -181,11 +188,11 @@ const ContractsTab = ({ data, loading, onAction }) => {
 
       <Pagination
         currentPage={currentPage}
-        totalPages={totalPages}
+        totalItems={filteredContracts.length}
         onPageChange={setCurrentPage}
       />
     </div>
   );
 };
 
-export default ContractsTab;
+export default React.memo(ContractsTab);

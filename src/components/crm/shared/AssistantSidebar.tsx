@@ -20,6 +20,24 @@ import {
   QuickActionButton
 } from './AssistantSidebar.styles';
 
+interface SidebarItemDef {
+  id: string;
+  label?: string;
+  icon?: React.ComponentType<{ size?: number }>;
+  badge?: number;
+  divider?: boolean;
+  section?: string;
+}
+
+interface AssistantSidebarProps {
+  items?: SidebarItemDef[];
+  activeItem?: string;
+  onItemClick?: (itemId: string) => void;
+  showHeader?: boolean;
+  showQuickActions?: boolean;
+  collapsed?: boolean;
+}
+
 const AssistantSidebar = memo(({ 
   items = [],
   activeItem,
@@ -27,7 +45,7 @@ const AssistantSidebar = memo(({
   showHeader = true,
   showQuickActions = true,
   collapsed = false
-}) => {
+}: AssistantSidebarProps) => {
   const dispatch = useDispatch();
   const currentAssistant = useSelector(selectCurrentAssistant);
   const favorites = useSelector(selectFavorites);
@@ -66,8 +84,8 @@ const AssistantSidebar = memo(({
       )}
       
       <SidebarNav>
-        {items.map((item, index) => (
-          <React.Fragment key={item.id || index}>
+        {items.map((item) => (
+          <React.Fragment key={item.id}>
             {item.divider && <SidebarDivider />}
             {item.section && !collapsed && (
               <SidebarSection>{item.section}</SidebarSection>

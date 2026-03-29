@@ -1,4 +1,56 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useReducer } from 'react';
+
+// Consolidated interaction state to avoid excessive re-renders during drag
+interface TourInteractionState {
+  rotation: { x: number; y: number };
+  zoom: number;
+  isDragging: boolean;
+  startPos: { x: number; y: number };
+}
+
+type TourAction =
+  | { type: 'START_DRAG'; payload: { x: number; y: number } }
+  | { type: 'DRAG_MOVE'; payload: { clientX: number; clientY: number } }
+  | { type: 'STOP_DRAG' }
+  | { type: 'AUTO_ROTATE' }
+  | { type: 'ZOOM'; payload: number }
+  | { type: 'ZOOM_DELTA'; payload: number }
+  | { type: 'RESET_VIEW' }
+  | { type: 'SET_ROTATION'; payload: { x: number; y: number } };
+
+function tourReducer(state: TourInteractionState, action: TourAction): TourInteractionState {
+  switch (action.type) {
+    case 'START_DRAG':
+      return { ...state, isDragging: true, startPos: action.payload };
+    case 'DRAG_MOVE': {
+      if (!state.isDragging) return state;
+      const deltaX = action.payload.clientX - state.startPos.x;
+      const deltaY = action.payload.clientY - state.startPos.y;
+      return {
+        ...state,
+        rotation: {
+          x: Math.max(-85, Math.min(85, state.rotation.x - deltaY * 0.3)),
+          y: state.rotation.y + deltaX * 0.3,
+        },
+        startPos: { x: action.payload.clientX, y: action.payload.clientY },
+      };
+    }
+    case 'STOP_DRAG':
+      return { ...state, isDragging: false };
+    case 'AUTO_ROTATE':
+      return { ...state, rotation: { ...state.rotation, y: state.rotation.y + 0.5 } };
+    case 'ZOOM':
+      return { ...state, zoom: Math.max(0.5, Math.min(3, action.payload)) };
+    case 'ZOOM_DELTA':
+      return { ...state, zoom: Math.max(0.5, Math.min(3, state.zoom + action.payload)) };
+    case 'RESET_VIEW':
+      return { ...state, rotation: { x: 0, y: 0 }, zoom: 1 };
+    case 'SET_ROTATION':
+      return { ...state, rotation: action.payload };
+    default:
+      return state;
+  }
+}
 import {
   VirtualTourContainer,
   TourHeader,
@@ -26,82 +78,108 @@ import {
   ViewsCount
 } from './VirtualTour.styles';
 
+interface TourImage {
+  url?: string;
+  title?: string;
+  name?: string;
+  thumbnail?: string;
+  hotspots?: TourHotspotData[];
+  [key: string]: unknown;
+}
+
+interface TourHotspotData {
+  id?: string;
+  x: number;
+  y: number;
+  label?: string;
+  icon?: string;
+  type?: 'info' | 'navigation';
+  targetRoom?: number;
+  action?: () => void;
+}
+
+interface VirtualTourProps {
+  images?: TourImage[];
+  initialIndex?: number;
+  onClose?: () => void;
+  propertyTitle?: string;
+}
+
 const VirtualTour = ({ 
   images = [], 
   initialIndex = 0,
   onClose,
   propertyTitle = 'Property Tour'
-}) => {
+}: VirtualTourProps) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [rotation, setRotation] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [isAutoRotate, setIsAutoRotate] = useState(false);
   const [showHotspots, setShowHotspots] = useState(true);
-  const containerRef = useRef(null);
-  const autoRotateRef = useRef(null);
 
-  const currentImage = images[currentIndex] || {};
+  const [interaction, dispatchTour] = useReducer(tourReducer, {
+    rotation: { x: 0, y: 0 },
+    zoom: 1,
+    isDragging: false,
+    startPos: { x: 0, y: 0 },
+  });
+
+  const { rotation, zoom, isDragging } = interaction;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const autoRotateRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const currentImage: TourImage = Array.isArray(images) ? (images[currentIndex] || {} as TourImage) : ({} as TourImage);
   const hotspots = currentImage.hotspots || [];
 
   useEffect(() => {
     if (isAutoRotate) {
       autoRotateRef.current = setInterval(() => {
-        setRotation(prev => ({ ...prev, y: prev.y + 0.5 }));
+        dispatchTour({ type: 'AUTO_ROTATE' });
       }, 50);
-    } else {
+    } else if (autoRotateRef.current) {
       clearInterval(autoRotateRef.current);
     }
-    return () => clearInterval(autoRotateRef.current);
+    return () => {
+      if (autoRotateRef.current) clearInterval(autoRotateRef.current);
+    };
   }, [isAutoRotate]);
 
-  const handleMouseDown = useCallback((e) => {
-    if (e.target.closest('.tour-hotspot')) return;
-    setIsDragging(true);
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest?.('.tour-hotspot')) return;
     setIsAutoRotate(false);
-    setStartPos({ x: e.clientX, y: e.clientY });
+    dispatchTour({ type: 'START_DRAG', payload: { x: e.clientX, y: e.clientY } });
   }, []);
 
-  const handleMouseMove = useCallback((e) => {
-    if (!isDragging) return;
-    const deltaX = e.clientX - startPos.x;
-    const deltaY = e.clientY - startPos.y;
-    setRotation(prev => ({
-      x: Math.max(-85, Math.min(85, prev.x - deltaY * 0.3)),
-      y: prev.y + deltaX * 0.3
-    }));
-    setStartPos({ x: e.clientX, y: e.clientY });
-  }, [isDragging, startPos]);
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    dispatchTour({ type: 'DRAG_MOVE', payload: { clientX: e.clientX, clientY: e.clientY } });
+  }, []);
 
   const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
+    dispatchTour({ type: 'STOP_DRAG' });
   }, []);
 
-  const handleTouchStart = useCallback((e) => {
-    if (e.target.closest('.tour-hotspot')) return;
-    setIsDragging(true);
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
     setIsAutoRotate(false);
+    if (e.touches.length === 0) return;
     const touch = e.touches[0];
-    setStartPos({ x: touch.clientX, y: touch.clientY });
+    dispatchTour({ type: 'START_DRAG', payload: { x: touch.clientX, y: touch.clientY } });
   }, []);
 
-  const handleTouchMove = useCallback((e) => {
-    if (!isDragging) return;
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 0) return;
     const touch = e.touches[0];
-    const deltaX = touch.clientX - startPos.x;
-    const deltaY = touch.clientY - startPos.y;
-    setRotation(prev => ({
-      x: Math.max(-85, Math.min(85, prev.x - deltaY * 0.3)),
-      y: prev.y + deltaX * 0.3
-    }));
-    setStartPos({ x: touch.clientX, y: touch.clientY });
-  }, [isDragging, startPos]);
+    dispatchTour({ type: 'DRAG_MOVE', payload: { clientX: touch.clientX, clientY: touch.clientY } });
+  }, []);
 
-  const handleWheel = useCallback((e) => {
-    e.preventDefault();
-    setZoom(prev => Math.max(0.5, Math.min(3, prev - e.deltaY * 0.001)));
+  // Use native event listener with { passive: false } so preventDefault() works for wheel zoom  
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      dispatchTour({ type: 'ZOOM_DELTA', payload: -e.deltaY * 0.001 });
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
   }, []);
 
   const toggleFullscreen = useCallback(() => {
@@ -114,13 +192,12 @@ const VirtualTour = ({
     }
   }, []);
 
-  const navigateToRoom = useCallback((roomIndex) => {
+  const navigateToRoom = useCallback((roomIndex: number) => {
     setCurrentIndex(roomIndex);
-    setRotation({ x: 0, y: 0 });
-    setZoom(1);
+    dispatchTour({ type: 'RESET_VIEW' });
   }, []);
 
-  const handleHotspotClick = useCallback((hotspot) => {
+  const handleHotspotClick = useCallback((hotspot: TourHotspotData) => {
     if (hotspot.targetRoom !== undefined) {
       navigateToRoom(hotspot.targetRoom);
     } else if (hotspot.action) {
@@ -137,7 +214,7 @@ const VirtualTour = ({
   }, []);
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       switch(e.key) {
         case 'Escape':
           if (isFullscreen) {
@@ -154,10 +231,10 @@ const VirtualTour = ({
           break;
         case '+':
         case '=':
-          setZoom(prev => Math.min(3, prev + 0.2));
+          dispatchTour({ type: 'ZOOM_DELTA', payload: 0.2 });
           break;
         case '-':
-          setZoom(prev => Math.max(0.5, prev - 0.2));
+          dispatchTour({ type: 'ZOOM_DELTA', payload: -0.2 });
           break;
         case 'r':
           setIsAutoRotate(prev => !prev);
@@ -229,13 +306,12 @@ const VirtualTour = ({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleMouseUp}
-        onWheel={handleWheel}
         style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
       >
         <div 
           className="tour-panorama"
           style={{
-            backgroundImage: `url(${currentImage.url || currentImage})`,
+            backgroundImage: `url(${currentImage.url || ''})`,
             backgroundPosition: `${50 + (rotation.y % 360) * (100/360)}% ${50 - rotation.x * (50/90)}%`,
             backgroundSize: `${300 * zoom}% ${200 * zoom}%`
           }}
@@ -249,7 +325,7 @@ const VirtualTour = ({
             
             return (
               <button
-                key={index}
+                key={hotspot.label || `hotspot-${hotspot.x}-${hotspot.y}`}
                 className={`tour-hotspot ${hotspot.type || 'navigation'}`}
                 style={{
                   left: `${adjustedX}%`,
@@ -280,14 +356,14 @@ const VirtualTour = ({
         <div className="zoom-controls">
           <button 
             className="zoom-btn"
-            onClick={() => setZoom(prev => Math.max(0.5, prev - 0.2))}
+            onClick={() => dispatchTour({ type: 'ZOOM', payload: zoom - 0.2 })}
           >
             −
           </button>
           <div className="zoom-level">{Math.round(zoom * 100)}%</div>
           <button 
             className="zoom-btn"
-            onClick={() => setZoom(prev => Math.min(3, prev + 0.2))}
+            onClick={() => dispatchTour({ type: 'ZOOM', payload: zoom + 0.2 })}
           >
             +
           </button>
@@ -296,13 +372,16 @@ const VirtualTour = ({
         <div className="room-navigator">
           {images.map((img, index) => (
             <button
-              key={index}
+              key={img.url || img.name || `room-${index}`}
               className={`room-thumb ${index === currentIndex ? 'active' : ''}`}
               onClick={() => navigateToRoom(index)}
             >
               <img 
-                src={img.thumbnail || img.url || img} 
+                src={img.thumbnail || img.url || ''} 
                 alt={img.name || `Room ${index + 1}`}
+                loading="lazy"
+                width={120}
+                height={80}
               />
               <span className="room-name">{img.name || `Room ${index + 1}`}</span>
             </button>

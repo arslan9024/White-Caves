@@ -33,36 +33,12 @@ export function createTestAdmin(overrides = {}) {
 }
 
 /**
- * Create test freelancer with optional overrides
- */
-export function createTestFreelancer(overrides = {}) {
-  return {
-    id: faker.string.uuid(),
-    userId: faker.string.uuid(),
-    name: faker.person.fullName(),
-    email: faker.internet.email(),
-    phone: faker.phone.number(),
-    department: 'sales',
-    specialties: [faker.word.words(2)],
-    hourlyRate: faker.number.int({ min: 50, max: 200 }),
-    bio: faker.lorem.sentence(),
-    profilePicture: faker.image.avatar(),
-    verified: true,
-    activeListings: faker.number.int({ min: 0, max: 50 }),
-    totalEarnings: faker.number.float({ min: 0, max: 100000 }),
-    rating: faker.number.float({ min: 1, max: 5, precision: 0.1 }),
-    createdAt: faker.date.past(),
-    ...overrides,
-  };
-}
-
-/**
  * Create test client with optional overrides
  */
 export function createTestClient(overrides = {}) {
   return {
     id: faker.string.uuid(),
-    freelancerId: faker.string.uuid(),
+    agentId: faker.string.uuid(),
     name: faker.company.name(),
     email: faker.internet.email(),
     phone: faker.phone.number(),
@@ -84,10 +60,10 @@ export function createTestClient(overrides = {}) {
 export function createTestCommission(overrides = {}) {
   return {
     id: faker.string.uuid(),
-    freelancerId: faker.string.uuid(),
+    agentId: faker.string.uuid(),
     clientId: faker.string.uuid(),
     projectId: faker.string.uuid(),
-    amount: faker.number.float({ min: 100, max: 50000, precision: 0.01 }),
+    amount: faker.number.float({ min: 100, max: 50000, fractionDigits: 2 }),
     percentage: faker.number.int({ min: 5, max: 30 }),
     status: 'pending',
     dueDate: faker.date.future(),
@@ -105,11 +81,11 @@ export function createTestCommission(overrides = {}) {
 export function createTestProject(overrides = {}) {
   return {
     id: faker.string.uuid(),
-    freelancerId: faker.string.uuid(),
+    agentId: faker.string.uuid(),
     clientId: faker.string.uuid(),
     title: faker.commerce.productName(),
     description: faker.lorem.paragraph(),
-    budget: faker.number.float({ min: 1000, max: 100000, precision: 0.01 }),
+    budget: faker.number.float({ min: 1000, max: 100000, fractionDigits: 2 }),
     status: 'in_progress',
     startDate: faker.date.past(),
     dueDate: faker.date.future(),
@@ -127,8 +103,8 @@ export function createTestProject(overrides = {}) {
  */
 export function createTestAuthToken(overrides = {}) {
   return {
-    accessToken: faker.string.alphaNumeric(256),
-    refreshToken: faker.string.alphaNumeric(256),
+    accessToken: faker.string.alphanumeric(256),
+    refreshToken: faker.string.alphanumeric(256),
     expiresIn: 3600,
     tokenType: 'Bearer',
     ...overrides,
@@ -171,13 +147,6 @@ export function createTestErrorResponse(message = 'Error', overrides = {}) {
  */
 export function createTestUsers(count = 5, overrides = {}) {
   return Array.from({ length: count }, () => createTestUser(overrides));
-}
-
-/**
- * Create multiple test freelancers
- */
-export function createTestFreelancers(count = 5, overrides = {}) {
-  return Array.from({ length: count }, () => createTestFreelancer(overrides));
 }
 
 /**

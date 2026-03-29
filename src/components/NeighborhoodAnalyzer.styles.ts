@@ -39,15 +39,15 @@ export const AreaSelector = styled.div`
   margin-bottom: 2rem;
 `;
 
-export const AreaButton = styled.button<{ isActive?: boolean }>`
+export const AreaButton = styled.button<{ $isActive?: boolean }>`
   padding: 0.75rem 1.5rem;
-  background: ${props => props.isActive ? 'var(--primary-color, #1a365d)' : 'var(--bg-light, #f7fafc)'};
-  border: 2px solid ${props => props.isActive ? 'var(--primary-color, #1a365d)' : 'transparent'};
+  background: ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--bg-light, #f7fafc)'};
+  border: 2px solid ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'transparent'};
   border-radius: 9999px;
   font-family: var(--font-body, 'Open Sans', sans-serif);
   font-size: 0.9rem;
   font-weight: 500;
-  color: ${props => props.isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
+  color: ${props => props.$isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
   cursor: pointer;
   transition: all 0.2s ease;
 
@@ -66,13 +66,13 @@ export const AnalyzerContent = styled.div`
   margin: 0 auto;
 `;
 
-export const AreaHero = styled.div<{ backgroundImage: string }>`
+export const AreaHero = styled.div<{ $backgroundImage: string }>`
   height: 300px;
   border-radius: 0.75rem;
   overflow: hidden;
   background-size: cover;
   background-position: center;
-  background-image: url(${props => props.backgroundImage});
+  background-image: url(${props => props.$backgroundImage});
   margin-bottom: 2rem;
 
   @media (max-width: 768px) {
@@ -125,7 +125,7 @@ export const HeroBadges = styled.div`
   gap: 0.75rem;
 `;
 
-export const Badge = styled.span<{ variant?: 'score' | 'grade' | 'trend'; score?: string; trend?: 'rising' | 'stable' | 'declining' }>`
+export const Badge = styled.span<{ $variant?: 'score' | 'grade' | 'trend'; $score?: string; $trend?: 'rising' | 'stable' | 'declining' }>`
   padding: 0.5rem 1rem;
   border-radius: 9999px;
   font-size: 0.85rem;
@@ -133,8 +133,8 @@ export const Badge = styled.span<{ variant?: 'score' | 'grade' | 'trend'; score?
   color: white;
 
   ${props => {
-    if (props.variant === 'score') {
-      switch (props.score) {
+    if (props.$variant === 'score') {
+      switch (props.$score) {
         case 'excellent':
           return 'background: var(--success-color, #38a169);';
         case 'good':
@@ -145,12 +145,12 @@ export const Badge = styled.span<{ variant?: 'score' | 'grade' | 'trend'; score?
           return 'background: var(--success-color, #38a169);';
       }
     }
-    if (props.variant === 'grade') {
+    if (props.$variant === 'grade') {
       return 'background: var(--accent-gold, #d4af37); color: #1a1a1a;';
     }
-    if (props.variant === 'trend') {
-      if (props.trend === 'rising') return 'background: var(--success-color, #38a169);';
-      if (props.trend === 'declining') return 'background: #EF4444;';
+    if (props.$variant === 'trend') {
+      if (props.$trend === 'rising') return 'background: var(--success-color, #38a169);';
+      if (props.$trend === 'declining') return 'background: #EF4444;';
       return 'background: rgba(255,255,255,0.2);';
     }
   }}
@@ -171,12 +171,12 @@ export const MetricsGrid = styled.div`
   }
 `;
 
-export const MetricCard = styled.div<{ isPrimary?: boolean }>`
-  background: ${props => props.isPrimary ? 'var(--primary-color, #1a365d)' : 'var(--bg-light, #f7fafc)'};
-  color: ${props => props.isPrimary ? 'white' : 'inherit'};
+export const MetricCard = styled.div<{ $isPrimary?: boolean }>`
+  background: ${props => props.$isPrimary ? 'var(--primary-color, #1a365d)' : 'var(--bg-light, #f7fafc)'};
+  color: ${props => props.$isPrimary ? 'white' : 'inherit'};
   padding: 1.5rem;
   border-radius: 0.75rem;
-  border: 1px solid ${props => props.isPrimary ? 'transparent' : 'var(--border-light, #edf2f7)'};
+  border: 1px solid ${props => props.$isPrimary ? 'transparent' : 'var(--border-light, #edf2f7)'};
   display: flex;
   flex-direction: column;
   gap: 0.5rem;

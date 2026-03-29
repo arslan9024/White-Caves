@@ -78,8 +78,8 @@ const TenantScreeningPage: FC<TenantScreeningPageProps> = () => {
 
         {activeTab === 'checklist' && (
           <div className="screening-checklist">
-            {screeningChecklist.map((section, index) => (
-              <div key={index} className="checklist-section">
+            {screeningChecklist.map((section) => (
+              <div key={section.category} className="checklist-section">
                 <h3>{section.category}</h3>
                 <div className="checklist-items">
                   {section.items.map(item => (
@@ -127,8 +127,8 @@ const TenantScreeningPage: FC<TenantScreeningPageProps> = () => {
           <div className="guidelines-section">
             <h3>Red Flags to Watch</h3>
             <div className="red-flags-list">
-              {redFlags.map((flag, index) => (
-                <div key={index} className="red-flag-item">
+              {redFlags.map((flag) => (
+                <div key={flag} className="red-flag-item">
                   <span className="flag-icon">⚠️</span>
                   <span>{flag}</span>
                 </div>

@@ -16,18 +16,23 @@ import {
   ClusterChip
 } from './ClusterBrowser.styles';
 
-const ClusterBrowser = ({ selectedCluster, onClusterSelect }) => {
+interface ClusterBrowserProps {
+  selectedCluster: string;
+  onClusterSelect?: (cluster: string) => void;
+}
+
+const ClusterBrowser = ({ selectedCluster, onClusterSelect }: ClusterBrowserProps) => {
   const dispatch = useDispatch();
   const clusters = useSelector(selectUniqueClusters);
   const sheets = useSelector(selectSheetsMeta);
   const properties = useSelector(selectFilteredProperties);
 
-  const clusterCounts = clusters.reduce((acc, cluster) => {
+  const clusterCounts = clusters.reduce<Record<string, number>>((acc, cluster) => {
     acc[cluster] = properties.filter(p => p.cluster === cluster).length;
     return acc;
   }, {});
 
-  const handleClusterClick = (cluster) => {
+  const handleClusterClick = (cluster: string) => {
     const newCluster = cluster === selectedCluster ? 'all' : cluster;
     dispatch(setFilter({ key: 'cluster', value: newCluster }));
     onClusterSelect?.(newCluster);

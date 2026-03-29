@@ -22,7 +22,7 @@ const TooltipContainer = styled.div`
 
 const TooltipContent = styled.div<{ $visible: boolean; $position: string }>`
   position: absolute;
-  background: ${theme.colors.dark};
+  background: ${theme.colors.dark.bg};
   color: white;
   padding: ${theme.spacing.sm} ${theme.spacing.md};
   border-radius: 4px;
@@ -57,15 +57,15 @@ const TooltipContent = styled.div<{ $visible: boolean; $position: string }>`
     ${(props) => {
       switch (props.$position) {
         case 'top':
-          return `top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: ${theme.colors.dark};`;
+          return `top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: ${theme.colors.dark.bg};`;
         case 'bottom':
-          return `bottom: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-bottom-color: ${theme.colors.dark};`;
+          return `bottom: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-bottom-color: ${theme.colors.dark.bg};`;
         case 'left':
-          return `left: 100%; top: 50%; transform: translateY(-50%); border: 5px solid transparent; border-left-color: ${theme.colors.dark};`;
+          return `left: 100%; top: 50%; transform: translateY(-50%); border: 5px solid transparent; border-left-color: ${theme.colors.dark.bg};`;
         case 'right':
-          return `right: 100%; top: 50%; transform: translateY(-50%); border: 5px solid transparent; border-right-color: ${theme.colors.dark};`;
+          return `right: 100%; top: 50%; transform: translateY(-50%); border: 5px solid transparent; border-right-color: ${theme.colors.dark.bg};`;
         default:
-          return `top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: ${theme.colors.dark};`;
+          return `top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: ${theme.colors.dark.bg};`;
       }
     }}
   }

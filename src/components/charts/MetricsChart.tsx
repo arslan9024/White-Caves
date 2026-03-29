@@ -8,6 +8,7 @@ import './charts.css';
 interface MetricItem {
   label: string;
   value: string;
+  unit?: string;
 }
 
 interface MetricsChartProps {
@@ -17,6 +18,25 @@ interface MetricsChartProps {
   height?: number;
   dataKeys?: string[];
 }
+
+// Tooltip component — defined outside to avoid re-creation on every render
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{ payload: { name: string; value: number; unit?: string } }>;
+}
+
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const { name, value, unit } = payload[0].payload;
+    return (
+      <div className="metrics-chart-tooltip">
+        <p className="tooltip-label">{name}</p>
+        <p className="tooltip-value">{value} {unit}</p>
+      </div>
+    );
+  }
+  return null;
+};
 
 const MetricsChart: React.FC<MetricsChartProps> = ({
   data = [],
@@ -29,24 +49,15 @@ const MetricsChart: React.FC<MetricsChartProps> = ({
   const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
 
   // Transform metric cards to chart data
-  const chartData = data.map((metric, idx) => ({
-    name: metric.label || `Metric ${idx + 1}`,
-    value: parseInt(metric.value) || 0,
-    unit: metric.unit || ''
-  }));
-
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      const { name, value, unit } = payload[0].payload;
-      return (
-        <div className="metrics-chart-tooltip">
-          <p className="tooltip-label">{name}</p>
-          <p className="tooltip-value">{value} {unit}</p>
-        </div>
-      );
-    }
-    return null;
-  };
+  const chartData = data.map((metric, idx) => {
+    const parsed = Number(metric.value);
+    const value = Number.isFinite(parsed) ? parsed : 0;
+    return {
+      name: metric.label || `Metric ${idx + 1}`,
+      value,
+      unit: metric.unit || ''
+    };
+  });
 
   return (
     <div className="metrics-chart-container">

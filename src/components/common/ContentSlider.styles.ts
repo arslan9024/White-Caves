@@ -67,7 +67,7 @@ export const SliderControl = styled.button<{ $position: 'prev' | 'next' }>`
   ${(props) => (props.$position === 'prev' ? 'left: -24px;' : 'right: -24px;')}
 
   &:hover {
-    background: #dc2626;
+    background: #D4AF37;
     transform: scale(1.1);
   }
 
@@ -103,7 +103,7 @@ export const SliderDot = styled.button<{ $isActive: boolean }>`
   height: 12px;
   border-radius: 50%;
   border: none;
-  background: ${(props) => (props.$isActive ? '#dc2626' : '#d1d5db')};
+  background: ${(props) => (props.$isActive ? '#D4AF37' : '#d1d5db')};
   cursor: pointer;
   transition: all 0.3s ease;
   padding: 0;
@@ -132,7 +132,7 @@ export const SliderPlayPause = styled.button`
   transition: all 0.3s ease;
 
   &:hover {
-    background: #dc2626;
+    background: #D4AF37;
     transform: scale(1.1);
   }
 `;
@@ -190,7 +190,7 @@ export const SlideBadge = styled.span<{ $type?: 'sale' | 'rent' }>`
   letter-spacing: 0.5px;
   background: ${(props) =>
     props.$type === 'sale'
-      ? '#dc2626'
+      ? '#D4AF37'
       : props.$type === 'rent'
         ? '#10b981'
         : '#6366f1'};

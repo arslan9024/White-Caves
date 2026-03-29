@@ -19,7 +19,7 @@ export const TooltipPortal = styled.div<{
   font-size: 13px;
   line-height: 1.4;
   white-space: nowrap;
-  z-index: 10000;
+  z-index: var(--z-tooltip, 800);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   pointer-events: none;
   animation: tooltipFadeIn 0.2s ease-in;

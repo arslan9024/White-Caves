@@ -1,7 +1,8 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Phone, Mail, MapPin, MessageCircle, ArrowRight, LucideIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Config } from '../../../config/constants';
 import './ContactCTA.css';
 
 interface FormData {
@@ -27,6 +28,13 @@ const ContactCTA: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const submitTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(submitTimerRef.current);
+    };
+  }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     const { name, value } = e.target;
@@ -35,26 +43,38 @@ const ContactCTA: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
+    // Basic JS validation
+    const trimmedName = formData.name.trim();
+    const trimmedEmail = formData.email.trim();
+    const trimmedMessage = formData.message.trim();
+    if (!trimmedName || !trimmedEmail || !trimmedMessage) return;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) return;
+    // Clear any existing timer before starting new submission
+    if (submitTimerRef.current) {
+      clearTimeout(submitTimerRef.current);
+    }
     setIsSubmitting(true);
     await new Promise(resolve => setTimeout(resolve, 1500));
     setIsSubmitting(false);
     setSubmitted(true);
     setFormData({ name: '', email: '', phone: '', message: '' });
-    setTimeout(() => setSubmitted(false), 3000);
+    // TODO: Wire to real backend API (POST /api/contact)
+    submitTimerRef.current = setTimeout(() => setSubmitted(false), 3000);
   };
 
   const contactInfo: ContactInfo[] = [
     {
       icon: Phone,
       label: 'Call Us',
-      value: '+971 56 361 6136',
-      link: 'tel:+971563616136'
+      value: Config.COMPANY.PHONE,
+      link: `tel:${Config.COMPANY.PHONE.replace(/\s/g, '')}`
     },
     {
       icon: Mail,
       label: 'Email Us',
-      value: 'admin@whitecaves.com',
-      link: 'mailto:admin@whitecaves.com'
+      value: Config.COMPANY.EMAIL,
+      link: `mailto:${Config.COMPANY.EMAIL}`
     },
     {
       icon: MapPin,
@@ -92,7 +112,7 @@ const ContactCTA: React.FC = () => {
             <div className="contact-methods">
               {contactInfo.map((item, index) => (
                 <motion.a 
-                  key={index}
+                  key={item.label}
                   href={item.link}
                   className="contact-method-item"
                   initial={{ opacity: 0, y: 20 }}
@@ -147,7 +167,9 @@ const ContactCTA: React.FC = () => {
               ) : (
                 <form onSubmit={handleSubmit} className="contact-form">
                   <div className="form-group">
+                    <label htmlFor="contact-name" className="sr-only">Your Name</label>
                     <input
+                      id="contact-name"
                       type="text"
                       name="name"
                       placeholder="Your Name"
@@ -155,12 +177,15 @@ const ContactCTA: React.FC = () => {
                       onChange={handleChange}
                       required
                       className="form-input"
+                      aria-label="Your name"
                     />
                   </div>
                   
                   <div className="form-row">
                     <div className="form-group">
+                      <label htmlFor="contact-email" className="sr-only">Email Address</label>
                       <input
+                        id="contact-email"
                         type="email"
                         name="email"
                         placeholder="Email Address"
@@ -168,22 +193,28 @@ const ContactCTA: React.FC = () => {
                         onChange={handleChange}
                         required
                         className="form-input"
+                        aria-label="Email address"
                       />
                     </div>
                     <div className="form-group">
+                      <label htmlFor="contact-phone" className="sr-only">Phone Number</label>
                       <input
+                        id="contact-phone"
                         type="tel"
                         name="phone"
                         placeholder="Phone Number"
                         value={formData.phone}
                         onChange={handleChange}
                         className="form-input"
+                        aria-label="Phone number"
                       />
                     </div>
                   </div>
                   
                   <div className="form-group">
+                    <label htmlFor="contact-message" className="sr-only">Your Message</label>
                     <textarea
+                      id="contact-message"
                       name="message"
                       placeholder="Your Message..."
                       value={formData.message}
@@ -191,6 +222,7 @@ const ContactCTA: React.FC = () => {
                       rows={5}
                       required
                       className="form-input"
+                      aria-label="Your message"
                     />
                   </div>
                   

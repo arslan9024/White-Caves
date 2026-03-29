@@ -290,11 +290,11 @@ export const FilterBar = styled.div`
   }
 `;
 
-export const FilterButton = styled.button<{ isActive?: boolean }>`
+export const FilterButton = styled.button<{ $isActive?: boolean }>`
   padding: 0.6rem 1.2rem;
-  background: ${props => props.isActive ? '#e41e3f' : '#f5f5f5'};
-  color: ${props => props.isActive ? 'white' : 'var(--text-primary)'};
-  border: ${props => props.isActive ? 'none' : '1px solid #ddd'};
+  background: ${props => props.$isActive ? '#e41e3f' : '#f5f5f5'};
+  color: ${props => props.$isActive ? 'white' : 'var(--text-primary)'};
+  border: ${props => props.$isActive ? 'none' : '1px solid #ddd'};
   border-radius: 20px;
   cursor: pointer;
   font-weight: 500;
@@ -302,7 +302,7 @@ export const FilterButton = styled.button<{ isActive?: boolean }>`
   white-space: nowrap;
 
   &:hover {
-    ${props => props.isActive 
+    ${props => props.$isActive 
       ? 'background: #c41834;' 
       : 'background: #eee; border-color: #bbb;'
     }

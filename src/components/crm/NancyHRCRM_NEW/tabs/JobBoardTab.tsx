@@ -1,7 +1,41 @@
 import React from 'react';
 import { Plus, Edit, Trash2, Users, Eye } from 'lucide-react';
 
-export default function JobBoardTab({ state }) {
+interface Job {
+  id: string | number;
+  title: string;
+  status: string;
+  department?: string;
+  location?: string;
+  applicants?: number;
+  type?: string;
+  salary?: string;
+  requirements?: string[];
+  shortlisted?: number;
+}
+
+interface StatusBadgeStyle {
+  bg: string;
+  color: string;
+}
+
+interface JobBoardState {
+  filteredJobs: Job[];
+  filterJobStatus: string;
+  setFilterJobStatus: (status: string) => void;
+  selectedJob: Job | null;
+  setSelectedJob: (job: Job | null) => void;
+  showJobModal: boolean;
+  setShowJobModal: (show: boolean) => void;
+  getJobStatusBadge: (status: string) => StatusBadgeStyle;
+  deleteJob: (id: string | number) => void;
+}
+
+interface JobBoardTabProps {
+  state: JobBoardState;
+}
+
+export default function JobBoardTab({ state }: JobBoardTabProps) {
   const {
     filteredJobs,
     filterJobStatus,
@@ -14,7 +48,7 @@ export default function JobBoardTab({ state }) {
     deleteJob
   } = state;
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: string | number) => {
     if (window.confirm('Are you sure you want to delete this job posting?')) {
       deleteJob(id);
     }
@@ -83,8 +117,8 @@ export default function JobBoardTab({ state }) {
               <div className="job-requirements">
                 <h5>Requirements:</h5>
                 <ul>
-                  {job.requirements.map((req, idx) => (
-                    <li key={idx}>{req}</li>
+                  {(job.requirements ?? []).map((req) => (
+                    <li key={req}>{req}</li>
                   ))}
                 </ul>
               </div>

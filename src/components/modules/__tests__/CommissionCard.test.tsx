@@ -9,7 +9,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import { configureStore, PreloadedState } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import React from 'react';
 
 // Mock commission reducer for testing
@@ -138,11 +138,11 @@ const CommissionCard: React.FC<CommissionCardProps> = ({
 /**
  * Helper function to create a test store
  */
-function createTestStore(preloadedState?: PreloadedState<any>) {
+function createTestStore(preloadedState?: Record<string, unknown>) {
   return configureStore({
     reducer: {
       commissions: mockCommissionReducer,
-    },
+    } as any,
     preloadedState,
   });
 }
@@ -496,12 +496,11 @@ describe('CommissionCard Component Tests', () => {
         createdAt: '2024-01-01T00:00:00Z',
       };
 
-      const onDelete = vi.fn(
-        () =>
-          new Promise((resolve) => {
-            setTimeout(resolve, 100);
-          })
-      );
+      let resolveDelete!: () => void;
+      const deletePromise = new Promise<void>((resolve) => {
+        resolveDelete = resolve;
+      });
+      const onDelete = vi.fn(() => deletePromise);
 
       // Act
       render(
@@ -512,12 +511,23 @@ describe('CommissionCard Component Tests', () => {
 
       const deleteButton = screen.getByTestId('btn-delete');
 
-      // Attempt to click multiple times
-      await userEvent.click(deleteButton);
-      await userEvent.click(deleteButton); // Should be disabled
+      // First click triggers delete
+      fireEvent.click(deleteButton);
 
+      // Wait for loading state so button is disabled
       await waitFor(() => {
-        expect(onDelete).toHaveBeenCalledTimes(1); // Only called once
+        expect(deleteButton).toBeDisabled();
+      });
+
+      // Second click should be ignored because button is disabled
+      fireEvent.click(deleteButton);
+
+      expect(onDelete).toHaveBeenCalledTimes(1); // Only called once
+
+      // Cleanup: resolve the pending promise
+      resolveDelete();
+      await waitFor(() => {
+        expect(deleteButton).not.toBeDisabled();
       });
     });
   });
@@ -534,15 +544,14 @@ describe('CommissionCard Component Tests', () => {
         createdAt: '2024-01-01T00:00:00Z',
       };
 
-      const onDelete = vi.fn(
-        () =>
-          new Promise((resolve) => {
-            setTimeout(resolve, 50);
-          })
-      );
+      let resolveDelete!: () => void;
+      const deletePromise = new Promise<void>((resolve) => {
+        resolveDelete = resolve;
+      });
+      const onDelete = vi.fn(() => deletePromise);
 
       // Act
-      const { container } = render(
+      render(
         <Provider store={store}>
           <CommissionCard commission={commission} onDelete={onDelete} />
         </Provider>
@@ -551,11 +560,16 @@ describe('CommissionCard Component Tests', () => {
       const deleteButton = screen.getByTestId('btn-delete') as HTMLButtonElement;
       expect(deleteButton.disabled).toBe(false);
 
-      await userEvent.click(deleteButton);
+      fireEvent.click(deleteButton);
 
       // Assert - Loading state
-      expect(deleteButton.disabled).toBe(true);
-      expect(deleteButton.textContent).toContain('Deleting');
+      await waitFor(() => {
+        expect(deleteButton.disabled).toBe(true);
+        expect(deleteButton.textContent).toContain('Deleting');
+      });
+
+      // Resolve the delete
+      resolveDelete();
 
       // Assert - Back to normal
       await waitFor(() => {
@@ -575,12 +589,11 @@ describe('CommissionCard Component Tests', () => {
         createdAt: '2024-01-01T00:00:00Z',
       };
 
-      const onDelete = vi.fn(
-        () =>
-          new Promise((resolve) => {
-            setTimeout(resolve, 30);
-          })
-      );
+      let resolveDelete!: () => void;
+      const deletePromise = new Promise<void>((resolve) => {
+        resolveDelete = resolve;
+      });
+      const onDelete = vi.fn(() => deletePromise);
 
       // Act
       render(
@@ -590,13 +603,19 @@ describe('CommissionCard Component Tests', () => {
       );
 
       const deleteButton = screen.getByTestId('btn-delete');
-      const initialText = deleteButton.textContent;
 
-      await userEvent.click(deleteButton);
+      fireEvent.click(deleteButton);
 
-      // Assert
-      expect(deleteButton.textContent).not.toBe(initialText);
-      expect(deleteButton.textContent).toContain('Deleting');
+      // Assert - Text changes to loading
+      await waitFor(() => {
+        expect(deleteButton.textContent).toContain('Deleting');
+      });
+
+      // Cleanup
+      resolveDelete();
+      await waitFor(() => {
+        expect(deleteButton.textContent).toBe('Delete');
+      });
     });
   });
 

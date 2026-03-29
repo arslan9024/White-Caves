@@ -1,18 +1,18 @@
-/**
+﻿/**
  * LAYER 3: FUNCTIONALITY TESTING SUITE
  * White Caves Platform - Complete Feature Coverage
  * 
  * Test Categories:
- * ✅ Dashboard Loading & Rendering
- * ✅ Tab Navigation & Switching
- * ✅ CRM Module Loading
- * ✅ UI Interactions
- * ✅ Data Display
- * ✅ Form Handling
- * ✅ Navigation Flow
- * ✅ Error Handling
- * ✅ State Management
- * ✅ Search & Filters
+ * âœ… Dashboard Loading & Rendering
+ * âœ… Tab Navigation & Switching
+ * âœ… CRM Module Loading
+ * âœ… UI Interactions
+ * âœ… Data Display
+ * âœ… Form Handling
+ * âœ… Navigation Flow
+ * âœ… Error Handling
+ * âœ… State Management
+ * âœ… Search & Filters
  */
 
 import { test, expect } from '@playwright/test';
@@ -23,7 +23,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('Dashboard Loading & Rendering', () => {
     
     test('L3-001: Owner Dashboard loads without errors', async ({ page }) => {
-      const response = await page.goto('http://localhost:5000/md/dashboard', {
+      const response = await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => null);
@@ -35,7 +35,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-002: Dashboard renders main layout elements', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -60,7 +60,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
         }
       });
       
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -76,7 +76,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-004: Seller Dashboard loads', async ({ page }) => {
-      const response = await page.goto('http://localhost:5000/seller/dashboard', {
+      const response = await page.goto('/seller/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => null);
@@ -87,7 +87,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-005: Buyer Dashboard loads', async ({ page }) => {
-      const response = await page.goto('http://localhost:5000/buyer/dashboard', {
+      const response = await page.goto('/buyer/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => null);
@@ -102,7 +102,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('Tab Navigation & Switching', () => {
     
     test('L3-010: Dashboard has multiple tabs', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -114,7 +114,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-011: Tab content switches on click', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -134,7 +134,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-012: Tab state is maintained', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -159,7 +159,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('CRM Module Loading', () => {
     
     test('L3-020: CRM modules load with suspense fallback', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -173,7 +173,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-021: CRM modules render content after loading', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -187,7 +187,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-022: CRM modules handle errors gracefully', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -210,7 +210,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('User Interactions', () => {
     
     test('L3-030: Button clicks are responsive', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -233,7 +233,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-031: Hover states work on interactive elements', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -255,7 +255,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-032: Links navigate properly', async ({ page }) => {
-      await page.goto('http://localhost:5000/', {
+      await page.goto('/', {
         waitUntil: 'networkidle',
         timeout: 30000,
       });
@@ -275,7 +275,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('Data Display & Rendering', () => {
     
     test('L3-040: Dashboard displays data tables', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -289,7 +289,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-041: Dashboard displays cards/panels', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -302,7 +302,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-042: Dashboard renders statistics/metrics', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -323,7 +323,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('Form Handling', () => {
     
     test('L3-050: Forms are present and functional', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -336,7 +336,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-051: Input fields are functional', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -358,7 +358,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-052: Form submission works', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -387,7 +387,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('Navigation Flow', () => {
     
     test('L3-060: Navigation menu is present', async ({ page }) => {
-      await page.goto('http://localhost:5000/', {
+      await page.goto('/', {
         waitUntil: 'networkidle',
         timeout: 30000,
       });
@@ -397,7 +397,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-061: Main navigation links work', async ({ page }) => {
-      await page.goto('http://localhost:5000/', {
+      await page.goto('/', {
         waitUntil: 'networkidle',
         timeout: 30000,
       });
@@ -413,7 +413,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-062: Breadcrumb navigation works (if present)', async ({ page }) => {
-      await page.goto('http://localhost:5000/', {
+      await page.goto('/', {
         waitUntil: 'networkidle',
         timeout: 30000,
       });
@@ -434,7 +434,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('Error Handling', () => {
     
     test('L3-070: 404 page loads for invalid routes', async ({ page }) => {
-      const response = await page.goto('http://localhost:5000/invalid-route-xyz', {
+      const response = await page.goto('/invalid-route-xyz', {
         waitUntil: 'networkidle',
         timeout: 30000,
       });
@@ -444,7 +444,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-071: Error messages are visible and helpful', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -469,7 +469,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
         }
       });
       
-      await page.goto('http://localhost:5000/', {
+      await page.goto('/', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -484,7 +484,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('State Management', () => {
     
     test('L3-080: Component state updates on interaction', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -508,7 +508,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-081: Local storage persists user preferences', async ({ page }) => {
-      await page.goto('http://localhost:5000/', {
+      await page.goto('/', {
         waitUntil: 'networkidle',
         timeout: 30000,
       });
@@ -534,7 +534,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('Search & Filters', () => {
     
     test('L3-090: Search inputs respond to user input', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -551,7 +551,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-091: Filter dropdowns work', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -574,7 +574,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     test('L3-100: Dashboard loads in reasonable time', async ({ page }) => {
       const startTime = Date.now();
       
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -586,7 +586,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     });
     
     test('L3-101: Page remains responsive during interaction', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -617,7 +617,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     test('L3-110: Mobile layout works', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 667 });
       
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -631,7 +631,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     test('L3-111: Tablet layout works', async ({ page }) => {
       await page.setViewportSize({ width: 768, height: 1024 });
       
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -644,7 +644,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     test('L3-112: Desktop layout works', async ({ page }) => {
       await page.setViewportSize({ width: 1920, height: 1080 });
       
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -659,18 +659,18 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('Testing Summary', () => {
     
     test('L3-200: Test suite execution complete', async ({}) => {
-      console.log('\n✅ LAYER 3 FUNCTIONALITY TESTING COMPLETE');
-      console.log('   • 50+ test scenarios executed');
-      console.log('   • Dashboard loading verified');
-      console.log('   • Tab navigation tested');
-      console.log('   • CRM modules validated');
-      console.log('   • User interactions confirmed');
-      console.log('   • Forms and inputs functional');
-      console.log('   • Navigation flow working');
-      console.log('   • Error handling tested');
-      console.log('   • State management verified');
-      console.log('   • Responsive behavior confirmed');
-      console.log('   • Performance acceptable');
+      console.log('\nâœ… LAYER 3 FUNCTIONALITY TESTING COMPLETE');
+      console.log('   â€¢ 50+ test scenarios executed');
+      console.log('   â€¢ Dashboard loading verified');
+      console.log('   â€¢ Tab navigation tested');
+      console.log('   â€¢ CRM modules validated');
+      console.log('   â€¢ User interactions confirmed');
+      console.log('   â€¢ Forms and inputs functional');
+      console.log('   â€¢ Navigation flow working');
+      console.log('   â€¢ Error handling tested');
+      console.log('   â€¢ State management verified');
+      console.log('   â€¢ Responsive behavior confirmed');
+      console.log('   â€¢ Performance acceptable');
       expect(true).toBe(true);
     });
   });

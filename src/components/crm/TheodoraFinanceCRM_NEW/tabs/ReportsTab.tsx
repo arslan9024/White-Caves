@@ -1,14 +1,31 @@
 import React, { useState } from 'react';
 import { BarChart3, PieChart, Download, Calendar } from 'lucide-react';
 
-const ReportsTab = ({ invoices, expenses }) => {
-  const [reportType, setReportType] = useState('revenue');
+interface Invoice {
+  id: string | number;
+  amount: number;
+  status: string;
+}
+
+interface Expense {
+  id: string | number;
+  amount: number;
+  status: string;
+}
+
+interface ReportsTabProps {
+  invoices: Invoice[];
+  expenses: Expense[];
+}
+
+const ReportsTab: React.FC<ReportsTabProps> = ({ invoices, expenses }) => {
+  const [reportType, setReportType] = useState<string>('revenue');
 
   const totalRevenue = invoices
-    .filter(i => i.status === 'paid')
-    .reduce((sum, i) => sum + i.amount, 0);
+    .filter((i: Invoice) => i.status === 'paid')
+    .reduce((sum: number, i: Invoice) => sum + i.amount, 0);
 
-  const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const totalExpenses = expenses.reduce((sum: number, e: Expense) => sum + e.amount, 0);
 
   const netProfit = totalRevenue - totalExpenses;
 

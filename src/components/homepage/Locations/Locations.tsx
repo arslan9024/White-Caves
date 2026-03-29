@@ -93,6 +93,7 @@ const Locations: React.FC = () => {
                   src={location.image} 
                   alt={location.name}
                   className="location-image"
+                  loading="lazy"
                   animate={{ scale: hoveredId === location.id ? 1.1 : 1 }}
                   transition={{ duration: 0.4 }}
                 />

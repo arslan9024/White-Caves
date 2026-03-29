@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import type { RootState } from '../../store/store';
 import { setCurrentSubModule } from '../../store/navigationSlice';
 import { getSubNavItems, getModuleById } from '../../features/featureRegistry';
 import {
@@ -34,12 +35,12 @@ interface SubNavItemType {
 
 const SubNavBar: React.FC<SubNavBarProps> = ({ moduleId, onSubModuleChange }) => {
   const dispatch = useDispatch();
-  const { currentSubModule, activeRole } = useSelector((state: any) => ({
+  const { currentSubModule, activeRole } = useSelector((state: RootState) => ({
     currentSubModule: state.navigation.currentSubModule,
     activeRole: state.navigation.activeRole,
   }));
 
-  const role = moduleId || activeRole;
+  const role = moduleId || activeRole || '';
   const subNavItems = getSubNavItems(role, role) as SubNavItemType[];
   const currentModule = getModuleById(role);
 

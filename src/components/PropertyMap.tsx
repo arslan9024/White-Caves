@@ -1,25 +1,30 @@
 import { useEffect, useState } from 'react';
 
-const PropertyMap = ({ location }) => {
-  const [coordinates, setCoordinates] = useState(null);
+interface Coordinates {
+  lat: number;
+  lng: number;
+}
+
+const dubaiLocations: Record<string, Coordinates> = {
+  'Palm Jumeirah': { lat: 25.1124, lng: 55.1390 },
+  'Downtown Dubai': { lat: 25.1972, lng: 55.2744 },
+  'Emirates Hills': { lat: 25.0657, lng: 55.1489 },
+  'Dubai Marina': { lat: 25.0805, lng: 55.1403 },
+  'Arabian Ranches': { lat: 25.0567, lng: 55.2617 },
+  'JVC': { lat: 25.0552, lng: 55.2100 },
+  'Business Bay': { lat: 25.1850, lng: 55.2642 },
+  'JBR': { lat: 25.0784, lng: 55.1337 },
+  'Dubai Hills Estate': { lat: 25.1200, lng: 55.2200 },
+  'City Walk': { lat: 25.2048, lng: 55.2614 },
+  'MBR City': { lat: 25.1700, lng: 55.3100 },
+  'The Springs': { lat: 25.0484, lng: 55.1929 },
+};
+
+const PropertyMap = ({ location }: { location?: string }) => {
+  const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
 
   useEffect(() => {
-    const defaultCoords = { lat: 25.2048, lng: 55.2708 };
-    
-    const dubaiLocations = {
-      'Palm Jumeirah': { lat: 25.1124, lng: 55.1390 },
-      'Downtown Dubai': { lat: 25.1972, lng: 55.2744 },
-      'Emirates Hills': { lat: 25.0657, lng: 55.1489 },
-      'Dubai Marina': { lat: 25.0805, lng: 55.1403 },
-      'Arabian Ranches': { lat: 25.0567, lng: 55.2617 },
-      'JVC': { lat: 25.0552, lng: 55.2100 },
-      'Business Bay': { lat: 25.1850, lng: 55.2642 },
-      'JBR': { lat: 25.0784, lng: 55.1337 },
-      'Dubai Hills Estate': { lat: 25.1200, lng: 55.2200 },
-      'City Walk': { lat: 25.2048, lng: 55.2614 },
-      'MBR City': { lat: 25.1700, lng: 55.3100 },
-      'The Springs': { lat: 25.0484, lng: 55.1929 },
-    };
+    const defaultCoords: Coordinates = { lat: 25.2048, lng: 55.2708 };
     
     if (location && dubaiLocations[location]) {
       setCoordinates(dubaiLocations[location]);

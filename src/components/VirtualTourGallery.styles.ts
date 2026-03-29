@@ -45,9 +45,9 @@ export const ViewControls = styled.div`
   gap: 0.5rem;
 `;
 
-export const ViewBtn = styled.button<{ active?: boolean }>`
+export const ViewBtn = styled.button<{ $active?: boolean }>`
   padding: 0.5rem 1rem;
-  background: ${props => props.active 
+  background: ${props => props.$active 
     ? 'var(--primary-color, #1a365d)' 
     : 'var(--bg-primary, #ffffff)'};
   border: 1px solid var(--border-color, #e2e8f0);
@@ -55,7 +55,7 @@ export const ViewBtn = styled.button<{ active?: boolean }>`
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: ${props => props.active 
+  color: ${props => props.$active 
     ? 'var(--text-on-primary, #ffffff)' 
     : 'var(--text-primary, #1a202c)'};
 

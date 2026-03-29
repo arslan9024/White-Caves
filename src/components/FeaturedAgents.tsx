@@ -52,8 +52,8 @@ const FeaturedAgents: FC<FeaturedAgentsProps> = () => {
     <StyledFeaturedAgentsSection>
       <StyledAgentsTitle>Meet Our Expert Agents</StyledAgentsTitle>
       <StyledAgentsGrid>
-        {agents.map((agent, index) => (
-          <StyledAgentCard key={index}>
+        {agents.map((agent) => (
+          <StyledAgentCard key={agent.name}>
             <StyledAgentPhoto src={agent.photo} alt={agent.name} />
             <StyledAgentName>{agent.name}</StyledAgentName>
             <StyledSpecialization>{agent.specialization}</StyledSpecialization>

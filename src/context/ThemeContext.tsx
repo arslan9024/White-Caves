@@ -1,4 +1,5 @@
-import { createContext, useState, useContext, useEffect, ReactNode, Dispatch, SetStateAction, FC } from 'react';
+import { createContext, useState, useContext, useEffect, useMemo, ReactNode, Dispatch, SetStateAction, FC } from 'react';
+import { safeStorage } from '../utils/safeStorage';
 
 interface ThemeContextType {
   isDark: boolean;
@@ -13,13 +14,13 @@ interface ThemeProviderProps {
 
 export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
   const [isDark, setIsDark] = useState<boolean>(() => {
-    const savedTheme = localStorage.getItem('theme');
+    const savedTheme = safeStorage.get('theme');
     return savedTheme === 'dark';
   });
 
   useEffect(() => {
     document.body.className = isDark ? 'dark-mode theme-transition' : 'theme-transition';
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    safeStorage.set('theme', isDark ? 'dark' : 'light');
     
     const timer = setTimeout(() => {
       document.body.classList.remove('theme-transition');
@@ -28,8 +29,10 @@ export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
     return () => clearTimeout(timer);
   }, [isDark]);
 
+  const value = useMemo(() => ({ isDark, setIsDark }), [isDark, setIsDark]);
+
   return (
-    <ThemeContext.Provider value={{ isDark, setIsDark }}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   );

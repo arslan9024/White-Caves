@@ -21,7 +21,7 @@ export const PanelContainer = styled.div`
   border-left: 1px solid #E0E0E0;
   display: flex;
   flex-direction: column;
-  z-index: 100;
+  z-index: var(--z-sidebar, 310);
   box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
 
   [data-theme="dark"] & {
@@ -45,7 +45,7 @@ export const PanelHeader = styled.div`
   justify-content: space-between;
   padding: 16px;
   border-bottom: 1px solid #E8E8E8;
-  background: linear-gradient(135deg, #D32F2F 0%, #B71C1C 100%);
+  background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
   color: white;
 `;
 
@@ -95,8 +95,8 @@ export const SearchInputWrapper = styled.div`
   transition: all 0.2s ease;
 
   &:focus-within {
-    border-color: #D32F2F;
-    box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+    border-color: #D4AF37;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
   }
 
   [data-theme="dark"] & {
@@ -104,8 +104,8 @@ export const SearchInputWrapper = styled.div`
     border-color: rgba(255, 255, 255, 0.1);
 
     &:focus-within {
-      border-color: #D32F2F;
-      box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+      border-color: #D4AF37;
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
     }
   }
 `;
@@ -176,7 +176,7 @@ export const PanelFilters = styled.div`
   }
 `;
 
-export const FilterButton = styled.button<{ isActive: boolean }>`
+export const FilterButton = styled.button<{ $isActive: boolean }>`
   padding: 6px 12px;
   border-radius: 16px;
   border: 1px solid #E0E0E0;
@@ -192,9 +192,9 @@ export const FilterButton = styled.button<{ isActive: boolean }>`
     background: #F5F5F5;
   }
 
-  ${props => props.isActive && `
-    background: #D32F2F;
-    border-color: #D32F2F;
+  ${props => props.$isActive && `
+    background: #D4AF37;
+    border-color: #D4AF37;
     color: white;
   `}
 
@@ -207,9 +207,9 @@ export const FilterButton = styled.button<{ isActive: boolean }>`
       background: rgba(255, 255, 255, 0.1);
     }
 
-    ${props => props.isActive && `
-      background: #D32F2F;
-      border-color: #D32F2F;
+    ${props => props.$isActive && `
+      background: #D4AF37;
+      border-color: #D4AF37;
       color: white;
     `}
   }
@@ -227,7 +227,7 @@ export const NoResults = styled.div`
   color: #9E9E9E;
 `;
 
-export const AssistantCard = styled.div<{ isExpanded: boolean }>`
+export const AssistantCard = styled.div<{ $isExpanded: boolean }>`
   margin-bottom: 8px;
   border-radius: 10px;
   background: #FFFFFF;
@@ -236,12 +236,12 @@ export const AssistantCard = styled.div<{ isExpanded: boolean }>`
   transition: all 0.2s ease;
 
   &:hover {
-    border-color: #D32F2F;
-    box-shadow: 0 2px 8px rgba(211, 47, 47, 0.1);
+    border-color: #D4AF37;
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.1);
   }
 
-  ${props => props.isExpanded && `
-    border-color: #D32F2F;
+  ${props => props.$isExpanded && `
+    border-color: #D4AF37;
   `}
 
   [data-theme="dark"] & {
@@ -249,7 +249,7 @@ export const AssistantCard = styled.div<{ isExpanded: boolean }>`
     border-color: rgba(255, 255, 255, 0.1);
 
     &:hover {
-      border-color: #D32F2F;
+      border-color: #D4AF37;
     }
   }
 `;
@@ -298,7 +298,7 @@ export const AssistantName = styled.span`
   }
 `;
 
-export const StatusBadge = styled.span<{ status: string }>`
+export const StatusBadge = styled.span<{ $status: string }>`
   font-size: 10px;
   font-weight: 600;
   padding: 2px 6px;
@@ -306,13 +306,13 @@ export const StatusBadge = styled.span<{ status: string }>`
   text-transform: uppercase;
 
   ${props => {
-    if (props.status === 'active') {
+    if (props.$status === 'active') {
       return `
         background: #E8F5E9;
         color: #2E7D32;
       `;
     }
-    if (props.status === 'idle') {
+    if (props.$status === 'idle') {
       return `
         background: #FFF3E0;
         color: #F57C00;
@@ -349,7 +349,7 @@ export const NotificationBadge = styled.span`
   min-width: 20px;
   height: 20px;
   padding: 0 6px;
-  background: #D32F2F;
+  background: #D4AF37;
   color: white;
   font-size: 11px;
   font-weight: 600;
@@ -419,7 +419,7 @@ export const QuickActions = styled.div`
   gap: 8px;
 `;
 
-export const ActionButton = styled.button<{ isPrimary?: boolean }>`
+export const ActionButton = styled.button<{ $isPrimary?: boolean }>`
   flex: 1;
   display: flex;
   align-items: center;
@@ -437,17 +437,17 @@ export const ActionButton = styled.button<{ isPrimary?: boolean }>`
 
   &:hover {
     background: #F5F5F5;
-    border-color: #D32F2F;
-    color: #D32F2F;
+    border-color: #D4AF37;
+    color: #D4AF37;
   }
 
-  ${props => props.isPrimary && `
-    background: #D32F2F;
-    border-color: #D32F2F;
+  ${props => props.$isPrimary && `
+    background: #D4AF37;
+    border-color: #D4AF37;
     color: white;
 
     &:hover {
-      background: #B71C1C;
+      background: #B8860B;
     }
   `}
 
@@ -460,13 +460,13 @@ export const ActionButton = styled.button<{ isPrimary?: boolean }>`
       background: rgba(255, 255, 255, 0.1);
     }
 
-    ${props => props.isPrimary && `
-      background: #D32F2F;
-      border-color: #D32F2F;
+    ${props => props.$isPrimary && `
+      background: #D4AF37;
+      border-color: #D4AF37;
       color: white;
 
       &:hover {
-        background: #B71C1C;
+        background: #B8860B;
       }
     `}
   }
@@ -500,12 +500,12 @@ export const Stat = styled.span`
   }
 `;
 
-export const StatDot = styled.span<{ status: string }>`
+export const StatDot = styled.span<{ $status: string }>`
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: ${props =>
-    props.status === 'online' ? '#2E7D32' :
-    props.status === 'idle' ? '#F57C00' :
+    props.$status === 'online' ? '#2E7D32' :
+    props.$status === 'idle' ? '#F57C00' :
     '#9E9E9E'};
 `;

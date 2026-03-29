@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { logout } from '../authSlice';
 
 interface SidebarState {
   leftCollapsed: boolean;
@@ -40,6 +41,9 @@ const sidebarSlice = createSlice({
     setShowRightDrawer: (state, action: PayloadAction<boolean>) => {
       state.showRightDrawer = action.payload;
     },
+    toggleShowRightDrawer: (state) => {
+      state.showRightDrawer = !state.showRightDrawer;
+    },
     clearSelectedAssistant: (state) => {
       state.selectedAssistant = null;
     },
@@ -56,6 +60,9 @@ const sidebarSlice = createSlice({
       state.selectedService = null;
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(logout, () => initialState);
+  },
 });
 
 export const {
@@ -65,10 +72,20 @@ export const {
   setRightCollapsed,
   selectAssistant,
   setShowRightDrawer,
+  toggleShowRightDrawer,
   clearSelectedAssistant,
   selectDepartment,
   selectService,
   clearDepartmentSelection,
 } = sidebarSlice.actions;
+
+// ─── Named Selectors (stable references for useSelector) ─────────────────
+export const selectLeftCollapsed = (state: { sidebar: SidebarState }) => state.sidebar.leftCollapsed;
+export const selectRightCollapsed = (state: { sidebar: SidebarState }) => state.sidebar.rightCollapsed;
+export const selectSelectedAssistant = (state: { sidebar: SidebarState }) => state.sidebar.selectedAssistant;
+export const selectShowRightDrawer = (state: { sidebar: SidebarState }) => state.sidebar.showRightDrawer;
+export const selectSelectedDepartment = (state: { sidebar: SidebarState }) => state.sidebar.selectedDepartment;
+
+// NOTE: selectSelectedService removed — unused. Re-add if needed.
 
 export default sidebarSlice.reducer;

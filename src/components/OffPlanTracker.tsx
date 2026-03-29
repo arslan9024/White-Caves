@@ -214,25 +214,25 @@ const OffPlanTracker: React.FC = () => {
 
       <FilterTabs>
         <FilterTab 
-          active={activeFilter === 'all'}
+          $isActive={activeFilter === 'all'}
           onClick={() => setActiveFilter('all')}
         >
           All Projects
         </FilterTab>
         <FilterTab 
-          active={activeFilter === 'luxury'}
+          $isActive={activeFilter === 'luxury'}
           onClick={() => setActiveFilter('luxury')}
         >
           Luxury
         </FilterTab>
         <FilterTab 
-          active={activeFilter === 'residential'}
+          $isActive={activeFilter === 'residential'}
           onClick={() => setActiveFilter('residential')}
         >
           Residential
         </FilterTab>
         <FilterTab 
-          active={activeFilter === 'commercial'}
+          $isActive={activeFilter === 'commercial'}
           onClick={() => setActiveFilter('commercial')}
         >
           Commercial
@@ -255,7 +255,7 @@ const OffPlanTracker: React.FC = () => {
               <ProjectTitle>{project.name}</ProjectTitle>
 
               <ProjectLocation>
-                <LocationIcon size={16} />
+                <LocationIcon>📍</LocationIcon>
                 {project.location}
               </ProjectLocation>
 
@@ -279,8 +279,8 @@ const OffPlanTracker: React.FC = () => {
               </div>
 
               <div style={{ margin: '12px 0' }}>
-                {project.features.map((feature, idx) => (
-                  <FeaturesChip key={idx}>{feature}</FeaturesChip>
+                {project.features.map((feature) => (
+                  <FeaturesChip key={feature}>{feature}</FeaturesChip>
                 ))}
               </div>
 

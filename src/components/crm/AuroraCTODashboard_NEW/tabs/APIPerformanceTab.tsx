@@ -1,8 +1,17 @@
 import React from 'react';
 import { BarChart3, TrendingUp, AlertTriangle, CheckCircle, Zap } from 'lucide-react';
 
-const APIPerformanceTab = ({ systemComponents }) => {
-  const apiMetrics = systemComponents.filter(c => c.type === 'api' || c.type === 'backend' || c.type === 'cache');
+interface SystemComponent {
+  id: string;
+  name: string;
+  type: string;
+  status: string;
+  version?: string;
+  metrics?: Record<string, unknown>;
+}
+
+const APIPerformanceTab = ({ systemComponents }: { systemComponents: SystemComponent[] }) => {
+  const apiMetrics = systemComponents.filter((c: SystemComponent) => c.type === 'api' || c.type === 'backend' || c.type === 'cache');
 
   const responseTimeMetrics = [
     { endpoint: '/api/properties', method: 'GET', avgTime: 145, p95: 320, status: 'good' },
@@ -27,19 +36,19 @@ const APIPerformanceTab = ({ systemComponents }) => {
             <div className="perf-metrics">
               <div className="metric">
                 <span className="label">Response Time:</span>
-                <span className="value">{component.metrics.responseTime}ms</span>
+                <span className="value">{String(component.metrics?.responseTime ?? 'N/A')}ms</span>
               </div>
               <div className="metric">
                 <span className="label">CPU:</span>
-                <span className="value">{component.metrics.cpu}%</span>
+                <span className="value">{String(component.metrics?.cpu ?? 'N/A')}%</span>
               </div>
               <div className="metric">
                 <span className="label">Memory:</span>
-                <span className="value">{component.metrics.memory}%</span>
+                <span className="value">{String(component.metrics?.memory ?? 'N/A')}%</span>
               </div>
               <div className="metric">
                 <span className="label">Uptime:</span>
-                <span className="value">{component.metrics.uptime}%</span>
+                <span className="value">{String(component.metrics?.uptime ?? 'N/A')}%</span>
               </div>
             </div>
           </div>
@@ -60,8 +69,8 @@ const APIPerformanceTab = ({ systemComponents }) => {
               </tr>
             </thead>
             <tbody>
-              {responseTimeMetrics.map((metric, idx) => (
-                <tr key={idx} className={`status-${metric.status}`}>
+              {responseTimeMetrics.map((metric) => (
+                <tr key={`${metric.method}-${metric.endpoint}`} className={`status-${metric.status}`}>
                   <td className="endpoint-name">{metric.endpoint}</td>
                   <td className="method">
                     <span className={`method-badge method-${metric.method.toLowerCase()}`}>

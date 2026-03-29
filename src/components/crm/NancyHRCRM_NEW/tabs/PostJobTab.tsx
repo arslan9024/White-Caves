@@ -1,12 +1,35 @@
 import React from 'react';
 import { JobPostComposer } from '../../shared';
+import { useToast } from '../../../Toast';
 
-export default function PostJobTab({ state }) {
+interface JobData {
+  title: string;
+  department?: string;
+  location?: string;
+  description?: string;
+  [key: string]: unknown;
+}
+
+interface PostedJob {
+  title: string;
+  [key: string]: unknown;
+}
+
+interface PostJobState {
+  addJob: (jobData: JobData) => PostedJob;
+}
+
+interface PostJobTabProps {
+  state: PostJobState;
+}
+
+export default function PostJobTab({ state }: PostJobTabProps) {
   const { addJob } = state;
+  const toast = useToast();
 
-  const handlePostJob = (jobData) => {
+  const handlePostJob = (jobData: JobData) => {
     const newJob = addJob(jobData);
-    alert(`Job posted successfully: ${newJob.title}`);
+    toast.success(`Job posted successfully: ${newJob.title}`);
   };
 
   return (
@@ -17,7 +40,7 @@ export default function PostJobTab({ state }) {
       </div>
 
       <div className="post-job-form-container">
-        <JobPostComposer onSubmit={handlePostJob} />
+        <JobPostComposer onPublish={(data: any) => handlePostJob(data)} />
       </div>
     </div>
   );

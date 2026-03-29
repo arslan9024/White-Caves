@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { logout } from './authSlice';
 
 interface PropertyFilters {
   search: string;
@@ -14,7 +15,7 @@ interface PropertyFilters {
   sortBy: string;
 }
 
-interface Property {
+export interface Property {
   id: string | number;
   title: string;
   location: string;
@@ -24,7 +25,7 @@ interface Property {
   baths: number;
   sqft: number;
   amenities: string[];
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface PropertyState {
@@ -127,7 +128,10 @@ export const propertySlice = createSlice({
 
       state.filteredProperties = sortProperties(filtered, state.filters.sortBy);
     }
-  }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(logout, () => initialState);
+  },
 });
 
 export const { setProperties, setFilters, clearFilters, applyFilters } = propertySlice.actions;

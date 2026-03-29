@@ -1,13 +1,24 @@
 import React from 'react';
 import { BarChart3, TrendingUp } from 'lucide-react';
 
-const PerformanceTab = ({ metrics }) => {
+interface PerformanceMetric {
+  metric: string;
+  value: string;
+  target: string;
+  trend: 'up' | 'down' | 'stable';
+}
+
+interface PerformanceTabProps {
+  metrics: PerformanceMetric[];
+}
+
+const PerformanceTab: React.FC<PerformanceTabProps> = ({ metrics }) => {
   return (
     <div className="performance-view">
       <h3>Performance Metrics</h3>
       
       <div className="performance-grid">
-        {metrics.map(metric => (
+        {metrics.map((metric: PerformanceMetric) => (
           <div key={metric.metric} className="performance-card">
             <div className="perf-header">
               <span className="perf-name">{metric.metric}</span>

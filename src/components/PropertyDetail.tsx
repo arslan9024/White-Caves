@@ -58,13 +58,13 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property }) => {
         <h1>{property.title}</h1>
         <PropertyTypePrice>
           <ListingType>{property.listingType}</ListingType>
-          <Price>AED {property.price.toLocaleString()}</Price>
+          <Price>AED {(property.price ?? 0).toLocaleString()}</Price>
         </PropertyTypePrice>
       </PropertyHeader>
 
       <PropertyImages>
         {property.images?.map((image, index) => (
-          <img key={index} src={image} alt={`Property view ${index + 1}`} />
+          <img key={image ?? `img-${index}`} src={image} alt={`Property view ${index + 1}`} loading="lazy" width={400} height={300} />
         ))}
       </PropertyImages>
 
@@ -135,8 +135,8 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property }) => {
       <PropertyAmenities>
         <h3>Amenities</h3>
         <AmenitiesGrid>
-          {property.amenities?.map((amenity, index) => (
-            <AmenityTag key={index}>{amenity}</AmenityTag>
+          {property.amenities?.map((amenity) => (
+            <AmenityTag key={amenity}>{amenity}</AmenityTag>
           ))}
         </AmenitiesGrid>
       </PropertyAmenities>

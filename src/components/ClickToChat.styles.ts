@@ -16,22 +16,22 @@ export const ClickToChatContainer = styled.div`
   position: fixed;
   bottom: 30px;
   right: 30px;
-  z-index: 1000;
+  z-index: var(--z-toast, 400);
 `;
 
-export const ChatTrigger = styled.button<{ expanded?: boolean }>`
+export const ChatTrigger = styled.button<{ $expanded?: boolean }>`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: ${props => props.expanded 
+  background: ${props => props.$expanded 
     ? 'var(--text-secondary, #6b7280)' 
     : 'linear-gradient(135deg, #25D366, #128C7E)'};
   color: white;
   border: none;
-  border-radius: ${props => props.expanded ? '50%' : '50px'};
-  padding: ${props => props.expanded ? '0.75rem' : '0.75rem 1.25rem'};
+  border-radius: ${props => props.$expanded ? '50%' : '50px'};
+  padding: ${props => props.$expanded ? '0.75rem' : '0.75rem 1.25rem'};
   cursor: pointer;
-  box-shadow: ${props => props.expanded 
+  box-shadow: ${props => props.$expanded 
     ? '0 4px 12px rgba(0, 0, 0, 0.15)' 
     : '0 4px 20px rgba(37, 211, 102, 0.4)'};
   transition: all 0.3s ease;
@@ -40,7 +40,7 @@ export const ChatTrigger = styled.button<{ expanded?: boolean }>`
 
   &:hover {
     transform: scale(1.05);
-    box-shadow: ${props => props.expanded 
+    box-shadow: ${props => props.$expanded 
       ? '0 6px 16px rgba(0, 0, 0, 0.2)' 
       : '0 6px 28px rgba(37, 211, 102, 0.5)'};
   }

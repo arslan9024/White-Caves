@@ -332,7 +332,7 @@ export function getRecommendedFeatures(businessType: string = 'startup'): ClaraF
   };
 
   const ids = recommendations[businessType] || recommendations.startup;
-  return ids.map(id => getFeatureById(id)).filter(Boolean);
+  return ids.map(id => getFeatureById(id)).filter((f): f is ClaraFeature => Boolean(f));
 }
 
 export default CLARA_FEATURES;

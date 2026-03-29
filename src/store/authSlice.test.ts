@@ -59,7 +59,7 @@ describe('authSlice', () => {
   });
 
   it('should handle loginSuccess with Google provider', () => {
-    const user = { uid: '123', email: 'test@example.com' };
+    const user = { id: '123', uid: '123', email: 'test@example.com' };
     const state = authReducer(
       initialState,
       loginSuccess({ user, token: 'token123', provider: 'google' })
@@ -74,7 +74,7 @@ describe('authSlice', () => {
   });
 
   it('should handle loginSuccess with email provider', () => {
-    const user = { uid: '456', email: 'user@test.com' };
+    const user = { id: '456', uid: '456', email: 'user@test.com' };
     const state = authReducer(
       initialState,
       loginSuccess({ user, token: 'token456', provider: 'email' })
@@ -86,7 +86,7 @@ describe('authSlice', () => {
   });
 
   it('should handle loginSuccess with phone provider', () => {
-    const user = { uid: '789', phoneNumber: '+1234567890' };
+    const user = { id: '789', uid: '789', email: 'phone@placeholder.com', phoneNumber: '+1234567890' };
     const state = authReducer(
       initialState,
       loginSuccess({ user, token: 'token789', provider: 'phone' })
@@ -100,12 +100,13 @@ describe('authSlice', () => {
   it('should handle logout', () => {
     const loggedInState = {
       ...initialState,
-      user: { uid: '123' },
+      user: { id: '123', uid: '123', email: 'test@example.com' } as const,
       token: 'token123',
       session: {
+        ...initialState.session,
         isLoggedIn: true,
         activeSessionId: 'session_123',
-        sessions: [{ id: 'session_123' }],
+        sessions: [{ id: 'session_123' }] as any[],
       },
     };
     

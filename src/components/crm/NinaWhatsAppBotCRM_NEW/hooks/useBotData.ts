@@ -1,9 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { DUMMY_BOTS, CODE_MODULES, Bot, CodeModule } from '../data/bots';
 import { NINA_BOT_FEATURES } from '../data/features';
 
 export const useBotData = () => {
-  const [bots, setBots] = useState<Bot[]>(DUMMY_BOTS);
+  // Only use dummy data in development — production fetches from API
+  const [bots, setBots] = useState<Bot[]>(import.meta.env.DEV ? DUMMY_BOTS : []);
   const [selectedBot, setSelectedBot] = useState<Bot | null>(null);
   const [codeModules, setCodeModules] = useState<CodeModule[]>(CODE_MODULES);
   const [expandedModule, setExpandedModule] = useState<string>('WhatsAppBot');
@@ -14,28 +15,28 @@ export const useBotData = () => {
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
   const handleAddBot = useCallback(() => {
-    const newBot = {
-      id: `bot-${Date.now()}`,
-      name: `Lion${bots.length}`,
-      number: '+971500000000',
-      status: 'pending',
-      qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=WhatsAppNewSession',
-      messagesProcessed: 0,
-      responseRate: 0,
-      avgResponseTime: '-',
-      lastActive: 'Never',
-      uptime: '0%',
-      features: []
-    };
-    setBots([...bots, newBot]);
-  }, [bots.length]);
+    setBots(prev => {
+      const newBot = {
+        id: `bot-${Date.now()}`,
+        name: `Lion${prev.length}`,
+        number: '+971500000000',
+        status: 'pending',
+        qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=WhatsAppNewSession',
+        messagesProcessed: 0,
+        responseRate: 0,
+        avgResponseTime: '-',
+        lastActive: 'Never',
+        uptime: '0%',
+        features: []
+      };
+      return [...prev, newBot];
+    });
+  }, []);
 
   const handleDeleteBot = useCallback((botId: string) => {
-    setBots(bots.filter(bot => bot.id !== botId));
-    if (selectedBot?.id === botId) {
-      setSelectedBot(null);
-    }
-  }, [bots, selectedBot]);
+    setBots(prev => prev.filter(bot => bot.id !== botId));
+    setSelectedBot(prev => (prev?.id === botId ? null : prev));
+  }, []);
 
   const handleToggleBotStatus = useCallback((botId: string) => {
     setBots(prevBots =>
@@ -61,10 +62,10 @@ export const useBotData = () => {
     );
   }, []);
 
-  const filteredBots = bots.filter(bot => {
+  const filteredBots = useMemo(() => bots.filter(bot => {
     if (filterStatus === 'all') return true;
     return bot.status === filterStatus;
-  });
+  }), [bots, filterStatus]);
 
   const getStatusColor = (status: string): string => {
     switch (status) {

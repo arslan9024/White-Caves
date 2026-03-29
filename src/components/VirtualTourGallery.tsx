@@ -28,8 +28,25 @@ import {
   EmptyState
 } from './VirtualTourGallery.styles';
 
+interface VirtualTour {
+  id: number;
+  title: string;
+  location: string;
+  price: number;
+  type: string;
+  beds: number;
+  baths: number;
+  sqft: number;
+  thumbnail: string;
+  tourUrl: string;
+  hasDrone: boolean;
+  hasVideo: boolean;
+  views: number;
+  featured: boolean;
+}
+
 const VirtualTourGallery = () => {
-  const [selectedTour, setSelectedTour] = useState(null);
+  const [selectedTour, setSelectedTour] = useState<VirtualTour | null>(null);
   const [viewMode, setViewMode] = useState('grid');
 
   const virtualTours = [
@@ -133,7 +150,7 @@ const VirtualTourGallery = () => {
 
   const featuredTours = virtualTours.filter(t => t.featured);
 
-  const openTour = (tour) => {
+  const openTour = (tour: VirtualTour) => {
     setSelectedTour(tour);
   };
 
@@ -152,12 +169,16 @@ const VirtualTourGallery = () => {
           <button
             className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
             onClick={() => setViewMode('grid')}
+            aria-label="Grid view"
+            aria-pressed={viewMode === 'grid'}
           >
             Grid
           </button>
           <button
             className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
             onClick={() => setViewMode('list')}
+            aria-label="List view"
+            aria-pressed={viewMode === 'list'}
           >
             List
           </button>
@@ -168,9 +189,9 @@ const VirtualTourGallery = () => {
         <h3>Featured Virtual Tours</h3>
         <div className="featured-slider">
           {featuredTours.map((tour) => (
-            <div key={tour.id} className="featured-tour-card" onClick={() => openTour(tour)}>
+            <div key={tour.id} className="featured-tour-card" onClick={() => openTour(tour)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openTour(tour); } }} role="button" tabIndex={0} aria-label={`View virtual tour of ${tour.title}`}>
               <div className="tour-thumbnail">
-                <img src={tour.thumbnail} alt={tour.title} />
+                <img src={tour.thumbnail} alt={tour.title} loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                 <div className="tour-overlay">
                   <div className="play-button">
                     <span>360</span>
@@ -187,10 +208,10 @@ const VirtualTourGallery = () => {
                 <div className="tour-details">
                   <span>{tour.beds} Beds</span>
                   <span>{tour.baths} Baths</span>
-                  <span>{tour.sqft.toLocaleString()} sqft</span>
+                  <span>{(tour.sqft ?? 0).toLocaleString()} sqft</span>
                 </div>
                 <div className="tour-footer">
-                  <span className="tour-price">AED {tour.price.toLocaleString()}</span>
+                  <span className="tour-price">AED {(tour.price ?? 0).toLocaleString()}</span>
                   <span className="tour-views">{tour.views} views</span>
                 </div>
               </div>
@@ -203,9 +224,9 @@ const VirtualTourGallery = () => {
         <h3>All Virtual Tours</h3>
         <div className="tours-container">
           {virtualTours.map((tour) => (
-            <div key={tour.id} className="tour-card" onClick={() => openTour(tour)}>
+            <div key={tour.id} className="tour-card" onClick={() => openTour(tour)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openTour(tour); } }} role="button" tabIndex={0} aria-label={`View virtual tour of ${tour.title}`}>
               <div className="tour-thumbnail">
-                <img src={tour.thumbnail} alt={tour.title} />
+                <img src={tour.thumbnail} alt={tour.title} loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                 <div className="tour-overlay">
                   <div className="play-button">
                     <span>360</span>
@@ -223,10 +244,10 @@ const VirtualTourGallery = () => {
                 <div className="tour-specs">
                   <span>{tour.beds} Beds</span>
                   <span>{tour.baths} Baths</span>
-                  <span>{tour.sqft.toLocaleString()} sqft</span>
+                  <span>{(tour.sqft ?? 0).toLocaleString()} sqft</span>
                 </div>
                 <div className="tour-footer">
-                  <span className="tour-price">AED {tour.price.toLocaleString()}</span>
+                  <span className="tour-price">AED {(tour.price ?? 0).toLocaleString()}</span>
                   <span className="tour-views">{tour.views} views</span>
                 </div>
               </div>
@@ -237,16 +258,16 @@ const VirtualTourGallery = () => {
 
       {selectedTour && (
         <div className="tour-modal">
-          <div className="modal-overlay" onClick={closeTour}></div>
+          <div className="modal-overlay" onClick={closeTour} onKeyDown={(e) => { if (e.key === 'Escape') closeTour(); }} role="presentation"></div>
           <div className="modal-content">
-            <button className="close-modal" onClick={closeTour}>x</button>
+            <button className="close-modal" onClick={closeTour} aria-label="Close virtual tour">x</button>
             <div className="modal-header">
               <h3>{selectedTour.title}</h3>
               <p>{selectedTour.location} | {selectedTour.type}</p>
             </div>
             <div className="tour-viewer">
               <div className="viewer-placeholder">
-                <img src={selectedTour.thumbnail} alt={selectedTour.title} />
+                <img src={selectedTour.thumbnail} alt={selectedTour.title} loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                 <div className="viewer-controls">
                   <div className="control-icon">
                     <span className="icon-360">360</span>
@@ -275,17 +296,17 @@ const VirtualTourGallery = () => {
                 </div>
                 <div className="info-item">
                   <span className="info-label">Area</span>
-                  <span className="info-value">{selectedTour.sqft.toLocaleString()} sqft</span>
+                  <span className="info-value">{(selectedTour.sqft ?? 0).toLocaleString()} sqft</span>
                 </div>
                 <div className="info-item">
                   <span className="info-label">Price</span>
-                  <span className="info-value price">AED {selectedTour.price.toLocaleString()}</span>
+                  <span className="info-value price">AED {(selectedTour.price ?? 0).toLocaleString()}</span>
                 </div>
               </div>
               <div className="modal-actions">
-                <button className="action-btn primary">Schedule Viewing</button>
-                <button className="action-btn secondary">Contact Agent</button>
-                <button className="action-btn outline">Download Brochure</button>
+                <button className="action-btn primary" aria-label="Schedule a property viewing">Schedule Viewing</button>
+                <button className="action-btn secondary" aria-label="Contact the listing agent">Contact Agent</button>
+                <button className="action-btn outline" aria-label="Download property brochure">Download Brochure</button>
               </div>
             </div>
           </div>

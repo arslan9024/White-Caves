@@ -74,16 +74,16 @@ export const MonthSelector = styled.div`
   flex-wrap: wrap;
 `;
 
-export const TimeSlot = styled.button<{ available?: boolean }>`
+export const TimeSlot = styled.button<{ $available?: boolean }>`
   padding: 8px 16px;
-  border: 1px solid ${props => props.available ? '#ddd' : '#ccc'};
-  background: ${props => props.available ? 'white' : '#f0f0f0'};
+  border: 1px solid ${props => props.$available ? '#ddd' : '#ccc'};
+  background: ${props => props.$available ? 'white' : '#f0f0f0'};
   border-radius: 4px;
-  cursor: ${props => props.available ? 'pointer' : 'not-allowed'};
-  color: ${props => props.available ? 'var(--text-primary)' : '#999'};
+  cursor: ${props => props.$available ? 'pointer' : 'not-allowed'};
+  color: ${props => props.$available ? 'var(--text-primary)' : '#999'};
   transition: all 0.3s ease;
 
-  &:hover ${props => props.available ? '' : ':disabled'} {
+  &:hover ${props => props.$available ? '' : ':disabled'} {
     border-color: #e41e3f;
     background: rgba(228, 30, 63, 0.05);
   }

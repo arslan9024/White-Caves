@@ -2,6 +2,16 @@ import React, { memo } from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import './SharedComponents.css';
 
+interface StatCardProps {
+  label: string;
+  value: string | number;
+  change?: number;
+  icon?: React.ComponentType<{ size?: number | string }>;
+  color?: string;
+  size?: 'default' | 'large';
+  onClick?: () => void;
+}
+
 const StatCard = memo(({ 
   label, 
   value, 
@@ -10,14 +20,14 @@ const StatCard = memo(({
   color = 'var(--assistant-color, #0EA5E9)',
   size = 'default',
   onClick
-}) => {
-  const isPositive = change > 0;
-  const isNeutral = change === 0 || change === undefined;
+}: StatCardProps) => {
+  const isPositive = (change ?? 0) > 0;
+  const isNeutral = change == null || change === 0 || !Number.isFinite(change);
   
   return (
     <div 
       className={`stat-card ${size} ${onClick ? 'clickable' : ''}`}
-      style={{ '--card-accent': color }}
+      style={{ '--card-accent': color } as React.CSSProperties}
       onClick={onClick}
     >
       {Icon && (

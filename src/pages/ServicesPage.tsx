@@ -1,9 +1,12 @@
 import React, { FC, useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import type { RootState } from '../store/store';
 import AppLayout from '../components/layout/AppLayout';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
+import { useToast } from '../components/Toast';
 import './ServicesPage.css';
 
 // Type definitions
@@ -47,8 +50,10 @@ interface User {
 }
 
 const ServicesPage: FC = () => {
+  useDocumentTitle('Our Services');
   const navigate = useNavigate();
-  const user = useSelector((state: any) => state.user.currentUser) as User | undefined;
+  const user = useSelector((state: RootState) => state.user.currentUser) as User | undefined;
+  const toast = useToast();
   const [activeService, setActiveService] = useState<string>('offplan');
   const [formData, setFormData] = useState<ConsultationForm>({
     name: '',
@@ -63,7 +68,7 @@ const ServicesPage: FC = () => {
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    alert('Thank you for your inquiry! Our team will contact you shortly.');
+    toast.success('Thank you for your inquiry! Our team will contact you shortly.');
     setFormData({ name: '', phone: '', service: '', message: '' });
   };
 
@@ -153,16 +158,16 @@ const ServicesPage: FC = () => {
                   <div className="service-list">
                     <h4>What We Offer</h4>
                     <ul>
-                      {service.subServices.map((sub, i) => (
-                        <li key={i}>{sub}</li>
+                      {service.subServices.map((sub) => (
+                        <li key={sub}>{sub}</li>
                       ))}
                     </ul>
                   </div>
                   <div className="service-features">
                     <h4>Key Features</h4>
                     <ul>
-                      {service.features.map((feature, i) => (
-                        <li key={i}><span className="check">✓</span> {feature}</li>
+                      {service.features.map((feature) => (
+                        <li key={feature}><span className="check">✓</span> {feature}</li>
                       ))}
                     </ul>
                   </div>
@@ -259,7 +264,7 @@ const ServicesPage: FC = () => {
                 
                 <div className="comparison-table">
                   <h4>Off-Plan vs Secondary Market</h4>
-                  <table>
+                  <table aria-label="Off-plan versus secondary market comparison">
                     <thead>
                       <tr>
                         <th>Feature</th>
@@ -360,8 +365,8 @@ const ServicesPage: FC = () => {
             <p className="section-subtitle">Real-time data from Dubai's prime property locations</p>
             
             <div className="areas-grid">
-              {primeAreas.map((area, i) => (
-                <div key={i} className="area-card">
+              {primeAreas.map((area) => (
+                <div key={area.name} className="area-card">
                   <h4>{area.name}</h4>
                   <div className="area-stats">
                     <div className="area-stat">
@@ -386,7 +391,7 @@ const ServicesPage: FC = () => {
             
             <div className="timeline">
               {processSteps.map((step, i) => (
-                <div key={i} className="timeline-step">
+                <div key={step.title} className="timeline-step">
                   <div className="step-number">{step.step}</div>
                   <div className="step-icon">{step.icon}</div>
                   <h4>{step.title}</h4>
@@ -403,8 +408,8 @@ const ServicesPage: FC = () => {
             <h2 className="section-title">Why Choose White Caves</h2>
             
             <div className="stats-grid">
-              {stats.map((stat, i) => (
-                <div key={i} className="stat-card">
+              {stats.map((stat) => (
+                <div key={stat.label} className="stat-card">
                   <div className="stat-value">{stat.value}</div>
                   <div className="stat-label">{stat.label}</div>
                 </div>

@@ -1,7 +1,15 @@
 import React from 'react';
 import { PlatformPublisherForm } from '../../shared';
 
-export default function PublishTab({ state }) {
+interface PublishState {
+  [key: string]: unknown;
+}
+
+interface PublishTabProps {
+  state: PublishState;
+}
+
+export default function PublishTab({ state }: PublishTabProps) {
   const { } = state;
 
   return (
@@ -27,8 +35,8 @@ export default function PublishTab({ state }) {
               <div className="item-info">
                 <h5>{item.title}</h5>
                 <div className="platforms-list">
-                  {item.platforms.map((p, idx) => (
-                    <span key={idx} className="platform-tag">{p}</span>
+                  {item.platforms.map((p) => (
+                    <span key={p} className="platform-tag">{p}</span>
                   ))}
                 </div>
                 <p>{item.scheduled}</p>

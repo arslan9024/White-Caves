@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { safeStorage } from '../utils/safeStorage';
 import {
   StyledOnboardingGateway,
   StyledGatewayContainer,
@@ -117,7 +118,7 @@ const OnboardingGateway: React.FC = () => {
       locked: false,
       fromGateway: true
     };
-    localStorage.setItem('preferredRole', JSON.stringify(userRole));
+    safeStorage.setJSON('preferredRole', userRole);
 
     setTimeout(() => {
       navigate(role.path);
@@ -139,22 +140,22 @@ const OnboardingGateway: React.FC = () => {
           {roles.map((role, index) => (
             <StyledOnboardingRoleTile
               key={role.id}
-              roleColor={role.color}
-              isSelected={selectedRole === role.id}
-              isFadingOut={isAnimating && selectedRole !== role.id}
-              animationDelay={`${index * 100}ms`}
+              $roleColor={role.color}
+              $isSelected={selectedRole === role.id}
+              $isFadingOut={isAnimating && selectedRole !== role.id}
+              $animationDelay={`${index * 100}ms`}
               onClick={() => handleRoleClick(role)}
             >
-              <StyledTileAccentBar roleColor={role.color} />
-              <StyledTileIconWrapper backgroundColor={role.color}>
+              <StyledTileAccentBar $roleColor={role.color} />
+              <StyledTileIconWrapper $backgroundColor={role.color}>
                 {role.icon}
               </StyledTileIconWrapper>
               <StyledTileTextContent>
                 <StyledTileTitle>{role.title}</StyledTileTitle>
-                <StyledTileSubtitle roleColor={role.color}>{role.subtitle}</StyledTileSubtitle>
+                <StyledTileSubtitle $roleColor={role.color}>{role.subtitle}</StyledTileSubtitle>
                 <StyledTileDescription>{role.description}</StyledTileDescription>
               </StyledTileTextContent>
-              <StyledTileArrow roleColor={role.color}>
+              <StyledTileArrow $roleColor={role.color}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                 </svg>

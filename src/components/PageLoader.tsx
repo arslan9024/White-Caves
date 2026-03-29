@@ -17,7 +17,7 @@ export default function PageLoader({ message = 'Loading...' }: PageLoaderProps) 
     <PageLoaderOverlay>
       <LoaderContent>
         <LoaderLogo>
-          <img src="/company-logo.jpg" alt="White Caves" />
+          <img src="/company-logo.jpg" alt="White Caves" width={80} height={80} />
         </LoaderLogo>
         <LoaderSpinner>
           <Spinner />

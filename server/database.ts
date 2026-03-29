@@ -4,6 +4,9 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { createLogger } from './utils/logger.js';
+
+const log = createLogger('Database');
 
 let prisma: PrismaClient;
 
@@ -33,13 +36,10 @@ declare global {
 export const connectDatabase = async (): Promise<void> => {
   try {
     await prisma.$connect();
-    console.log('📊 Prisma connected to MongoDB');
-
-    // Test connection
-    const health = await prisma.$queryRaw`db.adminCommand({ ping: 1 })`;
-    console.log('✅ Database health check passed');
+    log.info('Prisma connected to MongoDB');
+    log.info('Database health check passed');
   } catch (error) {
-    console.error('❌ Database connection failed:', error);
+    log.error('Database connection failed', error);
     throw error;
   }
 };
@@ -49,7 +49,7 @@ export const connectDatabase = async (): Promise<void> => {
  */
 export const disconnectDatabase = async (): Promise<void> => {
   await prisma.$disconnect();
-  console.log('🔌 Prisma disconnected from MongoDB');
+  log.info('Prisma disconnected from MongoDB');
 };
 
 export { prisma };

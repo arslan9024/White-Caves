@@ -34,9 +34,9 @@ export default function SocialLinks() {
 
   return (
     <div className="social-links">
-      {socialLinks.map((social, index) => (
+      {socialLinks.map((social) => (
         <a 
-          key={index} 
+          key={social.name} 
           href={social.url}
           className="social-link"
           title={social.name}

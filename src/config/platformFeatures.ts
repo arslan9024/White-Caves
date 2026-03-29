@@ -85,7 +85,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
       'UAE Pass Integration (Ready)',
     ],
     implementedDate: '2024-01-15',
-    files: ['src/pages/auth/SignInPage.jsx', 'src/features/auth/'],
+    files: ['src/pages/auth/SignInPage.tsx', 'src/features/auth/'],
   },
   {
     id: 'biometric_auth',
@@ -121,7 +121,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
       'Company Owner full access',
     ],
     implementedDate: '2024-01-20',
-    files: ['src/utils/permissions.js', 'src/hooks/usePermissions.js'],
+    files: ['src/utils/permissions.ts', 'src/hooks/usepermissions.ts'],
   },
   {
     id: 'role_approval_workflow',
@@ -155,7 +155,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
       'Favorites and saved properties',
     ],
     implementedDate: '2024-01-25',
-    files: ['src/pages/PropertiesPage.jsx', 'src/shared/components/properties/'],
+    files: ['src/pages/PropertiesPage.tsx', 'src/shared/components/properties/'],
   },
   {
     id: 'advanced_search',
@@ -172,7 +172,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
       'Save search preferences',
     ],
     implementedDate: '2024-02-10',
-    files: ['src/components/properties/PropertySearch.jsx'],
+    files: ['src/components/properties/PropertySearch.tsx'],
   },
   {
     id: 'ejari_contracts',
@@ -189,7 +189,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
       'Google Drive storage integration',
     ],
     implementedDate: '2024-02-20',
-    files: ['src/pages/SignContractPage.jsx', 'server/routes/contracts.routes.js'],
+    files: ['src/pages/SignContractPage.tsx', 'server/routes/contracts.routes.js'],
   },
   {
     id: 'transaction_timelines',
@@ -241,7 +241,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
       'Lead scoring',
     ],
     implementedDate: '2024-03-15',
-    files: ['src/pages/owner/WhatsAppDashboardPage.jsx', 'server/routes/whatsapp.routes.js'],
+    files: ['src/pages/owner/WhatsAppDashboardPage.tsx', 'server/routes/whatsapp.routes.js'],
   },
   {
     id: 'ai_chatbot',
@@ -276,7 +276,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
       'Vercel Speed Insights integration',
     ],
     implementedDate: '2024-03-25',
-    files: ['src/store/analyticsSlice.js', 'src/components/analytics/WebVitalsTracker.jsx'],
+    files: ['src/store/analyticsSlice.ts', 'src/components/analytics/WebVitalsTracker.tsx'],
   },
   {
     id: 'market_analytics',
@@ -293,7 +293,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
       'Conversion rates',
     ],
     implementedDate: '2024-02-28',
-    files: ['src/pages/owner/OwnerDashboardPage.jsx'],
+    files: ['src/pages/owner/OwnerDashboardPage.tsx'],
   },
   {
     id: 'google_calendar',
@@ -391,7 +391,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
       'Mobile responsive',
     ],
     implementedDate: '2024-01-25',
-    files: ['src/components/common/UniversalNav.jsx'],
+    files: ['src/components/common/UniversalNav.tsx'],
   },
   {
     id: 'content_slider',
@@ -407,7 +407,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
       'Custom render support',
     ],
     implementedDate: '2024-02-01',
-    files: ['src/components/common/ContentSlider.jsx'],
+    files: ['src/components/common/ContentSlider.tsx'],
   },
   {
     id: 'status_notifications',
@@ -424,7 +424,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
       'Auto-dismiss with progress',
     ],
     implementedDate: '2024-03-25',
-    files: ['src/components/common/StatusNotification.jsx'],
+    files: ['src/components/common/StatusNotification.tsx'],
   },
   {
     id: 'dark_mode',
@@ -456,7 +456,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
       'Direction switching',
     ],
     implementedDate: '2024-02-15',
-    files: ['src/styles/rtl.css', 'src/context/LanguageContext.jsx'],
+    files: ['src/styles/rtl.css', 'src/context/LanguageContext.tsx'],
   },
   {
     id: 'mortgage_calculator',
@@ -472,7 +472,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
       'Bank rate options',
     ],
     implementedDate: '2024-02-10',
-    files: ['src/pages/buyer/MortgageCalculatorPage.jsx'],
+    files: ['src/pages/buyer/MortgageCalculatorPage.tsx'],
   },
   {
     id: 'dld_fees_calculator',
@@ -488,7 +488,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
       'Total cost breakdown',
     ],
     implementedDate: '2024-02-10',
-    files: ['src/pages/buyer/DLDFeesPage.jsx'],
+    files: ['src/pages/buyer/DLDFeesPage.tsx'],
   },
   {
     id: 'rent_vs_buy',
@@ -504,7 +504,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
       'Personalized recommendations',
     ],
     implementedDate: '2024-03-05',
-    files: ['src/components/tools/RentVsBuyCalculator.jsx'],
+    files: ['src/components/tools/RentVsBuyCalculator.tsx'],
   },
   {
     id: 'virtual_tours',
@@ -520,7 +520,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
       'Mobile optimized',
     ],
     implementedDate: '2024-03-01',
-    files: ['src/components/properties/VirtualTourGallery.jsx'],
+    files: ['src/components/properties/VirtualTourGallery.tsx'],
   },
   {
     id: 'system_health',
@@ -537,7 +537,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
       'Deployment readiness',
     ],
     implementedDate: '2024-03-15',
-    files: ['src/pages/owner/SystemHealthPage.jsx', 'server/routes/system.routes.js'],
+    files: ['src/pages/owner/SystemHealthPage.tsx', 'server/routes/system.routes.ts'],
   },
   {
     id: 'agent_assignment',
@@ -649,7 +649,7 @@ export const getFeatureStats = (): FeatureStats => {
 // ---------------------------------------------------------------------------
 
 export const CATEGORY_INFO: Record<FeatureCategory, CategoryInfo> = {
-  [FEATURE_CATEGORIES.AUTHENTICATION]: { name: 'Authentication', icon: '🔐', color: '#DC2626' },
+  [FEATURE_CATEGORIES.AUTHENTICATION]: { name: 'Authentication', icon: '🔐', color: '#D4AF37' },
   [FEATURE_CATEGORIES.USER_MANAGEMENT]: { name: 'User Management', icon: '👥', color: '#2563EB' },
   [FEATURE_CATEGORIES.PROPERTY]: { name: 'Property', icon: '🏠', color: '#16A34A' },
   [FEATURE_CATEGORIES.TRANSACTIONS]: { name: 'Transactions', icon: '💰', color: '#D4AF37' },

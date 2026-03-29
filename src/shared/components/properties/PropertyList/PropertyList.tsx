@@ -68,7 +68,7 @@ const PropertyList = React.memo<PropertyListProps>(({
       <div className={classes}>
         <Grid columns={viewMode === 'list' ? { mobile: 1, tablet: 1, desktop: 1 } : columns} gap={gap}>
           {Array.from({ length: loadingCount }).map((_, index) => (
-            <React.Fragment key={index}>{LoadingSkeleton}</React.Fragment>
+            <React.Fragment key={`property-skeleton-${index}`}>{LoadingSkeleton}</React.Fragment>
           ))}
         </Grid>
       </div>

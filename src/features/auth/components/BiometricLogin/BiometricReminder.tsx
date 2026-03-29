@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import type { RootState } from '../../../../store/store';
 import { Link } from 'react-router-dom';
 import { 
   isPlatformAuthenticatorAvailable, 
   hasBiometricCredentials 
 } from '../../../../services/webAuthnService';
 import './BiometricLogin.css';
+import { safeStorage } from '../../../../utils/safeStorage';
 
 const REMINDER_DISMISSED_KEY = 'biometric_reminder_dismissed';
 
-const BiometricReminder = ({ variant = 'banner' }) => {
-  const user = useSelector(state => state.user?.currentUser);
+interface BiometricReminderProps {
+  variant?: 'banner' | 'card' | 'inline' | 'compact';
+}
+
+const BiometricReminder = ({ variant = 'banner' }: BiometricReminderProps) => {
+  const user = useSelector((state: RootState) => state.user?.currentUser);
   const [show, setShow] = useState(false);
   const [available, setAvailable] = useState(false);
 
@@ -35,14 +41,16 @@ const BiometricReminder = ({ variant = 'banner' }) => {
       }
 
       const dismissedKey = `${REMINDER_DISMISSED_KEY}_${user.id || user.email}`;
-      const dismissed = localStorage.getItem(dismissedKey);
+      const dismissed = safeStorage.get(dismissedKey);
       
       if (dismissed) {
         const dismissedDate = new Date(dismissed);
-        const daysSinceDismissed = (Date.now() - dismissedDate.getTime()) / (1000 * 60 * 60 * 24);
-        if (daysSinceDismissed < 7) {
-          setShow(false);
-          return;
+        if (!isNaN(dismissedDate.getTime())) {
+          const daysSinceDismissed = (Date.now() - dismissedDate.getTime()) / (1000 * 60 * 60 * 24);
+          if (daysSinceDismissed < 7) {
+            setShow(false);
+            return;
+          }
         }
       }
 
@@ -55,7 +63,7 @@ const BiometricReminder = ({ variant = 'banner' }) => {
   const handleDismiss = () => {
     if (user) {
       const dismissedKey = `${REMINDER_DISMISSED_KEY}_${user.id || user.email}`;
-      localStorage.setItem(dismissedKey, new Date().toISOString());
+      safeStorage.set(dismissedKey, new Date().toISOString());
     }
     setShow(false);
   };

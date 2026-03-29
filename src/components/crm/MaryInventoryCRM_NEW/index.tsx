@@ -64,7 +64,7 @@ export default function MaryInventoryCRM() {
 
       {/* Tab Content with Suspense */}
       <div className="mary-tabs-content">
-        <Suspense fallback={<SuspenseLoader message="Loading inventory..." />}>
+        <Suspense fallback={<SuspenseLoader />}>
           {ActiveTabComponent && <ActiveTabComponent />}
         </Suspense>
       </div>

@@ -1,13 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import Pagination from '../../ui/Pagination';
+import type { LeadsTabProps, LeadPriority, LeadStatus } from './types';
 import './TabStyles.css';
 
-const LeadsTab = ({ data, loading, onAction }) => {
+const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error, onAction }) => {
   const [sourceFilter, setSourceFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+
+  // Reset pagination when filters change (must be before any early returns — Rules of Hooks)
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [sourceFilter, statusFilter, priorityFilter]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="leads-tab">
+        <div className="tab-loading-state" role="status" aria-label="Loading leads">
+          <div className="loading-spinner" />
+          <p>Loading leads...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state with retry
+  if (error) {
+    return (
+      <div className="leads-tab">
+        <div className="tab-error-state" role="alert">
+          <span className="error-icon">⚠️</span>
+          <p>Failed to load leads: {error}</p>
+          <button className="primary-btn" onClick={() => onAction?.('retryFetch')}>
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const leads = data?.leads || [
     { id: 1, name: 'Khalid Al Maktoum', phone: '+971 50 111 2222', email: 'khalid@email.com', source: 'whatsapp', propertyInterest: 'Palm Jumeirah Villa', priority: 'high', status: 'new', createdAt: new Date().toISOString(), agent: 'Ahmed Ali' },
@@ -31,27 +64,23 @@ const LeadsTab = ({ data, loading, onAction }) => {
     currentPage * itemsPerPage
   );
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [sourceFilter, statusFilter, priorityFilter]);
-
-  const getSourceIcon = (source) => {
-    const icons = { whatsapp: '💬', website: '🌐', chatbot: '🤖', referral: '👥' };
+  const getSourceIcon = (source: string): string => {
+    const icons: Record<string, string> = { whatsapp: '💬', website: '🌐', chatbot: '🤖', referral: '👥' };
     return icons[source] || '📌';
   };
 
-  const getPriorityBadge = (priority) => {
+  const getPriorityBadge = (priority: string) => {
     const config = {
       high: { color: '#EF4444', bg: '#FEE2E2' },
       medium: { color: '#F59E0B', bg: '#FEF3C7' },
       low: { color: '#3B82F6', bg: '#DBEAFE' }
     };
-    const c = config[priority] || config.low;
+    const c = config[priority as keyof typeof config] || config.low;
     return <span className="priority-badge" style={{ color: c.color, backgroundColor: c.bg }}>{priority}</span>;
   };
 
-  const getStatusBadge = (status) => {
-    const config = {
+  const getStatusBadge = (status: string) => {
+    const config: Record<string, { color: string; text: string }> = {
       new: { color: '#3B82F6', text: 'New' },
       contacted: { color: '#06B6D4', text: 'Contacted' },
       qualified: { color: '#22C55E', text: 'Qualified' },
@@ -125,7 +154,7 @@ const LeadsTab = ({ data, loading, onAction }) => {
       </div>
 
       <div className="data-table">
-        <table>
+        <table aria-label="Leads data">
           <thead>
             <tr>
               <th>Lead</th>
@@ -144,7 +173,7 @@ const LeadsTab = ({ data, loading, onAction }) => {
                 <td>
                   <div className="lead-cell">
                     <strong>{lead.name}</strong>
-                    <small>{new Date(lead.createdAt).toLocaleDateString()}</small>
+                    <small>{lead.createdAt ? new Date(lead.createdAt).toLocaleDateString() : 'N/A'}</small>
                   </div>
                 </td>
                 <td>
@@ -158,7 +187,7 @@ const LeadsTab = ({ data, loading, onAction }) => {
                     {getSourceIcon(lead.source)} {lead.source}
                   </span>
                 </td>
-                <td>{lead.propertyInterest}</td>
+                <td>{(lead as any).propertyInterest || (lead as any).interest || 'N/A'}</td>
                 <td>{getPriorityBadge(lead.priority)}</td>
                 <td>{getStatusBadge(lead.status)}</td>
                 <td>{lead.agent || <span className="unassigned">Unassigned</span>}</td>
@@ -178,11 +207,12 @@ const LeadsTab = ({ data, loading, onAction }) => {
 
       <Pagination
         currentPage={currentPage}
-        totalPages={totalPages}
+        totalItems={totalPages * itemsPerPage}
+        itemsPerPage={itemsPerPage}
         onPageChange={setCurrentPage}
       />
     </div>
   );
 };
 
-export default LeadsTab;
+export default React.memo(LeadsTab);

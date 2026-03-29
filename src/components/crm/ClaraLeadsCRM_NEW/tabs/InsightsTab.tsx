@@ -16,12 +16,12 @@ export default function InsightsTab() {
   const winRate = 68; // Demo value
   const forecastAccuracy = 92; // Demo value
   
-  const leadsByType = leads.reduce((acc, lead) => {
+  const leadsByType = leads.reduce<Record<string, number>>((acc, lead) => {
     acc[lead.type] = (acc[lead.type] || 0) + 1;
     return acc;
   }, {});
 
-  const leadsBySize = leads.reduce((acc, lead) => {
+  const leadsBySize = leads.reduce<Record<string, number>>((acc, lead) => {
     acc[lead.size] = (acc[lead.size] || 0) + 1;
     return acc;
   }, {});

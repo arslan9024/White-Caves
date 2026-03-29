@@ -1,21 +1,62 @@
 import { createSlice, createAsyncThunk, createSelector, PayloadAction } from '@reduxjs/toolkit';
+import { logout } from '../authSlice';
 
 // JSON data loaded at runtime from public/ via fetch — never bundled into JS
 
+/** Property record from properties.json */
+export interface InventoryProperty {
+  pNumber: string;
+  area?: string;
+  status?: string;
+  cluster?: string;
+  layout?: string;
+  view?: string;
+  floor?: string | number;
+  rooms?: string | number;
+  masterProject?: string;
+  project?: string;
+  plotNumber?: string;
+  owners?: string[];
+  [key: string]: unknown;
+}
+
+/** Owner record from owners.json */
+export interface InventoryOwner {
+  id: string;
+  name?: string;
+  properties?: string[];
+  contacts?: Array<{ type: string; value: string }>;
+  [key: string]: unknown;
+}
+
+/** Ownerships mapping from ownerships.json */
+export interface Ownerships {
+  byPropertyId: Record<string, string[]>;
+  byOwnerId: Record<string, string[]>;
+}
+
+/** Manifest metadata from manifest.json */
+export interface InventoryManifest {
+  sheets: string[];
+  clusters: string[];
+  stats: Record<string, unknown>;
+  filterOptions: Record<string, unknown>;
+}
+
 interface InventoryData {
   properties: {
-    byId: Record<string, any>;
+    byId: Record<string, InventoryProperty>;
     allIds: string[];
   };
   owners: {
-    byId: Record<string, any>;
+    byId: Record<string, InventoryOwner>;
     allIds: string[];
   };
-  ownerships: any;
-  manifest: any;
+  ownerships: Ownerships;
+  manifest: InventoryManifest;
 }
 
-interface InventoryFilters {
+export interface InventoryFilters {
   cluster: string | null;
   status: string | null;
   area: string | null;
@@ -32,15 +73,15 @@ interface InventoryFilters {
 
 interface InventoryState {
   properties: {
-    byId: Record<string, any>;
+    byId: Record<string, InventoryProperty>;
     allIds: string[];
   };
   owners: {
-    byId: Record<string, any>;
+    byId: Record<string, InventoryOwner>;
     allIds: string[];
   };
-  ownerships: any;
-  manifest: any;
+  ownerships: Ownerships;
+  manifest: InventoryManifest;
   filters: InventoryFilters;
   selectedPropertyId: string | null;
   selectedOwnerId: string | null;
@@ -57,23 +98,38 @@ export const loadInventoryData = createAsyncThunk<
   async (_, { rejectWithValue }) => {
     try {
       // Fetch JSON data from public/ at runtime — zero bundle size impact
-      const [propertiesData, ownersData, ownershipsData, manifestData] = await Promise.all([
-        fetch('/data/damacHills2/properties.json').then(r => r.json()),
-        fetch('/data/damacHills2/owners.json').then(r => r.json()),
-        fetch('/data/damacHills2/ownerships.json').then(r => r.json()),
-        fetch('/data/damacHills2/manifest.json').then(r => r.json())
+      const safeFetch = async (url: string): Promise<unknown> => {
+        const r = await fetch(url);
+        if (!r.ok) throw new Error(`${url}: HTTP ${r.status}`);
+        return r.json();
+      };
+
+      // Use Promise.allSettled for error isolation — partial failures don't kill the whole load
+      const results = await Promise.allSettled([
+        safeFetch('/data/damacHills2/properties.json'),
+        safeFetch('/data/damacHills2/owners.json'),
+        safeFetch('/data/damacHills2/ownerships.json'),
+        safeFetch('/data/damacHills2/manifest.json')
       ]);
 
-      const propertiesById: Record<string, any> = {};
+      // Check for any failures
+      const failures = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
+      if (failures.length > 0) {
+        throw new Error(`Failed to load inventory: ${failures.map(f => f.reason?.message || 'Unknown error').join('; ')}`);
+      }
+
+      const [propertiesData, ownersData, ownershipsData, manifestData] = (results as PromiseFulfilledResult<unknown>[]).map(r => r.value);
+
+      const propertiesById: Record<string, InventoryProperty> = {};
       const propertyIds: string[] = [];
-      propertiesData.forEach((p: any) => {
+      (propertiesData as InventoryProperty[]).forEach((p: InventoryProperty) => {
         propertiesById[p.pNumber] = p;
         propertyIds.push(p.pNumber);
       });
       
-      const ownersById: Record<string, any> = {};
+      const ownersById: Record<string, InventoryOwner> = {};
       const ownerIds: string[] = [];
-      ownersData.forEach((o: any) => {
+      (ownersData as InventoryOwner[]).forEach((o: InventoryOwner) => {
         ownersById[o.id] = o;
         ownerIds.push(o.id);
       });
@@ -81,11 +137,12 @@ export const loadInventoryData = createAsyncThunk<
       return {
         properties: { byId: propertiesById, allIds: propertyIds },
         owners: { byId: ownersById, allIds: ownerIds },
-        ownerships: ownershipsData,
-        manifest: manifestData
+        ownerships: ownershipsData as Ownerships,
+        manifest: manifestData as InventoryManifest
       };
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to load inventory data');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to load inventory data';
+      return rejectWithValue(message);
     }
   }
 );
@@ -119,9 +176,9 @@ const inventorySlice = createSlice({
   name: 'inventory',
   initialState,
   reducers: {
-    setFilter: (state, action: PayloadAction<{ key: string; value: any }>) => {
+    setFilter: (state, action: PayloadAction<{ key: keyof InventoryFilters; value: string | boolean | null }>) => {
       const { key, value } = action.payload;
-      (state.filters as any)[key] = value;
+      (state.filters[key] as string | boolean | null) = value;
     },
     clearFilters: (state) => {
       state.filters = {
@@ -172,6 +229,9 @@ const inventorySlice = createSlice({
         state.loading = false;
         state.error = action.payload || 'Unknown error';
       });
+
+    // --- SECURITY: Reset inventory data on logout ---
+    builder.addCase(logout, () => initialState);
   }
 });
 
@@ -185,59 +245,59 @@ export const {
   toggleMultiPropertyFilter
 } = inventorySlice.actions;
 
-const selectInventory = (state: any) => state.inventory;
-const selectProperties = (state: any) => state.inventory.properties;
-export const selectOwners = (state: any) => state.inventory.owners;
-const selectOwnerships = (state: any) => state.inventory.ownerships;
-export const selectFilters = (state: any) => state.inventory.filters;
-const selectManifest = (state: any) => state.inventory.manifest;
+const selectInventory = (state: { inventory: InventoryState }) => state.inventory;
+const selectProperties = (state: { inventory: InventoryState }) => state.inventory.properties;
+export const selectOwners = (state: { inventory: InventoryState }) => state.inventory.owners;
+const selectOwnerships = (state: { inventory: InventoryState }) => state.inventory.ownerships;
+export const selectFilters = (state: { inventory: InventoryState }) => state.inventory.filters;
+const selectManifest = (state: { inventory: InventoryState }) => state.inventory.manifest;
 
 export const selectAllProperties = createSelector(
   [selectProperties],
-  (properties: any) => properties.allIds.map((id: string) => properties.byId[id])
+  (properties) => properties.allIds.map((id: string) => properties.byId[id])
 );
 
 export const selectAllOwners = createSelector(
   [selectOwners],
-  (owners: any) => owners.allIds.map((id: string) => owners.byId[id])
+  (owners) => owners.allIds.map((id: string) => owners.byId[id])
 );
 
 export const selectMultiOwnerProperties = createSelector(
   [selectAllProperties],
-  (properties: any[]) => properties.filter(p => p.owners && p.owners.length > 1)
+  (properties) => properties.filter(p => p.owners && p.owners.length > 1)
 );
 
 export const selectOwnersWithMultipleProperties = createSelector(
   [selectAllOwners],
-  (owners: any[]) => owners.filter(o => o.properties && o.properties.length > 1)
+  (owners) => owners.filter(o => o.properties && o.properties.length > 1)
 );
 
 export const selectOwnersWithMultiplePhones = createSelector(
   [selectAllOwners],
-  (owners: any[]) => owners.filter((o: any) => {
-    const phones = o.contacts?.filter((c: any) => c.type === 'mobile' || c.type === 'phone') || [];
+  (owners) => owners.filter((o) => {
+    const phones = o.contacts?.filter((c) => c.type === 'mobile' || c.type === 'phone') || [];
     return phones.length > 1;
   })
 );
 
 export const selectUniqueClusters = createSelector(
   [selectManifest],
-  (manifest: any) => manifest.clusters || []
+  (manifest) => manifest.clusters || []
 );
 
 export const selectUniqueAreas = createSelector(
   [selectAllProperties],
-  (properties: any[]) => [...new Set(properties.map(p => p.area).filter(Boolean))].sort()
+  (properties) => [...new Set(properties.map(p => p.area).filter(Boolean))].sort()
 );
 
 export const selectUniqueStatuses = createSelector(
   [selectAllProperties],
-  (properties: any[]) => [...new Set(properties.map(p => p.status).filter(Boolean))].sort()
+  (properties) => [...new Set(properties.map(p => p.status).filter(Boolean))].sort()
 );
 
 export const selectFilterOptions = createSelector(
   [selectManifest],
-  (manifest: any) => ({
+  (manifest) => ({
     ...manifest.filterOptions,
     clusters: manifest.clusters || []
   })
@@ -245,16 +305,16 @@ export const selectFilterOptions = createSelector(
 
 export const selectActiveFiltersCount = createSelector(
   [selectFilters],
-  (filters: any) => {
-    const filterKeys = ['cluster', 'status', 'area', 'layout', 'view', 'floor', 'rooms', 'masterProject'];
+  (filters: InventoryFilters) => {
+    const filterKeys: (keyof InventoryFilters)[] = ['cluster', 'status', 'area', 'layout', 'view', 'floor', 'rooms', 'masterProject'];
     return filterKeys.filter(key => filters[key] !== null).length;
   }
 );
 
 export const selectFilteredProperties = createSelector(
   [selectAllProperties, selectFilters, selectOwners],
-  (properties: any[], filters: any, owners: any) => {
-    return properties.filter((property: any) => {
+  (properties: InventoryProperty[], filters: InventoryFilters, owners: { byId: Record<string, InventoryOwner>; allIds: string[] }) => {
+    return properties.filter((property: InventoryProperty) => {
       if (filters.cluster && property.cluster !== filters.cluster) return false;
       if (filters.status && property.status !== filters.status) return false;
       if (filters.area && property.area !== filters.area) return false;
@@ -282,7 +342,7 @@ export const selectFilteredProperties = createSelector(
         const hasOwnerWithMultiPhone = property.owners?.some((oid: string) => {
           const owner = owners.byId[oid];
           if (!owner) return false;
-          const phones = owner.contacts?.filter((c: any) => ['mobile', 'phone', 'secondaryMobile'].includes(c.type)) || [];
+          const phones = owner.contacts?.filter((c) => ['mobile', 'phone', 'secondaryMobile'].includes(c.type)) || [];
           return phones.length > 1;
         });
         if (!hasOwnerWithMultiPhone) return false;
@@ -291,7 +351,7 @@ export const selectFilteredProperties = createSelector(
       if (filters.showMultiProperty) {
         const hasOwnerWithMultiProps = property.owners?.some((oid: string) => {
           const owner = owners.byId[oid];
-          return owner?.properties?.length > 1;
+          return owner?.properties?.length && owner.properties.length > 1;
         });
         if (!hasOwnerWithMultiProps) return false;
       }
@@ -303,15 +363,15 @@ export const selectFilteredProperties = createSelector(
 
 export const selectFilteredOwners = createSelector(
   [selectAllOwners, selectFilters],
-  (owners: any[], filters: any) => {
-    return owners.filter((owner: any) => {
+  (owners: InventoryOwner[], filters: InventoryFilters) => {
+    return owners.filter((owner: InventoryOwner) => {
       if (filters.searchQuery) {
         const query = filters.searchQuery.toLowerCase();
         if (!owner.name?.toLowerCase().includes(query)) return false;
       }
       
       if (filters.showMultiPhone) {
-        const phones = owner.contacts?.filter((c: any) => c.type === 'mobile' || c.type === 'phone') || [];
+        const phones = owner.contacts?.filter((c) => c.type === 'mobile' || c.type === 'phone') || [];
         if (phones.length <= 1) return false;
       }
       
@@ -326,17 +386,17 @@ export const selectFilteredOwners = createSelector(
 
 export const selectPropertyById = (propertyId: string) => createSelector(
   [selectProperties],
-  (properties: any) => properties.byId[propertyId]
+  (properties) => properties.byId[propertyId]
 );
 
 export const selectOwnerById = (ownerId: string) => createSelector(
   [selectOwners],
-  (owners: any) => owners.byId[ownerId]
+  (owners) => owners.byId[ownerId]
 );
 
 export const selectOwnersByPropertyId = (propertyId: string) => createSelector(
   [selectOwnerships, selectOwners],
-  (ownerships: any, owners: any) => {
+  (ownerships, owners) => {
     const ownerIds = ownerships.byPropertyId[propertyId] || [];
     return ownerIds.map((id: string) => owners.byId[id]).filter(Boolean);
   }
@@ -344,7 +404,7 @@ export const selectOwnersByPropertyId = (propertyId: string) => createSelector(
 
 export const selectPropertiesByOwnerId = (ownerId: string) => createSelector(
   [selectOwnerships, selectProperties],
-  (ownerships: any, properties: any) => {
+  (ownerships, properties) => {
     const propertyIds = ownerships.byOwnerId[ownerId] || [];
     return propertyIds.map((id: string) => properties.byId[id]).filter(Boolean);
   }
@@ -352,12 +412,12 @@ export const selectPropertiesByOwnerId = (ownerId: string) => createSelector(
 
 export const selectInventoryStats = createSelector(
   [selectManifest],
-  (manifest: any) => manifest.stats || {}
+  (manifest) => manifest.stats || {}
 );
 
 export const selectSheetsMeta = createSelector(
   [selectManifest],
-  (manifest: any) => manifest.sheets || []
+  (manifest) => manifest.sheets || []
 );
 
 export default inventorySlice.reducer;

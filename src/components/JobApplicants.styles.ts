@@ -101,13 +101,13 @@ export const StyledApplicationHeader = styled.div`
   }
 `;
 
-export const StyledStatusBadge = styled.span<{ backgroundColor?: string }>`
+export const StyledStatusBadge = styled.span<{ $backgroundColor?: string }>`
   padding: 0.4rem 0.8rem;
   border-radius: 15px;
   color: white;
   font-size: 0.85rem;
   font-weight: 500;
-  background-color: ${props => props.backgroundColor || '#FFA500'};
+  background-color: ${props => props.$backgroundColor || '#FFA500'};
 `;
 
 export const StyledApplicationDetails = styled.div`
@@ -230,7 +230,7 @@ export const StyledDetailModal = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: var(--z-overlay, 600);
 
   [data-theme='dark'] & {
     background: rgba(0, 0, 0, 0.7);
@@ -264,5 +264,99 @@ export const StyledDetailModalContent = styled.div`
     [data-theme='dark'] & {
       color: #cbd5e0;
     }
+  }
+`;
+
+/* ── Loading / Error / Empty States ─────────────────────── */
+
+export const StyledLoadingContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 1rem;
+  color: #666;
+
+  [data-theme='dark'] & {
+    color: #a0aec0;
+  }
+`;
+
+export const StyledSpinner = styled.div`
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #e41e3f;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  [data-theme='dark'] & {
+    border-color: #4a5568;
+    border-top-color: #e41e3f;
+  }
+`;
+
+export const StyledErrorBanner = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  background: #fff5f5;
+  border: 1px solid #feb2b2;
+  border-radius: 8px;
+  color: #c53030;
+  text-align: center;
+
+  [data-theme='dark'] & {
+    background: rgba(245, 101, 101, 0.1);
+    border-color: #c53030;
+    color: #fc8181;
+  }
+
+  button {
+    padding: 0.5rem 1.5rem;
+    background: #e41e3f;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #c5162f;
+    }
+  }
+`;
+
+export const StyledEmptyState = styled.div`
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 0.5rem;
+  color: #a0aec0;
+  text-align: center;
+
+  span {
+    font-size: 3rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  [data-theme='dark'] & {
+    color: #718096;
   }
 `;

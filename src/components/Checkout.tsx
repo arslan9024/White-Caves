@@ -1,6 +1,8 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { useStripe, Elements, PaymentElement, useElements } from '@stripe/react-stripe-js';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
+import { createLogger } from '../utils/logger';
+import { authFetch } from '../utils/authFetch';
 import {
   CheckoutContainerStyled,
   CheckoutFormStyled,
@@ -37,10 +39,11 @@ interface CheckoutProps {
 }
 
 let stripePromise: Promise<Stripe | null>;
+const checkoutLog = createLogger('Checkout');
 if (import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
   stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 } else {
-  console.warn('VITE_STRIPE_PUBLIC_KEY not found. Payment processing will not work until this is set.');
+  checkoutLog.warn('VITE_STRIPE_PUBLIC_KEY not set — payment processing is disabled. Set this environment variable to enable Stripe checkout.');
   stripePromise = Promise.resolve(null);
 }
 
@@ -49,11 +52,19 @@ const CheckoutForm: FC<CheckoutFormProps> = ({ property, amount, onSuccess, onCa
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!stripe || !elements) {
+      setErrorMessage('Payment system is not initialized. Please refresh the page.');
       return;
     }
 
@@ -69,17 +80,22 @@ const CheckoutForm: FC<CheckoutFormProps> = ({ property, amount, onSuccess, onCa
         redirect: 'if_required',
       });
 
+      if (!isMountedRef.current) return;
+
       if (error) {
         setErrorMessage(error.message || 'Payment failed');
-        setIsProcessing(false);
       } else {
-        if (onSuccess) {
-          onSuccess();
-        }
+        onSuccess?.();
       }
     } catch (err) {
-      setErrorMessage('An unexpected error occurred.');
-      setIsProcessing(false);
+      if (isMountedRef.current) {
+        const message = err instanceof Error ? err.message : 'An unexpected error occurred.';
+        setErrorMessage(message);
+      }
+    } finally {
+      if (isMountedRef.current) {
+        setIsProcessing(false);
+      }
     }
   };
 
@@ -89,7 +105,7 @@ const CheckoutForm: FC<CheckoutFormProps> = ({ property, amount, onSuccess, onCa
         <h3>Payment Details</h3>
         <PropertySummary>
           <p><strong>Property:</strong> {property?.title}</p>
-          <p><strong>Amount:</strong> ${amount?.toLocaleString()}</p>
+          <p><strong>Amount:</strong> AED {amount?.toLocaleString()}</p>
         </PropertySummary>
       </PaymentDetailsSection>
       
@@ -111,7 +127,7 @@ const CheckoutForm: FC<CheckoutFormProps> = ({ property, amount, onSuccess, onCa
           type="submit" 
           disabled={!stripe || isProcessing}
         >
-          {isProcessing ? 'Processing...' : `Pay $${amount?.toLocaleString()}`}
+          {isProcessing ? 'Processing...' : `Pay AED ${amount?.toLocaleString()}`}
         </SubmitBtn>
       </CheckoutActions>
     </CheckoutFormStyled>
@@ -124,9 +140,11 @@ const Checkout: FC<CheckoutProps> = ({ property, amount, onSuccess, onCancel }) 
   const [error, setError] = useState('');
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const createPaymentIntent = async () => {
       try {
-        const response = await fetch('/api/payments/create-payment-intent', {
+        const response = await authFetch('/api/payments/create-payment-intent', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -136,12 +154,38 @@ const Checkout: FC<CheckoutProps> = ({ property, amount, onSuccess, onCancel }) 
             propertyId: property?.id,
             propertyTitle: property?.title,
           }),
+          signal: controller.signal,
         });
+
+        if (!response.ok) {
+          let errData: Record<string, unknown> = {};
+          try {
+            const contentType = response.headers.get('content-type');
+            if (contentType?.includes('application/json')) {
+              errData = await response.json();
+            }
+          } catch {
+            // Silently fail to parse non-JSON error responses
+          }
+          if (!controller.signal.aborted) {
+            setError((errData?.error as string) || `Payment initialization failed (HTTP ${response.status})`);
+            setIsLoading(false);
+          }
+          return;
+        }
 
         const data = await response.json();
         
+        if (controller.signal.aborted) return;
+
         if (data.error) {
           setError(data.error);
+          setIsLoading(false);
+          return;
+        }
+
+        if (!data.clientSecret || typeof data.clientSecret !== 'string') {
+          setError('Invalid payment configuration from server');
           setIsLoading(false);
           return;
         }
@@ -149,6 +193,7 @@ const Checkout: FC<CheckoutProps> = ({ property, amount, onSuccess, onCancel }) 
         setClientSecret(data.clientSecret);
         setIsLoading(false);
       } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
         setError('Failed to initialize payment. Please try again.');
         setIsLoading(false);
       }
@@ -157,6 +202,8 @@ const Checkout: FC<CheckoutProps> = ({ property, amount, onSuccess, onCancel }) 
     if (amount && amount > 0) {
       createPaymentIntent();
     }
+
+    return () => { controller.abort(); };
   }, [amount, property]);
 
   if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {

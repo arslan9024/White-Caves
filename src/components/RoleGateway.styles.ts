@@ -65,13 +65,13 @@ export const RolesGrid = styled.div`
   }
 `;
 
-export const RoleCard = styled.button<{ selected?: boolean }>`
-  background: ${props => props.selected 
+export const RoleCard = styled.button<{ $selected?: boolean }>`
+  background: ${props => props.$selected 
     ? (props.theme?.colors?.primaryLight || 'rgba(211, 47, 47, 0.04)')
     : (props.theme?.colors?.bgPrimary || '#ffffff')
   };
-  border: 2px solid ${props => props.selected
-    ? (props.theme?.colors?.danger || '#d32f2f')
+  border: 2px solid ${props => props.$selected
+    ? (props.theme?.colors?.danger || '#D4AF37')
     : (props.theme?.colors?.borderColor || '#e0e0e0')
   };
   border-radius: ${props => props.theme?.radius?.xl || '1rem'};
@@ -90,13 +90,13 @@ export const RoleCard = styled.button<{ selected?: boolean }>`
     left: 0;
     right: 0;
     height: 4px;
-    background: ${props => props.theme?.colors?.danger || '#d32f2f'};
-    transform: ${props => props.selected ? 'scaleX(1)' : 'scaleX(0)'};
+    background: ${props => props.theme?.colors?.danger || '#D4AF37'};
+    transform: ${props => props.$selected ? 'scaleX(1)' : 'scaleX(0)'};
     transition: transform 0.3s ease;
   }
 
   &:hover {
-    border-color: ${props => props.theme?.colors?.danger || '#d32f2f'};
+    border-color: ${props => props.theme?.colors?.danger || '#D4AF37'};
     transform: translateY(-6px);
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
   }
@@ -105,7 +105,7 @@ export const RoleCard = styled.button<{ selected?: boolean }>`
     transform: scaleX(1);
   }
 
-  ${props => props.selected && `
+  ${props => props.$selected && `
     box-shadow: 0 0 0 3px ${props.theme?.colors?.dangerLight || 'rgba(211, 47, 47, 0.15)'};
   `}
 `;
@@ -142,7 +142,7 @@ export const ActionButtons = styled.div`
   }
 `;
 
-export const Button = styled.button<{ variant?: 'primary' | 'secondary' }>`
+export const Button = styled.button<{ $variant?: 'primary' | 'secondary' }>`
   flex: 1;
   padding: 0.875rem 1.5rem;
   font-size: 1rem;
@@ -152,7 +152,7 @@ export const Button = styled.button<{ variant?: 'primary' | 'secondary' }>`
   cursor: pointer;
   transition: all 0.3s ease;
 
-  ${props => props.variant === 'primary' ? `
+  ${props => props.$variant === 'primary' ? `
     background: ${props.theme?.colors?.primary || '#0066cc'};
     color: white;
 

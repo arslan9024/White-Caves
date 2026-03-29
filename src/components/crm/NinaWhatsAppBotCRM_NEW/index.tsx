@@ -25,19 +25,19 @@ const NinaWhatsAppBotCRM = () => {
   const renderTab = () => {
     switch (activeTab) {
       case 'bots':
-        return <BotsTab data={data} />;
+        return <BotsTab data={data as never} />;
       case 'code':
         return <CodeModulesTab data={data} />;
       case 'sessions':
-        return <SessionsTab data={data} />;
+        return <SessionsTab data={data as never} />;
       case 'analytics':
-        return <AnalyticsTab data={data} />;
+        return <AnalyticsTab data={data as never} />;
       case 'settings':
         return <NinaSettingsTab data={data} />;
       case 'features':
         return <NinaFeaturesTab data={data} />;
       default:
-        return <BotsTab data={data} />;
+        return <BotsTab data={data as never} />;
     }
   };
 

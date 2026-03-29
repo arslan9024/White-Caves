@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setUser } from '../../../../store/userSlice';
+import { setUser, type AppUser } from '../../../../store/userSlice';
 import { loginStart, loginFailure, loginSuccess } from '../../../../store/authSlice';
+import { createLogger } from '../../../../utils/logger';
+import { safeStorage } from '../../../../utils/safeStorage';
+
+const log = createLogger('BiometricLogin');
 import { 
   isPlatformAuthenticatorAvailable, 
   authenticateWithBiometric,
@@ -11,7 +15,13 @@ import {
 } from '../../../../services/webAuthnService';
 import './BiometricLogin.css';
 
-const BiometricLoginButton = ({ onSuccess, onError, disabled }) => {
+interface BiometricLoginButtonProps {
+  onSuccess?: (data: unknown) => void;
+  onError?: (error: unknown) => void;
+  disabled?: boolean;
+}
+
+const BiometricLoginButton = ({ onSuccess, onError, disabled }: BiometricLoginButtonProps) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -40,24 +50,23 @@ const BiometricLoginButton = ({ onSuccess, onError, disabled }) => {
         const sessionData = getBiometricSession();
         if (sessionData && sessionData.user) {
           dispatch(setUser({
-            id: sessionData.user.uid,
-            email: sessionData.user.email,
-            name: sessionData.user.displayName,
-            photo: sessionData.user.photoURL,
-          }));
+            id: sessionData.user.id,
+            email: sessionData.user.email || '',
+            name: sessionData.user.name || '',
+            photoURL: (sessionData.user.photoURL as string) || undefined,
+          } as AppUser));
           
           dispatch(loginSuccess({
-            user: sessionData.user,
+            user: sessionData.user as AppUser,
             token: sessionData.token,
             provider: 'biometric',
           }));
           
           onSuccess?.(sessionData.user);
           
-          const existingRole = localStorage.getItem('userRole');
+          const existingRole = safeStorage.getJSON<{ role: string }>('userRole');
           if (existingRole) {
-            const parsed = JSON.parse(existingRole);
-            navigate(`/${parsed.role}/dashboard`);
+            navigate(`/${existingRole.role}/dashboard`);
           } else {
             navigate('/select-role');
           }
@@ -65,9 +74,10 @@ const BiometricLoginButton = ({ onSuccess, onError, disabled }) => {
           throw new Error('Session expired. Please sign in with another method.');
         }
       }
-    } catch (error) {
-      console.error('Biometric login error:', error);
-      dispatch(loginFailure(error.message));
+    } catch (error: unknown) {
+      log.error('Biometric login error:', error);
+      const msg = error instanceof Error ? error.message : 'Biometric login failed';
+      dispatch(loginFailure(msg));
       onError?.(error);
     } finally {
       setLoading(false);

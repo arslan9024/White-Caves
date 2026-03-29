@@ -35,11 +35,11 @@ const TheodoraFinanceCRM = () => {
       case 'overview':
         return <OverviewTab financeStats={financeStats} />;
       case 'invoices':
-        return <InvoicesTab invoices={invoices} onSelectInvoice={setSelectedInvoice} />;
+        return <InvoicesTab invoices={invoices as any} onSelectInvoice={setSelectedInvoice as any} />;
       case 'payments':
-        return <PaymentsTab selectedInvoice={selectedInvoice} generatedMessage={generatedMessage} onGenerateMessage={handleGeneratePaymentMessage} />;
+        return <PaymentsTab selectedInvoice={selectedInvoice as any} generatedMessage={generatedMessage} onGenerateMessage={handleGeneratePaymentMessage as any} />;
       case 'expenses':
-        return <ExpensesTab expenses={expenses} onApprove={handleApproveExpense} onReject={handleRejectExpense} />;
+        return <ExpensesTab expenses={expenses as any} onApprove={handleApproveExpense as any} onReject={handleRejectExpense as any} />;
       case 'reports':
         return <ReportsTab invoices={invoices} expenses={expenses} />;
       default:
@@ -82,8 +82,8 @@ const TheodoraFinanceCRM = () => {
       <div className="features-section">
         <h3>Available Features</h3>
         <ul className="features-list">
-          {features.map((feature, index) => (
-            <li key={index} className="feature-item">
+          {features.map((feature) => (
+            <li key={feature} className="feature-item">
               <span className="feature-icon">✓</span>
               <span className="feature-text">{feature}</span>
             </li>

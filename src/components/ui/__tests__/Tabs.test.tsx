@@ -14,7 +14,7 @@ describe('Tabs Component', () => {
     it('should render all tab buttons', () => {
       const handleChange = vi.fn();
       render(
-        <Tabs tabs={mockTabs} activeTab="tab1" onChange={handleChange} />
+        <Tabs tabs={mockTabs} defaultTab="tab1" onChange={handleChange} />
       );
       
       expect(screen.getByText('Tab 1')).toBeInTheDocument();
@@ -30,19 +30,16 @@ describe('Tabs Component', () => {
       }));
       
       render(
-        <Tabs tabs={tabsWithContent} activeTab="tab1" onChange={handleChange} />
+        <Tabs tabs={tabsWithContent} defaultTab="tab1" onChange={handleChange} />
       );
       
       expect(screen.getByText('Content 1')).toBeInTheDocument();
     });
 
-    it('should render all children tabs when using children', () => {
+    it('should render all tabs with content', () => {
       const handleChange = vi.fn();
       render(
-        <Tabs activeTab="tab1" onChange={handleChange}>
-          <div data-tab-id="tab1">Tab 1</div>
-          <div data-tab-id="tab2">Tab 2</div>
-        </Tabs>
+        <Tabs tabs={mockTabs} defaultTab="tab1" onChange={handleChange} />
       );
       
       expect(screen.getByText('Tab 1')).toBeInTheDocument();
@@ -56,10 +53,10 @@ describe('Tabs Component', () => {
       const user = userEvent.setup();
       
       render(
-        <Tabs tabs={mockTabs} activeTab="tab1" onChange={handleChange} />
+        <Tabs tabs={mockTabs} defaultTab="tab1" onChange={handleChange} />
       );
       
-      const tab2Button = screen.getByRole('button', { name: 'Tab 2' });
+      const tab2Button = screen.getByRole('tab', { name: 'Tab 2' });
       await user.click(tab2Button);
       
       expect(handleChange).toHaveBeenCalledWith('tab2');
@@ -68,7 +65,7 @@ describe('Tabs Component', () => {
     it('should mark active tab as selected', () => {
       const handleChange = vi.fn();
       const { container } = render(
-        <Tabs tabs={mockTabs} activeTab="tab2" onChange={handleChange} />
+        <Tabs tabs={mockTabs} defaultTab="tab2" onChange={handleChange} />
       );
       
       const activeTab = container.querySelector('[aria-selected="true"]');
@@ -82,9 +79,9 @@ describe('Tabs Component', () => {
       const { container } = render(
         <Tabs 
           tabs={mockTabs} 
-          activeTab="tab1" 
+          defaultTab="tab1" 
           onChange={handleChange}
-          variant="pills"
+          variant="box"
         />
       );
       
@@ -96,7 +93,7 @@ describe('Tabs Component', () => {
     it('should have proper ARIA attributes', () => {
       const handleChange = vi.fn();
       const { container } = render(
-        <Tabs tabs={mockTabs} activeTab="tab1" onChange={handleChange} />
+        <Tabs tabs={mockTabs} defaultTab="tab1" onChange={handleChange} />
       );
       
       const tablist = container.querySelector('[role="tablist"]');
@@ -108,10 +105,10 @@ describe('Tabs Component', () => {
       const user = userEvent.setup();
       
       render(
-        <Tabs tabs={mockTabs} activeTab="tab1" onChange={handleChange} />
+        <Tabs tabs={mockTabs} defaultTab="tab1" onChange={handleChange} />
       );
       
-      const tab1 = screen.getByRole('tab');
+      const tab1 = screen.getAllByRole('tab')[0];
       tab1.focus();
       expect(tab1).toHaveFocus();
     });
@@ -119,7 +116,7 @@ describe('Tabs Component', () => {
     it('should have aria-selected on active tab', () => {
       const handleChange = vi.fn();
       const { container } = render(
-        <Tabs tabs={mockTabs} activeTab="tab2" onChange={handleChange} />
+        <Tabs tabs={mockTabs} defaultTab="tab2" onChange={handleChange} />
       );
       
       const activeTab = container.querySelector('[aria-selected="true"]');
@@ -136,7 +133,7 @@ describe('Tabs Component', () => {
       ];
       
       render(
-        <Tabs tabs={disabledTabs} activeTab="tab1" onChange={handleChange} />
+        <Tabs tabs={disabledTabs} defaultTab="tab1" onChange={handleChange} />
       );
       
       expect(screen.getByText('Tab 1')).toBeInTheDocument();

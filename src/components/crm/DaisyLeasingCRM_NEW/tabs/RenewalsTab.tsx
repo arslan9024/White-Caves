@@ -1,6 +1,24 @@
 import React from 'react';
 
-const RenewalsTab = ({ renewalStats, renewalList }) => {
+interface RenewalStats {
+  dueThisMonth: number;
+  renewalSent: number;
+  confirmed: number;
+}
+
+interface RenewalItem {
+  id?: string | number;
+  unit: string;
+  renewalDate: string;
+  status: string;
+}
+
+interface RenewalsTabProps {
+  renewalStats: RenewalStats;
+  renewalList: RenewalItem[];
+}
+
+const RenewalsTab: React.FC<RenewalsTabProps> = ({ renewalStats, renewalList }) => {
   return (
     <div className="renewals-view">
       <h3>Lease Renewals</h3>
@@ -21,7 +39,7 @@ const RenewalsTab = ({ renewalStats, renewalList }) => {
       {renewalList && renewalList.length > 0 && (
         <div className="renewal-list">
           {renewalList.map((renewal, index) => (
-            <div key={index} className="renewal-item">
+            <div key={renewal.id ?? `${renewal.unit}-${renewal.renewalDate}`} className="renewal-item">
               <span className="unit">{renewal.unit}</span>
               <span className="date">{renewal.renewalDate}</span>
               <span className={`status ${renewal.status}`}>{renewal.status}</span>

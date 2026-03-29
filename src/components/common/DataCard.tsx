@@ -29,7 +29,7 @@ interface DataCardProps {
   fullWidth?: boolean;
 }
 
-export default function DataCard({
+function DataCard({
   title,
   viewAllLink,
   viewAllText = 'View All',
@@ -112,7 +112,7 @@ export function DataListItem({
     >
       {(icon || avatar || avatarText) && (
         <ItemAvatar>
-          {avatar ? <img src={avatar} alt={title} /> : avatarText ? <AvatarText>{avatarText}</AvatarText> : <AvatarIcon>{icon}</AvatarIcon>}
+          {avatar ? <img src={avatar} alt={title} loading="lazy" width={40} height={40} /> : avatarText ? <AvatarText>{avatarText}</AvatarText> : <AvatarIcon>{icon}</AvatarIcon>}
         </ItemAvatar>
       )}
 
@@ -131,3 +131,5 @@ export function DataListItem({
     </DataListItemContainer>
   );
 }
+
+export default React.memo(DataCard);

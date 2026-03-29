@@ -4,6 +4,10 @@
  * Features: Message routing, lead capture, customer support
  */
 
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('WhatsApp');
+
 class WhatsAppBotService {
   private botToken: string | undefined;
   private phoneNumberId: string | undefined;
@@ -11,6 +15,16 @@ class WhatsAppBotService {
   constructor() {
     this.botToken = process.env.WHATSAPP_BOT_TOKEN;
     this.phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+
+    // Warn in dev, fail in production if credentials missing
+    if (!this.botToken || !this.phoneNumberId) {
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error(
+          'CRITICAL: WHATSAPP_BOT_TOKEN and WHATSAPP_PHONE_NUMBER_ID must be set in production'
+        );
+      }
+      log.warn('WhatsApp credentials not configured — bot features disabled');
+    }
   }
 
   /**
@@ -18,9 +32,11 @@ class WhatsAppBotService {
    */
   async initialize(): Promise<void> {
     if (!this.botToken || !this.phoneNumberId) {
-      throw new Error('WhatsApp credentials not configured');
+      throw new Error(
+        'WhatsApp credentials not configured. Set WHATSAPP_BOT_TOKEN and WHATSAPP_PHONE_NUMBER_ID environment variables.'
+      );
     }
-    console.log('WhatsApp Bot initialized');
+    log.info('WhatsApp Bot initialized');
   }
 
   /**
@@ -28,15 +44,15 @@ class WhatsAppBotService {
    */
   async sendMessage(phoneNumber: string, message: string): Promise<void> {
     // Implementation pending
-    console.log(`Sending message to ${phoneNumber}: ${message}`);
+    log.info(`Sending message to ${phoneNumber}`);
   }
 
   /**
    * Handle incoming message
    */
-  async handleIncomingMessage(data: any): Promise<void> {
+  async handleIncomingMessage(data: { from?: string; body?: string; timestamp?: number }): Promise<void> {
     // Implementation pending
-    console.log('Incoming message received:', data);
+    log.info('Incoming message received', { from: data?.from });
   }
 
   /**
@@ -44,15 +60,15 @@ class WhatsAppBotService {
    */
   async processMessage(messageBody: string, senderPhone: string): Promise<void> {
     // Implementation pending
-    console.log(`Processing message from ${senderPhone}: ${messageBody}`);
+    log.info(`Processing message from ${senderPhone}`);
   }
 
   /**
    * Send template message
    */
-  async sendTemplateMessage(phoneNumber: string, templateName: string, parameters?: any[]): Promise<void> {
+  async sendTemplateMessage(phoneNumber: string, templateName: string, parameters?: Array<{ type: string; text: string }>): Promise<void> {
     // Implementation pending
-    console.log(`Sending template ${templateName} to ${phoneNumber}`);
+    log.info(`Sending template ${templateName} to ${phoneNumber}`);
   }
 }
 

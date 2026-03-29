@@ -1,4 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createLogger } from '../../utils/logger';
+import { authFetch } from '../../utils/authFetch';
+import { useToast } from '../Toast';
+import type { CRMModuleProps } from './types';
+
+const log = createLogger('RERACompliance');
+
+interface RERAAgent {
+  id: string | number;
+  name: string;
+  reraNumber?: string | null;
+  status: string;
+  expiryDate?: string | null;
+  [key: string]: unknown;
+}
 
 /**
  * RERA Compliance Module
@@ -12,30 +27,28 @@ import React, { useState, useEffect } from 'react';
  * - Alert system for expired licenses
  */
 
-export default function RERAComplianceModule({ role, user, data }) {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [agents, setAgents] = useState([]);
-  const [reraStatus, setReraStatus] = useState({});
+export default function RERAComplianceModule({ role, user, data }: CRMModuleProps) {
+  const toast = useToast();
+  const [activeTab, setActiveTab] = useState<string>('dashboard');
+  const [agents, setAgents] = useState<RERAAgent[]>([]);
+  const [reraStatus, setReraStatus] = useState<Record<string, unknown>>({});
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedAgent, setSelectedAgent] = useState(null);
+  const [selectedAgent, setSelectedAgent] = useState<RERAAgent | null>(null);
   const [formData, setFormData] = useState({
     licenseNumber: '',
     expiryDate: '',
     agentName: '',
   });
+  const isMountedRef = useRef(true);
 
-  useEffect(() => {
-    fetchRERAStatus();
-  }, []);
-
-  const fetchRERAStatus = async () => {
+  const fetchRERAStatus = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/rera/status');
+      const response = await authFetch('/api/rera/status');
+      if (!isMountedRef.current) return;
       if (response.ok) {
         const data = await response.json();
         setReraStatus(data);
-        // Extract agents from response or use mock data
         setAgents(data.agents || []);
       } else {
         // Mock data for development
@@ -46,21 +59,31 @@ export default function RERAComplianceModule({ role, user, data }) {
         ]);
       }
     } catch (error) {
-      console.error('Failed to fetch RERA status:', error);
+      if (!isMountedRef.current) return;
+      log.error('Failed to fetch RERA status:', error);
       // Fallback to mock data
       setAgents([
         { id: 1, name: 'Ahmed Al-Mansouri', reraNumber: 'RERA-123456', status: 'valid', expiryDate: '2025-12-31' },
         { id: 2, name: 'Fatima Al-Naqbi', reraNumber: 'RERA-234567', status: 'expired', expiryDate: '2023-06-30' },
       ]);
     } finally {
-      setIsLoading(false);
+      if (isMountedRef.current) setIsLoading(false);
     }
-  };
+  }, []);
 
-  const handleRegisterRERA = async (e) => {
+  useEffect(() => {
+    isMountedRef.current = true;
+    fetchRERAStatus();
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, [fetchRERAStatus]);
+
+  const handleRegisterRERA = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/rera/register', {
+      const response = await authFetch('/api/rera/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -68,15 +91,15 @@ export default function RERAComplianceModule({ role, user, data }) {
       if (response.ok) {
         fetchRERAStatus();
         setFormData({ licenseNumber: '', expiryDate: '', agentName: '' });
-        alert('RERA registration successful!');
+        toast.success('RERA registration successful!');
       }
     } catch (error) {
-      console.error('RERA registration error:', error);
-      alert('Failed to register RERA');
+      log.error('RERA registration error:', error);
+      toast.error('Failed to register RERA');
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string): string => {
     switch (status) {
       case 'valid':
         return '#22c55e';

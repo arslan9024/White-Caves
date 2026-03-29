@@ -58,7 +58,13 @@ const AppLayout: React.FC<AppLayoutProps> = ({
     <AppLayoutContainer>
       <UnifiedNavbar 
         title={getPageTitle()}
-        user={user as any}
+        user={user ? {
+          name: user.name || user.email,
+          email: user.email,
+          role: (['admin', 'super_user', 'agent', 'client'] as const).includes(
+            user.role as 'admin' | 'super_user' | 'agent' | 'client'
+          ) ? (user.role as 'admin' | 'super_user' | 'agent' | 'client') : undefined,
+        } : undefined}
         notifications={[]}
         systemStatus="online"
       />

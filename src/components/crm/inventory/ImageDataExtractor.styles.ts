@@ -335,7 +335,7 @@ export const ImagePreviewModal = styled.div`
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.9);
-  z-index: 9999;
+  z-index: var(--z-fullscreen, 700);
   display: flex;
   align-items: center;
   justify-content: center;

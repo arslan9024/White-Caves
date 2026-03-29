@@ -5,17 +5,24 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
+import type { AuthRequest } from '../middleware/auth';
+import { prisma } from '../database.js';
+import { sanitizeString } from '../utils/sanitize';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // ─── GET /api/compliance/status ─────────────────────────────────────────
 // Overall compliance health check
 router.get(
   '/status',
   asyncHandler(async (req: Request, res: Response) => {
+    // AUTHORIZATION: Only managers/finance can view compliance status
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — compliance data requires manager role', 403);
+    }
+
     // Check key compliance metrics
     const [totalProperties, propertiesWithDocs, totalAgents, activeAgents] = await Promise.all([
       prisma.property.count(),
@@ -50,6 +57,12 @@ router.get(
 router.get(
   '/requirements',
   asyncHandler(async (req: Request, res: Response) => {
+    // AUTHORIZATION: Only managers/finance can view compliance requirements
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — compliance data requires manager role', 403);
+    }
+
     const requirements = [
       { id: 'rera-license', name: 'RERA Broker License', category: 'licensing', status: 'compliant', dueDate: '2027-01-01' },
       { id: 'dld-registration', name: 'DLD Registration', category: 'licensing', status: 'compliant', dueDate: '2027-01-01' },
@@ -66,15 +79,21 @@ router.get(
 );
 
 // ─── GET /api/compliance/audit-logs ─────────────────────────────────────
-// Audit trail from activity log
+// Audit trail from activity log — RESTRICTED to owner/manager roles
 router.get(
   '/audit-logs',
   asyncHandler(async (req: Request, res: Response) => {
-    const { page = '1', pageSize = '50', type, action } = req.query;
-    const pageNum = Math.max(1, parseInt(page as string));
-    const limit = Math.min(100, Math.max(1, parseInt(pageSize as string)));
+    // AUTHORIZATION: audit logs contain sensitive info — owner/manager only
+    const userRole = req.user?.role || '';
+    if (!['owner', 'manager'].includes(userRole)) {
+      throw new AppError('Access denied — audit logs require owner or manager role', 403);
+    }
 
-    const where: any = {};
+    const { page = '1', pageSize = '50', type, action } = req.query;
+    const pageNum = Math.max(1, parseInt(page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 50));
+
+    const where: Record<string, unknown> = {};
     if (type && type !== 'all') where.type = type as string;
     if (action && action !== 'all') where.action = action as string;
 
@@ -85,7 +104,7 @@ router.get(
         skip: (pageNum - 1) * limit,
         take: limit,
         include: {
-          user: { select: { id: true, name: true, email: true, role: true } },
+          user: { select: { id: true, name: true, role: true } },
         },
       }),
       prisma.activity.count({ where }),
@@ -93,7 +112,7 @@ router.get(
 
     res.status(200).json({
       success: true,
-      data: logs.map((l: any) => ({
+      data: logs.map((l) => ({
         id: l.id,
         type: l.type,
         action: l.action,
@@ -108,24 +127,37 @@ router.get(
 );
 
 // ─── POST /api/compliance/reports ───────────────────────────────────────
-// Submit a compliance report
+// Submit a compliance report — RESTRICTED to owner/manager roles
 router.post(
   '/reports',
   asyncHandler(async (req: Request, res: Response) => {
+    // AUTHORIZATION: compliance report submission requires elevated privileges
+    const userRole = req.user?.role || '';
+    if (!['owner', 'manager'].includes(userRole)) {
+      throw new AppError('Access denied — only owners/managers can submit compliance reports', 403);
+    }
+
     const { title, findings, recommendations } = req.body;
 
     if (!title) throw new AppError('Report title is required', 400);
+    if (typeof title !== 'string' || title.trim().length > 500) {
+      throw new AppError('Report title must be 500 characters or less', 400);
+    }
+
+    const sanitizedTitle = sanitizeString(title.trim());
+    const sanitizedFindings = findings ? sanitizeString(String(findings).substring(0, 10000)) : '';
+    const sanitizedRecommendations = recommendations ? sanitizeString(String(recommendations).substring(0, 10000)) : '';
 
     const activity = await prisma.activity.create({
       data: {
         type: 'system',
         action: 'created',
-        description: `Compliance report submitted: ${title}`,
-        userId: (req as any).user?.id || null,
+        description: `Compliance report submitted: ${sanitizedTitle}`,
+        userId: req.user?.id || null,
         metadata: {
-          reportTitle: title,
-          findings: findings || '',
-          recommendations: recommendations || '',
+          reportTitle: sanitizedTitle,
+          findings: sanitizedFindings,
+          recommendations: sanitizedRecommendations,
           submittedAt: new Date().toISOString(),
         },
       },

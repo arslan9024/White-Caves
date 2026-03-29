@@ -1,7 +1,21 @@
 import React from 'react';
 import { Zap, TrendingUp } from 'lucide-react';
 
-const CachingTab = ({ cacheStats, cacheHealth }) => {
+interface CacheStats {
+  totalHits: number;
+  totalMisses: number;
+  memoryUsed: number;
+  memoryTotal: number;
+  missRate: number;
+  ttlAvg: number;
+}
+
+interface CachingTabProps {
+  cacheStats: CacheStats;
+  cacheHealth: number;
+}
+
+const CachingTab: React.FC<CachingTabProps> = ({ cacheStats, cacheHealth }) => {
   return (
     <div className="caching-view">
       <h3>Caching Strategy</h3>

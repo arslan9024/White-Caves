@@ -1,7 +1,36 @@
 import React from 'react';
 import { Database, HardDrive, Zap } from 'lucide-react';
 
-const DatabaseTab = ({ metrics, dbHealth }) => {
+interface QueryPerformance {
+  avgTime: number;
+  slowQueries: number;
+  indexHits: number;
+}
+
+interface Operations {
+  reads: number;
+  writes: number;
+  updates: number;
+}
+
+interface DatabaseMetrics {
+  queryPerformance: QueryPerformance;
+  operations: Operations;
+}
+
+interface DBHealth {
+  connections: number;
+  connectionPercentage: number;
+  storage: string;
+  storagePercentage: number;
+}
+
+interface DatabaseTabProps {
+  metrics: DatabaseMetrics;
+  dbHealth: DBHealth;
+}
+
+const DatabaseTab: React.FC<DatabaseTabProps> = ({ metrics, dbHealth }) => {
   return (
     <div className="database-view">
       <h3>Database Metrics</h3>

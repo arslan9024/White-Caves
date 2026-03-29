@@ -1,4 +1,6 @@
-import React, { FC, useState, ChangeEvent, FormEvent } from 'react';
+import React, { FC, useState, useRef, useEffect, useCallback, ChangeEvent, FormEvent } from 'react';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { isValidEmail, isValidPhone, isRequired, isWithinLength, MAX_MESSAGE_LENGTH } from '../utils/validation';
 import './ContactPage.css';
 
 // Type definitions
@@ -11,6 +13,7 @@ interface ContactForm {
 }
 
 const ContactPage: FC = () => {
+  useDocumentTitle('Contact Us');
   const [formData, setFormData] = useState<ContactForm>({
     name: '',
     email: '',
@@ -19,16 +22,55 @@ const ContactPage: FC = () => {
     message: ''
   });
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [errors, setErrors] = useState<Partial<Record<keyof ContactForm, string>>>({});
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup timeout on unmount to prevent state update on unmounted component
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  const validate = (): boolean => {
+    const newErrors: Partial<Record<keyof ContactForm, string>> = {};
+    if (!isRequired(formData.name)) newErrors.name = 'Name is required';
+    if (!isRequired(formData.email)) {
+      newErrors.email = 'Email is required';
+    } else if (!isValidEmail(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+    if (!formData.subject) newErrors.subject = 'Please select a subject';
+    if (!isRequired(formData.message)) {
+      newErrors.message = 'Message is required';
+    } else if (!isWithinLength(formData.message, MAX_MESSAGE_LENGTH)) {
+      newErrors.message = `Message must be less than ${MAX_MESSAGE_LENGTH} characters`;
+    }
+    if (formData.phone && !isValidPhone(formData.phone)) {
+      newErrors.phone = 'Please enter a valid phone number';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>): void => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    // Clear field error on change
+    if (errors[name as keyof ContactForm]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
+    if (!validate()) return;
     setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 5000);
+    // Clear any existing timer, then set a new one tracked by ref for cleanup
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setSubmitted(false), 5000);
     setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+    setErrors({});
   };
 
   return (
@@ -184,7 +226,10 @@ const ContactPage: FC = () => {
                   onChange={handleChange}
                   required
                   placeholder="Enter your full name"
+                  aria-invalid={!!errors.name}
+                  aria-describedby={errors.name ? 'name-error' : undefined}
                 />
+                {errors.name && <span id="name-error" className="field-error" role="alert">{errors.name}</span>}
               </div>
 
               <div className="form-row">
@@ -198,7 +243,10 @@ const ContactPage: FC = () => {
                     onChange={handleChange}
                     required
                     placeholder="your@email.com"
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? 'email-error' : undefined}
                   />
+                  {errors.email && <span id="email-error" className="field-error" role="alert">{errors.email}</span>}
                 </div>
                 <div className="form-group">
                   <label htmlFor="phone">Phone Number</label>
@@ -209,7 +257,10 @@ const ContactPage: FC = () => {
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="+971 XX XXX XXXX"
+                    aria-invalid={!!errors.phone}
+                    aria-describedby={errors.phone ? 'phone-error' : undefined}
                   />
+                  {errors.phone && <span id="phone-error" className="field-error" role="alert">{errors.phone}</span>}
                 </div>
               </div>
 
@@ -262,7 +313,7 @@ const ContactPage: FC = () => {
               width="100%"
               height="400"
               style={{ border: 0 }}
-              allowFullScreen=""
+              allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               title="White Caves Location"

@@ -1,13 +1,13 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { DUMMY_EMPLOYEES, Employee } from '../data/employees';
 import { DUMMY_JOBS, Job } from '../data/jobs';
 import { DUMMY_APPLICANTS, Applicant } from '../data/applicants';
 
 export const useHRData = () => {
-  // State management
-  const [employees, setEmployees] = useState<Employee[]>(DUMMY_EMPLOYEES);
-  const [jobs, setJobs] = useState<Job[]>(DUMMY_JOBS);
-  const [applicants, setApplicants] = useState<Applicant[]>(DUMMY_APPLICANTS);
+  // Only use dummy data in development — production fetches from API
+  const [employees, setEmployees] = useState<Employee[]>(import.meta.env.DEV ? DUMMY_EMPLOYEES : []);
+  const [jobs, setJobs] = useState<Job[]>(import.meta.env.DEV ? DUMMY_JOBS : []);
+  const [applicants, setApplicants] = useState<Applicant[]>(import.meta.env.DEV ? DUMMY_APPLICANTS : []);
   
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filterDepartment, setFilterDepartment] = useState<string>('all');
@@ -23,8 +23,8 @@ export const useHRData = () => {
   const [showApplicantModal, setShowApplicantModal] = useState<boolean>(false);
   const [nancyActive, setNancyActive] = useState<boolean>(true);
 
-  // Filter employees
-  const filteredEmployees = useCallback(() => {
+  // Filter employees (memoized for stable references)
+  const filteredEmployees = useMemo(() => {
     return employees.filter(emp => {
       const matchesSearch = emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            emp.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -34,16 +34,16 @@ export const useHRData = () => {
     });
   }, [employees, searchQuery, filterDepartment]);
 
-  // Filter jobs
-  const filteredJobs = useCallback(() => {
+  // Filter jobs (memoized for stable references)
+  const filteredJobs = useMemo(() => {
     return jobs.filter(job => {
       const matchesStatus = filterJobStatus === 'all' || job.status === filterJobStatus;
       return matchesStatus;
     });
   }, [jobs, filterJobStatus]);
 
-  // Filter applicants
-  const filteredApplicants = useCallback(() => {
+  // Filter applicants (memoized for stable references)
+  const filteredApplicants = useMemo(() => {
     return applicants.filter(app => {
       const matchesSearch = app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            app.email.toLowerCase().includes(searchQuery.toLowerCase());
@@ -52,17 +52,20 @@ export const useHRData = () => {
     });
   }, [applicants, searchQuery, filterApplicantStatus]);
 
-  // Get unique departments
-  const departments = Array.from(new Set(employees.map(e => e.department)));
+  // Get unique departments (memoized)
+  const departments = useMemo(
+    () => Array.from(new Set(employees.map(e => e.department))),
+    [employees]
+  );
 
-  // Stats calculation
-  const stats = {
+  // Stats calculation (memoized)
+  const stats = useMemo(() => ({
     totalEmployees: employees.length,
     activeEmployees: employees.filter(e => e.status === 'active').length,
     onLeave: employees.filter(e => e.status === 'on_leave').length,
     openPositions: jobs.filter(j => j.status === 'open').length,
     totalApplicants: applicants.length
-  };
+  }), [employees, jobs, applicants]);
 
   // Helper functions for status badges
   const getStatusColor = (status: string): string => {
@@ -94,60 +97,60 @@ export const useHRData = () => {
     }
   };
 
-  // CRUD operations
+  // CRUD operations — use functional updaters to avoid stale closures
   const addEmployee = useCallback((newEmployee: Partial<Employee>) => {
     const employee = {
-      id: `EMP-${String(employees.length + 1).padStart(3, '0')}`,
+      id: `EMP-${String(Date.now()).slice(-3).padStart(3, '0')}`,
       ...newEmployee,
       status: newEmployee.status || 'active'
-    };
-    setEmployees([...employees, employee]);
+    } as Employee;
+    setEmployees(prev => [...prev, employee]);
     return employee;
-  }, [employees]);
+  }, []);
 
   const updateEmployee = useCallback((id: string, updates: Partial<Employee>) => {
-    setEmployees(employees.map(emp => emp.id === id ? { ...emp, ...updates } : emp));
-  }, [employees]);
+    setEmployees(prev => prev.map(emp => emp.id === id ? { ...emp, ...updates } : emp));
+  }, []);
 
   const deleteEmployee = useCallback((id: string) => {
-    setEmployees(employees.filter(emp => emp.id !== id));
-  }, [employees]);
+    setEmployees(prev => prev.filter(emp => emp.id !== id));
+  }, []);
 
   const addJob = useCallback((newJob: Partial<Job>) => {
     const job = {
-      id: `JOB-${String(jobs.length + 1).padStart(3, '0')}`,
+      id: `JOB-${String(Date.now()).slice(-3).padStart(3, '0')}`,
       ...newJob,
       status: newJob.status || 'open'
-    };
-    setJobs([...jobs, job]);
+    } as Job;
+    setJobs(prev => [...prev, job]);
     return job;
-  }, [jobs]);
+  }, []);
 
   const updateJob = useCallback((id: string, updates: Partial<Job>) => {
-    setJobs(jobs.map(job => job.id === id ? { ...job, ...updates } : job));
-  }, [jobs]);
+    setJobs(prev => prev.map(job => job.id === id ? { ...job, ...updates } : job));
+  }, []);
 
   const deleteJob = useCallback((id: string) => {
-    setJobs(jobs.filter(job => job.id !== id));
-  }, [jobs]);
+    setJobs(prev => prev.filter(job => job.id !== id));
+  }, []);
 
   const addApplicant = useCallback((newApplicant: Partial<Applicant>) => {
     const applicant = {
-      id: `APP-${String(applicants.length + 1).padStart(3, '0')}`,
+      id: `APP-${String(Date.now()).slice(-3).padStart(3, '0')}`,
       ...newApplicant,
       status: newApplicant.status || 'new'
-    };
-    setApplicants([...applicants, applicant]);
+    } as Applicant;
+    setApplicants(prev => [...prev, applicant]);
     return applicant;
-  }, [applicants]);
+  }, []);
 
   const updateApplicant = useCallback((id: string, updates: Partial<Applicant>) => {
-    setApplicants(applicants.map(app => app.id === id ? { ...app, ...updates } : app));
-  }, [applicants]);
+    setApplicants(prev => prev.map(app => app.id === id ? { ...app, ...updates } : app));
+  }, []);
 
   const deleteApplicant = useCallback((id: string) => {
-    setApplicants(applicants.filter(app => app.id !== id));
-  }, [applicants]);
+    setApplicants(prev => prev.filter(app => app.id !== id));
+  }, []);
 
   return {
     // Data
@@ -158,9 +161,9 @@ export const useHRData = () => {
     stats,
     
     // Filters
-    filteredEmployees: filteredEmployees(),
-    filteredJobs: filteredJobs(),
-    filteredApplicants: filteredApplicants(),
+    filteredEmployees,
+    filteredJobs,
+    filteredApplicants,
     
     // Search & Filter states
     searchQuery,

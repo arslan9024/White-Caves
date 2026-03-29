@@ -5,6 +5,27 @@ import {
 } from 'lucide-react';
 import './BotComponents.css';
 
+interface Bot {
+  id: string;
+  name: string;
+  number: string;
+  status: string;
+  qrCode?: string;
+  messagesProcessed?: number;
+  responseRate?: number;
+  uptime?: string;
+  features?: string[];
+}
+
+interface BotSessionManagerProps {
+  bots?: Bot[];
+  onCreateBot?: (data: { name: string; number: string }) => void;
+  onDeleteBot?: (botId: string) => void;
+  onRefreshSession?: (botId: string) => void;
+  onSelectBot?: (botId: string) => void;
+  selectedBotId?: string | null;
+}
+
 const BotSessionManager = memo(({ 
   bots = [],
   onCreateBot,
@@ -12,9 +33,9 @@ const BotSessionManager = memo(({
   onRefreshSession,
   onSelectBot,
   selectedBotId
-}) => {
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
+}: BotSessionManagerProps) => {
+  const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [newBotName, setNewBotName] = useState('');
   const [newBotNumber, setNewBotNumber] = useState('');
   
@@ -27,14 +48,14 @@ const BotSessionManager = memo(({
     }
   }, [newBotName, newBotNumber, onCreateBot]);
   
-  const handleDeleteBot = useCallback((botId) => {
+  const handleDeleteBot = useCallback((botId: string) => {
     if (onDeleteBot) {
       onDeleteBot(botId);
     }
     setShowDeleteConfirm(null);
   }, [onDeleteBot]);
   
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case 'connected': return <Wifi size={14} className="status-icon connected" />;
       case 'disconnected': return <WifiOff size={14} className="status-icon disconnected" />;
@@ -43,7 +64,7 @@ const BotSessionManager = memo(({
     }
   };
   
-  const getStatusLabel = (status) => {
+  const getStatusLabel = (status: string): string => {
     switch (status) {
       case 'connected': return 'Connected';
       case 'disconnected': return 'Disconnected';
@@ -103,7 +124,7 @@ const BotSessionManager = memo(({
               <div className="qr-section">
                 {bot.qrCode ? (
                   <div className="qr-display">
-                    <img src={bot.qrCode} alt="Scan QR Code" />
+                    <img src={bot.qrCode} alt="Scan QR Code" loading="lazy" width={200} height={200} />
                     <p>Scan with WhatsApp</p>
                   </div>
                 ) : (
@@ -132,8 +153,8 @@ const BotSessionManager = memo(({
             
             {bot.features && bot.features.length > 0 && (
               <div className="bot-features">
-                {bot.features.map((feature, idx) => (
-                  <span key={idx} className="feature-tag">{feature}</span>
+                {bot.features.map((feature) => (
+                  <span key={feature} className="feature-tag">{feature}</span>
                 ))}
               </div>
             )}
@@ -142,8 +163,8 @@ const BotSessionManager = memo(({
       </div>
       
       {showCreateModal && (
-        <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <div className="modal-overlay" onClick={() => setShowCreateModal(false)} role="presentation">
+          <div className="modal-content" role="dialog" aria-modal="true" aria-label="Create new WhatsApp bot" onClick={e => e.stopPropagation()} onKeyDown={e => { if (e.key === 'Escape') setShowCreateModal(false); }}>
             <div className="modal-header">
               <h4>Create New WhatsApp Bot</h4>
               <button className="close-btn" onClick={() => setShowCreateModal(false)}>
@@ -190,8 +211,8 @@ const BotSessionManager = memo(({
       )}
       
       {showDeleteConfirm && (
-        <div className="modal-overlay" onClick={() => setShowDeleteConfirm(null)}>
-          <div className="modal-content confirm" onClick={e => e.stopPropagation()}>
+        <div className="modal-overlay" onClick={() => setShowDeleteConfirm(null)} role="presentation">
+          <div className="modal-content confirm" role="alertdialog" aria-modal="true" aria-label="Confirm bot deletion" onClick={e => e.stopPropagation()} onKeyDown={e => { if (e.key === 'Escape') setShowDeleteConfirm(null); }}>
             <div className="confirm-icon">
               <AlertTriangle size={48} />
             </div>

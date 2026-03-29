@@ -86,7 +86,7 @@ class CommissionPersistenceManager {
   /**
    * Sync storage with API
    */
-  async syncWithApi(): Promise<void> {
+  async syncWithApi(): Promise<any[]> {
     try {
       const localData = this.getPersistedCommissions();
       const remoteData = await this.apiClient.fetchCommissions();
@@ -551,7 +551,7 @@ describe('Commission Persistence Integration Tests', () => {
           amount: 1000,
           details: {
             project: { id: 'p1', name: 'Project A' },
-            freelancer: { id: 'f1', username: 'john' },
+            agent: { id: 'f1', username: 'john' },
           },
         },
       ];

@@ -106,7 +106,7 @@ export const SkeletonLoader: FC<SkeletonLoaderProps> = ({
       return (
         <SkeletonLoadingGrid className={className} style={style}>
           {Array.from({ length: count }).map((_, i) => (
-            <SkeletonLoadingCard key={i}>
+            <SkeletonLoadingCard key={`skeleton-grid-${i}`}>
               <Skeleton variant="rounded" width="100%" height="150px" />
               <div style={{ padding: '12px' }}>
                 <Skeleton variant="text" width="70%" height="16px" />
@@ -122,7 +122,7 @@ export const SkeletonLoader: FC<SkeletonLoaderProps> = ({
         <SkeletonLoadingText className={className} style={style}>
           {Array.from({ length: count }).map((_, i) => (
             <Skeleton
-              key={i}
+              key={`skeleton-text-${i}`}
               variant="text"
               width={i === count - 1 ? '80%' : '100%'}
               height="16px"

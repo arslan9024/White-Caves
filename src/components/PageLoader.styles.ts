@@ -40,7 +40,7 @@ export const PageLoaderOverlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: var(--z-fullscreen, 700);
   animation: ${fadeIn} 0.3s ease;
 
   [data-theme='dark'] & {

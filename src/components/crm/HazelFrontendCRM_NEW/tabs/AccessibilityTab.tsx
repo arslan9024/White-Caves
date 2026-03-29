@@ -1,13 +1,24 @@
 import React from 'react';
 import { Accessibility, CheckCircle, AlertTriangle } from 'lucide-react';
 
-const AccessibilityTab = ({ audit }) => {
+interface AuditItem {
+  category: string;
+  status: string;
+  score: number;
+  issues: number;
+}
+
+interface AccessibilityTabProps {
+  audit: AuditItem[];
+}
+
+const AccessibilityTab: React.FC<AccessibilityTabProps> = ({ audit }) => {
   return (
     <div className="accessibility-view">
       <h3>Accessibility Audit</h3>
       
       <div className="audit-grid">
-        {audit.map(item => (
+        {audit.map((item: AuditItem) => (
           <div key={item.category} className={`audit-card status-${item.status}`}>
             <div className="audit-header">
               <div className="audit-title">

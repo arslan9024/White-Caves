@@ -1,32 +1,44 @@
 import React, { useState } from 'react';
+import type { WhatsAppTabProps } from './types';
 import './TabStyles.css';
 
-const WhatsAppTab = ({ data, loading, onAction }) => {
+const WhatsAppTab: React.FC<WhatsAppTabProps> = ({ data, loading, onAction }) => {
   const [broadcastMessage, setBroadcastMessage] = useState('');
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="whatsapp-tab">
+        <div className="tab-loading-state" role="status" aria-label="Loading WhatsApp data">
+          <div className="loading-spinner" />
+          <p>Loading WhatsApp data...</p>
+        </div>
+      </div>
+    );
+  }
+
   const stats = data?.whatsappStats || {
-    totalContacts: 3456,
-    activeConversations: 89,
-    messagesThisMonth: 12450,
-    responseRate: 94,
-    avgResponseTime: '8 min',
-    leadsGenerated: 234
+    totalContacts: 0,
+    activeConversations: 0,
+    messagesThisMonth: 0,
+    responseRate: 0,
+    avgResponseTime: '—',
+    leadsGenerated: 0
   };
 
-  const recentMessages = [
-    { id: 1, contact: '+971 50 123 4567', name: 'Khalid Ahmed', message: 'Interested in Palm Jumeirah villa', status: 'unread', time: '2 min ago', agent: null },
-    { id: 2, contact: '+44 7700 123 456', name: 'Emily Watson', message: 'When can I schedule a viewing?', status: 'replied', time: '15 min ago', agent: 'Sara Khan' },
-    { id: 3, contact: '+971 55 987 6543', name: 'Mohammed Ali', message: 'What is the price for Downtown apartment?', status: 'read', time: '1 hour ago', agent: 'Ahmed Ali' },
-    { id: 4, contact: '+86 138 0000 1234', name: 'Chen Wei', message: 'Looking for investment properties', status: 'unread', time: '2 hours ago', agent: null },
-  ];
+  interface WhatsAppMessage {
+    id: string;
+    name: string;
+    time: string;
+    message: string;
+    contact: string;
+    agent?: string;
+    status: string;
+  }
 
-  const templates = [
-    { id: 1, name: 'Welcome Message', category: 'greeting', uses: 1245 },
-    { id: 2, name: 'Property Details', category: 'property', uses: 892 },
-    { id: 3, name: 'Viewing Confirmation', category: 'booking', uses: 567 },
-    { id: 4, name: 'Follow-up', category: 'followup', uses: 445 },
-    { id: 5, name: 'Price Quote', category: 'property', uses: 389 },
-  ];
+  const recentMessages: WhatsAppMessage[] = [];
+
+  const templates: Array<{ id: number; name: string; category: string; uses: number }> = [];
 
   return (
     <div className="whatsapp-tab">
@@ -164,4 +176,4 @@ const WhatsAppTab = ({ data, loading, onAction }) => {
   );
 };
 
-export default WhatsAppTab;
+export default React.memo(WhatsAppTab);

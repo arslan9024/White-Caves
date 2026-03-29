@@ -3,6 +3,21 @@
 // =============================================================================
 
 /**
+ * Common props shared by CRM module components
+ * (LeadScoringModule, DLDIntegrationModule, RERAComplianceModule, PropertyValuationModule)
+ */
+export interface CRMModuleProps {
+  role: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role?: string;
+  } | null;
+  data?: Record<string, unknown>;
+}
+
+/**
  * Dashboard view types - all supported dashboard views
  */
 export type DashboardView =

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
+import { Config } from '../../../config/constants';
+import type { SettingsTabProps } from './types';
 import './TabStyles.css';
 
-const SettingsTab = ({ data, onAction, onSave }) => {
+const SettingsTab: React.FC<SettingsTabProps> = ({ data, onAction, onSave }) => {
   const [settings, setSettings] = useState({
-    companyName: 'White Caves Real Estate LLC',
-    companyEmail: 'info@whitecaves.ae',
-    companyPhone: '+971 56 361 6136',
-    address: 'Office D-72, El-Shaye-4, Port Saeed, Dubai',
+    companyName: Config.COMPANY.NAME,
+    companyEmail: Config.COMPANY.EMAIL,
+    companyPhone: Config.COMPANY.PHONE,
+    address: Config.COMPANY.ADDRESS,
     reraNumber: 'RERA-12345',
     dldLicense: 'Active',
     established: '2009',
@@ -19,7 +21,7 @@ const SettingsTab = ({ data, onAction, onSave }) => {
     darkMode: false
   });
 
-  const handleChange = (key, value) => {
+  const handleChange = (key: string, value: string | boolean) => {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
@@ -200,8 +202,8 @@ const SettingsTab = ({ data, onAction, onSave }) => {
         <div className="settings-card">
           <h4>System Health</h4>
           <div className="health-list">
-            {systemHealth.map((service, index) => (
-              <div key={index} className="health-item">
+            {systemHealth.map((service) => (
+              <div key={service.name} className="health-item">
                 <div className="health-info">
                   <span className={`health-indicator ${service.status}`}></span>
                   <span className="health-name">{service.name}</span>
@@ -238,4 +240,4 @@ const SettingsTab = ({ data, onAction, onSave }) => {
   );
 };
 
-export default SettingsTab;
+export default React.memo(SettingsTab);

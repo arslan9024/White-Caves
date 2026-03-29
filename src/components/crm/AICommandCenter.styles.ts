@@ -18,7 +18,7 @@ export const CommandCenterHeader = styled.header`
   backdrop-filter: blur(12px);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: var(--z-sticky, 200);
 `;
 
 export const HeaderLeft = styled.div`

@@ -2,39 +2,57 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
-import authReducer from '../../../redux/slices/authSlice';
+import { configureStore, type EnhancedStore } from '@reduxjs/toolkit';
+import authReducer from '../../../store/authSlice';
 import AdminDashboard from '../AdminDashboard';
+import type { ReactElement } from 'react';
+
+// Helper to create a full auth preloaded state
+const createAuthState = (overrides: Record<string, unknown> = {}) => ({
+  user: {
+    id: 'admin-123',
+    displayName: 'John Admin',
+    email: 'admin@whitecaves.ae',
+    role: 'admin',
+  },
+  token: null,
+  refreshToken: null,
+  session: {
+    isLoggedIn: true,
+    lastActive: null,
+    sessions: [],
+    expiresAt: null,
+    activeSessionId: null,
+  },
+  loginMethods: { social: false, email: false, mobile: false },
+  loginProvider: null,
+  rememberMe: false,
+  sessionTimeout: 30,
+  loading: false,
+  error: null,
+  ...overrides,
+});
 
 // Mock store setup
-const createMockStore = () => {
+const createMockStore = (authOverrides?: Record<string, unknown>) => {
   return configureStore({
     reducer: {
-      auth: authReducer
+      auth: authReducer,
     },
     preloadedState: {
-      auth: {
-        user: {
-          id: 'admin-123',
-          displayName: 'John Admin',
-          email: 'admin@whitecaves.ae',
-          role: 'admin'
-        },
-        isAuthenticated: true,
-        loading: false
-      }
-    }
+      auth: createAuthState(authOverrides) as ReturnType<typeof authReducer>,
+    },
   });
 };
 
 describe('AdminDashboard Integration', () => {
-  let mockStore;
+  let mockStore: EnhancedStore;
 
   beforeEach(() => {
     mockStore = createMockStore();
   });
 
-  const renderWithRedux = (component) => {
+  const renderWithRedux = (component: ReactElement) => {
     return render(
       <Provider store={mockStore}>
         {component}
@@ -114,7 +132,7 @@ describe('AdminDashboard Integration', () => {
     it('should display system metrics in overview', () => {
       renderWithRedux(<AdminDashboard />);
       
-      expect(screen.getByText(/1243|Total Users/)).toBeInTheDocument();
+      expect(screen.getAllByText(/1243|Total Users/).length).toBeGreaterThan(0);
     });
 
     it('should show active users count', () => {
@@ -126,7 +144,7 @@ describe('AdminDashboard Integration', () => {
     it('should display properties metrics', () => {
       renderWithRedux(<AdminDashboard />);
       
-      expect(screen.getByText(/3421|Total Properties/)).toBeInTheDocument();
+      expect(screen.getAllByText(/3421|Total Properties/).length).toBeGreaterThan(0);
     });
 
     it('should show system health status', () => {
@@ -139,7 +157,7 @@ describe('AdminDashboard Integration', () => {
     it('should display uptime percentage', () => {
       renderWithRedux(<AdminDashboard />);
       
-      expect(screen.getByText(/99.98|uptime/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/99\.98|uptime/i).length).toBeGreaterThan(0);
     });
   });
 
@@ -147,7 +165,7 @@ describe('AdminDashboard Integration', () => {
     it('should display recent activities', () => {
       renderWithRedux(<AdminDashboard />);
       
-      expect(screen.getByText(/Created new property listing|Recent Activity/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Created new property listing|Recent Activity/i).length).toBeGreaterThan(0);
     });
 
     it('should show activity user names', () => {
@@ -160,7 +178,7 @@ describe('AdminDashboard Integration', () => {
     it('should display activity timestamps', () => {
       renderWithRedux(<AdminDashboard />);
       
-      expect(screen.getByText(/hours ago|days ago/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/hours ago|days ago/i).length).toBeGreaterThan(0);
     });
   });
 
@@ -182,7 +200,7 @@ describe('AdminDashboard Integration', () => {
     it('should display alert messages', () => {
       renderWithRedux(<AdminDashboard />);
       
-      expect(screen.getByText(/High CPU usage detected|Database backup/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/High CPU usage detected|Database backup/i).length).toBeGreaterThan(0);
     });
   });
 
@@ -239,7 +257,7 @@ describe('AdminDashboard Integration', () => {
       const usersTab = screen.getByText('Users');
       await user.click(usersTab);
       
-      expect(screen.getByText(/John Doe|Jane Smith/)).toBeInTheDocument();
+      expect(screen.getAllByText(/John Doe|Jane Smith/).length).toBeGreaterThan(0);
     });
 
     it('should show user roles', async () => {
@@ -249,7 +267,7 @@ describe('AdminDashboard Integration', () => {
       const usersTab = screen.getByText('Users');
       await user.click(usersTab);
       
-      expect(screen.queryByText(/agent|admin/i)).toBeTruthy();
+      expect(screen.queryAllByText(/agent|admin/i).length).toBeGreaterThan(0);
     });
 
     it('should display user status', async () => {
@@ -259,7 +277,7 @@ describe('AdminDashboard Integration', () => {
       const usersTab = screen.getByText('Users');
       await user.click(usersTab);
       
-      expect(screen.queryByText(/active|inactive/i)).toBeTruthy();
+      expect(screen.queryAllByText(/active|inactive/i).length).toBeGreaterThan(0);
     });
   });
 
@@ -343,20 +361,11 @@ describe('AdminDashboard Integration', () => {
     });
 
     it('should fallback to Admin if user displayName is missing', () => {
-      const storeWithoutDisplayName = configureStore({
-        reducer: {
-          auth: authReducer
+      const storeWithoutDisplayName = createMockStore({
+        user: {
+          id: 'admin-456',
+          email: 'test@whitecaves.ae',
         },
-        preloadedState: {
-          auth: {
-            user: {
-              id: 'admin-456',
-              email: 'test@whitecaves.ae'
-            },
-            isAuthenticated: true,
-            loading: false
-          }
-        }
       });
       
       render(
@@ -371,17 +380,15 @@ describe('AdminDashboard Integration', () => {
 
   describe('Error Handling', () => {
     it('should render gracefully without data', () => {
-      const emptyStore = configureStore({
-        reducer: {
-          auth: authReducer
+      const emptyStore = createMockStore({
+        user: null,
+        session: {
+          isLoggedIn: false,
+          lastActive: null,
+          sessions: [],
+          expiresAt: null,
+          activeSessionId: null,
         },
-        preloadedState: {
-          auth: {
-            user: null,
-            isAuthenticated: false,
-            loading: false
-          }
-        }
       });
       
       render(
@@ -391,6 +398,245 @@ describe('AdminDashboard Integration', () => {
       );
       
       expect(screen.getByText('Admin Dashboard')).toBeInTheDocument();
+    });
+  });
+
+  describe('Tab Content: Users Tab', () => {
+    it('should show User Management header', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Users'));
+      expect(screen.getByText('User Management')).toBeInTheDocument();
+    });
+
+    it('should show users table with columns', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Users'));
+      expect(screen.getByText('User')).toBeInTheDocument();
+      expect(screen.getByText('Role')).toBeInTheDocument();
+      expect(screen.getByText('Status')).toBeInTheDocument();
+      expect(screen.getByText('Last Active')).toBeInTheDocument();
+      expect(screen.getByText('Actions')).toBeInTheDocument();
+    });
+
+    it('should show Edit button for users', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Users'));
+      const editButtons = screen.getAllByText('Edit');
+      expect(editButtons.length).toBeGreaterThan(0);
+    });
+
+    it('should show Suspend button for active users', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Users'));
+      const suspendButtons = screen.queryAllByText('Suspend');
+      expect(suspendButtons.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Tab Content: Analytics Tab', () => {
+    it('should show Analytics & Reports header', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Analytics'));
+      expect(screen.getByText('Analytics & Reports')).toBeInTheDocument();
+    });
+
+    it('should show filter period select', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Analytics'));
+      const select = screen.getByDisplayValue('Last 7 Days');
+      expect(select).toBeInTheDocument();
+    });
+
+    it('should allow changing filter period', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Analytics'));
+      const select = screen.getByDisplayValue('Last 7 Days');
+      await user.selectOptions(select, '30d');
+      expect(screen.getByDisplayValue('Last 30 Days')).toBeInTheDocument();
+    });
+
+    it('should show User Growth Trend chart', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Analytics'));
+      expect(screen.getByText('User Growth Trend')).toBeInTheDocument();
+    });
+
+    it('should show Transaction Volume chart', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Analytics'));
+      expect(screen.getByText('Transaction Volume')).toBeInTheDocument();
+    });
+
+    it('should show Export Report button', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Analytics'));
+      expect(screen.getByText('Export Report')).toBeInTheDocument();
+    });
+
+    it('should show Full Analytics button', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Analytics'));
+      expect(screen.getByText('Full Analytics')).toBeInTheDocument();
+    });
+  });
+
+  describe('Tab Content: Settings Tab', () => {
+    it('should show System Settings header', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Settings'));
+      expect(screen.getByText('System Settings')).toBeInTheDocument();
+    });
+
+    it('should show General Settings group', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Settings'));
+      expect(screen.getByText('General Settings')).toBeInTheDocument();
+    });
+
+    it('should show Performance Settings group', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Settings'));
+      expect(screen.getByText('Performance Settings')).toBeInTheDocument();
+    });
+
+    it('should show Security Settings group', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Settings'));
+      expect(screen.getByText('Security Settings')).toBeInTheDocument();
+    });
+
+    it('should show Platform Name input with default value', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Settings'));
+      const platformInput = screen.getByLabelText('Platform Name');
+      expect(platformInput).toHaveValue('White Caves');
+    });
+
+    it('should show Support Email input with default value', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Settings'));
+      const emailInput = screen.getByLabelText('Support Email');
+      expect(emailInput).toHaveValue('support@whitecaves.ae');
+    });
+
+    it('should show Cache Enabled checkbox checked by default', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Settings'));
+      const cacheCheckbox = screen.getByLabelText('Cache Enabled');
+      expect(cacheCheckbox).toBeChecked();
+    });
+
+    it('should show Auto-backup Interval with default value', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Settings'));
+      const backupInput = screen.getByLabelText(/auto-backup interval/i);
+      expect(backupInput).toHaveValue(24);
+    });
+
+    it('should show 2FA select with Enabled default', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Settings'));
+      const twoFaSelect = screen.getByLabelText('Two-Factor Authentication');
+      expect(twoFaSelect).toHaveValue('enabled');
+    });
+
+    it('should show Session Timeout with default value', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Settings'));
+      const timeoutInput = screen.getByLabelText(/session timeout/i);
+      expect(timeoutInput).toHaveValue(30);
+    });
+
+    it('should show Save Settings button', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Settings'));
+      expect(screen.getByText('Save Settings')).toBeInTheDocument();
+    });
+
+    it('should handle settings form submission', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+      
+      await user.click(screen.getByText('Settings'));
+      
+      const saveBtn = screen.getByText('Save Settings');
+      await user.click(saveBtn);
+      
+      // Should not crash - form submits with preventDefault
+      expect(screen.getByText('System Settings')).toBeInTheDocument();
+    });
+  });
+
+  describe('Overview: System Status Section', () => {
+    it('should display System Status header', () => {
+      renderWithRedux(<AdminDashboard />);
+      
+      expect(screen.getByText('System Status')).toBeInTheDocument();
+    });
+
+    it('should display Response Time', () => {
+      renderWithRedux(<AdminDashboard />);
+      
+      expect(screen.getByText('Response Time')).toBeInTheDocument();
+      expect(screen.getByText('142ms')).toBeInTheDocument();
+    });
+
+    it('should display Error Rate', () => {
+      renderWithRedux(<AdminDashboard />);
+      
+      expect(screen.getByText('Error Rate')).toBeInTheDocument();
+      expect(screen.getByText('0.02%')).toBeInTheDocument();
+    });
+
+    it('should display Database Status', () => {
+      renderWithRedux(<AdminDashboard />);
+      
+      expect(screen.getByText('Database Status')).toBeInTheDocument();
+      expect(screen.getByText('Connected')).toBeInTheDocument();
     });
   });
 });

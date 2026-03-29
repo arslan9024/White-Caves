@@ -1,7 +1,41 @@
 import React from 'react';
 import { DollarSign, Users, Eye, TrendingUp, Edit, Trash2 } from 'lucide-react';
 
-export default function CampaignsTab({ state }) {
+interface Campaign {
+  id: string | number;
+  name: string;
+  platform: string;
+  status: string;
+  budget: number;
+  spent: number;
+  reach: number;
+  cpl: number;
+}
+
+interface CampaignStats {
+  total: number;
+  active: number;
+  totalBudget: number;
+  totalLeads: number;
+}
+
+interface StatusBadgeStyle {
+  bg: string;
+  color: string;
+}
+
+interface CampaignsState {
+  filteredCampaigns: Campaign[];
+  campaignStats: CampaignStats;
+  getCampaignStatusBadge: (status: string) => StatusBadgeStyle;
+  deleteCampaign: (id: string | number) => void;
+}
+
+interface CampaignsTabProps {
+  state: CampaignsState;
+}
+
+export default function CampaignsTab({ state }: CampaignsTabProps) {
   const { filteredCampaigns, campaignStats, getCampaignStatusBadge, deleteCampaign } = state;
 
   return (
@@ -50,9 +84,9 @@ export default function CampaignsTab({ state }) {
             </tr>
           </thead>
           <tbody>
-            {filteredCampaigns.map(campaign => {
+            {filteredCampaigns.map((campaign: Campaign) => {
               const statusStyle = getCampaignStatusBadge(campaign.status);
-              const spent = (campaign.spent / campaign.budget * 100).toFixed(0);
+              const spent = campaign.budget > 0 ? (campaign.spent / campaign.budget * 100).toFixed(0) : '0';
               return (
                 <tr key={campaign.id}>
                   <td><strong>{campaign.name}</strong></td>
@@ -66,8 +100,8 @@ export default function CampaignsTab({ state }) {
                   <td>{campaign.reach.toLocaleString()}</td>
                   <td>AED {campaign.cpl}</td>
                   <td>
-                    <button className="icon-btn"><Edit size={14} /></button>
-                    <button className="icon-btn danger" onClick={() => deleteCampaign(campaign.id)}><Trash2 size={14} /></button>
+                    <button className="icon-btn" aria-label={`Edit campaign ${campaign.name}`}><Edit size={14} /></button>
+                    <button className="icon-btn danger" onClick={() => { if (window.confirm(`Delete campaign "${campaign.name}"? This cannot be undone.`)) deleteCampaign(campaign.id); }} aria-label={`Delete campaign ${campaign.name}`}><Trash2 size={14} /></button>
                   </td>
                 </tr>
               );

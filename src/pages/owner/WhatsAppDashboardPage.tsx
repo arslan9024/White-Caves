@@ -1,6 +1,11 @@
 import React, { FC, useState, useEffect } from 'react';
+import { createLogger } from '../../utils/logger';
+import { authFetch } from '../../utils/authFetch';
+
+const log = createLogger('WhatsAppDashboard');
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import type { RootState } from '../../store/store';
 import './WhatsAppDashboardPage.css';
 
 interface WhatsAppStats {
@@ -12,11 +17,9 @@ interface WhatsAppStats {
 
 interface WhatsAppDashboardPageProps {}
 
-const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
-
 const WhatsAppDashboardPage: FC<WhatsAppDashboardPageProps> = () => {
   const navigate = useNavigate();
-  const user = useSelector((state: any) => state.user.currentUser);
+  const user = useSelector((state: RootState) => state.user.currentUser);
   const [stats, setStats] = useState<WhatsAppStats>({
     totalContacts: 0,
     activeChats: 0,
@@ -25,31 +28,50 @@ const WhatsAppDashboardPage: FC<WhatsAppDashboardPageProps> = () => {
   });
   const [activeTab, setActiveTab] = useState<string>('overview');
   const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const isMountedRef = React.useRef(true);
 
   useEffect(() => {
-    if (!user || user.email !== OWNER_EMAIL) {
+    if (!user || (user.role !== 'owner' && user.role !== 'admin')) {
       navigate('/');
     }
   }, [user, navigate]);
 
   useEffect(() => {
-    fetchWhatsAppStats();
-    const interval = setInterval(fetchWhatsAppStats, 30000);
-    return () => clearInterval(interval);
+    isMountedRef.current = true;
+    const controller = new AbortController();
+    const doFetch = () => fetchWhatsAppStats(controller.signal);
+    doFetch();
+    const interval = setInterval(doFetch, 30000);
+    return () => {
+      isMountedRef.current = false;
+      clearInterval(interval);
+      controller.abort();
+    };
   }, []);
 
-  const fetchWhatsAppStats = async (): Promise<void> => {
+  const fetchWhatsAppStats = async (signal?: AbortSignal): Promise<void> => {
     try {
+      if (!isMountedRef.current) return;
       setLoading(true);
-      const response = await fetch('/api/whatsapp/stats');
+      setError(null);
+      const response = await authFetch('/api/whatsapp/stats', { signal });
+      if (!isMountedRef.current) return;
       if (response.ok) {
         const data = await response.json();
-        setStats(data);
+        if (isMountedRef.current) setStats(data);
+      } else {
+        const message = `Failed to load stats (${response.status})`;
+        log.warn(message);
+        if (isMountedRef.current) setError(message);
       }
-    } catch (error) {
-      console.error('Error fetching WhatsApp stats:', error);
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
+      const message = err instanceof Error ? err.message : 'Network error';
+      log.error('Error fetching WhatsApp stats:', err);
+      if (isMountedRef.current) setError(message);
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) setLoading(false);
     }
   };
 

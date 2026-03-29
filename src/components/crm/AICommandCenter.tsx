@@ -1,6 +1,7 @@
 import React, { memo, lazy, Suspense, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RefreshCw, Settings, Bell, LayoutGrid, List } from 'lucide-react';
+import type { AssistantPerformance } from '../../store/slices/aiAssistant/types';
 import { 
   AIDropdownSelector, 
   UniversalAssistantLayout,
@@ -32,7 +33,7 @@ import {
   LoadingContainer
 } from './AICommandCenter.styles';
 
-const LindaWhatsAppCRM = lazy(() => import('./LindaWhatsAppCRM_NEW'));
+const NadiaWhatsAppCRM = lazy(() => import('./NadiaWhatsAppCRM'));
 const MaryInventoryCRM = lazy(() => import('./MaryInventoryCRM_NEW'));
 const ClaraLeadsCRM = lazy(() => import('./ClaraLeadsCRM_NEW'));
 const NinaWhatsAppBotCRM = lazy(() => import('./NinaWhatsAppBotCRM_NEW'));
@@ -46,7 +47,7 @@ const LailaComplianceCRM = lazy(() => import('./LailaComplianceCRM_NEW'));
 const AuroraCTODashboard = lazy(() => import('./AuroraCTODashboard_NEW'));
 
 const ASSISTANT_COMPONENTS = {
-  linda: LindaWhatsAppCRM,
+  nadia: NadiaWhatsAppCRM,
   mary: MaryInventoryCRM,
   clara: ClaraLeadsCRM,
   nina: NinaWhatsAppBotCRM,
@@ -67,7 +68,12 @@ const LoadingSpinner = memo(() => (
   </div>
 ));
 
-const QuickStatsBar = memo(({ assistants, performance }) => {
+interface QuickStatsBarProps {
+  assistants: Array<{ metrics?: { systemHealth?: string } }>;
+  performance: AssistantPerformance | undefined;
+}
+
+const QuickStatsBar = memo(({ assistants, performance }: QuickStatsBarProps) => {
   const activeCount = assistants.filter(a => a.metrics?.systemHealth === 'optimal').length;
   const alertCount = performance?.criticalAlerts?.length || 0;
   
@@ -81,14 +87,14 @@ const QuickStatsBar = memo(({ assistants, performance }) => {
       />
       <StatCard 
         label="System Health" 
-        value={`${performance?.overallHealth || 95}%`}
+        value={`${performance?.overallHealth ?? 95}%`}
         icon={Settings}
         color="#0EA5E9"
         change={0.5}
       />
       <StatCard 
         label="Active Tasks" 
-        value={performance?.activeTasks || 47}
+        value={performance?.activeTasks ?? 47}
         icon={List}
         color="#8B5CF6"
         change={12}
@@ -111,19 +117,20 @@ const AICommandCenter = memo(() => {
   const recentActivity = useSelector(selectRecentActivity);
   const ui = useSelector(selectUI);
   
-  const handleLayoutChange = useCallback((layout) => {
+  const handleLayoutChange = useCallback((layout: 'grid' | 'list') => {
     dispatch(setLayout(layout));
   }, [dispatch]);
   
   const DashboardComponent = useMemo(() => {
     if (!currentAssistant) return null;
-    return ASSISTANT_COMPONENTS[currentAssistant.id] || null;
+    const id = currentAssistant.id as keyof typeof ASSISTANT_COMPONENTS;
+    return ASSISTANT_COMPONENTS[id] || null;
   }, [currentAssistant]);
   
   const assistantColor = currentAssistant?.colorScheme || '#0EA5E9';
   
   return (
-    <div className="ai-command-center" style={{ '--primary-color': assistantColor }}>
+    <div className="ai-command-center" style={{ '--primary-color': assistantColor } as React.CSSProperties}>
       <header className="command-center-header">
         <div className="header-left">
           <h1 className="command-center-title">AI Command Center</h1>

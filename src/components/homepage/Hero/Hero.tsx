@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, useScroll, useTransform, MotionValue, type Variants } from 'framer-motion';
 import { ArrowRight, Play, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import type { RootState } from '../../../store/store';
 import './Hero.css';
 
 interface AnimatedCounterProps {
@@ -50,39 +51,36 @@ const AnimatedCounter: React.FC<AnimatedCounterProps> = ({ end, duration = 2000,
 
 const TypewriterText: React.FC<TypewriterTextProps> = ({ text, delay = 0 }) => {
   const [displayText, setDisplayText] = useState<string>('');
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   
   useEffect(() => {
     const timeout = setTimeout(() => {
       let index = 0;
-      const interval = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         if (index <= text.length) {
           setDisplayText(text.slice(0, index));
           index++;
         } else {
-          clearInterval(interval);
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          intervalRef.current = null;
         }
       }, 50);
-      return () => clearInterval(interval);
     }, delay);
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [text, delay]);
   
   return <span>{displayText}<span className="typewriter-cursor">|</span></span>;
 };
 
-interface UserState {
-  user?: {
-    currentUser?: {
-      id: string;
-      name: string;
-      email: string;
-    } | null;
-  };
-}
-
 const Hero: React.FC = () => {
   const navigate = useNavigate();
-  const user = useSelector((state: { user: UserState['user'] }) => state.user?.currentUser);
+  const user = useSelector((state: RootState) => state.user?.currentUser);
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 500], [0, 150]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
@@ -94,7 +92,7 @@ const Hero: React.FC = () => {
     { number: 50, suffix: '+', label: 'Expert Agents' }
   ];
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -105,7 +103,7 @@ const Hero: React.FC = () => {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
@@ -220,9 +218,9 @@ const Hero: React.FC = () => {
           className="hero-stats-grid"
           variants={itemVariants}
         >
-          {stats.map((stat, index) => (
+          {stats.map((stat) => (
             <motion.div 
-              key={index}
+              key={stat.label}
               className="hero-stat-item"
               whileHover={{ y: -5, scale: 1.02 }}
               transition={{ duration: 0.2 }}

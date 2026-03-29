@@ -1,13 +1,13 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { createLogger } from '../../utils/logger';
+import { authFetch } from '../../utils/authFetch';
 import './WhatsAppSettingsPage.css';
-import type { RootState, AppDispatch } from '../../store';
+import type { RootState, AppDispatch } from '../../store/store';
 import {
   connectWhatsApp,
   disconnectWhatsApp,
-  sendWhatsAppMessage,
-  fetchWhatsAppHistory
 } from '../../store/slices/whatsappSlice';
 
 interface WhatsAppSettings {
@@ -19,12 +19,12 @@ interface WhatsAppSettings {
   apiToken: string;
 }
 
-const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
+const log = createLogger('WhatsApp');
 
 const WhatsAppSettingsPage: FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const user = useSelector((state: any) => state.user.currentUser);
+  const user = useSelector((state: RootState) => state.user.currentUser);
   const whatsappState = useSelector((state: RootState) => state.whatsapp);
   
   // Local component state
@@ -48,39 +48,50 @@ const WhatsAppSettingsPage: FC = () => {
   // WebSocket state
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const reconnectAttemptsRef = useRef<number>(0);
+  const isMountedRef = useRef<boolean>(true);
+  const messageTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Track component mount state for safe state updates
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
+    };
+  }, []);
+
+  const MAX_RECONNECT_ATTEMPTS = 5;
+  const BASE_RECONNECT_DELAY_MS = 2000;
 
   // Authorization check
   useEffect(() => {
-    if (!user || user.email !== OWNER_EMAIL) {
+    if (!user || (user.role !== 'owner' && user.role !== 'admin')) {
       navigate('/');
     }
   }, [user, navigate]);
 
   // Fetch initial settings
   useEffect(() => {
-    fetchSettings();
+    const controller = new AbortController();
+    fetchSettings(controller.signal);
+    return () => controller.abort();
   }, []);
 
   // Setup WebSocket for real-time status updates
   useEffect(() => {
-    setupWebSocket();
+    // Only connect WebSocket when we have a valid session
+    if (whatsappState.session?.sessionId) {
+      setupWebSocket();
+    }
 
     return () => {
       cleanupWebSocket();
     };
   }, [whatsappState.session?.sessionId]);
 
-  // Status polling fallback
-  useEffect(() => {
-    if (whatsappState.session?.connectionStatus === 'connecting' || 
-        whatsappState.session?.connectionStatus === 'qr_pending') {
-      const pollInterval = setInterval(() => {
-        pollConnectionStatus();
-      }, 3000);
-
-      return () => clearInterval(pollInterval);
-    }
-  }, [whatsappState.session?.connectionStatus]);
+  // Status polling fallback — removed wasteful poll that discarded response data.
+  // Real-time updates are handled by the WebSocket connection above.
 
   // ================================
   // WebSocket & Polling Methods
@@ -94,29 +105,30 @@ const WhatsAppSettingsPage: FC = () => {
       wsRef.current = new WebSocket(wsUrl);
       
       wsRef.current.onopen = () => {
-        console.log('[WhatsApp] WebSocket connected');
+        log.debug('WebSocket connected');
+        reconnectAttemptsRef.current = 0; // Reset on successful connection
       };
 
       wsRef.current.onmessage = (event: MessageEvent) => {
         try {
           const data = JSON.parse(event.data);
-          console.log('[WhatsApp] Status update:', data);
+          log.debug('Status update received');
           // Redux state can be updated here if needed
         } catch (error) {
-          console.error('[WhatsApp] Failed to parse WebSocket message:', error);
+          log.error('Failed to parse WebSocket message', error);
         }
       };
 
       wsRef.current.onerror = (error: Event) => {
-        console.error('[WhatsApp] WebSocket error:', error);
+        log.error('WebSocket error', error);
       };
 
       wsRef.current.onclose = () => {
-        console.log('[WhatsApp] WebSocket disconnected');
+        log.debug('WebSocket disconnected');
         scheduleWebSocketReconnect();
       };
     } catch (error) {
-      console.error('[WhatsApp] Failed to setup WebSocket:', error);
+      log.error('Failed to setup WebSocket', error);
     }
   };
 
@@ -124,10 +136,21 @@ const WhatsAppSettingsPage: FC = () => {
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
     }
+
+    if (reconnectAttemptsRef.current >= MAX_RECONNECT_ATTEMPTS) {
+      log.warn(`WebSocket reconnection failed after ${MAX_RECONNECT_ATTEMPTS} attempts. Giving up.`);
+      return;
+    }
     
+    const delay = BASE_RECONNECT_DELAY_MS * Math.pow(2, reconnectAttemptsRef.current);
+    reconnectAttemptsRef.current += 1;
+    log.debug(`WebSocket reconnect attempt ${reconnectAttemptsRef.current}/${MAX_RECONNECT_ATTEMPTS} in ${delay}ms`);
+
     reconnectTimeoutRef.current = setTimeout(() => {
-      setupWebSocket();
-    }, 5000);
+      if (isMountedRef.current) {
+        setupWebSocket();
+      }
+    }, delay);
   };
 
   const cleanupWebSocket = (): void => {
@@ -141,32 +164,24 @@ const WhatsAppSettingsPage: FC = () => {
     }
   };
 
-  const pollConnectionStatus = async (): Promise<void> => {
-    try {
-      const response = await fetch('/api/whatsapp/session');
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log('[WhatsApp] Status poll:', data);
-      }
-    } catch (error) {
-      console.error('[WhatsApp] Status poll failed:', error);
-    }
-  };
-
   // ================================
   // Settings API Methods
   // ================================
 
-  const fetchSettings = async (): Promise<void> => {
+  const fetchSettings = async (signal?: AbortSignal): Promise<void> => {
     try {
-      const response = await fetch('/api/whatsapp/settings');
+      const response = await authFetch('/api/whatsapp/settings', { signal });
       if (response.ok) {
         const data = await response.json();
-        setSettings(data);
+        if (isMountedRef.current) {
+          setSettings(prev => ({ ...prev, ...data }));
+        }
+      } else {
+        log.warn(`Failed to fetch WhatsApp settings (HTTP ${response.status})`);
       }
     } catch (error) {
-      console.error('Error fetching settings:', error);
+      if (error instanceof DOMException && error.name === 'AbortError') return;
+      log.error('Error fetching settings', error);
     }
   };
 
@@ -181,7 +196,7 @@ const WhatsAppSettingsPage: FC = () => {
   const handleSaveSettings = async (): Promise<void> => {
     try {
       setSaving(true);
-      const response = await fetch('/api/whatsapp/settings', {
+      const response = await authFetch('/api/whatsapp/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings)
@@ -189,12 +204,15 @@ const WhatsAppSettingsPage: FC = () => {
       
       if (response.ok) {
         setSavedMessage('Settings saved successfully!');
-        setTimeout(() => setSavedMessage(''), 3000);
+        if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
+        messageTimeoutRef.current = setTimeout(() => {
+          if (isMountedRef.current) setSavedMessage('');
+        }, 3000);
       } else {
         setSavedMessage('Error saving settings');
       }
     } catch (error) {
-      console.error('Error saving settings:', error);
+      log.error('Error saving settings', error);
       setSavedMessage('Error saving settings');
     } finally {
       setSaving(false);
@@ -207,12 +225,12 @@ const WhatsAppSettingsPage: FC = () => {
 
   const handleInitializeConnection = async (): Promise<void> => {
     try {
-      const response = await fetch('/api/whatsapp/init', {
+      const response = await authFetch('/api/whatsapp/init', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           sessionId: `session_${Date.now()}`,
-          ownerEmail: OWNER_EMAIL 
+          ownerEmail: user?.email || '' 
         })
       });
 
@@ -227,17 +245,17 @@ const WhatsAppSettingsPage: FC = () => {
       try {
         await dispatch(connectWhatsApp()).unwrap();
       } catch (dispatchError) {
-        console.error('Redux dispatch error:', dispatchError);
+        log.error('Redux dispatch error', dispatchError);
       }
     } catch (error) {
-      console.error('Error initializing connection:', error);
+      log.error('Error initializing connection', error);
       setSavedMessage('Error initializing connection');
     }
   };
 
   const handleDisconnect = async (): Promise<void> => {
     try {
-      const response = await fetch('/api/whatsapp/disconnect', {
+      const response = await authFetch('/api/whatsapp/disconnect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -247,11 +265,11 @@ const WhatsAppSettingsPage: FC = () => {
         try {
           await dispatch(disconnectWhatsApp()).unwrap();
         } catch (dispatchError) {
-          console.error('Redux dispatch error:', dispatchError);
+          log.error('Redux dispatch error', dispatchError);
         }
       }
     } catch (error) {
-      console.error('Error disconnecting:', error);
+      log.error('Error disconnecting', error);
       setSavedMessage('Error disconnecting');
     }
   };
@@ -268,7 +286,7 @@ const WhatsAppSettingsPage: FC = () => {
 
     try {
       setSendingTest(true);
-      const response = await fetch('/api/whatsapp/message', {
+      const response = await authFetch('/api/whatsapp/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -281,12 +299,15 @@ const WhatsAppSettingsPage: FC = () => {
       if (response.ok) {
         setSavedMessage('Test message sent successfully!');
         setTestMessage('');
-        setTimeout(() => setSavedMessage(''), 3000);
+        if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
+        messageTimeoutRef.current = setTimeout(() => {
+          if (isMountedRef.current) setSavedMessage('');
+        }, 3000);
       } else {
         setSavedMessage('Failed to send test message');
       }
     } catch (error) {
-      console.error('Error sending test message:', error);
+      log.error('Error sending test message', error);
       setSavedMessage('Error sending test message');
     } finally {
       setSendingTest(false);
@@ -435,6 +456,9 @@ const WhatsAppSettingsPage: FC = () => {
                     src={whatsappState.qrCode} 
                     alt="WhatsApp QR Code"
                     className="qr-code-image"
+                    loading="lazy"
+                    width={200}
+                    height={200}
                   />
                   <p className="qr-instructions">
                     1. Open WhatsApp on your phone<br/>
@@ -465,6 +489,9 @@ const WhatsAppSettingsPage: FC = () => {
                   value={testPhone}
                   onChange={(e) => setTestPhone(e.target.value)}
                   placeholder="+971561234567"
+                  pattern="\+?[0-9]{7,15}"
+                  maxLength={16}
+                  required
                   disabled={!whatsappState.session?.connectionStatus.includes('authenticated')}
                 />
                 <small>Include country code (e.g., +971 for UAE)</small>
@@ -478,6 +505,8 @@ const WhatsAppSettingsPage: FC = () => {
                   onChange={(e) => setTestMessage(e.target.value)}
                   placeholder="Type your test message here..."
                   rows={4}
+                  maxLength={4096}
+                  required
                   disabled={!whatsappState.session?.connectionStatus.includes('authenticated')}
                 />
               </div>
@@ -503,7 +532,7 @@ const WhatsAppSettingsPage: FC = () => {
                     <div key={msg.id} className={`message-item message-${msg.direction}`}>
                       <div className="message-header">
                         <span className="message-phone">{msg.phoneNumber}</span>
-                        <span className="message-time">{new Date(msg.timestamp).toLocaleTimeString()}</span>
+                        <span className="message-time">{msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : ''}</span>
                       </div>
                       <div className="message-body">{msg.body}</div>
                       <span className={`message-status status-${msg.status}`}>{msg.status}</span>
@@ -551,10 +580,10 @@ const WhatsAppSettingsPage: FC = () => {
                   <h4>Pending Messages</h4>
                   <div className="queue-list">
                     {whatsappState.queue.messages.map((msg, idx) => (
-                      <div key={idx} className="queue-item">
+                      <div key={msg.id ?? `${msg.phoneNumber}-${idx}`} className="queue-item">
                         <span className="queue-index">{idx + 1}.</span>
                         <span className="queue-phone">{msg.phoneNumber}</span>
-                        <span className="queue-preview">{msg.body.substring(0, 50)}...</span>
+                        <span className="queue-preview">{(msg.body || '').substring(0, 50)}...</span>
                         <span className={`queue-priority priority-${msg.priority || 'normal'}`}>
                           {msg.priority || 'normal'}
                         </span>
@@ -583,6 +612,8 @@ const WhatsAppSettingsPage: FC = () => {
                   value={settings.businessName}
                   onChange={handleChange}
                   placeholder="White Caves Real Estate LLC"
+                  required
+                  maxLength={100}
                 />
               </div>
 
@@ -595,6 +626,9 @@ const WhatsAppSettingsPage: FC = () => {
                   value={settings.businessPhone}
                   onChange={handleChange}
                   placeholder="+971 56 361 6136"
+                  pattern="\+?[0-9\s\-]{7,20}"
+                  maxLength={20}
+                  required
                 />
               </div>
 
@@ -607,6 +641,7 @@ const WhatsAppSettingsPage: FC = () => {
                   onChange={handleChange}
                   placeholder="Describe your business..."
                   rows={4}
+                  maxLength={500}
                 />
               </div>
 
@@ -619,6 +654,7 @@ const WhatsAppSettingsPage: FC = () => {
                   value={settings.profileImage}
                   onChange={handleChange}
                   placeholder="https://..."
+                  maxLength={500}
                 />
               </div>
 
@@ -631,6 +667,7 @@ const WhatsAppSettingsPage: FC = () => {
                   value={settings.webhookUrl}
                   onChange={handleChange}
                   placeholder="https://your-domain.com/webhook"
+                  maxLength={500}
                 />
               </div>
 
@@ -643,6 +680,8 @@ const WhatsAppSettingsPage: FC = () => {
                   value={settings.apiToken}
                   onChange={handleChange}
                   placeholder="Your API token"
+                  maxLength={256}
+                  autoComplete="off"
                 />
               </div>
 

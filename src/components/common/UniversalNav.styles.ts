@@ -10,7 +10,7 @@ export const UniversalNavHeader = styled.header`
   background: var(--nav-bg, linear-gradient(135deg, #1a1a2e 0%, #16213e 100%));
   display: flex;
   align-items: center;
-  z-index: 1000;
+  z-index: var(--z-navbar, 500);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   border-bottom: 1px solid rgba(220, 38, 38, 0.3);
 `;
@@ -201,7 +201,7 @@ export const DropdownMenu = styled.div`
   border-radius: 12px;
   padding: 8px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  z-index: 1001;
+  z-index: var(--z-dropdown, 100);
   animation: slideDown 0.2s ease;
 
   @keyframes slideDown {

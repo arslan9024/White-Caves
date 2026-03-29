@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import Card from '../../ui/Card';
 import Badge from '../../ui/Badge';
 import Button from '../../ui/Button';
+import { formatPrice } from '../../../../utils';
 import './ServiceCard.css';
 
 export interface ServiceData {
@@ -48,16 +49,6 @@ const ServiceCard = React.memo<ServiceCardProps>(({
     duration,
     popular
   } = service;
-
-  const formatPrice = (price?: number, unit?: string): string => {
-    if (!price) return 'Contact for pricing';
-    const formatted = new Intl.NumberFormat('en-AE', {
-      style: 'currency',
-      currency: 'AED',
-      maximumFractionDigits: 0
-    }).format(price);
-    return unit ? `${formatted} ${unit}` : formatted;
-  };
 
   const handleBook = useCallback((e: React.MouseEvent): void => {
     e.preventDefault();
@@ -113,7 +104,7 @@ const ServiceCard = React.memo<ServiceCardProps>(({
           
           {showPrice && price && (
             <span className={`${baseClass}__price`}>
-              {formatPrice(price, priceUnit)}
+              {formatPrice(price, { unit: priceUnit })}
             </span>
           )}
         </div>

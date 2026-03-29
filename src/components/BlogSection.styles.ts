@@ -80,9 +80,10 @@ export const FeaturedPost = styled.article`
   }
 `;
 
-export const FeaturedImage = styled.div`
+export const FeaturedImage = styled.div<{ $bgImage?: string }>`
   width: 45%;
   min-height: 280px;
+  background-image: ${props => props.$bgImage ? `url(${props.$bgImage})` : 'none'};
   background-size: cover;
   background-position: center;
   position: relative;
@@ -243,9 +244,10 @@ export const BlogCard = styled.div`
   }
 `;
 
-export const BlogCardImage = styled.div`
+export const BlogCardImage = styled.div<{ $bgImage?: string }>`
   width: 100%;
   height: 200px;
+  background-image: ${props => props.$bgImage ? `url(${props.$bgImage})` : 'none'};
   background-size: cover;
   background-position: center;
   position: relative;
@@ -311,4 +313,28 @@ export const LoadMoreBtn = styled.button`
     background: #b08d4a;
     transform: translateY(-2px);
   }
+`;
+
+export const CardFooter = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+`;
+
+export const ReadMoreLink = styled.a`
+  color: var(--primary-color, #c9a962);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
+export const LoadMoreContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
 `;

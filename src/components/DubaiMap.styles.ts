@@ -73,15 +73,15 @@ export const MapFilters = styled.div`
   margin-bottom: 2rem;
 `;
 
-export const FilterButton = styled.button<{ isActive?: boolean; variant?: 'residential' | 'commercial' | 'luxury' }>`
+export const FilterButton = styled.button<{ $isActive?: boolean; $variant?: 'residential' | 'commercial' | 'luxury' }>`
   padding: 0.75rem 1.5rem;
-  background: ${props => props.isActive ? 'var(--primary-color, #1a365d)' : 'var(--bg-primary, #ffffff)'};
-  border: 2px solid ${props => props.isActive ? 'var(--primary-color, #1a365d)' : 'var(--border-color, #e2e8f0)'};
+  background: ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--bg-primary, #ffffff)'};
+  border: 2px solid ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--border-color, #e2e8f0)'};
   border-radius: 9999px;
   font-family: var(--font-body, 'Open Sans', sans-serif);
   font-size: 0.9rem;
   font-weight: 500;
-  color: ${props => props.isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
+  color: ${props => props.$isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
   cursor: pointer;
   transition: all 0.2s ease;
 
@@ -89,17 +89,17 @@ export const FilterButton = styled.button<{ isActive?: boolean; variant?: 'resid
     border-color: var(--primary-color, #1a365d);
   }
 
-  ${props => props.isActive && props.variant === 'residential' && `
+  ${props => props.$isActive && props.$variant === 'residential' && `
     background: var(--success-color, #38a169);
     border-color: var(--success-color, #38a169);
   `}
 
-  ${props => props.isActive && props.variant === 'commercial' && `
+  ${props => props.$isActive && props.$variant === 'commercial' && `
     background: var(--primary-color, #1a365d);
     border-color: var(--primary-color, #1a365d);
   `}
 
-  ${props => props.isActive && props.variant === 'luxury' && `
+  ${props => props.$isActive && props.$variant === 'luxury' && `
     background: var(--secondary-color, #c53030);
     border-color: var(--secondary-color, #c53030);
   `}
@@ -182,7 +182,7 @@ export const MapInfoWindow = styled.div`
   border-radius: 0.75rem;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
   overflow: hidden;
-  z-index: 100;
+  z-index: var(--z-popover, 110);
   animation: ${slideIn} 0.3s ease;
 
   @media (max-width: 768px) {
@@ -323,7 +323,7 @@ export const CloseButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
+  z-index: var(--z-contentHover, 2);
 `;
 
 // Map Legend

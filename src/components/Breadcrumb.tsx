@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react';
+import React, { FC, ReactNode, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   BreadcrumbNav,
@@ -8,6 +8,23 @@ import {
   BreadcrumbSeparator,
   BreadcrumbCurrent
 } from './Breadcrumb.styles';
+
+/**
+ * Safely render a JSON-LD <script> tag without dangerouslySetInnerHTML.
+ * Uses a ref to set textContent directly, which is XSS-safe because
+ * textContent is never parsed as HTML.
+ */
+const JsonLdScript: FC<{ data: Record<string, unknown> }> = ({ data }) => {
+  const ref = React.useRef<HTMLScriptElement>(null);
+
+  React.useEffect(() => {
+    if (ref.current) {
+      ref.current.textContent = JSON.stringify(data);
+    }
+  }, [data]);
+
+  return <script ref={ref} type="application/ld+json" />;
+};
 
 interface BreadcrumbItemType {
   path: string;
@@ -83,10 +100,7 @@ const Breadcrumb: FC<BreadcrumbProps> = ({ customItems, showHome = true }) => {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
+      <JsonLdScript data={structuredData} />
       <BreadcrumbNav aria-label="Breadcrumb">
         <BreadcrumbList>
           {showHome && (

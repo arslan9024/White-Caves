@@ -2,7 +2,7 @@
  * SidebarContainer - Left Sidebar with Bold Branding
  * 
  * Features:
- * - Bold company branding (red gradient #D32F2F → #B71C1C)
+ * - Bold company branding (gold gradient #D4AF37 → #B8860B)
  * - Responsive width: 280px → 72px collapse (icon-only mode)
  * - Navigation items with icons and labels
  * - Active/hover states
@@ -12,6 +12,7 @@
 
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import type { RootState } from '../../../store/store';
 import {
   ChevronLeft, Home, BarChart3, Users2, MessageSquare, Settings,
   Zap, TrendingUp, Command, ChevronRight, Shield, AlertCircle, Activity,
@@ -99,21 +100,6 @@ interface SidebarContainerProps {
   role?: string;
 }
 
-interface AuthState {
-  role?: string;
-  isSuperUser?: boolean;
-}
-
-interface SidebarState {
-  selectedDepartment?: string;
-  selectedService?: string;
-}
-
-interface RootState {
-  auth?: AuthState;
-  sidebar?: SidebarState;
-}
-
 // ---------------------------------------------------------------------------
 // Department Definitions
 // ---------------------------------------------------------------------------
@@ -152,7 +138,7 @@ const DEPARTMENTS: DepartmentsMap = {
   executive: {
     icon: Globe,
     label: 'Executive',
-    color: '#DC2626',
+    color: '#D4AF37',
     services: ['Strategic Overview', 'KPIs', 'Reports', 'Insights']
   },
   compliance: {
@@ -196,8 +182,8 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
   const [expandedDepartments, setExpandedDepartments] = useState<ExpandedDepartments>({});
 
   // Get user role from Redux for super user detection
-  const userRole = useSelector((state: RootState) => state.auth?.role || 'user');
-  const isSuperUser = userRole === 'lion' || useSelector((state: RootState) => state.auth?.isSuperUser);
+  const userRole = useSelector((state: RootState) => state.auth?.user?.role || 'user');
+  const isSuperUser = userRole === 'lion';
   const selectedDepartment = useSelector((state: RootState) => state.sidebar?.selectedDepartment);
   const selectedService = useSelector((state: RootState) => state.sidebar?.selectedService);
 
@@ -413,7 +399,7 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
                       <DepartmentServices $deptColor={dept.color}>
                         {dept.services.map((service: string, idx: number) => (
                           <ServiceItem
-                            key={idx}
+                            key={service}
                             $active={selectedService === service}
                             $deptColor={dept.color}
                             onClick={() => {

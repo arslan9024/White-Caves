@@ -15,7 +15,7 @@
 }
 
 .wc-input__required {
-  color: var(--primary-red, #DC2626);
+  color: var(--primary-gold, #D4AF37);
   margin-left: 0.25rem;
 }
 
@@ -37,8 +37,8 @@
 
 .wc-input:focus {
   outline: none;
-  border-color: var(--primary-red, #DC2626);
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+  border-color: var(--primary-gold, #D4AF37);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
 }
 
 .wc-input::placeholder {

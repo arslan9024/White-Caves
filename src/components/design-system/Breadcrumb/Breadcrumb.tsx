@@ -64,7 +64,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, separator = '/', 
     <BreadcrumbContainer className={className} aria-label="Breadcrumb">
       <BreadcrumbList>
         {items.map((item, index) => (
-          <React.Fragment key={index}>
+          <React.Fragment key={item.label}>
             <BreadcrumbItem>
               <BreadcrumbLink
                 $active={item.active}

@@ -1,7 +1,26 @@
 import React from 'react';
 import { Plus, Star } from 'lucide-react';
 
-export default function PerformanceTab({ state }) {
+interface Employee {
+  id: string | number;
+  name: string;
+  avatar: string;
+  position: string;
+  performance: number;
+  attendance: number;
+  department?: string;
+  salary?: number;
+}
+
+interface PerformanceState {
+  employees: Employee[];
+}
+
+interface PerformanceTabProps {
+  state: PerformanceState;
+}
+
+export default function PerformanceTab({ state }: PerformanceTabProps) {
   const { employees } = state;
 
   return (
@@ -17,7 +36,7 @@ export default function PerformanceTab({ state }) {
         {employees.map((emp) => (
           <div key={emp.id} className="performance-card">
             <div className="perf-header">
-              <img src={emp.avatar} alt={emp.name} className="perf-avatar" />
+              <img src={emp.avatar} alt={emp.name} className="perf-avatar" loading="lazy" />
               <div className="perf-info">
                 <h4>{emp.name}</h4>
                 <p>{emp.position}</p>
@@ -64,7 +83,7 @@ export default function PerformanceTab({ state }) {
 
             <div className="perf-meta">
               <span className="meta-item">Dept: {emp.department}</span>
-              <span className="meta-item">Salary: {emp.salary.toLocaleString()} AED</span>
+              <span className="meta-item">Salary: {(emp.salary ?? 0).toLocaleString()} AED</span>
             </div>
 
             <button className="action-btn secondary">View Full Review</button>

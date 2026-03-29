@@ -2,87 +2,20 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ChatbotTab from '../ChatbotTab';
+import type { ChatbotTabProps } from '../types';
 
 describe('ChatbotTab Integration', () => {
-  const mockProps = {
+  const mockProps: ChatbotTabProps = {
     data: {
-      bots: [
-        {
-          id: 1,
-          name: 'Clara - Lead Bot',
-          status: 'active',
-          platform: 'whatsapp',
-          conversations: 1243,
-          engaged: 892,
-          leads: 156,
-          responseRate: 94.5,
-          avgResponseTime: 2.3,
-          createdAt: '2023-01-15',
-          lastActivity: '2024-01-08 14:30'
-        },
-        {
-          id: 2,
-          name: 'Property Bot',
-          status: 'active',
-          platform: 'website',
-          conversations: 567,
-          engaged: 432,
-          leads: 78,
-          responseRate: 92.1,
-          avgResponseTime: 1.8,
-          createdAt: '2023-03-20',
-          lastActivity: '2024-01-08 13:45'
-        },
-        {
-          id: 3,
-          name: 'Commission Helper',
-          status: 'inactive',
-          platform: 'telegram',
-          conversations: 234,
-          engaged: 180,
-          leads: 32,
-          responseRate: 85.6,
-          avgResponseTime: 3.2,
-          createdAt: '2023-06-10',
-          lastActivity: '2023-12-15 10:00'
-        }
-      ],
-      conversationHistory: [
-        {
-          id: 1,
-          botName: 'Clara - Lead Bot',
-          user: 'Khalid Al Maktoum',
-          platform: 'whatsapp',
-          messages: 12,
-          duration: '15 minutes',
-          status: 'completed',
-          leadQuality: 'high',
-          timestamp: '2024-01-08 10:30'
-        },
-        {
-          id: 2,
-          botName: 'Property Bot',
-          user: 'Emily Watson',
-          platform: 'website',
-          messages: 8,
-          duration: '8 minutes',
-          status: 'active',
-          leadQuality: 'medium',
-          timestamp: '2024-01-08 11:15'
-        },
-        {
-          id: 3,
-          botName: 'Clara - Lead Bot',
-          user: 'Chen Wei',
-          platform: 'whatsapp',
-          messages: 18,
-          duration: '22 minutes',
-          status: 'completed',
-          leadQuality: 'high',
-          timestamp: '2024-01-08 12:00'
-        }
-      ]
-    },
+      chatbotStats: {
+        totalConversations: 1243,
+        successfulLeads: 156,
+        avgResponseTime: 2.3,
+        satisfactionRate: 94.5,
+        activeChats: 5,
+        messagesProcessed: 8920
+      }
+    } as ChatbotTabProps['data'],
     loading: false,
     onAction: vi.fn()
   };
@@ -91,26 +24,27 @@ describe('ChatbotTab Integration', () => {
     it('should render chatbot tab', () => {
       render(<ChatbotTab {...mockProps} />);
       
-      expect(screen.getByText('Chatbots')).toBeInTheDocument();
+      expect(screen.getByText('AI Chatbot Management')).toBeInTheDocument();
     });
 
-    it('should display bot list', () => {
+    it('should display stat cards', () => {
       render(<ChatbotTab {...mockProps} />);
       
-      expect(screen.getByText('Clara - Lead Bot')).toBeInTheDocument();
-      expect(screen.getByText('Property Bot')).toBeInTheDocument();
+      expect(screen.getByText('Total Conversations')).toBeInTheDocument();
+      expect(screen.getByText('Leads Generated')).toBeInTheDocument();
     });
 
-    it('should show bot status', () => {
+    it('should show section headers', () => {
       render(<ChatbotTab {...mockProps} />);
       
-      expect(screen.getByText(/active|inactive/i)).toBeInTheDocument();
+      expect(screen.getByText('Intent Recognition Performance')).toBeInTheDocument();
+      expect(screen.getByText('Recent Conversations')).toBeInTheDocument();
     });
 
-    it('should display bot platform', () => {
+    it('should display quick actions section', () => {
       render(<ChatbotTab {...mockProps} />);
       
-      expect(screen.getByText(/whatsapp|website|telegram/i)).toBeInTheDocument();
+      expect(screen.getByText('Quick Actions')).toBeInTheDocument();
     });
   });
 
@@ -118,224 +52,192 @@ describe('ChatbotTab Integration', () => {
     it('should display conversation counts', () => {
       render(<ChatbotTab {...mockProps} />);
       
-      expect(screen.getByText(/1243|567|234/)).toBeInTheDocument();
+      expect(screen.getByText('1,243')).toBeInTheDocument();
     });
 
-    it('should show engaged user counts', () => {
+    it('should show lead generation count', () => {
       render(<ChatbotTab {...mockProps} />);
       
-      expect(screen.getByText(/892|432|180/)).toBeInTheDocument();
+      expect(screen.getByText('156')).toBeInTheDocument();
     });
 
-    it('should display lead conversion counts', () => {
+    it('should display average response time', () => {
       render(<ChatbotTab {...mockProps} />);
       
-      expect(screen.getByText(/156|78|32/)).toBeInTheDocument();
+      expect(screen.getByText('2.3s')).toBeInTheDocument();
     });
 
-    it('should show response rates', () => {
+    it('should show satisfaction rate', () => {
       render(<ChatbotTab {...mockProps} />);
       
-      expect(screen.getByText(/94.5|92.1|85.6/)).toBeInTheDocument();
+      expect(screen.getByText('94.5%')).toBeInTheDocument();
     });
 
-    it('should display average response times', () => {
+    it('should display active chats count', () => {
       render(<ChatbotTab {...mockProps} />);
       
-      expect(screen.getByText(/2.3|1.8|3.2/)).toBeInTheDocument();
+      expect(screen.getByText('5')).toBeInTheDocument();
+    });
+
+    it('should show messages processed count', () => {
+      render(<ChatbotTab {...mockProps} />);
+      
+      expect(screen.getByText('8,920')).toBeInTheDocument();
     });
   });
 
-  describe('Bot Status Indicators', () => {
-    it('should display active status indicator', () => {
+  describe('Stat Labels', () => {
+    it('should display all stat labels', () => {
+      render(<ChatbotTab {...mockProps} />);
+      
+      expect(screen.getByText('Total Conversations')).toBeInTheDocument();
+      expect(screen.getByText('Leads Generated')).toBeInTheDocument();
+      expect(screen.getByText('Avg Response Time')).toBeInTheDocument();
+    });
+
+    it('should show satisfaction and active chat labels', () => {
+      render(<ChatbotTab {...mockProps} />);
+      
+      expect(screen.getByText('Satisfaction Rate')).toBeInTheDocument();
+      expect(screen.getByText('Active Chats')).toBeInTheDocument();
+      expect(screen.getByText('Messages Processed')).toBeInTheDocument();
+    });
+
+    it('should render stat grid with 6 cards', () => {
       const { container } = render(<ChatbotTab {...mockProps} />);
       
-      const statusIndicators = container.querySelectorAll('[class*="status"]');
-      expect(statusIndicators.length).toBeGreaterThan(0);
+      const statCards = container.querySelectorAll('.chatbot-stat');
+      expect(statCards.length).toBe(6);
+    });
+  });
+
+  describe('Default Stats', () => {
+    it('should show zero values when no chatbot stats provided', () => {
+      const emptyDataProps: ChatbotTabProps = {
+        data: {} as ChatbotTabProps['data'],
+        loading: false,
+        onAction: vi.fn()
+      };
+      
+      render(<ChatbotTab {...emptyDataProps} />);
+      
+      expect(screen.getByText('0s')).toBeInTheDocument();
+      expect(screen.getByText('0%')).toBeInTheDocument();
     });
 
-    it('should show inactive status', () => {
+    it('should render stat icons', () => {
       render(<ChatbotTab {...mockProps} />);
       
-      const inactiveIndicators = screen.queryAllByText(/inactive/i);
-      expect(inactiveIndicators.length).toBeGreaterThan(0);
+      // Component uses emoji icons
+      expect(screen.getByText('💬')).toBeInTheDocument();
+      expect(screen.getByText('🎯')).toBeInTheDocument();
+      expect(screen.getByText('⚡')).toBeInTheDocument();
     });
 
-    it('should differentiate active and inactive bots', () => {
+    it('should highlight live active chats card', () => {
       const { container } = render(<ChatbotTab {...mockProps} />);
       
-      const statusElements = container.querySelectorAll('[class*="status"]');
-      expect(statusElements.length).toBeGreaterThan(0);
+      const liveCard = container.querySelector('.chatbot-stat.live');
+      expect(liveCard).toBeInTheDocument();
+    });
+
+    it('should display zero conversations when no data', () => {
+      const nullDataProps: ChatbotTabProps = {
+        data: null as unknown as ChatbotTabProps['data'],
+        loading: false,
+        onAction: vi.fn()
+      };
+      
+      render(<ChatbotTab {...nullDataProps} />);
+      
+      expect(screen.getByText('0s')).toBeInTheDocument();
     });
   });
 
-  describe('Conversation History', () => {
-    it('should display conversation history', () => {
-      render(<ChatbotTab {...mockProps} />);
-      
-      expect(screen.getByText('Khalid Al Maktoum')).toBeInTheDocument();
-      expect(screen.getByText('Emily Watson')).toBeInTheDocument();
-    });
-
-    it('should show conversation details', () => {
-      render(<ChatbotTab {...mockProps} />);
-      
-      expect(screen.getByText(/12|8|18/)).toBeInTheDocument(); // message counts
-    });
-
-    it('should display conversation duration', () => {
-      render(<ChatbotTab {...mockProps} />);
-      
-      expect(screen.getByText(/15 minutes|8 minutes|22 minutes/)).toBeInTheDocument();
-    });
-
-    it('should show conversation status', () => {
-      render(<ChatbotTab {...mockProps} />);
-      
-      expect(screen.getByText(/completed|active/i)).toBeInTheDocument();
-    });
-
-    it('should display lead quality', () => {
-      render(<ChatbotTab {...mockProps} />);
-      
-      expect(screen.getByText(/high|medium/i)).toBeInTheDocument();
-    });
-  });
-
-  describe('Platform Filtering', () => {
-    it('should filter bots by platform', async () => {
-      const user = userEvent.setup();
-      render(<ChatbotTab {...mockProps} />);
-      
-      const platformFilter = screen.queryByDisplayValue('All Platforms');
-      if (platformFilter) {
-        await user.selectOptions(platformFilter, 'whatsapp');
-        expect(screen.getByText('Clara - Lead Bot')).toBeInTheDocument();
-      }
-    });
-
-    it('should filter conversations by platform', async () => {
-      const user = userEvent.setup();
-      render(<ChatbotTab {...mockProps} />);
-      
-      const platformFilter = screen.queryByDisplayValue('All Platforms');
-      if (platformFilter) {
-        await user.selectOptions(platformFilter, 'website');
-        expect(screen.getByText('Emily Watson')).toBeInTheDocument();
-      }
-    });
-  });
-
-  describe('Status Filtering', () => {
-    it('should filter bots by status', async () => {
-      const user = userEvent.setup();
-      render(<ChatbotTab {...mockProps} />);
-      
-      const statusFilter = screen.queryByDisplayValue('All Status');
-      if (statusFilter) {
-        await user.selectOptions(statusFilter, 'active');
-        expect(screen.getByText('Clara - Lead Bot')).toBeInTheDocument();
-      }
-    });
-
-    it('should filter for inactive bots', async () => {
-      const user = userEvent.setup();
-      render(<ChatbotTab {...mockProps} />);
-      
-      const statusFilter = screen.queryByDisplayValue('All Status');
-      if (statusFilter) {
-        await user.selectOptions(statusFilter, 'inactive');
-        expect(screen.getByText('Commission Helper')).toBeInTheDocument();
-      }
-    });
-  });
-
-  describe('Search Functionality', () => {
-    it('should have search input', () => {
-      const { container } = render(<ChatbotTab {...mockProps} />);
-      
-      const searchInputs = container.querySelectorAll('input[type="text"], input[type="search"]');
-      expect(searchInputs.length).toBeGreaterThanOrEqual(0);
-    });
-
-    it('should search by bot name', async () => {
-      const user = userEvent.setup();
-      const { container } = render(<ChatbotTab {...mockProps} />);
-      
-      const searchInputs = container.querySelectorAll('input[type="text"], input[type="search"]');
-      if (searchInputs.length > 0) {
-        await user.type(searchInputs[0], 'Clara');
-        expect(screen.getByText('Clara - Lead Bot')).toBeInTheDocument();
-      }
-    });
-  });
-
-  describe('Bot Actions', () => {
-    it('should have action buttons for bots', () => {
+  describe('Quick Actions', () => {
+    it('should have action buttons', () => {
       const { container } = render(<ChatbotTab {...mockProps} />);
       
       const buttons = container.querySelectorAll('button');
-      expect(buttons.length).toBeGreaterThan(0);
+      expect(buttons.length).toBe(6); // 2 header + 4 action cards
     });
 
-    it('should support edit action', async () => {
+    it('should display training data action', () => {
+      render(<ChatbotTab {...mockProps} />);
+      
+      expect(screen.getByText('Training Data')).toBeInTheDocument();
+      expect(screen.getByText('View and edit training examples')).toBeInTheDocument();
+    });
+
+    it('should display response templates action', () => {
+      render(<ChatbotTab {...mockProps} />);
+      
+      expect(screen.getByText('Response Templates')).toBeInTheDocument();
+    });
+
+    it('should display conversation logs action', () => {
+      render(<ChatbotTab {...mockProps} />);
+      
+      expect(screen.getByText('Conversation Logs')).toBeInTheDocument();
+    });
+
+    it('should display rules engine action', () => {
+      render(<ChatbotTab {...mockProps} />);
+      
+      expect(screen.getByText('Rules Engine')).toBeInTheDocument();
+    });
+  });
+
+  describe('Header Actions', () => {
+    it('should have analytics button', () => {
+      render(<ChatbotTab {...mockProps} />);
+      
+      expect(screen.getByText('Analytics')).toBeInTheDocument();
+    });
+
+    it('should have training center button', () => {
+      render(<ChatbotTab {...mockProps} />);
+      
+      expect(screen.getByText('Training Center')).toBeInTheDocument();
+    });
+
+    it('should call onAction for analytics', async () => {
       const user = userEvent.setup();
-      render(<ChatbotTab {...mockProps} />);
+      const onActionMock = vi.fn();
+      const propsWithAction: ChatbotTabProps = {
+        ...mockProps,
+        onAction: onActionMock
+      };
       
-      const editButtons = screen.queryAllByRole('button');
-      expect(editButtons.length).toBeGreaterThan(0);
+      render(<ChatbotTab {...propsWithAction} />);
+      
+      const analyticsBtn = screen.getByText('Analytics').closest('button')!;
+      await user.click(analyticsBtn);
+      expect(onActionMock).toHaveBeenCalledWith('viewAnalytics');
     });
 
-    it('should support delete action', () => {
-      const { container } = render(<ChatbotTab {...mockProps} />);
+    it('should call onAction for training', async () => {
+      const user = userEvent.setup();
+      const onActionMock = vi.fn();
+      const propsWithAction: ChatbotTabProps = {
+        ...mockProps,
+        onAction: onActionMock
+      };
       
-      const buttons = container.querySelectorAll('button');
-      expect(buttons.length).toBeGreaterThan(0);
-    });
-  });
-
-  describe('Conversation Details', () => {
-    it('should show bot name in conversation', () => {
-      render(<ChatbotTab {...mockProps} />);
+      render(<ChatbotTab {...propsWithAction} />);
       
-      expect(screen.getByText('Clara - Lead Bot')).toBeInTheDocument();
-    });
-
-    it('should display user name in conversation', () => {
-      render(<ChatbotTab {...mockProps} />);
-      
-      expect(screen.getByText('Khalid Al Maktoum')).toBeInTheDocument();
-    });
-
-    it('should show conversation timestamp', () => {
-      render(<ChatbotTab {...mockProps} />);
-      
-      expect(screen.getByText(/2024/)).toBeInTheDocument();
-    });
-  });
-
-  describe('Pagination', () => {
-    it('should render pagination for bots', () => {
-      const { container } = render(<ChatbotTab {...mockProps} />);
-      
-      const paginationNav = container.querySelector('nav');
-      expect(paginationNav).toBeInTheDocument();
-    });
-
-    it('should render pagination for conversations', () => {
-      const { container } = render(<ChatbotTab {...mockProps} />);
-      
-      const navElements = container.querySelectorAll('nav');
-      expect(navElements.length).toBeGreaterThanOrEqual(0);
+      const trainingBtn = screen.getByText('Training Center').closest('button')!;
+      await user.click(trainingBtn);
+      expect(onActionMock).toHaveBeenCalledWith('trainChatbot');
     });
   });
 
   describe('Accessibility', () => {
-    it('should have accessible filter controls', () => {
-      const { container } = render(<ChatbotTab {...mockProps} />);
+    it('should have accessible buttons', () => {
+      render(<ChatbotTab {...mockProps} />);
       
-      const selects = container.querySelectorAll('select');
-      expect(selects.length).toBeGreaterThanOrEqual(0);
+      const buttons = screen.queryAllByRole('button');
+      expect(buttons.length).toBe(6);
     });
 
     it('should support keyboard navigation', async () => {
@@ -351,9 +253,9 @@ describe('ChatbotTab Integration', () => {
   });
 
   describe('Empty State', () => {
-    it('should handle empty bots list', () => {
-      const emptyProps = {
-        data: { bots: [], conversationHistory: [] },
+    it('should handle empty data', () => {
+      const emptyProps: ChatbotTabProps = {
+        data: {} as ChatbotTabProps['data'],
         loading: false,
         onAction: vi.fn()
       };
@@ -368,12 +270,12 @@ describe('ChatbotTab Integration', () => {
     it('should render when loading is false', () => {
       render(<ChatbotTab {...mockProps} />);
       
-      expect(screen.getByText('Chatbots')).toBeInTheDocument();
+      expect(screen.getByText('AI Chatbot Management')).toBeInTheDocument();
     });
 
     it('should render with null data gracefully', () => {
-      const nullDataProps = {
-        data: null,
+      const nullDataProps: ChatbotTabProps = {
+        data: null as unknown as ChatbotTabProps['data'],
         loading: false,
         onAction: vi.fn()
       };

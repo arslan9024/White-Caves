@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import type { CRMModuleProps } from './types';
 
 /**
  * Market Analytics & Reporting Module
@@ -12,7 +13,7 @@ import React, { useState } from 'react';
  * - Customizable reports
  */
 
-export default function MarketAnalyticsModule({ role, user, data }) {
+export default function MarketAnalyticsModule({ role, user, data }: CRMModuleProps) {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [dateRange, setDateRange] = useState('month');
 

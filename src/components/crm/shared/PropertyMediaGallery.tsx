@@ -5,25 +5,45 @@ import {
 } from 'lucide-react';
 import * as S from './PropertyComponents.styles';
 
+interface MediaImage {
+  url?: string;
+}
+
+/** Extract URL string from a MediaImage or plain string */
+const getImageUrl = (image: MediaImage | string): string => {
+  if (typeof image === 'string') return image;
+  return image?.url || '';
+};
+
+interface PropertyMediaGalleryProps {
+  images?: (MediaImage | string)[];
+  title?: string;
+  onImageClick?: (index: number) => void;
+  showThumbnails?: boolean;
+  maxThumbnails?: number;
+}
+
 const PropertyMediaGallery = memo(({ 
   images = [],
   title = '',
   onImageClick,
   showThumbnails = true,
   maxThumbnails = 5
-}) => {
+}: PropertyMediaGalleryProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   
   const handlePrev = useCallback(() => {
+    if (images.length === 0) return;
     setCurrentIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
   }, [images.length]);
   
   const handleNext = useCallback(() => {
+    if (images.length === 0) return;
     setCurrentIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
   }, [images.length]);
   
-  const handleThumbnailClick = useCallback((index) => {
+  const handleThumbnailClick = useCallback((index: number) => {
     setCurrentIndex(index);
   }, []);
   
@@ -41,7 +61,7 @@ const PropertyMediaGallery = memo(({
       <S.PropertyGallery>
         <S.GalleryMain>
           <S.GalleryImage
-            src={images[currentIndex]?.url || images[currentIndex]} 
+            src={getImageUrl(images[currentIndex])} 
             alt={`${title} - Image ${currentIndex + 1}`}
             onClick={() => setIsFullscreen(true)}
           />
@@ -72,13 +92,16 @@ const PropertyMediaGallery = memo(({
           <S.GalleryThumbnails>
             {images.slice(0, maxThumbnails).map((image, index) => (
               <S.Thumbnail
-                key={index}
+                key={getImageUrl(image) || `thumbnail-${index}`}
                 $active={index === currentIndex}
                 onClick={() => handleThumbnailClick(index)}
               >
                 <img 
-                  src={image?.url || image} 
+                  src={getImageUrl(image)} 
                   alt={`Thumbnail ${index + 1}`}
+                  loading="lazy"
+                  width={120}
+                  height={80}
                 />
               </S.Thumbnail>
             ))}
@@ -93,13 +116,16 @@ const PropertyMediaGallery = memo(({
       </S.PropertyGallery>
       
       {isFullscreen && (
-        <S.FullscreenOverlay onClick={() => setIsFullscreen(false)}>
+        <S.FullscreenOverlay onClick={() => setIsFullscreen(false)} role="dialog" aria-modal="true" aria-label={`${title} - Fullscreen gallery`} onKeyDown={(e) => { if (e.key === 'Escape') setIsFullscreen(false); }}>
           <S.CloseFullscreenBtn onClick={() => setIsFullscreen(false)}>
             <X size={24} />
           </S.CloseFullscreenBtn>
           <img 
-            src={images[currentIndex]?.url || images[currentIndex]} 
+            src={getImageUrl(images[currentIndex])} 
             alt={`${title} - Fullscreen`}
+            loading="lazy"
+            width={400}
+            height={300}
             onClick={(e) => e.stopPropagation()}
           />
           {images.length > 1 && (
@@ -126,7 +152,35 @@ const PropertyMediaGallery = memo(({
 
 PropertyMediaGallery.displayName = 'PropertyMediaGallery';
 
-const PropertySpecsGrid = memo(({ property }) => {
+interface PropertyData {
+  bedrooms?: number;
+  bathrooms?: number;
+  area?: number;
+  type?: string;
+  location?: string;
+  address?: string;
+  title?: string;
+  unitNumber?: string;
+  purpose?: string;
+  price?: number;
+  commission?: number;
+  serviceCharge?: number;
+  description?: string;
+  images?: (MediaImage | string)[];
+  owner?: {
+    avatar?: string;
+    name?: string;
+    phone?: string;
+    email?: string;
+  };
+  [key: string]: unknown;
+}
+
+interface PropertySpecsGridProps {
+  property?: PropertyData | null;
+}
+
+const PropertySpecsGrid = memo(({ property }: PropertySpecsGridProps) => {
   if (!property) return null;
   
   const specs = [
@@ -139,8 +193,8 @@ const PropertySpecsGrid = memo(({ property }) => {
   
   return (
     <S.PropertySpecsGrid>
-      {specs.map((spec, index) => (
-        <S.SpecItem key={index}>
+      {specs.map((spec) => (
+        <S.SpecItem key={spec.label}>
           <spec.icon size={18} />
           <S.SpecContent>
             <S.SpecValue>{spec.value}</S.SpecValue>
@@ -154,12 +208,19 @@ const PropertySpecsGrid = memo(({ property }) => {
 
 PropertySpecsGrid.displayName = 'PropertySpecsGrid';
 
+interface PropertyDetailContainerProps {
+  property?: PropertyData | null;
+  onClose?: () => void;
+  showOwnerInfo?: boolean;
+  showFinancials?: boolean;
+}
+
 const PropertyDetailContainer = memo(({ 
   property,
   onClose,
   showOwnerInfo = true,
   showFinancials = true
-}) => {
+}: PropertyDetailContainerProps) => {
   if (!property) return null;
   
   return (

@@ -14,7 +14,6 @@ interface Deal {
   price: string;
   stage: string;
   daysInStage: number;
-  expectedCommission: string;
 }
 
 interface SalesPipelinePageProps {}
@@ -31,21 +30,18 @@ const SalesPipelinePage: FC<SalesPipelinePageProps> = () => {
   ];
 
   const deals: Deal[] = [
-    { id: 1, property: 'Palm Jumeirah Villa', buyer: 'John Smith', price: 'AED 45M', stage: 'negotiating', daysInStage: 5, expectedCommission: 'AED 450K' },
-    { id: 2, property: 'Downtown Penthouse', buyer: 'Emma Wilson', price: 'AED 28M', stage: 'documentation', daysInStage: 3, expectedCommission: 'AED 280K' },
-    { id: 3, property: 'Marina 3BR Apt', buyer: 'Michael Brown', price: 'AED 3.5M', stage: 'viewing', daysInStage: 2, expectedCommission: 'AED 35K' },
-    { id: 4, property: 'Emirates Hills Villa', buyer: 'Lisa Chen', price: 'AED 65M', stage: 'inquiry', daysInStage: 1, expectedCommission: 'AED 650K' },
+    { id: 1, property: 'Palm Jumeirah Villa', buyer: 'John Smith', price: 'AED 45M', stage: 'negotiating', daysInStage: 5 },
+    { id: 2, property: 'Downtown Penthouse', buyer: 'Emma Wilson', price: 'AED 28M', stage: 'documentation', daysInStage: 3 },
+    { id: 3, property: 'Marina 3BR Apt', buyer: 'Michael Brown', price: 'AED 3.5M', stage: 'viewing', daysInStage: 2 },
+    { id: 4, property: 'Emirates Hills Villa', buyer: 'Lisa Chen', price: 'AED 65M', stage: 'inquiry', daysInStage: 1 },
   ];
 
   const getDealsByStage = (stageId: string): Deal[] => deals.filter(d => d.stage === stageId);
 
   const totalPipelineValue = deals.reduce((sum, deal) => {
-    const value = parseFloat(deal.price.replace('AED ', '').replace('M', '')) * 1000000;
-    return sum + value;
-  }, 0);
-
-  const totalExpectedCommission = deals.reduce((sum, deal) => {
-    const value = parseFloat(deal.expectedCommission.replace('AED ', '').replace('K', '')) * 1000;
+    if (!deal.price || typeof deal.price !== 'string') return sum;
+    const parsed = parseFloat(deal.price.replace('AED ', '').replace('M', ''));
+    const value = Number.isNaN(parsed) ? 0 : parsed * 1000000;
     return sum + value;
   }, 0);
 
@@ -65,10 +61,6 @@ const SalesPipelinePage: FC<SalesPipelinePageProps> = () => {
           <div className="summary-card">
             <span className="summary-label">Pipeline Value</span>
             <span className="summary-value">AED {(totalPipelineValue / 1000000).toFixed(0)}M</span>
-          </div>
-          <div className="summary-card">
-            <span className="summary-label">Expected Commission</span>
-            <span className="summary-value">AED {(totalExpectedCommission / 1000).toFixed(0)}K</span>
           </div>
         </div>
 
@@ -92,7 +84,6 @@ const SalesPipelinePage: FC<SalesPipelinePageProps> = () => {
                       <span className="deal-price">{deal.price}</span>
                       <span className="deal-days">{deal.daysInStage}d</span>
                     </div>
-                    <span className="deal-commission">{deal.expectedCommission}</span>
                   </div>
                 ))}
               </div>
@@ -101,7 +92,7 @@ const SalesPipelinePage: FC<SalesPipelinePageProps> = () => {
         </div>
 
         {selectedDeal && (
-          <div className="deal-modal-overlay" onClick={() => setSelectedDeal(null)}>
+          <div className="deal-modal-overlay" onClick={() => setSelectedDeal(null)} role="dialog" aria-modal="true" aria-label="Deal details">
             <div className="deal-modal" onClick={e => e.stopPropagation()}>
               <button className="modal-close" onClick={() => setSelectedDeal(null)}>×</button>
               <h2>{selectedDeal.property}</h2>
@@ -121,10 +112,6 @@ const SalesPipelinePage: FC<SalesPipelinePageProps> = () => {
                 <div className="detail-row">
                   <span className="detail-label">Days in Stage</span>
                   <span className="detail-value">{selectedDeal.daysInStage} days</span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Expected Commission</span>
-                  <span className="detail-value highlight">{selectedDeal.expectedCommission}</span>
                 </div>
               </div>
               <div className="modal-actions">

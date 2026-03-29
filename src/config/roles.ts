@@ -59,7 +59,7 @@ export const REAL_ESTATE_ROLES: RoleDefinition[] = [
     id: 'super_admin',
     name: 'Super Admin',
     icon: Shield,
-    color: '#DC2626',
+    color: '#D4AF37',
     description: 'System administration and user management',
     permissions: ['admin.*', 'users.*', 'settings.*'],
     dashboardPath: '/admin/dashboard',
@@ -256,13 +256,13 @@ export const REAL_ESTATE_ROLES: RoleDefinition[] = [
     category: 'client'
   },
   {
-    id: 'freelancer',
+    id: 'affiliated_agent',
     name: 'Affiliated Agent',
     icon: Truck,
     color: '#F97316',
     description: 'Independent contractor under company sponsorship',
     permissions: ['properties.own', 'leads.own', 'clients.limited'],
-    dashboardPath: '/freelancer/dashboard',
+    dashboardPath: '/agent/dashboard',
     category: 'agent'
   }
 ];
@@ -278,6 +278,7 @@ export const ROLE_KEY_MAP: Record<string, string> = {
   'sales-agent': 'sales_agent',
   'admin': 'super_admin',
   'seller': 'landlord',
+  'freelancer': 'affiliated_agent',
 };
 
 /** Normalize a role key to a canonical role ID */

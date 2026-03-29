@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from './store';
 
+import type { AppUser } from './userSlice';
+
 interface UserSession {
   id: string;
   device: string;
@@ -27,7 +29,7 @@ interface LoginMethods {
 }
 
 interface AuthState {
-  user: any | null;
+  user: AppUser | null;
   token: string | null;
   refreshToken: string | null;
   session: SessionData;
@@ -85,7 +87,7 @@ const initialState: AuthState = {
 };
 
 interface LoginSuccessPayload {
-  user: any;
+  user: AppUser;
   token?: string;
   refreshToken?: string;
   provider?: string;
@@ -138,7 +140,9 @@ export const authSlice = createSlice({
         expiresAt,
         activeSessionId: sessionId,
         sessions: [
-          ...state.session.sessions.filter(s => s.id !== sessionId),
+          ...state.session.sessions
+            .map(s => ({ ...s, isCurrent: false }))
+            .slice(-9),
           {
             id: sessionId,
             device: detectDevice(),
@@ -225,21 +229,26 @@ export const authSlice = createSlice({
       if (!state.session.isLoggedIn) return;
       
       const now = Date.now();
-      const lastActive = new Date(state.session.lastActive || '').getTime();
+      const lastActive = state.session.lastActive
+        ? new Date(state.session.lastActive).getTime()
+        : 0;
       const timeoutMs = state.sessionTimeout * 60 * 1000;
       
-      if (now - lastActive > timeoutMs) {
+      if (!Number.isFinite(lastActive) || now - lastActive > timeoutMs) {
         state.user = null;
         state.token = null;
         state.refreshToken = null;
+        state.loginProvider = null;
         state.session.isLoggedIn = false;
         state.session.activeSessionId = null;
+        state.session.sessions = [];
+        state.loginMethods = { social: false, email: false, mobile: false };
       }
     },
     setSessionTimeout: (state, action: PayloadAction<number>) => {
       state.sessionTimeout = action.payload;
     },
-    updateUserProfile: (state, action: PayloadAction<any>) => {
+    updateUserProfile: (state, action: PayloadAction<Partial<AppUser>>) => {
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
       }
@@ -268,12 +277,9 @@ export const {
 } = authSlice.actions;
 
 // Selectors
-export const selectAuth = (state: RootState) => state.auth;
-export const selectUser = (state: RootState) => state.auth.user;
 export const selectIsLoggedIn = (state: RootState) => state.auth.session.isLoggedIn;
-export const selectSessions = (state: RootState) => state.auth.session.sessions;
-export const selectLoginProvider = (state: RootState) => state.auth.loginProvider;
-export const selectAuthLoading = (state: RootState) => state.auth.loading;
-export const selectAuthError = (state: RootState) => state.auth.error;
+
+// NOTE: Unused selectors removed in Round 124 dead-code cleanup.
+// Re-add if needed: selectAuth, selectUser, selectSessions, selectLoginProvider, selectAuthLoading, selectAuthError
 
 export default authSlice.reducer;

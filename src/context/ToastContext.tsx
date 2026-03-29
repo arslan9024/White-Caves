@@ -5,7 +5,7 @@
  * automatic dismissal, and accessibility features.
  */
 
-import React, { createContext, ReactNode, useCallback, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 export type ToastType = 'info' | 'success' | 'warning' | 'error';
 export type ToastPosition =
@@ -48,6 +48,28 @@ interface ToastProviderProps {
  */
 export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+
+  // Cleanup all timers on unmount
+  useEffect(() => {
+    return () => {
+      timersRef.current.forEach(timer => clearTimeout(timer));
+      timersRef.current.clear();
+    };
+  }, []);
+
+  /**
+   * Dismiss a specific toast by ID
+   */
+  const dismiss = useCallback((id: string) => {
+    // Clear associated auto-dismiss timer
+    const timer = timersRef.current.get(id);
+    if (timer) {
+      clearTimeout(timer);
+      timersRef.current.delete(id);
+    }
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  }, []);
 
   /**
    * Show a new toast notification
@@ -55,7 +77,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
    */
   const show = useCallback(
     (config: Omit<Toast, 'id'>): string => {
-      const id = `toast-${Date.now()}-${Math.random()}`;
+      const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       const toast: Toast = {
         ...config,
         id,
@@ -69,35 +91,29 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
           dismiss(id);
         }, config.duration);
 
-        // Return cleanup function
-        return id;
+        timersRef.current.set(id, timer);
       }
 
       return id;
     },
-    []
+    [dismiss]
   );
-
-  /**
-   * Dismiss a specific toast by ID
-   */
-  const dismiss = useCallback((id: string) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
-  }, []);
 
   /**
    * Dismiss all currently displayed toasts
    */
   const dismissAll = useCallback(() => {
+    timersRef.current.forEach(timer => clearTimeout(timer));
+    timersRef.current.clear();
     setToasts([]);
   }, []);
 
-  const value: ToastContextType = {
+  const value: ToastContextType = useMemo(() => ({
     toasts,
     show,
     dismiss,
     dismissAll,
-  };
+  }), [toasts, show, dismiss, dismissAll]);
 
   return (
     <ToastContext.Provider value={value}>

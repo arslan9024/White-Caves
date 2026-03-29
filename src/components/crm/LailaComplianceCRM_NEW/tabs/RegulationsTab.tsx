@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Shield, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 
 const RegulationsTab = () => {
-  const [activeReg, setActiveReg] = useState('uae');
+  type RegKey = 'uae' | 'aml' | 'taxation';
+  const [activeReg, setActiveReg] = useState<RegKey>('uae');
 
   const regulations = {
     uae: {

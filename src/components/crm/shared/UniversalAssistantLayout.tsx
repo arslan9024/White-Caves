@@ -1,4 +1,5 @@
-import React, { memo, Suspense, lazy, useCallback } from 'react';
+import React, { memo, Suspense, lazy, useCallback, type ReactNode } from 'react';
+import { createLogger } from '../../../utils/logger';
 import { useSelector, useDispatch } from 'react-redux';
 import { Menu, X, RefreshCw } from 'lucide-react';
 import AssistantSidebar from './AssistantSidebar';
@@ -12,7 +13,12 @@ const LoadingSpinner = () => (
   </div>
 );
 
-const ErrorBoundaryFallback = ({ error, resetError }) => (
+interface ErrorBoundaryFallbackProps {
+  error: Error | null;
+  resetError: () => void;
+}
+
+const ErrorBoundaryFallback = ({ error, resetError }: ErrorBoundaryFallbackProps) => (
   <div className="error-container">
     <h3>Something went wrong</h3>
     <p>{error?.message || 'An unexpected error occurred'}</p>
@@ -23,18 +29,27 @@ const ErrorBoundaryFallback = ({ error, resetError }) => (
   </div>
 );
 
-class ErrorBoundary extends React.Component {
-  constructor(props) {
+interface ErrorBoundaryProps {
+  children: ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error, errorInfo) {
-    console.error('Dashboard Error:', error, errorInfo);
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+    createLogger('DashboardErrorBoundary').error('Dashboard Error:', error, errorInfo);
   }
 
   render() {
@@ -50,6 +65,22 @@ class ErrorBoundary extends React.Component {
   }
 }
 
+interface SidebarItem {
+  id: string;
+  label: string;
+  icon?: React.ComponentType<{ size?: number }>;
+}
+
+interface UniversalAssistantLayoutProps {
+  sidebarItems?: SidebarItem[];
+  activeFeature?: string;
+  onFeatureChange?: (feature: string) => void;
+  children: ReactNode;
+  headerActions?: ReactNode;
+  showSidebar?: boolean;
+  collapsedSidebar?: boolean;
+}
+
 const UniversalAssistantLayout = memo(({ 
   sidebarItems = [],
   activeFeature,
@@ -58,7 +89,7 @@ const UniversalAssistantLayout = memo(({
   headerActions,
   showSidebar = true,
   collapsedSidebar = false
-}) => {
+}: UniversalAssistantLayoutProps) => {
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(collapsedSidebar);
   const currentAssistant = useSelector(selectCurrentAssistant);
   
@@ -79,7 +110,7 @@ const UniversalAssistantLayout = memo(({
   return (
     <div 
       className={`universal-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}
-      style={{ '--assistant-color': assistantColor }}
+      style={{ '--assistant-color': assistantColor } as React.CSSProperties}
     >
       {showSidebar && (
         <AssistantSidebar

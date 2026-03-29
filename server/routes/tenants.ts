@@ -5,22 +5,30 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
+import type { AuthRequest } from '../middleware/auth';
+import { prisma } from '../database.js';
+import { sanitizeString } from '../utils/sanitize';
+import { validateIdParam } from '../utils/validate';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // ─── GET /api/tenants ───────────────────────────────────────────────────
 router.get(
   '/',
   asyncHandler(async (req: Request, res: Response) => {
+    // AUTHORIZATION: Tenant PII restricted to managers/admins
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — tenant data requires manager or above role', 403);
+    }
+
     const { page = '1', pageSize = '20', status, search } = req.query;
 
-    const pageNum = Math.max(1, parseInt(page as string));
-    const limit = Math.min(100, Math.max(1, parseInt(pageSize as string)));
+    const pageNum = Math.max(1, parseInt(page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 20));
 
-    const where: any = {};
+    const where: Record<string, unknown> = {};
     if (status && status !== 'all') where.status = status as string;
     if (search) {
       const s = search as string;
@@ -52,15 +60,18 @@ router.get(
 // ─── GET /api/tenants/stats ─────────────────────────────────────────────
 router.get(
   '/stats',
-  asyncHandler(async (req: Request, res: Response) => {
-    const [total, byStatus, rentStats] = await Promise.all([
+  asyncHandler(async (req: Request, res: Response) => {    // Authorization: Only managers+ can view tenant statistics
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
+      throw new AppError('Access denied — tenant statistics require manager role', 403);
+    }    const [total, byStatus, rentStats] = await Promise.all([
       prisma.tenant.count(),
       prisma.tenant.groupBy({ by: ['status'], _count: { _all: true } }),
       prisma.tenant.aggregate({ _sum: { monthlyRent: true }, _avg: { monthlyRent: true } }),
     ]);
 
     const statusCounts: Record<string, number> = {};
-    byStatus.forEach((s: any) => { statusCounts[s.status] = s._count._all; });
+    byStatus.forEach((s) => { statusCounts[s.status] = s._count._all; });
 
     res.status(200).json({
       success: true,
@@ -78,6 +89,14 @@ router.get(
 router.get(
   '/:id',
   asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Tenant ID');
+
+    // AUTHORIZATION: Tenant details restricted to managers/admins
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — tenant details require manager or above role', 403);
+    }
+
     const tenant = await prisma.tenant.findUnique({ where: { id: req.params.id } });
     if (!tenant) throw new AppError('Tenant not found', 404);
     res.status(200).json({ success: true, data: tenant });
@@ -88,23 +107,42 @@ router.get(
 router.post(
   '/',
   asyncHandler(async (req: Request, res: Response) => {
+    // AUTHORIZATION: Only admins or property managers can create tenant records
+    const isAdmin = ['owner', 'manager'].includes(req.user?.role || '');
+    if (!isAdmin) {
+      throw new AppError('Only admins or property managers can create tenant records', 403);
+    }
+
     const { name, email, phone, nationality, emiratesId, propertyId,
       monthlyRent, deposit, moveInDate, notes } = req.body;
 
     if (!name?.trim()) throw new AppError('Tenant name is required', 400);
 
+    const sanitizedName = sanitizeString(name.trim());
+    if (sanitizedName.length > 150) throw new AppError('Name must be 150 characters or less', 400);
+    if (notes && notes.length > 5000) throw new AppError('Notes must be 5000 characters or less', 400);
+
+    // Validate property exists if provided
+    if (propertyId) {
+      if (typeof propertyId !== 'string' || !/^[a-fA-F0-9]{24}$/.test(propertyId)) {
+        throw new AppError('Property ID must be a valid 24-character hex string', 400);
+      }
+      const property = await prisma.property.findUnique({ where: { id: propertyId }, select: { id: true } });
+      if (!property) throw new AppError('Referenced property not found', 400);
+    }
+
     const tenant = await prisma.tenant.create({
       data: {
-        name: name.trim(),
-        email: email?.trim() || null,
-        phone: phone?.trim() || null,
-        nationality: nationality || null,
-        emiratesId: emiratesId || null,
+        name: sanitizedName,
+        email: email?.trim()?.toLowerCase() || null,
+        phone: sanitizeString(phone?.trim() || '') || null,
+        nationality: sanitizeString(nationality || '') || null,
+        emiratesId: sanitizeString(emiratesId || '') || null,
         propertyId: propertyId || null,
-        monthlyRent: monthlyRent ? parseFloat(monthlyRent) : null,
-        deposit: deposit ? parseFloat(deposit) : null,
-        moveInDate: moveInDate ? new Date(moveInDate) : null,
-        notes: notes || null,
+        monthlyRent: monthlyRent ? (() => { const v = parseFloat(monthlyRent); return Number.isFinite(v) && v >= 0 ? v : null; })() : null,
+        deposit: deposit ? (() => { const v = parseFloat(deposit); return Number.isFinite(v) && v >= 0 ? v : null; })() : null,
+        moveInDate: moveInDate ? (() => { const d = new Date(moveInDate); return !isNaN(d.getTime()) ? d : null; })() : null,
+        notes: sanitizeString(notes || '') || null,
         status: 'active',
       },
     });
@@ -114,7 +152,7 @@ router.post(
         type: 'client',
         action: 'created',
         description: `New tenant added: ${tenant.name}`,
-        userId: (req as any).user?.id || null,
+        userId: req.user?.id || null,
       },
     });
 
@@ -127,25 +165,55 @@ router.patch(
   '/:id',
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
+    validateIdParam(id, 'Tenant ID');
     const { name, email, phone, nationality, emiratesId, propertyId,
       monthlyRent, deposit, moveInDate, moveOutDate, notes, status } = req.body;
 
     const existing = await prisma.tenant.findUnique({ where: { id } });
     if (!existing) throw new AppError('Tenant not found', 404);
 
-    const data: any = {};
-    if (name !== undefined) data.name = name.trim();
-    if (email !== undefined) data.email = email?.trim() || null;
-    if (phone !== undefined) data.phone = phone?.trim() || null;
-    if (nationality !== undefined) data.nationality = nationality;
-    if (emiratesId !== undefined) data.emiratesId = emiratesId;
-    if (propertyId !== undefined) data.propertyId = propertyId;
-    if (monthlyRent !== undefined) data.monthlyRent = monthlyRent ? parseFloat(monthlyRent) : null;
-    if (deposit !== undefined) data.deposit = deposit ? parseFloat(deposit) : null;
-    if (moveInDate !== undefined) data.moveInDate = moveInDate ? new Date(moveInDate) : null;
-    if (moveOutDate !== undefined) data.moveOutDate = moveOutDate ? new Date(moveOutDate) : null;
-    if (notes !== undefined) data.notes = notes;
-    if (status !== undefined) data.status = status;
+    // AUTHORIZATION: Only admins or property managers can update tenant records
+    const isAdmin = ['owner', 'manager'].includes(req.user?.role || '');
+    if (!isAdmin) {
+      throw new AppError('Only admins or property managers can update tenant records', 403);
+    }
+
+    const data: Record<string, unknown> = {};
+    if (name !== undefined) {
+      const s = sanitizeString(name.trim());
+      if (s.length > 150) throw new AppError('Name must be 150 characters or less', 400);
+      data.name = s;
+    }
+    if (email !== undefined) data.email = email?.trim()?.toLowerCase() || null;
+    if (phone !== undefined) data.phone = sanitizeString(phone?.trim() || '') || null;
+    if (nationality !== undefined) data.nationality = sanitizeString(nationality || '') || null;
+    if (emiratesId !== undefined) data.emiratesId = sanitizeString(emiratesId || '') || null;
+    if (propertyId !== undefined) {
+      if (propertyId && (typeof propertyId !== 'string' || !/^[a-fA-F0-9]{24}$/.test(propertyId))) {
+        throw new AppError('Property ID must be a valid 24-character hex string', 400);
+      }
+      // Validate property exists if provided
+      if (propertyId) {
+        const property = await prisma.property.findUnique({ where: { id: propertyId }, select: { id: true } });
+        if (!property) throw new AppError('Referenced property not found', 400);
+      }
+      data.propertyId = propertyId || null;
+    }
+    if (monthlyRent !== undefined) data.monthlyRent = monthlyRent ? (() => { const v = parseFloat(monthlyRent); return Number.isFinite(v) && v >= 0 ? v : null; })() : null;
+    if (deposit !== undefined) data.deposit = deposit ? (() => { const v = parseFloat(deposit); return Number.isFinite(v) && v >= 0 ? v : null; })() : null;
+    if (moveInDate !== undefined) data.moveInDate = moveInDate ? (() => { const d = new Date(moveInDate); return !isNaN(d.getTime()) ? d : null; })() : null;
+    if (moveOutDate !== undefined) data.moveOutDate = moveOutDate ? (() => { const d = new Date(moveOutDate); return !isNaN(d.getTime()) ? d : null; })() : null;
+    if (notes !== undefined) {
+      if (notes && notes.length > 5000) throw new AppError('Notes must be 5000 characters or less', 400);
+      data.notes = sanitizeString(notes || '') || null;
+    }
+    if (status !== undefined) {
+      const validStatuses = ['active', 'inactive', 'moved_out', 'terminated'];
+      if (!validStatuses.includes(status)) {
+        throw new AppError(`Invalid tenant status. Allowed: ${validStatuses.join(', ')}`, 400);
+      }
+      data.status = status;
+    }
 
     const tenant = await prisma.tenant.update({ where: { id }, data });
 
@@ -158,18 +226,27 @@ router.delete(
   '/:id',
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
+    validateIdParam(id, 'Tenant ID');
     const existing = await prisma.tenant.findUnique({ where: { id } });
     if (!existing) throw new AppError('Tenant not found', 404);
 
-    await prisma.tenant.delete({ where: { id } });
+    // AUTHORIZATION: Only admins or property managers can delete tenant records
+    const isAdmin = ['owner', 'manager'].includes(req.user?.role || '');
+    if (!isAdmin) {
+      throw new AppError('Only admins or property managers can delete tenant records', 403);
+    }
 
-    await prisma.activity.create({
-      data: {
-        type: 'client',
-        action: 'deleted',
-        description: `Tenant deleted: ${existing.name}`,
-        userId: (req as any).user?.id || null,
-      },
+    await prisma.$transaction(async (tx) => {
+      await tx.tenant.delete({ where: { id } });
+
+      await tx.activity.create({
+        data: {
+          type: 'client',
+          action: 'deleted',
+          description: `Tenant deleted: ${existing.name} (by ${req.user?.email})`,
+          userId: req.user?.id || null,
+        },
+      });
     });
 
     res.status(200).json({ success: true, message: `Tenant "${existing.name}" deleted` });
@@ -181,6 +258,7 @@ router.delete(
 router.get(
   '/:id/leases',
   asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Tenant ID');
     const tenant = await prisma.tenant.findUnique({ where: { id: req.params.id } });
     if (!tenant) throw new AppError('Tenant not found', 404);
 

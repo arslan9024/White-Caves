@@ -1,9 +1,70 @@
-import React, { memo, useState, useCallback } from 'react';
+import React, { memo, useState, useCallback, useEffect, useRef } from 'react';
 import { 
   CreditCard, QrCode, FileText, Building2, Copy, Check, 
   Download, Share2, ChevronDown, ChevronUp
 } from 'lucide-react';
 import './PaymentComponents.css';
+
+// ─── Types ──────────────────────────────────────────────────────────────
+
+interface BankDetails {
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+  iban: string;
+  swiftCode: string;
+  routingCode: string;
+  accountType: string;
+  branch: string;
+  currency: string;
+}
+
+interface QRCodeDisplayProps {
+  amount?: number;
+  reference: string;
+  onCopy: (text: string, field?: string) => void;
+}
+
+interface ChequeInstructionsProps {
+  amount?: number;
+  reference: string;
+  payeeName?: string;
+}
+
+interface BankTransferDetailsProps {
+  amount?: number;
+  reference: string;
+  onCopy: (text: string, field?: string) => void;
+  copied: string | null;
+}
+
+interface PaymentMethodSelectorProps {
+  selected: string;
+  onSelect: (method: string) => void;
+}
+
+interface PaymentInstructionDeckProps {
+  amount?: number;
+  reference?: string;
+  clientName?: string;
+  invoiceId?: string;
+  onGenerateMessage?: (message: string, method: string) => void;
+  showMethodSelector?: boolean;
+}
+
+// Bank details loaded from env vars at build time (not in source control).
+// In production, serve via authenticated API: GET /api/payment/bank-details
+const loadBankDetails = (): BankDetails => ({
+  bankName: import.meta.env.VITE_BANK_NAME || 'Contact office for details',
+  accountName: import.meta.env.VITE_BANK_ACCOUNT_NAME || 'WHITE CAVES REAL ESTATE L.L.C',
+  accountNumber: import.meta.env.VITE_BANK_ACCOUNT_NUMBER || '***REDACTED***',
+  iban: import.meta.env.VITE_BANK_IBAN || '***REDACTED***',
+  swiftCode: import.meta.env.VITE_BANK_SWIFT || '***REDACTED***',
+  routingCode: import.meta.env.VITE_BANK_ROUTING || '***REDACTED***',
+  accountType: import.meta.env.VITE_BANK_ACCOUNT_TYPE || 'Lite',
+  branch: import.meta.env.VITE_BANK_BRANCH || 'Mashreq NEOBiz Digital',
+  currency: 'AED',
+});
 
 const PAYMENT_METHODS = {
   qr: {
@@ -26,20 +87,12 @@ const PAYMENT_METHODS = {
   }
 };
 
-const BANK_DETAILS = {
-  bankName: 'Mashreq NEOBiz',
-  accountName: 'WHITE CAVES REAL ESTATE L.L.C',
-  accountNumber: '019101501006',
-  iban: 'AE960330000019101501006',
-  swiftCode: 'BOMLAEAD',
-  routingCode: '203320101',
-  accountType: 'Lite',
-  branch: 'Mashreq NEOBiz Digital',
-  currency: 'AED'
-};
+// Bank details loaded from env vars (no hardcoded secrets in source)
+const BANK_DETAILS = loadBankDetails();
 
-const QRCodeDisplay = memo(({ amount, reference, onCopy }) => {
-  const paymentInfo = `Merchant: WHITE CAVES REAL ESTATE L.L.C\nAmount: AED ${amount?.toLocaleString()}\nReference: ${reference}\nPayment Method: Aani - Scan with enabled bank apps`;
+const QRCodeDisplay = memo(({ amount, reference, onCopy }: QRCodeDisplayProps) => {
+  const displayAmount = amount != null ? `AED ${amount.toLocaleString()}` : 'Amount pending';
+  const paymentInfo = `Merchant: WHITE CAVES REAL ESTATE L.L.C\nAmount: ${displayAmount}\nReference: ${reference}\nPayment Method: Aani - Scan with enabled bank apps`;
   
   return (
     <div className="qr-code-container">
@@ -52,11 +105,14 @@ const QRCodeDisplay = memo(({ amount, reference, onCopy }) => {
           src="/images/aani-qr-code.png" 
           alt="Aani QR Code - WHITE CAVES REAL ESTATE L.L.C"
           className="aani-qr-image"
+          loading="lazy"
+          width={200}
+          height={200}
         />
         <p className="qr-instruction">Scan and pay using Aani enabled bank apps</p>
       </div>
       <div className="qr-details">
-        <p className="qr-amount">Amount: <strong>AED {amount?.toLocaleString()}</strong></p>
+        <p className="qr-amount">Amount: <strong>{displayAmount}</strong></p>
         <p className="qr-reference">Reference: <strong>{reference}</strong></p>
         <button className="copy-btn" onClick={() => onCopy(paymentInfo)}>
           <Copy size={14} /> Copy Payment Info
@@ -68,13 +124,13 @@ const QRCodeDisplay = memo(({ amount, reference, onCopy }) => {
 
 QRCodeDisplay.displayName = 'QRCodeDisplay';
 
-const ChequeInstructions = memo(({ amount, reference, payeeName }) => (
+const ChequeInstructions = memo(({ amount, reference, payeeName }: ChequeInstructionsProps) => (
   <div className="cheque-instructions">
     <div className="instruction-card">
       <h4>Cheque Payment Instructions</h4>
       <ol className="instruction-list">
         <li>Make the cheque payable to: <strong>{payeeName || BANK_DETAILS.accountName}</strong></li>
-        <li>Amount: <strong>AED {amount?.toLocaleString()}</strong> (in words on the cheque)</li>
+        <li>Amount: <strong>{amount != null ? `AED ${amount.toLocaleString()}` : 'Amount pending'}</strong> (in words on the cheque)</li>
         <li>Write reference number on the back: <strong>{reference}</strong></li>
         <li>Cross the cheque with "Account Payee Only"</li>
         <li>Date the cheque with today's date or post-dated as agreed</li>
@@ -96,7 +152,7 @@ const ChequeInstructions = memo(({ amount, reference, payeeName }) => (
 
 ChequeInstructions.displayName = 'ChequeInstructions';
 
-const BankTransferDetails = memo(({ amount, reference, onCopy, copied }) => (
+const BankTransferDetails = memo(({ amount, reference, onCopy, copied }: BankTransferDetailsProps) => (
   <div className="bank-transfer-details">
     <div className="bank-header">
       <Building2 size={24} />
@@ -152,7 +208,7 @@ const BankTransferDetails = memo(({ amount, reference, onCopy, copied }) => (
       </div>
       <div className="detail-row highlight">
         <span className="detail-label">Amount</span>
-        <span className="detail-value">AED {amount?.toLocaleString()}</span>
+        <span className="detail-value">{amount != null ? `AED ${amount.toLocaleString()}` : 'Amount pending'}</span>
       </div>
       <div className="detail-row highlight">
         <span className="detail-label">Reference</span>
@@ -171,7 +227,7 @@ const BankTransferDetails = memo(({ amount, reference, onCopy, copied }) => (
 
 BankTransferDetails.displayName = 'BankTransferDetails';
 
-const PaymentMethodSelector = memo(({ selected, onSelect }) => (
+const PaymentMethodSelector = memo(({ selected, onSelect }: PaymentMethodSelectorProps) => (
   <div className="payment-method-selector">
     {Object.values(PAYMENT_METHODS).map(method => {
       const IconComponent = method.icon;
@@ -199,15 +255,21 @@ const PaymentInstructionDeck = memo(({
   invoiceId = '',
   onGenerateMessage,
   showMethodSelector = true
-}) => {
+}: PaymentInstructionDeckProps) => {
   const [selectedMethod, setSelectedMethod] = useState('transfer');
-  const [copied, setCopied] = useState(null);
+  const [copied, setCopied] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(true);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    return () => clearTimeout(copyTimerRef.current);
+  }, []);
   
-  const handleCopy = useCallback((text, field) => {
+  const handleCopy = useCallback((text: string, field?: string) => {
     navigator.clipboard.writeText(text);
-    setCopied(field);
-    setTimeout(() => setCopied(null), 2000);
+    setCopied(field ?? null);
+    clearTimeout(copyTimerRef.current);
+    copyTimerRef.current = setTimeout(() => setCopied(null), 2000);
   }, []);
   
   const generateMessage = useCallback(() => {
@@ -227,17 +289,18 @@ const PaymentInstructionDeck = memo(({
     
     navigator.clipboard.writeText(message);
     setCopied('message');
-    setTimeout(() => setCopied(null), 2000);
+    clearTimeout(copyTimerRef.current);
+    copyTimerRef.current = setTimeout(() => setCopied(null), 2000);
   }, [selectedMethod, amount, reference, clientName, invoiceId, onGenerateMessage]);
   
   return (
     <div className="payment-instruction-deck">
-      <div className="deck-header" onClick={() => setExpanded(!expanded)}>
+      <div className="deck-header" onClick={() => setExpanded(!expanded)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded(!expanded); } }} aria-expanded={expanded} aria-label="Toggle payment instructions">
         <div className="deck-title">
           <CreditCard size={20} />
           <h3>Payment Instructions</h3>
         </div>
-        <button className="expand-btn">
+        <button className="expand-btn" tabIndex={-1} aria-hidden="true">
           {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
         </button>
       </div>

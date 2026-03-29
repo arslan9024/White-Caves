@@ -1,20 +1,35 @@
 import React from 'react';
 import { Search, Plus, Filter, AlertCircle, CheckCircle, Clock, TrendingUp, Lightbulb, AlertTriangle, DollarSign } from 'lucide-react';
 
-const TYPE_ICONS = {
+interface Suggestion {
+  id: string | number;
+  title?: string;
+  description?: string;
+  type: string;
+  priority?: string;
+}
+
+interface SuggestionsTabProps {
+  suggestions: Suggestion[];
+  unreviewedCount: number;
+  criticalCount: number;
+  onStatusChange: (id: string | number, status: string) => void;
+}
+
+const TYPE_ICONS: Record<string, React.ComponentType<{ size?: number | string }>> = {
   process_improvement: TrendingUp,
   new_opportunity: Lightbulb,
   risk_alert: AlertTriangle,
   cost_saving: DollarSign
 };
 
-const SuggestionsTab = ({ suggestions, unreviewedCount, criticalCount, onStatusChange }) => {
+const SuggestionsTab: React.FC<SuggestionsTabProps> = ({ suggestions, unreviewedCount, criticalCount, onStatusChange }) => {
   return (
     <div className="suggestions-view">
       <div className="view-header">
         <div className="search-box">
           <Search size={16} />
-          <input type="text" placeholder="Search suggestions..." />
+          <input type="text" placeholder="Search suggestions..." aria-label="Search suggestions" />
         </div>
         <div className="filter-buttons">
           <button className="filter-btn">
@@ -27,10 +42,10 @@ const SuggestionsTab = ({ suggestions, unreviewedCount, criticalCount, onStatusC
       </div>
       <div className="suggestions-list">
         {suggestions && suggestions.length > 0 ? (
-          suggestions.map((suggestion, index) => {
+          suggestions.map((suggestion: Suggestion) => {
             const IconComponent = TYPE_ICONS[suggestion.type] || TrendingUp;
             return (
-              <div key={index} className={`suggestion-card ${suggestion.priority}`}>
+              <div key={suggestion.id} className={`suggestion-card ${suggestion.priority}`}>
                 <div className="suggestion-header">
                   <div className="suggestion-icon">
                     <IconComponent size={20} />

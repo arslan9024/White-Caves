@@ -81,8 +81,8 @@ export function setupMockFetch() {
 /**
  * Create mock API response
  */
-export function createMockResponse(data, options = {}) {
-  return {
+export function createMockResponse(data: unknown, options: { ok?: boolean; status?: number; statusText?: string; headers?: Record<string, string> } = {}): Response {
+  const response: Partial<Response> = {
     ok: options.ok !== false,
     status: options.status || 200,
     statusText: options.statusText || 'OK',
@@ -92,6 +92,7 @@ export function createMockResponse(data, options = {}) {
     blob: vi.fn().mockResolvedValue(new Blob([JSON.stringify(data)])),
     clone: vi.fn(() => createMockResponse(data, options)),
   };
+  return response as Response;
 }
 
 /**

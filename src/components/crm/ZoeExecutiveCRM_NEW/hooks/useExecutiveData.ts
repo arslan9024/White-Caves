@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { MEETINGS, TASKS, EXECUTIVES, ASSISTANT_COLORS, Meeting, Task, Executive } from '../data/executive';
 import { ZOE_EXECUTIVE_FEATURES } from '../data/features';
@@ -32,8 +32,8 @@ export const useExecutiveData = () => {
   const complianceMetrics = useSelector(selectComplianceMetrics);
   const vault = useSelector(selectConfidentialVault);
 
-  const handleStatusChange = useCallback((suggestionId: string, status: string) => {
-    dispatch(updateSuggestionStatus({ id: suggestionId, status }));
+  const handleStatusChange = useCallback((suggestionId: string, status: 'pending' | 'unreviewed' | 'acknowledged') => {
+    dispatch(updateSuggestionStatus({ suggestionId, status }));
   }, [dispatch]);
 
   const getUpcomingMeetings = useCallback(() => {
@@ -53,12 +53,15 @@ export const useExecutiveData = () => {
     return executives.filter(e => e.status === 'available');
   }, [executives]);
 
-  const filteredMeetings = meetings.filter(meeting =>
+  const filteredMeetings = useMemo(() => meetings.filter(meeting =>
     meeting.title.toLowerCase().includes(meetingSearch.toLowerCase()) ||
     meeting.location.toLowerCase().includes(meetingSearch.toLowerCase())
-  );
+  ), [meetings, meetingSearch]);
 
-  const filteredTasks = getTasksByStatus(taskFilter);
+  const filteredTasks = useMemo(
+    () => getTasksByStatus(taskFilter),
+    [getTasksByStatus, taskFilter]
+  );
 
   return {
     activeTab,

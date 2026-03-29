@@ -1,4 +1,4 @@
-import React, { memo, useState, useCallback } from 'react';
+import React, { memo, useState, useCallback, useRef, useEffect } from 'react';
 import { 
   Briefcase, MapPin, DollarSign, Clock, Send, Save, Eye,
   Linkedin, Globe, ChevronDown, ChevronUp, Users, Star
@@ -16,13 +16,34 @@ const EMPLOYMENT_TYPES = ['Full-time', 'Part-time', 'Contract', 'Temporary', 'In
 const EXPERIENCE_LEVELS = ['Entry Level', 'Mid Level', 'Senior Level', 'Executive', 'Director'];
 const DEPARTMENTS = ['Sales', 'Marketing', 'Operations', 'Finance', 'HR', 'Technology', 'Administration'];
 
+interface JobData {
+  title?: string;
+  department?: string;
+  location?: string;
+  employmentType?: string;
+  experienceLevel?: string;
+  salaryMin?: string;
+  salaryMax?: string;
+  description?: string;
+  requirements?: string;
+  benefits?: string;
+  [key: string]: unknown;
+}
+
+interface JobPostComposerProps {
+  job?: JobData;
+  onPublish?: (data: JobData, platforms: string[]) => void;
+  onSaveDraft?: (data: JobData) => void;
+  onPreview?: (data: JobData) => void;
+}
+
 const JobPostComposer = memo(({ 
   job,
   onPublish,
   onSaveDraft,
   onPreview
-}) => {
-  const [formData, setFormData] = useState(job || {
+}: JobPostComposerProps) => {
+  const [formData, setFormData] = useState<JobData>(job || {
     title: '',
     department: '',
     location: 'Dubai, UAE',
@@ -34,14 +55,19 @@ const JobPostComposer = memo(({
     requirements: '',
     benefits: ''
   });
-  const [selectedPlatforms, setSelectedPlatforms] = useState(['linkedin', 'bayt']);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['linkedin', 'bayt']);
   const [publishing, setPublishing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [notification, setNotification] = useState(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const notifyTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    return () => clearTimeout(notifyTimerRef.current);
+  }, []);
   
   const validateForm = useCallback(() => {
-    const newErrors = {};
+    const newErrors: Record<string, string> = {};
     if (!formData.title?.trim()) newErrors.title = 'Job title is required';
     if (!formData.description?.trim()) newErrors.description = 'Job description is required';
     if (selectedPlatforms.length === 0) newErrors.platforms = 'Select at least one platform';
@@ -49,16 +75,17 @@ const JobPostComposer = memo(({
     return Object.keys(newErrors).length === 0;
   }, [formData, selectedPlatforms]);
   
-  const showNotification = useCallback((message, type = 'success') => {
+  const showNotification = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 4000);
+    clearTimeout(notifyTimerRef.current);
+    notifyTimerRef.current = setTimeout(() => setNotification(null), 4000);
   }, []);
   
-  const handleFieldChange = useCallback((field, value) => {
+  const handleFieldChange = useCallback((field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   }, []);
   
-  const togglePlatform = useCallback((platformId) => {
+  const togglePlatform = useCallback((platformId: string) => {
     setSelectedPlatforms(prev => 
       prev.includes(platformId) 
         ? prev.filter(p => p !== platformId)
@@ -142,7 +169,7 @@ const JobPostComposer = memo(({
               <input
                 type="text"
                 value={formData.title}
-                onChange={(e) => { handleFieldChange('title', e.target.value); setErrors(prev => ({...prev, title: null})); }}
+                onChange={(e) => { handleFieldChange('title', e.target.value); setErrors(prev => ({...prev, title: ''})); }}
                 placeholder="e.g., Senior Real Estate Agent"
               />
               {errors.title && <S.ErrorMessage>{errors.title}</S.ErrorMessage>}
@@ -226,7 +253,7 @@ const JobPostComposer = memo(({
             <label>Description <span className="required">*</span></label>
             <textarea
               value={formData.description}
-              onChange={(e) => { handleFieldChange('description', e.target.value); setErrors(prev => ({...prev, description: null})); }}
+              onChange={(e) => { handleFieldChange('description', e.target.value); setErrors(prev => ({...prev, description: ''})); }}
               placeholder="Describe the role, responsibilities, and day-to-day activities..."
               rows={5}
             />

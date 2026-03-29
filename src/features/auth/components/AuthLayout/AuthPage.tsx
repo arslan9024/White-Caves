@@ -5,23 +5,30 @@ import { EmailLoginForm } from '../EmailLogin';
 import { MobileLoginForm } from '../MobileLogin';
 import './AuthLayout.css';
 
-const AuthPage = ({ defaultMode = 'login', defaultTab = 'email', onSuccess }) => {
-  const navigate = useNavigate();
-  const [mode, setMode] = useState(defaultMode);
-  const [activeTab, setActiveTab] = useState(defaultTab);
-  const [error, setError] = useState(null);
+interface AuthPageProps {
+  defaultMode?: 'login' | 'signup';
+  defaultTab?: 'email' | 'phone';
+  onSuccess?: (userData: Record<string, unknown>) => void;
+}
 
-  const handleAuthSuccess = (userData) => {
+const AuthPage: React.FC<AuthPageProps> = ({ defaultMode = 'login', defaultTab = 'email', onSuccess }) => {
+  const navigate = useNavigate();
+  const [mode, setMode] = useState<'login' | 'signup'>(defaultMode);
+  const [activeTab, setActiveTab] = useState<string>(defaultTab);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleAuthSuccess = (userData: unknown): void => {
     setError(null);
     if (onSuccess) {
-      onSuccess(userData);
+      onSuccess(userData as Record<string, unknown>);
     } else {
       navigate('/');
     }
   };
 
-  const handleAuthError = (err) => {
-    setError(err.message || 'Authentication failed. Please try again.');
+  const handleAuthError = (err: unknown): void => {
+    const message = err instanceof Error ? err.message : typeof err === 'object' && err !== null && 'message' in err ? String((err as { message?: string }).message) : 'Authentication failed. Please try again.';
+    setError(message);
   };
 
   return (

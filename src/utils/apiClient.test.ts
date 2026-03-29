@@ -1,25 +1,43 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { apiClient } from './apiClient';
 
+// Cast fetch to mock for testing
+const mockFetch = vi.fn();
+
 describe('ApiClient', () => {
   beforeEach(() => {
-    global.fetch = vi.fn();
+    global.fetch = mockFetch;
+    mockFetch.mockReset();
     apiClient.setAuthToken(null);
   });
 
-  it('should set authorization header when token is provided', () => {
+  it('should set authorization header when token is provided', async () => {
     apiClient.setAuthToken('test-token');
-    expect(apiClient.defaultHeaders['Authorization']).toBe('Bearer test-token');
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: () => Promise.resolve({ success: true }),
+    });
+    await apiClient.get('/test');
+    const callArgs = mockFetch.mock.calls[0];
+    expect(callArgs[1].headers['Authorization']).toBe('Bearer test-token');
   });
 
-  it('should remove authorization header when null is passed', () => {
+  it('should remove authorization header when null is passed', async () => {
     apiClient.setAuthToken('test-token');
     apiClient.setAuthToken(null);
-    expect(apiClient.defaultHeaders['Authorization']).toBeUndefined();
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: () => Promise.resolve({ success: true }),
+    });
+    await apiClient.get('/test');
+    const callArgs = mockFetch.mock.calls[0];
+    expect(callArgs[1].headers['Authorization']).toBeUndefined();
   });
 
   it('should make GET request with correct URL', async () => {
-    global.fetch.mockResolvedValueOnce({
+    mockFetch.mockResolvedValueOnce({
       ok: true,
       headers: new Headers({ 'content-type': 'application/json' }),
       json: () => Promise.resolve({ success: true }),
@@ -27,7 +45,7 @@ describe('ApiClient', () => {
 
     const result = await apiClient.get('/test');
     
-    expect(global.fetch).toHaveBeenCalledWith(
+    expect(mockFetch).toHaveBeenCalledWith(
       '/api/test',
       expect.objectContaining({ method: 'GET' })
     );
@@ -35,7 +53,7 @@ describe('ApiClient', () => {
   });
 
   it('should make POST request with JSON body', async () => {
-    global.fetch.mockResolvedValueOnce({
+    mockFetch.mockResolvedValueOnce({
       ok: true,
       headers: new Headers({ 'content-type': 'application/json' }),
       json: () => Promise.resolve({ id: 1 }),
@@ -43,7 +61,7 @@ describe('ApiClient', () => {
 
     const result = await apiClient.post('/users', { name: 'Test' });
     
-    expect(global.fetch).toHaveBeenCalledWith(
+    expect(mockFetch).toHaveBeenCalledWith(
       '/api/users',
       expect.objectContaining({
         method: 'POST',
@@ -54,7 +72,7 @@ describe('ApiClient', () => {
   });
 
   it('should throw HttpError on non-ok response', async () => {
-    global.fetch.mockResolvedValueOnce({
+    mockFetch.mockResolvedValueOnce({
       ok: false,
       status: 404,
       headers: new Headers({ 'content-type': 'application/json' }),

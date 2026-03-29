@@ -19,6 +19,7 @@ const SophiaSalesCRM = () => {
     filterAgent,
     setFilterAgent,
     deals,
+    filteredDeals,
     agents,
     getTotalPipelineValue,
     getAverageWinRate,
@@ -101,14 +102,14 @@ const SophiaSalesCRM = () => {
         {activeTab === 'pipeline' && (
           <PipelineTab 
             data={{ pipelineStages }}
-            selectedStage={selectedStage}
+            selectedStage={selectedStage || ''}
             onSelectStage={handleSelectStage}
           />
         )}
 
         {activeTab === 'deals' && (
           <DealsTab 
-            deals={deals}
+            deals={filteredDeals}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             filterAgent={filterAgent}

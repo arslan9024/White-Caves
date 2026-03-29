@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`JobBoard > snapshot > matches empty-state snapshot 1`] = `
+<div
+  class="job-board"
+>
+  <h2>
+    Real Estate Agent Positions
+  </h2>
+  <div
+    class="jobs-list"
+  />
+</div>
+`;

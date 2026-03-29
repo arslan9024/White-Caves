@@ -1,7 +1,39 @@
 import React from 'react';
 import { Search, Plus, Edit, Trash2, Eye, Download, ChevronDown } from 'lucide-react';
 
-export default function EmployeesTab({ state }) {
+interface Employee {
+  id: string | number;
+  name: string;
+  avatar: string;
+  email?: string;
+  position: string;
+  department: string;
+  status: string;
+  performance: number;
+  attendance: number;
+  leaveBalance: number;
+}
+
+interface EmployeesState {
+  filteredEmployees: Employee[];
+  departments: string[];
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  filterDepartment: string;
+  setFilterDepartment: (dept: string) => void;
+  selectedEmployee: Employee | null;
+  setSelectedEmployee: (emp: Employee | null) => void;
+  showEmployeeModal: boolean;
+  setShowEmployeeModal: (show: boolean) => void;
+  getStatusColor: (status: string) => string;
+  deleteEmployee: (id: string | number) => void;
+}
+
+interface EmployeesTabProps {
+  state: EmployeesState;
+}
+
+export default function EmployeesTab({ state }: EmployeesTabProps) {
   const {
     filteredEmployees,
     departments,
@@ -17,7 +49,7 @@ export default function EmployeesTab({ state }) {
     deleteEmployee
   } = state;
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: string | number) => {
     if (window.confirm('Are you sure you want to delete this employee?')) {
       deleteEmployee(id);
     }
@@ -42,7 +74,7 @@ export default function EmployeesTab({ state }) {
             className="filter-select"
           >
             <option value="all">All Departments</option>
-            {departments.map((dept) => (
+            {departments.map((dept: string) => (
               <option key={dept} value={dept}>
                 {dept}
               </option>
@@ -76,7 +108,7 @@ export default function EmployeesTab({ state }) {
               <tr key={emp.id}>
                 <td>
                   <div className="employee-cell">
-                    <img src={emp.avatar} alt={emp.name} className="employee-avatar" />
+                    <img src={emp.avatar} alt={emp.name} className="employee-avatar" loading="lazy" width={40} height={40} />
                     <div className="employee-info">
                       <span className="employee-name">{emp.name}</span>
                       <span className="employee-email">{emp.email}</span>

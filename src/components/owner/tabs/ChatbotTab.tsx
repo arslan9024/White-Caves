@@ -1,33 +1,34 @@
 import React, { useState } from 'react';
+import type { ChatbotTabProps } from './types';
 import './TabStyles.css';
 
-const ChatbotTab = ({ data, loading, onAction }) => {
+const ChatbotTab: React.FC<ChatbotTabProps> = ({ data, loading, onAction }) => {
   const [activeSection, setActiveSection] = useState('overview');
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="chatbot-tab">
+        <div className="tab-loading-state" role="status" aria-label="Loading chatbot data">
+          <div className="loading-spinner" />
+          <p>Loading chatbot data...</p>
+        </div>
+      </div>
+    );
+  }
+
   const stats = data?.chatbotStats || {
-    totalConversations: 2456,
-    successfulLeads: 189,
-    avgResponseTime: 2.3,
-    satisfactionRate: 92,
-    activeChats: 12,
-    messagesProcessed: 18945
+    totalConversations: 0,
+    successfulLeads: 0,
+    avgResponseTime: 0,
+    satisfactionRate: 0,
+    activeChats: 0,
+    messagesProcessed: 0
   };
 
-  const recentConversations = [
-    { id: 1, user: '+971 50 XXX 1234', topic: 'Property Inquiry', status: 'completed', duration: '5 min', messages: 12, leadGenerated: true, timestamp: new Date().toISOString() },
-    { id: 2, user: 'Website Visitor', topic: 'Rental Information', status: 'active', duration: '2 min', messages: 6, leadGenerated: false, timestamp: new Date().toISOString() },
-    { id: 3, user: '+44 7700 XXX XXX', topic: 'Investment Options', status: 'completed', duration: '8 min', messages: 18, leadGenerated: true, timestamp: new Date(Date.now() - 3600000).toISOString() },
-    { id: 4, user: '+971 55 XXX 5678', topic: 'Viewing Booking', status: 'transferred', duration: '4 min', messages: 9, leadGenerated: true, timestamp: new Date(Date.now() - 7200000).toISOString() },
-  ];
+  const recentConversations: Array<{ id: number; user: string; topic: string; status: string; duration: string; messages: number; leadGenerated: boolean; timestamp: string }> = [];
 
-  const intents = [
-    { intent: 'Property Search', count: 845, accuracy: 96 },
-    { intent: 'Price Inquiry', count: 623, accuracy: 94 },
-    { intent: 'Book Viewing', count: 412, accuracy: 98 },
-    { intent: 'Investment Info', count: 289, accuracy: 91 },
-    { intent: 'Contact Agent', count: 256, accuracy: 99 },
-    { intent: 'General FAQ', count: 198, accuracy: 88 },
-  ];
+  const intents: Array<{ intent: string; count: number; accuracy: number }> = [];
 
   return (
     <div className="chatbot-tab">
@@ -92,8 +93,8 @@ const ChatbotTab = ({ data, loading, onAction }) => {
         <div className="chatbot-card">
           <h4>Intent Recognition Performance</h4>
           <div className="intents-list">
-            {intents.map((item, index) => (
-              <div key={index} className="intent-item">
+            {intents.map((item) => (
+              <div key={item.intent} className="intent-item">
                 <div className="intent-info">
                   <span className="intent-name">{item.intent}</span>
                   <span className="intent-count">{item.count} matches</span>
@@ -164,4 +165,4 @@ const ChatbotTab = ({ data, loading, onAction }) => {
   );
 };
 
-export default ChatbotTab;
+export default React.memo(ChatbotTab);

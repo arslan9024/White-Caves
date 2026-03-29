@@ -3,6 +3,8 @@ import {
   Home, MapPin, Building2, Layers, Eye, DollarSign, 
   FileText, Hash, Calendar, Phone, Mail, User, Zap
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import type { InventoryProperty, InventoryOwner } from '../../../store/slices/inventorySlice';
 import {
   PropertyDetailsCardContainer,
   CardHeader,
@@ -26,7 +28,27 @@ import {
   MoreContacts
 } from './PropertyDetailsCard.styles';
 
-const FIELD_CONFIGS = [
+interface FieldConfig {
+  key: string;
+  label: string;
+  icon: LucideIcon;
+  section: string;
+  format?: string;
+}
+
+interface SectionConfig {
+  id: string;
+  label: string;
+}
+
+interface PropertyDetailsCardProps {
+  property: InventoryProperty | null;
+  owners?: InventoryOwner[];
+  onOwnerClick?: (owner: InventoryOwner) => void;
+  compact?: boolean;
+}
+
+const FIELD_CONFIGS: FieldConfig[] = [
   { key: 'pNumber', label: 'P-Number', icon: Hash, section: 'identification' },
   { key: 'plotNumber', label: 'Plot Number', icon: Hash, section: 'identification' },
   { key: 'plotNo', label: 'Plot No', icon: Hash, section: 'identification' },
@@ -54,7 +76,7 @@ const FIELD_CONFIGS = [
   { key: 'dewaPremiseNumber', label: 'DEWA Premise', icon: Zap, section: 'utilities' }
 ];
 
-const SECTIONS = [
+const SECTIONS: SectionConfig[] = [
   { id: 'identification', label: 'Identification' },
   { id: 'location', label: 'Location' },
   { id: 'specifications', label: 'Specifications' },
@@ -62,7 +84,7 @@ const SECTIONS = [
   { id: 'utilities', label: 'Utilities' }
 ];
 
-const formatValue = (value, format) => {
+const formatValue = (value: unknown, format?: string): string => {
   if (value === null || value === undefined || value === '' || value === '.') {
     return '-';
   }
@@ -76,7 +98,7 @@ const formatValue = (value, format) => {
   return String(value);
 };
 
-const FieldItemRenderer = ({ config, value }) => {
+const FieldItemRenderer = ({ config, value }: { config: FieldConfig; value: unknown }) => {
   const Icon = config.icon;
   const displayValue = formatValue(value, config.format);
   const isEmpty = displayValue === '-';
@@ -113,10 +135,10 @@ const FieldItemRenderer = ({ config, value }) => {
   );
 };
 
-const PropertyDetailsCard = ({ property, owners = [], onOwnerClick, compact = false }) => {
+const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({ property, owners = [], onOwnerClick, compact = false }) => {
   if (!property) return null;
 
-  const renderSection = (section) => {
+  const renderSection = (section: SectionConfig) => {
     const fields = FIELD_CONFIGS.filter(f => f.section === section.id);
     const hasValues = fields.some(f => {
       const val = property[f.key];
@@ -176,16 +198,16 @@ const PropertyDetailsCard = ({ property, owners = [], onOwnerClick, compact = fa
                 </OwnerAvatar>
                 <OwnerInfo>
                   <OwnerName>{owner.name || 'Unknown'}</OwnerName>
-                  {owner.contacts?.length > 0 && (
+                  {(owner.contacts?.length ?? 0) > 0 && (
                     <OwnerContacts>
-                      {owner.contacts.slice(0, 2).map((c, i) => (
-                        <ContactBadge key={i}>
+                      {owner.contacts!.slice(0, 2).map((c, i) => (
+                        <ContactBadge key={c.value ?? `contact-${i}`}>
                           {c.type === 'email' ? <Mail size={10} /> : <Phone size={10} />}
                           {c.value}
                         </ContactBadge>
                       ))}
-                      {owner.contacts.length > 2 && (
-                        <MoreContacts>+{owner.contacts.length - 2}</MoreContacts>
+                      {(owner.contacts?.length ?? 0) > 2 && (
+                        <MoreContacts>+{(owner.contacts?.length ?? 0) - 2}</MoreContacts>
                       )}
                     </OwnerContacts>
                   )}

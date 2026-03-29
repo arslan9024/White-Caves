@@ -24,10 +24,10 @@ export interface ProgressBarProps {
   ariaLabel?: string;
 }
 
-const ProgressContainer = styled.div<{ size: string }>`
+const ProgressContainer = styled.div<{ $size: string }>`
   width: 100%;
   height: ${props => {
-    switch (props.size) {
+    switch (props.$size) {
       case 'small':
         return '4px';
       case 'large':
@@ -44,20 +44,20 @@ const ProgressContainer = styled.div<{ size: string }>`
 `;
 
 const ProgressBarFill = styled.div<{
-  value: number;
-  variant: ProgressVariant;
-  isIndeterminate: boolean;
-  animated: boolean;
-  striped: boolean;
+  $value: number;
+  $variant: ProgressVariant;
+  $isIndeterminate: boolean;
+  $animated: boolean;
+  $striped: boolean;
 }>`
   height: 100%;
-  width: ${props => (props.isIndeterminate ? '30%' : `${props.value}%`)};
-  transition: ${props => (props.animated ? 'width 0.6s ease' : 'none')};
+  width: ${props => (props.$isIndeterminate ? '30%' : `${props.$value}%`)};
+  transition: ${props => (props.$animated ? 'width 0.6s ease' : 'none')};
   border-radius: 4px;
   position: relative;
 
   ${props => {
-    switch (props.variant) {
+    switch (props.$variant) {
       case 'success':
         return 'background-color: #10b981;';
       case 'warning':
@@ -73,7 +73,7 @@ const ProgressBarFill = styled.div<{
   }}
 
   ${props =>
-    props.striped &&
+    props.$striped &&
     `
     background-image: linear-gradient(
       45deg,
@@ -89,7 +89,7 @@ const ProgressBarFill = styled.div<{
   `}
 
   ${props =>
-    props.animated &&
+    props.$animated &&
     `
     animation: progress-animation 2s linear infinite;
 
@@ -104,7 +104,7 @@ const ProgressBarFill = styled.div<{
   `}
 
   ${props =>
-    props.isIndeterminate &&
+    props.$isIndeterminate &&
     `
     animation: indeterminate 1.5s ease-in-out infinite;
 
@@ -162,13 +162,13 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
       aria-valuemax={100}
       aria-label={ariaLabel || 'Progress'}
     >
-      <ProgressContainer size={size}>
+      <ProgressContainer $size={size}>
         <ProgressBarFill
-          value={normalizedValue}
-          variant={variant}
-          isIndeterminate={isIndeterminate}
-          animated={animated || isIndeterminate}
-          striped={striped}
+          $value={normalizedValue}
+          $variant={variant}
+          $isIndeterminate={isIndeterminate}
+          $animated={animated || isIndeterminate}
+          $striped={striped}
         >
           {showLabel && !isIndeterminate && (
             <ProgressLabel>{normalizedValue}%</ProgressLabel>

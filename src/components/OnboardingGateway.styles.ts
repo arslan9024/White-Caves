@@ -46,7 +46,7 @@ export const StyledGatewaySubtitle = styled.p`
 export const StyledGatewayDivider = styled.div`
   width: 80px;
   height: 4px;
-  background: var(--primary-color, #d32f2f);
+  background: var(--primary-color, #d4af37);
   border-radius: var(--radius-full, 9999px);
   margin: 1.5rem auto 0;
 `;
@@ -65,7 +65,7 @@ export const StyledRoleTilesGrid = styled.div`
   }
 `;
 
-export const StyledOnboardingRoleTile = styled.div<{ roleColor: string; isSelected: boolean; isFadingOut: boolean; animationDelay?: string }>`
+export const StyledOnboardingRoleTile = styled.div<{ $roleColor: string; $isSelected: boolean; $isFadingOut: boolean; $animationDelay?: string }>`
   background: var(--bg-primary, #ffffff);
   border: 2px solid var(--border-color, #e0e0e0);
   border-radius: var(--radius-xl, 1rem);
@@ -76,19 +76,19 @@ export const StyledOnboardingRoleTile = styled.div<{ roleColor: string; isSelect
   position: relative;
   overflow: hidden;
   animation: fadeInUp 0.6s ease forwards;
-  opacity: ${props => props.isFadingOut ? 0.4 : 1};
-  transform: ${props => props.isFadingOut ? 'scale(0.95)' : 'scale(1)'};
-  animation-delay: ${props => props.animationDelay || '0ms'};
-  border-color: ${props => props.isSelected ? props.roleColor : 'var(--border-color, #e0e0e0)'};
-  box-shadow: ${props => props.isSelected ? `0 0 0 3px rgba(${parseInt(props.roleColor.slice(1, 3), 16)}, ${parseInt(props.roleColor.slice(3, 5), 16)}, ${parseInt(props.roleColor.slice(5, 7), 16)}, 0.2)` : 'none'};
+  opacity: ${props => props.$isFadingOut ? 0.4 : 1};
+  transform: ${props => props.$isFadingOut ? 'scale(0.95)' : 'scale(1)'};
+  animation-delay: ${props => props.$animationDelay || '0ms'};
+  border-color: ${props => props.$isSelected ? props.$roleColor : 'var(--border-color, #e0e0e0)'};
+  box-shadow: ${props => props.$isSelected ? `0 0 0 3px rgba(${parseInt(props.$roleColor.slice(1, 3), 16)}, ${parseInt(props.$roleColor.slice(3, 5), 16)}, ${parseInt(props.$roleColor.slice(5, 7), 16)}, 0.2)` : 'none'};
 
   [data-theme='dark'] & {
     background: #2d3748;
-    border-color: ${props => props.isSelected ? props.roleColor : '#4a5568'};
+    border-color: ${props => props.$isSelected ? props.$roleColor : '#4a5568'};
   }
 
   &:hover {
-    border-color: ${props => props.roleColor};
+    border-color: ${props => props.$roleColor};
     transform: translateY(-8px);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
   }
@@ -105,13 +105,13 @@ export const StyledOnboardingRoleTile = styled.div<{ roleColor: string; isSelect
   }
 `;
 
-export const StyledTileAccentBar = styled.div<{ roleColor: string }>`
+export const StyledTileAccentBar = styled.div<{ $roleColor: string }>`
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 4px;
-  background: ${props => props.roleColor};
+  background: ${props => props.$roleColor};
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.3s ease;
@@ -121,7 +121,7 @@ export const StyledTileAccentBar = styled.div<{ roleColor: string }>`
   }
 `;
 
-export const StyledTileIconWrapper = styled.div<{ backgroundColor: string }>`
+export const StyledTileIconWrapper = styled.div<{ $backgroundColor: string }>`
   width: 80px;
   height: 80px;
   margin: 0 auto 1.5rem;
@@ -132,7 +132,7 @@ export const StyledTileIconWrapper = styled.div<{ backgroundColor: string }>`
   color: #ffffff;
   transition: all 0.3s ease;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-  background-color: ${props => props.backgroundColor};
+  background-color: ${props => props.$backgroundColor};
 
   ${StyledOnboardingRoleTile}:hover & {
     transform: scale(1.1);
@@ -156,10 +156,10 @@ export const StyledTileTitle = styled.h3`
   }
 `;
 
-export const StyledTileSubtitle = styled.p<{ roleColor: string }>`
+export const StyledTileSubtitle = styled.p<{ $roleColor: string }>`
   font-size: 0.9rem;
   font-weight: 600;
-  color: ${props => props.roleColor};
+  color: ${props => props.$roleColor};
   margin-bottom: 0.75rem;
 `;
 
@@ -173,7 +173,7 @@ export const StyledTileDescription = styled.p`
   }
 `;
 
-export const StyledTileArrow = styled.div<{ roleColor: string }>`
+export const StyledTileArrow = styled.div<{ $roleColor: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -191,7 +191,7 @@ export const StyledTileArrow = styled.div<{ roleColor: string }>`
   }
 
   ${StyledOnboardingRoleTile}:hover & {
-    background: ${props => props.roleColor};
+    background: ${props => props.$roleColor};
     color: #ffffff;
     transform: translateX(4px);
   }
@@ -218,13 +218,13 @@ export const StyledFooterText = styled.p`
 `;
 
 export const StyledFooterLink = styled.a`
-  color: var(--primary-color, #d32f2f);
+  color: var(--primary-color, #d4af37);
   font-weight: 600;
   text-decoration: none;
   transition: color 0.2s ease;
 
   &:hover {
-    color: var(--primary-dark, #b71c1c);
+    color: var(--primary-dark, #b8860b);
     text-decoration: underline;
   }
 `;

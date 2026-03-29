@@ -1,10 +1,36 @@
 import React from 'react';
 import { QrCode, Smartphone, Wifi, Check, X, Plus, Zap } from 'lucide-react';
 
-export const SessionsTab = ({ data }) => {
+interface Bot {
+  id: string | number;
+  name: string;
+  number: string;
+  status: string;
+  qrCode?: string;
+  messagesProcessed?: number;
+  responseRate?: number;
+  avgResponseTime?: string;
+  uptime?: string;
+  features?: string[];
+}
+
+interface SessionsData {
+  bots: Bot[];
+  showQRCode: boolean;
+  setShowQRCode: (show: boolean) => void;
+  qrCodeBot: Bot | null;
+  setQRCodeBot: (bot: Bot | null) => void;
+  getStatusColor: (status: string) => string;
+}
+
+interface SessionsTabProps {
+  data: SessionsData;
+}
+
+export const SessionsTab: React.FC<SessionsTabProps> = ({ data }) => {
   const { bots, showQRCode, setShowQRCode, qrCodeBot, setQRCodeBot, getStatusColor } = data;
 
-  const pendingBots = bots.filter(b => b.status === 'pending' || !b.qrCode);
+  const pendingBots = bots.filter((b: Bot) => b.status === 'pending' || !b.qrCode);
 
   return (
     <div className="sessions-tab">
@@ -19,7 +45,7 @@ export const SessionsTab = ({ data }) => {
         <div className="pending-sessions">
           <h4>Pending Sessions</h4>
           <div className="session-cards">
-            {pendingBots.map(bot => (
+            {pendingBots.map((bot: Bot) => (
               <div key={bot.id} className="session-card pending">
                 <div className="session-info">
                   <Smartphone size={24} />
@@ -51,7 +77,7 @@ export const SessionsTab = ({ data }) => {
       <div className="active-sessions">
         <h4>Active Sessions</h4>
         <div className="session-cards">
-          {bots.filter(b => b.status === 'connected').map(bot => (
+          {bots.filter((b: Bot) => b.status === 'connected').map((bot: Bot) => (
             <div key={bot.id} className="session-card active">
               <div className="session-info">
                 <Wifi size={24} style={{ color: getStatusColor(bot.status) }} />
@@ -73,7 +99,7 @@ export const SessionsTab = ({ data }) => {
         <div className="qr-modal">
           <div className="qr-content">
             <h4>Scan QR Code - {qrCodeBot.name}</h4>
-            <img src={qrCodeBot.qrCode} alt="QR Code" className="qr-code-image" />
+            <img src={qrCodeBot.qrCode} alt="QR Code" className="qr-code-image" loading="lazy" width={200} height={200} />
             <p>Scan this QR code with WhatsApp to connect the bot</p>
             <button onClick={() => setShowQRCode(false)}>Close</button>
           </div>

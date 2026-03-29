@@ -6,7 +6,7 @@ export const MegaNavHeader = styled.header`
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: var(--z-navbar, 300);
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -157,7 +157,7 @@ export const MegaNavMenu = styled.div<{ $mobileOpen?: boolean }>`
     transform: translateX(${({ $mobileOpen }) => ($mobileOpen ? 0 : 100)}%);
     transition: transform 0.3s ease;
     overflow-y: auto;
-    z-index: 999;
+    z-index: var(--z-navbar, 300);
     
     [data-theme='dark'] & {
       background: #1a1a2e;
@@ -286,7 +286,7 @@ export const MegaDropdown = styled.div<{ $active?: boolean }>`
   pointer-events: ${({ $active }) => ($active ? 'auto' : 'none')};
   transition: all 0.25s ease;
   padding-top: 0.75rem;
-  z-index: 1001;
+  z-index: var(--z-dropdown, 100);
   
   @media (max-width: 1024px) {
     min-width: 500px;

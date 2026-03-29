@@ -56,15 +56,16 @@ async function runLoadTests() {
             ).length,
             totalRequests: results.reduce((sum, r) => sum + r.totalRequests, 0),
             totalErrors: results.reduce((sum, r) => sum + r.failedRequests, 0),
-            averageResponseTime: Math.round(
+            averageResponseTime: results.length > 0 ? Math.round(
               results.reduce((sum, r) => sum + r.avgResponseTime, 0) /
                 results.length
-            ),
-            maxResponseTime: Math.max(...results.map((r) => r.maxResponseTime)),
-            overallSuccessRate:
-              (results.reduce((sum, r) => sum + r.successfulRequests, 0) /
+            ) : 0,
+            maxResponseTime: results.length > 0 ? Math.max(...results.map((r) => r.maxResponseTime)) : 0,
+            overallSuccessRate: results.reduce((sum, r) => sum + r.totalRequests, 0) > 0
+              ? (results.reduce((sum, r) => sum + r.successfulRequests, 0) /
                 results.reduce((sum, r) => sum + r.totalRequests, 0)) *
-              100,
+                100
+              : 0,
           },
         },
         null,

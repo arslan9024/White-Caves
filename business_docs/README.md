@@ -1,33 +1,52 @@
-# /business_docs - Business Requirements & Domain Knowledge
+# /business_docs — White Caves Real Estate LLC
 
-This directory contains all business-related documentation, including requirements, features, domain-specific guidance, and strategic decisions for the White Caves CRM Platform.
+> **Single Source of Truth** for all business documentation, domain knowledge, and strategic planning.
+>
+> Last updated: March 23, 2026
+
+---
 
 ## 📋 Folder Structure
 
 ```
-/business_docs
-├── /crm_features/        # Feature specifications and requirements
-├── /requirements/        # Business and technical requirements
-├── /seo/                 # SEO strategy and guidelines
-└── /security/            # Security policies and procedures
+business_docs/
+├── 01_company_structure/     # Org chart, departments, roles & permissions
+├── 02_services/              # Core service offerings catalog (9 services)
+├── 03_ai_assistants/         # 24-persona AI assistant registry
+├── 04_workflows/             # 7 critical business workflows
+├── 05_requirements/          # 80+ functional & non-functional requirements
+├── 06_design_architecture/   # System architecture, data models, API design
+├── 07_business_model/        # 5 revenue streams, financial projections
+├── 08_market_research/       # Dubai market analysis, competitive landscape
+├── 09_crm_features/          # Feature specs (CRM, AI CRUD, UI components)
+├── 10_security/              # Security policy, RBAC, compliance
+├── 11_seo/                   # SEO strategy, keywords, content calendar
+└── archives/                 # Historical phase summaries
 ```
 
 ---
 
-## 🎯 Using This Directory
+## 🎯 Quick Navigation
 
-### For Business Analysts
-- Start: `requirements/`
-- Review: `crm_features/`
-- Reference: SEO and security policies
+| Audience | Start Here | Then Read |
+|----------|-----------|-----------|
+| **Business Analyst** | `05_requirements/` | `02_services/`, `04_workflows/` |
+| **Developer** | `06_design_architecture/` | `09_crm_features/`, `10_security/` |
+| **Project Manager** | `01_company_structure/` | `04_workflows/`, `07_business_model/` |
+| **Executive / Owner** | `07_business_model/` | `08_market_research/`, `01_company_structure/` |
+| **New Team Member** | `01_company_structure/` | `02_services/`, `03_ai_assistants/` |
 
-### For Developers
-- Reference: `crm_features/` for feature specs
-- Check: `security/` for security requirements
-- Optimize: `seo/` for SEO implementation guidelines
+---
 
-### For Project Managers
-- Overview: All folders for business context
+## 📊 Key Business Facts
+
+- **Company**: White Caves Real Estate LLC, Dubai, UAE
+- **Portfolio**: 9,378+ properties (DAMAC Hills 2 primary)
+- **Team**: 24+ employees across 10 departments
+- **AI Assistants**: 24 personas (5 critical, 9 core, 10 support)
+- **Revenue Target**: AED 39–100M annual (5 revenue streams)
+- **Market**: AED 180B Dubai real estate (TAM: AED 660M SaaS)
+- **Tech Stack**: React 18, TypeScript, Express, MongoDB/Prisma, Firebase
 - Status: Cross-reference with `/plans/STATUS_DASHBOARD_VISUAL.md`
 - Requirements: Track completion against `requirements/`
 
@@ -130,10 +149,11 @@ All subdirectories follow consistent templates:
 - User acceptance criteria
 
 **Examples**:
-- Commission Tracking
 - Client Management
-- Freelancer Platform
+- Lead Tracking & Pipeline
+- Property Management
 - AI Assistant Integration
+- Transaction Management
 - Department & Service Management
 
 ### /requirements/

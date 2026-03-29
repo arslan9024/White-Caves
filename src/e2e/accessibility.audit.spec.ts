@@ -1,15 +1,15 @@
-/**
+﻿/**
  * ACCESSIBILITY AUDIT TEST SUITE
  * Layer 2: A11y Testing for White Caves Platform
  * 
  * Tests:
- * ✅ WCAG 2.1 Level AA compliance
- * ✅ Keyboard navigation
- * ✅ ARIA labels and roles
- * ✅ Semantic HTML structure
- * ✅ Color contrast
- * ✅ Focus management
- * ✅ Screen reader support
+ * âœ… WCAG 2.1 Level AA compliance
+ * âœ… Keyboard navigation
+ * âœ… ARIA labels and roles
+ * âœ… Semantic HTML structure
+ * âœ… Color contrast
+ * âœ… Focus management
+ * âœ… Screen reader support
  * 
  * Using: Playwright + axe-core
  */
@@ -39,7 +39,7 @@ const DASHBOARD_PAGES = [
 test.describe('WCAG 2.1 Level AA Compliance', () => {
   DASHBOARD_PAGES.forEach(({ role, path, name }) => {
     test(`${name} - No accessibility violations`, async ({ page }) => {
-      await page.goto(`http://localhost:5000${path}`, { waitUntil: 'networkidle', timeout: 30000 });
+      await page.goto(`${path}`, { waitUntil: 'networkidle', timeout: 30000 });
       
       // Wait for page to load
       await page.waitForLoadState('networkidle');
@@ -66,7 +66,7 @@ test.describe('WCAG 2.1 Level AA Compliance', () => {
 // Test Group: Keyboard Navigation
 test.describe('Keyboard Navigation', () => {
   test('Owner Dashboard - Tab navigation works', async ({ page }) => {
-    await page.goto('http://localhost:5000/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto('/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
     
     // Tab to first interactive element
     await page.keyboard.press('Tab');
@@ -82,7 +82,7 @@ test.describe('Keyboard Navigation', () => {
   });
   
   test('Owner Dashboard - Escape key closes modals', async ({ page }) => {
-    await page.goto('http://localhost:5000/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto('/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
     
     // Try to find and open a modal (e.g., by clicking a button)
     const buttons = await page.locator('button').count();
@@ -102,7 +102,7 @@ test.describe('Keyboard Navigation', () => {
 // Test Group: ARIA Labels and Roles
 test.describe('ARIA Labels and Roles', () => {
   test('Owner Dashboard - Buttons have accessible names', async ({ page }) => {
-    await page.goto('http://localhost:5000/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto('/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
     
     const buttons = page.locator('button');
     const count = await buttons.count();
@@ -121,7 +121,7 @@ test.describe('ARIA Labels and Roles', () => {
   });
   
   test('Owner Dashboard - Links have accessible names', async ({ page }) => {
-    await page.goto('http://localhost:5000/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto('/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
     
     const links = page.locator('a');
     const count = await links.count();
@@ -144,7 +144,7 @@ test.describe('ARIA Labels and Roles', () => {
 // Test Group: Semantic HTML
 test.describe('Semantic HTML Structure', () => {
   test('Owner Dashboard - Uses semantic HTML elements', async ({ page }) => {
-    await page.goto('http://localhost:5000/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto('/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
     
     // Check for main element
     const mainElement = page.locator('main');
@@ -161,7 +161,7 @@ test.describe('Semantic HTML Structure', () => {
   });
   
   test('Owner Dashboard - Proper heading hierarchy', async ({ page }) => {
-    await page.goto('http://localhost:5000/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto('/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
     
     // Get all headings
     const h1Elements = page.locator('h1');
@@ -175,7 +175,7 @@ test.describe('Semantic HTML Structure', () => {
 // Test Group: Color Contrast
 test.describe('Color Contrast (WCAG AA)', () => {
   test('Owner Dashboard - Text contrast is sufficient', async ({ page }) => {
-    await page.goto('http://localhost:5000/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto('/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
     
     await injectAxe(page);
     
@@ -197,7 +197,7 @@ test.describe('Color Contrast (WCAG AA)', () => {
 // Test Group: Focus Management
 test.describe('Focus Management', () => {
   test('Owner Dashboard - Focus visible on keyboard navigation', async ({ page }) => {
-    await page.goto('http://localhost:5000/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto('/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
     
     // Press Tab to focus first element
     await page.keyboard.press('Tab');
@@ -216,7 +216,7 @@ test.describe('Focus Management', () => {
   });
   
   test('Owner Dashboard - Focus trap in modals', async ({ page }) => {
-    await page.goto('http://localhost:5000/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto('/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
     
     // Try to find and open a modal
     const buttons = page.locator('button');
@@ -242,7 +242,7 @@ test.describe('Focus Management', () => {
 // Test Group: Page Load Accessibility
 test.describe('Page Load Accessibility', () => {
   test('Owner Dashboard - Loads without accessibility violations', async ({ page }) => {
-    await page.goto('http://localhost:5000/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto('/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
     
     await injectAxe(page);
     
@@ -264,7 +264,7 @@ test.describe('Page Load Accessibility', () => {
     
     for (const { path, name } of DASHBOARD_PAGES) {
       try {
-        await page.goto(`http://localhost:5000${path}`, {
+        await page.goto(`${path}`, {
           waitUntil: 'networkidle',
           timeout: 30000,
         }).catch(() => {}); // Ignore navigation errors (auth may fail)
@@ -290,9 +290,9 @@ test.describe('Page Load Accessibility', () => {
     console.log('ACCESSIBILITY AUDIT RESULTS:');
     results.forEach(r => {
       if (r.violations === -1) {
-        console.log(`  ${r.page}: ⚠️ Authentication required`);
+        console.log(`  ${r.page}: âš ï¸ Authentication required`);
       } else {
-        const status = r.violations === 0 ? '✅' : '⚠️';
+        const status = r.violations === 0 ? 'âœ…' : 'âš ï¸';
         console.log(`  ${r.page}: ${status} ${r.violations} violations`);
       }
     });
@@ -305,7 +305,7 @@ test.describe('Responsive Accessibility', () => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
     
-    await page.goto('http://localhost:5000/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto('/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
     
     await injectAxe(page);
     
@@ -326,7 +326,7 @@ test.describe('Responsive Accessibility', () => {
     // Set tablet viewport
     await page.setViewportSize({ width: 768, height: 1024 });
     
-    await page.goto('http://localhost:5000/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto('/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
     
     await injectAxe(page);
     
@@ -347,7 +347,7 @@ test.describe('Responsive Accessibility', () => {
 // Test Group: Form Accessibility
 test.describe('Form Accessibility', () => {
   test('Owner Dashboard - Form inputs have labels', async ({ page }) => {
-    await page.goto('http://localhost:5000/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto('/md/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
     
     const inputs = page.locator('input, textarea, select');
     const count = await inputs.count();

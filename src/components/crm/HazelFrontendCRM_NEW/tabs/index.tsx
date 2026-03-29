@@ -32,17 +32,17 @@ const HazelFrontendCRM = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'overview':
-        return <OverviewTab componentStats={componentStats} accessibilityStats={accessibilityStats} performanceMetrics={performanceMetrics} />;
+        return <OverviewTab componentStats={componentStats} accessibilityStats={accessibilityStats} performanceMetrics={performanceMetrics as any} />;
       case 'components':
         return <ComponentsTab components={components} />;
       case 'design-system':
         return <DesignSystemTab designTokens={designTokens} themeMode={themeMode} onThemeChange={setThemeMode} />;
       case 'performance':
-        return <PerformanceTab metrics={performanceMetrics} />;
+        return <PerformanceTab metrics={performanceMetrics as any} />;
       case 'accessibility':
         return <AccessibilityTab audit={accessibilityAudit} />;
       default:
-        return <OverviewTab componentStats={componentStats} accessibilityStats={accessibilityStats} performanceMetrics={performanceMetrics} />;
+        return <OverviewTab componentStats={componentStats} accessibilityStats={accessibilityStats} performanceMetrics={performanceMetrics as any} />;
     }
   };
 
@@ -95,8 +95,8 @@ const HazelFrontendCRM = () => {
       <div className="features-section">
         <h3>Available Features</h3>
         <ul className="features-list">
-          {features.map((feature, index) => (
-            <li key={index} className="feature-item">
+          {features.map((feature) => (
+            <li key={feature} className="feature-item">
               <span className="feature-icon">✓</span>
               <span className="feature-text">{feature}</span>
             </li>

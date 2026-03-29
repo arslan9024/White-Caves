@@ -1,7 +1,15 @@
 import React from 'react';
 import { RefreshCw, Pause, Play, Trash2, Edit, Eye } from 'lucide-react';
 
-export default function AutomationTab({ state }) {
+interface AutomationState {
+  [key: string]: unknown;
+}
+
+interface AutomationTabProps {
+  state: AutomationState;
+}
+
+export default function AutomationTab({ state }: AutomationTabProps) {
   const { } = state;
   
   return (

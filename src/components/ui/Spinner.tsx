@@ -262,7 +262,7 @@ const Spinner: FC<SpinnerProps> = ({
   };
 
   return (
-    <SpinnerContainer $size={size} className={className} role="status">
+    <SpinnerContainer $size={size} className={className} role="status" aria-live="polite">
       {renderSpinner()}
       {label && <LoadingText $size={size}>{label}</LoadingText>}
     </SpinnerContainer>

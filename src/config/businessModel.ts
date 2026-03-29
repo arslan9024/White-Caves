@@ -32,7 +32,7 @@ export interface AssistantConfig {
   ownerOnly: boolean;
 }
 
-export type BusinessAssistantId = 'linda' | 'mary' | 'clara' | 'nina' | 'nancy';
+export type BusinessAssistantId = 'nadia' | 'mary' | 'clara' | 'nina' | 'nancy';
 
 export interface AIAssistantEcosystem {
   description: string;
@@ -129,8 +129,8 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
   aiAssistantEcosystem: {
     description: 'Integrated AI-powered CRM ecosystem for comprehensive real estate operations',
     assistants: {
-      linda: {
-        name: 'Linda',
+      nadia: {
+        name: 'Nadia',
         role: 'WhatsApp CRM Manager',
         primaryFunction: 'Customer engagement and lead capture via WhatsApp',
         kpis: ['Response Time', 'Lead Score Accuracy', 'Conversation Conversion Rate'],
@@ -150,7 +150,7 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
         role: 'Leads CRM Manager',
         primaryFunction: 'Lead pipeline management and conversion tracking',
         kpis: ['Conversion Rate', 'Pipeline Value', 'Lead Response Time'],
-        integrations: ['Linda WhatsApp', 'Mary Inventory', 'Email Marketing'],
+        integrations: ['Nadia WhatsApp', 'Mary Inventory', 'Email Marketing'],
         ownerOnly: true
       },
       nina: {
@@ -158,7 +158,7 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
         role: 'WhatsApp Bot Developer',
         primaryFunction: 'Automated bot management for 24/7 customer engagement',
         kpis: ['Automation Rate', 'Bot Uptime', 'Query Resolution Rate'],
-        integrations: ['WhatsApp API', 'Linda CRM'],
+        integrations: ['WhatsApp API', 'Nadia CRM'],
         ownerOnly: true
       },
       nancy: {
@@ -174,7 +174,7 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
 
   featureMapping: {
     leadCapture: {
-      flow: ['WhatsApp Message', 'Linda Processing', 'Lead Creation in Clara', 'Agent Assignment'],
+      flow: ['WhatsApp Message', 'Nadia Processing', 'Lead Creation in Clara', 'Agent Assignment'],
       automation: 'semi-automatic',
       timeToComplete: '< 5 minutes'
     },
@@ -202,7 +202,7 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
       description: 'Commission on successful property sales',
       rate: '2-3% of sale value',
       target: 'AED 50M/month',
-      aiSupport: ['clara', 'mary', 'linda']
+      aiSupport: ['clara', 'mary', 'nadia']
     },
     {
       id: 'leasing',
@@ -210,7 +210,7 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
       description: 'Commission on rental agreements',
       rate: '5% of annual rent',
       target: 'AED 2.5M/month',
-      aiSupport: ['clara', 'linda']
+      aiSupport: ['clara', 'nadia']
     },
     {
       id: 'property_management',
@@ -257,7 +257,7 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
   accessControl: {
     ownerExclusive: [
       'AI Assistant Hub',
-      'All CRM Systems (Linda, Mary, Clara, Nina, Nancy)',
+      'All CRM Systems (Nadia, Mary, Clara, Nina, Nancy)',
       'Business Analytics Dashboard',
       'Employee Performance Data',
       'Financial Reports',

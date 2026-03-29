@@ -55,7 +55,7 @@ export const ASSISTANT_COLORS: Record<string, string> = {
   nancy: '#10B981',
   theodora: '#8B5CF6',
   mary: '#EC4899',
-  linda: '#06B6D4',
+  nadia: '#06B6D4',
   nina: '#EF4444',
   laila: '#6366F1',
   aurora: '#14B8A6',

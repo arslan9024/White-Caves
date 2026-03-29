@@ -1,4 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createLogger } from '../../utils/logger';
+import { authFetch } from '../../utils/authFetch';
+import type { CRMModuleProps } from './types';
+
+const log = createLogger('LeadScoring');
+
+interface ScoredLead {
+  id: string;
+  name: string;
+  score: number;
+  budget: string;
+  interest: string;
+  source: string;
+  assignedAgent?: string;
+  [key: string]: unknown;
+}
+
+interface RoutingRule {
+  propertyType: string;
+  budget: string;
+  agent: string;
+  [key: string]: unknown;
+}
 
 /**
  * Lead Scoring & AI Routing Module
@@ -11,50 +34,53 @@ import React, { useState, useEffect } from 'react';
  * - AI-powered recommendations
  */
 
-export default function LeadScoringModule({ role, user, data }) {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [leads, setLeads] = useState([]);
-  const [routingRules, setRoutingRules] = useState([]);
-  const [selectedLead, setSelectedLead] = useState(null);
+export default function LeadScoringModule({ role, user, data }: CRMModuleProps) {
+  const [activeTab, setActiveTab] = useState<string>('dashboard');
+  const [leads, setLeads] = useState<ScoredLead[]>([]);
+  const [routingRules, setRoutingRules] = useState<RoutingRule[]>([]);
+  const [selectedLead, setSelectedLead] = useState<ScoredLead | null>(null);
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
+    isMountedRef.current = true;
+    const fetchLeads = async () => {
+      try {
+        const response = await authFetch('/api/leads/scored');
+        if (!isMountedRef.current) return;
+        if (response.ok) {
+          const data = await response.json();
+          setLeads(data.leads || []);
+        } else {
+          log.warn('Lead scoring API returned', response.status, '— showing empty state');
+          setLeads([]);
+        }
+      } catch (error) {
+        if (isMountedRef.current) log.error('Failed to fetch leads:', error);
+      }
+    };
+
+    const fetchRoutingRules = async () => {
+      try {
+        const response = await authFetch('/api/leads/routing-rules');
+        if (!isMountedRef.current) return;
+        if (response.ok) {
+          const data = await response.json();
+          setRoutingRules(data.rules || []);
+        }
+      } catch (error) {
+        if (isMountedRef.current) log.error('Failed to fetch routing rules:', error);
+      }
+    };
+
     fetchLeads();
     fetchRoutingRules();
+
+    return () => {
+      isMountedRef.current = false;
+    };
   }, []);
 
-  const fetchLeads = async () => {
-    try {
-      const response = await fetch('/api/leads/scored');
-      if (response.ok) {
-        const data = await response.json();
-        setLeads(data.leads || []);
-      } else {
-        // Mock data
-        setLeads([
-          { id: 1, name: 'Ahmed Hassan', score: 85, source: 'Google', budget: '2-3M AED', interest: 'Villa', assignedAgent: 'Mohammed' },
-          { id: 2, name: 'Fatima Al-Kirbi', score: 72, source: 'referral', budget: '1-2M AED', interest: 'Apartment', assignedAgent: 'Zainab' },
-          { id: 3, name: 'Khalil Omar', score: 45, source: 'walk-in', budget: '500K-1M', interest: 'Studio', assignedAgent: 'Unassigned' },
-          { id: 4, name: 'Sara Al-Maktoum', score: 92, source: 'call', budget: '5M+', interest: 'Luxury Villa', assignedAgent: null },
-        ]);
-      }
-    } catch (error) {
-      console.error('Failed to fetch leads:', error);
-    }
-  };
-
-  const fetchRoutingRules = async () => {
-    try {
-      const response = await fetch('/api/leads/routing-rules');
-      if (response.ok) {
-        const data = await response.json();
-        setRoutingRules(data.rules || []);
-      }
-    } catch (error) {
-      console.error('Failed to fetch routing rules:', error);
-    }
-  };
-
-  const getScoreColor = (score) => {
+  const getScoreColor = (score: number): string => {
     if (score >= 80) return '#22c55e';
     if (score >= 60) return '#f59e0b';
     return '#ef4444';
@@ -115,7 +141,7 @@ export default function LeadScoringModule({ role, user, data }) {
       <div className="rules-list">
         {routingRules.length > 0 ? (
           routingRules.map((rule, idx) => (
-            <div key={idx} className="rule-card">
+            <div key={`rule-${rule.propertyType}-${rule.budget}-${rule.agent}`} className="rule-card">
               <p><strong>Rule {idx + 1}:</strong> If property type is {rule.propertyType} AND budget is {rule.budget} → Assign to {rule.agent}</p>
             </div>
           ))

@@ -41,9 +41,10 @@ const UserStatusBar = React.memo<UserStatusBarProps>(({
   const displayName = userName || user?.displayName || user?.name || 'User';
 
   useEffect(() => {
+    // Update every 30s — minute-level precision is sufficient for a dashboard clock
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-    }, 1000);
+    }, 30000);
 
     return () => clearInterval(timer);
   }, []);
@@ -67,9 +68,13 @@ const UserStatusBar = React.memo<UserStatusBarProps>(({
   }, [currentTime, compact]);
 
   const greeting = useMemo(() => {
-    const hour = currentTime.getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 17) return 'Good Afternoon';
+    // Use Dubai time (UTC+4) for consistent greetings
+    const dubaiHour = parseInt(
+      new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Dubai', hour: 'numeric', hour12: false }).format(currentTime),
+      10
+    );
+    if (dubaiHour < 12) return 'Good Morning';
+    if (dubaiHour < 17) return 'Good Afternoon';
     return 'Good Evening';
   }, [currentTime]);
 

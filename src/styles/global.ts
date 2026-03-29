@@ -21,11 +21,14 @@ export const GlobalStyles = createGlobalStyle`
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
   }
 
   body {
     margin: 0;
     padding: 0;
+    min-height: 100vh;
     font-family: ${theme.typography.fontFamily.primary};
     font-size: ${theme.typography.styles.body.size};
     line-height: ${theme.typography.styles.body.lineHeight};
@@ -75,6 +78,7 @@ export const GlobalStyles = createGlobalStyle`
 
   p {
     margin: 0;
+    overflow-wrap: break-word;
   }
 
   a {
@@ -251,4 +255,84 @@ export const GlobalStyles = createGlobalStyle`
   ${theme.keyframes.slideOutDown}
   ${theme.keyframes.spin}
   ${theme.keyframes.pulse}
+
+  /* Animation Utility Classes */
+  .theme-transition {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.3s ease-in;
+  }
+
+  .slide-down {
+    animation: slideDown 0.3s ease-out;
+  }
+
+  .slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .spin {
+    animation: spin 1s linear infinite;
+  }
+
+  .pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Responsive Font Sizing */
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    html {
+      font-size: 15px;
+    }
+  }
+
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    html {
+      font-size: 14px;
+    }
+  }
+
+  /* Accessibility: Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Print Styles */
+  @media print {
+    body {
+      background-color: white;
+      color: black;
+    }
+    a {
+      text-decoration: underline;
+    }
+  }
+
+  /* Accessibility: skip-to-content link */
+  .skip-to-content {
+    position: absolute;
+    top: -100px;
+    left: 16px;
+    background: var(--color-primary, #1a73e8);
+    color: #fff;
+    padding: 8px 16px;
+    z-index: var(--z-max, 900);
+    border-radius: 0 0 4px 4px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: top 0.2s ease;
+  }
+  .skip-to-content:focus {
+    top: 0;
+  }
 `;

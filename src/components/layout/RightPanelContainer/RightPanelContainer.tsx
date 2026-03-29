@@ -54,7 +54,7 @@ interface RuntimeAssistant extends Assistant {
 }
 
 interface Notification {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface NotificationsByAssistant {
@@ -102,6 +102,7 @@ const RightPanelContainer: React.FC<RightPanelContainerProps> = ({
     technical: false
   });
 
+  // getAllAssistants() returns from a static registry; result is stable
   const allAssistants = useMemo((): RuntimeAssistant[] => getAllAssistants() as RuntimeAssistant[], []);
 
   // Group assistants by function
@@ -109,7 +110,7 @@ const RightPanelContainer: React.FC<RightPanelContainerProps> = ({
     const groups: GroupedAssistants = {
       crm: {
         label: 'CRM Assistants',
-        assistants: allAssistants.filter((a: RuntimeAssistant) => ['clara', 'sophia', 'mary', 'linda'].includes(a.id))
+        assistants: allAssistants.filter((a: RuntimeAssistant) => ['clara', 'sophia', 'mary', 'nadia'].includes(a.id))
       },
       operations: {
         label: 'Operations',

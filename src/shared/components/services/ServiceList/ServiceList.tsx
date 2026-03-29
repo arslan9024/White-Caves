@@ -14,7 +14,7 @@ export interface ServiceListProps {
   services?: ServiceData[];
   variant?: 'vertical' | 'horizontal';
   columns?: GridColumns;
-  gap?: 'small' | 'medium' | 'large' | string;
+  gap?: 'small' | 'medium' | 'large';
   showPrice?: boolean;
   showBooking?: boolean;
   emptyMessage?: string;
@@ -47,7 +47,7 @@ const ServiceList = React.memo<ServiceListProps>(({
       <div className={classes}>
         <Grid columns={variant === 'horizontal' ? { mobile: 1, tablet: 1, desktop: 2 } : columns} gap={gap}>
           {Array.from({ length: loadingCount }).map((_, index) => (
-            <div key={index} className={`${baseClass}__skeleton`}>
+            <div key={`service-skeleton-${index}`} className={`${baseClass}__skeleton`}>
               <div className={`${baseClass}__skeleton-image`} />
               <div className={`${baseClass}__skeleton-content`}>
                 <div className={`${baseClass}__skeleton-line ${baseClass}__skeleton-line--title`} />

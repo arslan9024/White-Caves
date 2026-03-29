@@ -12,6 +12,7 @@
 
 import React, { FC, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import type { RootState } from '../../../store/store';
 import { Check, AlertCircle, AlertTriangle, Info, X } from 'lucide-react';
 import { removeNotification } from '../../../store/slices/notificationSlice';
 import {
@@ -27,7 +28,7 @@ import {
 type NotificationType = 'success' | 'error' | 'warning' | 'info';
 
 interface Notification {
-  id: string | number;
+  id: number;
   type: NotificationType;
   title?: string;
   message: string;
@@ -38,7 +39,7 @@ interface ToastProps {}
 
 const Toast: FC<ToastProps> = () => {
   const dispatch = useDispatch();
-  const notifications = useSelector((state: any) => state.notifications?.notifications || []) as Notification[];
+  const notifications = useSelector((state: RootState) => state.notifications?.notifications || []) as Notification[];
 
   useEffect(() => {
     // Set auto-dismiss timers for each notification

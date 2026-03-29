@@ -1,7 +1,36 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
 
-export default function InsightsTab({ state }) {
+interface MarketHotspot {
+  area: string;
+  demand: string;
+  avgPrice: number;
+  priceChange: number;
+}
+
+interface PriceTrend {
+  month: string;
+  priceIndex: number;
+}
+
+interface MarketInsights {
+  priceIndex: number;
+  priceChange: number;
+  avgRentalYield: number;
+  supplyDemandRatio: number;
+  hotspots: MarketHotspot[];
+  trends: PriceTrend[];
+}
+
+interface InsightsState {
+  marketInsights: MarketInsights;
+}
+
+interface InsightsTabProps {
+  state: InsightsState;
+}
+
+export default function InsightsTab({ state }: InsightsTabProps) {
   const { marketInsights } = state;
 
   return (
@@ -37,8 +66,8 @@ export default function InsightsTab({ state }) {
       <div className="hotspots-section">
         <h4>Market Hotspots</h4>
         <div className="hotspots-list">
-          {marketInsights.hotspots.map((spot, idx) => (
-            <div key={idx} className="hotspot-item">
+          {marketInsights.hotspots.map((spot: MarketHotspot) => (
+            <div key={spot.area} className="hotspot-item">
               <div className="hotspot-header">
                 <h5>{spot.area}</h5>
                 <span className={`demand ${spot.demand}`}>{spot.demand} demand</span>
@@ -57,12 +86,16 @@ export default function InsightsTab({ state }) {
       <div className="trends-section">
         <h4>Price Trends (6 Months)</h4>
         <div className="trends-chart">
-          {marketInsights.trends.map((trend, idx) => (
-            <div key={idx} className="trend-bar" style={{ height: `${(trend.priceIndex / 152.3) * 100}%` }}>
-              <span className="trend-label">{trend.month}</span>
-              <span className="trend-value">{trend.priceIndex}</span>
-            </div>
-          ))}
+          {(() => {
+            const trends = marketInsights?.trends ?? [];
+            const maxIndex = Math.max(...trends.map(t => t.priceIndex), 1);
+            return trends.map((trend: PriceTrend) => (
+              <div key={trend.month} className="trend-bar" style={{ height: `${(trend.priceIndex / maxIndex) * 100}%` }}>
+                <span className="trend-label">{trend.month}</span>
+                <span className="trend-value">{trend.priceIndex}</span>
+              </div>
+            ));
+          })()}
         </div>
       </div>
     </div>

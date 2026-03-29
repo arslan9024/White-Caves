@@ -10,10 +10,10 @@ export const ThemeToggleButton = styled.button`
   justify-content: center;
 `;
 
-export const ToggleTrack = styled.div<{ isDark: boolean }>`
+export const ToggleTrack = styled.div<{ $isDark: boolean }>`
   width: 52px;
   height: 28px;
-  background: ${props => props.isDark 
+  background: ${props => props.$isDark 
     ? (props.theme?.colors?.primary || '#2196F3')
     : (props.theme?.colors?.borderColor || '#cccccc')
   };
@@ -39,19 +39,19 @@ export const ToggleIcons = styled.div`
   box-sizing: border-box;
 `;
 
-export const IconSun = styled.span<{ isDark: boolean }>`
+export const IconSun = styled.span<{ $isDark: boolean }>`
   color: ${props => props.theme?.colors?.accentGold || '#FFC107'};
-  opacity: ${props => props.isDark ? 0.5 : 1};
+  opacity: ${props => props.$isDark ? 0.5 : 1};
   transition: opacity 0.3s ease;
 `;
 
-export const IconMoon = styled.span<{ isDark: boolean }>`
+export const IconMoon = styled.span<{ $isDark: boolean }>`
   color: #ffffff;
-  opacity: ${props => props.isDark ? 1 : 0.5};
+  opacity: ${props => props.$isDark ? 1 : 0.5};
   transition: opacity 0.3s ease;
 `;
 
-export const ToggleThumb = styled.div<{ isDark: boolean }>`
+export const ToggleThumb = styled.div<{ $isDark: boolean }>`
   width: 22px;
   height: 22px;
   background: #ffffff;
@@ -60,5 +60,5 @@ export const ToggleThumb = styled.div<{ isDark: boolean }>`
   left: 3px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: ${props => props.isDark ? 'translateX(24px)' : 'translateX(0)'};
+  transform: ${props => props.$isDark ? 'translateX(24px)' : 'translateX(0)'};
 `;

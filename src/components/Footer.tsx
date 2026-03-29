@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
 import SocialLinks from './SocialLinks';
+import { Config } from '../config/constants';
 import * as S from './Footer.styles';
 
 interface FooterProps {}
@@ -17,20 +18,20 @@ const Footer: FC<FooterProps> = () => {
           <S.FooterContact>
             <p><S.ContactIcon>📍</S.ContactIcon> Office D-72, El-Shaye-4, Port Saeed, Dubai</p>
             <p><S.ContactIcon>📞</S.ContactIcon> Office: +971 4 335 0592</p>
-            <p><S.ContactIcon>📱</S.ContactIcon> Mobile: +971 56 361 6136</p>
+            <p><S.ContactIcon>📱</S.ContactIcon> Mobile: {Config.COMPANY.PHONE}</p>
             <p><S.ContactIcon>📧</S.ContactIcon> admin@whitecaves.com</p>
             <p><S.ContactIcon>🌐</S.ContactIcon> www.whitecaves.com</p>
           </S.FooterContact>
           <S.FooterApps>
             <S.AppsTitle>Contact us on:</S.AppsTitle>
             <S.AppButtons>
-              <S.AppBtn href="https://wa.me/971563616136" target="_blank" rel="noopener noreferrer" platform="whatsapp">
+              <S.AppBtn href={`https://wa.me/${Config.COMPANY.WHATSAPP}`} target="_blank" rel="noopener noreferrer" $platform="whatsapp">
                 <span>WhatsApp</span>
               </S.AppBtn>
-              <S.AppBtn href="botim://call?number=+971563616136" platform="botim">
+              <S.AppBtn href={`botim://call?number=+${Config.COMPANY.WHATSAPP}`} $platform="botim">
                 <span>Botim</span>
               </S.AppBtn>
-              <S.AppBtn href="https://gochat.me/+971563616136" target="_blank" rel="noopener noreferrer" platform="gochat">
+              <S.AppBtn href={`https://gochat.me/+${Config.COMPANY.WHATSAPP}`} target="_blank" rel="noopener noreferrer" $platform="gochat">
                 <span>GoChat</span>
               </S.AppBtn>
             </S.AppButtons>

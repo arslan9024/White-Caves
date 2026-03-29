@@ -98,14 +98,14 @@ export const FilterTabs = styled.div`
   }
 `;
 
-export const FilterTab = styled.button<{ isActive?: boolean }>`
+export const FilterTab = styled.button<{ $isActive?: boolean }>`
   padding: 0.75rem 1.5rem;
-  background: ${props => props.isActive ? 'var(--primary-color, #1a365d)' : 'var(--bg-primary, #ffffff)'};
-  border: 1px solid ${props => props.isActive ? 'var(--primary-color, #1a365d)' : 'var(--border-color, #e2e8f0)'};
+  background: ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--bg-primary, #ffffff)'};
+  border: 1px solid ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--border-color, #e2e8f0)'};
   border-radius: 9999px;
   font-family: var(--font-body, 'Open Sans', sans-serif);
   font-size: 0.9rem;
-  color: ${props => props.isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
+  color: ${props => props.$isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -170,11 +170,11 @@ export const ProjectImage = styled.div`
   }
 `;
 
-export const ProjectBadge = styled.span<{ variant?: 'status' | 'segment' }>`
+export const ProjectBadge = styled.span<{ $variant?: 'status' | 'segment' }>`
   position: absolute;
-  ${props => props.variant === 'segment' ? 'top: 1rem; right: 1rem;' : 'top: 1rem; left: 1rem;'}
+  ${props => props.$variant === 'segment' ? 'top: 1rem; right: 1rem;' : 'top: 1rem; left: 1rem;'}
   padding: 0.5rem 1rem;
-  background: ${props => props.variant === 'segment' ? 'rgba(26, 54, 93, 0.9)' : 'var(--secondary-color, #c53030)'};
+  background: ${props => props.$variant === 'segment' ? 'rgba(26, 54, 93, 0.9)' : 'var(--secondary-color, #c53030)'};
   color: var(--text-on-primary, #ffffff);
   font-size: 0.75rem;
   font-weight: 600;
@@ -291,12 +291,12 @@ export const ActionButtons = styled.div`
   margin-top: 1rem;
 `;
 
-export const ActionButton = styled.button<{ variant?: 'primary' | 'secondary' }>`
+export const ActionButton = styled.button<{ $variant?: 'primary' | 'secondary' }>`
   flex: 1;
   padding: 0.75rem 1rem;
-  background: ${props => props.variant === 'secondary' ? 'var(--bg-light, #f7fafc)' : 'var(--primary-color, #1a365d)'};
-  color: ${props => props.variant === 'secondary' ? 'var(--text-primary)' : 'white'};
-  border: ${props => props.variant === 'secondary' ? '1px solid var(--border-color, #e2e8f0)' : 'none'};
+  background: ${props => props.$variant === 'secondary' ? 'var(--bg-light, #f7fafc)' : 'var(--primary-color, #1a365d)'};
+  color: ${props => props.$variant === 'secondary' ? 'var(--text-primary)' : 'white'};
+  border: ${props => props.$variant === 'secondary' ? '1px solid var(--border-color, #e2e8f0)' : 'none'};
   border-radius: var(--radius-md);
   font-size: 0.9rem;
   font-weight: 600;
@@ -304,7 +304,7 @@ export const ActionButton = styled.button<{ variant?: 'primary' | 'secondary' }>
   transition: all 0.2s ease;
 
   &:hover {
-    ${props => props.variant === 'secondary'
+    ${props => props.$variant === 'secondary'
       ? 'background: var(--bg-tertiary, #edf2f7); border-color: var(--primary-color, #1a365d);'
       : 'background: var(--primary-dark, #0f2847);'
     }

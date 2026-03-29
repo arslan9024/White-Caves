@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import AppLayout from '../components/layout/AppLayout';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
@@ -21,6 +22,7 @@ interface Milestone {
 interface AboutPageProps {}
 
 const AboutPage: FC<AboutPageProps> = () => {
+  useDocumentTitle('About Us');
   const teamMembers: TeamMember[] = [
     {
       name: "Ahmed Al Rashid",
@@ -116,6 +118,7 @@ const AboutPage: FC<AboutPageProps> = () => {
                 <img 
                   src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=800" 
                   alt="White Caves Office"
+                  loading="lazy"
                 />
               </div>
             </div>
@@ -127,10 +130,10 @@ const AboutPage: FC<AboutPageProps> = () => {
             <h2 className="section-title">Meet Our Team</h2>
             <p className="section-subtitle">Expert professionals dedicated to your success</p>
             <div className="team-grid">
-              {teamMembers.map((member, index) => (
-                <div key={index} className="team-card">
+              {teamMembers.map((member) => (
+                <div key={member.name} className="team-card">
                   <div className="team-image">
-                    <img src={member.image} alt={member.name} />
+                    <img src={member.image} alt={member.name} loading="lazy" width={300} height={300} />
                   </div>
                   <div className="team-info">
                     <h3>{member.name}</h3>
@@ -147,8 +150,8 @@ const AboutPage: FC<AboutPageProps> = () => {
           <div className="container">
             <h2 className="section-title">Our Journey</h2>
             <div className="timeline">
-              {milestones.map((milestone, index) => (
-                <div key={index} className="timeline-item">
+              {milestones.map((milestone) => (
+                <div key={milestone.year} className="timeline-item">
                   <div className="timeline-dot"></div>
                   <div className="timeline-content">
                     <h3>{milestone.year}</h3>

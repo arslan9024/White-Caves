@@ -5,6 +5,8 @@ import {
   Users, Briefcase, MessageSquare, DollarSign, 
   Target, Shield, Server, Home, Megaphone
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import type { AIAssistant } from '../../../store/slices/aiAssistant/types';
 import { 
   selectAllAssistantsArray,
   selectCurrentAssistant,
@@ -20,7 +22,7 @@ import {
 } from '../../../store/slices/aiAssistantDashboardSlice';
 import './AIDropdownSelector.css';
 
-const DEPARTMENT_CONFIG = {
+const DEPARTMENT_CONFIG: Record<string, { label: string; icon: LucideIcon | null }> = {
   all: { label: 'All', icon: null },
   operations: { label: 'Operations', icon: Briefcase },
   sales: { label: 'Sales', icon: Target },
@@ -32,11 +34,17 @@ const DEPARTMENT_CONFIG = {
   technology: { label: 'Technology', icon: Server }
 };
 
+interface AIDropdownSelectorProps {
+  onSelect?: (assistantId: string) => void;
+  compact?: boolean;
+  showDepartmentFilters?: boolean;
+}
+
 const AIDropdownSelector = memo(({ 
   onSelect,
   compact = false,
   showDepartmentFilters = true
-}) => {
+}: AIDropdownSelectorProps) => {
   const dispatch = useDispatch();
   const dropdownRef = useRef(null);
   
@@ -51,8 +59,8 @@ const AIDropdownSelector = memo(({
   const departmentFilter = ui?.filters?.department || 'all';
   
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !(dropdownRef.current as HTMLElement).contains(event.target as Node)) {
         dispatch(closeDropdown());
       }
     };
@@ -70,21 +78,21 @@ const AIDropdownSelector = memo(({
     dispatch(toggleDropdown());
   }, [dispatch]);
   
-  const handleSelect = useCallback((assistantId) => {
+  const handleSelect = useCallback((assistantId: string) => {
     dispatch(selectAssistant(assistantId));
     onSelect?.(assistantId);
   }, [dispatch, onSelect]);
   
-  const handleToggleFavorite = useCallback((e, assistantId) => {
+  const handleToggleFavorite = useCallback((e: React.MouseEvent, assistantId: string) => {
     e.stopPropagation();
     dispatch(toggleFavorite(assistantId));
   }, [dispatch]);
   
-  const handleSearchChange = useCallback((e) => {
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setSearchQuery(e.target.value));
   }, [dispatch]);
   
-  const handleDepartmentChange = useCallback((dept) => {
+  const handleDepartmentChange = useCallback((dept: string) => {
     dispatch(setDepartmentFilter(dept));
   }, [dispatch]);
   
@@ -118,7 +126,7 @@ const AIDropdownSelector = memo(({
   );
   
   const departmentCounts = useMemo(() => {
-    const counts = { all: allAssistants.length };
+    const counts: Record<string, number> = { all: allAssistants.length };
     allAssistants.forEach(a => {
       counts[a.department] = (counts[a.department] || 0) + 1;
     });
@@ -133,7 +141,7 @@ const AIDropdownSelector = memo(({
       <button 
         className="dropdown-trigger"
         onClick={handleToggle}
-        style={{ '--accent-color': currentAssistant?.colorScheme || '#0EA5E9' }}
+        style={{ '--accent-color': currentAssistant?.colorScheme || '#0EA5E9' } as React.CSSProperties}
       >
         {currentAssistant ? (
           <>
@@ -216,7 +224,9 @@ const AIDropdownSelector = memo(({
                   <Clock size={12} />
                   <span>Recent</span>
                 </div>
-                {recentAssistants.map(assistant => (
+                {recentAssistants.map(assistant => {
+                  if (!assistant) return null;
+                  return (
                   <AssistantItem
                     key={assistant.id}
                     assistant={assistant}
@@ -225,7 +235,8 @@ const AIDropdownSelector = memo(({
                     onSelect={handleSelect}
                     onToggleFavorite={handleToggleFavorite}
                   />
-                ))}
+                  );
+                })}
               </div>
             )}
             
@@ -267,17 +278,25 @@ const AIDropdownSelector = memo(({
   );
 });
 
+interface AssistantItemProps {
+  assistant: AIAssistant;
+  isSelected: boolean;
+  isFavorite: boolean;
+  onSelect: (assistantId: string) => void;
+  onToggleFavorite: (e: React.MouseEvent, assistantId: string) => void;
+}
+
 const AssistantItem = memo(({ 
   assistant, 
   isSelected, 
   isFavorite, 
   onSelect, 
   onToggleFavorite 
-}) => (
+}: AssistantItemProps) => (
   <div
     className={`assistant-item ${isSelected ? 'selected' : ''}`}
     onClick={() => onSelect(assistant.id)}
-    style={{ '--item-color': assistant.colorScheme }}
+    style={{ '--item-color': assistant.colorScheme } as React.CSSProperties}
     role="button"
     tabIndex={0}
     onKeyDown={(e) => e.key === 'Enter' && onSelect(assistant.id)}

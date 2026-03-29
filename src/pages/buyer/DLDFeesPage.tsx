@@ -1,12 +1,14 @@
 import React, { FC, useState, useMemo } from 'react';
+import { formatCurrency } from '../../utils';
+import { Config } from '../../config/constants';
 import '../RolePages.css';
 
 interface DLDFeesPageProps {}
 
 const DLDFeesPage: FC<DLDFeesPageProps> = () => {
-  const [propertyPrice, setPropertyPrice] = useState<number>(5000000);
+  const [propertyPrice, setPropertyPrice] = useState<number>(Config.REAL_ESTATE.DEFAULT_PROPERTY_PRICE);
   const [isMortgage, setIsMortgage] = useState<boolean>(true);
-  const [mortgageAmount, setMortgageAmount] = useState<number>(3750000);
+  const [mortgageAmount, setMortgageAmount] = useState<number>(Config.REAL_ESTATE.DEFAULT_PROPERTY_PRICE * 0.75);
 
   interface Fees {
     dldFee: number;
@@ -23,14 +25,14 @@ const DLDFeesPage: FC<DLDFeesPageProps> = () => {
   }
 
   const fees: Fees = useMemo(() => {
-    const dldFee = propertyPrice * 0.04;
-    const dldAdminFee = 580;
-    const trusteeFee = isMortgage ? 4200 : 2100;
-    const agencyFee = propertyPrice * 0.02;
-    const agencyVAT = agencyFee * 0.05;
-    const mortgageRegistration = isMortgage ? mortgageAmount * 0.0025 + 290 : 0;
-    const noC = 5000;
-    const valuationFee = 3000;
+    const dldFee = propertyPrice * Config.DLD_FEES.TRANSFER_FEE_RATE;
+    const dldAdminFee = Config.DLD_FEES.ADMIN_FEE;
+    const trusteeFee = isMortgage ? Config.DLD_FEES.TRUSTEE_FEE_MORTGAGE : Config.DLD_FEES.TRUSTEE_FEE_CASH;
+    const agencyFee = propertyPrice * Config.REAL_ESTATE.AGENCY_COMMISSION_RATE;
+    const agencyVAT = agencyFee * Config.REAL_ESTATE.VAT_RATE;
+    const mortgageRegistration = isMortgage ? mortgageAmount * Config.DLD_FEES.MORTGAGE_REGISTRATION_RATE + Config.DLD_FEES.MORTGAGE_ADMIN_FEE : 0;
+    const noC = Config.DLD_FEES.NOC_FEE;
+    const valuationFee = Config.DLD_FEES.VALUATION_FEE;
     
     const totalBuyerCost = dldFee / 2 + dldAdminFee + trusteeFee + agencyFee + agencyVAT + mortgageRegistration + noC + valuationFee;
     const totalSellerCost = dldFee / 2;
@@ -49,14 +51,6 @@ const DLDFeesPage: FC<DLDFeesPageProps> = () => {
       grandTotal: totalBuyerCost + totalSellerCost
     };
   }, [propertyPrice, isMortgage, mortgageAmount]);
-
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-AE', {
-      style: 'currency',
-      currency: 'AED',
-      maximumFractionDigits: 0
-    }).format(amount);
-  };
 
   return (
     <div className="role-page no-sidebar">

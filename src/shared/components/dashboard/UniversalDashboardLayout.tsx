@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import UserStatusBar from './UserStatusBar';
 import RoleSelectorDropdown from '../ui/RoleSelectorDropdown';
+import type { RoleDefinition } from '../../../config/roles';
 import WeatherWidget from '../ui/WeatherWidget';
 import ProfilePanel from '../ui/ProfilePanel';
 import './UniversalDashboardLayout.css';
@@ -62,7 +63,7 @@ const UniversalDashboardLayout: React.FC<UniversalDashboardLayoutProps> = ({
   const user = useSelector((state: RootState) => state.user?.currentUser);
   const [showProfile, setShowProfile] = useState<boolean>(false);
 
-  const handleRoleChange = (role: RoleOption): void => {
+  const handleRoleChange = (role: RoleDefinition): void => {
     if (role.dashboardPath) {
       navigate(role.dashboardPath);
     }
@@ -107,7 +108,7 @@ const UniversalDashboardLayout: React.FC<UniversalDashboardLayoutProps> = ({
               title="View Profile"
             >
               {user?.photo ? (
-                <img src={user.photo} alt={user.name} className="profile-avatar" />
+                <img src={user.photo} alt={user.name} className="profile-avatar" loading="lazy" width={40} height={40} />
               ) : (
                 <div className="profile-avatar-placeholder">
                   {(user?.name || 'U').charAt(0).toUpperCase()}
@@ -148,7 +149,7 @@ const UniversalDashboardLayout: React.FC<UniversalDashboardLayoutProps> = ({
 
       {showProfile && (
         <ProfilePanel 
-          user={user}
+          user={(user as Record<string, unknown>) ?? null}
           onClose={() => setShowProfile(false)}
         />
       )}

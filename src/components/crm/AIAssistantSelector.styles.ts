@@ -80,7 +80,7 @@ export const DropdownMenu = styled.div`
   background: var(--card-bg);
   border-radius: 15px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: var(--z-dropdown, 100);
   max-height: 500px;
   overflow-y: auto;
   border: 1px solid var(--border-color);

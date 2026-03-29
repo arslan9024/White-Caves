@@ -4,7 +4,7 @@ export const StatusNotificationContainer = styled.div`
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 10000;
+  z-index: var(--z-toast, 400);
   max-width: 400px;
   width: calc(100% - 40px);
   pointer-events: none;

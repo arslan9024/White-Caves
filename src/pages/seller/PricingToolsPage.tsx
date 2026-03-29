@@ -1,4 +1,6 @@
 import React, { FC, useState, useMemo } from 'react';
+import { formatCurrency } from '../../utils';
+import { Config } from '../../config/constants';
 import '../RolePages.css';
 
 interface PricingToolsPageProps {}
@@ -42,9 +44,9 @@ const PricingToolsPage: FC<PricingToolsPageProps> = () => {
     const lowRange = estimatedPrice * 0.9;
     const highRange = estimatedPrice * 1.1;
     
-    const dldFee = estimatedPrice * 0.02;
-    const agencyCommission = estimatedPrice * 0.02;
-    const nocFee = 5000;
+    const dldFee = estimatedPrice * (Config.DLD_FEES.TRANSFER_FEE_RATE / 2); // Seller pays half
+    const agencyCommission = estimatedPrice * Config.REAL_ESTATE.AGENCY_COMMISSION_RATE;
+    const nocFee = Config.DLD_FEES.NOC_FEE;
     const totalCosts = dldFee + agencyCommission + nocFee;
     const netProceeds = estimatedPrice - totalCosts;
     
@@ -61,14 +63,6 @@ const PricingToolsPage: FC<PricingToolsPageProps> = () => {
     };
   }, [propertyType, location, beds, sqft]);
 
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-AE', {
-      style: 'currency',
-      currency: 'AED',
-      maximumFractionDigits: 0
-    }).format(amount);
-  };
-
   return (
     <div className="role-page no-sidebar">
       <div className="role-page-content full-width">
@@ -82,8 +76,8 @@ const PricingToolsPage: FC<PricingToolsPageProps> = () => {
             <h3>Property Details</h3>
             
             <div className="input-group">
-              <label>Property Type</label>
-              <select value={propertyType} onChange={(e) => setPropertyType(e.target.value)} className="select-input">
+              <label htmlFor="pricing-property-type">Property Type</label>
+              <select id="pricing-property-type" value={propertyType} onChange={(e) => setPropertyType(e.target.value)} className="select-input">
                 <option value="apartment">Apartment</option>
                 <option value="villa">Villa</option>
                 <option value="townhouse">Townhouse</option>
@@ -92,8 +86,8 @@ const PricingToolsPage: FC<PricingToolsPageProps> = () => {
             </div>
 
             <div className="input-group">
-              <label>Location</label>
-              <select value={location} onChange={(e) => setLocation(e.target.value)} className="select-input">
+              <label htmlFor="pricing-location">Location</label>
+              <select id="pricing-location" value={location} onChange={(e) => setLocation(e.target.value)} className="select-input">
                 <option value="dubai-marina">Dubai Marina</option>
                 <option value="downtown">Downtown Dubai</option>
                 <option value="palm-jumeirah">Palm Jumeirah</option>
@@ -104,8 +98,8 @@ const PricingToolsPage: FC<PricingToolsPageProps> = () => {
             </div>
 
             <div className="input-group">
-              <label>Bedrooms</label>
-              <select value={beds} onChange={(e) => setBeds(Number(e.target.value))} className="select-input">
+              <label htmlFor="pricing-bedrooms">Bedrooms</label>
+              <select id="pricing-bedrooms" value={beds} onChange={(e) => setBeds(Number(e.target.value))} className="select-input">
                 <option value="0">Studio</option>
                 <option value="1">1 Bedroom</option>
                 <option value="2">2 Bedrooms</option>
@@ -116,8 +110,9 @@ const PricingToolsPage: FC<PricingToolsPageProps> = () => {
             </div>
 
             <div className="input-group">
-              <label>Property Size (sqft)</label>
+              <label htmlFor="pricing-sqft">Property Size (sqft)</label>
               <input 
+                id="pricing-sqft"
                 type="number"
                 value={sqft}
                 onChange={(e) => setSqft(Number(e.target.value))}

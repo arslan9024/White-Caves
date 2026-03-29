@@ -1,26 +1,37 @@
 import React from 'react';
+import { createLogger } from '../../../utils/logger';
+
+const log = createLogger('ProfilePanel');
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { X, User, Mail, Phone, Shield, Settings, LogOut, Edit2, BarChart3, Users, AlertCircle, Zap } from 'lucide-react';
 import { auth } from '../../../config/firebase';
 import './ProfilePanel.css';
+import { safeStorage } from '../../../utils/safeStorage';
 
-const ProfilePanel = ({ user, onClose, isSuperUser = false }) => {
+interface ProfilePanelProps {
+  user: Record<string, unknown> | null;
+  onClose: () => void;
+  isSuperUser?: boolean;
+}
+
+const ProfilePanel = ({ user, onClose, isSuperUser = false }: ProfilePanelProps) => {
   const navigate = useNavigate();
   
-  // Detect super user from Redux
-  const userRole = useSelector(state => state.auth?.role || 'user');
-  const reduxIsSuperUser = useSelector(state => state.auth?.role === 'lion' || state.auth?.isSuperUser);
+  // Detect super user from Redux (stable selectors to avoid unnecessary re-renders)
+  const userRole = useSelector((state: any) => state.auth?.user?.role || 'user');
+  const authRole = useSelector((state: any) => state.auth?.user?.role);
+  const reduxIsSuperUser = authRole === 'lion';
   const effectiveIsSuperUser = isSuperUser || reduxIsSuperUser;
 
   const handleSignOut = async () => {
     try {
-      await auth.signOut();
-      localStorage.removeItem('userRole');
+      await auth?.signOut();
+      safeStorage.remove('userRole');
       navigate('/');
       onClose();
     } catch (error) {
-      console.error('Sign out error:', error);
+      log.error('Sign out error:', error);
     }
   };
 
@@ -51,11 +62,11 @@ const ProfilePanel = ({ user, onClose, isSuperUser = false }) => {
 
   return (
     <>
-      <div className="profile-panel-overlay" onClick={onClose} />
-      <div className="profile-panel">
+      <div className="profile-panel-overlay" onClick={onClose} role="presentation" />
+      <div className="profile-panel" role="dialog" aria-modal="true" aria-label="User profile" onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}>
         <div className="profile-panel-header">
           <h3>My Profile</h3>
-          <button className="profile-panel-close" onClick={onClose}>
+          <button className="profile-panel-close" onClick={onClose} aria-label="Close profile panel">
             <X size={20} />
           </button>
         </div>
@@ -63,22 +74,22 @@ const ProfilePanel = ({ user, onClose, isSuperUser = false }) => {
         <div className="profile-panel-content">
           <div className="profile-panel-avatar-section">
             {user?.photo ? (
-              <img src={user.photo} alt={user.name} className="profile-panel-avatar" />
+              <img src={String(user.photo)} alt={String(user.name ?? '')} className="profile-panel-avatar" loading="lazy" width={48} height={48} />
             ) : (
               <div className="profile-panel-avatar-placeholder">
                 <User size={48} />
               </div>
             )}
-            <button className="profile-edit-avatar-btn">
+            <button className="profile-edit-avatar-btn" aria-label="Edit profile picture">
               <Edit2 size={14} />
             </button>
           </div>
 
           <div className="profile-panel-info">
-            <h4 className="profile-panel-name">{user?.name || user?.displayName || 'User'}</h4>
+            <h4 className="profile-panel-name">{String(user?.name || user?.displayName || 'User')}</h4>
             <span className={`profile-panel-role ${effectiveIsSuperUser ? 'super-user' : ''}`}>
               <Shield size={14} />
-              {effectiveIsSuperUser ? '👑 Super User' : (user?.role || 'Member')}
+              {effectiveIsSuperUser ? '👑 Super User' : String(user?.role || 'Member')}
             </span>
           </div>
 
@@ -106,16 +117,16 @@ const ProfilePanel = ({ user, onClose, isSuperUser = false }) => {
           )}
 
           <div className="profile-panel-details">
-            {user?.email && (
+            {Boolean(user?.email) && (
               <div className="profile-detail-item">
                 <Mail size={16} />
-                <span>{user.email}</span>
+                <span>{String(user?.email)}</span>
               </div>
             )}
-            {user?.phone && (
+            {Boolean(user?.phone) && (
               <div className="profile-detail-item">
                 <Phone size={16} />
-                <span>{user.phone}</span>
+                <span>{String(user?.phone)}</span>
               </div>
             )}
           </div>

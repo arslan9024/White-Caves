@@ -195,9 +195,9 @@ const Alert: FC<AlertProps> = ({
 
         {actions.length > 0 && (
           <AlertActions>
-            {actions.map((action, idx) => (
+            {actions.map((action) => (
               <AlertButton
-                key={idx}
+                key={action.label}
                 $variant={action.variant}
                 onClick={action.onClick}
               >

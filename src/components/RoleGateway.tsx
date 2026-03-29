@@ -3,9 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setActiveRole } from '../store/navigationSlice';
 import * as S from './RoleGateway.styles';
+import { safeStorage } from '../utils/safeStorage';
 import type { AppDispatch } from '../store/store';
-
-const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
 
 interface RoleOption {
   id: string;
@@ -26,7 +25,7 @@ const ROLES: RoleOption[] = [
 ];
 
 interface RoleGatewayProps {
-  user: { email?: string; [key: string]: any };
+  user: { email?: string; role?: string; [key: string]: unknown };
   onRoleSelect?: (role: string) => void;
 }
 
@@ -37,7 +36,7 @@ export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    if (user?.email === OWNER_EMAIL) {
+    if (user?.role === 'owner' || user?.role === 'admin') {
       const lionRole = {
         role: 'lion',
         selectedAt: new Date().toISOString(),
@@ -45,7 +44,7 @@ export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
         isOwner: true,
         isSuperUser: true,
       };
-      localStorage.setItem('userRole', JSON.stringify(lionRole));
+      safeStorage.setJSON('userRole', lionRole);
       dispatch(setActiveRole('lion'));
       navigate('/lion/dashboard');
     }
@@ -64,7 +63,7 @@ export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
       locked: true,
     };
 
-    localStorage.setItem('userRole', JSON.stringify(userRole));
+    safeStorage.setJSON('userRole', userRole);
     dispatch(setActiveRole(selectedRole));
 
     if (onRoleSelect) {
@@ -87,7 +86,7 @@ export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
           {ROLES.map((role) => (
             <S.RoleCard
               key={role.id}
-              selected={selectedRole === role.id}
+              $selected={selectedRole === role.id}
               onClick={() => handleRoleSelect(role.id)}
             >
               <S.RoleIcon>{role.icon}</S.RoleIcon>
@@ -105,7 +104,7 @@ export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
             <p style={{ gridColumn: '1 / -1', textAlign: 'center', marginBottom: '1rem' }}>
               You selected: <strong>{ROLES.find(r => r.id === selectedRole)?.label}</strong>
             </p>
-            <S.Button variant="primary" onClick={handleConfirm}>
+            <S.Button $variant="primary" onClick={handleConfirm}>
               Confirm Selection & Continue
             </S.Button>
           </S.ActionButtons>
@@ -119,20 +118,16 @@ interface UserRoleData {
   role: string;
   selectedAt: string;
   locked: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
-export function useUserRole(): UserRoleData | null {
+function useUserRole(): UserRoleData | null {
   const [userRole, setUserRole] = useState<UserRoleData | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem('userRole');
+    const stored = safeStorage.getJSON<UserRoleData>('userRole');
     if (stored) {
-      try {
-        setUserRole(JSON.parse(stored));
-      } catch {
-        setUserRole(null);
-      }
+      setUserRole(stored);
     }
   }, []);
 

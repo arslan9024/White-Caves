@@ -1,5 +1,10 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createLogger } from '../utils/logger';
+import { authFetch } from '../utils/authFetch';
+import { useToast } from './Toast';
+
+const log = createLogger('JobApplicants');
 import {
   StyledJobApplicants,
   StyledJobTitle,
@@ -18,42 +23,85 @@ import {
   StyledRejectBtn,
   StyledDetailModal,
   StyledDetailModalContent,
+  StyledLoadingContainer,
+  StyledSpinner,
+  StyledErrorBanner,
+  StyledEmptyState,
 } from './JobApplicants.styles';
 
+interface JobApplication {
+  _id: string;
+  applicantName: string;
+  applicantEmail?: string;
+  role: string;
+  status: string;
+  email?: string;
+  phone?: string;
+  experience?: string;
+  languages?: string;
+  licenses?: string;
+  workLocation?: string;
+  coverLetter?: string;
+  resume?: string;
+  createdAt?: string;
+  [key: string]: unknown;
+}
+
 export default function JobApplicants() {
-  const [applications, setApplications] = useState([]);
+  const toast = useToast();
+  const [applications, setApplications] = useState<JobApplication[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState('all');
-  const [selectedApplication, setSelectedApplication] = useState(null);
+  const [selectedApplication, setSelectedApplication] = useState<JobApplication | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    fetchApplications();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    fetchApplications(controller.signal);
+    return () => { controller.abort(); };
   }, []);
 
-  const fetchApplications = async () => {
+  const fetchApplications = async (signal?: AbortSignal): Promise<void> => {
+    setLoading(true);
+    setError(null);
     try {
-      const response = await fetch('/api/job-applications');
+      const response = await authFetch('/api/job-applications', { signal });
+      if (!response.ok) throw new Error(`Failed to load applications: HTTP ${response.status}`);
       const data = await response.json();
-      setApplications(data);
-    } catch (error) {
-      console.error('Error fetching applications:', error);
+      setApplications(Array.isArray(data) ? data : []);
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
+      const msg = err instanceof Error ? err.message : 'Failed to load applications';
+      setError(msg);
+      log.error('Error fetching applications:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const updateApplicationStatus = async (applicationId, newStatus) => {
+  const updateApplicationStatus = async (applicationId: string, newStatus: string): Promise<void> => {
     try {
-      const response = await fetch(`/api/job-applications/${applicationId}`, {
+      const response = await authFetch(`/api/job-applications/${applicationId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
       });
       
       if (response.ok) {
-        alert('Application status updated successfully!');
-        fetchApplications();
+        toast.success('Application status updated successfully!');
+        fetchApplications(abortRef.current?.signal);
         setSelectedApplication(null);
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        toast.error(errorData.error || errorData.message || 'Failed to update application status');
+        log.error('Status update failed:', { applicationId, newStatus, status: response.status });
       }
     } catch (error) {
-      console.error('Error updating application:', error);
+      const msg = error instanceof Error ? error.message : 'Failed to update application status';
+      toast.error(msg);
+      log.error('Error updating application:', error);
     }
   };
 
@@ -62,8 +110,8 @@ export default function JobApplicants() {
     return app.status === filter;
   });
 
-  const getRoleName = (role) => {
-    const roleNames = {
+  const getRoleName = (role: string): string => {
+    const roleNames: Record<string, string> = {
       'LEASING_AGENT': 'Leasing Agent',
       'SALES_AGENT_SECONDARY': 'Sales Agent - Secondary Properties',
       'SALES_AGENT_OFF_PLAN': 'Sales Agent - Off Plan Properties',
@@ -73,8 +121,8 @@ export default function JobApplicants() {
     return roleNames[role] || role;
   };
 
-  const getStatusColor = (status) => {
-    const colors = {
+  const getStatusColor = (status: string): string => {
+    const colors: Record<string, string> = {
       'PENDING': '#FFA500',
       'REVIEWING': '#2196F3',
       'ACCEPTED': '#4CAF50',
@@ -121,11 +169,35 @@ export default function JobApplicants() {
       </StyledFilters>
 
       <StyledApplicationsGrid>
-        {filteredApplications.map(application => (
+        {loading && (
+          <StyledLoadingContainer>
+            <StyledSpinner />
+            <p>Loading job applications…</p>
+          </StyledLoadingContainer>
+        )}
+
+        {!loading && error && (
+          <StyledErrorBanner>
+            <p>⚠️ {error}</p>
+            <button onClick={() => fetchApplications(abortRef.current?.signal)}>Retry</button>
+          </StyledErrorBanner>
+        )}
+
+        {!loading && !error && filteredApplications.length === 0 && (
+          <StyledEmptyState>
+            <span>📋</span>
+            <p>{filter !== 'all'
+              ? `No ${filter.toLowerCase()} applications found.`
+              : 'No job applications yet.'}
+            </p>
+          </StyledEmptyState>
+        )}
+
+        {!loading && !error && filteredApplications.map(application => (
           <StyledApplicationCard key={application._id}>
             <StyledApplicationHeader>
               <h3>{application.applicantName}</h3>
-              <StyledStatusBadge backgroundColor={getStatusColor(application.status)}>
+              <StyledStatusBadge $backgroundColor={getStatusColor(application.status)}>
                 {application.status}
               </StyledStatusBadge>
             </StyledApplicationHeader>
@@ -136,7 +208,7 @@ export default function JobApplicants() {
               <p><strong>Languages:</strong> {application.languages}</p>
               <p><strong>Licenses:</strong> {application.licenses}</p>
               <p><strong>Work Location:</strong> {application.workLocation}</p>
-              <p><strong>Applied:</strong> {new Date(application.createdAt).toLocaleDateString()}</p>
+              <p><strong>Applied:</strong> {application.createdAt ? new Date(application.createdAt).toLocaleDateString() : 'Unknown'}</p>
             </StyledApplicationDetails>
 
             <StyledApplicationActions>
@@ -221,7 +293,7 @@ export default function JobApplicants() {
               <p><strong>Licenses:</strong> {selectedApplication.licenses}</p>
               <p><strong>Work Location Preference:</strong> {selectedApplication.workLocation}</p>
               <p><strong>Status:</strong> {selectedApplication.status}</p>
-              <p><strong>Applied On:</strong> {new Date(selectedApplication.createdAt).toLocaleString()}</p>
+              <p><strong>Applied On:</strong> {selectedApplication.createdAt ? new Date(selectedApplication.createdAt).toLocaleString() : 'Unknown'}</p>
               
               {selectedApplication.coverLetter && (
                 <div style={{ marginTop: '1.5rem' }}>

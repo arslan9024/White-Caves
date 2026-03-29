@@ -1,7 +1,44 @@
 import React from 'react';
 import { Search, Edit, Trash2, Eye, Download, Mail } from 'lucide-react';
 
-export default function ApplicantsTab({ state }) {
+interface Applicant {
+  id: string | number;
+  name: string;
+  avatar: string;
+  email: string;
+  job: string;
+  status: string;
+  phone?: string;
+  experience?: string;
+  appliedDate?: string;
+  score?: number;
+}
+
+interface StatusBadgeStyle {
+  bg: string;
+  color: string;
+}
+
+interface ApplicantsState {
+  filteredApplicants: Applicant[];
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  filterApplicantStatus: string;
+  setFilterApplicantStatus: (status: string) => void;
+  selectedApplicant: Applicant | null;
+  setSelectedApplicant: (applicant: Applicant | null) => void;
+  showApplicantModal: boolean;
+  setShowApplicantModal: (show: boolean) => void;
+  getApplicantStatusBadge: (status: string) => StatusBadgeStyle;
+  updateApplicant: (id: string | number, data: Partial<Applicant>) => void;
+  deleteApplicant: (id: string | number) => void;
+}
+
+interface ApplicantsTabProps {
+  state: ApplicantsState;
+}
+
+export default function ApplicantsTab({ state }: ApplicantsTabProps) {
   const {
     filteredApplicants,
     searchQuery,
@@ -17,13 +54,13 @@ export default function ApplicantsTab({ state }) {
     deleteApplicant
   } = state;
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: string | number) => {
     if (window.confirm('Are you sure you want to delete this applicant?')) {
       deleteApplicant(id);
     }
   };
 
-  const handleStatusChange = (id, newStatus) => {
+  const handleStatusChange = (id: string | number, newStatus: string) => {
     updateApplicant(id, { status: newStatus });
   };
 
@@ -66,7 +103,7 @@ export default function ApplicantsTab({ state }) {
           return (
             <div key={applicant.id} className="applicant-card">
               <div className="applicant-header">
-                <img src={applicant.avatar} alt={applicant.name} className="applicant-avatar" />
+                <img src={applicant.avatar} alt={applicant.name} className="applicant-avatar" loading="lazy" width={40} height={40} />
                 <div className="applicant-info">
                   <h4>{applicant.name}</h4>
                   <p className="applicant-job">{applicant.job}</p>
@@ -88,13 +125,13 @@ export default function ApplicantsTab({ state }) {
                 </div>
                 <div className="detail-row">
                   <span className="label">Applied:</span>
-                  <span>{new Date(applicant.appliedDate).toLocaleDateString()}</span>
+                  <span>{applicant.appliedDate ? new Date(applicant.appliedDate).toLocaleDateString() : 'N/A'}</span>
                 </div>
               </div>
 
               <div className="applicant-score">
-                <div className="score-badge" style={{ color: applicant.score >= 80 ? '#10b981' : applicant.score >= 60 ? '#f59e0b' : '#ef4444' }}>
-                  Score: {applicant.score}%
+                <div className="score-badge" style={{ color: (applicant.score ?? 0) >= 80 ? '#10b981' : (applicant.score ?? 0) >= 60 ? '#f59e0b' : '#ef4444' }}>
+                  Score: {applicant.score ?? 'N/A'}%
                 </div>
               </div>
 

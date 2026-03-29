@@ -1,7 +1,25 @@
 import React from 'react';
 import { BarChart3, TrendingUp, Zap, Clock, Activity, AlertCircle } from 'lucide-react';
 
-export const AnalyticsTab = ({ data }) => {
+interface Bot {
+  name: string;
+  responseRate: number;
+  avgResponseTime: string;
+  uptime: string;
+}
+
+interface AnalyticsData {
+  getTotalMessagesProcessed: () => number;
+  getAverageResponseRate: () => number;
+  getConnectedBotCount: () => number;
+  bots: Bot[];
+}
+
+interface AnalyticsTabProps {
+  data: AnalyticsData;
+}
+
+export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ data }) => {
   const { getTotalMessagesProcessed, getAverageResponseRate, getConnectedBotCount, bots } = data;
 
   const totalMessages = getTotalMessagesProcessed();
@@ -30,10 +48,10 @@ export const AnalyticsTab = ({ data }) => {
       </div>
 
       <div className="stats-grid">
-        {stats.map((stat, idx) => {
+        {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div key={idx} className="stat-card">
+            <div key={stat.label} className="stat-card">
               <div className="stat-icon" style={{ color: stat.color }}>
                 <Icon size={24} />
               </div>

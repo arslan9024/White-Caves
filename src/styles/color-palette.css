@@ -28,15 +28,15 @@
 
 :root {
   /* ======================================================================== 
-     PRIMARY BRAND COLORS
+     PRIMARY BRAND COLORS (2026 Gold Rebrand)
      ======================================================================== */
   
-  --color-primary: #DC2626;
-  --color-primary-dark: #B91C1C;
-  --color-primary-light: #FEE2E2;
-  --color-primary-alt: #D32F2F;
-  --color-primary-alt-light: #EF5350;
-  --color-primary-alt-hover: #C62828;
+  --color-primary: #D4AF37;
+  --color-primary-dark: #B8860B;
+  --color-primary-light: #FFF8E1;
+  --color-primary-alt: #C9A030;
+  --color-primary-alt-light: #FFCA28;
+  --color-primary-alt-hover: #9A7209;
   
   /* ======================================================================== 
      STATUS & FEEDBACK COLORS
@@ -253,7 +253,7 @@
   --dept-executive: #10B981;
   --dept-compliance: #6366F1;
   --dept-technology: #0EA5E9;
-  --dept-legal: #DC2626;
+  --dept-legal: #D4AF37;
   --dept-leasing: #14B8A6;
   --dept-backend: #06B6D4;
   --dept-frontend: #6366F1;
@@ -289,16 +289,16 @@
   --shadow-color-soft: rgba(0, 0, 0, 0.05);
   --shadow-color-medium: rgba(0, 0, 0, 0.1);
   --shadow-color-strong: rgba(0, 0, 0, 0.2);
-  --shadow-red: rgba(220, 38, 38, 0.15);
+  --shadow-red: rgba(211, 47, 47, 0.15);
   --shadow-glow-white: rgba(0, 0, 0, 0.1);
-  --shadow-glow-primary: rgba(211, 47, 47, 0.35);
+  --shadow-glow-primary: rgba(212, 175, 55, 0.35);
   
   /* ======================================================================== 
      ADVANCED COMBINATIONS
      ======================================================================== */
   
   /* Gradient overlays */
-  --gradient-primary: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+  --gradient-primary: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
   --gradient-purple: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
   --gradient-pink: linear-gradient(135deg, #EC4899 0%, #F472B6 100%);
   --gradient-cyan: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%);
@@ -309,8 +309,8 @@
   --gradient-indigo: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
   
   /* Hero overlays */
-  --hero-overlay-light: linear-gradient(135deg, rgba(211, 47, 47, 0.92) 0%, rgba(33, 33, 33, 0.88) 100%);
-  --hero-overlay-dark: linear-gradient(135deg, rgba(211, 47, 47, 0.88) 0%, rgba(10, 10, 10, 0.92) 100%);
+  --hero-overlay-light: linear-gradient(135deg, rgba(212, 175, 55, 0.92) 0%, rgba(33, 33, 33, 0.88) 100%);
+  --hero-overlay-dark: linear-gradient(135deg, rgba(212, 175, 55, 0.88) 0%, rgba(10, 10, 10, 0.92) 100%);
   
   /* Glassmorphism */
   --glass-bg-light: rgba(255, 255, 255, 0.85);
@@ -329,9 +329,9 @@
 [data-theme="dark"],
 body.dark-mode {
   /* Primary colors stay same in dark mode */
-  --color-primary: #DC2626;
-  --color-primary-dark: #B91C1C;
-  --color-primary-light: #EF5350;
+  --color-primary: #E5C158;
+  --color-primary-dark: #D4AF37;
+  --color-primary-light: #FFCA28;
   
   /* Status colors (with dark mode variants) */
   --color-success: #10B981;
@@ -387,8 +387,8 @@ body.dark-mode {
   --color-off-white: #1E293B;
   
   /* Gradients adapt */
-  --gradient-primary: linear-gradient(135deg, #B91C1C 0%, #8B1A1A 100%);
-  --hero-overlay-dark: linear-gradient(135deg, rgba(211, 47, 47, 0.88) 0%, rgba(10, 10, 10, 0.92) 100%);
+  --gradient-primary: linear-gradient(135deg, #D4AF37 0%, #9A7209 100%);
+  --hero-overlay-dark: linear-gradient(135deg, rgba(212, 175, 55, 0.88) 0%, rgba(10, 10, 10, 0.92) 100%);
 }
 
 /* ============================================================================ 

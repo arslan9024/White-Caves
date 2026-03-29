@@ -1,8 +1,19 @@
 import React, { useState } from 'react';
 import { Rocket, CheckCircle, AlertTriangle, Clock } from 'lucide-react';
 
-const ApplicationsTab = ({ systemComponents }) => {
-  const [deploymentFilter, setDeploymentFilter] = useState('all');
+interface SystemComponent {
+  id: string | number;
+  name: string;
+  type: string;
+  status: string;
+}
+
+interface ApplicationsTabProps {
+  systemComponents: SystemComponent[];
+}
+
+const ApplicationsTab: React.FC<ApplicationsTabProps> = ({ systemComponents }) => {
+  const [deploymentFilter, setDeploymentFilter] = useState<string>('all');
 
   const applications = [
     { id: 1, name: 'White Caves Frontend', version: '2.4.1', status: 'deployed', deployedAt: '2026-03-05 14:32', health: 99.95 },
@@ -73,7 +84,7 @@ const ApplicationsTab = ({ systemComponents }) => {
       <div className="deployment-history">
         <h4>Recent Deployments</h4>
         <div className="timeline">
-          {applications.sort((a, b) => new Date(b.deployedAt) - new Date(a.deployedAt)).slice(0, 3).map(app => (
+          {[...applications].sort((a, b) => new Date(b.deployedAt).getTime() - new Date(a.deployedAt).getTime()).slice(0, 3).map(app => (
             <div key={app.id} className="timeline-item">
               <div className="timeline-marker">
                 <CheckCircle size={16} style={{ color: '#10B981' }} />

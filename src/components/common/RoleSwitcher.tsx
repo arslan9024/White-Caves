@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { setActiveRole, setCurrentModule, setCurrentSubModule } from '../../store/navigationSlice';
 import { getDefaultModule } from '../../features/featureRegistry';
 import type { RootState } from '../../store/store';
+import { safeStorage } from '../../utils/safeStorage';
 import {
   RoleSwitcherContainer,
   RoleSwitcherToggle,
@@ -67,10 +68,10 @@ const RoleSwitcher: React.FC<RoleSwitcherProps> = ({ compact = false }) => {
       dispatch(setCurrentSubModule(defaultModule.defaultSubModule));
     }
     
-    localStorage.setItem('userRole', JSON.stringify({ 
+    safeStorage.setJSON('userRole', { 
       role: roleId, 
       selectedAt: new Date().toISOString() 
-    }));
+    });
     
     navigate(`/${roleId}/dashboard`);
     setIsOpen(false);

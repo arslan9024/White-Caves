@@ -2,9 +2,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ContractsTab from '../ContractsTab';
+import type { ContractsTabProps } from '../types';
 
 describe('ContractsTab Integration', () => {
-  const mockProps = {
+  const mockProps: ContractsTabProps = {
     data: {
       contracts: [
         {
@@ -42,7 +43,8 @@ describe('ContractsTab Integration', () => {
           property: 'Downtown Villa 45',
           amount: 4500000,
           status: 'pending',
-          completionDate: '2024-06-30'
+          completionDate: '2024-06-30',
+          ejariStatus: 'pending'
         },
         {
           id: 4,
@@ -66,7 +68,8 @@ describe('ContractsTab Integration', () => {
           property: 'Business Bay Tower 1201',
           amount: 2800000,
           status: 'completed',
-          completionDate: '2024-04-15'
+          completionDate: '2024-04-15',
+          ejariStatus: 'registered'
         },
         {
           id: 6,
@@ -91,7 +94,7 @@ describe('ContractsTab Integration', () => {
     it('should render contracts table with header', () => {
       render(<ContractsTab {...mockProps} />);
       
-      expect(screen.getByText('Contracts')).toBeInTheDocument();
+      expect(screen.getByText('Contract Management')).toBeInTheDocument();
     });
 
     it('should display all contracts initially', () => {
@@ -105,7 +108,7 @@ describe('ContractsTab Integration', () => {
       render(<ContractsTab {...mockProps} />);
       
       expect(screen.getByText('Marina View Apt 1502')).toBeInTheDocument();
-      expect(screen.getByText('John Smith')).toBeInTheDocument();
+      expect(screen.getByText(/John Smith/)).toBeInTheDocument();
     });
 
     it('should display contract amounts', () => {
@@ -135,7 +138,7 @@ describe('ContractsTab Integration', () => {
       await user.selectOptions(typeFilter, 'sale');
       
       expect(screen.getByText('SC-2024-001')).toBeInTheDocument();
-      expect(screen.getByText('Chen Wei')).toBeInTheDocument();
+      expect(screen.getByText(/Chen Wei/)).toBeInTheDocument();
     });
 
     it('should show only matching contracts', async () => {
@@ -241,7 +244,7 @@ describe('ContractsTab Integration', () => {
     it('should display ejari status for tenancy contracts', () => {
       render(<ContractsTab {...mockProps} />);
       
-      expect(screen.getByText(/Registered|Pending|None/)).toBeInTheDocument();
+      expect(screen.getAllByText(/Registered|Pending|None/).length).toBeGreaterThan(0);
     });
 
     it('should show ejari badge', () => {
@@ -298,7 +301,7 @@ describe('ContractsTab Integration', () => {
 
   describe('Empty State', () => {
     it('should handle empty contracts list', () => {
-      const emptyProps = {
+      const emptyProps: ContractsTabProps = {
         data: { contracts: [] },
         loading: false,
         onAction: vi.fn()
@@ -314,12 +317,12 @@ describe('ContractsTab Integration', () => {
     it('should render when loading is false', () => {
       render(<ContractsTab {...mockProps} />);
       
-      expect(screen.getByText('Contracts')).toBeInTheDocument();
+      expect(screen.getByText('Contract Management')).toBeInTheDocument();
     });
 
     it('should render with null data gracefully', () => {
-      const nullDataProps = {
-        data: null,
+      const nullDataProps: ContractsTabProps = {
+        data: null as unknown as ContractsTabProps['data'],
         loading: false,
         onAction: vi.fn()
       };

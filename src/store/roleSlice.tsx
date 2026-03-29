@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { logout } from './authSlice';
 
 interface AvailableRole {
   id: string;
@@ -8,7 +9,7 @@ interface AvailableRole {
   requiresApproval?: boolean;
 }
 
-interface RoleRequest {
+export interface RoleRequest {
   id: string;
   userId: string;
   currentRole: string;
@@ -19,6 +20,9 @@ interface RoleRequest {
   reviewedAt: string | null;
   reviewedBy: string | null;
   rejectionReason?: string;
+  userName?: string;
+  userEmail?: string;
+  displayName?: string;
 }
 
 interface StatusHistory {
@@ -199,6 +203,9 @@ export const roleSlice = createSlice({
       state.pendingRequests = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(logout, () => initialState);
+  },
 });
 
 export const {
@@ -218,14 +225,8 @@ export const {
   setPendingRequests,
 } = roleSlice.actions;
 
-// Selectors
-export const selectAvailableRoles = (state: any) => state.role?.availableRoles;
-export const selectUserRoles = (state: any) => state.role?.userRoles;
-export const selectActiveRole = (state: any) => state.role?.activeRole;
-export const selectPendingRequests = (state: any) => state.role?.pendingRequests;
-export const selectRoleRequestStatus = (state: any) => state.role?.userRoleRequest;
-export const selectStatusHistory = (state: any) => state.role?.statusHistory;
-export const selectHasPendingRequest = (state: any) => 
-  state.role?.pendingRequests?.some((r: RoleRequest) => r.status === 'pending');
+// Selectors — currently unused; re-add when role management UI is implemented
+// selectAvailableRoles, selectUserRoles, selectActiveRole, selectPendingRequests,
+// selectRoleRequestStatus, selectStatusHistory, selectHasPendingRequest
 
 export default roleSlice.reducer;

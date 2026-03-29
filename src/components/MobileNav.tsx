@@ -1,8 +1,11 @@
-import React, { useState, useEffect, FC } from 'react';
+import React, { useState, useEffect, useRef, FC } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { useSelector } from 'react-redux';
+import type { RootState } from '../store/store';
+import { safeStorage } from '../utils/safeStorage';
 import { PUBLIC_NAV, ROLE_NAV, getRoleCategory } from '../config/navigation';
+import type { NavItem } from '../config/navigation';
 import * as S from './MobileNav.styles';
 
 interface MobileNavProps {
@@ -14,19 +17,23 @@ const MobileNav: FC<MobileNavProps> = ({ isOpen, onClose }) => {
   const { isDark, setIsDark } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
-  const user = useSelector((state: any) => state.user?.currentUser);
+  const user = useSelector((state: RootState) => state.user?.currentUser);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
-    const stored = localStorage.getItem('userRole');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setUserRole(parsed.role);
-      } catch (e) {
-        setUserRole(null);
-      }
+    return () => {
+      clearTimeout(scrollTimerRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    const parsed = safeStorage.getJSON<{ role: string }>('userRole');
+    if (parsed) {
+      setUserRole(parsed.role);
+    } else {
+      setUserRole(null);
     }
   }, [user]);
 
@@ -35,7 +42,7 @@ const MobileNav: FC<MobileNavProps> = ({ isOpen, onClose }) => {
       onClose();
       if (location.pathname !== '/') {
         navigate('/');
-        setTimeout(() => {
+        scrollTimerRef.current = setTimeout(() => {
           document.querySelector(path)?.scrollIntoView({ behavior: 'smooth' });
         }, 100);
       } else {
@@ -52,7 +59,7 @@ const MobileNav: FC<MobileNavProps> = ({ isOpen, onClose }) => {
   };
 
   const roleNav = userRole ? ROLE_NAV[userRole] : null;
-  const roleCategory = getRoleCategory(userRole);
+  const roleCategory = getRoleCategory(userRole ?? '');
 
   return (
     <S.MobileNavOverlay $isOpen={isOpen} onClick={onClose}>
@@ -78,7 +85,7 @@ const MobileNav: FC<MobileNavProps> = ({ isOpen, onClose }) => {
             </S.SectionToggle>
             {expandedSection === 'explore' && (
               <S.SectionLinks>
-                {PUBLIC_NAV.buy?.map((item: any) => (
+                {PUBLIC_NAV.buy?.map((item: NavItem) => (
                   <S.SectionLink key={item.path} onClick={() => handleNavClick(item.path)}>
                     <span>{item.icon}</span> {item.label}
                   </S.SectionLink>
@@ -98,7 +105,7 @@ const MobileNav: FC<MobileNavProps> = ({ isOpen, onClose }) => {
             </S.SectionToggle>
             {expandedSection === 'rent' && (
               <S.SectionLinks>
-                {PUBLIC_NAV.rent?.map((item: any) => (
+                {PUBLIC_NAV.rent?.map((item: NavItem) => (
                   <S.SectionLink key={item.path} onClick={() => handleNavClick(item.path)}>
                     <span>{item.icon}</span> {item.label}
                   </S.SectionLink>
@@ -118,7 +125,7 @@ const MobileNav: FC<MobileNavProps> = ({ isOpen, onClose }) => {
             </S.SectionToggle>
             {expandedSection === 'sell' && (
               <S.SectionLinks>
-                {PUBLIC_NAV.sell?.map((item: any) => (
+                {PUBLIC_NAV.sell?.map((item: NavItem) => (
                   <S.SectionLink key={item.path} onClick={() => handleNavClick(item.path)}>
                     <span>{item.icon}</span> {item.label}
                   </S.SectionLink>
@@ -139,7 +146,7 @@ const MobileNav: FC<MobileNavProps> = ({ isOpen, onClose }) => {
               </S.SectionToggle>
               {expandedSection === 'dashboard' && (
                 <S.SectionLinks>
-                  {roleNav.links?.map((item: any) => (
+                  {roleNav.links?.map((item: NavItem) => (
                     <S.SectionLink key={item.path} onClick={() => handleNavClick(item.path)}>
                       <span>{item.icon}</span> {item.label}
                     </S.SectionLink>

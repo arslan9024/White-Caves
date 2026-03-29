@@ -4,7 +4,7 @@
  * Lightweight tooltip with positioning, animations, and accessibility features.
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useId } from 'react';
 import styled from 'styled-components';
 
 export type TooltipPlacement =
@@ -33,7 +33,7 @@ const TooltipWrapper = styled.div`
   display: inline-block;
 `;
 
-const TooltipContent = styled.div<{ isVisible: boolean; placement: TooltipPlacement }>`
+const TooltipContent = styled.div<{ $isVisible: boolean; $placement: TooltipPlacement }>`
   position: absolute;
   background-color: #1f2937;
   color: white;
@@ -42,10 +42,10 @@ const TooltipContent = styled.div<{ isVisible: boolean; placement: TooltipPlacem
   font-size: 12px;
   line-height: 1.4;
   white-space: nowrap;
-  z-index: 10;
+  z-index: var(--z-tooltip, 800);
   pointer-events: none;
-  opacity: ${props => (props.isVisible ? 1 : 0)};
-  visibility: ${props => (props.isVisible ? 'visible' : 'hidden')};
+  opacity: ${props => (props.$isVisible ? 1 : 0)};
+  visibility: ${props => (props.$isVisible ? 'visible' : 'hidden')};
   transition: opacity 0.2s ease, visibility 0.2s ease;
 
   &::after {
@@ -56,7 +56,7 @@ const TooltipContent = styled.div<{ isVisible: boolean; placement: TooltipPlacem
     border-style: solid;
 
     ${props => {
-      switch (props.placement) {
+      switch (props.$placement) {
         case 'top':
           return `
             bottom: -4px;
@@ -96,7 +96,7 @@ const TooltipContent = styled.div<{ isVisible: boolean; placement: TooltipPlacem
   }
 
   ${props => {
-    switch (props.placement) {
+    switch (props.$placement) {
       case 'top':
         return 'bottom: 100%; margin-bottom: 8px; left: 50%; transform: translateX(-50%);';
       case 'bottom':
@@ -119,9 +119,8 @@ const TooltipContent = styled.div<{ isVisible: boolean; placement: TooltipPlacem
   }}
 `;
 
-const TooltipTrigger = styled.span`
-  cursor: help;
-  border-bottom: 1px dotted currentColor;
+const TooltipTriggerStyled = styled.span`
+  display: inline-block;
 `;
 
 /**
@@ -138,6 +137,8 @@ export const Tooltip: React.FC<TooltipProps> = ({
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout>();
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const tooltipId = useId();
 
   const showTooltip = () => {
     timeoutRef.current = setTimeout(() => {
@@ -160,24 +161,38 @@ export const Tooltip: React.FC<TooltipProps> = ({
     };
   }, []);
 
+  // Click-outside handler for click-triggered tooltips
+  useEffect(() => {
+    if (trigger !== 'click' || !isVisible) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setIsVisible(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [trigger, isVisible]);
+
   const contentElement = (
-    <TooltipContent isVisible={isVisible} placement={placement} style={{ maxWidth }}>
+    <TooltipContent $isVisible={isVisible} $placement={placement} style={{ maxWidth }} role="tooltip" id={tooltipId}>
       {content}
     </TooltipContent>
   );
 
   if (trigger === 'click') {
     return (
-      <TooltipWrapper onClick={() => setIsVisible(!isVisible)}>
-        <TooltipTrigger>{children}</TooltipTrigger>
+      <TooltipWrapper ref={wrapperRef} onClick={() => setIsVisible(!isVisible)}>
+        <TooltipTriggerStyled aria-describedby={isVisible ? tooltipId : undefined}>{children}</TooltipTriggerStyled>
         {contentElement}
       </TooltipWrapper>
     );
   }
 
   return (
-    <TooltipWrapper onMouseEnter={showTooltip} onMouseLeave={hideTooltip}>
-      <TooltipTrigger>{children}</TooltipTrigger>
+    <TooltipWrapper onMouseEnter={showTooltip} onMouseLeave={hideTooltip} onFocus={showTooltip} onBlur={hideTooltip}>
+      <TooltipTriggerStyled aria-describedby={isVisible ? tooltipId : undefined}>{children}</TooltipTriggerStyled>
       {contentElement}
     </TooltipWrapper>
   );

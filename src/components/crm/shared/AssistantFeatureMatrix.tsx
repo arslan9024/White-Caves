@@ -5,17 +5,35 @@ import {
 } from 'lucide-react';
 import './AssistantFeatureMatrix.css';
 
+interface Feature {
+  name: string;
+  description: string;
+  category: string;
+  status: 'active' | 'beta' | 'planned' | 'development';
+  icon?: React.ReactNode;
+  sourceFiles?: string[];
+  capabilities?: string[];
+  nextMilestone?: string;
+}
+
+interface AssistantFeatureMatrixProps {
+  features: Feature[];
+  title?: string;
+  accentColor?: string;
+  categories?: string[];
+}
+
 export default function AssistantFeatureMatrix({ 
   features, 
   title = "Programmed Capabilities",
   accentColor = "#7c3aed",
   categories = []
-}) {
+}: AssistantFeatureMatrixProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [expandedFeature, setExpandedFeature] = useState(null);
+  const [expandedFeature, setExpandedFeature] = useState<number | null>(null);
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case 'active':
         return <CheckCircle size={14} className="status-icon active" />;
@@ -30,7 +48,7 @@ export default function AssistantFeatureMatrix({
     }
   };
 
-  const getStatusLabel = (status) => {
+  const getStatusLabel = (status: string): string => {
     switch (status) {
       case 'active': return 'Active';
       case 'beta': return 'Beta';
@@ -147,7 +165,7 @@ export default function AssistantFeatureMatrix({
       <div className="features-list">
         {filteredFeatures.map((feature, index) => (
           <div 
-            key={index}
+            key={feature.name}
             className={`feature-card ${expandedFeature === index ? 'expanded' : ''}`}
             onClick={() => setExpandedFeature(expandedFeature === index ? null : index)}
           >
@@ -174,8 +192,8 @@ export default function AssistantFeatureMatrix({
                   <div className="source-files">
                     <h5><FileCode size={14} /> Source Files</h5>
                     <div className="files-list">
-                      {feature.sourceFiles.map((file, i) => (
-                        <code key={i}>{file}</code>
+                      {feature.sourceFiles.map((file) => (
+                        <code key={file}>{file}</code>
                       ))}
                     </div>
                   </div>
@@ -185,8 +203,8 @@ export default function AssistantFeatureMatrix({
                   <div className="capabilities">
                     <h5>Capabilities</h5>
                     <ul>
-                      {feature.capabilities.map((cap, i) => (
-                        <li key={i}>
+                      {feature.capabilities.map((cap) => (
+                        <li key={cap}>
                           <CheckCircle size={12} />
                           {cap}
                         </li>

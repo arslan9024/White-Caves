@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import type { RootState } from '../../../../store/store';
 import { setUserRoles, setActiveRole, submitRoleChangeRequest } from '../../../../store/roleSlice';
 import { apiClient } from '../../../../utils/apiClient';
+import { createLogger } from '../../../../utils/logger';
 import './RoleSelection.css';
 
-const roleOptions = [
+const log = createLogger('RoleSelection');
+
+interface RoleOption {
+  value: string;
+  label: string;
+  icon: string;
+  description: string;
+  autoApprove: boolean;
+}
+
+const roleOptions: RoleOption[] = [
   { 
     value: 'buyer', 
     label: 'Buyer', 
@@ -49,18 +61,24 @@ const roleOptions = [
   },
 ];
 
-const RoleSelectionForm = ({ userId, onComplete, onSkip }) => {
+interface RoleSelectionFormProps {
+  userId: string;
+  onComplete?: (role: string, autoApproved: boolean) => void;
+  onSkip?: () => void;
+}
+
+const RoleSelectionForm = ({ userId, onComplete, onSkip }: RoleSelectionFormProps) => {
   const dispatch = useDispatch();
-  const { token } = useSelector((state) => state.auth);
-  const [selectedRole, setSelectedRole] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [reason, setReason] = useState('');
-  const [error, setError] = useState(null);
+  const { token } = useSelector((state: RootState) => state.auth);
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [reason, setReason] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
 
   const selectedRoleData = roleOptions.find(r => r.value === selectedRole);
   const requiresApproval = selectedRoleData && !selectedRoleData.autoApprove;
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedRole) return;
 
@@ -69,42 +87,47 @@ const RoleSelectionForm = ({ userId, onComplete, onSkip }) => {
 
     try {
       const roleData = roleOptions.find(r => r.value === selectedRole);
+      if (!roleData) {
+        setError('Invalid role selection. Please select a role and try again.');
+        setLoading(false);
+        return;
+      }
       
       if (token) {
         apiClient.setAuthToken(token);
       }
       
+      // Make API call FIRST, then update Redux only on success
       if (roleData.autoApprove) {
-        dispatch(setUserRoles([selectedRole]));
-        dispatch(setActiveRole(selectedRole));
-        
         await apiClient.post('/users/role', { 
           userId, 
           role: selectedRole,
           status: 'approved'
         });
+        // Only dispatch after API confirms success
+        dispatch(setUserRoles([selectedRole]));
+        dispatch(setActiveRole(selectedRole));
       } else {
+        await apiClient.post('/users/role-request', { 
+          userId, 
+          requestedRole: selectedRole,
+          reason,
+        });
+        // Only dispatch after API confirms success
         dispatch(submitRoleChangeRequest({
           userId,
           currentRole: 'buyer',
           requestedRole: selectedRole,
           reason,
         }));
-        
         dispatch(setUserRoles(['buyer']));
         dispatch(setActiveRole('buyer'));
-        
-        await apiClient.post('/users/role-request', { 
-          userId, 
-          requestedRole: selectedRole,
-          reason,
-        });
       }
 
       onComplete?.(selectedRole, roleData.autoApprove);
-    } catch (err) {
-      console.error('Role selection error:', err);
-      setError(err.message || 'Failed to set role. Please try again.');
+    } catch (err: unknown) {
+      log.error('Role selection error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to set role. Please try again.');
     } finally {
       setLoading(false);
     }

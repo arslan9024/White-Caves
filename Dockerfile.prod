@@ -9,10 +9,10 @@ WORKDIR /app
 # Install build dependencies
 RUN apk add --no-cache python3 make g++
 
-# Copy package files
+# Copy package files first for better layer caching
 COPY package*.json ./
 
-# Install dependencies (with legacy peer deps for compatibility)
+# Install ALL dependencies (needed for build)
 RUN npm ci --legacy-peer-deps
 
 # Copy entire codebase
@@ -21,8 +21,12 @@ COPY . .
 # Build frontend (Vite)
 RUN npm run build
 
-# Compile TypeScript for backend
-RUN npx tsc
+# Compile TypeScript server code to dist/server/
+RUN npx tsc --project tsconfig.server.json
+
+# Copy Prisma schema for runtime client generation
+COPY prisma ./prisma
+RUN npx prisma generate
 
 # Stage 2: Runtime stage (minimal image)
 FROM node:20-alpine
@@ -36,10 +40,13 @@ RUN apk add --no-cache curl
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
-# Copy from builder
+# Copy built artifacts from builder
 COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
-COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nodejs:nodejs /app/package*.json ./
+COPY --from=builder --chown=nodejs:nodejs /app/prisma ./prisma
+
+# Install production-only dependencies (much smaller than full node_modules)
+RUN npm ci --legacy-peer-deps --omit=dev && npm cache clean --force
 
 # Set environment variables
 ENV NODE_ENV=production

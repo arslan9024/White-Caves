@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
+import type { AgentsTabProps } from './types';
 import './TabStyles.css';
 
-const AgentsTab = ({ data, loading, onAction }) => {
+const AgentsTab: React.FC<AgentsTabProps> = ({ data, loading, onAction }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const agents = data?.agents || [
-    { id: 1, name: 'Ahmed Ali', email: 'ahmed.ali@whitecaves.ae', phone: '+971 50 123 4567', role: 'Senior Sales Agent', properties: 24, leads: 45, dealsClosed: 12, revenue: 3200000, rating: 4.8, online: true, avatar: null },
-    { id: 2, name: 'Sara Khan', email: 'sara.khan@whitecaves.ae', phone: '+971 55 987 6543', role: 'Leasing Agent', properties: 18, leads: 38, dealsClosed: 22, revenue: 1800000, rating: 4.6, online: true, avatar: null },
-    { id: 3, name: 'Mohammed Hassan', email: 'mohammed.h@whitecaves.ae', phone: '+971 52 456 7890', role: 'Sales Agent', properties: 15, leads: 32, dealsClosed: 8, revenue: 2100000, rating: 4.5, online: false, avatar: null },
-    { id: 4, name: 'Fatima Ahmed', email: 'fatima.a@whitecaves.ae', phone: '+971 54 321 0987', role: 'Leasing Agent', properties: 20, leads: 41, dealsClosed: 28, revenue: 1500000, rating: 4.9, online: true, avatar: null },
-    { id: 5, name: 'Omar Rashid', email: 'omar.r@whitecaves.ae', phone: '+971 56 789 0123', role: 'Junior Sales Agent', properties: 8, leads: 15, dealsClosed: 3, revenue: 850000, rating: 4.2, online: false, avatar: null },
-  ];
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="agents-tab">
+        <div className="tab-loading-state" role="status" aria-label="Loading agents">
+          <div className="loading-spinner" />
+          <p>Loading agents...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const agents = data?.agents || [];
 
   const filteredAgents = agents.filter(agent =>
     agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -18,13 +25,13 @@ const AgentsTab = ({ data, loading, onAction }) => {
     agent.role.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const getRatingStars = (rating) => {
+  const getRatingStars = (rating: number) => {
     const fullStars = Math.floor(rating);
     const hasHalf = rating % 1 >= 0.5;
     return (
       <div className="rating-stars">
         {[...Array(5)].map((_, i) => (
-          <span key={i} className={i < fullStars ? 'star filled' : (i === fullStars && hasHalf ? 'star half' : 'star')}>
+          <span key={`star-${i}`} className={i < fullStars ? 'star filled' : (i === fullStars && hasHalf ? 'star half' : 'star')}>
             ★
           </span>
         ))}
@@ -78,7 +85,7 @@ const AgentsTab = ({ data, loading, onAction }) => {
           <div key={agent.id} className="agent-card">
             <div className="agent-header">
               <div className="agent-avatar">
-                {agent.avatar ? <img src={agent.avatar} alt={agent.name} /> : agent.name.charAt(0)}
+                {agent.avatar ? <img src={agent.avatar} alt={agent.name} loading="lazy" width={40} height={40} /> : agent.name.charAt(0)}
               </div>
               <span className={`online-status ${agent.online ? 'online' : 'offline'}`}>
                 {agent.online ? 'Online' : 'Offline'}
@@ -121,4 +128,4 @@ const AgentsTab = ({ data, loading, onAction }) => {
   );
 };
 
-export default AgentsTab;
+export default React.memo(AgentsTab);

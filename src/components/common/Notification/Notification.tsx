@@ -8,7 +8,7 @@ const NotificationContainer = styled.div<{ $type?: NotificationType }>`
   position: fixed;
   top: 0;
   right: 0;
-  z-index: 1000;
+  z-index: var(--z-toast, 400);
   background-color: ${({ $type, theme }) => {
     if (!$type) return '#ffffff';
     const colors: Record<NotificationType, string> = {

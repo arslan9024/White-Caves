@@ -11,24 +11,28 @@ const WeatherWidget = ({ compact = false, location = 'Dubai', className = '' }) 
   });
 
   useEffect(() => {
-    const hour = new Date().getHours();
-    const isNight = hour < 6 || hour > 18;
+    // Use Dubai time (UTC+4) to deterministically select weather
+    const dubaiHour = parseInt(
+      new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Dubai', hour: 'numeric', hour12: false }).format(new Date()),
+      10
+    );
+    const hour = dubaiHour;
     
-    const conditions = [
-      { condition: 'sunny', temp: 35, humidity: 40, description: 'Sunny' },
-      { condition: 'partly-cloudy', temp: 32, humidity: 50, description: 'Partly Cloudy' },
-      { condition: 'cloudy', temp: 28, humidity: 60, description: 'Cloudy' },
-      { condition: 'hot', temp: 42, humidity: 30, description: 'Hot' },
-    ];
-    
-    const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
-    setWeather({
-      ...randomCondition,
-      temp: randomCondition.temp + Math.floor(Math.random() * 5) - 2
-    });
+    // Deterministic time-of-day-based weather (no random)
+    let condition: { condition: string; temp: number; humidity: number; description: string };
+    if (hour >= 6 && hour < 10) {
+      condition = { condition: 'partly-cloudy', temp: 30, humidity: 55, description: 'Partly Cloudy' };
+    } else if (hour >= 10 && hour < 15) {
+      condition = { condition: 'hot', temp: 40, humidity: 30, description: 'Hot' };
+    } else if (hour >= 15 && hour < 18) {
+      condition = { condition: 'sunny', temp: 36, humidity: 35, description: 'Sunny' };
+    } else {
+      condition = { condition: 'cloudy', temp: 28, humidity: 55, description: 'Clear Night' };
+    }
+    setWeather(condition);
   }, []);
 
-  const getWeatherIcon = (condition) => {
+  const getWeatherIcon = (condition: string) => {
     switch (condition) {
       case 'sunny':
       case 'hot':
@@ -50,7 +54,7 @@ const WeatherWidget = ({ compact = false, location = 'Dubai', className = '' }) 
 
   if (compact) {
     return (
-      <S.WeatherWidgetContainer $compact={compact} className={className}>
+      <S.WeatherWidgetContainer $compact={compact} className={className} role="region" aria-label={`Weather in ${location}: ${weather.description}, ${weather.temp}°C`}>
         <S.WeatherIcon>{getWeatherIcon(weather.condition)}</S.WeatherIcon>
         <S.WeatherTemp $compact={compact}>{weather.temp}°C</S.WeatherTemp>
       </S.WeatherWidgetContainer>
@@ -58,7 +62,7 @@ const WeatherWidget = ({ compact = false, location = 'Dubai', className = '' }) 
   }
 
   return (
-    <S.WeatherWidgetContainer className={className}>
+    <S.WeatherWidgetContainer className={className} role="region" aria-label={`Current weather in ${location}: ${weather.description}, ${weather.temp}°C, ${weather.humidity}% humidity`}>
       <S.WeatherMain>
         <S.WeatherIcon $large>{getWeatherIcon(weather.condition)}</S.WeatherIcon>
         <S.WeatherInfo>

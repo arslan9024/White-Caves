@@ -62,8 +62,8 @@ const OwnerDetailDrawer: React.FC<OwnerDetailDrawerProps> = ({
   const emails = owner.contacts?.filter(c => c.type === 'email') || [];
 
   return (
-    <OwnerDrawerOverlay onClick={onClose}>
-      <OwnerDrawer onClick={e => e.stopPropagation()}>
+    <OwnerDrawerOverlay onClick={onClose} role="presentation">
+      <OwnerDrawer onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={`Owner details: ${owner.name}`} onKeyDown={e => { if (e.key === 'Escape') onClose(); }}>
         <DrawerHeader>
           <OwnerAvatar>
             <User size={32} />
@@ -85,7 +85,7 @@ const OwnerDetailDrawer: React.FC<OwnerDetailDrawerProps> = ({
             <ContactList>
               {phones.length > 0 ? (
                 phones.map((phone, idx) => (
-                  <ContactItem key={idx} $isPrimary={phone.isPrimary}>
+                  <ContactItem key={phone.value ?? `phone-${idx}`} $isPrimary={phone.isPrimary}>
                     <ContactValue>{phone.value}</ContactValue>
                     {phone.isPrimary && <PrimaryBadge>Primary</PrimaryBadge>}
                   </ContactItem>
@@ -103,7 +103,7 @@ const OwnerDetailDrawer: React.FC<OwnerDetailDrawerProps> = ({
             <ContactList>
               {emails.length > 0 ? (
                 emails.map((email, idx) => (
-                  <ContactItem key={idx}>
+                  <ContactItem key={email.value ?? `email-${idx}`}>
                     <ContactValue>{email.value}</ContactValue>
                   </ContactItem>
                 ))

@@ -43,17 +43,16 @@ interface RootState {
   };
 }
 
+import { safeStorage } from '../utils/safeStorage';
+import { formatPrice } from '../utils';
+
 export function useRecentlyViewed() {
   const [recentIds, setRecentIds] = useState<string[]>([]);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        setRecentIds(JSON.parse(stored));
-      } catch (e) {
-        setRecentIds([]);
-      }
+    const stored = safeStorage.getJSON<string[]>(STORAGE_KEY, []);
+    if (stored && stored.length > 0) {
+      setRecentIds(stored);
     }
   }, []);
 
@@ -61,13 +60,13 @@ export function useRecentlyViewed() {
     setRecentIds(prev => {
       const filtered = prev.filter(id => id !== propertyId);
       const updated = [propertyId, ...filtered].slice(0, MAX_ITEMS);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      safeStorage.setJSON(STORAGE_KEY, updated);
       return updated;
     });
   };
 
   const clearRecent = () => {
-    localStorage.removeItem(STORAGE_KEY);
+    safeStorage.remove(STORAGE_KEY);
     setRecentIds([]);
   };
 
@@ -95,12 +94,7 @@ export default function RecentlyViewed({
     return null;
   }
 
-  const formatPrice = (price: number) => {
-    if (price >= 1000000) {
-      return `AED ${(price / 1000000).toFixed(1)}M`;
-    }
-    return `AED ${(price / 1000).toFixed(0)}K`;
-  };
+  // formatPrice imported from ../utils
 
   return (
     <RecentlyViewedSection>
@@ -131,6 +125,9 @@ export default function RecentlyViewed({
                     'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80'
                   }
                   alt={property.title}
+                  loading="lazy"
+                  width={400}
+                  height={300}
                 />
                 <PropertyTypeBadge>{property.type}</PropertyTypeBadge>
               </RecentPropertyImage>

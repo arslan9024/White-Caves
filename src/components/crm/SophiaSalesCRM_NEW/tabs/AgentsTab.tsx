@@ -1,12 +1,25 @@
 import React from 'react';
 import { Target, DollarSign, TrendingUp } from 'lucide-react';
 
-const AgentsTab = ({ agents }) => {
+interface Agent {
+  id: string | number;
+  avatar: string;
+  name: string;
+  deals: number;
+  value: string | number;
+  conversion: number;
+}
+
+interface AgentsTabProps {
+  agents: Agent[];
+}
+
+const AgentsTab: React.FC<AgentsTabProps> = ({ agents }) => {
   return (
     <div className="agents-view">
       <h3>Agent Performance</h3>
       <div className="agent-cards">
-        {agents.map(agent => (
+        {agents.map((agent: Agent) => (
           <div key={agent.id} className="agent-card">
             <div className="agent-avatar">{agent.avatar}</div>
             <div className="agent-info">

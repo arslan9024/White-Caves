@@ -6,8 +6,8 @@ import styled from 'styled-components';
  * ============================================================================ */
 
 export const JobPostComposer = styled.div`
-  background: ${(props) => props.theme.colors?.background || 'rgba(15, 23, 42, 0.6)'};
-  border: 1px solid ${(props) => props.theme.colors?.border || 'rgba(255, 255, 255, 0.1)'};
+  background: ${(props) => (props.theme as unknown as Record<string, Record<string, string>>).colors?.background || 'rgba(15, 23, 42, 0.6)'};
+  border: 1px solid ${(props) => (props.theme as unknown as Record<string, Record<string, string>>).colors?.border || 'rgba(255, 255, 255, 0.1)'};
   border-radius: 12px;
   overflow: hidden;
   position: relative;
@@ -25,7 +25,7 @@ export const NotificationToast = styled.div<{ $type?: 'success' | 'error' }>`
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 500;
-  z-index: 100;
+  z-index: var(--z-notification, 800);
   animation: slideIn 0.3s ease;
 
   background: ${(props) => {

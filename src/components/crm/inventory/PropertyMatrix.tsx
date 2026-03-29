@@ -10,6 +10,7 @@ import {
   setFilter,
   selectFilters
 } from '../../../store/slices/inventorySlice';
+import type { InventoryProperty, InventoryOwner } from '../../../store/slices/inventorySlice';
 import {
   PropertyMatrixContainer,
   MatrixHeader,
@@ -26,7 +27,18 @@ import {
   StatusBadge
 } from './PropertyMatrix.styles';
 
-const COLUMNS = [
+interface ColumnConfig {
+  key: string;
+  label: string;
+  sortable: boolean;
+}
+
+interface PropertyMatrixProps {
+  onPropertySelect?: (property: InventoryProperty) => void;
+  onOwnerSelect?: (owner: InventoryOwner) => void;
+}
+
+const COLUMNS: ColumnConfig[] = [
   { key: 'unitNumber', label: 'Unit', sortable: true },
   { key: 'project', label: 'Project', sortable: true },
   { key: 'cluster', label: 'Cluster', sortable: true },
@@ -36,7 +48,7 @@ const COLUMNS = [
   { key: 'layout', label: 'Layout', sortable: true }
 ];
 
-const formatValue = (value, format) => {
+const formatValue = (value: unknown, format?: string): string => {
   if (value === null || value === undefined || value === '' || value === '.') return '-';
   if (format === 'currency' && typeof value === 'number' && value > 0) {
     return new Intl.NumberFormat('en-AE', { 
@@ -49,7 +61,7 @@ const formatValue = (value, format) => {
   return String(value);
 };
 
-const PropertyMatrix = ({ onPropertySelect, onOwnerSelect }) => {
+const PropertyMatrix: React.FC<PropertyMatrixProps> = ({ onPropertySelect, onOwnerSelect }) => {
   const dispatch = useDispatch();
   const properties = useSelector(selectFilteredProperties);
   const owners = useSelector(selectOwners);
@@ -62,20 +74,20 @@ const PropertyMatrix = ({ onPropertySelect, onOwnerSelect }) => {
   const pageSize = 50;
 
   const sortedProperties = [...properties].sort((a, b) => {
-    let aVal = a[sortBy];
-    let bVal = b[sortBy];
+    let aVal: unknown = a[sortBy];
+    let bVal: unknown = b[sortBy];
     
     if (typeof aVal === 'number' && typeof bVal === 'number') {
       return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
     }
     
-    aVal = String(aVal || '').toLowerCase();
-    bVal = String(bVal || '').toLowerCase();
+    const aStr = String(aVal || '').toLowerCase();
+    const bStr = String(bVal || '').toLowerCase();
     
     if (sortOrder === 'asc') {
-      return aVal > bVal ? 1 : -1;
+      return aStr > bStr ? 1 : -1;
     }
-    return aVal < bVal ? 1 : -1;
+    return aStr < bStr ? 1 : -1;
   });
 
   const paginatedProperties = sortedProperties.slice(
@@ -84,7 +96,7 @@ const PropertyMatrix = ({ onPropertySelect, onOwnerSelect }) => {
   );
   const totalPages = Math.ceil(properties.length / pageSize);
 
-  const handleSort = (field) => {
+  const handleSort = (field: string) => {
     if (sortBy === field) {
       setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
     } else {
@@ -93,38 +105,39 @@ const PropertyMatrix = ({ onPropertySelect, onOwnerSelect }) => {
     }
   };
 
-  const hasMultipleOwners = (property) => property.owners?.length > 1;
+  const hasMultipleOwners = (property: InventoryProperty): boolean => property.owners?.length ? property.owners.length > 1 : false;
   
-  const ownerHasMultiplePhones = (ownerId) => {
+  const ownerHasMultiplePhones = (ownerId: string): boolean => {
     const owner = owners.byId[ownerId];
     if (!owner) return false;
     const phones = owner.contacts?.filter(c => ['mobile', 'phone', 'secondaryMobile'].includes(c.type)) || [];
     return phones.length > 1;
   };
 
-  const renderCell = (property, column) => {
+  const renderCell = (property: InventoryProperty, column: ColumnConfig): React.ReactNode => {
     const value = property[column.key];
+    const displayValue = typeof value === 'string' || typeof value === 'number' ? value : '';
     
     switch (column.key) {
       case 'unitNumber':
-        return <span className="unit-cell">{value || '-'}</span>;
+        return <span className="unit-cell">{displayValue || '-'}</span>;
       
       case 'project':
-        return <span className="project-cell">{value || '-'}</span>;
+        return <span className="project-cell">{displayValue || '-'}</span>;
       
       case 'cluster':
-        return <span className="cluster-badge">{value || '-'}</span>;
+        return <span className="cluster-badge">{displayValue || '-'}</span>;
       
       case 'layout':
-        return <span className="layout-badge">{value || '-'}</span>;
+        return <span className="layout-badge">{displayValue || '-'}</span>;
       
       case 'view':
-        return <span className="view-badge">{value || '-'}</span>;
+        return <span className="view-badge">{displayValue || '-'}</span>;
       
       case 'status':
         return (
-          <span className={`status-badge status-${value?.toLowerCase().replace(/\s+/g, '-')}`}>
-            {value || 'Unknown'}
+          <span className={`status-badge status-${typeof value === 'string' ? value.toLowerCase().replace(/\s+/g, '-') : 'unknown'}`}>
+            {displayValue || 'Unknown'}
           </span>
         );
       
@@ -138,7 +151,7 @@ const PropertyMatrix = ({ onPropertySelect, onOwnerSelect }) => {
                 <button
                   key={ownerId}
                   className={`owner-badge ${hasMultiPhone ? 'multi-phone' : ''}`}
-                  onClick={(e) => { e.stopPropagation(); onOwnerSelect?.(owner); }}
+                  onClick={(e) => { e.stopPropagation(); if (owner) onOwnerSelect?.(owner); }}
                   title={owner?.name}
                 >
                   <Users size={11} />
@@ -147,9 +160,9 @@ const PropertyMatrix = ({ onPropertySelect, onOwnerSelect }) => {
                 </button>
               );
             })}
-            {hasMultipleOwners(property) && property.owners.length > 2 && (
-              <span className="multi-owner-indicator" title={`${property.owners.length} owners total`}>
-                +{property.owners.length - 2}
+            {hasMultipleOwners(property) && (property.owners?.length ?? 0) > 2 && (
+              <span className="multi-owner-indicator" title={`${property.owners?.length ?? 0} owners total`}>
+                +{(property.owners?.length ?? 0) - 2}
               </span>
             )}
           </div>
@@ -160,7 +173,7 @@ const PropertyMatrix = ({ onPropertySelect, onOwnerSelect }) => {
     }
   };
 
-  const SortIcon = ({ field }) => {
+  const SortIcon = ({ field }: { field: string }) => {
     if (sortBy !== field) return null;
     return sortOrder === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />;
   };
@@ -240,7 +253,7 @@ const PropertyMatrix = ({ onPropertySelect, onOwnerSelect }) => {
           </button>
           <div className="page-numbers">
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              let pageNum;
+              let pageNum: number;
               if (totalPages <= 5) {
                 pageNum = i + 1;
               } else if (page <= 3) {

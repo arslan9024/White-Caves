@@ -1,15 +1,44 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { safeStorage } from '../utils/safeStorage';
+import { logout } from './authSlice';
 
-const initialState = {
+interface NavNotification {
+  id?: string;
+  type: string;
+  title?: string;
+  message: string;
+  timestamp?: string;
+  duration?: number;
+  read?: boolean;
+}
+
+interface NavigationState {
+  isOnline: boolean;
+  currentTime: string;
+  profileMenuOpen: boolean;
+  roleMenuOpen: boolean;
+  whatsappMenuOpen: boolean;
+  mobileMenuOpen: boolean;
+  activeRole: string | null;
+  theme: string;
+  language: string;
+  notifications: NavNotification[];
+  unreadNotifications: number;
+  currentModule: string | null;
+  currentSubModule: string | null;
+  sidebarCollapsed: boolean;
+}
+
+const initialState: NavigationState = {
   isOnline: navigator.onLine,
   currentTime: new Date().toISOString(),
   profileMenuOpen: false,
   roleMenuOpen: false,
   whatsappMenuOpen: false,
   mobileMenuOpen: false,
-  activeRole: localStorage.getItem('userRole') ? JSON.parse(localStorage.getItem('userRole'))?.role : null,
-  theme: localStorage.getItem('theme') || 'light',
-  language: localStorage.getItem('language') || 'en',
+  activeRole: safeStorage.getJSON<{ role: string }>('userRole')?.role ?? null,
+  theme: safeStorage.get('theme', 'light') ?? 'light',
+  language: safeStorage.get('language', 'en') ?? 'en',
   notifications: [],
   unreadNotifications: 0,
   currentModule: null,
@@ -66,19 +95,19 @@ const navigationSlice = createSlice({
     setActiveRole: (state, action) => {
       state.activeRole = action.payload;
       if (action.payload) {
-        localStorage.setItem('userRole', JSON.stringify({ role: action.payload }));
+        safeStorage.setJSON('userRole', { role: action.payload });
       } else {
-        localStorage.removeItem('userRole');
+        safeStorage.remove('userRole');
       }
     },
     setTheme: (state, action) => {
       state.theme = action.payload;
-      localStorage.setItem('theme', action.payload);
+      safeStorage.set('theme', action.payload);
       document.documentElement.setAttribute('data-theme', action.payload);
     },
     setLanguage: (state, action) => {
       state.language = action.payload;
-      localStorage.setItem('language', action.payload);
+      safeStorage.set('language', action.payload);
     },
     addNotification: (state, action) => {
       state.notifications.unshift(action.payload);
@@ -103,6 +132,9 @@ const navigationSlice = createSlice({
     setSidebarCollapsed: (state, action) => {
       state.sidebarCollapsed = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(logout, () => initialState);
   },
 });
 

@@ -64,12 +64,14 @@ export const ERROR_MESSAGES = {
   },
 };
 
-export const getErrorMessage = (error: any): string => {
+export const getErrorMessage = (error: unknown): string => {
   if (!error) return ERROR_MESSAGES.SERVER_ERROR;
   
-  if (error.response) {
-    const status = error.response.status;
-    const message = error.response.data?.message || error.response.data?.error;
+  const err = error as { response?: { status?: number; data?: { message?: string; error?: string } }; message?: string };
+  
+  if (err.response) {
+    const status = err.response.status;
+    const message = err.response.data?.message || err.response.data?.error;
     
     if (message) return message;
     
@@ -89,9 +91,9 @@ export const getErrorMessage = (error: any): string => {
     }
   }
   
-  if (error.request) {
+  if ((error as { request?: unknown }).request) {
     return ERROR_MESSAGES.NETWORK_ERROR;
   }
   
-  return error.message || ERROR_MESSAGES.SERVER_ERROR;
+  return err.message || ERROR_MESSAGES.SERVER_ERROR;
 };

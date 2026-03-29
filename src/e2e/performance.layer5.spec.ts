@@ -1,14 +1,14 @@
-/**
+﻿/**
  * LAYER 5: PERFORMANCE TESTING SUITE
  * White Caves Platform - Load Times & Response Metrics
  * 
  * Metrics Captured:
- * ✅ Dashboard load times
- * ✅ Tab switching speed
- * ✅ CRM module load times
- * ✅ Form response times
- * ✅ Navigation latency
- * ✅ Component render performance
+ * âœ… Dashboard load times
+ * âœ… Tab switching speed
+ * âœ… CRM module load times
+ * âœ… Form response times
+ * âœ… Navigation latency
+ * âœ… Component render performance
  */
 
 import { test, expect } from '@playwright/test';
@@ -24,13 +24,13 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
     test('P5-001: Owner Dashboard load time', async ({ page }) => {
       const startTime = Date.now();
       
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
       
       const loadTime = Date.now() - startTime;
-      console.log(`✅ Owner Dashboard load time: ${loadTime}ms`);
+      console.log(`âœ… Owner Dashboard load time: ${loadTime}ms`);
       
       // Should load in reasonable time (< 30 seconds)
       expect(loadTime).toBeLessThan(30000);
@@ -39,13 +39,13 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
     test('P5-002: Seller Dashboard load time', async ({ page }) => {
       const startTime = Date.now();
       
-      await page.goto('http://localhost:5000/seller/dashboard', {
+      await page.goto('/seller/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
       
       const loadTime = Date.now() - startTime;
-      console.log(`✅ Seller Dashboard load time: ${loadTime}ms`);
+      console.log(`âœ… Seller Dashboard load time: ${loadTime}ms`);
       
       expect(loadTime).toBeLessThan(30000);
     });
@@ -53,13 +53,13 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
     test('P5-003: Buyer Dashboard load time', async ({ page }) => {
       const startTime = Date.now();
       
-      await page.goto('http://localhost:5000/buyer/dashboard', {
+      await page.goto('/buyer/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
       
       const loadTime = Date.now() - startTime;
-      console.log(`✅ Buyer Dashboard load time: ${loadTime}ms`);
+      console.log(`âœ… Buyer Dashboard load time: ${loadTime}ms`);
       
       expect(loadTime).toBeLessThan(30000);
     });
@@ -69,7 +69,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
   test.describe('Interaction Response Times', () => {
     
     test('P5-010: Button click response', async ({ page }) => {
-      await page.goto('http://localhost:5000/', {
+      await page.goto('/', {
         waitUntil: 'networkidle',
         timeout: 30000,
       });
@@ -82,7 +82,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
         await buttons.first().click();
         const responseTime = Date.now() - startTime;
         
-        console.log(`✅ Button click response: ${responseTime}ms`);
+        console.log(`âœ… Button click response: ${responseTime}ms`);
         
         // Should respond instantly (< 500ms)
         expect(responseTime).toBeLessThan(500);
@@ -90,7 +90,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
     });
     
     test('P5-011: Form input response', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -103,7 +103,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
         await inputs.first().fill('test');
         const responseTime = Date.now() - startTime;
         
-        console.log(`✅ Form input response: ${responseTime}ms`);
+        console.log(`âœ… Form input response: ${responseTime}ms`);
         
         // Should respond instantly (< 100ms)
         expect(responseTime).toBeLessThan(100);
@@ -111,7 +111,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
     });
     
     test('P5-012: Tab switch response', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -125,7 +125,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
         await page.waitForTimeout(100);
         const responseTime = Date.now() - startTime;
         
-        console.log(`✅ Tab switch response: ${responseTime}ms`);
+        console.log(`âœ… Tab switch response: ${responseTime}ms`);
         
         expect(responseTime).toBeLessThan(1000);
       }
@@ -138,7 +138,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
     test('P5-020: CSS loading time', async ({ page }) => {
       const startTime = Date.now();
       
-      await page.goto('http://localhost:5000/', {
+      await page.goto('/', {
         waitUntil: 'networkidle',
         timeout: 30000,
       });
@@ -148,7 +148,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       });
       
       const loadTime = Date.now() - startTime;
-      console.log(`✅ CSS resources loaded: ${CSSResources} stylesheets in ${loadTime}ms`);
+      console.log(`âœ… CSS resources loaded: ${CSSResources} stylesheets in ${loadTime}ms`);
       
       expect(CSSResources).toBeGreaterThan(0);
     });
@@ -156,7 +156,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
     test('P5-021: JavaScript loading time', async ({ page }) => {
       const startTime = Date.now();
       
-      await page.goto('http://localhost:5000/', {
+      await page.goto('/', {
         waitUntil: 'networkidle',
         timeout: 30000,
       });
@@ -166,13 +166,13 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       });
       
       const loadTime = Date.now() - startTime;
-      console.log(`✅ JavaScript loaded: ${(jsSize / 1024).toFixed(2)}KB in ${loadTime}ms`);
+      console.log(`âœ… JavaScript loaded: ${(jsSize / 1024).toFixed(2)}KB in ${loadTime}ms`);
       
       expect(jsSize).toBeGreaterThan(0);
     });
     
     test('P5-022: Image loading time', async ({ page }) => {
-      await page.goto('http://localhost:5000/', {
+      await page.goto('/', {
         waitUntil: 'networkidle',
         timeout: 30000,
       });
@@ -184,7 +184,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       });
       
       const loadTime = Date.now() - startTime;
-      console.log(`✅ Images loaded: ${images} images in ${loadTime}ms`);
+      console.log(`âœ… Images loaded: ${images} images in ${loadTime}ms`);
       
       expect(images).toBeGreaterThanOrEqual(0);
     });
@@ -196,19 +196,19 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
     test('P5-030: First contentful paint', async ({ page }) => {
       const startTime = Date.now();
       
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'domcontentloaded',
         timeout: 30000,
       }).catch(() => {});
       
       const fcp = Date.now() - startTime;
-      console.log(`✅ First contentful paint: ${fcp}ms`);
+      console.log(`âœ… First contentful paint: ${fcp}ms`);
       
       expect(fcp).toBeLessThan(30000);
     });
     
     test('P5-031: Page render stability', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -227,7 +227,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
         return document.documentElement.offsetHeight;
       });
       
-      console.log(`✅ Page height: ${initialSize}px → ${finalSize}px (Stable: ${initialSize === finalSize})`);
+      console.log(`âœ… Page height: ${initialSize}px â†’ ${finalSize}px (Stable: ${initialSize === finalSize})`);
       
       // Page should be stable (initial and final sizes similar)
       const difference = Math.abs(initialSize - finalSize);
@@ -243,13 +243,13 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       
       const startTime = Date.now();
       
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
       
       const loadTime = Date.now() - startTime;
-      console.log(`✅ Mobile (375px) load time: ${loadTime}ms`);
+      console.log(`âœ… Mobile (375px) load time: ${loadTime}ms`);
       
       expect(loadTime).toBeLessThan(30000);
     });
@@ -259,13 +259,13 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       
       const startTime = Date.now();
       
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
       
       const loadTime = Date.now() - startTime;
-      console.log(`✅ Tablet (768px) load time: ${loadTime}ms`);
+      console.log(`âœ… Tablet (768px) load time: ${loadTime}ms`);
       
       expect(loadTime).toBeLessThan(30000);
     });
@@ -275,13 +275,13 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       
       const startTime = Date.now();
       
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
       
       const loadTime = Date.now() - startTime;
-      console.log(`✅ Desktop (1920px) load time: ${loadTime}ms`);
+      console.log(`âœ… Desktop (1920px) load time: ${loadTime}ms`);
       
       expect(loadTime).toBeLessThan(30000);
     });
@@ -291,7 +291,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
   test.describe('Stress & Stability Testing', () => {
     
     test('P5-050: Rapid navigation', async ({ page }) => {
-      await page.goto('http://localhost:5000/', {
+      await page.goto('/', {
         waitUntil: 'networkidle',
         timeout: 30000,
       });
@@ -312,14 +312,14 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       }
       
       const stressTime = Date.now() - startTime;
-      console.log(`✅ Rapid navigation completed in ${stressTime}ms`);
+      console.log(`âœ… Rapid navigation completed in ${stressTime}ms`);
       
       // Should handle rapid navigation
       expect(stressTime).toBeLessThan(10000);
     });
     
     test('P5-051: Rapid form input', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -339,14 +339,14 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
         }
         
         const stressTime = Date.now() - startTime;
-        console.log(`✅ Rapid form input completed in ${stressTime}ms`);
+        console.log(`âœ… Rapid form input completed in ${stressTime}ms`);
         
         expect(stressTime).toBeLessThan(5000);
       }
     });
     
     test('P5-052: Memory stability', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -370,7 +370,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
         return document.documentElement.outerHTML.length;
       });
       
-      console.log(`✅ Memory: ${(initialContent / 1024).toFixed(2)}KB → ${(finalContent / 1024).toFixed(2)}KB`);
+      console.log(`âœ… Memory: ${(initialContent / 1024).toFixed(2)}KB â†’ ${(finalContent / 1024).toFixed(2)}KB`);
       
       // Content size should be similar (no memory leak)
       const difference = Math.abs(finalContent - initialContent);
@@ -382,7 +382,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
   test.describe('Network Performance', () => {
     
     test('P5-060: API response time', async ({ page }) => {
-      await page.goto('http://localhost:5000/md/dashboard', {
+      await page.goto('/md/dashboard', {
         waitUntil: 'networkidle',
         timeout: 30000,
       }).catch(() => {});
@@ -394,7 +394,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       await page.waitForLoadState('networkidle');
       
       const networkTime = Date.now() - startTime;
-      console.log(`✅ Network settled in ${networkTime}ms`);
+      console.log(`âœ… Network settled in ${networkTime}ms`);
       
       expect(networkTime).toBeLessThan(10000);
     });
@@ -407,13 +407,13 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       
       const startTime = Date.now();
       
-      await page.goto('http://localhost:5000/', {
+      await page.goto('/', {
         waitUntil: 'domcontentloaded',
         timeout: 30000,
       });
       
       const loadTime = Date.now() - startTime;
-      console.log(`✅ Slow network load time: ${loadTime}ms`);
+      console.log(`âœ… Slow network load time: ${loadTime}ms`);
       
       // Should still load reasonably well on slow network
       expect(loadTime).toBeLessThan(30000);
@@ -442,18 +442,18 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
         status: 'PASSED',
       };
       
-      console.log('\n╔════════════════════════════════════════╗');
-      console.log('║  LAYER 5 PERFORMANCE TESTING REPORT    ║');
-      console.log('╚════════════════════════════════════════╝');
-      console.log(`\n⏱️  Timestamp: ${report.timestamp}`);
-      console.log(`📊 Tests: ${report.tests}`);
-      console.log(`📈 Category: ${report.category}`);
-      console.log('\n📋 Metrics Results:');
+      console.log('\nâ•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—');
+      console.log('â•‘  LAYER 5 PERFORMANCE TESTING REPORT    â•‘');
+      console.log('â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•');
+      console.log(`\nâ±ï¸  Timestamp: ${report.timestamp}`);
+      console.log(`ðŸ“Š Tests: ${report.tests}`);
+      console.log(`ðŸ“ˆ Category: ${report.category}`);
+      console.log('\nðŸ“‹ Metrics Results:');
       Object.entries(report.metrics).forEach(([key, value]) => {
-        console.log(`   ✅ ${key}: ${value}`);
+        console.log(`   âœ… ${key}: ${value}`);
       });
-      console.log(`\n🎯 Status: ${report.status}`);
-      console.log('\n✨ All performance tests passed!');
+      console.log(`\nðŸŽ¯ Status: ${report.status}`);
+      console.log('\nâœ¨ All performance tests passed!');
       console.log('   Dashboard is performant and responsive.\n');
       
       expect(report.status).toBe('PASSED');

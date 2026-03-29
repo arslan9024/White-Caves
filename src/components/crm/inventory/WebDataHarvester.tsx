@@ -6,16 +6,49 @@ import {
 } from 'lucide-react';
 import './WebDataHarvester.css';
 
-const WebDataHarvester = ({ onDataHarvested }) => {
+interface HarvestResult {
+  url: string;
+  data: {
+    name: string;
+    phone: string;
+    email: string;
+    unit: string;
+  };
+}
+
+interface HarvestError {
+  url: string;
+  error: string;
+}
+
+interface HarvestConfig {
+  startPage: number;
+  endPage: number;
+  delay: number;
+  selectors: {
+    name: string;
+    phone: string;
+    email: string;
+    unit: string;
+  };
+}
+
+interface WebDataHarvesterProps {
+  onDataHarvested?: (data: HarvestResult[]) => void;
+}
+
+type HarvestStatus = 'idle' | 'fetching' | 'paused' | 'completed' | 'stopped' | 'error';
+
+const WebDataHarvester: React.FC<WebDataHarvesterProps> = ({ onDataHarvested }) => {
   const [baseUrl, setBaseUrl] = useState('');
-  const [status, setStatus] = useState('idle');
-  const statusRef = useRef('idle');
+  const [status, setStatus] = useState<HarvestStatus>('idle');
+  const statusRef = useRef<HarvestStatus>('idle');
   const [progress, setProgress] = useState({ current: 0, total: 0 });
-  const [results, setResults] = useState([]);
-  const [errors, setErrors] = useState([]);
+  const [results, setResults] = useState<HarvestResult[]>([]);
+  const [errors, setErrors] = useState<HarvestError[]>([]);
   const [showHelp, setShowHelp] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
-  const [config, setConfig] = useState({
+  const [config, setConfig] = useState<HarvestConfig>({
     startPage: 1,
     endPage: 10,
     delay: 1000,
@@ -27,7 +60,7 @@ const WebDataHarvester = ({ onDataHarvested }) => {
     }
   });
 
-  const parseUrlTemplate = (template) => {
+  const parseUrlTemplate = (template: string): string[] => {
     const match = template.match(/\[(\d+):(\d+)\]/);
     if (match) {
       const start = parseInt(match[1]);
@@ -41,7 +74,7 @@ const WebDataHarvester = ({ onDataHarvested }) => {
     return [template];
   };
 
-  const simulateFetch = async (url, delay) => {
+  const simulateFetch = async (url: string, delay: number): Promise<HarvestResult> => {
     await new Promise(resolve => setTimeout(resolve, delay));
     
     const success = Math.random() > 0.2;
@@ -59,7 +92,7 @@ const WebDataHarvester = ({ onDataHarvested }) => {
     throw new Error(`Failed to fetch ${url}`);
   };
 
-  const updateStatus = (newStatus) => {
+  const updateStatus = (newStatus: HarvestStatus) => {
     setStatus(newStatus);
     statusRef.current = newStatus;
   };
@@ -85,13 +118,14 @@ const WebDataHarvester = ({ onDataHarvested }) => {
         const result = await simulateFetch(urls[i], config.delay);
         setResults(prev => [...prev, result]);
       } catch (err) {
-        setErrors(prev => [...prev, { url: urls[i], error: err.message }]);
+        const errorMsg = err instanceof Error ? err.message : String(err || 'Unknown error');
+        setErrors(prev => [...prev, { url: urls[i], error: errorMsg }]);
       }
       
       setProgress({ current: i + 1, total: urls.length });
     }
     
-    updateStatus('complete');
+    updateStatus('completed');
   };
 
   const handlePause = () => {
@@ -209,7 +243,7 @@ const WebDataHarvester = ({ onDataHarvested }) => {
       )}
 
       <div className="harvester-controls">
-        {status === 'idle' || status === 'complete' || status === 'stopped' ? (
+        {status === 'idle' || status === 'completed' || status === 'stopped' ? (
           <button 
             className="control-btn primary" 
             onClick={handleStart}
@@ -282,7 +316,7 @@ const WebDataHarvester = ({ onDataHarvested }) => {
             </thead>
             <tbody>
               {results.map((result, idx) => (
-                <tr key={idx}>
+                <tr key={result.data?.name ?? `result-${idx}`}>
                   <td>{result.data.name}</td>
                   <td>{result.data.phone}</td>
                   <td>{result.data.email}</td>
@@ -299,7 +333,7 @@ const WebDataHarvester = ({ onDataHarvested }) => {
           <h4><AlertTriangle size={16} /> Failed Requests</h4>
           <div className="errors-list">
             {errors.map((err, idx) => (
-              <div key={idx} className="error-item">
+              <div key={`${err.url}-${idx}`} className="error-item">
                 <span className="error-url">{err.url}</span>
                 <span className="error-msg">{err.error}</span>
               </div>
@@ -308,7 +342,7 @@ const WebDataHarvester = ({ onDataHarvested }) => {
         </div>
       )}
 
-      {results.length > 0 && status === 'complete' && (
+      {results.length > 0 && status === 'completed' && (
         <div className="import-section">
           <AlertTriangle size={16} />
           <span>Review the harvested data, then import to your inventory</span>

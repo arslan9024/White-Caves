@@ -108,7 +108,8 @@ const DubaiMap: FC<DubaiMapProps> = ({ properties = [], onPropertySelect }) => {
   };
 
   useEffect(() => {
-    setTimeout(() => setMapLoaded(true), 500);
+    const timer = setTimeout(() => setMapLoaded(true), 500);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -120,28 +121,28 @@ const DubaiMap: FC<DubaiMapProps> = ({ properties = [], onPropertySelect }) => {
 
       <MapFilters>
         <FilterButton 
-          isActive={activeFilter === 'all'}
+          $isActive={activeFilter === 'all'}
           onClick={() => setActiveFilter('all')}
         >
           All Properties
         </FilterButton>
         <FilterButton 
-          isActive={activeFilter === 'residential'}
-          variant="residential"
+          $isActive={activeFilter === 'residential'}
+          $variant="residential"
           onClick={() => setActiveFilter('residential')}
         >
           Residential
         </FilterButton>
         <FilterButton 
-          isActive={activeFilter === 'commercial'}
-          variant="commercial"
+          $isActive={activeFilter === 'commercial'}
+          $variant="commercial"
           onClick={() => setActiveFilter('commercial')}
         >
           Commercial
         </FilterButton>
         <FilterButton 
-          isActive={activeFilter === 'luxury'}
-          variant="luxury"
+          $isActive={activeFilter === 'luxury'}
+          $variant="luxury"
           onClick={() => setActiveFilter('luxury')}
         >
           Luxury

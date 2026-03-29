@@ -1,6 +1,28 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { logout } from '../authSlice';
 
-const initialState = {
+// ─── Types ──────────────────────────────────────────────────────────────
+export interface AppNotification {
+  id: number;
+  type: 'info' | 'success' | 'warning' | 'error';
+  title: string;
+  message: string;
+  duration: number;
+  createdAt: number;
+}
+
+interface NotificationState {
+  notifications: AppNotification[];
+}
+
+interface AddNotificationPayload {
+  type?: AppNotification['type'];
+  title: string;
+  message: string;
+  duration?: number;
+}
+
+const initialState: NotificationState = {
   notifications: [],
 };
 
@@ -8,8 +30,8 @@ const notificationSlice = createSlice({
   name: 'notifications',
   initialState,
   reducers: {
-    addNotification: (state, action) => {
-      const id = Date.now();
+    addNotification: (state, action: PayloadAction<AddNotificationPayload>) => {
+      const id = Date.now() + Math.random();
       state.notifications.push({
         id,
         type: action.payload.type || 'info',
@@ -19,7 +41,7 @@ const notificationSlice = createSlice({
         createdAt: new Date().getTime(),
       });
     },
-    removeNotification: (state, action) => {
+    removeNotification: (state, action: PayloadAction<number>) => {
       state.notifications = state.notifications.filter(
         notif => notif.id !== action.payload
       );
@@ -27,6 +49,9 @@ const notificationSlice = createSlice({
     clearAllNotifications: (state) => {
       state.notifications = [];
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(logout, () => initialState);
   },
 });
 
