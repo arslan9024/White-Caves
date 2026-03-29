@@ -273,7 +273,7 @@ app.get('/api/contracts', authMiddleware, asyncHandler(async (_req: Request, res
   res.status(200).json({ success: true, data: [], pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 } });
 }));
 app.post('/api/contracts', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
-  res.status(201).json({ success: true, data: { id: Date.now().toString(), status: 'draft', createdAt: new Date() } });
+  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
 }));
 
 // Job Applications API stubs (JobBoard, JobApplicants)
@@ -283,29 +283,29 @@ app.get('/api/job-applications', authMiddleware, asyncHandler(async (_req: Reque
 }));
 app.post('/api/job-applications', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
   logger.info('Job application received (stub)', { body: Object.keys(req.body || {}) });
-  res.status(201).json({ success: true, data: { id: Date.now().toString(), status: 'pending', createdAt: new Date() } });
+  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
 }));
 app.patch('/api/job-applications/:id', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
   const { status } = req.body || {};
   logger.info('Job application status update (stub)', { id, status });
-  res.status(200).json({ success: true, data: { id, status: status || 'pending', updatedAt: new Date() } });
+  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
 }));
 
 // Appointments API stubs (AppointmentScheduler)
 // TODO: Add Prisma model and full CRUD when scheduling module is prioritised
 app.post('/api/appointments', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
   logger.info('Appointment created (stub)', { propertyId: req.body?.propertyId, agentId: req.body?.agentId });
-  res.status(201).json({ success: true, data: { id: Date.now().toString(), status: 'confirmed', createdAt: new Date() } });
+  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
 }));
 app.get('/api/appointments', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
   res.status(200).json({ success: true, data: [], pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 } });
 }));
-app.patch('/api/appointments/:id', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  res.status(200).json({ success: true, data: { id: req.params.id, status: 'updated', updatedAt: new Date() } });
+app.patch('/api/appointments/:id', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
+  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
 }));
-app.delete('/api/appointments/:id', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  res.status(200).json({ success: true, message: `Appointment ${req.params.id} cancelled (stub)` });
+app.delete('/api/appointments/:id', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
+  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
 }));
 
 // Tenancy Agreements API stubs (CreateTenancyAgreement)
@@ -315,10 +315,10 @@ app.get('/api/tenancy-agreements', authMiddleware, asyncHandler(async (_req: Req
 }));
 app.post('/api/tenancy-agreements', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
   logger.info('Tenancy agreement created (stub)', { propertyId: req.body?.propertyId });
-  res.status(201).json({ success: true, data: { id: Date.now().toString(), status: 'draft', createdAt: new Date() } });
+  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
 }));
-app.patch('/api/tenancy-agreements/:id', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  res.status(200).json({ success: true, data: { id: req.params.id, status: 'updated', updatedAt: new Date() } });
+app.patch('/api/tenancy-agreements/:id', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
+  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
 }));
 
 // Payments API stub (Checkout — Stripe integration pending)
@@ -389,10 +389,10 @@ app.post('/api/users/role', authMiddleware, asyncHandler(async (req: Request, re
   res.status(200).json({ success: true, data: updated });
 }));
 app.post('/api/users/role-request', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  const { userId, requestedRole, reason } = req.body;
+  const { requestedRole } = req.body;
   if (!requestedRole) throw new AppError('requestedRole is required', 400);
-  logger.info('Role request submitted (stub)', { userId: userId || req.user?.id, requestedRole });
-  res.status(201).json({ success: true, data: { id: Date.now().toString(), userId: userId || req.user?.id, requestedRole, reason, status: 'pending', createdAt: new Date() } });
+  logger.info('Role request submitted (stub)', { userId: req.user?.id, requestedRole });
+  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
 }));
 app.get('/api/admin/role-requests', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
   const allowedRoles = ['owner', 'manager', 'admin'];

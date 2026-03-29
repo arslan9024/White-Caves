@@ -67,14 +67,12 @@ router.post(
       await prisma.nadiaMessage.create({
         data: {
           conversationId: conversation.id,
+          waMessageId: `local-${Date.now()}`,
           direction: 'inbound',
-          senderType: 'customer',
-          senderPhone: customerPhone,
-          content: initialMessage,
+          body: initialMessage,
           messageType: 'text',
           status: 'delivered',
-          ninaSentiment: sentiment,
-          ninaEntities: entities,
+          timestamp: new Date(),
         },
       });
 
@@ -324,14 +322,12 @@ router.post(
     const message = await prisma.nadiaMessage.create({
       data: {
         conversationId,
+        waMessageId: `local-${Date.now()}`,
         direction: senderType === 'customer' ? 'inbound' : 'outbound',
-        senderType: senderType as 'customer' | 'bot' | 'agent',
-        senderPhone: senderPhone || conversation.customerPhone,
-        content,
+        body: content,
         messageType: 'text',
         status: 'delivered',
-        ninaSentiment: sentiment,
-        ninaEntities: entities,
+        timestamp: new Date(),
       },
     });
 
@@ -343,8 +339,8 @@ router.post(
 
       const newScore = calculateLeadScore({
         messageCount,
-        intent: updatedIntent,
-        sentiment,
+        intent: updatedIntent ?? undefined,
+        sentiment: sentiment ?? undefined,
         hasPhone: !!conversation.customerPhone,
       });
 

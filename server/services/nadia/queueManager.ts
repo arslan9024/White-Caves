@@ -47,7 +47,7 @@ export async function getQueuedConversations(limit: number = 10) {
     waitTimeMinutes: Math.round(
       (Date.now() - q.queuedAt.getTime()) / 60000
     ),
-    lastMessage: q.conversation.messages[0]?.content || null,
+    lastMessage: q.conversation.messages[0]?.body || null,
     messageCount: q.conversation.messages.length,
     priority_label:
       q.priority <= 2
@@ -125,7 +125,6 @@ export async function queueConversationForAssignment(
       where: { id: existing.id },
       data: {
         priority,
-        routingReason: reason,
         status: 'queued',
       },
       include: {
@@ -139,7 +138,6 @@ export async function queueConversationForAssignment(
     data: {
       conversationId,
       priority,
-      routingReason: reason,
       status: 'queued',
       queuedAt: new Date(),
     },

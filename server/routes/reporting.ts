@@ -154,7 +154,7 @@ router.get(
 
     const toMap = (arr: Array<{ _count: { _all: number }; [key: string]: unknown }>, keyField: string) => {
       const map: Record<string, number> = {};
-      arr.forEach(item => { map[item[keyField]] = item._count._all; });
+      arr.forEach(item => { map[String(item[keyField])] = item._count._all; });
       return map;
     };
 
