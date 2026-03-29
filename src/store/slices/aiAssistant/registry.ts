@@ -490,7 +490,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     title: 'Legal Risk Analyst',
     department: 'legal',
     icon: 'Scale',
-    colorScheme: '#D4AF37',
+    colorScheme: '#E31E24',
     avatar: '👩‍⚖️',
     description:
       'Proactively identifies, documents, and helps resolve legal issues. Monitors contracts, regulations, and transaction compliance',
@@ -598,7 +598,7 @@ export const DEPARTMENT_COLORS: Record<string, string> = {
   communications: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
   sales: 'linear-gradient(135deg, #8B5CF6 0%, #D946EF 100%)',
   technology: 'linear-gradient(135deg, #0EA5E9 0%, #06B6D4 100%)',
-  legal: 'linear-gradient(135deg, #D4AF37 0%, #B8860B 100%)',
+  legal: 'linear-gradient(135deg, #E31E24 0%, #C62828 100%)',
 };
 
 // ============================================================================

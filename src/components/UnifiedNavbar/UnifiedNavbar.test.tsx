@@ -41,8 +41,8 @@ vi.mock('./AdminControls', () => ({
 vi.mock('../../styles/theme', () => ({
   theme: {
     colors: {
-      primary: '#D4AF37',
-      primaryDark: '#B8860B',
+      primary: '#E31E24',
+      primaryDark: '#C62828',
       background: { primary: '#F8F9FA', secondary: '#FFFFFF', tertiary: '#F5F5F5', overlay: 'rgba(0,0,0,0.5)' },
       text: { primary: '#212121', secondary: '#666666', inverse: '#FFFFFF' },
       border: '#E0E0E0',

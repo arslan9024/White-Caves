@@ -35,14 +35,14 @@
   --text-tertiary: #6b7280;
   --text-muted: #9ca3af;
   --text-inverse: #ffffff;
-  --text-link: #D4AF37;
-  --text-link-hover: #B8860B;
+  --text-link: #E31E24;
+  --text-link-hover: #C62828;
   
   /* Border Colors */
   --border-color: #e5e7eb;
   --border-light: #f3f4f6;
   --border-dark: #d1d5db;
-  --border-focus: #D4AF37;
+  --border-focus: #E31E24;
   
   /* Shadow Colors */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -54,7 +54,7 @@
   /* Input Colors */
   --input-bg: #ffffff;
   --input-border: #d1d5db;
-  --input-focus-border: #D4AF37;
+  --input-focus-border: #E31E24;
   --input-placeholder: #9ca3af;
   
   /* Table Colors */
@@ -65,7 +65,7 @@
   /* Sidebar/Nav Colors */
   --nav-bg: #ffffff;
   --nav-text: #374151;
-  --nav-text-active: #D4AF37;
+  --nav-text-active: #E31E24;
   --nav-bg-active: #fef2f2;
   
   /* Badge/Tag Colors */

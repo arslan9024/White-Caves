@@ -1,18 +1,20 @@
 export const brand = {
   colors: {
     primary: {
-      50: '#FFF8E1',
-      100: '#FFECB3',
-      200: '#FFE082',
-      300: '#FFD54F',
-      400: '#FFCA28',
-      500: '#D4AF37',
-      600: '#C9A030',
-      700: '#B8860B',
-      800: '#9A7209',
-      900: '#7A5B07',
+      50: '#FFEBEE',
+      100: '#FFCDD2',
+      200: '#EF9A9A',
+      300: '#E57373',
+      400: '#EF5350',
+      500: '#E31E24',
+      600: '#D32F2F',
+      700: '#C62828',
+      800: '#B71C1C',
+      900: '#8B0000',
     },
     accent: {
+      gold: '#D4AF37',
+      goldLight: '#FFCA28',
       emerald: '#2E5A4F',
       emeraldLight: '#3D7A6B',
       sand: '#F5E6D3',
@@ -53,7 +55,7 @@ export const brand = {
       marketing: '#EC4899',
       executive: '#10B981',
       compliance: '#6366F1',
-      legal: '#D4AF37',
+      legal: '#E31E24',
       technology: '#0EA5E9',
       intelligence: '#0D9488',
     },
@@ -104,18 +106,19 @@ export const brand = {
   },
 
   layout: {
-    navbarHeight: '64px',
-    sidebarWidth: '280px',
-    sidebarCollapsed: '72px',
+    navbarHeight: '56px',
+    sidebarWidth: '64px',
+    sidebarExpanded: '304px',
     contentMaxWidth: '1400px',
-    contextBarHeight: '56px',
+    rightPanelWidth: '360px',
+    flyoutWidth: '240px',
   },
 
   elevation: {
     none: 'none',
-    low: '0 2px 4px rgba(212, 175, 55, 0.08)',
-    medium: '0 4px 12px rgba(212, 175, 55, 0.12)',
-    high: '0 8px 24px rgba(212, 175, 55, 0.16)',
+    low: '0 2px 4px rgba(227, 30, 36, 0.08)',
+    medium: '0 4px 12px rgba(227, 30, 36, 0.12)',
+    high: '0 8px 24px rgba(227, 30, 36, 0.16)',
     overlay: '0 16px 48px rgba(0, 0, 0, 0.2)',
     card: '0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06)',
     cardHover: '0 4px 12px rgba(0, 0, 0, 0.12)',
@@ -195,8 +198,9 @@ export const getCSSVariables = (): string => `
     /* Layout */
     --navbar-height: ${brand.layout.navbarHeight};
     --sidebar-width: ${brand.layout.sidebarWidth};
-    --sidebar-collapsed: ${brand.layout.sidebarCollapsed};
-    --context-bar-height: ${brand.layout.contextBarHeight};
+    --sidebar-expanded: ${brand.layout.sidebarExpanded};
+    --flyout-width: ${brand.layout.flyoutWidth};
+    --right-panel-width: ${brand.layout.rightPanelWidth};
     
     /* Typography */
     --font-primary: ${brand.typography.fontFamily.primary};

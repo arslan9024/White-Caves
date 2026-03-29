@@ -1,65 +1,54 @@
 /**
- * SidebarContainer - Left Sidebar with Bold Branding
- * 
- * Features:
- * - Bold company branding (gold gradient #D4AF37 → #B8860B)
- * - Responsive width: 280px → 72px collapse (icon-only mode)
- * - Navigation items with icons and labels
- * - Active/hover states
- * - Smooth collapse animation
- * - Mobile-responsive behavior
+ * SidebarContainer — Slim Icon Rail (64px) + Flyout Panel (240px)
+ *
+ * Industry-standard 2025-2026 CRM sidebar pattern:
+ * - 64px icon rail always visible on desktop
+ * - Click → opens 240px flyout with department services
+ * - Active state: RED left border + icon fill
+ * - Bottom-pinned: AI Assistant + Settings icons
+ * - Mobile: hidden (replaced by BottomTabBar)
  */
 
-import React, { useState } from 'react';
+import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import {
-  ChevronLeft, Home, BarChart3, Users2, MessageSquare, Settings,
-  Zap, TrendingUp, Command, ChevronRight, Shield, AlertCircle, Activity,
-  Building2, Briefcase, DollarSign, Megaphone, Globe, Lock, Code, Scale
+  Home, BarChart3, Users2, Settings,
+  TrendingUp, Building2, DollarSign, Megaphone,
+  MessageSquare, Globe, Lock, Code, Scale, Bot,
+  Shield, ChevronLeft
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-// @ts-ignore - sidebarSlice is a .js file pending conversion
-import { selectDepartment, selectService } from '../../../store/slices/sidebarSlice';
 import {
-  SidebarContainerWrapper,
-  SidebarHeader,
-  SidebarLogo,
-  LogoBadge,
-  LogoText,
-  LogoTitle,
-  LogoSubtitle,
-  SidebarNav,
-  NavGroup,
-  GroupHeader,
-  GroupToggle,
-  GroupItems,
-  GroupItemsCollapsed,
-  NavItem,
-  NavIcon,
-  NavLabel,
-  NavItemIcon,
-  NavIconLarge,
-  NavTooltip,
-  DepartmentsList,
-  DepartmentItem,
-  DepartmentHeader,
-  DeptIcon,
-  DeptLabel,
-  DeptToggle,
-  DepartmentServices,
-  ServiceItem,
-  ServiceDot,
-  ServiceLabel,
-  DepartmentsCollapsed,
-  DeptIconBtn,
-  AdminGroupHeader,
-  AdminNavItem
+  selectSelectedDepartment,
+  selectFlyoutOpen,
+  selectFlyoutDepartment,
+  selectSelectedService,
+  toggleFlyout,
+  closeFlyout,
+  selectDepartment,
+  selectService,
+  toggleRightPanel,
+} from '../../../store/slices/sidebarSlice';
+import {
+  RailContainer,
+  RailWrapper,
+  RailIcon,
+  RailIconButton,
+  RailTooltip,
+  RailDivider,
+  RailSpacer,
+  FlyoutPanel,
+  FlyoutHeader,
+  FlyoutTitle,
+  FlyoutClose,
+  FlyoutNav,
+  FlyoutItem,
+  FlyoutDot,
+  FlyoutBackdrop,
 } from './styles';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
+// ─── Department definitions ───────────────────────────────────────────────
 
 interface DepartmentDef {
   icon: LucideIcon;
@@ -68,383 +57,221 @@ interface DepartmentDef {
   services: string[];
 }
 
-interface DepartmentsMap {
-  [key: string]: DepartmentDef;
-}
-
-interface MenuItem {
-  id: string;
-  label: string;
-  icon: LucideIcon;
-}
-
-interface MenuGroup {
-  group: string;
-  label: string;
-  icon?: LucideIcon;
-  items: MenuItem[];
-}
-
-interface ExpandedGroups {
-  [key: string]: boolean;
-}
-
-interface ExpandedDepartments {
-  [key: string]: boolean;
-}
-
-interface SidebarContainerProps {
-  collapsed?: boolean;
-  activeTab?: string;
-  onTabChange?: (tabId: string) => void;
-  role?: string;
-}
-
-// ---------------------------------------------------------------------------
-// Department Definitions
-// ---------------------------------------------------------------------------
-
-const DEPARTMENTS: DepartmentsMap = {
+const DEPARTMENTS: Record<string, DepartmentDef> = {
   operations: {
-    icon: Building2,
-    label: 'Operations',
-    color: '#3B82F6',
-    services: ['Inventory Management', 'Properties', 'Asset Tracking', 'Data Management']
+    icon: Building2, label: 'Operations', color: '#3B82F6',
+    services: ['Inventory Management', 'Properties', 'Asset Tracking', 'Data Management'],
   },
   finance: {
-    icon: DollarSign,
-    label: 'Finance',
-    color: '#F59E0B',
-    services: ['Invoicing', 'Payment Tracking', 'Financial Reports', 'Budget Analysis']
+    icon: DollarSign, label: 'Finance', color: '#F59E0B',
+    services: ['Invoicing', 'Payment Tracking', 'Financial Reports', 'Budget Analysis'],
   },
   sales: {
-    icon: TrendingUp,
-    label: 'Sales',
-    color: '#10B981',
-    services: ['Lead Management', 'Negotiations', 'Deal Tracking', 'Commission Tracking']
+    icon: TrendingUp, label: 'Sales', color: '#10B981',
+    services: ['Lead Management', 'Negotiations', 'Deal Tracking', 'Pipeline'],
   },
   marketing: {
-    icon: Megaphone,
-    label: 'Marketing',
-    color: '#EC4899',
-    services: ['Campaigns', 'Content', 'Analytics', 'Lead Generation']
+    icon: Megaphone, label: 'Marketing', color: '#EC4899',
+    services: ['Campaigns', 'Content', 'Analytics', 'Lead Generation'],
   },
   communications: {
-    icon: MessageSquare,
-    label: 'Communications',
-    color: '#8B5CF6',
-    services: ['Messages', 'Emails', 'Templates', 'Notifications']
+    icon: MessageSquare, label: 'Communications', color: '#8B5CF6',
+    services: ['Messages', 'Emails', 'Templates', 'Notifications'],
   },
   executive: {
-    icon: Globe,
-    label: 'Executive',
-    color: '#D4AF37',
-    services: ['Strategic Overview', 'KPIs', 'Reports', 'Insights']
+    icon: Globe, label: 'Executive', color: '#E31E24',
+    services: ['Strategic Overview', 'KPIs', 'Reports', 'Insights'],
   },
   compliance: {
-    icon: Lock,
-    label: 'Compliance',
-    color: '#059669',
-    services: ['Regulations', 'Audits', 'Policies', 'Documentation']
+    icon: Lock, label: 'Compliance', color: '#059669',
+    services: ['Regulations', 'Audits', 'Policies', 'Documentation'],
   },
   technology: {
-    icon: Code,
-    label: 'Technology',
-    color: '#06B6D4',
-    services: ['Systems', 'Integration', 'Support', 'Development']
+    icon: Code, label: 'Technology', color: '#06B6D4',
+    services: ['Systems', 'Integration', 'Support', 'Development'],
   },
   legal: {
-    icon: Scale,
-    label: 'Legal',
-    color: '#7C3AED',
-    services: ['Contracts', 'Agreements', 'Compliance', 'Documentation']
-  }
+    icon: Scale, label: 'Legal', color: '#7C3AED',
+    services: ['Contracts', 'Agreements', 'Compliance', 'Documentation'],
+  },
 };
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
+// ─── Top nav items ────────────────────────────────────────────────────────
+
+const TOP_ITEMS = [
+  { id: 'home', icon: Home, label: 'Dashboard' },
+  { id: 'analytics', icon: BarChart3, label: 'Analytics' },
+  { id: 'clients', icon: Users2, label: 'Clients' },
+];
+
+// ─── Props ────────────────────────────────────────────────────────────────
+
+interface SidebarContainerProps {
+  activeTab?: string;
+  onTabChange?: (tabId: string) => void;
+}
+
+// ─── Component ────────────────────────────────────────────────────────────
 
 const SidebarContainer: React.FC<SidebarContainerProps> = ({
-  collapsed = false,
-  activeTab = 'overview',
+  activeTab = 'home',
   onTabChange = () => {},
-  role = 'owner'
 }) => {
   const dispatch = useDispatch();
-  const [expandedGroups, setExpandedGroups] = useState<ExpandedGroups>({
-    dashboard: true,
-    management: true,
-    departments: false,
-    analytics: false,
-    admin: false
-  });
-  const [expandedDepartments, setExpandedDepartments] = useState<ExpandedDepartments>({});
 
-  // Get user role from Redux for super user detection
+  const selectedDepartment = useSelector(selectSelectedDepartment);
+  const selectedSvc = useSelector(selectSelectedService);
+  const flyoutOpen = useSelector(selectFlyoutOpen);
+  const flyoutDepartment = useSelector(selectFlyoutDepartment);
   const userRole = useSelector((state: RootState) => state.auth?.user?.role || 'user');
   const isSuperUser = userRole === 'lion';
-  const selectedDepartment = useSelector((state: RootState) => state.sidebar?.selectedDepartment);
-  const selectedService = useSelector((state: RootState) => state.sidebar?.selectedService);
 
-  const toggleGroup = (groupId: string): void => {
-    setExpandedGroups(prev => ({
-      ...prev,
-      [groupId]: !prev[groupId]
-    }));
-  };
-
-  const toggleDepartment = (deptId: string): void => {
-    setExpandedDepartments(prev => ({
-      ...prev,
-      [deptId]: !prev[deptId]
-    }));
-  };
-
-  const handleDepartmentSelect = (deptId: string): void => {
+  const handleDeptClick = useCallback((deptId: string) => {
+    dispatch(toggleFlyout(deptId));
     dispatch(selectDepartment(deptId));
-    if (!collapsed) {
-      toggleDepartment(deptId);
-    }
-  };
+  }, [dispatch]);
 
-  // Define menu items for each role
-  const getMenuItems = (): MenuGroup[] => {
-    const baseItems: MenuGroup[] = [
-      {
-        group: 'dashboard',
-        label: 'Dashboard',
-        items: [
-          { id: 'overview', label: 'Overview', icon: Home },
-          { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-          { id: 'reports', label: 'Reports', icon: TrendingUp }
-        ]
-      },
-      {
-        group: 'management',
-        label: 'Management',
-        items: [
-          { id: 'clients', label: 'Clients', icon: Users2 },
-          { id: 'leads', label: 'Leads', icon: Command },
-          { id: 'communications', label: 'Communications', icon: MessageSquare }
-        ]
-      },
-      {
-        group: 'analytics',
-        label: 'Analytics',
-        items: [
-          { id: 'performance', label: 'Performance', icon: Zap },
-          { id: 'settings', label: 'Settings', icon: Settings }
-        ]
-      }
-    ];
+  const handleServiceClick = useCallback((deptId: string, service: string) => {
+    dispatch(selectService({ department: deptId, service }));
+    onTabChange(`service-${deptId}`);
+  }, [dispatch, onTabChange]);
 
-    // Add admin section for super users
-    if (isSuperUser) {
-      baseItems.push({
-        group: 'admin',
-        label: 'Administration',
-        icon: Shield,
-        items: [
-          { id: 'admin-dashboard', label: 'Admin Dashboard', icon: Shield },
-          { id: 'system-health', label: 'System Health', icon: Activity },
-          { id: 'user-management', label: 'User Management', icon: Users2 },
-          { id: 'alerts', label: 'Alerts & Monitoring', icon: AlertCircle },
-          { id: 'system-settings', label: 'System Settings', icon: Settings }
-        ]
-      });
-    }
+  const handleTopItemClick = useCallback((itemId: string) => {
+    dispatch(closeFlyout());
+    onTabChange(itemId);
+  }, [dispatch, onTabChange]);
 
-    return baseItems;
-  };
-
-  const menuGroups = getMenuItems();
-
-  const isAdminGroup = (group: MenuGroup): boolean => group.group === 'admin' && !!isSuperUser;
+  const activeDept = DEPARTMENTS[flyoutDepartment || ''];
 
   return (
-    <SidebarContainerWrapper $collapsed={collapsed}>
-      {/* Header with Logo */}
-      <SidebarHeader>
-        <SidebarLogo>
-          <LogoBadge>
-            <span>WC</span>
-          </LogoBadge>
-          {!collapsed && (
-            <LogoText>
-              <LogoTitle>White Caves</LogoTitle>
-              <LogoSubtitle>Real Estate</LogoSubtitle>
-            </LogoText>
-          )}
-        </SidebarLogo>
-      </SidebarHeader>
+    <>
+      {/* Backdrop to close flyout on outside click */}
+      {flyoutOpen && <FlyoutBackdrop onClick={() => dispatch(closeFlyout())} />}
 
-      {/* Navigation */}
-      <SidebarNav>
-        {menuGroups.map(group => {
-          const isAdmin = isAdminGroup(group);
-          const GroupHeaderComponent = isAdmin ? AdminGroupHeader : GroupHeader;
+      <RailContainer>
+        <RailWrapper>
+          {/* ── Top navigation items ─────────────────────── */}
+          {TOP_ITEMS.map(item => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            return (
+              <RailIcon key={item.id}>
+                <RailIconButton
+                  $active={isActive}
+                  onClick={() => handleTopItemClick(item.id)}
+                  aria-label={item.label}
+                  title={item.label}
+                >
+                  <Icon size={22} />
+                </RailIconButton>
+                <RailTooltip>{item.label}</RailTooltip>
+              </RailIcon>
+            );
+          })}
 
-          return (
-            <NavGroup key={group.group} className={group.group === 'departments' ? 'departments-group' : ''}>
-              {/* Group Header */}
-              <GroupHeaderComponent
-                $expanded={expandedGroups[group.group]}
-                $isDepartments={group.group === 'departments'}
-                onClick={() => !collapsed && toggleGroup(group.group)}
-                title={collapsed ? group.label : ''}
+          <RailDivider />
+
+          {/* ── Department icons ──────────────────────────── */}
+          {Object.entries(DEPARTMENTS).map(([deptId, dept]) => {
+            const Icon = dept.icon;
+            const isActive = selectedDepartment === deptId;
+            const isFlyoutTarget = flyoutDepartment === deptId && flyoutOpen;
+            return (
+              <RailIcon key={deptId}>
+                <RailIconButton
+                  $active={isActive}
+                  $isFlyoutTarget={isFlyoutTarget}
+                  $color={dept.color}
+                  onClick={() => handleDeptClick(deptId)}
+                  aria-label={dept.label}
+                  title={dept.label}
+                >
+                  <Icon size={20} />
+                </RailIconButton>
+                <RailTooltip>{dept.label}</RailTooltip>
+              </RailIcon>
+            );
+          })}
+
+          <RailSpacer />
+
+          {/* ── Bottom pinned items ──────────────────────── */}
+          <RailDivider />
+
+          {/* AI Assistants toggle */}
+          <RailIcon>
+            <RailIconButton
+              onClick={() => dispatch(toggleRightPanel())}
+              aria-label="AI Assistants"
+              title="AI Assistants"
+            >
+              <Bot size={22} />
+            </RailIconButton>
+            <RailTooltip>AI Assistants</RailTooltip>
+          </RailIcon>
+
+          {/* Admin (super user only) */}
+          {isSuperUser && (
+            <RailIcon>
+              <RailIconButton
+                onClick={() => onTabChange('admin-dashboard')}
+                aria-label="Admin"
+                title="Admin Dashboard"
               >
-                <span>{group.label}</span>
-                {!collapsed && (
-                  <GroupToggle $rotated={expandedGroups[group.group]}>
-                    <ChevronRight size={16} />
-                  </GroupToggle>
-                )}
-              </GroupHeaderComponent>
+                <Shield size={20} />
+              </RailIconButton>
+              <RailTooltip>Admin</RailTooltip>
+            </RailIcon>
+          )}
 
-              {/* Group Items */}
-              {expandedGroups[group.group] && !collapsed && (
-                <GroupItems>
-                  {group.items.map(item => {
-                    const IconComponent = item.icon;
-                    const ItemComponent = isAdmin ? AdminNavItem : NavItem;
+          {/* Settings */}
+          <RailIcon>
+            <RailIconButton
+              $active={activeTab === 'settings'}
+              onClick={() => handleTopItemClick('settings')}
+              aria-label="Settings"
+              title="Settings"
+            >
+              <Settings size={20} />
+            </RailIconButton>
+            <RailTooltip>Settings</RailTooltip>
+          </RailIcon>
+        </RailWrapper>
 
-                    return (
-                      <ItemComponent
-                        key={item.id}
-                        $active={activeTab === item.id}
-                        onClick={() => onTabChange(item.id)}
-                        title={item.label}
-                      >
-                        <NavIcon>
-                          <IconComponent size={20} />
-                        </NavIcon>
-                        <NavLabel>{item.label}</NavLabel>
-                      </ItemComponent>
-                    );
-                  })}
-                </GroupItems>
-              )}
-
-              {/* Icon-Only Mode (Collapsed) */}
-              {collapsed && (
-                <GroupItemsCollapsed>
-                  {group.items.map(item => {
-                    const IconComponent = item.icon;
-                    return (
-                      <NavItemIcon
-                        key={item.id}
-                        $active={activeTab === item.id}
-                        onClick={() => onTabChange(item.id)}
-                        title={item.label}
-                      >
-                        <NavIconLarge>
-                          <IconComponent size={24} />
-                        </NavIconLarge>
-                        <NavTooltip>{item.label}</NavTooltip>
-                      </NavItemIcon>
-                    );
-                  })}
-                </GroupItemsCollapsed>
-              )}
-            </NavGroup>
-          );
-        })}
-
-        {/* Departments Section */}
-        <NavGroup className="departments-group">
-          {/* Departments Header */}
-          <GroupHeader
-            $expanded={expandedGroups.departments}
-            $isDepartments={true}
-            onClick={() => !collapsed && toggleGroup('departments')}
-            title={collapsed ? 'Departments' : ''}
-          >
-            <span>Departments</span>
-            {!collapsed && (
-              <GroupToggle $rotated={expandedGroups.departments}>
-                <ChevronRight size={16} />
-              </GroupToggle>
-            )}
-          </GroupHeader>
-
-          {/* Departments List */}
-          {expandedGroups.departments && !collapsed && (
-            <DepartmentsList>
-              {Object.entries(DEPARTMENTS).map(([deptId, dept]) => {
-                const IconComponent = dept.icon;
-                const isExpanded = expandedDepartments[deptId];
-                const isSelected = selectedDepartment === deptId;
-
-                return (
-                  <DepartmentItem key={deptId}>
-                    {/* Department Header */}
-                    <DepartmentHeader
-                      $selected={isSelected}
-                      $deptColor={dept.color}
-                      onClick={() => handleDepartmentSelect(deptId)}
-                      title={dept.label}
+        {/* ── Flyout panel ─────────────────────────────── */}
+        <FlyoutPanel $open={flyoutOpen} $color={activeDept?.color}>
+          {activeDept && flyoutDepartment && (
+            <>
+              <FlyoutHeader>
+                <FlyoutTitle $color={activeDept.color}>
+                  {activeDept.label}
+                </FlyoutTitle>
+                <FlyoutClose onClick={() => dispatch(closeFlyout())} aria-label="Close flyout">
+                  <ChevronLeft size={16} />
+                </FlyoutClose>
+              </FlyoutHeader>
+              <FlyoutNav>
+                {activeDept.services.map((service) => {
+                  const isActiveSvc =
+                    selectedDepartment === flyoutDepartment && selectedSvc === service;
+                  return (
+                    <FlyoutItem
+                      key={service}
+                      $active={isActiveSvc}
+                      $color={activeDept.color}
+                      onClick={() => handleServiceClick(flyoutDepartment, service)}
                     >
-                      <DeptIcon $deptColor={dept.color}>
-                        <IconComponent size={18} />
-                      </DeptIcon>
-                      <DeptLabel>{dept.label}</DeptLabel>
-                      <DeptToggle $rotated={isExpanded} $deptColor={dept.color}>
-                        <ChevronRight size={14} />
-                      </DeptToggle>
-                    </DepartmentHeader>
-
-                    {/* Department Services */}
-                    {isExpanded && (
-                      <DepartmentServices $deptColor={dept.color}>
-                        {dept.services.map((service: string, idx: number) => (
-                          <ServiceItem
-                            key={service}
-                            $active={selectedService === service}
-                            $deptColor={dept.color}
-                            onClick={() => {
-                              dispatch(selectService({ department: deptId, service }));
-                              onTabChange(`service-${deptId}-${idx}`);
-                            }}
-                            title={service}
-                          >
-                            <ServiceDot $color={dept.color} />
-                            <ServiceLabel>{service}</ServiceLabel>
-                          </ServiceItem>
-                        ))}
-                      </DepartmentServices>
-                    )}
-                  </DepartmentItem>
-                );
-              })}
-            </DepartmentsList>
+                      <FlyoutDot $color={activeDept.color} />
+                      {service}
+                    </FlyoutItem>
+                  );
+                })}
+              </FlyoutNav>
+            </>
           )}
-
-          {/* Icon-Only Mode (Collapsed) - Department Icons */}
-          {collapsed && (
-            <DepartmentsCollapsed>
-              {Object.entries(DEPARTMENTS).slice(0, 4).map(([deptId, dept]) => {
-                const IconComponent = dept.icon;
-                const isSelected = selectedDepartment === deptId;
-
-                return (
-                  <DeptIconBtn
-                    key={deptId}
-                    $active={isSelected}
-                    $deptColor={dept.color}
-                    onClick={() => handleDepartmentSelect(deptId)}
-                    title={dept.label}
-                  >
-                    <IconComponent size={20} />
-                    <NavTooltip>{dept.label}</NavTooltip>
-                  </DeptIconBtn>
-                );
-              })}
-            </DepartmentsCollapsed>
-          )}
-        </NavGroup>
-      </SidebarNav>
-    </SidebarContainerWrapper>
+        </FlyoutPanel>
+      </RailContainer>
+    </>
   );
 };
 

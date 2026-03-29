@@ -59,7 +59,7 @@ export const REAL_ESTATE_ROLES: RoleDefinition[] = [
     id: 'super_admin',
     name: 'Super Admin',
     icon: Shield,
-    color: '#D4AF37',
+    color: '#E31E24',
     description: 'System administration and user management',
     permissions: ['admin.*', 'users.*', 'settings.*'],
     dashboardPath: '/admin/dashboard',

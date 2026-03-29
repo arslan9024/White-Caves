@@ -21,7 +21,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
   const stats = [
     { title: 'Total Properties', value: data?.totalProperties ?? 0, icon: '🏠', color: '#DC2626', change: '+12%' },
     { title: 'Active Agents', value: data?.activeAgents ?? 0, icon: '👥', color: '#2563EB', change: '+5%' },
-    { title: 'Monthly Revenue', value: `AED ${(data?.monthlyRevenue ?? 0).toLocaleString()}`, icon: '💰', color: '#D4AF37', change: '+18%' },
+    { title: 'Monthly Revenue', value: `AED ${(data?.monthlyRevenue ?? 0).toLocaleString()}`, icon: '💰', color: '#E31E24', change: '+18%' },
     { title: 'WhatsApp Leads', value: data?.whatsappLeads ?? 0, icon: '💬', color: '#25D366', change: '+25%' },
     { title: 'UAE Pass Users', value: data?.uaepassUsers ?? 0, icon: '🆔', color: '#ce1126', change: '+15%' },
     { title: 'Chatbot Chats', value: data?.chatbotConversations ?? 0, icon: '🤖', color: '#8B5CF6', change: '+30%' },

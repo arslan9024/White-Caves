@@ -18,7 +18,7 @@
 }
 
 .role-selector-trigger:hover {
-  border-color: var(--primary-color, #D4AF37);
+  border-color: var(--primary-color, #E31E24);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 

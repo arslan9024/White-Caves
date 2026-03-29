@@ -10,7 +10,7 @@ vi.mock('../../../styles/theme', () => ({
       border: '#e0e0e0',
       background: { secondary: '#f5f5f5', tertiary: '#eee' },
       text: { primary: '#222', disabled: '#aaa' },
-      primary: '#D4AF37',
+      primary: '#E31E24',
       error: '#C62828',
     },
     typography: {

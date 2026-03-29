@@ -1,15 +1,15 @@
 /**
  * Color Palette - White Caves Brand Colors
  * All colors used throughout the application, organized by purpose
- * 2026 Gold Rebrand: Red (#D32F2F) → Gold (#D4AF37)
+ * 2026 Brand: RED (#E31E24) primary, GOLD (#D4AF37) accent only
  */
 
 export const colors = {
-  // Primary Brand Colors (GOLD)
-  primary: '#D4AF37',
-  primaryDark: '#B8860B',
-  primaryLight: '#FFCA28',
-  primaryVeryLight: '#FFF8E1',
+  // Primary Brand Colors (RED)
+  primary: '#E31E24',
+  primaryDark: '#C62828',
+  primaryLight: '#EF5350',
+  primaryVeryLight: '#FFEBEE',
 
   // Secondary Colors
   secondary: '#2E5A4F',

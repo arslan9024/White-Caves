@@ -90,8 +90,8 @@
 
 .header-action-btn:hover {
   background: var(--bg-hover, #f3f4f6);
-  color: var(--primary-color, #D4AF37);
-  border-color: var(--primary-color, #D4AF37);
+  color: var(--primary-color, #E31E24);
+  border-color: var(--primary-color, #E31E24);
 }
 
 .close-btn {
@@ -168,7 +168,7 @@
 }
 
 .gallery-nav:hover {
-  background: var(--primary-color, #D4AF37);
+  background: var(--primary-color, #E31E24);
   color: white;
 }
 

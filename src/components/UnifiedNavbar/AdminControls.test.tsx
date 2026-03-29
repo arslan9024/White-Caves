@@ -8,7 +8,7 @@ vi.mock('../../styles/theme', () => ({
     spacing: { xs: '4px', sm: '8px', md: '16px', lg: '24px' },
     colors: {
       border: '#e0e0e0',
-      primary: '#D4AF37',
+      primary: '#E31E24',
       success: '#388E3C',
       error: '#C62828',
       warning: '#F57C00',

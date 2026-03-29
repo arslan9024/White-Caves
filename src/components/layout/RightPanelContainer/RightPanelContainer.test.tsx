@@ -1,237 +1,176 @@
+/**
+ * RightPanelContainer – Unit Tests (Redux-driven, no props)
+ * The component reads isOpen / selectedAssistant from Redux sidebarSlice.
+ */
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import sidebarReducer, { openRightPanel, closeRightPanel, selectAssistant } from '../../../store/slices/sidebarSlice';
 
-// Mock lucide-react
-vi.mock('lucide-react', () => ({
-  X: (props: any) => <span data-testid="icon-x" {...props} />,
-  Search: (props: any) => <span data-testid="icon-search" {...props} />,
-  ChevronRight: (props: any) => <span data-testid="icon-chevron" {...props} />,
-  Bot: (props: any) => <span data-testid="icon-bot" {...props} />,
-}));
+// Minimal auth slice so useSelector doesn't crash
+const authReducer = (state = { user: null }) => state;
 
-// Mock styled-components
-vi.mock('./styles', () => {
-  const c = (tag: string, testid?: string) => ({ children, ...props }: any) => {
-    const filtered: any = {};
-    for (const [k, v] of Object.entries(props)) {
-      if (!k.startsWith('$')) filtered[k] = v;
-    }
-    if (testid) filtered['data-testid'] = testid;
-    return React.createElement(tag, filtered, children);
-  };
+// We DO NOT mock styled-components — we just let them render as-is (or mock lightly)
+// But we mock lucide-react so it doesn't pull in SVGs
+vi.mock('lucide-react', async () => {
+  const stub = (name: string) =>
+    React.forwardRef(({ size, ...props }: any, ref: any) => (
+      <span data-testid={`icon-${name.toLowerCase()}`} ref={ref} {...props} />
+    ));
   return {
-    RightPanelRoot: ({ children, $isMobile, $isTablet, $isOpen, ...props }: any) => {
-      const filtered: any = {};
-      for (const [k, v] of Object.entries(props)) {
-        if (!k.startsWith('$')) filtered[k] = v;
-      }
-      return React.createElement('div', { ...filtered, 'data-testid': 'panel-root' }, children);
-    },
-    PanelHeader: c('div', 'panel-header'),
-    PanelTitle: c('div'),
-    PanelCloseButton: c('button'),
-    PanelSearchSection: c('div'),
-    SearchInputWrapper: c('div'),
-    SearchIcon: c('span'),
-    SearchInput: ({ ...props }: any) => React.createElement('input', props),
-    SearchClearButton: c('button'),
-    PanelContent: c('div', 'panel-content'),
-    AssistantGroup: c('div'),
-    GroupHeaderButton: ({ children, $expanded, ...props }: any) => {
-      const f: any = {};
-      for (const [k, v] of Object.entries(props)) { if (!k.startsWith('$')) f[k] = v; }
-      return React.createElement('button', f, children);
-    },
-    ToggleIcon: ({ children, $rotated, ...props }: any) => React.createElement('span', props, children),
-    GroupAssistants: c('div'),
-    AssistantItemButton: ({ children, $active, ...props }: any) => {
-      const f: any = {};
-      for (const [k, v] of Object.entries(props)) { if (!k.startsWith('$')) f[k] = v; }
-      return React.createElement('button', f, children);
-    },
-    AssistantAvatar: c('span'),
-    AssistantInfo: c('div'),
-    AssistantName: c('span'),
-    AssistantRole: c('span'),
-    NotificationBadge: c('span', 'notification-badge'),
-    PanelFooter: c('div'),
-    FooterHint: c('span'),
-    KeyboardKey: c('kbd'),
+    X: stub('X'),
+    Search: stub('Search'),
+    Bot: stub('Bot'),
+    MessageSquare: stub('MessageSquare'),
+    BarChart3: stub('BarChart3'),
+    Settings: stub('Settings'),
+    ChevronDown: stub('ChevronDown'),
   };
 });
 
-// Mock assistant registry
-vi.mock('../../../config/assistantRegistry', () => ({
-  getAllAssistants: () => [
-    { id: 'clara', name: 'Clara', description: 'Leads CRM', emoji: '👩', role: 'CRM Lead' },
-    { id: 'sophia', name: 'Sophia', description: 'Sales Analytics', emoji: '📊', role: 'Sales' },
-    { id: 'mary', name: 'Mary', description: 'Inventory Manager', emoji: '🏠', role: 'Inventory' },
-    { id: 'nadia', name: 'Nadia', description: 'Client Relations', emoji: '🤝', role: 'Client' },
-    { id: 'nancy', name: 'Nancy', description: 'HR Manager', emoji: '👔', role: 'HR' },
-    { id: 'daisy', name: 'Daisy', description: 'Operations', emoji: '⚙️', role: 'Ops' },
-    { id: 'theodora', name: 'Theodora', description: 'Finance', emoji: '💰', role: 'Finance' },
-    { id: 'zoe', name: 'Zoe', description: 'Executive CRM', emoji: '👑', role: 'Executive' },
-    { id: 'aurora', name: 'Aurora', description: 'CTO Dashboard', emoji: '🏛️', role: 'CTO' },
-    { id: 'hazel', name: 'Hazel', description: 'Security', emoji: '🔒', role: 'Security' },
-  ],
-}));
-
 import RightPanelContainer from './RightPanelContainer';
 
-describe('RightPanelContainer', () => {
-  const defaultProps = {
-    isOpen: true,
-    onClose: vi.fn(),
-    onAssistantSelect: vi.fn(),
-    notifications: {} as any,
-  };
+// ── Helper ───────────────────────────────────────────────────────
 
+function makeStore(sidebarOverrides: Record<string, unknown> = {}) {
+  return configureStore({
+    reducer: { sidebar: sidebarReducer, auth: authReducer },
+    preloadedState: {
+      sidebar: {
+        flyoutOpen: false,
+        flyoutDepartment: null,
+        rightPanelOpen: false,
+        selectedAssistant: null,
+        selectedDepartment: null,
+        selectedService: null,
+        commandPaletteOpen: false,
+        mobileSheetOpen: false,
+        ...sidebarOverrides,
+      } as ReturnType<typeof sidebarReducer>,
+    },
+  });
+}
+
+function renderPanel(sidebarOverrides: Record<string, unknown> = {}) {
+  const store = makeStore(sidebarOverrides);
+  const utils = render(
+    <Provider store={store}>
+      <RightPanelContainer />
+    </Provider>,
+  );
+  return { store, ...utils };
+}
+
+// ── Tests ────────────────────────────────────────────────────────
+
+describe('RightPanelContainer', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   describe('rendering', () => {
-    it('renders when open', () => {
-      render(<RightPanelContainer {...defaultProps} />);
-      expect(screen.getByTestId('panel-root')).toBeInTheDocument();
-    });
-
-    it('returns null when closed and not mobile', () => {
-      const { container } = render(<RightPanelContainer {...defaultProps} isOpen={false} />);
-      expect(container.firstChild).toBeNull();
-    });
-
     it('renders panel title "AI Assistants"', () => {
-      render(<RightPanelContainer {...defaultProps} />);
+      renderPanel({ rightPanelOpen: true });
       expect(screen.getByText('AI Assistants')).toBeInTheDocument();
     });
 
     it('renders search input', () => {
-      render(<RightPanelContainer {...defaultProps} />);
+      renderPanel({ rightPanelOpen: true });
       expect(screen.getByPlaceholderText('Search assistants...')).toBeInTheDocument();
     });
 
     it('renders close button', () => {
-      render(<RightPanelContainer {...defaultProps} />);
+      renderPanel({ rightPanelOpen: true });
       expect(screen.getByLabelText('Close panel')).toBeInTheDocument();
     });
 
-    it('renders footer keyboard hint', () => {
-      render(<RightPanelContainer {...defaultProps} />);
-      expect(screen.getByText('Cmd')).toBeInTheDocument();
+    it('renders Esc keyboard hint in footer', () => {
+      renderPanel({ rightPanelOpen: true });
+      expect(screen.getByText('Esc')).toBeInTheDocument();
     });
   });
 
   describe('groups', () => {
-    it('renders CRM Assistants group', () => {
-      render(<RightPanelContainer {...defaultProps} />);
-      expect(screen.getByText('CRM Assistants')).toBeInTheDocument();
+    it('renders CRM group', () => {
+      renderPanel({ rightPanelOpen: true });
+      expect(screen.getByText('CRM (2)')).toBeInTheDocument();
     });
 
     it('renders Operations group', () => {
-      render(<RightPanelContainer {...defaultProps} />);
-      expect(screen.getByText('Operations')).toBeInTheDocument();
+      renderPanel({ rightPanelOpen: true });
+      expect(screen.getByText('Operations (3)')).toBeInTheDocument();
     });
 
     it('renders Technical group', () => {
-      render(<RightPanelContainer {...defaultProps} />);
-      expect(screen.getByText('Technical')).toBeInTheDocument();
+      renderPanel({ rightPanelOpen: true });
+      expect(screen.getByText('Technical (2)')).toBeInTheDocument();
     });
 
-    it('shows CRM assistants by default (crm expanded)', () => {
-      render(<RightPanelContainer {...defaultProps} />);
+    it('shows Hazel assistant in CRM group', () => {
+      renderPanel({ rightPanelOpen: true });
+      expect(screen.getByText('Hazel')).toBeInTheDocument();
+    });
+
+    it('shows Clara assistant in CRM group', () => {
+      renderPanel({ rightPanelOpen: true });
       expect(screen.getByText('Clara')).toBeInTheDocument();
-      expect(screen.getByText('Sophia')).toBeInTheDocument();
+    });
+
+    it('shows Mary assistant in Operations group', () => {
+      renderPanel({ rightPanelOpen: true });
       expect(screen.getByText('Mary')).toBeInTheDocument();
-      expect(screen.getByText('Nadia')).toBeInTheDocument();
     });
 
-    it('shows Operations assistants by default (operations expanded)', () => {
-      render(<RightPanelContainer {...defaultProps} />);
-      expect(screen.getByText('Nancy')).toBeInTheDocument();
-      expect(screen.getByText('Daisy')).toBeInTheDocument();
-    });
-
-    it('technical group does not show assistants by default (collapsed)', () => {
-      render(<RightPanelContainer {...defaultProps} />);
-      // Technical is collapsed — Zoe, Aurora, Hazel should NOT be visible
-      expect(screen.queryByText('Zoe')).not.toBeInTheDocument();
-    });
-
-    it('expands technical group on click', () => {
-      render(<RightPanelContainer {...defaultProps} />);
-      fireEvent.click(screen.getByText('Technical'));
-      expect(screen.getByText('Zoe')).toBeInTheDocument();
-      expect(screen.getByText('Aurora')).toBeInTheDocument();
-    });
-
-    it('collapses CRM group on click', () => {
-      render(<RightPanelContainer {...defaultProps} />);
-      fireEvent.click(screen.getByText('CRM Assistants'));
-      expect(screen.queryByText('Clara')).not.toBeInTheDocument();
+    it('collapses a group on click', () => {
+      renderPanel({ rightPanelOpen: true });
+      // CRM group shows Hazel by default
+      expect(screen.getByText('Hazel')).toBeInTheDocument();
+      // Click the CRM group header to collapse (text is "CRM (2)")
+      const crmHeader = screen.getByText('CRM (2)');
+      fireEvent.click(crmHeader);
+      // Hazel should disappear
+      expect(screen.queryByText('Hazel')).not.toBeInTheDocument();
     });
   });
 
   describe('interactions', () => {
-    it('calls onClose when close button clicked', () => {
-      render(<RightPanelContainer {...defaultProps} />);
+    it('dispatches closeRightPanel when close button clicked', () => {
+      const { store } = renderPanel({ rightPanelOpen: true });
       fireEvent.click(screen.getByLabelText('Close panel'));
-      expect(defaultProps.onClose).toHaveBeenCalledTimes(1);
+      expect(store.getState().sidebar.rightPanelOpen).toBe(false);
     });
 
-    it('calls onAssistantSelect when assistant clicked', () => {
-      render(<RightPanelContainer {...defaultProps} />);
-      fireEvent.click(screen.getByText('Clara'));
-      expect(defaultProps.onAssistantSelect).toHaveBeenCalledWith(
-        expect.objectContaining({ id: 'clara', name: 'Clara' })
-      );
+    it('dispatches selectAssistant when assistant clicked', () => {
+      const { store } = renderPanel({ rightPanelOpen: true });
+      fireEvent.click(screen.getByText('Hazel'));
+      expect(store.getState().sidebar.selectedAssistant).toBe('hazel');
+    });
+
+    it('dispatches closeRightPanel on Escape key', () => {
+      const { store } = renderPanel({ rightPanelOpen: true });
+      fireEvent.keyDown(window, { key: 'Escape' });
+      expect(store.getState().sidebar.rightPanelOpen).toBe(false);
     });
   });
 
   describe('search', () => {
     it('filters assistants by name', () => {
-      render(<RightPanelContainer {...defaultProps} />);
+      renderPanel({ rightPanelOpen: true });
       const input = screen.getByPlaceholderText('Search assistants...');
-      fireEvent.change(input, { target: { value: 'nancy' } });
-      expect(screen.getByText('Nancy')).toBeInTheDocument();
-      // Clara should no longer be visible (doesn't match search)
-      expect(screen.queryByText('Clara')).not.toBeInTheDocument();
+      fireEvent.change(input, { target: { value: 'hazel' } });
+      expect(screen.getByText('Hazel')).toBeInTheDocument();
+      expect(screen.queryByText('Mary')).not.toBeInTheDocument();
     });
 
     it('filters assistants by description', () => {
-      render(<RightPanelContainer {...defaultProps} />);
+      renderPanel({ rightPanelOpen: true });
       const input = screen.getByPlaceholderText('Search assistants...');
       fireEvent.change(input, { target: { value: 'inventory' } });
       expect(screen.getByText('Mary')).toBeInTheDocument();
-    });
-
-    it('shows clear button when search has value', () => {
-      render(<RightPanelContainer {...defaultProps} />);
-      const input = screen.getByPlaceholderText('Search assistants...');
-      fireEvent.change(input, { target: { value: 'test' } });
-      expect(screen.getByLabelText('Clear search')).toBeInTheDocument();
-    });
-
-    it('clears search when clear button clicked', () => {
-      render(<RightPanelContainer {...defaultProps} />);
-      const input = screen.getByPlaceholderText('Search assistants...');
-      fireEvent.change(input, { target: { value: 'nancy' } });
-      fireEvent.click(screen.getByLabelText('Clear search'));
-      // Clara should be back
-      expect(screen.getByText('Clara')).toBeInTheDocument();
-    });
-  });
-
-  describe('notifications', () => {
-    it('renders notification badge when assistant has notifications', () => {
-      render(
-        <RightPanelContainer
-          {...defaultProps}
-          notifications={{ clara: [{ msg: 'hello' }, { msg: 'world' }] }}
-        />
-      );
-      expect(screen.getByText('2')).toBeInTheDocument();
+      expect(screen.queryByText('Alex')).not.toBeInTheDocument();
     });
   });
 });

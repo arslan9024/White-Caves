@@ -28,15 +28,15 @@
 
 :root {
   /* ======================================================================== 
-     PRIMARY BRAND COLORS (2026 Gold Rebrand)
+     PRIMARY BRAND COLORS (2026 Red Brand)
      ======================================================================== */
   
-  --color-primary: #D4AF37;
-  --color-primary-dark: #B8860B;
-  --color-primary-light: #FFF8E1;
-  --color-primary-alt: #C9A030;
-  --color-primary-alt-light: #FFCA28;
-  --color-primary-alt-hover: #9A7209;
+  --color-primary: #E31E24;
+  --color-primary-dark: #C62828;
+  --color-primary-light: #FFEBEE;
+  --color-primary-alt: #D32F2F;
+  --color-primary-alt-light: #EF5350;
+  --color-primary-alt-hover: #B71C1C;
   
   /* ======================================================================== 
      STATUS & FEEDBACK COLORS
@@ -253,7 +253,7 @@
   --dept-executive: #10B981;
   --dept-compliance: #6366F1;
   --dept-technology: #0EA5E9;
-  --dept-legal: #D4AF37;
+  --dept-legal: #E31E24;
   --dept-leasing: #14B8A6;
   --dept-backend: #06B6D4;
   --dept-frontend: #6366F1;
@@ -298,7 +298,7 @@
      ======================================================================== */
   
   /* Gradient overlays */
-  --gradient-primary: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+  --gradient-primary: linear-gradient(135deg, #E31E24 0%, #C62828 100%);
   --gradient-purple: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
   --gradient-pink: linear-gradient(135deg, #EC4899 0%, #F472B6 100%);
   --gradient-cyan: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%);
@@ -329,8 +329,8 @@
 [data-theme="dark"],
 body.dark-mode {
   /* Primary colors stay same in dark mode */
-  --color-primary: #E5C158;
-  --color-primary-dark: #D4AF37;
+  --color-primary: #EF5350;
+  --color-primary-dark: #E31E24;
   --color-primary-light: #FFCA28;
   
   /* Status colors (with dark mode variants) */
@@ -387,7 +387,7 @@ body.dark-mode {
   --color-off-white: #1E293B;
   
   /* Gradients adapt */
-  --gradient-primary: linear-gradient(135deg, #D4AF37 0%, #9A7209 100%);
+  --gradient-primary: linear-gradient(135deg, #E31E24 0%, #B71C1C 100%);
   --hero-overlay-dark: linear-gradient(135deg, rgba(212, 175, 55, 0.88) 0%, rgba(10, 10, 10, 0.92) 100%);
 }
 

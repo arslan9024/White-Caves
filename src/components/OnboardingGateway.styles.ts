@@ -46,7 +46,7 @@ export const StyledGatewaySubtitle = styled.p`
 export const StyledGatewayDivider = styled.div`
   width: 80px;
   height: 4px;
-  background: var(--primary-color, #d4af37);
+  background: var(--primary-color, #E31E24);
   border-radius: var(--radius-full, 9999px);
   margin: 1.5rem auto 0;
 `;
@@ -218,13 +218,13 @@ export const StyledFooterText = styled.p`
 `;
 
 export const StyledFooterLink = styled.a`
-  color: var(--primary-color, #d4af37);
+  color: var(--primary-color, #E31E24);
   font-weight: 600;
   text-decoration: none;
   transition: color 0.2s ease;
 
   &:hover {
-    color: var(--primary-dark, #b8860b);
+    color: var(--primary-dark, #C62828);
     text-decoration: underline;
   }
 `;

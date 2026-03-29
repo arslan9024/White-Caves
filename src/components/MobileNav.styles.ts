@@ -143,7 +143,7 @@ export const MobileHomeButton = styled.button`
   background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(184, 134, 11, 0.2));
   border: 1px solid rgba(212, 175, 55, 0.3);
   border-radius: 12px;
-  color: #D4AF37;
+  color: #E31E24;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -308,7 +308,7 @@ export const FooterButton = styled.button`
   background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(184, 134, 11, 0.2));
   border: 1px solid rgba(212, 175, 55, 0.3);
   border-radius: 8px;
-  color: #D4AF37;
+  color: #E31E24;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;

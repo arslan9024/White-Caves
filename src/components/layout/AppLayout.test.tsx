@@ -1,7 +1,7 @@
 /**
- * AppLayout — Unit Tests
- * Tests: rendering, role detection from URL, page title extraction,
- * children rendering, nav visibility toggle, user info pass-through
+ * AppLayout — Unit Tests (updated for new CRM layout)
+ * Tests: rendering, role detection from URL, children rendering,
+ * nav visibility toggle, component composition
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -13,18 +13,20 @@ import { MemoryRouter } from 'react-router-dom';
 
 // ── Mocks ────────────────────────────────────────────────────────
 
-vi.mock('../UnifiedNavbar', () => ({
-  UnifiedNavbar: ({ title, user, systemStatus }: Record<string, unknown>) => (
-    <div data-testid="unified-navbar" data-title={title as string} data-status={systemStatus as string}>
-      {user ? (user as Record<string, string>).name : 'No user'}
-    </div>
-  ),
+vi.mock('./TopBar', () => ({
+  TopBar: () => <div data-testid="top-bar">TopBar</div>,
 }));
 
-vi.mock('../common', () => ({
-  UniversalNav: (props: Record<string, unknown>) => (
-    <div data-testid="universal-nav">UniversalNav</div>
-  ),
+vi.mock('./SidebarContainer', () => ({
+  default: () => <div data-testid="sidebar-container">SidebarContainer</div>,
+}));
+
+vi.mock('./RightPanelContainer', () => ({
+  default: () => <div data-testid="right-panel">RightPanel</div>,
+}));
+
+vi.mock('../common/CommandPalette', () => ({
+  default: () => <div data-testid="command-palette">CommandPalette</div>,
 }));
 
 vi.mock('../../features/auth/components/BiometricLogin', () => ({
@@ -34,6 +36,8 @@ vi.mock('../../features/auth/components/BiometricLogin', () => ({
 vi.mock('./AppLayout/styles', () => ({
   AppLayoutContainer: ({ children, ...props }: Record<string, unknown>) =>
     <div data-testid="app-layout-container">{children as React.ReactNode}</div>,
+  AppBody: ({ children, ...props }: Record<string, unknown>) =>
+    <div data-testid="app-body">{children as React.ReactNode}</div>,
   AppMain: ({ children, ...props }: Record<string, unknown>) =>
     <main data-testid="app-main">{children as React.ReactNode}</main>,
 }));
@@ -41,21 +45,23 @@ vi.mock('./AppLayout/styles', () => ({
 import AppLayout from './AppLayout';
 import navigationReducer from '../../store/navigationSlice';
 import userReducer from '../../store/userSlice';
+import sidebarReducer from '../../store/slices/sidebarSlice';
 
 // ── Helpers ──────────────────────────────────────────────────────
 
-const createMockStore = (userOverrides: Record<string, unknown> = {}) => {
+const createMockStore = (overrides: Record<string, unknown> = {}) => {
   return configureStore({
     reducer: {
       navigation: navigationReducer,
       user: userReducer,
+      sidebar: sidebarReducer,
     },
     preloadedState: {
       user: {
         currentUser: null,
-        loading: false,
+        isLoading: false,
         error: null,
-        ...userOverrides,
+        ...overrides,
       } as ReturnType<typeof userReducer>,
     },
   });
@@ -63,10 +69,10 @@ const createMockStore = (userOverrides: Record<string, unknown> = {}) => {
 
 const renderLayout = (
   path = '/',
-  userOverrides: Record<string, unknown> = {},
+  overrides: Record<string, unknown> = {},
   props: Record<string, unknown> = {},
 ) => {
-  const store = createMockStore(userOverrides);
+  const store = createMockStore(overrides);
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[path]}>
@@ -93,14 +99,24 @@ describe('AppLayout', () => {
       expect(screen.getByTestId('app-layout-container')).toBeInTheDocument();
     });
 
-    it('should render the unified navbar', () => {
+    it('should render the TopBar', () => {
       renderLayout();
-      expect(screen.getByTestId('unified-navbar')).toBeInTheDocument();
+      expect(screen.getByTestId('top-bar')).toBeInTheDocument();
     });
 
-    it('should render the UniversalNav by default', () => {
+    it('should render the CommandPalette', () => {
       renderLayout();
-      expect(screen.getByTestId('universal-nav')).toBeInTheDocument();
+      expect(screen.getByTestId('command-palette')).toBeInTheDocument();
+    });
+
+    it('should render the SidebarContainer by default', () => {
+      renderLayout();
+      expect(screen.getByTestId('sidebar-container')).toBeInTheDocument();
+    });
+
+    it('should render the RightPanelContainer by default', () => {
+      renderLayout();
+      expect(screen.getByTestId('right-panel')).toBeInTheDocument();
     });
 
     it('should render BiometricReminder', () => {
@@ -118,47 +134,29 @@ describe('AppLayout', () => {
       renderLayout();
       expect(screen.getByTestId('app-main')).toBeInTheDocument();
     });
+
+    it('should render the app body wrapper', () => {
+      renderLayout();
+      expect(screen.getByTestId('app-body')).toBeInTheDocument();
+    });
   });
 
   // ── Nav Visibility ───────────────────────────────────────────
 
   describe('Nav Visibility', () => {
-    it('should hide UniversalNav when showNav is false', () => {
+    it('should hide SidebarContainer when showNav is false', () => {
       renderLayout('/', {}, { showNav: false });
-      expect(screen.queryByTestId('universal-nav')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('sidebar-container')).not.toBeInTheDocument();
     });
 
-    it('should show UniversalNav when showNav is true (default)', () => {
+    it('should hide RightPanelContainer when showNav is false', () => {
+      renderLayout('/', {}, { showNav: false });
+      expect(screen.queryByTestId('right-panel')).not.toBeInTheDocument();
+    });
+
+    it('should show SidebarContainer when showNav is true (default)', () => {
       renderLayout();
-      expect(screen.getByTestId('universal-nav')).toBeInTheDocument();
-    });
-  });
-
-  // ── Page Title ───────────────────────────────────────────────
-
-  describe('Page Title', () => {
-    it('should pass "Home" title for root path', () => {
-      renderLayout('/');
-      const navbar = screen.getByTestId('unified-navbar');
-      expect(navbar.getAttribute('data-title')).toBe('Home');
-    });
-
-    it('should extract title from path and capitalize', () => {
-      renderLayout('/owner/crm');
-      const navbar = screen.getByTestId('unified-navbar');
-      expect(navbar.getAttribute('data-title')).toBe('Crm');
-    });
-
-    it('should replace hyphens with spaces in title', () => {
-      renderLayout('/owner/agent-performance');
-      const navbar = screen.getByTestId('unified-navbar');
-      expect(navbar.getAttribute('data-title')).toBe('Agent Performance');
-    });
-
-    it('should use last path segment as title', () => {
-      renderLayout('/owner/crm/leads');
-      const navbar = screen.getByTestId('unified-navbar');
-      expect(navbar.getAttribute('data-title')).toBe('Leads');
+      expect(screen.getByTestId('sidebar-container')).toBeInTheDocument();
     });
   });
 
@@ -222,30 +220,7 @@ describe('AppLayout', () => {
           </MemoryRouter>
         </Provider>,
       );
-      // activeRole should remain at its initial value (not 'unknown')
       expect(store.getState().navigation.activeRole).not.toBe('unknown');
-    });
-  });
-
-  // ── User Info Pass-Through ───────────────────────────────────
-
-  describe('User Info', () => {
-    it('should pass user info to navbar when user exists', () => {
-      renderLayout('/', {
-        currentUser: { id: 'u1', name: 'Ahmed', email: 'ahmed@wc.ae', role: 'owner' },
-      });
-      expect(screen.getByText('Ahmed')).toBeInTheDocument();
-    });
-
-    it('should show "No user" when no user is logged in', () => {
-      renderLayout('/', { currentUser: null });
-      expect(screen.getByText('No user')).toBeInTheDocument();
-    });
-
-    it('should pass system status to navbar', () => {
-      renderLayout();
-      const navbar = screen.getByTestId('unified-navbar');
-      expect(navbar.getAttribute('data-status')).toBe('online');
     });
   });
 });

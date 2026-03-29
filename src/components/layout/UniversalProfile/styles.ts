@@ -19,7 +19,7 @@ export const ProfileSignInBtn = styled(RouterLink)`
   align-items: center;
   gap: 8px;
   padding: 10px 24px;
-  background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+  background: linear-gradient(135deg, #E31E24 0%, #C62828 100%);
   color: #ffffff;
   font-size: 0.9rem;
   font-weight: 600;
@@ -30,7 +30,7 @@ export const ProfileSignInBtn = styled(RouterLink)`
   cursor: pointer;
 
   &:hover {
-    background: linear-gradient(135deg, #FFCA28 0%, #D4AF37 100%);
+    background: linear-gradient(135deg, #FFCA28 0%, #E31E24 100%);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
   }
@@ -68,7 +68,7 @@ export const ProfileAvatar = styled.div<{ $large?: boolean }>`
   width: ${props => (props.$large ? '50px' : '42px')};
   height: ${props => (props.$large ? '50px' : '42px')};
   border-radius: 50%;
-  background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+  background: linear-gradient(135deg, #E31E24 0%, #C62828 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -78,7 +78,7 @@ export const ProfileAvatar = styled.div<{ $large?: boolean }>`
   flex-shrink: 0;
 
   ${ProfileTrigger}:hover & {
-    border-color: #D4AF37;
+    border-color: #E31E24;
     transform: scale(1.05);
   }
 

@@ -63,7 +63,7 @@ export const RedirectNotice = styled.p`
 
 export const Countdown = styled.span`
   display: inline-block;
-  background: linear-gradient(135deg, #d4af37, #b8860b);
+  background: linear-gradient(135deg, #E31E24, #C62828);
   color: #0a0a0f;
   width: 26px;
   height: 26px;
@@ -76,7 +76,7 @@ export const Countdown = styled.span`
 export const ErrorHomeBtn = styled.button`
   margin-top: 25px;
   padding: 12px 28px;
-  background: linear-gradient(135deg, #d4af37, #b8860b);
+  background: linear-gradient(135deg, #E31E24, #C62828);
   color: #0a0a0f;
   border: none;
   border-radius: 10px;

@@ -15,7 +15,7 @@
 }
 
 .wc-select__required {
-  color: var(--primary-gold, #D4AF37);
+  color: var(--primary-gold, #E31E24);
   margin-left: 0.25rem;
 }
 
@@ -40,7 +40,7 @@
 
 .wc-select:focus {
   outline: none;
-  border-color: var(--primary-gold, #D4AF37);
+  border-color: var(--primary-gold, #E31E24);
   box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
 }
 
@@ -78,7 +78,7 @@
 }
 
 .wc-select:focus + .wc-select__arrow {
-  color: var(--primary-gold, #D4AF37);
+  color: var(--primary-gold, #E31E24);
 }
 
 .wc-select__helper {

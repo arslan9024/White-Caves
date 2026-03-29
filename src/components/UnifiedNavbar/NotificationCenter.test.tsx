@@ -11,7 +11,7 @@ vi.mock('../../styles/theme', () => ({
   theme: {
     colors: {
       text: { primary: '#1a1a1a', secondary: '#6b7280', disabled: '#9ca3af' },
-      primary: '#d4af37',
+      primary: '#E31E24',
       border: '#e5e7eb',
       background: { primary: '#ffffff', secondary: '#f9fafb' },
     },

@@ -2,9 +2,9 @@
 
 :root {
   /* ── PRIMARY VARIABLES (canonical naming) ──────────────────────────── */
-  --color-primary: #D4AF37;
-  --color-primary-dark: #B8860B;
-  --color-primary-light: #FFF8E1;
+  --color-primary: #E31E24;
+  --color-primary-dark: #C62828;
+  --color-primary-light: #FFEBEE;
   
   --color-white: #FFFFFF;
   --color-off-white: #F9FAFB;
@@ -25,7 +25,7 @@
   --primary-color: var(--color-primary);
   --primary-hover: var(--color-primary-dark);
   --primary-light: var(--color-primary-light);
-  --primary-dark: #9A7209;
+  --primary-dark: #B71C1C;
   --secondary-color: var(--color-dark-gray);
   --secondary-hover: #374151;
   --accent-gold: var(--color-gold);
@@ -76,7 +76,7 @@
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-red: 0 0 20px rgba(212, 175, 55, 0.15);
+  --shadow-red: 0 0 20px rgba(227, 30, 36, 0.15);
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   
   --transition-fast: 0.15s ease;
@@ -129,7 +129,7 @@
   --text-secondary: #e2e8f0;
   --text-muted: #94a3b8;
   --text-inverse: #0f172a;
-  --text-link: #E5C158;
+  --text-link: #EF5350;
   
   --border-color: #334155;
   --border-light: rgba(255, 255, 255, 0.1);

@@ -69,7 +69,7 @@ export const RedirectNotice = styled.p`
 
 export const Countdown = styled.span`
   display: inline-block;
-  background: linear-gradient(135deg, #d4af37, #b8860b);
+  background: linear-gradient(135deg, #E31E24, #C62828);
   color: #0a0a0f;
   width: 28px;
   height: 28px;
@@ -102,16 +102,16 @@ export const ErrorButton = styled.button<{ $variant?: 'primary' | 'secondary' }>
       return `
         background: transparent;
         border: 2px solid rgba(212, 175, 55, 0.5);
-        color: #d4af37;
+        color: #E31E24;
 
         &:hover {
           background: rgba(212, 175, 55, 0.1);
-          border-color: #d4af37;
+          border-color: #E31E24;
         }
       `;
     }
     return `
-      background: linear-gradient(135deg, #d4af37, #b8860b);
+      background: linear-gradient(135deg, #E31E24, #C62828);
       color: #0a0a0f;
 
       &:hover {

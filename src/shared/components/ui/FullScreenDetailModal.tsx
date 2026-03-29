@@ -112,7 +112,7 @@ const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
           
           <div className="modal-header-actions">
             <button className="header-action-btn" onClick={() => setIsFavorite(!isFavorite)} aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'} aria-pressed={isFavorite}>
-              <Heart size={20} fill={isFavorite ? '#D4AF37' : 'none'} color={isFavorite ? '#D4AF37' : 'currentColor'} />
+              <Heart size={20} fill={isFavorite ? '#E31E24' : 'none'} color={isFavorite ? '#E31E24' : 'currentColor'} />
             </button>
             <button className="header-action-btn" aria-label="Share">
               <Share2 size={20} />
