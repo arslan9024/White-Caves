@@ -584,10 +584,8 @@ const UnifiedDashboardPage: FC = () => {
       <div className="unified-dashboard-layout">
         {/* Left Sidebar - Fixed Overlay (Desktop) / Drawer (Mobile) */}
         <SidebarContainer
-          collapsed={leftCollapsed}
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          role={currentRole}
         />
 
         {/* Center Content Area */}
