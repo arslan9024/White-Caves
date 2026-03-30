@@ -271,4 +271,9 @@ export const getInitialState = (): AIAssistantDashboardState => ({
   },
 
   initialized: true,
+
+  // Phase 0.8 — plan loading state
+  plans: {},
+  plansLoading: {},
+  plansError: {},
 });

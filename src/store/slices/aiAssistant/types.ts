@@ -334,4 +334,8 @@ export interface AIAssistantDashboardState {
   leadManagementHub: LeadManagementHubState;
   complianceEngine: ComplianceEngineState;
   initialized: boolean;
+  /** Phase 0.8 — markdown plans keyed by assistant id */
+  plans: Record<string, string | null>;
+  plansLoading: Record<string, boolean>;
+  plansError: Record<string, string | null>;
 }

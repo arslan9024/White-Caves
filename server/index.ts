@@ -30,6 +30,7 @@ import communicationsRoutes from './routes/communications.js';
 import reportingRoutes from './routes/reporting.js';
 import complianceRoutes from './routes/compliance.js';
 import crmRoutes from './routes/crm.js';
+import assistantsRoutes from './routes/assistants.js';
 
 // Load environment variables
 dotenv.config();
@@ -218,6 +219,9 @@ app.use('/api/compliance', complianceRoutes);
 // CRM General API (Search, Analytics, Dashboard, Export)
 app.use('/api/crm/export', strictLimiter); // Strict rate limit on data export
 app.use('/api/crm', crmRoutes);
+
+// AI Assistants API (Phase 0.8 — plan management)
+app.use('/api/assistants', assistantsRoutes);
 
 // ============================================================================
 // STUB ROUTES — Placeholder APIs for frontend pages not yet backed by full CRUD
