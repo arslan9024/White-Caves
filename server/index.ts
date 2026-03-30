@@ -33,6 +33,8 @@ import crmRoutes from './routes/crm.js';
 import nadiaRoutes from './routes/nadia.js';
 import lindaRoutes from './routes/linda.js';
 import metaWebhookRoutes from './routes/meta-webhook.js';
+import favoritesRoutes from './routes/favorites.js';
+import savedSearchesRoutes from './routes/saved-searches.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 
 // Load environment variables
@@ -198,6 +200,12 @@ app.use('/api/linda', lindaRoutes);
 
 // Meta Business API Webhooks and Sending (production scale channel)
 app.use('/api/webhooks/meta', metaWebhookRoutes);
+
+// Favorites API (any authenticated user can manage their own favorites)
+app.use('/api/favorites', favoritesRoutes);
+
+// Saved Searches API (any authenticated user can manage their own saved searches)
+app.use('/api/saved-searches', savedSearchesRoutes);
 
 // WhatsApp Webhook (public endpoint — requires webhook secret for verification)
 app.post('/api/whatsapp/webhook', asyncHandler(async (req: Request, res: Response) => {

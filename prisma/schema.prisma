@@ -31,6 +31,13 @@ model User {
   activities    Activity[]
   transactions  Transaction[] @relation("TransactionAgent")
   commissions   Commission[]
+  favorites     Favorite[]
+  savedSearches SavedSearch[]
+  viewings      Viewing[]    @relation("ViewingUser")
+  offersAsBuyer Offer[]      @relation("OfferBuyer")
+  leasesAsTenant Lease[]     @relation("LeaseTenant")
+  leasesAsLandlord Lease[]   @relation("LeaseLandlord")
+  maintenanceRequests Maintenance[] @relation("MaintenanceRequester")
 
   @@index([role])
   @@index([status])
@@ -67,6 +74,11 @@ model Property {
   transactions Transaction[]
   tenants      Tenant[]
   commissions  Commission[]
+  favorites    Favorite[]
+  viewings     Viewing[]
+  offers       Offer[]
+  leases       Lease[]
+  maintenanceRequests Maintenance[]
 
   @@index([status])
   @@index([type])
@@ -105,6 +117,8 @@ model Lead {
   activities   Activity[]
   transactions Transaction[]
   commissions  Commission[]
+  viewings     Viewing[]
+  offers       Offer[]
 
   @@index([status])
   @@index([source])
@@ -298,4 +312,187 @@ model Commission {
   @@index([agentId, status])  // Composite for agent performance queries
   @@index([propertyId])
   @@index([leadId])
+}
+
+// ─── FAVORITE ───────────────────────────────────────────────────────────
+
+model Favorite {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt  DateTime @default(now())
+
+  // Relations
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+  propertyId String   @db.ObjectId
+  property   Property @relation(fields: [propertyId], references: [id])
+
+  @@unique([userId, propertyId]) // One favorite per user per property
+  @@index([userId])
+  @@index([propertyId])
+  @@index([createdAt])
+}
+
+// ─── SAVED SEARCH ───────────────────────────────────────────────────────
+
+model SavedSearch {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   // e.g. "3BR apartments in JBR under 2M"
+  filters     Json     // { type, minPrice, maxPrice, bedrooms, location, area, ... }
+  alertEnabled Boolean @default(false) // Notify user when new matches appear
+  lastChecked DateTime?
+  matchCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([alertEnabled])
+  @@index([createdAt])
+}
+
+// ─── VIEWING ────────────────────────────────────────────────────────────
+
+model Viewing {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  scheduledAt   DateTime
+  duration      Int      @default(30)  // minutes
+  status        String   @default("scheduled") // scheduled, confirmed, completed, cancelled, no_show
+  type          String   @default("in_person") // in_person, virtual, open_house
+  notes         String?
+  feedback      String?  // Post-viewing feedback
+  rating        Int?     // 1-5 star rating
+  location      String?  // Meeting point or virtual link
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  userId        String   @db.ObjectId
+  user          User     @relation("ViewingUser", fields: [userId], references: [id])
+  propertyId    String   @db.ObjectId
+  property      Property @relation(fields: [propertyId], references: [id])
+  leadId        String?  @db.ObjectId
+  lead          Lead?    @relation(fields: [leadId], references: [id])
+
+  @@index([userId])
+  @@index([propertyId])
+  @@index([leadId])
+  @@index([status])
+  @@index([scheduledAt])
+  @@index([createdAt])
+}
+
+// ─── OFFER ──────────────────────────────────────────────────────────────
+
+model Offer {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  amount        Float
+  status        String   @default("pending") // pending, accepted, rejected, countered, expired, withdrawn
+  expiresAt     DateTime?
+  terms         String?  // Free-text negotiation terms
+  counterAmount Float?   // Counter-offer amount
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  buyerId       String   @db.ObjectId
+  buyer         User     @relation("OfferBuyer", fields: [buyerId], references: [id])
+  propertyId    String   @db.ObjectId
+  property      Property @relation(fields: [propertyId], references: [id])
+  leadId        String?  @db.ObjectId
+  lead          Lead?    @relation(fields: [leadId], references: [id])
+
+  @@index([buyerId])
+  @@index([propertyId])
+  @@index([leadId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ─── LEASE ──────────────────────────────────────────────────────────────
+
+model Lease {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  leaseNumber   String?
+  startDate     DateTime
+  endDate       DateTime
+  monthlyRent   Float
+  depositAmount Float    @default(0)
+  status        String   @default("draft") // draft, active, expiring, expired, terminated, renewed
+  terms         String?
+  documents     String[]
+  nextPaymentDue DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  tenantId      String   @db.ObjectId
+  tenant        User     @relation("LeaseTenant", fields: [tenantId], references: [id])
+  landlordId    String   @db.ObjectId
+  landlord      User     @relation("LeaseLandlord", fields: [landlordId], references: [id])
+  propertyId    String   @db.ObjectId
+  property      Property @relation(fields: [propertyId], references: [id])
+
+  @@index([tenantId])
+  @@index([landlordId])
+  @@index([propertyId])
+  @@index([status])
+  @@index([endDate])
+  @@index([createdAt])
+}
+
+// ─── MAINTENANCE ────────────────────────────────────────────────────────
+
+model Maintenance {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  description   String?
+  category      String   @default("general") // plumbing, electrical, hvac, appliance, structural, general
+  priority      String   @default("medium")  // low, medium, high, emergency
+  status        String   @default("open")    // open, in_progress, scheduled, completed, cancelled
+  scheduledDate DateTime?
+  completedAt   DateTime?
+  cost          Float?
+  images        String[]
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  requesterId   String   @db.ObjectId
+  requester     User     @relation("MaintenanceRequester", fields: [requesterId], references: [id])
+  propertyId    String   @db.ObjectId
+  property      Property @relation(fields: [propertyId], references: [id])
+
+  @@index([requesterId])
+  @@index([propertyId])
+  @@index([status])
+  @@index([priority])
+  @@index([category])
+  @@index([createdAt])
+}
+
+// ─── JOB APPLICATION ────────────────────────────────────────────────────
+
+model JobApplication {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  email         String
+  phone         String?
+  position      String
+  experience    String?
+  resumeUrl     String?
+  coverLetter   String?
+  status        String   @default("received") // received, reviewed, shortlisted, interview, offered, hired, rejected
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([status])
+  @@index([position])
+  @@index([email])
+  @@index([createdAt])
 }

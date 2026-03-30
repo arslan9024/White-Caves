@@ -10,6 +10,9 @@ import AIAssistantsPanel from '../components/layout/AIAssistantsPanel/AIAssistan
 import DepartmentContentPanel from '../components/layout/DepartmentContentPanel/DepartmentContentPanel';
 import { Badge, Tabs, ProgressBar } from '../components/ui';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import SubNavBar from '../components/common/SubNavBar';
+import { DashboardSubTabRenderer } from '../components/dashboard/DashboardRenderer';
+import { getSubNavItems, getModuleById } from '../features/featureRegistry';
 import {
   toggleLeftSidebar,
   toggleRightSidebar,
@@ -177,10 +180,16 @@ const UnifiedDashboardPage: FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   
   const currentRole = useSelector((state: RootState) => state.navigation?.activeRole || 'buyer');
+  const currentModule = useSelector((state: RootState) => state.navigation?.currentModule);
+  const currentSubModule = useSelector((state: RootState) => state.navigation?.currentSubModule);
   const user = useSelector((state: RootState) => state.user.currentUser);
   
   const [activeTab, setActiveTab] = useState<string>(searchParams.get('tab') || 'overview');
   const [selectedCRMModule, setSelectedCRMModule] = useState<string | null>(null);
+
+  // Resolve the feature-registry sub-nav items for the current role
+  const roleModule = getModuleById(currentModule ?? currentRole);
+  const roleSubNavItems = getSubNavItems(currentRole, currentModule ?? currentRole);
 
   // ─── Redux CRM State (replaces direct API calls) ─────────────────────
   const allLeads = useSelector(selectAllLeads);
@@ -409,6 +418,23 @@ const UnifiedDashboardPage: FC = () => {
           </Suspense>
         </RouteErrorBoundary>
       );
+    }
+
+    // ─── Feature-registry sub-module rendering ────────────────────────
+    // When a sub-module is active (via SubNavBar click), resolve the
+    // component name from featureRegistry and render via DashboardSubTabRenderer.
+    if (currentSubModule && roleSubNavItems.length > 0) {
+      const subItem = roleSubNavItems.find((s) => s.id === currentSubModule);
+      if (subItem) {
+        return (
+          <RouteErrorBoundary section={subItem.label}>
+            <DashboardSubTabRenderer
+              componentName={subItem.component}
+              fallback={<TabLoadingFallback />}
+            />
+          </RouteErrorBoundary>
+        );
+      }
     }
 
     // Render standard tabs
@@ -651,6 +677,11 @@ const UnifiedDashboardPage: FC = () => {
                   </div>
                 ) : (
                   <>
+                    {/* Role-specific Sub-Navigation (from featureRegistry) */}
+                    {roleSubNavItems.length > 0 && (
+                      <SubNavBar moduleId={currentModule ?? currentRole} />
+                    )}
+
                     {/* Tab Navigation */}
                     <div className="unified-dashboard-tabs">
                       <div className="tabs-scroll">
