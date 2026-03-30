@@ -130,6 +130,25 @@ export const updateAssistantMetricsAsync = createAsyncThunk(
   },
 );
 
+/**
+ * Phase 0.8 — Fetch the markdown plan for a specific assistant from /api/assistants/:id/plan.
+ * Requires the user to be authenticated; called lazily when an assistant is selected.
+ */
+export const fetchAssistantPlan = createAsyncThunk(
+  'aiAssistantDashboard/fetchPlan',
+  async (assistantId: string, { rejectWithValue }) => {
+    try {
+      const { assistantsService } = await import('../../services/assistantsService');
+      const response = await assistantsService.getPlan(assistantId);
+      return { id: assistantId, plan: response.plan };
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'Failed to load assistant plan',
+      );
+    }
+  },
+);
+
 // ============================================================================
 // SLICE DEFINITION
 // ============================================================================
@@ -645,6 +664,19 @@ const aiAssistantDashboardSlice = createSlice({
             ...metrics,
           };
         }
+      })
+      // ── Phase 0.8 — assistant plan loading ────────────────────────────
+      .addCase(fetchAssistantPlan.pending, (state, action) => {
+        state.plansLoading[action.meta.arg] = true;
+        state.plansError[action.meta.arg] = null;
+      })
+      .addCase(fetchAssistantPlan.fulfilled, (state, action) => {
+        state.plansLoading[action.payload.id] = false;
+        state.plans[action.payload.id] = action.payload.plan;
+      })
+      .addCase(fetchAssistantPlan.rejected, (state, action) => {
+        state.plansLoading[action.meta.arg] = false;
+        state.plansError[action.meta.arg] = (action.payload ?? 'Failed to load plan') as string;
       })
       .addCase(logout, () => getInitialState());
   },

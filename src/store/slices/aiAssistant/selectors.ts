@@ -213,3 +213,14 @@ export const selectComplianceEngine = (state: RootState) =>
 
 export const selectComplianceMetrics = (state: RootState) =>
   state.aiAssistantDashboard?.complianceEngine?.complianceMetrics ?? EMPTY_OBJECT;
+
+// ── Phase 0.8 — Assistant Plans ─────────────────────────────────────────────
+
+export const selectAssistantPlan = (id: string) => (state: RootState): string | null =>
+  state.aiAssistantDashboard?.plans?.[id] ?? null;
+
+export const selectAssistantPlanLoading = (id: string) => (state: RootState): boolean =>
+  state.aiAssistantDashboard?.plansLoading?.[id] ?? false;
+
+export const selectAssistantPlanError = (id: string) => (state: RootState): string | null =>
+  state.aiAssistantDashboard?.plansError?.[id] ?? null;
