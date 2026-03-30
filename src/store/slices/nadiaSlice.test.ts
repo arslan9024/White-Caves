@@ -6,6 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { NadiaState, Conversation, QueuedConversation } from '@/types/nadia';
 import nadiaReducer, {
   selectConversation,
   clearError,
@@ -46,15 +47,16 @@ vi.mock('@/services/nadiaAPI', () => ({
 
 const getInitialState = () => nadiaReducer(undefined, { type: 'unknown' });
 
-const sampleConv = (overrides = {}) => ({
+const sampleConv = (overrides: Partial<Conversation> = {}): Conversation => ({
   id: 'conv-1',
   customerName: 'Ahmed',
   customerPhone: '+971501234567',
   status: 'ACTIVE',
+  priority: 'HIGH',
   leadScore: 80,
-  assignedAgent: null,
+  assignedAgent: undefined,
   createdAt: '2026-03-01T00:00:00Z',
-  lastMessageAt: '2026-03-25T10:00:00Z',
+  updatedAt: '2026-03-25T10:00:00Z',
   ...overrides,
 });
 
@@ -67,11 +69,16 @@ const sampleMessage = (overrides = {}) => ({
   ...overrides,
 });
 
-const sampleQueueItem = (overrides = {}) => ({
+const sampleQueueItem = (overrides: Partial<QueuedConversation> = {}): QueuedConversation => ({
   queueId: 'q-1',
   conversationId: 'conv-1',
-  priority: 'HIGH' as const,
-  addedAt: '2026-03-25T09:00:00Z',
+  customerPhone: '+971501234567',
+  priority: 'HIGH',
+  leadScore: 80,
+  createdAt: '2026-03-25T09:00:00Z',
+  waitTimeMinutes: 15,
+  sortOrder: 1,
+  status: 'ACTIVE',
   ...overrides,
 });
 
@@ -130,7 +137,7 @@ describe('nadiaSlice', () => {
     });
 
     it('resetNadia returns to initial state', () => {
-      const dirty = {
+      const dirty: NadiaState = {
         ...getInitialState(),
         conversations: [sampleConv()],
         messages: [sampleMessage()],
@@ -262,7 +269,7 @@ describe('nadiaSlice', () => {
     });
 
     it('fulfilled: removes from queue and updates conversation', () => {
-      const state = {
+      const state: NadiaState = {
         ...getInitialState(),
         queue: [sampleQueueItem()],
         conversations: [sampleConv()],
@@ -293,7 +300,7 @@ describe('nadiaSlice', () => {
 
     it('fulfilled: updates conversation and clears selection if selected', () => {
       const closedConv = sampleConv({ status: 'CLOSED' });
-      const state = {
+      const state: NadiaState = {
         ...getInitialState(),
         conversations: [sampleConv()],
         selectedConversationId: 'conv-1',
@@ -308,7 +315,7 @@ describe('nadiaSlice', () => {
 
     it('fulfilled: does not clear selection of different conversation', () => {
       const closedConv = sampleConv({ id: 'conv-2', status: 'CLOSED' });
-      const state = {
+      const state: NadiaState = {
         ...getInitialState(),
         conversations: [sampleConv(), sampleConv({ id: 'conv-2' })],
         selectedConversationId: 'conv-1',

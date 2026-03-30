@@ -239,10 +239,10 @@ describe('BuyerTabs', () => {
       await waitFor(() => {
         expect(mockAuthFetch).toHaveBeenCalled();
       });
-      const urls = mockAuthFetch.mock.calls.map((c: unknown[]) => c[0]);
+      const urls = mockAuthFetch.mock.calls.map((c: unknown[]) => c[0] as string);
       expect(urls).toContain('/api/favorites/ids');
-      expect(urls.some((u: string) => u.includes('/api/viewings'))).toBe(true);
-      expect(urls.some((u: string) => u.includes('/api/offers'))).toBe(true);
+      expect(urls.some((u) => u.includes('/api/viewings'))).toBe(true);
+      expect(urls.some((u) => u.includes('/api/offers'))).toBe(true);
       expect(urls).toContain('/api/saved-searches');
     });
 
