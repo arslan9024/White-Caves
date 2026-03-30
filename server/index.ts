@@ -35,6 +35,10 @@ import lindaRoutes from './routes/linda.js';
 import metaWebhookRoutes from './routes/meta-webhook.js';
 import favoritesRoutes from './routes/favorites.js';
 import savedSearchesRoutes from './routes/saved-searches.js';
+import viewingsRoutes from './routes/viewings.js';
+import offersRoutes from './routes/offers.js';
+import leasesRoutes from './routes/leases.js';
+import maintenanceRoutes from './routes/maintenance.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 
 // Load environment variables
@@ -206,6 +210,18 @@ app.use('/api/favorites', favoritesRoutes);
 
 // Saved Searches API (any authenticated user can manage their own saved searches)
 app.use('/api/saved-searches', savedSearchesRoutes);
+
+// Viewings API (schedule and manage property viewings)
+app.use('/api/viewings', viewingsRoutes);
+
+// Offers API (buyer offers on properties)
+app.use('/api/offers', offersRoutes);
+
+// Leases API (lease management for landlords, tenants, leasing agents)
+app.use('/api/leases', leasesRoutes);
+
+// Maintenance API (maintenance requests for landlords and tenants)
+app.use('/api/maintenance', maintenanceRoutes);
 
 // WhatsApp Webhook (public endpoint — requires webhook secret for verification)
 app.post('/api/whatsapp/webhook', asyncHandler(async (req: Request, res: Response) => {
