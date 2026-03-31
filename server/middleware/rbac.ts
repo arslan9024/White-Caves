@@ -16,6 +16,62 @@ import { Response, NextFunction } from 'express';
 import { AuthRequest } from './auth';
 import { AppError } from './errorHandler';
 
+// ─── Role alias map ─────────────────────────────────────────────────────────
+// Maps frontend / UI role IDs (stored in JWT) to the 12 canonical backend roles.
+// If a role is already canonical it maps to itself (or is absent and passes through).
+export const ROLE_ALIAS_MAP: Record<string, string> = {
+  // Executive → owner
+  managing_director: 'owner',
+  real_estate_company: 'owner',
+  // Executive → manager
+  property_mgmt_company: 'manager',
+  // Admin
+  super_admin: 'admin',
+  // Management → manager
+  branch_manager: 'manager',
+  sales_manager: 'manager',
+  leasing_manager: 'manager',
+  marketing_manager: 'manager',
+  // Agent layer
+  sales_agent: 'agent',
+  leasing_agent: 'leasing-agent',
+  property_manager: 'agent',
+  affiliated_agent: 'secondary-sales-agent',
+  // Specialist → viewer (read-heavy advisory roles)
+  property_consultant: 'viewer',
+  mortgage_consultant: 'viewer',
+  valuation_expert: 'viewer',
+  // Support
+  trustee_officer: 'admin',
+  legal_officer: 'admin',
+  finance_officer: 'finance',
+  document_controller: 'admin',
+  // Client
+  developer: 'seller',
+  investor: 'buyer',
+  // Identity mappings (canonical roles resolve to themselves)
+  owner: 'owner',
+  manager: 'manager',
+  admin: 'admin',
+  finance: 'finance',
+  agent: 'agent',
+  'secondary-sales-agent': 'secondary-sales-agent',
+  'leasing-agent': 'leasing-agent',
+  landlord: 'landlord',
+  seller: 'seller',
+  viewer: 'viewer',
+  tenant: 'tenant',
+  buyer: 'buyer',
+};
+
+/**
+ * Resolve any incoming role string (frontend UI role or legacy alias) to
+ * the canonical 12-role backend key used by ROLE_HIERARCHY / ROLE_PERMISSIONS.
+ */
+export function resolveBackendRole(role: string): string {
+  return ROLE_ALIAS_MAP[role] ?? role;
+}
+
 // ─── Role hierarchy (mirrored from src/utils/permissions.ts) ─────────────────
 export const ROLE_HIERARCHY: Record<string, number> = {
   owner: 100,
@@ -99,7 +155,8 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
 
 // ─── Helper: check permission for a role ─────────────────────────────────────
 export function roleHasPermission(role: string, permission: string): boolean {
-  const perms = ROLE_PERMISSIONS[role];
+  const resolved = resolveBackendRole(role);
+  const perms = ROLE_PERMISSIONS[resolved];
   if (!perms) return false;
   return perms.includes(permission);
 }
@@ -118,7 +175,8 @@ export function requireRole(...allowedRoles: string[]) {
     if (!userRole) {
       return next(new AppError('Authentication required', 401));
     }
-    if (!allowedRoles.includes(userRole)) {
+    const resolved = resolveBackendRole(userRole);
+    if (!allowedRoles.includes(resolved)) {
       return next(
         new AppError(
           `Access denied — requires role: ${allowedRoles.join(' | ')}`,
@@ -145,7 +203,8 @@ export function requirePermission(...requiredPermissions: string[]) {
     if (!userRole) {
       return next(new AppError('Authentication required', 401));
     }
-    const hasAny = requiredPermissions.some(p => roleHasPermission(userRole, p));
+    const resolved = resolveBackendRole(userRole);
+    const hasAny = requiredPermissions.some(p => roleHasPermission(resolved, p));
     if (!hasAny) {
       return next(
         new AppError(
@@ -171,7 +230,8 @@ export function requireAllPermissions(...requiredPermissions: string[]) {
     if (!userRole) {
       return next(new AppError('Authentication required', 401));
     }
-    const hasAll = requiredPermissions.every(p => roleHasPermission(userRole, p));
+    const resolved = resolveBackendRole(userRole);
+    const hasAll = requiredPermissions.every(p => roleHasPermission(resolved, p));
     if (!hasAll) {
       return next(
         new AppError(
@@ -199,7 +259,8 @@ export function requireMinRole(minRole: string) {
     if (!userRole) {
       return next(new AppError('Authentication required', 401));
     }
-    const userLevel = ROLE_HIERARCHY[userRole] || 0;
+    const resolved = resolveBackendRole(userRole);
+    const userLevel = ROLE_HIERARCHY[resolved] || 0;
     if (userLevel < minLevel) {
       return next(
         new AppError(
@@ -235,8 +296,10 @@ export function scopeToOwn(ownerField = 'userId') {
       return next(new AppError('Authentication required', 401));
     }
 
+    const resolved = resolveBackendRole(userRole);
+
     // Supervisors see everything
-    if (SUPERVISOR_ROLES.includes(userRole)) {
+    if (SUPERVISOR_ROLES.includes(resolved)) {
       (req as AuthRequest & { ownershipFilter: Record<string, unknown> }).ownershipFilter = {};
     } else {
       // Agents/others see only their own data
