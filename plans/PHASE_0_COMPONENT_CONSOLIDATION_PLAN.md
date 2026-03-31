@@ -1,4 +1,5 @@
 # Phase 0: Component Consolidation & Architecture Modernization
+
 ## White Caves Real Estate Platform - Foundation Preparation
 
 **Project**: White Caves Real Estate CRM  
@@ -24,6 +25,7 @@
 ### SECTION A: Components to REMOVE (Freelancer/Commission Legacy)
 
 #### A.1: Direct Deletions
+
 ```
 src/components/
   ├── freelancer/                       ❌ ENTIRE FOLDER
@@ -42,6 +44,7 @@ src/components/
 ```
 
 #### A.2: Conditional Removals (Files with mixed content)
+
 ```
 IF src/pages/dashboard/index.tsx contains freelancer/commission UI → REFACTOR
 IF src/hooks/ contains freelancer/commission hooks → DELETE or ARCHIVE
@@ -50,6 +53,7 @@ IF src/services/ contains freelancer/commission API calls → DELETE
 ```
 
 #### A.3: Redux State to REMOVE
+
 ```
 src/store/slices/
   ├── freelancer.ts                    ❌ DELETE
@@ -59,6 +63,7 @@ src/store/slices/
 ```
 
 #### A.4: Database/Prisma Schema to REMOVE
+
 ```
 schema.prisma
   ❌ model Freelancer { }
@@ -70,6 +75,7 @@ schema.prisma
 ```
 
 #### A.5: API Routes to REMOVE
+
 ```
 src/routes/api/
   ├── freelancer/
@@ -86,6 +92,7 @@ src/routes/api/
 ```
 
 #### A.6: Tests to REMOVE
+
 ```
 src/tests/
   ├── freelancer.spec.ts               ❌ DELETE
@@ -99,6 +106,7 @@ src/tests/
 ### SECTION B: Components to CONSOLIDATE (Reduce Duplication)
 
 #### B.1: Identify Duplicate Sidebars/Navigation
+
 ```
 Current State (if any):
   ├── EnhancedLeftSidebar.tsx          ✅ KEEP (modern)
@@ -113,6 +121,7 @@ Target: Single, unified DualSidebarLayout
 ```
 
 #### B.2: Identify Duplicate Modals (Consolidate to Reusable Pattern)
+
 ```
 Pattern Target:
   src/components/common/Modal/
@@ -132,6 +141,7 @@ Lead Modals (should use FormModal):
 ```
 
 #### B.3: Identify Duplicate Tables/Lists (Consolidate to BaseTable)
+
 ```
 Pattern Target:
   src/components/common/Table/
@@ -151,6 +161,7 @@ Lead Tables:
 ```
 
 #### B.4: Identify Duplicate Forms (Consolidate)
+
 ```
 Pattern Target:
   src/components/common/Forms/
@@ -166,6 +177,7 @@ Property Forms:
 ```
 
 #### B.5: Identify Duplicate Card Components
+
 ```
 Pattern Target:
   src/components/common/Card/
@@ -189,6 +201,7 @@ Lead Cards:
 ### SECTION C: Component Consolidation Results
 
 #### Before Consolidation
+
 ```
 Components: ~150 files
 Patterns: 15+ variations of same concept
@@ -197,6 +210,7 @@ Maintenance burden: HIGH
 ```
 
 #### After Consolidation (Target)
+
 ```
 Components: ~80 files
 Patterns: 1 standard per type
@@ -218,6 +232,7 @@ Breakdown:
 ## 🏗️ ARCHITECTURE MODERNIZATION
 
 ### 1. React 18 Best Practices
+
 - [ ] Ensure all components use functional syntax (const vs class)
 - [ ] Remove deprecated APIs (findDOMNode, etc.)
 - [ ] Use useCallback where appropriate
@@ -226,6 +241,7 @@ Breakdown:
 - [ ] Verify Suspense boundaries
 
 ### 2. TypeScript Strict Mode
+
 - [ ] Ensure tsconfig.json has `strict: true`
 - [ ] No `any` types (use proper inference)
 - [ ] All props fully typed
@@ -234,6 +250,7 @@ Breakdown:
 - [ ] Run: `npm run type-check` → 0 errors
 
 ### 3. State Management (Redux Toolkit)
+
 - [ ] Slice pattern consistency (actions, reducers, selectors)
 - [ ] Async thunks instead of saga/middleware
 - [ ] Entity adapters for normalized state
@@ -242,6 +259,7 @@ Breakdown:
 - [ ] Unused slices removed (freelancer, commission)
 
 ### 4. Styling Consistency
+
 - [ ] Design tokens applied consistently
 - [ ] styled-components or CSS modules only
 - [ ] No inline styles except dynamic values
@@ -250,6 +268,7 @@ Breakdown:
 - [ ] Responsive breakpoints standardized
 
 ### 5. Error Handling
+
 - [ ] ErrorBoundary at route level
 - [ ] Try-catch for async operations
 - [ ] User-friendly error messages
@@ -257,6 +276,7 @@ Breakdown:
 - [ ] Graceful fallbacks
 
 ### 6. Performance
+
 - [ ] Code-split routes (React.lazy)
 - [ ] Image optimization (next-image or similar)
 - [ ] Bundle analysis (webpack-visualizer)
@@ -268,6 +288,7 @@ Breakdown:
 ## 🚀 EXECUTION STEPS
 
 ### STEP 1: Backup & Branch (15 min) ⏳
+
 ```bash
 # Create backup branch
 git checkout -b phase-0-component-consolidation
@@ -280,6 +301,7 @@ npm run test          # Baseline
 ```
 
 ### STEP 2: Remove Freelancer & Commission Features (1-2 hours) 🗑️
+
 ```typescript
 // 1. Delete directories
 rm -rf src/components/freelancer
@@ -319,6 +341,7 @@ grep -r "from.*commission" src/      # Remove all
 ```
 
 ### STEP 3: Consolidate Components (2-3 hours) 🔄
+
 ```typescript
 // Create base component patterns
 src/components/common/
@@ -363,6 +386,7 @@ rm -f src/components/property/PropertyTableV2.tsx
 ```
 
 ### STEP 4: Update Imports & Fix Errors (1-2 hours) 🔧
+
 ```bash
 # Check for broken imports
 npm run type-check
@@ -380,6 +404,7 @@ grep -r "import.*freelancer" src/
 ```
 
 ### STEP 5: Clean Up Redux Store (30 min) 📦
+
 ```typescript
 // Update src/store/index.ts or configureStore.ts
 
@@ -388,10 +413,10 @@ const store = configureStore({
   reducer: {
     property: propertyReducer,
     lead: leadReducer,
-    freelancer: freelancerReducer,      // ❌ DELETE
-    commission: commissionReducer,      // ❌ DELETE
+    freelancer: freelancerReducer, // ❌ DELETE
+    commission: commissionReducer, // ❌ DELETE
     assistant: assistantReducer,
-  }
+  },
 });
 
 // After:
@@ -401,13 +426,14 @@ const store = configureStore({
     lead: leadReducer,
     agent: agentReducer,
     assistant: assistantReducer,
-  }
+  },
 });
 
 // Remove exports from that slice files
 ```
 
 ### STEP 6: Validate Build (15 min) ✅
+
 ```bash
 # Type checking
 npm run type-check
@@ -425,11 +451,14 @@ npm run test
 ```
 
 ### STEP 7: Document Architecture (30 min) 📝
+
 Create: `ARCHITECTURE.md`
+
 ```markdown
 # White Caves Architecture Guide
 
 ## Component Structure
+
 - common/: Reusable base components (Table, Card, Form, Modal)
 - layout/: Page layouts
 - property/: Property-related components
@@ -439,18 +468,21 @@ Create: `ARCHITECTURE.md`
 - chat/: Chat/messaging components
 
 ## State Management
+
 - Redux Toolkit with slices pattern
 - Async thunks for API calls
 - Entity adapters for normalized state
 - Selectors for computed state
 
 ## Styling
+
 - styled-components
 - Design tokens from ds/tokens.ts
 - Responsive breakpoints
 - Dark mode support (if applicable)
 
 ## Best Practices
+
 1. Components are functional, not class-based
 2. TypeScript strict mode enabled
 3. No inline styles except dynamic values
@@ -460,6 +492,7 @@ Create: `ARCHITECTURE.md`
 ```
 
 ### STEP 8: Git Commit (5 min) 💾
+
 ```bash
 git add .
 git commit -m "Phase 0: Component Consolidation & Architecture Modernization
@@ -478,6 +511,7 @@ git push origin phase-0-component-consolidation
 ```
 
 ### STEP 9: Create Pull Request
+
 - Title: "Phase 0: Component Consolidation & Architecture Modernization"
 - Description: Link to this plan
 - Reviewers: Team lead
@@ -489,11 +523,13 @@ git push origin phase-0-component-consolidation
 ## 📋 EXECUTION CHECKLIST
 
 ### Pre-Execution
+
 - [ ] Create backup branch
 - [ ] Run baseline: `npm run type-check` (note starting error count)
 - [ ] Run baseline: `npm run test` (note passing tests)
 
 ### Execution
+
 - [ ] Step 1: Backup & Branch ✅
 - [ ] Step 2: Remove Freelancer & Commission (1-2 hours)
   - [ ] Delete directories
@@ -530,6 +566,7 @@ git push origin phase-0-component-consolidation
 - [ ] Step 9: Create Pull Request
 
 ### Post-Execution
+
 - [ ] Code review completed
 - [ ] Tests passed on CI/CD
 - [ ] Merge to main
@@ -540,17 +577,17 @@ git push origin phase-0-component-consolidation
 
 ## ⏱️ TIME ESTIMATE
 
-| Step | Time | Status |
-|------|------|--------|
-| 1. Backup & Branch | 15 min | ⏳ |
-| 2. Remove Legacy | 1-2 hrs | ⏳ |
-| 3. Consolidate Components | 2-3 hrs | ⏳ |
-| 4. Update Imports | 1-2 hrs | ⏳ |
-| 5. Clean Redux | 30 min | ⏳ |
-| 6. Validate Build | 15 min | ⏳ |
-| 7. Document | 30 min | ⏳ |
-| 8-9. Git & PR | 5 min | ⏳ |
-| **TOTAL** | **5.5-8.5 hours** | **⏳** |
+| Step                      | Time              | Status |
+| ------------------------- | ----------------- | ------ |
+| 1. Backup & Branch        | 15 min            | ⏳     |
+| 2. Remove Legacy          | 1-2 hrs           | ⏳     |
+| 3. Consolidate Components | 2-3 hrs           | ⏳     |
+| 4. Update Imports         | 1-2 hrs           | ⏳     |
+| 5. Clean Redux            | 30 min            | ⏳     |
+| 6. Validate Build         | 15 min            | ⏳     |
+| 7. Document               | 30 min            | ⏳     |
+| 8-9. Git & PR             | 5 min             | ⏳     |
+| **TOTAL**                 | **5.5-8.5 hours** | **⏳** |
 
 **Recommended**: 1-2 days (split across 2 work sessions)
 
@@ -559,6 +596,7 @@ git push origin phase-0-component-consolidation
 ## 🎯 SUCCESS METRICS
 
 ✅ **Phase 0 Complete When:**
+
 1. 0 TypeScript errors
 2. 0 import errors
 3. All existing tests pass
@@ -587,6 +625,7 @@ git push origin phase-0-component-consolidation
 ## 🔗 NEXT PHASES
 
 After Phase 0 Completion:
+
 - **Phase 1**: NADIA Implementation (Meta Business API)
 - **Phase 2**: NINA Implementation (NLP Engine)
 - **Phase 3**: LINDA Implementation (LocalAuth)

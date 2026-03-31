@@ -7,12 +7,14 @@
 ## What's Ready to Build
 
 ### ✅ All Backend Infrastructure Complete
+
 - NADIA messaging pipeline working
 - MongoDB schema ready
 - Express routing established
 - E2E tests passing (19/19)
 
 ### ✅ All Frontend Ready
+
 - NADIA Dashboard live
 - Redux state management working
 - WebSocket polling ready
@@ -24,18 +26,19 @@
 
 ## Priority Decision Matrix
 
-| Workstream | Complexity | Impact | Prerequisites | Estimated Time |
-|------------|-----------|--------|---------------|-----------------|
-| **1. Nina NLP** | Medium | 🔴 Critical (core logic) | None | 90 min |
-| **2. Linda WhatsApp** | High | 🔴 Critical (message ingestion) | Nina partially | 90 min |
-| **3. Meta Business API** | Medium | 🟡 Important (scalability) | Nina + Linda | 60 min |
-| **4. Optimization** | Low | 🟢 Nice-to-have (performance) | All above | 60 min |
+| Workstream               | Complexity | Impact                          | Prerequisites  | Estimated Time |
+| ------------------------ | ---------- | ------------------------------- | -------------- | -------------- |
+| **1. Nina NLP**          | Medium     | 🔴 Critical (core logic)        | None           | 90 min         |
+| **2. Linda WhatsApp**    | High       | 🔴 Critical (message ingestion) | Nina partially | 90 min         |
+| **3. Meta Business API** | Medium     | 🟡 Important (scalability)      | Nina + Linda   | 60 min         |
+| **4. Optimization**      | Low        | 🟢 Nice-to-have (performance)   | All above      | 60 min         |
 
 ---
 
 ## Recommended Execution Order
 
 ### **Approach A: Sequential (Safe, Proven)**
+
 ```
 1. Nina NLP Engine (90 min)
    └─ Intent detection, memory, entities
@@ -48,11 +51,12 @@
 
 4. Optimization (60 min)
    └─ Caching, security
-   
+
 Total: 300 min (5 hours)
 ```
 
 ### **Approach B: Parallel (Faster, Riskier)**
+
 ```
 Task 1A: Nina NLP (90 min) ──┐
                              └─ Phase 3 Complete
@@ -65,6 +69,7 @@ Total: 150-180 min (2.5-3 hours)
 ```
 
 ### **Approach C: Phased MVP (Iterative)**
+
 ```
 Sprint 1 (2 hours):
   ├─ Nina NLP core (confidence + intent)
@@ -85,21 +90,25 @@ Sprint 3 (1 hour):
 ## Files to Create (14 new files)
 
 ### **Nina Engine (3 files)**
+
 - [ ] `server/services/nadia/ninaEngine.ts` (400 lines)
 - [ ] `server/services/nadia/conversationMemory.ts` (300 lines)
 - [ ] `server/services/nadia/entityExtractor.ts` (250 lines)
 
 ### **Linda WhatsApp (3 files)**
+
 - [ ] `server/services/whatsapp/lindaClient.ts` (350 lines)
 - [ ] `server/routes/linda.ts` (250 lines)
 - [ ] `server/config/linda.config.ts` (100 lines)
 
 ### **Meta Business API (3 files)**
+
 - [ ] `server/services/whatsapp/metaAPI.ts` (300 lines)
 - [ ] `server/routes/meta-webhook.ts` (200 lines)
 - [ ] `server/config/secrets.ts` (150 lines)
 
 ### **Optimization & Security (5 files)**
+
 - [ ] `server/config/database-indexes.ts` (150 lines)
 - [ ] `server/services/cache.ts` (200 lines)
 - [ ] `server/middleware/authNADIA.ts` (180 lines)
@@ -111,6 +120,7 @@ Sprint 3 (1 hour):
 ## Implementation Checklist
 
 ### Part 1: Nina NLP (90 min)
+
 ```
 FOUNDATIONS:
   [ ] Create ninaEngine.ts with IntentResult interface
@@ -138,6 +148,7 @@ INTEGRATION:
 ```
 
 ### Part 2: Linda WhatsApp (90 min)
+
 ```
 CLIENT:
   [ ] Install whatsapp-web.js
@@ -165,6 +176,7 @@ CONFIG:
 ```
 
 ### Part 3: Meta Business API (60 min)
+
 ```
 CLIENT:
   [ ] Create metaAPI.ts
@@ -191,6 +203,7 @@ TESTING:
 ```
 
 ### Part 4: Optimization (60 min)
+
 ```
 DATABASE:
   [ ] Add conversation indexes
@@ -222,9 +235,10 @@ MONITORING:
 ## Key Technical Decisions
 
 ### Nina NLP Architecture
+
 ```
 Decision: Use local NLP (no third-party API)
-Rationale: 
+Rationale:
   ✅ Cost-effective (no API charges)
   ✅ Privacy-preserving (no data sent out)
   ✅ Fast inference (local processing)
@@ -237,6 +251,7 @@ Alternative: Use OpenAI/Hugging Face API
 ```
 
 ### Linda vs Meta (Dual Strategy)
+
 ```
 Linda (LocalAuth - whatsapp-web.js):
   ✅ No Meta Business Account required
@@ -259,6 +274,7 @@ STRATEGY: Run both in parallel
 ```
 
 ### Deployment Architecture
+
 ```
 Production Flow:
   WhatsApp → Linda (LocalAuth) ──┐
@@ -296,7 +312,7 @@ Production Flow:
    - Option B: Unit + Integration tests (full pipeline)
    - Option C: Add E2E with real WhatsApp (most thorough)
 
-4. **Release Timeline**: 
+4. **Release Timeline**:
    - Option A: Full Phase 3 today (5 hours intensive)
    - Option B: Phase 3A (Nina only) today, rest later
    - Option C: Phased approach (2 hours today + subsequent sessions)
@@ -306,19 +322,22 @@ Production Flow:
 ## Files Already Ready
 
 ✅ **Phase 2B files (already created)**:
+
 - src/types/nadia.ts
 - src/services/nadiaAPI.ts
 - src/store/slices/nadiaSlice.ts
-- src/components/nadia/*
+- src/components/nadia/\*
 - src/pages/NadiaPage.tsx
 
 ✅ **Phase 2 files (already created)**:
+
 - server/routes/nadia.ts
 - server/services/nadia/messageProcessor.ts
 - server/services/nadia/queueManager.ts
 - server/routes/nadia.test.ts
 
 ### Integration Points Ready
+
 ✅ Express message router configured
 ✅ MongoDB collections created
 ✅ Redux store integrated
@@ -330,17 +349,20 @@ Production Flow:
 ## Next Steps
 
 ### Immediate (5 min)
+
 - [ ] Review Phase 3 plan: PHASE_3_ADVANCED_FEATURES_PLAN.md
 - [ ] Answer 4 technical questions above
 - [ ] Choose execution approach (Sequential/Parallel/Phased)
 
 ### Short-term (5 hours)
+
 - [ ] Implement chosen workstreams
 - [ ] Run tests
 - [ ] Verify end-to-end flow
 - [ ] Commit to git
 
 ### Medium-term (Later sessions)
+
 - [ ] Production deployment
 - [ ] Meta Business Account setup
 - [ ] Linda session configuration
@@ -351,6 +373,7 @@ Production Flow:
 ## Success Metric
 
 By end of Phase 3:
+
 - ✅ NADIA handles 100+ intents with 95%+ accuracy
 - ✅ Linda receives WhatsApp messages in <2 seconds
 - ✅ Meta API webhooks working at scale

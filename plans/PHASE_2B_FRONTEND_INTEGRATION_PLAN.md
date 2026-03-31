@@ -14,6 +14,7 @@
 Phase 2B delivers **complete frontend integration** for the NADIA CRM backend. We'll build 5 React components with Redux state management to create a fully functional conversation dashboard, queue manager, and message viewer. All components will be type-safe (TypeScript), styled with your design system, and connected to the backend API.
 
 ### Deliverables
+
 - ✅ 5 React components (Dashboard, Queue Manager, Message Viewer, Conversation List, Message Input)
 - ✅ Redux integration with API thunks
 - ✅ Real-time polling system
@@ -72,12 +73,14 @@ Redux State:
 ## Component Breakdown
 
 ### 1. **NADIADashboard** (Main Container)
+
 **File**: `src/components/nadia/NADIADashboard.tsx`
 **Responsibility**: Layout, state management, polling orchestration
 
 **Props**: None (top-level component)
 
 **Key Features**:
+
 - 3-panel layout (conversation list | messages | queue)
 - Redux state management via thunks
 - Polling intervals for real-time updates (2-second interval)
@@ -85,6 +88,7 @@ Redux State:
 - Error boundary integration
 
 **Component Structure**:
+
 ```typescript
 interface NADIADashboardState {
   selectedConversationId: string | null;
@@ -107,10 +111,12 @@ const dispatch = useAppDispatch();
 ---
 
 ### 2. **ConversationListPanel** (Left Sidebar)
+
 **File**: `src/components/nadia/ConversationListPanel.tsx`
 **Responsibility**: Display, filter, sort, and select conversations
 
 **Props**:
+
 ```typescript
 interface ConversationListPanelProps {
   conversations: Conversation[];
@@ -121,6 +127,7 @@ interface ConversationListPanelProps {
 ```
 
 **Key Features**:
+
 - Display conversations with customer info + last message
 - Filter by status (ACTIVE, PENDING, CLOSED, SPAM)
 - Sort by leadScore (descending, hot leads first)
@@ -129,6 +136,7 @@ interface ConversationListPanelProps {
 - Responsive scrolling
 
 **UI Elements**:
+
 - Status badge (color-coded: green=ACTIVE, yellow=PENDING, gray=CLOSED, red=SPAM)
 - Lead score bar (0-100 scale)
 - Customer name + phone number
@@ -137,6 +145,7 @@ interface ConversationListPanelProps {
 - Unread count badge
 
 **Component Data**:
+
 ```typescript
 // For each conversation:
 {
@@ -154,10 +163,12 @@ interface ConversationListPanelProps {
 ---
 
 ### 3. **MessageViewer** (Center Pane)
+
 **File**: `src/components/nadia/MessageViewer.tsx`
 **Responsibility**: Display conversation thread and messages
 
 **Props**:
+
 ```typescript
 interface MessageViewerProps {
   conversation: Conversation | null;
@@ -168,6 +179,7 @@ interface MessageViewerProps {
 ```
 
 **Key Features**:
+
 - Scrollable message thread
 - Message bubbles (customer left, agent right)
 - Inline metadata (timestamp, sender, sentiment icon)
@@ -178,6 +190,7 @@ interface MessageViewerProps {
 - Auto-scroll to latest message
 
 **UI Elements**:
+
 ```
 ┌─────────────────────────────────┐
 │ Ahmed Al-Mansouri | +971501234567
@@ -204,10 +217,12 @@ interface MessageViewerProps {
 ---
 
 ### 4. **MessageInput** (Message Composition)
+
 **File**: `src/components/nadia/MessageInput.tsx`
 **Responsibility**: Capture and send messages
 
 **Props**:
+
 ```typescript
 interface MessageInputProps {
   conversationId: string;
@@ -218,6 +233,7 @@ interface MessageInputProps {
 ```
 
 **Key Features**:
+
 - Textarea for message composition
 - Message type selector (CUSTOMER | AGENT)
 - Send button with loading state
@@ -227,6 +243,7 @@ interface MessageInputProps {
 - Error display
 
 **UI Elements**:
+
 ```
 ┌────────────────────────────────────────┐
 │ Message Type: [Customer ▼]             │
@@ -243,10 +260,12 @@ interface MessageInputProps {
 ---
 
 ### 5. **QueueManagerPanel** (Right Sidebar)
+
 **File**: `src/components/nadia/QueueManagerPanel.tsx`
 **Responsibility**: Display queue stats and agent assignment
 
 **Props**:
+
 ```typescript
 interface QueueManagerPanelProps {
   queue: QueuedConversation[];
@@ -257,6 +276,7 @@ interface QueueManagerPanelProps {
 ```
 
 **Key Features**:
+
 - Queue statistics dashboard
 - Priority distribution (URGENT, HIGH, NORMAL, LOW)
 - Queued conversations list
@@ -265,6 +285,7 @@ interface QueueManagerPanelProps {
 - Visual queue depth indicator
 
 **Stats Display**:
+
 ```
 ┌─────────────────────────────────┐
 │ 📊 Queue Statistics             │
@@ -297,9 +318,11 @@ interface QueueManagerPanelProps {
 ## Redux Integration
 
 ### Redux Slice: `nadiaSlice`
+
 **File**: `src/store/slices/nadiaSlice.ts`
 
 **State Structure**:
+
 ```typescript
 interface NadiaState {
   conversations: Conversation[];
@@ -324,6 +347,7 @@ export const selectSelectedConversation = (state: RootState) => {
 ```
 
 ### Async Thunks
+
 ```typescript
 // Thunk signatures:
 export const fetchConversations = createAsyncThunk(
@@ -350,13 +374,10 @@ export const sendMessage = createAsyncThunk(
   }
 );
 
-export const fetchQueue = createAsyncThunk(
-  'nadia/fetchQueue',
-  async () => {
-    // API call: GET /api/nadia/queue
-    // Returns: QueuedConversation[]
-  }
-);
+export const fetchQueue = createAsyncThunk('nadia/fetchQueue', async () => {
+  // API call: GET /api/nadia/queue
+  // Returns: QueuedConversation[]
+});
 
 export const assignAgent = createAsyncThunk(
   'nadia/assignAgent',
@@ -380,6 +401,7 @@ export const closeConversation = createAsyncThunk(
 ## Real-Time Updates Strategy
 
 ### Polling Approach
+
 ```typescript
 // In NADIADashboard.tsx
 useEffect(() => {
@@ -412,7 +434,9 @@ useEffect(() => {
 ```
 
 ### Future Enhancement: WebSocket
+
 When ready for production optimization:
+
 - Replace polling with Socket.IO connections
 - Real-time message delivery
 - Presence indicators
@@ -423,6 +447,7 @@ When ready for production optimization:
 ## API Integration
 
 ### Base Configuration
+
 ```typescript
 // src/services/nadiaAPI.ts
 const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -434,6 +459,7 @@ const NADIA_API = `${API_BASE}/api/nadia`;
 ```
 
 ### Endpoint Integration
+
 ```typescript
 // Conversations
 GET    /api/nadia/conversations              → fetchConversations()
@@ -541,12 +567,14 @@ export const QueueManagerContainer = styled.div`
 ## Implementation Roadmap
 
 ### Phase 2B.1: Foundation (30 mins)
+
 - [ ] Create Redux slice (nadiaSlice.ts) with thunks
 - [ ] Create type definitions (types/nadia.ts)
 - [ ] Create API service layer (services/nadiaAPI.ts)
 - [ ] Create styled components (styles/nadia.ts)
 
 ### Phase 2B.2: Components (90 mins)
+
 - [ ] Build ConversationListPanel component
 - [ ] Build MessageViewer component
 - [ ] Build MessageInput component
@@ -554,12 +582,14 @@ export const QueueManagerContainer = styled.div`
 - [ ] Build NADIADashboard container
 
 ### Phase 2B.3: Integration (45 mins)
+
 - [ ] Hook up Redux dispatch/selectors to components
 - [ ] Implement polling intervals
 - [ ] Connect API calls to thunks
 - [ ] Error handling & loading states
 
 ### Phase 2B.4: Polish (15 mins)
+
 - [ ] Responsive design testing
 - [ ] Accessibility (aria labels, keyboard nav)
 - [ ] Performance optimization (memoization)
@@ -614,13 +644,13 @@ src/
 // Mock data for development/testing before API integration
 const mockConversations: Conversation[] = [
   {
-    id: "conv-001",
-    customerPhone: "+971501234567",
-    customerName: "Ahmed Al-Mansouri",
-    status: "ACTIVE",
-    priority: "HIGH",
+    id: 'conv-001',
+    customerPhone: '+971501234567',
+    customerName: 'Ahmed Al-Mansouri',
+    status: 'ACTIVE',
+    priority: 'HIGH',
     leadScore: 85,
-    assignedAgent: "nadia@whiteaves.com",
+    assignedAgent: 'nadia@whiteaves.com',
     createdAt: new Date(Date.now() - 3600000),
     updatedAt: new Date(),
     unreadCount: 2,
@@ -634,6 +664,7 @@ const mockConversations: Conversation[] = [
 ## Next Steps (After Phase 2B)
 
 ### Phase 3: Advanced Features (1-2 weeks)
+
 - [ ] Nina NLP integration (advanced intent detection)
 - [ ] Linda WhatsApp LocalAuth integration
 - [ ] Meta Business API production credentials
@@ -641,6 +672,7 @@ const mockConversations: Conversation[] = [
 - [ ] User acceptance testing (UAT)
 
 ### Quality Assurance
+
 - [ ] E2E testing with Playwright
 - [ ] Cross-browser testing
 - [ ] Mobile device testing

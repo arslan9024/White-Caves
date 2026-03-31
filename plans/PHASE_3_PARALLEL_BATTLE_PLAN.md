@@ -47,9 +47,11 @@ VALIDATION PHASE (20 min):
 Since you're the sole developer, we'll **implement sequentially but design for parallel**:
 
 ### **Phase 3.1 - Nina NLP Engine (90 min)**
+
 **Goal**: Core intent detection + conversation memory
 
 Files to create:
+
 ```
 server/services/nadia/ninaEngine.ts        (380 lines)
 server/services/nadia/conversationMemory.ts (280 lines)
@@ -57,6 +59,7 @@ server/services/nadia/entityExtractor.ts    (200 lines)
 ```
 
 Key features:
+
 - 6 main intents (property, viewing, purchase, complaint, info, negotiation)
 - 15+ sub-intents for context
 - Confidence scoring (0-100%)
@@ -65,9 +68,11 @@ Key features:
 - Hybrid training (pre-built patterns + learning)
 
 ### **Phase 3.2 - Linda WhatsApp LocalAuth (90 min)**
+
 **Goal**: Dual WhatsApp ingestion + message routing
 
 Files to create:
+
 ```
 server/services/whatsapp/lindaClient.ts     (340 lines)
 server/routes/linda.ts                      (200 lines)
@@ -75,6 +80,7 @@ server/config/linda.config.ts               (100 lines)
 ```
 
 Key features:
+
 - whatsapp-web.js client with LocalAuth
 - Session persistence (no re-auth each time)
 - Event listeners (messages, status)
@@ -83,9 +89,11 @@ Key features:
 - Conversation creation/update
 
 ### **Phase 3.3 - Meta Business API (90 min)**
+
 **Goal**: Production webhooks + scalable sending
 
 Files to create:
+
 ```
 server/services/whatsapp/metaAPI.ts         (280 lines)
 server/routes/meta-webhook.ts               (180 lines)
@@ -93,6 +101,7 @@ server/config/secrets.ts                    (120 lines)
 ```
 
 Key features:
+
 - MetaAPIClient for sending/receiving
 - Webhook verification & parsing
 - Access token management
@@ -107,23 +116,27 @@ Key features:
 ### **Minute 0-45: Foundation Setup**
 
 Step 1 (mins 0-10): Create directory structure
+
 ```bash
 mkdir -p server/services/whatsapp
 mkdir -p server/config
 ```
 
 Step 2 (mins 10-20): Create type definitions
+
 ```
 server/types/index.ts (add Nina + WhatsApp types)
 ```
 
 Step 3 (mins 20-35): Install new dependencies
+
 ```bash
 npm install whatsapp-web.js axios dotenv
 npm install -D @types/node
 ```
 
 Step 4 (mins 35-45): Update environment variables
+
 ```
 .env.example (add Meta + Linda config)
 ```
@@ -135,6 +148,7 @@ Step 4 (mins 35-45): Update environment variables
 #### **Track 1A: Nina Intent Engine (mins 45-105)**
 
 1. **Intent Detection Core** (mins 45-75)
+
 ```typescript
 // server/services/nadia/ninaEngine.ts - Part 1
 - IntentResult interface
@@ -146,6 +160,7 @@ Step 4 (mins 35-45): Update environment variables
 ```
 
 2. **Conversation Memory** (mins 75-95)
+
 ```typescript
 // server/services/nadia/conversationMemory.ts
 - ConversationContext interface
@@ -157,6 +172,7 @@ Step 4 (mins 35-45): Update environment variables
 ```
 
 3. **Entity Extraction** (mins 95-105)
+
 ```typescript
 // server/services/nadia/entityExtractor.ts
 - Entity interface (Property, User, Action)
@@ -170,6 +186,7 @@ Step 4 (mins 35-45): Update environment variables
 #### **Track 2A: Linda LocalAuth (mins 45-135)**
 
 1. **WhatsApp Client Setup** (mins 45-80)
+
 ```typescript
 // server/services/whatsapp/lindaClient.ts - Part 1
 - LindaClient class
@@ -181,6 +198,7 @@ Step 4 (mins 35-45): Update environment variables
 ```
 
 2. **Message Routing** (mins 80-110)
+
 ```typescript
 // server/routes/linda.ts
 - POST /api/linda/webhook
@@ -192,6 +210,7 @@ Step 4 (mins 35-45): Update environment variables
 ```
 
 3. **Configuration** (mins 110-135)
+
 ```typescript
 // server/config/linda.config.ts + .env
 - Session path setup
@@ -203,6 +222,7 @@ Step 4 (mins 35-45): Update environment variables
 #### **Track 3A: Meta Business API (mins 45-125)**
 
 1. **API Client** (mins 45-75)
+
 ```typescript
 // server/services/whatsapp/metaAPI.ts - Part 1
 - MetaAPIClient class
@@ -213,6 +233,7 @@ Step 4 (mins 35-45): Update environment variables
 ```
 
 2. **Webhook Handler** (mins 75-105)
+
 ```typescript
 // server/routes/meta-webhook.ts
 - Webhook verification
@@ -223,6 +244,7 @@ Step 4 (mins 35-45): Update environment variables
 ```
 
 3. **Secrets Management** (mins 105-125)
+
 ```typescript
 // server/config/secrets.ts
 - Environment config
@@ -238,6 +260,7 @@ Step 4 (mins 35-45): Update environment variables
 #### **Step 1: Wire All Together (mins 135-165)**
 
 1. **Multi-Source Message Router** (mins 135-145)
+
 ```typescript
 // Update server/routes/nadia.ts
 - Add linda.ts routes
@@ -247,6 +270,7 @@ Step 4 (mins 35-45): Update environment variables
 ```
 
 2. **Multi-Channel Sender** (mins 145-155)
+
 ```typescript
 // Update server/services/nadia/messageProcessor.ts
 - Add linda send capability
@@ -256,6 +280,7 @@ Step 4 (mins 35-45): Update environment variables
 ```
 
 3. **Conversation Sync** (mins 155-165)
+
 ```typescript
 // Update server/models/conversation.ts
 - Add whatsappSource field
@@ -266,6 +291,7 @@ Step 4 (mins 35-45): Update environment variables
 #### **Step 2: Unit Tests (mins 165-210)**
 
 1. **Nina Engine Tests** (mins 165-180)
+
 ```typescript
 // server/services/nadia/ninaEngine.test.ts
 - Intent detection (6 tests)
@@ -276,6 +302,7 @@ Step 4 (mins 35-45): Update environment variables
 ```
 
 2. **WhatsApp Router Tests** (mins 180-195)
+
 ```typescript
 // server/routes/linda-meta.test.ts
 - Message ingestion (4 tests)
@@ -286,6 +313,7 @@ Step 4 (mins 35-45): Update environment variables
 ```
 
 3. **Integration Tests** (mins 195-210)
+
 ```typescript
 // server/routes/full-pipeline.test.ts
 - End-to-end message flow (3 tests)
@@ -315,6 +343,7 @@ Step 4 (mins 35-45): Update environment variables
 ## File Creation Checklist
 
 ### **Core NLP (3 files)**
+
 ```
 [ ] server/services/nadia/ninaEngine.ts        380 lines
 [ ] server/services/nadia/conversationMemory.ts 280 lines
@@ -323,6 +352,7 @@ Subtotal: 860 lines
 ```
 
 ### **Linda WhatsApp (3 files)**
+
 ```
 [ ] server/services/whatsapp/lindaClient.ts     340 lines
 [ ] server/routes/linda.ts                      200 lines
@@ -331,6 +361,7 @@ Subtotal: 640 lines
 ```
 
 ### **Meta Business API (3 files)**
+
 ```
 [ ] server/services/whatsapp/metaAPI.ts         280 lines
 [ ] server/routes/meta-webhook.ts               180 lines
@@ -339,6 +370,7 @@ Subtotal: 580 lines
 ```
 
 ### **Tests & Integration (4 files)**
+
 ```
 [ ] server/services/nadia/ninaEngine.test.ts    180 lines
 [ ] server/routes/linda-meta.test.ts            150 lines
@@ -348,6 +380,7 @@ Subtotal: 720 lines
 ```
 
 ### **Updated Existing (2 files)**
+
 ```
 [ ] server/routes/nadia.ts                      +150 lines
 [ ] server/services/nadia/messageProcessor.ts   +100 lines
@@ -360,23 +393,24 @@ Subtotal: +250 lines
 
 ## Time Breakdown
 
-| Phase | Duration | Output | Status |
-|-------|----------|--------|--------|
-| Setup (dirs, deps, types) | 45 min | 6 files | Ready |
-| Nina NLP Core | 60 min | 3 files | Ready |
-| Linda WhatsApp | 90 min | 3 files | Ready |
-| Meta Business API | 90 min | 3 files | Ready |
-| Integration & Wiring | 30 min | 2 updated files | Ready |
-| Core Unit Tests | 45 min | 3 test files | Ready |
-| E2E Integration | 30 min | 1 big test file | Ready |
-| Build + Validation | 20 min | Compile check | Ready |
-| **TOTAL** | **300 min** | **~4,050 lines** | ✅ Ready |
+| Phase                     | Duration    | Output           | Status   |
+| ------------------------- | ----------- | ---------------- | -------- |
+| Setup (dirs, deps, types) | 45 min      | 6 files          | Ready    |
+| Nina NLP Core             | 60 min      | 3 files          | Ready    |
+| Linda WhatsApp            | 90 min      | 3 files          | Ready    |
+| Meta Business API         | 90 min      | 3 files          | Ready    |
+| Integration & Wiring      | 30 min      | 2 updated files  | Ready    |
+| Core Unit Tests           | 45 min      | 3 test files     | Ready    |
+| E2E Integration           | 30 min      | 1 big test file  | Ready    |
+| Build + Validation        | 20 min      | Compile check    | Ready    |
+| **TOTAL**                 | **300 min** | **~4,050 lines** | ✅ Ready |
 
 ---
 
 ## Git Strategy
 
 ### Branch Structure
+
 ```
 main (production)
   ↑
@@ -388,6 +422,7 @@ main (production)
 ```
 
 ### 4-Commit Strategy
+
 ```
 Commit 1 (Setup):
   - Directory structure
@@ -421,6 +456,7 @@ Commit 4 (E2E):
 ## Success Criteria
 
 ### **Must Have** (all mandatory)
+
 - ✅ Nina detects intent with 90%+ accuracy
 - ✅ Linda receives messages in <2 seconds
 - ✅ Meta API sends replies successfully
@@ -431,6 +467,7 @@ Commit 4 (E2E):
 - ✅ ESLint passes (0 warnings)
 
 ### **Should Have** (for confidence)
+
 - ✅ Unit test coverage >80%
 - ✅ All error cases handled
 - ✅ Message deduplication working
@@ -438,6 +475,7 @@ Commit 4 (E2E):
 - ✅ Rate limiting configured
 
 ### **Nice to Have** (bonus)
+
 - Performance benchmarks
 - Load testing baseline
 - Security audit report
@@ -448,6 +486,7 @@ Commit 4 (E2E):
 ## Contingency Plans
 
 ### **If running behind schedule:**
+
 ```
 -30 min (2m 30s): Skip Linda integration (use Meta only)
 -60 min (1h): Skip E2E tests (use unit tests only)
@@ -455,6 +494,7 @@ Commit 4 (E2E):
 ```
 
 ### **If running ahead of schedule:**
+
 ```
 +30 min bonus: Add performance optimization
 +60 min bonus: Add load testing
@@ -480,6 +520,7 @@ Commit 4 (E2E):
 Ready to start Phase 3 implementation?
 
 Say "GO" to start:
+
 1. Setting up directory structure
 2. Installing dependencies
 3. Creating Nina NLP engine

@@ -66,6 +66,7 @@ Phase 3 transforms NADIA from a **mock-based CRM** into a **production-grade Wha
 ## Workstream 1: Nina NLP Engine Integration
 
 ### Current State
+
 - ✅ Mock NLP in Phase 2 (messageProcessor.ts)
 - ✅ Basic intent detection (4 intents)
 - ✅ Sentiment analysis (basic)
@@ -76,9 +77,11 @@ Phase 3 transforms NADIA from a **mock-based CRM** into a **production-grade Wha
 ### Phase 3 Implementation
 
 #### 1.1 Enhanced Intent Engine
+
 **File**: `server/services/nadia/ninaEngine.ts`
 
 **Capabilities**:
+
 - Advanced multi-label intent detection
 - Context-aware confidence scoring
 - Intent chain reasoning (previous intent → next intent)
@@ -86,6 +89,7 @@ Phase 3 transforms NADIA from a **mock-based CRM** into a **production-grade Wha
 - Intent refinement from user corrections
 
 **Intent Hierarchy**:
+
 ```
 ├─ PROPERTY_INQUIRY
 │  ├─ Residential
@@ -120,6 +124,7 @@ Phase 3 transforms NADIA from a **mock-based CRM** into a **production-grade Wha
 ```
 
 **Implementation**:
+
 ```typescript
 // server/services/nadia/ninaEngine.ts
 interface IntentResult {
@@ -136,23 +141,25 @@ interface IntentResult {
 
 export class NinaEngine {
   // Context-aware intent detection
-  detectIntent(message: string, context: ConversationContext): IntentResult
-  
+  detectIntent(message: string, context: ConversationContext): IntentResult;
+
   // Process with conversation history
-  processWithContext(message: string, conversation: Conversation): IntentResult
-  
+  processWithContext(message: string, conversation: Conversation): IntentResult;
+
   // Confidence calibration
-  calibrateConfidence(intent: Intent, context: ConversationContext): number
-  
+  calibrateConfidence(intent: Intent, context: ConversationContext): number;
+
   // Learn from corrections
-  recordFeedback(message: string, actualIntent: Intent, predictedIntent: Intent): void
+  recordFeedback(message: string, actualIntent: Intent, predictedIntent: Intent): void;
 }
 ```
 
 #### 1.2 Conversation Memory System
+
 **File**: `server/services/nadia/conversationMemory.ts`
 
 **Features**:
+
 - Short-term context (current conversation thread)
 - Long-term memory (conversation history)
 - User preference tracking
@@ -160,6 +167,7 @@ export class NinaEngine {
 - Predictive next-steps
 
 **Implementation**:
+
 ```typescript
 interface ConversationContext {
   conversationId: string;
@@ -172,18 +180,20 @@ interface ConversationContext {
 }
 
 export class ConversationMemory {
-  updateContext(conversationId: string, message: Message): ConversationContext
-  getContext(conversationId: string): ConversationContext
-  predictNextIntent(conversationId: string): Intent[]
-  recognizePattern(conversationId: string): Pattern
-  suggestNextAction(conversationId: string): Action
+  updateContext(conversationId: string, message: Message): ConversationContext;
+  getContext(conversationId: string): ConversationContext;
+  predictNextIntent(conversationId: string): Intent[];
+  recognizePattern(conversationId: string): Pattern;
+  suggestNextAction(conversationId: string): Action;
 }
 ```
 
 #### 1.3 Entity Extraction (Advanced)
+
 **File**: `server/services/nadia/entityExtractor.ts`
 
 **Extracted Entities**:
+
 ```
 Property:
 ├─ Type (villa, apartment, townhouse, plot)
@@ -214,6 +224,7 @@ Action:
 ## Workstream 2: Linda WhatsApp LocalAuth Integration
 
 ### Current State
+
 - ✅ NADIA backend ready to receive messages
 - ✅ Message routing working
 - ❌ No WhatsApp account connection
@@ -223,15 +234,18 @@ Action:
 ### Phase 3 Implementation
 
 #### 2.1 Linda LocalAuth Setup
+
 **File**: `server/services/whatsapp/lindaClient.ts`
 
 **Technologies**:
+
 - `whatsapp-web.js` library
 - LocalAuth storage for session persistence
 - Chrome/Chromium headless automation
 - Message event listeners
 
 **Implementation**:
+
 ```typescript
 import { Client } from 'whatsapp-web.js';
 import LocalAuth from 'whatsapp-web.js/lib/stores/LocalAuth';
@@ -245,8 +259,8 @@ export class LindaClient {
       authStrategy: new LocalAuth(),
       puppeteer: {
         headless: true,
-        args: ['--no-sandbox']
-      }
+        args: ['--no-sandbox'],
+      },
     });
 
     // Setup event handlers
@@ -263,12 +277,12 @@ export class LindaClient {
     });
 
     // Message received
-    this.client.on('message', async (message) => {
+    this.client.on('message', async message => {
       await this.handleIncomingMessage(message);
     });
 
     // QR code (for initial auth)
-    this.client.on('qr', (qr) => {
+    this.client.on('qr', qr => {
       console.log('QR Code:', qr);
       // Expose for user to scan
     });
@@ -292,9 +306,11 @@ export class LindaClient {
 ```
 
 #### 2.2 Message Bidirectional Routing
+
 **File**: `server/routes/linda.ts` (new)
 
 **Endpoints**:
+
 ```
 POST   /api/linda/webhook           - Receive from LocalAuth
 GET    /api/linda/status            - Check connection
@@ -304,6 +320,7 @@ PATCH  /api/linda/config            - Update settings
 ```
 
 **Message Flow**:
+
 ```
 WhatsApp Message (Linda)
         ↓
@@ -327,20 +344,22 @@ Optionally send WhatsApp reply
 ```
 
 #### 2.3 LocalAuth Session Persistence
+
 **File**: `server/config/linda.config.ts`
 
 **Session Storage**:
+
 ```typescript
 interface LindaConfig {
   authStrategy: 'LOCAL_AUTH' | 'CLOUD';
-  sessionPath: string;  // ~/.linda-session
-  sessionTimeout: number;  // hours before re-auth
+  sessionPath: string; // ~/.linda-session
+  sessionTimeout: number; // hours before re-auth
   maxReconnectAttempts: number;
   puppeteerOptions: {
     headless: boolean;
     args: string[];
   };
-  messageRetention: number;  // days to keep in memory
+  messageRetention: number; // days to keep in memory
 }
 ```
 
@@ -349,6 +368,7 @@ interface LindaConfig {
 ## Workstream 3: Meta Business API Production Setup
 
 ### Current State
+
 - ✅ Database ready for Meta API data
 - ❌ No production credentials configured
 - ❌ No webhook integration
@@ -358,9 +378,11 @@ interface LindaConfig {
 ### Phase 3 Implementation
 
 #### 3.1 Meta Business Platform Integration
+
 **File**: `server/services/whatsapp/metaAPI.ts`
 
 **Setup Steps**:
+
 1. Create Meta Business Account
 2. Create WhatsApp Business App
 3. Configure webhook URL
@@ -368,6 +390,7 @@ interface LindaConfig {
 5. Add phone number
 
 **Implementation**:
+
 ```typescript
 import axios from 'axios';
 
@@ -385,22 +408,19 @@ export class MetaAPIClient {
     this.client = axios.create({
       baseURL: 'https://graph.instagram.com/v17.0',
       headers: {
-        'Authorization': `Bearer ${this.accessToken}`,
-      }
+        Authorization: `Bearer ${this.accessToken}`,
+      },
     });
   }
 
   async sendMessage(toPhoneNumber: string, message: string): Promise<void> {
-    await this.client.post(
-      `/${this.phoneNumberId}/messages`,
-      {
-        messaging_product: 'whatsapp',
-        recipient_type: 'individual',
-        to: toPhoneNumber,
-        type: 'text',
-        text: { body: message }
-      }
-    );
+    await this.client.post(`/${this.phoneNumberId}/messages`, {
+      messaging_product: 'whatsapp',
+      recipient_type: 'individual',
+      to: toPhoneNumber,
+      type: 'text',
+      text: { body: message },
+    });
   }
 
   async getMessageStatus(messageId: string): Promise<MessageStatus> {
@@ -413,19 +433,18 @@ export class MetaAPIClient {
     formData.append('file', new Blob([mediaData]));
     formData.append('type', type);
 
-    const response = await this.client.post(
-      `/${this.phoneNumberId}/media`,
-      formData
-    );
+    const response = await this.client.post(`/${this.phoneNumberId}/media`, formData);
     return response.data.id;
   }
 }
 ```
 
 #### 3.2 Webhook Integration
+
 **File**: `server/routes/meta-webhook.ts`
 
 **Endpoints**:
+
 ```
 POST   /api/webhooks/meta           - Receive messages
 GET    /api/webhooks/meta/verify    - Webhook verification
@@ -433,6 +452,7 @@ PATCH  /api/webhooks/meta/config    - Update webhook settings
 ```
 
 **Webhook Handler**:
+
 ```typescript
 app.post('/api/webhooks/meta', async (req, res) => {
   const { object, entry } = req.body;
@@ -450,7 +470,7 @@ app.post('/api/webhooks/meta', async (req, res) => {
           phone: message.from,
           content: message.text.body,
           timestamp: message.timestamp,
-          externalId: message.id
+          externalId: message.id,
         });
       }
     }
@@ -461,9 +481,11 @@ app.post('/api/webhooks/meta', async (req, res) => {
 ```
 
 #### 3.3 API Token & Secret Management
+
 **File**: `server/config/secrets.ts`
 
 **Environment Configuration**:
+
 ```env
 # Meta Business API
 META_BUSINESS_ACCOUNT_ID=your_account_id
@@ -486,29 +508,33 @@ RATE_LIMIT_MAX_REQUESTS=100
 ## Workstream 4: Performance Optimization
 
 ### 4.1 Database Indexing & Query Optimization
+
 **File**: `server/config/database-indexes.ts`
 
 **Optimized Indexes**:
+
 ```typescript
 // Conversation queries
-db.conversation.createIndex({ status: 1, priority: -1, leadScore: -1 })
-db.conversation.createIndex({ customerPhone: 1 })
-db.conversation.createIndex({ assignedAgent: 1, status: 1 })
-db.conversation.createIndex({ createdAt: -1 })
+db.conversation.createIndex({ status: 1, priority: -1, leadScore: -1 });
+db.conversation.createIndex({ customerPhone: 1 });
+db.conversation.createIndex({ assignedAgent: 1, status: 1 });
+db.conversation.createIndex({ createdAt: -1 });
 
 // Message queries
-db.message.createIndex({ conversationId: 1, timestamp: -1 })
-db.message.createIndex({ sentiment: 1, leadScore: -1 })
-db.message.createIndex({ intent: 1 })
+db.message.createIndex({ conversationId: 1, timestamp: -1 });
+db.message.createIndex({ sentiment: 1, leadScore: -1 });
+db.message.createIndex({ intent: 1 });
 
 // Queue queries
-db.conversation.createIndex({ status: 'PENDING', priority: -1, createdAt: 1 })
+db.conversation.createIndex({ status: 'PENDING', priority: -1, createdAt: 1 });
 ```
 
 ### 4.2 Caching Layer
+
 **File**: `server/services/cache.ts`
 
 **Features**:
+
 - Redis caching for frequent queries
 - 5-minute TTL for conversations
 - 2-minute TTL for messages
@@ -529,13 +555,15 @@ export class CacheService {
 
   invalidateConversationCache(id: string): void {
     redis.del(`conversation:${id}`);
-    redis.del('conversations:*');  // Clear all conversation cache
+    redis.del('conversations:*'); // Clear all conversation cache
   }
 }
 ```
 
 ### 4.3 API Response Optimization
+
 **Features**:
+
 - Pagination (default 50 items)
 - Field filtering (select specific fields)
 - Response compression (gzip)
@@ -547,9 +575,11 @@ export class CacheService {
 ## Workstream 5: Security Hardening
 
 ### 5.1 API Authentication & Authorization
+
 **File**: `server/middleware/authNADIA.ts`
 
 **Features**:
+
 - Validate API keys
 - Rate limiting per agent
 - IP whitelisting
@@ -572,7 +602,9 @@ export const validateNADIARequest = (req: Request, res: Response, next: NextFunc
 ```
 
 ### 5.2 Encryption & Data Privacy
+
 **Features**:
+
 - End-to-end encryption for sensitive data
 - PII masking in logs
 - Secure webhook verification
@@ -580,7 +612,9 @@ export const validateNADIARequest = (req: Request, res: Response, next: NextFunc
 - GDPR compliance
 
 ### 5.3 Error Handling & Monitoring
+
 **Features**:
+
 - Centralized error logging
 - Sentry integration
 - Error rate alerting
@@ -592,6 +626,7 @@ export const validateNADIARequest = (req: Request, res: Response, next: NextFunc
 ## Implementation Timeline
 
 ### **Part 1: Nina NLP (90 mins)**
+
 - [ ] Create ninaEngine.ts with advanced intent detection
 - [ ] Implement conversation memory system
 - [ ] Add entity extraction capabilities
@@ -599,6 +634,7 @@ export const validateNADIARequest = (req: Request, res: Response, next: NextFunc
 - [ ] Integrate with message processor
 
 ### **Part 2: Linda WhatsApp (90 mins)**
+
 - [ ] Set up whatsapp-web.js client
 - [ ] Implement LocalAuth session management
 - [ ] Create message bidirectional routing
@@ -606,6 +642,7 @@ export const validateNADIARequest = (req: Request, res: Response, next: NextFunc
 - [ ] Test message flow end-to-end
 
 ### **Part 3: Meta Business API (60 mins)**
+
 - [ ] Create MetaAPIClient class
 - [ ] Implement webhook verification
 - [ ] Add access token management
@@ -613,6 +650,7 @@ export const validateNADIARequest = (req: Request, res: Response, next: NextFunc
 - [ ] Create test scenarios
 
 ### **Part 4: Optimization & Security (60 mins)**
+
 - [ ] Add database indexes
 - [ ] Implement caching layer
 - [ ] Add API authentication
@@ -623,20 +661,21 @@ export const validateNADIARequest = (req: Request, res: Response, next: NextFunc
 
 ## Success Criteria
 
-| Item | Target | Metric |
-|------|--------|--------|
-| Nina Intent Accuracy | 95%+ | Test messages |
-| Linda Message Delivery | 99.9% | Uptime tracking |
-| Meta API Response Time | <2s | P95 latency |
-| Cache Hit Rate | 80%+ | Query analytics |
-| API Availability | 99.95% | Monitoring dashboard |
-| Security Score | A+ | Vulnerability scan |
+| Item                   | Target | Metric               |
+| ---------------------- | ------ | -------------------- |
+| Nina Intent Accuracy   | 95%+   | Test messages        |
+| Linda Message Delivery | 99.9%  | Uptime tracking      |
+| Meta API Response Time | <2s    | P95 latency          |
+| Cache Hit Rate         | 80%+   | Query analytics      |
+| API Availability       | 99.95% | Monitoring dashboard |
+| Security Score         | A+     | Vulnerability scan   |
 
 ---
 
 ## Deliverables
 
 ### Code
+
 - [ ] ninaEngine.ts (400+ lines)
 - [ ] conversationMemory.ts (300+ lines)
 - [ ] lindaClient.ts (350+ lines)
@@ -645,6 +684,7 @@ export const validateNADIARequest = (req: Request, res: Response, next: NextFunc
 - [ ] Security middleware (200+ lines)
 
 ### Documentation
+
 - [ ] Nina NLP Integration Guide
 - [ ] Linda Setup Instructions
 - [ ] Meta Business API Docs
@@ -652,12 +692,14 @@ export const validateNADIARequest = (req: Request, res: Response, next: NextFunc
 - [ ] Security Audit Report
 
 ### Tests
+
 - [ ] Unit tests (30+ tests)
 - [ ] Integration tests (20+ tests)
 - [ ] E2E tests with real WhatsApp (10+ tests)
 - [ ] Load testing (1000 concurrent messages)
 
 ### Commits (3-4 commits)
+
 1. "Phase 3A: Implement Nina NLP engine with context memory"
 2. "Phase 3B: Integrate Linda WhatsApp LocalAuth client"
 3. "Phase 3C: Add Meta Business API production setup"
@@ -667,13 +709,13 @@ export const validateNADIARequest = (req: Request, res: Response, next: NextFunc
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-|------|--------|-----------|
-| Meta API quota limits | High | Implement queue/backoff |
-| WhatsApp LocalAuth disconnection | High | Auto-reconnect logic |
-| NLP accuracy on Arabic text | Medium | Train on local data |
-| Rate limiting failures | Medium | Fallback to queue |
-| PII exposure in logs | High | Masking middleware |
+| Risk                             | Impact | Mitigation              |
+| -------------------------------- | ------ | ----------------------- |
+| Meta API quota limits            | High   | Implement queue/backoff |
+| WhatsApp LocalAuth disconnection | High   | Auto-reconnect logic    |
+| NLP accuracy on Arabic text      | Medium | Train on local data     |
+| Rate limiting failures           | Medium | Fallback to queue       |
+| PII exposure in logs             | High   | Masking middleware      |
 
 ---
 
@@ -715,6 +757,7 @@ git commit -m "Phase 3A: Implement Nina NLP engine..."
 ## Questions Before We Start?
 
 This Phase 3 plan includes:
+
 - ✅ 3 major workstreams (Nina, Linda, Meta)
 - ✅ 1 optimization workstream
 - ✅ Complete technical specifications
@@ -725,6 +768,7 @@ This Phase 3 plan includes:
 **Ready to dive in?** 🚀
 
 Just say which workstream to tackle first:
+
 1. **Nina NLP** - Start with advanced intent detection
 2. **Linda WhatsApp** - Start with LocalAuth integration
 3. **Meta API** - Start with production credentials
