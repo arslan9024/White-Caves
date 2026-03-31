@@ -1,4 +1,5 @@
 import styled, { keyframes } from 'styled-components';
+import { typography } from '../../../styles/theme/typography';
 
 const skeletonLoading = keyframes`
   0% { background-position: 200% 0; }
@@ -52,7 +53,7 @@ export const StatCardNumber = styled.span`
   font-size: 1.75rem;
   font-weight: 700;
   color: var(--text-primary, #1f2937);
-  font-family: 'Montserrat', 'Segoe UI', sans-serif;
+  font-family: ${typography.fontFamily.heading};
 
   [data-theme="dark"] & {
     color: var(--text-primary-dark, #f9fafb);

@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { keyframes } from 'styled-components';
+import { typography } from '../../../styles/theme/typography';
 
 const spin = keyframes`
   from { transform: rotate(0deg); }
@@ -151,7 +152,7 @@ export const TextArea = styled.textarea`
   border-radius: 8px;
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-family: 'Monaco', 'Menlo', monospace;
+  font-family: ${typography.fontFamily.mono};
   font-size: 0.9rem;
   resize: vertical;
   transition: border-color 0.2s;

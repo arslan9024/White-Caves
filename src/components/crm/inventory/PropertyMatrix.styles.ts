@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { typography } from '../../../styles/theme/typography';
 
 export const PropertyMatrixContainer = styled.div`
   background: var(--bg-card);
@@ -103,7 +104,7 @@ export const MatrixTable = styled.table`
 
 export const PNumberCell = styled.td`
   font-weight: 600;
-  font-family: monospace;
+  font-family: ${typography.fontFamily.mono};
   color: var(--primary);
 `;
 

@@ -8,6 +8,8 @@ export const typography = {
     primary: '"Inter", "Segoe UI", "Roboto", sans-serif',
     heading: '"Poppins", "Inter", "Segoe UI", sans-serif',
     mono: '"JetBrains Mono", "Fira Code", "Courier New", monospace',
+    serif: '"Georgia", "Times New Roman", serif',
+    system: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   },
 
   sizes: {

@@ -1,10 +1,11 @@
 import styled from 'styled-components';
+import { typography } from '../styles/theme/typography';
 
 export const Container = styled.div`
   max-width: 900px;
   margin: 0 auto;
   padding: 40px 20px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: ${typography.fontFamily.system};
 `;
 
 export const Header = styled.div`
