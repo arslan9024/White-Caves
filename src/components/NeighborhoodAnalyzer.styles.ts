@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { typography } from '../styles/theme/typography';
 
 export const NeighborhoodAnalyzerContainer = styled.div`
   padding: 3rem 5%;
@@ -15,7 +16,7 @@ export const AnalyzerHeader = styled.div`
 `;
 
 export const AnalyzerTitle = styled.h2`
-  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-family: ${typography.fontFamily.heading};
   font-size: 2rem;
   color: var(--primary-color, #1a365d);
   margin-bottom: 0.5rem;
@@ -44,7 +45,7 @@ export const AreaButton = styled.button<{ $isActive?: boolean }>`
   background: ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--bg-light, #f7fafc)'};
   border: 2px solid ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'transparent'};
   border-radius: 9999px;
-  font-family: var(--font-body, 'Open Sans', sans-serif);
+  font-family: ${typography.fontFamily.primary};
   font-size: 0.9rem;
   font-weight: 500;
   color: ${props => props.$isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
@@ -98,7 +99,7 @@ export const HeroContent = styled.div`
 `;
 
 export const HeroTitle = styled.h3`
-  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-family: ${typography.fontFamily.heading};
   font-size: 2.5rem;
   margin-bottom: 1rem;
   margin: 0 0 1rem 0;
@@ -205,7 +206,7 @@ export const InsightsSection = styled.div`
 `;
 
 export const InsightsTitle = styled.h4`
-  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-family: ${typography.fontFamily.heading};
   font-size: 1.1rem;
   margin-bottom: 1rem;
   margin: 0 0 1rem 0;
@@ -246,7 +247,7 @@ export const RisksSection = styled.div`
 `;
 
 export const RisksTitle = styled.h4`
-  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-family: ${typography.fontFamily.heading};
   font-size: 1.1rem;
   margin-bottom: 1rem;
   margin: 0 0 1rem 0;
