@@ -1,13 +1,8 @@
 import React from 'react';
 import { User, Plus, Trash2, Edit2, Check, X } from 'lucide-react';
 
-interface AssignedAgent {
-  agentName?: string;
-  agentTitle?: string;
-}
-
 interface AgentAssignmentData {
-  assignedAgent: AssignedAgent | null;
+  assignedAgent: string | null;
   setShowAgentAssign: (show: boolean) => void;
   handleAgentAssign: (agentId: string) => void;
 }
@@ -35,8 +30,8 @@ export const AgentAssignmentTab: React.FC<AgentAssignmentTabProps> = ({ data }) 
               <User size={32} />
             </div>
             <div className="agent-details">
-              <h4>{assignedAgent.agentName || 'Agent Name'}</h4>
-              <span className="agent-title">{assignedAgent.agentTitle || 'Title'}</span>
+              <h4>{assignedAgent || 'Agent Name'}</h4>
+              <span className="agent-title">Assigned Agent</span>
               <div className="agent-status">
                 <Check size={14} />
                 <span>Assigned</span>

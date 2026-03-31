@@ -1,13 +1,6 @@
 import React from 'react';
 import { CreditCard, CheckCircle, Clock } from 'lucide-react';
-
-interface Invoice {
-  id: string | number;
-  client: string;
-  amount: number;
-  status: string;
-  dueDate: string;
-}
+import type { Invoice } from '../data/finance';
 
 interface PaymentsTabProps {
   selectedInvoice: Invoice | null;

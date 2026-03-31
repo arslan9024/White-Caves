@@ -10,7 +10,7 @@ export default function FeaturesTab() {
         <p className="view-subtitle">Explore all available HR management features and planned enhancements</p>
       </div>
 
-      <AssistantFeatureMatrix features={NANCY_FEATURES as any} />
+      <AssistantFeatureMatrix features={NANCY_FEATURES} />
     </div>
   );
 }

@@ -37,7 +37,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
    * Handle message send
    */
   const handleSendMessage = useCallback(
-    async (e: React.FormEvent) => {
+    async (e: React.SyntheticEvent) => {
       e.preventDefault();
       setError(null);
 
@@ -71,7 +71,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
         if (!disabled && !loading && content.trim()) {
-          handleSendMessage(e as any);
+          handleSendMessage(e);
         }
       }
     },

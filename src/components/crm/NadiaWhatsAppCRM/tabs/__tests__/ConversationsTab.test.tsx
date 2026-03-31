@@ -25,6 +25,7 @@ const mockConversation = (overrides = {}) => ({
   contact: {
     avatar: 'https://example.com/avatar1.jpg',
     name: 'John Smith',
+    phone: '+971501234567',
     status: 'online',
   },
   time: '10:30 AM',
@@ -33,15 +34,15 @@ const mockConversation = (overrides = {}) => ({
   priority: 'hot',
   tags: ['VIP', 'Buyer'],
   messages: [
-    { id: 'msg-1', text: 'Hi there!', sender: 'John', time: '10:00 AM', type: 'received' as const, status: 'read' as const },
-    { id: 'msg-2', text: 'How can I help?', sender: 'Agent', time: '10:05 AM', type: 'sent' as const, status: 'delivered' as const },
+    { id: 1, text: 'Hi there!', type: 'received', time: '10:00 AM', status: 'read' },
+    { id: 2, text: 'How can I help?', type: 'sent', time: '10:05 AM', status: 'delivered' },
   ],
   ...overrides,
 });
 
 const createMockData = (overrides = {}) => ({
   filteredConversations: [mockConversation()],
-  selectedConversation: null as any,
+  selectedConversation: null as ReturnType<typeof mockConversation> | null,
   setSelectedConversation: vi.fn(),
   messageInput: '',
   setMessageInput: vi.fn(),

@@ -56,6 +56,15 @@ import ContractsTab from '../components/owner/tabs/ContractsTab';
 import AnalyticsTab from '../components/owner/tabs/AnalyticsTab';
 import SettingsTab from '../components/owner/tabs/SettingsTab';
 import UsersTab from '../components/owner/tabs/UsersTab';
+import type {
+  OverviewData,
+  PropertiesData,
+  AgentsData,
+  LeadsData,
+  ContractsData,
+  AnalyticsData,
+  SettingsData,
+} from '../components/owner/tabs/types';
 import AdminDashboard from '../components/admin/AdminDashboard';
 
 // Lazy-load AI modules
@@ -117,14 +126,17 @@ interface DashboardData {
 /** Standard props passed to every CRM module and dashboard tab */
 interface CRMModuleProps {
   role: string;
-  user: Record<string, unknown> | null;
+  user: { id: string; name?: string; email: string; role?: string; [key: string]: unknown } | null;
   data: DashboardData;
 }
 
 interface CRMModule {
-  Component: ComponentType<any>;
+  Component: ComponentType<CRMModuleProps>;
   label: string;
 }
+
+/** Adapter: UnifiedCRM has its own props, not the standard CRM module contract */
+const UnifiedCRMAdapter: FC<CRMModuleProps> = () => <UnifiedCRM />;
 
 interface TabLoadingFallbackProps {}
 
@@ -140,6 +152,16 @@ interface UnifiedDashboardPageState {
 /** Stable empty array constant for placeholder data fields */
 const EMPTY_CRM_ARRAY: CRMEntity[] = [];
 
+/**
+ * Type bridge for dashboard tabs.
+ * Tabs receive the shared DashboardData bundle but expect specific sub-shapes
+ * (OverviewData, PropertiesData, etc.). All tab data types use optional fields,
+ * so missing/extra DashboardData properties are safely ignored.
+ */
+function tabData<T>(data: DashboardData | null | undefined): T {
+  return (data ?? {}) as unknown as T;
+}
+
 const TabLoadingFallback: FC<TabLoadingFallbackProps> = () => (
   <div className="tab-loading-fallback">
     <SuspenseLoader />
@@ -148,7 +170,7 @@ const TabLoadingFallback: FC<TabLoadingFallbackProps> = () => (
 
 const CRM_MODULES: Record<string, CRMModule> = {
   // Unified CRM Dashboard
-  unified: { Component: UnifiedCRM, label: 'Unified CRM Dashboard' },
+  unified: { Component: UnifiedCRMAdapter, label: 'Unified CRM Dashboard' },
   
   // AI-Powered CRM Modules
   nadia: { Component: NadiaWhatsAppCRM, label: 'WhatsApp CRM' },
@@ -250,8 +272,8 @@ const UnifiedDashboardPage: FC = () => {
     dispatch(toggleShowRightDrawer());
   }, [dispatch]);
 
-  const handleSelectAssistant = useCallback((assistant: any): void => {
-    const id = typeof assistant === 'string' ? assistant : assistant?.id || assistant;
+  const handleSelectAssistant = useCallback((assistant: string | { id?: string }): void => {
+    const id = typeof assistant === 'string' ? assistant : assistant?.id || '';
     dispatch(selectAssistant(id));
   }, [dispatch]);
 
@@ -442,37 +464,37 @@ const UnifiedDashboardPage: FC = () => {
       case 'overview':
         return (
           <RouteErrorBoundary section="Overview">
-            <OverviewTab data={dataToRender as any} />
+            <OverviewTab data={tabData<OverviewData>(dataToRender)} />
           </RouteErrorBoundary>
         );
       case 'properties':
         return (
           <RouteErrorBoundary section="Properties">
-            <PropertiesTab data={dataToRender as any} />
+            <PropertiesTab data={tabData<PropertiesData>(dataToRender)} />
           </RouteErrorBoundary>
         );
       case 'agents':
         return (
           <RouteErrorBoundary section="Agents">
-            <AgentsTab data={dataToRender as any} />
+            <AgentsTab data={tabData<AgentsData>(dataToRender)} />
           </RouteErrorBoundary>
         );
       case 'leads':
         return (
           <RouteErrorBoundary section="Leads">
-            <LeadsTab data={dataToRender as any} />
+            <LeadsTab data={tabData<LeadsData>(dataToRender)} />
           </RouteErrorBoundary>
         );
       case 'contracts':
         return (
           <RouteErrorBoundary section="Contracts">
-            <ContractsTab data={dataToRender as any} />
+            <ContractsTab data={tabData<ContractsData>(dataToRender)} />
           </RouteErrorBoundary>
         );
       case 'analytics':
         return (
           <RouteErrorBoundary section="Analytics">
-            <AnalyticsTab data={dataToRender as any} />
+            <AnalyticsTab data={tabData<AnalyticsData>(dataToRender)} />
           </RouteErrorBoundary>
         );
       case 'admin':
@@ -506,13 +528,13 @@ const UnifiedDashboardPage: FC = () => {
       case 'settings':
         return (
           <RouteErrorBoundary section="Settings">
-            <SettingsTab data={dataToRender as any} />
+            <SettingsTab data={tabData<SettingsData>(dataToRender)} />
           </RouteErrorBoundary>
         );
       default:
         return (
           <RouteErrorBoundary section="Overview">
-            <OverviewTab data={dataToRender as any} />
+            <OverviewTab data={tabData<OverviewData>(dataToRender)} />
           </RouteErrorBoundary>
         );
     }

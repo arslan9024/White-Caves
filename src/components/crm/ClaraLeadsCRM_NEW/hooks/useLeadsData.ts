@@ -199,8 +199,8 @@ export function useLeadsData() {
 
     // Apply sort — always copy to avoid mutating the source array
     return [...result].sort((a, b) => {
-      let aVal = (a as any)[sortBy];
-      let bVal = (b as any)[sortBy];
+      let aVal = a[sortBy as keyof Lead];
+      let bVal = b[sortBy as keyof Lead];
 
       if (sortBy === 'lastContact' || sortBy === 'createdAt') {
         aVal = new Date(aVal).getTime();

@@ -59,7 +59,7 @@ interface Neighborhood {
   name: string;
   score: number;
   investmentGrade: string;
-  trend: string;
+  trend: 'rising' | 'stable' | 'declining';
   avgPrice: number;
   pricePerSqft: number;
   rentalYield: number;
@@ -236,7 +236,7 @@ const NeighborhoodAnalyzer: React.FC = () => {
             <HeroBadges>
               <Badge $variant="score">Score: {current.score}/100</Badge>
               <Badge $variant="grade">{current.investmentGrade}</Badge>
-              <Badge $variant="trend" $trend={current.trend as any}>{current.trend}</Badge>
+              <Badge $variant="trend" $trend={current.trend}>{current.trend}</Badge>
             </HeroBadges>
           </HeroContent>
         </AreaHero>

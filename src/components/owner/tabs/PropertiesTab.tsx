@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Badge, Pagination } from '../../../components/ui';
+import { Badge, Pagination, type BadgeVariant } from '../../../components/ui';
 import type { PropertiesTabProps, PropertyStatus } from './types';
 import './TabStyles.css';
 
@@ -56,15 +56,15 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error, onA
   });
 
   const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { color: string; text: string; variant: string }> = {
+    const statusConfig: Record<string, { color: string; text: string; variant: BadgeVariant }> = {
       'available': { color: '#22C55E', text: 'Available', variant: 'success' },
       'reserved': { color: '#F59E0B', text: 'Reserved', variant: 'warning' },
       'under_contract': { color: '#8B5CF6', text: 'Under Contract', variant: 'info' },
       'sold': { color: '#EF4444', text: 'Sold', variant: 'error' },
       'off_market': { color: '#6B7280', text: 'Off Market', variant: 'secondary' }
     };
-    const config = statusConfig[status] || { color: '#6B7280', text: status, variant: 'secondary' };
-    return <Badge variant={config.variant as any} size="small">{config.text}</Badge>;
+    const config = statusConfig[status] || { color: '#6B7280', text: status, variant: 'secondary' as BadgeVariant };
+    return <Badge variant={config.variant} size="small">{config.text}</Badge>;
   };
 
   // Pagination logic

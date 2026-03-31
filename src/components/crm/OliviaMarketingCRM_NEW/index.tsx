@@ -138,9 +138,9 @@ export default function OliviaMarketingCRM() {
         <Suspense fallback={<SuspenseLoader />}>
           {activeTab === 'automation' && <AutomationTab state={state} />}
           {activeTab === 'insights' && <InsightsTab state={state} />}
-          {activeTab === 'campaigns' && <CampaignsTab state={state as any} />}
+          {activeTab === 'campaigns' && <CampaignsTab state={state} />}
           {activeTab === 'social' && <SocialTab state={state} />}
-          {activeTab === 'listings' && <ListingsTab state={state as any} />}
+          {activeTab === 'listings' && <ListingsTab state={state} />}
           {activeTab === 'publish' && <PublishTab state={state} />}
           {activeTab === 'features' && <FeaturesTab />}
         </Suspense>

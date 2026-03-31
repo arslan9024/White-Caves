@@ -15,7 +15,7 @@ export default function DealsTab() {
     closed_lost: leads.filter(l => l.stage === 'closed_lost')
   };
 
-  const stageLabels = {
+  const stageLabels: Record<string, string> = {
     initial_contact: 'Initial Contact',
     discovery: 'Discovery',
     proposal: 'Proposal',
@@ -75,7 +75,7 @@ export default function DealsTab() {
         {Object.entries(dealsByStage).map(([stage, deals]) => (
           <div key={stage} className="deal-column">
             <div className="deal-column-title">
-              {(stageLabels as any)[stage]}
+              {stageLabels[stage]}
               <div style={{
                 fontSize: '12px',
                 color: 'var(--color-text-secondary)',

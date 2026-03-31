@@ -318,8 +318,8 @@ const AssistantItemRenderer = ({ assistant, isFavorite, isSelected, onSelect, on
         </FavoriteBtn>
         {assistant.quickStats && (
           <div style={{ fontSize: '11px' }}>
-            <div style={{ fontWeight: 700, color: 'var(--primary-color)' }}>{String((assistant.quickStats as any).today?.value ?? assistant.quickStats.value ?? '')}</div>
-            <div style={{ color: 'var(--text-secondary)', fontSize: '10px' }}>{String((assistant.quickStats as any).today?.label ?? assistant.quickStats.label ?? '')}</div>
+            <div style={{ fontWeight: 700, color: 'var(--primary-color)' }}>{String(assistant.quickStats.value ?? '')}</div>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '10px' }}>{String(assistant.quickStats.label ?? '')}</div>
           </div>
         )}
       </ItemRight>

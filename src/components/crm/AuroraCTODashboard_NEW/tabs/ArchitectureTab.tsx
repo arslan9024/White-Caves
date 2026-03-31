@@ -1,5 +1,6 @@
 import React from 'react';
 import { BarChart3, Server, Database, AlertCircle, CheckCircle } from 'lucide-react';
+import type { TechStack, SystemComponent } from '../data/architecture';
 
 interface ArchModule {
   name: string;
@@ -12,23 +13,9 @@ interface ModuleCategory {
   modules: ArchModule[];
 }
 
-interface ComponentMetrics {
-  cpu: number;
-  memory: number;
-  uptime: number;
-}
-
-interface SystemComponent {
-  id: string | number;
-  name: string;
-  type: string;
-  status: string;
-  metrics: ComponentMetrics;
-}
-
 interface ArchitectureTabProps {
   modules: ModuleCategory[];
-  techStack: Record<string, string[]>;
+  techStack: TechStack;
   systemComponents: SystemComponent[];
 }
 

@@ -92,8 +92,8 @@ export const useFinanceData = () => {
     };
   }, [financeSummary, commissions, pendingCommissions, approvedCommissions]);
 
-  const handleGeneratePaymentMessage = useCallback((_message: string, _method: string) => {
-    setGeneratedMessage(_message);
+  const handleGeneratePaymentMessage = useCallback((_message?: string, _method?: string) => {
+    setGeneratedMessage(_message ?? '');
   }, []);
 
   const handleSelectInvoice = useCallback((invoice: Invoice) => {
