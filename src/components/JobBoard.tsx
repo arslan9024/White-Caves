@@ -167,8 +167,8 @@ export default function JobBoard() {
                 <option value="LEASING_AGENT">Leasing Agent</option>
                 <option value="SALES_AGENT_SECONDARY">Sales Agent - Secondary Properties</option>
                 <option value="SALES_AGENT_OFF_PLAN">Sales Agent - Off Plan Properties</option>
-                <option value="FREELANCE_AGENT">Freelance Agent</option>
-                <option value="FREELANCE_CONSULTANT">Freelance Consultant</option>
+                <option value="PROPERTY_CONSULTANT">Property Consultant</option>
+                <option value="MARKETING_SPECIALIST">Marketing Specialist</option>
               </select>
               
               <select 
