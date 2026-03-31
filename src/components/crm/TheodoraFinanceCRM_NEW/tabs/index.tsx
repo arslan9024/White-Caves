@@ -35,11 +35,11 @@ const TheodoraFinanceCRM = () => {
       case 'overview':
         return <OverviewTab financeStats={financeStats} />;
       case 'invoices':
-        return <InvoicesTab invoices={invoices as any} onSelectInvoice={setSelectedInvoice as any} />;
+        return <InvoicesTab invoices={invoices} onSelectInvoice={setSelectedInvoice} />;
       case 'payments':
-        return <PaymentsTab selectedInvoice={selectedInvoice as any} generatedMessage={generatedMessage} onGenerateMessage={handleGeneratePaymentMessage as any} />;
+        return <PaymentsTab selectedInvoice={selectedInvoice} generatedMessage={generatedMessage} onGenerateMessage={handleGeneratePaymentMessage} />;
       case 'expenses':
-        return <ExpensesTab expenses={expenses as any} onApprove={handleApproveExpense as any} onReject={handleRejectExpense as any} />;
+        return <ExpensesTab expenses={expenses} onApprove={handleApproveExpense} onReject={handleRejectExpense} />;
       case 'reports':
         return <ReportsTab invoices={invoices} expenses={expenses} />;
       default:

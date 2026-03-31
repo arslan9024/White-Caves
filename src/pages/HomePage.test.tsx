@@ -112,7 +112,7 @@ const createMockStore = () => {
         currentUser: { id: 'u1', name: 'Ahmed', email: 'ahmed@wc.ae', role: 'buyer' },
         loading: false,
         error: null,
-      } as ReturnType<typeof userReducer>,
+      } as unknown as ReturnType<typeof userReducer>,
     },
   });
 };

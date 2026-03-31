@@ -8,12 +8,14 @@ import { Router, Request, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
+import { requirePermission } from '../middleware/rbac';
 
 const router = Router();
 
 // ─── GET /api/crm/dashboard ────────────────────────────────────────────
 router.get(
   '/dashboard',
+  requirePermission('view_dashboard'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only managers+ can access CRM dashboard metrics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
@@ -52,6 +54,7 @@ router.get(
 // ─── GET /api/crm/analytics ────────────────────────────────────────────
 router.get(
   '/analytics',
+  requirePermission('view_dashboard'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only managers+ can access CRM analytics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
@@ -89,6 +92,7 @@ router.get(
 // Global search across leads, properties, and agents
 router.get(
   '/search',
+  requirePermission('view_dashboard'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only managers+ can perform global CRM search
     const allowedRoles = ['owner', 'manager', 'admin'];
@@ -149,6 +153,7 @@ router.get(
 // ─── GET /api/crm/export ───────────────────────────────────────────────
 router.get(
   '/export',
+  requirePermission('view_all_reports'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only admins can export CRM data
     const isAdmin = ['owner', 'manager', 'admin'].includes(req.user?.role || '');

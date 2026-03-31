@@ -10,6 +10,7 @@ import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { createLogger } from '../utils/logger';
+import { requirePermission, requireMinRole } from '../middleware/rbac';
 
 const router = Router();
 const log = createLogger('Communications');
@@ -41,6 +42,7 @@ async function verifyLeadAccess(userId: string, role: string, leadId: string): P
 // Log an outgoing message (WhatsApp, email, SMS)
 router.post(
   '/messages/send',
+  requireMinRole('agent'),
   asyncHandler(async (req: Request, res: Response) => {
     const { recipientId, channel, content, leadId } = req.body;
 
@@ -111,6 +113,7 @@ router.post(
 // Get communication history with a specific recipient (via activities)
 router.get(
   '/messages/:recipientId',
+  requirePermission('view_dashboard'),
   asyncHandler(async (req: Request, res: Response) => {
     const { recipientId } = req.params;
 
@@ -168,6 +171,7 @@ router.get(
 // List unique leads with recent communication activity
 router.get(
   '/conversations',
+  requirePermission('view_dashboard'),
   asyncHandler(async (req: Request, res: Response) => {
     // Authorization: scope conversations to leads the user can access
     const userId = req.user?.id;
@@ -223,6 +227,7 @@ router.get(
 // Integration channel status check
 router.get(
   '/status',
+  requirePermission('view_dashboard'),
   asyncHandler(async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,

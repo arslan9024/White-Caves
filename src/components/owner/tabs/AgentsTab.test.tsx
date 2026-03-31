@@ -113,14 +113,14 @@ describe('AgentsTab', () => {
   describe('stats row', () => {
     it('shows total agents count', () => {
       const { container } = render(<AgentsTab data={mockData} onAction={mockOnAction} />);
-      const statsRow = container.querySelector('.agent-stats-row')!;
+      const statsRow = container.querySelector('.agent-stats-row')! as HTMLElement;
       expect(within(statsRow).getByText('3')).toBeInTheDocument();
       expect(within(statsRow).getByText('Total Agents')).toBeInTheDocument();
     });
 
     it('shows online agents count', () => {
       const { container } = render(<AgentsTab data={mockData} onAction={mockOnAction} />);
-      const statsRow = container.querySelector('.agent-stats-row')!;
+      const statsRow = container.querySelector('.agent-stats-row')! as HTMLElement;
       // 2 agents online (Ahmed + Omar)
       expect(within(statsRow).getByText('Online Now')).toBeInTheDocument();
       expect(within(statsRow).getByText('2')).toBeInTheDocument();
@@ -128,7 +128,7 @@ describe('AgentsTab', () => {
 
     it('shows total deals closed', () => {
       const { container } = render(<AgentsTab data={mockData} onAction={mockOnAction} />);
-      const statsRow = container.querySelector('.agent-stats-row')!;
+      const statsRow = container.querySelector('.agent-stats-row')! as HTMLElement;
       // 12 + 3 + 15 = 30
       expect(within(statsRow).getByText('30')).toBeInTheDocument();
       expect(within(statsRow).getByText('Total Deals')).toBeInTheDocument();
@@ -136,7 +136,7 @@ describe('AgentsTab', () => {
 
     it('shows total revenue', () => {
       const { container } = render(<AgentsTab data={mockData} onAction={mockOnAction} />);
-      const statsRow = container.querySelector('.agent-stats-row')!;
+      const statsRow = container.querySelector('.agent-stats-row')! as HTMLElement;
       // (3500000 + 850000 + 5200000) / 1000000 = 9.6M
       expect(within(statsRow).getByText(/AED 9.6M/)).toBeInTheDocument();
       expect(within(statsRow).getByText('Total Revenue')).toBeInTheDocument();
@@ -305,7 +305,7 @@ describe('AgentsTab', () => {
     it('renders with no agents', () => {
       const { container } = render(<AgentsTab data={{ agents: [] }} onAction={mockOnAction} />);
       expect(screen.getByText('Agent Management')).toBeInTheDocument();
-      const statsRow = container.querySelector('.agent-stats-row')!;
+      const statsRow = container.querySelector('.agent-stats-row')! as HTMLElement;
       // All stats should be 0
       const zeros = within(statsRow).getAllByText('0');
       expect(zeros.length).toBeGreaterThanOrEqual(1);

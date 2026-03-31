@@ -25,11 +25,11 @@ const NadiaWhatsAppCRM = () => {
   const renderTab = () => {
     switch (activeTab) {
       case 'conversations':
-        return <ConversationsTab data={data as any} />;
+        return <ConversationsTab data={data} />;
       case 'quick-replies':
         return <QuickRepliesTab data={data} />;
       case 'agents':
-        return <AgentAssignmentTab data={data as any} />;
+        return <AgentAssignmentTab data={data} />;
       case 'insights':
         return <InsightsTab data={data} />;
       case 'settings':
@@ -37,7 +37,7 @@ const NadiaWhatsAppCRM = () => {
       case 'features':
         return <FeaturesTab data={data} />;
       default:
-        return <ConversationsTab data={data as any} />;
+        return <ConversationsTab data={data} />;
     }
   };
 

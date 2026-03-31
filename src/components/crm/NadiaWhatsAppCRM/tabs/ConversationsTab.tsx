@@ -1,36 +1,11 @@
 import React, { useRef, useEffect } from 'react';
 import { MessageCircle, Send, Paperclip, Smile, Search, Filter, Plus } from 'lucide-react';
-
-interface Contact {
-  avatar: string;
-  name: string;
-  status: string;
-}
-
-interface Message {
-  id: string | number;
-  text: string;
-  sender: string;
-  time: string;
-  type?: 'sent' | 'received';
-  status?: 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
-}
-
-interface Conversation {
-  id: string | number;
-  contact: Contact;
-  time: string;
-  lastMessage: string;
-  unread: number;
-  priority: string;
-  tags?: string[];
-  messages?: Message[];
-}
+import type { Conversation } from '../data/conversations';
 
 interface ConversationsData {
   filteredConversations: Conversation[];
   selectedConversation: Conversation | null;
-  setSelectedConversation: (conv: Conversation) => void;
+  setSelectedConversation: (conv: Conversation | null) => void;
   messageInput: string;
   setMessageInput: (input: string) => void;
   searchQuery: string;

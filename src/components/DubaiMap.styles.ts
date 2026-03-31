@@ -1,4 +1,5 @@
 import styled, { keyframes } from 'styled-components';
+import { typography } from '../styles/theme/typography';
 
 // Keyframes
 const slideIn = keyframes`
@@ -45,7 +46,7 @@ export const MapHeader = styled.div`
 `;
 
 export const MapTitle = styled.h2`
-  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-family: ${typography.fontFamily.heading};
   font-size: 2rem;
   color: var(--primary-color, #1a365d);
   margin-bottom: 0.5rem;
@@ -78,7 +79,7 @@ export const FilterButton = styled.button<{ $isActive?: boolean; $variant?: 'res
   background: ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--bg-primary, #ffffff)'};
   border: 2px solid ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--border-color, #e2e8f0)'};
   border-radius: 9999px;
-  font-family: var(--font-body, 'Open Sans', sans-serif);
+  font-family: ${typography.fontFamily.primary};
   font-size: 0.9rem;
   font-weight: 500;
   color: ${props => props.$isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
@@ -198,7 +199,7 @@ export const InfoHeader = styled.div`
 `;
 
 export const InfoTitle = styled.h4`
-  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-family: ${typography.fontFamily.heading};
   font-size: 1.1rem;
   margin-bottom: 0.25rem;
   margin: 0;
@@ -299,7 +300,7 @@ export const ViewAllButton = styled.button`
   border: none;
   border-radius: 0.75rem;
   color: var(--text-on-primary, #ffffff);
-  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-family: ${typography.fontFamily.heading};
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -336,7 +337,7 @@ export const MapLegend = styled.div`
 `;
 
 export const LegendTitle = styled.h4`
-  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-family: ${typography.fontFamily.heading};
   font-size: 0.9rem;
   color: var(--text-primary, #1a202c);
   margin-bottom: 0.75rem;

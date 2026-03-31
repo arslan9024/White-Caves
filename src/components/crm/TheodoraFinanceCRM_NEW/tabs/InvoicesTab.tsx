@@ -1,15 +1,6 @@
 import React from 'react';
 import { FileText, Download, Search, Filter } from 'lucide-react';
-
-interface Invoice {
-  id: string | number;
-  client: string;
-  property: string;
-  amount: number;
-  status: string;
-  date: string;
-  dueDate: string;
-}
+import type { Invoice } from '../data/finance';
 
 interface InvoicesTabProps {
   invoices: Invoice[];

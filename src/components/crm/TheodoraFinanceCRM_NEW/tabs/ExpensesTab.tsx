@@ -1,19 +1,11 @@
 import React from 'react';
 import { Receipt, CheckCircle, Clock, X } from 'lucide-react';
-
-interface Expense {
-  id: string | number;
-  description: string;
-  category: string;
-  amount: number;
-  date: string;
-  status: string;
-}
+import type { Expense } from '../data/finance';
 
 interface ExpensesTabProps {
   expenses: Expense[];
-  onApprove: (id: string | number) => void;
-  onReject: (id: string | number) => void;
+  onApprove: (id: number) => void;
+  onReject: (id: number) => void;
 }
 
 const ExpensesTab: React.FC<ExpensesTabProps> = ({ expenses, onApprove, onReject }) => {

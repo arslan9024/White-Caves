@@ -8,6 +8,7 @@ import { Router, Request, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
+import { requirePermission } from '../middleware/rbac';
 
 const router = Router();
 
@@ -16,6 +17,7 @@ const router = Router();
 // Also handles role-based routes: /admin/summary, /:role/summary
 router.get(
   ['/summary', '/overview', '/admin/summary', '/:role/summary'],
+  requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Financial metrics restricted to managers/owners
     const userRole = req.user?.role || '';
@@ -84,6 +86,7 @@ router.get(
 // Global activity feed
 router.get(
   '/activities',
+  requirePermission('view_all_reports'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only managers+ can access global activity feed
     const allowedRoles = ['owner', 'manager', 'admin'];
@@ -132,6 +135,7 @@ router.get(
 // ─── GET /api/dashboard/executive ───────────────────────────────────────
 router.get(
   '/executive',
+  requirePermission('view_all_reports'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only managers+ can access executive analytics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
@@ -154,7 +158,7 @@ router.get(
 
     const toMap = (arr: Array<{ _count: { _all: number }; [key: string]: unknown }>, keyField: string) => {
       const map: Record<string, number> = {};
-      arr.forEach(item => { map[item[keyField]] = item._count._all; });
+      arr.forEach(item => { map[String(item[keyField])] = item._count._all; });
       return map;
     };
 
@@ -175,6 +179,7 @@ router.get(
 // ─── GET /api/dashboard/kpis ────────────────────────────────────────────
 router.get(
   '/kpis',
+  requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only managers+ can access KPI metrics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];

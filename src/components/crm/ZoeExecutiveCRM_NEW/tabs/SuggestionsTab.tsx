@@ -2,7 +2,7 @@ import React from 'react';
 import { Search, Plus, Filter, AlertCircle, CheckCircle, Clock, TrendingUp, Lightbulb, AlertTriangle, DollarSign } from 'lucide-react';
 
 interface Suggestion {
-  id: string | number;
+  id: string;
   title?: string;
   description?: string;
   type: string;
@@ -13,7 +13,7 @@ interface SuggestionsTabProps {
   suggestions: Suggestion[];
   unreviewedCount: number;
   criticalCount: number;
-  onStatusChange: (id: string | number, status: string) => void;
+  onStatusChange: (id: string, status: string) => void;
 }
 
 const TYPE_ICONS: Record<string, React.ComponentType<{ size?: number | string }>> = {

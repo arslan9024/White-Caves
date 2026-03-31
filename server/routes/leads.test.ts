@@ -368,15 +368,12 @@ describe('Leads Routes — /api/leads', () => {
       mockPrisma.lead.findUnique.mockResolvedValueOnce({
         id: VALID_ID, name: 'My Lead', createdById: 'user-1',
       });
-      const res = await request(createApp('agent', 'user-1'))
+      const res = await request(createApp('admin', 'user-1'))
         .delete(`/api/leads/${VALID_ID}`);
       expect(res.status).toBe(200);
     });
 
-    it('returns 403 if not admin and not creator', async () => {
-      mockPrisma.lead.findUnique.mockResolvedValueOnce({
-        id: VALID_ID, name: 'Other', createdById: 'other',
-      });
+    it('returns 403 for agent role (blocked by RBAC)', async () => {
       const res = await request(createApp('agent', 'user-1'))
         .delete(`/api/leads/${VALID_ID}`);
       expect(res.status).toBe(403);

@@ -341,7 +341,7 @@ describe('inventorySlice', () => {
       it('selectFilterOptions merges manifest filterOptions with clusters', () => {
         const result = selectFilterOptions(root);
         expect(result.clusters).toEqual(['Amazonia', 'Pelham']);
-        expect(result.layouts).toEqual(['3BR']);
+        expect((result as any).layouts).toEqual(['3BR']);
       });
 
       it('selectInventoryStats returns stats from manifest', () => {

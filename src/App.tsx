@@ -100,6 +100,8 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
 const MortgageCalculatorPage = lazy(() => import('./pages/buyer/MortgageCalculatorPage'));
 const DLDFeesPage = lazy(() => import('./pages/buyer/DLDFeesPage'));
 const TitleDeedRegistrationPage = lazy(() => import('./pages/buyer/TitleDeedRegistrationPage'));
+const FavoriteListingsPage = lazy(() => import('./pages/buyer/FavoriteListings'));
+const SavedSearchesPage = lazy(() => import('./pages/buyer/SavedSearches'));
 
 // Seller Sub-Pages
 const PricingToolsPage = lazy(() => import('./pages/seller/PricingToolsPage'));
@@ -116,6 +118,7 @@ const SalesPipelinePage = lazy(() => import('./pages/secondary-sales-agent/Sales
 
 // Unified Dashboard (replaces role-specific dashboards)
 const UnifiedDashboardPage = lazy(() => import('./pages/UnifiedDashboardPage'));
+const NadiaPage = lazy(() => import('./pages/NadiaPage'));
 
 // Owner/MD Sub-Pages (BusinessModelPage, ClientServicesPage removed — redirected to /modern-dashboard)
 const SystemHealthPage = lazy(() => import('./pages/owner/SystemHealthPage'));
@@ -335,6 +338,28 @@ function App(): React.JSX.Element {
                   </AppLayout>
                 </ProtectedRoute>
               } />
+              <Route path="/buyer/favorites" element={
+                <ProtectedRoute allowedRoles={['buyer']}>
+                  <AppLayout>
+                    <RouteErrorBoundary section="Favorite Listings">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <FavoriteListingsPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/buyer/saved-searches" element={
+                <ProtectedRoute allowedRoles={['buyer']}>
+                  <AppLayout>
+                    <RouteErrorBoundary section="Saved Searches">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <SavedSearchesPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
               <Route path="/seller/pricing-tools" element={
                 <ProtectedRoute allowedRoles={['seller']}>
                   <AppLayout>
@@ -503,6 +528,19 @@ function App(): React.JSX.Element {
                     <RouteErrorBoundary section="Agent Performance">
                       <Suspense fallback={<SuspenseLoader />}>
                         <AgentPerformancePage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+
+              {/* Nadia AI CRM — WhatsApp Business API Dashboard */}
+              <Route path="/nadia" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <RouteErrorBoundary section="Nadia AI">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <NadiaPage />
                       </Suspense>
                     </RouteErrorBoundary>
                   </AppLayout>

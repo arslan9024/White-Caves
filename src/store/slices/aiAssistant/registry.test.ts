@@ -123,7 +123,7 @@ describe('AI Assistant Registry', () => {
       const nadia = AI_ASSISTANTS_REGISTRY.nadia;
       expect(nadia.name).toBe('Nadia');
       expect(nadia.department).toBe('communications');
-      expect(nadia.capabilities).toContain('conversation_management');
+      expect(nadia.capabilities).toContain('cloud_api_integration');
     });
 
     it('Aurora is CTO in technology', () => {

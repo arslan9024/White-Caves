@@ -484,7 +484,7 @@ describe('App', () => {
 
   it('redirects /lion/dashboard to /dashboard', async () => {
     mockReduxState.currentUser = { id: '1', role: 'owner', email: 'test@test.com' };
-    mockSafeStorage.getJSON.mockReturnValue({ role: 'owner', selectedAt: '', locked: true });
+    mockSafeStorage.getJSON.mockReturnValue({ role: 'owner', selectedAt: '', locked: true } as any);
     await act(async () => {
       renderAtRoute('/lion/dashboard');
     });
@@ -495,7 +495,7 @@ describe('App', () => {
 
   it('redirects /modern-dashboard to /dashboard', async () => {
     mockReduxState.currentUser = { id: '1', role: 'owner', email: 'test@test.com' };
-    mockSafeStorage.getJSON.mockReturnValue({ role: 'owner', selectedAt: '', locked: true });
+    mockSafeStorage.getJSON.mockReturnValue({ role: 'owner', selectedAt: '', locked: true } as any);
     await act(async () => {
       renderAtRoute('/modern-dashboard');
     });

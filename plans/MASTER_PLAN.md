@@ -2,7 +2,8 @@
 
 > **Single Source of Truth** — Updated March 24, 2026  
 > **Goal**: #1 Real Estate Platform in Dubai  
-> **Status**: 97% Feature-Complete · 85% Production-Hardened
+> **Status**: 97% Feature-Complete · 85% Production-Hardened  
+> **`as any` in production**: **0** (all eliminated)
 
 ---
 
@@ -20,16 +21,17 @@
 ## ⏳ Current Transformation (March 2026)
 
 ### Phase 0: Root File Cleanup ✅ COMPLETE
-- [x] Moved 4 root .md files to /plans/
+- [x] Moved 25+ root .md files to /plans/ and /archives/
+- [x] Only README.md remains at root
 - [x] Consolidated MASTER_PLAN into single source of truth
 
-### Phase 0.2: Business Documentation → `business_docs/` ✅ COMPLETE
+### Phase 0.2: Business Documentation → `business_docs/` ⏳ 80% COMPLETE
 - [x] Fix duplicate folder numbering (renumbered 01–11 + archives)
 - [x] Merge /business/ content INTO /business_docs/ (canonical name) — old /business/ deleted
-- [ ] Create 09_user_roles_permissions/ (14 roles, 21 permissions documented)
-- [ ] Create 10_design_system/ (design tokens, colors, typography, breakpoints)
-- [ ] Create individual AI assistant .md files (24 assistants)
-- [ ] Add Dubai-specific docs (RERA, Ejari, portal integrations)
+- [ ] _DEFERRED_: Create 09_user_roles_permissions/ (24 frontend roles → 12 backend roles, 21 permissions, alias mapping documented in ADR-002)
+- [ ] _DEFERRED_: Create 10_design_system/ (design tokens, colors, typography, breakpoints)
+- [ ] _DEFERRED_: Create individual AI assistant .md files (24 assistants)
+- [ ] _DEFERRED_: Add Dubai-specific docs (RERA, Ejari, portal integrations)
 
 ### Phase 0.5: Duplicate Elimination & Freelancer Removal ✅ COMPLETE
 - [x] Remove freelancer references from production code (mapped to `affiliated_agent` in roles.ts)
@@ -41,7 +43,7 @@
 - [x] Dead CSS cleanup: component-utilities.css, MainNavBar.css
 - [x] Stale log cleanup: 22 .txt files (2.1MB) + _build_logs/ (0.9MB) deleted from root
 - [x] Cleaned dead Vite chunk config (GracePMODashboard_NEW, IsabelPropertyCRM_NEW)
-- [ ] Unify CSS approach (standardize on styled-components)
+- [ ] _DEFERRED_: Unify CSS approach (standardize on styled-components)
 
 ### Phase 0.75: Dashboard & Layout Compliance ✅ COMPLETE
 - [x] Audit CRM dual-sidebar layout — SidebarContainer + AIAssistantsPanel both active, responsive at 1024px/768px
@@ -83,7 +85,7 @@
 
 | Metric | Target | Current | Status |
 |--------|--------|---------|--------|
-| TypeScript Strict Mode | 100% | 100% (0 prod errors) | ✅ |
+| TypeScript Strict Mode | 100% | 100% (0 prod errors, 0 `as any`) | ✅ |
 | Build Success Rate | 100% | 100% | ✅ |
 | Production Build Time | <10s | 7-8s | ✅ |
 | Test Coverage | 80% | 60% (0 TS errors, tests need run) | ⏳ |
@@ -100,8 +102,10 @@
 
 - **Frontend**: React 18, TypeScript 5 (strict), Redux Toolkit (13 slices), Vite 7, styled-components
 - **Backend**: Express 5, Prisma 6.6, MongoDB, JWT auth, bcrypt, rate limiting
-- **Database**: 7 Prisma models (User, Property, Lead, Commission, Activity, Transaction, Tenant), 40+ indexes
-- **RBAC**: 14 roles, 21 permissions, per-endpoint authorization
+- **Database**: 17 Prisma models (User, Property, Lead, Commission, Contract, Transaction, Message, Conversation, Notification, AuditLog, Document, Favorite, Viewing, Offer, AIAssistant, Integration, Setting), 60+ indexes
+- **RBAC**: 24 frontend roles aliased to 12 backend roles, 21 permissions, per-endpoint authorization (ADR-002)
+- **Design Tokens**: Centralized at src/styles/theme/ — 90+ colors, 26+ typography, 7 spacing (ADR-007)
+- **ADRs**: 7 architecture decision records in docs/adr/
 - **AI Assistants**: 24 registered (Nadia=WhatsApp CRM, Clara=Leads, Mary=Inventory, etc.)
 - **CRM Layout**: Dual sidebar (left=departments, right=AI assistants), dynamic center, 12 owner tabs
 - **Testing**: Vitest + Playwright, load testing framework, accessibility audits

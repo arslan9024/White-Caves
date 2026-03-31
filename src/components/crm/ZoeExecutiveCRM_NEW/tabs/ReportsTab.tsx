@@ -1,26 +1,25 @@
 import React from 'react';
 import { TrendingUp, DollarSign, Users, AlertTriangle } from 'lucide-react';
+import type { ConfidentialVaultState } from '../../../../store/slices/aiAssistant/types';
 
 interface FunnelMetrics {
-  totalLeads?: number;
-  conversionRate?: string | number;
-  pipelineValue?: string | number;
+  totalIncoming?: number;
+  conversionRate?: number;
+  rentVsSaleRatio?: string;
+  avgQualificationTime?: string;
 }
 
 interface ComplianceMetrics {
-  score?: string | number;
-  activeReviews?: number;
-  issuesFound?: number;
-}
-
-interface Vault {
-  [key: string]: unknown;
+  totalProfiles?: number;
+  pendingReview?: number;
+  approvedThisMonth?: number;
+  riskScore?: number;
 }
 
 interface ReportsTabProps {
   funnelMetrics: FunnelMetrics | null;
   complianceMetrics: ComplianceMetrics | null;
-  vault: Vault;
+  vault: ConfidentialVaultState;
 }
 
 const ReportsTab: React.FC<ReportsTabProps> = ({ funnelMetrics, complianceMetrics, vault }) => {
@@ -37,16 +36,16 @@ const ReportsTab: React.FC<ReportsTabProps> = ({ funnelMetrics, complianceMetric
             </div>
             <div className="report-content">
               <div className="metric-row">
-                <span>Total Leads</span>
-                <span className="metric-value">{funnelMetrics.totalLeads || 0}</span>
+                <span>Total Incoming</span>
+                <span className="metric-value">{funnelMetrics.totalIncoming || 0}</span>
               </div>
               <div className="metric-row">
                 <span>Conversion Rate</span>
-                <span className="metric-value">{funnelMetrics.conversionRate || '0'}%</span>
+                <span className="metric-value">{funnelMetrics.conversionRate || 0}%</span>
               </div>
               <div className="metric-row">
-                <span>Pipeline Value</span>
-                <span className="metric-value">AED {funnelMetrics.pipelineValue || 0}</span>
+                <span>Rent vs Sale</span>
+                <span className="metric-value">{funnelMetrics.rentVsSaleRatio || 'N/A'}</span>
               </div>
             </div>
           </div>
@@ -60,16 +59,16 @@ const ReportsTab: React.FC<ReportsTabProps> = ({ funnelMetrics, complianceMetric
             </div>
             <div className="report-content">
               <div className="metric-row">
-                <span>Compliance Score</span>
-                <span className="metric-value">{complianceMetrics.score || '0'}%</span>
+                <span>Risk Score</span>
+                <span className="metric-value">{complianceMetrics.riskScore ?? 0}</span>
               </div>
               <div className="metric-row">
-                <span>Active Reviews</span>
-                <span className="metric-value">{complianceMetrics.activeReviews || 0}</span>
+                <span>Pending Review</span>
+                <span className="metric-value">{complianceMetrics.pendingReview || 0}</span>
               </div>
               <div className="metric-row">
-                <span>Issues Found</span>
-                <span className="metric-value">{complianceMetrics.issuesFound || 0}</span>
+                <span>Approved This Month</span>
+                <span className="metric-value">{complianceMetrics.approvedThisMonth || 0}</span>
               </div>
             </div>
           </div>

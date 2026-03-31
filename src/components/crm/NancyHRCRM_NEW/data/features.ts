@@ -3,7 +3,7 @@
 export interface NancyFeature {
   name: string;
   category: string;
-  status: string;
+  status: 'active' | 'beta' | 'planned' | 'development';
   description: string;
   sourceFiles?: string[];
   capabilities: string[];

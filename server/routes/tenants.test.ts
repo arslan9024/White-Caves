@@ -307,9 +307,6 @@ describe('Tenants Routes — /api/tenants', () => {
     });
 
     it('returns 403 for agent role', async () => {
-      mockPrisma.tenant.findUnique.mockResolvedValueOnce({
-        id: VALID_ID, name: 'Test',
-      });
       const res = await request(createApp('agent'))
         .delete(`/api/tenants/${VALID_ID}`);
       expect(res.status).toBe(403);

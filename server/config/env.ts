@@ -10,8 +10,11 @@ export const IS_PRODUCTION = NODE_ENV === 'production';
 
 // ─── Auth ────────────────────────────────────────────────────────────────
 const _jwtSecret = process.env.JWT_SECRET;
-if (!_jwtSecret && IS_PRODUCTION) {
-  throw new Error('CRITICAL: JWT_SECRET environment variable must be set in production');
+if (!_jwtSecret && (IS_PRODUCTION || NODE_ENV === 'staging')) {
+  throw new Error('CRITICAL: JWT_SECRET environment variable must be set in production/staging');
+}
+if (!_jwtSecret && NODE_ENV !== 'development' && NODE_ENV !== 'test') {
+  throw new Error('CRITICAL: JWT_SECRET must be set for non-development environments');
 }
 if (!_jwtSecret) {
   console.warn('⚠️  JWT_SECRET not set — using dev-only fallback. Never deploy without it.');
