@@ -1,5 +1,4 @@
-/* CONSOLIDATED: Import base CRM styles to remove ~1.5KB duplicates */
-@import '../../../styles/crm-base.css';
+﻿/* CONSOLIDATED: Import base CRM styles to remove ~1.5KB duplicates */
 
 /* Mary-specific customizations - extends base .crm-* classes */
 

@@ -1,6 +1,4 @@
-@import url('../../../styles/crm-standard-utilities.css');
-@import url('../../../styles/crm-base.css');
-
+﻿
 .nancy-crm-container {
   background: var(--bg-primary);
   border-radius: 12px;

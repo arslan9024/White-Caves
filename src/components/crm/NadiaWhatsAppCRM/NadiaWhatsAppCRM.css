@@ -1,6 +1,4 @@
-@import url('../../../styles/crm-standard-utilities.css');
-@import url('../../../styles/crm-base.css');
-
+﻿
 /* CONSOLIDATED: Nadia WhatsApp header/avatar patterns now use crm-base.css */
 /* This removes ~0.8KB of duplicate header/avatar/status styles */
 
