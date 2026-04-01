@@ -112,7 +112,6 @@ function makeStore(overrides: Record<string, unknown> = {}, role = 'user') {
         aiCommandOpen: false,
         aiAssistantSearch: '',
         aiAssistantFilter: 'all' as const,
-        rightPanelOpen: false,
         selectedAssistant: null,
         selectedDepartment: null,
         selectedService: null,

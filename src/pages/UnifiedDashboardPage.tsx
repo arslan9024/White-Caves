@@ -14,14 +14,14 @@ import SubNavBar from '../components/common/SubNavBar';
 import { DashboardSubTabRenderer } from '../components/dashboard/DashboardRenderer';
 import { getSubNavItems, getModuleById } from '../features/featureRegistry';
 import {
-  toggleLeftSidebar,
-  toggleRightSidebar,
+  openFlyout,
+  closeFlyout,
+  toggleAICommand,
   selectAssistant,
-  toggleShowRightDrawer,
-  selectLeftCollapsed,
-  selectRightCollapsed,
+  selectFlyoutOpen,
+  selectFlyoutDepartment,
+  selectAICommandOpen,
   selectSelectedAssistant as selectSelectedAssistantSelector,
-  selectShowRightDrawer as selectShowRightDrawerSelector,
   selectSelectedDepartment as selectSelectedDepartmentSelector,
 } from '../store/slices/sidebarSlice';
 import type { RootState } from '../store/store';
@@ -258,18 +258,26 @@ const UnifiedDashboardPage: FC = () => {
     leaseInfo: EMPTY_CRM_ARRAY,
   }), [allProperties, allAgents, allLeads, hotLeads, allCommissions, recentActivities, overview]);
 
-  // Redux sidebar state — use named selectors for stable references
-  const leftCollapsed = useSelector(selectLeftCollapsed);
-  const rightCollapsed = useSelector(selectRightCollapsed);
+  // Redux sidebar state — unified sidebar selectors (flyout = left panel, aiCommand = AI assistants)
+  const flyoutOpen = useSelector(selectFlyoutOpen);
+  const flyoutDepartment = useSelector(selectFlyoutDepartment);
+  const aiCommandOpen = useSelector(selectAICommandOpen);
+  const leftCollapsed = !flyoutOpen;
+  const rightCollapsed = !aiCommandOpen;
   const selectedAssistantRedux = useSelector(selectSelectedAssistantSelector);
-  const showRightDrawer = useSelector(selectShowRightDrawerSelector);
+  const showRightDrawer = aiCommandOpen;
   const selectedDepartment = useSelector(selectSelectedDepartmentSelector);
 
   // Sidebar action handlers
-  const handleToggleLeftSidebar = useCallback(() => dispatch(toggleLeftSidebar()), [dispatch]);
+  const handleToggleLeftSidebar = useCallback(() => {
+    if (flyoutOpen) {
+      dispatch(closeFlyout());
+    } else {
+      dispatch(openFlyout(flyoutDepartment || selectedDepartment || 'general'));
+    }
+  }, [dispatch, flyoutOpen, flyoutDepartment, selectedDepartment]);
   const handleToggleRightSidebar = useCallback(() => {
-    dispatch(toggleRightSidebar());
-    dispatch(toggleShowRightDrawer());
+    dispatch(toggleAICommand());
   }, [dispatch]);
 
   const handleSelectAssistant = useCallback((assistant: string | { id?: string }): void => {
@@ -410,13 +418,16 @@ const UnifiedDashboardPage: FC = () => {
       // Ctrl+B or Cmd+B to toggle left sidebar
       if ((e.ctrlKey || e.metaKey) && e.code === 'KeyB') {
         e.preventDefault();
-        dispatch(toggleLeftSidebar());
+        if (flyoutOpen) {
+          dispatch(closeFlyout());
+        } else {
+          dispatch(openFlyout(flyoutDepartment || selectedDepartment || 'general'));
+        }
       }
-      // Ctrl+Shift+A or Cmd+Shift+A to toggle right sidebar (avoids hijacking native Ctrl+A select-all)
+      // Ctrl+Shift+A or Cmd+Shift+A to toggle AI Command Center
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.code === 'KeyA') {
         e.preventDefault();
-        dispatch(toggleRightSidebar());
-        dispatch(toggleShowRightDrawer());
+        dispatch(toggleAICommand());
       }
     };
 

@@ -22,8 +22,6 @@ interface SidebarState {
   commandPaletteOpen: boolean;
   /** Mobile bottom sheet open */
   mobileSheetOpen: boolean;
-  /** @deprecated — kept for backward compatibility, always false */
-  rightPanelOpen: boolean;
 }
 
 const initialState: SidebarState = {
@@ -32,7 +30,6 @@ const initialState: SidebarState = {
   aiCommandOpen: false,
   aiAssistantSearch: '',
   aiAssistantFilter: 'all',
-  rightPanelOpen: false,
   selectedAssistant: null,
   selectedDepartment: null,
   selectedService: null,
@@ -75,25 +72,6 @@ const sidebarSlice = createSlice({
       state.aiCommandOpen = false;
     },
     toggleAICommand: (state) => {
-      if (state.aiCommandOpen) {
-        state.aiCommandOpen = false;
-      } else {
-        state.aiCommandOpen = true;
-        state.flyoutOpen = false;
-        state.flyoutDepartment = null;
-      }
-    },
-
-    // ── Right panel (legacy — maps to AI Command Center) ────────────
-    openRightPanel: (state) => {
-      state.aiCommandOpen = true;
-      state.flyoutOpen = false;
-      state.flyoutDepartment = null;
-    },
-    closeRightPanel: (state) => {
-      state.aiCommandOpen = false;
-    },
-    toggleRightPanel: (state) => {
       if (state.aiCommandOpen) {
         state.aiCommandOpen = false;
       } else {
@@ -157,25 +135,6 @@ const sidebarSlice = createSlice({
       state.aiAssistantFilter = action.payload;
     },
 
-    // ── Legacy compatibility aliases ────────────────────────────────
-    toggleLeftSidebar: (state) => {
-      state.flyoutOpen = !state.flyoutOpen;
-    },
-    toggleRightSidebar: (state) => {
-      state.aiCommandOpen = !state.aiCommandOpen;
-    },
-    setLeftCollapsed: (state, action: PayloadAction<boolean>) => {
-      state.flyoutOpen = !action.payload;
-    },
-    setRightCollapsed: (state, action: PayloadAction<boolean>) => {
-      state.aiCommandOpen = !action.payload;
-    },
-    setShowRightDrawer: (state, action: PayloadAction<boolean>) => {
-      state.aiCommandOpen = action.payload;
-    },
-    toggleShowRightDrawer: (state) => {
-      state.aiCommandOpen = !state.aiCommandOpen;
-    },
   },
   extraReducers: (builder) => {
     builder.addCase(logout, () => initialState);
@@ -192,10 +151,6 @@ export const {
   toggleAICommand,
   setAIAssistantSearch,
   setAIAssistantFilter,
-  // Legacy right-panel aliases (now map to AI Command Center)
-  openRightPanel,
-  closeRightPanel,
-  toggleRightPanel,
   // Selection
   selectAssistant,
   clearSelectedAssistant,
@@ -209,13 +164,6 @@ export const {
   // Mobile
   toggleMobileSheet,
   closeMobileSheet,
-  // Legacy aliases
-  toggleLeftSidebar,
-  toggleRightSidebar,
-  setLeftCollapsed,
-  setRightCollapsed,
-  setShowRightDrawer,
-  toggleShowRightDrawer,
 } = sidebarSlice.actions;
 
 // ─── Named Selectors (stable references for useSelector) ─────────────────
@@ -229,11 +177,5 @@ export const selectSelectedDepartment = (state: { sidebar: SidebarState }) => st
 export const selectSelectedService = (state: { sidebar: SidebarState }) => state.sidebar.selectedService;
 export const selectCommandPaletteOpen = (state: { sidebar: SidebarState }) => state.sidebar.commandPaletteOpen;
 export const selectMobileSheetOpen = (state: { sidebar: SidebarState }) => state.sidebar.mobileSheetOpen;
-
-// Legacy selectors (backward compat — now map to aiCommandOpen)
-export const selectRightPanelOpen = (state: { sidebar: SidebarState }) => state.sidebar.aiCommandOpen;
-export const selectLeftCollapsed = (state: { sidebar: SidebarState }) => !state.sidebar.flyoutOpen;
-export const selectRightCollapsed = (state: { sidebar: SidebarState }) => !state.sidebar.aiCommandOpen;
-export const selectShowRightDrawer = (state: { sidebar: SidebarState }) => state.sidebar.aiCommandOpen;
 
 export default sidebarSlice.reducer;

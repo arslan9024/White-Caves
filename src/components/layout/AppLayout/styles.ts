@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
 /**
- * New CRM Layout: TopBar (56px) + SidebarRail (64px) + Content
+ * Unified CRM Layout: TopBar (56px) + SidebarRail (64px) + Content
  *
- * Desktop:  [64px Rail] [--- Content ---] [360px Right Panel (optional)]
+ * Desktop:  [64px Rail] [--- Content (full width) ---]
  * Mobile:   [--- Full width ---] + bottom nav
  */
 
