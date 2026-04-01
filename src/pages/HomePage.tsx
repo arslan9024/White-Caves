@@ -28,7 +28,6 @@ const VirtualTourGallery = lazy(() => import('../components/VirtualTourGallery')
 const DubaiMap = lazy(() => import('../components/DubaiMap'));
 const CompanyProfile = lazy(() => import('../components/CompanyProfile'));
 const BlogSection = lazy(() => import('../components/BlogSection'));
-const NewsletterSubscription = lazy(() => import('../components/NewsletterSubscription'));
 const OnboardingGateway = lazy(() => import('../components/OnboardingGateway'));
 
 /** Minimal placeholder while lazy chunks load */
@@ -81,7 +80,6 @@ const HomePage: FC = () => {
           <Team />
           <Testimonials />
           <BlogSection />
-          <NewsletterSubscription />
           <ContactCTA />
           <OnboardingGateway />
         </Suspense>

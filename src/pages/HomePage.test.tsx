@@ -79,9 +79,6 @@ vi.mock('../components/CompanyProfile', () => ({
 vi.mock('../components/BlogSection', () => ({
   default: () => <div data-testid="blog-section">BlogSection</div>,
 }));
-vi.mock('../components/NewsletterSubscription', () => ({
-  default: () => <div data-testid="newsletter">Newsletter</div>,
-}));
 vi.mock('../components/OnboardingGateway', () => ({
   default: () => <div data-testid="onboarding">Onboarding</div>,
 }));
@@ -266,13 +263,6 @@ describe('HomePage', () => {
       renderPage();
       await waitFor(() => {
         expect(screen.getByTestId('blog-section')).toBeInTheDocument();
-      });
-    });
-
-    it('should render NewsletterSubscription', async () => {
-      renderPage();
-      await waitFor(() => {
-        expect(screen.getByTestId('newsletter')).toBeInTheDocument();
       });
     });
 
