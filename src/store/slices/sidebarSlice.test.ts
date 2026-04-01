@@ -108,34 +108,34 @@ describe('sidebarSlice', () => {
     });
   });
 
-  // ─── Right panel ───────────────────────────────────────────────
+  // ─── Right panel (legacy → now maps to aiCommandOpen) ─────────
   describe('right panel', () => {
-    it('openRightPanel opens', () => {
+    it('openRightPanel opens AI command', () => {
       const state = reducer(initialState(), openRightPanel());
-      expect(state.rightPanelOpen).toBe(true);
+      expect(state.aiCommandOpen).toBe(true);
     });
 
-    it('closeRightPanel closes', () => {
+    it('closeRightPanel closes AI command', () => {
       let state = reducer(initialState(), openRightPanel());
       state = reducer(state, closeRightPanel());
-      expect(state.rightPanelOpen).toBe(false);
+      expect(state.aiCommandOpen).toBe(false);
     });
 
-    it('toggleRightPanel flips state', () => {
+    it('toggleRightPanel flips aiCommandOpen', () => {
       let state = initialState();
       state = reducer(state, toggleRightPanel());
-      expect(state.rightPanelOpen).toBe(true);
+      expect(state.aiCommandOpen).toBe(true);
       state = reducer(state, toggleRightPanel());
-      expect(state.rightPanelOpen).toBe(false);
+      expect(state.aiCommandOpen).toBe(false);
     });
   });
 
   // ─── Assistant selection ────────────────────────────────────────
   describe('assistant selection', () => {
-    it('selectAssistant sets selectedAssistant and opens panel', () => {
+    it('selectAssistant sets selectedAssistant and opens AI command', () => {
       const state = reducer(initialState(), selectAssistant('hazel'));
       expect(state.selectedAssistant).toBe('hazel');
-      expect(state.rightPanelOpen).toBe(true);
+      expect(state.aiCommandOpen).toBe(true);
     });
 
     it('selectAssistant(null) clears without opening', () => {
@@ -238,10 +238,10 @@ describe('sidebarSlice', () => {
       expect(state.flyoutOpen).toBe(false);
     });
 
-    it('toggleRightSidebar flips rightPanelOpen', () => {
+    it('toggleRightSidebar flips aiCommandOpen', () => {
       let state = initialState();
       state = reducer(state, toggleRightSidebar());
-      expect(state.rightPanelOpen).toBe(true);
+      expect(state.aiCommandOpen).toBe(true);
     });
 
     it('setLeftCollapsed(true) closes flyout', () => {
@@ -255,20 +255,20 @@ describe('sidebarSlice', () => {
       expect(state.flyoutOpen).toBe(true);
     });
 
-    it('setRightCollapsed(false) opens right panel', () => {
+    it('setRightCollapsed(false) opens AI command', () => {
       const state = reducer(initialState(), setRightCollapsed(false));
-      expect(state.rightPanelOpen).toBe(true);
+      expect(state.aiCommandOpen).toBe(true);
     });
 
-    it('setShowRightDrawer sets rightPanelOpen', () => {
+    it('setShowRightDrawer sets aiCommandOpen', () => {
       const state = reducer(initialState(), setShowRightDrawer(true));
-      expect(state.rightPanelOpen).toBe(true);
+      expect(state.aiCommandOpen).toBe(true);
     });
 
-    it('toggleShowRightDrawer flips rightPanelOpen', () => {
+    it('toggleShowRightDrawer flips aiCommandOpen', () => {
       let state = initialState();
       state = reducer(state, toggleShowRightDrawer());
-      expect(state.rightPanelOpen).toBe(true);
+      expect(state.aiCommandOpen).toBe(true);
     });
   });
 
@@ -298,9 +298,9 @@ describe('sidebarSlice', () => {
       expect(selectFlyoutDepartment(rootWith({ flyoutDepartment: 'sales' }))).toBe('sales');
     });
 
-    it('selectRightPanelOpen', () => {
+    it('selectRightPanelOpen (legacy → reads aiCommandOpen)', () => {
       expect(selectRightPanelOpen(rootWith())).toBe(false);
-      expect(selectRightPanelOpen(rootWith({ rightPanelOpen: true }))).toBe(true);
+      expect(selectRightPanelOpen(rootWith({ aiCommandOpen: true }))).toBe(true);
     });
 
     it('selectSelectedAssistant', () => {
@@ -334,14 +334,14 @@ describe('sidebarSlice', () => {
       expect(selectLeftCollapsed(rootWith({ flyoutOpen: true }))).toBe(false);
     });
 
-    it('selectRightCollapsed (legacy) inverts rightPanelOpen', () => {
+    it('selectRightCollapsed (legacy) inverts aiCommandOpen', () => {
       expect(selectRightCollapsed(rootWith())).toBe(true);
-      expect(selectRightCollapsed(rootWith({ rightPanelOpen: true }))).toBe(false);
+      expect(selectRightCollapsed(rootWith({ aiCommandOpen: true }))).toBe(false);
     });
 
-    it('selectShowRightDrawer (legacy) mirrors rightPanelOpen', () => {
+    it('selectShowRightDrawer (legacy) mirrors aiCommandOpen', () => {
       expect(selectShowRightDrawer(rootWith())).toBe(false);
-      expect(selectShowRightDrawer(rootWith({ rightPanelOpen: true }))).toBe(true);
+      expect(selectShowRightDrawer(rootWith({ aiCommandOpen: true }))).toBe(true);
     });
   });
 
@@ -360,7 +360,7 @@ describe('sidebarSlice', () => {
       expect(state.selectedDepartment).toBeNull();
     });
 
-    it('open right → select assistant → clear → close', () => {
+    it('open AI → select assistant → clear → close', () => {
       let state = initialState();
       state = reducer(state, openRightPanel());
       state = reducer(state, selectAssistant('hazel'));
@@ -368,7 +368,7 @@ describe('sidebarSlice', () => {
 
       state = reducer(state, clearSelectedAssistant());
       state = reducer(state, closeRightPanel());
-      expect(state.rightPanelOpen).toBe(false);
+      expect(state.aiCommandOpen).toBe(false);
       expect(state.selectedAssistant).toBeNull();
     });
   });

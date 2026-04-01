@@ -21,10 +21,6 @@ vi.mock('./SidebarContainer', () => ({
   default: () => <div data-testid="sidebar-container">SidebarContainer</div>,
 }));
 
-vi.mock('./RightPanelContainer', () => ({
-  default: () => <div data-testid="right-panel">RightPanel</div>,
-}));
-
 vi.mock('../common/CommandPalette', () => ({
   default: () => <div data-testid="command-palette">CommandPalette</div>,
 }));
@@ -114,9 +110,9 @@ describe('AppLayout', () => {
       expect(screen.getByTestId('sidebar-container')).toBeInTheDocument();
     });
 
-    it('should render the RightPanelContainer by default', () => {
+    it('should not render a separate right panel (unified sidebar)', () => {
       renderLayout();
-      expect(screen.getByTestId('right-panel')).toBeInTheDocument();
+      expect(screen.queryByTestId('right-panel')).not.toBeInTheDocument();
     });
 
     it('should render BiometricReminder', () => {
@@ -147,11 +143,6 @@ describe('AppLayout', () => {
     it('should hide SidebarContainer when showNav is false', () => {
       renderLayout('/', {}, { showNav: false });
       expect(screen.queryByTestId('sidebar-container')).not.toBeInTheDocument();
-    });
-
-    it('should hide RightPanelContainer when showNav is false', () => {
-      renderLayout('/', {}, { showNav: false });
-      expect(screen.queryByTestId('right-panel')).not.toBeInTheDocument();
     });
 
     it('should show SidebarContainer when showNav is true (default)', () => {

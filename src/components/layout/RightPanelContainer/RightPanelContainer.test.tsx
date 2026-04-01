@@ -1,5 +1,5 @@
-/**
- * RightPanelContainer – Unit Tests (Redux-driven, no props)
+﻿/**
+ * RightPanelContainer â€“ Unit Tests (Redux-driven, no props)
  * The component reads isOpen / selectedAssistant from Redux sidebarSlice.
  */
 
@@ -13,7 +13,7 @@ import sidebarReducer, { openRightPanel, closeRightPanel, selectAssistant } from
 // Minimal auth slice so useSelector doesn't crash
 const authReducer = (state = { user: null }) => state;
 
-// We DO NOT mock styled-components — we just let them render as-is (or mock lightly)
+// We DO NOT mock styled-components â€” we just let them render as-is (or mock lightly)
 // But we mock lucide-react so it doesn't pull in SVGs
 vi.mock('lucide-react', async () => {
   const stub = (name: string) =>
@@ -33,7 +33,7 @@ vi.mock('lucide-react', async () => {
 
 import RightPanelContainer from './RightPanelContainer';
 
-// ── Helper ───────────────────────────────────────────────────────
+// â”€â”€ Helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function makeStore(sidebarOverrides: Record<string, unknown> = {}) {
   return configureStore({
@@ -42,6 +42,9 @@ function makeStore(sidebarOverrides: Record<string, unknown> = {}) {
       sidebar: {
         flyoutOpen: false,
         flyoutDepartment: null,
+        aiCommandOpen: false,
+        aiAssistantSearch: '',
+        aiAssistantFilter: 'all' as const,
         rightPanelOpen: false,
         selectedAssistant: null,
         selectedDepartment: null,
@@ -64,7 +67,7 @@ function renderPanel(sidebarOverrides: Record<string, unknown> = {}) {
   return { store, ...utils };
 }
 
-// ── Tests ────────────────────────────────────────────────────────
+// â”€â”€ Tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 describe('RightPanelContainer', () => {
   beforeEach(() => {
@@ -73,59 +76,59 @@ describe('RightPanelContainer', () => {
 
   describe('rendering', () => {
     it('renders panel title "AI Assistants"', () => {
-      renderPanel({ rightPanelOpen: true });
+      renderPanel({ rightPanelOpen: true, aiCommandOpen: true });
       expect(screen.getByText('AI Assistants')).toBeInTheDocument();
     });
 
     it('renders search input', () => {
-      renderPanel({ rightPanelOpen: true });
+      renderPanel({ rightPanelOpen: true, aiCommandOpen: true });
       expect(screen.getByPlaceholderText('Search assistants...')).toBeInTheDocument();
     });
 
     it('renders close button', () => {
-      renderPanel({ rightPanelOpen: true });
+      renderPanel({ rightPanelOpen: true, aiCommandOpen: true });
       expect(screen.getByLabelText('Close panel')).toBeInTheDocument();
     });
 
     it('renders Esc keyboard hint in footer', () => {
-      renderPanel({ rightPanelOpen: true });
+      renderPanel({ rightPanelOpen: true, aiCommandOpen: true });
       expect(screen.getByText('Esc')).toBeInTheDocument();
     });
   });
 
   describe('groups', () => {
     it('renders CRM group', () => {
-      renderPanel({ rightPanelOpen: true });
+      renderPanel({ rightPanelOpen: true, aiCommandOpen: true });
       expect(screen.getByText('CRM (2)')).toBeInTheDocument();
     });
 
     it('renders Operations group', () => {
-      renderPanel({ rightPanelOpen: true });
+      renderPanel({ rightPanelOpen: true, aiCommandOpen: true });
       expect(screen.getByText('Operations (3)')).toBeInTheDocument();
     });
 
     it('renders Technical group', () => {
-      renderPanel({ rightPanelOpen: true });
+      renderPanel({ rightPanelOpen: true, aiCommandOpen: true });
       expect(screen.getByText('Technical (2)')).toBeInTheDocument();
     });
 
     it('shows Hazel assistant in CRM group', () => {
-      renderPanel({ rightPanelOpen: true });
+      renderPanel({ rightPanelOpen: true, aiCommandOpen: true });
       expect(screen.getByText('Hazel')).toBeInTheDocument();
     });
 
     it('shows Clara assistant in CRM group', () => {
-      renderPanel({ rightPanelOpen: true });
+      renderPanel({ rightPanelOpen: true, aiCommandOpen: true });
       expect(screen.getByText('Clara')).toBeInTheDocument();
     });
 
     it('shows Mary assistant in Operations group', () => {
-      renderPanel({ rightPanelOpen: true });
+      renderPanel({ rightPanelOpen: true, aiCommandOpen: true });
       expect(screen.getByText('Mary')).toBeInTheDocument();
     });
 
     it('collapses a group on click', () => {
-      renderPanel({ rightPanelOpen: true });
+      renderPanel({ rightPanelOpen: true, aiCommandOpen: true });
       // CRM group shows Hazel by default
       expect(screen.getByText('Hazel')).toBeInTheDocument();
       // Click the CRM group header to collapse (text is "CRM (2)")
@@ -138,27 +141,27 @@ describe('RightPanelContainer', () => {
 
   describe('interactions', () => {
     it('dispatches closeRightPanel when close button clicked', () => {
-      const { store } = renderPanel({ rightPanelOpen: true });
+      const { store } = renderPanel({ rightPanelOpen: true, aiCommandOpen: true });
       fireEvent.click(screen.getByLabelText('Close panel'));
-      expect(store.getState().sidebar.rightPanelOpen).toBe(false);
+      expect(store.getState().sidebar.aiCommandOpen).toBe(false);
     });
 
     it('dispatches selectAssistant when assistant clicked', () => {
-      const { store } = renderPanel({ rightPanelOpen: true });
+      const { store } = renderPanel({ rightPanelOpen: true, aiCommandOpen: true });
       fireEvent.click(screen.getByText('Hazel'));
       expect(store.getState().sidebar.selectedAssistant).toBe('hazel');
     });
 
     it('dispatches closeRightPanel on Escape key', () => {
-      const { store } = renderPanel({ rightPanelOpen: true });
+      const { store } = renderPanel({ rightPanelOpen: true, aiCommandOpen: true });
       fireEvent.keyDown(window, { key: 'Escape' });
-      expect(store.getState().sidebar.rightPanelOpen).toBe(false);
+      expect(store.getState().sidebar.aiCommandOpen).toBe(false);
     });
   });
 
   describe('search', () => {
     it('filters assistants by name', () => {
-      renderPanel({ rightPanelOpen: true });
+      renderPanel({ rightPanelOpen: true, aiCommandOpen: true });
       const input = screen.getByPlaceholderText('Search assistants...');
       fireEvent.change(input, { target: { value: 'hazel' } });
       expect(screen.getByText('Hazel')).toBeInTheDocument();
@@ -166,7 +169,7 @@ describe('RightPanelContainer', () => {
     });
 
     it('filters assistants by description', () => {
-      renderPanel({ rightPanelOpen: true });
+      renderPanel({ rightPanelOpen: true, aiCommandOpen: true });
       const input = screen.getByPlaceholderText('Search assistants...');
       fireEvent.change(input, { target: { value: 'inventory' } });
       expect(screen.getByText('Mary')).toBeInTheDocument();

@@ -1,22 +1,24 @@
 /**
- * SidebarContainer — Slim Icon Rail (64px) + Flyout Panel (240px)
+ * SidebarContainer — Unified Slim Icon Rail (64px) + Flyout Panel (240px)
  *
- * Industry-standard 2025-2026 CRM sidebar pattern:
+ * Single sidebar architecture combining departments AND AI Command Center.
  * - 64px icon rail always visible on desktop
- * - Click → opens 240px flyout with department services
+ * - Click department → opens 240px flyout with services
+ * - Click Bot icon → opens 240px flyout with AI assistants (from registry)
+ * - Department flyout & AI flyout are mutually exclusive
  * - Active state: RED left border + icon fill
  * - Bottom-pinned: AI Assistant + Settings icons
  * - Mobile: hidden (replaced by BottomTabBar)
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import {
   Home, BarChart3, Users2, Settings,
   TrendingUp, Building2, DollarSign, Megaphone,
   MessageSquare, Globe, Lock, Code, Scale, Bot,
-  Shield, ChevronLeft
+  Shield, ChevronLeft, ChevronDown, Search,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -24,12 +26,21 @@ import {
   selectFlyoutOpen,
   selectFlyoutDepartment,
   selectSelectedService,
+  selectAICommandOpen,
+  selectSelectedAssistant,
   toggleFlyout,
   closeFlyout,
   selectDepartment,
   selectService,
-  toggleRightPanel,
+  toggleAICommand,
+  closeAICommand,
+  selectAssistant,
 } from '../../../store/slices/sidebarSlice';
+import {
+  getAllAssistants,
+  DEPARTMENTS as REGISTRY_DEPARTMENTS,
+} from '../../../config/assistantRegistry';
+import type { Assistant, DepartmentId } from '../../../config/assistantRegistry';
 import {
   RailContainer,
   RailWrapper,
@@ -46,6 +57,15 @@ import {
   FlyoutItem,
   FlyoutDot,
   FlyoutBackdrop,
+  AISearchBar,
+  AISearchInput,
+  AIGroupHeader,
+  AIAssistantBtn,
+  AIAvatar,
+  AIAssistantName,
+  AIAssistantDesc,
+  AIAssistantInfo,
+  AIFooter,
 } from './styles';
 
 // ─── Department definitions ───────────────────────────────────────────────
@@ -123,8 +143,14 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
   const selectedSvc = useSelector(selectSelectedService);
   const flyoutOpen = useSelector(selectFlyoutOpen);
   const flyoutDepartment = useSelector(selectFlyoutDepartment);
+  const aiCommandOpen = useSelector(selectAICommandOpen);
+  const selectedAssistantId = useSelector(selectSelectedAssistant);
   const userRole = useSelector((state: RootState) => state.auth?.user?.role || 'user');
   const isSuperUser = userRole === 'lion';
+
+  // AI assistant local search state
+  const [aiSearch, setAiSearch] = useState('');
+  const [expandedDepts, setExpandedDepts] = useState<Record<string, boolean>>({});
 
   const handleDeptClick = useCallback((deptId: string) => {
     dispatch(toggleFlyout(deptId));
@@ -141,12 +167,55 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
     onTabChange(itemId);
   }, [dispatch, onTabChange]);
 
+  const handleAIToggle = useCallback(() => {
+    dispatch(toggleAICommand());
+    setAiSearch('');
+  }, [dispatch]);
+
+  const handleCloseFlyout = useCallback(() => {
+    if (aiCommandOpen) {
+      dispatch(closeAICommand());
+    } else {
+      dispatch(closeFlyout());
+    }
+  }, [dispatch, aiCommandOpen]);
+
+  // Build AI assistant list grouped by department
+  const allAssistants = useMemo(() => getAllAssistants(), []);
+  const filteredAssistants = useMemo(() => {
+    if (!aiSearch.trim()) return allAssistants;
+    const q = aiSearch.toLowerCase();
+    return allAssistants.filter(a =>
+      a.name.toLowerCase().includes(q) ||
+      a.title.toLowerCase().includes(q) ||
+      a.department.toLowerCase().includes(q)
+    );
+  }, [allAssistants, aiSearch]);
+
+  const groupedAssistants = useMemo(() => {
+    const groups: Record<string, Assistant[]> = {};
+    filteredAssistants.forEach(a => {
+      if (!groups[a.department]) groups[a.department] = [];
+      groups[a.department].push(a);
+    });
+    return groups;
+  }, [filteredAssistants]);
+
+  const toggleDeptExpand = useCallback((dept: string) => {
+    setExpandedDepts(prev => ({ ...prev, [dept]: !prev[dept] }));
+  }, []);
+
+  const isDeptExpanded = useCallback((dept: string) => {
+    return expandedDepts[dept] !== false; // default expanded
+  }, [expandedDepts]);
+
   const activeDept = DEPARTMENTS[flyoutDepartment || ''];
+  const anyFlyoutOpen = flyoutOpen || aiCommandOpen;
 
   return (
     <>
       {/* Backdrop to close flyout on outside click */}
-      {flyoutOpen && <FlyoutBackdrop onClick={() => dispatch(closeFlyout())} />}
+      {anyFlyoutOpen && <FlyoutBackdrop onClick={handleCloseFlyout} />}
 
       <RailContainer>
         <RailWrapper>
@@ -198,16 +267,18 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
           {/* ── Bottom pinned items ──────────────────────── */}
           <RailDivider />
 
-          {/* AI Assistants toggle */}
+          {/* AI Command Center toggle */}
           <RailIcon>
             <RailIconButton
-              onClick={() => dispatch(toggleRightPanel())}
-              aria-label="AI Assistants"
-              title="AI Assistants"
+              $active={aiCommandOpen}
+              $color="#E31E24"
+              onClick={handleAIToggle}
+              aria-label="AI Command Center"
+              title="AI Command Center"
             >
               <Bot size={22} />
             </RailIconButton>
-            <RailTooltip>AI Assistants</RailTooltip>
+            <RailTooltip>AI Command Center</RailTooltip>
           </RailIcon>
 
           {/* Admin (super user only) */}
@@ -238,9 +309,10 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
           </RailIcon>
         </RailWrapper>
 
-        {/* ── Flyout panel ─────────────────────────────── */}
-        <FlyoutPanel $open={flyoutOpen} $color={activeDept?.color}>
-          {activeDept && flyoutDepartment && (
+        {/* ── Flyout panel — Department services OR AI Command Center ── */}
+        <FlyoutPanel $open={anyFlyoutOpen} $color={aiCommandOpen ? '#E31E24' : activeDept?.color}>
+          {/* Department flyout content */}
+          {flyoutOpen && activeDept && flyoutDepartment && (
             <>
               <FlyoutHeader>
                 <FlyoutTitle $color={activeDept.color}>
@@ -267,6 +339,72 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
                   );
                 })}
               </FlyoutNav>
+            </>
+          )}
+
+          {/* AI Command Center flyout content */}
+          {aiCommandOpen && (
+            <>
+              <FlyoutHeader>
+                <FlyoutTitle $color="#E31E24">
+                  AI Command Center
+                </FlyoutTitle>
+                <FlyoutClose onClick={() => dispatch(closeAICommand())} aria-label="Close AI panel">
+                  <ChevronLeft size={16} />
+                </FlyoutClose>
+              </FlyoutHeader>
+
+              <AISearchBar>
+                <AISearchInput>
+                  <Search size={14} style={{ color: '#9CA3AF', flexShrink: 0 }} />
+                  <input
+                    value={aiSearch}
+                    onChange={e => setAiSearch(e.target.value)}
+                    placeholder="Search assistants..."
+                    autoComplete="off"
+                  />
+                </AISearchInput>
+              </AISearchBar>
+
+              <FlyoutNav>
+                {Object.entries(groupedAssistants).map(([deptId, assistants]) => {
+                  const deptInfo = REGISTRY_DEPARTMENTS[deptId as DepartmentId];
+                  const isExpanded = isDeptExpanded(deptId);
+                  return (
+                    <div key={deptId}>
+                      <AIGroupHeader onClick={() => toggleDeptExpand(deptId)}>
+                        <span>{deptInfo?.label || deptId} ({assistants.length})</span>
+                        <ChevronDown
+                          size={12}
+                          style={{
+                            transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)',
+                            transition: 'transform 0.2s ease',
+                          }}
+                        />
+                      </AIGroupHeader>
+                      {isExpanded && assistants.map(assistant => (
+                        <AIAssistantBtn
+                          key={assistant.id}
+                          $selected={selectedAssistantId === assistant.id}
+                          onClick={() => dispatch(selectAssistant(assistant.id))}
+                        >
+                          <AIAvatar $color={assistant.color}>
+                            {assistant.avatar || assistant.name[0]}
+                          </AIAvatar>
+                          <AIAssistantInfo>
+                            <AIAssistantName>{assistant.name}</AIAssistantName>
+                            <AIAssistantDesc>{assistant.title}</AIAssistantDesc>
+                          </AIAssistantInfo>
+                        </AIAssistantBtn>
+                      ))}
+                    </div>
+                  );
+                })}
+              </FlyoutNav>
+
+              <AIFooter>
+                {filteredAssistants.length} assistant{filteredAssistants.length !== 1 ? 's' : ''} • <kbd>Esc</kbd> to close
+              </AIFooter>
             </>
           )}
         </FlyoutPanel>

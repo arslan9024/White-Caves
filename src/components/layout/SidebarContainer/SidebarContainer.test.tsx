@@ -39,8 +39,22 @@ vi.mock('lucide-react', async () => {
     Bot: stub('Bot'),
     Shield: stub('Shield'),
     ChevronLeft: stub('ChevronLeft'),
+    ChevronDown: stub('ChevronDown'),
+    Search: stub('Search'),
   };
 });
+
+// Mock assistantRegistry
+vi.mock('../../../config/assistantRegistry', () => ({
+  getAllAssistants: () => [
+    { id: 'hazel', name: 'Hazel', title: 'CRM Assistant', department: 'operations', color: '#3B82F6', avatar: 'H' },
+    { id: 'clara', name: 'Clara', title: 'Communications', department: 'communications', color: '#8B5CF6', avatar: 'C' },
+  ],
+  DEPARTMENTS: {
+    operations: { id: 'operations', label: 'Operations', color: '#3B82F6', gradient: '', icon: 'building' },
+    communications: { id: 'communications', label: 'Communications', color: '#8B5CF6', gradient: '', icon: 'message' },
+  },
+}));
 
 // Mock styled-components with simple divs
 vi.mock('./styles', () => {
@@ -72,6 +86,15 @@ vi.mock('./styles', () => {
     FlyoutItem: stub('FlyoutItem', 'button'),
     FlyoutDot: stub('FlyoutDot'),
     FlyoutBackdrop: stub('FlyoutBackdrop'),
+    AISearchBar: stub('AISearchBar'),
+    AISearchInput: stub('AISearchInput'),
+    AIGroupHeader: stub('AIGroupHeader', 'button'),
+    AIAssistantBtn: stub('AIAssistantBtn', 'button'),
+    AIAvatar: stub('AIAvatar'),
+    AIAssistantName: stub('AIAssistantName'),
+    AIAssistantDesc: stub('AIAssistantDesc'),
+    AIAssistantInfo: stub('AIAssistantInfo'),
+    AIFooter: stub('AIFooter'),
   };
 });
 
@@ -86,6 +109,9 @@ function makeStore(overrides: Record<string, unknown> = {}, role = 'user') {
       sidebar: {
         flyoutOpen: false,
         flyoutDepartment: null,
+        aiCommandOpen: false,
+        aiAssistantSearch: '',
+        aiAssistantFilter: 'all' as const,
         rightPanelOpen: false,
         selectedAssistant: null,
         selectedDepartment: null,
@@ -155,9 +181,9 @@ describe('SidebarContainer', () => {
       expect(screen.getByText('Settings')).toBeInTheDocument();
     });
 
-    it('renders AI Assistants button', () => {
+    it('renders AI Command Center button', () => {
       renderSidebar();
-      expect(screen.getByText('AI Assistants')).toBeInTheDocument();
+      expect(screen.getByText('AI Command Center')).toBeInTheDocument();
     });
   });
 
@@ -205,12 +231,12 @@ describe('SidebarContainer', () => {
     });
   });
 
-  describe('AI assistants toggle', () => {
-    it('dispatches toggleRightPanel when AI Assistants clicked', () => {
+  describe('AI Command Center toggle', () => {
+    it('dispatches toggleAICommand when AI Command Center clicked', () => {
       const { store } = renderSidebar();
-      const aiBtn = screen.getByTitle('AI Assistants');
+      const aiBtn = screen.getByTitle('AI Command Center');
       fireEvent.click(aiBtn);
-      expect(store.getState().sidebar.rightPanelOpen).toBe(true);
+      expect(store.getState().sidebar.aiCommandOpen).toBe(true);
     });
   });
 });

@@ -1,11 +1,11 @@
 # White Caves Real Estate — Master Plan
 
-> **Single Source of Truth** — Updated March 31, 2026  
+> **Single Source of Truth** — Updated April 1, 2026  
 > **Goal**: #1 Real Estate Platform in Dubai  
-> **Overall Progress**: 96% Feature-Complete · 90% Production-Hardened  
+> **Overall Progress**: 97% Feature-Complete · 92% Production-Hardened  
 > **TypeScript Strict**: 0 errors · 0 `as any` in production  
-> **Tests**: 309 files · 7,744 tests · 100% pass rate  
-> **Build**: Clean (0 errors, 0 warnings)
+> **Tests**: 285 files · 7,163 tests · 100% pass rate  
+> **Build**: Clean (0 errors, 0 warnings) · 8.64s
 
 ---
 
@@ -44,6 +44,9 @@ WhatsApp AI       ████████████████████�
 | Dead Code | 19 dead components + 38 files removed (-11,094 LOC) | ✅ COMPLETE | Mar 31, 2026 |
 | Barrel Clean | common/index.tsx: 9 dead re-exports removed | ✅ COMPLETE | Mar 31, 2026 |
 | Freelancer | All references removed from production code | ✅ COMPLETE | Mar 31, 2026 |
+| Dead Code R2 | Additional dead components removed (-6,934 LOC) | ✅ COMPLETE | Mar 31, 2026 |
+| Phase 0.6 | Design system consolidation & dead code R3 (-15,434 LOC) | ✅ COMPLETE | Mar 31, 2026 |
+| Unified Sidebar | Single sidebar: departments + AI Command Center (no right panel) | ✅ COMPLETE | Apr 1, 2026 |
 
 ---
 
@@ -93,14 +96,14 @@ WhatsApp AI       ████████████████████�
 | TypeScript Strict Mode | 100% | 100% (0 errors, 0 `as any`) | ✅ |
 | Build Success Rate | 100% | 100% | ✅ |
 | Production Build Time | <10s | 7-8s | ✅ |
-| Test Files | — | 309 | ✅ |
-| Test Count | — | 7,744 (100% pass) | ✅ |
+| Test Files | — | 285 | ✅ |
+| Test Count | — | 7,163 (100% pass) | ✅ |
 | Test Coverage | 80% | ~60% | ⏳ |
 | Lighthouse Performance | >90 | ~78 | ⏳ |
 | Lighthouse SEO | >90 | ~95 | ✅ |
 | Lighthouse Accessibility | >90 | ~92 | ✅ |
 | Bundle Size (gzip) | <500KB | ~185KB | ✅ |
-| Dead Code | Zero | 0 (11,094 lines removed Mar 31) | ✅ |
+| Dead Code | Zero | 0 (33,462 lines removed, 230+ files) | ✅ |
 
 ---
 

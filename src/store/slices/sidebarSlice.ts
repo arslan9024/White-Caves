@@ -6,8 +6,12 @@ interface SidebarState {
   flyoutOpen: boolean;
   /** Which department's flyout is shown */
   flyoutDepartment: string | null;
-  /** Right AI assistant panel open */
-  rightPanelOpen: boolean;
+  /** AI Command Center flyout open (replaces right panel) */
+  aiCommandOpen: boolean;
+  /** AI assistant search query */
+  aiAssistantSearch: string;
+  /** AI assistant filter mode */
+  aiAssistantFilter: 'all' | 'active' | 'idle';
   /** Selected AI assistant */
   selectedAssistant: string | null;
   /** Selected department */
@@ -18,11 +22,16 @@ interface SidebarState {
   commandPaletteOpen: boolean;
   /** Mobile bottom sheet open */
   mobileSheetOpen: boolean;
+  /** @deprecated — kept for backward compatibility, always false */
+  rightPanelOpen: boolean;
 }
 
 const initialState: SidebarState = {
   flyoutOpen: false,
   flyoutDepartment: null,
+  aiCommandOpen: false,
+  aiAssistantSearch: '',
+  aiAssistantFilter: 'all',
   rightPanelOpen: false,
   selectedAssistant: null,
   selectedDepartment: null,
@@ -39,6 +48,7 @@ const sidebarSlice = createSlice({
     openFlyout: (state, action: PayloadAction<string>) => {
       state.flyoutOpen = true;
       state.flyoutDepartment = action.payload;
+      state.aiCommandOpen = false; // Close AI when dept opens
     },
     closeFlyout: (state) => {
       state.flyoutOpen = false;
@@ -51,25 +61,55 @@ const sidebarSlice = createSlice({
       } else {
         state.flyoutOpen = true;
         state.flyoutDepartment = action.payload;
+        state.aiCommandOpen = false; // Close AI when dept opens
       }
     },
 
-    // ── Right panel (AI assistants) ─────────────────────────────────
+    // ── AI Command Center (unified sidebar flyout) ──────────────────
+    openAICommand: (state) => {
+      state.aiCommandOpen = true;
+      state.flyoutOpen = false;
+      state.flyoutDepartment = null;
+    },
+    closeAICommand: (state) => {
+      state.aiCommandOpen = false;
+    },
+    toggleAICommand: (state) => {
+      if (state.aiCommandOpen) {
+        state.aiCommandOpen = false;
+      } else {
+        state.aiCommandOpen = true;
+        state.flyoutOpen = false;
+        state.flyoutDepartment = null;
+      }
+    },
+
+    // ── Right panel (legacy — maps to AI Command Center) ────────────
     openRightPanel: (state) => {
-      state.rightPanelOpen = true;
+      state.aiCommandOpen = true;
+      state.flyoutOpen = false;
+      state.flyoutDepartment = null;
     },
     closeRightPanel: (state) => {
-      state.rightPanelOpen = false;
+      state.aiCommandOpen = false;
     },
     toggleRightPanel: (state) => {
-      state.rightPanelOpen = !state.rightPanelOpen;
+      if (state.aiCommandOpen) {
+        state.aiCommandOpen = false;
+      } else {
+        state.aiCommandOpen = true;
+        state.flyoutOpen = false;
+        state.flyoutDepartment = null;
+      }
     },
 
     // ── Selection ───────────────────────────────────────────────────
     selectAssistant: (state, action: PayloadAction<string | null>) => {
       state.selectedAssistant = action.payload;
       if (action.payload) {
-        state.rightPanelOpen = true;
+        state.aiCommandOpen = true;
+        state.flyoutOpen = false;
+        state.flyoutDepartment = null;
       }
     },
     clearSelectedAssistant: (state) => {
@@ -109,24 +149,32 @@ const sidebarSlice = createSlice({
       state.mobileSheetOpen = false;
     },
 
+    // ── AI Assistant Search / Filter ─────────────────────────────────
+    setAIAssistantSearch: (state, action: PayloadAction<string>) => {
+      state.aiAssistantSearch = action.payload;
+    },
+    setAIAssistantFilter: (state, action: PayloadAction<'all' | 'active' | 'idle'>) => {
+      state.aiAssistantFilter = action.payload;
+    },
+
     // ── Legacy compatibility aliases ────────────────────────────────
     toggleLeftSidebar: (state) => {
       state.flyoutOpen = !state.flyoutOpen;
     },
     toggleRightSidebar: (state) => {
-      state.rightPanelOpen = !state.rightPanelOpen;
+      state.aiCommandOpen = !state.aiCommandOpen;
     },
     setLeftCollapsed: (state, action: PayloadAction<boolean>) => {
       state.flyoutOpen = !action.payload;
     },
     setRightCollapsed: (state, action: PayloadAction<boolean>) => {
-      state.rightPanelOpen = !action.payload;
+      state.aiCommandOpen = !action.payload;
     },
     setShowRightDrawer: (state, action: PayloadAction<boolean>) => {
-      state.rightPanelOpen = action.payload;
+      state.aiCommandOpen = action.payload;
     },
     toggleShowRightDrawer: (state) => {
-      state.rightPanelOpen = !state.rightPanelOpen;
+      state.aiCommandOpen = !state.aiCommandOpen;
     },
   },
   extraReducers: (builder) => {
@@ -138,17 +186,27 @@ export const {
   openFlyout,
   closeFlyout,
   toggleFlyout,
+  // AI Command Center
+  openAICommand,
+  closeAICommand,
+  toggleAICommand,
+  setAIAssistantSearch,
+  setAIAssistantFilter,
+  // Legacy right-panel aliases (now map to AI Command Center)
   openRightPanel,
   closeRightPanel,
   toggleRightPanel,
+  // Selection
   selectAssistant,
   clearSelectedAssistant,
   selectDepartment,
   selectService,
   clearDepartmentSelection,
+  // Command Palette
   openCommandPalette,
   closeCommandPalette,
   toggleCommandPalette,
+  // Mobile
   toggleMobileSheet,
   closeMobileSheet,
   // Legacy aliases
@@ -163,16 +221,19 @@ export const {
 // ─── Named Selectors (stable references for useSelector) ─────────────────
 export const selectFlyoutOpen = (state: { sidebar: SidebarState }) => state.sidebar.flyoutOpen;
 export const selectFlyoutDepartment = (state: { sidebar: SidebarState }) => state.sidebar.flyoutDepartment;
-export const selectRightPanelOpen = (state: { sidebar: SidebarState }) => state.sidebar.rightPanelOpen;
+export const selectAICommandOpen = (state: { sidebar: SidebarState }) => state.sidebar.aiCommandOpen;
+export const selectAIAssistantSearch = (state: { sidebar: SidebarState }) => state.sidebar.aiAssistantSearch;
+export const selectAIAssistantFilter = (state: { sidebar: SidebarState }) => state.sidebar.aiAssistantFilter;
 export const selectSelectedAssistant = (state: { sidebar: SidebarState }) => state.sidebar.selectedAssistant;
 export const selectSelectedDepartment = (state: { sidebar: SidebarState }) => state.sidebar.selectedDepartment;
 export const selectSelectedService = (state: { sidebar: SidebarState }) => state.sidebar.selectedService;
 export const selectCommandPaletteOpen = (state: { sidebar: SidebarState }) => state.sidebar.commandPaletteOpen;
 export const selectMobileSheetOpen = (state: { sidebar: SidebarState }) => state.sidebar.mobileSheetOpen;
 
-// Legacy selectors (backward compat)
+// Legacy selectors (backward compat — now map to aiCommandOpen)
+export const selectRightPanelOpen = (state: { sidebar: SidebarState }) => state.sidebar.aiCommandOpen;
 export const selectLeftCollapsed = (state: { sidebar: SidebarState }) => !state.sidebar.flyoutOpen;
-export const selectRightCollapsed = (state: { sidebar: SidebarState }) => !state.sidebar.rightPanelOpen;
-export const selectShowRightDrawer = (state: { sidebar: SidebarState }) => state.sidebar.rightPanelOpen;
+export const selectRightCollapsed = (state: { sidebar: SidebarState }) => !state.sidebar.aiCommandOpen;
+export const selectShowRightDrawer = (state: { sidebar: SidebarState }) => state.sidebar.aiCommandOpen;
 
 export default sidebarSlice.reducer;

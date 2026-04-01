@@ -4,25 +4,24 @@
  * Structure:
  *   ┌──────────────── TopBar (56px fixed) ─────────────────┐
  *   │ [WC Logo] | Breadcrumbs ──── [⌘K] [🔔] [👤 User ▾] │
- *   ├──────┬───────────────────────────────┬───────────────┤
- *   │ Rail │         Main Content          │   AI Panel    │
- *   │ 64px │                               │   (slide-in)  │
- *   │      │                               │               │
- *   └──────┴───────────────────────────────┴───────────────┘
+ *   ├──────┬───────────────────────────────────────────────┤
+ *   │ Rail │              Main Content                     │
+ *   │ 64px │                                               │
+ *   │      │  (full width — no right panel)                │
+ *   └──────┴───────────────────────────────────────────────┘
  *
  * - TopBar: unified breadcrumb nav, Cmd+K search, notifications, user menu
- * - SidebarContainer: 64px icon rail + 240px flyout for departments
- * - RightPanelContainer: AI assistants slide-in (triggered from rail or Ctrl+A)
+ * - SidebarContainer: 64px icon rail + 240px flyout for BOTH departments & AI assistants
  * - CommandPalette: global search overlay (Cmd+K)
+ * - AI Command Center: integrated into left sidebar flyout (no separate right panel)
  */
 
 import React, { useEffect, ReactNode, lazy, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setActiveRole } from '../../store/navigationSlice';
 import { TopBar } from './TopBar';
 import SidebarContainer from './SidebarContainer';
-import RightPanelContainer from './RightPanelContainer';
 import CommandPalette from '../common/CommandPalette';
 import { AppLayoutContainer, AppBody, AppMain } from './AppLayout/styles';
 
@@ -70,21 +69,18 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       {/* ─── Command Palette Overlay (Cmd+K / Ctrl+K) ─────────────── */}
       <CommandPalette />
 
-      {/* ─── Body: Rail + Content + Right Panel ────────────────────── */}
+      {/* ─── Body: Rail + Content (full width, no right panel) ─────── */}
       <AppBody>
-        {/* Left icon rail (64px) + department flyout (240px) */}
+        {/* Left icon rail (64px) + unified flyout (departments & AI) */}
         {showNav && <SidebarContainer />}
 
-        {/* Main content area */}
+        {/* Main content area — full width */}
         <AppMain $withNav={showNav}>
           <Suspense fallback={null}>
             <BiometricReminder />
           </Suspense>
           {children}
         </AppMain>
-
-        {/* Right slide-in AI assistant panel */}
-        {showNav && <RightPanelContainer />}
       </AppBody>
     </AppLayoutContainer>
   );

@@ -306,3 +306,169 @@ export const FlyoutDot = styled.span<{ $color?: string }>`
   background: ${p => p.$color || '#E31E24'};
   flex-shrink: 0;
 `;
+
+/* ═══════════════════════════════════════════════════════════════
+   AI COMMAND CENTER FLYOUT STYLES
+   Shown inside FlyoutPanel when AI icon is clicked
+   ═══════════════════════════════════════════════════════════════ */
+
+export const AISearchBar = styled.div`
+  padding: 12px 16px;
+  border-bottom: 1px solid #F3F4F6;
+
+  @media (prefers-color-scheme: dark) {
+    border-bottom-color: #2D2D44;
+  }
+`;
+
+export const AISearchInput = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  background: #F3F4F6;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+
+  &:focus-within {
+    border-color: #E31E24;
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.1);
+  }
+
+  input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 12px;
+    color: #374151;
+    font-family: inherit;
+
+    &::placeholder { color: #9CA3AF; }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background: #334155;
+    &:focus-within { background: #1E293B; }
+    input { color: #E2E8F0; &::placeholder { color: #64748B; } }
+  }
+`;
+
+export const AIGroupHeader = styled.button`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 600;
+  color: #9CA3AF;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.15s ease;
+
+  &:hover { color: #6B7280; }
+
+  @media (prefers-color-scheme: dark) {
+    color: #64748B;
+    &:hover { color: #94A3B8; }
+  }
+`;
+
+export const AIAssistantBtn = styled.button<{ $selected?: boolean }>`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: ${p => p.$selected ? '#FFEBEE' : 'transparent'};
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+
+  &:hover {
+    background: ${p => p.$selected ? '#FFEBEE' : '#F9FAFB'};
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background: ${p => p.$selected ? 'rgba(227, 30, 36, 0.12)' : 'transparent'};
+    &:hover { background: ${p => p.$selected ? 'rgba(227, 30, 36, 0.12)' : 'rgba(255,255,255,0.04)'}; }
+  }
+`;
+
+export const AIAvatar = styled.div<{ $color?: string }>`
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: ${p => p.$color || 'linear-gradient(135deg, #E31E24, #C62828)'};
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+`;
+
+export const AIAssistantName = styled.div`
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media (prefers-color-scheme: dark) {
+    color: #F8FAFC;
+  }
+`;
+
+export const AIAssistantDesc = styled.div`
+  font-size: 11px;
+  color: #6B7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media (prefers-color-scheme: dark) {
+    color: #94A3B8;
+  }
+`;
+
+export const AIAssistantInfo = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+export const AIFooter = styled.div`
+  padding: 8px 16px;
+  border-top: 1px solid #E5E7EB;
+  font-size: 11px;
+  color: #9CA3AF;
+  text-align: center;
+
+  @media (prefers-color-scheme: dark) {
+    border-top-color: #334155;
+    color: #64748B;
+  }
+
+  kbd {
+    padding: 1px 4px;
+    border-radius: 3px;
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    font-size: 10px;
+    font-family: inherit;
+
+    @media (prefers-color-scheme: dark) {
+      background: #334155;
+      border-color: #475569;
+    }
+  }
+`;
