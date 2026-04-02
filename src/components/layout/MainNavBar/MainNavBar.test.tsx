@@ -195,7 +195,6 @@ const renderNavBar = (props: Record<string, unknown> = {}) => {
           notifications={[]}
           onLogout={vi.fn()}
           onToggleLeftSidebar={vi.fn()}
-          onToggleRightSidebar={vi.fn()}
           {...props}
         />
       </MemoryRouter>
@@ -230,10 +229,10 @@ describe('MainNavBar', () => {
       expect(screen.getByPlaceholderText('Search assistants, properties, leads...')).toBeInTheDocument();
     });
 
-    it('should render sidebar toggle buttons', () => {
+    it('should render sidebar toggle button', () => {
       renderNavBar();
       const toggleBtns = screen.getAllByTestId('SidebarToggleButton');
-      expect(toggleBtns.length).toBe(2); // left + right
+      expect(toggleBtns.length).toBe(1); // left only (unified sidebar)
     });
   });
 
@@ -454,14 +453,6 @@ describe('MainNavBar', () => {
       const toggleBtns = screen.getAllByTestId('SidebarToggleButton');
       fireEvent.click(toggleBtns[0]);
       expect(onToggleLeftSidebar).toHaveBeenCalled();
-    });
-
-    it('should call onToggleRightSidebar when right toggle clicked', () => {
-      const onToggleRightSidebar = vi.fn();
-      renderNavBar({ onToggleRightSidebar });
-      const toggleBtns = screen.getAllByTestId('SidebarToggleButton');
-      fireEvent.click(toggleBtns[1]);
-      expect(onToggleRightSidebar).toHaveBeenCalled();
     });
   });
 

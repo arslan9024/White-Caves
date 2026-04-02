@@ -6,7 +6,6 @@ import SuspenseLoader from '../components/common/SuspenseLoader';
 import RouteErrorBoundary from '../components/RouteErrorBoundary';
 import MainNavBar from '../components/layout/MainNavBar/MainNavBar';
 import SidebarContainer from '../components/layout/SidebarContainer/SidebarContainer';
-import AIAssistantsPanel from '../components/layout/AIAssistantsPanel/AIAssistantsPanel';
 import DepartmentContentPanel from '../components/layout/DepartmentContentPanel/DepartmentContentPanel';
 import { Badge, Tabs, ProgressBar } from '../components/ui';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
@@ -16,11 +15,9 @@ import { getSubNavItems, getModuleById } from '../features/featureRegistry';
 import {
   openFlyout,
   closeFlyout,
-  toggleAICommand,
   selectAssistant,
   selectFlyoutOpen,
   selectFlyoutDepartment,
-  selectAICommandOpen,
   selectSelectedAssistant as selectSelectedAssistantSelector,
   selectSelectedDepartment as selectSelectedDepartmentSelector,
 } from '../store/slices/sidebarSlice';
@@ -258,15 +255,12 @@ const UnifiedDashboardPage: FC = () => {
     leaseInfo: EMPTY_CRM_ARRAY,
   }), [allProperties, allAgents, allLeads, hotLeads, allCommissions, recentActivities, overview]);
 
-  // Redux sidebar state — unified sidebar selectors (flyout = left panel, aiCommand = AI assistants)
+  // Redux sidebar state — unified sidebar selectors
   const flyoutOpen = useSelector(selectFlyoutOpen);
   const flyoutDepartment = useSelector(selectFlyoutDepartment);
-  const aiCommandOpen = useSelector(selectAICommandOpen);
-  const leftCollapsed = !flyoutOpen;
-  const rightCollapsed = !aiCommandOpen;
   const selectedAssistantRedux = useSelector(selectSelectedAssistantSelector);
-  const showRightDrawer = aiCommandOpen;
   const selectedDepartment = useSelector(selectSelectedDepartmentSelector);
+  const leftCollapsed = !flyoutOpen;
 
   // Sidebar action handlers
   const handleToggleLeftSidebar = useCallback(() => {
@@ -276,9 +270,6 @@ const UnifiedDashboardPage: FC = () => {
       dispatch(openFlyout(flyoutDepartment || selectedDepartment || 'general'));
     }
   }, [dispatch, flyoutOpen, flyoutDepartment, selectedDepartment]);
-  const handleToggleRightSidebar = useCallback(() => {
-    dispatch(toggleAICommand());
-  }, [dispatch]);
 
   const handleSelectAssistant = useCallback((assistant: string | { id?: string }): void => {
     const id = typeof assistant === 'string' ? assistant : assistant?.id || '';
@@ -412,10 +403,9 @@ const UnifiedDashboardPage: FC = () => {
     }
   }, [dispatch, currentRole]);
 
-  // Keyboard shortcuts for sidebar toggles
+  // Keyboard shortcut: Ctrl+B / Cmd+B to toggle left sidebar flyout
   useEffect((): (() => void) => {
     const handleKeyDown = (e: KeyboardEvent): void => {
-      // Ctrl+B or Cmd+B to toggle left sidebar
       if ((e.ctrlKey || e.metaKey) && e.code === 'KeyB') {
         e.preventDefault();
         if (flyoutOpen) {
@@ -424,16 +414,11 @@ const UnifiedDashboardPage: FC = () => {
           dispatch(openFlyout(flyoutDepartment || selectedDepartment || 'general'));
         }
       }
-      // Ctrl+Shift+A or Cmd+Shift+A to toggle AI Command Center
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.code === 'KeyA') {
-        e.preventDefault();
-        dispatch(toggleAICommand());
-      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [dispatch]);
+  }, [dispatch, flyoutOpen, flyoutDepartment, selectedDepartment]);
 
   // Helper: Render tab content based on activeTab
   const renderTabContent = (): ReactNode => {
@@ -634,9 +619,7 @@ const UnifiedDashboardPage: FC = () => {
       <MainNavBar
         user={user}
         leftSidebarCollapsed={leftCollapsed}
-        rightSidebarCollapsed={rightCollapsed}
         onToggleLeftSidebar={handleToggleLeftSidebar}
-        onToggleRightSidebar={handleToggleRightSidebar}
       />
 
       {/* Main Layout Container */}
@@ -773,25 +756,7 @@ const UnifiedDashboardPage: FC = () => {
           </div>
         </div>
 
-        {/* Right Sidebar - Mirror of Left (with AI Assistants) */}
-        <AIAssistantsPanel
-          isOpen={!rightCollapsed}
-          onClose={handleToggleRightSidebar}
-          onAssistantSelect={handleSelectAssistant}
-        />
-
-        {/* Right Drawer for Mobile (< 768px) */}
-        {showRightDrawer && (
-          <div className="right-drawer-overlay" onClick={handleToggleRightSidebar} role="dialog" aria-label="Close sidebar overlay" onKeyDown={(e: React.KeyboardEvent) => e.key === 'Escape' && handleToggleRightSidebar()}>
-            <div className="right-drawer" onClick={(e: React.MouseEvent) => e.stopPropagation()} role="complementary" aria-label="AI Assistants panel">
-              <AIAssistantsPanel
-                isOpen={true}
-                onClose={handleToggleRightSidebar}
-                onAssistantSelect={handleSelectAssistant}
-              />
-            </div>
-          </div>
-        )}
+        {/* AI Assistants are inside SidebarContainer flyout — no separate right panel */}
       </div>
     </>
   );
