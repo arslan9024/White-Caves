@@ -7,7 +7,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 
-export type SwitchProps = React.InputHTMLAttributes<HTMLInputElement> & {
+export type SwitchProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> & {
   label?: string;
   size?: 'sm' | 'md' | 'lg';
 };

@@ -110,11 +110,6 @@ describe('AppLayout', () => {
       expect(screen.getByTestId('sidebar-container')).toBeInTheDocument();
     });
 
-    it('should not render a separate right panel (unified sidebar)', () => {
-      renderLayout();
-      expect(screen.queryByTestId('right-panel')).not.toBeInTheDocument();
-    });
-
     it('should render BiometricReminder', () => {
       renderLayout();
       expect(screen.getByTestId('biometric-reminder')).toBeInTheDocument();

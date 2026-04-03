@@ -1041,18 +1041,12 @@ export const makeSelectLeadsByAgent = (agentId: string | number) =>
     (state: RootState) => state.crmData?.leads?.items,
     (items) => items?.filter((l: CRMItem) => l.agent_id === agentId) ?? []
   );
-/** @deprecated Use makeSelectLeadsByAgent(agentId) instead for memoized results */
-export const selectLeadsByAgent = (state: RootState, agentId: string | number) =>
-  state.crmData?.leads?.items?.filter((l: CRMItem) => l.agent_id === agentId) || [];
 
 export const makeSelectClientsByAgent = (agentId: string | number) =>
   createSelector(
     (state: RootState) => state.crmData?.clients?.items,
     (items) => items?.filter((c: CRMItem) => c.agent_id === agentId) ?? []
   );
-/** @deprecated Use makeSelectClientsByAgent(agentId) instead for memoized results */
-export const selectClientsByAgent = (state: RootState, agentId: string | number) =>
-  state.crmData?.clients?.items?.filter((c: CRMItem) => c.agent_id === agentId) || [];
 
 // Last updated
 export const selectLastUpdated = (state: RootState) => state.crmData?.lastUpdated;
