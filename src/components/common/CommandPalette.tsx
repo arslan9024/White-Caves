@@ -266,7 +266,7 @@ const DEPT_ICONS: Record<string, LucideIcon> = {
 
 // ─── Component ────────────────────────────────────────────────────────────
 
-const CommandPalette: React.FC = () => {
+const CommandPalette: React.FC = React.memo(function CommandPalette() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isOpen = useSelector(selectCommandPaletteOpen);
@@ -416,6 +416,6 @@ const CommandPalette: React.FC = () => {
       </PaletteContainer>
     </Overlay>
   );
-};
+});
 
 export default CommandPalette;

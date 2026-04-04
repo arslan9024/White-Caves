@@ -111,10 +111,10 @@ function useBreadcrumbs() {
 
 // ─── Component ────────────────────────────────────────────────────────────
 
-const TopBar: React.FC<TopBarProps> = ({
+const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
   notifications = [],
   onLogout,
-}) => {
+}) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const crumbs = useBreadcrumbs();
@@ -261,6 +261,6 @@ const TopBar: React.FC<TopBarProps> = ({
       </ActionsSection>
     </TopBarContainer>
   );
-};
+});
 
 export default TopBar;
