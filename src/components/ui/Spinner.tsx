@@ -4,7 +4,7 @@
  * Professional loading spinner with multiple variants
  */
 
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import styled from 'styled-components';
 import { SpinnerProps, SpinnerVariant, SpinnerSize } from './advancedUI.types';
 
@@ -229,13 +229,13 @@ const LoadingText = styled.div<{ $size: SpinnerSize }>`
 // COMPONENT
 // ============================================================================
 
-const Spinner: FC<SpinnerProps> = ({
+const Spinner: FC<SpinnerProps> = memo(function Spinner({
   variant = 'default',
   size = 'medium',
   color,
   label,
   className = '',
-}) => {
+}) {
   const renderSpinner = () => {
     switch (variant) {
       case 'dots':
@@ -267,6 +267,6 @@ const Spinner: FC<SpinnerProps> = ({
       {label && <LoadingText $size={size}>{label}</LoadingText>}
     </SpinnerContainer>
   );
-};
+});
 
 export default Spinner;

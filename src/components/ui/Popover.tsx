@@ -4,7 +4,7 @@
  * Lightweight popover with positioning options and click-outside handling.
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import styled from 'styled-components';
 
 export type PopoverPlacement =
@@ -129,7 +129,7 @@ const PopoverContent = styled.div<{ $isVisible: boolean; $placement: PopoverPlac
  * Popover Component
  * Lightweight popover that appears next to trigger element
  */
-export const Popover: React.FC<PopoverProps> = ({
+export const Popover: React.FC<PopoverProps> = memo(function Popover({
   content,
   children,
   placement = 'bottom',
@@ -138,7 +138,7 @@ export const Popover: React.FC<PopoverProps> = ({
   maxWidth = 300,
   onOpen,
   onClose,
-}) => {
+}) {
   const [isVisible, setIsVisible] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -211,6 +211,6 @@ export const Popover: React.FC<PopoverProps> = ({
       </PopoverContent>
     </PopoverWrapper>
   );
-};
+});
 
 export default Popover;
