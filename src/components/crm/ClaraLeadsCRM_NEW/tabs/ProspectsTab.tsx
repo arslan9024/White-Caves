@@ -1,70 +1,27 @@
-import React, { useState, FormEvent } from 'react';
-import { useLeadsData } from '../hooks/useLeadsData';
+import React from 'react';
+import { useProspectsForm, STATUS_OPTIONS, STAGE_OPTIONS } from '../hooks/useProspectsForm';
 
 export default function ProspectsTab() {
   const {
     filteredLeads,
+    stats,
     filterStatus,
     setFilterStatus,
     filterStage,
     setFilterStage,
     searchQuery,
     setSearchQuery,
-    addLead,
     updateLead,
-    deleteLead,
-    stats
-  } = useLeadsData();
+    showAddForm,
+    formData,
+    toggleAddForm,
+    setField,
+    handleAddLead,
+    handleDeleteLead,
+  } = useProspectsForm();
 
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    type: 'commercial',
-    size: 'medium',
-    status: 'contacted',
-    value: 0,
-    stage: 'initial_contact',
-    email: '',
-    phone: '',
-    notes: ''
-  });
-
-  const handleAddLead = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (formData.name.trim()) {
-      addLead(formData);
-      setFormData({
-        name: '',
-        type: 'commercial',
-        size: 'medium',
-        status: 'contacted',
-        value: 0,
-        stage: 'initial_contact',
-        email: '',
-        phone: '',
-        notes: ''
-      });
-      setShowAddForm(false);
-    }
-  };
-
-  const handleDeleteLead = (id: string) => {
-    if (confirm('Delete this lead?')) {
-      deleteLead(id);
-    }
-  };
-
-  const statusOptions = ['all', 'contacted', 'interested', 'qualified', 'lost'];
-  const stageOptions = [
-    'all',
-    'initial_contact',
-    'discovery',
-    'proposal',
-    'negotiation',
-    'contract_review',
-    'closed_won',
-    'closed_lost'
-  ];
+  const statusOptions = [...STATUS_OPTIONS];
+  const stageOptions = [...STAGE_OPTIONS];
 
   return (
     <div className="prospects-section">
@@ -82,7 +39,7 @@ export default function ProspectsTab() {
             {stats.totalLeads} total • ${(stats.totalValue / 1000).toFixed(0)}K pipeline
           </p>
         </div>
-        <button className="button-primary" onClick={() => setShowAddForm(!showAddForm)}>
+        <button className="button-primary" onClick={toggleAddForm}>
           {showAddForm ? 'Cancel' : '+ Add Lead'}
         </button>
       </div>
@@ -101,14 +58,14 @@ export default function ProspectsTab() {
               type="text"
               placeholder="Company Name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) => setField('name', e.target.value)}
               className="filter-input"
               style={{ gridColumn: '1 / -1' }}
               required
             />
             <select
               value={formData.type}
-              onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+              onChange={(e) => setField('type', e.target.value)}
               className="filter-select"
             >
               <option value="commercial">Commercial</option>
@@ -118,7 +75,7 @@ export default function ProspectsTab() {
             </select>
             <select
               value={formData.size}
-              onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+              onChange={(e) => setField('size', e.target.value)}
               className="filter-select"
             >
               <option value="small">Small</option>
@@ -130,14 +87,14 @@ export default function ProspectsTab() {
               type="email"
               placeholder="Email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) => setField('email', e.target.value)}
               className="filter-input"
             />
             <input
               type="tel"
               placeholder="Phone"
               value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              onChange={(e) => setField('phone', e.target.value)}
               className="filter-input"
             />
             <input
@@ -146,13 +103,13 @@ export default function ProspectsTab() {
               value={formData.value}
               onChange={(e) => {
                 const parsed = parseFloat(e.target.value);
-                setFormData({ ...formData, value: Number.isNaN(parsed) ? 0 : parsed });
+                setField('value', Number.isNaN(parsed) ? 0 : parsed);
               }}
               className="filter-input"
             />
             <select
               value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              onChange={(e) => setField('status', e.target.value)}
               className="filter-select"
             >
               <option value="contacted">Contacted</option>
@@ -162,7 +119,7 @@ export default function ProspectsTab() {
             </select>
             <select
               value={formData.stage}
-              onChange={(e) => setFormData({ ...formData, stage: e.target.value })}
+              onChange={(e) => setField('stage', e.target.value)}
               className="filter-select"
             >
               <option value="initial_contact">Initial Contact</option>
@@ -174,7 +131,7 @@ export default function ProspectsTab() {
             <textarea
               placeholder="Notes"
               value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              onChange={(e) => setField('notes', e.target.value)}
               className="filter-input"
               style={{ gridColumn: '1 / -1', minHeight: '60px' }}
             />
