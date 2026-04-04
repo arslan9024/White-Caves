@@ -330,6 +330,7 @@ const AdminDashboard = () => {
               <S.FilterSelect 
                 value={filterPeriod}
                 onChange={(e) => setFilterPeriod(e.target.value)}
+                aria-label="Filter analytics by time period"
               >
                 <option value="7d">Last 7 Days</option>
                 <option value="30d">Last 30 Days</option>

@@ -161,6 +161,7 @@ export default function JobBoard() {
               <select 
                 value={applicationForm.role}
                 onChange={(e) => setApplicationForm({...applicationForm, role: e.target.value})}
+                aria-label="Select job role"
                 required
               >
                 <option value="">Select Role</option>
@@ -174,6 +175,7 @@ export default function JobBoard() {
               <select 
                 value={applicationForm.workLocation}
                 onChange={(e) => setApplicationForm({...applicationForm, workLocation: e.target.value})}
+                aria-label="Select work location preference"
                 required
               >
                 <option value="">Select Work Location</option>

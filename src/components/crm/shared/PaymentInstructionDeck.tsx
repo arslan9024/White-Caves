@@ -3,6 +3,7 @@ import {
   CreditCard, QrCode, FileText, Building2, Copy, Check, 
   Download, Share2, ChevronDown, ChevronUp
 } from 'lucide-react';
+import { TIMING } from '../../../constants/app';
 import './PaymentComponents.css';
 
 // ─── Types ──────────────────────────────────────────────────────────────
@@ -269,7 +270,7 @@ const PaymentInstructionDeck = memo(({
     navigator.clipboard.writeText(text);
     setCopied(field ?? null);
     clearTimeout(copyTimerRef.current);
-    copyTimerRef.current = setTimeout(() => setCopied(null), 2000);
+    copyTimerRef.current = setTimeout(() => setCopied(null), TIMING.COPY_FEEDBACK);
   }, []);
   
   const generateMessage = useCallback(() => {
@@ -290,7 +291,7 @@ const PaymentInstructionDeck = memo(({
     navigator.clipboard.writeText(message);
     setCopied('message');
     clearTimeout(copyTimerRef.current);
-    copyTimerRef.current = setTimeout(() => setCopied(null), 2000);
+    copyTimerRef.current = setTimeout(() => setCopied(null), TIMING.COPY_FEEDBACK);
   }, [selectedMethod, amount, reference, clientName, invoiceId, onGenerateMessage]);
   
   return (

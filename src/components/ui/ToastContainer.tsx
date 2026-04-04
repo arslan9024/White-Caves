@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useToast } from '../../context/useToast';
 import type { Toast as ToastType } from '../../context/ToastContext';
+import { TIMING } from '../../constants/app';
 import { Info, CheckCircle, AlertCircle, XCircle, X } from 'lucide-react';
 
 const ToastContainerWrapper = styled.div<{ $position: string }>`
@@ -136,7 +137,7 @@ const SingleToastItem: React.FC<{
 
     const timer = setTimeout(() => {
       setIsExiting(true);
-      setTimeout(onClose, 300);
+      setTimeout(onClose, TIMING.TOAST_EXIT_ANIMATION);
     }, toast.duration);
 
     return () => clearTimeout(timer);
@@ -144,7 +145,7 @@ const SingleToastItem: React.FC<{
 
   const handleClose = () => {
     setIsExiting(true);
-    setTimeout(onClose, 300);
+    setTimeout(onClose, TIMING.TOAST_EXIT_ANIMATION);
   };
 
   return (

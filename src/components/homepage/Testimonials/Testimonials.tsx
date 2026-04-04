@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Star, Quote } from 'lucide-react';
+import { TIMING } from '../../../constants/app';
 import './Testimonials.css';
 
 interface Testimonial {
@@ -76,14 +77,14 @@ const Testimonials: React.FC = () => {
     const timer = setInterval(() => {
       setDirection(1);
       setActiveIndex((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
+    }, TIMING.CAROUSEL_AUTOPLAY);
     return () => clearInterval(timer);
   }, [autoplay]);
 
   const navigateCarousel = (dir: number): void => {
     setAutoplay(false);
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
-    resumeTimerRef.current = setTimeout(() => setAutoplay(true), 10000);
+    resumeTimerRef.current = setTimeout(() => setAutoplay(true), TIMING.CAROUSEL_RESUME);
     setDirection(dir);
     setActiveIndex((prev) => {
       if (dir === 1) return (prev + 1) % testimonials.length;
