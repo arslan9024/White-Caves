@@ -4,20 +4,12 @@
  * Route: /owner/crm/agents
  */
 
-import React, { FC, useState, useMemo, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { formatCurrencyAbbreviated } from '../../utils';
 import { Badge } from '../../components/ui';
-import type { AppDispatch } from '../../store/store';
-import {
-  selectAllAgents,
-  selectAgentsLoading,
-  selectAllLeads,
-  selectAllCommissions,
-  fetchAgentsFromAPI,
-} from '../../store/crmDataSlice';
+import { useAgentPerformance } from '../../hooks/crm/useAgentPerformance';
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -308,54 +300,19 @@ const formatCurrency = (amount: number) => formatCurrencyAbbreviated(amount);
 
 const AgentPerformancePage: FC = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
-  const reduxAgents = useSelector(selectAllAgents) as Agent[];
-  const reduxLeads = useSelector(selectAllLeads);
-  const reduxCommissions = useSelector(selectAllCommissions);
-  const loading = useSelector(selectAgentsLoading);
-  const [currentPage, setCurrentPage] = useState(1);
-  const AGENTS_PER_PAGE = 12;
 
-  // Fetch agents from API on mount
-  useEffect(() => {
-    const promise = dispatch(fetchAgentsFromAPI());
-    return () => { promise.abort?.(); };
-  }, [dispatch]);
-
-  // Use Redux data exclusively — no hardcoded fallback
-  const agents = reduxAgents;
-
-  // Sort by performance
-  const rankedAgents = useMemo(() => {
-    return [...agents].sort((a, b) => (b.performance || 0) - (a.performance || 0));
-  }, [agents]);
-
-  // Team stats
-  const teamStats = useMemo(() => {
-    const totalDeals = agents.reduce((sum, a) => sum + (a.deals_closed || 0), 0);
-    const totalRevenue = agents.reduce((sum, a) => sum + (a.revenue_generated || 0), 0);
-    const avgPerformance = agents.length
-      ? Math.round(agents.reduce((sum, a) => sum + (a.performance || 0), 0) / agents.length)
-      : 0;
-    const avgConversion = agents.length
-      ? Math.round(agents.reduce((sum, a) => sum + (a.conversion_rate || 0), 0) / agents.length)
-      : 0;
-    const onlineCount = agents.filter(a => a.status === 'online').length;
-
-    return { totalDeals, totalRevenue, avgPerformance, avgConversion, onlineCount, total: agents.length };
-  }, [agents]);
-
-  // Paginate ranked agents
-  const totalPages = Math.max(1, Math.ceil(rankedAgents.length / AGENTS_PER_PAGE));
-  const paginatedAgents = useMemo(() => {
-    const start = (currentPage - 1) * AGENTS_PER_PAGE;
-    return rankedAgents.slice(start, start + AGENTS_PER_PAGE);
-  }, [rankedAgents, currentPage]);
-
-  // Reset to page 1 when agents change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [agents.length]);
+  // All data fetching, ranking, stats & pagination handled by the hook
+  const {
+    agents,
+    loading,
+    teamStats,
+    rankedAgents,
+    paginatedAgents,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    agentsPerPage,
+  } = useAgentPerformance();
 
   return (
     <PageContainer>
@@ -417,7 +374,7 @@ const AgentPerformancePage: FC = () => {
       {agents.length > 0 && <SectionTitle>🏆 Agent Rankings (Page {currentPage} of {totalPages})</SectionTitle>}
       <AgentGrid>
         {paginatedAgents.map((agent, idx) => {
-          const globalIdx = (currentPage - 1) * AGENTS_PER_PAGE + idx;
+          const globalIdx = (currentPage - 1) * agentsPerPage + idx;
           return (
           <AgentCard key={agent.id} $rank={globalIdx + 1}>
             <AgentHeader>
@@ -516,7 +473,7 @@ const AgentPerformancePage: FC = () => {
           </thead>
           <tbody>
             {paginatedAgents.map((agent, idx) => {
-              const globalIdx = (currentPage - 1) * AGENTS_PER_PAGE + idx;
+              const globalIdx = (currentPage - 1) * agentsPerPage + idx;
               return (
               <LTr key={agent.id}>
                 <LTd style={{ fontWeight: 600, color: globalIdx < 3 ? '#F59E0B' : '#888' }}>

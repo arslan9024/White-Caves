@@ -4,7 +4,7 @@
  * Accessible tab navigation with automatic focus management and keyboard support.
  */
 
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import styled from 'styled-components';
 
 export type TabsVariant = 'default' | 'underline' | 'box';
@@ -113,13 +113,13 @@ const TabContent = styled.div`
  * Tabs Component
  * Accessible tab navigation system
  */
-export const Tabs: React.FC<TabsProps> = ({
+export const Tabs: React.FC<TabsProps> = memo(function Tabs({
   tabs,
   defaultTab,
   variant = 'default',
   onChange,
   fullWidth = false,
-}) => {
+}) {
   const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.id);
 
   const handleTabChange = (tabId: string) => {
@@ -197,6 +197,4 @@ export const Tabs: React.FC<TabsProps> = ({
       )}
     </TabsContainer>
   );
-};
-
-export default Tabs;
+});
