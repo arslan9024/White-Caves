@@ -17,7 +17,7 @@
  * </Button>
  */
 
-import React, { ForwardedRef, forwardRef } from 'react';
+import React, { ForwardedRef, forwardRef, memo } from 'react';
 import { ButtonProps } from './types';
 import { StyledButton, IconWrapper, LoadingSpinner } from './Button.styles';
 
@@ -38,7 +38,7 @@ import { StyledButton, IconWrapper, LoadingSpinner } from './Button.styles';
  *
  * @returns {React.ReactElement} Button element
  */
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+export const Button = memo(forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       variant = 'primary',
@@ -98,7 +98,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       </StyledButton>
     );
   }
-);
+));
 
 Button.displayName = 'Button';
 
