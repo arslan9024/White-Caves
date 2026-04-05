@@ -6,24 +6,11 @@
 
 import React, { FC, useState, useEffect, lazy, Suspense } from 'react';
 import ErrorBoundary from '../../components/ErrorBoundary';
-import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { Badge, Tabs } from '../../components/ui';
 import SuspenseLoader from '../../components/common/SuspenseLoader';
-import type { RootState, AppDispatch } from '../../store/store';
-import {
-  selectAllLeads,
-  selectHotLeads,
-  selectAllClients,
-  selectAllAgents,
-  selectAllCommissions,
-  selectRecentActivities,
-  selectOverviewData,
-  fetchLeadsFromAPI,
-  fetchAgentsFromAPI,
-  fetchDashboardOverview,
-} from '../../store/crmDataSlice';
+import { useCRMHubData } from '../../hooks/crm/useCRMHubData';
 
 // Lazy-load CRM modules
 const ClaraLeadsCRM = lazy(() => import('../../components/crm/ClaraLeadsCRM_NEW'));
@@ -333,37 +320,23 @@ const CRM_MODULES: CRMModuleDef[] = [
 // ─── CRM Hub Component ─────────────────────────────────────────────────
 
 const CRMHubPage: FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const {
+    user,
+    recentActivities,
+    totalLeads,
+    totalClients,
+    totalAgents,
+    totalCommissions,
+    hotLeadCount,
+    pipelineValue,
+  } = useCRMHubData();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const user = useSelector((state: RootState) => state.user.currentUser);
-
-  // CRM data from Redux
-  const allLeads = useSelector(selectAllLeads);
-  const hotLeads = useSelector(selectHotLeads);
-  const allClients = useSelector(selectAllClients);
-  const allAgents = useSelector(selectAllAgents);
-  const commissions = useSelector(selectAllCommissions);
-  const recentActivities = useSelector((state: RootState) => selectRecentActivities(state, 8));
-  const overview = useSelector(selectOverviewData);
 
   // Active module state
   const [activeModule, setActiveModule] = useState<string | null>(
     searchParams.get('module') || null
   );
-
-  // Try to fetch from API on mount (silently falls back to dummy data)
-  useEffect(() => {
-    const leadsPromise = dispatch(fetchLeadsFromAPI({}));
-    const agentsPromise = dispatch(fetchAgentsFromAPI());
-    const overviewPromise = dispatch(fetchDashboardOverview());
-
-    return () => {
-      leadsPromise.abort?.();
-      agentsPromise.abort?.();
-      overviewPromise.abort?.();
-    };
-  }, [dispatch]);
 
   // Sync URL params
   useEffect(() => {
@@ -381,18 +354,6 @@ const CRMHubPage: FC = () => {
   const handleBackToHub = () => {
     setActiveModule(null);
   };
-
-  // Calculate stats
-  const totalLeads = allLeads.length;
-  const totalClients = allClients.length;
-  const totalAgents = allAgents.length;
-  const totalCommissions = commissions.length;
-  const hotLeadCount = hotLeads.length;
-  const overviewMetrics = (overview as Record<string, Record<string, unknown>> | null)?.metrics;
-  const rawPipelineValue = overviewMetrics?.pipelineValue;
-  const pipelineValue = rawPipelineValue !== undefined && rawPipelineValue !== null
-    ? Number(rawPipelineValue)
-    : allLeads.reduce((sum: number, l) => sum + (Number(l.value) || Number(l.budget) || 0), 0);
 
   // If a module is selected, show it full-screen
   if (activeModule) {
