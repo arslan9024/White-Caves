@@ -3,7 +3,7 @@
  * Text input field with optional icons, labels, and error states
  */
 
-import React, { ForwardedRef, forwardRef, useId } from 'react';
+import React, { ForwardedRef, forwardRef, useId, memo } from 'react';
 import { InputProps } from './types';
 import {
   InputWrapper,
@@ -14,7 +14,7 @@ import {
   HelperText,
 } from './Input.styles';
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
+export const Input = memo(forwardRef<HTMLInputElement, InputProps>(
   (
     {
       type = 'text',
@@ -74,7 +74,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       </InputWrapper>
     );
   }
-);
+));
 
 Input.displayName = 'Input';
 
