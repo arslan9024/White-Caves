@@ -3,7 +3,7 @@
  * Data display table with sorting and selection
  */
 
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 import { Checkbox } from '../Checkbox';
@@ -88,7 +88,7 @@ const TableCell = styled.td`
   color: ${theme.colors.text.primary};
 `;
 
-export const Table = React.forwardRef<HTMLTableElement, TableProps>(
+export const Table = memo(React.forwardRef<HTMLTableElement, TableProps>(
   (
     {
       columns,
@@ -177,7 +177,7 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps>(
       </TableWrapper>
     );
   }
-);
+));
 
 Table.displayName = 'Table';
 
