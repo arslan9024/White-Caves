@@ -71,7 +71,7 @@ export const RoleCard = styled.button<{ $selected?: boolean }>`
     : (props.theme?.colors?.bgPrimary || '#ffffff')
   };
   border: 2px solid ${props => props.$selected
-    ? (props.theme?.colors?.danger || '#E31E24')
+    ? (props.theme?.colors?.danger || '#D4AF37')
     : (props.theme?.colors?.borderColor || '#e0e0e0')
   };
   border-radius: ${props => props.theme?.radius?.xl || '1rem'};
@@ -90,13 +90,13 @@ export const RoleCard = styled.button<{ $selected?: boolean }>`
     left: 0;
     right: 0;
     height: 4px;
-    background: ${props => props.theme?.colors?.danger || '#E31E24'};
+    background: ${props => props.theme?.colors?.danger || '#D4AF37'};
     transform: ${props => props.$selected ? 'scaleX(1)' : 'scaleX(0)'};
     transition: transform 0.3s ease;
   }
 
   &:hover {
-    border-color: ${props => props.theme?.colors?.danger || '#E31E24'};
+    border-color: ${props => props.theme?.colors?.danger || '#D4AF37'};
     transform: translateY(-6px);
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
   }

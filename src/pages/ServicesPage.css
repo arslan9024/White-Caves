@@ -69,7 +69,7 @@
 }
 
 .btn-primary-gold {
-  background: linear-gradient(135deg, #E31E24, #D32F2F);
+  background: linear-gradient(135deg, #D4AF37, #D32F2F);
   color: #0A2463;
   border: none;
   padding: 1rem 2.5rem;
@@ -89,7 +89,7 @@
 .btn-secondary-outline {
   background: transparent;
   color: white;
-  border: 2px solid #E31E24;
+  border: 2px solid #D4AF37;
   padding: 1rem 2.5rem;
   font-size: 1.1rem;
   font-weight: 600;
@@ -161,7 +161,7 @@
 }
 
 .service-subtitle {
-  color: #E31E24;
+  color: #D4AF37;
   font-weight: 500;
   margin-bottom: 1.5rem;
 }
@@ -183,7 +183,7 @@
 
 [data-theme="dark"] .service-list h4,
 [data-theme="dark"] .service-features h4 {
-  color: #E31E24;
+  color: #D4AF37;
 }
 
 .service-list ul,
@@ -224,7 +224,7 @@
 }
 
 .btn-learn-more:hover {
-  background: #E31E24;
+  background: #D4AF37;
   color: #0A2463;
 }
 
@@ -252,7 +252,7 @@
 }
 
 .tab-btn:hover {
-  border-color: #E31E24;
+  border-color: #D4AF37;
 }
 
 .tab-btn.active {
@@ -292,7 +292,7 @@
 }
 
 [data-theme="dark"] .process-flowchart h4 {
-  color: #E31E24;
+  color: #D4AF37;
 }
 
 .flowchart-steps {
@@ -324,7 +324,7 @@
 
 .flow-arrow {
   font-size: 1.5rem;
-  color: #E31E24;
+  color: #D4AF37;
 }
 
 .benefits-grid {
@@ -362,7 +362,7 @@
 }
 
 [data-theme="dark"] .comparison-table h4 {
-  color: #E31E24;
+  color: #D4AF37;
 }
 
 .comparison-table table {
@@ -400,7 +400,7 @@
 }
 
 .metric {
-  background: linear-gradient(135deg, #E31E24, #D32F2F);
+  background: linear-gradient(135deg, #D4AF37, #D32F2F);
   color: #0A2463;
   padding: 2rem;
   border-radius: 12px;
@@ -452,7 +452,7 @@
 }
 
 [data-theme="dark"] .faq-section h4 {
-  color: #E31E24;
+  color: #D4AF37;
 }
 
 .faq-item {
@@ -505,7 +505,7 @@
 }
 
 .area-card h4 {
-  color: #E31E24;
+  color: #D4AF37;
   margin-bottom: 1rem;
   font-size: 1.1rem;
 }
@@ -569,7 +569,7 @@
   top: -15px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #E31E24, #D32F2F);
+  background: linear-gradient(135deg, #D4AF37, #D32F2F);
   color: #0A2463;
   width: 30px;
   height: 30px;
@@ -620,7 +620,7 @@
 .trust-indicators .stat-value {
   font-size: 2.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #0A2463, #E31E24);
+  background: linear-gradient(135deg, #0A2463, #D4AF37);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -711,12 +711,12 @@
 .cta-form select:focus,
 .cta-form textarea:focus {
   outline: none;
-  border-color: #E31E24;
+  border-color: #D4AF37;
 }
 
 .btn-submit {
   width: 100%;
-  background: linear-gradient(135deg, #E31E24, #D32F2F);
+  background: linear-gradient(135deg, #D4AF37, #D32F2F);
   color: #0A2463;
   border: none;
   padding: 1rem;

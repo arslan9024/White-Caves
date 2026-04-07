@@ -246,7 +246,7 @@ const DEPT_COLORS: Record<string, string> = {
   sales: '#10B981',
   marketing: '#EC4899',
   communications: '#8B5CF6',
-  executive: '#E31E24',
+  executive: '#D4AF37',
   compliance: '#059669',
   technology: '#06B6D4',
   legal: '#7C3AED',

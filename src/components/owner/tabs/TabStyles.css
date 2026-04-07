@@ -477,7 +477,7 @@
 
 .type-badge.sale {
   background: rgba(212, 175, 55, 0.2);
-  color: #E31E24;
+  color: #D4AF37;
 }
 
 .source-badge {
@@ -492,7 +492,7 @@
 
 .price-cell {
   font-weight: 600;
-  color: #E31E24 !important;
+  color: #D4AF37 !important;
 }
 
 .action-buttons {
@@ -648,7 +648,7 @@
 }
 
 .agent-revenue strong {
-  color: #E31E24;
+  color: #D4AF37;
 }
 
 .rating-stars {
@@ -855,7 +855,7 @@
   width: 28px;
   height: 28px;
   background: rgba(212, 175, 55, 0.2);
-  color: #E31E24;
+  color: #D4AF37;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -881,7 +881,7 @@
 }
 
 .agent-row .agent-revenue {
-  color: #E31E24;
+  color: #D4AF37;
   font-weight: 600;
 }
 

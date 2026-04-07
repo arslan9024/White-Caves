@@ -50,7 +50,7 @@ export const LogoMark = styled.div`
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #E31E24, #C62828);
+  background: linear-gradient(135deg, #D4AF37, #B8960C);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -139,7 +139,7 @@ export const BreadcrumbItem = styled.button<{ $isLast?: boolean }>`
   ${p => !p.$isLast && css`
     &:hover {
       background: #F3F4F6;
-      color: #E31E24;
+      color: #D4AF37;
     }
   `}
 
@@ -268,7 +268,7 @@ export const NotifBadge = styled.span`
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #E31E24;
+  background: #D4AF37;
   color: #FFFFFF;
   font-size: 9px;
   font-weight: 700;
@@ -311,7 +311,7 @@ export const UserAvatar = styled.div<{ $src?: string }>`
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: ${p => p.$src ? `url(${p.$src}) center/cover` : 'linear-gradient(135deg, #E31E24, #C62828)'};
+  background: ${p => p.$src ? `url(${p.$src}) center/cover` : 'linear-gradient(135deg, #D4AF37, #B8960C)'};
   color: #FFFFFF;
   font-size: 13px;
   font-weight: 600;
@@ -433,7 +433,7 @@ export const DropdownHeaderEmail = styled.span`
 export const DropdownHeaderRole = styled.span`
   font-size: 11px;
   font-weight: 600;
-  color: #E31E24;
+  color: #D4AF37;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `;

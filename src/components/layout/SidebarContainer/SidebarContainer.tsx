@@ -99,7 +99,7 @@ const DEPARTMENTS: Record<string, DepartmentDef> = {
     services: ['Messages', 'Emails', 'Templates', 'Notifications'],
   },
   executive: {
-    icon: Globe, label: 'Executive', color: '#E31E24',
+    icon: Globe, label: 'Executive', color: '#D4AF37',
     services: ['Strategic Overview', 'KPIs', 'Reports', 'Insights'],
   },
   compliance: {
@@ -271,7 +271,7 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
           <RailIcon>
             <RailIconButton
               $active={aiCommandOpen}
-              $color="#E31E24"
+              $color="#D4AF37"
               onClick={handleAIToggle}
               aria-label="AI Command Center"
               title="AI Command Center"
@@ -310,7 +310,7 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
         </RailWrapper>
 
         {/* ── Flyout panel — Department services OR AI Command Center ── */}
-        <FlyoutPanel $open={anyFlyoutOpen} $color={aiCommandOpen ? '#E31E24' : activeDept?.color}>
+        <FlyoutPanel $open={anyFlyoutOpen} $color={aiCommandOpen ? '#D4AF37' : activeDept?.color}>
           {/* Department flyout content */}
           {flyoutOpen && activeDept && flyoutDepartment && (
             <>
@@ -346,7 +346,7 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
           {aiCommandOpen && (
             <>
               <FlyoutHeader>
-                <FlyoutTitle $color="#E31E24">
+                <FlyoutTitle $color="#D4AF37">
                   AI Command Center
                 </FlyoutTitle>
                 <FlyoutClose onClick={() => dispatch(closeAICommand())} aria-label="Close AI panel">

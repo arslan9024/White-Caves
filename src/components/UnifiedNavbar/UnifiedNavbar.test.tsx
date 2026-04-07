@@ -41,14 +41,14 @@ vi.mock('./AdminControls', () => ({
 vi.mock('../../styles/theme', () => ({
   theme: {
     colors: {
-      primary: '#E31E24',
-      primaryDark: '#C62828',
+      primary: '#D4AF37',
+      primaryDark: '#B8960C',
       background: { primary: '#F8F9FA', secondary: '#FFFFFF', tertiary: '#F5F5F5', overlay: 'rgba(0,0,0,0.5)' },
       text: { primary: '#212121', secondary: '#666666', inverse: '#FFFFFF' },
       border: '#E0E0E0',
       success: '#388E3C',
       warning: '#F57F17',
-      error: '#C62828',
+      error: '#D32F2F',
       white: '#FFFFFF',
     },
     spacing: { xs: '4px', sm: '8px', md: '16px', lg: '24px', xl: '32px' },

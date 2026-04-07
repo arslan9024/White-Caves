@@ -43,7 +43,7 @@ export const TourTitle = styled.div`
 `;
 
 export const TourBadge = styled.div`
-  background: linear-gradient(135deg, #E31E24, #C62828);
+  background: linear-gradient(135deg, #D4AF37, #B8960C);
   color: #0a0a0f;
   padding: 4px 12px;
   border-radius: 20px;
@@ -83,12 +83,12 @@ export const TourBtn = styled.button<{ $close?: boolean; $active?: boolean }>`
     background: ${props => props.$close 
       ? 'rgba(255, 100, 100, 0.3)' 
       : 'rgba(212, 175, 55, 0.3)'};
-    border-color: ${props => props.$close ? '#ff6464' : '#E31E24'};
+    border-color: ${props => props.$close ? '#ff6464' : '#D4AF37'};
   }
 
   ${props => props.$active && `
     background: rgba(212, 175, 55, 0.4);
-    border-color: #E31E24;
+    border-color: #D4AF37;
   `}
 `;
 
@@ -133,7 +133,7 @@ export const TourHotspot = styled.button`
 
   &:hover {
     transform: translate(-50%, -50%) scale(1.2);
-    background: #E31E24;
+    background: #D4AF37;
   }
 
   &.info {
@@ -255,7 +255,7 @@ export const RoomThumb = styled.button<{ $active?: boolean }>`
   height: 50px;
   border-radius: 8px;
   overflow: hidden;
-  border: 2px solid ${props => props.$active ? '#E31E24' : 'transparent'};
+  border: 2px solid ${props => props.$active ? '#D4AF37' : 'transparent'};
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
@@ -301,6 +301,6 @@ export const TourInfoText = styled.div`
 `;
 
 export const ViewsCount = styled.span`
-  color: #E31E24;
+  color: #D4AF37;
   font-weight: 600;
 `;

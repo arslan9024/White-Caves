@@ -52,7 +52,7 @@ export const UserName = styled.span`
 
 export const UserRole = styled.span`
   font-size: 12px;
-  color: #E31E24;
+  color: #D4AF37;
   font-weight: 500;
 `;
 
@@ -72,8 +72,8 @@ export const Tab = styled.button<{ $active?: boolean }>`
   padding: 16px 24px;
   background: none;
   border: none;
-  border-bottom: 3px solid ${props => props.$active ? '#E31E24' : 'transparent'};
-  color: ${props => props.$active ? '#E31E24' : '#757575'};
+  border-bottom: 3px solid ${props => props.$active ? '#D4AF37' : 'transparent'};
+  color: ${props => props.$active ? '#D4AF37' : '#757575'};
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -82,7 +82,7 @@ export const Tab = styled.button<{ $active?: boolean }>`
 
   &:hover {
     color: #212121;
-    border-bottom-color: ${props => props.$active ? '#E31E24' : '#E0E0E0'};
+    border-bottom-color: ${props => props.$active ? '#D4AF37' : '#E0E0E0'};
   }
 `;
 
@@ -123,7 +123,7 @@ export const MetricHeader = styled.div`
   align-items: center;
   gap: 12px;
   margin-bottom: 16px;
-  color: #E31E24;
+  color: #D4AF37;
 
   svg {
     flex-shrink: 0;
@@ -160,7 +160,7 @@ export const MetricBar = styled.div`
 
 export const MetricBarFill = styled.div<{ $color?: string }>`
   height: 100%;
-  background: ${props => props.$color || '#E31E24'};
+  background: ${props => props.$color || '#D4AF37'};
   border-radius: 2px;
   transition: width 0.3s ease;
 `;
@@ -217,7 +217,7 @@ export const SectionHeader = styled.div`
   }
 
   svg {
-    color: #E31E24;
+    color: #D4AF37;
   }
 
   button {
@@ -276,7 +276,7 @@ export const AlertStatus = styled.span<{ $status?: string }>`
   font-weight: 600;
   text-transform: uppercase;
   background: ${props => props.$status === 'active' ? '#FFCDD2' : '#E0E0E0'};
-  color: ${props => props.$status === 'active' ? '#C62828' : '#616161'};
+  color: ${props => props.$status === 'active' ? '#B8960C' : '#616161'};
 `;
 
 export const ActivitySection = styled.div`
@@ -540,7 +540,7 @@ export const SettingItem = styled.div`
 
     &:focus {
       outline: none;
-      border-color: #E31E24;
+      border-color: #D4AF37;
     }
   }
 
@@ -552,7 +552,7 @@ export const SettingItem = styled.div`
 
 export const BtnPrimary = styled.button`
   padding: 12px 24px;
-  background: #E31E24;
+  background: #D4AF37;
   color: white;
   border: none;
   border-radius: 4px;
@@ -562,7 +562,7 @@ export const BtnPrimary = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: #C62828;
+    background: #B8960C;
     box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
   }
 `;
@@ -602,7 +602,7 @@ export const FilterSelect = styled.select`
 
   &:focus {
     outline: none;
-    border-color: #E31E24;
+    border-color: #D4AF37;
   }
 `;
 
@@ -637,7 +637,7 @@ export const ChartPlaceholder = styled.div`
 export const ChartBar = styled.div<{ $height?: string }>`
   width: 20%;
   height: ${props => props.$height || '50%'};
-  background: linear-gradient(180deg, #E31E24, #C62828);
+  background: linear-gradient(180deg, #D4AF37, #B8960C);
   border-radius: 4px 4px 0 0;
   transition: all 0.2s;
 
@@ -687,7 +687,7 @@ export const AlertClose = styled.button`
 
 export const SaveBtn = styled.button`
   padding: 12px 24px;
-  background: #E31E24;
+  background: #D4AF37;
   color: white;
   border: none;
   border-radius: 4px;
@@ -698,7 +698,7 @@ export const SaveBtn = styled.button`
   margin-top: 12px;
 
   &:hover {
-    background: #C62828;
+    background: #B8960C;
     box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
   }
 `;

@@ -630,13 +630,13 @@ export const DropdownItem = styled.button<{ $isLogout?: boolean; $isAdmin?: bool
   background: none;
   border: none;
   font-size: 13px;
-  color: ${props => (props.$isLogout ? '#c62828' : theme.colors.text.primary)};
+  color: ${props => (props.$isLogout ? '#B8960C' : theme.colors.text.primary)};
   cursor: pointer;
   transition: background 0.15s ease;
   text-align: left;
 
   svg {
-    color: ${props => (props.$isLogout ? '#c62828' : theme.colors.text.secondary)};
+    color: ${props => (props.$isLogout ? '#B8960C' : theme.colors.text.secondary)};
     flex-shrink: 0;
   }
 

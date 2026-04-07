@@ -89,7 +89,7 @@ export const RailIconButton = styled.button<{
   border-radius: 12px;
   cursor: pointer;
   color: ${p =>
-    p.$active ? '#E31E24' :
+    p.$active ? '#D4AF37' :
     p.$color && p.$isFlyoutTarget ? p.$color :
     '#6B7280'};
   position: relative;
@@ -105,13 +105,13 @@ export const RailIconButton = styled.button<{
     width: 3px;
     height: ${p => p.$active ? '24px' : '0'};
     border-radius: 0 2px 2px 0;
-    background: #E31E24;
+    background: #D4AF37;
     transition: height 0.2s ease;
   }
 
   &:hover {
     background: ${p => p.$active ? '#FFEBEE' : '#F3F4F6'};
-    color: ${p => p.$active ? '#E31E24' : p.$color || '#374151'};
+    color: ${p => p.$active ? '#D4AF37' : p.$color || '#374151'};
 
     &::before {
       height: ${p => p.$active ? '24px' : '16px'};
@@ -280,7 +280,7 @@ export const FlyoutItem = styled.button<{ $active?: boolean; $color?: string }>`
   cursor: pointer;
   font-size: 13px;
   font-weight: ${p => p.$active ? '600' : '400'};
-  color: ${p => p.$active ? (p.$color || '#E31E24') : '#374151'};
+  color: ${p => p.$active ? (p.$color || '#D4AF37') : '#374151'};
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
@@ -289,7 +289,7 @@ export const FlyoutItem = styled.button<{ $active?: boolean; $color?: string }>`
 
   &:hover {
     background: ${p => p.$active ? `${p.$color}18` : '#F3F4F6'};
-    color: ${p => p.$color || '#E31E24'};
+    color: ${p => p.$color || '#D4AF37'};
   }
 
   @media (prefers-color-scheme: dark) {
@@ -303,7 +303,7 @@ export const FlyoutDot = styled.span<{ $color?: string }>`
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: ${p => p.$color || '#E31E24'};
+  background: ${p => p.$color || '#D4AF37'};
   flex-shrink: 0;
 `;
 
@@ -332,7 +332,7 @@ export const AISearchInput = styled.div`
   transition: all 0.15s ease;
 
   &:focus-within {
-    border-color: #E31E24;
+    border-color: #D4AF37;
     background: #FFFFFF;
     box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.1);
   }
@@ -406,7 +406,7 @@ export const AIAvatar = styled.div<{ $color?: string }>`
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: ${p => p.$color || 'linear-gradient(135deg, #E31E24, #C62828)'};
+  background: ${p => p.$color || 'linear-gradient(135deg, #D4AF37, #B8960C)'};
   color: #FFFFFF;
   font-size: 13px;
   font-weight: 600;

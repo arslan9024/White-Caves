@@ -1,20 +1,59 @@
 /**
- * Color Palette - White Caves Brand Colors
+ * Color Palette - White Caves Luxury Dubai Brand
  * All colors used throughout the application, organized by purpose
- * 2026 Brand: RED (#E31E24) primary, GOLD (#D4AF37) accent only
+ * 2026 Brand: GOLD (#D4AF37) primary, DARK GREEN (#2E5A4F) secondary
+ * Luxury Dubai aesthetic — gold accents, deep emerald tones, sand warmth
  */
 
 export const colors = {
-  // Primary Brand Colors (RED)
-  primary: '#E31E24',
-  primaryDark: '#C62828',
-  primaryLight: '#EF5350',
-  primaryVeryLight: '#FFEBEE',
+  // Primary Brand Colors (GOLD)
+  primary: '#D4AF37',
+  primaryDark: '#B8960C',
+  primaryLight: '#E8CC6E',
+  primaryVeryLight: '#FDF8E8',
 
-  // Secondary Colors
+  // Secondary Colors (DARK GREEN)
   secondary: '#2E5A4F',
   secondaryDark: '#1E3A32',
   secondaryLight: '#3D7A6B',
+
+  // Gold Palette (50→900)
+  gold: {
+    50: '#FDF8E8',
+    100: '#FAF0C8',
+    200: '#F5E08E',
+    300: '#E8CC6E',
+    400: '#D4AF37',
+    500: '#B8960C',
+    600: '#9A7D0A',
+    700: '#7C6408',
+    800: '#5E4B06',
+    900: '#403204',
+  },
+
+  // Green Palette (50→900)
+  green: {
+    50: '#E8F0EE',
+    100: '#C5DAD5',
+    200: '#9EBFB7',
+    300: '#6FA396',
+    400: '#4D8676',
+    500: '#2E5A4F',
+    600: '#264B42',
+    700: '#1E3A32',
+    800: '#162B25',
+    900: '#0E1C18',
+  },
+
+  // Luxury Gradients
+  luxury: {
+    goldShimmer: 'linear-gradient(135deg, #D4AF37 0%, #E8CC6E 50%, #D4AF37 100%)',
+    goldToGreen: 'linear-gradient(135deg, #D4AF37 0%, #2E5A4F 100%)',
+    darkGreen: 'linear-gradient(135deg, #2E5A4F 0%, #1E3A32 100%)',
+    goldDark: 'linear-gradient(180deg, #D4AF37, #B8960C)',
+    warmSand: 'linear-gradient(135deg, #F5E6D3 0%, #FDF8E8 100%)',
+    premiumDark: 'linear-gradient(135deg, #1A1A1A 0%, #2E5A4F 100%)',
+  },
 
   // Semantic Colors
   success: '#388E3C',
@@ -96,7 +135,7 @@ export const colors = {
     gold: '#FFD700',
     navyBlue: '#1E40AF',
     violet: '#7C3AED',
-    crimson: '#E31E24',
+    crimson: '#D4AF37',
     royalBlue: '#2563EB',
     deepPurple: '#7C3AED',
     emerald: '#059669',
@@ -155,6 +194,9 @@ export const colors = {
   radiusMd: '8px',
   radiusLg: '12px',
   radiusSm: '6px',
+
+  // Legacy compat — components referencing old red brand
+  brandRed: '#E31E24',
 };
 
 export type Colors = typeof colors;

@@ -134,7 +134,7 @@ export const FooterSection = styled.div`
       left: 0;
       width: 30px;
       height: 2px;
-      background: var(--color-primary, #E31E24);
+      background: var(--color-primary, #D4AF37);
 
       @media (max-width: 768px) {
         left: 50%;

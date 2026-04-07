@@ -8,11 +8,11 @@ vi.mock('../../../styles/theme', () => ({
     spacing: { xs: '4px', sm: '8px', md: '16px' },
     colors: {
       border: '#e0e0e0',
-      primary: '#E31E24',
+      primary: '#D4AF37',
       secondary: '#1976D2',
       success: '#388E3C',
       warning: '#F57C00',
-      error: '#C62828',
+      error: '#D32F2F',
       background: { secondary: '#f5f5f5', tertiary: '#eee' },
       text: { primary: '#222' },
     },

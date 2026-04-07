@@ -147,7 +147,7 @@ export const Badge = styled.span<{ $variant?: 'score' | 'grade' | 'trend'; $scor
       }
     }
     if (props.$variant === 'grade') {
-      return 'background: var(--accent-gold, #E31E24); color: #1a1a1a;';
+      return 'background: var(--accent-gold, #D4AF37); color: #1a1a1a;';
     }
     if (props.$variant === 'trend') {
       if (props.$trend === 'rising') return 'background: var(--success-color, #38a169);';
