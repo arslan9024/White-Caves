@@ -1,374 +1,53 @@
-import React, { FC, useState, useRef, useEffect, ChangeEvent, FormEvent, ReactNode } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import React, { FC, ChangeEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
-import { setUser } from '../../store/userSlice';
-import { 
-  signInWithGoogle, 
-  signInWithFacebook, 
-  signInWithApple,
-  signInWithPhone,
-  createRecaptchaVerifier
-} from '../../config/firebase';
-import {
-  loginWithEmail as backendLogin,
-  registerWithEmail as backendRegister,
-  syncFirebaseUser,
-} from '../../services/authService';
+import { useSignIn, USER_CATEGORIES } from '../../hooks/useSignIn';
 import { BiometricLoginButton } from '../../features/auth/components/BiometricLogin';
 import './AuthPages.css';
-import { safeStorage } from '../../utils/safeStorage';
-
-// Type definitions
-interface UserCategory {
-  id: string;
-  label: string;
-  icon: string;
-  desc: string;
-  color: string;
-}
-
-interface UserRole {
-  id: string;
-  label: string;
-  icon: string;
-  desc: string;
-}
-
-interface PendingUser {
-  id: string;
-  email: string;
-  name: string;
-  photo?: string;
-}
-
-interface ConfirmationResult {
-  confirm: (otp: string) => Promise<{ user: { uid: string; email: string | null; displayName: string | null; photoURL: string | null } }>;
-}
-
-interface SignInPageState {
-  mode: 'signin' | 'signup';
-  step: number;
-  activeTab: 'email' | 'phone';
-  loading: boolean;
-  error: string;
-  success: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  fullName: string;
-  selectedCategory: string;
-  selectedRole: string;
-  employeeId: string;
-  phone: string;
-  otp: string;
-  showOtpInput: boolean;
-  confirmationResult: ConfirmationResult | null;
-  pendingUser: PendingUser | null;
-}
-
-const USER_CATEGORIES: UserCategory[] = [
-  { 
-    id: 'client', 
-    label: 'Client', 
-    icon: '🏠', 
-    desc: 'Looking to buy, sell, or rent property',
-    color: '#10b981'
-  },
-  { 
-    id: 'staff', 
-    label: 'Staff Member', 
-    icon: '💼', 
-    desc: 'White Caves employee or agent',
-    color: '#3b82f6'
-  }
-];
-
-const CLIENT_ROLES: UserRole[] = [
-  { id: 'buyer', label: 'Buyer', icon: '🔍', desc: 'Looking to purchase property' },
-  { id: 'seller', label: 'Seller', icon: '💰', desc: 'Want to sell your property' },
-  { id: 'landlord', label: 'Landlord', icon: '🏢', desc: 'Renting out your property' },
-  { id: 'tenant', label: 'Tenant', icon: '🔑', desc: 'Looking to rent a property' }
-];
-
-const STAFF_ROLES: UserRole[] = [
-  { id: 'leasing-agent', label: 'Leasing Agent', icon: '📋', desc: 'Property rental specialist' },
-  { id: 'secondary-sales-agent', label: 'Sales Agent', icon: '📊', desc: 'Property sales specialist' },
-  { id: 'team-leader', label: 'Team Leader', icon: '👥', desc: 'Managing agent teams' }
-];
 
 const SignInPage: FC = () => {
   useDocumentTitle('Sign In');
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
-  const [step, setStep] = useState<number>(1);
-  const [activeTab, setActiveTab] = useState<'email' | 'phone'>('email');
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>('');
-  const [success, setSuccess] = useState<string>('');
-  
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [fullName, setFullName] = useState<string>('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [selectedRole, setSelectedRole] = useState<string>('');
-  const [employeeId, setEmployeeId] = useState<string>('');
-  
-  const [phone, setPhone] = useState<string>('');
-  const [otp, setOtp] = useState<string>('');
-  const [showOtpInput, setShowOtpInput] = useState<boolean>(false);
-  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
-  
-  const [pendingUser, setPendingUser] = useState<PendingUser | null>(null);
 
-  // Ref for navigation timers to prevent memory leaks on unmount
-  const navTimerRef = useRef<ReturnType<typeof setTimeout>>();
-
-  useEffect(() => {
-    return () => {
-      clearTimeout(navTimerRef.current);
-    };
-  }, []);
-
-  const saveUserData = (category: string, role: string, status: string = 'active'): void => {
-    safeStorage.setJSON('userRole', { 
-      category, 
-      role, 
-      status,
-      locked: true 
-    });
-  };
-
-  const handleSignInSuccess = (user: { id: string; email: string | null; name: string | null; role?: string; photoUrl?: string | null; department?: string | null }): void => {
-    dispatch(setUser({
-      id: user.id,
-      email: user.email || '',
-      name: user.name || undefined,
-      role: user.role,
-      photoURL: user.photoUrl || undefined,
-    }));
-    
-    // Backend JWT is already stored by authService
-    const userRole = user.role || 'agent';
-    setSuccess('Sign in successful!');
-    navTimerRef.current = setTimeout(() => navigate(`/${userRole}/dashboard`), 1000);
-  };
-
-  const handleSignUpSuccess = (user: { id: string; email: string | null; name: string | null; role?: string; photoUrl?: string | null }): void => {
-    setPendingUser({
-      id: user.id,
-      email: user.email || '',
-      name: user.name || fullName,
-      photo: user.photoUrl || undefined,
-    });
-    setStep(2);
-  };
-
-  const proceedToRoleSelection = (): void => {
-    if (!selectedCategory) {
-      setError('Please select a category');
-      return;
-    }
-    setError('');
-    setStep(3);
-  };
-
-  const completeSignUp = (): void => {
-    if (!selectedRole) {
-      setError('Please select a role to continue');
-      return;
-    }
-    
-    const status = selectedCategory === 'staff' ? 'pending' : 'active';
-    
-    dispatch(setUser({
-      id: pendingUser?.id || '',
-      email: pendingUser?.email || '',
-      name: pendingUser?.name || undefined,
-      role: selectedRole,
-      status,
-    }));
-    saveUserData(selectedCategory, selectedRole, status);
-    
-    if (selectedCategory === 'staff') {
-      setSuccess('Registration submitted! Your account is pending approval.');
-      navTimerRef.current = setTimeout(() => navigate('/pending-approval'), 1500);
-    } else {
-      setSuccess('Account created successfully!');
-      navTimerRef.current = setTimeout(() => navigate(`/${selectedRole}/dashboard`), 1000);
-    }
-  };
-
-  const handleSocialAuth = async (provider: string): Promise<void> => {
-    setLoading(true);
-    setError('');
-    try {
-      let result;
-      switch (provider) {
-        case 'google':
-          result = await signInWithGoogle();
-          break;
-        case 'facebook':
-          result = await signInWithFacebook();
-          break;
-        case 'apple':
-          result = await signInWithApple();
-          break;
-        default:
-          throw new Error('Invalid provider');
-      }
-      
-      // Sync Firebase user with backend to get JWT
-      try {
-        const backendResponse = await syncFirebaseUser(result.user);
-        if (!backendResponse?.data?.user) {
-          throw new Error('Invalid backend response: missing user data');
-        }
-        const backendUser = backendResponse.data.user;
-        
-        if (mode === 'signup') {
-          handleSignUpSuccess(backendUser);
-        } else {
-          handleSignInSuccess(backendUser);
-        }
-      } catch {
-        // Backend unavailable — fall back to Firebase-only auth
-        const firebaseUser = result.user;
-        const fallbackUser = {
-          id: firebaseUser.uid,
-          email: firebaseUser.email,
-          name: firebaseUser.displayName,
-        };
-        if (mode === 'signup') {
-          handleSignUpSuccess(fallbackUser);
-        } else {
-          handleSignInSuccess(fallbackUser);
-        }
-      }
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Authentication failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEmailSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    
-    if (mode === 'signup' && password !== confirmPassword) {
-      setError('Passwords do not match');
-      setLoading(false);
-      return;
-    }
-
-    // Client-side password validation (mirrors backend rules)
-    if (mode === 'signup') {
-      if (password.length < 8) {
-        setError('Password must be at least 8 characters');
-        setLoading(false);
-        return;
-      }
-      if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
-        setError('Password must contain at least one letter and one number');
-        setLoading(false);
-        return;
-      }
-    }
-    
-    try {
-      if (mode === 'signup') {
-        const response = await backendRegister(email, password, fullName || undefined);
-        if (!response?.data?.user) throw new Error('Invalid response: missing user data');
-        handleSignUpSuccess(response.data.user);
-      } else {
-        const response = await backendLogin(email, password);
-        if (!response?.data?.user) throw new Error('Invalid response: missing user data');
-        handleSignInSuccess(response.data.user);
-      }
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Authentication failed';
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlePhoneSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    
-    try {
-      const recaptchaVerifier = createRecaptchaVerifier('recaptcha-container');
-      const result = await signInWithPhone(phone, recaptchaVerifier);
-      setConfirmationResult(result);
-      setShowOtpInput(true);
-      setSuccess('OTP sent to your phone');
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to send OTP');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleOtpVerify = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    
-    try {
-      const result = await confirmationResult?.confirm(otp);
-      if (!result?.user) {
-        throw new Error('OTP verification failed');
-      }
-
-      // Sync Firebase phone-auth user with backend for JWT
-      try {
-        const backendResponse = await syncFirebaseUser(result.user);
-        const backendUser = backendResponse.data.user;
-        if (mode === 'signup') {
-          handleSignUpSuccess(backendUser);
-        } else {
-          handleSignInSuccess(backendUser);
-        }
-      } catch {
-        // Backend unavailable — fall back to Firebase-only
-        const firebaseUser = result.user;
-        const fallbackUser = {
-          id: firebaseUser.uid,
-          email: firebaseUser.email,
-          name: firebaseUser.displayName,
-        };
-        if (mode === 'signup') {
-          handleSignUpSuccess(fallbackUser);
-        } else {
-          handleSignInSuccess(fallbackUser);
-        }
-      }
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Invalid OTP');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const switchMode = (): void => {
-    setMode(mode === 'signin' ? 'signup' : 'signin');
-    setStep(1);
-    setSelectedCategory('');
-    setSelectedRole('');
-    setError('');
-    setSuccess('');
-  };
-
-  const getRolesForCategory = (): UserRole[] => {
-    return selectedCategory === 'staff' ? STAFF_ROLES : CLIENT_ROLES;
-  };
+  const {
+    mode,
+    step,
+    activeTab,
+    setActiveTab,
+    loading,
+    error,
+    setError,
+    success,
+    switchMode,
+    goBackToStep,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    confirmPassword,
+    setConfirmPassword,
+    fullName,
+    setFullName,
+    selectedCategory,
+    setSelectedCategory,
+    selectedRole,
+    setSelectedRole,
+    employeeId,
+    setEmployeeId,
+    phone,
+    setPhone,
+    otp,
+    setOtp,
+    showOtpInput,
+    resetOtp,
+    handleSignInSuccess,
+    handleSocialAuth,
+    handleEmailSubmit,
+    handlePhoneSubmit,
+    handleOtpVerify,
+    proceedToRoleSelection,
+    completeSignUp,
+    getRolesForCategory,
+  } = useSignIn();
 
   return (
     <div className="auth-page">
@@ -585,10 +264,7 @@ const SignInPage: FC = () => {
                         <button 
                           type="button" 
                           className="btn btn-link"
-                          onClick={() => {
-                            setShowOtpInput(false);
-                            setOtp('');
-                          }}
+                          onClick={resetOtp}
                         >
                           Change Phone Number
                         </button>
@@ -654,10 +330,7 @@ const SignInPage: FC = () => {
 
               <button 
                 className="btn btn-link"
-                onClick={() => {
-                  setStep(1);
-                  setSelectedCategory('');
-                }}
+                onClick={() => goBackToStep(1)}
               >
                 Go Back
               </button>
@@ -713,10 +386,7 @@ const SignInPage: FC = () => {
 
               <button 
                 className="btn btn-link"
-                onClick={() => {
-                  setStep(2);
-                  setSelectedRole('');
-                }}
+                onClick={() => goBackToStep(2)}
               >
                 Go Back
               </button>
