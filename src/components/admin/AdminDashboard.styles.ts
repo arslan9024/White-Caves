@@ -275,7 +275,7 @@ export const AlertStatus = styled.span<{ $status?: string }>`
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  background: ${props => props.$status === 'active' ? '#FFCDD2' : '#E0E0E0'};
+  background: ${props => props.$status === 'active' ? 'rgba(212, 175, 55, 0.12)' : '#E0E0E0'};
   color: ${props => props.$status === 'active' ? '#B8960C' : '#616161'};
 `;
 

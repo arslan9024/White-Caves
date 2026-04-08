@@ -44,6 +44,7 @@ export const RailWrapper = styled.nav`
   overflow-y: auto;
   overflow-x: hidden;
   flex-shrink: 0;
+  box-shadow: 2px 0 12px rgba(212, 175, 55, 0.04);
 
   /* Hide scrollbar */
   &::-webkit-scrollbar { width: 0; }
@@ -52,6 +53,7 @@ export const RailWrapper = styled.nav`
   @media (prefers-color-scheme: dark) {
     background: #1A1A2E;
     border-right-color: #2D2D44;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
   }
 `;
 
@@ -82,7 +84,7 @@ export const RailIconButton = styled.button<{
   align-items: center;
   justify-content: center;
   background: ${p =>
-    p.$active ? '#FFEBEE' :
+    p.$active ? 'rgba(212, 175, 55, 0.10)' :
     p.$isFlyoutTarget ? '#F3F4F6' :
     'transparent'};
   border: none;
@@ -95,7 +97,7 @@ export const RailIconButton = styled.button<{
   position: relative;
   transition: all 0.15s ease;
 
-  /* Active indicator — red left bar */
+  /* Active indicator — gold left bar */
   &::before {
     content: '';
     position: absolute;
@@ -110,7 +112,7 @@ export const RailIconButton = styled.button<{
   }
 
   &:hover {
-    background: ${p => p.$active ? '#FFEBEE' : '#F3F4F6'};
+    background: ${p => p.$active ? 'rgba(212, 175, 55, 0.12)' : '#F3F4F6'};
     color: ${p => p.$active ? '#D4AF37' : p.$color || '#374151'};
 
     &::before {
@@ -120,17 +122,17 @@ export const RailIconButton = styled.button<{
 
   @media (prefers-color-scheme: dark) {
     background: ${p =>
-      p.$active ? 'rgba(227, 30, 36, 0.15)' :
+      p.$active ? 'rgba(212, 175, 55, 0.15)' :
       p.$isFlyoutTarget ? 'rgba(255, 255, 255, 0.05)' :
       'transparent'};
     color: ${p =>
-      p.$active ? '#EF5350' :
+      p.$active ? '#E8CC6E' :
       p.$color && p.$isFlyoutTarget ? p.$color :
       '#94A3B8'};
 
     &:hover {
-      background: ${p => p.$active ? 'rgba(227, 30, 36, 0.15)' : 'rgba(255, 255, 255, 0.08)'};
-      color: ${p => p.$active ? '#EF5350' : p.$color || '#E2E8F0'};
+      background: ${p => p.$active ? 'rgba(212, 175, 55, 0.18)' : 'rgba(255, 255, 255, 0.08)'};
+      color: ${p => p.$active ? '#E8CC6E' : p.$color || '#E2E8F0'};
     }
   }
 `;
@@ -207,10 +209,12 @@ export const FlyoutPanel = styled.div<{ $open?: boolean; $color?: string }>`
   transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
+  box-shadow: ${p => p.$open ? '4px 0 24px rgba(212, 175, 55, 0.06)' : 'none'};
 
   @media (prefers-color-scheme: dark) {
     background: #1E293B;
     border-right-color: #334155;
+    box-shadow: ${p => p.$open ? '4px 0 24px rgba(0, 0, 0, 0.3)' : 'none'};
   }
 `;
 
@@ -293,7 +297,7 @@ export const FlyoutItem = styled.button<{ $active?: boolean; $color?: string }>`
   }
 
   @media (prefers-color-scheme: dark) {
-    color: ${p => p.$active ? (p.$color || '#EF5350') : '#E2E8F0'};
+    color: ${p => p.$active ? (p.$color || '#E8CC6E') : '#E2E8F0'};
     background: ${p => p.$active ? `${p.$color}18` : 'transparent'};
     &:hover { background: ${p => p.$active ? `${p.$color}22` : '#334155'}; }
   }
@@ -334,7 +338,7 @@ export const AISearchInput = styled.div`
   &:focus-within {
     border-color: #D4AF37;
     background: #FFFFFF;
-    box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.1);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
   }
 
   input {
@@ -386,19 +390,19 @@ export const AIAssistantBtn = styled.button<{ $selected?: boolean }>`
   align-items: center;
   gap: 10px;
   padding: 8px 16px;
-  background: ${p => p.$selected ? '#FFEBEE' : 'transparent'};
+  background: ${p => p.$selected ? 'rgba(212, 175, 55, 0.10)' : 'transparent'};
   border: none;
   cursor: pointer;
   transition: all 0.15s ease;
   text-align: left;
 
   &:hover {
-    background: ${p => p.$selected ? '#FFEBEE' : '#F9FAFB'};
+    background: ${p => p.$selected ? 'rgba(212, 175, 55, 0.14)' : '#F9FAFB'};
   }
 
   @media (prefers-color-scheme: dark) {
-    background: ${p => p.$selected ? 'rgba(227, 30, 36, 0.12)' : 'transparent'};
-    &:hover { background: ${p => p.$selected ? 'rgba(227, 30, 36, 0.12)' : 'rgba(255,255,255,0.04)'}; }
+    background: ${p => p.$selected ? 'rgba(212, 175, 55, 0.12)' : 'transparent'};
+    &:hover { background: ${p => p.$selected ? 'rgba(212, 175, 55, 0.16)' : 'rgba(255,255,255,0.04)'}; }
   }
 `;
 

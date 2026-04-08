@@ -461,18 +461,18 @@ export const NotificationItem = styled.div<{ $unread?: boolean }>`
   padding: ${theme.spacing.md};
   cursor: pointer;
   transition: background 0.15s ease;
-  background: ${props => (props.$unread ? '#ffebee' : 'transparent')};
+  background: ${props => (props.$unread ? 'rgba(212, 175, 55, 0.08)' : 'transparent')};
 
   &:hover {
-    background: ${props => (props.$unread ? '#ffcdd2' : theme.colors.background.tertiary)};
+    background: ${props => (props.$unread ? 'rgba(212, 175, 55, 0.14)' : theme.colors.background.tertiary)};
   }
 
   @media (prefers-color-scheme: dark) {
-    background: ${props => (props.$unread ? 'rgba(211, 47, 47, 0.1)' : 'transparent')};
+    background: ${props => (props.$unread ? 'rgba(212, 175, 55, 0.10)' : 'transparent')};
 
     &:hover {
       background: ${props =>
-        props.$unread ? 'rgba(211, 47, 47, 0.15)' : 'rgba(255, 255, 255, 0.05)'};
+        props.$unread ? 'rgba(212, 175, 55, 0.15)' : 'rgba(255, 255, 255, 0.05)'};
     }
   }
 `;
@@ -630,13 +630,13 @@ export const DropdownItem = styled.button<{ $isLogout?: boolean; $isAdmin?: bool
   background: none;
   border: none;
   font-size: 13px;
-  color: ${props => (props.$isLogout ? '#B8960C' : theme.colors.text.primary)};
+  color: ${props => (props.$isLogout ? '#D32F2F' : theme.colors.text.primary)};
   cursor: pointer;
   transition: background 0.15s ease;
   text-align: left;
 
   svg {
-    color: ${props => (props.$isLogout ? '#B8960C' : theme.colors.text.secondary)};
+    color: ${props => (props.$isLogout ? '#D32F2F' : theme.colors.text.secondary)};
     flex-shrink: 0;
   }
 

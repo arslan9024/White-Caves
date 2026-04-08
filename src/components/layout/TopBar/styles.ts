@@ -26,12 +26,14 @@ export const TopBarContainer = styled.header`
   padding: 0 16px;
   background: #FFFFFF;
   border-bottom: 1px solid #E5E7EB;
+  box-shadow: 0 1px 8px rgba(212, 175, 55, 0.06);
   z-index: var(--z-navbar, 500);
   transition: background 0.2s ease, box-shadow 0.2s ease;
 
   @media (prefers-color-scheme: dark) {
     background: #1E293B;
     border-bottom-color: #334155;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
   }
 `;
 
@@ -195,6 +197,12 @@ export const SearchTrigger = styled.button`
     color: #6B7280;
   }
 
+  &:focus-visible {
+    outline: none;
+    border-color: #D4AF37;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+  }
+
   @media (max-width: 640px) {
     padding: 6px 8px;
     span { display: none; }
@@ -208,6 +216,11 @@ export const SearchTrigger = styled.button`
     &:hover {
       background: #475569;
       color: #94A3B8;
+    }
+
+    &:focus-visible {
+      border-color: #D4AF37;
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     }
   }
 `;
@@ -250,6 +263,11 @@ export const IconButton = styled.button<{ $hasNotif?: boolean }>`
   &:hover {
     background: #F3F4F6;
     color: #111827;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -355,7 +373,7 @@ export const DropdownMenu = styled.div<{ $align?: 'left' | 'right' }>`
   background: #FFFFFF;
   border: 1px solid #E5E7EB;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(212, 175, 55, 0.06);
   padding: 6px;
   z-index: 600;
   animation: ${fadeIn} 0.15s ease;
@@ -363,7 +381,7 @@ export const DropdownMenu = styled.div<{ $align?: 'left' | 'right' }>`
   @media (prefers-color-scheme: dark) {
     background: #1E293B;
     border-color: #334155;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(212, 175, 55, 0.04);
   }
 `;
 

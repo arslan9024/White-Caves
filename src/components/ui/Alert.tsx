@@ -48,7 +48,7 @@ const AlertContainer = styled.div<{ $type: AlertType; $filled?: boolean }>`
       info: '#1565c0',
       success: '#2e7d32',
       warning: '#e65100',
-      error: '#B8960C',
+      error: '#C62828',
     };
     return colors[props.$type];
   }};

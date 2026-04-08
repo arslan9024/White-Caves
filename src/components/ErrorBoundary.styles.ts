@@ -69,8 +69,8 @@ export const RedirectNotice = styled.p`
 
 export const Countdown = styled.span`
   display: inline-block;
-  background: linear-gradient(135deg, #D4AF37, #B8960C);
-  color: #0a0a0f;
+  background: linear-gradient(135deg, #EF5350, #D32F2F);
+  color: #FFFFFF;
   width: 28px;
   height: 28px;
   line-height: 28px;
@@ -101,22 +101,22 @@ export const ErrorButton = styled.button<{ $variant?: 'primary' | 'secondary' }>
     if (props.$variant === 'secondary') {
       return `
         background: transparent;
-        border: 2px solid rgba(212, 175, 55, 0.5);
-        color: #D4AF37;
+        border: 2px solid rgba(211, 47, 47, 0.5);
+        color: #EF5350;
 
         &:hover {
-          background: rgba(212, 175, 55, 0.1);
-          border-color: #D4AF37;
+          background: rgba(211, 47, 47, 0.1);
+          border-color: #EF5350;
         }
       `;
     }
     return `
-      background: linear-gradient(135deg, #D4AF37, #B8960C);
-      color: #0a0a0f;
+      background: linear-gradient(135deg, #EF5350, #D32F2F);
+      color: #FFFFFF;
 
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        box-shadow: 0 6px 20px rgba(211, 47, 47, 0.4);
       }
 
       &:active {
@@ -165,11 +165,11 @@ export const ErrorStack = styled.pre`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(212, 175, 55, 0.3);
+    background: rgba(211, 47, 47, 0.3);
     border-radius: 2px;
 
     &:hover {
-      background: rgba(212, 175, 55, 0.5);
+      background: rgba(211, 47, 47, 0.5);
     }
   }
 `;
