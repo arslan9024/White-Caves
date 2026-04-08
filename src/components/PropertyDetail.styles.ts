@@ -52,7 +52,7 @@ export const ListingType = styled.span`
   font-size: 0.875rem;
 
   [data-theme='dark'] & {
-    background: #c41e3a;
+    background: #D4AF37;
   }
 `;
 

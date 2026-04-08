@@ -25,7 +25,7 @@ export const ToggleTrack = styled.div<{ $isDark: boolean }>`
 
   @media (hover: hover) {
     &:hover {
-      box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.2);
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
     }
   }
 `;

@@ -257,7 +257,7 @@ export const StatCard = styled.div`
 
   &:hover {
     border-color: var(--primary-red);
-    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.1);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.1);
   }
 
   /* Dark Mode */
@@ -337,7 +337,7 @@ export const MetricsGrid = styled.div`
 `;
 
 export const MetricCard = styled.div`
-  background: linear-gradient(135deg, var(--light-gray) 0%, rgba(211, 47, 47, 0.02) 100%);
+  background: linear-gradient(135deg, var(--light-gray) 0%, rgba(212, 175, 55, 0.02) 100%);
   padding: 20px;
   border-radius: 10px;
   border: 1px solid var(--border-gray);
@@ -350,12 +350,12 @@ export const MetricCard = styled.div`
   &:hover {
     transform: translateY(-4px);
     border-color: var(--primary-red);
-    box-shadow: 0 8px 20px rgba(211, 47, 47, 0.15);
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.12);
   }
 
   /* Dark Mode */
   [data-theme="dark"] & {
-    background: linear-gradient(135deg, #2A2A2A 0%, rgba(211, 47, 47, 0.05) 100%);
+    background: linear-gradient(135deg, #2A2A2A 0%, rgba(212, 175, 55, 0.04) 100%);
     border-color: #333333;
   }
 `;
@@ -459,19 +459,19 @@ export const ServiceCard = styled.div`
 
   &:hover {
     border-color: var(--primary-red);
-    box-shadow: 0 8px 20px rgba(211, 47, 47, 0.1);
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.1);
     transform: translateY(-4px);
   }
 
   &:focus {
     border-color: var(--primary-red);
-    box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.2);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     outline: none;
   }
 
   &:focus-visible {
     border-color: var(--primary-red);
-    box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.2);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
   }
 
   /* Dark Mode */
@@ -575,12 +575,12 @@ export const ActionButton = styled.button`
     color: white;
     border-color: var(--primary-red);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.2);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
   }
 
   &:active {
     transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(211, 47, 47, 0.15);
+    box-shadow: 0 2px 6px rgba(212, 175, 55, 0.12);
   }
 
   &:focus-visible {

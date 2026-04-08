@@ -40,7 +40,7 @@
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(211, 47, 47, 0.15) 50%,
+    rgba(212, 175, 55, 0.12) 50%,
     transparent 100%
   );
 }
@@ -55,7 +55,7 @@
 .shape {
   position: absolute;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(211, 47, 47, 0.3), rgba(211, 47, 47, 0.1));
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(212, 175, 55, 0.08));
   filter: blur(40px);
 }
 
@@ -87,7 +87,7 @@
   height: 150px;
   bottom: 20%;
   left: 15%;
-  background: linear-gradient(135deg, rgba(211, 47, 47, 0.25), rgba(211, 47, 47, 0.1));
+  background: linear-gradient(135deg, rgba(46, 90, 79, 0.2), rgba(46, 90, 79, 0.08));
 }
 
 .hero-content {

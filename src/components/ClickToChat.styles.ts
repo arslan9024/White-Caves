@@ -189,8 +189,8 @@ export const QuickMessageBtn = styled.button`
   }
 
   &:hover {
-    background: var(--primary-color, #c41e3a);
-    border-color: var(--primary-color, #c41e3a);
+    background: var(--primary-color, #D4AF37);
+    border-color: var(--primary-color, #D4AF37);
     color: white;
   }
 `;

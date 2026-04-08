@@ -7,6 +7,68 @@ import { createGlobalStyle } from 'styled-components';
 import { theme } from './theme';
 
 export const GlobalStyles = createGlobalStyle`
+  /* ═══ CSS Variables Bridge ═══════════════════════════════════
+     Maps JS design tokens → CSS custom properties so .css files
+     (homepage, auth, etc.) can consume the same palette.
+     ─────────────────────────────────────────────────────────── */
+  :root {
+    /* Brand */
+    --primary-color: ${theme.colors.primary};
+    --primary-dark: ${theme.colors.primaryDark};
+    --primary-light: ${theme.colors.primaryLight};
+    --primary-very-light: ${theme.colors.primaryVeryLight};
+    --accent-gold: ${theme.colors.primary};
+    --secondary-color: ${theme.colors.secondary};
+    --secondary-dark: ${theme.colors.secondaryDark};
+
+    /* Backgrounds */
+    --bg-primary: ${theme.colors.background.primary};
+    --bg-secondary: ${theme.colors.background.secondary};
+    --bg-tertiary: ${theme.colors.background.tertiary};
+
+    /* Text */
+    --text-primary: ${theme.colors.text.primary};
+    --text-secondary: ${theme.colors.text.secondary};
+    --text-muted: ${theme.colors.text.tertiary};
+
+    /* Borders */
+    --border-color: ${theme.colors.border};
+    --border-light: ${theme.colors.borderLight};
+
+    /* Typography */
+    --font-heading: ${theme.typography.fontFamily.heading};
+    --font-body: ${theme.typography.fontFamily.primary};
+
+    /* Radius */
+    --radius-xs: ${theme.radius.xs};
+    --radius-sm: ${theme.radius.sm};
+    --radius-md: ${theme.radius.md};
+    --radius-lg: ${theme.radius.lg};
+    --radius-xl: ${theme.radius.xl};
+    --radius-xxl: ${theme.radius.xxl};
+    --radius-full: ${theme.radius.full};
+
+    /* Shadows */
+    --shadow-sm: ${theme.shadows.sm};
+    --shadow-md: ${theme.shadows.md};
+    --shadow-lg: ${theme.shadows.lg};
+    --shadow-xl: ${theme.shadows.xl};
+
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.2s ease;
+    --transition-slow: 0.3s ease;
+
+    /* Semantic */
+    --success-color: ${theme.colors.success};
+    --error-color: ${theme.colors.error};
+    --warning-color: ${theme.colors.warning};
+    --info-color: ${theme.colors.info};
+
+    /* Legacy alias (DepartmentContentPanel, Modal) */
+    --primary-red: var(--primary-color);
+  }
+
   /* CSS Reset & Base Styles */
   *,
   *::before,

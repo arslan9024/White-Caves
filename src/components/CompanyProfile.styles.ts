@@ -20,7 +20,7 @@ export const CompanyProfileHeader = styled.div`
   gap: 2rem;
   margin-bottom: 3rem;
   padding-bottom: 2rem;
-  border-bottom: 2px solid var(--primary-color, #c41e3a);
+  border-bottom: 2px solid var(--primary-color, #D4AF37);
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -51,7 +51,7 @@ export const CompanyProfileTitle = styled.div`
 
 export const CompanyTagline = styled.p`
   font-size: 1.25rem;
-  color: var(--primary-color, #c41e3a);
+  color: var(--primary-color, #D4AF37);
   font-weight: 500;
   margin: 0;
 `;
@@ -151,7 +151,7 @@ export const ServiceItem = styled.div`
   }
 
   &:hover {
-    background: var(--primary-light, rgba(196, 30, 58, 0.1));
+    background: var(--primary-light, rgba(212, 175, 55, 0.1));
   }
 
   span:last-child {
@@ -177,8 +177,8 @@ export const CompanyStatsBar = styled.div`
   padding: 2rem;
   background: linear-gradient(
     135deg,
-    var(--primary-color, #c41e3a),
-    var(--primary-dark, #a01830)
+    var(--primary-color, #D4AF37),
+    var(--primary-dark, #B8960C)
   );
   border-radius: 16px;
 
@@ -286,8 +286,8 @@ export const DownloadProfileBtn = styled.button`
   padding: 0.875rem 2rem;
   background: linear-gradient(
     135deg,
-    var(--primary-color, #c41e3a),
-    var(--primary-dark, #a01830)
+    var(--primary-color, #D4AF37),
+    var(--primary-dark, #B8960C)
   );
   color: white;
   border: none;
@@ -304,7 +304,7 @@ export const DownloadProfileBtn = styled.button`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(196, 30, 58, 0.3);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
   }
 
   &:active {

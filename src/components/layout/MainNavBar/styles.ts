@@ -210,7 +210,7 @@ export const SearchContainer = styled.div<{ $focused?: boolean }>`
   ${props => props.$focused && `
     background: ${theme.colors.background.secondary};
     border-color: ${theme.colors.primary};
-    box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
 
     @media (prefers-color-scheme: dark) {
       background: rgba(255, 255, 255, 0.12);

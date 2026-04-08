@@ -196,7 +196,7 @@ const Hero: React.FC = () => {
           <motion.button 
             className="btn btn-primary btn-lg hero-btn-primary"
             onClick={handleGetStarted}
-            whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(211, 47, 47, 0.4)" }}
+            whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(212, 175, 55, 0.35)" }}
             whileTap={{ scale: 0.98 }}
           >
             Get Started
