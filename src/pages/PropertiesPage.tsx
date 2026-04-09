@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, lazy, Suspense } from 'react';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { usePropertyBrowser } from '../hooks/usePropertyBrowser';
 import AppLayout from '../components/layout/AppLayout';
@@ -6,9 +6,14 @@ import Footer from '../components/Footer';
 import PropertyFilterPanel from './properties/PropertyFilterPanel';
 import { PropertyDetailModal } from '../shared/components/property';
 import {
-  Grid, List, MapPin, Bed, Bath, Maximize, Heart, ChevronRight,
+  Grid, List, Map as MapIcon, MapPin, Bed, Bath, Maximize, Heart, ChevronRight,
 } from 'lucide-react';
+import 'leaflet/dist/leaflet.css';
 import './PropertiesPage.css';
+
+const InteractiveMap = lazy(() =>
+  import('../components/maps/InteractiveMap').then((m) => ({ default: m.default }))
+);
 
 interface PropertiesPageProps {}
 
@@ -64,12 +69,31 @@ const PropertiesPage: FC<PropertiesPageProps> = () => {
                 >
                   <List size={18} />
                 </button>
+                <button
+                  className={`view-btn ${view === 'map' ? 'active' : ''}`}
+                  onClick={() => setView('map')}
+                  aria-label="Map view"
+                >
+                  <MapIcon size={18} />
+                </button>
               </div>
             </div>
           </div>
 
+          {/* Map View */}
+          {view === 'map' && (
+            <div className="properties-map-section">
+              <Suspense fallback={<div className="map-loading-fallback"><p>Loading map...</p></div>}>
+                <InteractiveMap
+                  properties={filteredProperties}
+                  onPropertyClick={(p) => setSelectedProperty(p as typeof selectedProperty)}
+                />
+              </Suspense>
+            </div>
+          )}
+
           {/* Property Grid */}
-          <div className={`properties-grid ${view}`}>
+          <div className={`properties-grid ${view}`} style={view === 'map' ? { display: 'none' } : undefined}>
             {loading && (
               <div className="properties-loading" style={{ gridColumn: '1 / -1' }}>
                 <div className="loading-spinner" />

@@ -669,3 +669,29 @@
     align-items: flex-start;
   }
 }
+
+/* ─── Map Section ─────────────────────────────────────────────── */
+.properties-map-section {
+  margin-bottom: 2rem;
+  border-radius: 16px;
+  overflow: hidden;
+  min-height: 500px;
+}
+
+.map-loading-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: #f8f7f2;
+  border-radius: 16px;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .properties-map-section {
+    min-height: 350px;
+    border-radius: 12px;
+  }
+}

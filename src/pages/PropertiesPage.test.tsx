@@ -37,6 +37,14 @@ vi.mock('./properties/PropertyFilterPanel', () => ({
   ),
 }));
 
+// Mock InteractiveMap (lazy-loaded)
+vi.mock('../components/maps/InteractiveMap', () => ({
+  default: () => <div data-testid="interactive-map-mock">Map</div>,
+}));
+
+// Mock leaflet CSS import
+vi.mock('leaflet/dist/leaflet.css', () => ({}));
+
 // Mock the async thunk so it resolves immediately without hitting the network
 const mockAuthFetchForProperties = vi.fn();
 vi.mock('../utils/authFetch', () => ({
@@ -167,7 +175,7 @@ describe('PropertiesPage', () => {
     it('should render view toggle buttons', () => {
       renderPage();
       const buttons = document.querySelectorAll('.view-btn');
-      expect(buttons.length).toBe(2);
+      expect(buttons.length).toBe(3); // grid, list, map
     });
 
     it('should render Footer', () => {
@@ -307,6 +315,18 @@ describe('PropertiesPage', () => {
       fireEvent.click(listBtn!);
       const listContainer = document.querySelector('.properties-grid.list');
       expect(listContainer).toBeTruthy();
+    });
+
+    it('should switch to map view', async () => {
+      renderPage();
+      await waitFor(() => {
+        expect(screen.getByText('Palm Villa')).toBeInTheDocument();
+      });
+      const mapBtn = document.querySelectorAll('.view-btn')[2];
+      fireEvent.click(mapBtn!);
+      // Map view hides the grid
+      const grid = document.querySelector('.properties-grid');
+      expect(grid?.getAttribute('style')).toContain('display: none');
     });
   });
 });

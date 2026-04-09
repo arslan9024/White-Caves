@@ -83,7 +83,7 @@ export function usePropertyBrowser() {
   const loading = useSelector(selectPropertiesLoading);
   const filters = useSelector((state: RootState) => state.properties.filters);
 
-  const [view, setView] = useState<'grid' | 'list'>('grid');
+  const [view, setView] = useState<'grid' | 'list' | 'map'>('grid');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedProperty, setSelectedProperty] = useState<PropertyType | null>(null);
 
