@@ -476,3 +476,87 @@ export const AIFooter = styled.div`
     }
   }
 `;
+
+/* ═══════════════════════════════════════════════════════════════
+   COLLAPSIBLE GROUP + BADGE STYLES
+   Groups: "Company Features" and "AI Command Center" in icon rail
+   Badge: pill showing unread/pending counts on department icons
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Collapsible Group ─────────────────────────────────────── */
+
+export const RailGroupHeader = styled.button<{ $collapsed?: boolean }>`
+  width: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0;
+  margin: 0 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #9CA3AF;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.15s ease;
+  gap: 2px;
+
+  svg {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    transform: ${p => p.$collapsed ? 'rotate(-90deg)' : 'rotate(0deg)'};
+  }
+
+  &:hover {
+    color: #D4AF37;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    color: #64748B;
+    &:hover { color: #E8CC6E; }
+  }
+`;
+
+export const RailGroupContent = styled.div<{ $collapsed?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  max-height: ${p => p.$collapsed ? '0' : '600px'};
+  opacity: ${p => p.$collapsed ? '0' : '1'};
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.2s ease;
+`;
+
+/* ── Badge (pill on icon) ──────────────────────────────────── */
+
+export const RailBadge = styled.span<{ $color?: string }>`
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${p => p.$color || '#D4AF37'};
+  color: #FFFFFF;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 8px;
+  line-height: 1;
+  pointer-events: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+  }
+`;

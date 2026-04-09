@@ -6,12 +6,15 @@
  * - Click department → opens 240px flyout with services
  * - Click Bot icon → opens 240px flyout with AI assistants (from registry)
  * - Department flyout & AI flyout are mutually exclusive
- * - Active state: RED left border + icon fill
- * - Bottom-pinned: AI Assistant + Settings icons
+ * - Active state: GOLD left border + icon fill
+ * - Collapsible groups: "Company" (9 departments) and "AI Center" (Bot)
+ * - Badge counts: Leads (hot), Properties (available), Messages (queued)
+ * - Collapse state persisted in localStorage
+ * - Bottom-pinned: Admin + Settings icons
  * - Mobile: hidden (replaced by BottomTabBar)
  */
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import {
@@ -41,6 +44,9 @@ import {
   DEPARTMENTS as REGISTRY_DEPARTMENTS,
 } from '../../../config/assistantRegistry';
 import type { Assistant, DepartmentId } from '../../../config/assistantRegistry';
+import { selectHotLeads } from '../../../store/crmDataSlice';
+import { selectAllProperties } from '../../../store/crmDataSlice';
+import { selectQueuedCount } from '../../../store/slices/nadiaSlice';
 import {
   RailContainer,
   RailWrapper,
@@ -49,6 +55,9 @@ import {
   RailTooltip,
   RailDivider,
   RailSpacer,
+  RailGroupHeader,
+  RailGroupContent,
+  RailBadge,
   FlyoutPanel,
   FlyoutHeader,
   FlyoutTitle,
@@ -75,12 +84,34 @@ interface DepartmentDef {
   label: string;
   color: string;
   services: string[];
+  /** Redux selector key for badge count — mapped at render time */
+  badgeKey?: 'hotLeads' | 'properties' | 'messages';
+}
+
+// localStorage key for persisting group collapse states
+const COLLAPSE_STORAGE_KEY = 'wc-sidebar-collapse';
+
+function readCollapseState(): Record<string, boolean> {
+  try {
+    const raw = localStorage.getItem(COLLAPSE_STORAGE_KEY);
+    if (!raw) return {};
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
+}
+
+function writeCollapseState(state: Record<string, boolean>): void {
+  try {
+    localStorage.setItem(COLLAPSE_STORAGE_KEY, JSON.stringify(state));
+  } catch { /* quota exceeded — silently fail */ }
 }
 
 const DEPARTMENTS: Record<string, DepartmentDef> = {
   operations: {
     icon: Building2, label: 'Operations', color: '#3B82F6',
     services: ['Inventory Management', 'Properties', 'Asset Tracking', 'Data Management'],
+    badgeKey: 'properties',
   },
   finance: {
     icon: DollarSign, label: 'Finance', color: '#F59E0B',
@@ -89,6 +120,7 @@ const DEPARTMENTS: Record<string, DepartmentDef> = {
   sales: {
     icon: TrendingUp, label: 'Sales', color: '#10B981',
     services: ['Lead Management', 'Negotiations', 'Deal Tracking', 'Pipeline'],
+    badgeKey: 'hotLeads',
   },
   marketing: {
     icon: Megaphone, label: 'Marketing', color: '#EC4899',
@@ -97,6 +129,7 @@ const DEPARTMENTS: Record<string, DepartmentDef> = {
   communications: {
     icon: MessageSquare, label: 'Communications', color: '#8B5CF6',
     services: ['Messages', 'Emails', 'Templates', 'Notifications'],
+    badgeKey: 'messages',
   },
   executive: {
     icon: Globe, label: 'Executive', color: '#D4AF37',
@@ -147,6 +180,30 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
   const selectedAssistantId = useSelector(selectSelectedAssistant);
   const userRole = useSelector((state: RootState) => state.auth?.user?.role || 'user');
   const isSuperUser = userRole === 'lion';
+
+  // ── Badge selectors ─────────────────────────────────────
+  const hotLeads = useSelector(selectHotLeads);
+  const allProperties = useSelector(selectAllProperties);
+  const queuedMessages = useSelector(selectQueuedCount);
+
+  const badgeCounts = useMemo<Record<string, number>>(() => ({
+    hotLeads: hotLeads?.length ?? 0,
+    properties: allProperties?.length ?? 0,
+    messages: queuedMessages ?? 0,
+  }), [hotLeads, allProperties, queuedMessages]);
+
+  // ── Group collapse state (persisted to localStorage) ────
+  const [groupCollapse, setGroupCollapse] = useState<Record<string, boolean>>(() =>
+    readCollapseState()
+  );
+
+  const toggleGroup = useCallback((groupId: string) => {
+    setGroupCollapse(prev => {
+      const next = { ...prev, [groupId]: !prev[groupId] };
+      writeCollapseState(next);
+      return next;
+    });
+  }, []);
 
   // AI assistant local search state
   const [aiSearch, setAiSearch] = useState('');
@@ -240,46 +297,77 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
 
           <RailDivider />
 
-          {/* ── Department icons ──────────────────────────── */}
-          {Object.entries(DEPARTMENTS).map(([deptId, dept]) => {
-            const Icon = dept.icon;
-            const isActive = selectedDepartment === deptId;
-            const isFlyoutTarget = flyoutDepartment === deptId && flyoutOpen;
-            return (
-              <RailIcon key={deptId}>
-                <RailIconButton
-                  $active={isActive}
-                  $isFlyoutTarget={isFlyoutTarget}
-                  $color={dept.color}
-                  onClick={() => handleDeptClick(deptId)}
-                  aria-label={dept.label}
-                  title={dept.label}
-                >
-                  <Icon size={20} />
-                </RailIconButton>
-                <RailTooltip>{dept.label}</RailTooltip>
-              </RailIcon>
-            );
-          })}
+          {/* ── Company departments (collapsible group) ───── */}
+          <RailGroupHeader
+            $collapsed={!!groupCollapse['company']}
+            onClick={() => toggleGroup('company')}
+            aria-label="Toggle Company departments"
+            title="Company"
+          >
+            <ChevronDown size={8} />
+            <span>Company</span>
+          </RailGroupHeader>
+
+          <RailGroupContent $collapsed={!!groupCollapse['company']}>
+            {Object.entries(DEPARTMENTS).map(([deptId, dept]) => {
+              const Icon = dept.icon;
+              const isActive = selectedDepartment === deptId;
+              const isFlyoutTarget = flyoutDepartment === deptId && flyoutOpen;
+              const badge = dept.badgeKey ? badgeCounts[dept.badgeKey] : 0;
+              return (
+                <RailIcon key={deptId}>
+                  <RailIconButton
+                    $active={isActive}
+                    $isFlyoutTarget={isFlyoutTarget}
+                    $color={dept.color}
+                    onClick={() => handleDeptClick(deptId)}
+                    aria-label={dept.label}
+                    title={dept.label}
+                  >
+                    <Icon size={20} />
+                    {badge > 0 && (
+                      <RailBadge $color={dept.color} aria-label={`${badge} ${dept.label}`}>
+                        {badge > 99 ? '99+' : badge}
+                      </RailBadge>
+                    )}
+                  </RailIconButton>
+                  <RailTooltip>{dept.label}</RailTooltip>
+                </RailIcon>
+              );
+            })}
+          </RailGroupContent>
 
           <RailSpacer />
 
           {/* ── Bottom pinned items ──────────────────────── */}
           <RailDivider />
 
-          {/* AI Command Center toggle */}
-          <RailIcon>
-            <RailIconButton
-              $active={aiCommandOpen}
-              $color="#D4AF37"
-              onClick={handleAIToggle}
-              aria-label="AI Command Center"
-              title="AI Command Center"
-            >
-              <Bot size={22} />
-            </RailIconButton>
-            <RailTooltip>AI Command Center</RailTooltip>
-          </RailIcon>
+          {/* AI group label */}
+          <RailGroupHeader
+            $collapsed={!!groupCollapse['ai']}
+            onClick={() => toggleGroup('ai')}
+            aria-label="Toggle AI Command Center"
+            title="AI Center"
+          >
+            <ChevronDown size={8} />
+            <span>AI</span>
+          </RailGroupHeader>
+
+          <RailGroupContent $collapsed={!!groupCollapse['ai']}>
+            {/* AI Command Center toggle */}
+            <RailIcon>
+              <RailIconButton
+                $active={aiCommandOpen}
+                $color="#D4AF37"
+                onClick={handleAIToggle}
+                aria-label="AI Command Center"
+                title="AI Command Center"
+              >
+                <Bot size={22} />
+              </RailIconButton>
+              <RailTooltip>AI Command Center</RailTooltip>
+            </RailIcon>
+          </RailGroupContent>
 
           {/* Admin (super user only) */}
           {isSuperUser && (
