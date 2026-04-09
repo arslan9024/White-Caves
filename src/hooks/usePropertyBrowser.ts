@@ -56,6 +56,24 @@ function mapApiProperty(p: Record<string, unknown>): PropertyType {
   };
 }
 
+/** Sort properties by a given key */
+function sortProperties(props: PropertyType[], sortBy: string): PropertyType[] {
+  const sorted = [...props];
+  switch (sortBy) {
+    case 'price_asc':
+      return sorted.sort((a, b) => a.price - b.price);
+    case 'price_desc':
+      return sorted.sort((a, b) => b.price - a.price);
+    case 'sqft_desc':
+      return sorted.sort((a, b) => b.sqft - a.sqft);
+    case 'newest':
+      return sorted.sort((a, b) => b.yearBuilt - a.yearBuilt);
+    case 'featured':
+    default:
+      return sorted.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+  }
+}
+
 export type { PropertyType };
 
 export function usePropertyBrowser() {
@@ -63,6 +81,7 @@ export function usePropertyBrowser() {
   const favorites = useSelector((state: RootState) => selectFavorites(state));
   const apiProperties = useSelector(selectAllProperties) as Record<string, unknown>[];
   const loading = useSelector(selectPropertiesLoading);
+  const filters = useSelector((state: RootState) => state.properties.filters);
 
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -80,17 +99,69 @@ export function usePropertyBrowser() {
     [apiProperties]
   );
 
-  // Filter by search term
+  // Apply Redux filters + local search
   const filteredProperties = useMemo(() => {
-    if (!searchTerm.trim()) return properties;
-    const term = searchTerm.toLowerCase();
-    return properties.filter(
-      (p) =>
-        p.title.toLowerCase().includes(term) ||
-        p.location.toLowerCase().includes(term) ||
-        p.type.toLowerCase().includes(term)
-    );
-  }, [properties, searchTerm]);
+    let result = properties;
+
+    // Text search (local input OR Redux filters.search)
+    const term = (searchTerm || filters.search || '').toLowerCase().trim();
+    if (term) {
+      result = result.filter(
+        (p) =>
+          p.title.toLowerCase().includes(term) ||
+          p.location.toLowerCase().includes(term) ||
+          p.type.toLowerCase().includes(term)
+      );
+    }
+
+    // Location filter
+    if (filters.locations.length > 0) {
+      result = result.filter((p) => filters.locations.includes(p.location));
+    }
+
+    // Property type filter
+    if (filters.propertyTypes.length > 0) {
+      result = result.filter((p) => filters.propertyTypes.includes(p.type));
+    }
+
+    // Bedrooms
+    if (filters.beds > 0) {
+      result = result.filter((p) => p.beds >= filters.beds);
+    }
+
+    // Bathrooms
+    if (filters.baths > 0) {
+      result = result.filter((p) => p.baths >= filters.baths);
+    }
+
+    // Price range
+    if (filters.minPrice > 0) {
+      result = result.filter((p) => p.price >= filters.minPrice);
+    }
+    if (filters.maxPrice < 100_000_000) {
+      result = result.filter((p) => p.price <= filters.maxPrice);
+    }
+
+    // Area (sqft)
+    if (filters.minSqft > 0) {
+      result = result.filter((p) => p.sqft >= filters.minSqft);
+    }
+    if (filters.maxSqft < 20_000) {
+      result = result.filter((p) => p.sqft <= filters.maxSqft);
+    }
+
+    // Amenities
+    if (filters.amenities.length > 0) {
+      result = result.filter((p) =>
+        filters.amenities.every((a) => p.amenities.includes(a))
+      );
+    }
+
+    // Sort
+    result = sortProperties(result, filters.sortBy);
+
+    return result;
+  }, [properties, searchTerm, filters]);
 
   const handleFavoriteToggle = useCallback((property: PropertyType) => {
     const isFavorited = favorites.some(f => f.id === property.id);
@@ -123,6 +194,7 @@ export function usePropertyBrowser() {
     setView,
     searchTerm,
     handleSearchChange,
+    properties,
     filteredProperties,
     selectedProperty,
     setSelectedProperty,

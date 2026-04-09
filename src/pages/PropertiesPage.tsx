@@ -3,9 +3,11 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { usePropertyBrowser } from '../hooks/usePropertyBrowser';
 import AppLayout from '../components/layout/AppLayout';
 import Footer from '../components/Footer';
-import WhatsAppButton from '../components/WhatsAppButton';
-import { PropertyImageSlider, PropertyDetailModal } from '../shared/components/property';
-import { Search, SlidersHorizontal, Grid, List, MapPin, Bed, Bath, Maximize, X, ChevronDown } from 'lucide-react';
+import PropertyFilterPanel from './properties/PropertyFilterPanel';
+import { PropertyDetailModal } from '../shared/components/property';
+import {
+  Grid, List, MapPin, Bed, Bath, Maximize, Heart, ChevronRight,
+} from 'lucide-react';
 import './PropertiesPage.css';
 
 interface PropertiesPageProps {}
@@ -14,11 +16,9 @@ const PropertiesPage: FC<PropertiesPageProps> = () => {
   useDocumentTitle('Properties');
   const {
     loading,
-    favorites,
     view,
     setView,
-    searchTerm,
-    handleSearchChange,
+    properties,
     filteredProperties,
     selectedProperty,
     setSelectedProperty,
@@ -29,79 +29,157 @@ const PropertiesPage: FC<PropertiesPageProps> = () => {
   return (
     <AppLayout>
       <div className="properties-page">
+        {/* ─── Hero Banner ──────────────────────────────────── */}
         <section className="properties-hero">
-          <h1>Find Your Dream Property</h1>
-          <p>Browse our exclusive collection of properties across Dubai</p>
+          <div className="properties-hero-overlay" />
+          <div className="properties-hero-content">
+            <h1>Discover Luxury Properties</h1>
+            <p>Browse our exclusive collection of premium properties across Dubai</p>
+          </div>
         </section>
 
-        <section className="properties-content">
-          <div className="filter-section">
-            <div className="search-bar">
-              <Search size={20} />
-              <input
-                type="text"
-                placeholder="Search properties by location, type, or price..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-              />
+        {/* ─── Filter Panel ─────────────────────────────────── */}
+        <PropertyFilterPanel
+          resultCount={filteredProperties.length}
+          totalCount={properties.length}
+        />
+
+        {/* ─── Content ──────────────────────────────────────── */}
+        <section className="properties-container">
+          {/* View toggle */}
+          <div className="results-header">
+            <div className="results-controls">
+              <div className="view-toggle">
+                <button
+                  className={`view-btn ${view === 'grid' ? 'active' : ''}`}
+                  onClick={() => setView('grid')}
+                  aria-label="Grid view"
+                >
+                  <Grid size={18} />
+                </button>
+                <button
+                  className={`view-btn ${view === 'list' ? 'active' : ''}`}
+                  onClick={() => setView('list')}
+                  aria-label="List view"
+                >
+                  <List size={18} />
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="view-toggle">
-            <button
-              className={`view-btn ${view === 'grid' ? 'active' : ''}`}
-              onClick={() => setView('grid')}
-            >
-              <Grid size={20} />
-            </button>
-            <button
-              className={`view-btn ${view === 'list' ? 'active' : ''}`}
-              onClick={() => setView('list')}
-            >
-              <List size={20} />
-            </button>
-          </div>
-
+          {/* Property Grid */}
           <div className={`properties-grid ${view}`}>
             {loading && (
-              <div className="properties-loading" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem 1rem' }}>
-                <p style={{ fontSize: '1.1rem', color: '#555' }}>⏳ Loading properties...</p>
+              <div className="properties-loading" style={{ gridColumn: '1 / -1' }}>
+                <div className="loading-spinner" />
+                <p>Loading properties...</p>
               </div>
             )}
+
             {!loading && filteredProperties.length === 0 && (
-              <div className="properties-empty" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem 1rem' }}>
-                <p style={{ fontSize: '1.5rem' }}>🏠</p>
-                <p style={{ fontSize: '1.1rem', fontWeight: 600, color: '#333' }}>No Properties Found</p>
-                <p style={{ fontSize: '0.9rem', color: '#888' }}>
-                  {searchTerm ? 'Try adjusting your search terms.' : 'Properties will appear here once they are listed.'}
-                </p>
+              <div className="no-results" style={{ gridColumn: '1 / -1' }}>
+                <div className="no-results-content">
+                  <p style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🏠</p>
+                  <h3>No Properties Found</h3>
+                  <p>Try adjusting your filters or search criteria.</p>
+                </div>
               </div>
             )}
-            {filteredProperties.map(property => (
-              <div
+
+            {filteredProperties.map((property) => (
+              <article
                 key={property.id}
-                className="property-item"
+                className="property-card-enhanced"
                 onClick={() => setSelectedProperty(property)}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') setSelectedProperty(property);
+                }}
+                role="button"
+                aria-label={`View ${property.title}`}
               >
-                <div className="property-image">
-                  <img src={property.image} alt={property.title} loading="lazy" width={400} height={260} />
+                {/* Card Image */}
+                <div className="card-image-wrapper">
+                  <img
+                    src={property.image}
+                    alt={property.title}
+                    loading="lazy"
+                    width={400}
+                    height={260}
+                    className="card-main-image"
+                  />
+                  <div className="card-badges">
+                    {property.featured && (
+                      <span className="badge featured">Featured</span>
+                    )}
+                    <span className={`badge purpose ${property.purpose}`}>
+                      {property.purpose === 'buy' ? 'For Sale' : 'For Rent'}
+                    </span>
+                  </div>
+                  <button
+                    className={`card-fav-btn ${isFavorite(property.id) ? 'active' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleFavoriteToggle(property);
+                    }}
+                    aria-label={
+                      isFavorite(property.id)
+                        ? 'Remove from favorites'
+                        : 'Add to favorites'
+                    }
+                  >
+                    <Heart
+                      size={18}
+                      fill={isFavorite(property.id) ? '#DC2626' : 'none'}
+                      stroke={isFavorite(property.id) ? '#DC2626' : 'white'}
+                    />
+                  </button>
                 </div>
-                <div className="property-info">
-                  <h3>{property.title}</h3>
-                  <p className="location">
-                    <MapPin size={16} /> {property.location}
+
+                {/* Card Content */}
+                <div className="card-content">
+                  <span className="card-type">{property.type}</span>
+                  <h3 className="card-title">{property.title}</h3>
+                  <p className="card-location">
+                    <MapPin size={14} />
+                    {property.location}
                   </p>
-                  <div className="property-specs">
-                    <span><Bed size={16} /> {property.beds} Beds</span>
-                    <span><Bath size={16} /> {property.baths} Baths</span>
-                    <span><Maximize size={16} /> {property.sqft.toLocaleString()} sqft</span>
+
+                  <div className="card-specs">
+                    <span><Bed size={14} /> {property.beds} Beds</span>
+                    <span><Bath size={14} /> {property.baths} Baths</span>
+                    <span><Maximize size={14} /> {property.sqft.toLocaleString()} sqft</span>
+                  </div>
+
+                  {property.amenities.length > 0 && (
+                    <div className="card-amenities">
+                      {property.amenities.slice(0, 3).map((a) => (
+                        <span key={a} className="amenity-chip">{a}</span>
+                      ))}
+                      {property.amenities.length > 3 && (
+                        <span className="amenity-chip more">
+                          +{property.amenities.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="card-footer">
+                    <span className="card-price">
+                      AED {property.price.toLocaleString()}
+                    </span>
+                    <span className="view-details-btn">
+                      Details <ChevronRight size={14} className="rotated" />
+                    </span>
                   </div>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </section>
 
+        {/* ─── Detail Modal ─────────────────────────────────── */}
         {selectedProperty && (
           <PropertyDetailModal
             property={selectedProperty}

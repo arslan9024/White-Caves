@@ -27,6 +27,16 @@ vi.mock('../components/WhatsAppButton', () => ({
   default: () => <div data-testid="whatsapp-btn">WhatsApp</div>,
 }));
 
+// Mock PropertyFilterPanel to simplify PropertiesPage tests
+vi.mock('./properties/PropertyFilterPanel', () => ({
+  default: ({ resultCount, totalCount }: { resultCount: number; totalCount: number }) => (
+    <div data-testid="filter-panel">
+      <span data-testid="result-count">{resultCount}</span>
+      <span data-testid="total-count">{totalCount}</span>
+    </div>
+  ),
+}));
+
 // Mock the async thunk so it resolves immediately without hitting the network
 const mockAuthFetchForProperties = vi.fn();
 vi.mock('../utils/authFetch', () => ({
@@ -54,6 +64,7 @@ import dashboardReducer from '../store/dashboardSlice';
 import userReducer from '../store/userSlice';
 import navigationReducer from '../store/navigationSlice';
 import authReducer from '../store/authSlice';
+import propertyReducer from '../store/propertySlice';
 
 // ── Helpers ──────────────────────────────────────────────────────
 
@@ -71,6 +82,7 @@ const createMockStore = (crmOverrides: Record<string, unknown> = {}) => {
       user: userReducer,
       navigation: navigationReducer,
       auth: authReducer,
+      properties: propertyReducer,
     },
     preloadedState: {
       crmData: {
@@ -143,13 +155,13 @@ describe('PropertiesPage', () => {
 
     it('should render hero section', () => {
       renderPage();
-      expect(screen.getByText('Find Your Dream Property')).toBeInTheDocument();
-      expect(screen.getByText('Browse our exclusive collection of properties across Dubai')).toBeInTheDocument();
+      expect(screen.getByText('Discover Luxury Properties')).toBeInTheDocument();
+      expect(screen.getByText(/Browse our exclusive collection/)).toBeInTheDocument();
     });
 
-    it('should render search bar', () => {
+    it('should render filter panel', () => {
       renderPage();
-      expect(screen.getByPlaceholderText('Search properties by location, type, or price...')).toBeInTheDocument();
+      expect(screen.getByTestId('filter-panel')).toBeInTheDocument();
     });
 
     it('should render view toggle buttons', () => {
@@ -212,82 +224,30 @@ describe('PropertiesPage', () => {
 
   // ── Search ───────────────────────────────────────────────────
 
-  describe('Search', () => {
-    it('should filter properties by search term', async () => {
-      renderPage();
-      // Wait for loading to finish
-      await waitFor(() => {
-        expect(screen.getByText('Palm Villa')).toBeInTheDocument();
-      });
-      const input = screen.getByPlaceholderText('Search properties by location, type, or price...');
-      fireEvent.change(input, { target: { value: 'Palm' } });
-
-      expect(screen.getByText('Palm Villa')).toBeInTheDocument();
-      expect(screen.queryByText('Marina Apartment')).not.toBeInTheDocument();
-      expect(screen.queryByText('Downtown Penthouse')).not.toBeInTheDocument();
-    });
-
-    it('should filter by location', async () => {
-      renderPage();
-      await waitFor(() => {
-        expect(screen.getByText('Marina Apartment')).toBeInTheDocument();
-      });
-      const input = screen.getByPlaceholderText('Search properties by location, type, or price...');
-      fireEvent.change(input, { target: { value: 'Marina' } });
-
-      expect(screen.getByText('Marina Apartment')).toBeInTheDocument();
-      expect(screen.queryByText('Palm Villa')).not.toBeInTheDocument();
-    });
-
-    it('should filter by type', async () => {
-      renderPage();
-      await waitFor(() => {
-        expect(screen.getByText('Downtown Penthouse')).toBeInTheDocument();
-      });
-      const input = screen.getByPlaceholderText('Search properties by location, type, or price...');
-      fireEvent.change(input, { target: { value: 'Penthouse' } });
-
-      expect(screen.getByText('Downtown Penthouse')).toBeInTheDocument();
-      expect(screen.queryByText('Palm Villa')).not.toBeInTheDocument();
-    });
-
-    it('should show empty state when no properties match', async () => {
+  describe('Filter Panel Integration', () => {
+    it('should pass result counts to filter panel', async () => {
       renderPage();
       await waitFor(() => {
         expect(screen.getByText('Palm Villa')).toBeInTheDocument();
       });
-      const input = screen.getByPlaceholderText('Search properties by location, type, or price...');
-      fireEvent.change(input, { target: { value: 'nonexistent xyz' } });
-
-      expect(screen.getByText('No Properties Found')).toBeInTheDocument();
-      expect(screen.getByText('Try adjusting your search terms.')).toBeInTheDocument();
-    });
-
-    it('should be case-insensitive', async () => {
-      renderPage();
-      await waitFor(() => {
-        expect(screen.getByText('Palm Villa')).toBeInTheDocument();
-      });
-      const input = screen.getByPlaceholderText('Search properties by location, type, or price...');
-      fireEvent.change(input, { target: { value: 'palm villa' } });
-
-      expect(screen.getByText('Palm Villa')).toBeInTheDocument();
+      expect(screen.getByTestId('result-count')).toBeInTheDocument();
+      expect(screen.getByTestId('total-count')).toBeInTheDocument();
     });
   });
 
   // ── Loading / Empty States ───────────────────────────────────
 
   describe('Loading & Empty States', () => {
-    it('should show loading state initially before API resolves', () => {
+    it('should show loading state when loading is true', () => {
+      // Use a never-resolving promise so loading stays true
+      mockAuthFetchForProperties.mockReturnValue(new Promise(() => {}));
       renderPage({
-        properties: { items: [], selected: null, loading: false, error: null },
+        properties: { items: [], selected: null, loading: true, error: null },
       });
-      // The dispatch of fetchPropertiesFromAPI triggers pending → loading=true
       expect(screen.getByText(/Loading properties/)).toBeInTheDocument();
     });
 
     it('should show empty state when no properties exist after loading completes', async () => {
-      // Mock API to return empty
       mockAuthFetchForProperties.mockResolvedValue({
         ok: true,
         json: async () => ({ data: [] }),
@@ -295,11 +255,10 @@ describe('PropertiesPage', () => {
       renderPage({
         properties: { items: [], selected: null, loading: false, error: null },
       });
-      // Wait for fetchPropertiesFromAPI to resolve (mocked to return empty data)
       await waitFor(() => {
         expect(screen.getByText('No Properties Found')).toBeInTheDocument();
       });
-      expect(screen.getByText('Properties will appear here once they are listed.')).toBeInTheDocument();
+      expect(screen.getByText('Try adjusting your filters or search criteria.')).toBeInTheDocument();
     });
   });
 
@@ -311,7 +270,7 @@ describe('PropertiesPage', () => {
       await waitFor(() => {
         expect(screen.getByText('Palm Villa')).toBeInTheDocument();
       });
-      const propertyCard = screen.getByText('Palm Villa').closest('.property-item');
+      const propertyCard = screen.getByText('Palm Villa').closest('.property-card-enhanced');
       fireEvent.click(propertyCard!);
       expect(screen.getByTestId('property-modal')).toBeInTheDocument();
     });
@@ -321,7 +280,7 @@ describe('PropertiesPage', () => {
       await waitFor(() => {
         expect(screen.getByText('Palm Villa')).toBeInTheDocument();
       });
-      const propertyCard = screen.getByText('Palm Villa').closest('.property-item');
+      const propertyCard = screen.getByText('Palm Villa').closest('.property-card-enhanced');
       fireEvent.click(propertyCard!);
       fireEvent.click(screen.getByTestId('modal-close'));
       expect(screen.queryByTestId('property-modal')).not.toBeInTheDocument();
