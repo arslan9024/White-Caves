@@ -58,8 +58,15 @@ vi.mock('react-redux', async () => {
     ...actual,
     useSelector: (selector: (state: Record<string, unknown>) => unknown) =>
       selector({ user: { currentUser: mockUser } }),
+    useDispatch: () => vi.fn(),
   };
 });
+
+// Mock propertySlice for HeroSearchBar integration
+vi.mock('../../../store/propertySlice', () => ({
+  setFilters: vi.fn((payload: unknown) => ({ type: 'properties/setFilters', payload })),
+  clearFilters: vi.fn(() => ({ type: 'properties/clearFilters' })),
+}));
 
 // Import after mocks
 import Hero from './Hero';

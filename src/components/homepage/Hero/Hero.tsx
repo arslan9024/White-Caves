@@ -4,6 +4,7 @@ import { ArrowRight, Play, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
+import HeroSearchBar from './HeroSearchBar';
 import './Hero.css';
 
 interface AnimatedCounterProps {
@@ -191,6 +192,10 @@ const Hero: React.FC = () => {
           Experience unparalleled luxury living in Dubai's most prestigious locations.
           White Caves Real Estate brings you exclusive properties with world-class amenities.
         </motion.p>
+
+        <motion.div variants={itemVariants}>
+          <HeroSearchBar />
+        </motion.div>
 
         <motion.div className="hero-cta-group" variants={itemVariants}>
           <motion.button 
