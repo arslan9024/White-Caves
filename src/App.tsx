@@ -135,6 +135,7 @@ const AgentPerformancePage = lazy(() => import('./pages/crm/AgentPerformancePage
 
 // Public Pages
 const PropertiesPage = lazy(() => import('./pages/PropertiesPage'));
+const PropertyDetailPage = lazy(() => import('./pages/PropertyDetailPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const ServicesPage = lazy(() => import('./pages/ServicesPage'));
 const CareersPage = lazy(() => import('./pages/CareersPage'));
@@ -245,6 +246,13 @@ function App(): React.JSX.Element {
                 <RouteErrorBoundary section="Properties">
                   <Suspense fallback={<SuspenseLoader />}>
                     <PropertiesPage />
+                  </Suspense>
+                </RouteErrorBoundary>
+              } />
+              <Route path="/property/:id" element={
+                <RouteErrorBoundary section="PropertyDetail">
+                  <Suspense fallback={<SuspenseLoader />}>
+                    <PropertyDetailPage />
                   </Suspense>
                 </RouteErrorBoundary>
               } />

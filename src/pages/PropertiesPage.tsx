@@ -5,8 +5,9 @@ import AppLayout from '../components/layout/AppLayout';
 import Footer from '../components/Footer';
 import PropertyFilterPanel from './properties/PropertyFilterPanel';
 import { PropertyDetailModal } from '../shared/components/property';
+import { Link } from 'react-router-dom';
 import {
-  Grid, List, Map as MapIcon, MapPin, Bed, Bath, Maximize, Heart, ChevronRight,
+  Grid, List, Map as MapIcon, MapPin, Bed, Bath, Maximize, Heart, Share2, ChevronRight,
 } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import './PropertiesPage.css';
@@ -193,9 +194,30 @@ const PropertiesPage: FC<PropertiesPageProps> = () => {
                     <span className="card-price">
                       AED {property.price.toLocaleString()}
                     </span>
-                    <span className="view-details-btn">
-                      Details <ChevronRight size={14} className="rotated" />
-                    </span>
+                    <div className="card-footer-actions">
+                      <button
+                        className="card-share-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const url = `${window.location.origin}/property/${property.id}`;
+                          if (navigator.share) {
+                            navigator.share({ title: property.title, url }).catch(() => {});
+                          } else {
+                            navigator.clipboard.writeText(url).catch(() => {});
+                          }
+                        }}
+                        aria-label="Share property"
+                      >
+                        <Share2 size={14} />
+                      </button>
+                      <Link
+                        to={`/property/${property.id}`}
+                        className="view-details-btn"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Details <ChevronRight size={14} />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </article>
