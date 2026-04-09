@@ -151,7 +151,7 @@ export const OwnerBadge = styled.button<{ $multiPhone?: boolean }>`
 
   &:hover {
     border-color: var(--primary);
-    background: rgba(220, 38, 38, 0.05);
+    background: rgba(212, 175, 55, 0.05);
   }
 `;
 

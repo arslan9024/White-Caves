@@ -315,7 +315,7 @@ export const FavoriteBtn = styled.button`
 
   &:hover {
     color: var(--primary-color);
-    background: rgba(220, 38, 38, 0.1);
+    background: rgba(212, 175, 55, 0.1);
   }
 
   svg {

@@ -311,7 +311,7 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
                 ) : (
                   notifications.slice(0, 5).map((notif: NotificationItem_T, idx: number) => (
                     <NotificationItem key={notif.id ?? `${notif.title}-${idx}`} $unread={!notif.isRead}>
-                      <NotifIcon $color={notif.color || '#D32F2F'}>
+                      <NotifIcon $color={notif.color || '#D4AF37'}>
                         {notif.icon || <Bell size={14} />}
                       </NotifIcon>
                       <NotifContent>

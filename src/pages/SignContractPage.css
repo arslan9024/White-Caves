@@ -106,7 +106,7 @@
 }
 
 .home-btn:hover {
-  background: #D32F2F;
+  background: #B8960C;
   transform: translateY(-2px);
 }
 
@@ -154,7 +154,7 @@
 }
 
 .role-badge {
-  background: linear-gradient(135deg, #D4AF37 0%, #D32F2F 100%);
+  background: linear-gradient(135deg, #D4AF37 0%, #B8960C 100%);
   color: #000;
   padding: 12px 20px;
   border-radius: 8px;
@@ -370,7 +370,7 @@
 }
 
 .submit-signature-btn {
-  background: linear-gradient(135deg, #D4AF37 0%, #D32F2F 100%);
+  background: linear-gradient(135deg, #D4AF37 0%, #B8960C 100%);
   color: #000;
   border: none;
   padding: 15px 50px;

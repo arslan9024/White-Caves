@@ -388,8 +388,8 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
   executive: {
     name: 'Executive',
     icon: 'Globe',
-    color: '#DC2626',
-    bgGradient: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
+    color: '#D4AF37',
+    bgGradient: 'linear-gradient(135deg, #D4AF37 0%, #991B1B 100%)',
     description: 'Strategic oversight, KPIs, executive reports, and board insights',
     metrics: [
       { label: 'Revenue YTD', value: 'AED 24.8M', change: '+32%', trend: 'up' },

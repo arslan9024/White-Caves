@@ -47,7 +47,7 @@ export const Select = styled.select`
   &:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
   }
 
   &:disabled {
@@ -61,8 +61,8 @@ export const Select = styled.select`
     color: #e2e8f0;
 
     &:focus {
-      border-color: #dc2626;
-      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+      border-color: #D4AF37;
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     }
   }
 `;

@@ -130,7 +130,7 @@
 
 .category-card.active {
   border-color: var(--primary-color);
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(212, 175, 55, 0.1);
 }
 
 .category-name {
@@ -250,9 +250,9 @@
 }
 
 .btn-sm.danger {
-  background: rgba(220, 38, 38, 0.1);
-  border-color: rgba(220, 38, 38, 0.3);
-  color: #dc2626;
+  background: rgba(212, 175, 55, 0.1);
+  border-color: rgba(212, 175, 55, 0.3);
+  color: #D4AF37;
 }
 
 .users-table-container {
@@ -415,9 +415,9 @@
 }
 
 .action-btn.danger:hover {
-  background: rgba(220, 38, 38, 0.1);
-  border-color: rgba(220, 38, 38, 0.3);
-  color: #dc2626;
+  background: rgba(212, 175, 55, 0.1);
+  border-color: rgba(212, 175, 55, 0.3);
+  color: #D4AF37;
 }
 
 .no-results {

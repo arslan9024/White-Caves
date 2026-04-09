@@ -50,7 +50,7 @@ export const ClearFiltersBtn = styled.button`
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(220, 38, 38, 0.1);
+    background: rgba(212, 175, 55, 0.08);
     border-color: var(--primary);
     color: var(--primary);
   }

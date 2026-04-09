@@ -120,7 +120,7 @@ const FieldItemRenderer = ({ config, value }: { config: FieldConfig; value: unkn
         justifyContent: 'center',
         width: '28px',
         height: '28px',
-        background: 'rgba(220, 38, 38, 0.1)',
+        background: 'rgba(212, 175, 55, 0.1)',
         borderRadius: '6px',
         color: 'var(--primary)',
         flexShrink: 0

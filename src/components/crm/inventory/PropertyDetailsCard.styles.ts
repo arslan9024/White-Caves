@@ -53,7 +53,7 @@ export const StatusBadge = styled.span<{ $status?: string }>`
       case 'available':
         return '#3b82f6';
       case 'sold':
-        return '#dc2626';
+        return '#D4AF37';
       case 'reserved':
         return '#f59e0b';
       default:
@@ -110,7 +110,7 @@ export const FieldItem = styled.div<{ $empty?: boolean }>`
   opacity: ${(props) => (props.$empty ? '0.5' : '1')};
 
   &:hover {
-    background: rgba(220, 38, 38, 0.05);
+    background: rgba(212, 175, 55, 0.05);
   }
 `;
 
@@ -120,7 +120,7 @@ export const FieldIcon = styled.div`
   justify-content: center;
   width: 28px;
   height: 28px;
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(212, 175, 55, 0.1);
   border-radius: 6px;
   color: var(--primary);
   flex-shrink: 0;
@@ -235,7 +235,7 @@ export const ContactBadge = styled.span`
 
 export const MoreContacts = styled.span`
   padding: 3px 8px;
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(212, 175, 55, 0.1);
   border-radius: 4px;
   font-size: 11px;
   color: var(--primary);

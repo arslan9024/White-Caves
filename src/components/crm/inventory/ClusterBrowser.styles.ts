@@ -66,7 +66,7 @@ export const ClusterChip = styled.button<{ $active?: boolean }>`
 
   &:hover {
     border-color: var(--primary);
-    background: ${props => props.$active ? 'var(--primary)' : 'rgba(220, 38, 38, 0.05)'};
+    background: ${props => props.$active ? 'var(--primary)' : 'rgba(212, 175, 55, 0.05)'};
   }
 
   &:active {
@@ -74,12 +74,12 @@ export const ClusterChip = styled.button<{ $active?: boolean }>`
   }
 
   @media (prefers-color-scheme: dark) {
-    background: ${props => props.$active ? '#dc2626' : '#333333'};
-    border-color: ${props => props.$active ? '#dc2626' : '#444444'};
+    background: ${props => props.$active ? '#D4AF37' : '#333333'};
+    border-color: ${props => props.$active ? '#D4AF37' : '#444444'};
     color: ${props => props.$active ? 'white' : '#e2e8f0'};
 
     &:hover {
-      background: ${props => props.$active ? '#b91c1c' : 'rgba(220, 38, 38, 0.15)'};
+      background: ${props => props.$active ? '#B8960C' : 'rgba(212, 175, 55, 0.15)'};
     }
   }
 `;

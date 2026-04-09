@@ -253,7 +253,7 @@ export const PropertyPrice = styled.p`
   margin: 0;
 
   [data-theme='dark'] & {
-    color: var(--primary, #dc2626);
+    color: var(--primary, #D4AF37);
   }
 `;
 
@@ -308,8 +308,8 @@ export const ScrollButton = styled.button`
     color: var(--text-primary, white);
 
     &:hover {
-      background: var(--primary, #dc2626);
-      border-color: var(--primary, #dc2626);
+      background: var(--primary, #D4AF37);
+      border-color: var(--primary, #D4AF37);
       color: white;
     }
   }

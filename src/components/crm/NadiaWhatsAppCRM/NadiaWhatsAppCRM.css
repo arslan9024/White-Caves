@@ -1,4 +1,4 @@
-﻿
+
 /* CONSOLIDATED: Nadia WhatsApp header/avatar patterns now use crm-base.css */
 /* This removes ~0.8KB of duplicate header/avatar/status styles */
 
@@ -382,7 +382,7 @@
 
 .chat-action-btn:hover {
   background: var(--bg-hover, #f3f4f6);
-  color: var(--primary-color, #dc2626);
+  color: var(--primary-color, #D4AF37);
 }
 
 /* Messages */

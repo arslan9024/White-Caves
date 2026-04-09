@@ -224,9 +224,9 @@ export const AmenityTag = styled.span`
     border-color: var(--border-color, #3a3a5a);
 
     &:hover {
-      background: var(--primary, #dc2626);
+      background: var(--primary, #D4AF37);
       color: white;
-      border-color: var(--primary, #dc2626);
+      border-color: var(--primary, #D4AF37);
     }
   }
 `;

@@ -44,13 +44,13 @@
 }
 
 .primary-btn {
-  background: linear-gradient(135deg, #DC2626, #B91C1C);
+  background: linear-gradient(135deg, #D4AF37, #B8960C);
   color: white;
 }
 
 .primary-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
 }
 
 .secondary-btn {
@@ -419,7 +419,7 @@
 .property-thumb {
   width: 40px;
   height: 40px;
-  background: rgba(220, 38, 38, 0.2);
+  background: rgba(212, 175, 55, 0.2);
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -544,8 +544,8 @@
 }
 
 .page-btn.active {
-  background: #DC2626;
-  border-color: #DC2626;
+  background: #D4AF37;
+  border-color: #D4AF37;
   color: white;
 }
 
@@ -573,7 +573,7 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #DC2626, #B91C1C);
+  background: linear-gradient(135deg, #D4AF37, #B8960C);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -605,7 +605,7 @@
 }
 
 .agent-role {
-  color: #DC2626;
+  color: #D4AF37;
   font-size: 0.85rem;
   margin: 0 0 8px;
 }
@@ -825,7 +825,7 @@
 
 .emirate-bar {
   height: 100%;
-  background: linear-gradient(90deg, #DC2626, #F87171);
+  background: linear-gradient(90deg, #D4AF37, #F87171);
   border-radius: 4px;
 }
 
@@ -904,7 +904,7 @@
 }
 
 .range-btn.active {
-  background: #DC2626;
+  background: #D4AF37;
   color: white;
 }
 
@@ -1081,7 +1081,7 @@
 
 .action-card:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: #DC2626;
+  border-color: #D4AF37;
 }
 
 .action-card .action-icon {
@@ -1331,7 +1331,7 @@
 .user-avatar {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #DC2626, #B91C1C);
+  background: linear-gradient(135deg, #D4AF37, #B8960C);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1376,7 +1376,7 @@
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #DC2626;
+  border-color: #D4AF37;
 }
 
 .form-row {
@@ -1462,7 +1462,7 @@
 }
 
 .toggle-switch input:checked + .toggle-slider {
-  background-color: #DC2626;
+  background-color: #D4AF37;
 }
 
 .toggle-switch input:checked + .toggle-slider::before {
@@ -1620,7 +1620,7 @@
 
 .trend-bar {
   width: 100%;
-  background: linear-gradient(to top, #DC2626, #F87171);
+  background: linear-gradient(to top, #D4AF37, #F87171);
   border-radius: 4px 4px 0 0;
 }
 

@@ -211,8 +211,8 @@ export const ItemLabel = styled.span`
 `;
 
 export const ItemBadge = styled.span`
-  background: rgba(220, 38, 38, 0.2);
-  color: #dc2626;
+  background: rgba(212, 175, 55, 0.15);
+  color: #D4AF37;
   font-size: 11px;
   font-weight: 600;
   padding: 2px 6px;

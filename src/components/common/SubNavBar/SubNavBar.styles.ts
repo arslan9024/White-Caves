@@ -104,11 +104,11 @@ export const SubNavItem = styled.button<{ $isActive?: boolean }>`
   ${(props) =>
     props.$isActive
       ? `
-    background: var(--primary-color, #DC2626);
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+    background: var(--primary-color, #D4AF37);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
 
     &:hover {
-      background: var(--primary-dark, #b91c1c);
+      background: var(--primary-dark, #B8960C);
       transform: translateY(-1px);
     }
   `
@@ -184,7 +184,7 @@ export const SubNavActionButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, var(--primary-color, #DC2626), var(--accent-color, #f59e0b));
+  background: linear-gradient(135deg, var(--primary-color, #D4AF37), var(--accent-color, #f59e0b));
   color: white;
   border: none;
   border-radius: 8px;
@@ -196,7 +196,7 @@ export const SubNavActionButton = styled.button`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+    box-shadow: 0 6px 16px rgba(212, 175, 55, 0.3);
   }
 `;
 

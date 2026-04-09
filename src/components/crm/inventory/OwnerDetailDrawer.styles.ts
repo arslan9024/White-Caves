@@ -56,14 +56,14 @@ export const OwnerAvatar = styled.div`
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(212, 175, 55, 0.1);
   color: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
 
   [data-theme='dark'] & {
-    background: rgba(220, 38, 38, 0.2);
+    background: rgba(212, 175, 55, 0.15);
   }
 `;
 
@@ -178,10 +178,10 @@ export const ContactItem = styled.div<{ $isPrimary?: boolean }>`
     props.$isPrimary &&
     `
     border-color: var(--primary);
-    background: rgba(220, 38, 38, 0.05);
+    background: rgba(212, 175, 55, 0.05);
 
     [data-theme='dark'] & {
-      background: rgba(220, 38, 38, 0.15);
+      background: rgba(212, 175, 55, 0.12);
     }
   `};
 
@@ -230,7 +230,7 @@ export const PropertyItem = styled.button`
 
   &:hover {
     border-color: var(--primary);
-    background: rgba(220, 38, 38, 0.05);
+    background: rgba(212, 175, 55, 0.05);
   }
 
   [data-theme='dark'] & {
@@ -238,7 +238,7 @@ export const PropertyItem = styled.button`
     border-color: var(--border-color, #3a3a5a);
 
     &:hover {
-      background: rgba(220, 38, 38, 0.15);
+      background: rgba(212, 175, 55, 0.12);
     }
   }
 `;

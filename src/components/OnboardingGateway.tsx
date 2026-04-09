@@ -59,7 +59,7 @@ const OnboardingGateway: React.FC = () => {
       ),
       path: '/seller/dashboard',
       role: 'seller',
-      color: '#D32F2F'
+      color: '#D4AF37'
     },
     {
       id: 'buyer',
