@@ -1204,8 +1204,8 @@ const crmDataSlice = createSlice({
         state.notifications.error = null;
       })
       .addCase(fetchUnreadCountAPI.fulfilled, (state, action) => {
-        if (action.payload && typeof (action.payload as { count?: number }).count === 'number') {
-          state.notifications.unreadCount = (action.payload as { count: number }).count;
+        if (action.payload && typeof (action.payload as { unreadCount?: number }).unreadCount === 'number') {
+          state.notifications.unreadCount = (action.payload as { unreadCount: number }).unreadCount;
         }
       })
       .addCase(fetchUnreadCountAPI.rejected, (state, action) => {

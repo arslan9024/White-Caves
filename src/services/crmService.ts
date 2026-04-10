@@ -137,7 +137,7 @@ export async function fetchNotifications(params?: Record<string, string>) {
 
 export async function fetchUnreadCount() {
   const res = await authFetch(`${API}/notifications/unread-count`);
-  return parseResponse<{ count: number }>(res);
+  return parseResponse<{ unreadCount: number }>(res);
 }
 
 export async function markNotificationRead(id: string) {
@@ -188,7 +188,7 @@ export async function removeFavorite(propertyId: string) {
 
 export async function checkFavorite(propertyId: string) {
   const res = await authFetch(`${API}/favorites/check/${propertyId}`);
-  return parseResponse<{ isFavorite: boolean }>(res);
+  return parseResponse<{ isFavorited: boolean }>(res);
 }
 
 // ─── Users (Management) ────────────────────────────────────────────────
