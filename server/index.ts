@@ -31,6 +31,10 @@ import reportingRoutes from './routes/reporting.js';
 import complianceRoutes from './routes/compliance.js';
 import crmRoutes from './routes/crm.js';
 import assistantsRoutes from './routes/assistants.js';
+import clientsRoutes from './routes/clients.js';
+import notificationsRoutes from './routes/notifications.js';
+import favoritesRoutes from './routes/favorites.js';
+import usersRoutes from './routes/users.js';
 
 // Load environment variables
 dotenv.config();
@@ -222,6 +226,18 @@ app.use('/api/crm', crmRoutes);
 
 // AI Assistants API (Phase 0.8 — plan management)
 app.use('/api/assistants', assistantsRoutes);
+
+// Clients API (Client/Owner management)
+app.use('/api/clients', clientsRoutes);
+
+// Notifications API (In-app notifications)
+app.use('/api/notifications', notificationsRoutes);
+
+// Favorites API (Property favorites/bookmarks)
+app.use('/api/favorites', favoritesRoutes);
+
+// Users Management API (RBAC, role/status management)
+app.use('/api/users', usersRoutes);
 
 // ============================================================================
 // STUB ROUTES — Placeholder APIs for frontend pages not yet backed by full CRUD
