@@ -14,6 +14,7 @@ import { parsePagination } from '../config/pagination';
 
 const VALID_CLIENT_TYPES = ['buyer', 'seller', 'owner', 'investor'] as const;
 const VALID_CLIENT_STATUSES = ['active', 'inactive', 'vip'] as const;
+const AGENT_AND_ABOVE_ROLES = ['owner', 'manager', 'admin', 'agent'];
 
 const router = Router();
 
@@ -22,7 +23,7 @@ router.get(
   '/',
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only owner, manager, admin, agent can access clients
-    const allowedRoles = ['owner', 'manager', 'admin', 'agent'];
+    const allowedRoles = AGENT_AND_ABOVE_ROLES;
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
       throw new AppError('Access denied — client data requires agent role or above', 403);
     }
@@ -110,7 +111,7 @@ router.get(
     validateIdParam(req.params.id, 'Client ID');
 
     // AUTHORIZATION: Only owner, manager, admin, agent can access
-    const allowedRoles = ['owner', 'manager', 'admin', 'agent'];
+    const allowedRoles = AGENT_AND_ABOVE_ROLES;
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
       throw new AppError('Access denied — client details require agent role or above', 403);
     }
@@ -127,7 +128,7 @@ router.post(
   '/',
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only owner, manager, admin, agent can create clients
-    const allowedRoles = ['owner', 'manager', 'admin', 'agent'];
+    const allowedRoles = AGENT_AND_ABOVE_ROLES;
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
       throw new AppError('Access denied — client creation requires agent role or above', 403);
     }
@@ -188,7 +189,7 @@ router.patch(
     validateIdParam(id, 'Client ID');
 
     // AUTHORIZATION: Only owner, manager, admin, agent can update clients
-    const allowedRoles = ['owner', 'manager', 'admin', 'agent'];
+    const allowedRoles = AGENT_AND_ABOVE_ROLES;
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
       throw new AppError('Access denied — client update requires agent role or above', 403);
     }
@@ -251,7 +252,7 @@ router.delete(
     validateIdParam(id, 'Client ID');
 
     // AUTHORIZATION: Only owner, manager, admin, agent can delete clients
-    const allowedRoles = ['owner', 'manager', 'admin', 'agent'];
+    const allowedRoles = AGENT_AND_ABOVE_ROLES;
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
       throw new AppError('Access denied — client deletion requires agent role or above', 403);
     }
@@ -283,7 +284,7 @@ router.get(
     validateIdParam(req.params.id, 'Client ID');
 
     // AUTHORIZATION: Only owner, manager, admin, agent can access
-    const allowedRoles = ['owner', 'manager', 'admin', 'agent'];
+    const allowedRoles = AGENT_AND_ABOVE_ROLES;
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
       throw new AppError('Access denied — client communications require agent role or above', 403);
     }
@@ -291,9 +292,10 @@ router.get(
     const client = await prisma.client.findUnique({ where: { id: req.params.id } });
     if (!client) throw new AppError('Client not found', 404);
 
-    const { page = '1', pageSize = '20' } = req.query;
-    const pageNum = Math.max(1, parseInt(page as string) || 1);
-    const limit = Math.min(50, Math.max(1, parseInt(pageSize as string) || 20));
+    const { page: pageNum, limit, skip } = parsePagination({
+      page: req.query.page as string,
+      limit: req.query.pageSize as string,
+    });
 
     // Activities related to this client are logged with type 'client' and description containing client name
     const where = {
@@ -305,7 +307,7 @@ router.get(
       prisma.activity.findMany({
         where,
         orderBy: { createdAt: 'desc' },
-        skip: (pageNum - 1) * limit,
+        skip,
         take: limit,
         include: { user: { select: { id: true, name: true } } },
       }),

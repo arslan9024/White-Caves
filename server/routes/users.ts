@@ -13,6 +13,7 @@ import { parsePagination } from '../config/pagination';
 
 const VALID_ROLES = ['owner', 'manager', 'admin', 'agent', 'finance', 'viewer'] as const;
 const VALID_USER_STATUSES = ['active', 'inactive'] as const;
+const OWNER_MANAGER_ROLES = ['owner', 'manager'];
 
 const router = Router();
 
@@ -21,7 +22,7 @@ router.get(
   '/',
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only owner/manager can list all users
-    const allowedRoles = ['owner', 'manager'];
+    const allowedRoles = OWNER_MANAGER_ROLES;
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
       throw new AppError('Access denied — user listing requires manager role or above', 403);
     }
@@ -79,7 +80,7 @@ router.get(
   '/stats',
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only owner/manager can view user statistics
-    const allowedRoles = ['owner', 'manager'];
+    const allowedRoles = OWNER_MANAGER_ROLES;
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
       throw new AppError('Access denied — user statistics require manager role or above', 403);
     }
@@ -114,7 +115,7 @@ router.get(
     validateIdParam(req.params.id, 'User ID');
 
     // AUTHORIZATION: Only owner/manager can view user details
-    const allowedRoles = ['owner', 'manager'];
+    const allowedRoles = OWNER_MANAGER_ROLES;
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
       throw new AppError('Access denied — user details require manager role or above', 403);
     }
@@ -187,7 +188,7 @@ router.patch(
     validateIdParam(id, 'User ID');
 
     // AUTHORIZATION: Only owner/manager can change user status
-    const allowedRoles = ['owner', 'manager'];
+    const allowedRoles = OWNER_MANAGER_ROLES;
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
       throw new AppError('Access denied — user status changes require manager role or above', 403);
     }
