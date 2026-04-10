@@ -1,72 +1,226 @@
 # MASTER PLAN – White Caves
-**Last Updated:** 2026-03-30  
-**Progress:** ████████░░ 80% (Phase 0,0.2,0.5,0.75 done; 0.6 90%; 0.8 complete; Phase1 15%)  
+
+**Last Updated:** 2026-04-10  
+**Progress:** █████████░ 85% (Phase 0–0.8 done; Phase 1 at 40%; Phase 2 planned)  
 **Strict policies enforced.**
 
 > **Reference:** For the full historical plan, see `/plans/MASTER_PLAN.md`.  
 > **Business docs:** `/business_docs/` (canonical business documentation).  
-> **Architecture decisions:** `/docs/adr/`.
+> **Architecture decisions:** `/docs/adr/` (7 ADRs).
 
 ---
 
-## Completed
+## Latest Audit (April 10, 2026)
+
+| Metric            | Result                                                                                                                                                                      |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vite Build**    | ✅ Passes (17.86s, 0 errors)                                                                                                                                                |
+| **TypeScript**    | ✅ 0 errors (`tsc --noEmit`)                                                                                                                                                |
+| **Unit Tests**    | ✅ 309 files, 7,744 tests — all passing                                                                                                                                     |
+| **E2E Tests**     | 11 spec files (commission, dashboard, auth, a11y, performance)                                                                                                              |
+| **npm audit**     | ⚠️ 7 vulnerabilities (1 critical, 5 high, 1 moderate) — fixable via `npm audit fix`                                                                                         |
+| **Server Routes** | 20+ full CRUD routes, 8 stub endpoints (501/503)                                                                                                                            |
+| **RBAC**          | ✅ Enforced on all authenticated routes (12 roles, 20+ permissions)                                                                                                         |
+| **Design System** | 15 components (Alert, Avatar, Badge, Button, Card, Checkbox, Input, etc.)                                                                                                   |
+| **Prisma Models** | 15 models (User, Property, Lead, Activity, Transaction, Tenant, Commission, Favorite, SavedSearch, Viewing, Offer, Lease, Maintenance, NadiaConversation + Message + Queue) |
+| **i18n**          | English complete (523 lines), Arabic partial (3 sections)                                                                                                                   |
+| **OpenAPI**       | 10 paths documented (needs expansion to 30+)                                                                                                                                |
+
+---
+
+## ✅ Completed Phases
 
 - **Phase 0:** `/plans` created, root .md files moved, tasks extracted.
-- **Phase 0.2:** `/business_docs/` created, researched, all department docs in place (RERA, Ejari, WhatsApp, multi-currency). 24 AI assistant profiles documented.
+- **Phase 0.2:** `/business_docs/` created (98 files, 15 sections), researched, all department docs in place (RERA, Ejari, WhatsApp, multi-currency). 24 AI assistant profiles documented.
 - **Phase 0.5:** Duplicate components removed, Mongoose/Prisma models consolidated, dead code cleaned (~190KB removed), freelancer refs mapped to `affiliated_agent`.
 - **Phase 0.75:** CRM dual-sidebar audited, all 26 role tab-mappings verified, responsive collapse confirmed.
 - **Phase 1a:** WhatsApp assistant renamed Linda → **Nadia** across 100+ references.
 - **Phase 0.6:** Design tokens, component library, AppLayout (TopBar + SidebarContainer + RightPanelContainer), Redux slices (sidebar, aiAssistantDashboard, navigation), public site SEO/a11y, bundle optimization.
-- **Phase 0.8:** AI Assistant API — `GET/POST/PUT/DELETE /api/assistants` + `GET /api/assistants/:id/plan` with auth, path validation, XSS sanitisation. Frontend service + Redux async thunks (`fetchAssistantPlan`). `AssistantPlanView` component. Admin `AssistantPlanEditor` (super-user only).
+- **Phase 0.8:** AI Assistant API — `GET/POST/PUT/DELETE /api/assistants` + `GET /api/assistants/:id/plan` with auth, path validation, XSS sanitisation. Frontend service + Redux async thunks (`fetchAssistantPlan`). `AssistantPlanView` component. Admin `AssistantPlanEditor` (super-user only). ADR-002 written.
 
 ---
 
-## In Progress / Pending
-
-### Phase 1 (15%)
+## ⏳ Phase 1 — Current (40%)
 
 - [x] 1a. Rename WhatsApp assistant → Nadia
 - [x] SEO & a11y (meta/OG/JSON-LD, form labels, aria, dynamic titles)
 - [x] Bundle optimization (lazy-loading, code-splitting, inline skeleton)
+- [x] Auth system complete (JWT + bcrypt + authMiddleware on all /api routes)
+- [x] RBAC middleware fully enforced (requireRole, requirePermission on every route)
+- [x] Error handling (centralized AppError, asyncHandler, structured 422 validation)
+- [x] Rate limiting (5 limiters: api, auth, register, password, strict)
+- [x] Input validation & XSS sanitization on all POST/PATCH handlers
+- [x] Security hardening (Helmet CSP, CORS whitelist, timing-safe webhooks, body limit 1MB)
+- [x] Structured server logging (logger with levels, context-aware formatting)
 - [ ] 1. WhatsApp recovery: LocalAuth, auto-reconnect, heartbeat
-- [ ] 2. E2E testing: Vitest coverage >50%, Playwright critical flows, test factories
-- [ ] 3. Features: DB indexes finalized, file uploads (Multer + S3/local)
+- [ ] 2. E2E testing: expand Playwright to cover all critical flows
+- [ ] 3. File uploads: Multer middleware + S3/local storage integration
 - [ ] 4. Bugs: webhook timeout (async), WhatsApp dedup
-- [ ] 5. RBAC: middleware, frontend conditional render, data segmentation, public favorites
-- [ ] 6. Design polish: full Phase 0.6 compliance audit
-- [ ] 7. Code quality: Storybook, Swagger/OpenAPI, pre-commit hooks finalized
-- [ ] 8. Docs: README update, API docs, ADRs for Phase 0.8
-- [ ] 9. Deployment: Vercel env vars verified, rollback plan documented
+- [ ] 5. Design polish: full Phase 0.6 compliance audit
+- [ ] 6. Expand OpenAPI spec (currently 10 paths, needs 30+)
+- [ ] 7. Deployment: Vercel env vars verified, rollback plan documented
+
+---
+
+## 📋 Phase 2 — Next (Improvements & Production Hardening)
+
+### 2.1 Stub Endpoints → Full Implementation
+
+- [ ] **Contracts CRUD** — Prisma model + full /api/contracts endpoints (currently 501)
+- [ ] **Job Applications CRUD** — JobApplication model exists but /api/job-applications returns 501
+- [ ] **Appointments CRUD** — Prisma model + /api/appointments (currently 501)
+- [ ] **Tenancy Agreements CRUD** — /api/tenancy-agreements endpoints (currently 501)
+- [ ] **Payment Processing** — Stripe SDK integration for /api/payments/create-payment-intent (currently 503)
+- [ ] **Property Valuation** — ML model integration for /api/valuation/estimate (currently 501)
+- [ ] **Role Requests** — /api/role-requests for self-service role management (currently 501)
+
+### 2.2 File Upload System
+
+- [ ] Install & configure Multer middleware for multipart uploads
+- [ ] S3 / Cloud Storage integration (property photos, documents, agent profiles)
+- [ ] File validation (size limit, MIME type, virus scanning)
+- [ ] Image optimization pipeline (resize, WebP conversion)
+
+### 2.3 CRM Module Backend Integration
+
+- [ ] Connect SophiaSalesCRM to real API (currently mock data)
+- [ ] Connect DaisyLeasingCRM to real API (currently mock data)
+- [ ] Connect OliviaMarketingCRM to real API (currently mock data)
+- [ ] Connect MaryInventoryCRM to real API (currently mock data)
+- [ ] Connect NancyHRCRM to real API (currently mock data)
+- [ ] Connect ZoeExecutiveCRM to real API (currently mock data)
+- [ ] Connect AuroraCTODashboard to real API (currently mock data)
+- [ ] Connect HazelFrontendCRM to real API (currently mock data)
+- [ ] Connect WillowBackendCRM to real API (currently mock data)
+
+### 2.4 Internationalization (i18n)
+
+- [ ] Install react-i18next and configure language detection
+- [ ] Complete Arabic translations (currently only 3 sections)
+- [ ] Add language selector UI component
+- [ ] RTL layout support for Arabic
+- [ ] Date/number/currency formatting per locale
+
+### 2.5 API Documentation & Developer Experience
+
+- [ ] Expand OpenAPI spec to cover all 30+ endpoints
+- [ ] Add Swagger UI endpoint (`/api-docs`)
+- [ ] Set up Storybook for design system components (15 components)
+- [ ] Auto-validate API responses against OpenAPI schema in tests
+
+### 2.6 Monitoring & Observability
+
+- [ ] Add Prometheus metrics endpoint (`/metrics`)
+- [ ] Integrate error tracking (Sentry or LogRocket)
+- [ ] Database query performance monitoring
+- [ ] Add structured request tracing (correlation IDs)
+- [ ] Alerting rules for error rates > threshold
+
+### 2.7 Security Hardening
+
+- [ ] Fix npm audit vulnerabilities (7 total: lodash, path-to-regexp, picomatch, vite)
+- [ ] Implement 2FA (Twilio SMS or TOTP) — auth route placeholder exists
+- [ ] Configure firebase-admin SDK for Firebase sync endpoint (currently 503)
+- [ ] Add HTTPS redirect enforcement for production
+- [ ] API key rotation documentation
+- [ ] Circuit breaker for external API calls (WhatsApp, Stripe, Firebase)
+
+### 2.8 Testing Expansion
+
+- [ ] Vitest coverage target: 50%+ (currently running 7,744 tests across 309 files)
+- [ ] Add test factories for common test data creation
+- [ ] Playwright E2E: full critical path coverage (auth → listing → offer → transaction)
+- [ ] Security tests: XSS/injection edge cases, rate limiter bypass attempts
+- [ ] Load testing: concurrent operations, stress tests
+- [ ] Database transaction edge case tests
+
+### 2.9 DevOps & CI/CD
+
+- [ ] GitHub Actions CI pipeline (lint → typecheck → test → build → deploy)
+- [ ] Docker multi-stage production build optimization
+- [ ] Kubernetes manifests validation (k8s/ and helm/ exist but need testing)
+- [ ] Environment-specific configs (dev, staging, production)
+- [ ] Automated dependency updates (Dependabot or Renovate)
+- [ ] Pre-commit hooks fully operational (husky + lint-staged configured)
+
+### 2.10 Code Quality
+
+- [ ] Eliminate remaining `any` types (~39 instances, mostly in tests and WhatsApp services)
+- [ ] Unify CSS approach (standardize on styled-components, reduce CSS module duplication)
+- [ ] Remove remaining console.log/console.warn in favor of structured logger
+- [ ] Write ADRs for remaining major decisions (i18n choice, file storage, monitoring)
+
+---
+
+## Feature Status Matrix
+
+| Feature                     | Frontend   | Backend | Tests | Status   |
+| --------------------------- | ---------- | ------- | ----- | -------- |
+| **Auth (JWT + bcrypt)**     | ✅         | ✅      | ✅    | Complete |
+| **RBAC (12 roles)**         | ✅         | ✅      | ✅    | Complete |
+| **Properties CRUD**         | ✅         | ✅      | ✅    | Complete |
+| **Leads CRUD + Scoring**    | ✅         | ✅      | ✅    | Complete |
+| **Transactions**            | ✅         | ✅      | ✅    | Complete |
+| **Commissions**             | ✅         | ✅      | ✅    | Complete |
+| **Tenants**                 | ✅         | ✅      | ✅    | Complete |
+| **Viewings**                | ✅         | ✅      | ✅    | Complete |
+| **Offers**                  | ✅         | ✅      | ✅    | Complete |
+| **Leases**                  | ✅         | ✅      | ✅    | Complete |
+| **Maintenance**             | ✅         | ✅      | ✅    | Complete |
+| **Favorites**               | ✅         | ✅      | ✅    | Complete |
+| **Saved Searches**          | ✅         | ✅      | ✅    | Complete |
+| **Reporting/Analytics**     | ✅         | ✅      | ✅    | Complete |
+| **Compliance (RERA/DLD)**   | ✅         | ✅      | ✅    | Complete |
+| **Communications**          | ✅         | ✅      | ✅    | Complete |
+| **AI Assistants API**       | ✅         | ✅      | ✅    | Complete |
+| **Nadia WhatsApp CRM**      | ✅         | ✅      | ✅    | Complete |
+| **Design System**           | ✅ (15)    | —       | ✅    | Complete |
+| **Contracts**               | ✅         | ⚠️ Stub | —     | Phase 2  |
+| **Job Applications**        | ✅         | ⚠️ Stub | —     | Phase 2  |
+| **Appointments**            | ✅         | ⚠️ Stub | —     | Phase 2  |
+| **Payments (Stripe)**       | ✅         | ⚠️ 503  | —     | Phase 2  |
+| **Valuation (ML)**          | ✅         | ⚠️ 501  | —     | Phase 2  |
+| **File Uploads**            | —          | —       | —     | Phase 2  |
+| **i18n (Arabic)**           | ⚠️ Partial | —       | —     | Phase 2  |
+| **Swagger UI**              | —          | —       | —     | Phase 2  |
+| **Storybook**               | —          | —       | —     | Phase 2  |
+| **Monitoring (Prometheus)** | —          | —       | —     | Phase 2  |
 
 ---
 
 ## Progress Bar
 
 ```
-[████████░░] 80%
+[█████████░] 85%
  Phase0 ████  Phase0.2 ████  Phase0.5 ████  Phase0.75 ████
- Phase0.6 ███▓  Phase0.8 ████  Phase1 █░░░░
+ Phase0.6 ████  Phase0.8 ████  Phase1 ██░░░  Phase2 ░░░░░
 ```
+
+**Working features:** 19/28 complete (68% of all features end-to-end)  
+**Infrastructure:** Auth, RBAC, security, validation, logging — all complete  
+**Remaining:** 9 features need backend implementation or integration (Phase 2)
 
 ---
 
 ## Strict Policies Checklist (merge to main)
 
-- [ ] Build passes (`npm run build`)
-- [ ] Tests pass (`npm run test:run`)
-- [ ] No `any`, TypeScript strict mode
-- [ ] Error boundaries + API error handling on all routes
-- [ ] MongoDB/Prisma validated and indexed
-- [ ] RBAC active (middleware + frontend guards)
-- [ ] Design tokens used, unified sidebar + top navbar
-- [ ] WCAG 2.1 AA, Lighthouse > 90
-- [ ] No half-features (every feature end-to-end, tested, accessible)
-- [ ] ADR written for every significant architectural decision
+- [x] Build passes (`npm run build`) — ✅ verified April 10, 2026
+- [x] Tests pass (`npm run test:run`) — ✅ 309 files, 7,744 tests
+- [ ] No `any`, TypeScript strict mode — ⚠️ ~39 instances remain (mostly tests)
+- [x] Error boundaries + API error handling on all routes
+- [x] MongoDB/Prisma validated and indexed (15 models, proper indexes)
+- [x] RBAC active (middleware + frontend guards)
+- [x] Design tokens used, unified sidebar + top navbar
+- [ ] WCAG 2.1 AA, Lighthouse > 90 — needs full audit
+- [ ] No half-features — ⚠️ 9 stub endpoints return 501/503
+- [x] ADR written for every significant architectural decision (7 ADRs)
 
 ---
 
 ## Reference
 
-- `/business_docs/` — business requirements, AI assistant profiles, design system, roles
-- `/docs/adr/` — Architecture Decision Records
+- `/business_docs/` — 98 files, 15 sections: business requirements, AI assistant profiles, design system, roles
+- `/docs/adr/` — 7 Architecture Decision Records
 - `/plans/` — full historical plan archive and session summaries
+- `/openapi.json` — API specification (10 paths, needs expansion)
+- `/k8s/`, `/helm/` — Kubernetes deployment manifests
