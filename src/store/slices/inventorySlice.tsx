@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, createSelector, PayloadAction } from '@reduxjs/toolkit';
 import { logout } from '../authSlice';
+import { getErrorMessage } from '../../constants/errors';
 
 // JSON data loaded at runtime from public/ via fetch — never bundled into JS
 
@@ -141,7 +142,7 @@ export const loadInventoryData = createAsyncThunk<
         manifest: manifestData as InventoryManifest
       };
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to load inventory data';
+      const message = getErrorMessage(error, 'Failed to load inventory data');
       return rejectWithValue(message);
     }
   }

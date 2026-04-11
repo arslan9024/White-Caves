@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { logout } from './authSlice';
 import { authFetch } from '../utils/authFetch';
+import { getErrorMessage } from '../constants/errors';
 import * as favoritesApi from '../services/favoritesApi';
 
 export interface FavoriteItem {
@@ -120,7 +121,7 @@ export const fetchDashboardMetrics = createAsyncThunk<
       }
       return { role, data: await response.json() };
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to fetch metrics';
+      const message = getErrorMessage(error, 'Failed to fetch metrics');
       return rejectWithValue(message);
     }
   }
@@ -139,7 +140,7 @@ export const fetchFavoriteIdsThunk = createAsyncThunk<
     try {
       return await favoritesApi.fetchFavoriteIds();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to fetch favorites';
+      const message = getErrorMessage(error, 'Failed to fetch favorites');
       return rejectWithValue(message);
     }
   }
@@ -158,7 +159,7 @@ export const fetchFavoritesThunk = createAsyncThunk<
       const pageSize = (params && 'pageSize' in params) ? params.pageSize : 20;
       return await favoritesApi.fetchFavorites(page, pageSize);
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to fetch favorites';
+      const message = getErrorMessage(error, 'Failed to fetch favorites');
       return rejectWithValue(message);
     }
   }
@@ -176,7 +177,7 @@ export const addFavoriteThunk = createAsyncThunk<
       await favoritesApi.addFavorite(item.id);
       return { propertyId: item.id, item };
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to add favorite';
+      const message = getErrorMessage(error, 'Failed to add favorite');
       return rejectWithValue(message);
     }
   }
@@ -194,7 +195,7 @@ export const removeFavoriteThunk = createAsyncThunk<
       await favoritesApi.removeFavorite(propertyId);
       return propertyId;
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to remove favorite';
+      const message = getErrorMessage(error, 'Failed to remove favorite');
       return rejectWithValue(message);
     }
   }

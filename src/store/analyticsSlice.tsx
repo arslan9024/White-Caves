@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { logout } from './authSlice';
 import { authFetch } from '../utils/authFetch';
+import { getErrorMessage } from '../constants/errors';
 
 interface WebVital {
   value: number;
@@ -90,7 +91,7 @@ export const fetchAnalytics = createAsyncThunk<
       const raw = await response.json();
       return raw.data || raw;
     } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch analytics');
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch analytics'));
     }
   }
 );

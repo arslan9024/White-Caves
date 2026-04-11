@@ -6,6 +6,7 @@
 
 import { createSlice, createAsyncThunk, createSelector, PayloadAction } from '@reduxjs/toolkit';
 import { authFetch, extractApiError } from '../utils/authFetch';
+import { getErrorMessage } from '../constants/errors';
 import { logout } from './authSlice';
 import type { RootState } from './store';
 // In production, async thunks fetch real data from the API.
@@ -125,7 +126,7 @@ export const fetchLeadsFromAPI = createAsyncThunk<
       const data = await response.json();
       return data.data || data;
     } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch leads');
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch leads'));
     }
   }
 );
@@ -148,7 +149,7 @@ export const fetchPropertiesFromAPI = createAsyncThunk<
       const data = await response.json();
       return data.data || data;
     } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch properties');
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch properties'));
     }
   }
 );
@@ -167,7 +168,7 @@ export const fetchAgentsFromAPI = createAsyncThunk<
       const data = await response.json();
       return data.data || data;
     } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch agents');
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch agents'));
     }
   }
 );
@@ -186,7 +187,7 @@ export const fetchDashboardOverview = createAsyncThunk<
       const data = await response.json();
       return data.data || data;
     } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch dashboard overview');
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch dashboard overview'));
     }
   }
 );
@@ -209,7 +210,7 @@ export const createLeadAPI = createAsyncThunk<
       const data = await response.json();
       return data.data || data;
     } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to create lead');
+      return rejectWithValue(getErrorMessage(error, 'Failed to create lead'));
     }
   }
 );
@@ -232,7 +233,7 @@ export const updateLeadAPI = createAsyncThunk<
       const data = await response.json();
       return data.data || data;
     } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to update lead');
+      return rejectWithValue(getErrorMessage(error, 'Failed to update lead'));
     }
   }
 );
@@ -250,7 +251,7 @@ export const deleteLeadAPI = createAsyncThunk<
       if (!response.ok) throw new Error(await extractApiError(response, 'Failed to delete lead'));
       return id;
     } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to delete lead');
+      return rejectWithValue(getErrorMessage(error, 'Failed to delete lead'));
     }
   }
 );
@@ -273,7 +274,7 @@ export const createPropertyAPI = createAsyncThunk<
       const data = await response.json();
       return data.data || data;
     } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to create property');
+      return rejectWithValue(getErrorMessage(error, 'Failed to create property'));
     }
   }
 );
@@ -296,7 +297,7 @@ export const updatePropertyAPI = createAsyncThunk<
       const data = await response.json();
       return data.data || data;
     } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to update property');
+      return rejectWithValue(getErrorMessage(error, 'Failed to update property'));
     }
   }
 );
@@ -314,7 +315,7 @@ export const deletePropertyAPI = createAsyncThunk<
       if (!response.ok) throw new Error(await extractApiError(response, 'Failed to delete property'));
       return id;
     } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to delete property');
+      return rejectWithValue(getErrorMessage(error, 'Failed to delete property'));
     }
   }
 );
@@ -343,7 +344,7 @@ export const fetchCommissionsFromAPI = createAsyncThunk<
       const data = await response.json();
       return data.data || data;
     } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch commissions');
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch commissions'));
     }
   }
 );
@@ -362,7 +363,7 @@ export const fetchFinanceSummary = createAsyncThunk<
       const data = await response.json();
       return data.data || data;
     } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch finance summary');
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch finance summary'));
     }
   }
 );
@@ -385,7 +386,7 @@ export const createCommissionAPI = createAsyncThunk<
       const data = await response.json();
       return data.data || data;
     } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to create commission');
+      return rejectWithValue(getErrorMessage(error, 'Failed to create commission'));
     }
   }
 );
@@ -408,7 +409,7 @@ export const updateCommissionAPI = createAsyncThunk<
       const data = await response.json();
       return data.data || data;
     } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to update commission');
+      return rejectWithValue(getErrorMessage(error, 'Failed to update commission'));
     }
   }
 );
@@ -431,7 +432,7 @@ export const bulkPayCommissionsAPI = createAsyncThunk<
       const data = await response.json();
       return { commissionIds, paidCount: data.data?.paidCount || 0 };
     } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to process commission payments');
+      return rejectWithValue(getErrorMessage(error, 'Failed to process commission payments'));
     }
   }
 );
