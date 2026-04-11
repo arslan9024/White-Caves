@@ -12,21 +12,9 @@
 
 import { safeStorage } from './safeStorage';
 import { createLogger } from './logger';
+import { HttpError } from './HttpError';
 
 const log = createLogger('authFetch');
-
-// ─── Custom Error with HTTP Status ──────────────────────────────────────
-
-export class HttpError extends Error {
-  constructor(
-    message: string,
-    public readonly status: number,
-    public readonly statusText: string,
-  ) {
-    super(message);
-    this.name = 'HttpError';
-  }
-}
 
 // ─── Auto-Logout ────────────────────────────────────────────────────────
 
@@ -129,3 +117,6 @@ export async function extractApiError(response: Response, fallback: string): Pro
     return `${fallback} (${response.status})`;
   }
 }
+
+// Re-export HttpError so existing consumers can still import from this module
+export { HttpError } from './HttpError';
