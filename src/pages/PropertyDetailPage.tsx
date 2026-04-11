@@ -356,6 +356,8 @@ const PropertyDetailPage: FC = () => {
                     src={sp.image}
                     alt={sp.title}
                     loading="lazy"
+                    width={280}
+                    height={180}
                     className="similar-card-image"
                   />
                   <div className="similar-card-info">

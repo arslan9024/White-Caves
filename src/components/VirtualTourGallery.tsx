@@ -191,7 +191,7 @@ const VirtualTourGallery = () => {
           {featuredTours.map((tour) => (
             <div key={tour.id} className="featured-tour-card" onClick={() => openTour(tour)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openTour(tour); } }} role="button" tabIndex={0} aria-label={`View virtual tour of ${tour.title}`}>
               <div className="tour-thumbnail">
-                <img src={tour.thumbnail} alt={tour.title} loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                <img src={tour.thumbnail} alt={tour.title} loading="lazy" width={280} height={180} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                 <div className="tour-overlay">
                   <div className="play-button">
                     <span>360</span>
@@ -226,7 +226,7 @@ const VirtualTourGallery = () => {
           {virtualTours.map((tour) => (
             <div key={tour.id} className="tour-card" onClick={() => openTour(tour)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openTour(tour); } }} role="button" tabIndex={0} aria-label={`View virtual tour of ${tour.title}`}>
               <div className="tour-thumbnail">
-                <img src={tour.thumbnail} alt={tour.title} loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                <img src={tour.thumbnail} alt={tour.title} loading="lazy" width={280} height={180} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                 <div className="tour-overlay">
                   <div className="play-button">
                     <span>360</span>
@@ -267,7 +267,7 @@ const VirtualTourGallery = () => {
             </div>
             <div className="tour-viewer">
               <div className="viewer-placeholder">
-                <img src={selectedTour.thumbnail} alt={selectedTour.title} loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                <img src={selectedTour.thumbnail} alt={selectedTour.title} loading="lazy" width={600} height={400} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                 <div className="viewer-controls">
                   <div className="control-icon">
                     <span className="icon-360">360</span>

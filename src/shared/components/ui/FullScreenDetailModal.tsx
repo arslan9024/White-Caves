@@ -168,7 +168,7 @@ const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
                       className={`thumbnail ${idx === currentImageIndex ? 'active' : ''}`}
                       onClick={() => setCurrentImageIndex(idx)}
                     >
-                      <img src={img} alt={`${title || 'Property'} thumbnail ${idx + 1}`} loading="lazy" />
+                      <img src={img} alt={`${title || 'Property'} thumbnail ${idx + 1}`} loading="lazy" width={80} height={80} />
                     </button>
                   ))}
                 </div>

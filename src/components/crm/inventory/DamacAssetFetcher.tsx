@@ -274,7 +274,7 @@ const DamacAssetFetcher: React.FC<DamacAssetFetcherProps> = ({ selectedProperty 
               onClick={() => toggleAssetSelection(asset.id)}
             >
               <AssetImage>
-                <img src={asset.url} alt={asset.sdNumber} loading="lazy" />
+                <img src={asset.url} alt={asset.sdNumber} loading="lazy" width={200} height={150} />
                 {selectedAssets.includes(asset.id) && (
                   <SelectionBadge>
                     <CheckCircle size={20} />
