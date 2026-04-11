@@ -63,6 +63,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({
 
   return (
     <AppLayoutContainer>
+      {/* ─── Skip Navigation (WCAG 2.4.1) ────────────────────────── */}
+      <a href="#main-content" className="skip-to-content">
+        Skip to main content
+      </a>
+
       {/* ─── Top Navigation Bar (56px) ─────────────────────────────── */}
       <TopBar />
 
@@ -75,7 +80,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         {showNav && <SidebarContainer />}
 
         {/* Main content area — full width */}
-        <AppMain $withNav={showNav}>
+        <AppMain $withNav={showNav} id="main-content" tabIndex={-1}>
           <Suspense fallback={null}>
             <BiometricReminder />
           </Suspense>

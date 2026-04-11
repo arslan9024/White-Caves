@@ -34,8 +34,8 @@ vi.mock('./AppLayout/styles', () => ({
     <div data-testid="app-layout-container">{children as React.ReactNode}</div>,
   AppBody: ({ children, ...props }: Record<string, unknown>) =>
     <div data-testid="app-body">{children as React.ReactNode}</div>,
-  AppMain: ({ children, ...props }: Record<string, unknown>) =>
-    <main data-testid="app-main">{children as React.ReactNode}</main>,
+  AppMain: ({ children, id, tabIndex, ...props }: Record<string, unknown>) =>
+    <main data-testid="app-main" id={id as string} tabIndex={tabIndex as number}>{children as React.ReactNode}</main>,
 }));
 
 import AppLayout from './AppLayout';
@@ -129,6 +129,15 @@ describe('AppLayout', () => {
     it('should render the app body wrapper', () => {
       renderLayout();
       expect(screen.getByTestId('app-body')).toBeInTheDocument();
+    });
+
+    it('should render skip-to-content link for keyboard navigation (WCAG 2.4.1)', () => {
+      renderLayout();
+      const skipLink = screen.getByText('Skip to main content');
+      expect(skipLink).toBeInTheDocument();
+      expect(skipLink.tagName).toBe('A');
+      expect(skipLink).toHaveAttribute('href', '#main-content');
+      expect(skipLink).toHaveClass('skip-to-content');
     });
   });
 

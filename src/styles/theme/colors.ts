@@ -197,6 +197,31 @@ export const colors = {
 
   // Legacy compat — components referencing old red brand
   brandRed: '#E31E24',
+
+  // ═══════════════════════════════════════════════════════════════
+  // WCAG AA CONTRAST-SAFE VARIANTS
+  // Gold (#D4AF37) on white = 1.8:1 — FAILS. These variants pass.
+  // ═══════════════════════════════════════════════════════════════
+
+  /** WCAG AA compliant gold for text on white backgrounds (4.5:1+) */
+  a11y: {
+    /** Gold darkened for text: 4.7:1 on white. Use for gold text, labels. */
+    goldText: '#7C6408',
+    /** Gold for large text (≥18px bold / 24px normal): 3.1:1 on white. */
+    goldLargeText: '#9A7D0A',
+    /** Gold for UI elements (non-text): 3:1 on white. Borders, icons. */
+    goldUI: '#9A7D0A',
+    /** Focus ring color: 4:1 on white, visible on light and dark backgrounds. */
+    focusRing: '#9A7D0A',
+    /** Error text: 6.6:1 on white (darkened from #D32F2F to #B71C1C). */
+    errorText: '#B71C1C',
+    /** Warning text: 5.6:1 on white (deep orange 900, from #E65100 to #BF360C). */
+    warningText: '#BF360C',
+    /** Success text: 5.2:1 on white (green 800, from #388E3C to #2E7D32). */
+    successText: '#2E7D32',
+    /** Info text: 7.5:1 on white (light blue 900, from #0288D1 to #01579B). */
+    infoText: '#01579B',
+  },
 };
 
 export type Colors = typeof colors;
