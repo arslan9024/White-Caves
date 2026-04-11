@@ -35,10 +35,7 @@ export { useWhatsAppSettings } from './useWhatsAppSettings';
 // ── Core Hooks (default exports) ─────────────────────────────────────
 export { default as useActionHandler } from './useActionHandler';
 export { default as useDocumentTitle } from './useDocumentTitle';
-export { default as useFocusTrap } from './useFocusTrap';
-export { default as useIntersectionObserver } from './useIntersectionObserver';
 export { default as useMediaQuery } from './useMediaQuery';
-export { default as usePrefetch } from './usePrefetch';
 export { default as usePublicFavorites } from './usePublicFavorites';
 export { default as useResizableSidebar } from './useResizableSidebar';
 
