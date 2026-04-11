@@ -1,5 +1,4 @@
-import React, { FC, useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import React, { FC } from 'react';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import AppLayout from '../components/layout/AppLayout';
 import './CareersPage.css';
@@ -15,66 +14,10 @@ interface JobPosition {
   requirements: string[];
 }
 
-interface ApplicationFormData {
-  fullName: string;
-  email: string;
-  phone: string;
-  position: string;
-  experience: string;
-  currentCompany: string;
-  linkedIn: string;
-  coverLetter: string;
-  heardFrom: string;
-}
-
 interface CareersPageProps {}
 
 const CareersPage: FC<CareersPageProps> = () => {
   useDocumentTitle('Careers');
-  const [selectedJob, setSelectedJob] = useState<JobPosition | null>(null);
-  const [showForm, setShowForm] = useState<boolean>(false);
-  const [formData, setFormData] = useState<ApplicationFormData>({
-    fullName: '',
-    email: '',
-    phone: '',
-    position: '',
-    experience: '',
-    currentCompany: '',
-    linkedIn: '',
-    coverLetter: '',
-    heardFrom: ''
-  });
-  const [submitted, setSubmitted] = useState<boolean>(false);
-  const scrollTimerRef = useRef<ReturnType<typeof setTimeout>>();
-
-  useEffect(() => {
-    return () => clearTimeout(scrollTimerRef.current);
-  }, []);
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>): void => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleApply = (job: JobPosition): void => {
-    setSelectedJob(job);
-    setFormData({ ...formData, position: job.title });
-    setShowForm(true);
-    clearTimeout(scrollTimerRef.current);
-    scrollTimerRef.current = setTimeout(() => {
-      document.getElementById('application-form')?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
-  };
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
-    // TODO: Wire to backend API (POST /api/careers/apply)
-    setSubmitted(true);
-    setShowForm(false);
-    clearTimeout(scrollTimerRef.current);
-    scrollTimerRef.current = setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 100);
-  };
 
   const jobPositions: JobPosition[] = [
     {
@@ -148,16 +91,6 @@ const CareersPage: FC<CareersPageProps> = () => {
           </div>
         </section>
 
-        {submitted && (
-          <div className="careers-success-message">
-            <div className="success-content">
-              <span className="success-icon">✓</span>
-              <h3>Application Submitted Successfully!</h3>
-              <p>Thank you for your interest in joining White Caves Real Estate. Our HR team will review your application and contact you within 3-5 business days.</p>
-            </div>
-          </div>
-        )}
-
         <section className="careers-benefits">
           <div className="careers-container">
             <h2>Why Join White Caves?</h2>
@@ -192,12 +125,13 @@ const CareersPage: FC<CareersPageProps> = () => {
                     <span className="position-meta">{job.type} • {job.experience}</span>
                   </div>
                   <p className="position-desc">{job.description}</p>
-                  <button
+                  <a
                     className="apply-btn"
-                    onClick={() => handleApply(job)}
+                    href={`mailto:careers@whitecaves.ae?subject=Application: ${encodeURIComponent(job.title)}&body=${encodeURIComponent(`Hi,\n\nI would like to apply for the ${job.title} position.\n\nBest regards`)}`}
+                    aria-label={`Apply for ${job.title} position`}
                   >
                     Apply Now
-                  </button>
+                  </a>
                 </div>
               ))}
             </div>
