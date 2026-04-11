@@ -15,12 +15,12 @@
 | `01_company_structure/` | Org chart, departments, teams, stakeholders | `/business_docs/01_company_structure/` | 4 |
 | `02_services_features/` | Products, services, SLAs | `/business_docs/02_services/` | 3 |
 | `03_agent_workflows/` | Sales, leasing, compliance, onboarding workflows | `/business_docs/04_workflows/` | 7 |
-| `04_ai_assistants/` | All 27 AI assistant profiles + integration map | `/business_docs/03_ai_assistants/` + new | 30 |
+| `04_ai_assistants/` | All 27 AI assistant profiles + integration map | `/business_docs/03_ai_assistants/` + new | 28 |
 | `05_requirements/` | Business, technical & compliance requirements | `/business_docs/05_requirements/` | 9 |
 | `06_design/` | Architecture, API, database, UI/UX, data dictionary | `/business_docs/06_design_architecture/` | 7 |
 | `07_business_model/` | Revenue model, BMC, projections | `/business_docs/07_business_model/` | 3 |
 | `08_market_research/` | Dubai market, competitors, regulations, tech upgrades | `/business_docs/08_market_research/` + new | 9 |
-| `09_user_roles_permissions/` | RBAC matrix, 27 roles, 100+ permissions | `/business_docs/09_user_roles_permissions/` + new | 4 |
+| `09_user_roles_permissions/` | RBAC matrix, 22+ roles, 100+ permissions | `/business_docs/09_user_roles_permissions/` + new | 4 |
 | `10_design_system/` | Tokens, accessibility, RTL/i18n, AR/VR, 3D tours | `/business_docs/10_design_system/` + new | 9 |
 
 ### Phase 2A New Documents (Research Implementation)

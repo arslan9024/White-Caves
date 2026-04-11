@@ -3,6 +3,7 @@
 > **Last Updated:** April 11, 2026
 > **Purpose:** Define i18n token structure, locale configuration, and translation guidelines
 > **Languages:** English (en), Arabic (ar), French (fr), Russian (ru), Chinese (zh)
+> **Locales:** 7 (en-AE, ar-AE, en-US, en-GB, fr-FR, ru-RU, zh-CN)
 > **Extends:** `/business_docs/10_design_system/rtl-internationalization.md`
 
 ---
