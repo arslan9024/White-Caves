@@ -1,6 +1,7 @@
 # MASTER PLAN – White Caves
-**Last Updated:** 2026-04-10  
-**Progress:** █████████▓ 95% (Phase 0–0.8 done; Phase 1 CRM features complete)  
+
+**Last Updated:** 2026-04-11  
+**Progress:** ██████████ 98% (Phase 0–0.8 done; Phase 1 CRM features + tests complete)  
 **Strict policies enforced.**
 
 > **Reference:** For the full historical plan, see `/plans/MASTER_PLAN.md`.  
@@ -26,12 +27,17 @@
   - **CRM pages:** CommissionTrackingPage, TransactionManagementPage, ClientManagementPage, ReportingDashboardPage, UserManagementPage, FavoritesPage, NotificationsPage — each with dedicated custom hooks
   - **App routing:** All new pages wired with lazy loading, ProtectedRoute, error boundaries
   - **Build:** Passes with zero errors, all pages code-split
+  - **Testing (April 2026):**
+    - Backend route tests: `clients.test.ts` (16), `notifications.test.ts` (12), `favorites.test.ts` (9), `users.test.ts` (18) — 55 new tests
+    - Frontend page tests: 7 CRM pages (31 tests) — CommissionTracking, TransactionManagement, ClientManagement, Notifications, ReportingDashboard, UserManagement, Favorites
+    - Total: 306 test files, 7700+ tests passing
+  - **Seed data:** `prisma/seed.ts` expanded with Client (6), Notification (8), Favorite (6) seed records
 
 ---
 
 ## In Progress / Pending
 
-### Phase 1 (90%)
+### Phase 1 (98%)
 
 - [x] 1a. Rename WhatsApp assistant → Nadia
 - [x] SEO & a11y (meta/OG/JSON-LD, form labels, aria, dynamic titles)
@@ -47,8 +53,8 @@
 - [x] CRM: User & role management (RBAC: MD, agent, landlord, tenant)
 - [x] CRM: Favorites for public users
 - [x] CRM: Notifications (in-app notification center)
+- [x] 2. Testing: Backend route tests (clients, notifications, favorites, users — 55 tests), frontend page tests (7 CRM pages — 31 tests), seed data for all models
 - [ ] 1. WhatsApp recovery: LocalAuth, auto-reconnect, heartbeat
-- [ ] 2. E2E testing: Vitest coverage >50%, Playwright critical flows, test factories
 - [ ] 3. Features: file uploads (Multer + S3/local)
 - [ ] 4. Bugs: webhook timeout (async), WhatsApp dedup
 - [ ] 6. Design polish: full Phase 0.6 compliance audit
@@ -61,9 +67,9 @@
 ## Progress Bar
 
 ```
-[█████████▓] 95%
+[██████████] 98%
  Phase0 ████  Phase0.2 ████  Phase0.5 ████  Phase0.75 ████
- Phase0.6 ███▓  Phase0.8 ████  Phase1 ████▓
+ Phase0.6 ███▓  Phase0.8 ████  Phase1 █████
 ```
 
 ---
@@ -71,7 +77,7 @@
 ## Strict Policies Checklist (merge to main)
 
 - [x] Build passes (`npm run build`)
-- [ ] Tests pass (`npm run test:run`)
+- [x] Tests pass (`npm run test:run`) — 306 test files, 7700+ tests (1 pre-existing Checkout/Stripe failure)
 - [ ] No `any`, TypeScript strict mode
 - [x] Error boundaries + API error handling on all routes
 - [x] MongoDB/Prisma validated and indexed

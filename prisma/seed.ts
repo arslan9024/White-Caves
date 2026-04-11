@@ -6,6 +6,8 @@
  *    or: npx tsx prisma/seed.ts
  */
 
+/* eslint-disable no-console, no-undef, @typescript-eslint/no-explicit-any */
+
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
@@ -21,14 +23,27 @@ async function main() {
   // ─── 0. CLEANUP ────────────────────────────────────────────────────────
   // Use raw MongoDB drop to handle corrupt data (non-ObjectID IDs from earlier schema)
   console.log('🧹 Cleaning existing data (raw drop)...');
-  const collections = ['Activity', 'Commission', 'Transaction', 'Tenant', 'Lead', 'Property', 'User'];
+  const collections = [
+    'Favorite',
+    'Notification',
+    'Client',
+    'Activity',
+    'Commission',
+    'Transaction',
+    'Tenant',
+    'Lead',
+    'Property',
+    'User',
+  ];
   for (const col of collections) {
     try {
       await prisma.$runCommandRaw({ drop: col });
       console.log(`  ✅ Dropped collection: ${col}`);
     } catch (e: any) {
       // Collection might not exist — that's fine
-      console.log(`  ℹ️  Collection ${col}: ${e.message?.includes('ns not found') ? 'does not exist' : e.message || 'skipped'}`);
+      console.log(
+        `  ℹ️  Collection ${col}: ${e.message?.includes('ns not found') ? 'does not exist' : e.message || 'skipped'}`
+      );
     }
   }
   console.log('  ✅ All collections cleaned\n');
@@ -126,7 +141,8 @@ async function main() {
     prisma.property.create({
       data: {
         title: 'Luxury 3BR Penthouse - Palm Jumeirah',
-        description: 'Stunning full-floor penthouse with panoramic views of the Arabian Gulf. Private pool, marble finishes, smart home automation.',
+        description:
+          'Stunning full-floor penthouse with panoramic views of the Arabian Gulf. Private pool, marble finishes, smart home automation.',
         type: 'penthouse',
         status: 'available',
         price: 18500000,
@@ -145,7 +161,8 @@ async function main() {
     prisma.property.create({
       data: {
         title: 'Modern 2BR Apartment - Downtown Dubai',
-        description: 'High-floor apartment in Boulevard Point with direct Burj Khalifa views. Full amenities including infinity pool and gym.',
+        description:
+          'High-floor apartment in Boulevard Point with direct Burj Khalifa views. Full amenities including infinity pool and gym.',
         type: 'apartment',
         status: 'available',
         price: 3200000,
@@ -164,7 +181,8 @@ async function main() {
     prisma.property.create({
       data: {
         title: '5BR Villa - Emirates Hills',
-        description: 'Prestigious golf-course villa with lake views. Landscaped garden, private cinema, staff quarters, double garage.',
+        description:
+          'Prestigious golf-course villa with lake views. Landscaped garden, private cinema, staff quarters, double garage.',
         type: 'villa',
         status: 'available',
         price: 42000000,
@@ -202,7 +220,8 @@ async function main() {
     prisma.property.create({
       data: {
         title: '4BR Townhouse - Dubai Hills',
-        description: 'Corner townhouse with park views. Maid room, large terrace, community pool and clubhouse access.',
+        description:
+          'Corner townhouse with park views. Maid room, large terrace, community pool and clubhouse access.',
         type: 'townhouse',
         status: 'reserved',
         price: 4800000,
@@ -221,7 +240,8 @@ async function main() {
     prisma.property.create({
       data: {
         title: 'Commercial Office - Business Bay',
-        description: 'Grade A office space in Prism Tower. Floor-to-ceiling windows, fiber optic, ready to move in.',
+        description:
+          'Grade A office space in Prism Tower. Floor-to-ceiling windows, fiber optic, ready to move in.',
         type: 'commercial',
         status: 'available',
         price: 2100000,
@@ -240,7 +260,8 @@ async function main() {
     prisma.property.create({
       data: {
         title: '1BR Apartment - Dubai Marina',
-        description: 'Fully furnished 1BR with marina views. Walking distance to JBR beach and The Walk.',
+        description:
+          'Fully furnished 1BR with marina views. Walking distance to JBR beach and The Walk.',
         type: 'apartment',
         status: 'rented',
         price: 1800000,
@@ -259,7 +280,8 @@ async function main() {
     prisma.property.create({
       data: {
         title: '6BR Mansion - Arabian Ranches',
-        description: 'Grand mansion on double plot. Cinema, home office, landscaped garden with BBQ area, infinity pool.',
+        description:
+          'Grand mansion on double plot. Cinema, home office, landscaped garden with BBQ area, infinity pool.',
         type: 'villa',
         status: 'sold',
         price: 15000000,
@@ -612,93 +634,303 @@ async function main() {
   const activities = await Promise.all([
     prisma.activity.create({
       data: {
-        type: 'lead', action: 'created',
+        type: 'lead',
+        action: 'created',
         description: 'New VIP lead: Sheikh Mohammed Al-Maktoum — Budget AED 50M',
-        userId: owner.id, leadId: leads[0].id,
+        userId: owner.id,
+        leadId: leads[0].id,
       },
     }),
     prisma.activity.create({
       data: {
-        type: 'property', action: 'created',
+        type: 'property',
+        action: 'created',
         description: 'New listing: Luxury 3BR Penthouse - Palm Jumeirah — AED 18.5M',
         userId: agents[0].id,
       },
     }),
     prisma.activity.create({
       data: {
-        type: 'deal', action: 'status_changed',
+        type: 'deal',
+        action: 'status_changed',
         description: 'Arabian Ranches mansion: in_progress → completed. Amount: AED 15M',
         userId: agents[1].id,
       },
     }),
     prisma.activity.create({
       data: {
-        type: 'commission', action: 'paid',
+        type: 'commission',
+        action: 'paid',
         description: 'Commission AED 450,000 paid to Mary Thompson (Arabian Ranches sale)',
         userId: owner.id,
       },
     }),
     prisma.activity.create({
       data: {
-        type: 'lead', action: 'status_changed',
+        type: 'lead',
+        action: 'status_changed',
         description: 'Lead "Alexander Petrov" status: qualified → won',
-        userId: agents[1].id, leadId: leads[6].id,
+        userId: agents[1].id,
+        leadId: leads[6].id,
         metadata: { oldStatus: 'qualified', newStatus: 'won' },
       },
     }),
     prisma.activity.create({
       data: {
-        type: 'lead', action: 'call',
+        type: 'lead',
+        action: 'call',
         description: 'Phone call with Sarah Williams — discussed Dubai Hills options',
-        userId: agents[2].id, leadId: leads[1].id,
+        userId: agents[2].id,
+        leadId: leads[1].id,
       },
     }),
     prisma.activity.create({
       data: {
-        type: 'client', action: 'created',
+        type: 'client',
+        action: 'created',
         description: 'New tenant added: David Park (Dubai Marina)',
         userId: agents[3].id,
       },
     }),
     prisma.activity.create({
       data: {
-        type: 'property', action: 'status_changed',
+        type: 'property',
+        action: 'status_changed',
         description: 'Property "6BR Mansion - Arabian Ranches": available → sold',
         userId: agents[1].id,
       },
     }),
     prisma.activity.create({
       data: {
-        type: 'system', action: 'login',
+        type: 'system',
+        action: 'login',
         description: 'Ahmad Al-Rashid logged in',
         userId: owner.id,
       },
     }),
     prisma.activity.create({
       data: {
-        type: 'lead', action: 'email',
+        type: 'lead',
+        action: 'email',
         description: 'Email sent to Li Wei Chen — investment portfolio proposal',
-        userId: agents[0].id, leadId: leads[2].id,
+        userId: agents[0].id,
+        leadId: leads[2].id,
       },
     }),
   ]);
 
   console.log(`  ✅ ${activities.length} activities created`);
 
+  // ─── 8. CLIENTS ────────────────────────────────────────────────────────
+  console.log('👥 Creating clients...');
+  const clients = await Promise.all([
+    prisma.client.create({
+      data: {
+        name: 'Fatima Al-Maktoum',
+        email: 'fatima@maktoum.ae',
+        phone: '+971501111111',
+        type: 'buyer',
+        nationality: 'Emirati',
+        status: 'vip',
+        company: 'Maktoum Holdings',
+        notes: 'Looking for luxury villa in Palm Jumeirah',
+        address: 'Downtown Dubai',
+        tags: ['VIP', 'Luxury'],
+        propertyIds: [properties[0].id],
+        emiratesId: '784-1990-1234567-1',
+      },
+    }),
+    prisma.client.create({
+      data: {
+        name: 'James Wilson',
+        email: 'james@wilson.co.uk',
+        phone: '+971502222222',
+        type: 'investor',
+        nationality: 'British',
+        status: 'active',
+        company: 'Wilson Capital',
+        notes: 'Interested in bulk apartment purchases',
+        address: 'DIFC, Dubai',
+        tags: ['Investor', 'Bulk'],
+        propertyIds: [properties[1].id, properties[2].id],
+      },
+    }),
+    prisma.client.create({
+      data: {
+        name: 'Aisha Rahman',
+        email: 'aisha@rahman.ae',
+        phone: '+971503333333',
+        type: 'seller',
+        nationality: 'Pakistani',
+        status: 'active',
+        notes: 'Selling 2BR apartment in JLT',
+        address: 'JLT, Dubai',
+        tags: ['Seller'],
+        propertyIds: [properties[3].id],
+      },
+    }),
+    prisma.client.create({
+      data: {
+        name: 'Chen Wei',
+        email: 'chen@investors.cn',
+        phone: '+971504444444',
+        type: 'buyer',
+        nationality: 'Chinese',
+        status: 'active',
+        company: 'Dragon Real Estate',
+        notes: 'Looking for commercial space',
+        address: 'Business Bay',
+        tags: ['Commercial', 'International'],
+        propertyIds: [],
+      },
+    }),
+    prisma.client.create({
+      data: {
+        name: 'Mohammad Al-Zahrani',
+        email: 'mohammad@zahrani.sa',
+        phone: '+971505555555',
+        type: 'owner',
+        nationality: 'Saudi',
+        status: 'active',
+        company: 'Zahrani Properties',
+        notes: 'Owns multiple units in Marina',
+        address: 'Dubai Marina',
+        tags: ['Multi-unit', 'Owner'],
+        propertyIds: [properties[4].id, properties[5].id],
+      },
+    }),
+    prisma.client.create({
+      data: {
+        name: 'Elena Petrova',
+        email: 'elena@petrova.ru',
+        phone: '+971506666666',
+        type: 'investor',
+        nationality: 'Russian',
+        status: 'inactive',
+        notes: 'Previously interested, now on hold',
+        address: 'JBR, Dubai',
+        tags: ['On Hold'],
+        propertyIds: [],
+      },
+    }),
+  ]);
+  console.log(`  ✅ ${clients.length} clients created`);
+
+  // ─── 9. NOTIFICATIONS ─────────────────────────────────────────────────
+  console.log('🔔 Creating notifications...');
+  const notifications = await Promise.all([
+    prisma.notification.create({
+      data: {
+        userId: owner.id,
+        type: 'lead',
+        channel: 'in_app',
+        title: 'New Lead Assigned',
+        message: 'A new high-priority lead has been assigned to your team.',
+        read: false,
+      },
+    }),
+    prisma.notification.create({
+      data: {
+        userId: owner.id,
+        type: 'commission',
+        channel: 'in_app',
+        title: 'Commission Approved',
+        message: 'Commission for Palm Jumeirah villa sale has been approved.',
+        read: true,
+      },
+    }),
+    prisma.notification.create({
+      data: {
+        userId: agents[0].id,
+        type: 'property',
+        channel: 'in_app',
+        title: 'Property Status Changed',
+        message: 'Marina Heights 2BR status changed to Under Offer.',
+        read: false,
+      },
+    }),
+    prisma.notification.create({
+      data: {
+        userId: agents[1].id,
+        type: 'system',
+        channel: 'in_app',
+        title: 'System Maintenance',
+        message: 'Scheduled maintenance this weekend.',
+        read: false,
+      },
+    }),
+    prisma.notification.create({
+      data: {
+        userId: agents[2].id,
+        type: 'info',
+        channel: 'in_app',
+        title: 'Training Reminder',
+        message: 'Mandatory CRM training session tomorrow at 10 AM.',
+        read: true,
+      },
+    }),
+    prisma.notification.create({
+      data: {
+        userId: agents[0].id,
+        type: 'success',
+        channel: 'in_app',
+        title: 'Deal Closed',
+        message: 'Congratulations! Business Bay office deal closed successfully.',
+        read: false,
+      },
+    }),
+    prisma.notification.create({
+      data: {
+        userId: owner.id,
+        type: 'warning',
+        channel: 'in_app',
+        title: 'License Expiry',
+        message: 'RERA license renewal due in 30 days.',
+        read: false,
+      },
+    }),
+    prisma.notification.create({
+      data: {
+        userId: agents[3].id,
+        type: 'lead',
+        channel: 'in_app',
+        title: 'Lead Follow-Up Due',
+        message: 'Follow up with Sarah Khan about JLT apartment.',
+        read: false,
+      },
+    }),
+  ]);
+  console.log(`  ✅ ${notifications.length} notifications created`);
+
+  // ─── 10. FAVORITES ────────────────────────────────────────────────────
+  console.log('⭐ Creating favorites...');
+  const favorites = await Promise.all([
+    prisma.favorite.create({ data: { userId: owner.id, propertyId: properties[0].id } }),
+    prisma.favorite.create({ data: { userId: owner.id, propertyId: properties[2].id } }),
+    prisma.favorite.create({ data: { userId: agents[0].id, propertyId: properties[1].id } }),
+    prisma.favorite.create({ data: { userId: agents[0].id, propertyId: properties[4].id } }),
+    prisma.favorite.create({ data: { userId: agents[1].id, propertyId: properties[3].id } }),
+    prisma.favorite.create({ data: { userId: agents[2].id, propertyId: properties[5].id } }),
+  ]);
+  console.log(`  ✅ ${favorites.length} favorites created`);
+
   // ─── SUMMARY ───────────────────────────────────────────────────────────
   console.log(`
 ╔════════════════════════════════════════════════════════════╗
 ║  🌱 DATABASE SEEDED SUCCESSFULLY                         ║
 ╠════════════════════════════════════════════════════════════╣
-║  Users:        ${agents.length + 1} (1 owner + ${agents.length} agents)                      ║
-║  Properties:   ${properties.length}                                       ║
-║  Leads:        ${leads.length}                                       ║
-║  Commissions:  ${commissions.length}                                        ║
-║  Transactions: ${transactions.length}                                        ║
-║  Tenants:      ${tenants.length}                                        ║
-║  Activities:   ${activities.length}                                       ║
+║  Users:         ${agents.length + 1} (1 owner + ${agents.length} agents)                     ║
+║  Properties:    ${properties.length}                                      ║
+║  Leads:         ${leads.length}                                      ║
+║  Commissions:   ${commissions.length}                                       ║
+║  Transactions:  ${transactions.length}                                       ║
+║  Tenants:       ${tenants.length}                                       ║
+║  Activities:    ${activities.length}                                      ║
+║  Clients:       ${clients.length}                                       ║
+║  Notifications: ${notifications.length}                                       ║
+║  Favorites:     ${favorites.length}                                       ║
 ╠════════════════════════════════════════════════════════════╣
-║  Total Records: ${6 + properties.length + leads.length + commissions.length + transactions.length + tenants.length + activities.length}                                     ║
+║  Total Records: ${6 + properties.length + leads.length + commissions.length + transactions.length + tenants.length + activities.length + clients.length + notifications.length + favorites.length}                                    ║
 ╚════════════════════════════════════════════════════════════╝
   `);
 }
@@ -708,7 +940,7 @@ main()
     await prisma.$disconnect();
     console.log('✅ Done! Prisma disconnected.\n');
   })
-  .catch(async (e) => {
+  .catch(async e => {
     console.error('❌ Seed failed:', e);
     await prisma.$disconnect();
     process.exit(1);
