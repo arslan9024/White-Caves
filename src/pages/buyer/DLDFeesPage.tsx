@@ -3,9 +3,7 @@ import { formatCurrency } from '../../utils';
 import { Config } from '../../config/constants';
 import '../RolePages.css';
 
-interface DLDFeesPageProps {}
-
-const DLDFeesPage: FC<DLDFeesPageProps> = () => {
+const DLDFeesPage: FC = () => {
   const [propertyPrice, setPropertyPrice] = useState<number>(Config.REAL_ESTATE.DEFAULT_PROPERTY_PRICE);
   const [isMortgage, setIsMortgage] = useState<boolean>(true);
   const [mortgageAmount, setMortgageAmount] = useState<number>(Config.REAL_ESTATE.DEFAULT_PROPERTY_PRICE * 0.75);

@@ -15,9 +15,7 @@ interface ContractData {
   date: string;
 }
 
-interface SignContractPageProps {}
-
-const SignContractPage: FC<SignContractPageProps> = () => {
+const SignContractPage: FC = () => {
   useDocumentTitle('Sign Contract');
   const { token } = useParams<{token: string}>();
   const navigate = useNavigate();

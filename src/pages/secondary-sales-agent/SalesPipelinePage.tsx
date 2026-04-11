@@ -16,9 +16,7 @@ interface Deal {
   daysInStage: number;
 }
 
-interface SalesPipelinePageProps {}
-
-const SalesPipelinePage: FC<SalesPipelinePageProps> = () => {
+const SalesPipelinePage: FC = () => {
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
 
   const pipelineStages: PipelineStage[] = [

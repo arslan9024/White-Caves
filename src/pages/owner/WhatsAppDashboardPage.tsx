@@ -15,9 +15,7 @@ interface WhatsAppStats {
   responseTime: string;
 }
 
-interface WhatsAppDashboardPageProps {}
-
-const WhatsAppDashboardPage: FC<WhatsAppDashboardPageProps> = () => {
+const WhatsAppDashboardPage: FC = () => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.user.currentUser);
   const [stats, setStats] = useState<WhatsAppStats>({

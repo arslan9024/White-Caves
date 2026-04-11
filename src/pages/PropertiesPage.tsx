@@ -16,9 +16,7 @@ const InteractiveMap = lazy(() =>
   import('../components/maps/InteractiveMap').then((m) => ({ default: m.default }))
 );
 
-interface PropertiesPageProps {}
-
-const PropertiesPage: FC<PropertiesPageProps> = () => {
+const PropertiesPage: FC = () => {
   useDocumentTitle('Properties');
   const {
     loading,

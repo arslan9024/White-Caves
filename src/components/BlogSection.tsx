@@ -38,8 +38,6 @@ interface BlogPost {
   featured: boolean;
 }
 
-interface BlogSectionProps {}
-
 const blogPosts: BlogPost[] = [
   {
     id: 1,
@@ -111,7 +109,7 @@ const blogPosts: BlogPost[] = [
 
 const categories = ["All", "Market Analysis", "Buying Guide", "Investment", "Lifestyle", "Legal"];
 
-const BlogSection: FC<BlogSectionProps> = () => {
+const BlogSection: FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [visiblePosts, setVisiblePosts] = useState(6);
 

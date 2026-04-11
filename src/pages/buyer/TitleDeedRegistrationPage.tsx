@@ -19,9 +19,7 @@ interface FeeItem {
   amount: string;
 }
 
-interface TitleDeedRegistrationPageProps {}
-
-const TitleDeedRegistrationPage: FC<TitleDeedRegistrationPageProps> = () => {
+const TitleDeedRegistrationPage: FC = () => {
   const steps: Step[] = [
     {
       number: 1,

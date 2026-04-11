@@ -9,8 +9,6 @@ import './AuthPages.css';
 
 const log = createLogger('UAEPassSuccess');
 
-interface UAEPassSuccessPageProps {}
-
 interface UserData {
   name: string;
   email: string;
@@ -19,7 +17,7 @@ interface UserData {
   phone?: string;
 }
 
-const UAEPassSuccessPage: FC<UAEPassSuccessPageProps> = () => {
+const UAEPassSuccessPage: FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const dispatch = useDispatch();

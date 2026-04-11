@@ -14,9 +14,7 @@ interface JobPosition {
   requirements: string[];
 }
 
-interface CareersPageProps {}
-
-const CareersPage: FC<CareersPageProps> = () => {
+const CareersPage: FC = () => {
   useDocumentTitle('Careers');
 
   const jobPositions: JobPosition[] = [

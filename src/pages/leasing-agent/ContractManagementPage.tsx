@@ -25,9 +25,7 @@ interface FormDataType {
   [key: string]: string;
 }
 
-interface ContractManagementPageProps {}
-
-const ContractManagementPage: FC<ContractManagementPageProps> = () => {
+const ContractManagementPage: FC = () => {
   const [contracts, setContracts] = useState<ContractData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedContract, setSelectedContract] = useState<ContractData | null>(null);

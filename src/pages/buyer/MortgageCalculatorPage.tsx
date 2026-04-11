@@ -3,9 +3,7 @@ import { formatCurrency } from '../../utils';
 import { Config } from '../../config/constants';
 import '../RolePages.css';
 
-interface MortgageCalculatorPageProps {}
-
-const MortgageCalculatorPage: FC<MortgageCalculatorPageProps> = () => {
+const MortgageCalculatorPage: FC = () => {
   const [propertyPrice, setPropertyPrice] = useState<number>(Config.REAL_ESTATE.DEFAULT_PROPERTY_PRICE);
   const [downPayment, setDownPayment] = useState<number>(Config.MORTGAGE.DEFAULT_DOWN_PAYMENT);
   const [interestRate, setInterestRate] = useState<number>(Config.MORTGAGE.DEFAULT_INTEREST_RATE);

@@ -2,9 +2,7 @@ import React, { FC, useState } from 'react';
 import { Search, Mail, Lock, Heart, Star, Building2, Users, Wallet, TrendingUp } from 'lucide-react';
 import './DesignSystemTest.css';
 
-interface DesignSystemTestProps {}
-
-const DesignSystemTest: FC<DesignSystemTestProps> = () => {
+const DesignSystemTest: FC = () => {
   const [inputValue, setInputValue] = useState<string>('');
   const [passwordValue, setPasswordValue] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);

@@ -38,9 +38,7 @@ interface ContactApp {
   color: string;
 }
 
-interface ClickToChatProps {}
-
-const ClickToChat: FC<ClickToChatProps> = () => {
+const ClickToChat: FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [message, setMessage] = useState('');
   const [isOnline, setIsOnline] = useState(true);

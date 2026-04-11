@@ -19,9 +19,7 @@ interface Milestone {
   desc: string;
 }
 
-interface AboutPageProps {}
-
-const AboutPage: FC<AboutPageProps> = () => {
+const AboutPage: FC = () => {
   useDocumentTitle('About Us');
   const teamMembers: TeamMember[] = [
     {
