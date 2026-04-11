@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { logout } from './authSlice';
 import { authFetch } from '../utils/authFetch';
-import { getErrorMessage } from '../constants/errors';
+import { getErrorMessage } from '../constants';
 
 interface WebVital {
   value: number;

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { logout } from './authSlice';
 import { authFetch } from '../utils/authFetch';
-import { getErrorMessage } from '../constants/errors';
+import { getErrorMessage } from '../constants';
 import * as favoritesApi from '../services/favoritesApi';
 
 export interface FavoriteItem {

@@ -12,7 +12,7 @@ import { createSlice, createAsyncThunk, createSelector, PayloadAction } from '@r
 import { logout } from '../authSlice';
 import type { RootState } from '../store';
 import { authFetch } from '../../utils/authFetch';
-import { getErrorMessage } from '../../constants/errors';
+import { getErrorMessage } from '../../constants';
 
 // ================================
 // Types

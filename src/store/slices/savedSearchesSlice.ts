@@ -8,7 +8,7 @@
 import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { logout } from '../authSlice';
 import * as api from '../../services/savedSearchesApi';
-import { getErrorMessage } from '../../constants/errors';
+import { getErrorMessage } from '../../constants';
 
 // ─── State types ─────────────────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, createSelector, PayloadAction } from '@reduxjs/toolkit';
 import { logout } from '../authSlice';
-import { getErrorMessage } from '../../constants/errors';
+import { getErrorMessage } from '../../constants';
 
 // JSON data loaded at runtime from public/ via fetch — never bundled into JS
 

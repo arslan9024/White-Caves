@@ -47,6 +47,7 @@ import type { Assistant, DepartmentId } from '../../../config/assistantRegistry'
 import { selectHotLeads } from '../../../store/crmDataSlice';
 import { selectAllProperties } from '../../../store/crmDataSlice';
 import { selectQueuedCount } from '../../../store/slices/nadiaSlice';
+import { createLogger } from '../../../utils/logger';
 import {
   RailContainer,
   RailWrapper,
@@ -90,13 +91,15 @@ interface DepartmentDef {
 
 // localStorage key for persisting group collapse states
 const COLLAPSE_STORAGE_KEY = 'wc-sidebar-collapse';
+const log = createLogger('SidebarContainer');
 
 function readCollapseState(): Record<string, boolean> {
   try {
     const raw = localStorage.getItem(COLLAPSE_STORAGE_KEY);
     if (!raw) return {};
     return JSON.parse(raw);
-  } catch {
+  } catch (e) {
+    log.warn('Failed to read collapse state from localStorage', e);
     return {};
   }
 }
@@ -104,7 +107,7 @@ function readCollapseState(): Record<string, boolean> {
 function writeCollapseState(state: Record<string, boolean>): void {
   try {
     localStorage.setItem(COLLAPSE_STORAGE_KEY, JSON.stringify(state));
-  } catch { /* quota exceeded — silently fail */ }
+  } catch (e) { log.warn('Failed to write collapse state (quota exceeded?)', e); }
 }
 
 const DEPARTMENTS: Record<string, DepartmentDef> = {

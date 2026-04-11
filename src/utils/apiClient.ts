@@ -1,4 +1,4 @@
-import { ERROR_MESSAGES } from '@/constants/errors';
+import { ERROR_MESSAGES } from '@/constants';
 import { HttpError } from './HttpError';
 
 const API_BASE_URL = '/api';

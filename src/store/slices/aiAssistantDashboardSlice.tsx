@@ -12,7 +12,7 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { logout } from '../authSlice';
-import { getErrorMessage } from '../../constants/errors';
+import { getErrorMessage } from '../../constants';
 
 // ── Re-export types for consumer convenience ──
 export type {

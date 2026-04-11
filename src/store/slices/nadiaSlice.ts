@@ -6,7 +6,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '@/store/store';
 import nadiaAPI from '@/services/nadiaAPI';
-import { getErrorMessage } from '@/constants/errors';
+import { getErrorMessage } from '@/constants';
 import {
   Conversation,
   Message,

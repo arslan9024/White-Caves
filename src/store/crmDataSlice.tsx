@@ -6,7 +6,7 @@
 
 import { createSlice, createAsyncThunk, createSelector, PayloadAction } from '@reduxjs/toolkit';
 import { authFetch, extractApiError } from '../utils/authFetch';
-import { getErrorMessage } from '../constants/errors';
+import { getErrorMessage } from '../constants';
 import { logout } from './authSlice';
 import type { RootState } from './store';
 // In production, async thunks fetch real data from the API.
