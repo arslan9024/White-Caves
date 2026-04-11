@@ -200,7 +200,7 @@ const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({ property, own
                   <OwnerName>{owner.name || 'Unknown'}</OwnerName>
                   {(owner.contacts?.length ?? 0) > 0 && (
                     <OwnerContacts>
-                      {owner.contacts!.slice(0, 2).map((c, i) => (
+                      {owner.contacts?.slice(0, 2).map((c, i) => (
                         <ContactBadge key={c.value ?? `contact-${i}`}>
                           {c.type === 'email' ? <Mail size={10} /> : <Phone size={10} />}
                           {c.value}
