@@ -107,9 +107,13 @@ const initialState: CRMDataState = {
 // ============================================================================
 
 /** Fetch all leads from the backend API, falls back to dummy data on error */
-export const fetchLeadsFromAPI = createAsyncThunk(
+export const fetchLeadsFromAPI = createAsyncThunk<
+  CRMItem[],
+  { page?: number; pageSize?: number; status?: string; source?: string },
+  { rejectValue: string }
+>(
   'crmData/fetchLeads',
-  async (params: { page?: number; pageSize?: number; status?: string; source?: string } = {}, { rejectWithValue }) => {
+  async (params = {}, { rejectWithValue }) => {
     try {
       const query = new URLSearchParams();
       if (params.page) query.set('page', String(params.page));
@@ -127,9 +131,13 @@ export const fetchLeadsFromAPI = createAsyncThunk(
 );
 
 /** Fetch all properties from the backend API */
-export const fetchPropertiesFromAPI = createAsyncThunk(
+export const fetchPropertiesFromAPI = createAsyncThunk<
+  CRMItem[],
+  { page?: number; status?: string; type?: string },
+  { rejectValue: string }
+>(
   'crmData/fetchProperties',
-  async (params: { page?: number; status?: string; type?: string } = {}, { rejectWithValue }) => {
+  async (params = {}, { rejectWithValue }) => {
     try {
       const query = new URLSearchParams();
       if (params.page) query.set('page', String(params.page));
@@ -146,7 +154,11 @@ export const fetchPropertiesFromAPI = createAsyncThunk(
 );
 
 /** Fetch all agents from the backend API */
-export const fetchAgentsFromAPI = createAsyncThunk(
+export const fetchAgentsFromAPI = createAsyncThunk<
+  CRMItem[],
+  void,
+  { rejectValue: string }
+>(
   'crmData/fetchAgents',
   async (_, { rejectWithValue }) => {
     try {
@@ -161,7 +173,11 @@ export const fetchAgentsFromAPI = createAsyncThunk(
 );
 
 /** Fetch dashboard overview from the backend API */
-export const fetchDashboardOverview = createAsyncThunk(
+export const fetchDashboardOverview = createAsyncThunk<
+  Record<string, unknown>,
+  void,
+  { rejectValue: string }
+>(
   'crmData/fetchDashboardOverview',
   async (_, { rejectWithValue }) => {
     try {
@@ -176,9 +192,13 @@ export const fetchDashboardOverview = createAsyncThunk(
 );
 
 /** Create a new lead via API */
-export const createLeadAPI = createAsyncThunk(
+export const createLeadAPI = createAsyncThunk<
+  CRMItem,
+  Record<string, unknown>,
+  { rejectValue: string }
+>(
   'crmData/createLead',
-  async (leadData: Record<string, unknown>, { rejectWithValue }) => {
+  async (leadData, { rejectWithValue }) => {
     try {
       const response = await authFetch('/api/leads', {
         method: 'POST',
@@ -195,9 +215,13 @@ export const createLeadAPI = createAsyncThunk(
 );
 
 /** Update a lead via API */
-export const updateLeadAPI = createAsyncThunk(
+export const updateLeadAPI = createAsyncThunk<
+  CRMItem,
+  { id: string | number } & Record<string, unknown>,
+  { rejectValue: string }
+>(
   'crmData/updateLeadAPI',
-  async ({ id, ...updates }: { id: string | number } & Record<string, unknown>, { rejectWithValue }) => {
+  async ({ id, ...updates }, { rejectWithValue }) => {
     try {
       const response = await authFetch(`/api/leads/${id}`, {
         method: 'PATCH',
@@ -214,9 +238,13 @@ export const updateLeadAPI = createAsyncThunk(
 );
 
 /** Delete a lead via API */
-export const deleteLeadAPI = createAsyncThunk(
+export const deleteLeadAPI = createAsyncThunk<
+  string | number,
+  string | number,
+  { rejectValue: string }
+>(
   'crmData/deleteLeadAPI',
-  async (id: string | number, { rejectWithValue }) => {
+  async (id, { rejectWithValue }) => {
     try {
       const response = await authFetch(`/api/leads/${id}`, { method: 'DELETE' });
       if (!response.ok) throw new Error(await extractApiError(response, 'Failed to delete lead'));
@@ -228,9 +256,13 @@ export const deleteLeadAPI = createAsyncThunk(
 );
 
 /** Create a new property via API */
-export const createPropertyAPI = createAsyncThunk(
+export const createPropertyAPI = createAsyncThunk<
+  CRMItem,
+  Record<string, unknown>,
+  { rejectValue: string }
+>(
   'crmData/createProperty',
-  async (propertyData: Record<string, unknown>, { rejectWithValue }) => {
+  async (propertyData, { rejectWithValue }) => {
     try {
       const response = await authFetch('/api/properties', {
         method: 'POST',
@@ -247,9 +279,13 @@ export const createPropertyAPI = createAsyncThunk(
 );
 
 /** Update a property via API */
-export const updatePropertyAPI = createAsyncThunk(
+export const updatePropertyAPI = createAsyncThunk<
+  CRMItem,
+  { id: string | number } & Record<string, unknown>,
+  { rejectValue: string }
+>(
   'crmData/updateProperty',
-  async ({ id, ...updates }: { id: string | number } & Record<string, unknown>, { rejectWithValue }) => {
+  async ({ id, ...updates }, { rejectWithValue }) => {
     try {
       const response = await authFetch(`/api/properties/${id}`, {
         method: 'PATCH',
@@ -266,9 +302,13 @@ export const updatePropertyAPI = createAsyncThunk(
 );
 
 /** Delete a property via API */
-export const deletePropertyAPI = createAsyncThunk(
+export const deletePropertyAPI = createAsyncThunk<
+  string | number,
+  string | number,
+  { rejectValue: string }
+>(
   'crmData/deleteProperty',
-  async (id: string | number, { rejectWithValue }) => {
+  async (id, { rejectWithValue }) => {
     try {
       const response = await authFetch(`/api/properties/${id}`, { method: 'DELETE' });
       if (!response.ok) throw new Error(await extractApiError(response, 'Failed to delete property'));
@@ -284,9 +324,13 @@ export const deletePropertyAPI = createAsyncThunk(
 // ============================================================================
 
 /** Fetch commissions from /api/finance/commissions with optional filtering */
-export const fetchCommissionsFromAPI = createAsyncThunk(
+export const fetchCommissionsFromAPI = createAsyncThunk<
+  CRMItem[],
+  { page?: number; pageSize?: number; status?: string; type?: string; agentId?: string },
+  { rejectValue: string }
+>(
   'crmData/fetchCommissions',
-  async (params: { page?: number; pageSize?: number; status?: string; type?: string; agentId?: string } = {}, { rejectWithValue }) => {
+  async (params = {}, { rejectWithValue }) => {
     try {
       const query = new URLSearchParams();
       if (params.page) query.set('page', String(params.page));
@@ -305,7 +349,11 @@ export const fetchCommissionsFromAPI = createAsyncThunk(
 );
 
 /** Fetch financial summary from /api/finance/summary */
-export const fetchFinanceSummary = createAsyncThunk(
+export const fetchFinanceSummary = createAsyncThunk<
+  Record<string, unknown>,
+  void,
+  { rejectValue: string }
+>(
   'crmData/fetchFinanceSummary',
   async (_, { rejectWithValue }) => {
     try {
@@ -320,9 +368,13 @@ export const fetchFinanceSummary = createAsyncThunk(
 );
 
 /** Create a new commission via /api/finance/commissions */
-export const createCommissionAPI = createAsyncThunk(
+export const createCommissionAPI = createAsyncThunk<
+  CRMItem,
+  { agentId: string; amount: number; percentage?: number; type?: string; notes?: string; leadId?: string; propertyId?: string },
+  { rejectValue: string }
+>(
   'crmData/createCommission',
-  async (commissionData: { agentId: string; amount: number; percentage?: number; type?: string; notes?: string; leadId?: string; propertyId?: string }, { rejectWithValue }) => {
+  async (commissionData, { rejectWithValue }) => {
     try {
       const response = await authFetch('/api/finance/commissions', {
         method: 'POST',
@@ -339,9 +391,13 @@ export const createCommissionAPI = createAsyncThunk(
 );
 
 /** Update a commission via /api/finance/commissions/:id */
-export const updateCommissionAPI = createAsyncThunk(
+export const updateCommissionAPI = createAsyncThunk<
+  CRMItem,
+  { id: string; status?: string; amount?: number; notes?: string },
+  { rejectValue: string }
+>(
   'crmData/updateCommissionAPI',
-  async ({ id, ...updates }: { id: string; status?: string; amount?: number; notes?: string }, { rejectWithValue }) => {
+  async ({ id, ...updates }, { rejectWithValue }) => {
     try {
       const response = await authFetch(`/api/finance/commissions/${id}`, {
         method: 'PATCH',
@@ -358,9 +414,13 @@ export const updateCommissionAPI = createAsyncThunk(
 );
 
 /** Bulk-pay approved commissions via /api/finance/payments */
-export const bulkPayCommissionsAPI = createAsyncThunk(
+export const bulkPayCommissionsAPI = createAsyncThunk<
+  { commissionIds: string[]; paidCount: number },
+  string[],
+  { rejectValue: string }
+>(
   'crmData/bulkPayCommissions',
-  async (commissionIds: string[], { rejectWithValue }) => {
+  async (commissionIds, { rejectWithValue }) => {
     try {
       const response = await authFetch('/api/finance/payments', {
         method: 'POST',
