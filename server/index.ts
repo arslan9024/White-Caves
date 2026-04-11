@@ -237,7 +237,8 @@ app.use('/api/notifications', notificationsRoutes);
 app.use('/api/favorites', favoritesRoutes);
 
 // Users Management API (RBAC, role/status management)
-app.use('/api/users', usersRoutes);
+// Mounted at /api/user-management to avoid conflict with /api/users (agents alias)
+app.use('/api/user-management', usersRoutes);
 
 // ============================================================================
 // STUB ROUTES — Placeholder APIs for frontend pages not yet backed by full CRUD
