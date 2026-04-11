@@ -40,6 +40,9 @@
     "audit:fix": "npm audit fix",
     "server:api": "tsx server/index.ts",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed:enhanced": "tsx prisma/seed-enhanced.ts",
+    "db:seed:small": "tsx prisma/seed-enhanced.ts --count small",
+    "db:seed:large": "tsx prisma/seed-enhanced.ts --count large",
     "db:generate": "npx prisma generate",
     "db:push": "npx prisma db push",
     "prepare": "husky"
