@@ -6,6 +6,7 @@
 
 import { createSlice, createAsyncThunk, createSelector, PayloadAction } from '@reduxjs/toolkit';
 import { authFetch, extractApiError } from '../utils/authFetch';
+import * as crmService from '../services/crmService';
 import { logout } from './authSlice';
 import type { RootState } from './store';
 // In production, async thunks fetch real data from the API.
@@ -42,12 +43,28 @@ interface ActivityCollection {
   error?: string | null;
 }
 
+interface NotificationCollection {
+  items: CRMItem[];
+  unreadCount: number;
+  loading: boolean;
+  error: string | null;
+}
+
+interface FavoriteCollection {
+  items: CRMItem[];
+  loading: boolean;
+  error: string | null;
+}
+
 interface CRMDataState {
   leads: CRMCollection<CRMItem>;
   clients: CRMCollection<CRMItem>;
   agents: CRMCollection<CRMItem>;
   properties: CRMCollection<CRMItem>;
+  transactions: CRMCollection<CRMItem>;
   commissions: CommissionCollection;
+  notifications: NotificationCollection;
+  favorites: FavoriteCollection;
   activities: ActivityCollection;
   overview: Record<string, unknown> | null;
   lastUpdated: string;
@@ -82,7 +99,27 @@ const initialState: CRMDataState = {
     error: null
   },
 
+  transactions: {
+    items: [],
+    selected: null,
+    loading: false,
+    error: null
+  },
+
   commissions: {
+    items: [],
+    loading: false,
+    error: null
+  },
+
+  notifications: {
+    items: [],
+    unreadCount: 0,
+    loading: false,
+    error: null
+  },
+
+  favorites: {
     items: [],
     loading: false,
     error: null
@@ -277,26 +314,44 @@ export const deletePropertyAPI = createAsyncThunk(
 );
 
 // ============================================================================
-// COMMISSION ASYNC THUNKS — Finance API Integration
+// ASYNC THUNKS — Commissions (via crmService)
 // ============================================================================
 
-/** Fetch commissions from /api/finance/commissions with optional filtering */
-export const fetchCommissionsFromAPI = createAsyncThunk(
+/** Fetch all commissions from the backend API */
+export const fetchCommissionsAPI = createAsyncThunk(
   'crmData/fetchCommissions',
-  async (params: { page?: number; pageSize?: number; status?: string; type?: string; agentId?: string } = {}, { rejectWithValue }) => {
+  async (params: Record<string, string> | undefined, { rejectWithValue }) => {
     try {
-      const query = new URLSearchParams();
-      if (params.page) query.set('page', String(params.page));
-      if (params.pageSize) query.set('pageSize', String(params.pageSize));
-      if (params.status) query.set('status', params.status);
-      if (params.type) query.set('type', params.type);
-      if (params.agentId) query.set('agentId', params.agentId);
-      const response = await authFetch(`/api/finance/commissions?${query.toString()}`);
-      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to fetch commissions'));
-      const data = await response.json();
-      return data.data || data;
+      return await crmService.fetchCommissions(params);
     } catch (error: unknown) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch commissions');
+    }
+  }
+);
+
+/** @deprecated Use fetchCommissionsAPI instead */
+export const fetchCommissionsFromAPI = fetchCommissionsAPI;
+
+/** Create a new commission via API */
+export const createCommissionAPI = createAsyncThunk(
+  'crmData/createCommission',
+  async (data: Record<string, unknown>, { rejectWithValue }) => {
+    try {
+      return await crmService.createCommission(data);
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to create commission');
+    }
+  }
+);
+
+/** Update a commission via API */
+export const updateCommissionAPI = createAsyncThunk(
+  'crmData/updateCommission',
+  async ({ id, ...updates }: { id: string } & Record<string, unknown>, { rejectWithValue }) => {
+    try {
+      return await crmService.updateCommission(id, updates);
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to update commission');
     }
   }
 );
@@ -316,44 +371,6 @@ export const fetchFinanceSummary = createAsyncThunk(
   }
 );
 
-/** Create a new commission via /api/finance/commissions */
-export const createCommissionAPI = createAsyncThunk(
-  'crmData/createCommission',
-  async (commissionData: { agentId: string; amount: number; percentage?: number; type?: string; notes?: string; leadId?: string; propertyId?: string }, { rejectWithValue }) => {
-    try {
-      const response = await authFetch('/api/finance/commissions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(commissionData),
-      });
-      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to create commission'));
-      const data = await response.json();
-      return data.data || data;
-    } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to create commission');
-    }
-  }
-);
-
-/** Update a commission via /api/finance/commissions/:id */
-export const updateCommissionAPI = createAsyncThunk(
-  'crmData/updateCommissionAPI',
-  async ({ id, ...updates }: { id: string; status?: string; amount?: number; notes?: string }, { rejectWithValue }) => {
-    try {
-      const response = await authFetch(`/api/finance/commissions/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates),
-      });
-      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to update commission'));
-      const data = await response.json();
-      return data.data || data;
-    } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to update commission');
-    }
-  }
-);
-
 /** Bulk-pay approved commissions via /api/finance/payments */
 export const bulkPayCommissionsAPI = createAsyncThunk(
   'crmData/bulkPayCommissions',
@@ -369,6 +386,204 @@ export const bulkPayCommissionsAPI = createAsyncThunk(
       return { commissionIds, paidCount: data.data?.paidCount || 0 };
     } catch (error: unknown) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to process commission payments');
+    }
+  }
+);
+
+// ============================================================================
+// ASYNC THUNKS — Transactions (via crmService)
+// ============================================================================
+
+/** Fetch all transactions from the backend API */
+export const fetchTransactionsAPI = createAsyncThunk(
+  'crmData/fetchTransactions',
+  async (params: Record<string, string> | undefined, { rejectWithValue }) => {
+    try {
+      return await crmService.fetchTransactions(params);
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch transactions');
+    }
+  }
+);
+
+/** Create a new transaction via API */
+export const createTransactionAPI = createAsyncThunk(
+  'crmData/createTransaction',
+  async (data: Record<string, unknown>, { rejectWithValue }) => {
+    try {
+      return await crmService.createTransaction(data);
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to create transaction');
+    }
+  }
+);
+
+/** Update a transaction via API */
+export const updateTransactionAPI = createAsyncThunk(
+  'crmData/updateTransaction',
+  async ({ id, ...updates }: { id: string } & Record<string, unknown>, { rejectWithValue }) => {
+    try {
+      return await crmService.updateTransaction(id, updates);
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to update transaction');
+    }
+  }
+);
+
+/** Delete a transaction via API */
+export const deleteTransactionAPI = createAsyncThunk(
+  'crmData/deleteTransaction',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      return await crmService.deleteTransaction(id);
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to delete transaction');
+    }
+  }
+);
+
+// ============================================================================
+// ASYNC THUNKS — Clients (via crmService)
+// ============================================================================
+
+/** Fetch all clients from the backend API */
+export const fetchClientsAPI = createAsyncThunk(
+  'crmData/fetchClients',
+  async (params: Record<string, string> | undefined, { rejectWithValue }) => {
+    try {
+      return await crmService.fetchClients(params);
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch clients');
+    }
+  }
+);
+
+/** Create a new client via API */
+export const createClientAPI = createAsyncThunk(
+  'crmData/createClient',
+  async (data: Record<string, unknown>, { rejectWithValue }) => {
+    try {
+      return await crmService.createClient(data);
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to create client');
+    }
+  }
+);
+
+/** Update a client via API */
+export const updateClientAPI = createAsyncThunk(
+  'crmData/updateClient',
+  async ({ id, ...updates }: { id: string } & Record<string, unknown>, { rejectWithValue }) => {
+    try {
+      return await crmService.updateClient(id, updates);
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to update client');
+    }
+  }
+);
+
+/** Delete a client via API */
+export const deleteClientAPI = createAsyncThunk(
+  'crmData/deleteClient',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      return await crmService.deleteClient(id);
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to delete client');
+    }
+  }
+);
+
+// ============================================================================
+// ASYNC THUNKS — Notifications (via crmService)
+// ============================================================================
+
+/** Fetch notifications from the backend API */
+export const fetchNotificationsAPI = createAsyncThunk(
+  'crmData/fetchNotifications',
+  async (params: Record<string, string> | undefined, { rejectWithValue }) => {
+    try {
+      return await crmService.fetchNotifications(params);
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch notifications');
+    }
+  }
+);
+
+/** Fetch unread notification count */
+export const fetchUnreadCountAPI = createAsyncThunk(
+  'crmData/fetchUnreadCount',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await crmService.fetchUnreadCount();
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch unread count');
+    }
+  }
+);
+
+/** Mark a single notification as read */
+export const markNotificationReadAPI = createAsyncThunk(
+  'crmData/markNotificationRead',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      await crmService.markNotificationRead(id);
+      return id;
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to mark notification as read');
+    }
+  }
+);
+
+/** Mark all notifications as read */
+export const markAllNotificationsReadAPI = createAsyncThunk(
+  'crmData/markAllNotificationsRead',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await crmService.markAllNotificationsRead();
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to mark all notifications as read');
+    }
+  }
+);
+
+// ============================================================================
+// ASYNC THUNKS — Favorites (via crmService)
+// ============================================================================
+
+/** Fetch user's favorite properties */
+export const fetchFavoritesAPI = createAsyncThunk(
+  'crmData/fetchFavorites',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await crmService.fetchFavorites();
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch favorites');
+    }
+  }
+);
+
+/** Add a property to favorites */
+export const addFavoriteAPI = createAsyncThunk(
+  'crmData/addFavorite',
+  async (propertyId: string, { rejectWithValue }) => {
+    try {
+      return await crmService.addFavorite(propertyId);
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to add favorite');
+    }
+  }
+);
+
+/** Remove a property from favorites */
+export const removeFavoriteAPI = createAsyncThunk(
+  'crmData/removeFavorite',
+  async (propertyId: string, { rejectWithValue }) => {
+    try {
+      await crmService.removeFavorite(propertyId);
+      return propertyId;
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to remove favorite');
     }
   }
 );
@@ -795,18 +1010,18 @@ const crmDataSlice = createSlice({
 
     // --- Fetch Commissions ---
     builder
-      .addCase(fetchCommissionsFromAPI.pending, (state) => {
+      .addCase(fetchCommissionsAPI.pending, (state) => {
         state.commissions.loading = true;
         state.commissions.error = null;
       })
-      .addCase(fetchCommissionsFromAPI.fulfilled, (state, action) => {
+      .addCase(fetchCommissionsAPI.fulfilled, (state, action) => {
         state.commissions.loading = false;
         if (Array.isArray(action.payload)) {
-          state.commissions.items = action.payload;
+          state.commissions.items = action.payload as CRMItem[];
         }
         state.lastUpdated = new Date().toISOString();
       })
-      .addCase(fetchCommissionsFromAPI.rejected, (state, action) => {
+      .addCase(fetchCommissionsAPI.rejected, (state, action) => {
         state.commissions.loading = false;
         state.commissions.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to fetch commissions';
       });
@@ -820,7 +1035,7 @@ const crmDataSlice = createSlice({
       .addCase(createCommissionAPI.fulfilled, (state, action) => {
         state.commissions.loading = false;
         if (action.payload) {
-          state.commissions.items.unshift(action.payload);
+          state.commissions.items.unshift(action.payload as CRMItem);
         }
         state.lastUpdated = new Date().toISOString();
       })
@@ -838,9 +1053,9 @@ const crmDataSlice = createSlice({
       .addCase(updateCommissionAPI.fulfilled, (state, action) => {
         state.commissions.loading = false;
         if (action.payload) {
-          const idx = state.commissions.items.findIndex(c => c.id === action.payload.id);
+          const idx = state.commissions.items.findIndex(c => c.id === (action.payload as CRMItem).id);
           if (idx > -1) {
-            state.commissions.items[idx] = { ...state.commissions.items[idx], ...action.payload };
+            state.commissions.items[idx] = { ...state.commissions.items[idx], ...(action.payload as CRMItem) };
           }
         }
         state.lastUpdated = new Date().toISOString();
@@ -858,7 +1073,6 @@ const crmDataSlice = createSlice({
       })
       .addCase(bulkPayCommissionsAPI.fulfilled, (state, action) => {
         state.commissions.loading = false;
-        // Mark paid commissions in state
         const paidIds = new Set(action.payload.commissionIds);
         state.commissions.items = state.commissions.items.map(c =>
           paidIds.has(String(c.id)) ? { ...c, status: 'paid', paidAt: new Date().toISOString() } : c
@@ -868,6 +1082,263 @@ const crmDataSlice = createSlice({
       .addCase(bulkPayCommissionsAPI.rejected, (state, action) => {
         state.commissions.loading = false;
         state.commissions.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to process payments';
+      });
+
+    // --- Fetch Transactions ---
+    builder
+      .addCase(fetchTransactionsAPI.pending, (state) => {
+        state.transactions.loading = true;
+        state.transactions.error = null;
+      })
+      .addCase(fetchTransactionsAPI.fulfilled, (state, action) => {
+        state.transactions.loading = false;
+        if (Array.isArray(action.payload)) {
+          state.transactions.items = action.payload as CRMItem[];
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(fetchTransactionsAPI.rejected, (state, action) => {
+        state.transactions.loading = false;
+        state.transactions.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to fetch transactions';
+      });
+
+    // --- Create Transaction ---
+    builder
+      .addCase(createTransactionAPI.pending, (state) => {
+        state.transactions.loading = true;
+        state.transactions.error = null;
+      })
+      .addCase(createTransactionAPI.fulfilled, (state, action) => {
+        state.transactions.loading = false;
+        if (action.payload) {
+          state.transactions.items.unshift(action.payload as CRMItem);
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(createTransactionAPI.rejected, (state, action) => {
+        state.transactions.loading = false;
+        state.transactions.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to create transaction';
+      });
+
+    // --- Update Transaction ---
+    builder
+      .addCase(updateTransactionAPI.pending, (state) => {
+        state.transactions.loading = true;
+        state.transactions.error = null;
+      })
+      .addCase(updateTransactionAPI.fulfilled, (state, action) => {
+        state.transactions.loading = false;
+        if (action.payload) {
+          const idx = state.transactions.items.findIndex(t => t.id === (action.payload as CRMItem).id);
+          if (idx > -1) {
+            state.transactions.items[idx] = { ...state.transactions.items[idx], ...(action.payload as CRMItem) };
+          }
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(updateTransactionAPI.rejected, (state, action) => {
+        state.transactions.loading = false;
+        state.transactions.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to update transaction';
+      });
+
+    // --- Delete Transaction ---
+    builder
+      .addCase(deleteTransactionAPI.pending, (state) => {
+        state.transactions.loading = true;
+        state.transactions.error = null;
+      })
+      .addCase(deleteTransactionAPI.fulfilled, (state, action) => {
+        state.transactions.loading = false;
+        state.transactions.items = state.transactions.items.filter(t => t.id !== action.payload);
+        if (state.transactions.selected?.id === action.payload) {
+          state.transactions.selected = null;
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(deleteTransactionAPI.rejected, (state, action) => {
+        state.transactions.loading = false;
+        state.transactions.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to delete transaction';
+      });
+
+    // --- Fetch Clients (API) ---
+    builder
+      .addCase(fetchClientsAPI.pending, (state) => {
+        state.clients.loading = true;
+        state.clients.error = null;
+      })
+      .addCase(fetchClientsAPI.fulfilled, (state, action) => {
+        state.clients.loading = false;
+        if (Array.isArray(action.payload)) {
+          state.clients.items = action.payload as CRMItem[];
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(fetchClientsAPI.rejected, (state, action) => {
+        state.clients.loading = false;
+        state.clients.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to fetch clients';
+      });
+
+    // --- Create Client (API) ---
+    builder
+      .addCase(createClientAPI.pending, (state) => {
+        state.clients.loading = true;
+        state.clients.error = null;
+      })
+      .addCase(createClientAPI.fulfilled, (state, action) => {
+        state.clients.loading = false;
+        if (action.payload) {
+          state.clients.items.unshift(action.payload as CRMItem);
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(createClientAPI.rejected, (state, action) => {
+        state.clients.loading = false;
+        state.clients.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to create client';
+      });
+
+    // --- Update Client (API) ---
+    builder
+      .addCase(updateClientAPI.pending, (state) => {
+        state.clients.loading = true;
+        state.clients.error = null;
+      })
+      .addCase(updateClientAPI.fulfilled, (state, action) => {
+        state.clients.loading = false;
+        if (action.payload) {
+          const idx = state.clients.items.findIndex(c => c.id === (action.payload as CRMItem).id);
+          if (idx > -1) {
+            state.clients.items[idx] = { ...state.clients.items[idx], ...(action.payload as CRMItem) };
+          }
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(updateClientAPI.rejected, (state, action) => {
+        state.clients.loading = false;
+        state.clients.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to update client';
+      });
+
+    // --- Delete Client (API) ---
+    builder
+      .addCase(deleteClientAPI.pending, (state) => {
+        state.clients.loading = true;
+        state.clients.error = null;
+      })
+      .addCase(deleteClientAPI.fulfilled, (state, action) => {
+        state.clients.loading = false;
+        state.clients.items = state.clients.items.filter(c => c.id !== action.payload);
+        if (state.clients.selected?.id === action.payload) {
+          state.clients.selected = null;
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(deleteClientAPI.rejected, (state, action) => {
+        state.clients.loading = false;
+        state.clients.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to delete client';
+      });
+
+    // --- Fetch Notifications ---
+    builder
+      .addCase(fetchNotificationsAPI.pending, (state) => {
+        state.notifications.loading = true;
+        state.notifications.error = null;
+      })
+      .addCase(fetchNotificationsAPI.fulfilled, (state, action) => {
+        state.notifications.loading = false;
+        if (Array.isArray(action.payload)) {
+          state.notifications.items = action.payload as CRMItem[];
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(fetchNotificationsAPI.rejected, (state, action) => {
+        state.notifications.loading = false;
+        state.notifications.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to fetch notifications';
+      });
+
+    // --- Fetch Unread Count ---
+    builder
+      .addCase(fetchUnreadCountAPI.pending, (state) => {
+        state.notifications.error = null;
+      })
+      .addCase(fetchUnreadCountAPI.fulfilled, (state, action) => {
+        if (action.payload && typeof (action.payload as { unreadCount?: number }).unreadCount === 'number') {
+          state.notifications.unreadCount = (action.payload as { unreadCount: number }).unreadCount;
+        }
+      })
+      .addCase(fetchUnreadCountAPI.rejected, (state, action) => {
+        state.notifications.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to fetch unread count';
+      });
+
+    // --- Mark Notification Read ---
+    builder
+      .addCase(markNotificationReadAPI.fulfilled, (state, action) => {
+        const idx = state.notifications.items.findIndex(n => n.id === action.payload);
+        if (idx > -1) {
+          state.notifications.items[idx] = { ...state.notifications.items[idx], read: true };
+        }
+        if (state.notifications.unreadCount > 0) {
+          state.notifications.unreadCount -= 1;
+        }
+      });
+
+    // --- Mark All Notifications Read ---
+    builder
+      .addCase(markAllNotificationsReadAPI.fulfilled, (state) => {
+        state.notifications.items = state.notifications.items.map(n => ({ ...n, read: true }));
+        state.notifications.unreadCount = 0;
+      });
+
+    // --- Fetch Favorites ---
+    builder
+      .addCase(fetchFavoritesAPI.pending, (state) => {
+        state.favorites.loading = true;
+        state.favorites.error = null;
+      })
+      .addCase(fetchFavoritesAPI.fulfilled, (state, action) => {
+        state.favorites.loading = false;
+        if (Array.isArray(action.payload)) {
+          state.favorites.items = action.payload as CRMItem[];
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(fetchFavoritesAPI.rejected, (state, action) => {
+        state.favorites.loading = false;
+        state.favorites.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to fetch favorites';
+      });
+
+    // --- Add Favorite ---
+    builder
+      .addCase(addFavoriteAPI.pending, (state) => {
+        state.favorites.loading = true;
+        state.favorites.error = null;
+      })
+      .addCase(addFavoriteAPI.fulfilled, (state, action) => {
+        state.favorites.loading = false;
+        if (action.payload) {
+          state.favorites.items.push(action.payload as CRMItem);
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(addFavoriteAPI.rejected, (state, action) => {
+        state.favorites.loading = false;
+        state.favorites.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to add favorite';
+      });
+
+    // --- Remove Favorite ---
+    builder
+      .addCase(removeFavoriteAPI.pending, (state) => {
+        state.favorites.loading = true;
+        state.favorites.error = null;
+      })
+      .addCase(removeFavoriteAPI.fulfilled, (state, action) => {
+        state.favorites.loading = false;
+        state.favorites.items = state.favorites.items.filter(
+          f => f.id !== action.payload && (f as CRMItem & { propertyId?: string }).propertyId !== action.payload
+        );
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(removeFavoriteAPI.rejected, (state, action) => {
+        state.favorites.loading = false;
+        state.favorites.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to remove favorite';
       });
 
     // --- SECURITY: Reset all CRM data on logout to prevent data leaks ---
@@ -918,7 +1389,10 @@ const selectLeadsSlice = (state: RootState) => state.crmData?.leads;
 const selectClientsSlice = (state: RootState) => state.crmData?.clients;
 const selectAgentsSlice = (state: RootState) => state.crmData?.agents;
 const selectPropertiesSlice = (state: RootState) => state.crmData?.properties;
+const selectTransactionsSlice = (state: RootState) => state.crmData?.transactions;
 const selectCommissionsSlice = (state: RootState) => state.crmData?.commissions;
+const selectNotificationsSlice = (state: RootState) => state.crmData?.notifications;
+const selectFavoritesSlice = (state: RootState) => state.crmData?.favorites;
 const selectActivitiesSlice = (state: RootState) => state.crmData?.activities;
 
 // ── Leads ──
@@ -949,6 +1423,7 @@ export const selectAllClients = createSelector(
 );
 export const selectSelectedClient = (state: RootState) => state.crmData?.clients?.selected;
 export const selectClientsLoading = (state: RootState) => state.crmData?.clients?.loading;
+export const selectClientsError = (state: RootState) => state.crmData?.clients?.error;
 
 // ── Agents ──
 export const selectAllAgents = createSelector(
@@ -993,19 +1468,50 @@ export const selectPendingCommissions = createSelector(
   selectAllCommissions,
   (items) => items.filter((c: CRMItem) => c.status === 'pending')
 );
-export const selectApprovedCommissions = createSelector(
-  selectAllCommissions,
-  (items) => items.filter((c: CRMItem) => c.status === 'approved')
-);
 export const selectPaidCommissions = createSelector(
   selectAllCommissions,
   (items) => items.filter((c: CRMItem) => c.status === 'paid')
 );
+export const selectApprovedCommissions = createSelector(
+  selectAllCommissions,
+  (items) => items.filter((c: CRMItem) => c.status === 'approved')
+);
+
+export const selectCommissionsByAgent = (state: RootState, agentId: string | number) =>
+  state.crmData?.commissions?.items?.filter((c: CRMItem) => c.agent_id === agentId) || [];
+
 export const selectCommissionsLoading = (state: RootState) => state.crmData?.commissions?.loading;
 export const selectCommissionsError = (state: RootState) => state.crmData?.commissions?.error;
 
-export const selectCommissionsByAgent = (state: RootState, agentId: string | number) =>
-  state.crmData?.commissions?.items?.filter((c: CRMItem) => c.agentId === agentId || c.agent_id === agentId) || [];
+// ── Transactions ──
+export const selectAllTransactions = createSelector(
+  selectTransactionsSlice,
+  (transactions) => transactions?.items || []
+);
+export const selectSelectedTransaction = (state: RootState) => state.crmData?.transactions?.selected;
+export const selectTransactionsLoading = (state: RootState) => state.crmData?.transactions?.loading;
+export const selectTransactionsError = (state: RootState) => state.crmData?.transactions?.error;
+
+// ── Notifications ──
+export const selectAllNotifications = createSelector(
+  selectNotificationsSlice,
+  (notifications) => notifications?.items || []
+);
+export const selectUnreadNotifications = createSelector(
+  selectAllNotifications,
+  (items) => items.filter((n: CRMItem) => !n.read)
+);
+export const selectUnreadCount = (state: RootState) => state.crmData?.notifications?.unreadCount ?? 0;
+export const selectNotificationsLoading = (state: RootState) => state.crmData?.notifications?.loading;
+export const selectNotificationsError = (state: RootState) => state.crmData?.notifications?.error;
+
+// ── Favorites ──
+export const selectAllFavorites = createSelector(
+  selectFavoritesSlice,
+  (favorites) => favorites?.items || []
+);
+export const selectFavoritesLoading = (state: RootState) => state.crmData?.favorites?.loading;
+export const selectFavoritesError = (state: RootState) => state.crmData?.favorites?.error;
 
 // ── Activities ──
 export const selectAllActivities = createSelector(

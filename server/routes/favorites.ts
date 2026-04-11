@@ -1,201 +1,150 @@
 /**
- * Favorites API Routes
- * ────────────────────
- * CRUD endpoints for user property favorites.
- * Each user can favorite a property once (unique constraint).
- *
- * GET    /api/favorites           — List user's favorites (with property data)
- * POST   /api/favorites           — Add a favorite
- * DELETE /api/favorites/:propertyId — Remove a favorite
- * GET    /api/favorites/check/:propertyId — Check if a property is favorited
- * GET    /api/favorites/ids       — Get all favorited property IDs (lightweight)
+ * Favorites API Routes — Property Favorites Management
+ * Allow users to bookmark/favorite properties
+ * Endpoints: /api/favorites
  */
 
-import { Router, Response } from 'express';
-import { asyncHandler, AppError } from '../middleware/errorHandler.js';
-import { AuthRequest } from '../middleware/auth.js';
+import { Router, Request, Response } from 'express';
+import { asyncHandler, AppError } from '../middleware/errorHandler';
+import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
-import logger from '../utils/logger.js';
+import { validate, rules, validateIdParam } from '../utils/validate';
+import { parsePagination } from '../config/pagination';
 
 const router = Router();
 
-// ─── GET /api/favorites — List all favorites for current user ────────────────
+// ─── GET /api/favorites ─────────────────────────────────────────────────
 router.get(
   '/',
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = (req as AuthRequest).user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const page = Math.max(1, parseInt(req.query.page as string) || 1);
-    const pageSize = Math.min(50, Math.max(1, parseInt(req.query.pageSize as string) || 20));
-    const skip = (page - 1) * pageSize;
+    const { page: pageNum, limit, skip } = parsePagination({
+      page: req.query.page as string,
+      limit: req.query.pageSize as string,
+    });
+
+    const where = { userId };
 
     const [favorites, total] = await Promise.all([
       prisma.favorite.findMany({
-        where: { userId },
-        include: {
-          property: {
-            select: {
-              id: true,
-              title: true,
-              price: true,
-              location: true,
-              area: true,
-              type: true,
-              status: true,
-              bedrooms: true,
-              bathrooms: true,
-              sqft: true,
-              images: true,
-              featured: true,
-              agentName: true,
-            },
-          },
-        },
+        where,
         orderBy: { createdAt: 'desc' },
         skip,
-        take: pageSize,
+        take: limit,
       }),
-      prisma.favorite.count({ where: { userId } }),
+      prisma.favorite.count({ where }),
     ]);
 
+    // Populate property data for each favorite
+    const propertyIds = favorites.map((f) => f.propertyId);
+    const properties = propertyIds.length > 0
+      ? await prisma.property.findMany({
+          where: { id: { in: propertyIds } },
+          select: {
+            id: true, title: true, type: true, status: true,
+            price: true, bedrooms: true, bathrooms: true, sqft: true,
+            location: true, images: true, featured: true,
+          },
+        })
+      : [];
+
+    const propertyMap = new Map(properties.map((p) => [p.id, p]));
+    const data = favorites.map((f) => ({
+      ...f,
+      property: propertyMap.get(f.propertyId) || null,
+    }));
+
     res.status(200).json({
       success: true,
-      data: favorites,
+      data,
       pagination: {
-        page,
-        pageSize,
+        page: pageNum,
+        pageSize: limit,
         total,
-        totalPages: Math.ceil(total / pageSize),
+        totalPages: Math.ceil(total / limit),
       },
     });
-  }),
+  })
 );
 
-// ─── GET /api/favorites/ids — Get all favorited property IDs (lightweight) ───
-router.get(
-  '/ids',
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
+// ─── POST /api/favorites ────────────────────────────────────────────────
+router.post(
+  '/',
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = (req as AuthRequest).user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const favorites = await prisma.favorite.findMany({
-      where: { userId },
-      select: { propertyId: true },
+    const { propertyId } = req.body;
+
+    validate(req.body, {
+      propertyId: rules.requiredMongoId('Property ID'),
     });
 
-    res.status(200).json({
-      success: true,
-      data: favorites.map(f => f.propertyId),
+    // Verify the property exists
+    const property = await prisma.property.findUnique({
+      where: { id: propertyId },
+      select: { id: true },
     });
-  }),
+    if (!property) throw new AppError('Property not found', 404);
+
+    // Check for existing favorite (unique constraint)
+    const existing = await prisma.favorite.findUnique({
+      where: { userId_propertyId: { userId, propertyId } },
+    });
+    if (existing) {
+      throw new AppError('Property is already in your favorites', 400);
+    }
+
+    const favorite = await prisma.favorite.create({
+      data: { userId, propertyId },
+    });
+
+    res.status(201).json({ success: true, data: favorite });
+  })
 );
 
-// ─── GET /api/favorites/check/:propertyId — Check if property is favorited ───
+// ─── DELETE /api/favorites/:propertyId ──────────────────────────────────
+router.delete(
+  '/:propertyId',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { propertyId } = req.params;
+    validateIdParam(propertyId, 'Property ID');
+    const userId = (req as AuthRequest).user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
+
+    const existing = await prisma.favorite.findUnique({
+      where: { userId_propertyId: { userId, propertyId } },
+    });
+    if (!existing) throw new AppError('Favorite not found', 404);
+
+    await prisma.favorite.delete({
+      where: { userId_propertyId: { userId, propertyId } },
+    });
+
+    res.status(200).json({ success: true, message: 'Favorite removed' });
+  })
+);
+
+// ─── GET /api/favorites/check/:propertyId ───────────────────────────────
 router.get(
   '/check/:propertyId',
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
+  asyncHandler(async (req: Request, res: Response) => {
+    const { propertyId } = req.params;
+    validateIdParam(propertyId, 'Property ID');
+    const userId = (req as AuthRequest).user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { propertyId } = req.params;
-    if (!propertyId) throw new AppError('Property ID is required', 400);
-
     const favorite = await prisma.favorite.findUnique({
-      where: {
-        userId_propertyId: { userId, propertyId },
-      },
+      where: { userId_propertyId: { userId, propertyId } },
     });
 
     res.status(200).json({
       success: true,
       data: { isFavorited: !!favorite },
     });
-  }),
-);
-
-// ─── POST /api/favorites — Add a favorite ────────────────────────────────────
-router.post(
-  '/',
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
-
-    const { propertyId } = req.body;
-    if (!propertyId) throw new AppError('propertyId is required', 400);
-
-    // Verify property exists
-    const property = await prisma.property.findUnique({
-      where: { id: propertyId },
-      select: { id: true, title: true },
-    });
-    if (!property) throw new AppError('Property not found', 404);
-
-    // Upsert to handle duplicate gracefully
-    const favorite = await prisma.favorite.upsert({
-      where: {
-        userId_propertyId: { userId, propertyId },
-      },
-      create: { userId, propertyId },
-      update: {}, // No-op if already exists
-      include: {
-        property: {
-          select: {
-            id: true,
-            title: true,
-            price: true,
-            location: true,
-            type: true,
-            status: true,
-            images: true,
-          },
-        },
-      },
-    });
-
-    logger.info('Property favorited', { userId, propertyId, propertyTitle: property.title });
-
-    res.status(201).json({
-      success: true,
-      data: favorite,
-    });
-  }),
-);
-
-// ─── DELETE /api/favorites/:propertyId — Remove a favorite ───────────────────
-router.delete(
-  '/:propertyId',
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
-
-    const { propertyId } = req.params;
-    if (!propertyId) throw new AppError('Property ID is required', 400);
-
-    // Check it exists before deleting
-    const existing = await prisma.favorite.findUnique({
-      where: {
-        userId_propertyId: { userId, propertyId },
-      },
-    });
-
-    if (!existing) {
-      throw new AppError('Favorite not found', 404);
-    }
-
-    await prisma.favorite.delete({
-      where: {
-        userId_propertyId: { userId, propertyId },
-      },
-    });
-
-    logger.info('Favorite removed', { userId, propertyId });
-
-    res.status(200).json({
-      success: true,
-      message: 'Favorite removed',
-    });
-  }),
+  })
 );
 
 export default router;
