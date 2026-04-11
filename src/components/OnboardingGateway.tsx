@@ -40,7 +40,7 @@ interface UserRole {
   fromGateway: boolean;
 }
 
-const OnboardingGateway: React.FC = () => {
+const OnboardingGateway = () => {
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);

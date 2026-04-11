@@ -91,7 +91,7 @@ const cardVariants: Variants = {
   }
 };
 
-const Features: React.FC = () => {
+const Features = () => {
   return (
     <section className="features-section" id="features">
       <div className="container">

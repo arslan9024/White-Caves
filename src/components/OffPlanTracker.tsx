@@ -156,7 +156,7 @@ const offPlanProjects: OffPlanProject[] = [
   }
 ];
 
-const OffPlanTracker: React.FC = () => {
+const OffPlanTracker = () => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [countdowns, setCountdowns] = useState<Countdowns>({});
 

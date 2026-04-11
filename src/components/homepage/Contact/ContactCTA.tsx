@@ -19,7 +19,7 @@ interface ContactInfo {
   link: string;
 }
 
-const ContactCTA: React.FC = () => {
+const ContactCTA = () => {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',

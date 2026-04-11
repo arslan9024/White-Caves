@@ -60,7 +60,7 @@ interface Variants {
   };
 }
 
-const Testimonials: React.FC = () => {
+const Testimonials = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [direction, setDirection] = useState<number>(0);
   const [autoplay, setAutoplay] = useState<boolean>(true);

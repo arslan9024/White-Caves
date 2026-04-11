@@ -69,7 +69,7 @@ const cardVariants = {
   }
 };
 
-const Team: React.FC = () => {
+const Team = () => {
   return (
     <section className="team-section" id="team">
       <div className="container">

@@ -79,7 +79,7 @@ const TypewriterText: React.FC<TypewriterTextProps> = ({ text, delay = 0 }) => {
   return <span>{displayText}<span className="typewriter-cursor">|</span></span>;
 };
 
-const Hero: React.FC = () => {
+const Hero = () => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.user?.currentUser);
   const { scrollY } = useScroll();

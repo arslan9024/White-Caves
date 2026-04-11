@@ -34,7 +34,7 @@ const formatPrice = (price: number): string => {
   return `AED ${(price / 1000).toFixed(0)}K`;
 };
 
-const PropertyComparison: React.FC = () => {
+const PropertyComparison = () => {
   const properties = useSelector((state: { properties: PropertiesState }) => state.properties.properties) || [];
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [showSelector, setShowSelector] = useState<boolean>(false);

@@ -102,7 +102,7 @@ const SelectField: React.FC<SelectFieldProps> = memo(function SelectField({
   );
 });
 
-const HeroSearchBar: React.FC = memo(function HeroSearchBar() {
+const HeroSearchBar = memo(function HeroSearchBar() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 

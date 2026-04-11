@@ -53,7 +53,7 @@ const locations: Location[] = [
   }
 ];
 
-const Locations: React.FC = () => {
+const Locations = () => {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const navigate = useNavigate();
 

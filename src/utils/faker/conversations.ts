@@ -187,6 +187,11 @@ export interface GeneratedActivity {
   icon: string;
 }
 
+/** Internal type used during activity generation for sort-then-strip pattern */
+interface ActivityWithSortKey extends GeneratedActivity {
+  _hoursAgo: number;
+}
+
 // ─── Conversation Generator ──────────────────────────────────
 
 function fillTemplate(template: string, rng: ReturnType<typeof createRng>): string {
@@ -287,7 +292,7 @@ export function generateConversations(count = 25, seed = 300): GeneratedConversa
 
 export function generateActivities(count = 50, seed = 400): GeneratedActivity[] {
   const rng = createRng(seed);
-  const activities: GeneratedActivity[] = [];
+  const activities: ActivityWithSortKey[] = [];
 
   const agentNames = [
     'Ahmed Hassan', 'Fatima Al-Mansoori', 'Mohammed Al-Mazrouei',
@@ -354,7 +359,7 @@ export function generateActivities(count = 50, seed = 400): GeneratedActivity[] 
   }
 
   // Sort by hoursAgo ascending (most-recent first = lowest hoursAgo)
-  activities.sort((a, b) => (a as any)._hoursAgo - (b as any)._hoursAgo);
+  activities.sort((a, b) => a._hoursAgo - b._hoursAgo);
 
   // Assign timestamps and IDs after sort, then strip temp field
   return activities.map((a, idx) => {
@@ -363,7 +368,7 @@ export function generateActivities(count = 50, seed = 400): GeneratedActivity[] 
       .toISOString()
       .replace('T', ' ')
       .slice(0, 16);
-    const { _hoursAgo, ...rest } = a as any;
-    return { ...rest, id: idx + 1, timestamp: ts } as GeneratedActivity;
+    const { _hoursAgo, ...rest } = a;
+    return { ...rest, id: idx + 1, timestamp: ts };
   });
 }
