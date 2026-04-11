@@ -14,7 +14,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Search, Bell, ChevronDown, User, Settings, LogOut, Shield } from 'lucide-react';
+import { Search, Bell, ChevronDown, User, Settings, LogOut, Shield, Menu } from 'lucide-react';
 import type { RootState } from '../../../store/store';
 import {
   selectSelectedDepartment,
@@ -46,6 +46,7 @@ import {
   DropdownHeaderName,
   DropdownHeaderEmail,
   DropdownHeaderRole,
+  HamburgerButton,
 } from './styles';
 
 // ─── Types ────────────────────────────────────────────────────────────────
@@ -55,6 +56,8 @@ interface TopBarProps {
   notifications?: Array<{ id: string; read: boolean }>;
   /** Callback when user clicks logout in the dropdown */
   onLogout?: () => void;
+  /** Callback when user clicks hamburger (mobile) — opens MobileMenuDrawer */
+  onMenuOpen?: () => void;
 }
 
 // ─── Breadcrumb builder ───────────────────────────────────────────────────
@@ -114,6 +117,7 @@ function useBreadcrumbs() {
 const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
   notifications = [],
   onLogout,
+  onMenuOpen,
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -155,6 +159,11 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
 
   return (
     <TopBarContainer>
+      {/* Hamburger — visible on mobile/tablet only */}
+      <HamburgerButton onClick={onMenuOpen} aria-label="Open navigation menu">
+        <Menu size={20} />
+      </HamburgerButton>
+
       {/* Logo */}
       <LogoSection onClick={() => navigate('/dashboard')} aria-label="Go to dashboard">
         <LogoMark>WC</LogoMark>

@@ -248,8 +248,8 @@ export const SearchShortcut = styled.kbd`
 
 export const IconButton = styled.button<{ $hasNotif?: boolean }>`
   position: relative;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -454,4 +454,46 @@ export const DropdownHeaderRole = styled.span`
   color: #D4AF37;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+`;
+
+/* ═══════════════════════════════════════════════════════════════
+   HAMBURGER BUTTON — visible only ≤ 768px
+   ═══════════════════════════════════════════════════════════════ */
+
+export const HamburgerButton = styled.button`
+  display: none; /* Hidden on desktop */
+  width: 44px;   /* WCAG 2.1 AA touch target */
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #374151;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover, &:active {
+    background: #F3F4F6;
+    color: #D4AF37;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    display: flex;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    color: #E2E8F0;
+    &:hover, &:active {
+      background: #334155;
+      color: #D4AF37;
+    }
+  }
 `;

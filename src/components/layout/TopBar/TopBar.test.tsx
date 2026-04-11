@@ -99,6 +99,9 @@ vi.mock('./styles', () => ({
   DropdownHeaderRole: ({ children, ...props }: Record<string, unknown>) => (
     <div data-testid="dropdown-header-role" {...props}>{children as React.ReactNode}</div>
   ),
+  HamburgerButton: ({ children, ...props }: Record<string, unknown>) => (
+    <button data-testid="hamburger-button" {...props}>{children as React.ReactNode}</button>
+  ),
 }));
 
 vi.mock('lucide-react', () => ({
@@ -109,6 +112,7 @@ vi.mock('lucide-react', () => ({
   Settings: () => <svg data-testid="icon-settings" />,
   LogOut: () => <svg data-testid="icon-logout" />,
   Shield: () => <svg data-testid="icon-shield" />,
+  Menu: () => <svg data-testid="icon-menu" />,
 }));
 
 import TopBar from './TopBar';
