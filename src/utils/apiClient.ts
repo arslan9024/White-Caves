@@ -1,4 +1,4 @@
-import { getErrorMessage, ERROR_MESSAGES } from './errorMessages';
+import { ERROR_MESSAGES } from '@/constants/errors';
 
 const API_BASE_URL = '/api';
 
@@ -188,4 +188,4 @@ class ApiClient {
 }
 
 export const apiClient = new ApiClient();
-export { HttpError, getErrorMessage };
+export { HttpError };
