@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import { theme } from '../styles/theme';
+
+const { shadows, transitions, colors, radius } = theme;
 
 export const BlogSectionContainer = styled.section`
   padding: 80px 0;
@@ -57,18 +60,18 @@ export const FeaturedPost = styled.article`
   display: flex;
   background: var(--surface, #ffffff);
   overflow: hidden;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
+  border-radius: ${radius.xl};
+  box-shadow: ${shadows.card};
+  transition: all ${transitions.durations.standard} ${transitions.easing.easeOut};
 
   @media (prefers-color-scheme: dark) {
     background: rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: ${shadows.lg};
   }
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    box-shadow: ${shadows.luxuryHover};
 
     @media (prefers-color-scheme: dark) {
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
@@ -99,7 +102,7 @@ export const PostCategory = styled.span`
   position: absolute;
   top: 16px;
   left: 16px;
-  background: var(--primary, #c9a962);
+  background: var(--primary, ${colors.primary});
   color: white;
   padding: 6px 14px;
   border-radius: 20px;
@@ -164,7 +167,7 @@ export const ReadMoreBtn = styled.button`
   transition: all 0.2s ease;
 
   &:hover {
-    background: #b08d4a;
+    background: ${colors.primaryDark};
     transform: translateX(4px);
   }
 `;
@@ -197,12 +200,12 @@ export const FilterBtn = styled.button<{ $isActive?: boolean }>`
 
   &:hover {
     background: ${props => props.$isActive 
-      ? '#b08d4a' 
+      ? colors.primaryDark 
       : 'var(--surface-hover, #e5e5e7)'};
 
     @media (prefers-color-scheme: dark) {
       background: ${props => props.$isActive 
-        ? '#b08d4a' 
+        ? colors.primaryDark 
         : 'rgba(255, 255, 255, 0.1)'};
     }
   }
@@ -224,19 +227,19 @@ export const BlogGrid = styled.div`
 
 export const BlogCard = styled.div`
   background: var(--surface, #ffffff);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
+  box-shadow: ${shadows.card};
+  transition: all ${transitions.durations.standard} ${transitions.easing.easeOut};
 
   @media (prefers-color-scheme: dark) {
     background: rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: ${shadows.lg};
   }
 
   &:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    box-shadow: ${shadows.luxuryHover};
 
     @media (prefers-color-scheme: dark) {
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
@@ -260,7 +263,7 @@ export const BlogCardContent = styled.div`
 
 export const BlogCardCategory = styled.span`
   display: inline-block;
-  background: var(--primary, #c9a962);
+  background: var(--primary, ${colors.primary});
   color: white;
   padding: 4px 12px;
   border-radius: 20px;
@@ -310,7 +313,7 @@ export const LoadMoreBtn = styled.button`
   transition: all 0.3s ease;
 
   &:hover {
-    background: #b08d4a;
+    background: ${colors.primaryDark};
     transform: translateY(-2px);
   }
 `;
@@ -323,7 +326,7 @@ export const CardFooter = styled.div`
 `;
 
 export const ReadMoreLink = styled.a`
-  color: var(--primary-color, #c9a962);
+  color: var(--primary-color, ${colors.primary});
   text-decoration: none;
   font-weight: 500;
   transition: opacity 0.2s ease;

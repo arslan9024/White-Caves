@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import { theme } from '../styles/theme';
+
+const { shadows, transitions, colors, radius } = theme;
 
 export const CompanyProfileSection = styled.section`
   padding: 5rem 2rem;
@@ -32,8 +35,8 @@ export const CompanyLogoLarge = styled.img`
   width: 120px;
   height: 120px;
   object-fit: cover;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border-radius: ${radius.xxl};
+  box-shadow: ${shadows.luxuryElevated};
 `;
 
 export const CompanyProfileTitle = styled.div`
@@ -65,18 +68,18 @@ export const CompanyProfileGrid = styled.div`
 
 export const ProfileCard = styled.div`
   background: var(--card-bg, #ffffff);
-  border-radius: 16px;
+  border-radius: ${radius.xxl};
   padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: ${shadows.luxuryCard};
+  transition: transform ${transitions.durations.standard} ${transitions.easing.easeOut}, box-shadow ${transitions.durations.standard} ${transitions.easing.easeOut};
 
   [data-theme='dark'] & {
-    background: var(--card-bg, #252542);
+    background: var(--card-bg, ${colors.background.darkSecondary});
   }
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    box-shadow: ${shadows.luxuryHover};
   }
 
   h3 {
@@ -109,13 +112,13 @@ export const ProfileCardIcon = styled.div`
 
 export const CompanyServicesOverview = styled.div`
   background: var(--card-bg, #ffffff);
-  border-radius: 16px;
+  border-radius: ${radius.xxl};
   padding: 2rem;
   margin-bottom: 3rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: ${shadows.luxuryCard};
 
   [data-theme='dark'] & {
-    background: var(--card-bg, #252542);
+    background: var(--card-bg, ${colors.background.darkSecondary});
   }
 
   h3 {
@@ -177,10 +180,10 @@ export const CompanyStatsBar = styled.div`
   padding: 2rem;
   background: linear-gradient(
     135deg,
-    var(--primary-color, #D4AF37),
-    var(--primary-dark, #B8960C)
+    var(--primary-color, ${colors.primary}),
+    var(--primary-dark, ${colors.primaryDark})
   );
-  border-radius: 16px;
+  border-radius: ${radius.xxl};
 
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
@@ -214,20 +217,20 @@ export const CompanyContactInfo = styled.div`
   border-radius: 16px;
   padding: 2rem;
   margin-bottom: 3rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: ${shadows.luxuryCard};
 
   [data-theme='dark'] & {
-    background: var(--card-bg, #252542);
+    background: var(--card-bg, ${colors.background.darkSecondary});
   }
 
   h3 {
     font-size: 1.5rem;
     font-weight: 600;
-    color: var(--text-primary, #1a1a2e);
+    color: var(--text-primary, ${colors.text.primary});
     margin: 0 0 1.5rem 0;
 
     [data-theme='dark'] & {
-      color: var(--text-primary, #ffffff);
+      color: var(--text-primary, ${colors.text.inverse});
     }
   }
 `;
@@ -291,11 +294,11 @@ export const DownloadProfileBtn = styled.button`
   );
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all ${transitions.durations.standard} ${transitions.easing.easeOut};
 
   svg {
     width: 20px;
@@ -304,7 +307,7 @@ export const DownloadProfileBtn = styled.button`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+    box-shadow: ${shadows.luxuryGlow};
   }
 
   &:active {

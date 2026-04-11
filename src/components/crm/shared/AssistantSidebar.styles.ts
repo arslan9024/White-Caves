@@ -1,17 +1,20 @@
 import styled from 'styled-components';
+import { theme } from '../../../styles/theme';
+
+const { colors, shadows, transitions, radius, spacing } = theme;
 
 export const AssistantSidebarContainer = styled.div<{ $collapsed?: boolean; $sidebarAccent?: string }>`
-  --sidebar-accent: ${props => props.$sidebarAccent || '#0EA5E9'};
+  --sidebar-accent: ${props => props.$sidebarAccent || colors.info};
   display: flex;
   flex-direction: column;
   height: 100%;
   background: var(--bg-secondary);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all ${transitions.durations.standard} ${transitions.easing.easeOut};
 
   @media (prefers-color-scheme: dark) {
-    background: #1e1e2e;
+    background: ${colors.background.dark};
   }
 `;
 
@@ -23,7 +26,7 @@ export const SidebarHeader = styled.div`
   border-bottom: 1px solid var(--border-color);
 
   @media (prefers-color-scheme: dark) {
-    border-color: #333333;
+    border-color: ${colors.background.darkSecondary};
   }
 `;
 
@@ -212,7 +215,7 @@ export const ItemLabel = styled.span`
 
 export const ItemBadge = styled.span`
   background: rgba(212, 175, 55, 0.15);
-  color: #D4AF37;
+  color: ${colors.primary};
   font-size: 11px;
   font-weight: 600;
   padding: 2px 6px;
@@ -243,8 +246,8 @@ export const SidebarFooter = styled.div`
   background: var(--bg-primary);
 
   @media (prefers-color-scheme: dark) {
-    background: #1a1a2e;
-    border-color: #333333;
+    background: ${colors.background.dark};
+    border-color: ${colors.background.darkSecondary};
   }
 `;
 

@@ -1,6 +1,9 @@
 import styled from 'styled-components';
 import { keyframes } from 'styled-components';
 import { typography } from '../../../styles/theme/typography';
+import { theme } from '../../../styles/theme';
+
+const { colors, shadows, transitions, radius } = theme;
 
 const spin = keyframes`
   from { transform: rotate(0deg); }
@@ -34,7 +37,7 @@ export const HeaderInfo = styled.div`
   gap: 12px;
 
   svg {
-    color: #8b5cf6;
+    color: ${colors.primary};
     flex-shrink: 0;
   }
 
@@ -77,11 +80,11 @@ export const ViewToggleButton = styled.button<{ $active?: boolean }>`
   background: ${props => props.$active ? 'var(--bg-primary)' : 'transparent'};
   border-radius: 6px;
   cursor: pointer;
-  color: ${props => props.$active ? '#8b5cf6' : 'var(--text-muted)'};
+  color: ${props => props.$active ? colors.primary : 'var(--text-muted)'};
   transition: all 0.2s;
 
   &:hover {
-    color: #8b5cf6;
+    color: ${colors.primary};
   }
 
   @media (prefers-color-scheme: dark) {
@@ -126,14 +129,14 @@ export const AutoFillButton = styled.button`
   background: var(--bg-tertiary);
   border-radius: 4px;
   cursor: pointer;
-  color: #8b5cf6;
+  color: ${colors.primary};
   display: flex;
   align-items: center;
   gap: 4px;
   transition: all 0.2s;
 
   &:hover {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(212, 175, 55, 0.1);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -141,7 +144,7 @@ export const AutoFillButton = styled.button`
     border-color: #444444;
 
     &:hover {
-      background: rgba(139, 92, 246, 0.15);
+      background: rgba(212, 175, 55, 0.15);
     }
   }
 `;
@@ -159,8 +162,8 @@ export const TextArea = styled.textarea`
 
   &:focus {
     outline: none;
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    border-color: ${colors.primary};
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
   }
 
   &::placeholder {
@@ -191,7 +194,7 @@ export const FetchButton = styled.button<{ $variant?: 'primary' | 'danger' | 'de
   background: ${props => {
     switch (props.$variant) {
       case 'primary':
-        return '#8b5cf6';
+        return colors.primary;
       case 'danger':
         return 'transparent';
       default:
@@ -206,7 +209,7 @@ export const FetchButton = styled.button<{ $variant?: 'primary' | 'danger' | 'de
       case 'primary':
         return 'white';
       case 'danger':
-        return '#ef4444';
+        return colors.error;
       default:
         return 'var(--text-primary)';
     }
@@ -214,7 +217,7 @@ export const FetchButton = styled.button<{ $variant?: 'primary' | 'danger' | 'de
   border-color: ${props => {
     switch (props.$variant) {
       case 'primary':
-        return '#8b5cf6';
+        return colors.primary;
       case 'danger':
         return 'rgba(239, 68, 68, 0.3)';
       default:
@@ -227,7 +230,7 @@ export const FetchButton = styled.button<{ $variant?: 'primary' | 'danger' | 'de
     ${props => {
       switch (props.$variant) {
         case 'primary':
-          return 'background: #7c3aed;';
+          return `background: ${colors.primaryDark};`;
         case 'danger':
           return 'background: rgba(239, 68, 68, 0.1);';
         default:
@@ -245,7 +248,7 @@ export const FetchButton = styled.button<{ $variant?: 'primary' | 'danger' | 'de
     background: ${props => {
       switch (props.$variant) {
         case 'primary':
-          return '#8b5cf6';
+          return colors.primary;
         case 'danger':
           return 'transparent';
         default:
@@ -257,7 +260,7 @@ export const FetchButton = styled.button<{ $variant?: 'primary' | 'danger' | 'de
       ${props => {
         switch (props.$variant) {
           case 'primary':
-            return 'background: #7c3aed;';
+            return `background: ${colors.primaryDark};`;
           case 'danger':
             return 'background: rgba(239, 68, 68, 0.15);';
           default:
@@ -292,7 +295,7 @@ export const SummaryItem = styled.div<{ $variant?: 'success' | 'error' }>`
   gap: 6px;
   font-size: 0.9rem;
   font-weight: 500;
-  color: ${props => props.$variant === 'success' ? '#22c55e' : props.$variant === 'error' ? '#ef4444' : 'var(--text-primary)'};
+  color: ${props => props.$variant === 'success' ? colors.success : props.$variant === 'error' ? colors.error : 'var(--text-primary)'};
 `;
 
 export const AssetsGrid = styled.div<{ $viewMode?: 'grid' | 'list' }>`
@@ -310,19 +313,19 @@ export const AssetCard = styled.div<{ $selected?: boolean }>`
   position: relative;
   border-radius: 8px;
   overflow: hidden;
-  border: 2px solid ${props => props.$selected ? '#8b5cf6' : 'var(--border-color)'};
+  border: 2px solid ${props => props.$selected ? colors.primary : 'var(--border-color)'};
   cursor: pointer;
   transition: all 0.2s;
   background: var(--bg-secondary);
 
   &:hover {
-    border-color: #8b5cf6;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+    border-color: ${colors.primary};
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
   }
 
   @media (prefers-color-scheme: dark) {
     background: #1e1e2e;
-    border-color: ${props => props.$selected ? '#8b5cf6' : '#333333'};
+    border-color: ${props => props.$selected ? colors.primary : '#333333'};
   }
 `;
 
@@ -348,7 +351,7 @@ export const SelectionBadge = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(139, 92, 246, 0.9);
+  background: rgba(212, 175, 55, 0.9);
   border-radius: 50%;
   padding: 8px;
   display: flex;
@@ -387,8 +390,8 @@ export const AssetType = styled.span<{ $type?: string }>`
   display: inline-block;
   padding: 2px 6px;
   border-radius: 4px;
-  background: ${props => props.$type === 'primary' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(156, 163, 175, 0.2)'};
-  color: ${props => props.$type === 'primary' ? '#6366f1' : '#6b7280'};
+  background: ${props => props.$type === 'primary' ? 'rgba(212, 175, 55, 0.2)' : 'rgba(156, 163, 175, 0.2)'};
+  color: ${props => props.$type === 'primary' ? colors.primary : '#6b7280'};
   text-transform: capitalize;
   font-weight: 500;
 `;
@@ -397,8 +400,8 @@ export const OpenLink = styled.a`
   position: absolute;
   top: 4px;
   right: 4px;
-  background: rgba(139, 92, 246, 0.2);
-  color: #8b5cf6;
+  background: rgba(212, 175, 55, 0.2);
+  color: ${colors.primary};
   width: 24px;
   height: 24px;
   border-radius: 4px;
@@ -410,7 +413,7 @@ export const OpenLink = styled.a`
   cursor: pointer;
 
   &:hover {
-    background: rgba(139, 92, 246, 0.4);
+    background: rgba(212, 175, 55, 0.4);
   }
 
   ${AssetCard}:hover & {

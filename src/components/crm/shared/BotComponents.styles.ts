@@ -1,7 +1,16 @@
 import styled from 'styled-components';
+import { theme } from '../../../styles/theme';
+
+const { colors, shadows } = theme;
+
+// Bot feature accent (cyan/teal)
+const botAccent = '#06b6d4';
+const botAccentDark = '#0891b2';
+const botGradient = `linear-gradient(135deg, ${botAccent} 0%, ${botAccentDark} 100%)`;
 
 /* ============================================================================
  * Bot Components Styled Components
+ * Dark-themed bot management + chat UI with cyan accent
  * ============================================================================ */
 
 export const BotSessionManager = styled.div`
@@ -45,7 +54,7 @@ export const CreateBtn = styled.button`
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem 1rem;
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  background: ${botGradient};
   border: none;
   border-radius: 8px;
   color: #fff;
@@ -96,13 +105,13 @@ export const BotCard = styled.div<{
   $status?: 'connected' | 'disconnected' | 'pending';
 }>`
   background: ${(props) =>
-    props.$selected ? 'rgba(6, 182, 212, 0.1)' : 'rgba(255, 255, 255, 0.02)'};
+    props.$selected ? `rgba(6, 182, 212, 0.1)` : 'rgba(255, 255, 255, 0.02)'};
   border: 1px solid ${(props) =>
-    props.$selected ? '#06b6d4' : 'rgba(255, 255, 255, 0.1)'};
+    props.$selected ? botAccent : 'rgba(255, 255, 255, 0.1)'};
   border-left: ${(props) => {
-    if (props.$status === 'connected') return '3px solid #10b981';
-    if (props.$status === 'disconnected') return '3px solid #ef4444';
-    if (props.$status === 'pending') return '3px solid #f59e0b';
+    if (props.$status === 'connected') return `3px solid ${colors.success}`;
+    if (props.$status === 'disconnected') return `3px solid ${colors.error}`;
+    if (props.$status === 'pending') return `3px solid ${colors.warning}`;
     return '3px solid transparent';
   }};
   border-radius: 10px;
@@ -190,11 +199,11 @@ export const StatusIndicator = styled.span<{ $status?: string }>`
   background: ${(props) => {
     switch (props.$status) {
       case 'connected':
-        return '#10b981';
+        return colors.success;
       case 'disconnected':
-        return '#ef4444';
+        return colors.error;
       case 'pending':
-        return '#f59e0b';
+        return colors.warning;
       default:
         return '#64748b';
     }
@@ -277,7 +286,7 @@ export const Message = styled.div<{ $isBot?: boolean }>`
 
 export const MessageContent = styled.div<{ $isBot?: boolean }>`
   background: ${(props) =>
-    props.$isBot ? 'rgba(255, 255, 255, 0.05)' : 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)'};
+    props.$isBot ? 'rgba(255, 255, 255, 0.05)' : botGradient};
   border: ${(props) =>
     props.$isBot ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'};
   border-radius: 10px;
@@ -320,7 +329,7 @@ export const InputField = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #06b6d4;
+    border-color: ${botAccent};
     background: rgba(255, 255, 255, 0.05);
   }
 
@@ -338,7 +347,7 @@ export const SendBtn = styled.button`
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  background: ${botGradient};
   border: none;
   color: #fff;
   cursor: pointer;

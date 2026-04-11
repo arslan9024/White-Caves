@@ -1,13 +1,17 @@
 import styled from 'styled-components';
+import { theme } from '../../../styles/theme';
+
+const { colors, shadows } = theme;
 
 /* ============================================================================
  * JobComponents Styled Components
  * Used by: JobPostComposer.jsx
+ * Dark-themed job posting UI with slate/amber palette
  * ============================================================================ */
 
 export const JobPostComposer = styled.div`
-  background: ${(props) => (props.theme as unknown as Record<string, Record<string, string>>).colors?.background || 'rgba(15, 23, 42, 0.6)'};
-  border: 1px solid ${(props) => (props.theme as unknown as Record<string, Record<string, string>>).colors?.border || 'rgba(255, 255, 255, 0.1)'};
+  background: ${colors.background.overlay};
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   overflow: hidden;
   position: relative;

@@ -1,9 +1,15 @@
 import styled, { keyframes } from 'styled-components';
+import { theme } from '../../../styles/theme';
+
+const { colors, shadows, transitions, radius, spacing, mediaQueries } = theme;
 
 /* ═══════════════════════════════════════════════════════════════
    ICON-RAIL SIDEBAR + FLYOUT PANEL STYLES
    64px rail + 240px flyout — replaces old 280px wide sidebar
    ═══════════════════════════════════════════════════════════════ */
+
+/* Reduce all transforms/animations for users who prefer reduced motion */
+const reducedMotion = `@media (prefers-reduced-motion: reduce)`;
 
 const slideIn = keyframes`
   from { opacity: 0; transform: translateX(-8px); }
@@ -20,7 +26,7 @@ export const RailContainer = styled.aside`
   display: flex;
   z-index: var(--z-sticky, 200);
 
-  @media (max-width: 768px) {
+  ${mediaQueries.tablet} {
     display: none;
   }
 
@@ -34,24 +40,24 @@ export const RailContainer = styled.aside`
 export const RailWrapper = styled.nav`
   width: 64px;
   height: 100%;
-  background: #FFFFFF;
-  border-right: 1px solid #E5E7EB;
+  background: ${colors.background.secondary};
+  border-right: 1px solid ${colors.border};
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px 0;
-  gap: 4px;
+  padding: ${spacing.md} 0;
+  gap: ${spacing.xs};
   overflow-y: auto;
   overflow-x: hidden;
   flex-shrink: 0;
-  box-shadow: 2px 0 12px rgba(212, 175, 55, 0.04);
+  box-shadow: ${shadows.sidebar};
 
   /* Hide scrollbar */
   &::-webkit-scrollbar { width: 0; }
   scrollbar-width: none;
 
   @media (prefers-color-scheme: dark) {
-    background: #1A1A2E;
+    background: ${colors.background.dark};
     border-right-color: #2D2D44;
     box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
   }
@@ -85,17 +91,21 @@ export const RailIconButton = styled.button<{
   justify-content: center;
   background: ${p =>
     p.$active ? 'rgba(212, 175, 55, 0.10)' :
-    p.$isFlyoutTarget ? '#F3F4F6' :
+    p.$isFlyoutTarget ? '${colors.background.tertiary}' :
     'transparent'};
   border: none;
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   cursor: pointer;
   color: ${p =>
-    p.$active ? '#D4AF37' :
+    p.$active ? '${colors.primary}' :
     p.$color && p.$isFlyoutTarget ? p.$color :
-    '#6B7280'};
+    '${colors.text.tertiary}'};
   position: relative;
-  transition: all 0.15s ease;
+  transition: ${transitions.active};
+
+  ${reducedMotion} {
+    transition: none;
+  }
 
   /* Active indicator — gold left bar */
   &::before {
@@ -106,14 +116,14 @@ export const RailIconButton = styled.button<{
     transform: translateY(-50%);
     width: 3px;
     height: ${p => p.$active ? '24px' : '0'};
-    border-radius: 0 2px 2px 0;
-    background: #D4AF37;
-    transition: height 0.2s ease;
+    border-radius: 0 ${radius.xs} ${radius.xs} 0;
+    background: ${colors.primary};
+    transition: height ${transitions.durations.shorter} ${transitions.easing.easeInOut};
   }
 
   &:hover {
-    background: ${p => p.$active ? 'rgba(212, 175, 55, 0.12)' : '#F3F4F6'};
-    color: ${p => p.$active ? '#D4AF37' : p.$color || '#374151'};
+    background: ${p => p.$active ? 'rgba(212, 175, 55, 0.12)' : '${colors.background.tertiary}'};
+    color: ${p => p.$active ? '${colors.primary}' : p.$color || '${colors.text.primary}'};
 
     &::before {
       height: ${p => p.$active ? '24px' : '16px'};
@@ -126,13 +136,13 @@ export const RailIconButton = styled.button<{
       p.$isFlyoutTarget ? 'rgba(255, 255, 255, 0.05)' :
       'transparent'};
     color: ${p =>
-      p.$active ? '#E8CC6E' :
+      p.$active ? '${colors.primaryLight}' :
       p.$color && p.$isFlyoutTarget ? p.$color :
       '#94A3B8'};
 
     &:hover {
       background: ${p => p.$active ? 'rgba(212, 175, 55, 0.18)' : 'rgba(255, 255, 255, 0.08)'};
-      color: ${p => p.$active ? '#E8CC6E' : p.$color || '#E2E8F0'};
+      color: ${p => p.$active ? '${colors.primaryLight}' : p.$color || '#E2E8F0'};
     }
   }
 `;
@@ -144,18 +154,19 @@ export const RailTooltip = styled.span`
   left: 56px;
   top: 50%;
   transform: translateY(-50%) translateX(-4px);
-  background: #1F2937;
-  color: #FFFFFF;
+  background: ${colors.text.primary};
+  color: ${colors.text.inverse};
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: ${radius.md};
   font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
   z-index: 600;
-  transition: opacity 0.15s ease, transform 0.15s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: opacity ${transitions.durations.shortest} ${transitions.easing.easeOut},
+             transform ${transitions.durations.shortest} ${transitions.easing.easeOut};
+  box-shadow: ${shadows.dropdown};
 
   &::before {
     content: '';
@@ -164,7 +175,7 @@ export const RailTooltip = styled.span`
     top: 50%;
     transform: translateY(-50%);
     border: 4px solid transparent;
-    border-right-color: #1F2937;
+    border-right-color: ${colors.text.primary};
   }
 `;
 
@@ -173,8 +184,8 @@ export const RailTooltip = styled.span`
 export const RailDivider = styled.div`
   width: 32px;
   height: 1px;
-  background: #E5E7EB;
-  margin: 4px 0;
+  background: ${colors.border};
+  margin: ${spacing.xs} 0;
   flex-shrink: 0;
 
   @media (prefers-color-scheme: dark) {
@@ -203,13 +214,17 @@ export const FlyoutBackdrop = styled.div`
 export const FlyoutPanel = styled.div<{ $open?: boolean; $color?: string }>`
   width: ${p => p.$open ? '240px' : '0'};
   height: 100%;
-  background: #FFFFFF;
-  border-right: ${p => p.$open ? '1px solid #E5E7EB' : 'none'};
+  background: ${colors.background.secondary};
+  border-right: ${p => p.$open ? `1px solid ${colors.border}` : 'none'};
   overflow: hidden;
-  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width ${transitions.durations.short} ${transitions.easing.easeInOut};
   display: flex;
   flex-direction: column;
-  box-shadow: ${p => p.$open ? '4px 0 24px rgba(212, 175, 55, 0.06)' : 'none'};
+  box-shadow: ${p => p.$open ? shadows.luxuryCard : 'none'};
+
+  ${reducedMotion} {
+    transition: none;
+  }
 
   @media (prefers-color-scheme: dark) {
     background: #1E293B;
@@ -222,9 +237,13 @@ export const FlyoutHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 16px 12px;
-  border-bottom: 1px solid #E5E7EB;
-  animation: ${slideIn} 0.2s ease;
+  padding: ${spacing.md} ${spacing.md} ${spacing.md};
+  border-bottom: 1px solid ${colors.border};
+  animation: ${slideIn} ${transitions.durations.shorter} ${transitions.easing.easeOut};
+
+  ${reducedMotion} {
+    animation: none;
+  }
 
   @media (prefers-color-scheme: dark) {
     border-bottom-color: #334155;
@@ -235,7 +254,7 @@ export const FlyoutTitle = styled.h3<{ $color?: string }>`
   margin: 0;
   font-size: 14px;
   font-weight: 600;
-  color: ${p => p.$color || '#111827'};
+  color: ${p => p.$color || colors.text.primary};
   white-space: nowrap;
 `;
 
@@ -249,12 +268,12 @@ export const FlyoutClose = styled.button`
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  color: #9CA3AF;
-  transition: all 0.15s ease;
+  color: ${colors.text.tertiary};
+  transition: ${transitions.active};
 
   &:hover {
-    background: #F3F4F6;
-    color: #374151;
+    background: ${colors.background.tertiary};
+    color: ${colors.text.primary};
   }
 
   @media (prefers-color-scheme: dark) {
@@ -265,11 +284,15 @@ export const FlyoutClose = styled.button`
 export const FlyoutNav = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 8px;
+  padding: ${spacing.sm};
   display: flex;
   flex-direction: column;
   gap: 2px;
-  animation: ${slideIn} 0.25s ease;
+  animation: ${slideIn} ${transitions.durations.short} ${transitions.easing.easeOut};
+
+  ${reducedMotion} {
+    animation: none;
+  }
 `;
 
 export const FlyoutItem = styled.button<{ $active?: boolean; $color?: string }>`
@@ -284,20 +307,20 @@ export const FlyoutItem = styled.button<{ $active?: boolean; $color?: string }>`
   cursor: pointer;
   font-size: 13px;
   font-weight: ${p => p.$active ? '600' : '400'};
-  color: ${p => p.$active ? (p.$color || '#D4AF37') : '#374151'};
+  color: ${p => p.$active ? (p.$color || colors.primary) : colors.text.primary};
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: all 0.15s ease;
+  transition: ${transitions.active};
 
   &:hover {
-    background: ${p => p.$active ? `${p.$color}18` : '#F3F4F6'};
-    color: ${p => p.$color || '#D4AF37'};
+    background: ${p => p.$active ? `${p.$color}18` : colors.background.tertiary};
+    color: ${p => p.$color || colors.primary};
   }
 
   @media (prefers-color-scheme: dark) {
-    color: ${p => p.$active ? (p.$color || '#E8CC6E') : '#E2E8F0'};
+    color: ${p => p.$active ? (p.$color || colors.primaryLight) : '#E2E8F0'};
     background: ${p => p.$active ? `${p.$color}18` : 'transparent'};
     &:hover { background: ${p => p.$active ? `${p.$color}22` : '#334155'}; }
   }
@@ -306,8 +329,8 @@ export const FlyoutItem = styled.button<{ $active?: boolean; $color?: string }>`
 export const FlyoutDot = styled.span<{ $color?: string }>`
   width: 6px;
   height: 6px;
-  border-radius: 50%;
-  background: ${p => p.$color || '#D4AF37'};
+  border-radius: ${radius.full};
+  background: ${p => p.$color || colors.primary};
   flex-shrink: 0;
 `;
 
@@ -317,8 +340,8 @@ export const FlyoutDot = styled.span<{ $color?: string }>`
    ═══════════════════════════════════════════════════════════════ */
 
 export const AISearchBar = styled.div`
-  padding: 12px 16px;
-  border-bottom: 1px solid #F3F4F6;
+  padding: ${spacing.md} ${spacing.md};
+  border-bottom: 1px solid ${colors.background.tertiary};
 
   @media (prefers-color-scheme: dark) {
     border-bottom-color: #2D2D44;
@@ -328,17 +351,17 @@ export const AISearchBar = styled.div`
 export const AISearchInput = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 7px 10px;
-  background: #F3F4F6;
-  border-radius: 8px;
+  background: ${colors.background.tertiary};
+  border-radius: ${radius.lg};
   border: 1px solid transparent;
-  transition: all 0.15s ease;
+  transition: ${transitions.active};
 
   &:focus-within {
-    border-color: #D4AF37;
-    background: #FFFFFF;
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    border-color: ${colors.primary};
+    background: ${colors.background.secondary};
+    box-shadow: ${shadows.luxuryFocus};
   }
 
   input {
@@ -347,10 +370,10 @@ export const AISearchInput = styled.div`
     outline: none;
     background: transparent;
     font-size: 12px;
-    color: #374151;
+    color: ${colors.text.primary};
     font-family: inherit;
 
-    &::placeholder { color: #9CA3AF; }
+    &::placeholder { color: ${colors.text.tertiary}; }
   }
 
   @media (prefers-color-scheme: dark) {
@@ -365,18 +388,18 @@ export const AIGroupHeader = styled.button`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px;
+  padding: ${spacing.sm} ${spacing.md};
   background: transparent;
   border: none;
   cursor: pointer;
   font-size: 10px;
   font-weight: 600;
-  color: #9CA3AF;
+  color: ${colors.text.tertiary};
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  transition: all 0.15s ease;
+  transition: ${transitions.active};
 
-  &:hover { color: #6B7280; }
+  &:hover { color: ${colors.text.secondary}; }
 
   @media (prefers-color-scheme: dark) {
     color: #64748B;
@@ -393,11 +416,11 @@ export const AIAssistantBtn = styled.button<{ $selected?: boolean }>`
   background: ${p => p.$selected ? 'rgba(212, 175, 55, 0.10)' : 'transparent'};
   border: none;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: ${transitions.active};
   text-align: left;
 
   &:hover {
-    background: ${p => p.$selected ? 'rgba(212, 175, 55, 0.14)' : '#F9FAFB'};
+    background: ${p => p.$selected ? 'rgba(212, 175, 55, 0.14)' : colors.background.primary};
   }
 
   @media (prefers-color-scheme: dark) {
@@ -409,9 +432,9 @@ export const AIAssistantBtn = styled.button<{ $selected?: boolean }>`
 export const AIAvatar = styled.div<{ $color?: string }>`
   width: 32px;
   height: 32px;
-  border-radius: 8px;
-  background: ${p => p.$color || 'linear-gradient(135deg, #D4AF37, #B8960C)'};
-  color: #FFFFFF;
+  border-radius: ${radius.lg};
+  background: ${p => p.$color || colors.luxury.goldDark};
+  color: ${colors.text.inverse};
   font-size: 13px;
   font-weight: 600;
   display: flex;
@@ -423,7 +446,7 @@ export const AIAvatar = styled.div<{ $color?: string }>`
 export const AIAssistantName = styled.div`
   font-size: 13px;
   font-weight: 500;
-  color: #111827;
+  color: ${colors.text.primary};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -435,7 +458,7 @@ export const AIAssistantName = styled.div`
 
 export const AIAssistantDesc = styled.div`
   font-size: 11px;
-  color: #6B7280;
+  color: ${colors.text.secondary};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -451,10 +474,10 @@ export const AIAssistantInfo = styled.div`
 `;
 
 export const AIFooter = styled.div`
-  padding: 8px 16px;
-  border-top: 1px solid #E5E7EB;
+  padding: ${spacing.sm} ${spacing.md};
+  border-top: 1px solid ${colors.border};
   font-size: 11px;
-  color: #9CA3AF;
+  color: ${colors.text.tertiary};
   text-align: center;
 
   @media (prefers-color-scheme: dark) {
@@ -463,10 +486,10 @@ export const AIFooter = styled.div`
   }
 
   kbd {
-    padding: 1px 4px;
-    border-radius: 3px;
-    background: #F3F4F6;
-    border: 1px solid #E5E7EB;
+    padding: 1px ${spacing.xs};
+    border-radius: ${radius.sm};
+    background: ${colors.background.tertiary};
+    border: 1px solid ${colors.border};
     font-size: 10px;
     font-family: inherit;
 
@@ -490,12 +513,12 @@ export const RailGroupHeader = styled.button<{ $collapsed?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px 0;
-  margin: 0 4px;
+  padding: ${spacing.xs} 0;
+  margin: 0 ${spacing.xs};
   background: transparent;
   border: none;
   cursor: pointer;
-  color: #9CA3AF;
+  color: ${colors.text.tertiary};
   font-size: 8px;
   font-weight: 700;
   text-transform: uppercase;
@@ -503,22 +526,22 @@ export const RailGroupHeader = styled.button<{ $collapsed?: boolean }>`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: all 0.15s ease;
+  transition: ${transitions.active};
   gap: 2px;
 
   svg {
     flex-shrink: 0;
-    transition: transform 0.2s ease;
+    transition: transform ${transitions.durations.shorter} ${transitions.easing.easeInOut};
     transform: ${p => p.$collapsed ? 'rotate(-90deg)' : 'rotate(0deg)'};
   }
 
   &:hover {
-    color: #D4AF37;
+    color: ${colors.primary};
   }
 
   @media (prefers-color-scheme: dark) {
     color: #64748B;
-    &:hover { color: #E8CC6E; }
+    &:hover { color: ${colors.primaryLight}; }
   }
 `;
 
@@ -526,12 +549,16 @@ export const RailGroupContent = styled.div<{ $collapsed?: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: ${spacing.xs};
   overflow: hidden;
   max-height: ${p => p.$collapsed ? '0' : '600px'};
   opacity: ${p => p.$collapsed ? '0' : '1'};
-  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.2s ease;
+  transition: max-height ${transitions.durations.standard} ${transitions.easing.easeInOut},
+              opacity ${transitions.durations.shorter} ${transitions.easing.easeOut};
+
+  ${reducedMotion} {
+    transition: none;
+  }
 `;
 
 /* ── Badge (pill on icon) ──────────────────────────────────── */
@@ -542,15 +569,15 @@ export const RailBadge = styled.span<{ $color?: string }>`
   right: 2px;
   min-width: 16px;
   height: 16px;
-  padding: 0 4px;
+  padding: 0 ${spacing.xs};
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${p => p.$color || '#D4AF37'};
-  color: #FFFFFF;
+  background: ${p => p.$color || colors.primary};
+  color: ${colors.text.inverse};
   font-size: 9px;
   font-weight: 700;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   line-height: 1;
   pointer-events: none;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);

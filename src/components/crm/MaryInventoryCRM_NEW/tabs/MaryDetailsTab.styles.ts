@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import { theme } from '../../../../styles/theme';
+
+const { spacing, radius, shadows, transitions, colors } = theme;
 
 export const MaryDetailsTabContainer = styled.div`
   padding: 0;
@@ -156,11 +159,11 @@ export const InfoCard = styled.div`
   padding: 16px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
-  border-left: 4px solid #3b82f6;
+  border-radius: ${radius.lg};
+  border-left: 4px solid ${colors.info};
 
   h4 {
-    margin: 0 0 8px 0;
+    margin: 0 0 ${spacing.sm} 0;
     color: var(--text-primary);
     font-size: 15px;
     font-weight: 600;
@@ -183,7 +186,7 @@ export const InfoCard = styled.div`
 
   svg {
     flex-shrink: 0;
-    color: #3b82f6;
+    color: ${colors.info};
     margin-top: 2px;
   }
 
@@ -305,16 +308,16 @@ export const DetailGroup = styled.div`
 
 export const StatusBadge = styled.span`
   display: inline-block;
-  padding: 4px 12px;
-  background: rgba(34, 197, 94, 0.1);
-  color: #22c55e;
-  border-radius: 6px;
+  padding: ${spacing.xs} ${radius.xl};
+  background: rgba(56, 142, 60, 0.1);
+  color: ${colors.success};
+  border-radius: ${radius.md};
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
 
   [data-theme='dark'] & {
-    background: rgba(34, 197, 94, 0.2);
+    background: rgba(56, 142, 60, 0.2);
   }
 `;
 
@@ -464,12 +467,12 @@ export const PropertyCard = styled.div<{ $isSelected: boolean }>`
     props.$isSelected &&
     `
     border-color: var(--primary);
-    background: rgba(var(--primary-rgb, 196, 30, 58), 0.05);
+    background: rgba(212, 175, 55, 0.05);
   `}
 
   &:hover {
     border-color: var(--primary);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: ${shadows.sm};
   }
 
   [data-theme='dark'] & {

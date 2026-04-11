@@ -1,4 +1,12 @@
 import styled from 'styled-components';
+import { theme } from '../../../styles/theme';
+
+const { spacing, radius, shadows, transitions, colors, mediaQueries } = theme;
+
+/* ═══ Motion a11y ══════════════════════════════════
+   Reduce all transforms / animations for users who
+   prefer reduced motion (OS-level setting).          */
+const reducedMotion = `@media (prefers-reduced-motion: reduce)`;
 
 // ==============================================================================
 // MAIN CONTAINER
@@ -8,14 +16,14 @@ export const DepartmentPanel = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--white-bg);
-  border-radius: 12px;
+  background: ${colors.background.secondary};
+  border-radius: ${radius.xl};
   overflow-y: auto;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: ${shadows.card};
 
   /* Scrollbar Styling */
   &::-webkit-scrollbar {
-    width: 8px;
+    width: ${spacing.sm};
   }
 
   &::-webkit-scrollbar-track {
@@ -23,17 +31,17 @@ export const DepartmentPanel = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: var(--border-gray);
-    border-radius: 4px;
+    background: ${colors.border};
+    border-radius: ${radius.sm};
 
     &:hover {
-      background: var(--text-secondary);
+      background: ${colors.text.secondary};
     }
   }
 
   /* Dark Mode */
   [data-theme="dark"] & {
-    background: #1E1E1E;
+    background: ${colors.background.dark};
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
@@ -42,15 +50,6 @@ export const DepartmentPanel = styled.div`
     align-items: center;
     justify-content: center;
   }
-
-  @media (max-width: 1024px) {
-  }
-
-  @media (max-width: 768px) {
-  }
-
-  @media (max-width: 480px) {
-  }
 `;
 
 // ==============================================================================
@@ -58,8 +57,8 @@ export const DepartmentPanel = styled.div`
 // ==============================================================================
 
 export const ContentHeader = styled.div`
-  padding: 32px 28px;
-  color: white;
+  padding: ${spacing.xl} 28px;
+  color: ${colors.text.inverse};
   position: relative;
   overflow: hidden;
 
@@ -72,20 +71,16 @@ export const ContentHeader = styled.div`
     width: 200px;
     height: 200px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
+    border-radius: ${radius.full};
     z-index: 0;
   }
 
-  @media (max-width: 1024px) {
-    padding: 24px 20px;
+  ${mediaQueries.tablet} {
+    padding: ${spacing.lg} 20px;
   }
 
-  @media (max-width: 768px) {
-    padding: 20px 16px;
-  }
-
-  @media (max-width: 480px) {
-    padding: 16px 12px;
+  ${mediaQueries.mobile} {
+    padding: ${spacing.md} 12px;
   }
 `;
 
@@ -97,18 +92,14 @@ export const HeaderContent = styled.div`
 export const HeaderTitle = styled.h1`
   font-size: 32px;
   font-weight: 700;
-  margin: 0 0 8px 0;
+  margin: 0 0 ${spacing.sm} 0;
   letter-spacing: -0.5px;
 
-  @media (max-width: 1024px) {
-    font-size: 26px;
+  ${mediaQueries.tablet} {
+    font-size: 24px;
   }
 
-  @media (max-width: 768px) {
-    font-size: 22px;
-  }
-
-  @media (max-width: 480px) {
+  ${mediaQueries.mobile} {
     font-size: 18px;
   }
 `;
@@ -119,7 +110,7 @@ export const HeaderDescription = styled.p`
   opacity: 0.95;
   font-weight: 400;
 
-  @media (max-width: 480px) {
+  ${mediaQueries.mobile} {
     font-size: 12px;
   }
 `;
@@ -133,21 +124,16 @@ export const ContentBody = styled.div`
   padding: 28px;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: ${spacing.xl};
 
-  @media (max-width: 1024px) {
+  ${mediaQueries.tablet} {
     padding: 20px;
-    gap: 24px;
+    gap: ${spacing.lg};
   }
 
-  @media (max-width: 768px) {
-    padding: 16px;
-    gap: 20px;
-  }
-
-  @media (max-width: 480px) {
+  ${mediaQueries.mobile} {
     padding: 12px;
-    gap: 16px;
+    gap: ${spacing.md};
   }
 `;
 
@@ -162,23 +148,23 @@ export const EmptyState = styled.div`
   justify-content: center;
   padding: 60px 40px;
   text-align: center;
-  color: var(--text-secondary);
+  color: ${colors.text.secondary};
 
-  @media (max-width: 768px) {
-    padding: 40px 24px;
+  ${mediaQueries.tablet} {
+    padding: 40px ${spacing.lg};
   }
 
-  @media (max-width: 480px) {
+  ${mediaQueries.mobile} {
     padding: 30px 20px;
   }
 `;
 
 export const EmptyStateIcon = styled.svg`
-  color: var(--border-gray);
-  margin-bottom: 24px;
+  color: ${colors.border};
+  margin-bottom: ${spacing.lg};
   opacity: 0.5;
 
-  @media (max-width: 768px) {
+  ${mediaQueries.tablet} {
     width: 48px;
     height: 48px;
   }
@@ -187,10 +173,10 @@ export const EmptyStateIcon = styled.svg`
 export const EmptyStateHeading = styled.h2`
   font-size: 24px;
   font-weight: 600;
-  margin: 0 0 12px 0;
-  color: var(--text-primary);
+  margin: 0 0 ${radius.xl} 0;
+  color: ${colors.text.primary};
 
-  @media (max-width: 768px) {
+  ${mediaQueries.tablet} {
     font-size: 20px;
   }
 `;
@@ -212,20 +198,20 @@ export const ServiceContent = styled.div`
 `;
 
 export const ServiceHeader = styled.div`
-  border-bottom: 2px solid var(--border-gray);
+  border-bottom: 2px solid ${colors.border};
   padding-bottom: 20px;
 `;
 
 export const ServiceTitle = styled.h2`
   font-size: 24px;
   font-weight: 600;
-  margin: 0 0 8px 0;
-  color: var(--text-primary);
+  margin: 0 0 ${spacing.sm} 0;
+  color: ${colors.text.primary};
 `;
 
 export const ServiceDescription = styled.p`
   margin: 0;
-  color: var(--text-secondary);
+  color: ${colors.text.secondary};
   font-size: 14px;
 `;
 
@@ -236,33 +222,37 @@ export const ServiceDescription = styled.p`
 export const StatsGrid = styled.div<{ $isServiceStats?: boolean }>`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: ${props => (props.$isServiceStats ? '12px' : '16px')};
+  gap: ${props => (props.$isServiceStats ? radius.xl : spacing.md)};
 
-  @media (max-width: 768px) {
+  ${mediaQueries.tablet} {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (max-width: 480px) {
+  ${mediaQueries.mobile} {
     grid-template-columns: 1fr;
   }
 `;
 
 export const StatCard = styled.div`
-  background: var(--light-gray);
-  padding: 16px;
-  border-radius: 8px;
-  border: 1px solid var(--border-gray);
+  background: ${colors.background.tertiary};
+  padding: ${spacing.md};
+  border-radius: ${radius.lg};
+  border: 1px solid ${colors.border};
   text-align: center;
-  transition: all var(--transition-fast);
+  transition: ${transitions.hover};
 
   &:hover {
-    border-color: var(--primary-red);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.1);
+    border-color: ${colors.primary};
+    box-shadow: ${shadows.luxuryCard};
+  }
+
+  ${reducedMotion} {
+    transition: none;
   }
 
   /* Dark Mode */
   [data-theme="dark"] & {
-    background: #2A2A2A;
+    background: ${colors.background.darkSecondary};
     border-color: #333333;
   }
 `;
@@ -272,14 +262,14 @@ export const StatLabel = styled.div`
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 8px;
+  color: ${colors.text.secondary};
+  margin-bottom: ${spacing.sm};
 `;
 
 export const StatValue = styled.div`
   font-size: 24px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: ${colors.text.primary};
 `;
 
 // ==============================================================================
@@ -287,18 +277,18 @@ export const StatValue = styled.div`
 // ==============================================================================
 
 export const OverviewSection = styled.div`
-  margin-top: 12px;
+  margin-top: ${radius.xl};
 `;
 
 export const OverviewHeading = styled.h2`
   font-size: 20px;
   font-weight: 600;
-  margin: 0 0 12px 0;
-  color: var(--text-primary);
+  margin: 0 0 ${radius.xl} 0;
+  color: ${colors.text.primary};
 `;
 
 export const OverviewText = styled.p`
-  color: var(--text-secondary);
+  color: ${colors.text.secondary};
   font-size: 14px;
   line-height: 1.6;
   max-width: 600px;
@@ -314,48 +304,49 @@ export const MetricsSection = styled.div``;
 export const MetricsSectionHeading = styled.h2`
   font-size: 20px;
   font-weight: 600;
-  margin: 0 0 16px 0;
-  color: var(--text-primary);
+  margin: 0 0 ${spacing.md} 0;
+  color: ${colors.text.primary};
 `;
 
 export const MetricsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+  gap: ${spacing.md};
 
-  @media (max-width: 1024px) {
+  ${mediaQueries.tablet} {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-
-  @media (max-width: 480px) {
+  ${mediaQueries.mobile} {
     grid-template-columns: 1fr;
   }
 `;
 
 export const MetricCard = styled.div`
-  background: linear-gradient(135deg, var(--light-gray) 0%, rgba(212, 175, 55, 0.02) 100%);
+  background: linear-gradient(135deg, ${colors.background.tertiary} 0%, ${colors.primaryVeryLight} 100%);
   padding: 20px;
   border-radius: 10px;
-  border: 1px solid var(--border-gray);
+  border: 1px solid ${colors.border};
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  transition: all var(--transition-normal);
+  gap: ${radius.xl};
+  transition: ${transitions.hover};
   cursor: pointer;
 
   &:hover {
     transform: translateY(-4px);
-    border-color: var(--primary-red);
-    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.12);
+    border-color: ${colors.primary};
+    box-shadow: ${shadows.luxuryCard};
+  }
+
+  ${reducedMotion} {
+    transition: none;
+    &:hover { transform: none; }
   }
 
   /* Dark Mode */
   [data-theme="dark"] & {
-    background: linear-gradient(135deg, #2A2A2A 0%, rgba(212, 175, 55, 0.04) 100%);
+    background: linear-gradient(135deg, ${colors.background.darkSecondary} 0%, rgba(212, 175, 55, 0.04) 100%);
     border-color: #333333;
   }
 `;
@@ -365,16 +356,16 @@ export const MetricLabel = styled.div`
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: ${colors.text.secondary};
 `;
 
 export const MetricValue = styled.div`
   font-size: 28px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: ${colors.text.primary};
   line-height: 1;
 
-  @media (max-width: 480px) {
+  ${mediaQueries.mobile} {
     font-size: 24px;
   }
 `;
@@ -388,12 +379,12 @@ export const MetricChange = styled.div<{ $trend?: 'up' | 'down' | 'stable' }>`
   color: ${props => {
     switch (props.$trend) {
       case 'up':
-        return '#10B981';
+        return colors.status.active;
       case 'down':
-        return '#EF4444';
+        return colors.error;
       case 'stable':
       default:
-        return 'var(--text-secondary)';
+        return colors.text.secondary;
     }
   }};
 
@@ -409,8 +400,8 @@ export const MetricChange = styled.div<{ $trend?: 'up' | 'down' | 'stable' }>`
 export const AnalyticsSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  margin-top: 16px;
+  gap: ${spacing.lg};
+  margin-top: ${spacing.md};
 `;
 
 // ==============================================================================
@@ -422,82 +413,70 @@ export const ServicesSection = styled.div``;
 export const ServicesSectionHeading = styled.h2`
   font-size: 20px;
   font-weight: 600;
-  margin: 0 0 16px 0;
-  color: var(--text-primary);
+  margin: 0 0 ${spacing.md} 0;
+  color: ${colors.text.primary};
 `;
 
 export const ServicesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
+  gap: ${spacing.md};
 
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  }
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-
-  @media (max-width: 480px) {
+  ${mediaQueries.tablet} {
     grid-template-columns: 1fr;
   }
 `;
 
 export const ServiceCard = styled.div`
-  background: var(--light-gray);
-  border: 2px solid var(--border-gray);
+  background: ${colors.background.tertiary};
+  border: 2px solid ${colors.border};
   border-radius: 10px;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  transition: all var(--transition-normal);
+  gap: ${radius.xl};
+  transition: ${transitions.hover};
   cursor: pointer;
   user-select: none;
   outline: none;
 
   &:hover {
-    border-color: var(--primary-red);
-    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.1);
+    border-color: ${colors.primary};
+    box-shadow: ${shadows.luxuryCard};
     transform: translateY(-4px);
   }
 
-  &:focus {
-    border-color: var(--primary-red);
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
-    outline: none;
+  &:focus-visible {
+    border-color: ${colors.primary};
+    box-shadow: ${shadows.luxuryFocus};
   }
 
-  &:focus-visible {
-    border-color: var(--primary-red);
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+  ${reducedMotion} {
+    transition: none;
+    &:hover { transform: none; }
   }
 
   /* Dark Mode */
   [data-theme="dark"] & {
-    background: #2A2A2A;
+    background: ${colors.background.darkSecondary};
     border-color: #333333;
-  }
-
-  @media (max-width: 480px) {
   }
 `;
 
 export const ServiceCardTitle = styled.div`
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: ${colors.text.primary};
   margin: 0;
 
-  @media (max-width: 480px) {
+  ${mediaQueries.mobile} {
     font-size: 14px;
   }
 `;
 
 export const ServiceCardDescription = styled.p`
   font-size: 13px;
-  color: var(--text-secondary);
+  color: ${colors.text.secondary};
   margin: 0;
   line-height: 1.5;
 `;
@@ -505,17 +484,22 @@ export const ServiceCardDescription = styled.p`
 export const ServiceCardAction = styled.button`
   background: transparent;
   border: none;
-  color: var(--primary-red);
+  color: ${colors.primary};
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   padding: 0;
-  margin-top: 4px;
-  transition: all var(--transition-fast);
+  margin-top: ${spacing.xs};
+  transition: ${transitions.active};
   text-align: left;
 
   &:hover {
     transform: translateX(4px);
+  }
+
+  ${reducedMotion} {
+    transition: none;
+    &:hover { transform: none; }
   }
 `;
 
@@ -528,8 +512,8 @@ export const ActionsSection = styled.div``;
 export const ActionsSectionHeading = styled.h3`
   font-size: 16px;
   font-weight: 600;
-  margin: 0 0 12px 0;
-  color: var(--text-primary);
+  margin: 0 0 ${radius.xl} 0;
+  color: ${colors.text.primary};
 `;
 
 export const ActionsGrid = styled.div`
@@ -537,15 +521,11 @@ export const ActionsGrid = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 10px;
 
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  }
-
-  @media (max-width: 768px) {
+  ${mediaQueries.tablet} {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (max-width: 480px) {
+  ${mediaQueries.mobile} {
     grid-template-columns: 1fr;
   }
 `;
@@ -554,16 +534,16 @@ export const ActionButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 12px 16px;
-  background: var(--light-gray);
-  border: 1px solid var(--border-gray);
-  border-radius: 8px;
+  gap: ${spacing.sm};
+  padding: ${radius.xl} ${spacing.md};
+  background: ${colors.background.tertiary};
+  border: 1px solid ${colors.border};
+  border-radius: ${radius.lg};
   cursor: pointer;
-  color: var(--text-primary);
+  color: ${colors.text.primary};
   font-size: 13px;
   font-weight: 500;
-  transition: all var(--transition-fast);
+  transition: ${transitions.hover};
   outline: none;
 
   svg {
@@ -571,26 +551,31 @@ export const ActionButton = styled.button`
   }
 
   &:hover {
-    background: var(--primary-red);
-    color: white;
-    border-color: var(--primary-red);
+    background: ${colors.primary};
+    color: ${colors.text.inverse};
+    border-color: ${colors.primary};
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+    box-shadow: ${shadows.luxuryCard};
   }
 
   &:active {
     transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(212, 175, 55, 0.12);
+    box-shadow: ${shadows.active};
   }
 
   &:focus-visible {
-    outline: 2px solid var(--primary-red);
+    outline: 2px solid ${colors.primary};
     outline-offset: 2px;
+  }
+
+  ${reducedMotion} {
+    transition: none;
+    &:hover { transform: none; }
   }
 
   /* Dark Mode */
   [data-theme="dark"] & {
-    background: #2A2A2A;
+    background: ${colors.background.darkSecondary};
     border-color: #333333;
   }
 `;

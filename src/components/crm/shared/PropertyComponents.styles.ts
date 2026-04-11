@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import { theme } from '../../../styles/theme';
+
+const { colors } = theme;
 
 /* ============================================================================
  * Property Components Styled Components
@@ -166,7 +169,7 @@ export const Thumbnail = styled.button<{ $active?: boolean; $isMore?: boolean }>
   height: 48px;
   border-radius: 6px;
   overflow: hidden;
-  border: 2px solid ${(props) => (props.$active ? '#3b82f6' : 'transparent')};
+  border: 2px solid ${(props) => (props.$active ? colors.primary : 'transparent')};
   cursor: pointer;
   background: #1e293b;
   padding: 0;
@@ -185,7 +188,7 @@ export const Thumbnail = styled.button<{ $active?: boolean; $isMore?: boolean }>
   `}
 
   &:hover {
-    border-color: #3b82f6;
+    border-color: ${colors.primary};
     opacity: 0.8;
   }
 
@@ -518,7 +521,7 @@ export const OwnerAvatar = styled.div`
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  background: ${colors.luxury.goldDark};
   display: flex;
   align-items: center;
   justify-content: center;

@@ -1,10 +1,14 @@
 import styled from 'styled-components';
+import { theme } from '../../styles/theme';
+
+const { colors, spacing, radius, shadows, transitions, mediaQueries } = theme;
+const reducedMotion = `@media (prefers-reduced-motion: reduce)`;
 
 export const AdminContainer = styled.div`
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - 64px);
-  background: #FAFAFA;
+  background: ${colors.background.primary};
   padding-top: 64px;
 `;
 
@@ -12,11 +16,11 @@ export const AdminHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 32px 24px;
-  background: white;
-  border-bottom: 1px solid #E0E0E0;
+  padding: ${spacing.xl} ${spacing.lg};
+  background: ${colors.background.secondary};
+  border-bottom: 1px solid ${colors.border};
 
-  @media (max-width: 768px) {
+  ${mediaQueries.tablet} {
     flex-direction: column;
     gap: 1rem;
   }
@@ -24,16 +28,16 @@ export const AdminHeader = styled.div`
 
 export const AdminTitle = styled.div`
   h1 {
-    margin: 0 0 4px 0;
+    margin: 0 0 ${spacing.xs} 0;
     font-size: 28px;
     font-weight: 700;
-    color: #212121;
+    color: ${colors.text.primary};
   }
 
   p {
     margin: 0;
     font-size: 14px;
-    color: #757575;
+    color: ${colors.text.secondary};
   }
 `;
 
@@ -41,61 +45,63 @@ export const AdminUserInfo = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4px;
+  gap: ${spacing.xs};
 `;
 
 export const UserName = styled.span`
   font-size: 14px;
   font-weight: 600;
-  color: #212121;
+  color: ${colors.text.primary};
 `;
 
 export const UserRole = styled.span`
   font-size: 12px;
-  color: #D4AF37;
+  color: ${colors.primary};
   font-weight: 500;
 `;
 
 export const AdminTabs = styled.div`
   display: flex;
   gap: 0;
-  padding: 0 24px;
-  background: white;
-  border-bottom: 1px solid #E0E0E0;
+  padding: 0 ${spacing.lg};
+  background: ${colors.background.secondary};
+  border-bottom: 1px solid ${colors.border};
   overflow-x: auto;
 `;
 
 export const Tab = styled.button<{ $active?: boolean }>`
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 16px 24px;
+  gap: ${spacing.sm};
+  padding: ${spacing.md} ${spacing.lg};
   background: none;
   border: none;
-  border-bottom: 3px solid ${props => props.$active ? '#D4AF37' : 'transparent'};
-  color: ${props => props.$active ? '#D4AF37' : '#757575'};
+  border-bottom: 3px solid ${props => props.$active ? colors.primary : 'transparent'};
+  color: ${props => props.$active ? colors.primary : colors.text.secondary};
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   white-space: nowrap;
 
   &:hover {
-    color: #212121;
-    border-bottom-color: ${props => props.$active ? '#D4AF37' : '#E0E0E0'};
+    color: ${colors.text.primary};
+    border-bottom-color: ${props => props.$active ? colors.primary : colors.border};
   }
+
+  ${reducedMotion} { transition: none; }
 `;
 
 export const AdminContent = styled.div`
   flex: 1;
-  padding: 32px 24px;
+  padding: ${spacing.xl} ${spacing.lg};
   overflow-y: auto;
 `;
 
 export const AdminOverview = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: ${spacing.xl};
 `;
 
 export const MetricsGrid = styled.div`
@@ -105,25 +111,30 @@ export const MetricsGrid = styled.div`
 `;
 
 export const MetricCard = styled.div`
-  background: white;
-  border-radius: 12px;
+  background: ${colors.background.secondary};
+  border-radius: ${radius.xl};
   padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  transition: all 0.2s ease;
-  border: 1px solid #E0E0E0;
+  box-shadow: ${shadows.xs};
+  transition: ${transitions.hover};
+  border: 1px solid ${colors.border};
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    box-shadow: ${shadows.md};
     transform: translateY(-2px);
+  }
+
+  ${reducedMotion} {
+    transition: none;
+    &:hover { transform: none; }
   }
 `;
 
 export const MetricHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-  color: #D4AF37;
+  gap: ${radius.xl};
+  margin-bottom: ${spacing.md};
+  color: ${colors.primary};
 
   svg {
     flex-shrink: 0;
@@ -133,7 +144,7 @@ export const MetricHeader = styled.div`
 export const MetricTitle = styled.span`
   font-size: 13px;
   font-weight: 500;
-  color: #757575;
+  color: ${colors.text.secondary};
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `;
@@ -141,28 +152,28 @@ export const MetricTitle = styled.span`
 export const MetricValue = styled.div`
   font-size: 32px;
   font-weight: 700;
-  color: #212121;
-  margin-bottom: 4px;
+  color: ${colors.text.primary};
+  margin-bottom: ${spacing.xs};
 `;
 
 export const MetricSubtext = styled.div`
   font-size: 13px;
-  color: #9E9E9E;
-  margin-bottom: 12px;
+  color: ${colors.text.tertiary};
+  margin-bottom: ${radius.xl};
 `;
 
 export const MetricBar = styled.div`
   height: 4px;
-  background: #E0E0E0;
-  border-radius: 2px;
+  background: ${colors.border};
+  border-radius: ${radius.xs};
   overflow: hidden;
 `;
 
 export const MetricBarFill = styled.div<{ $color?: string }>`
   height: 100%;
-  background: ${props => props.$color || '#D4AF37'};
-  border-radius: 2px;
-  transition: width 0.3s ease;
+  background: ${props => props.$color || colors.primary};
+  border-radius: ${radius.xs};
+  transition: width ${transitions.durations.standard} ${transitions.easing.easeInOut};
 `;
 
 export const MetricStatus = styled.div<{ $status?: string }>`
@@ -170,54 +181,54 @@ export const MetricStatus = styled.div<{ $status?: string }>`
   font-weight: 700;
   color: ${props => {
     switch (props.$status) {
-      case 'excellent': return '#4CAF50';
-      case 'good': return '#2196F3';
-      case 'warning': return '#FF9800';
-      default: return '#D32F2F';
+      case 'excellent': return colors.success;
+      case 'good': return colors.info;
+      case 'warning': return colors.warning;
+      default: return colors.error;
     }
   }};
-  margin-bottom: 12px;
+  margin-bottom: ${radius.xl};
 `;
 
 export const MetricDetails = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const DetailItem = styled.div`
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  color: #757575;
+  color: ${colors.text.secondary};
 `;
 
 export const DetailValue = styled.span`
   font-weight: 600;
-  color: #212121;
+  color: ${colors.text.primary};
 `;
 
 export const AlertsSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: ${spacing.md};
 `;
 
 export const SectionHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: ${radius.xl};
+  margin-bottom: ${spacing.md};
 
   h3 {
     margin: 0;
     font-size: 18px;
     font-weight: 600;
-    color: #212121;
+    color: ${colors.text.primary};
   }
 
   svg {
-    color: #D4AF37;
+    color: ${colors.primary};
   }
 
   button {
@@ -225,11 +236,11 @@ export const SectionHeader = styled.div`
     background: none;
     border: none;
     cursor: pointer;
-    color: #757575;
-    transition: color 0.2s;
+    color: ${colors.text.secondary};
+    transition: color ${transitions.durations.shorter} ${transitions.easing.easeOut};
 
     &:hover {
-      color: #212121;
+      color: ${colors.text.primary};
     }
   }
 `;
@@ -244,12 +255,12 @@ export const AlertItem = styled.div<{ $severity?: 'warning' | 'info' }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: ${radius.xl} ${spacing.md};
   background: ${props => props.$severity === 'warning' ? '#FFF3E0' : '#E3F2FD'};
-  border-left: 4px solid ${props => props.$severity === 'warning' ? '#FF9800' : '#2196F3'};
-  border-radius: 4px;
+  border-left: 4px solid ${props => props.$severity === 'warning' ? colors.warning : colors.info};
+  border-radius: ${radius.sm};
   cursor: pointer;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
 
   &:hover {
     background: ${props => props.$severity === 'warning' ? '#FFE0B2' : '#BBDEFB'};
@@ -259,50 +270,50 @@ export const AlertItem = styled.div<{ $severity?: 'warning' | 'info' }>`
 export const AlertContent = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: ${radius.xl};
   flex: 1;
 `;
 
 export const AlertMessage = styled.span`
   font-size: 14px;
-  color: #212121;
+  color: ${colors.text.primary};
   font-weight: 500;
 `;
 
 export const AlertStatus = styled.span<{ $status?: string }>`
-  padding: 2px 8px;
-  border-radius: 12px;
+  padding: 2px ${spacing.sm};
+  border-radius: ${radius.xl};
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  background: ${props => props.$status === 'active' ? 'rgba(212, 175, 55, 0.12)' : '#E0E0E0'};
-  color: ${props => props.$status === 'active' ? '#B8960C' : '#616161'};
+  background: ${props => props.$status === 'active' ? 'rgba(212, 175, 55, 0.12)' : colors.border};
+  color: ${props => props.$status === 'active' ? colors.primaryDark : '#616161'};
 `;
 
 export const ActivitySection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: ${spacing.md};
 `;
 
 export const ActivitiesList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: ${radius.xl};
 `;
 
 export const ActivityItem = styled.div`
   display: flex;
   align-items: flex-start;
-  gap: 16px;
-  padding: 12px 16px;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #E0E0E0;
-  transition: all 0.2s;
+  gap: ${spacing.md};
+  padding: ${radius.xl} ${spacing.md};
+  background: ${colors.background.secondary};
+  border-radius: ${radius.lg};
+  border: 1px solid ${colors.border};
+  transition: ${transitions.hover};
 
   &:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: ${shadows.sm};
   }
 `;
 
@@ -312,23 +323,23 @@ export const ActivityIcon = styled.div<{ type?: string }>`
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: ${radius.full};
   background: ${props => {
     switch (props.type) {
       case 'create': return '#E8F5E9';
       case 'update': return '#E3F2FD';
       case 'download': return '#FFF3E0';
       case 'system': return '#F3E5F5';
-      default: return '#EEEEEE';
+      default: return colors.background.tertiary;
     }
   }};
   color: ${props => {
     switch (props.type) {
-      case 'create': return '#4CAF50';
-      case 'update': return '#2196F3';
-      case 'download': return '#FF9800';
+      case 'create': return colors.success;
+      case 'update': return colors.info;
+      case 'download': return colors.warning;
       case 'system': return '#9C27B0';
-      default: return '#757575';
+      default: return colors.text.secondary;
     }
   }};
   flex-shrink: 0;
@@ -341,108 +352,108 @@ export const ActivityContent = styled.div`
 export const ActivityUser = styled.div`
   font-size: 13px;
   font-weight: 600;
-  color: #212121;
+  color: ${colors.text.primary};
   margin-bottom: 2px;
 `;
 
 export const ActivityAction = styled.div`
   font-size: 13px;
-  color: #757575;
+  color: ${colors.text.secondary};
 `;
 
 export const ActivityTime = styled.div`
   font-size: 12px;
-  color: #9E9E9E;
+  color: ${colors.text.tertiary};
   white-space: nowrap;
 `;
 
 export const AdminUsers = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: ${spacing.lg};
 `;
 
 export const UsersTable = styled.div`
-  background: white;
-  border-radius: 8px;
+  background: ${colors.background.secondary};
+  border-radius: ${radius.lg};
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: ${shadows.sm};
 
   table {
     width: 100%;
     border-collapse: collapse;
 
     thead {
-      background: #F5F5F5;
+      background: ${colors.background.tertiary};
     }
 
     th {
-      padding: 16px;
+      padding: ${spacing.md};
       text-align: left;
       font-size: 12px;
       font-weight: 600;
-      color: #757575;
+      color: ${colors.text.secondary};
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      border-bottom: 1px solid #E0E0E0;
+      border-bottom: 1px solid ${colors.border};
     }
 
     td {
-      padding: 16px;
-      border-bottom: 1px solid #E0E0E0;
+      padding: ${spacing.md};
+      border-bottom: 1px solid ${colors.border};
       font-size: 14px;
-      color: #212121;
+      color: ${colors.text.primary};
     }
 
     tbody tr:hover {
-      background: #FAFAFA;
+      background: ${colors.background.tertiary};
     }
   }
 `;
 
 export const RoleBadge = styled.span<{ $role?: string }>`
   display: inline-block;
-  padding: 4px 12px;
-  border-radius: 12px;
+  padding: ${spacing.xs} ${radius.xl};
+  border-radius: ${radius.xl};
   font-size: 12px;
   font-weight: 600;
   background: ${props => {
     switch (props.$role) {
       case 'agent': return '#E3F2FD';
       case 'admin': return '#FCE4EC';
-      default: return '#F0F0F0';
+      default: return colors.background.tertiary;
     }
   }};
   color: ${props => {
     switch (props.$role) {
-      case 'agent': return '#1976D2';
-      case 'admin': return '#C2185B';
-      default: return '#616161';
+      case 'agent': return colors.info;
+      case 'admin': return colors.error;
+      default: return colors.text.secondary;
     }
   }};
 `;
 
 export const StatusBadge = styled.span<{ $status?: string }>`
   display: inline-block;
-  padding: 4px 12px;
-  border-radius: 12px;
+  padding: ${spacing.xs} ${radius.xl};
+  border-radius: ${radius.xl};
   font-size: 12px;
   font-weight: 600;
   background: ${props => props.$status === 'active' ? '#E8F5E9' : '#FFEBEE'};
-  color: ${props => props.$status === 'active' ? '#388E3C' : '#D32F2F'};
+  color: ${props => props.$status === 'active' ? colors.success : colors.error};
 `;
 
 export const ActionBtn = styled.button<{ $danger?: boolean }>`
-  padding: 8px 16px;
-  margin-right: 8px;
+  padding: ${spacing.sm} ${spacing.md};
+  margin-right: ${spacing.sm};
   border: none;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   background: ${props => props.$danger ? '#FFEBEE' : '#E3F2FD'};
-  color: ${props => props.$danger ? '#D32F2F' : '#1976D2'};
-  transition: all 0.2s;
+  color: ${props => props.$danger ? colors.error : colors.info};
+  transition: ${transitions.hover};
 
   &:hover {
     background: ${props => props.$danger ? '#FFCDD2' : '#BBDEFB'};
@@ -452,32 +463,32 @@ export const ActionBtn = styled.button<{ $danger?: boolean }>`
 export const AdminSettings = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: ${spacing.xl};
 `;
 
 export const StatusSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: ${spacing.md};
 `;
 
 export const StatusGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 16px;
+  gap: ${spacing.md};
 `;
 
 export const StatusItem = styled.div`
-  background: white;
-  padding: 16px;
-  border-radius: 8px;
-  border: 1px solid #E0E0E0;
+  background: ${colors.background.secondary};
+  padding: ${spacing.md};
+  border-radius: ${radius.lg};
+  border: 1px solid ${colors.border};
 `;
 
 export const StatusLabel = styled.div`
   font-size: 12px;
-  color: #757575;
-  margin-bottom: 8px;
+  color: ${colors.text.secondary};
+  margin-bottom: ${spacing.sm};
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `;
@@ -485,32 +496,32 @@ export const StatusLabel = styled.div`
 export const StatusValue = styled.div`
   font-size: 20px;
   font-weight: 700;
-  color: #212121;
+  color: ${colors.text.primary};
 `;
 
 export const StatusValueSuccess = styled(StatusValue)`
-  color: #4CAF50;
+  color: ${colors.success};
 `;
 
 export const SettingsGroups = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: ${spacing.xl};
 `;
 
 export const SettingGroup = styled.div`
-  background: white;
-  padding: 24px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: ${colors.background.secondary};
+  padding: ${spacing.lg};
+  border-radius: ${radius.lg};
+  box-shadow: ${shadows.sm};
 
   h4 {
     margin: 0 0 20px 0;
     font-size: 16px;
     font-weight: 600;
-    color: #212121;
-    border-bottom: 1px solid #E0E0E0;
-    padding-bottom: 12px;
+    color: ${colors.text.primary};
+    border-bottom: 1px solid ${colors.border};
+    padding-bottom: ${radius.xl};
   }
 `;
 
@@ -525,104 +536,104 @@ export const SettingItem = styled.div`
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #212121;
-    margin-bottom: 8px;
+    color: ${colors.text.primary};
+    margin-bottom: ${spacing.sm};
   }
 
   input,
   select {
     width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #E0E0E0;
-    border-radius: 4px;
+    padding: ${spacing.sm} ${radius.xl};
+    border: 1px solid ${colors.border};
+    border-radius: ${radius.sm};
     font-size: 14px;
-    transition: border-color 0.2s;
+    transition: border-color ${transitions.durations?.short || '0.2s'};
 
     &:focus {
       outline: none;
-      border-color: #D4AF37;
+      border-color: ${colors.primary};
     }
   }
 
   input[type='checkbox'] {
     width: auto;
-    margin-right: 8px;
+    margin-right: ${spacing.sm};
   }
 `;
 
 export const BtnPrimary = styled.button`
-  padding: 12px 24px;
-  background: #D4AF37;
-  color: white;
+  padding: ${radius.xl} ${spacing.lg};
+  background: ${colors.primary};
+  color: ${colors.background.secondary};
   border: none;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
 
   &:hover {
-    background: #B8960C;
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    background: ${colors.primaryDark};
+    box-shadow: ${shadows.luxuryGlow};
   }
 `;
 
 export const BtnSecondary = styled.button`
-  padding: 12px 24px;
-  background: #F5F5F5;
-  color: #212121;
+  padding: ${radius.xl} ${spacing.lg};
+  background: ${colors.background.tertiary};
+  color: ${colors.text.primary};
   border: none;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: all 0.2s;
+  gap: ${spacing.sm};
+  transition: ${transitions.hover};
 
   &:hover {
-    background: #E0E0E0;
+    background: ${colors.border};
   }
 `;
 
 export const AdminAnalytics = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: ${spacing.xl};
 `;
 
 export const FilterSelect = styled.select`
-  padding: 8px 12px;
+  padding: ${spacing.sm} ${radius.xl};
   margin-left: auto;
-  border: 1px solid #E0E0E0;
-  border-radius: 4px;
+  border: 1px solid ${colors.border};
+  border-radius: ${radius.sm};
   font-size: 14px;
   cursor: pointer;
 
   &:focus {
     outline: none;
-    border-color: #D4AF37;
+    border-color: ${colors.primary};
   }
 `;
 
 export const AnalyticsCharts = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
+  gap: ${spacing.lg};
 `;
 
 export const ChartContainer = styled.div`
-  background: white;
-  padding: 24px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: ${colors.background.secondary};
+  padding: ${spacing.lg};
+  border-radius: ${radius.lg};
+  box-shadow: ${shadows.sm};
 
   h4 {
-    margin: 0 0 16px 0;
+    margin: 0 0 ${spacing.md} 0;
     font-size: 16px;
     font-weight: 600;
-    color: #212121;
+    color: ${colors.text.primary};
   }
 `;
 
@@ -631,15 +642,15 @@ export const ChartPlaceholder = styled.div`
   align-items: flex-end;
   justify-content: space-around;
   height: 200px;
-  padding: 16px 0;
+  padding: ${spacing.md} 0;
 `;
 
 export const ChartBar = styled.div<{ $height?: string }>`
   width: 20%;
   height: ${props => props.$height || '50%'};
-  background: linear-gradient(180deg, #D4AF37, #B8960C);
-  border-radius: 4px 4px 0 0;
-  transition: all 0.2s;
+  background: ${colors.luxury.goldDark};
+  border-radius: ${radius.sm} ${radius.sm} 0 0;
+  transition: ${transitions.hover};
 
   &:hover {
     opacity: 0.8;
@@ -653,7 +664,7 @@ export const PaginationContainer = styled.div`
 
 export const ReportActions = styled.div`
   display: flex;
-  gap: 16px;
+  gap: ${spacing.md};
 `;
 
 export const AlertIcon = styled.div`
@@ -663,7 +674,7 @@ export const AlertIcon = styled.div`
   width: 24px;
   height: 24px;
   flex-shrink: 0;
-  color: #FF9800;
+  color: ${colors.warning};
 `;
 
 export const AlertClose = styled.button`
@@ -676,29 +687,29 @@ export const AlertClose = styled.button`
   border: none;
   font-size: 20px;
   cursor: pointer;
-  color: #757575;
-  transition: color 0.2s;
+  color: ${colors.text.secondary};
+  transition: color ${transitions.durations?.short || '0.2s'};
   flex-shrink: 0;
 
   &:hover {
-    color: #212121;
+    color: ${colors.text.primary};
   }
 `;
 
 export const SaveBtn = styled.button`
-  padding: 12px 24px;
-  background: #D4AF37;
-  color: white;
+  padding: ${radius.xl} ${spacing.lg};
+  background: ${colors.primary};
+  color: ${colors.background.secondary};
   border: none;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
-  margin-top: 12px;
+  transition: ${transitions.hover};
+  margin-top: ${radius.xl};
 
   &:hover {
-    background: #B8960C;
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    background: ${colors.primaryDark};
+    box-shadow: ${shadows.luxuryGlow};
   }
 `;

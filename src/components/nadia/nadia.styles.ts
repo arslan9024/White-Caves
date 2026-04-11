@@ -1,61 +1,67 @@
 /**
  * NADIA Components - Styled Components
  * Design system integration with styled-components
+ * Now using centralized White Caves theme tokens
  */
 
 import styled, { css } from 'styled-components';
+import { theme } from '../../styles/theme';
+
+const { spacing, radius, shadows, transitions, colors } = theme;
 
 /**
- * Design tokens (would normally import from your design system)
+ * Design tokens — bridge from local API to centralized theme.
+ * Keeps all tokens.xxx references working while pulling from
+ * the single source of truth in styles/theme.
  */
 const tokens = {
   colors: {
-    primary: '#4F46E5',
-    secondary: '#059669',
-    danger: '#DC2626',
-    warning: '#F97316',
-    success: '#22C55E',
+    primary: colors.primary,
+    secondary: colors.secondary,
+    danger: colors.error,
+    warning: colors.warning,
+    success: colors.success,
     background: {
-      primary: '#F8F9FA',
-      secondary: '#F3F4F6',
+      primary: colors.background.primary,
+      secondary: colors.background.tertiary,
     },
     surface: {
-      primary: '#FFFFFF',
-      secondary: '#F9FAFB',
+      primary: colors.background.secondary,
+      secondary: colors.background.tertiary,
     },
     text: {
-      primary: '#1F2937',
-      secondary: '#6B7280',
-      tertiary: '#9CA3AF',
+      primary: colors.text.primary,
+      secondary: colors.text.secondary,
+      tertiary: colors.text.tertiary,
     },
     border: {
-      subtle: '#E5E7EB',
-      light: '#D1D5DB',
+      subtle: colors.border,
+      light: colors.borderDark,
       dark: '#9CA3AF',
     },
   },
   spacing: {
-    xs: '4px',
-    sm: '8px',
-    md: '16px',
-    lg: '24px',
-    xl: '32px',
+    xs: spacing.xs,
+    sm: spacing.sm,
+    md: spacing.md,
+    lg: spacing.lg,
+    xl: spacing.xl,
   },
   borderRadius: {
-    sm: '4px',
-    md: '8px',
-    lg: '12px',
-    xl: '16px',
+    sm: radius.sm,
+    md: radius.lg,    // nadia md (8px) = theme lg (8px)
+    lg: radius.xl,    // nadia lg (12px) = theme xl (12px)
+    xl: radius.xxl,   // nadia xl (16px) = theme xxl (16px)
   },
   shadows: {
-    sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-    md: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+    sm: shadows.xs,
+    md: shadows.md,
+    lg: shadows.lg,
   },
   transitions: {
-    fast: '150ms ease',
-    base: '250ms ease',
-    slow: '350ms ease',
+    fast: `${transitions.durations.shortest} ${transitions.easing.easeInOut}`,
+    base: `${transitions.durations.short} ${transitions.easing.easeInOut}`,
+    slow: `${transitions.durations.complex} ${transitions.easing.easeInOut}`,
   },
 };
 
