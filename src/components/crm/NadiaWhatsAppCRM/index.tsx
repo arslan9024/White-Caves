@@ -63,10 +63,10 @@ const NadiaWhatsAppCRM = () => {
           >
             {data.nadiaActive ? 'Pause Nadia' : 'Activate Nadia'}
           </button>
-          <button className="nadia-action-btn">
+          <button className="nadia-action-btn" aria-label="Refresh conversations">
             <RefreshCw size={18} />
           </button>
-          <button className="nadia-action-btn">
+          <button className="nadia-action-btn" aria-label="Download chat export">
             <Download size={18} />
           </button>
         </div>

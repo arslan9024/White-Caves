@@ -60,7 +60,7 @@ const BigTileCard = memo(({
             </span>
           )}
           {actions && (
-            <button className="tile-menu-btn">
+            <button className="tile-menu-btn" aria-label="More options">
               <MoreVertical size={16} />
             </button>
           )}

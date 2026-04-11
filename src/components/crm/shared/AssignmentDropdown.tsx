@@ -92,7 +92,7 @@ const AssignmentDropdown = memo(({
                 style={{ backgroundColor: getStatusColor(selectedAgent.status || '') }}
               />
             )}
-            <button className="clear-btn" onClick={handleClear}>
+            <button className="clear-btn" onClick={handleClear} aria-label="Clear agent selection">
               <X size={14} />
             </button>
           </div>

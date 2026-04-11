@@ -57,10 +57,10 @@ const NinaWhatsAppBotCRM = () => {
           </div>
         </div>
         <div className="nina-actions">
-          <button className="nina-action-btn">
+          <button className="nina-action-btn" aria-label="Refresh bot status">
             <RefreshCw size={18} />
           </button>
-          <button className="nina-action-btn">
+          <button className="nina-action-btn" aria-label="Download bot data">
             <Download size={18} />
           </button>
         </div>
