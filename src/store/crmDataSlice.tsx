@@ -9,14 +9,17 @@ import { authFetch, extractApiError } from '../utils/authFetch';
 import { logout } from './authSlice';
 import type { RootState } from './store';
 // In production, async thunks fetch real data from the API.
-// Dummy data is only used as fallback initial state in dev mode.
+// Dev mode: faker-generated data (50+ properties, 20+ agents, 100+ leads)
+// with fallback to legacy DUMMY_* data for safety.
 import {
-  DUMMY_ALL_LEADS,
-  DUMMY_CLIENTS,
-  DUMMY_AGENTS,
-  DUMMY_ACTIVITIES,
-  DUMMY_OVERVIEW_DATA
-} from '../data/dummyLeads';
+  DEV_LEADS,
+  DEV_CLIENTS,
+  DEV_AGENTS,
+  DEV_PROPERTIES,
+  DEV_COMMISSIONS,
+  DEV_ACTIVITIES,
+  DEV_OVERVIEW,
+} from '../data/devData';
 
 interface CRMItem {
   id: string | number;
@@ -55,46 +58,46 @@ interface CRMDataState {
 
 const initialState: CRMDataState = {
   leads: {
-    items: import.meta.env.DEV ? DUMMY_ALL_LEADS : [],
+    items: import.meta.env.DEV ? DEV_LEADS : [],
     selected: null,
     loading: false,
     error: null
   },
 
   clients: {
-    items: import.meta.env.DEV ? DUMMY_CLIENTS : [],
+    items: import.meta.env.DEV ? DEV_CLIENTS : [],
     selected: null,
     loading: false,
     error: null
   },
 
   agents: {
-    items: import.meta.env.DEV ? DUMMY_AGENTS : [],
+    items: import.meta.env.DEV ? DEV_AGENTS : [],
     selected: null,
     loading: false,
     error: null
   },
 
   properties: {
-    items: [],
+    items: import.meta.env.DEV ? DEV_PROPERTIES : [],
     selected: null,
     loading: false,
     error: null
   },
 
   commissions: {
-    items: [],
+    items: import.meta.env.DEV ? DEV_COMMISSIONS : [],
     loading: false,
     error: null
   },
 
   activities: {
-    items: import.meta.env.DEV ? DUMMY_ACTIVITIES : [],
+    items: import.meta.env.DEV ? DEV_ACTIVITIES : [],
     loading: false,
     error: null
   },
 
-  overview: import.meta.env.DEV ? DUMMY_OVERVIEW_DATA : null,
+  overview: import.meta.env.DEV ? DEV_OVERVIEW : null,
 
   lastUpdated: new Date().toISOString()
 };

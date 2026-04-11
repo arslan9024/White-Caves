@@ -124,13 +124,15 @@ vi.mock('../utils/authFetch', () => ({
   extractApiError: (...args: unknown[]) => mockExtractApiError(...args),
 }));
 
-// ─── Mock dummy data imports ─────────────────────────────────────────────
-vi.mock('../data/dummyLeads', () => ({
-  DUMMY_ALL_LEADS: [],
-  DUMMY_CLIENTS: [],
-  DUMMY_AGENTS: [],
-  DUMMY_ACTIVITIES: [],
-  DUMMY_OVERVIEW_DATA: null,
+// ─── Mock dev data imports ───────────────────────────────────────────────
+vi.mock('../data/devData', () => ({
+  DEV_LEADS: [],
+  DEV_CLIENTS: [],
+  DEV_AGENTS: [],
+  DEV_PROPERTIES: [],
+  DEV_COMMISSIONS: [],
+  DEV_ACTIVITIES: [],
+  DEV_OVERVIEW: null,
 }));
 
 // ─── Helper: get clean initial state ─────────────────────────────────────
