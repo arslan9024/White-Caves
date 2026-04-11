@@ -219,8 +219,8 @@ router.post(
       throw new AppError('Email and verification code are required', 400);
     }
 
-    // For now, accept code "000000" in local dev mode ONLY
-    if (process.env.NODE_ENV === 'development' && code === '000000') {
+    // Dev-only 2FA bypass: requires BOTH NODE_ENV=development AND DEV_2FA_BYPASS=true
+    if (process.env.NODE_ENV === 'development' && process.env.DEV_2FA_BYPASS === 'true' && code === '000000') {
       const user = await prisma.user.findUnique({ where: { email } });
       if (!user) throw new AppError('User not found', 404);
 

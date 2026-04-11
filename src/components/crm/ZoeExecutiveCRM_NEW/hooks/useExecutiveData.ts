@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { MEETINGS, TASKS, EXECUTIVES, ASSISTANT_COLORS, Meeting, Task, Executive } from '../data/executive';
 import { ZOE_EXECUTIVE_FEATURES } from '../data/features';
+import type { ExecutiveSuggestion } from '../../../../store/slices/aiAssistant/types';
 import {
   selectFilteredSuggestions,
   selectUnreviewedSuggestionsCount,
@@ -32,8 +33,11 @@ export const useExecutiveData = () => {
   const complianceMetrics = useSelector(selectComplianceMetrics);
   const vault = useSelector(selectConfidentialVault);
 
-  const handleStatusChange = useCallback((suggestionId: string, status: 'pending' | 'unreviewed' | 'acknowledged') => {
-    dispatch(updateSuggestionStatus({ suggestionId, status }));
+  const handleStatusChange = useCallback((suggestionId: string, status: string) => {
+    dispatch(updateSuggestionStatus({
+      suggestionId,
+      status: status as ExecutiveSuggestion['status'],
+    }));
   }, [dispatch]);
 
   const getUpcomingMeetings = useCallback(() => {

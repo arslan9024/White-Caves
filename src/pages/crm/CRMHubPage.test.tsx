@@ -138,7 +138,7 @@ const createMockStore = (crmOverrides: Record<string, unknown> = {}) => {
         currentUser: { id: 'u1', name: 'Owner', role: 'owner', email: 'owner@wc.ae' },
         loading: false,
         error: null,
-      } as ReturnType<typeof userReducer>,
+      } as unknown as ReturnType<typeof userReducer>,
       auth: {
         user: { id: 'u1', displayName: 'Owner', email: 'owner@wc.ae', role: 'owner' },
         token: 'tok',

@@ -111,7 +111,7 @@ const ZoeExecutiveCRM = () => {
               suggestions={filteredSuggestions}
               unreviewedCount={unreviewedCount}
               criticalCount={(criticalSuggestions && criticalSuggestions.length) || 0}
-              onStatusChange={handleStatusChange as any}
+              onStatusChange={handleStatusChange}
             />
           )}
 
@@ -138,8 +138,8 @@ const ZoeExecutiveCRM = () => {
           {activeTab === 'reports' && (
             <ReportsTab 
               funnelMetrics={funnelMetrics}
-              complianceMetrics={complianceMetrics as any}
-              vault={vault as any}
+              complianceMetrics={complianceMetrics}
+              vault={vault}
             />
           )}
         </Suspense>

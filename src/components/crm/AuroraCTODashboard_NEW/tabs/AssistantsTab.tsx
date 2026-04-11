@@ -2,7 +2,7 @@ import React from 'react';
 import { Users, CheckCircle, Mail, MessageSquare } from 'lucide-react';
 
 interface Assistant {
-  id: string | number;
+  id: string;
   name: string;
   title: string;
   department: string;

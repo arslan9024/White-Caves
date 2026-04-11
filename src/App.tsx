@@ -100,6 +100,8 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
 const MortgageCalculatorPage = lazy(() => import('./pages/buyer/MortgageCalculatorPage'));
 const DLDFeesPage = lazy(() => import('./pages/buyer/DLDFeesPage'));
 const TitleDeedRegistrationPage = lazy(() => import('./pages/buyer/TitleDeedRegistrationPage'));
+const FavoriteListingsPage = lazy(() => import('./pages/buyer/FavoriteListings'));
+const SavedSearchesPage = lazy(() => import('./pages/buyer/SavedSearches'));
 
 // Seller Sub-Pages
 const PricingToolsPage = lazy(() => import('./pages/seller/PricingToolsPage'));
@@ -116,6 +118,7 @@ const SalesPipelinePage = lazy(() => import('./pages/secondary-sales-agent/Sales
 
 // Unified Dashboard (replaces role-specific dashboards)
 const UnifiedDashboardPage = lazy(() => import('./pages/UnifiedDashboardPage'));
+const NadiaPage = lazy(() => import('./pages/NadiaPage'));
 
 // Owner/MD Sub-Pages (BusinessModelPage, ClientServicesPage removed — redirected to /modern-dashboard)
 const SystemHealthPage = lazy(() => import('./pages/owner/SystemHealthPage'));
@@ -129,6 +132,13 @@ const CRMHubPage = lazy(() => import('./pages/crm/CRMHubPage'));
 const LeadManagementPage = lazy(() => import('./pages/crm/LeadManagementPage'));
 const PropertyManagementPage = lazy(() => import('./pages/crm/PropertyManagementPage'));
 const AgentPerformancePage = lazy(() => import('./pages/crm/AgentPerformancePage'));
+const CommissionTrackingPage = lazy(() => import('./pages/crm/CommissionTrackingPage'));
+const TransactionManagementPage = lazy(() => import('./pages/crm/TransactionManagementPage'));
+const ClientManagementPage = lazy(() => import('./pages/crm/ClientManagementPage'));
+const ReportingDashboardPage = lazy(() => import('./pages/crm/ReportingDashboardPage'));
+const UserManagementPage = lazy(() => import('./pages/crm/UserManagementPage'));
+const FavoritesPage = lazy(() => import('./pages/crm/FavoritesPage'));
+const NotificationsPage = lazy(() => import('./pages/crm/NotificationsPage'));
 
 // Public Pages
 const PropertiesPage = lazy(() => import('./pages/PropertiesPage'));
@@ -335,6 +345,28 @@ function App(): React.JSX.Element {
                   </AppLayout>
                 </ProtectedRoute>
               } />
+              <Route path="/buyer/favorites" element={
+                <ProtectedRoute allowedRoles={['buyer']}>
+                  <AppLayout>
+                    <RouteErrorBoundary section="Favorite Listings">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <FavoriteListingsPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/buyer/saved-searches" element={
+                <ProtectedRoute allowedRoles={['buyer']}>
+                  <AppLayout>
+                    <RouteErrorBoundary section="Saved Searches">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <SavedSearchesPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
               <Route path="/seller/pricing-tools" element={
                 <ProtectedRoute allowedRoles={['seller']}>
                   <AppLayout>
@@ -503,6 +535,96 @@ function App(): React.JSX.Element {
                     <RouteErrorBoundary section="Agent Performance">
                       <Suspense fallback={<SuspenseLoader />}>
                         <AgentPerformancePage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/owner/crm/commissions" element={
+                <ProtectedRoute allowedRoles={['owner']}>
+                  <AppLayout>
+                    <RouteErrorBoundary section="Commission Tracking">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <CommissionTrackingPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/owner/crm/transactions" element={
+                <ProtectedRoute allowedRoles={['owner']}>
+                  <AppLayout>
+                    <RouteErrorBoundary section="Transaction Management">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <TransactionManagementPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/owner/crm/clients" element={
+                <ProtectedRoute allowedRoles={['owner']}>
+                  <AppLayout>
+                    <RouteErrorBoundary section="Client Management">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <ClientManagementPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/owner/crm/reporting" element={
+                <ProtectedRoute allowedRoles={['owner']}>
+                  <AppLayout>
+                    <RouteErrorBoundary section="Reporting Dashboard">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <ReportingDashboardPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/owner/crm/users" element={
+                <ProtectedRoute allowedRoles={['owner']}>
+                  <AppLayout>
+                    <RouteErrorBoundary section="User Management">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <UserManagementPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/favorites" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <RouteErrorBoundary section="Favorites">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <FavoritesPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/notifications" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <RouteErrorBoundary section="Notifications">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <NotificationsPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+
+              {/* Nadia AI CRM — WhatsApp Business API Dashboard */}
+              <Route path="/nadia" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <RouteErrorBoundary section="Nadia AI">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <NadiaPage />
                       </Suspense>
                     </RouteErrorBoundary>
                   </AppLayout>

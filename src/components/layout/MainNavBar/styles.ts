@@ -76,7 +76,7 @@ export const LogoLetter = styled.span`
   font-size: 20px;
   font-weight: 800;
   color: white;
-  font-family: 'Montserrat', sans-serif;
+  font-family: ${theme.typography.fontFamily.heading};
 `;
 
 export const LogoText = styled.div`
@@ -94,7 +94,7 @@ export const LogoTitle = styled.span`
   font-weight: 700;
   color: ${theme.colors.text.primary};
   line-height: 1.2;
-  font-family: 'Montserrat', sans-serif;
+  font-family: ${theme.typography.fontFamily.heading};
 
   @media (prefers-color-scheme: dark) {
     color: #ffffff;
@@ -259,7 +259,7 @@ export const SearchShortcut = styled.div`
 
 export const ShortcutKey = styled.kbd`
   font-size: 11px;
-  font-family: 'Inter', sans-serif;
+  font-family: ${theme.typography.fontFamily.primary};
   background: ${theme.colors.background.secondary};
   border: 1px solid ${theme.colors.border};
   border-radius: 4px;

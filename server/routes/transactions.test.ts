@@ -192,11 +192,11 @@ describe('Transactions Routes — /api/transactions', () => {
       expect(res.body.success).toBe(true);
     });
 
-    it('creates transaction for agent', async () => {
+    it('returns 403 for agent role (no process_payments permission)', async () => {
       const res = await request(createApp('agent'))
         .post('/api/transactions')
         .send(validBody);
-      expect(res.status).toBe(201);
+      expect(res.status).toBe(403);
     });
 
     it('returns 403 for tenant role', async () => {

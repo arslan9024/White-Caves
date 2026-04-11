@@ -14,7 +14,6 @@ export const DUMMY_AGENTS = [
     department: 'Sales',
     status: 'online',
     sales: 15,
-    commission: 450000,
     roi: 98,
     performance: 'Excellent',
     rating: 4.8,
@@ -31,7 +30,6 @@ export const DUMMY_AGENTS = [
     department: 'Sales',
     status: 'online',
     sales: 13,
-    commission: 390000,
     roi: 95,
     performance: 'Excellent',
     rating: 4.7,
@@ -48,7 +46,6 @@ export const DUMMY_AGENTS = [
     department: 'Operations',
     status: 'online',
     sales: 11,
-    commission: 330000,
     roi: 92,
     performance: 'Very Good',
     rating: 4.6,
@@ -65,7 +62,6 @@ export const DUMMY_AGENTS = [
     department: 'Sales',
     status: 'away',
     sales: 10,
-    commission: 280000,
     roi: 88,
     performance: 'Very Good',
     rating: 4.5,
@@ -82,7 +78,6 @@ export const DUMMY_AGENTS = [
     department: 'Marketing',
     status: 'online',
     sales: 9,
-    commission: 270000,
     roi: 85,
     performance: 'Good',
     rating: 4.4,
@@ -99,7 +94,6 @@ export const DUMMY_AGENTS = [
     department: 'Sales',
     status: 'offline',
     sales: 8,
-    commission: 240000,
     roi: 82,
     performance: 'Good',
     rating: 4.3,
@@ -116,7 +110,6 @@ export const DUMMY_AGENTS = [
     department: 'Operations',
     status: 'online',
     sales: 7,
-    commission: 210000,
     roi: 78,
     performance: 'Good',
     rating: 4.2,
@@ -133,7 +126,6 @@ export const DUMMY_AGENTS = [
     department: 'Sales',
     status: 'online',
     sales: 6,
-    commission: 180000,
     roi: 75,
     performance: 'Average',
     rating: 4.0,
@@ -482,15 +474,6 @@ export const DUMMY_ACTIVITIES = [
     icon: '🔥'
   },
   {
-    id: 3,
-    timestamp: '2026-03-07 08:45',
-    action: 'Commission paid',
-    description: 'Commission paid to Ahmed Hassan: AED 50,000',
-    user: 'System',
-    type: 'payment',
-    icon: '💰'
-  },
-  {
     id: 4,
     timestamp: '2026-03-06 17:20',
     action: 'Lead stage updated',
@@ -527,15 +510,6 @@ export const DUMMY_ACTIVITIES = [
     icon: '🏠'
   },
   {
-    id: 8,
-    timestamp: '2026-03-04 16:45',
-    action: 'Commission approved',
-    description: 'Fatima Al-Mansoori\"s commission approved for payment',
-    user: 'Ahmed Hassan',
-    type: 'approval',
-    icon: '✓'
-  },
-  {
     id: 9,
     timestamp: '2026-03-04 13:20',
     action: 'New agent onboarded',
@@ -566,7 +540,6 @@ export const DUMMY_OVERVIEW_DATA = {
     agentsTotal: 15,
     conversionsThisMonth: 12,
     revenuethisMonth: 2850000,
-    commissionThisMonth: 427500,
     activeClients: 10,
     activeDeals: 45,
     pendingPayments: 3
@@ -578,14 +551,12 @@ export const DUMMY_OVERVIEW_DATA = {
     thisMonth: {
       deals_closed: 12,
       revenue: 2850000,
-      commission: 427500,
       new_clients: 3,
       conversion_rate: 14.2
     },
     lastMonth: {
       deals_closed: 10,
       revenue: 2100000,
-      commission: 315000,
       new_clients: 2,
       conversion_rate: 12.1
     }

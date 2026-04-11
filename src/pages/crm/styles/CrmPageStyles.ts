@@ -6,6 +6,7 @@
  *   import { PageContainer, PageHeader, PrimaryButton, ... } from '../styles/CrmPageStyles';
  */
 import styled from 'styled-components';
+import { typography } from '../../../styles/theme/typography';
 
 // ─── Layout ─────────────────────────────────────────────────────────────
 
@@ -13,7 +14,7 @@ export const PageContainer = styled.div`
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-family: ${typography.fontFamily.primary};
 `;
 
 export const PageHeader = styled.div`

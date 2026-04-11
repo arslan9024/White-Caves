@@ -39,7 +39,10 @@ vi.mock('../PropertyCard/PropertyCard.styles', () => {
 vi.mock('../../../store/dashboardSlice', () => ({
   addToFavorites: vi.fn((payload) => ({ type: 'dashboard/addToFavorites', payload })),
   removeFromFavorites: vi.fn((id) => ({ type: 'dashboard/removeFromFavorites', payload: id })),
+  addFavoriteThunk: vi.fn((payload) => ({ type: 'dashboard/addFavorite/pending', payload })),
+  removeFavoriteThunk: vi.fn((id) => ({ type: 'dashboard/removeFavorite/pending', payload: id })),
   selectFavorites: (state: any) => state.dashboard?.favorites || [],
+  selectFavoriteIds: (state: any) => state.dashboard?.favoriteIds || [],
 }));
 
 import PropertyCard, { PropertyStatusBadge } from '../PropertyCard';
@@ -47,7 +50,7 @@ import PropertyCard, { PropertyStatusBadge } from '../PropertyCard';
 const createStore = (favorites: any[] = []) =>
   configureStore({
     reducer: {
-      dashboard: () => ({ favorites }),
+      dashboard: () => ({ favorites, favoriteIds: favorites.map((f: any) => f.id) }),
     },
   });
 

@@ -1,14 +1,6 @@
 import React from 'react';
 import { BarChart3, TrendingUp, AlertTriangle, CheckCircle, Zap } from 'lucide-react';
-
-interface SystemComponent {
-  id: string;
-  name: string;
-  type: string;
-  status: string;
-  version?: string;
-  metrics?: Record<string, unknown>;
-}
+import type { SystemComponent } from '../data/architecture';
 
 const APIPerformanceTab = ({ systemComponents }: { systemComponents: SystemComponent[] }) => {
   const apiMetrics = systemComponents.filter((c: SystemComponent) => c.type === 'api' || c.type === 'backend' || c.type === 'cache');

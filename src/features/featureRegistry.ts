@@ -98,7 +98,7 @@ export const DASHBOARD_MODULES: DashboardModule[] = [
   {
     id: 'secondary-sales-agent',
     name: 'Sales Agent Dashboard',
-    description: 'Sales pipeline, leads, and commission tracking',
+    description: 'Sales pipeline and leads',
     icon: '👔',
     roles: ['secondary-sales-agent'],
     defaultSubModule: 'pipeline',
@@ -106,7 +106,6 @@ export const DASHBOARD_MODULES: DashboardModule[] = [
       { id: 'pipeline', label: 'Sales Pipeline', icon: '📊', component: 'SalesPipeline', roles: ['secondary-sales-agent'] },
       { id: 'leads', label: 'Leads', icon: '🎯', component: 'SalesLeads', roles: ['secondary-sales-agent'], badgeCount: 8 },
       { id: 'deals', label: 'Active Deals', icon: '🤝', component: 'ActiveDeals', roles: ['secondary-sales-agent'] },
-      { id: 'commission', label: 'Commission', icon: '💵', component: 'CommissionTracker', roles: ['secondary-sales-agent'] },
       { id: 'performance', label: 'Performance', icon: '📈', component: 'AgentPerformance', roles: ['secondary-sales-agent'] }
     ]
   },

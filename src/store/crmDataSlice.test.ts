@@ -141,7 +141,7 @@ const getInitialState = () => crmDataReducer(undefined, { type: 'unknown' });
 // ─── Helper: create a test store with crmData reducer ────────────────────
 function createTestStore(preloadedState?: Record<string, unknown>) {
   return configureStore({
-    reducer: { crmData: crmDataReducer },
+    reducer: { crmData: crmDataReducer } as any,
     ...(preloadedState ? { preloadedState } : {}),
   });
 }

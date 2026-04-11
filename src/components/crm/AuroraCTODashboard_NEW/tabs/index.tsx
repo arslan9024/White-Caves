@@ -35,13 +35,13 @@ const AuroraCTODashboard = () => {
       case 'overview':
         return <OverviewTab stats={stats} systemStatus={systemStatus} />;
       case 'assistants':
-        return <AssistantsTab assistants={assistants as any} departments={Object.keys(departments)} selectedAssistant={selectedAssistant as any} onSelectAssistant={onSelectAssistant as any} />;
+        return <AssistantsTab assistants={assistants} departments={Object.keys(departments)} selectedAssistant={selectedAssistant} onSelectAssistant={onSelectAssistant} />;
       case 'architecture':
-        return <ArchitectureTab modules={modules} techStack={techStack as any} systemComponents={systemComponents as any} />;
+        return <ArchitectureTab modules={modules} techStack={techStack} systemComponents={systemComponents} />;
       case 'applications':
-        return <ApplicationsTab systemComponents={systemComponents as any} />;
+        return <ApplicationsTab systemComponents={systemComponents} />;
       case 'api-performance':
-        return <APIPerformanceTab systemComponents={systemComponents as any} />;
+        return <APIPerformanceTab systemComponents={systemComponents} />;
       default:
         return <OverviewTab stats={stats} systemStatus={systemStatus} />;
     }

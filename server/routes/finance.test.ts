@@ -111,8 +111,8 @@ describe('Finance Routes — /api/finance', () => {
       expect(netProfit).toBe(totalRevenue - totalExpenses);
     });
 
-    it('returns 403 for agent role', async () => {
-      const res = await request(createApp('agent')).get('/api/finance/summary');
+    it('returns 403 for unauthorized role (seller)', async () => {
+      const res = await request(createApp('seller')).get('/api/finance/summary');
       expect(res.status).toBe(403);
     });
 
@@ -148,8 +148,8 @@ describe('Finance Routes — /api/finance', () => {
       expect(call?.where?.status).toBe('paid');
     });
 
-    it('returns 403 for agent role', async () => {
-      const res = await request(createApp('agent')).get('/api/finance/commissions');
+    it('returns 403 for unauthorized role (seller)', async () => {
+      const res = await request(createApp('seller')).get('/api/finance/commissions');
       expect(res.status).toBe(403);
     });
   });
@@ -172,8 +172,8 @@ describe('Finance Routes — /api/finance', () => {
       expect(res.body.data.id).toBe(VALID_MONGO_ID);
     });
 
-    it('returns 403 for agent role', async () => {
-      const res = await request(createApp('agent')).get(`/api/finance/commissions/${VALID_MONGO_ID}`);
+    it('returns 403 for unauthorized role (seller)', async () => {
+      const res = await request(createApp('seller')).get(`/api/finance/commissions/${VALID_MONGO_ID}`);
       expect(res.status).toBe(403);
     });
   });

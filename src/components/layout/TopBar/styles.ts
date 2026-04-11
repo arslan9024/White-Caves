@@ -1,4 +1,5 @@
 import styled, { css, keyframes } from 'styled-components';
+import { typography } from '../../../styles/theme/typography';
 
 /* ═══════════════════════════════════════════════════════════════
    TOP BAR — Single unified navbar (56px)
@@ -56,7 +57,7 @@ export const LogoMark = styled.div`
   color: #FFFFFF;
   font-weight: 800;
   font-size: 14px;
-  font-family: 'Poppins', sans-serif;
+  font-family: ${typography.fontFamily.heading};
   letter-spacing: 0.5px;
   flex-shrink: 0;
   transition: transform 0.2s ease;
@@ -71,7 +72,7 @@ export const LogoName = styled.span`
   font-weight: 700;
   color: #111827;
   white-space: nowrap;
-  font-family: 'Poppins', sans-serif;
+  font-family: ${typography.fontFamily.heading};
 
   @media (max-width: 768px) {
     display: none;

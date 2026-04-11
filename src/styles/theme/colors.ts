@@ -77,6 +77,48 @@ export const colors = {
     draft: '#6B7280',
   },
 
+  // Badge / StatusConfig Colors
+  // Used by statusConfig.ts for badge color overrides across all entity types.
+  badges: {
+    blue: '#3B82F6',
+    cyan: '#06B6D4',
+    green: '#22C55E',
+    greenDark: '#16A34A',
+    purple: '#8B5CF6',
+    amber: '#F59E0B',
+    red: '#EF4444',
+    gray: '#6B7280',
+    grayLight: '#9CA3AF',
+  },
+
+  // Role category colours (used by roles.ts REAL_ESTATE_ROLES)
+  roles: {
+    gold: '#FFD700',
+    navyBlue: '#1E40AF',
+    violet: '#7C3AED',
+    crimson: '#E31E24',
+    royalBlue: '#2563EB',
+    deepPurple: '#7C3AED',
+    emerald: '#059669',
+    orange: '#EA580C',
+    teal: '#10B981',
+    indigo: '#6366F1',
+    cyan: '#0891B2',
+    mintTeal: '#0D9488',
+    amethyst: '#A855F7',
+    deepIndigo: '#4338CA',
+    blueIndigo: '#4F46E5',
+    kellyGreen: '#16A34A',
+    hotPink: '#DB2777',
+    periwinkle: '#6366F1',
+    stone: '#78716C',
+    skyBlue: '#0369A1',
+    lavender: '#8B5CF6',
+    oceanBlue: '#0EA5E9',
+    aqua: '#14B8A6',
+    tangerine: '#F97316',
+  },
+
   // Dark Mode Colors
   dark: {
     bg: '#1A1A1A',

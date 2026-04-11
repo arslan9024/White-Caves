@@ -40,11 +40,6 @@ export const useActionHandler = (): UseActionHandlerReturn => {
         if (action.includes('view')) return '/dashboard/sales/negotiations';
         if (action.includes('add')) return '/dashboard/sales/negotiations/new';
       }
-      if (action.includes('commission')) {
-        if (action.includes('log')) return '/dashboard/sales/commissions/log';
-        if (action.includes('calculate')) return '/dashboard/sales/commissions/calculator';
-        if (action.includes('report')) return '/dashboard/sales/commissions/report';
-      }
     }
 
     // Property Management

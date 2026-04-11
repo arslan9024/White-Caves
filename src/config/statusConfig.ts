@@ -9,6 +9,7 @@
  */
 
 import type { BadgeVariant } from '../components/design-system/Badge/types';
+import { colors } from '../styles/theme/colors';
 
 // ─── Shared Badge Config Type ─────────────────────────────────────────
 
@@ -33,13 +34,13 @@ export const LEAD_STATUS = {
 export type LeadStatusValue = (typeof LEAD_STATUS)[keyof typeof LEAD_STATUS];
 
 export const LEAD_STATUS_CONFIG: Record<string, StatusConfig> = {
-  [LEAD_STATUS.NEW]: { label: 'New', color: '#3B82F6', badgeVariant: 'info' },
-  [LEAD_STATUS.CONTACTED]: { label: 'Contacted', color: '#06B6D4', badgeVariant: 'info' },
-  [LEAD_STATUS.QUALIFIED]: { label: 'Qualified', color: '#22C55E', badgeVariant: 'success' },
-  [LEAD_STATUS.VIEWING]: { label: 'Viewing', color: '#8B5CF6', badgeVariant: 'primary' },
-  [LEAD_STATUS.OFFERED]: { label: 'Offered', color: '#F59E0B', badgeVariant: 'warning' },
-  [LEAD_STATUS.WON]: { label: 'Won', color: '#16A34A', badgeVariant: 'success' },
-  [LEAD_STATUS.LOST]: { label: 'Lost', color: '#EF4444', badgeVariant: 'error' },
+  [LEAD_STATUS.NEW]: { label: 'New', color: colors.badges.blue, badgeVariant: 'info' },
+  [LEAD_STATUS.CONTACTED]: { label: 'Contacted', color: colors.badges.cyan, badgeVariant: 'info' },
+  [LEAD_STATUS.QUALIFIED]: { label: 'Qualified', color: colors.badges.green, badgeVariant: 'success' },
+  [LEAD_STATUS.VIEWING]: { label: 'Viewing', color: colors.badges.purple, badgeVariant: 'primary' },
+  [LEAD_STATUS.OFFERED]: { label: 'Offered', color: colors.badges.amber, badgeVariant: 'warning' },
+  [LEAD_STATUS.WON]: { label: 'Won', color: colors.badges.greenDark, badgeVariant: 'success' },
+  [LEAD_STATUS.LOST]: { label: 'Lost', color: colors.badges.red, badgeVariant: 'error' },
 };
 
 // ─── Lead Priority ────────────────────────────────────────────────────
@@ -53,9 +54,9 @@ export const LEAD_PRIORITY = {
 export type LeadPriorityValue = (typeof LEAD_PRIORITY)[keyof typeof LEAD_PRIORITY];
 
 export const LEAD_PRIORITY_CONFIG: Record<string, StatusConfig> = {
-  [LEAD_PRIORITY.HIGH]: { label: 'High', color: '#EF4444', badgeVariant: 'error' },
-  [LEAD_PRIORITY.MEDIUM]: { label: 'Medium', color: '#F59E0B', badgeVariant: 'warning' },
-  [LEAD_PRIORITY.LOW]: { label: 'Low', color: '#3B82F6', badgeVariant: 'info' },
+  [LEAD_PRIORITY.HIGH]: { label: 'High', color: colors.badges.red, badgeVariant: 'error' },
+  [LEAD_PRIORITY.MEDIUM]: { label: 'Medium', color: colors.badges.amber, badgeVariant: 'warning' },
+  [LEAD_PRIORITY.LOW]: { label: 'Low', color: colors.badges.blue, badgeVariant: 'info' },
 };
 
 // ─── Lead Source ──────────────────────────────────────────────────────
@@ -95,13 +96,13 @@ export const PROPERTY_STATUS = {
 export type PropertyStatusValue = (typeof PROPERTY_STATUS)[keyof typeof PROPERTY_STATUS];
 
 export const PROPERTY_STATUS_CONFIG: Record<string, StatusConfig> = {
-  [PROPERTY_STATUS.AVAILABLE]: { label: 'Available', color: '#22C55E', badgeVariant: 'success' },
-  [PROPERTY_STATUS.RESERVED]: { label: 'Reserved', color: '#F59E0B', badgeVariant: 'warning' },
-  [PROPERTY_STATUS.UNDER_CONTRACT]: { label: 'Under Contract', color: '#8B5CF6', badgeVariant: 'info' },
-  [PROPERTY_STATUS.SOLD]: { label: 'Sold', color: '#EF4444', badgeVariant: 'error' },
-  [PROPERTY_STATUS.RENTED]: { label: 'Rented', color: '#06B6D4', badgeVariant: 'info' },
-  [PROPERTY_STATUS.OFF_MARKET]: { label: 'Off Market', color: '#6B7280', badgeVariant: 'secondary' },
-  [PROPERTY_STATUS.ARCHIVED]: { label: 'Archived', color: '#9CA3AF', badgeVariant: 'secondary' },
+  [PROPERTY_STATUS.AVAILABLE]: { label: 'Available', color: colors.badges.green, badgeVariant: 'success' },
+  [PROPERTY_STATUS.RESERVED]: { label: 'Reserved', color: colors.badges.amber, badgeVariant: 'warning' },
+  [PROPERTY_STATUS.UNDER_CONTRACT]: { label: 'Under Contract', color: colors.badges.purple, badgeVariant: 'info' },
+  [PROPERTY_STATUS.SOLD]: { label: 'Sold', color: colors.badges.red, badgeVariant: 'error' },
+  [PROPERTY_STATUS.RENTED]: { label: 'Rented', color: colors.badges.cyan, badgeVariant: 'info' },
+  [PROPERTY_STATUS.OFF_MARKET]: { label: 'Off Market', color: colors.badges.gray, badgeVariant: 'secondary' },
+  [PROPERTY_STATUS.ARCHIVED]: { label: 'Archived', color: colors.badges.grayLight, badgeVariant: 'secondary' },
 };
 
 // ─── Contract Status ──────────────────────────────────────────────────
@@ -117,11 +118,11 @@ export const CONTRACT_STATUS = {
 export type ContractStatusValue = (typeof CONTRACT_STATUS)[keyof typeof CONTRACT_STATUS];
 
 export const CONTRACT_STATUS_CONFIG: Record<string, StatusConfig> = {
-  [CONTRACT_STATUS.ACTIVE]: { label: 'Active', color: '#22C55E', badgeVariant: 'success' },
-  [CONTRACT_STATUS.PENDING]: { label: 'Pending', color: '#F59E0B', badgeVariant: 'warning' },
-  [CONTRACT_STATUS.COMPLETED]: { label: 'Completed', color: '#3B82F6', badgeVariant: 'info' },
-  [CONTRACT_STATUS.EXPIRED]: { label: 'Expired', color: '#EF4444', badgeVariant: 'error' },
-  [CONTRACT_STATUS.CANCELLED]: { label: 'Cancelled', color: '#6B7280', badgeVariant: 'secondary' },
+  [CONTRACT_STATUS.ACTIVE]: { label: 'Active', color: colors.badges.green, badgeVariant: 'success' },
+  [CONTRACT_STATUS.PENDING]: { label: 'Pending', color: colors.badges.amber, badgeVariant: 'warning' },
+  [CONTRACT_STATUS.COMPLETED]: { label: 'Completed', color: colors.badges.blue, badgeVariant: 'info' },
+  [CONTRACT_STATUS.EXPIRED]: { label: 'Expired', color: colors.badges.red, badgeVariant: 'error' },
+  [CONTRACT_STATUS.CANCELLED]: { label: 'Cancelled', color: colors.badges.gray, badgeVariant: 'secondary' },
 };
 
 // ─── Ejari Status ─────────────────────────────────────────────────────
@@ -134,8 +135,8 @@ export const EJARI_STATUS = {
 export type EjariStatusValue = (typeof EJARI_STATUS)[keyof typeof EJARI_STATUS];
 
 export const EJARI_STATUS_CONFIG: Record<string, StatusConfig> = {
-  [EJARI_STATUS.REGISTERED]: { label: '✓ Registered', color: '#22C55E', badgeVariant: 'success' },
-  [EJARI_STATUS.PENDING]: { label: '⏳ Pending', color: '#EF4444', badgeVariant: 'warning' },
+  [EJARI_STATUS.REGISTERED]: { label: '✓ Registered', color: colors.badges.green, badgeVariant: 'success' },
+  [EJARI_STATUS.PENDING]: { label: '⏳ Pending', color: colors.badges.red, badgeVariant: 'warning' },
 };
 
 // ─── User Status ──────────────────────────────────────────────────────
@@ -149,9 +150,9 @@ export const USER_STATUS = {
 export type UserStatusValue = (typeof USER_STATUS)[keyof typeof USER_STATUS];
 
 export const USER_STATUS_CONFIG: Record<string, StatusConfig> = {
-  [USER_STATUS.ACTIVE]: { label: 'Active', color: '#22C55E', badgeVariant: 'success' },
-  [USER_STATUS.PENDING]: { label: 'Pending', color: '#F59E0B', badgeVariant: 'warning' },
-  [USER_STATUS.INACTIVE]: { label: 'Inactive', color: '#EF4444', badgeVariant: 'error' },
+  [USER_STATUS.ACTIVE]: { label: 'Active', color: colors.badges.green, badgeVariant: 'success' },
+  [USER_STATUS.PENDING]: { label: 'Pending', color: colors.badges.amber, badgeVariant: 'warning' },
+  [USER_STATUS.INACTIVE]: { label: 'Inactive', color: colors.badges.red, badgeVariant: 'error' },
 };
 
 // ─── UAE Pass Verification ────────────────────────────────────────────
@@ -165,9 +166,9 @@ export const UAE_PASS_STATUS = {
 export type UAEPassStatusValue = (typeof UAE_PASS_STATUS)[keyof typeof UAE_PASS_STATUS];
 
 export const UAE_PASS_STATUS_CONFIG: Record<string, StatusConfig> = {
-  [UAE_PASS_STATUS.VERIFIED]: { label: '✓ Verified', color: '#22C55E', badgeVariant: 'success' },
-  [UAE_PASS_STATUS.PENDING]: { label: '⏳ Pending', color: '#F59E0B', badgeVariant: 'warning' },
-  [UAE_PASS_STATUS.REJECTED]: { label: '✕ Rejected', color: '#EF4444', badgeVariant: 'error' },
+  [UAE_PASS_STATUS.VERIFIED]: { label: '✓ Verified', color: colors.badges.green, badgeVariant: 'success' },
+  [UAE_PASS_STATUS.PENDING]: { label: '⏳ Pending', color: colors.badges.amber, badgeVariant: 'warning' },
+  [UAE_PASS_STATUS.REJECTED]: { label: '✕ Rejected', color: colors.badges.red, badgeVariant: 'error' },
 };
 
 // ─── UAE Pass Roles ───────────────────────────────────────────────────
@@ -183,11 +184,11 @@ export const UAE_PASS_ROLE = {
 export type UAEPassRoleValue = (typeof UAE_PASS_ROLE)[keyof typeof UAE_PASS_ROLE];
 
 export const UAE_PASS_ROLE_CONFIG: Record<string, { label: string; color: string }> = {
-  [UAE_PASS_ROLE.BUYER]: { label: 'Buyer', color: '#3B82F6' },
-  [UAE_PASS_ROLE.SELLER]: { label: 'Seller', color: '#8B5CF6' },
-  [UAE_PASS_ROLE.LANDLORD]: { label: 'Landlord', color: '#F59E0B' },
-  [UAE_PASS_ROLE.TENANT]: { label: 'Tenant', color: '#22C55E' },
-  [UAE_PASS_ROLE.AGENT]: { label: 'Agent', color: '#EC4899' },
+  [UAE_PASS_ROLE.BUYER]: { label: 'Buyer', color: colors.badges.blue },
+  [UAE_PASS_ROLE.SELLER]: { label: 'Seller', color: colors.badges.purple },
+  [UAE_PASS_ROLE.LANDLORD]: { label: 'Landlord', color: colors.badges.amber },
+  [UAE_PASS_ROLE.TENANT]: { label: 'Tenant', color: colors.badges.green },
+  [UAE_PASS_ROLE.AGENT]: { label: 'Agent', color: colors.departments.marketing },
 };
 
 // ─── System / Service Health ──────────────────────────────────────────
@@ -201,9 +202,9 @@ export const SYSTEM_STATUS = {
 export type SystemStatusValue = (typeof SYSTEM_STATUS)[keyof typeof SYSTEM_STATUS];
 
 export const SYSTEM_STATUS_CONFIG: Record<string, StatusConfig> = {
-  [SYSTEM_STATUS.HEALTHY]: { label: 'Healthy', color: '#22C55E', badgeVariant: 'success' },
-  [SYSTEM_STATUS.DEGRADED]: { label: 'Degraded', color: '#F59E0B', badgeVariant: 'warning' },
-  [SYSTEM_STATUS.DOWN]: { label: 'Down', color: '#EF4444', badgeVariant: 'error' },
+  [SYSTEM_STATUS.HEALTHY]: { label: 'Healthy', color: colors.badges.green, badgeVariant: 'success' },
+  [SYSTEM_STATUS.DEGRADED]: { label: 'Degraded', color: colors.badges.amber, badgeVariant: 'warning' },
+  [SYSTEM_STATUS.DOWN]: { label: 'Down', color: colors.badges.red, badgeVariant: 'error' },
 };
 
 // ─── Integration Status ───────────────────────────────────────────────
@@ -217,9 +218,9 @@ export const INTEGRATION_STATUS = {
 export type IntegrationStatusValue = (typeof INTEGRATION_STATUS)[keyof typeof INTEGRATION_STATUS];
 
 export const INTEGRATION_STATUS_CONFIG: Record<string, StatusConfig> = {
-  [INTEGRATION_STATUS.CONNECTED]: { label: '● Connected', color: '#22C55E', badgeVariant: 'success' },
-  [INTEGRATION_STATUS.PENDING]: { label: '○ Pending', color: '#F59E0B', badgeVariant: 'warning' },
-  [INTEGRATION_STATUS.DISCONNECTED]: { label: '✕ Disconnected', color: '#EF4444', badgeVariant: 'error' },
+  [INTEGRATION_STATUS.CONNECTED]: { label: '● Connected', color: colors.badges.green, badgeVariant: 'success' },
+  [INTEGRATION_STATUS.PENDING]: { label: '○ Pending', color: colors.badges.amber, badgeVariant: 'warning' },
+  [INTEGRATION_STATUS.DISCONNECTED]: { label: '✕ Disconnected', color: colors.badges.red, badgeVariant: 'error' },
 };
 
 // ─── Utility: Get Status Config ───────────────────────────────────────
@@ -231,7 +232,7 @@ export const INTEGRATION_STATUS_CONFIG: Record<string, StatusConfig> = {
 export function getStatusConfig(
   configMap: Record<string, StatusConfig>,
   status: string,
-  fallback: StatusConfig = { label: status, color: '#6B7280', badgeVariant: 'secondary' }
+  fallback: StatusConfig = { label: status, color: colors.badges.gray, badgeVariant: 'secondary' }
 ): StatusConfig {
   return configMap[status] || fallback;
 }

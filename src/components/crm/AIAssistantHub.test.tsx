@@ -82,7 +82,7 @@ const createMockStore = (overrides: Record<string, unknown> = {}) => {
           ],
         },
         ...overrides,
-      } as ReturnType<typeof aiAssistantDashboardReducer>,
+      } as unknown as ReturnType<typeof aiAssistantDashboardReducer>,
     },
   });
 };

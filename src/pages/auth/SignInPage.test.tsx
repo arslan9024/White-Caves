@@ -4,7 +4,7 @@
  * role selection flow, success/error states, social auth
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -61,7 +61,7 @@ const createStore = () =>
   configureStore({
     reducer: { user: userReducer },
     preloadedState: {
-      user: { currentUser: null, loading: false, error: null } as ReturnType<typeof userReducer>,
+      user: { currentUser: null, loading: false, error: null } as unknown as ReturnType<typeof userReducer>,
     },
   });
 

@@ -4,7 +4,7 @@ import {
   ChevronDown, ChevronUp, MoreVertical, UserCheck, UserX,
   Download, Upload, RefreshCw
 } from 'lucide-react';
-import { Pagination, Badge } from '../../../components/ui';
+import { Pagination, Badge, type BadgeVariant } from '../../../components/ui';
 import { REAL_ESTATE_ROLES } from '../../../config/roles';
 import type { UsersTabProps } from './types';
 import './UsersTab.css';
@@ -356,13 +356,13 @@ function UsersTab({ onAction }: UsersTabProps) {
   };
 
   const getStatusBadge = (status: string) => {
-    const statusVariants: Record<string, string> = {
+    const statusVariants: Record<string, BadgeVariant> = {
       active: 'success',
       pending: 'warning',
       inactive: 'error'
     };
     return (
-      <Badge variant={statusVariants[status] as any || 'secondary'} size="small">
+      <Badge variant={statusVariants[status] || 'secondary'} size="small">
         {status === 'active' && <UserCheck size={12} />}
         {status === 'inactive' && <UserX size={12} />}
         {status.charAt(0).toUpperCase() + status.slice(1)}

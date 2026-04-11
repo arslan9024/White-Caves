@@ -156,8 +156,7 @@ export const ROLE_NAV: Record<string, RoleNavConfig> = {
       { label: 'Sales Pipeline', path: '/secondary-sales-agent/sales-pipeline', icon: '📈' },
       { label: 'My Listings', path: '/secondary-sales-agent/dashboard#listings', icon: '🏠' },
       { label: 'Client Leads', path: '/secondary-sales-agent/dashboard#leads', icon: '👥' },
-      { label: 'Appointments', path: '/secondary-sales-agent/dashboard#appointments', icon: '📅' },
-      { label: 'Commission', path: '/secondary-sales-agent/dashboard#commission', icon: '💰' }
+      { label: 'Appointments', path: '/secondary-sales-agent/dashboard#appointments', icon: '📅' }
     ]
   },
   'team-leader': {

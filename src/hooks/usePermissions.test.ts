@@ -61,7 +61,7 @@ function createMockStore(activeRole: string | null = null) {
 function createWrapper(activeRole: string | null = null) {
   const store = createMockStore(activeRole);
   return function Wrapper({ children }: { children: React.ReactNode }) {
-    return React.createElement(Provider, { store }, children);
+    return React.createElement(Provider, { store } as any, children);
   };
 }
 

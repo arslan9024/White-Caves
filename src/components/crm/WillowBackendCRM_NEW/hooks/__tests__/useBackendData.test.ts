@@ -88,7 +88,7 @@ describe('useBackendData', () => {
     it('should calculate average success rate', () => {
       const { result } = renderHook(() => useBackendData());
       // (99.5 + 98.0) / 2 = 98.75
-      expect(result.current.apiStats.avgSuccessRate).toBe('98.75');
+      expect(result.current.apiStats.avgSuccessRate).toBe(98.75);
     });
 
     it('should calculate cached endpoints count', () => {
@@ -133,7 +133,7 @@ describe('useBackendData', () => {
       const { result } = renderHook(() => useBackendData());
       const health = result.current.getDatabaseHealth();
 
-      expect(health.connections).toBe('25/100');
+      expect(health.connections).toBe(25);
       expect(health.connectionPercentage).toBe(25);
     });
 

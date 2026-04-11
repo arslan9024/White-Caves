@@ -93,7 +93,7 @@ describe('ImageDataExtractor', () => {
       result: 'data:image/jpeg;base64,mockdata',
       onload: null as any,
     };
-    vi.spyOn(window, 'FileReader' as any).mockImplementation(() => mockFileReader);
+    (vi.spyOn(window, 'FileReader' as any) as any).mockImplementation(() => mockFileReader);
 
     // Mock URL methods (not available in jsdom)
     global.URL.createObjectURL = vi.fn().mockReturnValue('blob:mock-url');

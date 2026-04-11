@@ -3,9 +3,9 @@ import { BarChart3, TrendingUp } from 'lucide-react';
 
 interface PerformanceMetric {
   metric: string;
-  value: string;
-  target: string;
-  trend: 'up' | 'down' | 'stable';
+  value: number | string;
+  target: number | string;
+  trend: string;
 }
 
 interface PerformanceTabProps {

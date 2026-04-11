@@ -1,0 +1,610 @@
+# Analytics & Business Intelligence Dashboard — CRM Feature Specification
+
+> **Status:** In Development  
+> **Module Owner:** Aisha (Analytics Specialist AI)  
+> **Last Updated:** April 2026  
+> **Priority:** Critical  
+> **API Endpoints:** `/api/analytics`, `/api/reports`, `/api/dashboards`
+
+---
+
+## Overview
+
+The Analytics & Business Intelligence Dashboard provides real-time, role-based insights across every dimension of the real estate business — sales performance, financial health, marketing effectiveness, property portfolio, and agent productivity. The system is designed for data-driven decision-making at every level of the organization.
+
+### Purpose
+
+Deliver actionable intelligence through interactive dashboards, automated reports, and AI-powered market insights — enabling executives to steer strategy, managers to optimize operations, and agents to maximize their performance.
+
+### Business Value
+
+- **Revenue Optimization**: Identify high-converting lead sources and top-performing agents
+- **Operational Visibility**: Real-time KPIs eliminate guesswork and stale reports
+- **Strategic Planning**: Market intelligence and trend analysis drive informed decisions
+- **Performance Culture**: Transparent scorecards motivate agents and teams
+- **Cost Efficiency**: Campaign ROI tracking ensures marketing budget is well spent
+- **Compliance**: Audit-ready reports meet regulatory requirements
+- **Time Savings**: Automated reports replace manual spreadsheet work
+
+---
+
+## User Stories
+
+### Owner / Executive Perspective
+
+- **As an** owner, **I want to** see a company-wide KPI dashboard, **so that** I understand business health at a glance
+- **As an** owner, **I want to** compare quarterly performance year-over-year, **so that** I track growth trajectory
+- **As an** owner, **I want to** drill down from company metrics to team to individual agent, **so that** I identify issues at any level
+- **As an** owner, **I want to** receive automated weekly reports, **so that** I stay informed without logging in daily
+- **As an** owner, **I want to** see market trends and demand forecasting, **so that** I make strategic decisions
+
+### Manager Perspective
+
+- **As a** manager, **I want to** see my team's pipeline and conversion metrics, **so that** I can coach effectively
+- **As a** manager, **I want to** compare agent performance on a leaderboard, **so that** I recognize top performers
+- **As a** manager, **I want to** track marketing campaign ROI, **so that** I allocate budget to effective channels
+- **As a** manager, **I want to** monitor inventory aging, **so that** I address stale listings proactively
+- **As a** manager, **I want to** build custom reports, **so that** I answer ad-hoc business questions
+
+### Agent Perspective
+
+- **As an** agent, **I want to** see my personal performance dashboard, **so that** I track my progress toward targets
+- **As an** agent, **I want to** see my conversion funnel, **so that** I identify where I lose deals
+- **As an** agent, **I want to** see which listings get the most views, **so that** I focus on high-interest properties
+- **As an** agent, **I want to** see my commission earnings, **so that** I track my income
+
+### Sales Agent / Leasing Agent Perspective
+
+- **As a** sales agent, **I want to** see deal velocity metrics, **so that** I improve my sales cycle time
+- **As a** leasing agent, **I want to** see occupancy rate trends, **so that** I understand rental market demand
+
+---
+
+## Executive Dashboard
+
+### Company-Wide KPIs
+
+| KPI | Metric | Visualization | Update Frequency |
+|-----|--------|--------------|------------------|
+| Total Revenue | AED/USD amount | Number card + sparkline | Real-time |
+| Deals Closed | Count (MTD/QTD/YTD) | Number card + trend | Real-time |
+| Pipeline Value | Total weighted pipeline | Number card | Real-time |
+| Active Leads | Count by stage | Funnel chart | Real-time |
+| Conversion Rate | Leads → Deals % | Percentage + trend | Daily |
+| Avg. Deal Size | AED/USD amount | Number card + trend | Daily |
+| Commission Earned | Total commissions | Number card | Daily |
+| Active Listings | Count by status | Donut chart | Real-time |
+| Occupancy Rate | Occupied / Total % | Gauge chart | Daily |
+| Agent Utilization | Active agents / Total | Percentage | Daily |
+
+### Executive Summary Widgets
+
+- **Revenue waterfall chart**: Monthly revenue breakdown (new sales + rentals + renewals)
+- **Deal pipeline funnel**: Leads → Qualified → Viewing → Offer → Negotiation → Closed
+- **Geographic heatmap**: Revenue by Dubai community
+- **Trend comparison**: Current period vs. previous period (selectable: MoM, QoQ, YoY)
+- **Top deals table**: Largest 10 deals in period with agent name and status
+
+---
+
+## Sales Analytics
+
+### Conversion Funnel
+
+Tracks leads through every stage of the sales pipeline.
+
+```
+   Lead Captured         ████████████████████████████████████  1,250
+   Contacted             ███████████████████████████████       1,020
+   Qualified             ████████████████████████              780
+   Viewing Scheduled     ██████████████████                    560
+   Viewing Completed     ████████████████                      490
+   Offer Submitted       ████████████                          370
+   Negotiation           █████████                             280
+   Closed Won            ██████                                185
+   Closed Lost           ████                                  95
+```
+
+#### Funnel Metrics
+
+| Metric | Calculation | Purpose |
+|--------|-------------|---------|
+| Stage conversion rate | Entries to stage / Entries to previous stage | Identify drop-off points |
+| Overall conversion rate | Closed Won / Lead Captured | Measure end-to-end efficiency |
+| Stage duration (avg.) | Average days spent in each stage | Identify bottlenecks |
+| Drop-off analysis | % lost at each stage with reasons | Improve process |
+
+### Deal Velocity
+
+- **Average deal cycle**: Days from lead capture to close
+- **Velocity by property type**: Apartments vs. villas vs. commercial
+- **Velocity by price range**: Under 1M, 1–5M, 5–10M, 10M+
+- **Velocity by agent**: Individual agent cycle times
+- **Velocity trend**: Monthly trend of average deal cycle
+- **Stalled deals**: Deals in same stage for > 14 days (configurable)
+
+### Win/Loss Analysis
+
+| Dimension | Analysis |
+|-----------|----------|
+| By reason | Top 10 loss reasons (price, location, competition, financing) |
+| By competitor | Which competitors won the deal |
+| By source | Win rate per lead source |
+| By agent | Win rate per agent |
+| By property type | Win rate per type |
+| By community | Win rate per area |
+| By time | Win rate trend over time |
+
+---
+
+## Marketing Analytics
+
+### Lead Source Performance
+
+| Source | Leads | Qualified | Converted | Cost | CPL | CPA |
+|--------|-------|-----------|-----------|------|-----|-----|
+| PropertyFinder | 320 | 180 | 28 | AED 15,000 | AED 47 | AED 536 |
+| Bayut | 280 | 150 | 22 | AED 12,000 | AED 43 | AED 545 |
+| Google Ads | 200 | 90 | 12 | AED 18,000 | AED 90 | AED 1,500 |
+| Facebook/IG | 180 | 60 | 8 | AED 8,000 | AED 44 | AED 1,000 |
+| Website Organic | 150 | 80 | 15 | AED 0 | AED 0 | AED 0 |
+| Referrals | 120 | 90 | 30 | AED 0 | AED 0 | AED 0 |
+| Walk-in | 50 | 35 | 12 | N/A | N/A | N/A |
+| WhatsApp | 100 | 55 | 10 | AED 2,000 | AED 20 | AED 200 |
+
+> CPL = Cost Per Lead; CPA = Cost Per Acquisition
+
+### Campaign ROI Dashboard
+
+- **Active campaigns**: List with status, budget, spend, results
+- **Campaign comparison**: Side-by-side performance metrics
+- **Attribution model**: First-touch, last-touch, multi-touch attribution
+- **Budget utilization**: Spend vs. budget per campaign
+- **ROI calculation**: (Revenue from campaign - Cost) / Cost × 100
+- **Channel mix**: Pie chart of lead distribution by channel
+
+### Channel Performance
+
+- **Portal analytics**: Views, inquiries, conversion per portal
+- **Digital ads**: Impressions, clicks, CTR, conversions, CPC
+- **Social media**: Followers, engagement, leads generated
+- **Email marketing**: Open rate, click rate, conversion rate
+- **WhatsApp**: Delivery, read, response rates
+
+---
+
+## Financial Analytics
+
+### Revenue Trends
+
+- **Monthly revenue chart**: Bar chart with sales + rental revenue stacked
+- **Revenue by type**: Sale commissions, rental commissions, management fees
+- **Revenue by team**: Contribution of each team to total revenue
+- **Revenue by community**: Geographic revenue distribution
+- **Currency display**: AED primary, USD toggle
+
+### Commission Tracking
+
+| Metric | Description |
+|--------|-------------|
+| Total commissions earned | Sum of all closed deal commissions |
+| Commission pipeline | Expected commissions from pipeline |
+| Commission by agent | Individual agent commission breakdown |
+| Commission splits | Agent/company split tracking |
+| Pending commissions | Earned but not yet paid |
+| Commission trend | Monthly commission trend (12 months) |
+
+### Expense Analysis
+
+- **Operating expenses**: Office, salaries, marketing, technology
+- **Marketing spend**: By channel and campaign
+- **Cost per deal**: Total cost / Number of deals closed
+- **Profit margins**: Revenue - Expenses by category
+- **Budget vs. actual**: Variance reporting
+
+---
+
+## Property Analytics
+
+### Inventory Health
+
+| Metric | Description | Alert Threshold |
+|--------|-------------|-----------------|
+| Total active listings | Count of active properties | N/A |
+| New listings (MTD) | Properties listed this month | < 10 = warning |
+| Average days on market | Mean DOM for active listings | > 90 = warning |
+| Inventory aging | Distribution by DOM buckets | > 50% over 60 days |
+| Listings without inquiry | Properties with 0 inquiries in 30 days | Any = flag |
+| Price reduction rate | % of listings with price drops | > 30% = warning |
+
+### Price Trends
+
+- **Community price index**: Average price per sq ft by community (time series)
+- **Price range distribution**: Histogram of listing prices
+- **Rent vs. sale price correlation**: Yield analysis by area
+- **Price change history**: Track all price modifications
+- **Comparison**: Current vs. 3 months ago vs. 12 months ago
+
+### Area Performance
+
+| Area | Active Listings | Avg. Price/sqft | Avg. DOM | Inquiries | Conversion |
+|------|----------------|-----------------|----------|-----------|------------|
+| Dubai Marina | 45 | AED 1,850 | 32 | 340 | 12% |
+| Downtown Dubai | 38 | AED 2,400 | 28 | 420 | 15% |
+| Palm Jumeirah | 22 | AED 3,100 | 45 | 180 | 8% |
+| JVC | 65 | AED 950 | 22 | 510 | 18% |
+| Business Bay | 42 | AED 1,650 | 35 | 290 | 11% |
+
+---
+
+## Agent Performance Scorecards
+
+### Individual Scorecard
+
+| Metric | Target | Actual | % Achieved | Trend |
+|--------|--------|--------|------------|-------|
+| Leads contacted | 50/month | 42 | 84% | ↑ |
+| Viewings conducted | 20/month | 18 | 90% | ↑ |
+| Deals closed | 5/month | 3 | 60% | ↓ |
+| Revenue generated | AED 500K/month | AED 380K | 76% | → |
+| Avg. response time | < 5 min | 8 min | 63% | ↓ |
+| Client satisfaction | 4.5/5 | 4.2/5 | 93% | → |
+| Listings active | 15 | 12 | 80% | ↑ |
+| Commission earned | AED 75K/month | AED 57K | 76% | → |
+
+### Team Leaderboard
+
+- **Ranked by**: Revenue, deals closed, conversion rate (selectable)
+- **Time period**: Weekly, Monthly, Quarterly, Annual
+- **Visualization**: Bar chart with agent photos
+- **Gamification**: Badges for achievements (e.g., "Top Closer", "Speed Demon")
+- **Historical ranking**: Position change vs. previous period
+
+### Activity Metrics
+
+| Activity | Tracked | Benchmark |
+|----------|---------|-----------|
+| Calls made | ✅ | 20/day |
+| Emails sent | ✅ | 15/day |
+| WhatsApp messages | ✅ | 25/day |
+| Viewings conducted | ✅ | 1/day |
+| Listings created | ✅ | 2/week |
+| Follow-ups completed | ✅ | 10/day |
+| Proposals sent | ✅ | 3/week |
+| Client meetings | ✅ | 5/week |
+
+### Performance Alerts
+
+- Agent below 50% of monthly target by mid-month
+- Response time exceeding SLA for 3+ consecutive leads
+- Zero activity for 2+ business days
+- Conversion rate below team average for 2+ months
+
+---
+
+## Market Intelligence
+
+### Area Trends
+
+- **Transaction volume**: Monthly transactions by community (DLD data)
+- **Price movement**: Monthly price index change by area
+- **Supply vs. demand**: New listings vs. inquiries ratio
+- **Emerging areas**: Communities with highest growth rates
+- **Seasonal patterns**: Monthly/quarterly demand patterns
+
+### Competitor Pricing
+
+- **Price comparison**: Average listing price vs. competitor agencies (per community)
+- **Listing volume**: Number of active listings vs. competitors
+- **Market share estimate**: Based on portal listings and DLD transactions
+- **Positioning map**: Price vs. volume scatter plot
+
+### Demand Forecasting
+
+- **AI-powered prediction**: 3-month demand forecast by area and property type
+- **Confidence interval**: Low/mid/high prediction bands
+- **Influencing factors**: Visa changes, expo effects, interest rates, seasonality
+- **Recommended actions**: AI-generated strategy suggestions
+
+---
+
+## Custom Report Builder
+
+### Report Creation
+
+- **Drag-and-drop interface**: Select metrics, dimensions, and filters
+- **Data sources**: Leads, deals, properties, agents, finances, marketing
+- **Metric library**: 100+ pre-defined metrics available
+- **Custom calculations**: Create computed fields (e.g., Revenue - Expenses)
+- **Grouping**: Group by any dimension (agent, team, area, type, time)
+- **Filters**: Multi-criteria filtering with AND/OR logic
+
+### Visualization Options
+
+| Chart Type | Best For | Interactive |
+|------------|----------|-------------|
+| Bar chart | Comparisons across categories | ✅ Click to drill down |
+| Line chart | Trends over time | ✅ Hover for values |
+| Pie / Donut | Composition / distribution | ✅ Click to filter |
+| Funnel | Conversion processes | ✅ Click per stage |
+| Heatmap | Geographic or matrix data | ✅ Hover for values |
+| Table | Detailed tabular data | ✅ Sort, filter, export |
+| KPI card | Single metric highlight | ✅ Click for detail |
+| Gauge | Progress toward target | ❌ Static |
+| Scatter plot | Correlation analysis | ✅ Hover for values |
+| Waterfall | Sequential value changes | ✅ Hover for values |
+
+### Report Scheduling
+
+| Feature | Options |
+|---------|---------|
+| Frequency | Daily, Weekly, Monthly, Quarterly |
+| Delivery | Email (PDF/Excel), Portal notification |
+| Recipients | Individual users, Teams, Custom lists |
+| Time | Configurable delivery time |
+| Conditions | Send only if data meets criteria (e.g., revenue > 0) |
+
+### Export Options
+
+- **PDF**: Formatted report with charts and branding
+- **Excel**: Raw data with pivot-ready formatting
+- **CSV**: Plain data export
+- **Google Sheets**: Direct export to linked sheet
+- **API**: Programmatic access to report data
+
+---
+
+## Real-Time Data Feeds
+
+### WebSocket Architecture
+
+```
+┌────────────┐     WebSocket      ┌──────────────┐
+│  Dashboard │◀──────────────────▶│  WS Server   │
+│  (Browser) │                    │  (Socket.IO)  │
+└────────────┘                    └──────────────┘
+                                         │
+                                         │ Pub/Sub
+                                         ▼
+                                  ┌──────────────┐
+                                  │  Event Bus   │
+                                  │  (Redis)     │
+                                  └──────────────┘
+                                         ▲
+                          ┌──────────────┼──────────────┐
+                          │              │              │
+                   ┌──────────┐   ┌──────────┐   ┌──────────┐
+                   │  Lead    │   │  Deal    │   │ Property │
+                   │  Service │   │  Service │   │  Service │
+                   └──────────┘   └──────────┘   └──────────┘
+```
+
+### Live-Updating Metrics
+
+| Metric | Update Trigger | Latency |
+|--------|---------------|---------|
+| Pipeline value | Deal stage change | < 2 seconds |
+| Lead count | New lead created | < 2 seconds |
+| Revenue | Deal closed | < 2 seconds |
+| Active listings | Status change | < 5 seconds |
+| Agent activity | Action logged | < 5 seconds |
+| Inquiry count | New inquiry | < 2 seconds |
+
+### Real-Time Notifications
+
+- Deal closed → Celebration animation on team dashboard
+- Large deal (> AED 5M) → Company-wide notification
+- New lead assigned → Agent dashboard flash
+- Target achieved → Badge animation
+
+---
+
+## Data Visualization Specifications
+
+### Chart Library
+
+Built on a modern charting library (Recharts / Chart.js) with White Caves design system tokens.
+
+### Color Palette
+
+| Purpose | Color | Usage |
+|---------|-------|-------|
+| Primary | `#2563EB` | Primary metrics, active series |
+| Success | `#16A34A` | Positive trends, targets met |
+| Warning | `#F59E0B` | Approaching threshold |
+| Danger | `#DC2626` | Negative trends, overdue |
+| Secondary | `#6B7280` | Secondary data series |
+| Accent 1 | `#8B5CF6` | Third data series |
+| Accent 2 | `#EC4899` | Fourth data series |
+| Neutral | `#E5E7EB` | Backgrounds, grid lines |
+
+### Responsive Charts
+
+- **Desktop**: Full interactive charts with hover tooltips
+- **Tablet**: Simplified charts, touch-friendly tooltips
+- **Mobile**: Condensed charts, swipe between metrics
+- **Print**: Optimized for A4 landscape PDF export
+
+---
+
+## Role-Based Dashboard Views
+
+### Access Matrix
+
+| Dashboard Section | Owner | Manager | Agent | Sales Agent | Leasing Agent |
+|-------------------|-------|---------|-------|-------------|---------------|
+| Executive summary | ✅ All | ✅ Team | ❌ | ❌ | ❌ |
+| Sales analytics | ✅ All | ✅ Team | ✅ Own | ✅ Own | ❌ |
+| Rental analytics | ✅ All | ✅ Team | ✅ Own | ❌ | ✅ Own |
+| Financial analytics | ✅ All | ✅ Team | ✅ Own | ✅ Own | ✅ Own |
+| Property analytics | ✅ All | ✅ Team | ✅ Own | ✅ Own | ✅ Own |
+| Agent scorecards | ✅ All | ✅ Team | ✅ Own | ✅ Own | ✅ Own |
+| Marketing analytics | ✅ All | ✅ Team | ❌ | ❌ | ❌ |
+| Market intelligence | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All |
+| Custom reports | ✅ All | ✅ Team | ✅ Own | ✅ Own | ✅ Own |
+| Report builder | ✅ | ✅ | ❌ | ❌ | ❌ |
+
+### Data Scoping Rules
+
+- **Owner**: Sees all company data across all teams and agents
+- **Manager**: Sees data for their team's agents and own data
+- **Agent / Sales Agent / Leasing Agent**: Sees only their own data
+- **Shared data**: Market intelligence is accessible to all roles
+- **Report builder**: Restricted to Owner and Manager roles
+
+---
+
+## Historical Comparison
+
+### Time Period Comparisons
+
+| Comparison | Format | Available For |
+|------------|--------|---------------|
+| Month-over-Month (MoM) | Current month vs. previous month | All metrics |
+| Quarter-over-Quarter (QoQ) | Current quarter vs. previous quarter | All metrics |
+| Year-over-Year (YoY) | Current year vs. same period last year | All metrics |
+| Custom range | Any two date ranges | All metrics |
+| Rolling average | 3/6/12 month rolling avg. | Trend metrics |
+
+### Comparison Visualizations
+
+- **Side-by-side bar chart**: Two periods compared per metric
+- **Overlay line chart**: Current vs. previous period trends
+- **Variance table**: Metric, Previous, Current, Change %, Direction
+- **Sparkline indicators**: Mini trend charts in metric cards
+
+### Benchmarking
+
+- **Internal benchmark**: Agent vs. team average vs. company average
+- **Historical benchmark**: Current vs. best period vs. worst period
+- **Target benchmark**: Actual vs. target with gap analysis
+- **Market benchmark**: Company performance vs. market indicators (where available)
+
+---
+
+## Acceptance Criteria
+
+### Executive Dashboard
+
+- [ ] Dashboard loads within 5 seconds with all widgets populated
+- [ ] Real-time updates via WebSocket reflect within 2 seconds
+- [ ] All KPI cards display correct values matching database queries
+- [ ] Drill-down navigation works from company → team → agent level
+- [ ] Currency toggle switches all financial metrics between AED and USD
+
+### Sales Analytics
+
+- [ ] Conversion funnel displays accurate counts per stage
+- [ ] Deal velocity calculations match manual verification
+- [ ] Win/loss analysis correctly categorizes by all dimensions
+- [ ] Stalled deal alerts trigger at configured thresholds
+
+### Agent Scorecards
+
+- [ ] Target vs. actual metrics match HR-configured targets
+- [ ] Leaderboard rankings update in real-time
+- [ ] Performance alerts fire for below-threshold agents
+- [ ] Historical comparison shows correct period data
+
+### Custom Reports
+
+- [ ] Report builder supports all listed data sources and metrics
+- [ ] Drag-and-drop interface works on desktop browsers
+- [ ] Scheduled reports deliver on time via configured channels
+- [ ] Export generates correct data in all supported formats (PDF, Excel, CSV)
+- [ ] Saved reports persist and load correctly
+
+### Real-Time Data
+
+- [ ] WebSocket connection establishes within 3 seconds
+- [ ] Automatic reconnection on connection loss (with exponential backoff)
+- [ ] Live updates appear without page refresh
+- [ ] Concurrent users (50+) do not degrade performance
+
+### Role-Based Access
+
+- [ ] Owner sees all company data
+- [ ] Manager sees only team data
+- [ ] Agent sees only own data
+- [ ] Unauthorized dashboard sections are hidden (not just disabled)
+- [ ] API enforces same access rules as UI
+
+---
+
+## Technical Notes
+
+### API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/analytics/executive` | Executive dashboard data |
+| GET | `/api/analytics/sales` | Sales analytics |
+| GET | `/api/analytics/sales/funnel` | Conversion funnel data |
+| GET | `/api/analytics/sales/velocity` | Deal velocity metrics |
+| GET | `/api/analytics/marketing` | Marketing performance |
+| GET | `/api/analytics/marketing/campaigns` | Campaign analytics |
+| GET | `/api/analytics/financial` | Financial summary |
+| GET | `/api/analytics/financial/commissions` | Commission details |
+| GET | `/api/analytics/properties` | Property analytics |
+| GET | `/api/analytics/properties/pricing` | Price trend data |
+| GET | `/api/analytics/agents/:id/scorecard` | Agent scorecard |
+| GET | `/api/analytics/agents/leaderboard` | Agent rankings |
+| GET | `/api/analytics/market` | Market intelligence |
+| GET | `/api/analytics/market/forecast` | AI demand forecast |
+| POST | `/api/reports` | Create custom report |
+| GET | `/api/reports` | List saved reports |
+| GET | `/api/reports/:id` | Get report data |
+| PUT | `/api/reports/:id` | Update report config |
+| DELETE | `/api/reports/:id` | Delete report |
+| POST | `/api/reports/:id/schedule` | Schedule report |
+| GET | `/api/reports/:id/export` | Export report data |
+
+### Performance Requirements
+
+- Dashboard initial load: < 5 seconds (95th percentile)
+- Widget data refresh: < 2 seconds
+- Report generation: < 10 seconds for up to 100K rows
+- Export generation: < 30 seconds for up to 500K rows
+- WebSocket latency: < 2 seconds from event to display
+- Concurrent dashboard users: Support 50+ simultaneous sessions
+
+### Data Aggregation Strategy
+
+- **Real-time metrics**: Computed on-demand from live database
+- **Daily aggregates**: Pre-computed nightly for historical charts
+- **Monthly snapshots**: Stored for YoY comparison performance
+- **Cache layer**: Redis cache with 5-minute TTL for dashboard widgets
+- **Query optimization**: Materialized views for complex aggregations
+
+### AI Integration
+
+- **Aisha (Analytics Specialist)**: Generates insights, anomaly detection, forecast narratives
+- **Omar (Financial Advisor)**: Provides financial analysis commentary and recommendations
+- **Nadia (Market Researcher)**: Supplies market intelligence and competitive analysis
+- **Rashid (Strategy)**: Translates analytics into strategic recommendations
+
+---
+
+## Dependencies
+
+- Charting library (Recharts or Chart.js)
+- WebSocket server (Socket.IO)
+- Redis (pub/sub and caching)
+- PDF generation service (Puppeteer or PDFKit)
+- Excel generation library (ExcelJS)
+- Google Maps API (geographic heatmaps)
+- DLD API (market transaction data)
+- Exchange rate API (AED/USD conversion)
+
+---
+
+## Future Enhancements
+
+- Predictive analytics using machine learning models
+- Natural language query interface ("Show me revenue by area last quarter")
+- Automated insight generation (AI detects and narrates anomalies)
+- Mobile-native dashboard app
+- Embedded analytics for landlord and tenant portals
+- Integration with external BI tools (Power BI, Tableau, Looker)
+- Voice-activated dashboard queries via AI assistants
+- Benchmark data sharing consortium with partner agencies

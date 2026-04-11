@@ -81,7 +81,7 @@ const createStore = (
         loading: false,
         error: null,
         ...userOverrides,
-      } as ReturnType<typeof userReducer>,
+      } as unknown as ReturnType<typeof userReducer>,
       whatsapp: { ...defaultWhatsAppState, ...whatsappOverrides } as WhatsAppState,
     },
   });

@@ -10,12 +10,14 @@ import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { validateIdParam } from '../utils/validate';
+import { requirePermission, requireRole } from '../middleware/rbac';
 
 const router = Router();
 
 // ─── GET /api/tenants ───────────────────────────────────────────────────
 router.get(
   '/',
+  requirePermission('view_contracts'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Tenant PII restricted to managers/admins
     const allowedRoles = ['owner', 'manager', 'admin'];
@@ -60,6 +62,7 @@ router.get(
 // ─── GET /api/tenants/stats ─────────────────────────────────────────────
 router.get(
   '/stats',
+  requirePermission('view_contracts'),
   asyncHandler(async (req: Request, res: Response) => {    // Authorization: Only managers+ can view tenant statistics
     const allowedRoles = ['owner', 'manager', 'admin'];
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
@@ -88,6 +91,7 @@ router.get(
 // ─── GET /api/tenants/:id ───────────────────────────────────────────────
 router.get(
   '/:id',
+  requirePermission('view_contracts'),
   asyncHandler(async (req: Request, res: Response) => {
     validateIdParam(req.params.id, 'Tenant ID');
 
@@ -106,6 +110,7 @@ router.get(
 // ─── POST /api/tenants ──────────────────────────────────────────────────
 router.post(
   '/',
+  requirePermission('create_contracts'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only admins or property managers can create tenant records
     const isAdmin = ['owner', 'manager'].includes(req.user?.role || '');
@@ -163,6 +168,7 @@ router.post(
 // ─── PATCH /api/tenants/:id ─────────────────────────────────────────────
 router.patch(
   '/:id',
+  requirePermission('create_contracts'),
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     validateIdParam(id, 'Tenant ID');
@@ -224,6 +230,7 @@ router.patch(
 // ─── DELETE /api/tenants/:id ────────────────────────────────────────────
 router.delete(
   '/:id',
+  requireRole('owner', 'manager', 'admin'),
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     validateIdParam(id, 'Tenant ID');
@@ -257,6 +264,7 @@ router.delete(
 // Returns the property info as a "lease" for this tenant
 router.get(
   '/:id/leases',
+  requirePermission('view_contracts'),
   asyncHandler(async (req: Request, res: Response) => {
     validateIdParam(req.params.id, 'Tenant ID');
     const tenant = await prisma.tenant.findUnique({ where: { id: req.params.id } });

@@ -67,7 +67,7 @@ let windowOpenSpy: ReturnType<typeof vi.spyOn>;
 describe('PropertyDetailModal', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null) as any;
   });
 
   /* ── Null Property ──────────────────────────────────────────── */
