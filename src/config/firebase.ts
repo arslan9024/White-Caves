@@ -12,15 +12,7 @@ import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
   updateProfile,
-  updateEmail,
-  updatePassword,
-  sendPasswordResetEmail,
-  sendEmailVerification,
   reauthenticateWithCredential,
-  setPersistence,
-  browserLocalPersistence,
-  browserSessionPersistence,
-  onAuthStateChanged,
   type Auth,
   type User,
   type ApplicationVerifier
@@ -116,40 +108,6 @@ export const signOut = async () => {
 export const updateUserProfile = async (user: User, updates: { displayName?: string | null; photoURL?: string | null }) => {
   if (!auth) throw new Error('Firebase not initialized');
   return await updateProfile(user, updates);
-};
-
-export const updateUserEmail = async (user: User, newEmail: string) => {
-  if (!auth) throw new Error('Firebase not initialized');
-  return await updateEmail(user, newEmail);
-};
-
-export const updateUserPassword = async (user: User, newPassword: string) => {
-  if (!auth) throw new Error('Firebase not initialized');
-  return await updatePassword(user, newPassword);
-};
-
-export const resetPassword = async (email: string) => {
-  if (!auth) throw new Error('Firebase not initialized');
-  return await sendPasswordResetEmail(auth, email);
-};
-
-export const verifyEmail = async (user: User) => {
-  if (!auth) throw new Error('Firebase not initialized');
-  return await sendEmailVerification(user);
-};
-
-export const setAuthPersistence = async (rememberMe = true) => {
-  if (!auth) throw new Error('Firebase not initialized');
-  const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
-  return await setPersistence(auth, persistence);
-};
-
-export const onAuthChange = (callback: (user: User | null) => void) => {
-  if (!auth) {
-    log.warn('Firebase not initialized');
-    return () => {};
-  }
-  return onAuthStateChanged(auth, callback);
 };
 
 export const saveBiometricSession = (user: User, token: string): void => {

@@ -53,7 +53,7 @@ export const SAMPLE_DUBAI_PROPERTIES: DubaiProperty[] = [
 
 // ─── Map marker colors ────────────────────────────────────────────────────
 
-export const AREA_TYPE_COLORS: Record<string, string> = {
+const AREA_TYPE_COLORS: Record<string, string> = {
   luxury: '#c53030',
   commercial: '#1a365d',
   residential: '#38a169',

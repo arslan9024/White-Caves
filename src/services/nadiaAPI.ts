@@ -64,7 +64,7 @@ async function fetchApi<T>(
 /**
  * CONVERSATIONS API
  */
-export const conversationsAPI = {
+const conversationsAPI = {
   /**
    * Create a new conversation
    */
@@ -121,7 +121,7 @@ export const conversationsAPI = {
 /**
  * MESSAGES API
  */
-export const messagesAPI = {
+const messagesAPI = {
   /**
    * Send a message in a conversation
    */
@@ -160,7 +160,7 @@ export const messagesAPI = {
 /**
  * QUEUE API
  */
-export const queueAPI = {
+const queueAPI = {
   /**
    * Get current queue of waiting conversations
    */
@@ -192,7 +192,7 @@ export const queueAPI = {
 /**
  * HEALTH API
  */
-export const healthAPI = {
+const healthAPI = {
   /**
    * Check if NADIA service is running
    */
@@ -204,7 +204,7 @@ export const healthAPI = {
 /**
  * Batch operations
  */
-export const batchAPI = {
+const batchAPI = {
   /**
    * Load all initial data for dashboard
    */

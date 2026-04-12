@@ -32,8 +32,8 @@ export const FEATURE_STATUS = {
 // Derived Types from const assertions
 // ---------------------------------------------------------------------------
 
-export type FeatureCategory = typeof FEATURE_CATEGORIES[keyof typeof FEATURE_CATEGORIES];
-export type FeatureStatus = typeof FEATURE_STATUS[keyof typeof FEATURE_STATUS];
+type FeatureCategory = typeof FEATURE_CATEGORIES[keyof typeof FEATURE_CATEGORIES];
+type FeatureStatus = typeof FEATURE_STATUS[keyof typeof FEATURE_STATUS];
 
 // ---------------------------------------------------------------------------
 // Interfaces
@@ -57,7 +57,7 @@ export interface FeatureStats {
   readonly byStatus: Record<string, number>;
 }
 
-export interface CategoryInfo {
+interface CategoryInfo {
   readonly name: string;
   readonly icon: string;
   readonly color: string;
