@@ -126,7 +126,7 @@ export const ImageCounter = styled.div`
   left: 1rem;
   padding: 0.375rem 0.75rem;
   background: rgba(0, 0, 0, 0.5);
-  border-radius: 6px;
+  border-radius: ${radius.md};
   color: #fff;
   font-size: 0.75rem;
   font-weight: 500;
@@ -167,7 +167,7 @@ export const Thumbnail = styled.button<{ $active?: boolean; $isMore?: boolean }>
   flex-shrink: 0;
   width: 64px;
   height: 48px;
-  border-radius: 6px;
+  border-radius: ${radius.md};
   overflow: hidden;
   border: 2px solid ${(props) => (props.$active ? colors.primary : 'transparent')};
   cursor: pointer;

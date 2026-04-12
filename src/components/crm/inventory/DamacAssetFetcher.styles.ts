@@ -78,7 +78,7 @@ export const ViewToggleButton = styled.button<{ $active?: boolean }>`
   padding: 8px;
   border: none;
   background: ${props => props.$active ? 'var(--bg-primary)' : 'transparent'};
-  border-radius: 6px;
+  border-radius: ${radius.md};
   cursor: pointer;
   color: ${props => props.$active ? colors.primary : 'var(--text-muted)'};
   transition: ${transitions.hover};
@@ -127,7 +127,7 @@ export const AutoFillButton = styled.button`
   padding: 4px 8px;
   border: 1px solid var(--border-color);
   background: var(--bg-tertiary);
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   cursor: pointer;
   color: ${colors.primary};
   display: flex;
@@ -389,7 +389,7 @@ export const AssetRegistration = styled.span`
 export const AssetType = styled.span<{ $type?: string }>`
   display: inline-block;
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   background: ${props => props.$type === 'primary' ? 'rgba(212, 175, 55, 0.2)' : 'rgba(156, 163, 175, 0.2)'};
   color: ${props => props.$type === 'primary' ? colors.primary : '#6b7280'};
   text-transform: capitalize;
@@ -404,7 +404,7 @@ export const OpenLink = styled.a`
   color: ${colors.primary};
   width: 24px;
   height: 24px;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -453,7 +453,7 @@ export const NotFoundList = styled.div`
 export const NotFoundItem = styled.span`
   padding: 4px 8px;
   background: rgba(239, 68, 68, 0.1);
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   font-size: 0.85rem;
   color: #ef4444;
 

@@ -123,7 +123,7 @@ export const FieldIcon = styled.div`
   width: 28px;
   height: 28px;
   background: rgba(212, 175, 55, 0.1);
-  border-radius: 6px;
+  border-radius: ${radius.md};
   color: var(--primary);
   flex-shrink: 0;
 
@@ -230,7 +230,7 @@ export const ContactBadge = styled.span`
   gap: 4px;
   padding: 3px 8px;
   background: var(--bg-secondary);
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   font-size: 11px;
   color: var(--text-secondary);
 `;
@@ -238,7 +238,7 @@ export const ContactBadge = styled.span`
 export const MoreContacts = styled.span`
   padding: 3px 8px;
   background: rgba(212, 175, 55, 0.1);
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   font-size: 11px;
   color: var(--primary);
   font-weight: 600;

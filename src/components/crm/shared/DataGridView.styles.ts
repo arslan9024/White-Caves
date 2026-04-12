@@ -223,7 +223,7 @@ export const RowActionsButton = styled.button`
   border: none;
   background: transparent;
   color: var(--text-muted);
-  border-radius: 6px;
+  border-radius: ${radius.md};
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -288,7 +288,7 @@ export const PaginationButton = styled.button<{ disabled?: boolean }>`
   padding: 8px 14px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: ${radius.md};
   color: var(--text-secondary);
   font-size: 13px;
   cursor: pointer;

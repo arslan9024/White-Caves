@@ -139,7 +139,7 @@ export const ConversationListScroll = styled.div`
 
   &::-webkit-scrollbar-thumb {
     background: ${tokens.colors.border.light};
-    border-radius: 4px;
+    border-radius: ${radius.sm};
 
     &:hover {
       background: ${tokens.colors.border.dark};
@@ -335,7 +335,7 @@ export const MessageViewerContent = styled.div`
 
   &::-webkit-scrollbar-thumb {
     background: ${tokens.colors.border.light};
-    border-radius: 4px;
+    border-radius: ${radius.sm};
 
     &:hover {
       background: ${tokens.colors.border.dark};

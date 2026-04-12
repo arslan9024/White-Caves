@@ -73,7 +73,7 @@ export const ToggleBtn = styled.button<{ $active?: boolean }>`
       : 'transparent'};
   color: ${(props) =>
     props.$active ? 'white' : '#64748b'};
-  border-radius: 6px;
+  border-radius: ${radius.md};
   cursor: pointer;
   display: flex;
   align-items: center;

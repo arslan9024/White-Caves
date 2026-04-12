@@ -76,7 +76,7 @@ export const PlatformError = styled.div`
   text-align: center;
   padding: 0.5rem;
   background: rgba(239, 68, 68, 0.1);
-  border-radius: 6px;
+  border-radius: ${radius.md};
   margin: 0 1.5rem;
 `;
 
@@ -273,7 +273,7 @@ export const FormField = styled.div<{ $span2?: boolean; $hasError?: boolean }>`
     padding: 0.625rem 0.75rem;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid ${(props) => (props.$hasError ? '#ef4444' : 'rgba(255, 255, 255, 0.1)')};
-    border-radius: 6px;
+    border-radius: ${radius.md};
     color: #fff;
     font-size: 0.875rem;
     font-family: inherit;
@@ -319,7 +319,7 @@ export const InputWithIcon = styled.div`
   padding: 0.625rem 0.75rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
+  border-radius: ${radius.md};
   transition: ${transitions.hover};
 
   &:focus-within {
@@ -362,7 +362,7 @@ export const SalaryRange = styled.div`
     padding: 0.625rem 0.75rem;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
+    border-radius: ${radius.md};
     color: #fff;
     font-size: 0.875rem;
     transition: ${transitions.hover};

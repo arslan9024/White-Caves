@@ -156,7 +156,7 @@ export const HotspotLabel = styled.div`
   color: white;
   background: rgba(0, 0, 0, 0.7);
   padding: 2px 8px;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   opacity: 0;
   transition: opacity 0.3s ease;
 

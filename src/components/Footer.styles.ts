@@ -99,7 +99,7 @@ export const AppBtn = styled.a<{ $platform?: 'whatsapp' | 'botim' | 'gochat' }>`
   align-items: center;
   justify-content: center;
   padding: 0.5rem 1rem;
-  border-radius: 6px;
+  border-radius: ${radius.md};
   font-size: 0.8rem;
   font-weight: 600;
   text-decoration: none;
@@ -209,7 +209,7 @@ export const Badge = styled.span<{ type?: 'rera' | 'dld' }>`
   padding: 0.375rem 0.75rem;
   background: ${props => props.type === 'dld' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(220, 38, 38, 0.2)'};
   border: 1px solid ${props => props.type === 'dld' ? 'rgba(59, 130, 246, 0.4)' : 'rgba(220, 38, 38, 0.4)'};
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   font-size: 0.75rem;
   font-weight: 600;
   color: ${props => props.type === 'dld' ? '#60A5FA' : '#FF6B6B'};

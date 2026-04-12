@@ -192,7 +192,7 @@ export const PreviewBtn = styled.button`
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   transition: ${transitions.hover};
 
   &:hover {
@@ -211,7 +211,7 @@ export const ResultActions = styled.div`
     background: transparent;
     color: var(--text-muted);
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: ${radius.sm};
     transition: ${transitions.hover};
 
     &:hover {
@@ -252,7 +252,7 @@ export const ValueChip = styled.div`
   padding: 6px 12px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: ${radius.md};
   font-size: 0.85rem;
   color: var(--text-primary);
 

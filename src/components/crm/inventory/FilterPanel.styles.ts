@@ -44,7 +44,7 @@ export const ClearFiltersBtn = styled.button`
   padding: 8px 14px;
   background: transparent;
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: ${radius.md};
   color: var(--text-secondary);
   font-size: 12px;
   font-weight: 500;

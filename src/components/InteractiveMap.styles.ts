@@ -56,7 +56,7 @@ export const MapVisualContainer = styled.div`
 export const DubaiMapVisual = styled.div`
   position: relative;
   background: var(--glass-bg);
-  border-radius: 16px;
+  border-radius: ${radius.xxl};
   overflow: hidden;
   border: 1px solid var(--border-color);
   min-height: 400px;

@@ -127,7 +127,7 @@ export const ClearSearchBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   transition: ${transitions.hover};
 
   &:hover {
@@ -312,7 +312,7 @@ export const FavoriteBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  border-radius: ${radius.md};
   transition: ${transitions.hover};
 
   &:hover {

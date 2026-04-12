@@ -296,7 +296,7 @@ export const PropertyItemMeta = styled.div`
 export const PropertyStatus = styled.span<{ $status?: string }>`
   font-size: 11px;
   padding: 3px 8px;
-  border-radius: 6px;
+  border-radius: ${radius.md};
   font-weight: 500;
   text-transform: capitalize;
 

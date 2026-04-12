@@ -214,7 +214,7 @@ export const StatLabel = styled.span`
 
 export const CompanyContactInfo = styled.div`
   background: var(--card-bg, #ffffff);
-  border-radius: 16px;
+  border-radius: ${radius.xxl};
   padding: 2rem;
   margin-bottom: 3rem;
   box-shadow: ${shadows.luxuryCard};

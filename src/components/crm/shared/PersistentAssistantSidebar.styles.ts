@@ -100,7 +100,7 @@ export const DepartmentHeader = styled.div<{ $departmentColor?: string }>`
   letter-spacing: 0.1em;
   color: #fff;
   padding: 0.25rem 0.75rem;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   margin-bottom: 0.25rem;
   opacity: 0.9;
   background: ${props => props.$departmentColor + '40' || 'rgba(255, 255, 255, 0.05)'};
@@ -181,7 +181,7 @@ export const TileTitle = styled.span`
 export const TileAction = styled.button`
   width: 28px;
   height: 28px;
-  border-radius: 6px;
+  border-radius: ${radius.md};
   background: transparent;
   border: none;
   color: #64748b;

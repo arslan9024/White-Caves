@@ -36,7 +36,7 @@ export const ModalOverlay = styled.div`
 
 export const ModalContainer = styled.div<{ $size?: 'small' | 'medium' | 'large' | 'full' }>`
   background: var(--card-bg, #ffffff);
-  border-radius: 16px;
+  border-radius: ${radius.xxl};
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   max-height: calc(100vh - 2rem);
   display: flex;

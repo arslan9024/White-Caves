@@ -50,7 +50,7 @@ export const ListingType = styled.span`
   background: #e41e3f;
   color: white;
   padding: 0.5rem 1rem;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   font-weight: 600;
   font-size: 0.875rem;
 

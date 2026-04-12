@@ -120,7 +120,7 @@ export const RecentlyViewedTrack = styled.div`
 
 export const RecentPropertyCard = styled.div<{ $animationDelay?: string }>`
   flex: 0 0 280px;
-  border-radius: 16px;
+  border-radius: ${radius.xxl};
   overflow: hidden;
   cursor: pointer;
   transition: ${transitions.all};

@@ -115,7 +115,7 @@ export const ClusterBadge = styled.span`
   padding: 4px 10px;
   background: rgba(139, 92, 246, 0.1);
   color: #8b5cf6;
-  border-radius: 6px;
+  border-radius: ${radius.md};
   font-size: 12px;
   font-weight: 500;
 `;
@@ -145,7 +145,7 @@ export const OwnerBadge = styled.button<{ $multiPhone?: boolean }>`
       props.$multiPhone
         ? '#3b82f6'
         : 'var(--border-color)'};
-  border-radius: 6px;
+  border-radius: ${radius.md};
   font-size: 11px;
   color: var(--text-primary);
   cursor: pointer;
@@ -177,7 +177,7 @@ export const MultiOwnerIndicator = styled.div`
 export const StatusBadge = styled.span<{ $status?: string }>`
   display: inline-block;
   padding: 4px 10px;
-  border-radius: 6px;
+  border-radius: ${radius.md};
   font-size: 12px;
   font-weight: 500;
   background: ${(props) => {
@@ -219,7 +219,7 @@ export const PaginationBtn = styled.button<{ $active?: boolean; $disabled?: bool
     props.$active ? 'var(--primary)' : 'transparent'};
   color: ${(props) =>
     props.$active ? 'white' : 'var(--text-secondary)'};
-  border-radius: 6px;
+  border-radius: ${radius.md};
   cursor: ${(props) => (props.$disabled ? 'not-allowed' : 'pointer')};
   opacity: ${(props) => (props.$disabled ? 0.5 : 1)};
   transition: ${transitions.hover};

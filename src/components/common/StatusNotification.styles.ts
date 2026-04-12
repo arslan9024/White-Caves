@@ -137,7 +137,7 @@ export const StatusDismiss = styled.button`
   padding: 4px;
   cursor: pointer;
   color: var(--text-muted, #9ca3af);
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   flex-shrink: 0;
   display: flex;
   align-items: center;

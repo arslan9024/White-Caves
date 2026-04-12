@@ -66,7 +66,7 @@ export const ChatPopup = styled.div`
   right: 0;
   width: 340px;
   background: var(--card-bg, #ffffff);
-  border-radius: 16px;
+  border-radius: ${radius.xxl};
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   animation: ${slideUp} 0.3s ease;

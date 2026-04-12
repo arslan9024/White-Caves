@@ -79,7 +79,7 @@ export const ViewTab = styled.button<{ $isActive: boolean }>`
   padding: 10px 16px;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: ${radius.md};
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -275,7 +275,7 @@ export const DetailGroup = styled.div`
   padding: 12px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: ${radius.md};
 
   label {
     font-size: 12px;

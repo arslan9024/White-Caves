@@ -151,7 +151,7 @@ export const ErrorDetails = styled.details`
 export const ErrorStack = styled.pre`
   background: rgba(0, 0, 0, 0.5);
   padding: 1rem;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   overflow-x: auto;
   color: #ff6b6b;
   font-size: 0.75rem;

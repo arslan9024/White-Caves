@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { typography } from '../styles/theme/typography';
 import { transitions } from '../styles/theme/transitions';
+import { radius } from '../styles/theme/radius';
 
 export const OffplanTrackerContainer = styled.div`
   padding: 3rem 5%;
@@ -279,7 +280,7 @@ export const FeaturesChip = styled.span`
   display: inline-block;
   padding: 0.3rem 0.75rem;
   background: var(--bg-light, #f7fafc);
-  border-radius: 6px;
+  border-radius: ${radius.md};
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--text-secondary);
