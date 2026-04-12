@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { keyframes } from 'styled-components';
 import { transitions } from '../../../styles/theme/transitions';
+import { typography } from '../../../styles/theme/typography';
 import { radius } from '../../../styles/theme/radius';
 
 const badgePulse = keyframes`
@@ -58,7 +59,7 @@ export const CollapseButton = styled.button`
 
 export const SidebarTitle = styled.div`
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: #fff;
   flex: 1;
   white-space: nowrap;
@@ -95,7 +96,7 @@ export const DepartmentGroup = styled.div`
 
 export const DepartmentHeader = styled.div<{ $departmentColor?: string }>`
   font-size: 0.625rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #fff;
@@ -163,7 +164,7 @@ export const TileInfo = styled.div`
 
 export const TileName = styled.span`
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
@@ -212,7 +213,7 @@ export const NotificationBadgeContainer = styled.div<{
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   border-radius: 9999px;
   line-height: 1;
   

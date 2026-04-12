@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../styles/theme/transitions';
+import { typography } from '../styles/theme/typography';
 import { radius } from '../styles/theme/radius';
 
 export const Container = styled.div`
@@ -28,7 +29,7 @@ export const Header = styled.div`
   h1 {
     font-family: ${props => props.theme?.fonts?.heading || "'Montserrat', sans-serif"};
     font-size: 2.5rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
     color: ${props => props.theme?.colors?.textPrimary || '#212121'};
     margin-bottom: 1rem;
 
@@ -49,7 +50,7 @@ export const Header = styled.div`
 export const Warning = styled.div`
   font-size: 0.875rem;
   color: ${props => props.theme?.colors?.danger || '#d32f2f'};
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   background: ${props => `rgba(211, 47, 47, 0.08)`};
   padding: 0.75rem 1.25rem;
   border-radius: ${props => props.theme?.radius?.lg || '0.75rem'};
@@ -120,7 +121,7 @@ export const RoleIcon = styled.span`
 
 export const RoleTitle = styled.h3`
   font-size: 1.125rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: ${props => props.theme?.colors?.textPrimary || '#212121'};
   margin; 0 0 0.5rem;
 `;
@@ -148,7 +149,7 @@ export const Button = styled.button<{ $variant?: 'primary' | 'secondary' }>`
   flex: 1;
   padding: 0.875rem 1.5rem;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   border: none;
   border-radius: ${radius.lg};
   cursor: pointer;

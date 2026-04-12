@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../styles/theme';
 
-const { shadows, transitions, colors, radius } = theme;
+const { shadows, transitions, colors, radius, typography } = theme;
 
 export const CompanyProfileSection = styled.section`
   padding: 5rem 2rem;
@@ -42,7 +42,7 @@ export const CompanyLogoLarge = styled.img`
 export const CompanyProfileTitle = styled.div`
   h2 {
     font-size: 2.5rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
     color: var(--text-primary, #1a1a2e);
     margin: 0 0 0.5rem 0;
 
@@ -55,7 +55,7 @@ export const CompanyProfileTitle = styled.div`
 export const CompanyTagline = styled.p`
   font-size: 1.25rem;
   color: var(--primary-color, ${colors.primary});
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   margin: 0;
 `;
 
@@ -84,7 +84,7 @@ export const ProfileCard = styled.div`
 
   h3 {
     font-size: 1.25rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: var(--text-primary, #1a1a2e);
     margin: 0 0 0.75rem 0;
 
@@ -123,7 +123,7 @@ export const CompanyServicesOverview = styled.div`
 
   h3 {
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: var(--text-primary, #1a1a2e);
     margin: 0 0 1.5rem 0;
     text-align: center;
@@ -160,7 +160,7 @@ export const ServiceItem = styled.div`
   span:last-child {
     font-size: 0.9rem;
     color: var(--text-primary, #1a1a2e);
-    font-weight: 500;
+    font-weight: ${typography.weights.medium};
 
     [data-theme='dark'] & {
       color: var(--text-primary, #ffffff);
@@ -202,7 +202,7 @@ export const StatBlock = styled.div`
 export const StatNumber = styled.span`
   display: block;
   font-size: 2.5rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   margin-bottom: 0.25rem;
 `;
 
@@ -225,7 +225,7 @@ export const CompanyContactInfo = styled.div`
 
   h3 {
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: var(--text-primary, ${colors.text.primary});
     margin: 0 0 1.5rem 0;
 
@@ -296,7 +296,7 @@ export const DownloadProfileBtn = styled.button`
   border: none;
   border-radius: ${radius.lg};
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
   transition: all ${transitions.durations.standard} ${transitions.easing.easeOut};
 

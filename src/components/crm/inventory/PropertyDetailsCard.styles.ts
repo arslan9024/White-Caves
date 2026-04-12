@@ -25,7 +25,7 @@ export const PropertyId = styled.div`
   align-items: center;
   gap: 8px;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--text-primary);
 `;
 
@@ -33,7 +33,7 @@ export const StatusBadge = styled.span<{ $status?: string }>`
   padding: 6px 12px;
   border-radius: 20px;
   font-size: ${typography.sizes.xs};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
   background: ${(props) => {
     switch (props.$status) {
@@ -82,7 +82,7 @@ export const SectionTitle = styled.h3`
   align-items: center;
   gap: 8px;
   font-size: ${typography.sizes.sm};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -150,7 +150,7 @@ export const FieldLabel = styled.span`
 
 export const FieldValue = styled.span`
   font-size: ${typography.sizes.base};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
   word-break: break-word;
 
@@ -202,7 +202,7 @@ export const OwnerAvatar = styled.div`
   align-items: center;
   justify-content: center;
   color: white;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   font-size: 16px;
   flex-shrink: 0;
 `;
@@ -214,7 +214,7 @@ export const OwnerInfo = styled.div`
 
 export const OwnerName = styled.span`
   display: block;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
   margin-bottom: 4px;
 `;
@@ -242,5 +242,5 @@ export const MoreContacts = styled.span`
   border-radius: ${radius.sm};
   font-size: 11px;
   color: var(--primary);
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
 `;

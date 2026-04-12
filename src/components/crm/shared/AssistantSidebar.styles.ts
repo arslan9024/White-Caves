@@ -50,7 +50,7 @@ export const AssistantInfo = styled.div`
   h3 {
     margin: 0 0 4px 0;
     font-size: ${typography.sizes.base};
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
@@ -157,7 +157,7 @@ export const SidebarDivider = styled.div`
 
 export const SidebarSection = styled.div`
   font-size: 11px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--text-muted);
@@ -182,7 +182,7 @@ export const SidebarItem = styled.button<{ $active?: boolean }>`
   transition: ${transitions.hover};
   text-align: left;
   font-size: ${typography.sizes.base};
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 
   &:hover {
     background: rgba(14, 165, 233, 0.05);
@@ -217,7 +217,7 @@ export const ItemBadge = styled.span`
   background: rgba(212, 175, 55, 0.15);
   color: ${colors.primary};
   font-size: 11px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   padding: 2px 6px;
   border-radius: 10px;
   white-space: nowrap;

@@ -85,7 +85,7 @@ export const StyledBadge = styled.span<BadgeProps>`
   align-items: center;
   gap: 6px;
   font-family: ${typography.fontFamily.heading};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   white-space: nowrap;
   border: 1px solid transparent;
   transition: all 0.15s ease;

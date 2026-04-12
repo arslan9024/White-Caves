@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { colors } from '../styles/theme/colors';
+import { typography } from '../styles/theme/typography';
 import { transitions } from '../styles/theme/transitions';
 import { radius } from '../styles/theme/radius';
 
@@ -19,7 +20,7 @@ export const PropertyHeader = styled.div`
     margin: 0 0 1rem 0;
     color: var(--text-primary);
     font-size: 2rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
 
     [data-theme='dark'] & {
       color: white;
@@ -51,7 +52,7 @@ export const ListingType = styled.span`
   color: white;
   padding: 0.5rem 1rem;
   border-radius: ${radius.sm};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   font-size: 0.875rem;
 
   [data-theme='dark'] & {
@@ -102,7 +103,7 @@ export const PropertyDescription = styled.div`
     color: var(--text-primary);
     margin: 0 0 1rem 0;
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
 
     [data-theme='dark'] & {
       color: white;
@@ -142,7 +143,7 @@ export const InfoSection = styled.div`
     margin-bottom: 1rem;
     color: var(--text-primary);
     font-size: 1.125rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
 
     [data-theme='dark'] & {
       color: white;
@@ -186,7 +187,7 @@ export const PropertyAmenities = styled.div`
     color: var(--text-primary);
     margin: 0 0 1rem 0;
     font-size: 1.25rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
 
     [data-theme='dark'] & {
       color: white;
@@ -241,7 +242,7 @@ export const PropertyLocation = styled.div`
     color: var(--text-primary);
     margin: 0 0 1rem 0;
     font-size: 1.25rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
 
     [data-theme='dark'] & {
       color: white;

@@ -48,7 +48,7 @@ export const AreaButton = styled.button<{ $isActive?: boolean }>`
   border-radius: 9999px;
   font-family: ${typography.fontFamily.primary};
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   color: ${props => props.$isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
   cursor: pointer;
   transition: ${transitions.hover};
@@ -131,7 +131,7 @@ export const Badge = styled.span<{ $variant?: 'score' | 'grade' | 'trend'; $scor
   padding: 0.5rem 1rem;
   border-radius: 9999px;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: white;
 
   ${props => {
@@ -186,13 +186,13 @@ export const MetricCard = styled.div<{ $isPrimary?: boolean }>`
 
 export const MetricLabel = styled.span`
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   opacity: 0.7;
 `;
 
 export const MetricValue = styled.span`
   font-size: 1.75rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
 `;
 
 export const InsightsSection = styled.div`
@@ -231,7 +231,7 @@ export const InsightItem = styled.li`
   &::before {
     content: '✓';
     color: var(--success-color, #38a169);
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
     flex-shrink: 0;
   }
 `;
@@ -272,7 +272,7 @@ export const RiskItem = styled.li`
 
   &::before {
     content: '⚠';
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
     flex-shrink: 0;
   }
 `;

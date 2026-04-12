@@ -25,7 +25,7 @@ export const FilterTitle = styled.div`
   align-items: center;
   gap: 8px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 `;
 
@@ -33,7 +33,7 @@ export const ActiveCount = styled.span`
   background: var(--primary);
   color: white;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   padding: 2px 8px;
   border-radius: 10px;
 `;
@@ -48,7 +48,7 @@ export const ClearFiltersBtn = styled.button`
   border-radius: ${radius.md};
   color: var(--text-secondary);
   font-size: ${typography.sizes.xs};
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   cursor: pointer;
   transition: ${transitions.hover};
 

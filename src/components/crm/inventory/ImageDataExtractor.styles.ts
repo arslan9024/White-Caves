@@ -1,5 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 import { transitions } from '../../../../styles/theme/transitions';
+import { typography } from '../../../../styles/theme/typography';
 import { radius } from '../../../../styles/theme/radius';
 
 const spin = keyframes`
@@ -182,7 +183,7 @@ export const ResultSource = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   color: var(--text-primary);
 `;
 
@@ -317,7 +318,7 @@ export const ImportBtn = styled.button`
   border: none;
   border-radius: ${radius.lg};
   color: white;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
   transition: background 0.2s;
 

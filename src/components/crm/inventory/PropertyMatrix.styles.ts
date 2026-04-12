@@ -26,7 +26,7 @@ export const MatrixInfo = styled.div`
   align-items: center;
   gap: 10px;
   color: var(--text-primary);
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 `;
 
 export const MatrixSearch = styled.div`
@@ -65,7 +65,7 @@ export const MatrixTable = styled.table`
     padding: 12px 16px;
     text-align: left;
     font-size: ${typography.sizes.xs};
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -105,7 +105,7 @@ export const MatrixTable = styled.table`
 `;
 
 export const PNumberCell = styled.td`
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   font-family: ${typography.fontFamily.mono};
   color: var(--primary);
 `;
@@ -117,7 +117,7 @@ export const ClusterBadge = styled.span`
   color: #8b5cf6;
   border-radius: ${radius.md};
   font-size: ${typography.sizes.xs};
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 `;
 
 export const AreaCell = styled.div`
@@ -171,7 +171,7 @@ export const MultiOwnerIndicator = styled.div`
   color: white;
   border-radius: 50%;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
 `;
 
 export const StatusBadge = styled.span<{ $status?: string }>`
@@ -179,7 +179,7 @@ export const StatusBadge = styled.span<{ $status?: string }>`
   padding: 4px 10px;
   border-radius: ${radius.md};
   font-size: ${typography.sizes.xs};
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   background: ${(props) => {
     switch (props.$status) {
       case 'rented':

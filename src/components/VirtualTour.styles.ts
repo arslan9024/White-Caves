@@ -52,7 +52,7 @@ export const TourBadge = styled.div`
   padding: 4px 12px;
   border-radius: 20px;
   font-size: ${typography.sizes.xs};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
 `;
 
@@ -60,7 +60,7 @@ export const TourTitleText = styled.h3`
   color: white;
   margin: 0;
   font-size: 18px;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 `;
 
 export const TourControlsHeader = styled.div`
@@ -306,5 +306,5 @@ export const TourInfoText = styled.div`
 
 export const ViewsCount = styled.span`
   color: ${colors.primary};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
 `;

@@ -82,7 +82,7 @@ export const FilterButton = styled.button<{ $isActive?: boolean; $variant?: 'res
   border-radius: 9999px;
   font-family: ${typography.fontFamily.primary};
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   color: ${props => props.$isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
   cursor: pointer;
   transition: ${transitions.hover};
@@ -211,7 +211,7 @@ export const AreaType = styled.span<{ type?: 'luxury' | 'residential' | 'commerc
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
   background: rgba(255, 255, 255, 0.2);
   margin-top: 0.5rem;
@@ -268,7 +268,7 @@ export const PreviewInfo = styled.div`
 
 export const PreviewTitle = styled.h5`
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary, #1a202c);
   margin-bottom: 0.25rem;
   margin: 0;
@@ -276,7 +276,7 @@ export const PreviewTitle = styled.h5`
 
 export const PreviewPrice = styled.div`
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--secondary-color, #c53030);
   margin-bottom: 0.25rem;
 `;
@@ -302,7 +302,7 @@ export const ViewAllButton = styled.button`
   border-radius: 0.75rem;
   color: var(--text-on-primary, #ffffff);
   font-family: ${typography.fontFamily.heading};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
   transition: ${transitions.hover};
 

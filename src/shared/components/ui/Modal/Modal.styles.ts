@@ -1,5 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 import { transitions } from '../../../../styles/theme/transitions';
+import { typography } from '../../../../styles/theme/typography';
 import { radius } from '../../../../styles/theme/radius';
 
 const modalFadeIn = keyframes`
@@ -77,7 +78,7 @@ export const ModalHeader = styled.div`
 export const ModalTitle = styled.h2`
   margin: 0;
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary, #1f2937);
 
   [data-theme="dark"] & {

@@ -99,7 +99,7 @@ export const StatCardLabel = styled.div`
   display: flex;
   align-items: center;
   font-size: ${typography.sizes.base};
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   color: rgba(0, 0, 0, 0.7);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -142,7 +142,7 @@ export const StatCardValue = styled.div`
 
 export const StatValue = styled.div<{ $color?: string }>`
   font-size: 28px;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   letter-spacing: -0.5px;
   color: ${props => props.$color || 'inherit'};
 
@@ -154,7 +154,7 @@ export const StatValue = styled.div<{ $color?: string }>`
 export const StatUnit = styled.span`
   font-size: ${typography.sizes.base};
   color: rgba(0, 0, 0, 0.5);
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 
   @media (prefers-color-scheme: dark) {
     color: rgba(255, 255, 255, 0.5);
@@ -199,7 +199,7 @@ export const StatCardComparison = styled.div`
 `;
 
 export const ChangeValue = styled.span<{ $color?: string }>`
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   font-size: ${typography.sizes.sm};
   color: ${props => props.$color || 'inherit'};
 `;

@@ -54,7 +54,7 @@ export const ErrorTitle = styled.h1`
   color: white;
   font-size: 2rem;
   margin-bottom: 1rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
 `;
 
 export const ErrorMessage = styled.p`
@@ -78,7 +78,7 @@ export const Countdown = styled.span`
   height: 28px;
   line-height: 28px;
   border-radius: 50%;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   margin: 0 4px;
 `;
 
@@ -94,7 +94,7 @@ export const ErrorButton = styled.button<{ $variant?: 'primary' | 'secondary' }>
   padding: 0.875rem 2rem;
   border-radius: ${radius.lg};
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
   transition: ${transitions.all};
   border: none;
@@ -140,7 +140,7 @@ export const ErrorDetails = styled.details`
   summary {
     cursor: pointer;
     color: rgba(255, 255, 255, 0.7);
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     margin-bottom: 0.5rem;
 
     &:hover {

@@ -20,7 +20,7 @@ export const IndicatorsHeader = styled.div`
 
   h3 {
     font-size: 16px;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     margin: 0;
   }
 
@@ -80,14 +80,14 @@ export const IndicatorContent = styled.div`
 
 export const IndicatorValue = styled.span`
   font-size: 24px;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--accent-color);
   line-height: 1;
 `;
 
 export const IndicatorLabel = styled.span`
   font-size: ${typography.sizes.sm};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 `;
 

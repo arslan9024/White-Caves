@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { colors } from '../styles/theme/colors';
+import { typography } from '../styles/theme/typography';
 import { transitions } from '../styles/theme/transitions';
 import { radius } from '../styles/theme/radius';
 
@@ -43,7 +44,7 @@ export const HeaderLeft = styled.div`
 
 export const SectionTitle = styled.h3`
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--text-primary);
   margin: 0;
 
@@ -177,7 +178,7 @@ export const PropertyTypeBadge = styled.span`
   left: 0.75rem;
   padding: 0.25rem 0.75rem;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: white;
   background: var(--primary);
   border-radius: 9999px;
@@ -194,7 +195,7 @@ export const RecentPropertyInfo = styled.div`
 
 export const PropertyTitle = styled.h4`
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
   margin: 0 0 0.5rem 0;
   white-space: nowrap;
@@ -251,7 +252,7 @@ export const SpecDot = styled.span`
 
 export const PropertyPrice = styled.p`
   font-size: 1.125rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--primary);
   margin: 0;
 

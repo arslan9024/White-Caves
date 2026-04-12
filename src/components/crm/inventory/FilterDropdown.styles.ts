@@ -14,7 +14,7 @@ export const FilterDropdownContainer = styled.div<{ $disabled?: boolean }>`
 
 export const FilterLabel = styled.label`
   font-size: 11px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -38,7 +38,7 @@ export const Select = styled.select`
   border-radius: ${radius.lg};
   color: var(--text-primary);
   font-size: ${typography.sizes.sm};
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   cursor: pointer;
   appearance: none;
   transition: ${transitions.hover};

@@ -120,7 +120,7 @@ export const ConversationListHeader = styled.div`
   h2 {
     margin: 0;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: ${tokens.colors.text.primary};
   }
 `;
@@ -179,7 +179,7 @@ export const ConversationItemHeader = styled.div`
 
 export const ConversationItemName = styled.p`
   margin: 0;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   font-size: ${typography.sizes.base};
   color: ${tokens.colors.text.primary};
 `;
@@ -195,7 +195,7 @@ export const StatusBadge = styled.span<{ status: string }>`
   padding: 2px 8px;
   border-radius: ${tokens.borderRadius.sm};
   font-size: 11px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
 
   ${(props) => {
@@ -269,7 +269,7 @@ export const UnreadBadge = styled.span`
   color: white;
   border-radius: 50%;
   font-size: ${typography.sizes.xs};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
 `;
 
 /**
@@ -306,7 +306,7 @@ export const MessageViewerHeaderContent = styled.div`
   h3 {
     margin: 0;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: ${tokens.colors.text.primary};
   }
 
@@ -403,7 +403,7 @@ export const SentimentBadge = styled.span<{ sentiment?: string }>`
   }};
   border-radius: ${tokens.borderRadius.sm};
   font-size: 11px;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 `;
 
 export const EmptyState = styled.div`
@@ -507,7 +507,7 @@ export const SendButton = styled.button`
   border: none;
   border-radius: ${tokens.borderRadius.md};
   font-size: ${typography.sizes.base};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
   transition: all ${tokens.transitions.fast};
 
@@ -553,7 +553,7 @@ export const QueueManagerHeader = styled.div`
   h3 {
     margin: 0 0 ${tokens.spacing.md} 0;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: ${tokens.colors.text.primary};
   }
 `;
@@ -577,7 +577,7 @@ export const StatItem = styled.div`
 
   span:last-child {
     color: ${tokens.colors.text.primary};
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
   }
 `;
 
@@ -628,7 +628,7 @@ export const QueueItemHeader = styled.div`
 export const QueueItemName = styled.p`
   margin: 0;
   font-size: ${typography.sizes.sm};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: ${tokens.colors.text.primary};
 `;
 
@@ -643,7 +643,7 @@ export const PriorityBadge = styled.span<{ priority: string }>`
   padding: 2px 6px;
   border-radius: 3px;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
 
   ${(props) => {
@@ -701,7 +701,7 @@ export const AssignButtonSmall = styled.button`
   border: none;
   border-radius: ${tokens.borderRadius.md};
   font-size: ${typography.sizes.xs};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
   transition: all ${tokens.transitions.fast};
 

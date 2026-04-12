@@ -139,7 +139,7 @@ export const GridTableHeader = styled.th`
   text-align: left;
   padding: 12px 16px;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;

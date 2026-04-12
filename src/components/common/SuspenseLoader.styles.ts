@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { typography } from '../../styles/theme/typography';
 
 export const SuspenseLoaderContainer = styled.div`
   width: 100%;
@@ -51,7 +52,7 @@ export const SpinnerCircle = styled.div`
 export const SpinnerText = styled.p`
   font-size: 1rem;
   color: var(--text-secondary);
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   letter-spacing: 0.5px;
   animation: pulse-text 1.5s ease-in-out infinite;
 

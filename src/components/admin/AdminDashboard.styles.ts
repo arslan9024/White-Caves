@@ -30,7 +30,7 @@ export const AdminTitle = styled.div`
   h1 {
     margin: 0 0 ${spacing.xs} 0;
     font-size: 28px;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
     color: ${colors.text.primary};
   }
 
@@ -50,14 +50,14 @@ export const AdminUserInfo = styled.div`
 
 export const UserName = styled.span`
   font-size: ${typography.sizes.base};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: ${colors.text.primary};
 `;
 
 export const UserRole = styled.span`
   font-size: ${typography.sizes.xs};
   color: ${colors.primary};
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 `;
 
 export const AdminTabs = styled.div`
@@ -79,7 +79,7 @@ export const Tab = styled.button<{ $active?: boolean }>`
   border-bottom: 3px solid ${props => props.$active ? colors.primary : 'transparent'};
   color: ${props => props.$active ? colors.primary : colors.text.secondary};
   font-size: ${typography.sizes.base};
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   cursor: pointer;
   transition: ${transitions.hover};
   white-space: nowrap;
@@ -143,7 +143,7 @@ export const MetricHeader = styled.div`
 
 export const MetricTitle = styled.span`
   font-size: ${typography.sizes.sm};
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   color: ${colors.text.secondary};
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -151,7 +151,7 @@ export const MetricTitle = styled.span`
 
 export const MetricValue = styled.div`
   font-size: 32px;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: ${colors.text.primary};
   margin-bottom: ${spacing.xs};
 `;
@@ -178,7 +178,7 @@ export const MetricBarFill = styled.div<{ $color?: string }>`
 
 export const MetricStatus = styled.div<{ $status?: string }>`
   font-size: 20px;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: ${props => {
     switch (props.$status) {
       case 'excellent': return colors.success;
@@ -204,7 +204,7 @@ export const DetailItem = styled.div`
 `;
 
 export const DetailValue = styled.span`
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: ${colors.text.primary};
 `;
 
@@ -223,7 +223,7 @@ export const SectionHeader = styled.div`
   h3 {
     margin: 0;
     font-size: 18px;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: ${colors.text.primary};
   }
 
@@ -277,14 +277,14 @@ export const AlertContent = styled.div`
 export const AlertMessage = styled.span`
   font-size: ${typography.sizes.base};
   color: ${colors.text.primary};
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 `;
 
 export const AlertStatus = styled.span<{ $status?: string }>`
   padding: 2px ${spacing.sm};
   border-radius: ${radius.xl};
   font-size: 11px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
   background: ${props => props.$status === 'active' ? 'rgba(212, 175, 55, 0.12)' : colors.border};
   color: ${props => props.$status === 'active' ? colors.primaryDark : '#616161'};
@@ -351,7 +351,7 @@ export const ActivityContent = styled.div`
 
 export const ActivityUser = styled.div`
   font-size: ${typography.sizes.sm};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: ${colors.text.primary};
   margin-bottom: 2px;
 `;
@@ -391,7 +391,7 @@ export const UsersTable = styled.div`
       padding: ${spacing.md};
       text-align: left;
       font-size: ${typography.sizes.xs};
-      font-weight: 600;
+      font-weight: ${typography.weights.semibold};
       color: ${colors.text.secondary};
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -416,7 +416,7 @@ export const RoleBadge = styled.span<{ $role?: string }>`
   padding: ${spacing.xs} ${radius.xl};
   border-radius: ${radius.xl};
   font-size: ${typography.sizes.xs};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   background: ${props => {
     switch (props.$role) {
       case 'agent': return '#E3F2FD';
@@ -438,7 +438,7 @@ export const StatusBadge = styled.span<{ $status?: string }>`
   padding: ${spacing.xs} ${radius.xl};
   border-radius: ${radius.xl};
   font-size: ${typography.sizes.xs};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   background: ${props => props.$status === 'active' ? '#E8F5E9' : '#FFEBEE'};
   color: ${props => props.$status === 'active' ? colors.success : colors.error};
 `;
@@ -449,7 +449,7 @@ export const ActionBtn = styled.button<{ $danger?: boolean }>`
   border: none;
   border-radius: ${radius.sm};
   font-size: ${typography.sizes.sm};
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   cursor: pointer;
   background: ${props => props.$danger ? '#FFEBEE' : '#E3F2FD'};
   color: ${props => props.$danger ? colors.error : colors.info};
@@ -495,7 +495,7 @@ export const StatusLabel = styled.div`
 
 export const StatusValue = styled.div`
   font-size: 20px;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: ${colors.text.primary};
 `;
 
@@ -518,7 +518,7 @@ export const SettingGroup = styled.div`
   h4 {
     margin: 0 0 20px 0;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: ${colors.text.primary};
     border-bottom: 1px solid ${colors.border};
     padding-bottom: ${radius.xl};
@@ -535,7 +535,7 @@ export const SettingItem = styled.div`
   label {
     display: block;
     font-size: ${typography.sizes.base};
-    font-weight: 500;
+    font-weight: ${typography.weights.medium};
     color: ${colors.text.primary};
     margin-bottom: ${spacing.sm};
   }
@@ -568,7 +568,7 @@ export const BtnPrimary = styled.button`
   border: none;
   border-radius: ${radius.sm};
   font-size: ${typography.sizes.base};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
   transition: ${transitions.hover};
 
@@ -585,7 +585,7 @@ export const BtnSecondary = styled.button`
   border: none;
   border-radius: ${radius.sm};
   font-size: ${typography.sizes.base};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -632,7 +632,7 @@ export const ChartContainer = styled.div`
   h4 {
     margin: 0 0 ${spacing.md} 0;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: ${colors.text.primary};
   }
 `;
@@ -703,7 +703,7 @@ export const SaveBtn = styled.button`
   border: none;
   border-radius: ${radius.sm};
   font-size: ${typography.sizes.base};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
   transition: ${transitions.hover};
   margin-top: ${radius.xl};

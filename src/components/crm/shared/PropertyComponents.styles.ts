@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 
-const { colors, transitions, radius } = theme;
+const { colors, transitions, radius, typography } = theme;
 
 /* ============================================================================
  * Property Components Styled Components
@@ -129,7 +129,7 @@ export const ImageCounter = styled.div`
   border-radius: ${radius.md};
   color: #fff;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   z-index: 10;
 `;
 
@@ -348,7 +348,7 @@ export const SpecContent = styled.div`
 
 export const SpecValue = styled.span`
   font-size: 0.9375rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: #fff;
 
   @media (max-width: 768px) {
@@ -399,7 +399,7 @@ export const HeaderInfo = styled.div`
 
   h2 {
     font-size: 1.25rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: #fff;
     margin: 0 0 0.5rem 0;
   }
@@ -446,7 +446,7 @@ export const PriceLabel = styled.span`
 export const PriceValue = styled.span`
   display: block;
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: #10b981;
 
   @media (max-width: 768px) {
@@ -486,7 +486,7 @@ export const DetailSection = styled.div`
 
   h4 {
     font-size: 0.875rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: #94a3b8;
     margin: 0 0 1rem 0;
     text-transform: uppercase;
@@ -527,7 +527,7 @@ export const OwnerAvatar = styled.div`
   justify-content: center;
   color: #fff;
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   flex-shrink: 0;
 
   @media (max-width: 768px) {
@@ -545,7 +545,7 @@ export const OwnerDetails = styled.div`
 `;
 
 export const OwnerName = styled.span`
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: #fff;
   font-size: 0.9375rem;
 
@@ -600,7 +600,7 @@ export const FinLabel = styled.span`
 export const FinValue = styled.span`
   display: block;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: #fff;
 
   @media (max-width: 768px) {
@@ -619,7 +619,7 @@ export const DescriptionSection = styled.div`
 
   h4 {
     font-size: 0.875rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: #94a3b8;
     margin: 0 0 1rem 0;
     text-transform: uppercase;

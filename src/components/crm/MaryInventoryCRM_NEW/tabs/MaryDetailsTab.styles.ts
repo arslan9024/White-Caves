@@ -39,7 +39,7 @@ export const HeaderContent = styled.div`
   h3 {
     margin: 0;
     font-size: 18px;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
     color: var(--text-primary, #1f2937);
 
     [data-theme='dark'] & {
@@ -81,7 +81,7 @@ export const ViewTab = styled.button<{ $isActive: boolean }>`
   border: 1px solid transparent;
   border-radius: ${radius.md};
   font-size: ${typography.sizes.base};
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   cursor: pointer;
   transition: ${transitions.hover};
   white-space: nowrap;
@@ -166,7 +166,7 @@ export const InfoCard = styled.div`
     margin: 0 0 ${spacing.sm} 0;
     color: var(--text-primary);
     font-size: 15px;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
 
     [data-theme='dark'] & {
       color: white;
@@ -201,7 +201,7 @@ export const GuideContent = styled.div`
     margin: 0 0 12px 0;
     color: var(--text-primary);
     font-size: 15px;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
 
     &.mt-6 {
       margin-top: 24px;
@@ -238,7 +238,7 @@ export const GuideList = styled.ul`
 
     strong {
       color: var(--text-primary);
-      font-weight: 600;
+      font-weight: ${typography.weights.semibold};
 
       [data-theme='dark'] & {
         color: white;
@@ -279,7 +279,7 @@ export const DetailGroup = styled.div`
 
   label {
     font-size: ${typography.sizes.xs};
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -292,7 +292,7 @@ export const DetailGroup = styled.div`
   > div,
   > p {
     font-size: ${typography.sizes.base};
-    font-weight: 500;
+    font-weight: ${typography.weights.medium};
     color: var(--text-primary);
 
     [data-theme='dark'] & {
@@ -313,7 +313,7 @@ export const StatusBadge = styled.span`
   color: ${colors.success};
   border-radius: ${radius.md};
   font-size: ${typography.sizes.xs};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
 
   [data-theme='dark'] & {
@@ -370,7 +370,7 @@ export const EmptyState = styled.div`
     margin: 0 0 8px 0;
     color: var(--text-primary);
     font-size: 16px;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
 
     [data-theme='dark'] & {
       color: white;
@@ -438,7 +438,7 @@ export const ClusterBlock = styled.div`
 export const ClusterTitle = styled.h4`
   margin: 0 0 12px 0;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 
   [data-theme='dark'] & {
@@ -505,7 +505,7 @@ export const CardHeader = styled.div`
 `;
 
 export const PNumber = styled.span`
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   font-size: ${typography.sizes.base};
   color: var(--text-primary);
 
@@ -526,7 +526,7 @@ export const CardBody = styled.div`
     color: var(--text-secondary);
 
     &.card-project {
-      font-weight: 500;
+      font-weight: ${typography.weights.medium};
       color: var(--text-primary);
 
       [data-theme='dark'] & {

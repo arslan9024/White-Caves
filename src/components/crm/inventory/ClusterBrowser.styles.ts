@@ -31,7 +31,7 @@ export const ClusterHeader = styled.div`
 
 export const ClusterTitle = styled.h3`
   font-size: ${typography.sizes.base};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   margin: 0;
   flex: 1;
   color: var(--text-primary);
@@ -61,7 +61,7 @@ export const ClusterChip = styled.button<{ $active?: boolean }>`
   padding: 6px 14px;
   border-radius: 20px;
   font-size: ${typography.sizes.xs};
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   background: ${props => props.$active ? 'var(--primary)' : 'var(--bg-secondary)'};
   border: 1px solid ${props => props.$active ? 'var(--primary)' : 'var(--border-color)'};
   color: ${props => props.$active ? 'white' : 'var(--text-primary)'};

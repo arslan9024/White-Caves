@@ -58,7 +58,7 @@ export const AssistantInfo = styled.div`
 
 export const AssistantName = styled.div`
   font-size: 16px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 `;
 
@@ -180,7 +180,7 @@ export const SectionHeader = styled.div`
   gap: 8px;
   padding: 8px 16px;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
   color: var(--text-tertiary);
   letter-spacing: 0.5px;
@@ -238,7 +238,7 @@ export const ItemInfo = styled.div`
 
 export const ItemName = styled.div`
   font-size: ${typography.sizes.base};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 `;
 
@@ -269,7 +269,7 @@ export const HealthBadge = styled.span<{ $status?: string }>`
   padding: 2px 6px;
   border-radius: 10px;
   font-size: 9px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: capitalize;
   background: ${(props) => {
     switch (props.$status) {

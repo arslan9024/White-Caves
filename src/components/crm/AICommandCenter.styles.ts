@@ -33,7 +33,7 @@ export const HeaderLeft = styled.div`
 export const CommandCenterTitle = styled.h1`
   margin: 0;
   font-size: 24px;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: #f8fafc;
   background: linear-gradient(
     135deg,
@@ -116,7 +116,7 @@ export const NotificationBadge = styled.span`
   color: white;
   border-radius: 50%;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   display: flex;
   align-items: center;
   justify-content: center;

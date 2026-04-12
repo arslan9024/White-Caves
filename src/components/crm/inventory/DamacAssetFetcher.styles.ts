@@ -111,7 +111,7 @@ export const InputGroup = styled.div`
 
 export const InputLabel = styled.label`
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   color: var(--text-secondary);
   display: flex;
   align-items: center;
@@ -294,7 +294,7 @@ export const SummaryItem = styled.div<{ $variant?: 'success' | 'error' }>`
   align-items: center;
   gap: 6px;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   color: ${props => props.$variant === 'success' ? colors.success : props.$variant === 'error' ? colors.error : 'var(--text-primary)'};
 `;
 
@@ -369,7 +369,7 @@ export const AssetInfo = styled.div`
 `;
 
 export const AssetSD = styled.span`
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 
   @media (prefers-color-scheme: dark) {
@@ -393,7 +393,7 @@ export const AssetType = styled.span<{ $type?: string }>`
   background: ${props => props.$type === 'primary' ? 'rgba(212, 175, 55, 0.2)' : 'rgba(156, 163, 175, 0.2)'};
   color: ${props => props.$type === 'primary' ? colors.primary : '#6b7280'};
   text-transform: capitalize;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 `;
 
 export const OpenLink = styled.a`

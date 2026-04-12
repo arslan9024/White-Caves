@@ -25,7 +25,7 @@ export const StyledGatewayHeader = styled.div`
 export const StyledGatewayTitle = styled.h2`
   font-family: ${typography.fontFamily.heading};
   font-size: 2.5rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--text-primary, #212121);
   margin-bottom: 0.75rem;
 
@@ -150,7 +150,7 @@ export const StyledTileTextContent = styled.div`
 export const StyledTileTitle = styled.h3`
   font-family: ${typography.fontFamily.heading};
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--text-primary, #212121);
   margin-bottom: 0.5rem;
 
@@ -161,7 +161,7 @@ export const StyledTileTitle = styled.h3`
 
 export const StyledTileSubtitle = styled.p<{ $roleColor: string }>`
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: ${props => props.$roleColor};
   margin-bottom: 0.75rem;
 `;
@@ -222,7 +222,7 @@ export const StyledFooterText = styled.p`
 
 export const StyledFooterLink = styled.a`
   color: var(--primary-color, ${colors.primary});
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-decoration: none;
   transition: color 0.2s ease;
 

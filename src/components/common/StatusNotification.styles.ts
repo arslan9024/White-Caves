@@ -112,7 +112,7 @@ export const StatusContent = styled.div`
 
 export const StatusTitle = styled.strong`
   font-size: ${typography.sizes.base};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary, #1f2937);
   line-height: 1.3;
 

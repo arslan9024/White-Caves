@@ -156,7 +156,7 @@ export const PlayButton = styled.div`
   span {
     font-family: ${typography.fontFamily.heading};
     font-size: 1.25rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
     color: var(--primary-color, #1a365d);
   }
 `;
@@ -174,7 +174,7 @@ export const Badge = styled.span<{ type?: 'drone' | 'video' }>`
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
   background: ${props => {
     switch(props.type) {
@@ -244,7 +244,7 @@ export const SpecItem = styled.span`
 
 export const TourPrice = styled.div`
   font-size: 1.4rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--primary-color, #1a365d);
   margin: 1rem 0;
 `;
@@ -256,7 +256,7 @@ export const ViewTourBtn = styled.button`
   color: white;
   border: none;
   border-radius: 0.5rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
   transition: ${transitions.all};
 
@@ -325,7 +325,7 @@ export const LoadMoreBtn = styled.button`
   color: white;
   border: none;
   border-radius: 0.5rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
   transition: ${transitions.all};
 

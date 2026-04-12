@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { keyframes } from 'styled-components';
 import { colors } from '../../styles/theme/colors';
+import { typography } from '../../styles/theme/typography';
 import { transitions } from '../../styles/theme/transitions';
 import { radius } from '../../styles/theme/radius';
 
@@ -38,7 +39,7 @@ export const ChatTrigger = styled.button<{ $expanded?: boolean }>`
     ? '0 4px 12px rgba(0, 0, 0, 0.15)' 
     : '0 4px 20px rgba(37, 211, 102, 0.4)'};
   transition: ${transitions.all};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   font-size: 0.9rem;
 
   &:hover {
@@ -102,7 +103,7 @@ export const ChatAvatar = styled.img`
 export const ChatHeaderTitle = styled.h4`
   margin: 0;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
 `;
 
 export const OnlineStatus = styled.div<{ $isOnline?: boolean }>`
@@ -277,7 +278,7 @@ export const ChatAppBtn = styled.button<{ $appColor?: string }>`
   align-items: center;
   gap: 4px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   transition: ${transitions.hover};
 
   &:hover {

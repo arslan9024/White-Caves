@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../styles/theme';
 
-const { shadows, transitions, colors, radius } = theme;
+const { shadows, transitions, colors, radius, typography } = theme;
 
 export const BlogSectionContainer = styled.section`
   padding: 80px 0;
@@ -24,7 +24,7 @@ export const BlogHeader = styled.div`
 
   h2 {
     font-size: 2.5rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
     color: var(--text-primary, #1a1a2e);
     margin: 0 0 16px 0;
 
@@ -107,7 +107,7 @@ export const PostCategory = styled.span`
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `;
@@ -120,7 +120,7 @@ export const FeaturedContent = styled.div`
 
   h3 {
     font-size: 1.4rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
     color: var(--text-primary, #1a1a2e);
     margin: 0 0 12px 0;
     line-height: 1.4;
@@ -149,7 +149,7 @@ export const PostMeta = styled.div`
 `;
 
 export const PostAuthor = styled.span`
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   color: var(--primary, #c9a962);
 `;
 
@@ -162,7 +162,7 @@ export const ReadMoreBtn = styled.button`
   border: none;
   border-radius: ${radius.lg};
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
   transition: ${transitions.hover};
 
@@ -187,7 +187,7 @@ export const FilterBtn = styled.button<{ $isActive?: boolean }>`
   border-radius: 25px;
   color: ${props => props.$isActive ? 'white' : 'var(--text-secondary, #6b7280)'};
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   cursor: pointer;
   transition: ${transitions.hover};
 
@@ -268,14 +268,14 @@ export const BlogCardCategory = styled.span`
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
   margin-bottom: 12px;
 `;
 
 export const BlogCardTitle = styled.h3`
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary, #1a1a2e);
   margin: 0 0 8px 0;
   line-height: 1.4;
@@ -308,7 +308,7 @@ export const LoadMoreBtn = styled.button`
   border: none;
   border-radius: ${radius.lg};
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
   transition: ${transitions.all};
 
@@ -328,7 +328,7 @@ export const CardFooter = styled.div`
 export const ReadMoreLink = styled.a`
   color: var(--primary-color, ${colors.primary});
   text-decoration: none;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   transition: opacity 0.2s ease;
 
   &:hover {

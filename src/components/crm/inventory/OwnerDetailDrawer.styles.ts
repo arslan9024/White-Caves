@@ -76,7 +76,7 @@ export const OwnerInfo = styled.div`
   h2 {
     margin: 0;
     font-size: 18px;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: var(--text-primary);
   }
 
@@ -151,7 +151,7 @@ export const DrawerSection = styled.section`
     align-items: center;
     gap: 8px;
     font-size: ${typography.sizes.base};
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: var(--text-primary);
     margin: 0 0 12px;
 
@@ -209,7 +209,7 @@ export const PrimaryBadge = styled.span`
   background: var(--primary);
   color: white;
   border-radius: 10px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
 `;
 
 export const PropertiesList = styled.div`
@@ -254,7 +254,7 @@ export const PropertyItemInfo = styled.div`
 
 export const PropertyPNumber = styled.span`
   font-size: ${typography.sizes.base};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 
   [data-theme='dark'] & {
@@ -298,7 +298,7 @@ export const PropertyStatus = styled.span<{ $status?: string }>`
   font-size: 11px;
   padding: 3px 8px;
   border-radius: ${radius.md};
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   text-transform: capitalize;
 
   ${props => {

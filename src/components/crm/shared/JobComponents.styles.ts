@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 
-const { colors, shadows, transitions, radius } = theme;
+const { colors, shadows, transitions, radius, typography } = theme;
 
 /* ============================================================================
  * JobComponents Styled Components
@@ -28,7 +28,7 @@ export const NotificationToast = styled.div<{ $type?: 'success' | 'error' }>`
   padding: 0.75rem 1.25rem;
   border-radius: ${radius.lg};
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   z-index: var(--z-notification, 800);
   animation: slideIn 0.3s ease;
 
@@ -127,7 +127,7 @@ export const HeaderInfo = styled.div`
   h3 {
     color: #fff;
     font-size: 1.125rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     margin: 0;
   }
 
@@ -151,7 +151,7 @@ export const PlatformSelection = styled.div`
   h4 {
     color: #94a3b8;
     font-size: 0.8125rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin: 0 0 0.75rem 0;
@@ -221,7 +221,7 @@ export const FormSection = styled.div`
   h4 {
     color: #fff;
     font-size: 0.9375rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     margin: 0 0 1rem 0;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -259,7 +259,7 @@ export const FormField = styled.div<{ $span2?: boolean; $hasError?: boolean }>`
   label {
     color: #94a3b8;
     font-size: 0.8125rem;
-    font-weight: 500;
+    font-weight: ${typography.weights.medium};
   }
 
   .required {
@@ -380,7 +380,7 @@ export const SalaryRange = styled.div`
   span {
     color: #64748b;
     font-size: 0.8125rem;
-    font-weight: 500;
+    font-weight: ${typography.weights.medium};
     white-space: nowrap;
   }
 
@@ -416,7 +416,7 @@ export const ActionBtn = styled.button<{ $variant?: 'primary' | 'secondary' }>`
   padding: 0.75rem 1.25rem;
   border-radius: ${radius.lg};
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   cursor: pointer;
   transition: ${transitions.hover};
   border: none;
@@ -469,7 +469,7 @@ export const JobPreview = styled.div`
   h4 {
     color: #94a3b8;
     font-size: 0.8125rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin: 0 0 1rem 0;
@@ -497,14 +497,14 @@ export const PreviewHeader = styled.div`
   h3 {
     color: #fff;
     font-size: 1.125rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     margin: 0;
   }
 
   .company {
     color: #f59e0b;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: ${typography.weights.medium};
     margin-top: 0.25rem;
   }
 
@@ -551,7 +551,7 @@ export const PreviewSection = styled.div`
   h5 {
     color: #94a3b8;
     font-size: 0.8125rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     margin: 0 0 0.5rem 0;
   }
 

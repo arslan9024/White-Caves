@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { transitions } from '../../../styles/theme/transitions';
+import { typography } from '../../../styles/theme/typography';
 import { radius } from '../../../styles/theme/radius';
 
 export const PropertyCardGrid = styled.div<{ $columns?: number }>`
@@ -80,7 +81,7 @@ export const PropertyStatusBadgeStyled = styled.span<{ $statusType?: string }>`
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: capitalize;
   z-index: 2;
 
@@ -140,7 +141,7 @@ export const PropertyCardContent = styled.div`
 
 export const PropertyTitle = styled.h4`
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
   margin: 0 0 0.5rem 0;
   white-space: nowrap;
@@ -156,7 +157,7 @@ export const PropertyLocation = styled.p`
 
 export const PropertyPrice = styled.p`
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--color-primary);
   margin: 0 0 0.75rem 0;
 `;

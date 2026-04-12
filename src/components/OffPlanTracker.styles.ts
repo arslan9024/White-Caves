@@ -71,7 +71,7 @@ export const StatNumber = styled.div`
   display: block;
   font-family: ${typography.fontFamily.heading};
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--secondary-color, #c53030);
 `;
 
@@ -180,7 +180,7 @@ export const ProjectBadge = styled.span<{ $variant?: 'status' | 'segment' }>`
   background: ${props => props.$variant === 'segment' ? 'rgba(26, 54, 93, 0.9)' : 'var(--secondary-color, #c53030)'};
   color: var(--text-on-primary, #ffffff);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
   border-radius: 9999px;
 `;
@@ -211,13 +211,13 @@ export const DeveloperLogo = styled.img`
 
 export const DeveloperName = styled.span`
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 `;
 
 export const ProjectTitle = styled.h3`
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
   margin-bottom: 0.5rem;
   margin: 0 0 0.5rem 0;
@@ -258,20 +258,20 @@ export const DetailItem = styled.div`
 
 export const DetailLabel = styled.span`
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
   color: var(--text-muted, #718096);
 `;
 
 export const DetailValue = styled.span`
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 `;
 
 export const ProjectPrice = styled.div`
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--secondary-color, #c53030);
   margin-bottom: 1rem;
 `;
@@ -282,7 +282,7 @@ export const FeaturesChip = styled.span`
   background: var(--bg-light, #f7fafc);
   border-radius: ${radius.md};
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   color: var(--text-secondary);
   margin-right: 0.5rem;
   margin-bottom: 0.5rem;
@@ -302,7 +302,7 @@ export const ActionButton = styled.button<{ $variant?: 'primary' | 'secondary' }
   border: ${props => props.$variant === 'secondary' ? '1px solid var(--border-color, #e2e8f0)' : 'none'};
   border-radius: var(--radius-md);
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
   transition: ${transitions.hover};
 
@@ -341,7 +341,7 @@ export const TimeUnit = styled.div`
 
 export const TimeValue = styled.span`
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--secondary-color, #c53030);
 `;
 

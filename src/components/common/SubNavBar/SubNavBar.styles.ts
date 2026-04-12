@@ -1,5 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 import { colors } from '../../../styles/theme/colors';
+import { typography } from '../../../styles/theme/typography';
 import { transitions } from '../../../styles/theme/transitions';
 import { radius } from '../../../styles/theme/radius';
 
@@ -60,7 +61,7 @@ export const ModuleIcon = styled.span`
 `;
 
 export const ModuleTitle = styled.span`
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary, #1f2937);
   font-size: 0.95rem;
 
@@ -100,7 +101,7 @@ export const SubNavItem = styled.button<{ $isActive?: boolean }>`
   position: relative;
   white-space: nowrap;
   color: ${(props) => (props.$isActive ? 'white' : 'var(--text-secondary, #6b7280)')};
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   font-size: 0.875rem;
   font-family: inherit;
 
@@ -149,7 +150,7 @@ export const SubNavIcon = styled.span`
 `;
 
 export const SubNavLabel = styled.span`
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 `;
 
 export const SubNavBadge = styled.span<{ $isActive?: boolean }>`
@@ -160,7 +161,7 @@ export const SubNavBadge = styled.span<{ $isActive?: boolean }>`
   border-radius: 10px;
   min-width: 1.25rem;
   text-align: center;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
 `;
 
 export const SubNavIndicator = styled.span`
@@ -192,7 +193,7 @@ export const SubNavActionButton = styled.button`
   border: none;
   border-radius: ${radius.lg};
   cursor: pointer;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   font-size: 0.875rem;
   font-family: inherit;
   transition: ${transitions.all};

@@ -132,7 +132,7 @@ export const LocationMarker = styled.button<{ $isActive?: boolean }>`
 
 export const MarkerCount = styled.span`
   font-size: ${typography.sizes.base};
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: #ffffff;
   line-height: 1;
 `;
@@ -176,7 +176,7 @@ export const LocationItem = styled.div<{ $isSelected?: boolean }>`
 
 export const LocationName = styled.h4`
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   margin: 0 0 0.25rem 0;
   color: var(--text-primary);
 `;
@@ -225,13 +225,13 @@ export const PropertyInfo = styled.div`
 export const PropertyTitle = styled.h3`
   margin: 0 0 0.5rem 0;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 `;
 
 export const PropertyPrice = styled.div`
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--secondary-color);
   margin-bottom: 0.5rem;
 `;

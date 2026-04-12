@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../styles/theme/transitions';
+import { typography } from '../styles/theme/typography';
 import { radius } from '../styles/theme/radius';
 
 export const FooterContainer = styled.footer`
@@ -101,7 +102,7 @@ export const AppBtn = styled.a<{ $platform?: 'whatsapp' | 'botim' | 'gochat' }>`
   padding: 0.5rem 1rem;
   border-radius: ${radius.md};
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-decoration: none;
   color: white;
   transition: ${transitions.hover};
@@ -124,7 +125,7 @@ export const FooterSection = styled.div`
   h3 {
     color: white;
     font-size: 1.1rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
     margin-bottom: 1.25rem;
     position: relative;
     padding-bottom: 0.75rem;
@@ -211,7 +212,7 @@ export const Badge = styled.span<{ type?: 'rera' | 'dld' }>`
   border: 1px solid ${props => props.type === 'dld' ? 'rgba(59, 130, 246, 0.4)' : 'rgba(220, 38, 38, 0.4)'};
   border-radius: ${radius.sm};
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: ${props => props.type === 'dld' ? '#60A5FA' : '#FF6B6B'};
   margin-right: 0.5rem;
   margin-bottom: 0.5rem;

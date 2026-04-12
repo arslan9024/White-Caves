@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../styles/theme';
 
-const { colors, shadows, transitions, radius, spacing } = theme;
+const { colors, shadows, transitions, radius, spacing, typography } = theme;
 
 export const JobBoardContainer = styled.div`
   padding: 2rem;
@@ -15,7 +15,7 @@ export const JobBoardContainer = styled.div`
 
 export const BoardTitle = styled.h2`
   font-size: 1.75rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
   margin-bottom: 2rem;
   margin: 0 0 2rem 0;
@@ -59,7 +59,7 @@ export const JobCard = styled.div`
 
 export const JobTitle = styled.h3`
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
   margin-bottom: 0.75rem;
   margin: 0 0 0.75rem 0;
@@ -101,7 +101,7 @@ export const SubmitButton = styled.button`
   cursor: pointer;
   width: 100%;
   margin-top: auto;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   transition: ${transitions.hover};
 
   &:hover {
@@ -176,7 +176,7 @@ export const FormInput = styled.input`
     padding: 0.5rem 1rem;
     border-radius: ${radius.sm};
     cursor: pointer;
-    font-weight: 500;
+    font-weight: ${typography.weights.medium};
 
     &:hover {
       background: ${colors.primaryDark};
@@ -210,7 +210,7 @@ export const FormSubmitButton = styled.button`
   padding: 0.8rem 1.5rem;
   border-radius: ${radius.sm};
   cursor: pointer;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   transition: ${transitions.hover};
   width: 100%;
 
@@ -240,7 +240,7 @@ export const FormGroup = styled.div`
 
 export const FormLabel = styled.label`
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   color: var(--text-primary);
 `;
 
@@ -272,7 +272,7 @@ export const EmptyStateIcon = styled.div`
 
 export const EmptyStateTitle = styled.h3`
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   margin-bottom: 0.5rem;
   color: var(--text-primary);
 `;
@@ -300,7 +300,7 @@ export const FilterButton = styled.button<{ $isActive?: boolean }>`
   border: ${props => props.$isActive ? 'none' : `1px solid ${colors.border}`};
   border-radius: 20px;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   transition: ${transitions.hover};
   white-space: nowrap;
 
@@ -323,7 +323,7 @@ export const SortDropdown = styled.select`
   background: ${colors.background.secondary};
   color: var(--text-primary);
   cursor: pointer;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 
   &:focus {
     outline: none;
