@@ -10,6 +10,7 @@ import {
   Info, CheckCircle, AlertCircle, XCircle, X, Zap,
 } from 'lucide-react';
 import { ToastConfig, ToastType, ToastPosition } from './advancedUI.types';
+import { spacing } from '../../styles/theme/spacing';
 
 // ============================================================================
 // STYLES
@@ -116,7 +117,7 @@ const ToastContent = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: ${spacing.xs};
 `;
 
 const ToastMessage = styled.div`
@@ -154,7 +155,7 @@ const CloseButton = styled.button`
   flex-shrink: 0;
   background: none;
   border: none;
-  padding: 4px;
+  padding: ${spacing.xs};
   cursor: pointer;
   color: #999;
   display: flex;

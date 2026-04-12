@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { typography } from '../../../styles/theme/typography';
 import { transitions } from '../../../../styles/theme/transitions';
 import { radius } from '../../../../styles/theme/radius';
+import { spacing } from '../../../../styles/theme/spacing';
 
 export const PropertyMatrixContainer = styled.div`
   background: var(--bg-card);
@@ -17,7 +18,7 @@ export const MatrixHeader = styled.div`
   padding: 16px 20px;
   border-bottom: 1px solid var(--border-color);
   background: var(--bg-secondary);
-  gap: 16px;
+  gap: ${spacing.md};
   flex-wrap: wrap;
 `;
 
@@ -32,7 +33,7 @@ export const MatrixInfo = styled.div`
 export const MatrixSearch = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 8px 14px;
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
@@ -137,7 +138,7 @@ export const OwnersCell = styled.div`
 export const OwnerBadge = styled.button<{ $multiPhone?: boolean }>`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: ${spacing.xs};
   padding: 4px 8px;
   background: var(--bg-secondary);
   border: 1px solid
@@ -206,8 +207,8 @@ export const Pagination = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
-  padding: 16px;
+  gap: ${spacing.sm};
+  padding: ${spacing.md};
   border-top: 1px solid var(--border-color);
 `;
 

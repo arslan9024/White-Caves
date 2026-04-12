@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { transitions } from '../../../styles/theme/transitions';
 import { typography } from '../../../styles/theme/typography';
 import { radius } from '../../../styles/theme/radius';
+import { spacing } from '../../../styles/theme/spacing';
 
 export const CommandCenterContainer = styled.div`
   min-height: 100vh;
@@ -27,7 +28,7 @@ export const CommandCenterHeader = styled.header`
 export const HeaderLeft = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: ${spacing.xs};
 `;
 
 export const CommandCenterTitle = styled.h1`
@@ -54,14 +55,14 @@ export const CommandCenterSubtitle = styled.p`
 export const HeaderControls = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: ${spacing.md};
 `;
 
 export const ViewToggleContainer = styled.div`
   display: flex;
   background: rgba(255, 255, 255, 0.05);
   border-radius: ${radius.lg};
-  padding: 4px;
+  padding: ${spacing.xs};
 `;
 
 export const ToggleBtn = styled.button<{ $active?: boolean }>`
@@ -156,7 +157,7 @@ export const LoadingContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: ${spacing.md};
   padding: 40px;
   color: #e2e8f0;
 

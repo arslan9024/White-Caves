@@ -6,6 +6,7 @@
 
 import React, { useState, memo } from 'react';
 import styled from 'styled-components';
+import { spacing } from '../../styles/theme/spacing';
 
 export type TabsVariant = 'default' | 'underline' | 'box';
 
@@ -90,7 +91,7 @@ const TabButton = styled.button<{
   opacity: ${props => (props.disabled ? '0.5' : '1')};
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 const TabContent = styled.div`

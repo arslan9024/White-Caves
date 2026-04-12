@@ -1,6 +1,7 @@
 import styled, { keyframes } from 'styled-components';
 import { radius } from '../../styles/theme/radius';
 import { typography } from '../../styles/theme/typography';
+import { spacing } from '../../styles/theme/spacing';
 
 // Keyframes
 const trendUp = keyframes`
@@ -82,7 +83,7 @@ export const StatCardWrapper = styled.div<{ $backgroundColor: string; $borderCol
   }
 
   @media (max-width: 768px) {
-    padding: 16px;
+    padding: ${spacing.md};
     gap: 10px;
   }
 `;
@@ -137,7 +138,7 @@ export const TrendIcon = styled.svg<{ $trendType?: 'up' | 'down' | 'stable' }>`
 export const StatCardValue = styled.div`
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const StatValue = styled.div<{ $color?: string }>`
@@ -194,7 +195,7 @@ export const SparklineFill = styled.polyline`
 export const StatCardComparison = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   font-size: ${typography.sizes.xs};
 `;
 

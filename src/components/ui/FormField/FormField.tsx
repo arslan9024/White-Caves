@@ -9,6 +9,7 @@ import React, { FC, memo, useState, useId } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 import type { PasswordStrength } from '@/utils/validation';
+import { spacing } from '../../../styles/theme/spacing';
 
 /* ═══════════════════════════════ Types ════════════════════════════ */
 
@@ -64,7 +65,7 @@ const shake = keyframes`
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: ${spacing.xs};
   width: 100%;
 `;
 
@@ -169,7 +170,7 @@ const TogglePasswordBtn = styled.button`
   border: none;
   cursor: pointer;
   color: ${(p) => p.theme.colors?.text?.tertiary || '#999'};
-  padding: 4px;
+  padding: ${spacing.xs};
   display: flex;
   align-items: center;
 
@@ -181,7 +182,7 @@ const TogglePasswordBtn = styled.button`
 const ErrorRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: ${spacing.xs};
   color: ${(p) => p.theme.colors?.error || '#B71C1C'};
   font-size: 13px;
   min-height: 20px;
@@ -206,7 +207,7 @@ const ValidIcon = styled.span`
 
 const StrengthBar = styled.div`
   display: flex;
-  gap: 4px;
+  gap: ${spacing.xs};
   margin-top: 4px;
 `;
 

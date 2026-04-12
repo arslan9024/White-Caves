@@ -4,6 +4,7 @@ import { colors } from '../styles/theme/colors';
 import { typography } from '../styles/theme/typography';
 import { transitions } from '../styles/theme/transitions';
 import { radius } from '../styles/theme/radius';
+import { spacing } from '../styles/theme/spacing';
 
 const pulse = keyframes`
   0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
@@ -65,7 +66,7 @@ export const TourTitleText = styled.h3`
 
 export const TourControlsHeader = styled.div`
   display: flex;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const TourBtn = styled.button<{ $close?: boolean; $active?: boolean }>`
@@ -215,11 +216,11 @@ export const TourFooter = styled.div`
 export const ZoomControls = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border-radius: 25px;
-  padding: 4px;
+  padding: ${spacing.xs};
 `;
 
 export const ZoomBtn = styled.button`
@@ -247,9 +248,9 @@ export const ZoomLevel = styled.span`
 
 export const RoomNavigator = styled.div`
   display: flex;
-  gap: 8px;
+  gap: ${spacing.sm};
   overflow-x: auto;
-  padding: 4px;
+  padding: ${spacing.xs};
   max-width: 50%;
 `;
 
@@ -296,7 +297,7 @@ export const TourInfo = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4px;
+  gap: ${spacing.xs};
 `;
 
 export const TourInfoText = styled.div`

@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { radius } from '../../styles/theme/radius';
 import { typography } from '../../styles/theme/typography';
+import { spacing } from '../../styles/theme/spacing';
 
 export const StatusNotificationContainer = styled.div`
   position: fixed;
@@ -135,7 +136,7 @@ export const StatusMessage = styled.span`
 export const StatusDismiss = styled.button`
   background: transparent;
   border: none;
-  padding: 4px;
+  padding: ${spacing.xs};
   cursor: pointer;
   color: var(--text-muted, #9ca3af);
   border-radius: ${radius.sm};

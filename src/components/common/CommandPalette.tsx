@@ -20,6 +20,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { selectCommandPaletteOpen, closeCommandPalette, selectDepartment } from '../../store/slices/sidebarSlice';
 import styled, { keyframes } from 'styled-components';
+import { spacing } from '../../styles/theme/spacing';
 
 // ─── Types ────────────────────────────────────────────────────────────────
 
@@ -131,7 +132,7 @@ const CloseHint = styled.kbd`
 const ResultsList = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 8px;
+  padding: ${spacing.sm};
 `;
 
 const CategoryLabel = styled.div`
@@ -203,7 +204,7 @@ const Footer = styled.div`
   border-top: 1px solid #E5E7EB;
   font-size: 12px;
   color: #9CA3AF;
-  gap: 16px;
+  gap: ${spacing.md};
 
   @media (prefers-color-scheme: dark) {
     border-top-color: #334155;
@@ -214,7 +215,7 @@ const Footer = styled.div`
 const FooterHint = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: ${spacing.xs};
 
   kbd {
     font-size: 10px;

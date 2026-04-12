@@ -1,7 +1,7 @@
 import styled, { keyframes, css } from 'styled-components';
 import { theme } from '../../../styles/theme';
 
-const { colors, shadows, radius, transitions, spacing } = theme;
+const { colors, shadows, radius, transitions, spacing, typography } = theme;
 
 /* ═══════════════════════════════════════════════════════════════
    MOBILE MENU DRAWER
@@ -97,7 +97,7 @@ export const DrawerLogoMark = styled.div`
   align-items: center;
   justify-content: center;
   color: #FFFFFF;
-  font-weight: 800;
+  font-weight: ${typography.weights.extrabold};
   font-size: 14px;
   letter-spacing: 0.5px;
 `;
@@ -259,7 +259,7 @@ export const DrawerSubItem = styled.button<{ $active?: boolean }>`
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 10px ${spacing.md};
   background: transparent;
   border: none;

@@ -1,10 +1,11 @@
 import styled from 'styled-components';
+import { spacing } from '../styles/theme/spacing';
 
 export const ThemeToggleButton = styled.button`
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  padding: ${spacing.xs};
   display: flex;
   align-items: center;
   justify-content: center;

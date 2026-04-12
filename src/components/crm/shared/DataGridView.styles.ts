@@ -2,11 +2,12 @@ import styled from 'styled-components';
 import { transitions } from '../../../styles/theme/transitions';
 import { typography } from '../../../styles/theme/typography';
 import { radius } from '../../../styles/theme/radius';
+import { spacing } from '../../../styles/theme/spacing';
 
 export const DataGridViewContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: ${spacing.md};
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: ${radius.xl};
@@ -79,7 +80,7 @@ export const GridSearch = styled.div`
 export const GridFilterButton = styled.button`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 10px 16px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
@@ -158,7 +159,7 @@ export const GridTableHeader = styled.th`
   span {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: ${spacing.xs};
   }
 
   [data-theme='dark'] & {
@@ -279,7 +280,7 @@ export const PaginationInfo = styled.span`
 export const PaginationControls = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
 
   [data-theme='dark'] & {
   }

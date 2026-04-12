@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { transitions } from '../../../../styles/theme/transitions';
 import { typography } from '../../../../styles/theme/typography';
 import { radius } from '../../../../styles/theme/radius';
+import { spacing } from '../../../../styles/theme/spacing';
 
 export const PropertyDetailsCardContainer = styled.div`
   background: var(--bg-primary);
@@ -23,7 +24,7 @@ export const CardHeader = styled.div`
 export const PropertyId = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   font-size: ${typography.sizes.lg};
   font-weight: ${typography.weights.bold};
   color: var(--text-primary);
@@ -80,7 +81,7 @@ export const DetailsSection = styled.div`
 export const SectionTitle = styled.h3`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   font-size: ${typography.sizes.sm};
   font-weight: ${typography.weights.semibold};
   color: var(--text-secondary);
@@ -98,7 +99,7 @@ export const FieldsGrid = styled.div`
 
   &.compact {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 8px;
+    gap: ${spacing.sm};
   }
 `;
 
@@ -228,7 +229,7 @@ export const OwnerContacts = styled.div`
 export const ContactBadge = styled.span`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: ${spacing.xs};
   padding: 3px 8px;
   background: var(--bg-secondary);
   border-radius: ${radius.sm};

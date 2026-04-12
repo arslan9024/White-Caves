@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../../../../styles/theme';
 
-const { spacing, radius, shadows, transitions, colors, typography } = theme;
+const { spacing, radius, shadows, transitions, colors, typography , spacing , spacing } = theme;
 
 export const MaryDetailsTabContainer = styled.div`
   padding: 0;
@@ -49,7 +49,7 @@ export const HeaderContent = styled.div`
 `;
 
 export const HeaderSubtitle = styled.p`
-  margin: 4px 0 0 0;
+  margin: ${spacing.xs} 0 0 0;
   font-size: ${typography.sizes.sm};
   color: var(--text-secondary, #6b7280);
 
@@ -60,7 +60,7 @@ export const HeaderSubtitle = styled.p`
 
 export const DetailsViewTabs = styled.div`
   display: flex;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 12px 20px;
   border-bottom: 1px solid var(--border-color);
   background: var(--bg-primary);
@@ -147,7 +147,7 @@ export const DetailsViewContent = styled.div`
 export const GuideSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: ${spacing.lg};
 
   [data-theme='dark'] & {
   }
@@ -155,8 +155,8 @@ export const GuideSection = styled.div`
 
 export const InfoCard = styled.div`
   display: flex;
-  gap: 16px;
-  padding: 16px;
+  gap: ${spacing.md};
+  padding: ${spacing.md};
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: ${radius.lg};
@@ -262,7 +262,7 @@ export const SelectedPropertySection = styled.div`
 export const PropertyDetails = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
+  gap: ${spacing.md};
 
   [data-theme='dark'] & {
   }
@@ -327,7 +327,7 @@ export const OwnersList = styled.ul`
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: ${spacing.xs};
 
   li {
     color: var(--text-secondary);
@@ -399,7 +399,7 @@ export const MatrixSection = styled.div`
 `;
 
 export const MatrixInfo = styled.div`
-  padding: 16px;
+  padding: ${spacing.md};
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: ${radius.lg};
@@ -424,7 +424,7 @@ export const MatrixInfo = styled.div`
 export const ClustersContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: ${spacing.lg};
 
   [data-theme='dark'] & {
   }
@@ -498,7 +498,7 @@ export const CardHeader = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 8px;
-  gap: 8px;
+  gap: ${spacing.sm};
 
   [data-theme='dark'] & {
   }
@@ -517,7 +517,7 @@ export const PNumber = styled.span`
 export const CardBody = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: ${spacing.xs};
   margin-bottom: 8px;
 
   p {

@@ -3,11 +3,12 @@ import { colors } from '../../../styles/theme/colors';
 import { typography } from '../../../../styles/theme/typography';
 import { transitions } from '../../../../styles/theme/transitions';
 import { radius } from '../../../../styles/theme/radius';
+import { spacing } from '../../../../styles/theme/spacing';
 
 export const ClusterBrowserContainer = styled.div`
   background: var(--bg-card);
   border-radius: ${radius.xl};
-  padding: 16px;
+  padding: ${spacing.md};
   margin-bottom: 20px;
   border: 1px solid var(--border-color);
 
@@ -54,7 +55,7 @@ export const ClusterCount = styled.span`
 export const ClusterGrid = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const ClusterChip = styled.button<{ $active?: boolean }>`

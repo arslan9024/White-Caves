@@ -10,6 +10,7 @@ import {
   Info, CheckCircle, AlertCircle, XCircle, X,
 } from 'lucide-react';
 import { AlertProps, AlertType } from './advancedUI.types';
+import { spacing } from '../../styles/theme/spacing';
 
 // ============================================================================
 // STYLES
@@ -92,7 +93,7 @@ const AlertDescription = styled.div`
 
 const AlertActions = styled.div`
   display: flex;
-  gap: 8px;
+  gap: ${spacing.sm};
   margin-top: 10px;
 `;
 
@@ -122,7 +123,7 @@ const CloseButton = styled.button`
   flex-shrink: 0;
   background: none;
   border: none;
-  padding: 4px;
+  padding: ${spacing.xs};
   cursor: pointer;
   color: inherit;
   display: flex;

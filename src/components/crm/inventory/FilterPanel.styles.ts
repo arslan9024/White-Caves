@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { transitions } from '../../../../styles/theme/transitions';
 import { typography } from '../../../../styles/theme/typography';
 import { radius } from '../../../../styles/theme/radius';
+import { spacing } from '../../../../styles/theme/spacing';
 
 export const FilterPanelContainer = styled.div`
   background: var(--bg-primary);
@@ -23,7 +24,7 @@ export const FilterPanelHeader = styled.div`
 export const FilterTitle = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   font-size: ${typography.sizes.md};
   font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
@@ -62,7 +63,7 @@ export const ClearFiltersBtn = styled.button`
 export const FilterGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 16px;
+  gap: ${spacing.md};
 
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, 1fr);

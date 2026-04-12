@@ -1,6 +1,7 @@
 import styled, { css, keyframes } from 'styled-components';
 import { colors } from '../../../styles/theme/colors';
 import { typography } from '../../../styles/theme/typography';
+import { spacing } from '../../../styles/theme/spacing';
 
 /* ═══════════════════════════════════════════════════════════════
    TOP BAR — Single unified navbar (56px)
@@ -23,7 +24,7 @@ export const TopBarContainer = styled.header`
   height: 56px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: ${spacing.md};
   padding: 0 16px;
   background: #FFFFFF;
   border-bottom: 1px solid #E5E7EB;
@@ -58,7 +59,7 @@ export const LogoMark = styled.div`
   align-items: center;
   justify-content: center;
   color: #FFFFFF;
-  font-weight: 800;
+  font-weight: ${typography.weights.extrabold};
   font-size: 14px;
   font-family: ${typography.fontFamily.heading};
   letter-spacing: 0.5px;
@@ -172,7 +173,7 @@ export const BreadcrumbSeparator = styled.span`
 export const ActionsSection = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: ${spacing.xs};
   flex-shrink: 0;
 `;
 
@@ -181,7 +182,7 @@ export const ActionsSection = styled.div`
 export const SearchTrigger = styled.button`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 6px 12px;
   background: #F3F4F6;
   border: 1px solid #E5E7EB;
@@ -307,7 +308,7 @@ export const NotifBadge = styled.span`
 export const UserButton = styled.button`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 4px 8px 4px 4px;
   background: transparent;
   border: none;
@@ -416,7 +417,7 @@ export const DropdownItem = styled.button<{ $danger?: boolean }>`
 export const DropdownDivider = styled.div`
   height: 1px;
   background: #E5E7EB;
-  margin: 4px 0;
+  margin: ${spacing.xs} 0;
 
   @media (prefers-color-scheme: dark) {
     background: #334155;

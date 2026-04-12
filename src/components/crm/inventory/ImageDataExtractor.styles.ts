@@ -2,6 +2,7 @@ import styled, { keyframes } from 'styled-components';
 import { transitions } from '../../../../styles/theme/transitions';
 import { typography } from '../../../../styles/theme/typography';
 import { radius } from '../../../../styles/theme/radius';
+import { spacing } from '../../../../styles/theme/spacing';
 
 const spin = keyframes`
   from {
@@ -15,7 +16,7 @@ const spin = keyframes`
 export const ImageExtractorContainer = styled.div`
   background: var(--bg-secondary);
   border-radius: ${radius.xl};
-  padding: 24px;
+  padding: ${spacing.lg};
   border: 1px solid var(--border-color);
 `;
 
@@ -25,7 +26,7 @@ export const ExtractorHeader = styled.div`
   align-items: center;
   margin-bottom: 24px;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: ${spacing.md};
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -56,7 +57,7 @@ export const HeaderSubtext = styled.span`
 
 export const HeaderActions = styled.div`
   display: flex;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const ActionBtn = styled.button<{ $danger?: boolean }>`
@@ -132,7 +133,7 @@ export const ProcessingState = styled.div`
 export const UploadedFiles = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: ${spacing.sm};
   margin-top: 16px;
 `;
 
@@ -182,13 +183,13 @@ export const ResultHeader = styled.div`
 export const ResultSource = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   font-weight: ${typography.weights.medium};
   color: var(--text-primary);
 `;
 
 export const PreviewBtn = styled.button`
-  padding: 4px;
+  padding: ${spacing.xs};
   border: none;
   background: transparent;
   color: var(--text-muted);
@@ -204,7 +205,7 @@ export const PreviewBtn = styled.button`
 
 export const ResultActions = styled.div`
   display: flex;
-  gap: 4px;
+  gap: ${spacing.xs};
 
   button {
     padding: 6px;
@@ -223,7 +224,7 @@ export const ResultActions = styled.div`
 `;
 
 export const ResultData = styled.div`
-  padding: 16px;
+  padding: ${spacing.md};
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -243,7 +244,7 @@ export const DataField = styled.div`
 export const FieldValues = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const ValueChip = styled.div`
@@ -287,7 +288,7 @@ export const EditBtn = styled.button`
 
 export const ImportSection = styled.div`
   margin-top: 24px;
-  padding: 16px;
+  padding: ${spacing.md};
   background: rgba(245, 158, 11, 0.1);
   border: 1px solid rgba(245, 158, 11, 0.3);
   border-radius: 10px;
@@ -365,7 +366,7 @@ export const ClosePreviewBtn = styled.button`
   border: none;
   color: white;
   cursor: pointer;
-  padding: 8px;
+  padding: ${spacing.sm};
   display: flex;
   align-items: center;
   justify-content: center;

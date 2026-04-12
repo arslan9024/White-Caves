@@ -11,6 +11,7 @@ import { useToast } from '../../context/useToast';
 import type { Toast as ToastType } from '../../context/ToastContext';
 import { TIMING } from '../../constants/app';
 import { Info, CheckCircle, AlertCircle, XCircle, X } from 'lucide-react';
+import { spacing } from '../../styles/theme/spacing';
 
 const ToastContainerWrapper = styled.div<{ $position: string }>`
   position: fixed;
@@ -108,7 +109,7 @@ const ToastCloseBtn = styled.button`
   flex-shrink: 0;
   background: none;
   border: none;
-  padding: 4px;
+  padding: ${spacing.xs};
   cursor: pointer;
   color: #999;
   display: flex;

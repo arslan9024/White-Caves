@@ -4,6 +4,7 @@ import { colors } from '../../styles/theme/colors';
 import { typography } from '../../styles/theme/typography';
 import { transitions } from '../../styles/theme/transitions';
 import { radius } from '../../styles/theme/radius';
+import { spacing } from '../../styles/theme/spacing';
 
 const slideUp = keyframes`
   from {
@@ -262,7 +263,7 @@ export const SendBtn = styled.button`
 export const ContactAppsContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  gap: ${spacing.sm};
   margin-top: 12px;
 `;
 
@@ -276,7 +277,7 @@ export const ChatAppBtn = styled.button<{ $appColor?: string }>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: ${spacing.xs};
   font-size: 0.75rem;
   font-weight: ${typography.weights.semibold};
   transition: ${transitions.hover};

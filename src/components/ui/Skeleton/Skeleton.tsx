@@ -16,6 +16,7 @@
 
 import React, { memo } from 'react';
 import styled, { keyframes, css } from 'styled-components';
+import { spacing } from '../../../styles/theme/spacing';
 
 /* ──────────────────────────── Types ───────────────────────────── */
 
@@ -87,7 +88,7 @@ const SkeletonBlock = styled.div<{
 const TextGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: ${spacing.sm};
   width: 100%;
 `;
 

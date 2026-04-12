@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { transitions } from '../../../styles/theme/transitions';
 import { typography } from '../../../styles/theme/typography';
 import { radius } from '../../../styles/theme/radius';
+import { spacing } from '../../../styles/theme/spacing';
 
 export const OwnerDrawerOverlay = styled.div`
   position: fixed;
@@ -44,7 +45,7 @@ export const OwnerDrawer = styled.div`
 export const DrawerHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: ${spacing.md};
   padding: 20px;
   border-bottom: 1px solid var(--border-color);
   background: var(--bg-secondary);
@@ -101,7 +102,7 @@ export const DrawerCloseButton = styled.button`
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  padding: 8px;
+  padding: ${spacing.sm};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -149,7 +150,7 @@ export const DrawerSection = styled.section`
   h3 {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: ${spacing.sm};
     font-size: ${typography.sizes.base};
     font-weight: ${typography.weights.semibold};
     color: var(--text-primary);
@@ -164,7 +165,7 @@ export const DrawerSection = styled.section`
 export const ContactList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const ContactItem = styled.div<{ $isPrimary?: boolean }>`
@@ -215,7 +216,7 @@ export const PrimaryBadge = styled.span`
 export const PropertiesList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const PropertyItem = styled.button`
@@ -249,7 +250,7 @@ export const PropertyItem = styled.button`
 export const PropertyItemInfo = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: ${spacing.xs};
 `;
 
 export const PropertyPNumber = styled.span`
@@ -274,7 +275,7 @@ export const PropertyProject = styled.span`
 export const PropertyLocation = styled.span`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: ${spacing.xs};
   font-size: 11px;
   color: var(--text-muted);
 
@@ -291,7 +292,7 @@ export const PropertyLocation = styled.span`
 export const PropertyItemMeta = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const PropertyStatus = styled.span<{ $status?: string }>`

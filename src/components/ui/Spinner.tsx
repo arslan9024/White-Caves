@@ -7,6 +7,7 @@
 import React, { FC, memo } from 'react';
 import styled from 'styled-components';
 import { SpinnerProps, SpinnerVariant, SpinnerSize } from './advancedUI.types';
+import { spacing } from '../../styles/theme/spacing';
 
 // ============================================================================
 // STYLES
@@ -61,7 +62,7 @@ const DefaultSpinner = styled.div<{ $color?: string; $size: SpinnerSize }>`
 // Dots spinner animation
 const DotsSpinner = styled.div<{ $color?: string; $size: SpinnerSize }>`
   display: flex;
-  gap: 4px;
+  gap: ${spacing.xs};
   align-items: center;
   justify-content: center;
   height: 100%;

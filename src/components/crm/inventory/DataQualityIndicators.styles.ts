@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { transitions } from '../../../../styles/theme/transitions';
 import { typography } from '../../../../styles/theme/typography';
 import { radius } from '../../../../styles/theme/radius';
+import { spacing } from '../../../../styles/theme/spacing';
 
 export const DataQualityIndicatorsContainer = styled.div`
   background: var(--bg-card);
@@ -32,14 +33,14 @@ export const IndicatorsHeader = styled.div`
 export const IndicatorsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  gap: ${spacing.md};
 `;
 
 export const IndicatorCard = styled.button<{ $accentColor?: string }>`
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 16px;
+  gap: ${spacing.md};
+  padding: ${spacing.md};
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 10px;

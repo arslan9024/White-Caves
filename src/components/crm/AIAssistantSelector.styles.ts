@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { transitions } from '../../../styles/theme/transitions';
 import { typography } from '../../../styles/theme/typography';
 import { radius } from '../../../styles/theme/radius';
+import { spacing } from '../../../styles/theme/spacing';
 
 export const SelectorContainer = styled.div<{ $compact?: boolean }>`
   position: relative;
@@ -94,7 +95,7 @@ export const DropdownSearch = styled.div`
   align-items: center;
   padding: 12px 16px;
   border-bottom: 1px solid var(--border-color);
-  gap: 8px;
+  gap: ${spacing.sm};
   position: sticky;
   top: 0;
   background: var(--card-bg);
@@ -122,7 +123,7 @@ export const SearchInput = styled.input`
 export const ClearSearchBtn = styled.button`
   background: none;
   border: none;
-  padding: 4px;
+  padding: ${spacing.xs};
   cursor: pointer;
   color: var(--text-secondary);
   display: flex;
@@ -177,7 +178,7 @@ export const DropdownSection = styled.div`
 export const SectionHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 8px 16px;
   font-size: 11px;
   font-weight: ${typography.weights.semibold};
@@ -253,14 +254,14 @@ export const ItemTitle = styled.div`
 export const ItemMetrics = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   margin-top: 4px;
 `;
 
 export const Metric = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: ${spacing.xs};
   font-size: 10px;
   color: var(--text-tertiary);
 `;

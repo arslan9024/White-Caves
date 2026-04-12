@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
+import { typography } from '../../../styles/theme/typography';
+import { spacing } from '../../../styles/theme/spacing';
 
 /* ===============================================
    NAVBAR CONTAINER
@@ -74,7 +76,7 @@ export const LogoIcon = styled.div`
 
 export const LogoLetter = styled.span`
   font-size: 20px;
-  font-weight: 800;
+  font-weight: ${typography.weights.extrabold};
   color: white;
   font-family: ${theme.typography.fontFamily.heading};
 `;
@@ -250,7 +252,7 @@ export const SearchInput = styled.input`
 
 export const SearchShortcut = styled.div`
   display: flex;
-  gap: 4px;
+  gap: ${spacing.xs};
 
   @media (max-width: 768px) {
     display: none;
@@ -614,7 +616,7 @@ export const ChevronIcon = styled.div<{ $open?: boolean }>`
 export const DropdownDivider = styled.div`
   height: 1px;
   background: ${theme.colors.border};
-  margin: 4px 0;
+  margin: ${spacing.xs} 0;
 
   @media (prefers-color-scheme: dark) {
     background: rgba(255, 255, 255, 0.1);

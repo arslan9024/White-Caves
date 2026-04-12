@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
+import { spacing } from '../../styles/theme/spacing';
 import { Badge } from '../design-system';
 
 export type NotificationCenterProps = {
@@ -34,7 +35,7 @@ const BellButton = styled.button`
   color: ${theme.colors.text.primary};
   font-size: 20px;
   cursor: pointer;
-  padding: 8px;
+  padding: ${spacing.sm};
   position: relative;
   transition: ${theme.transitions.create('all', theme.transitions.durations.standard)};
   display: flex;

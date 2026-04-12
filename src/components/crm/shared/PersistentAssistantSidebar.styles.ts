@@ -3,6 +3,7 @@ import { keyframes } from 'styled-components';
 import { transitions } from '../../../styles/theme/transitions';
 import { typography } from '../../../styles/theme/typography';
 import { radius } from '../../../styles/theme/radius';
+import { spacing } from '../../../styles/theme/spacing';
 
 const badgePulse = keyframes`
   0%, 100% { transform: scale(1); }
@@ -251,7 +252,7 @@ export const NotificationBadgeContainer = styled.div<{
 export const SidebarFooter = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 12px 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   flex-shrink: 0;

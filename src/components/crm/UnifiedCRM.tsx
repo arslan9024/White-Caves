@@ -2,6 +2,7 @@ import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { RootState, AppDispatch } from '../../store/store';
+import { spacing } from '../../styles/theme/spacing';
 
 // ============================================================================
 // TYPES & CONSTANTS
@@ -149,19 +150,19 @@ const DASHBOARD_CONFIGS: Record<DashboardView, DashboardConfig> = {
 const StyledContainer = styled.div`
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 24px;
+  padding: ${spacing.lg};
 `;
 
 const Header = styled.div`
   background: white;
   border-radius: 12px;
-  padding: 24px;
+  padding: ${spacing.lg};
   margin-bottom: 32px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 24px;
+  gap: ${spacing.lg};
 
   @media (max-width: 1024px) {
     flex-direction: column;
@@ -186,7 +187,7 @@ const Subtitle = styled.p`
   font-size: 14px;
   color: #666;
   display: flex;
-  gap: 16px;
+  gap: ${spacing.md};
   flex-wrap: wrap;
 
   span {
@@ -203,7 +204,7 @@ const Subtitle = styled.p`
 
 const ViewSelectorContainer = styled.div`
   display: flex;
-  gap: 8px;
+  gap: ${spacing.sm};
   flex-wrap: wrap;
   padding: 12px;
   background: #f5f5f5;
@@ -245,13 +246,13 @@ const ViewButton = styled.button<{ $isActive: boolean; $isDisabled: boolean }>`
 const ContentArea = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
+  gap: ${spacing.lg};
 `;
 
 const Card = styled.div`
   background: white;
   border-radius: 12px;
-  padding: 24px;
+  padding: ${spacing.lg};
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
 
@@ -281,7 +282,7 @@ const MetricCard = styled(Card)`
 const FeatureList = styled.ul`
   list-style: none;
   padding: 0;
-  margin: 16px 0 0 0;
+  margin: ${spacing.md} 0 0 0;
 
   li {
     padding: 8px 0;
@@ -290,7 +291,7 @@ const FeatureList = styled.ul`
     border-bottom: 1px solid #f0f0f0;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: ${spacing.sm};
 
     &:last-child {
       border-bottom: none;
@@ -306,7 +307,7 @@ const FeatureList = styled.ul`
 
 const RoleIndicator = styled.div`
   display: flex;
-  gap: 8px;
+  gap: ${spacing.sm};
   flex-wrap: wrap;
   margin-top: 12px;
 

@@ -6,6 +6,7 @@
 
 import React, { useMemo, memo } from 'react';
 import styled from 'styled-components';
+import { spacing } from '../../styles/theme/spacing';
 
 export interface PaginationProps {
   currentPage: number;
@@ -21,7 +22,7 @@ const PaginationContainer = styled.nav`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 16px 0;
 `;
 

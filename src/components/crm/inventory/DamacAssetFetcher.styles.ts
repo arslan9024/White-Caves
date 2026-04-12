@@ -3,7 +3,7 @@ import { keyframes } from 'styled-components';
 import { typography } from '../../../styles/theme/typography';
 import { theme } from '../../../styles/theme';
 
-const { colors, shadows, transitions, radius } = theme;
+const { colors, shadows, transitions, radius , spacing , spacing } = theme;
 
 const spin = keyframes`
   from { transform: rotate(0deg); }
@@ -13,7 +13,7 @@ const spin = keyframes`
 export const DamacFetcherContainer = styled.div`
   background: var(--bg-secondary);
   border-radius: ${radius.xl};
-  padding: 24px;
+  padding: ${spacing.lg};
   border: 1px solid var(--border-color);
 
   @media (prefers-color-scheme: dark) {
@@ -64,9 +64,9 @@ export const HeaderInfo = styled.div`
 
 export const ViewToggle = styled.div`
   display: flex;
-  gap: 4px;
+  gap: ${spacing.xs};
   background: var(--bg-tertiary);
-  padding: 4px;
+  padding: ${spacing.xs};
   border-radius: ${radius.lg};
 
   @media (prefers-color-scheme: dark) {
@@ -75,7 +75,7 @@ export const ViewToggle = styled.div`
 `;
 
 export const ViewToggleButton = styled.button<{ $active?: boolean }>`
-  padding: 8px;
+  padding: ${spacing.sm};
   border: none;
   background: ${props => props.$active ? 'var(--bg-primary)' : 'transparent'};
   border-radius: ${radius.md};
@@ -95,7 +95,7 @@ export const ViewToggleButton = styled.button<{ $active?: boolean }>`
 export const FetcherInputs = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: ${spacing.md};
   margin-bottom: 20px;
 
   @media (max-width: 768px) {
@@ -106,7 +106,7 @@ export const FetcherInputs = styled.div`
 export const InputGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const InputLabel = styled.label`
@@ -132,7 +132,7 @@ export const AutoFillButton = styled.button`
   color: ${colors.primary};
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: ${spacing.xs};
   transition: ${transitions.hover};
 
   &:hover {
@@ -188,7 +188,7 @@ export const FetcherActions = styled.div`
 export const FetchButton = styled.button<{ $variant?: 'primary' | 'danger' | 'default' }>`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 10px 20px;
   border: 1px solid var(--border-color);
   background: ${props => {
@@ -277,7 +277,7 @@ export const SpinningIcon = styled.svg`
 
 export const ResultsSummary = styled.div`
   display: flex;
-  gap: 16px;
+  gap: ${spacing.md};
   margin-bottom: 20px;
   padding: 12px;
   background: var(--bg-tertiary);
@@ -353,7 +353,7 @@ export const SelectionBadge = styled.div`
   transform: translate(-50%, -50%);
   background: rgba(212, 175, 55, 0.9);
   border-radius: 50%;
-  padding: 8px;
+  padding: ${spacing.sm};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -361,10 +361,10 @@ export const SelectionBadge = styled.div`
 `;
 
 export const AssetInfo = styled.div`
-  padding: 8px;
+  padding: ${spacing.sm};
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: ${spacing.xs};
   font-size: 0.75rem;
 `;
 
@@ -423,7 +423,7 @@ export const OpenLink = styled.a`
 
 export const NotFoundSection = styled.div`
   margin-top: 20px;
-  padding: 16px;
+  padding: ${spacing.md};
   background: rgba(239, 68, 68, 0.05);
   border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: ${radius.lg};
@@ -447,7 +447,7 @@ export const NotFoundSection = styled.div`
 export const NotFoundList = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const NotFoundItem = styled.span`

@@ -22,7 +22,7 @@ export const SidebarHeader = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px;
+  padding: ${spacing.md};
   border-bottom: 1px solid var(--border-color);
 
   @media (prefers-color-scheme: dark) {
@@ -148,7 +148,7 @@ export const SidebarNav = styled.nav`
 export const SidebarDivider = styled.div`
   height: 1px;
   background: var(--border-color);
-  margin: 8px 0;
+  margin: ${spacing.sm} 0;
 
   @media (prefers-color-scheme: dark) {
     background: #333333;
@@ -240,7 +240,7 @@ export const ItemArrow = styled.span`
 
 export const SidebarFooter = styled.div`
   display: flex;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 12px 16px;
   border-top: 1px solid var(--border-color);
   background: var(--bg-primary);
