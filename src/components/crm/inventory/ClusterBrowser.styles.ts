@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { colors } from '../../../styles/theme/colors';
+import { transitions } from '../../../../styles/theme/transitions';
 
 export const ClusterBrowserContainer = styled.div`
   background: var(--bg-card);
@@ -63,7 +64,7 @@ export const ClusterChip = styled.button<{ $active?: boolean }>`
   border: 1px solid ${props => props.$active ? 'var(--primary)' : 'var(--border-color)'};
   color: ${props => props.$active ? 'white' : 'var(--text-primary)'};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     border-color: var(--primary);

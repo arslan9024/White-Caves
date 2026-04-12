@@ -1,4 +1,5 @@
 import styled, { keyframes } from 'styled-components';
+import { transitions } from '../../../../styles/theme/transitions';
 
 const spin = keyframes`
   from {
@@ -67,7 +68,7 @@ export const ActionBtn = styled.button<{ $danger?: boolean }>`
   cursor: pointer;
   font-size: 0.85rem;
   color: ${(props) => (props.$danger ? '#ef4444' : 'var(--text-primary)')};
-  transition: all 0.2s;
+  transition: ${transitions.hover};
   border-color: ${(props) => (props.$danger ? 'rgba(239, 68, 68, 0.3)' : 'var(--border-color)')};
 
   &:hover {
@@ -81,7 +82,7 @@ export const DropZone = styled.div<{ $active?: boolean; $processing?: boolean }>
   padding: 48px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: ${transitions.all};
   background: var(--bg-tertiary);
   border-color: ${(props) => (props.$active ? '#f59e0b' : 'var(--border-color)')};
   background: ${(props) => (props.$active ? 'rgba(245, 158, 11, 0.1)' : 'var(--bg-tertiary)')};
@@ -191,7 +192,7 @@ export const PreviewBtn = styled.button`
   color: var(--text-muted);
   cursor: pointer;
   border-radius: 4px;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
 
   &:hover {
     background: var(--bg-hover);
@@ -210,7 +211,7 @@ export const ResultActions = styled.div`
     color: var(--text-muted);
     cursor: pointer;
     border-radius: 4px;
-    transition: all 0.2s;
+    transition: ${transitions.hover};
 
     &:hover {
       background: var(--bg-hover);

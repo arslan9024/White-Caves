@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { typography } from '../styles/theme/typography';
+import { transitions } from '../styles/theme/transitions';
 
 export const NeighborhoodAnalyzerContainer = styled.div`
   padding: 3rem 5%;
@@ -50,7 +51,7 @@ export const AreaButton = styled.button<{ $isActive?: boolean }>`
   font-weight: 500;
   color: ${props => props.$isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     border-color: var(--primary-color, #1a365d);

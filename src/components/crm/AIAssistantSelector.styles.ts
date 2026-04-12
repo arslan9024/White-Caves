@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { transitions } from '../../../styles/theme/transitions';
 
 export const SelectorContainer = styled.div<{ $compact?: boolean }>`
   position: relative;
@@ -14,7 +15,7 @@ export const CurrentAssistantDisplay = styled.div`
   align-items: center;
   padding: 16px 20px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: ${transitions.all};
   border-radius: 15px;
   gap: 12px;
 
@@ -126,7 +127,7 @@ export const ClearSearchBtn = styled.button`
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
 
   &:hover {
     background: var(--hover-bg);
@@ -153,7 +154,7 @@ export const DeptBtn = styled.button<{ $active?: boolean }>`
   border-radius: 20px;
   font-size: 11px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
 
   &:hover {
     background: var(--hover-bg);
@@ -197,7 +198,7 @@ export const AssistantItem = styled.div<{ $selected?: boolean }>`
   align-items: center;
   padding: 10px 16px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
   gap: 12px;
   background: ${(props) =>
     props.$selected
@@ -311,7 +312,7 @@ export const FavoriteBtn = styled.button`
   align-items: center;
   justify-content: center;
   border-radius: 6px;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
 
   &:hover {
     color: var(--primary-color);

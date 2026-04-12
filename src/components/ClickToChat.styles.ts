@@ -36,7 +36,7 @@ export const ChatTrigger = styled.button<{ $expanded?: boolean }>`
   box-shadow: ${props => props.$expanded 
     ? '0 4px 12px rgba(0, 0, 0, 0.15)' 
     : '0 4px 20px rgba(37, 211, 102, 0.4)'};
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
   font-weight: 600;
   font-size: 0.9rem;
 
@@ -50,7 +50,7 @@ export const ChatTrigger = styled.button<{ $expanded?: boolean }>`
 
 export const ChatLabel = styled.span`
   white-space: nowrap;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 `;
 
 export const WhatsAppIconSmall = styled.svg`

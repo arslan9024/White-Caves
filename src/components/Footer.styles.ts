@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { transitions } from '../styles/theme/transitions';
 
 export const FooterContainer = styled.footer`
   background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
@@ -102,7 +103,7 @@ export const AppBtn = styled.a<{ $platform?: 'whatsapp' | 'botim' | 'gochat' }>`
   font-weight: 600;
   text-decoration: none;
   color: white;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   background: ${props => {
     switch (props.$platform) {
       case 'whatsapp': return '#25D366';
@@ -157,7 +158,7 @@ export const FooterSection = styled.div`
     color: rgba(255, 255, 255, 0.75);
     text-decoration: none;
     font-size: 0.9rem;
-    transition: all 0.2s ease;
+    transition: ${transitions.hover};
     display: inline-block;
 
     &:hover {

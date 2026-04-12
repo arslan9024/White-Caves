@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { keyframes } from 'styled-components';
+import { transitions } from '../styles/theme/transitions';
 
 const pulse = keyframes`
   0% {
@@ -29,7 +30,7 @@ export const WhatsAppFloatingBtn = styled.button`
   align-items: center;
   justify-content: center;
   z-index: var(--z-toast, 400);
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
   animation: ${pulse} 2s infinite;
 
   &:hover {

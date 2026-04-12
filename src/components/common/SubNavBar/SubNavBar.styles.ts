@@ -1,5 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 import { colors } from '../../../styles/theme/colors';
+import { transitions } from '../../../styles/theme/transitions';
 
 const pulse = keyframes`
   0%, 100% { opacity: 1; }
@@ -19,7 +20,7 @@ export const SubNavBarWrapper = styled.div`
   top: 64px;
   z-index: var(--z-sticky, 200);
   backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   [data-theme='dark'] & {
     background: rgba(30, 30, 40, 0.95);
@@ -94,7 +95,7 @@ export const SubNavItem = styled.button<{ $isActive?: boolean }>`
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   position: relative;
   white-space: nowrap;
   color: ${(props) => (props.$isActive ? 'white' : 'var(--text-secondary, #6b7280)')};
@@ -193,7 +194,7 @@ export const SubNavActionButton = styled.button`
   font-weight: 500;
   font-size: 0.875rem;
   font-family: inherit;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   &:hover {
     transform: translateY(-2px);

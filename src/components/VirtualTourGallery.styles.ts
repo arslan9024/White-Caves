@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { typography } from '../styles/theme/typography';
 import { keyframes } from 'styled-components';
+import { transitions } from '../styles/theme/transitions';
 
 const pulse = keyframes`
   0% { transform: scale(1); }
@@ -55,7 +56,7 @@ export const ViewBtn = styled.button<{ $active?: boolean }>`
   border-radius: 0.5rem;
   font-size: 0.85rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   color: ${props => props.$active 
     ? 'var(--text-on-primary, #ffffff)' 
     : 'var(--text-primary, #1a202c)'};
@@ -101,7 +102,7 @@ export const FeaturedTourCard = styled.div`
   overflow: hidden;
   box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   &:hover {
     transform: translateY(-6px);
@@ -257,7 +258,7 @@ export const ViewTourBtn = styled.button`
   border-radius: 0.5rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   &:hover {
     background: #0d1b2a;
@@ -285,7 +286,7 @@ export const TourCard = styled.div`
   overflow: hidden;
   box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   &:hover {
     transform: translateY(-6px);
@@ -326,7 +327,7 @@ export const LoadMoreBtn = styled.button`
   border-radius: 0.5rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   &:hover {
     background: #0d1b2a;

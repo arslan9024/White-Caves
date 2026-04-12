@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { transitions } from '../styles/theme/transitions';
 
 export const ErrorBoundaryContainer = styled.div`
   min-height: 100vh;
@@ -93,7 +94,7 @@ export const ErrorButton = styled.button<{ $variant?: 'primary' | 'secondary' }>
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
   border: none;
   outline: none;
 

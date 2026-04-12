@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { keyframes } from 'styled-components';
 import { colors } from '../styles/theme/colors';
+import { transitions } from '../styles/theme/transitions';
 
 const pulse = keyframes`
   0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
@@ -78,7 +79,7 @@ export const TourBtn = styled.button<{ $close?: boolean; $active?: boolean }>`
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   &:hover {
     background: ${props => props.$close 
@@ -130,7 +131,7 @@ export const TourHotspot = styled.button`
   justify-content: center;
   animation: ${pulse} 2s infinite;
   z-index: 5;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   &:hover {
     transform: translate(-50%, -50%) scale(1.2);
@@ -258,7 +259,7 @@ export const RoomThumb = styled.button<{ $active?: boolean }>`
   overflow: hidden;
   border: 2px solid ${props => props.$active ? colors.primary : 'transparent'};
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
   position: relative;
   background: none;
   padding: 0;

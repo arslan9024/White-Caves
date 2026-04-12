@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { typography } from '../styles/theme/typography';
+import { transitions } from '../styles/theme/transitions';
 
 export const OffplanTrackerContainer = styled.div`
   padding: 3rem 5%;
@@ -108,7 +109,7 @@ export const FilterTab = styled.button<{ $isActive?: boolean }>`
   font-size: 0.9rem;
   color: ${props => props.$isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   white-space: nowrap;
 
   &:hover {
@@ -142,7 +143,7 @@ export const ProjectCard = styled.div`
   border-radius: var(--radius-lg, 0.75rem);
   overflow: hidden;
   box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   &:hover {
     transform: translateY(-6px);
@@ -302,7 +303,7 @@ export const ActionButton = styled.button<{ $variant?: 'primary' | 'secondary' }
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     ${props => props.$variant === 'secondary'

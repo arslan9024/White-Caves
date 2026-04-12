@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { transitions } from '../styles/theme/transitions';
 
 export const InteractiveMapContainer = styled.div`
   padding: 3rem;
@@ -112,7 +113,7 @@ export const LocationMarker = styled.button<{ $isActive?: boolean }>`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 1;
   padding: 0;
@@ -163,7 +164,7 @@ export const LocationItem = styled.div<{ $isSelected?: boolean }>`
   border: 2px solid ${props => props.$isSelected ? 'var(--primary-color)' : 'var(--border-color)'};
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     border-color: var(--primary-color);
@@ -200,7 +201,7 @@ export const PropertyCard = styled.div`
   overflow: hidden;
   background: var(--bg-primary);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   &:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);

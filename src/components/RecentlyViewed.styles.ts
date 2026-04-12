@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { colors } from '../styles/theme/colors';
+import { transitions } from '../styles/theme/transitions';
 
 export const RecentlyViewedSection = styled.section`
   position: relative;
@@ -71,7 +72,7 @@ export const ClearButton = styled.button`
   border: 1px solid var(--border-color);
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     color: var(--error);
@@ -121,7 +122,7 @@ export const RecentPropertyCard = styled.div<{ $animationDelay?: string }>`
   border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
   animation: fadeSlideIn 0.4s ease-out forwards;
   opacity: 0;
   transform: translateY(10px);
@@ -288,7 +289,7 @@ export const ScrollButton = styled.button`
   justify-content: center;
   cursor: pointer;
   pointer-events: all;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   box-shadow: var(--shadow-md);
   color: var(--text-primary);
 

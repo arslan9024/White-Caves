@@ -81,7 +81,7 @@ export const ViewToggleButton = styled.button<{ $active?: boolean }>`
   border-radius: 6px;
   cursor: pointer;
   color: ${props => props.$active ? colors.primary : 'var(--text-muted)'};
-  transition: all 0.2s;
+  transition: ${transitions.hover};
 
   &:hover {
     color: ${colors.primary};
@@ -133,7 +133,7 @@ export const AutoFillButton = styled.button`
   display: flex;
   align-items: center;
   gap: 4px;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
 
   &:hover {
     background: rgba(212, 175, 55, 0.1);
@@ -224,7 +224,7 @@ export const FetchButton = styled.button<{ $variant?: 'primary' | 'danger' | 'de
         return 'var(--border-color)';
     }
   }};
-  transition: all 0.2s;
+  transition: ${transitions.hover};
 
   &:hover:not(:disabled) {
     ${props => {
@@ -315,7 +315,7 @@ export const AssetCard = styled.div<{ $selected?: boolean }>`
   overflow: hidden;
   border: 2px solid ${props => props.$selected ? colors.primary : 'var(--border-color)'};
   cursor: pointer;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
   background: var(--bg-secondary);
 
   &:hover {
@@ -409,7 +409,7 @@ export const OpenLink = styled.a`
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
   cursor: pointer;
 
   &:hover {

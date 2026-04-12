@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { transitions } from '../../../../styles/theme/transitions';
 
 export const FilterPanelContainer = styled.div`
   background: var(--bg-primary);
@@ -47,7 +48,7 @@ export const ClearFiltersBtn = styled.button`
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     background: rgba(212, 175, 55, 0.08);

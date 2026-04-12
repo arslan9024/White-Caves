@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { typography } from '../../../styles/theme/typography';
+import { transitions } from '../../../../styles/theme/transitions';
 
 export const PropertyMatrixContainer = styled.div`
   background: var(--bg-card);
@@ -147,7 +148,7 @@ export const OwnerBadge = styled.button<{ $multiPhone?: boolean }>`
   font-size: 11px;
   color: var(--text-primary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     border-color: var(--primary);
@@ -220,7 +221,7 @@ export const PaginationBtn = styled.button<{ $active?: boolean; $disabled?: bool
   border-radius: 6px;
   cursor: ${(props) => (props.$disabled ? 'not-allowed' : 'pointer')};
   opacity: ${(props) => (props.$disabled ? 0.5 : 1)};
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover:not(:disabled) {
     border-color: var(--primary);

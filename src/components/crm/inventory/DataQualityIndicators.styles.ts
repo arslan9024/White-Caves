@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { transitions } from '../../../../styles/theme/transitions';
 
 export const DataQualityIndicatorsContainer = styled.div`
   background: var(--bg-card);
@@ -41,7 +42,7 @@ export const IndicatorCard = styled.button<{ $accentColor?: string }>`
   border: 1px solid var(--border-color);
   border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   text-align: left;
   --accent-color: ${(props) => props.$accentColor || '#D4AF37'};
 

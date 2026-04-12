@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { colors } from '../styles/theme/colors';
+import { transitions } from '../styles/theme/transitions';
 
 export const PropertyDetailContainer = styled.div`
   max-width: 1200px;
@@ -211,7 +212,7 @@ export const AmenityTag = styled.span`
   font-size: 0.9rem;
   color: var(--text-secondary);
   border: 1px solid var(--border-color);
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     background: var(--primary);

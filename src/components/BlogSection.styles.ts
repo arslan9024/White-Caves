@@ -164,7 +164,7 @@ export const ReadMoreBtn = styled.button`
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     background: ${colors.primaryDark};
@@ -189,7 +189,7 @@ export const FilterBtn = styled.button<{ $isActive?: boolean }>`
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   @media (prefers-color-scheme: dark) {
     background: ${props => props.$isActive 
@@ -310,7 +310,7 @@ export const LoadMoreBtn = styled.button`
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   &:hover {
     background: ${colors.primaryDark};

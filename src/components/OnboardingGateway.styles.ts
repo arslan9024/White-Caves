@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { colors } from '../styles/theme/colors';
 import { typography } from '../styles/theme/typography';
+import { transitions } from '../styles/theme/transitions';
 
 export const StyledOnboardingGateway = styled.section`
   padding: var(--spacing-3xl, 6rem) 5%;
@@ -132,7 +133,7 @@ export const StyledTileIconWrapper = styled.div<{ $backgroundColor: string }>`
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
   background-color: ${props => props.$backgroundColor};
 
@@ -185,7 +186,7 @@ export const StyledTileArrow = styled.div<{ $roleColor: string }>`
   background: var(--bg-secondary, #f5f5f5);
   border-radius: 50%;
   color: var(--text-muted, #757575);
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   [data-theme='dark'] & {
     background: #4a5568;

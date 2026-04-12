@@ -83,7 +83,7 @@ export const ViewTab = styled.button<{ $isActive: boolean }>`
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   white-space: nowrap;
   color: var(--text-secondary);
 
@@ -461,7 +461,7 @@ export const PropertyCard = styled.div<{ $isSelected: boolean }>`
   border: 2px solid var(--border-color);
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   ${props =>
     props.$isSelected &&

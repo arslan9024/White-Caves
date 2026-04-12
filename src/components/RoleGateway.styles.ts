@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { transitions } from '../styles/theme/transitions';
 
 export const Container = styled.div`
   min-height: 100vh;
@@ -150,7 +151,7 @@ export const Button = styled.button<{ $variant?: 'primary' | 'secondary' }>`
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   ${props => props.$variant === 'primary' ? `
     background: ${props.theme?.colors?.primary || '#0066cc'};

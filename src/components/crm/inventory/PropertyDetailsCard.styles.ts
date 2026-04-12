@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { transitions } from '../../../../styles/theme/transitions';
 
 export const PropertyDetailsCardContainer = styled.div`
   background: var(--bg-primary);
@@ -106,7 +107,7 @@ export const FieldItem = styled.div<{ $empty?: boolean }>`
   padding: 10px 12px;
   background: var(--bg-secondary);
   border-radius: 8px;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   opacity: ${(props) => (props.$empty ? '0.5' : '1')};
 
   &:hover {
@@ -177,7 +178,7 @@ export const OwnerItem = styled.button`
   border: 1px solid var(--border-color);
   border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   text-align: left;
 
   &:hover {

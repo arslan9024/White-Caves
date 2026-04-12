@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { transitions } from '../../../../styles/theme/transitions';
 
 export const FilterDropdownContainer = styled.div<{ $disabled?: boolean }>`
   display: flex;
@@ -38,7 +39,7 @@ export const Select = styled.select`
   font-weight: 500;
   cursor: pointer;
   appearance: none;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     border-color: var(--primary);

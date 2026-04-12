@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { transitions } from '../../../styles/theme/transitions';
 
 export const CommandCenterContainer = styled.div`
   min-height: 100vh;
@@ -76,7 +77,7 @@ export const ToggleBtn = styled.button<{ $active?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
 
   &:hover {
     color: #e2e8f0;
@@ -94,7 +95,7 @@ export const HeaderAction = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
   position: relative;
 
   &:hover {
