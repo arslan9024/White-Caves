@@ -1,4 +1,5 @@
 import styled, { keyframes } from 'styled-components';
+import { colors } from '../../../styles/theme/colors';
 
 const pulse = keyframes`
   0%, 100% { opacity: 1; }
@@ -104,11 +105,11 @@ export const SubNavItem = styled.button<{ $isActive?: boolean }>`
   ${(props) =>
     props.$isActive
       ? `
-    background: var(--primary-color, #D4AF37);
+    background: var(--primary-color, ${colors.primary});
     box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
 
     &:hover {
-      background: var(--primary-dark, #B8960C);
+      background: var(--primary-dark, ${colors.primaryDark});
       transform: translateY(-1px);
     }
   `
@@ -184,7 +185,7 @@ export const SubNavActionButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, var(--primary-color, #D4AF37), var(--accent-color, #f59e0b));
+  background: linear-gradient(135deg, var(--primary-color, ${colors.primary}), var(--accent-color, #f59e0b));
   color: white;
   border: none;
   border-radius: 8px;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { OverviewTabProps } from './types';
+import { colors } from '../../../styles/theme/colors';
 import './TabStyles.css';
 
 const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction }) => {
@@ -19,9 +20,9 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
   }
 
   const stats = [
-    { title: 'Total Properties', value: data?.totalProperties ?? 0, icon: '🏠', color: '#D4AF37', change: '+12%' },
+    { title: 'Total Properties', value: data?.totalProperties ?? 0, icon: '🏠', color: colors.primary, change: '+12%' },
     { title: 'Active Agents', value: data?.activeAgents ?? 0, icon: '👥', color: '#2563EB', change: '+5%' },
-    { title: 'Monthly Revenue', value: `AED ${(data?.monthlyRevenue ?? 0).toLocaleString()}`, icon: '💰', color: '#D4AF37', change: '+18%' },
+    { title: 'Monthly Revenue', value: `AED ${(data?.monthlyRevenue ?? 0).toLocaleString()}`, icon: '💰', color: colors.primary, change: '+18%' },
     { title: 'WhatsApp Leads', value: data?.whatsappLeads ?? 0, icon: '💬', color: '#25D366', change: '+25%' },
     { title: 'UAE Pass Users', value: data?.uaepassUsers ?? 0, icon: '🆔', color: '#ce1126', change: '+15%' },
     { title: 'Chatbot Chats', value: data?.chatbotConversations ?? 0, icon: '🤖', color: '#8B5CF6', change: '+30%' },
@@ -80,7 +81,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
               <div key={`revenue-month-${i}`} className="chart-bar-container">
                 <div 
                   className="chart-bar" 
-                  style={{ height: `${(value / 3.5) * 100}%`, background: `linear-gradient(to top, #D4AF37, #F87171)` }}
+                  style={{ height: `${(value / 3.5) * 100}%`, background: `linear-gradient(to top, ${colors.primary}, #F87171)` }}
                 />
                 <span className="chart-label">{['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'][i]}</span>
               </div>
@@ -95,7 +96,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
           <h3>Property Distribution</h3>
           <div className="pie-chart-placeholder">
             <div className="pie-segments">
-              <div className="pie-segment" style={{ '--segment-color': '#D4AF37', '--segment-percent': '45%' } as React.CSSProperties}>
+              <div className="pie-segment" style={{ '--segment-color': colors.primary, '--segment-percent': '45%' } as React.CSSProperties}>
                 <span>Apartments 45%</span>
               </div>
               <div className="pie-segment" style={{ '--segment-color': '#3B82F6', '--segment-percent': '25%' } as React.CSSProperties}>

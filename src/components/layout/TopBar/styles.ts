@@ -1,4 +1,5 @@
 import styled, { css, keyframes } from 'styled-components';
+import { colors } from '../../../styles/theme/colors';
 import { typography } from '../../../styles/theme/typography';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -52,7 +53,7 @@ export const LogoMark = styled.div`
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #D4AF37, #B8960C);
+  background: linear-gradient(135deg, ${colors.primary}, ${colors.primaryDark});
   display: flex;
   align-items: center;
   justify-content: center;
@@ -141,7 +142,7 @@ export const BreadcrumbItem = styled.button<{ $isLast?: boolean }>`
   ${p => !p.$isLast && css`
     &:hover {
       background: #F3F4F6;
-      color: #D4AF37;
+      color: ${colors.primary};
     }
   `}
 
@@ -199,7 +200,7 @@ export const SearchTrigger = styled.button`
 
   &:focus-visible {
     outline: none;
-    border-color: #D4AF37;
+    border-color: ${colors.primary};
     box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
   }
 
@@ -219,7 +220,7 @@ export const SearchTrigger = styled.button`
     }
 
     &:focus-visible {
-      border-color: #D4AF37;
+      border-color: ${colors.primary};
       box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     }
   }
@@ -286,7 +287,7 @@ export const NotifBadge = styled.span`
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #D4AF37;
+  background: ${colors.primary};
   color: #FFFFFF;
   font-size: 9px;
   font-weight: 700;
@@ -329,7 +330,7 @@ export const UserAvatar = styled.div<{ $src?: string }>`
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: ${p => p.$src ? `url(${p.$src}) center/cover` : 'linear-gradient(135deg, #D4AF37, #B8960C)'};
+  background: ${p => p.$src ? `url(${p.$src}) center/cover` : `linear-gradient(135deg, ${colors.primary}, ${colors.primaryDark})`};
   color: #FFFFFF;
   font-size: 13px;
   font-weight: 600;
@@ -451,7 +452,7 @@ export const DropdownHeaderEmail = styled.span`
 export const DropdownHeaderRole = styled.span`
   font-size: 11px;
   font-weight: 600;
-  color: #D4AF37;
+  color: ${colors.primary};
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `;
@@ -477,7 +478,7 @@ export const HamburgerButton = styled.button`
 
   &:hover, &:active {
     background: #F3F4F6;
-    color: #D4AF37;
+    color: ${colors.primary};
   }
 
   &:focus-visible {
@@ -493,7 +494,7 @@ export const HamburgerButton = styled.button`
     color: #E2E8F0;
     &:hover, &:active {
       background: #334155;
-      color: #D4AF37;
+      color: ${colors.primary};
     }
   }
 `;

@@ -113,7 +113,7 @@ export const ViewTab = styled.button<{ $isActive: boolean }>`
       `
       background: var(--bg-secondary, #2a2a3e);
       color: white;
-      border-color: var(--primary, #D4AF37);
+      border-color: var(--primary, ${colors.primary});
     `}
   }
 `;
@@ -480,14 +480,14 @@ export const PropertyCard = styled.div<{ $isSelected: boolean }>`
     border-color: var(--border-color, #3a3a5a);
 
     &:hover {
-      border-color: var(--primary, #D4AF37);
+      border-color: var(--primary, ${colors.primary});
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
 
     ${props =>
       props.$isSelected &&
       `
-      border-color: var(--primary, #D4AF37);
+      border-color: var(--primary, ${colors.primary});
       background: rgba(212, 175, 55, 0.08);
     `}
   }

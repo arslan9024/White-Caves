@@ -47,6 +47,7 @@ import type { Assistant, DepartmentId } from '../../../config/assistantRegistry'
 import { selectHotLeads } from '../../../store/crmDataSlice';
 import { selectAllProperties } from '../../../store/crmDataSlice';
 import { selectQueuedCount } from '../../../store/slices/nadiaSlice';
+import { colors } from '../../../styles/theme/colors';
 import { createLogger } from '../../../utils/logger';
 import {
   RailContainer,
@@ -135,7 +136,7 @@ const DEPARTMENTS: Record<string, DepartmentDef> = {
     badgeKey: 'messages',
   },
   executive: {
-    icon: Globe, label: 'Executive', color: '#D4AF37',
+    icon: Globe, label: 'Executive', color: colors.primary,
     services: ['Strategic Overview', 'KPIs', 'Reports', 'Insights'],
   },
   compliance: {
@@ -361,7 +362,7 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
             <RailIcon>
               <RailIconButton
                 $active={aiCommandOpen}
-                $color="#D4AF37"
+                $color={colors.primary}
                 onClick={handleAIToggle}
                 aria-label="AI Command Center"
                 title="AI Command Center"
@@ -401,7 +402,7 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
         </RailWrapper>
 
         {/* ── Flyout panel — Department services OR AI Command Center ── */}
-        <FlyoutPanel $open={anyFlyoutOpen} $color={aiCommandOpen ? '#D4AF37' : activeDept?.color}>
+        <FlyoutPanel $open={anyFlyoutOpen} $color={aiCommandOpen ? colors.primary : activeDept?.color}>
           {/* Department flyout content */}
           {flyoutOpen && activeDept && flyoutDepartment && (
             <>
@@ -437,7 +438,7 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
           {aiCommandOpen && (
             <>
               <FlyoutHeader>
-                <FlyoutTitle $color="#D4AF37">
+                <FlyoutTitle $color={colors.primary}>
                   AI Command Center
                 </FlyoutTitle>
                 <FlyoutClose onClick={() => dispatch(closeAICommand())} aria-label="Close AI panel">

@@ -23,7 +23,7 @@ export const CompanyProfileHeader = styled.div`
   gap: 2rem;
   margin-bottom: 3rem;
   padding-bottom: 2rem;
-  border-bottom: 2px solid var(--primary-color, #D4AF37);
+  border-bottom: 2px solid var(--primary-color, ${colors.primary});
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -54,7 +54,7 @@ export const CompanyProfileTitle = styled.div`
 
 export const CompanyTagline = styled.p`
   font-size: 1.25rem;
-  color: var(--primary-color, #D4AF37);
+  color: var(--primary-color, ${colors.primary});
   font-weight: 500;
   margin: 0;
 `;
@@ -289,8 +289,8 @@ export const DownloadProfileBtn = styled.button`
   padding: 0.875rem 2rem;
   background: linear-gradient(
     135deg,
-    var(--primary-color, #D4AF37),
-    var(--primary-dark, #B8960C)
+    var(--primary-color, ${colors.primary}),
+    var(--primary-dark, ${colors.primaryDark})
   );
   color: white;
   border: none;

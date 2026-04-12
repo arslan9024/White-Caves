@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { colors } from '../styles/theme/colors';
 import { typography } from '../styles/theme/typography';
 
 export const StyledOnboardingGateway = styled.section`
@@ -47,7 +48,7 @@ export const StyledGatewaySubtitle = styled.p`
 export const StyledGatewayDivider = styled.div`
   width: 80px;
   height: 4px;
-  background: var(--primary-color, #D4AF37);
+  background: var(--primary-color, ${colors.primary});
   border-radius: var(--radius-full, 9999px);
   margin: 1.5rem auto 0;
 `;
@@ -219,13 +220,13 @@ export const StyledFooterText = styled.p`
 `;
 
 export const StyledFooterLink = styled.a`
-  color: var(--primary-color, #D4AF37);
+  color: var(--primary-color, ${colors.primary});
   font-weight: 600;
   text-decoration: none;
   transition: color 0.2s ease;
 
   &:hover {
-    color: var(--primary-dark, #B8960C);
+    color: var(--primary-dark, ${colors.primaryDark});
     text-decoration: underline;
   }
 `;

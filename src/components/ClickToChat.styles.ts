@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { keyframes } from 'styled-components';
+import { colors } from '../../styles/theme/colors';
 
 const slideUp = keyframes`
   from {
@@ -189,8 +190,8 @@ export const QuickMessageBtn = styled.button`
   }
 
   &:hover {
-    background: var(--primary-color, #D4AF37);
-    border-color: var(--primary-color, #D4AF37);
+    background: var(--primary-color, ${colors.primary});
+    border-color: var(--primary-color, ${colors.primary});
     color: white;
   }
 `;

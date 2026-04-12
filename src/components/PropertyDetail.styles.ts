@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { colors } from '../styles/theme/colors';
 
 export const PropertyDetailContainer = styled.div`
   max-width: 1200px;
@@ -52,7 +53,7 @@ export const ListingType = styled.span`
   font-size: 0.875rem;
 
   [data-theme='dark'] & {
-    background: #D4AF37;
+    background: ${colors.primary};
   }
 `;
 
@@ -224,9 +225,9 @@ export const AmenityTag = styled.span`
     border-color: var(--border-color, #3a3a5a);
 
     &:hover {
-      background: var(--primary, #D4AF37);
+      background: var(--primary, ${colors.primary});
       color: white;
-      border-color: var(--primary, #D4AF37);
+      border-color: var(--primary, ${colors.primary});
     }
   }
 `;

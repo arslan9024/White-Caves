@@ -14,6 +14,7 @@ import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-le
 import L from 'leaflet';
 import { useDispatch } from 'react-redux';
 import { setFilters } from '../../store/propertySlice';
+import { colors } from '../../styles/theme/colors';
 import {
   DUBAI_CENTER,
   DEFAULT_ZOOM,
@@ -70,8 +71,8 @@ interface DubaiMapProps {
 /* ─── Custom Gold Marker Icon ───────────────────────────────────── */
 
 function createGoldIcon(featured: boolean = false): L.DivIcon {
-  const bg = featured ? '#D4AF37' : '#2E5A4F';
-  const border = featured ? '#B8960C' : '#1a3a2f';
+  const bg = featured ? colors.primary : '#2E5A4F';
+  const border = featured ? colors.primaryDark : '#1a3a2f';
   return L.divIcon({
     className: 'dubai-map-marker-wrapper',
     html: `
@@ -205,7 +206,7 @@ const DubaiMap: FC<DubaiMapProps> = ({
                 center={[community.lat, community.lng]}
                 radius={community.radius}
                 pathOptions={{
-                  color: stats ? '#D4AF37' : '#2E5A4F',
+                  color: stats ? colors.primary : '#2E5A4F',
                   fillColor: stats ? 'rgba(212, 175, 55, 0.08)' : 'rgba(46, 90, 79, 0.04)',
                   fillOpacity: 0.4,
                   weight: stats ? 2 : 1,

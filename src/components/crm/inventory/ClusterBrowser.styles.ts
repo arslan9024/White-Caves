@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { colors } from '../../../styles/theme/colors';
 
 export const ClusterBrowserContainer = styled.div`
   background: var(--bg-card);
@@ -74,12 +75,12 @@ export const ClusterChip = styled.button<{ $active?: boolean }>`
   }
 
   @media (prefers-color-scheme: dark) {
-    background: ${props => props.$active ? '#D4AF37' : '#333333'};
-    border-color: ${props => props.$active ? '#D4AF37' : '#444444'};
+    background: ${props => props.$active ? colors.primary : '#333333'};
+    border-color: ${props => props.$active ? colors.primary : '#444444'};
     color: ${props => props.$active ? 'white' : '#e2e8f0'};
 
     &:hover {
-      background: ${props => props.$active ? '#B8960C' : 'rgba(212, 175, 55, 0.15)'};
+      background: ${props => props.$active ? colors.primaryDark : 'rgba(212, 175, 55, 0.15)'};
     }
   }
 `;

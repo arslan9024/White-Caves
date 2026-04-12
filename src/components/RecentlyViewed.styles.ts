@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { colors } from '../styles/theme/colors';
 
 export const RecentlyViewedSection = styled.section`
   position: relative;
@@ -253,7 +254,7 @@ export const PropertyPrice = styled.p`
   margin: 0;
 
   [data-theme='dark'] & {
-    color: var(--primary, #D4AF37);
+    color: var(--primary, ${colors.primary});
   }
 `;
 
@@ -308,8 +309,8 @@ export const ScrollButton = styled.button`
     color: var(--text-primary, white);
 
     &:hover {
-      background: var(--primary, #D4AF37);
-      border-color: var(--primary, #D4AF37);
+      background: var(--primary, ${colors.primary});
+      border-color: var(--primary, ${colors.primary});
       color: white;
     }
   }
