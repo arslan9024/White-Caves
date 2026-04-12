@@ -7,6 +7,7 @@
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../../utils/authFetch';
 import { createLogger } from '../../utils/logger';
+import { settledJson } from '../../utils/settledJson';
 import type {
   DashboardOwnerStats,
   DashboardFinanceAnalytics,
@@ -27,14 +28,10 @@ export const OwnerOverview: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const [propsRes, leadsRes, leasesRes] = await Promise.allSettled([
-          authFetch('/api/properties/count'),
-          authFetch('/api/leads/count'),
-          authFetch('/api/leases/count'),
-        ]);
-        const props = propsRes.status === 'fulfilled' ? await propsRes.value.json() : { count: 0 };
-        const leads = leadsRes.status === 'fulfilled' ? await leadsRes.value.json() : { count: 0 };
-        const leases = leasesRes.status === 'fulfilled' ? await leasesRes.value.json() : { count: 0 };
+        const [props, leads, leases] = await settledJson(
+          [authFetch('/api/properties/count'), authFetch('/api/leads/count'), authFetch('/api/leases/count')],
+          [{ count: 0 }, { count: 0 }, { count: 0 }],
+        );
         setStats({
           properties: props.count ?? props.data ?? 0,
           leads: leads.count ?? leads.data ?? 0,

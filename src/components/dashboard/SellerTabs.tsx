@@ -7,6 +7,7 @@
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../../utils/authFetch';
 import { createLogger } from '../../utils/logger';
+import { settledJson } from '../../utils/settledJson';
 import type {
   DashboardProperty,
   DashboardLead,
@@ -318,12 +319,10 @@ export const SellerAnalytics: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const [propRes, offRes] = await Promise.allSettled([
-          authFetch('/api/properties?role=seller'),
-          authFetch('/api/offers?role=seller'),
-        ]);
-        const props = propRes.status === 'fulfilled' ? await propRes.value.json() : { data: [] };
-        const offs = offRes.status === 'fulfilled' ? await offRes.value.json() : { data: [] };
+        const [props, offs] = await settledJson(
+          [authFetch('/api/properties?role=seller'), authFetch('/api/offers?role=seller')],
+          [{ data: [] }, { data: [] }],
+        );
 
         const propList: DashboardProperty[] = props.data ?? props.properties ?? [];
         const offList: DashboardOffer[] = offs.data ?? [];

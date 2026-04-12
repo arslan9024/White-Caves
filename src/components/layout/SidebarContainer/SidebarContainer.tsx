@@ -242,7 +242,7 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
   }, [dispatch, aiCommandOpen]);
 
   // Build AI assistant list grouped by department
-  const allAssistants = useMemo(() => getAllAssistants(), []);
+  const allAssistants = getAllAssistants();
   const filteredAssistants = useMemo(() => {
     if (!aiSearch.trim()) return allAssistants;
     const q = aiSearch.toLowerCase();

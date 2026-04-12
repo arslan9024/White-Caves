@@ -7,6 +7,7 @@
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../../utils/authFetch';
 import { createLogger } from '../../utils/logger';
+import { settledJson } from '../../utils/settledJson';
 import type {
   DashboardLease,
   DashboardMaintenanceRequest,
@@ -28,12 +29,10 @@ export const TenantOverview: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const [leaseRes, maintRes] = await Promise.allSettled([
-          authFetch('/api/leases/my-lease'),
-          authFetch('/api/maintenance?pageSize=5'),
-        ]);
-        const l = leaseRes.status === 'fulfilled' ? await leaseRes.value.json() : { data: null };
-        const m = maintRes.status === 'fulfilled' ? await maintRes.value.json() : { data: [] };
+        const [l, m] = await settledJson(
+          [authFetch('/api/leases/my-lease'), authFetch('/api/maintenance?pageSize=5')],
+          [{ data: null }, { data: [] }],
+        );
         setLease(l.data);
         setMaintenance(m.data ?? []);
       } catch (error) { log.warn('Failed to fetch tenant overview:', error); }

@@ -7,6 +7,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { authFetch } from '../../utils/authFetch';
 import { createLogger } from '../../utils/logger';
+import { settledJson } from '../../utils/settledJson';
 import type {
   DashboardViewing,
   DashboardFavorite,
@@ -29,16 +30,10 @@ export const BuyerOverview: React.FC = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const [favRes, viewRes, offRes, searchRes] = await Promise.allSettled([
-          authFetch('/api/favorites/ids'),
-          authFetch('/api/viewings?pageSize=5'),
-          authFetch('/api/offers?role=buyer&pageSize=5'),
-          authFetch('/api/saved-searches'),
-        ]);
-        const fav = favRes.status === 'fulfilled' ? await favRes.value.json() : { data: [] };
-        const view = viewRes.status === 'fulfilled' ? await viewRes.value.json() : { data: [] };
-        const off = offRes.status === 'fulfilled' ? await offRes.value.json() : { data: [] };
-        const sSearch = searchRes.status === 'fulfilled' ? await searchRes.value.json() : { data: [] };
+        const [fav, view, off, sSearch] = await settledJson(
+          [authFetch('/api/favorites/ids'), authFetch('/api/viewings?pageSize=5'), authFetch('/api/offers?role=buyer&pageSize=5'), authFetch('/api/saved-searches')],
+          [{ data: [] }, { data: [] }, { data: [] }, { data: [] }],
+        );
 
         setStats({
           favorites: fav.data?.length ?? 0,

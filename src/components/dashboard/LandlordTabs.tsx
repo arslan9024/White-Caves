@@ -7,6 +7,7 @@
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../../utils/authFetch';
 import { createLogger } from '../../utils/logger';
+import { settledJson } from '../../utils/settledJson';
 import type {
   DashboardProperty,
   DashboardLease,
@@ -153,12 +154,10 @@ export const MaintenanceRequests: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const [reqRes, statsRes] = await Promise.allSettled([
-          authFetch('/api/maintenance?pageSize=50'),
-          authFetch('/api/maintenance/stats'),
-        ]);
-        const reqs = reqRes.status === 'fulfilled' ? await reqRes.value.json() : { data: [] };
-        const st = statsRes.status === 'fulfilled' ? await statsRes.value.json() : { data: null };
+        const [reqs, st] = await settledJson(
+          [authFetch('/api/maintenance?pageSize=50'), authFetch('/api/maintenance/stats')],
+          [{ data: [] }, { data: null }],
+        );
         setRequests(reqs.data ?? []);
         setStats(st.data);
       } catch (error) { log.warn('Failed to fetch maintenance data:', error); }
@@ -343,12 +342,10 @@ export const LeaseManagement: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const [allRes, expRes] = await Promise.allSettled([
-          authFetch('/api/leases?role=landlord&pageSize=50'),
-          authFetch('/api/leases/expiring?days=60'),
-        ]);
-        const all = allRes.status === 'fulfilled' ? await allRes.value.json() : { data: [] };
-        const exp = expRes.status === 'fulfilled' ? await expRes.value.json() : { data: [] };
+        const [all, exp] = await settledJson(
+          [authFetch('/api/leases?role=landlord&pageSize=50'), authFetch('/api/leases/expiring?days=60')],
+          [{ data: [] }, { data: [] }],
+        );
         setLeases(all.data ?? []);
         setExpiring(exp.data ?? []);
       } catch (error) { log.warn('Failed to fetch lease data:', error); }
