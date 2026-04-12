@@ -6,6 +6,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../../utils/authFetch';
+import type {
+  DashboardOwnerStats,
+  DashboardFinanceAnalytics,
+  DashboardSystemHealth,
+} from '@/types/dashboard';
 import * as S from './shared';
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -13,7 +18,7 @@ import * as S from './shared';
 // ═══════════════════════════════════════════════════════════════════════
 
 export const OwnerOverview: React.FC = () => {
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<DashboardOwnerStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -113,7 +118,7 @@ export const OwnerOverview: React.FC = () => {
 
 export const BusinessAnalytics: React.FC = () => {
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<DashboardFinanceAnalytics | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -248,7 +253,7 @@ export const WhatsAppDashboard: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const SystemHealth: React.FC = () => {
-  const [health, setHealth] = useState<any>(null);
+  const [health, setHealth] = useState<DashboardSystemHealth | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -7,6 +7,15 @@
 
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../../utils/authFetch';
+import type {
+  DashboardLease,
+  DashboardProperty,
+  DashboardViewing,
+  DashboardApplication,
+  DashboardOffer,
+  DashboardLead,
+  DashboardAgentStats,
+} from '@/types/dashboard';
 import * as S from './shared';
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -14,7 +23,7 @@ import * as S from './shared';
 // ═══════════════════════════════════════════════════════════════════════
 
 export const LeasingPipeline: React.FC = () => {
-  const [leases, setLeases] = useState<any[]>([]);
+  const [leases, setLeases] = useState<DashboardLease[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -49,7 +58,7 @@ export const LeasingPipeline: React.FC = () => {
             <h4 style={{ textTransform: 'capitalize', fontSize: '0.85rem', marginBottom: '0.5rem', color: '#6b7280' }}>
               {g.stage} ({g.items.length})
             </h4>
-            {g.items.map((l: any) => (
+            {g.items.map((l) => (
               <div key={l.id} style={{ ...S.card, marginBottom: '0.5rem', padding: '0.75rem' }}>
                 <strong style={{ fontSize: '0.85rem' }}>{l.property?.title ?? l.propertyId ?? '—'}</strong>
                 <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0.25rem 0 0 0' }}>
@@ -69,7 +78,7 @@ export const LeasingPipeline: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const LeasingProperties: React.FC = () => {
-  const [properties, setProperties] = useState<any[]>([]);
+  const [properties, setProperties] = useState<DashboardProperty[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -95,7 +104,7 @@ export const LeasingProperties: React.FC = () => {
         ? S.emptyState('🏠', 'No rental properties', 'Add rental properties to start leasing.')
         : (
           <div style={S.listGrid}>
-            {properties.map((p: any) => (
+            {properties.map((p) => (
               <div key={p.id} style={S.card}>
                 <h4 style={{ margin: '0 0 0.25rem 0' }}>{p.title}</h4>
                 <p style={{ ...S.headerSubtitle, margin: 0 }}>📍 {p.location}</p>
@@ -120,7 +129,7 @@ export const LeasingProperties: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const LeaseContracts: React.FC = () => {
-  const [leases, setLeases] = useState<any[]>([]);
+  const [leases, setLeases] = useState<DashboardLease[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -158,7 +167,7 @@ export const LeaseContracts: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {leases.map((l: any) => (
+                {leases.map((l) => (
                   <tr key={l.id}>
                     <td style={S.td}>{l.property?.title ?? '—'}</td>
                     <td style={S.td}>{l.tenant?.name ?? '—'}</td>
@@ -186,7 +195,7 @@ export const LeaseContracts: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const LeasingViewings: React.FC = () => {
-  const [viewings, setViewings] = useState<any[]>([]);
+  const [viewings, setViewings] = useState<DashboardViewing[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -242,7 +251,7 @@ export const LeasingViewings: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {viewings.map((v: any) => (
+                {viewings.map((v) => (
                   <tr key={v.id}>
                     <td style={S.td}>{v.property?.title ?? '—'}</td>
                     <td style={S.td}>{v.lead?.name ?? v.user?.name ?? '—'}</td>
@@ -269,7 +278,7 @@ export const LeasingViewings: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const TenantApplications: React.FC = () => {
-  const [applications, setApplications] = useState<any[]>([]);
+  const [applications, setApplications] = useState<DashboardApplication[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -306,7 +315,7 @@ export const TenantApplications: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {applications.map((a: any) => (
+                {applications.map((a) => (
                   <tr key={a.id}>
                     <td style={S.td}><strong>{a.applicantName ?? a.user?.name ?? '—'}</strong></td>
                     <td style={S.td}>{a.property?.title ?? '—'}</td>
@@ -333,7 +342,7 @@ export const TenantApplications: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const LeaseRenewals: React.FC = () => {
-  const [expiring, setExpiring] = useState<any[]>([]);
+  const [expiring, setExpiring] = useState<DashboardLease[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -371,7 +380,7 @@ export const LeaseRenewals: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {expiring.map((l: any) => (
+                {expiring.map((l) => (
                   <tr key={l.id}>
                     <td style={S.td}>{l.property?.title ?? '—'}</td>
                     <td style={S.td}>{l.tenant?.name ?? '—'}</td>
@@ -398,7 +407,7 @@ export const LeaseRenewals: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const SalesPipeline: React.FC = () => {
-  const [offers, setOffers] = useState<any[]>([]);
+  const [offers, setOffers] = useState<DashboardOffer[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -434,7 +443,7 @@ export const SalesPipeline: React.FC = () => {
             <h4 style={{ textTransform: 'capitalize', fontSize: '0.85rem', color: '#6b7280', marginBottom: '0.5rem' }}>
               {g.stage} ({g.items.length})
             </h4>
-            {g.items.map((o: any) => (
+            {g.items.map((o) => (
               <div key={o.id} style={{ ...S.card, marginBottom: '0.5rem', padding: '0.75rem' }}>
                 <strong style={{ fontSize: '0.85rem' }}>{o.property?.title ?? '—'}</strong>
                 <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0.25rem 0 0 0' }}>
@@ -454,7 +463,7 @@ export const SalesPipeline: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const SalesLeads: React.FC = () => {
-  const [leads, setLeads] = useState<any[]>([]);
+  const [leads, setLeads] = useState<DashboardLead[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -492,7 +501,7 @@ export const SalesLeads: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {leads.map((l: any) => (
+                {leads.map((l) => (
                   <tr key={l.id}>
                     <td style={S.td}><strong>{l.name}</strong></td>
                     <td style={S.td}>{S.formatStatus(l.source ?? 'direct')}</td>
@@ -520,7 +529,7 @@ export const SalesLeads: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const ActiveDeals: React.FC = () => {
-  const [offers, setOffers] = useState<any[]>([]);
+  const [offers, setOffers] = useState<DashboardOffer[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -571,7 +580,7 @@ export const ActiveDeals: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {offers.map((o: any) => (
+                {offers.map((o) => (
                   <tr key={o.id}>
                     <td style={S.td}>{o.property?.title ?? '—'}</td>
                     <td style={S.td}>{o.buyer?.name ?? o.user?.name ?? '—'}</td>
@@ -595,7 +604,7 @@ export const ActiveDeals: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const AgentPerformance: React.FC = () => {
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<DashboardAgentStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

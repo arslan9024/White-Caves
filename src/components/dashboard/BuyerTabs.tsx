@@ -6,6 +6,12 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { authFetch } from '../../utils/authFetch';
+import type {
+  DashboardViewing,
+  DashboardFavorite,
+  DashboardSavedSearch,
+  DashboardOffer,
+} from '@/types/dashboard';
 import * as S from './shared';
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -14,7 +20,7 @@ import * as S from './shared';
 
 export const BuyerOverview: React.FC = () => {
   const [stats, setStats] = useState({ favorites: 0, viewings: 0, offers: 0, savedSearches: 0 });
-  const [recentViewings, setRecentViewings] = useState<any[]>([]);
+  const [recentViewings, setRecentViewings] = useState<DashboardViewing[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -87,7 +93,7 @@ export const BuyerOverview: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {recentViewings.map((v: any) => (
+                {recentViewings.map((v) => (
                   <tr key={v.id}>
                     <td style={S.td}>{v.property?.title ?? v.propertyId}</td>
                     <td style={S.td}>{S.formatDate(v.scheduledAt)}</td>
@@ -110,7 +116,7 @@ export const BuyerOverview: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const SavedProperties: React.FC = () => {
-  const [properties, setProperties] = useState<any[]>([]);
+  const [properties, setProperties] = useState<DashboardFavorite[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
@@ -137,7 +143,7 @@ export const SavedProperties: React.FC = () => {
         ? S.emptyState('💾', 'No saved properties', 'Browse listings and tap the heart icon to save properties here.')
         : (
           <div style={S.listGrid}>
-            {properties.map((fav: any) => (
+            {properties.map((fav) => (
               <div key={fav.id} style={S.card}>
                 <h4 style={{ margin: 0 }}>{fav.property?.title ?? 'Property'}</h4>
                 <p style={S.headerSubtitle}>📍 {fav.property?.location ?? '—'}</p>
@@ -162,7 +168,7 @@ export const SavedProperties: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const ViewingSchedule: React.FC = () => {
-  const [viewings, setViewings] = useState<any[]>([]);
+  const [viewings, setViewings] = useState<DashboardViewing[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -200,7 +206,7 @@ export const ViewingSchedule: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {viewings.map((v: any) => (
+                {viewings.map((v) => (
                   <tr key={v.id}>
                     <td style={S.td}>{v.property?.title ?? v.propertyId}</td>
                     <td style={S.td}>{v.agent?.name ?? '—'}</td>
@@ -230,7 +236,7 @@ export const ViewingSchedule: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const PriceAlerts: React.FC = () => {
-  const [searches, setSearches] = useState<any[]>([]);
+  const [searches, setSearches] = useState<DashboardSavedSearch[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -238,7 +244,7 @@ export const PriceAlerts: React.FC = () => {
       try {
         const res = await authFetch('/api/saved-searches');
         const json = await res.json();
-        setSearches((json.data ?? []).filter((s: any) => s.alertEnabled));
+        setSearches((json.data ?? []).filter((s: DashboardSavedSearch) => s.alertEnabled));
       } catch { /* empty */ }
       setLoading(false);
     })();
@@ -256,7 +262,7 @@ export const PriceAlerts: React.FC = () => {
         ? S.emptyState('🔔', 'No price alerts active', 'Enable alerts on your saved searches to track price changes.')
         : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {searches.map((s: any) => (
+            {searches.map((s) => (
               <div key={s.id} style={S.card}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
@@ -283,7 +289,7 @@ export const PriceAlerts: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const BuyerOffers: React.FC = () => {
-  const [offers, setOffers] = useState<any[]>([]);
+  const [offers, setOffers] = useState<DashboardOffer[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -327,8 +333,8 @@ export const BuyerOffers: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {offers.map((o: any) => {
-                  const sc = statusColor(o.status);
+                {offers.map((o) => {
+                  const sc = statusColor(o.status ?? '');
                   return (
                     <tr key={o.id}>
                       <td style={S.td}>{o.property?.title ?? o.propertyId}</td>

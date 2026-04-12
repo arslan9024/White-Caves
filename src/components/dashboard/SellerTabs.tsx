@@ -6,6 +6,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../../utils/authFetch';
+import type {
+  DashboardProperty,
+  DashboardLead,
+  DashboardOffer,
+} from '@/types/dashboard';
 import * as S from './shared';
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -13,7 +18,7 @@ import * as S from './shared';
 // ═══════════════════════════════════════════════════════════════════════
 
 export const SellerListings: React.FC = () => {
-  const [properties, setProperties] = useState<any[]>([]);
+  const [properties, setProperties] = useState<DashboardProperty[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,7 +56,7 @@ export const SellerListings: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {properties.map((p: any) => (
+                {properties.map((p) => (
                   <tr key={p.id}>
                     <td style={S.td}>
                       <strong>{p.title}</strong>
@@ -85,7 +90,7 @@ export const SellerListings: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const SellerInquiries: React.FC = () => {
-  const [leads, setLeads] = useState<any[]>([]);
+  const [leads, setLeads] = useState<DashboardLead[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -122,7 +127,7 @@ export const SellerInquiries: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {leads.map((l: any) => (
+                {leads.map((l) => (
                   <tr key={l.id}>
                     <td style={S.td}>
                       <strong>{l.name || l.contactName || '—'}</strong>
@@ -224,7 +229,7 @@ export const MarketInsights: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const ReceivedOffers: React.FC = () => {
-  const [offers, setOffers] = useState<any[]>([]);
+  const [offers, setOffers] = useState<DashboardOffer[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -269,8 +274,8 @@ export const ReceivedOffers: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {offers.map((o: any) => {
-                  const sc = statusColor(o.status);
+                {offers.map((o) => {
+                  const sc = statusColor(o.status ?? '');
                   return (
                     <tr key={o.id}>
                       <td style={S.td}>{o.property?.title ?? '—'}</td>
@@ -317,11 +322,11 @@ export const SellerAnalytics: React.FC = () => {
         const props = propRes.status === 'fulfilled' ? await propRes.value.json() : { data: [] };
         const offs = offRes.status === 'fulfilled' ? await offRes.value.json() : { data: [] };
 
-        const propList = props.data ?? props.properties ?? [];
-        const offList = offs.data ?? [];
-        const prices = propList.map((p: any) => p.price).filter(Boolean);
+        const propList: DashboardProperty[] = props.data ?? props.properties ?? [];
+        const offList: DashboardOffer[] = offs.data ?? [];
+        const prices = propList.map((p) => p.price).filter(Boolean);
         const avg = prices.length > 0 ? prices.reduce((a: number, b: number) => a + b, 0) / prices.length : 0;
-        const accepted = offList.filter((o: any) => o.status === 'accepted').length;
+        const accepted = offList.filter((o) => o.status === 'accepted').length;
 
         setStats({
           totalListings: propList.length,
