@@ -137,7 +137,7 @@ export const safeStorage = {
       return this.set(key, JSON.stringify(value));
     } catch (e) {
       if (import.meta.env.DEV) {
-        console.warn(`[safeStorage] setJSON failed for key "${key}":`, e);
+        log.warn(`setJSON failed for key "${key}":`, e);
       }
       return false;
     }

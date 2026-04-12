@@ -1,6 +1,7 @@
 import React, { FC, useState, useRef, useEffect, useCallback, ChangeEvent, FormEvent } from 'react';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { isValidEmail, isValidPhone, isRequired, isWithinLength, MAX_MESSAGE_LENGTH } from '../utils/validation';
+import { TIMING } from '../constants';
 import './ContactPage.css';
 
 // Type definitions
@@ -68,7 +69,7 @@ const ContactPage: FC = () => {
     setSubmitted(true);
     // Clear any existing timer, then set a new one tracked by ref for cleanup
     if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setSubmitted(false), 5000);
+    timerRef.current = setTimeout(() => setSubmitted(false), TIMING.FORM_RESET_DELAY);
     setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
     setErrors({});
   };

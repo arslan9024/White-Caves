@@ -3,6 +3,7 @@ import {
   Upload, Check, AlertCircle, Globe, Building2, 
   Image, FileText, Send, ChevronDown, ChevronUp
 } from 'lucide-react';
+import { TIMING } from '../../../constants';
 import './PlatformPublisher.css';
 
 interface Platform {
@@ -91,7 +92,7 @@ const PlatformPublisherForm = memo(({
     for (const platformId of selectedPlatforms) {
       setPublishing(prev => ({ ...prev, [platformId]: true }));
       
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, TIMING.SIMULATED_API_DELAY));
       
       setPublishing(prev => ({ ...prev, [platformId]: false }));
       setPublishResults(prev => ({ 

@@ -17,6 +17,7 @@ import {
   signInWithPhone,
   createRecaptchaVerifier,
 } from '../config/firebase';
+import { TIMING } from '../constants';
 import {
   loginWithEmail as backendLogin,
   registerWithEmail as backendRegister,
@@ -149,7 +150,7 @@ export function useSignIn() {
       );
       const userRole = user.role || 'agent';
       setSuccess('Sign in successful!');
-      navTimerRef.current = setTimeout(() => navigate(`/${userRole}/dashboard`), 1000);
+      navTimerRef.current = setTimeout(() => navigate(`/${userRole}/dashboard`), TIMING.NAVIGATION_DELAY);
     },
     [dispatch, navigate],
   );
@@ -199,10 +200,10 @@ export function useSignIn() {
 
     if (selectedCategory === 'staff') {
       setSuccess('Registration submitted! Your account is pending approval.');
-      navTimerRef.current = setTimeout(() => navigate('/pending-approval'), 1500);
+      navTimerRef.current = setTimeout(() => navigate('/pending-approval'), TIMING.SIMULATED_API_DELAY);
     } else {
       setSuccess('Account created successfully!');
-      navTimerRef.current = setTimeout(() => navigate(`/${selectedRole}/dashboard`), 1000);
+      navTimerRef.current = setTimeout(() => navigate(`/${selectedRole}/dashboard`), TIMING.NAVIGATION_DELAY);
     }
   }, [selectedRole, selectedCategory, pendingUser, dispatch, navigate, saveUserData]);
 

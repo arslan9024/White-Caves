@@ -42,6 +42,12 @@ export const TIMING = {
   /** Resume autoplay after user interaction */
   CAROUSEL_RESUME: 10000,
 
+  /** Brief delay before page navigation after auth success */
+  NAVIGATION_DELAY: 1000,
+
+  /** Form success state auto-reset (longer dismiss) */
+  FORM_RESET_DELAY: 5000,
+
   /** Session timeout (30 minutes) */
   SESSION_TIMEOUT: 1_800_000,
 } as const;

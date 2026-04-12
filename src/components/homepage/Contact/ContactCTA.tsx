@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Send, Phone, Mail, MapPin, MessageCircle, ArrowRight, LucideIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Config } from '../../../config/constants';
+import { TIMING } from '../../../constants';
 import './ContactCTA.css';
 
 interface FormData {
@@ -55,12 +56,12 @@ const ContactCTA = () => {
       clearTimeout(submitTimerRef.current);
     }
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, TIMING.SIMULATED_API_DELAY));
     setIsSubmitting(false);
     setSubmitted(true);
     setFormData({ name: '', email: '', phone: '', message: '' });
     // TODO: Wire to real backend API (POST /api/contact)
-    submitTimerRef.current = setTimeout(() => setSubmitted(false), 3000);
+    submitTimerRef.current = setTimeout(() => setSubmitted(false), TIMING.SUCCESS_DISMISS);
   };
 
   const contactInfo: ContactInfo[] = [
