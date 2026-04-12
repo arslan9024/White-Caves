@@ -1,4 +1,3 @@
-import React from 'react';
 import { JobPostComposer } from '../../shared';
 import { useToast } from '../../../Toast';
 

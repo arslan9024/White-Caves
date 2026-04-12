@@ -1,4 +1,3 @@
-import React from 'react';
 import { RefreshCw, Pause, Play, Trash2, Edit, Eye } from 'lucide-react';
 
 interface AutomationState {

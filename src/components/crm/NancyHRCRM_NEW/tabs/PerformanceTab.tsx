@@ -1,4 +1,3 @@
-import React from 'react';
 import { Plus, Star } from 'lucide-react';
 
 interface Employee {

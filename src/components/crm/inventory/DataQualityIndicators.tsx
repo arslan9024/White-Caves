@@ -1,4 +1,3 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
 import { Users, Phone, Building2, AlertTriangle, CheckCircle } from 'lucide-react';
 import {

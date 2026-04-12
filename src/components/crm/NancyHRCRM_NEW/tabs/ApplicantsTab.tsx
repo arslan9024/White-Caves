@@ -1,4 +1,3 @@
-import React from 'react';
 import { Search, Edit, Trash2, Eye, Download, Mail } from 'lucide-react';
 
 interface Applicant {

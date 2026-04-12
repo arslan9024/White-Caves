@@ -1,5 +1,3 @@
-
-import React from 'react';
 import { WhatsAppFloatingBtn, WhatsAppIcon } from './WhatsAppButton.styles';
 import { Config } from '../config/constants';
 

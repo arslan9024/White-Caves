@@ -1,4 +1,3 @@
-import React from 'react';
 import { Phone, Mail, Video, MessageCircle, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 
 interface Executive {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useProspectsForm, STATUS_OPTIONS, STAGE_OPTIONS } from '../hooks/useProspectsForm';
 
 export default function ProspectsTab() {

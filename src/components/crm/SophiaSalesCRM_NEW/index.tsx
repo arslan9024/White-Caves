@@ -1,4 +1,3 @@
-import React from 'react';
 import { Users, TrendingUp, DollarSign, Target, Clock, ArrowUp, ArrowDown } from 'lucide-react';
 import { useSalesData } from './hooks/useSalesData';
 import PipelineTab from './tabs/PipelineTab';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { PlatformPublisherForm } from '../../shared';
 
 interface PublishState {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { DollarSign, Users, Eye, TrendingUp, Edit, Trash2 } from 'lucide-react';
 
 interface Campaign {

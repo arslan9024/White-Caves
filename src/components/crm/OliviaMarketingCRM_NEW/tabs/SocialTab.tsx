@@ -1,4 +1,3 @@
-import React from 'react';
 import { Instagram, Facebook, Linkedin, Youtube, Users, Heart, MessageCircle } from 'lucide-react';
 
 interface SocialTabProps {

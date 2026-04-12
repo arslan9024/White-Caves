@@ -1,4 +1,3 @@
-import React from 'react';
 import { useLeadsData } from '../hooks/useLeadsData';
 import { useLeadsInsights } from '../hooks/useLeadsInsights';
 
