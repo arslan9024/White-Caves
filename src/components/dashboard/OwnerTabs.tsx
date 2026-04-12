@@ -6,12 +6,15 @@
 
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../../utils/authFetch';
+import { createLogger } from '../../utils/logger';
 import type {
   DashboardOwnerStats,
   DashboardFinanceAnalytics,
   DashboardSystemHealth,
 } from '@/types/dashboard';
 import * as S from './shared';
+
+const log = createLogger('Dashboard');
 
 // ═══════════════════════════════════════════════════════════════════════
 // OWNER OVERVIEW
@@ -37,7 +40,7 @@ export const OwnerOverview: React.FC = () => {
           leads: leads.count ?? leads.data ?? 0,
           leases: leases.count ?? leases.data ?? 0,
         });
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch overview stats:', error); }
       setLoading(false);
     })();
   }, []);
@@ -126,7 +129,7 @@ export const BusinessAnalytics: React.FC = () => {
         const res = await authFetch('/api/finance/analytics');
         const json = await res.json();
         setData(json.data);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch analytics data:', error); }
       setLoading(false);
     })();
   }, []);
@@ -262,7 +265,7 @@ export const SystemHealth: React.FC = () => {
         const res = await authFetch('/api/health');
         const json = await res.json();
         setHealth(json);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch health status:', error); }
       setLoading(false);
     })();
   }, []);

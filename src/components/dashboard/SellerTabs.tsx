@@ -6,12 +6,15 @@
 
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../../utils/authFetch';
+import { createLogger } from '../../utils/logger';
 import type {
   DashboardProperty,
   DashboardLead,
   DashboardOffer,
 } from '@/types/dashboard';
 import * as S from './shared';
+
+const log = createLogger('Dashboard');
 
 // ═══════════════════════════════════════════════════════════════════════
 // SELLER LISTINGS
@@ -27,7 +30,7 @@ export const SellerListings: React.FC = () => {
         const res = await authFetch('/api/properties?role=seller&pageSize=50');
         const json = await res.json();
         setProperties(json.data ?? json.properties ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch properties:', error); }
       setLoading(false);
     })();
   }, []);
@@ -99,7 +102,7 @@ export const SellerInquiries: React.FC = () => {
         const res = await authFetch('/api/leads?source=inquiry&pageSize=50');
         const json = await res.json();
         setLeads(json.data ?? json.leads ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch seller inquiries:', error); }
       setLoading(false);
     })();
   }, []);
@@ -238,7 +241,7 @@ export const ReceivedOffers: React.FC = () => {
         const res = await authFetch('/api/offers?role=seller&pageSize=50');
         const json = await res.json();
         setOffers(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch seller offers:', error); }
       setLoading(false);
     })();
   }, []);
@@ -334,7 +337,7 @@ export const SellerAnalytics: React.FC = () => {
           avgPrice: avg,
           conversionRate: offList.length > 0 ? Math.round((accepted / offList.length) * 100) : 0,
         });
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch seller analytics:', error); }
       setLoading(false);
     })();
   }, []);

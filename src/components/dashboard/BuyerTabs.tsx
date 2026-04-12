@@ -6,6 +6,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { authFetch } from '../../utils/authFetch';
+import { createLogger } from '../../utils/logger';
 import type {
   DashboardViewing,
   DashboardFavorite,
@@ -13,6 +14,8 @@ import type {
   DashboardOffer,
 } from '@/types/dashboard';
 import * as S from './shared';
+
+const log = createLogger('Dashboard');
 
 // ═══════════════════════════════════════════════════════════════════════
 // BUYER OVERVIEW
@@ -44,7 +47,7 @@ export const BuyerOverview: React.FC = () => {
           savedSearches: sSearch.data?.length ?? 0,
         });
         setRecentViewings(view.data?.slice?.(0, 5) ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch buyer stats:', error); }
       setLoading(false);
     };
     load();
@@ -125,7 +128,7 @@ export const SavedProperties: React.FC = () => {
       const res = await authFetch('/api/favorites?pageSize=50');
       const json = await res.json();
       setProperties(json.data ?? []);
-    } catch { /* empty */ }
+    } catch (error) { log.warn('Failed to fetch saved properties:', error); }
     setLoading(false);
   }, []);
 
@@ -177,7 +180,7 @@ export const ViewingSchedule: React.FC = () => {
         const res = await authFetch('/api/viewings?pageSize=50');
         const json = await res.json();
         setViewings(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch viewing schedule:', error); }
       setLoading(false);
     })();
   }, []);
@@ -245,7 +248,7 @@ export const PriceAlerts: React.FC = () => {
         const res = await authFetch('/api/saved-searches');
         const json = await res.json();
         setSearches((json.data ?? []).filter((s: DashboardSavedSearch) => s.alertEnabled));
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch saved searches:', error); }
       setLoading(false);
     })();
   }, []);
@@ -298,7 +301,7 @@ export const BuyerOffers: React.FC = () => {
         const res = await authFetch('/api/offers?role=buyer&pageSize=50');
         const json = await res.json();
         setOffers(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch buyer offers:', error); }
       setLoading(false);
     })();
   }, []);

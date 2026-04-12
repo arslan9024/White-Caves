@@ -6,12 +6,15 @@
 
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../../utils/authFetch';
+import { createLogger } from '../../utils/logger';
 import type {
   DashboardLease,
   DashboardMaintenanceRequest,
   DashboardPayment,
 } from '@/types/dashboard';
 import * as S from './shared';
+
+const log = createLogger('Dashboard');
 
 // ═══════════════════════════════════════════════════════════════════════
 // TENANT OVERVIEW
@@ -33,7 +36,7 @@ export const TenantOverview: React.FC = () => {
         const m = maintRes.status === 'fulfilled' ? await maintRes.value.json() : { data: [] };
         setLease(l.data);
         setMaintenance(m.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch tenant overview:', error); }
       setLoading(false);
     })();
   }, []);
@@ -104,7 +107,7 @@ export const TenantLease: React.FC = () => {
         const res = await authFetch('/api/leases/my-lease');
         const json = await res.json();
         setLease(json.data);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch lease details:', error); }
       setLoading(false);
     })();
   }, []);
@@ -191,7 +194,7 @@ export const TenantPayments: React.FC = () => {
         const res = await authFetch('/api/leases/my-payments');
         const json = await res.json();
         setPayments(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch payment history:', error); }
       setLoading(false);
     })();
   }, []);
@@ -276,7 +279,7 @@ export const TenantMaintenance: React.FC = () => {
         const res = await authFetch('/api/maintenance?pageSize=50');
         const json = await res.json();
         setRequests(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch maintenance requests:', error); }
       setLoading(false);
     })();
   }, []);

@@ -6,6 +6,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../../utils/authFetch';
+import { createLogger } from '../../utils/logger';
 import type {
   DashboardProperty,
   DashboardLease,
@@ -13,6 +14,8 @@ import type {
   DashboardMaintenanceStats,
 } from '@/types/dashboard';
 import * as S from './shared';
+
+const log = createLogger('Dashboard');
 
 // ═══════════════════════════════════════════════════════════════════════
 // LANDLORD PROPERTIES
@@ -28,7 +31,7 @@ export const LandlordProperties: React.FC = () => {
         const res = await authFetch('/api/properties?role=landlord&pageSize=50');
         const json = await res.json();
         setProperties(json.data ?? json.properties ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch properties:', error); }
       setLoading(false);
     })();
   }, []);
@@ -86,7 +89,7 @@ export const TenantManagement: React.FC = () => {
         const res = await authFetch('/api/leases?role=landlord&pageSize=50');
         const json = await res.json();
         setLeases(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch tenant leases:', error); }
       setLoading(false);
     })();
   }, []);
@@ -158,7 +161,7 @@ export const MaintenanceRequests: React.FC = () => {
         const st = statsRes.status === 'fulfilled' ? await statsRes.value.json() : { data: null };
         setRequests(reqs.data ?? []);
         setStats(st.data);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch maintenance data:', error); }
       setLoading(false);
     })();
   }, []);
@@ -257,7 +260,7 @@ export const FinancialSummary: React.FC = () => {
         const res = await authFetch('/api/leases?role=landlord&pageSize=100');
         const json = await res.json();
         setLeases(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch financial data:', error); }
       setLoading(false);
     })();
   }, []);
@@ -348,7 +351,7 @@ export const LeaseManagement: React.FC = () => {
         const exp = expRes.status === 'fulfilled' ? await expRes.value.json() : { data: [] };
         setLeases(all.data ?? []);
         setExpiring(exp.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch lease data:', error); }
       setLoading(false);
     })();
   }, []);

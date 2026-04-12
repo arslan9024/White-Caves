@@ -7,6 +7,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../../utils/authFetch';
+import { createLogger } from '../../utils/logger';
 import type {
   DashboardLease,
   DashboardProperty,
@@ -17,6 +18,8 @@ import type {
   DashboardAgentStats,
 } from '@/types/dashboard';
 import * as S from './shared';
+
+const log = createLogger('Dashboard');
 
 // ═══════════════════════════════════════════════════════════════════════
 // LEASING AGENT — PIPELINE
@@ -32,7 +35,7 @@ export const LeasingPipeline: React.FC = () => {
         const res = await authFetch('/api/leases?pageSize=100');
         const json = await res.json();
         setLeases(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch leases:', error); }
       setLoading(false);
     })();
   }, []);
@@ -87,7 +90,7 @@ export const LeasingProperties: React.FC = () => {
         const res = await authFetch('/api/properties?type=rent&pageSize=50');
         const json = await res.json();
         setProperties(json.data ?? json.properties ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch properties:', error); }
       setLoading(false);
     })();
   }, []);
@@ -138,7 +141,7 @@ export const LeaseContracts: React.FC = () => {
         const res = await authFetch('/api/leases?pageSize=50');
         const json = await res.json();
         setLeases(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch lease contracts:', error); }
       setLoading(false);
     })();
   }, []);
@@ -204,7 +207,7 @@ export const LeasingViewings: React.FC = () => {
         const res = await authFetch('/api/viewings?pageSize=50');
         const json = await res.json();
         setViewings(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch viewings:', error); }
       setLoading(false);
     })();
   }, []);
@@ -287,7 +290,7 @@ export const TenantApplications: React.FC = () => {
         const res = await authFetch('/api/job-applications?type=tenant&pageSize=50');
         const json = await res.json();
         setApplications(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch applications:', error); }
       setLoading(false);
     })();
   }, []);
@@ -351,7 +354,7 @@ export const LeaseRenewals: React.FC = () => {
         const res = await authFetch('/api/leases/expiring?days=90');
         const json = await res.json();
         setExpiring(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch expiring leases:', error); }
       setLoading(false);
     })();
   }, []);
@@ -416,7 +419,7 @@ export const SalesPipeline: React.FC = () => {
         const res = await authFetch('/api/offers?pageSize=100');
         const json = await res.json();
         setOffers(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch offers:', error); }
       setLoading(false);
     })();
   }, []);
@@ -472,7 +475,7 @@ export const SalesLeads: React.FC = () => {
         const res = await authFetch('/api/leads?pageSize=50');
         const json = await res.json();
         setLeads(json.data ?? json.leads ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch leads:', error); }
       setLoading(false);
     })();
   }, []);
@@ -538,7 +541,7 @@ export const ActiveDeals: React.FC = () => {
         const res = await authFetch('/api/offers?status=accepted,negotiation,closing&pageSize=50');
         const json = await res.json();
         setOffers(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch active deals:', error); }
       setLoading(false);
     })();
   }, []);
@@ -613,7 +616,7 @@ export const AgentPerformance: React.FC = () => {
         const res = await authFetch('/api/offers/stats');
         const json = await res.json();
         setStats(json.data);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch agent stats:', error); }
       setLoading(false);
     })();
   }, []);
