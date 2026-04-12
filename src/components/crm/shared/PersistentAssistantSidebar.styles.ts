@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { keyframes } from 'styled-components';
+import { transitions } from '../../../styles/theme/transitions';
 
 const badgePulse = keyframes`
   0%, 100% { transform: scale(1); }
@@ -45,7 +46,7 @@ export const CollapseButton = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   flex-shrink: 0;
 
   &:hover {
@@ -119,7 +120,7 @@ export const AssistantTileContainer = styled.button<{ $active?: boolean; $tileCo
   border: 1px solid ${props => props.$active ? `#${props.$tileColor}` : 'transparent'};
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   width: 100%;
   text-align: left;
   position: relative;
@@ -188,7 +189,7 @@ export const TileAction = styled.button`
   justify-content: center;
   cursor: pointer;
   opacity: 0;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   flex-shrink: 0;
 
   &:hover {

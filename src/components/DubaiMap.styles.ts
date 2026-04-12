@@ -1,5 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 import { typography } from '../styles/theme/typography';
+import { transitions } from '../styles/theme/transitions';
 
 // Keyframes
 const slideIn = keyframes`
@@ -84,7 +85,7 @@ export const FilterButton = styled.button<{ $isActive?: boolean; $variant?: 'res
   font-weight: 500;
   color: ${props => props.$isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     border-color: var(--primary-color, #1a365d);
@@ -164,7 +165,7 @@ export const MarkerPulse = styled.circle`
 `;
 
 export const MarkerDot = styled.circle`
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 `;
 
 export const MarkerLabel = styled.text`
@@ -242,7 +243,7 @@ export const PropertyPreview = styled.div`
   border-radius: 0.5rem;
   margin-bottom: 0.75rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     background: var(--bg-tertiary, #edf2f7);
@@ -303,7 +304,7 @@ export const ViewAllButton = styled.button`
   font-family: ${typography.fontFamily.heading};
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     background: var(--primary-hover, #234773);

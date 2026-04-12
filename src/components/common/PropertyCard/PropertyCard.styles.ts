@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { transitions } from '../../../styles/theme/transitions';
 
 export const PropertyCardGrid = styled.div<{ $columns?: number }>`
   display: grid;
@@ -22,7 +23,7 @@ export const PropertyCardContainer = styled(Link)`
   overflow: hidden;
   text-decoration: none;
   display: block;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   cursor: pointer;
 
   &:hover {
@@ -38,7 +39,7 @@ export const PropertyCardDiv = styled.div<{ $clickable?: boolean }>`
   border-radius: 12px;
   overflow: hidden;
   display: block;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   cursor: ${(props) => (props.$clickable ? 'pointer' : 'default')};
 
   &:hover {
@@ -119,7 +120,7 @@ export const FavoriteButton = styled.button<{ $isActive?: boolean }>`
   justify-content: center;
   font-size: 1.1rem;
   z-index: 3;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     transform: scale(1.1);

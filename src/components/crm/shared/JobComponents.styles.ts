@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 
-const { colors, shadows } = theme;
+const { colors, shadows, transitions } = theme;
 
 /* ============================================================================
  * JobComponents Styled Components
@@ -184,7 +184,7 @@ export const PlatformChip = styled.button<{ $selected?: boolean; $color?: string
   color: ${(props) => (props.$selected ? props.$color || '#f59e0b' : '#94a3b8')};
   font-size: 0.8125rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     background: rgba(255, 255, 255, 0.05);
@@ -277,7 +277,7 @@ export const FormField = styled.div<{ $span2?: boolean; $hasError?: boolean }>`
     color: #fff;
     font-size: 0.875rem;
     font-family: inherit;
-    transition: all 0.2s ease;
+    transition: ${transitions.hover};
 
     &:focus {
       outline: none;
@@ -320,7 +320,7 @@ export const InputWithIcon = styled.div`
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:focus-within {
     border-color: #f59e0b;
@@ -365,7 +365,7 @@ export const SalaryRange = styled.div`
     border-radius: 6px;
     color: #fff;
     font-size: 0.875rem;
-    transition: all 0.2s ease;
+    transition: ${transitions.hover};
 
     &:focus {
       outline: none;
@@ -418,7 +418,7 @@ export const ActionBtn = styled.button<{ $variant?: 'primary' | 'secondary' }>`
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   border: none;
   font-family: inherit;
 

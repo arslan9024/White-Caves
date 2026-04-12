@@ -88,7 +88,7 @@ export const FavoriteButton = styled.button<{ $isFavorite?: boolean }>`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   flex-shrink: 0;
 
   &:hover {
@@ -179,7 +179,7 @@ export const SidebarItem = styled.button<{ $active?: boolean }>`
   border: none;
   color: ${props => props.$active ? 'var(--primary)' : 'var(--text-secondary)'};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   text-align: left;
   font-size: 14px;
   font-weight: 500;
@@ -262,7 +262,7 @@ export const QuickActionButton = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   flex: 1;
 
   &:hover {

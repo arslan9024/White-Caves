@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { transitions } from '../../../styles/theme/transitions';
 
 export const DataGridViewContainer = styled.div`
   display: flex;
@@ -84,7 +85,7 @@ export const GridFilterButton = styled.button`
   color: var(--text-secondary);
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     background: var(--bg-tertiary);
@@ -226,7 +227,7 @@ export const RowActionsButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   opacity: 0;
 
   ${GridTableRow}:hover & {
@@ -290,7 +291,7 @@ export const PaginationButton = styled.button<{ disabled?: boolean }>`
   color: var(--text-secondary);
   font-size: 13px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover:not(:disabled) {
     background: var(--bg-tertiary);

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 
-const { colors } = theme;
+const { colors, transitions } = theme;
 
 /* ============================================================================
  * Property Components Styled Components
@@ -67,7 +67,7 @@ export const GalleryNav = styled.button<{ $position?: 'prev' | 'next' }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   z-index: 10;
 
   ${(props) => (props.$position === 'prev' ? `left: 1rem;` : `right: 1rem;`)}
@@ -107,7 +107,7 @@ export const FullscreenBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   z-index: 10;
 
   &:hover {
@@ -173,7 +173,7 @@ export const Thumbnail = styled.button<{ $active?: boolean; $isMore?: boolean }>
   cursor: pointer;
   background: #1e293b;
   padding: 0;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   ${(props) =>
     props.$isMore &&
@@ -242,7 +242,7 @@ export const CloseFullscreenBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   z-index: var(--z-overlay, 600);
 
   &:hover {
@@ -269,7 +269,7 @@ export const FullscreenNav = styled.button<{ $position?: 'prev' | 'next' }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   z-index: var(--z-overlay, 600);
 
   ${(props) => (props.$position === 'prev' ? `left: 2rem;` : `right: 2rem;`)}

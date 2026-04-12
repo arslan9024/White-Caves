@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { keyframes } from 'styled-components';
 import { colors } from '../../styles/theme/colors';
+import { transitions } from '../../styles/theme/transitions';
 
 const slideUp = keyframes`
   from {
@@ -181,7 +182,7 @@ export const QuickMessageBtn = styled.button`
   font-size: 0.8rem;
   margin: 0.25rem 0.25rem 0.25rem 0;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   @media (prefers-color-scheme: dark) {
     background: var(--bg-tertiary, #1a1a2e);
@@ -209,7 +210,7 @@ export const MessageInput = styled.input`
   font-size: 0.85rem;
   color: var(--text-primary, #1a1a2e);
   background: var(--bg-secondary, #f0f0f0);
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   @media (prefers-color-scheme: dark) {
     background: var(--bg-tertiary, #1a1a2e);
@@ -243,7 +244,7 @@ export const SendBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     background: #128C7E;
@@ -276,7 +277,7 @@ export const ChatAppBtn = styled.button<{ $appColor?: string }>`
   gap: 4px;
   font-size: 0.75rem;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     transform: translateY(-2px);

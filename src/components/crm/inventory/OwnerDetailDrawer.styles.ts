@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { X } from 'lucide-react';
+import { transitions } from '../../../styles/theme/transitions';
 
 export const OwnerDrawerOverlay = styled.div`
   position: fixed;
@@ -102,7 +103,7 @@ export const DrawerCloseButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     color: var(--text-primary);
@@ -172,7 +173,7 @@ export const ContactItem = styled.div<{ $isPrimary?: boolean }>`
   background: var(--bg-secondary);
   border-radius: 8px;
   border: 1px solid var(--border-color);
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   ${props =>
     props.$isPrimary &&
@@ -224,7 +225,7 @@ export const PropertyItem = styled.button`
   border: 1px solid var(--border-color);
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   text-align: left;
   width: 100%;
 
