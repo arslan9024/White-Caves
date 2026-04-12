@@ -42,7 +42,10 @@ async function fetchApi<T>(
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      const errorData = await response.json().catch(e => {
+        log.debug('Non-JSON error response:', e);
+        return {};
+      });
       throw new Error(
         errorData.error || `API Error: ${response.status} ${response.statusText}`
       );

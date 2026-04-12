@@ -19,7 +19,10 @@ import {
   Calendar, Building2, Phone, Mail, MessageCircle,
   Copy, Printer, ChevronRight,
 } from 'lucide-react';
+import { createLogger } from '../utils/logger';
 import './PropertyDetailPage.css';
+
+const log = createLogger('PropertyDetailPage');
 
 const DubaiMap = lazy(() => import('../components/maps/DubaiMap'));
 
@@ -30,15 +33,15 @@ function shareProperty(property: PropertyType) {
   const text = `${property.title} — AED ${property.price.toLocaleString()} | ${property.location}`;
 
   if (navigator.share) {
-    navigator.share({ title: property.title, text, url }).catch(() => {});
+    navigator.share({ title: property.title, text, url }).catch(e => log.warn('Share failed:', e));
   } else {
-    navigator.clipboard.writeText(url).catch(() => {});
+    navigator.clipboard.writeText(url).catch(e => log.warn('Clipboard write failed:', e));
   }
 }
 
 function copyLink(propertyId: string) {
   const url = `${window.location.origin}/property/${propertyId}`;
-  navigator.clipboard.writeText(url).catch(() => {});
+  navigator.clipboard.writeText(url).catch(e => log.warn('Clipboard write failed:', e));
 }
 
 function printProperty() {

@@ -9,7 +9,10 @@ import { Link } from 'react-router-dom';
 import {
   Grid, List, Map as MapIcon, MapPin, Bed, Bath, Maximize, Heart, Share2, ChevronRight,
 } from 'lucide-react';
+import { createLogger } from '../utils/logger';
 import 'leaflet/dist/leaflet.css';
+
+const log = createLogger('PropertiesPage');
 import './PropertiesPage.css';
 
 const InteractiveMap = lazy(() =>
@@ -199,9 +202,9 @@ const PropertiesPage: FC = () => {
                           e.stopPropagation();
                           const url = `${window.location.origin}/property/${property.id}`;
                           if (navigator.share) {
-                            navigator.share({ title: property.title, url }).catch(() => {});
+                            navigator.share({ title: property.title, url }).catch(e => log.warn('Share failed:', e));
                           } else {
-                            navigator.clipboard.writeText(url).catch(() => {});
+                            navigator.clipboard.writeText(url).catch(e => log.warn('Clipboard write failed:', e));
                           }
                         }}
                         aria-label="Share property"

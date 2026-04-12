@@ -64,7 +64,10 @@ const ContractManagementPage: FC = () => {
       const response = await authFetch('/api/contracts', { signal });
       if (!isMountedRef.current) return;
       if (!response.ok) {
-        const errData = await response.json().catch(() => ({ error: 'Failed to fetch contracts' }));
+        const errData = await response.json().catch(e => {
+          log.debug('Non-JSON error response:', e);
+          return { error: 'Failed to fetch contracts' };
+        });
         log.error('Failed to fetch contracts:', errData.error || response.statusText);
         if (isMountedRef.current) toast.error(errData.error || 'Failed to fetch contracts');
         return;
@@ -115,7 +118,10 @@ const ContractManagementPage: FC = () => {
       if (!isMountedRef.current) return;
       
       if (!response.ok) {
-        const errData = await response.json().catch(() => ({ error: 'Failed to create contract' }));
+        const errData = await response.json().catch(e => {
+          log.debug('Non-JSON error response:', e);
+          return { error: 'Failed to create contract' };
+        });
         if (isMountedRef.current) toast.error(errData.error || `Failed to create contract (${response.status})`);
         return;
       }

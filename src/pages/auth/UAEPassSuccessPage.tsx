@@ -87,7 +87,10 @@ const UAEPassSuccessPage: FC = () => {
           navigate('/dashboard');
         }, 3000);
       } else {
-        const errorData = await response.json().catch(() => ({ message: 'Authentication failed' }));
+        const errorData = await response.json().catch(e => {
+          log.debug('Non-JSON error response:', e);
+          return { message: 'Authentication failed' };
+        });
         if (isMountedRef.current) setError(errorData.message || 'Authentication failed');
       }
     } catch (err: unknown) {

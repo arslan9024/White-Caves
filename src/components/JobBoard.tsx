@@ -114,7 +114,10 @@ export default function JobBoard() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        const errorData = await response.json().catch(e => {
+          log.debug('Non-JSON error response:', e);
+          return {};
+        });
         throw new Error(
           (errorData as { message?: string }).message ||
           `HTTP ${response.status}: ${response.statusText}`

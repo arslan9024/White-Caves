@@ -97,7 +97,10 @@ export function useUserProfile() {
         }),
       });
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        const errorData = await response.json().catch(e => {
+          log.debug('Non-JSON error response:', e);
+          return {};
+        });
         throw new Error((errorData as Record<string, string>).error || 'Failed to save profile');
       }
       await response.json();
