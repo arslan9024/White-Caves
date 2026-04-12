@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { colors } from '../styles/theme/colors';
 import { transitions } from '../styles/theme/transitions';
+import { radius } from '../styles/theme/radius';
 
 export const PropertyDetailContainer = styled.div`
   max-width: 1200px;
@@ -78,7 +79,7 @@ export const PropertyImages = styled.div`
     width: 100%;
     height: 250px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: ${radius.lg};
     background: var(--bg-secondary);
     transition: transform 0.3s ease;
 
@@ -134,7 +135,7 @@ export const PropertyInfoGrid = styled.div`
 export const InfoSection = styled.div`
   background: var(--bg-secondary);
   padding: 1.5rem;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   border: 1px solid var(--border-color);
 
   h3 {
@@ -249,7 +250,7 @@ export const PropertyLocation = styled.div`
 
   .map {
     height: 400px;
-    border-radius: 8px;
+    border-radius: ${radius.lg};
     overflow: hidden;
     border: 1px solid var(--border-color);
 

@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { keyframes } from 'styled-components';
 import { transitions } from '../../../styles/theme/transitions';
+import { radius } from '../../../styles/theme/radius';
 
 const badgePulse = keyframes`
   0%, 100% { transform: scale(1); }
@@ -38,7 +39,7 @@ export const SidebarHeader = styled.div`
 export const CollapseButton = styled.button`
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #94a3b8;
@@ -118,7 +119,7 @@ export const AssistantTileContainer = styled.button<{ $active?: boolean; $tileCo
   padding: 0.625rem 0.75rem;
   background: ${props => props.$active ? `rgba(${props.$tileColor}, 0.15)` : 'rgba(255, 255, 255, 0.02)'};
   border: 1px solid ${props => props.$active ? `#${props.$tileColor}` : 'transparent'};
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
   transition: ${transitions.hover};
   width: 100%;

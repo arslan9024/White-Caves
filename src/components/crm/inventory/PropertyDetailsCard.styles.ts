@@ -1,10 +1,11 @@
 import styled from 'styled-components';
 import { transitions } from '../../../../styles/theme/transitions';
+import { radius } from '../../../../styles/theme/radius';
 
 export const PropertyDetailsCardContainer = styled.div`
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   overflow: hidden;
   font-size: ${(props) => (props.className?.includes('compact') ? '13px' : '14px')};
 `;
@@ -106,7 +107,7 @@ export const FieldItem = styled.div<{ $empty?: boolean }>`
   gap: 10px;
   padding: 10px 12px;
   background: var(--bg-secondary);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   transition: ${transitions.hover};
   opacity: ${(props) => (props.$empty ? '0.5' : '1')};
 

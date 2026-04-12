@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { keyframes } from 'styled-components';
 import { colors } from '../../styles/theme/colors';
 import { transitions } from '../../styles/theme/transitions';
+import { radius } from '../../styles/theme/radius';
 
 const slideUp = keyframes`
   from {
@@ -144,7 +145,7 @@ export const ChatBody = styled.div`
 export const WelcomeMessage = styled.div`
   background: var(--bg-secondary, #f0f0f0);
   padding: 0.75rem;
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   margin-bottom: 1rem;
 
   @media (prefers-color-scheme: dark) {
@@ -268,7 +269,7 @@ export const ChatAppBtn = styled.button<{ $appColor?: string }>`
   padding: 10px;
   background: ${props => props.$appColor || '#25D366'};
   border: none;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   color: white;
   cursor: pointer;
   display: flex;

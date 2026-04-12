@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../styles/theme/transitions';
+import { radius } from '../styles/theme/radius';
 
 export const ErrorBoundaryContainer = styled.div`
   min-height: 100vh;
@@ -90,7 +91,7 @@ export const ErrorActions = styled.div`
 
 export const ErrorButton = styled.button<{ $variant?: 'primary' | 'secondary' }>`
   padding: 0.875rem 2rem;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -132,7 +133,7 @@ export const ErrorDetails = styled.details`
   text-align: left;
   background: rgba(0, 0, 0, 0.2);
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   border: 1px solid rgba(255, 255, 255, 0.1);
 
   summary {

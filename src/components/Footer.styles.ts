@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../styles/theme/transitions';
+import { radius } from '../styles/theme/radius';
 
 export const FooterContainer = styled.footer`
   background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
@@ -40,7 +41,7 @@ export const FooterLogo = styled.img`
   width: auto;
   object-fit: contain;
   margin-bottom: 1rem;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
 `;
 
 export const FooterTagline = styled.p`

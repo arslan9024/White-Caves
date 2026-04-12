@@ -12,7 +12,7 @@ const spin = keyframes`
 
 export const DamacFetcherContainer = styled.div`
   background: var(--bg-secondary);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   padding: 24px;
   border: 1px solid var(--border-color);
 
@@ -67,7 +67,7 @@ export const ViewToggle = styled.div`
   gap: 4px;
   background: var(--bg-tertiary);
   padding: 4px;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
 
   @media (prefers-color-scheme: dark) {
     background: #333333;
@@ -152,7 +152,7 @@ export const AutoFillButton = styled.button`
 export const TextArea = styled.textarea`
   padding: 12px;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   background: var(--bg-primary);
   color: var(--text-primary);
   font-family: ${typography.fontFamily.mono};
@@ -201,7 +201,7 @@ export const FetchButton = styled.button<{ $variant?: 'primary' | 'danger' | 'de
         return 'var(--bg-tertiary)';
     }
   }};
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
   font-size: 0.9rem;
   color: ${props => {
@@ -281,7 +281,7 @@ export const ResultsSummary = styled.div`
   margin-bottom: 20px;
   padding: 12px;
   background: var(--bg-tertiary);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   flex-wrap: wrap;
 
   @media (prefers-color-scheme: dark) {
@@ -311,7 +311,7 @@ export const AssetsGrid = styled.div<{ $viewMode?: 'grid' | 'list' }>`
 
 export const AssetCard = styled.div<{ $selected?: boolean }>`
   position: relative;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   overflow: hidden;
   border: 2px solid ${props => props.$selected ? colors.primary : 'var(--border-color)'};
   cursor: pointer;
@@ -426,7 +426,7 @@ export const NotFoundSection = styled.div`
   padding: 16px;
   background: rgba(239, 68, 68, 0.05);
   border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
 
   h4 {
     margin: 0 0 12px 0;

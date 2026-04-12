@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../../../styles/theme/transitions';
+import { radius } from '../../../styles/theme/radius';
 
 export const SelectorContainer = styled.div<{ $compact?: boolean }>`
   position: relative;
@@ -32,7 +33,7 @@ export const AssistantAvatar = styled.div`
 export const AvatarIcon = styled.div`
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   display: flex;
   align-items: center;
   justify-content: center;

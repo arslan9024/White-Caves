@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { transitions } from '../../../styles/theme/transitions';
+import { radius } from '../../../styles/theme/radius';
 
 export const PropertyCardGrid = styled.div<{ $columns?: number }>`
   display: grid;
@@ -19,7 +20,7 @@ export const PropertyCardGrid = styled.div<{ $columns?: number }>`
 export const PropertyCardContainer = styled(Link)`
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   overflow: hidden;
   text-decoration: none;
   display: block;
@@ -36,7 +37,7 @@ export const PropertyCardContainer = styled(Link)`
 export const PropertyCardDiv = styled.div<{ $clickable?: boolean }>`
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   overflow: hidden;
   display: block;
   transition: ${transitions.hover};

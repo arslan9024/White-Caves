@@ -160,7 +160,7 @@ export const ReadMoreBtn = styled.button`
   background: var(--primary, #c9a962);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -306,7 +306,7 @@ export const LoadMoreBtn = styled.button`
   background: var(--primary, #c9a962);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;

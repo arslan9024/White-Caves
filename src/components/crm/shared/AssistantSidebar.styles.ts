@@ -80,7 +80,7 @@ export const AssistantTitle = styled.span`
 export const FavoriteButton = styled.button<{ $isFavorite?: boolean }>`
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   background: transparent;
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
@@ -254,7 +254,7 @@ export const SidebarFooter = styled.div`
 export const QuickActionButton = styled.button`
   width: 36px;
   height: 36px;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   background: transparent;
   border: 1px solid var(--border-color);
   color: var(--text-secondary);

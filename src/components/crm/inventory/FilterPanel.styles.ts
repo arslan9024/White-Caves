@@ -1,10 +1,11 @@
 import styled from 'styled-components';
 import { transitions } from '../../../../styles/theme/transitions';
+import { radius } from '../../../../styles/theme/radius';
 
 export const FilterPanelContainer = styled.div`
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   padding: 20px;
   margin-bottom: 20px;
 `;

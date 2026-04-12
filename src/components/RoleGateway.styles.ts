@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../styles/theme/transitions';
+import { radius } from '../styles/theme/radius';
 
 export const Container = styled.div`
   min-height: 100vh;
@@ -149,7 +150,7 @@ export const Button = styled.button<{ $variant?: 'primary' | 'secondary' }>`
   font-size: 1rem;
   font-weight: 600;
   border: none;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
   transition: ${transitions.all};
 

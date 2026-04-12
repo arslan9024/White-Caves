@@ -146,7 +146,7 @@ export const ServiceItem = styled.div`
   gap: 0.75rem;
   padding: 0.75rem 1rem;
   background: var(--bg-secondary, #f8f9fa);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   transition: background 0.2s ease;
 
   [data-theme='dark'] & {

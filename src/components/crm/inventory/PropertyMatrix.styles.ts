@@ -1,10 +1,11 @@
 import styled from 'styled-components';
 import { typography } from '../../../styles/theme/typography';
 import { transitions } from '../../../../styles/theme/transitions';
+import { radius } from '../../../../styles/theme/radius';
 
 export const PropertyMatrixContainer = styled.div`
   background: var(--bg-card);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   border: 1px solid var(--border-color);
   overflow: hidden;
 `;
@@ -35,7 +36,7 @@ export const MatrixSearch = styled.div`
   padding: 8px 14px;
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   flex: 1;
   max-width: 400px;
 

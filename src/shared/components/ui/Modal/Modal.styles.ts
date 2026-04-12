@@ -1,5 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 import { transitions } from '../../../../styles/theme/transitions';
+import { radius } from '../../../../styles/theme/radius';
 
 const modalFadeIn = keyframes`
   from {
@@ -93,7 +94,7 @@ export const ModalCloseButton = styled.button`
   padding: 0;
   border: none;
   background: transparent;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   color: var(--text-muted, #6b7280);
   cursor: pointer;
   transition: ${transitions.hover};

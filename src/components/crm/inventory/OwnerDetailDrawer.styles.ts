@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { X } from 'lucide-react';
 import { transitions } from '../../../styles/theme/transitions';
+import { radius } from '../../../styles/theme/radius';
 
 export const OwnerDrawerOverlay = styled.div`
   position: fixed;
@@ -171,7 +172,7 @@ export const ContactItem = styled.div<{ $isPrimary?: boolean }>`
   justify-content: space-between;
   padding: 10px 14px;
   background: var(--bg-secondary);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   border: 1px solid var(--border-color);
   transition: ${transitions.hover};
 
@@ -223,7 +224,7 @@ export const PropertyItem = styled.button`
   padding: 12px 14px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
   transition: ${transitions.hover};
   text-align: left;

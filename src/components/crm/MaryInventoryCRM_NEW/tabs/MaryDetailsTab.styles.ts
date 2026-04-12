@@ -402,7 +402,7 @@ export const MatrixInfo = styled.div`
   padding: 16px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   margin-bottom: 20px;
 
   p {
@@ -459,7 +459,7 @@ export const PropertyCard = styled.div<{ $isSelected: boolean }>`
   padding: 12px;
   background: var(--bg-secondary);
   border: 2px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
   transition: ${transitions.hover};
 

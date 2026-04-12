@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { keyframes } from 'styled-components';
 import { colors } from '../styles/theme/colors';
 import { transitions } from '../styles/theme/transitions';
+import { radius } from '../styles/theme/radius';
 
 const pulse = keyframes`
   0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
@@ -255,7 +256,7 @@ export const RoomThumb = styled.button<{ $active?: boolean }>`
   flex-shrink: 0;
   width: 80px;
   height: 50px;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   overflow: hidden;
   border: 2px solid ${props => props.$active ? colors.primary : 'transparent'};
   cursor: pointer;

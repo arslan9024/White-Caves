@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 
-const { colors, transitions } = theme;
+const { colors, transitions, radius } = theme;
 
 /* ============================================================================
  * Property Components Styled Components
@@ -13,7 +13,7 @@ const { colors, transitions } = theme;
 // ============================================================================
 
 export const PropertyGallery = styled.div<{ $isEmpty?: boolean }>`
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   overflow: hidden;
   background: rgba(15, 23, 42, 0.6);
 
@@ -30,7 +30,7 @@ export const PropertyGallery = styled.div<{ $isEmpty?: boolean }>`
   `}
 
   @media (max-width: 768px) {
-    border-radius: 8px;
+    border-radius: ${radius.lg};
   }
 `;
 
@@ -99,7 +99,7 @@ export const FullscreenBtn = styled.button`
   right: 1rem;
   width: 36px;
   height: 36px;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   background: rgba(0, 0, 0, 0.5);
   border: none;
   color: #fff;
@@ -372,12 +372,12 @@ export const SpecLabel = styled.span`
 export const PropertyDetailContainer = styled.div`
   background: rgba(15, 23, 42, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   padding: 1.5rem;
 
   @media (max-width: 768px) {
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: ${radius.lg};
   }
 `;
 
@@ -520,7 +520,7 @@ export const OwnerCard = styled.div`
 export const OwnerAvatar = styled.div`
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   background: ${colors.luxury.goldDark};
   display: flex;
   align-items: center;
@@ -581,7 +581,7 @@ export const FinancialGrid = styled.div`
 export const FinancialItem = styled.div`
   padding: 1rem;
   background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
 
   @media (max-width: 768px) {
     padding: 0.75rem;

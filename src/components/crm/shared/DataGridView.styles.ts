@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../../../styles/theme/transitions';
+import { radius } from '../../../styles/theme/radius';
 
 export const DataGridViewContainer = styled.div`
   display: flex;
@@ -7,7 +8,7 @@ export const DataGridViewContainer = styled.div`
   gap: 16px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   padding: 20px;
 
   [data-theme='dark'] & {
@@ -34,7 +35,7 @@ export const GridSearch = styled.div`
   padding: 10px 16px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   flex: 1;
   max-width: 300px;
 
@@ -81,7 +82,7 @@ export const GridFilterButton = styled.button`
   padding: 10px 16px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   color: var(--text-secondary);
   font-size: 14px;
   cursor: pointer;

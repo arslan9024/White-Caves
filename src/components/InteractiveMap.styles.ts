@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../styles/theme/transitions';
+import { radius } from '../styles/theme/radius';
 
 export const InteractiveMapContainer = styled.div`
   padding: 3rem;
@@ -162,7 +163,7 @@ export const LocationItem = styled.div<{ $isSelected?: boolean }>`
   padding: 1rem;
   background: var(--bg-primary);
   border: 2px solid ${props => props.$isSelected ? 'var(--primary-color)' : 'var(--border-color)'};
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
   transition: ${transitions.hover};
 
@@ -197,7 +198,7 @@ export const PropertiesGrid = styled.div`
 `;
 
 export const PropertyCard = styled.div`
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   overflow: hidden;
   background: var(--bg-primary);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);

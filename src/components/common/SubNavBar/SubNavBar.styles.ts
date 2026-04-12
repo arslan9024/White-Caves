@@ -1,6 +1,7 @@
 import styled, { keyframes } from 'styled-components';
 import { colors } from '../../../styles/theme/colors';
 import { transitions } from '../../../styles/theme/transitions';
+import { radius } from '../../../styles/theme/radius';
 
 const pulse = keyframes`
   0%, 100% { opacity: 1; }
@@ -93,7 +94,7 @@ export const SubNavItem = styled.button<{ $isActive?: boolean }>`
   padding: 0.5rem 1rem;
   background: transparent;
   border: none;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
   transition: ${transitions.hover};
   position: relative;
@@ -189,7 +190,7 @@ export const SubNavActionButton = styled.button`
   background: linear-gradient(135deg, var(--primary-color, ${colors.primary}), var(--accent-color, #f59e0b));
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
   font-weight: 500;
   font-size: 0.875rem;

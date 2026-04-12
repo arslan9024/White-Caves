@@ -1,5 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 import { transitions } from '../../../../styles/theme/transitions';
+import { radius } from '../../../../styles/theme/radius';
 
 const spin = keyframes`
   from {
@@ -12,7 +13,7 @@ const spin = keyframes`
 
 export const ImageExtractorContainer = styled.div`
   background: var(--bg-secondary);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   padding: 24px;
   border: 1px solid var(--border-color);
 `;
@@ -64,7 +65,7 @@ export const ActionBtn = styled.button<{ $danger?: boolean }>`
   padding: 8px 16px;
   border: 1px solid var(--border-color);
   background: var(--bg-tertiary);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
   font-size: 0.85rem;
   color: ${(props) => (props.$danger ? '#ef4444' : 'var(--text-primary)')};
@@ -78,7 +79,7 @@ export const ActionBtn = styled.button<{ $danger?: boolean }>`
 
 export const DropZone = styled.div<{ $active?: boolean; $processing?: boolean }>`
   border: 2px dashed var(--border-color);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   padding: 48px;
   text-align: center;
   cursor: pointer;
@@ -314,7 +315,7 @@ export const ImportBtn = styled.button`
   padding: 10px 24px;
   background: #f59e0b;
   border: none;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   color: white;
   font-weight: 600;
   cursor: pointer;
@@ -351,7 +352,7 @@ export const PreviewContent = styled.div`
   img {
     max-width: 100%;
     max-height: 80vh;
-    border-radius: 8px;
+    border-radius: ${radius.lg};
   }
 `;
 

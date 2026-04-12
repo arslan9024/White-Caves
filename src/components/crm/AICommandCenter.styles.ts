@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../../../styles/theme/transitions';
+import { radius } from '../../../styles/theme/radius';
 
 export const CommandCenterContainer = styled.div`
   min-height: 100vh;
@@ -58,7 +59,7 @@ export const HeaderControls = styled.div`
 export const ViewToggleContainer = styled.div`
   display: flex;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   padding: 4px;
 `;
 

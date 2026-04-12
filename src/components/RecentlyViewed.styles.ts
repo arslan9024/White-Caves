@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { colors } from '../styles/theme/colors';
 import { transitions } from '../styles/theme/transitions';
+import { radius } from '../styles/theme/radius';
 
 export const RecentlyViewedSection = styled.section`
   position: relative;
@@ -70,7 +71,7 @@ export const ClearButton = styled.button`
   color: var(--text-muted);
   background: transparent;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
   transition: ${transitions.hover};
 

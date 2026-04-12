@@ -1,10 +1,11 @@
 import styled from 'styled-components';
 import { colors } from '../../../styles/theme/colors';
 import { transitions } from '../../../../styles/theme/transitions';
+import { radius } from '../../../../styles/theme/radius';
 
 export const ClusterBrowserContainer = styled.div`
   background: var(--bg-card);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   padding: 16px;
   margin-bottom: 20px;
   border: 1px solid var(--border-color);
@@ -40,7 +41,7 @@ export const ClusterCount = styled.span`
   color: var(--text-secondary);
   background: var(--bg-secondary);
   padding: 4px 10px;
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   white-space: nowrap;
 
   @media (prefers-color-scheme: dark) {

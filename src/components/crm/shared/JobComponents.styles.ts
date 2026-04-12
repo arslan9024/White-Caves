@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 
-const { colors, shadows, transitions } = theme;
+const { colors, shadows, transitions, radius } = theme;
 
 /* ============================================================================
  * JobComponents Styled Components
@@ -12,12 +12,12 @@ const { colors, shadows, transitions } = theme;
 export const JobPostComposer = styled.div`
   background: ${colors.background.overlay};
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   overflow: hidden;
   position: relative;
 
   @media (max-width: 768px) {
-    border-radius: 8px;
+    border-radius: ${radius.lg};
   }
 `;
 
@@ -26,7 +26,7 @@ export const NotificationToast = styled.div<{ $type?: 'success' | 'error' }>`
   top: 1rem;
   right: 1rem;
   padding: 0.75rem 1.25rem;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   font-size: 0.875rem;
   font-weight: 500;
   z-index: var(--z-notification, 800);
@@ -97,7 +97,7 @@ export const ComposerHeader = styled.div`
 export const HeaderIcon = styled.div`
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   display: flex;
   align-items: center;
@@ -414,7 +414,7 @@ export const ActionBtn = styled.button<{ $variant?: 'primary' | 'secondary' }>`
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -489,7 +489,7 @@ export const PreviewCard = styled.div`
 
   @media (max-width: 768px) {
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: ${radius.lg};
   }
 `;
 

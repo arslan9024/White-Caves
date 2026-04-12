@@ -1,4 +1,5 @@
 import styled, { keyframes } from 'styled-components';
+import { radius } from '../../styles/theme/radius';
 
 // Keyframes
 const trendUp = keyframes`
@@ -26,7 +27,7 @@ const trendDown = keyframes`
 // Enhanced Stat Card
 export const StatCardWrapper = styled.div<{ $backgroundColor: string; $borderColor: string; $isClickable?: boolean }>`
   background: ${props => props.$backgroundColor};
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   border-left: 4px solid ${props => props.$borderColor};
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -51,7 +52,7 @@ export const StatCardWrapper = styled.div<{ $backgroundColor: string; $borderCol
       rgba(255, 255, 255, 0) 100%
     );
     pointer-events: none;
-    border-radius: 12px;
+    border-radius: ${radius.xl};
   }
 
   &:hover {

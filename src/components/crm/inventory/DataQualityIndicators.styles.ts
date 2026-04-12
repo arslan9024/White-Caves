@@ -1,9 +1,10 @@
 import styled from 'styled-components';
 import { transitions } from '../../../../styles/theme/transitions';
+import { radius } from '../../../../styles/theme/radius';
 
 export const DataQualityIndicatorsContainer = styled.div`
   background: var(--bg-card);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   padding: 20px;
   margin-bottom: 20px;
   border: 1px solid var(--border-color);
@@ -56,7 +57,7 @@ export const IndicatorCard = styled.button<{ $accentColor?: string }>`
 export const IndicatorIcon = styled.div`
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   background: color-mix(in srgb, var(--accent-color) 15%, transparent);
   color: var(--accent-color);
   display: flex;
