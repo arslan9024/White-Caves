@@ -32,7 +32,7 @@ export const HeaderLeft = styled.div`
 
 export const CommandCenterTitle = styled.h1`
   margin: 0;
-  font-size: 24px;
+  font-size: ${typography.sizes.xxl};
   font-weight: ${typography.weights.bold};
   color: #f8fafc;
   background: linear-gradient(

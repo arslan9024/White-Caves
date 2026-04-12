@@ -105,7 +105,7 @@ export const FilterTab = styled.button<{ $isActive?: boolean }>`
   padding: 0.75rem 1.5rem;
   background: ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--bg-primary, #ffffff)'};
   border: 1px solid ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--border-color, #e2e8f0)'};
-  border-radius: 9999px;
+  border-radius: ${radius.full};
   font-family: ${typography.fontFamily.primary};
   font-size: 0.9rem;
   color: ${props => props.$isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
@@ -182,7 +182,7 @@ export const ProjectBadge = styled.span<{ $variant?: 'status' | 'segment' }>`
   font-size: 0.75rem;
   font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
-  border-radius: 9999px;
+  border-radius: ${radius.full};
 `;
 
 export const ProjectContent = styled.div`

@@ -24,7 +24,7 @@ export const PropertyId = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 18px;
+  font-size: ${typography.sizes.lg};
   font-weight: ${typography.weights.bold};
   color: var(--text-primary);
 `;
@@ -203,7 +203,7 @@ export const OwnerAvatar = styled.div`
   justify-content: center;
   color: white;
   font-weight: ${typography.weights.bold};
-  font-size: 16px;
+  font-size: ${typography.sizes.md};
   flex-shrink: 0;
 `;
 

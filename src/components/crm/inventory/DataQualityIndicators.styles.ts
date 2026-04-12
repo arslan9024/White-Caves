@@ -19,7 +19,7 @@ export const IndicatorsHeader = styled.div`
   color: var(--text-primary);
 
   h3 {
-    font-size: 16px;
+    font-size: ${typography.sizes.md};
     font-weight: ${typography.weights.semibold};
     margin: 0;
   }
@@ -79,7 +79,7 @@ export const IndicatorContent = styled.div`
 `;
 
 export const IndicatorValue = styled.span`
-  font-size: 24px;
+  font-size: ${typography.sizes.xxl};
   font-weight: ${typography.weights.bold};
   color: var(--accent-color);
   line-height: 1;

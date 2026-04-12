@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { typography } from '../styles/theme/typography';
 import { transitions } from '../styles/theme/transitions';
+import { radius } from '../styles/theme/radius';
 
 export const NeighborhoodAnalyzerContainer = styled.div`
   padding: 3rem 5%;
@@ -45,7 +46,7 @@ export const AreaButton = styled.button<{ $isActive?: boolean }>`
   padding: 0.75rem 1.5rem;
   background: ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--bg-light, #f7fafc)'};
   border: 2px solid ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'transparent'};
-  border-radius: 9999px;
+  border-radius: ${radius.full};
   font-family: ${typography.fontFamily.primary};
   font-size: 0.9rem;
   font-weight: ${typography.weights.medium};
@@ -129,7 +130,7 @@ export const HeroBadges = styled.div`
 
 export const Badge = styled.span<{ $variant?: 'score' | 'grade' | 'trend'; $score?: string; $trend?: 'rising' | 'stable' | 'declining' }>`
   padding: 0.5rem 1rem;
-  border-radius: 9999px;
+  border-radius: ${radius.full};
   font-size: 0.85rem;
   font-weight: ${typography.weights.semibold};
   color: white;

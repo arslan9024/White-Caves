@@ -38,7 +38,7 @@ export const HeaderContent = styled.div`
 
   h3 {
     margin: 0;
-    font-size: 18px;
+    font-size: ${typography.sizes.lg};
     font-weight: ${typography.weights.bold};
     color: var(--text-primary, #1f2937);
 
@@ -369,7 +369,7 @@ export const EmptyState = styled.div`
   h4 {
     margin: 0 0 8px 0;
     color: var(--text-primary);
-    font-size: 16px;
+    font-size: ${typography.sizes.md};
     font-weight: ${typography.weights.semibold};
 
     [data-theme='dark'] & {

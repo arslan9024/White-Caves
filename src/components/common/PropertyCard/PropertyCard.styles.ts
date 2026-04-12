@@ -164,7 +164,7 @@ export const PropertyPrice = styled.p`
 
 export const PriceSuffix = styled.span`
   font-size: 0.8rem;
-  font-weight: 400;
+  font-weight: ${typography.weights.regular};
   color: var(--text-muted);
 `;
 

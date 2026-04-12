@@ -29,7 +29,7 @@ export const AdminHeader = styled.div`
 export const AdminTitle = styled.div`
   h1 {
     margin: 0 0 ${spacing.xs} 0;
-    font-size: 28px;
+    font-size: ${typography.sizes.xxxl};
     font-weight: ${typography.weights.bold};
     color: ${colors.text.primary};
   }
@@ -150,7 +150,7 @@ export const MetricTitle = styled.span`
 `;
 
 export const MetricValue = styled.div`
-  font-size: 32px;
+  font-size: ${typography.sizes.display};
   font-weight: ${typography.weights.bold};
   color: ${colors.text.primary};
   margin-bottom: ${spacing.xs};
@@ -177,7 +177,7 @@ export const MetricBarFill = styled.div<{ $color?: string }>`
 `;
 
 export const MetricStatus = styled.div<{ $status?: string }>`
-  font-size: 20px;
+  font-size: ${typography.sizes.xl};
   font-weight: ${typography.weights.bold};
   color: ${props => {
     switch (props.$status) {
@@ -222,7 +222,7 @@ export const SectionHeader = styled.div`
 
   h3 {
     margin: 0;
-    font-size: 18px;
+    font-size: ${typography.sizes.lg};
     font-weight: ${typography.weights.semibold};
     color: ${colors.text.primary};
   }
@@ -494,7 +494,7 @@ export const StatusLabel = styled.div`
 `;
 
 export const StatusValue = styled.div`
-  font-size: 20px;
+  font-size: ${typography.sizes.xl};
   font-weight: ${typography.weights.bold};
   color: ${colors.text.primary};
 `;
@@ -517,7 +517,7 @@ export const SettingGroup = styled.div`
 
   h4 {
     margin: 0 0 20px 0;
-    font-size: 16px;
+    font-size: ${typography.sizes.md};
     font-weight: ${typography.weights.semibold};
     color: ${colors.text.primary};
     border-bottom: 1px solid ${colors.border};
@@ -631,7 +631,7 @@ export const ChartContainer = styled.div`
 
   h4 {
     margin: 0 0 ${spacing.md} 0;
-    font-size: 16px;
+    font-size: ${typography.sizes.md};
     font-weight: ${typography.weights.semibold};
     color: ${colors.text.primary};
   }
@@ -685,7 +685,7 @@ export const AlertClose = styled.button`
   height: 24px;
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: ${typography.sizes.xl};
   cursor: pointer;
   color: ${colors.text.secondary};
   transition: color ${transitions.durations?.short || '0.2s'};

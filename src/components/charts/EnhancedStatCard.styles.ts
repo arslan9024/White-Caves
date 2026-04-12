@@ -141,13 +141,13 @@ export const StatCardValue = styled.div`
 `;
 
 export const StatValue = styled.div<{ $color?: string }>`
-  font-size: 28px;
+  font-size: ${typography.sizes.xxxl};
   font-weight: ${typography.weights.bold};
   letter-spacing: -0.5px;
   color: ${props => props.$color || 'inherit'};
 
   @media (max-width: 768px) {
-    font-size: 24px;
+    font-size: ${typography.sizes.xxl};
   }
 `;
 

@@ -119,7 +119,7 @@ export const ConversationListHeader = styled.div`
 
   h2 {
     margin: 0;
-    font-size: 16px;
+    font-size: ${typography.sizes.md};
     font-weight: ${typography.weights.semibold};
     color: ${tokens.colors.text.primary};
   }
@@ -305,7 +305,7 @@ export const MessageViewerHeaderContent = styled.div`
 
   h3 {
     margin: 0;
-    font-size: 16px;
+    font-size: ${typography.sizes.md};
     font-weight: ${typography.weights.semibold};
     color: ${tokens.colors.text.primary};
   }
@@ -552,7 +552,7 @@ export const QueueManagerHeader = styled.div`
 
   h3 {
     margin: 0 0 ${tokens.spacing.md} 0;
-    font-size: 16px;
+    font-size: ${typography.sizes.md};
     font-weight: ${typography.weights.semibold};
     color: ${tokens.colors.text.primary};
   }
@@ -762,7 +762,7 @@ export const ErrorAlert = styled.div`
     border: none;
     color: inherit;
     cursor: pointer;
-    font-size: 16px;
+    font-size: ${typography.sizes.md};
     padding: 0;
   }
 `;

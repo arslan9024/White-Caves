@@ -75,7 +75,7 @@ export const OwnerInfo = styled.div`
 
   h2 {
     margin: 0;
-    font-size: 18px;
+    font-size: ${typography.sizes.lg};
     font-weight: ${typography.weights.semibold};
     color: var(--text-primary);
   }

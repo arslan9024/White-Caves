@@ -214,7 +214,7 @@ export const NotificationBadgeContainer = styled.div<{
   align-items: center;
   justify-content: center;
   font-weight: ${typography.weights.bold};
-  border-radius: 9999px;
+  border-radius: ${radius.full};
   line-height: 1;
   
   ${props => {

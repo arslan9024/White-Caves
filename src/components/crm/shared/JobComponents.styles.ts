@@ -180,7 +180,7 @@ export const PlatformChip = styled.button<{ $selected?: boolean; $color?: string
   background: ${(props) =>
     props.$selected ? `color-mix(in srgb, ${props.$color || '#f59e0b'} 15%, transparent)` : 'rgba(255, 255, 255, 0.02)'};
   border: 1px solid ${(props) => (props.$selected ? props.$color || '#f59e0b' : 'rgba(255, 255, 255, 0.1)')};
-  border-radius: 9999px;
+  border-radius: ${radius.full};
   color: ${(props) => (props.$selected ? props.$color || '#f59e0b' : '#94a3b8')};
   font-size: 0.8125rem;
   cursor: pointer;

@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { typography } from '../styles/theme/typography';
 import { keyframes } from 'styled-components';
 import { transitions } from '../styles/theme/transitions';
+import { radius } from '../styles/theme/radius';
 
 const pulse = keyframes`
   0% { transform: scale(1); }
@@ -172,7 +173,7 @@ export const TourBadges = styled.div`
 
 export const Badge = styled.span<{ type?: 'drone' | 'video' }>`
   padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
+  border-radius: ${radius.full};
   font-size: 0.7rem;
   font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
@@ -197,7 +198,7 @@ export const TourType = styled.div`
   background: rgba(0, 0, 0, 0.6);
   color: var(--text-on-primary, #ffffff);
   font-size: 0.75rem;
-  border-radius: 9999px;
+  border-radius: ${radius.full};
 `;
 
 export const TourInfo = styled.div`

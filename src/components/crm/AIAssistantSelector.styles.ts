@@ -57,7 +57,7 @@ export const AssistantInfo = styled.div`
 `;
 
 export const AssistantName = styled.div`
-  font-size: 16px;
+  font-size: ${typography.sizes.md};
   font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 `;
@@ -188,7 +188,7 @@ export const SectionHeader = styled.div`
 
 export const SectionCount = styled.span`
   margin-left: auto;
-  font-weight: 400;
+  font-weight: ${typography.weights.regular};
 `;
 
 export const SectionIcon = styled.span`

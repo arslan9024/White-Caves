@@ -24,7 +24,7 @@ export const FilterTitle = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 16px;
+  font-size: ${typography.sizes.md};
   font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 `;

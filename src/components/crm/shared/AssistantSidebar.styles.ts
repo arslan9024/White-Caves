@@ -39,7 +39,7 @@ export const AssistantAvatar = styled.div<{ $background?: string }>`
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 24px;
+  font-size: ${typography.sizes.xxl};
   line-height: 1;
 `;
 

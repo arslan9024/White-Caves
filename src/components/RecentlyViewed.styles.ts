@@ -58,7 +58,7 @@ export const ItemCount = styled.span`
   color: var(--text-muted);
   padding: 0.25rem 0.75rem;
   background: var(--bg-tertiary);
-  border-radius: 9999px;
+  border-radius: ${radius.full};
 
   [data-theme='dark'] & {
     color: var(--text-muted, #808080);
@@ -181,7 +181,7 @@ export const PropertyTypeBadge = styled.span`
   font-weight: ${typography.weights.semibold};
   color: white;
   background: var(--primary);
-  border-radius: 9999px;
+  border-radius: ${radius.full};
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `;

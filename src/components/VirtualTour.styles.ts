@@ -59,7 +59,7 @@ export const TourBadge = styled.div`
 export const TourTitleText = styled.h3`
   color: white;
   margin: 0;
-  font-size: 18px;
+  font-size: ${typography.sizes.lg};
   font-weight: ${typography.weights.medium};
 `;
 
@@ -80,7 +80,7 @@ export const TourBtn = styled.button<{ $close?: boolean; $active?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: ${typography.sizes.md};
   transition: ${transitions.all};
 
   &:hover {
@@ -146,7 +146,7 @@ export const TourHotspot = styled.button`
 `;
 
 export const HotspotIcon = styled.span`
-  font-size: 18px;
+  font-size: ${typography.sizes.lg};
 `;
 
 export const HotspotLabel = styled.div`
@@ -229,7 +229,7 @@ export const ZoomBtn = styled.button`
   border: none;
   background: rgba(255, 255, 255, 0.2);
   color: white;
-  font-size: 18px;
+  font-size: ${typography.sizes.lg};
   cursor: pointer;
   transition: background 0.3s ease;
 

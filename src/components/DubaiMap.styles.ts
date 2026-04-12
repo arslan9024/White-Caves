@@ -1,6 +1,7 @@
 import styled, { keyframes } from 'styled-components';
 import { typography } from '../styles/theme/typography';
 import { transitions } from '../styles/theme/transitions';
+import { radius } from '../styles/theme/radius';
 
 // Keyframes
 const slideIn = keyframes`
@@ -79,7 +80,7 @@ export const FilterButton = styled.button<{ $isActive?: boolean; $variant?: 'res
   padding: 0.75rem 1.5rem;
   background: ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--bg-primary, #ffffff)'};
   border: 2px solid ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--border-color, #e2e8f0)'};
-  border-radius: 9999px;
+  border-radius: ${radius.full};
   font-family: ${typography.fontFamily.primary};
   font-size: 0.9rem;
   font-weight: ${typography.weights.medium};
@@ -209,7 +210,7 @@ export const InfoTitle = styled.h4`
 export const AreaType = styled.span<{ type?: 'luxury' | 'residential' | 'commercial' }>`
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
+  border-radius: ${radius.full};
   font-size: 0.7rem;
   font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
