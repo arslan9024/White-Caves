@@ -64,7 +64,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ contracts, onApprove }) => 
               <td>{c.date}</td>
               <td>
                 <div className="contract-actions">
-                  <button className="btn-view" title="View contract">
+                  <button className="btn-view" title="View contract" aria-label="View contract">
                     <Eye size={16} />
                   </button>
                   {c.status === 'pending_review' && (
@@ -72,11 +72,12 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ contracts, onApprove }) => 
                       className="btn-approve"
                       onClick={() => onApprove(c.id)}
                       title="Approve contract"
+                      aria-label="Approve contract"
                     >
                       <CheckCircle size={16} />
                     </button>
                   )}
-                  <button className="btn-download" title="Download">
+                  <button className="btn-download" title="Download" aria-label="Download contract">
                     <Download size={16} />
                   </button>
                 </div>

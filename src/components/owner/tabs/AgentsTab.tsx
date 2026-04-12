@@ -117,9 +117,9 @@ const AgentsTab: React.FC<AgentsTabProps> = ({ data, loading, onAction }) => {
             </div>
             {getRatingStars(agent.rating)}
             <div className="agent-actions">
-              <button className="icon-btn" title="View Profile" onClick={() => onAction?.('viewAgent', agent.id)}>👁️</button>
-              <button className="icon-btn" title="Message" onClick={() => onAction?.('messageAgent', agent.id)}>💬</button>
-              <button className="icon-btn" title="Edit" onClick={() => onAction?.('editAgent', agent.id)}>✏️</button>
+              <button className="icon-btn" title="View Profile" aria-label="View profile" onClick={() => onAction?.('viewAgent', agent.id)}>👁️</button>
+              <button className="icon-btn" title="Message" aria-label="Send message" onClick={() => onAction?.('messageAgent', agent.id)}>💬</button>
+              <button className="icon-btn" title="Edit" aria-label="Edit agent" onClick={() => onAction?.('editAgent', agent.id)}>✏️</button>
             </div>
           </div>
         ))}

@@ -52,10 +52,10 @@ const ExecutivesTab = ({ executives }: ExecutivesTabProps) => {
               </div>
             </div>
             <div className="executive-actions">
-              <button title="Call"><Phone size={16} /></button>
-              <button title="Email"><Mail size={16} /></button>
-              <button title="Video Call"><Video size={16} /></button>
-              <button title="Message"><MessageCircle size={16} /></button>
+              <button title="Call" aria-label="Call executive"><Phone size={16} /></button>
+              <button title="Email" aria-label="Email executive"><Mail size={16} /></button>
+              <button title="Video Call" aria-label="Video call executive"><Video size={16} /></button>
+              <button title="Message" aria-label="Message executive"><MessageCircle size={16} /></button>
             </div>
           </div>
         ))}
