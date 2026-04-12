@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../../../styles/theme/transitions';
+import { typography } from '../../../styles/theme/typography';
 import { radius } from '../../../styles/theme/radius';
 
 export const SelectorContainer = styled.div<{ $compact?: boolean }>`
@@ -62,7 +63,7 @@ export const AssistantName = styled.div`
 `;
 
 export const AssistantTitle = styled.div`
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
@@ -109,7 +110,7 @@ export const SearchInput = styled.input`
   flex: 1;
   border: none;
   background: transparent;
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   color: var(--text-primary);
   outline: none;
 
@@ -236,7 +237,7 @@ export const ItemInfo = styled.div`
 `;
 
 export const ItemName = styled.div`
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   font-weight: 600;
   color: var(--text-primary);
 `;

@@ -1,5 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 import { radius } from '../../styles/theme/radius';
+import { typography } from '../../styles/theme/typography';
 
 // Keyframes
 const trendUp = keyframes`
@@ -97,7 +98,7 @@ export const StatCardHeader = styled.div`
 export const StatCardLabel = styled.div`
   display: flex;
   align-items: center;
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   font-weight: 500;
   color: rgba(0, 0, 0, 0.7);
   text-transform: uppercase;
@@ -113,7 +114,7 @@ export const StatCardLabel = styled.div`
   }
 
   @media (max-width: 768px) {
-    font-size: 12px;
+    font-size: ${typography.sizes.xs};
   }
 `;
 
@@ -151,7 +152,7 @@ export const StatValue = styled.div<{ $color?: string }>`
 `;
 
 export const StatUnit = styled.span`
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   color: rgba(0, 0, 0, 0.5);
   font-weight: 500;
 
@@ -194,18 +195,18 @@ export const StatCardComparison = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
 `;
 
 export const ChangeValue = styled.span<{ $color?: string }>`
   font-weight: 600;
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   color: ${props => props.$color || 'inherit'};
 `;
 
 export const ComparisonText = styled.span`
   color: rgba(0, 0, 0, 0.5);
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
 
   @media (prefers-color-scheme: dark) {
     color: rgba(255, 255, 255, 0.5);

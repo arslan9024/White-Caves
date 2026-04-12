@@ -431,7 +431,7 @@ export const NotFoundSection = styled.div`
   h4 {
     margin: 0 0 12px 0;
     color: #ef4444;
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
   }
 
   @media (prefers-color-scheme: dark) {

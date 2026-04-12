@@ -22,12 +22,12 @@ const sizeStyles = {
   md: css`
     height: 26px;
     padding: 0 10px;
-    font-size: 12px;
+    font-size: ${typography.sizes.xs};
   `,
   lg: css`
     height: 32px;
     padding: 0 14px;
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
   `,
 };
 

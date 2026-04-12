@@ -7,7 +7,7 @@
 import styled, { css } from 'styled-components';
 import { theme } from '../../styles/theme';
 
-const { spacing, radius, shadows, transitions, colors } = theme;
+const { spacing, radius, shadows, transitions, colors, typography } = theme;
 
 /**
  * Design tokens — bridge from local API to centralized theme.
@@ -180,13 +180,13 @@ export const ConversationItemHeader = styled.div`
 export const ConversationItemName = styled.p`
   margin: 0;
   font-weight: 600;
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   color: ${tokens.colors.text.primary};
 `;
 
 export const ConversationItemInfo = styled.p`
   margin: 0;
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: ${tokens.colors.text.tertiary};
 `;
 
@@ -233,7 +233,7 @@ export const LeadScoreBar = styled.div`
   display: flex;
   align-items: center;
   gap: ${tokens.spacing.sm};
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: ${tokens.colors.text.secondary};
 `;
 
@@ -268,7 +268,7 @@ export const UnreadBadge = styled.span`
   background-color: ${tokens.colors.danger};
   color: white;
   border-radius: 50%;
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   font-weight: 600;
 `;
 
@@ -312,7 +312,7 @@ export const MessageViewerHeaderContent = styled.div`
 
   p {
     margin: 0;
-    font-size: 13px;
+    font-size: ${typography.sizes.sm};
     color: ${tokens.colors.text.secondary};
   }
 `;
@@ -368,7 +368,7 @@ export const MessageContent = styled.div<{ sender: 'CUSTOMER' | 'AGENT' }>`
 `;
 
 export const MessageMetadata = styled.div`
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: ${tokens.colors.text.tertiary};
   display: flex;
   gap: ${tokens.spacing.sm};
@@ -417,7 +417,7 @@ export const EmptyState = styled.div`
 
   p {
     margin: 0;
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
   }
 `;
 
@@ -445,7 +445,7 @@ export const MessageTypeSelect = styled.select`
   border-radius: ${tokens.borderRadius.md};
   background: ${tokens.colors.surface.primary};
   color: ${tokens.colors.text.primary};
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   cursor: pointer;
   transition: border-color ${tokens.transitions.fast};
 
@@ -467,7 +467,7 @@ export const MessageTextarea = styled.textarea`
   background: ${tokens.colors.surface.primary};
   color: ${tokens.colors.text.primary};
   font-family: inherit;
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   resize: none;
   max-height: 150px;
   transition: border-color ${tokens.transitions.fast};
@@ -495,7 +495,7 @@ export const MessageInputFooter = styled.div`
 `;
 
 export const CharCount = styled.span<{ isWarning?: boolean }>`
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: ${(props) =>
     props.isWarning ? tokens.colors.warning : tokens.colors.text.tertiary};
 `;
@@ -506,7 +506,7 @@ export const SendButton = styled.button`
   color: white;
   border: none;
   border-radius: ${tokens.borderRadius.md};
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   font-weight: 600;
   cursor: pointer;
   transition: all ${tokens.transitions.fast};
@@ -568,7 +568,7 @@ export const StatItem = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   padding: ${tokens.spacing.sm} 0;
 
   span:first-child {
@@ -627,7 +627,7 @@ export const QueueItemHeader = styled.div`
 
 export const QueueItemName = styled.p`
   margin: 0;
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   font-weight: 600;
   color: ${tokens.colors.text.primary};
 `;
@@ -684,7 +684,7 @@ export const AssignAgentInput = styled.input`
   border-radius: ${tokens.borderRadius.md};
   background: ${tokens.colors.surface.primary};
   color: ${tokens.colors.text.primary};
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   transition: border-color ${tokens.transitions.fast};
 
   &:focus {
@@ -700,7 +700,7 @@ export const AssignButtonSmall = styled.button`
   color: white;
   border: none;
   border-radius: ${tokens.borderRadius.md};
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   font-weight: 600;
   cursor: pointer;
   transition: all ${tokens.transitions.fast};
@@ -751,7 +751,7 @@ export const ErrorAlert = styled.div`
   color: #991b1b;
   border: 1px solid #fecaca;
   border-radius: ${tokens.borderRadius.md};
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   display: flex;
   gap: ${tokens.spacing.sm};
   align-items: flex-start;

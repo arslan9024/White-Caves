@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { radius } from '../../styles/theme/radius';
+import { typography } from '../../styles/theme/typography';
 
 export const StatusNotificationContainer = styled.div`
   position: fixed;
@@ -110,7 +111,7 @@ export const StatusContent = styled.div`
 `;
 
 export const StatusTitle = styled.strong`
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   font-weight: 600;
   color: var(--text-primary, #1f2937);
   line-height: 1.3;
@@ -121,7 +122,7 @@ export const StatusTitle = styled.strong`
 `;
 
 export const StatusMessage = styled.span`
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   color: var(--text-secondary, #6b7280);
   line-height: 1.4;
   word-wrap: break-word;

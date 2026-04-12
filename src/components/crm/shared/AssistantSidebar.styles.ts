@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 
-const { colors, shadows, transitions, radius, spacing } = theme;
+const { colors, shadows, transitions, radius, spacing, typography } = theme;
 
 export const AssistantSidebarContainer = styled.div<{ $collapsed?: boolean; $sidebarAccent?: string }>`
   --sidebar-accent: ${props => props.$sidebarAccent || colors.info};
@@ -49,7 +49,7 @@ export const AssistantInfo = styled.div`
 
   h3 {
     margin: 0 0 4px 0;
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     font-weight: 600;
     color: var(--text-primary);
     white-space: nowrap;
@@ -65,7 +65,7 @@ export const AssistantInfo = styled.div`
 `;
 
 export const AssistantTitle = styled.span`
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: var(--text-secondary);
   display: block;
   white-space: nowrap;
@@ -181,7 +181,7 @@ export const SidebarItem = styled.button<{ $active?: boolean }>`
   cursor: pointer;
   transition: ${transitions.hover};
   text-align: left;
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   font-weight: 500;
 
   &:hover {

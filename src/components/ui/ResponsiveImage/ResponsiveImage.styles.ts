@@ -1,4 +1,5 @@
 import styled, { keyframes, css } from 'styled-components';
+import { typography } from '../../../styles/theme/typography';
 
 // ─── Animations ───────────────────────────────────────────────
 const shimmer = keyframes`
@@ -89,7 +90,7 @@ export const ErrorFallback = styled.div`
   gap: 8px;
   background: var(--color-surface-secondary, #f1f5f9);
   color: var(--color-text-tertiary, #94a3b8);
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   text-align: center;
   padding: 16px;
 

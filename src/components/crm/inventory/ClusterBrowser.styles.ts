@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { colors } from '../../../styles/theme/colors';
+import { typography } from '../../../../styles/theme/typography';
 import { transitions } from '../../../../styles/theme/transitions';
 import { radius } from '../../../../styles/theme/radius';
 
@@ -29,7 +30,7 @@ export const ClusterHeader = styled.div`
 `;
 
 export const ClusterTitle = styled.h3`
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   font-weight: 600;
   margin: 0;
   flex: 1;
@@ -37,7 +38,7 @@ export const ClusterTitle = styled.h3`
 `;
 
 export const ClusterCount = styled.span`
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: var(--text-secondary);
   background: var(--bg-secondary);
   padding: 4px 10px;
@@ -59,7 +60,7 @@ export const ClusterGrid = styled.div`
 export const ClusterChip = styled.button<{ $active?: boolean }>`
   padding: 6px 14px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   font-weight: 500;
   background: ${props => props.$active ? 'var(--primary)' : 'var(--bg-secondary)'};
   border: 1px solid ${props => props.$active ? 'var(--primary)' : 'var(--border-color)'};

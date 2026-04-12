@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../../../../styles/theme/transitions';
+import { typography } from '../../../../styles/theme/typography';
 import { radius } from '../../../../styles/theme/radius';
 
 export const PropertyDetailsCardContainer = styled.div`
@@ -31,7 +32,7 @@ export const PropertyId = styled.div`
 export const StatusBadge = styled.span<{ $status?: string }>`
   padding: 6px 12px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   font-weight: 600;
   text-transform: uppercase;
   background: ${(props) => {
@@ -80,7 +81,7 @@ export const SectionTitle = styled.h3`
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -148,13 +149,13 @@ export const FieldLabel = styled.span`
 `;
 
 export const FieldValue = styled.span`
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   font-weight: 600;
   color: var(--text-primary);
   word-break: break-word;
 
   &.compact {
-    font-size: 12px;
+    font-size: ${typography.sizes.xs};
   }
 `;
 

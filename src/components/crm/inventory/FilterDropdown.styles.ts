@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../../../../styles/theme/transitions';
+import { typography } from '../../../../styles/theme/typography';
 import { radius } from '../../../../styles/theme/radius';
 
 export const FilterDropdownContainer = styled.div<{ $disabled?: boolean }>`
@@ -36,7 +37,7 @@ export const Select = styled.select`
   border: 1px solid var(--border-color);
   border-radius: ${radius.lg};
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   font-weight: 500;
   cursor: pointer;
   appearance: none;

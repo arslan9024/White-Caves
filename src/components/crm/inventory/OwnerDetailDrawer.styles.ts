@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { X } from 'lucide-react';
 import { transitions } from '../../../styles/theme/transitions';
+import { typography } from '../../../styles/theme/typography';
 import { radius } from '../../../styles/theme/radius';
 
 export const OwnerDrawerOverlay = styled.div`
@@ -85,7 +86,7 @@ export const OwnerInfo = styled.div`
 `;
 
 export const OwnerID = styled.span`
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: var(--text-secondary);
   display: block;
   margin-top: 4px;
@@ -149,7 +150,7 @@ export const DrawerSection = styled.section`
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     font-weight: 600;
     color: var(--text-primary);
     margin: 0 0 12px;
@@ -194,7 +195,7 @@ export const ContactItem = styled.div<{ $isPrimary?: boolean }>`
 `;
 
 export const ContactValue = styled.span`
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   color: var(--text-primary);
 
   [data-theme='dark'] & {
@@ -252,7 +253,7 @@ export const PropertyItemInfo = styled.div`
 `;
 
 export const PropertyPNumber = styled.span`
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   font-weight: 600;
   color: var(--text-primary);
 
@@ -262,7 +263,7 @@ export const PropertyPNumber = styled.span`
 `;
 
 export const PropertyProject = styled.span`
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: var(--text-secondary);
 
   [data-theme='dark'] & {
@@ -335,7 +336,7 @@ export const PropertyStatus = styled.span<{ $status?: string }>`
 `;
 
 export const NoData = styled.p`
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   color: var(--text-secondary);
   font-style: italic;
   padding: 10px;

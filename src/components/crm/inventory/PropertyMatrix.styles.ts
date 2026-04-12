@@ -45,7 +45,7 @@ export const MatrixSearch = styled.div`
     background: transparent;
     flex: 1;
     color: var(--text-primary);
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
 
     &:focus {
       outline: none;
@@ -64,7 +64,7 @@ export const MatrixTable = styled.table`
   th {
     padding: 12px 16px;
     text-align: left;
-    font-size: 12px;
+    font-size: ${typography.sizes.xs};
     font-weight: 600;
     color: var(--text-secondary);
     text-transform: uppercase;
@@ -87,7 +87,7 @@ export const MatrixTable = styled.table`
   td {
     padding: 12px 16px;
     border-top: 1px solid var(--border-color);
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     color: var(--text-primary);
   }
 
@@ -116,7 +116,7 @@ export const ClusterBadge = styled.span`
   background: rgba(139, 92, 246, 0.1);
   color: #8b5cf6;
   border-radius: ${radius.md};
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   font-weight: 500;
 `;
 
@@ -178,7 +178,7 @@ export const StatusBadge = styled.span<{ $status?: string }>`
   display: inline-block;
   padding: 4px 10px;
   border-radius: ${radius.md};
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   font-weight: 500;
   background: ${(props) => {
     switch (props.$status) {

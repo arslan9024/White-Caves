@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { keyframes } from 'styled-components';
 import { colors } from '../styles/theme/colors';
+import { typography } from '../styles/theme/typography';
 import { transitions } from '../styles/theme/transitions';
 import { radius } from '../styles/theme/radius';
 
@@ -50,7 +51,7 @@ export const TourBadge = styled.div`
   color: #0a0a0f;
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   font-weight: 600;
   text-transform: uppercase;
 `;
@@ -152,7 +153,7 @@ export const HotspotLabel = styled.div`
   position: absolute;
   bottom: -24px;
   white-space: nowrap;
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: white;
   background: rgba(0, 0, 0, 0.7);
   padding: 2px 8px;
@@ -239,7 +240,7 @@ export const ZoomBtn = styled.button`
 
 export const ZoomLevel = styled.span`
   color: white;
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   min-width: 50px;
   text-align: center;
 `;
@@ -300,7 +301,7 @@ export const TourInfo = styled.div`
 
 export const TourInfoText = styled.div`
   color: white;
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
 `;
 
 export const ViewsCount = styled.span`

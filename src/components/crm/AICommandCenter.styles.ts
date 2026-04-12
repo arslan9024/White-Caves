@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../../../styles/theme/transitions';
+import { typography } from '../../../styles/theme/typography';
 import { radius } from '../../../styles/theme/radius';
 
 export const CommandCenterContainer = styled.div`
@@ -45,7 +46,7 @@ export const CommandCenterTitle = styled.h1`
 `;
 
 export const CommandCenterSubtitle = styled.p`
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   color: #64748b;
   margin: 0;
 `;

@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../styles/theme/transitions';
+import { typography } from '../styles/theme/typography';
 import { radius } from '../styles/theme/radius';
 
 export const InteractiveMapContainer = styled.div`
@@ -130,7 +131,7 @@ export const LocationMarker = styled.button<{ $isActive?: boolean }>`
 `;
 
 export const MarkerCount = styled.span`
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   font-weight: 700;
   color: #ffffff;
   line-height: 1;

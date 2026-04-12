@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
 
-const { colors, spacing, radius, shadows, transitions, mediaQueries } = theme;
+const { colors, spacing, radius, shadows, transitions, mediaQueries, typography } = theme;
 const reducedMotion = `@media (prefers-reduced-motion: reduce)`;
 
 export const AdminContainer = styled.div`
@@ -36,7 +36,7 @@ export const AdminTitle = styled.div`
 
   p {
     margin: 0;
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     color: ${colors.text.secondary};
   }
 `;
@@ -49,13 +49,13 @@ export const AdminUserInfo = styled.div`
 `;
 
 export const UserName = styled.span`
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   font-weight: 600;
   color: ${colors.text.primary};
 `;
 
 export const UserRole = styled.span`
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: ${colors.primary};
   font-weight: 500;
 `;
@@ -78,7 +78,7 @@ export const Tab = styled.button<{ $active?: boolean }>`
   border: none;
   border-bottom: 3px solid ${props => props.$active ? colors.primary : 'transparent'};
   color: ${props => props.$active ? colors.primary : colors.text.secondary};
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   font-weight: 500;
   cursor: pointer;
   transition: ${transitions.hover};
@@ -142,7 +142,7 @@ export const MetricHeader = styled.div`
 `;
 
 export const MetricTitle = styled.span`
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   font-weight: 500;
   color: ${colors.text.secondary};
   text-transform: uppercase;
@@ -157,7 +157,7 @@ export const MetricValue = styled.div`
 `;
 
 export const MetricSubtext = styled.div`
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   color: ${colors.text.tertiary};
   margin-bottom: ${radius.xl};
 `;
@@ -199,7 +199,7 @@ export const MetricDetails = styled.div`
 export const DetailItem = styled.div`
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: ${colors.text.secondary};
 `;
 
@@ -275,7 +275,7 @@ export const AlertContent = styled.div`
 `;
 
 export const AlertMessage = styled.span`
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   color: ${colors.text.primary};
   font-weight: 500;
 `;
@@ -350,19 +350,19 @@ export const ActivityContent = styled.div`
 `;
 
 export const ActivityUser = styled.div`
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   font-weight: 600;
   color: ${colors.text.primary};
   margin-bottom: 2px;
 `;
 
 export const ActivityAction = styled.div`
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   color: ${colors.text.secondary};
 `;
 
 export const ActivityTime = styled.div`
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: ${colors.text.tertiary};
   white-space: nowrap;
 `;
@@ -390,7 +390,7 @@ export const UsersTable = styled.div`
     th {
       padding: ${spacing.md};
       text-align: left;
-      font-size: 12px;
+      font-size: ${typography.sizes.xs};
       font-weight: 600;
       color: ${colors.text.secondary};
       text-transform: uppercase;
@@ -401,7 +401,7 @@ export const UsersTable = styled.div`
     td {
       padding: ${spacing.md};
       border-bottom: 1px solid ${colors.border};
-      font-size: 14px;
+      font-size: ${typography.sizes.base};
       color: ${colors.text.primary};
     }
 
@@ -415,7 +415,7 @@ export const RoleBadge = styled.span<{ $role?: string }>`
   display: inline-block;
   padding: ${spacing.xs} ${radius.xl};
   border-radius: ${radius.xl};
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   font-weight: 600;
   background: ${props => {
     switch (props.$role) {
@@ -437,7 +437,7 @@ export const StatusBadge = styled.span<{ $status?: string }>`
   display: inline-block;
   padding: ${spacing.xs} ${radius.xl};
   border-radius: ${radius.xl};
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   font-weight: 600;
   background: ${props => props.$status === 'active' ? '#E8F5E9' : '#FFEBEE'};
   color: ${props => props.$status === 'active' ? colors.success : colors.error};
@@ -448,7 +448,7 @@ export const ActionBtn = styled.button<{ $danger?: boolean }>`
   margin-right: ${spacing.sm};
   border: none;
   border-radius: ${radius.sm};
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   font-weight: 500;
   cursor: pointer;
   background: ${props => props.$danger ? '#FFEBEE' : '#E3F2FD'};
@@ -486,7 +486,7 @@ export const StatusItem = styled.div`
 `;
 
 export const StatusLabel = styled.div`
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: ${colors.text.secondary};
   margin-bottom: ${spacing.sm};
   text-transform: uppercase;
@@ -534,7 +534,7 @@ export const SettingItem = styled.div`
 
   label {
     display: block;
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     font-weight: 500;
     color: ${colors.text.primary};
     margin-bottom: ${spacing.sm};
@@ -546,7 +546,7 @@ export const SettingItem = styled.div`
     padding: ${spacing.sm} ${radius.xl};
     border: 1px solid ${colors.border};
     border-radius: ${radius.sm};
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     transition: border-color ${transitions.durations?.short || '0.2s'};
 
     &:focus {
@@ -567,7 +567,7 @@ export const BtnPrimary = styled.button`
   color: ${colors.background.secondary};
   border: none;
   border-radius: ${radius.sm};
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   font-weight: 600;
   cursor: pointer;
   transition: ${transitions.hover};
@@ -584,7 +584,7 @@ export const BtnSecondary = styled.button`
   color: ${colors.text.primary};
   border: none;
   border-radius: ${radius.sm};
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -608,7 +608,7 @@ export const FilterSelect = styled.select`
   margin-left: auto;
   border: 1px solid ${colors.border};
   border-radius: ${radius.sm};
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   cursor: pointer;
 
   &:focus {
@@ -702,7 +702,7 @@ export const SaveBtn = styled.button`
   color: ${colors.background.secondary};
   border: none;
   border-radius: ${radius.sm};
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   font-weight: 600;
   cursor: pointer;
   transition: ${transitions.hover};

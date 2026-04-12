@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../../../../styles/theme/transitions';
+import { typography } from '../../../../styles/theme/typography';
 import { radius } from '../../../../styles/theme/radius';
 
 export const DataQualityIndicatorsContainer = styled.div`
@@ -85,7 +86,7 @@ export const IndicatorValue = styled.span`
 `;
 
 export const IndicatorLabel = styled.span`
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   font-weight: 600;
   color: var(--text-primary);
 `;

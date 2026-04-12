@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../../../../styles/theme';
 
-const { spacing, radius, shadows, transitions, colors } = theme;
+const { spacing, radius, shadows, transitions, colors, typography } = theme;
 
 export const MaryDetailsTabContainer = styled.div`
   padding: 0;
@@ -50,7 +50,7 @@ export const HeaderContent = styled.div`
 
 export const HeaderSubtitle = styled.p`
   margin: 4px 0 0 0;
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   color: var(--text-secondary, #6b7280);
 
   [data-theme='dark'] & {
@@ -80,7 +80,7 @@ export const ViewTab = styled.button<{ $isActive: boolean }>`
   background: transparent;
   border: 1px solid transparent;
   border-radius: ${radius.md};
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   font-weight: 500;
   cursor: pointer;
   transition: ${transitions.hover};
@@ -176,7 +176,7 @@ export const InfoCard = styled.div`
   p {
     margin: 0;
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     line-height: 1.5;
 
     [data-theme='dark'] & {
@@ -223,7 +223,7 @@ export const GuideList = styled.ul`
 
   li {
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     line-height: 1.5;
     padding-left: 24px;
     position: relative;
@@ -278,7 +278,7 @@ export const DetailGroup = styled.div`
   border-radius: ${radius.md};
 
   label {
-    font-size: 12px;
+    font-size: ${typography.sizes.xs};
     font-weight: 600;
     color: var(--text-muted);
     text-transform: uppercase;
@@ -291,7 +291,7 @@ export const DetailGroup = styled.div`
 
   > div,
   > p {
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     font-weight: 500;
     color: var(--text-primary);
 
@@ -312,7 +312,7 @@ export const StatusBadge = styled.span`
   background: rgba(56, 142, 60, 0.1);
   color: ${colors.success};
   border-radius: ${radius.md};
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   font-weight: 600;
   text-transform: uppercase;
 
@@ -331,7 +331,7 @@ export const OwnersList = styled.ul`
 
   li {
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     padding-left: 16px;
     position: relative;
 
@@ -380,7 +380,7 @@ export const EmptyState = styled.div`
   p {
     margin: 0;
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     line-height: 1.5;
     max-width: 400px;
 
@@ -408,7 +408,7 @@ export const MatrixInfo = styled.div`
   p {
     margin: 0;
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
 
     [data-theme='dark'] & {
       color: var(--text-secondary, #a0a0a0);
@@ -506,7 +506,7 @@ export const CardHeader = styled.div`
 
 export const PNumber = styled.span`
   font-weight: 600;
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   color: var(--text-primary);
 
   [data-theme='dark'] & {
@@ -522,7 +522,7 @@ export const CardBody = styled.div`
 
   p {
     margin: 0;
-    font-size: 12px;
+    font-size: ${typography.sizes.xs};
     color: var(--text-secondary);
 
     &.card-project {
@@ -549,7 +549,7 @@ export const CardFooter = styled.div`
   align-items: center;
   padding-top: 8px;
   border-top: 1px solid var(--border-color);
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: var(--text-muted);
 
   [data-theme='dark'] & {
@@ -565,7 +565,7 @@ export const EmptyMatrix = styled.div`
 
   p {
     margin: 0;
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
 
     [data-theme='dark'] & {
       color: var(--text-muted, #808080);

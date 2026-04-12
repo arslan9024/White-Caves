@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../../../styles/theme/transitions';
+import { typography } from '../../../styles/theme/typography';
 import { radius } from '../../../styles/theme/radius';
 
 export const DataGridViewContainer = styled.div`
@@ -48,7 +49,7 @@ export const GridSearch = styled.div`
     border: none;
     background: transparent;
     color: var(--text-primary);
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     width: 100%;
     outline: none;
 
@@ -84,7 +85,7 @@ export const GridFilterButton = styled.button`
   border: 1px solid var(--border-color);
   border-radius: ${radius.lg};
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   cursor: pointer;
   transition: ${transitions.hover};
 
@@ -172,7 +173,7 @@ export const GridTableHeader = styled.th`
 
 export const GridTableCell = styled.td`
   padding: 14px 16px;
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   color: var(--text-primary);
   border-bottom: 1px solid var(--border-color);
 
@@ -267,7 +268,7 @@ export const GridPagination = styled.div`
 `;
 
 export const PaginationInfo = styled.span`
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: var(--text-muted);
 
   [data-theme='dark'] & {
@@ -290,7 +291,7 @@ export const PaginationButton = styled.button<{ disabled?: boolean }>`
   border: 1px solid var(--border-color);
   border-radius: ${radius.md};
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   cursor: pointer;
   transition: ${transitions.hover};
 
@@ -317,7 +318,7 @@ export const PaginationButton = styled.button<{ disabled?: boolean }>`
 `;
 
 export const PageNumber = styled.span`
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   color: var(--text-secondary);
   padding: 0 8px;
 

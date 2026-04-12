@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../styles/theme/transitions';
+import { typography } from '../styles/theme/typography';
 import { radius } from '../styles/theme/radius';
 
 export const ErrorBoundaryContainer = styled.div`
@@ -65,7 +66,7 @@ export const ErrorMessage = styled.p`
 
 export const RedirectNotice = styled.p`
   color: rgba(255, 255, 255, 0.5);
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   margin-bottom: 25px;
 `;
 

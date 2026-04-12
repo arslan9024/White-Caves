@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { transitions } from '../../../../styles/theme/transitions';
+import { typography } from '../../../../styles/theme/typography';
 import { radius } from '../../../../styles/theme/radius';
 
 export const FilterPanelContainer = styled.div`
@@ -46,7 +47,7 @@ export const ClearFiltersBtn = styled.button`
   border: 1px solid var(--border-color);
   border-radius: ${radius.md};
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   font-weight: 500;
   cursor: pointer;
   transition: ${transitions.hover};
