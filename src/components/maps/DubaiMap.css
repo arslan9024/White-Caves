@@ -102,7 +102,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #2E5A4F;
+  color: var(--secondary-color, #2E5A4F);
   background: rgba(46, 90, 79, 0.08);
   padding: 2px 8px;
   border-radius: 4px;
@@ -191,7 +191,7 @@
   display: flex;
   gap: 12px;
   font-size: 0.75rem;
-  color: #2E5A4F;
+  color: var(--secondary-color, #2E5A4F);
   font-weight: 600;
   margin-bottom: 8px;
 }
@@ -199,7 +199,7 @@
 .community-filter-btn {
   width: 100%;
   padding: 6px 12px;
-  background: #2E5A4F;
+  background: var(--secondary-color, #2E5A4F);
   color: white;
   font-size: 0.75rem;
   font-weight: 600;
@@ -249,7 +249,7 @@
 }
 
 .legend-dot.standard {
-  background: #2E5A4F;
+  background: var(--secondary-color, #2E5A4F);
 }
 
 .legend-circle {

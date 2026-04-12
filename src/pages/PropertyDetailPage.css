@@ -98,7 +98,7 @@
 
 .detail-badges .badge.type {
   background: rgba(46, 90, 79, 0.1);
-  color: #2E5A4F;
+  color: var(--secondary-color, #2E5A4F);
 }
 
 .detail-title {
@@ -205,7 +205,7 @@
   gap: 6px;
   padding: 8px 16px;
   background: rgba(46, 90, 79, 0.06);
-  color: #2E5A4F;
+  color: var(--secondary-color, #2E5A4F);
   border: 1px solid rgba(46, 90, 79, 0.12);
   border-radius: 8px;
   font-size: 0.8rem;
@@ -303,7 +303,7 @@
 }
 
 .contact-btn.email {
-  background: #2E5A4F;
+  background: var(--secondary-color, #2E5A4F);
   color: white;
 }
 
@@ -419,7 +419,7 @@
   font-size: 0.65rem;
   font-weight: 600;
   text-transform: uppercase;
-  color: #2E5A4F;
+  color: var(--secondary-color, #2E5A4F);
   letter-spacing: 0.05em;
 }
 

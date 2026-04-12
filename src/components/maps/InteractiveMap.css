@@ -14,7 +14,7 @@
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  background: #2E5A4F;
+  background: var(--secondary-color, #2E5A4F);
   color: white;
   border: none;
   border-radius: 8px;
