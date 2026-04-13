@@ -158,7 +158,7 @@ describe('UsersTab Integration', () => {
       const user = userEvent.setup();
       render(<UsersTab {...mockProps} />);
       
-      // 'affiliated_agent' role (formerly freelancer)
+      // affiliated_agent role
       const roleFilter = screen.getByDisplayValue('All Roles');
       await user.selectOptions(roleFilter, 'affiliated_agent');
       

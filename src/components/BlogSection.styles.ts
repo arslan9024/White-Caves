@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../styles/theme';
 
-const { shadows, transitions, colors, radius, typography , spacing , spacing } = theme;
+const { shadows, transitions, colors, radius, typography, spacing } = theme;
 
 export const BlogSectionContainer = styled.section`
   padding: 80px 0;

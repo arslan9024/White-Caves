@@ -58,3 +58,43 @@ const decodedToken = await admin.auth().verifyIdToken(idToken);
 - Form validation should provide real-time feedback with `aria-describedby`
 - API client needs retry logic with exponential backoff for transient failures
 - CSS layout: Avoid `position: fixed` without `safe-area-inset` consideration for notched devices
+
+---
+
+## From: PHASE_4_ROADMAP.md (Phase 0 cleanup, April 14, 2026)
+
+### Phase 4 Ideas (Not Yet Implemented)
+- **4.1 Performance Optimization**: Redis caching layer, message queue optimization, load testing & tuning
+- **4.2 Advanced NLP**: Azure Cognitive Services, Arabic language support, multi-intent detection
+- **4.3 Lead Scoring**: Machine learning model, predictive ranking, commission forecasting
+- **4.4 Admin Dashboard**: Real-time analytics, intent tuning UI, performance monitoring
+- **4.5 Channel Expansion**: SMS fallback, email integration, web chat widget
+
+### Phase 5 Ideas
+- Real-time commission tracking, automated payment processing
+- Multi-language customer bot (Arabic primary)
+- Integration marketplace (external CRMs, listing sites)
+
+---
+
+## From: TEAM_COMMUNICATION_TEMPLATES.md (Phase 0 cleanup, April 14, 2026)
+
+### Deployment Communication Templates
+Preserved for future deployment cycles. Contains email templates for:
+- Deployment kickoff notifications
+- Daily progress updates
+- Escalation procedures
+- Post-deployment success announcements
+These can be adapted for the White Caves transformation deployment.
+
+---
+
+## From: SESSION_ARCHIVE.md (Phase 0 cleanup, April 14, 2026)
+
+### Key Architectural Decisions Made Across Sessions 1-10
+- Session 5: Sidebar consolidated from 7+ sidebars → SidebarContainer (64px rail + 240px flyout)
+- Session 6: Enterprise testing infrastructure (performance baselines, regression detection)
+- Session 7: Commission feature backend complete (9 endpoints, E2E tests)
+- Session 8: Dashboard integration (7 pages enhanced, 12 UI components)
+- Session 9: CI/CD pipeline setup, quality gates
+- Session 10: 3-week production deployment planning
