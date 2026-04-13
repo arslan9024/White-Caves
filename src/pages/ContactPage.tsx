@@ -2,6 +2,7 @@ import React, { FC, useState, useRef, useEffect, useCallback, ChangeEvent, FormE
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { isValidEmail, isValidPhone, isRequired, isWithinLength, MAX_MESSAGE_LENGTH } from '../utils/validation';
 import { TIMING } from '../constants';
+import SEOHead from '../components/SEOHead';
 import './ContactPage.css';
 
 // Type definitions
@@ -76,6 +77,12 @@ const ContactPage: FC = () => {
 
   return (
     <div className="contact-page">
+      <SEOHead
+        title="Contact White Caves Real Estate — Dubai Property Experts"
+        description="Contact White Caves Real Estate for luxury property inquiries in Dubai. Visit our Business Bay office, call +971 50 000 0000, or send us a message online."
+        canonical="/contact"
+        keywords={['contact real estate Dubai', 'Dubai property agent contact', 'White Caves office']}
+      />
       <div className="contact-hero">
         <div className="contact-hero-content">
           <h1>Contact Us</h1>

@@ -4,6 +4,7 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import AppLayout from '../components/layout/AppLayout';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
+import SEOHead from '../components/SEOHead';
 import './AboutPage.css';
 
 interface TeamMember {
@@ -66,6 +67,12 @@ const AboutPage: FC = () => {
 
   return (
     <AppLayout>
+      <SEOHead
+        title="About White Caves — Dubai's Premier Luxury Real Estate Agency"
+        description="Learn about White Caves Real Estate, Dubai's trusted luxury property brokerage since 2009. 500+ properties sold, RERA licensed, serving the world's most discerning clients."
+        canonical="/about"
+        keywords={['about White Caves', 'Dubai real estate agency', 'luxury property brokerage Dubai']}
+      />
       <div className="about-page">
         <section className="about-hero">
           <div className="hero-overlay"></div>

@@ -13,6 +13,8 @@ import { usePropertyBrowser, type PropertyType } from '../hooks/usePropertyBrows
 import { usePublicFavorites } from '../hooks/usePublicFavorites';
 import AppLayout from '../components/layout/AppLayout';
 import Footer from '../components/Footer';
+import SEOHead from '../components/SEOHead';
+import { getPropertyJsonLd } from '../utils/jsonLd';
 import { PropertyImageSlider } from '../shared/components/property';
 import {
   ArrowLeft, Heart, Share2, MapPin, Bed, Bath, Maximize,
@@ -141,6 +143,27 @@ const PropertyDetailPage: FC = () => {
 
   return (
     <AppLayout>
+      <SEOHead
+        title={`${property.title} — ${property.location}`}
+        description={`${property.type} in ${property.location}. ${property.bedrooms} bed, ${property.bathrooms} bath, ${property.size} sqft. AED ${property.price?.toLocaleString()}. Contact White Caves Real Estate.`}
+        canonical={`/property/${property.id}`}
+        ogImage={property.images?.[0]}
+        ogType="product"
+        jsonLd={getPropertyJsonLd({
+          id: String(property.id),
+          title: property.title,
+          description: property.description || `${property.type} in ${property.location}`,
+          price: property.price || 0,
+          propertyType: property.type || 'apartment',
+          bedrooms: property.bedrooms,
+          bathrooms: property.bathrooms,
+          squareFeet: property.size,
+          address: { area: property.location || 'Dubai' },
+          images: property.images || [],
+          status: property.status === 'For Sale' ? 'for_sale' : 'for_rent',
+        })}
+        keywords={[property.location, property.type, `${property.bedrooms} bedroom Dubai`].filter(Boolean) as string[]}
+      />
       <div className="property-detail-page" data-testid="property-detail-page">
         {/* ─── Breadcrumb ───────────────────────────────────── */}
         <nav className="detail-breadcrumb" aria-label="Breadcrumb">

@@ -8,6 +8,8 @@ import Footer from '../components/Footer';
 import ClickToChat from '../components/ClickToChat';
 import { useRecentlyViewed } from '../components/RecentlyViewed';
 import { HOME_PROPERTIES } from '../data/homeProperties';
+import SEOHead from '../components/SEOHead';
+import { getOrganizationJsonLd } from '../utils/jsonLd';
 import './HomePage.css';
 
 // Above-the-fold: lazy-loaded to defer framer-motion (~120KB) from critical path
@@ -57,6 +59,13 @@ const HomePage: FC = () => {
 
   return (
     <AppLayout>
+      <SEOHead
+        title="Dubai Luxury Real Estate — Buy, Sell & Rent Premium Properties"
+        description="White Caves Real Estate is Dubai's premier luxury brokerage. Browse apartments, villas, and penthouses in Dubai Marina, Palm Jumeirah, Downtown, and more. RERA licensed."
+        canonical="/"
+        jsonLd={getOrganizationJsonLd()}
+        keywords={['Dubai luxury apartments', 'Palm Jumeirah villas', 'Dubai Marina penthouses', 'off-plan Dubai', 'RERA licensed broker']}
+      />
       <div className="home-page">
         {/* Above the fold — lazy-loaded to defer framer-motion from critical path */}
         <Suspense fallback={

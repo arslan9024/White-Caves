@@ -10,6 +10,7 @@ import {
   Grid, List, Map as MapIcon, MapPin, Bed, Bath, Maximize, Heart, Share2, ChevronRight,
 } from 'lucide-react';
 import { createLogger } from '../utils/logger';
+import SEOHead from '../components/SEOHead';
 import 'leaflet/dist/leaflet.css';
 
 const log = createLogger('PropertiesPage');
@@ -35,6 +36,12 @@ const PropertiesPage: FC = () => {
 
   return (
     <AppLayout>
+      <SEOHead
+        title="Properties for Sale & Rent in Dubai"
+        description="Browse luxury apartments, villas, and penthouses for sale and rent in Dubai. Advanced search with map view. Filter by area, price, bedrooms, and amenities."
+        canonical="/properties"
+        keywords={['properties for sale Dubai', 'apartments for rent Dubai', 'luxury villas Dubai', 'Dubai real estate listings']}
+      />
       <div className="properties-page">
         {/* ─── Hero Banner ──────────────────────────────────── */}
         <section className="properties-hero">

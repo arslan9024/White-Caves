@@ -7,6 +7,7 @@ import AppLayout from '../components/layout/AppLayout';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
 import { useToast } from '../components/Toast';
+import SEOHead from '../components/SEOHead';
 import './ServicesPage.css';
 
 // Type definitions
@@ -127,6 +128,12 @@ const ServicesPage: FC = () => {
 
   return (
     <AppLayout>
+      <SEOHead
+        title="Real Estate Services — Buying, Selling & Leasing in Dubai"
+        description="White Caves offers premium real estate services in Dubai: property buying, selling, leasing, investment advisory, and property management. Free consultation available."
+        canonical="/services"
+        keywords={['real estate services Dubai', 'property buying Dubai', 'property leasing Dubai', 'investment advisory Dubai']}
+      />
       <div className="services-page">
         <section className="services-hero">
           <div className="hero-overlay"></div>
