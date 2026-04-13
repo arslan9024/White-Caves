@@ -109,7 +109,83 @@ Ejari ("My Rent") is Dubai's official tenancy contract registration system, mand
 
 ---
 
-## 5. Portal Integration Requirements
+## 5. RERA Fee Schedule (2026)
+
+### Brokerage & Agent Fees
+| Fee Type | Amount | When Due |
+|----------|--------|----------|
+| New broker license (company) | AED 5,100 + trade license | Initial registration |
+| Broker license renewal | AED 5,100/year | Annual |
+| Agent BRN registration | AED 3,710 | Initial (includes RERA training) |
+| Agent BRN renewal | AED 510/year | Annual |
+| Branch office registration | AED 5,100 | Per branch |
+| Trakheesi permit (ad authorization) | AED 220/listing | Per property ad |
+| Trakheesi bulk upload | AED 220 × listing count | Bulk sync to portals |
+| RERA training certificate | AED 3,200 | Per agent (mandatory) |
+| Real estate appraiser license | AED 5,100 | Per appraiser |
+
+### Transaction Fees (DLD)
+| Fee Type | Amount | Paid By |
+|----------|--------|---------|
+| Transfer fee (sale) | 4% of sale price | Split buyer/seller (negotiable) |
+| DLD admin fee | AED 580 | Buyer |
+| Mortgage registration | 0.25% of loan amount | Buyer |
+| Mortgage release | AED 1,290 | Seller (upon payoff) |
+| Oqood (off-plan SPA) | 4% of purchase price | Buyer |
+| Title deed issuance | AED 250 | Buyer |
+| NOC (No Objection Certificate) | AED 500-5,000 | Seller (varies by developer) |
+
+### Escrow Account Requirements
+- **Law**: Under Dubai Law No. 8 of 2007, escrow accounts are **mandatory** for off-plan developments
+- **Regulated by**: RERA (escrow account registration required)
+- **Platform impact**: Track escrow status for off-plan transaction pipeline
+- **Developer obligations**:
+  - Must deposit 20% of project cost before selling off-plan
+  - All buyer payments go to RERA-registered escrow account
+  - Escrow agent must be RERA-approved bank (Emirates NBD, ADCB, etc.)
+  - Progress-linked payment plans: disbursement tied to construction milestones
+- **Our integration** (planned): Track escrow milestone payments for off-plan transactions
+
+---
+
+## 6. VAT & TRN (Tax Registration Number)
+
+### VAT in UAE Real Estate (Federal Decree-Law No. 8 of 2017)
+| Transaction Type | VAT Rate | Notes |
+|-----------------|----------|-------|
+| **Commercial property sale** | 5% | Standard rated |
+| **Residential property sale (first sale)** | 0% | Zero-rated (first supply within 3 years of completion) |
+| **Residential property sale (resale)** | Exempt | No VAT on resale of residential |
+| **Commercial property lease** | 5% | Standard rated |
+| **Residential property lease** | Exempt | No VAT |
+| **Brokerage commission** | 5% | Standard rated (always) |
+| **Property management fees** | 5% | Standard rated |
+| **Valuation/consulting fees** | 5% | Standard rated |
+| **Bare land** | Exempt | No VAT |
+
+### TRN Requirements for White Caves
+- **TRN (Tax Registration Number)**: Mandatory for businesses with annual taxable supplies > AED 375,000
+- **Voluntary registration**: Available for > AED 187,500
+- **White Caves must**:
+  - Display TRN on all invoices (commission invoices, management fee invoices)
+  - Charge 5% VAT on commission invoices
+  - File quarterly VAT returns via FTA (Federal Tax Authority) portal
+  - Issue tax-compliant invoices (tax invoice requirements per Article 59)
+- **Platform impact**:
+  - `trnNumber` field on Company profile
+  - VAT calculation on Commission model: `commission × 1.05` for invoicing
+  - Tax invoice template in document generator (Form F + VAT line)
+  - VAT line item on all commission invoices: `{ baseAmount, vatRate: 0.05, vatAmount, totalAmount }`
+
+### Corporate Tax (Federal Decree-Law No. 47 of 2022)
+- **Rate**: 9% on taxable income > AED 375,000 (effective June 2023)
+- **Free zone exemption**: Available for qualifying free zone companies
+- **White Caves impact**: Standard 9% corporate tax applies to net profits
+- **Platform impact**: Financial reports should track revenue for tax filing purposes
+
+---
+
+## 7. Portal Integration Requirements
 
 ### PropertyFinder
 - Leading UAE property portal
@@ -144,7 +220,7 @@ White Caves Platform
 
 ---
 
-## 6. Multi-Currency Support
+## 8. Multi-Currency Support
 
 ### Required Currencies
 | Currency | Code | Symbol | Primary Use |

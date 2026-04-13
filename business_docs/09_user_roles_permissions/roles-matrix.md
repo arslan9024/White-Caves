@@ -139,11 +139,26 @@
 - **Dashboard:** `/marketing/dashboard`  
 - **Permissions:** `marketing.*`, `properties.promote`, `analytics.marketing`  
 
+### Compliance Officer (`compliance_officer`)
+- **Category:** Support  
+- **Color:** #B91C1C  
+- **Dashboard:** `/compliance/dashboard`  
+- **Permissions:** `compliance.*`, `audit.*`, `legal.view`, `reports.compliance`  
+- **Description:** RERA/DLD compliance monitoring, AML reporting, audit trail management  
+- **Key Responsibilities:** Ensure all listings have valid Trakheesi permits, monitor AML thresholds, generate STR reports, manage RERA BRN validations
+
 ### Document Controller (`document_controller`)
 - **Category:** Support  
 - **Color:** #6366F1  
 - **Dashboard:** `/documents/dashboard`  
 - **Permissions:** `documents.*`, `verification.*`  
+
+### IT Administrator (`it_admin`)
+- **Category:** Support  
+- **Color:** #475569  
+- **Dashboard:** `/admin/settings`  
+- **Permissions:** `admin.system`, `settings.*`, `logs.view`, `integrations.*`  
+- **Description:** Platform configuration, API key management, integration monitoring, system health
 
 ---
 
