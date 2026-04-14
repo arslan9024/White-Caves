@@ -39,7 +39,9 @@ import viewingsRoutes from './routes/viewings.js';
 import offersRoutes from './routes/offers.js';
 import leasesRoutes from './routes/leases.js';
 import maintenanceRoutes from './routes/maintenance.js';
+import uploadsRoutes from './routes/uploads.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
+import { UPLOAD_DIR } from './middleware/upload.js';
 
 // Load environment variables
 dotenv.config();
@@ -223,28 +225,93 @@ app.use('/api/leases', leasesRoutes);
 // Maintenance API (maintenance requests for landlords and tenants)
 app.use('/api/maintenance', maintenanceRoutes);
 
-// WhatsApp Webhook (public endpoint — requires webhook secret for verification)
-app.post('/api/whatsapp/webhook', asyncHandler(async (req: Request, res: Response) => {
-  if (!WHATSAPP_WEBHOOK_SECRET) {
-    throw new AppError('WhatsApp webhook not configured — set WHATSAPP_WEBHOOK_SECRET', 500);
+// File Uploads API (images, documents)
+app.use('/api/uploads', uploadsRoutes);
+
+// Serve uploaded files as static assets
+app.use('/uploads', express.static(UPLOAD_DIR));
+
+// ── WhatsApp Webhook (public endpoint — return 200 IMMEDIATELY, process async) ──
+// Message dedup cache: messageId → timestamp (auto-expires after 10 min)
+const _webhookDedup = new Map<string, number>();
+const DEDUP_TTL_MS = 10 * 60 * 1000; // 10 minutes
+
+/** Prune expired dedup entries (runs lazily on each webhook call) */
+function pruneDedup(): void {
+  const now = Date.now();
+  for (const [key, ts] of _webhookDedup) {
+    if (now - ts > DEDUP_TTL_MS) _webhookDedup.delete(key);
   }
-  // SECURITY: Only accept webhook secret via header (never query params — they leak in logs)
+}
+
+/** Background processing — fire-and-forget after 200 is sent */
+async function processWebhookPayload(payload: Record<string, unknown>): Promise<void> {
+  try {
+    const entries = (payload.entry as Array<Record<string, unknown>>) ?? [];
+    for (const entry of entries) {
+      const changes = (entry.changes as Array<Record<string, unknown>>) ?? [];
+      for (const change of changes) {
+        const value = change.value as Record<string, unknown> | undefined;
+        const messages = (value?.messages as Array<Record<string, unknown>>) ?? [];
+        for (const msg of messages) {
+          const msgId = (msg.id as string) ?? '';
+          // Dedup: skip if already processed
+          if (msgId && _webhookDedup.has(msgId)) {
+            logger.debug('WhatsApp webhook dedup — skipping already-processed message', { msgId });
+            continue;
+          }
+          if (msgId) _webhookDedup.set(msgId, Date.now());
+
+          // TODO: Route to WhatsApp service for conversation handling, lead creation, etc.
+          logger.info('WhatsApp message received', {
+            msgId,
+            from: msg.from,
+            type: msg.type,
+            timestamp: msg.timestamp,
+          });
+        }
+      }
+    }
+  } catch (err) {
+    // Never let background processing crash — log and swallow
+    logger.error('WhatsApp webhook background processing error', { error: String(err) });
+  }
+}
+
+app.post('/api/whatsapp/webhook', (req: Request, res: Response) => {
+  // ── Step 1: Validate config ──
+  if (!WHATSAPP_WEBHOOK_SECRET) {
+    res.status(503).json({ error: 'WhatsApp webhook not configured' });
+    return;
+  }
+
+  // ── Step 2: Validate token (SECURITY: header only, never query params) ──
   const webhookToken = (req.headers['x-webhook-token'] || '') as string;
   if (!webhookToken) {
-    throw new AppError('Webhook token required in x-webhook-token header', 403);
+    res.status(403).json({ error: 'Webhook token required' });
+    return;
   }
-  // Use timing-safe comparison to prevent timing attacks on secret
+
   const expected = Buffer.from(WHATSAPP_WEBHOOK_SECRET, 'utf8');
   const received = Buffer.from(webhookToken, 'utf8');
   if (expected.length !== received.length || !crypto.timingSafeEqual(expected, received)) {
-    throw new AppError('Invalid webhook token', 403);
+    res.status(403).json({ error: 'Invalid webhook token' });
+    return;
   }
-  logger.debug('WhatsApp webhook received', {
-    hasEntry: !!req.body?.entry,
-    entryCount: req.body?.entry?.length ?? 0,
-  });
+
+  // ── Step 3: Return 200 IMMEDIATELY (Meta requires <15s response) ──
   res.status(200).json({ success: true });
-}));
+
+  // ── Step 4: Process in background (fire-and-forget) ──
+  pruneDedup();
+  const payload = req.body as Record<string, unknown>;
+  logger.debug('WhatsApp webhook received', {
+    hasEntry: !!payload?.entry,
+    entryCount: Array.isArray(payload?.entry) ? (payload.entry as unknown[]).length : 0,
+  });
+  // Intentionally not awaited — runs in background after response is sent
+  void processWebhookPayload(payload);
+});
 
 // Reporting API (Zoe - Executive Dashboard)
 app.use('/api/dashboard', reportingRoutes);
