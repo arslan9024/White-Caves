@@ -11,6 +11,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
+import swaggerUi from 'swagger-ui-express';
 import { connectDatabase, prisma } from './database.js';
 import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.js';
 import authMiddleware from './middleware/auth.js';
@@ -127,6 +128,33 @@ app.get('/health', (req: Request, res: Response) => {
     version: process.env.APP_VERSION || '1.0.0',
   });
 });
+
+// ============================================================================
+// SWAGGER / API DOCUMENTATION
+// ============================================================================
+
+// Serve interactive API docs at /api-docs (dev + staging only, disabled in prod)
+if (process.env.NODE_ENV !== 'production') {
+  // Dynamic import of openapi.json (ESM-compatible)
+  import('../openapi.json', { with: { type: 'json' } })
+    .then(({ default: openApiSpec }) => {
+      app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec, {
+        customCss: '.swagger-ui .topbar { display: none }',
+        customSiteTitle: 'White Caves API Docs',
+        swaggerOptions: {
+          persistAuthorization: true,
+          docExpansion: 'list',
+          filter: true,
+          tagsSorter: 'alpha',
+          operationsSorter: 'alpha',
+        },
+      }));
+      logger.info('📚 Swagger UI available at /api-docs');
+    })
+    .catch((err: unknown) => {
+      logger.warn('Swagger UI skipped — openapi.json not found', { error: String(err) });
+    });
+}
 
 // ============================================================================
 // API ROUTES

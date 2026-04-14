@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import { transitions } from '../../../../styles/theme/transitions';
-import { typography } from '../../../../styles/theme/typography';
-import { radius } from '../../../../styles/theme/radius';
+import { transitions } from '../../../styles/theme/transitions';
+import { typography } from '../../../styles/theme/typography';
+import { radius } from '../../../styles/theme/radius';
 
 export const FilterDropdownContainer = styled.div<{ $disabled?: boolean }>`
   display: flex;

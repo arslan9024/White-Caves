@@ -1,201 +1,61 @@
 {
-  "openapi": "3.0.0",
+  "openapi": "3.0.3",
   "info": {
     "title": "White Caves Real Estate API",
-    "description": "Complete REST API for White Caves real estate platform. AI-powered chatbot, intelligent agent matching, real-time notifications, and comprehensive analytics.",
-    "version": "1.0.0",
+    "description": "Complete REST API for White Caves — Dubai's #1 real estate CRM platform. 140+ endpoints covering property management, lead tracking, AI-powered WhatsApp CRM (Nadia), commission management, dashboards, compliance, and more.",
+    "version": "2.0.0",
     "contact": {
-      "name": "White Caves Support",
-      "email": "support@whitecaves.com",
+      "name": "White Caves Engineering",
+      "email": "engineering@whitecaves.com",
       "url": "https://whitecaves.com"
     },
-    "license": {
-      "name": "Proprietary",
-      "url": "https://whitecaves.com/license"
-    }
+    "license": { "name": "Proprietary" }
   },
   "servers": [
-    {
-      "url": "http://localhost:5000/api",
-      "description": "Local Development Server"
-    },
-    {
-      "url": "https://staging.whitecaves.com/api",
-      "description": "Staging Environment"
-    },
-    {
-      "url": "https://api.whitecaves.com",
-      "description": "Production Environment"
-    }
+    { "url": "http://localhost:5000/api", "description": "Local Development" },
+    { "url": "https://staging.whitecaves.com/api", "description": "Staging" },
+    { "url": "https://api.whitecaves.com/api", "description": "Production" }
+  ],
+  "tags": [
+    { "name": "Auth", "description": "Authentication & user management" },
+    { "name": "Leads", "description": "Lead management & scoring" },
+    { "name": "Properties", "description": "Property listings & inventory" },
+    { "name": "Agents", "description": "Agent profiles & performance" },
+    { "name": "Transactions", "description": "Deals: sale, rental, lease" },
+    { "name": "Finance", "description": "Commissions & payments" },
+    { "name": "Tenants", "description": "Tenant management" },
+    { "name": "Communications", "description": "Message history & conversations" },
+    { "name": "Nadia", "description": "WhatsApp CRM (Nadia AI)" },
+    { "name": "Dashboard", "description": "Reporting & analytics" },
+    { "name": "CRM", "description": "CRM dashboard, search, export" },
+    { "name": "Favorites", "description": "Property wishlists" },
+    { "name": "SavedSearches", "description": "Saved search criteria & alerts" },
+    { "name": "Viewings", "description": "Property viewing management" },
+    { "name": "Offers", "description": "Buyer offers & negotiations" },
+    { "name": "Leases", "description": "Lease lifecycle management" },
+    { "name": "Maintenance", "description": "Maintenance requests" },
+    { "name": "Compliance", "description": "UAE RERA compliance" },
+    { "name": "Admin", "description": "User & role administration" },
+    { "name": "Uploads", "description": "File upload & management" },
+    { "name": "AI", "description": "AI Assistant services" },
+    { "name": "System", "description": "Health checks & system info" }
   ],
   "paths": {
-    "/chatbot/message": {
+    "/auth/login": {
       "post": {
-        "summary": "Process User Message",
-        "description": "Send a user message to the AI chatbot and receive an intelligent response with property recommendations",
-        "tags": ["Chatbot"],
-        "operationId": "processMessage",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ConversationMessage"
-              },
-              "example": {
-                "conversationId": "conv-2024-001",
-                "userMessage": "I'm looking for a 2-bedroom apartment in Dubai Marina with a budget of 1.5 million AED",
-                "language": "en"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful response from chatbot",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ConversationResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - Invalid or missing authentication token"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        },
-        "security": [
-          {
-            "Bearer": []
-          }
-        ]
-      }
-    },
-    "/chatbot/conversations/{conversationId}/history": {
-      "get": {
-        "summary": "Get Conversation History",
-        "description": "Retrieve the complete history of a conversation including all messages and bot responses",
-        "tags": ["Chatbot"],
-        "operationId": "getConversationHistory",
-        "parameters": [
-          {
-            "name": "conversationId",
-            "in": "path",
-            "required": true,
-            "description": "Unique identifier for the conversation",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "Maximum number of messages to retrieve",
-            "schema": {
-              "type": "integer",
-              "default": 50
-            }
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "Number of messages to skip",
-            "schema": {
-              "type": "integer",
-              "default": 0
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Conversation history retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ConversationMessage"
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Conversation not found"
-          }
-        },
-        "security": [
-          {
-            "Bearer": []
-          }
-        ]
-      }
-    },
-    "/chatbot/conversations/{conversationId}/score-lead": {
-      "post": {
-        "summary": "Score Lead Quality",
-        "description": "Calculate a lead quality score based on conversation engagement and property interest indicators",
-        "tags": ["Chatbot"],
-        "operationId": "scoreLeadQuality",
-        "parameters": [
-          {
-            "name": "conversationId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Lead score calculated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LeadScore"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/agents/assign": {
-      "post": {
-        "summary": "Assign Best Agent for Lead",
-        "description": "Find and assign the best-matching agent for a given lead based on expertise, capacity, and performance",
-        "tags": ["Agent Assignment"],
-        "operationId": "assignAgent",
+        "tags": ["Auth"],
+        "summary": "Login",
+        "operationId": "login",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": ["email", "password"],
                 "properties": {
-                  "lead": {
-                    "type": "object",
-                    "description": "Lead information"
-                  },
-                  "preferences": {
-                    "type": "object",
-                    "description": "Assignment preferences"
-                  }
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string", "minLength": 8 }
                 }
               }
             }
@@ -203,518 +63,898 @@
         },
         "responses": {
           "200": {
-            "description": "Agent assigned successfully",
+            "description": "Login successful",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AgentAssignment"
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "token": { "type": "string" },
+                    "user": { "$ref": "#/components/schemas/User" }
+                  }
                 }
               }
             }
           },
-          "404": {
-            "description": "No suitable agents found"
-          }
+          "401": { "$ref": "#/components/responses/Unauthorized" }
         }
       }
     },
-    "/agents/{agentId}": {
-      "get": {
-        "summary": "Get Agent Details",
-        "description": "Retrieve detailed information about a specific agent",
-        "tags": ["Agent Management"],
-        "operationId": "getAgent",
-        "parameters": [
-          {
-            "name": "agentId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Agent details retrieved",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Agent"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Agent not found"
-          }
-        }
-      }
-    },
-    "/notifications/send": {
+    "/auth/register": {
       "post": {
-        "summary": "Send Notification",
-        "description": "Send a notification to a user via email, SMS, or push notification",
-        "tags": ["Notifications"],
-        "operationId": "sendNotification",
+        "tags": ["Auth"],
+        "summary": "Register new user",
+        "operationId": "register",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NotificationRequest"
+                "type": "object",
+                "required": ["email", "password", "name"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string", "minLength": 8 },
+                  "name": { "type": "string" },
+                  "phone": { "type": "string" },
+                  "department": { "type": "string" }
+                }
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "Notification queued successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Notification"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid notification parameters"
-          }
-        }
-      }
-    },
-    "/notifications/user/{userId}": {
-      "get": {
-        "summary": "Get User Notifications",
-        "description": "Retrieve notification history for a specific user",
-        "tags": ["Notifications"],
-        "operationId": "getUserNotifications",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "default": 50
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User notifications retrieved",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Notification"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/dashboard/data": {
-      "get": {
-        "summary": "Get Dashboard Data",
-        "description": "Retrieve comprehensive dashboard metrics and analytics",
-        "tags": ["Dashboard"],
-        "operationId": "getDashboardData",
-        "responses": {
-          "200": {
-            "description": "Dashboard data retrieved",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DashboardData"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/dashboard/analytics": {
-      "get": {
-        "summary": "Get Market Analytics",
-        "description": "Retrieve market trends, pricing analytics, and property statistics",
-        "tags": ["Dashboard"],
-        "operationId": "getMarketAnalytics",
-        "parameters": [
-          {
-            "name": "period",
-            "in": "query",
-            "description": "Time period for analytics (week, month, quarter, year)",
-            "schema": {
-              "type": "string",
-              "enum": ["week", "month", "quarter", "year"],
-              "default": "month"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Market analytics retrieved",
+          "201": {
+            "description": "Registration successful",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "period": { "type": "string" },
-                    "averagePrices": { "type": "object" },
-                    "trends": { "type": "object" },
-                    "topLocations": { "type": "array" }
+                    "success": { "type": "boolean" },
+                    "token": { "type": "string" },
+                    "user": { "$ref": "#/components/schemas/User" }
                   }
                 }
               }
             }
-          }
+          },
+          "409": { "description": "Email already exists" }
         }
       }
     },
-    "/health": {
+    "/auth/profile": {
       "get": {
-        "summary": "Health Check",
-        "description": "Check API server health status",
+        "tags": ["Auth"],
+        "summary": "Get current user profile",
+        "operationId": "getProfile",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "User profile",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      },
+      "patch": {
+        "tags": ["Auth"],
+        "summary": "Update current user profile",
+        "operationId": "updateProfile",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "phone": { "type": "string" },
+                  "photoUrl": { "type": "string" },
+                  "department": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Profile updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }
+        }
+      }
+    },
+    "/auth/password": {
+      "put": {
+        "tags": ["Auth"],
+        "summary": "Change password",
+        "operationId": "changePassword",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["currentPassword", "newPassword"],
+                "properties": {
+                  "currentPassword": { "type": "string" },
+                  "newPassword": { "type": "string", "minLength": 8 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Password changed" },
+          "400": { "description": "Current password incorrect" }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Logout and log activity",
+        "operationId": "logout",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Logged out" } }
+      }
+    },
+    "/auth/verify-2fa": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Verify 2FA code (stub)",
+        "operationId": "verify2fa",
+        "requestBody": {
+          "content": { "application/json": { "schema": { "type": "object", "properties": { "code": { "type": "string" } } } } }
+        },
+        "responses": { "200": { "description": "2FA verified" }, "501": { "description": "Not implemented" } }
+      }
+    },
+    "/auth/firebase-sync": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Firebase UID sync (disabled)",
+        "operationId": "firebaseSync",
+        "responses": { "503": { "description": "Service unavailable — Firebase SDK not configured" } }
+      }
+    },
+    "/leads": {
+      "get": {
+        "tags": ["Leads"],
+        "summary": "List leads with filters",
+        "operationId": "getLeads",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "$ref": "#/components/parameters/Page" },
+          { "$ref": "#/components/parameters/PageSize" },
+          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["new", "contacted", "qualified", "hot", "warm", "cold", "won", "lost"] } },
+          { "name": "source", "in": "query", "schema": { "type": "string", "enum": ["whatsapp", "website", "phone", "referral", "marketing", "direct"] } },
+          { "name": "assignedTo", "in": "query", "schema": { "type": "string" }, "description": "Agent user ID" },
+          { "name": "search", "in": "query", "schema": { "type": "string" }, "description": "Search name, email, phone" },
+          { "name": "minScore", "in": "query", "schema": { "type": "integer" } },
+          { "name": "maxScore", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated lead list",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PaginatedLeads" } } }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Leads"],
+        "summary": "Create a new lead",
+        "operationId": "createLead",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LeadCreate" } } }
+        },
+        "responses": {
+          "201": { "description": "Lead created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Lead" } } } },
+          "400": { "$ref": "#/components/responses/BadRequest" }
+        }
+      }
+    },
+    "/leads/stats": {
+      "get": {
+        "tags": ["Leads"],
+        "summary": "Lead aggregation statistics",
+        "operationId": "getLeadStats",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Lead stats (by status, source, score distribution)" } }
+      }
+    },
+    "/leads/analytics/conversion": {
+      "get": {
+        "tags": ["Leads"],
+        "summary": "Lead conversion funnel analytics",
+        "operationId": "getLeadConversion",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Conversion funnel data" } }
+      }
+    },
+    "/leads/bulk-import": {
+      "post": {
+        "tags": ["Leads"],
+        "summary": "Bulk import leads (up to 500)",
+        "operationId": "bulkImportLeads",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object", "properties": { "leads": { "type": "array", "maxItems": 500, "items": { "$ref": "#/components/schemas/LeadCreate" } } } } } }
+        },
+        "responses": {
+          "200": { "description": "Import results", "content": { "application/json": { "schema": { "type": "object", "properties": { "imported": { "type": "integer" }, "failed": { "type": "integer" }, "errors": { "type": "array", "items": { "type": "object" } } } } } } }
+        }
+      }
+    },
+    "/leads/{id}": {
+      "get": {
+        "tags": ["Leads"],
+        "summary": "Get lead detail",
+        "operationId": "getLead",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "$ref": "#/components/parameters/ResourceId" }],
+        "responses": {
+          "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Lead" } } } },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "patch": {
+        "tags": ["Leads"],
+        "summary": "Update lead",
+        "operationId": "updateLead",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "$ref": "#/components/parameters/ResourceId" }],
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LeadCreate" } } } },
+        "responses": { "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Lead" } } } } }
+      },
+      "delete": {
+        "tags": ["Leads"],
+        "summary": "Delete lead",
+        "operationId": "deleteLead",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "$ref": "#/components/parameters/ResourceId" }],
+        "responses": { "200": { "description": "Lead deleted" } }
+      }
+    },
+    "/leads/{id}/activities": {
+      "get": {
+        "tags": ["Leads"],
+        "summary": "List lead activities",
+        "operationId": "getLeadActivities",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "$ref": "#/components/parameters/ResourceId" }],
+        "responses": { "200": { "description": "Activity list" } }
+      },
+      "post": {
+        "tags": ["Leads"],
+        "summary": "Log activity on a lead",
+        "operationId": "createLeadActivity",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "$ref": "#/components/parameters/ResourceId" }],
+        "requestBody": {
+          "content": { "application/json": { "schema": { "type": "object", "required": ["action", "description"], "properties": { "action": { "type": "string" }, "description": { "type": "string" }, "metadata": { "type": "object" } } } } }
+        },
+        "responses": { "201": { "description": "Activity logged" } }
+      }
+    },
+    "/properties": {
+      "get": {
+        "tags": ["Properties"],
+        "summary": "List properties with filters",
+        "operationId": "getProperties",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "$ref": "#/components/parameters/Page" },
+          { "$ref": "#/components/parameters/PageSize" },
+          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["available", "reserved", "sold", "rented", "off_market"] } },
+          { "name": "type", "in": "query", "schema": { "type": "string", "enum": ["villa", "apartment", "penthouse", "commercial", "land", "townhouse"] } },
+          { "name": "minPrice", "in": "query", "schema": { "type": "number" } },
+          { "name": "maxPrice", "in": "query", "schema": { "type": "number" } },
+          { "name": "bedrooms", "in": "query", "schema": { "type": "integer" } },
+          { "name": "bathrooms", "in": "query", "schema": { "type": "integer" } },
+          { "name": "area", "in": "query", "schema": { "type": "string" }, "description": "Dubai area (JBR, Marina, Downtown, etc.)" },
+          { "name": "featured", "in": "query", "schema": { "type": "boolean" } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PaginatedProperties" } } } }
+        }
+      },
+      "post": {
+        "tags": ["Properties"],
+        "summary": "Create property listing",
+        "operationId": "createProperty",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PropertyCreate" } } } },
+        "responses": { "201": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Property" } } } } }
+      }
+    },
+    "/properties/stats": {
+      "get": {
+        "tags": ["Properties"],
+        "summary": "Property portfolio statistics",
+        "operationId": "getPropertyStats",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Aggregated property stats" } }
+      }
+    },
+    "/properties/{id}": {
+      "get": {
+        "tags": ["Properties"],
+        "summary": "Get property detail",
+        "operationId": "getProperty",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "$ref": "#/components/parameters/ResourceId" }],
+        "responses": { "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Property" } } } }, "404": { "$ref": "#/components/responses/NotFound" } }
+      },
+      "patch": {
+        "tags": ["Properties"],
+        "summary": "Update property",
+        "operationId": "updateProperty",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "$ref": "#/components/parameters/ResourceId" }],
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PropertyCreate" } } } },
+        "responses": { "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Property" } } } } }
+      },
+      "delete": {
+        "tags": ["Properties"],
+        "summary": "Delete property",
+        "operationId": "deleteProperty",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "$ref": "#/components/parameters/ResourceId" }],
+        "responses": { "200": { "description": "Property deleted" } }
+      }
+    },
+    "/agents": {
+      "get": {
+        "tags": ["Agents"],
+        "summary": "List agents with performance data",
+        "operationId": "getAgents",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "$ref": "#/components/parameters/Page" },
+          { "$ref": "#/components/parameters/PageSize" },
+          { "name": "status", "in": "query", "schema": { "type": "string" } },
+          { "name": "department", "in": "query", "schema": { "type": "string" } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Agent list with enriched performance" } }
+      }
+    },
+    "/agents/stats": {
+      "get": { "tags": ["Agents"], "summary": "Team aggregate statistics", "operationId": "getAgentStats", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Team stats" } } }
+    },
+    "/agents/{id}": {
+      "get": {
+        "tags": ["Agents"], "summary": "Agent detail with recent activity", "operationId": "getAgent", "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "$ref": "#/components/parameters/ResourceId" }],
+        "responses": { "200": { "description": "Agent detail" }, "404": { "$ref": "#/components/responses/NotFound" } }
+      }
+    },
+    "/agents/{id}/performance": {
+      "get": {
+        "tags": ["Agents"], "summary": "Agent performance metrics & score", "operationId": "getAgentPerformance", "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "$ref": "#/components/parameters/ResourceId" }],
+        "responses": { "200": { "description": "Performance score, metrics, rankings" } }
+      }
+    },
+    "/agents/{id}/commissions": {
+      "get": {
+        "tags": ["Agents"], "summary": "Agent commission history", "operationId": "getAgentCommissions", "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "$ref": "#/components/parameters/ResourceId" }],
+        "responses": { "200": { "description": "Commission list" } }
+      }
+    },
+    "/transactions": {
+      "get": {
+        "tags": ["Transactions"], "summary": "List transactions", "operationId": "getTransactions", "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "$ref": "#/components/parameters/Page" },
+          { "$ref": "#/components/parameters/PageSize" },
+          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["draft", "pending", "in_progress", "completed", "cancelled"] } },
+          { "name": "type", "in": "query", "schema": { "type": "string", "enum": ["sale", "rental", "lease"] } }
+        ],
+        "responses": { "200": { "description": "Transaction list" } }
+      },
+      "post": {
+        "tags": ["Transactions"], "summary": "Create transaction", "operationId": "createTransaction", "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TransactionCreate" } } } },
+        "responses": { "201": { "description": "Transaction created" } }
+      }
+    },
+    "/transactions/stats": {
+      "get": { "tags": ["Transactions"], "summary": "Transaction aggregates", "operationId": "getTransactionStats", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Stats" } } }
+    },
+    "/transactions/{id}": {
+      "get": { "tags": ["Transactions"], "summary": "Transaction detail", "operationId": "getTransaction", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Detail" } } },
+      "patch": { "tags": ["Transactions"], "summary": "Update transaction", "operationId": "updateTransaction", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TransactionCreate" } } } }, "responses": { "200": { "description": "Updated" } } },
+      "delete": { "tags": ["Transactions"], "summary": "Delete transaction", "operationId": "deleteTransaction", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Deleted" } } }
+    },
+    "/finance/summary": {
+      "get": { "tags": ["Finance"], "summary": "Commission summary dashboard", "operationId": "getFinanceSummary", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Summary with totals, pending, paid" } } }
+    },
+    "/finance/commissions": {
+      "get": {
+        "tags": ["Finance"], "summary": "List commissions", "operationId": "getCommissions", "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "$ref": "#/components/parameters/Page" },
+          { "$ref": "#/components/parameters/PageSize" },
+          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["pending", "approved", "paid", "cancelled"] } },
+          { "name": "type", "in": "query", "schema": { "type": "string", "enum": ["sale", "rental", "referral"] } },
+          { "name": "agentId", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Commission list" } }
+      },
+      "post": {
+        "tags": ["Finance"], "summary": "Create commission", "operationId": "createCommission", "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommissionCreate" } } } },
+        "responses": { "201": { "description": "Created" } }
+      }
+    },
+    "/finance/commissions/{id}": {
+      "get": { "tags": ["Finance"], "summary": "Commission detail", "operationId": "getCommission", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Detail" } } },
+      "patch": { "tags": ["Finance"], "summary": "Update commission (role-based)", "operationId": "updateCommission", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Updated" } } }
+    },
+    "/finance/payments": {
+      "post": {
+        "tags": ["Finance"], "summary": "Bulk pay commissions", "operationId": "bulkPayCommissions", "security": [{ "bearerAuth": [] }],
+        "requestBody": { "content": { "application/json": { "schema": { "type": "object", "properties": { "commissionIds": { "type": "array", "items": { "type": "string" } } } } } } },
+        "responses": { "200": { "description": "Batch payment result" } }
+      }
+    },
+    "/tenants": {
+      "get": { "tags": ["Tenants"], "summary": "List tenants (managers+)", "operationId": "getTenants", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/Page" }, { "$ref": "#/components/parameters/PageSize" }], "responses": { "200": { "description": "Tenant list" } } },
+      "post": { "tags": ["Tenants"], "summary": "Create tenant", "operationId": "createTenant", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TenantCreate" } } } }, "responses": { "201": { "description": "Created" } } }
+    },
+    "/tenants/stats": { "get": { "tags": ["Tenants"], "summary": "Tenant stats", "operationId": "getTenantStats", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Stats" } } } },
+    "/tenants/{id}": {
+      "get": { "tags": ["Tenants"], "summary": "Tenant detail", "operationId": "getTenant", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Detail" } } },
+      "patch": { "tags": ["Tenants"], "summary": "Update tenant", "operationId": "updateTenant", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Updated" } } }
+    },
+    "/communications/messages/send": {
+      "post": { "tags": ["Communications"], "summary": "Log a sent message", "operationId": "logMessage", "security": [{ "bearerAuth": [] }], "requestBody": { "content": { "application/json": { "schema": { "type": "object", "properties": { "recipientId": { "type": "string" }, "type": { "type": "string", "enum": ["whatsapp", "email", "sms", "call"] }, "body": { "type": "string" } } } } } }, "responses": { "201": { "description": "Logged" } } }
+    },
+    "/communications/messages/{recipientId}": {
+      "get": { "tags": ["Communications"], "summary": "Message history with lead", "operationId": "getMessageHistory", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "recipientId", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Message list" } } }
+    },
+    "/communications/conversations": {
+      "get": { "tags": ["Communications"], "summary": "List communication threads", "operationId": "getConversations", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Conversation list" } } }
+    },
+    "/nadia/conversations": {
+      "get": { "tags": ["Nadia"], "summary": "List WhatsApp conversations", "operationId": "getNadiaConversations", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/Page" }, { "$ref": "#/components/parameters/PageSize" }, { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["active", "assigned_to_agent", "in_bot_flow", "closed"] } }], "responses": { "200": { "description": "Conversation list" } } },
+      "post": { "tags": ["Nadia"], "summary": "Create WhatsApp conversation", "operationId": "createNadiaConversation", "security": [{ "bearerAuth": [] }], "requestBody": { "content": { "application/json": { "schema": { "type": "object", "required": ["wabaId", "customerPhone"], "properties": { "wabaId": { "type": "string" }, "customerPhone": { "type": "string" }, "agentPhone": { "type": "string" } } } } } }, "responses": { "201": { "description": "Conversation created" } } }
+    },
+    "/nadia/conversations/{id}": {
+      "get": { "tags": ["Nadia"], "summary": "Get conversation detail", "operationId": "getNadiaConversation", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Conversation with messages" } } },
+      "patch": { "tags": ["Nadia"], "summary": "Update conversation", "operationId": "updateNadiaConversation", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Updated" } } },
+      "delete": { "tags": ["Nadia"], "summary": "Delete conversation", "operationId": "deleteNadiaConversation", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Deleted" } } }
+    },
+    "/nadia/messages": {
+      "post": { "tags": ["Nadia"], "summary": "Add message to conversation", "operationId": "createNadiaMessage", "security": [{ "bearerAuth": [] }], "requestBody": { "content": { "application/json": { "schema": { "type": "object", "required": ["conversationId", "waMessageId", "direction", "body", "timestamp"], "properties": { "conversationId": { "type": "string" }, "waMessageId": { "type": "string" }, "direction": { "type": "string", "enum": ["inbound", "outbound"] }, "body": { "type": "string" }, "messageType": { "type": "string", "enum": ["text", "image", "document", "audio", "video"] }, "timestamp": { "type": "string", "format": "date-time" } } } } } }, "responses": { "201": { "description": "Created" } } }
+    },
+    "/nadia/messages/{id}": {
+      "get": { "tags": ["Nadia"], "summary": "Get message", "operationId": "getNadiaMessage", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Message" } } },
+      "patch": { "tags": ["Nadia"], "summary": "Update message status", "operationId": "updateNadiaMessage", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Updated" } } }
+    },
+    "/nadia/queue": {
+      "get": { "tags": ["Nadia"], "summary": "Get conversation queue", "operationId": "getNadiaQueue", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Queued conversations awaiting assignment" } } }
+    },
+    "/dashboard/summary": {
+      "get": { "tags": ["Dashboard"], "summary": "KPI snapshot", "operationId": "getDashboardSummary", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Lead count, property count, agent count, revenue" } } }
+    },
+    "/dashboard/activities": {
+      "get": { "tags": ["Dashboard"], "summary": "Global activity feed", "operationId": "getDashboardActivities", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/Page" }, { "$ref": "#/components/parameters/PageSize" }], "responses": { "200": { "description": "Activity feed" } } }
+    },
+    "/dashboard/executive": {
+      "get": { "tags": ["Dashboard"], "summary": "Executive analytics", "operationId": "getExecutiveDashboard", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Executive-level metrics and trends" } } }
+    },
+    "/dashboard/kpis": {
+      "get": { "tags": ["Dashboard"], "summary": "30-day KPIs", "operationId": "getDashboardKPIs", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "KPI data for last 30 days" } } }
+    },
+    "/crm/dashboard": {
+      "get": { "tags": ["CRM"], "summary": "CRM dashboard metrics", "operationId": "getCrmDashboard", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "CRM metrics" } } }
+    },
+    "/crm/analytics": {
+      "get": { "tags": ["CRM"], "summary": "CRM analytics", "operationId": "getCrmAnalytics", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Analytics: leads, properties, commissions" } } }
+    },
+    "/crm/search": {
+      "get": { "tags": ["CRM"], "summary": "Global CRM search", "operationId": "crmSearch", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "q", "in": "query", "required": true, "schema": { "type": "string", "minLength": 2 }, "description": "Search term (min 2 chars)" }], "responses": { "200": { "description": "Search results across leads, properties, agents" } } }
+    },
+    "/crm/export": {
+      "get": {
+        "tags": ["CRM"], "summary": "Export CRM data", "operationId": "crmExport", "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "type", "in": "query", "required": true, "schema": { "type": "string", "enum": ["leads", "properties", "agents", "commissions"] } }, { "name": "format", "in": "query", "schema": { "type": "string", "enum": ["json", "csv"], "default": "json" } }],
+        "responses": { "200": { "description": "Exported data (uses Prisma select projection for security)" } }
+      }
+    },
+    "/favorites": {
+      "get": { "tags": ["Favorites"], "summary": "List user's favorite properties", "operationId": "getFavorites", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Favorite list with property details" } } },
+      "post": { "tags": ["Favorites"], "summary": "Add property to favorites", "operationId": "addFavorite", "security": [{ "bearerAuth": [] }], "requestBody": { "content": { "application/json": { "schema": { "type": "object", "required": ["propertyId"], "properties": { "propertyId": { "type": "string" } } } } } }, "responses": { "201": { "description": "Added" }, "409": { "description": "Already favorited" } } }
+    },
+    "/favorites/ids": {
+      "get": { "tags": ["Favorites"], "summary": "Get favorited property IDs only", "operationId": "getFavoriteIds", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Array of property IDs" } } }
+    },
+    "/favorites/check/{propertyId}": {
+      "get": { "tags": ["Favorites"], "summary": "Check if property is favorited", "operationId": "checkFavorite", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "propertyId", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Boolean result" } } }
+    },
+    "/favorites/{propertyId}": {
+      "delete": { "tags": ["Favorites"], "summary": "Remove from favorites", "operationId": "removeFavorite", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "propertyId", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Removed" } } }
+    },
+    "/saved-searches": {
+      "get": { "tags": ["SavedSearches"], "summary": "List saved searches", "operationId": "getSavedSearches", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Saved search list" } } },
+      "post": { "tags": ["SavedSearches"], "summary": "Create saved search (max 20)", "operationId": "createSavedSearch", "security": [{ "bearerAuth": [] }], "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SavedSearchCreate" } } } }, "responses": { "201": { "description": "Created" }, "400": { "description": "Limit of 20 reached" } } }
+    },
+    "/saved-searches/{id}": {
+      "patch": { "tags": ["SavedSearches"], "summary": "Update saved search", "operationId": "updateSavedSearch", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Updated" } } },
+      "delete": { "tags": ["SavedSearches"], "summary": "Delete saved search", "operationId": "deleteSavedSearch", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Deleted" } } }
+    },
+    "/viewings": {
+      "get": { "tags": ["Viewings"], "summary": "List viewings", "operationId": "getViewings", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/Page" }, { "$ref": "#/components/parameters/PageSize" }], "responses": { "200": { "description": "Viewing list" } } },
+      "post": { "tags": ["Viewings"], "summary": "Schedule a viewing", "operationId": "createViewing", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ViewingCreate" } } } }, "responses": { "201": { "description": "Created" } } }
+    },
+    "/viewings/upcoming": {
+      "get": { "tags": ["Viewings"], "summary": "List upcoming viewings only", "operationId": "getUpcomingViewings", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Upcoming viewings" } } }
+    },
+    "/viewings/{id}": {
+      "patch": { "tags": ["Viewings"], "summary": "Update viewing (reschedule, cancel, feedback)", "operationId": "updateViewing", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Updated" } } },
+      "delete": { "tags": ["Viewings"], "summary": "Delete viewing", "operationId": "deleteViewing", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Deleted" } } }
+    },
+    "/offers": {
+      "get": { "tags": ["Offers"], "summary": "List offers made by user", "operationId": "getOffers", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Offer list" } } },
+      "post": { "tags": ["Offers"], "summary": "Submit offer on property", "operationId": "createOffer", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OfferCreate" } } } }, "responses": { "201": { "description": "Created" } } }
+    },
+    "/offers/received": {
+      "get": { "tags": ["Offers"], "summary": "Offers received on user's properties", "operationId": "getReceivedOffers", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Received offer list" } } }
+    },
+    "/offers/{id}": {
+      "patch": { "tags": ["Offers"], "summary": "Accept, reject, or counter offer", "operationId": "updateOffer", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "requestBody": { "content": { "application/json": { "schema": { "type": "object", "properties": { "status": { "type": "string", "enum": ["accepted", "rejected", "countered"] }, "counterAmount": { "type": "number" }, "notes": { "type": "string" } } } } } }, "responses": { "200": { "description": "Updated" } } },
+      "delete": { "tags": ["Offers"], "summary": "Withdraw offer", "operationId": "deleteOffer", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Withdrawn" } } }
+    },
+    "/leases": {
+      "get": { "tags": ["Leases"], "summary": "List leases (tenant or landlord view)", "operationId": "getLeases", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/Page" }, { "$ref": "#/components/parameters/PageSize" }, { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["draft", "active", "expiring", "expired", "terminated", "renewed"] } }], "responses": { "200": { "description": "Lease list" } } },
+      "post": { "tags": ["Leases"], "summary": "Create lease", "operationId": "createLease", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LeaseCreate" } } } }, "responses": { "201": { "description": "Created" } } }
+    },
+    "/leases/expiring": {
+      "get": { "tags": ["Leases"], "summary": "Leases expiring within N days", "operationId": "getExpiringLeases", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "days", "in": "query", "schema": { "type": "integer", "default": 90 } }], "responses": { "200": { "description": "Expiring leases" } } }
+    },
+    "/leases/{id}": {
+      "get": { "tags": ["Leases"], "summary": "Lease detail", "operationId": "getLease", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Detail" } } },
+      "patch": { "tags": ["Leases"], "summary": "Renew, terminate, or update lease", "operationId": "updateLease", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Updated" } } },
+      "delete": { "tags": ["Leases"], "summary": "Delete lease (draft only)", "operationId": "deleteLease", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Deleted" } } }
+    },
+    "/maintenance": {
+      "get": { "tags": ["Maintenance"], "summary": "List maintenance requests", "operationId": "getMaintenanceRequests", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/Page" }, { "$ref": "#/components/parameters/PageSize" }, { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["open", "in_progress", "scheduled", "completed", "cancelled"] } }, { "name": "priority", "in": "query", "schema": { "type": "string", "enum": ["low", "medium", "high", "emergency"] } }, { "name": "category", "in": "query", "schema": { "type": "string", "enum": ["plumbing", "electrical", "hvac", "appliance", "structural", "general"] } }], "responses": { "200": { "description": "List" } } },
+      "post": { "tags": ["Maintenance"], "summary": "Submit maintenance request", "operationId": "createMaintenance", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MaintenanceCreate" } } } }, "responses": { "201": { "description": "Created" } } }
+    },
+    "/maintenance/stats": { "get": { "tags": ["Maintenance"], "summary": "Maintenance stats", "operationId": "getMaintenanceStats", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Stats" } } } },
+    "/maintenance/{id}": {
+      "get": { "tags": ["Maintenance"], "summary": "Request detail", "operationId": "getMaintenance", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Detail" } } },
+      "patch": { "tags": ["Maintenance"], "summary": "Update request (assign, schedule, complete)", "operationId": "updateMaintenance", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Updated" } } },
+      "delete": { "tags": ["Maintenance"], "summary": "Delete request", "operationId": "deleteMaintenance", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Deleted" } } }
+    },
+    "/compliance/status": { "get": { "tags": ["Compliance"], "summary": "Compliance health check", "operationId": "getComplianceStatus", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Status" } } } },
+    "/compliance/requirements": { "get": { "tags": ["Compliance"], "summary": "UAE RERA compliance checklist", "operationId": "getComplianceRequirements", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "RERA requirements" } } } },
+    "/compliance/audit-logs": { "get": { "tags": ["Compliance"], "summary": "Activity audit trail", "operationId": "getAuditLogs", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/Page" }, { "$ref": "#/components/parameters/PageSize" }], "responses": { "200": { "description": "Audit entries" } } } },
+    "/compliance/reports": { "post": { "tags": ["Compliance"], "summary": "Submit compliance report", "operationId": "submitComplianceReport", "security": [{ "bearerAuth": [] }], "responses": { "201": { "description": "Report submitted" } } } },
+    "/users/role": {
+      "post": { "tags": ["Admin"], "summary": "Update user role (admin only)", "operationId": "updateUserRole", "security": [{ "bearerAuth": [] }], "requestBody": { "content": { "application/json": { "schema": { "type": "object", "required": ["userId", "role"], "properties": { "userId": { "type": "string" }, "role": { "type": "string", "enum": ["owner", "admin", "manager", "senior_agent", "agent", "junior_agent", "marketing_manager", "finance_manager", "compliance_officer", "viewer", "tenant", "buyer"] } } } } } }, "responses": { "200": { "description": "Role updated" } } }
+    },
+    "/users/role-request": {
+      "post": { "tags": ["Admin"], "summary": "Request role upgrade", "operationId": "requestRoleUpgrade", "security": [{ "bearerAuth": [] }], "requestBody": { "content": { "application/json": { "schema": { "type": "object", "properties": { "requestedRole": { "type": "string" }, "reason": { "type": "string" } } } } } }, "responses": { "201": { "description": "Request submitted" } } }
+    },
+    "/admin/role-requests": {
+      "get": { "tags": ["Admin"], "summary": "List pending role requests", "operationId": "getRoleRequests", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Pending requests" } } }
+    },
+    "/admin/role-requests/{id}/approve": {
+      "post": { "tags": ["Admin"], "summary": "Approve role request", "operationId": "approveRoleRequest", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Approved" } } }
+    },
+    "/admin/role-requests/{id}/reject": {
+      "post": { "tags": ["Admin"], "summary": "Reject role request", "operationId": "rejectRoleRequest", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Rejected" } } }
+    },
+    "/uploads/images": {
+      "post": { "tags": ["Uploads"], "summary": "Upload images (max 10, 10MB each)", "operationId": "uploadImages", "security": [{ "bearerAuth": [] }], "requestBody": { "content": { "multipart/form-data": { "schema": { "type": "object", "properties": { "images": { "type": "array", "items": { "type": "string", "format": "binary" } } } } } } }, "responses": { "200": { "description": "Upload results with URLs" } } }
+    },
+    "/uploads/documents": {
+      "post": { "tags": ["Uploads"], "summary": "Upload documents (max 5, 25MB each)", "operationId": "uploadDocuments", "security": [{ "bearerAuth": [] }], "requestBody": { "content": { "multipart/form-data": { "schema": { "type": "object", "properties": { "documents": { "type": "array", "items": { "type": "string", "format": "binary" } } } } } } }, "responses": { "200": { "description": "Upload results" } } }
+    },
+    "/uploads/{filename}": {
+      "delete": { "tags": ["Uploads"], "summary": "Delete uploaded file", "operationId": "deleteUpload", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "filename", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "File deleted" } } }
+    },
+    "/uploads/info": {
+      "get": { "tags": ["Uploads"], "summary": "Upload service info (usage, limits)", "operationId": "getUploadInfo", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Upload service info and disk usage" } } }
+    },
+    "/ai-assistants": {
+      "get": { "tags": ["AI"], "summary": "List all AI assistants", "operationId": "getAIAssistants", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Assistant list (27 personas)" } } }
+    },
+    "/ai-assistants/departments": {
+      "get": { "tags": ["AI"], "summary": "List assistants grouped by department", "operationId": "getAIDepartments", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Department-grouped assistants" } } }
+    },
+    "/ai-assistants/search": {
+      "get": { "tags": ["AI"], "summary": "Search assistants", "operationId": "searchAIAssistants", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "q", "in": "query", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Matching assistants" } } }
+    },
+    "/ai-assistants/{id}": {
+      "get": { "tags": ["AI"], "summary": "Get assistant detail", "operationId": "getAIAssistant", "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ResourceId" }], "responses": { "200": { "description": "Assistant detail" } } }
+    },
+    "/ai-assistants/chat": {
+      "post": { "tags": ["AI"], "summary": "Chat with an AI assistant", "operationId": "chatWithAssistant", "security": [{ "bearerAuth": [] }], "requestBody": { "content": { "application/json": { "schema": { "type": "object", "required": ["assistantId", "message"], "properties": { "assistantId": { "type": "string" }, "message": { "type": "string" }, "conversationId": { "type": "string" } } } } } }, "responses": { "200": { "description": "AI response" } } }
+    },
+    "/ai-assistants/metrics/dashboard": {
+      "get": { "tags": ["AI"], "summary": "AI assistant usage metrics", "operationId": "getAIMetrics", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Metrics dashboard" } } }
+    },
+    "/ai-assistants/lead-score/{leadId}": {
+      "post": { "tags": ["AI"], "summary": "AI lead scoring", "operationId": "scoreLeadAI", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "leadId", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Score + breakdown" } } }
+    },
+    "/ai-assistants/lead-score/batch": {
+      "post": { "tags": ["AI"], "summary": "Batch AI lead scoring", "operationId": "batchScoreLeadsAI", "security": [{ "bearerAuth": [] }], "requestBody": { "content": { "application/json": { "schema": { "type": "object", "properties": { "leadIds": { "type": "array", "items": { "type": "string" } } } } } } }, "responses": { "200": { "description": "Batch scores" } } }
+    },
+    "/ai-assistants/documents/generate": {
+      "post": { "tags": ["AI"], "summary": "Generate document with AI", "operationId": "generateDocument", "security": [{ "bearerAuth": [] }], "requestBody": { "content": { "application/json": { "schema": { "type": "object", "required": ["templateType"], "properties": { "templateType": { "type": "string", "enum": ["mou", "form_f", "ejari", "noc", "invoice", "tenancy_contract"] }, "data": { "type": "object" } } } } } }, "responses": { "200": { "description": "Generated document content" } } }
+    },
+    "/ai-assistants/documents/types": {
+      "get": { "tags": ["AI"], "summary": "List available document templates", "operationId": "getDocumentTypes", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Template type list" } } }
+    },
+    "/ai-assistants/market/insights": {
+      "get": { "tags": ["AI"], "summary": "AI market insights", "operationId": "getMarketInsights", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Market insight data" } } }
+    },
+    "/ai-assistants/market/forecast/{area}": {
+      "get": { "tags": ["AI"], "summary": "AI price forecast for Dubai area", "operationId": "getAreaForecast", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "area", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Dubai area name (Marina, JBR, Downtown, etc.)" }], "responses": { "200": { "description": "Price forecast" } } }
+    },
+    "/whatsapp/webhook": {
+      "post": {
         "tags": ["System"],
-        "operationId": "healthCheck",
-        "responses": {
-          "200": {
-            "description": "Server is healthy",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": { "type": "string" },
-                    "timestamp": { "type": "string", "format": "date-time" },
-                    "version": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
+        "summary": "WhatsApp webhook (public, requires x-webhook-token header)",
+        "operationId": "whatsappWebhook",
+        "parameters": [{ "name": "x-webhook-token", "in": "header", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "content": { "application/json": { "schema": { "type": "object" } } } },
+        "responses": { "200": { "description": "Accepted (processes async)" }, "403": { "description": "Invalid token" } }
       }
+    },
+    "/system/health": {
+      "get": { "tags": ["System"], "summary": "Detailed system health", "operationId": "systemHealth", "responses": { "200": { "description": "Health status with DB, memory, uptime" } } }
     }
   },
   "components": {
-    "schemas": {
-      "ConversationMessage": {
-        "type": "object",
-        "properties": {
-          "conversationId": {
-            "type": "string",
-            "description": "Unique conversation identifier"
-          },
-          "userMessage": {
-            "type": "string",
-            "description": "User's message or query"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Message timestamp"
-          },
-          "language": {
-            "type": "string",
-            "enum": ["en", "ar"],
-            "description": "Message language code"
-          }
-        },
-        "required": ["conversationId", "userMessage", "language"]
-      },
-      "ConversationResponse": {
-        "type": "object",
-        "properties": {
-          "conversationId": {
-            "type": "string"
-          },
-          "botResponse": {
-            "type": "string"
-          },
-          "confidence": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 1
-          },
-          "intent": {
-            "type": "string",
-            "description": "Detected user intent"
-          },
-          "entities": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Entity"
-            }
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "Entity": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "description": "Entity type (location, price, bedroom, etc.)"
-          },
-          "value": {
-            "type": "string",
-            "description": "Entity value"
-          },
-          "confidence": {
-            "type": "number",
-            "description": "Confidence score for entity extraction"
-          }
-        }
-      },
-      "LeadScore": {
-        "type": "object",
-        "properties": {
-          "conversationId": {
-            "type": "string"
-          },
-          "score": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 100,
-            "description": "Lead quality score (0-100)"
-          },
-          "reasoning": {
-            "type": "string"
-          },
-          "nextAction": {
-            "type": "string"
-          }
-        }
-      },
-      "Agent": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string",
-            "format": "email"
-          },
-          "phone": {
-            "type": "string"
-          },
-          "expertise": {
-            "type": "object",
-            "properties": {
-              "propertyTypes": {
-                "type": "array",
-                "items": { "type": "string" }
-              },
-              "locations": {
-                "type": "array",
-                "items": { "type": "string" }
-              }
-            }
-          },
-          "activeDeals": {
-            "type": "integer"
-          },
-          "maxCapacity": {
-            "type": "integer"
-          },
-          "performance": {
-            "type": "object",
-            "properties": {
-              "closingRate": {
-                "type": "number"
-              }
-            }
-          }
-        }
-      },
-      "AgentAssignment": {
-        "type": "object",
-        "properties": {
-          "agentId": {
-            "type": "string"
-          },
-          "agent": {
-            "$ref": "#/components/schemas/Agent"
-          },
-          "matchScore": {
-            "type": "number"
-          },
-          "reason": {
-            "type": "string"
-          }
-        }
-      },
-      "NotificationRequest": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string",
-            "enum": ["email", "sms", "push"]
-          },
-          "title": {
-            "type": "string"
-          },
-          "message": {
-            "type": "string"
-          }
-        },
-        "required": ["userId", "type", "message"]
-      },
-      "Notification": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string"
-          },
-          "userId": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string",
-            "enum": ["email", "sms", "push"]
-          },
-          "title": {
-            "type": "string"
-          },
-          "message": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": ["pending", "sent", "failed"]
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "sentAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "DashboardData": {
-        "type": "object",
-        "properties": {
-          "totalLeads": {
-            "type": "integer"
-          },
-          "activeConversations": {
-            "type": "integer"
-          },
-          "closedDeals": {
-            "type": "integer"
-          },
-          "revenue": {
-            "type": "number"
-          },
-          "topAgents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Agent"
-            }
-          },
-          "recentProperties": {
-            "type": "array"
-          },
-          "marketTrends": {
-            "type": "object"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "object",
-            "properties": {
-              "code": {
-                "type": "string"
-              },
-              "message": {
-                "type": "string"
-              },
-              "timestamp": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "path": {
-                "type": "string"
-              },
-              "traceId": {
-                "type": "string"
-              }
-            }
-          }
-        }
-      }
-    },
     "securitySchemes": {
-      "Bearer": {
+      "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "JWT Bearer token authentication"
+        "description": "JWT token obtained from /auth/login"
+      }
+    },
+    "parameters": {
+      "Page": { "name": "page", "in": "query", "schema": { "type": "integer", "minimum": 1, "default": 1 } },
+      "PageSize": { "name": "pageSize", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 20 } },
+      "ResourceId": { "name": "id", "in": "path", "required": true, "schema": { "type": "string" }, "description": "MongoDB ObjectId" }
+    },
+    "responses": {
+      "Unauthorized": { "description": "Missing or invalid JWT token", "content": { "application/json": { "schema": { "type": "object", "properties": { "error": { "type": "string" } } } } } },
+      "NotFound": { "description": "Resource not found", "content": { "application/json": { "schema": { "type": "object", "properties": { "error": { "type": "string" } } } } } },
+      "BadRequest": { "description": "Validation error", "content": { "application/json": { "schema": { "type": "object", "properties": { "error": { "type": "string" }, "details": { "type": "array", "items": { "type": "object" } } } } } } }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "name": { "type": "string" },
+          "photoUrl": { "type": "string", "nullable": true },
+          "role": { "type": "string", "enum": ["owner", "admin", "manager", "senior_agent", "agent", "junior_agent", "marketing_manager", "finance_manager", "compliance_officer", "viewer", "tenant", "buyer"] },
+          "phone": { "type": "string", "nullable": true },
+          "department": { "type": "string", "nullable": true },
+          "status": { "type": "string", "enum": ["active", "inactive"] },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
       },
-      "ApiKey": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "X-API-Key",
-        "description": "API Key authentication"
+      "Property": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "description": { "type": "string", "nullable": true },
+          "type": { "type": "string", "enum": ["villa", "apartment", "penthouse", "commercial", "land", "townhouse"] },
+          "status": { "type": "string", "enum": ["available", "reserved", "sold", "rented", "off_market"] },
+          "price": { "type": "number" },
+          "bedrooms": { "type": "integer" },
+          "bathrooms": { "type": "integer" },
+          "sqft": { "type": "integer" },
+          "location": { "type": "string" },
+          "area": { "type": "string", "nullable": true },
+          "amenities": { "type": "array", "items": { "type": "string" } },
+          "images": { "type": "array", "items": { "type": "string" } },
+          "featured": { "type": "boolean" },
+          "agentName": { "type": "string", "nullable": true },
+          "userId": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "PropertyCreate": {
+        "type": "object",
+        "required": ["title", "price", "location"],
+        "properties": {
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "type": { "type": "string", "enum": ["villa", "apartment", "penthouse", "commercial", "land", "townhouse"] },
+          "status": { "type": "string" },
+          "price": { "type": "number" },
+          "bedrooms": { "type": "integer" },
+          "bathrooms": { "type": "integer" },
+          "sqft": { "type": "integer" },
+          "location": { "type": "string" },
+          "area": { "type": "string" },
+          "amenities": { "type": "array", "items": { "type": "string" } },
+          "images": { "type": "array", "items": { "type": "string" } },
+          "featured": { "type": "boolean" }
+        }
+      },
+      "Lead": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "email": { "type": "string", "nullable": true },
+          "phone": { "type": "string", "nullable": true },
+          "company": { "type": "string", "nullable": true },
+          "status": { "type": "string", "enum": ["new", "contacted", "qualified", "hot", "warm", "cold", "won", "lost"] },
+          "source": { "type": "string", "enum": ["whatsapp", "website", "phone", "referral", "marketing", "direct"] },
+          "budget": { "type": "number", "nullable": true },
+          "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+          "notes": { "type": "string", "nullable": true },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "lastContact": { "type": "string", "format": "date-time", "nullable": true },
+          "assignedToId": { "type": "string", "nullable": true },
+          "propertyId": { "type": "string", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "LeadCreate": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "phone": { "type": "string" },
+          "company": { "type": "string" },
+          "status": { "type": "string" },
+          "source": { "type": "string" },
+          "budget": { "type": "number" },
+          "score": { "type": "integer" },
+          "notes": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "assignedToId": { "type": "string" },
+          "propertyId": { "type": "string" }
+        }
+      },
+      "PaginatedLeads": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Lead" } },
+          "total": { "type": "integer" },
+          "page": { "type": "integer" },
+          "pageSize": { "type": "integer" },
+          "totalPages": { "type": "integer" }
+        }
+      },
+      "PaginatedProperties": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Property" } },
+          "total": { "type": "integer" },
+          "page": { "type": "integer" },
+          "pageSize": { "type": "integer" },
+          "totalPages": { "type": "integer" }
+        }
+      },
+      "TransactionCreate": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "enum": ["sale", "rental", "lease"] },
+          "status": { "type": "string" },
+          "amount": { "type": "number" },
+          "closingDate": { "type": "string", "format": "date-time" },
+          "notes": { "type": "string" },
+          "propertyId": { "type": "string" },
+          "leadId": { "type": "string" }
+        }
+      },
+      "CommissionCreate": {
+        "type": "object",
+        "required": ["amount", "agentId"],
+        "properties": {
+          "amount": { "type": "number" },
+          "percentage": { "type": "number" },
+          "type": { "type": "string", "enum": ["sale", "rental", "referral"] },
+          "notes": { "type": "string" },
+          "agentId": { "type": "string" },
+          "leadId": { "type": "string" },
+          "propertyId": { "type": "string" }
+        }
+      },
+      "TenantCreate": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string" },
+          "phone": { "type": "string" },
+          "nationality": { "type": "string" },
+          "emiratesId": { "type": "string" },
+          "moveInDate": { "type": "string", "format": "date-time" },
+          "monthlyRent": { "type": "number" },
+          "deposit": { "type": "number" },
+          "propertyId": { "type": "string" }
+        }
+      },
+      "SavedSearchCreate": {
+        "type": "object",
+        "required": ["name", "filters"],
+        "properties": {
+          "name": { "type": "string" },
+          "filters": { "type": "object", "description": "Search criteria (type, minPrice, maxPrice, bedrooms, location, area, etc.)" },
+          "alertEnabled": { "type": "boolean" }
+        }
+      },
+      "ViewingCreate": {
+        "type": "object",
+        "required": ["propertyId", "scheduledAt"],
+        "properties": {
+          "propertyId": { "type": "string" },
+          "scheduledAt": { "type": "string", "format": "date-time" },
+          "duration": { "type": "integer", "default": 30 },
+          "type": { "type": "string", "enum": ["in_person", "virtual", "open_house"] },
+          "notes": { "type": "string" },
+          "location": { "type": "string" },
+          "leadId": { "type": "string" }
+        }
+      },
+      "OfferCreate": {
+        "type": "object",
+        "required": ["propertyId", "amount"],
+        "properties": {
+          "propertyId": { "type": "string" },
+          "amount": { "type": "number" },
+          "terms": { "type": "string" },
+          "expiresAt": { "type": "string", "format": "date-time" },
+          "notes": { "type": "string" },
+          "leadId": { "type": "string" }
+        }
+      },
+      "LeaseCreate": {
+        "type": "object",
+        "required": ["propertyId", "tenantId", "landlordId", "startDate", "endDate", "monthlyRent"],
+        "properties": {
+          "propertyId": { "type": "string" },
+          "tenantId": { "type": "string" },
+          "landlordId": { "type": "string" },
+          "startDate": { "type": "string", "format": "date-time" },
+          "endDate": { "type": "string", "format": "date-time" },
+          "monthlyRent": { "type": "number" },
+          "depositAmount": { "type": "number" },
+          "terms": { "type": "string" },
+          "leaseNumber": { "type": "string" }
+        }
+      },
+      "MaintenanceCreate": {
+        "type": "object",
+        "required": ["title", "propertyId"],
+        "properties": {
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "category": { "type": "string", "enum": ["plumbing", "electrical", "hvac", "appliance", "structural", "general"] },
+          "priority": { "type": "string", "enum": ["low", "medium", "high", "emergency"] },
+          "propertyId": { "type": "string" },
+          "images": { "type": "array", "items": { "type": "string" } }
+        }
       }
     }
-  },
-  "tags": [
-    {
-      "name": "Chatbot",
-      "description": "AI-powered chatbot endpoints for property search and customer interaction"
-    },
-    {
-      "name": "Agent Assignment",
-      "description": "Intelligent agent matching and assignment"
-    },
-    {
-      "name": "Agent Management",
-      "description": "Agent profile and performance management"
-    },
-    {
-      "name": "Notifications",
-      "description": "User notification delivery via email, SMS, and push"
-    },
-    {
-      "name": "Dashboard",
-      "description": "Analytics and dashboard metrics"
-    },
-    {
-      "name": "System",
-      "description": "System health and status endpoints"
-    }
-  ]
+  }
 }
