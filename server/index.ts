@@ -39,6 +39,7 @@ import viewingsRoutes from './routes/viewings.js';
 import offersRoutes from './routes/offers.js';
 import leasesRoutes from './routes/leases.js';
 import maintenanceRoutes from './routes/maintenance.js';
+import aiAssistantRoutes from './routes/ai-assistant.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 
 // Load environment variables
@@ -222,6 +223,9 @@ app.use('/api/leases', leasesRoutes);
 
 // Maintenance API (maintenance requests for landlords and tenants)
 app.use('/api/maintenance', maintenanceRoutes);
+
+// AI Assistant API (Chat, Lead Scoring, Document Generation, Market Analysis)
+app.use('/api/ai-assistant', aiAssistantRoutes);
 
 // WhatsApp Webhook (public endpoint — requires webhook secret for verification)
 app.post('/api/whatsapp/webhook', asyncHandler(async (req: Request, res: Response) => {
