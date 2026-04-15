@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import { typography } from '../../../styles/theme/typography';
-import { transitions } from '../../../../styles/theme/transitions';
-import { radius } from '../../../../styles/theme/radius';
-import { spacing } from '../../../../styles/theme/spacing';
+import { transitions } from '../../../styles/theme/transitions';
+import { radius } from '../../../styles/theme/radius';
+import { spacing } from '../../../styles/theme/spacing';
 
 export const PropertyMatrixContainer = styled.div`
   background: var(--bg-card);

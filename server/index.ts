@@ -16,6 +16,7 @@ import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.
 import authMiddleware from './middleware/auth.js';
 import { CORS_ORIGINS, WHATSAPP_WEBHOOK_SECRET } from './config/env.js';
 import { apiLimiter, authLimiter, registerLimiter, passwordLimiter, strictLimiter } from './middleware/rateLimiter.js';
+import { requestIdMiddleware } from './middleware/requestId.js';
 import logger, { createLogger } from './utils/logger.js';
 
 // Route imports (ESM-compatible)
@@ -50,6 +51,9 @@ const PORT = process.env.PORT || 3001;
 // ============================================================================
 // MIDDLEWARE SETUP
 // ============================================================================
+
+// Request ID — must be first so every log/error/response carries the trace ID
+app.use(requestIdMiddleware);
 
 // Security middleware
 app.use(helmet({
@@ -119,14 +123,26 @@ app.use('/api/auth/firebase-sync', authLimiter);
 // HEALTH CHECK ENDPOINT
 // ============================================================================
 
-app.get('/health', (req: Request, res: Response) => {
-  res.status(200).json({
-    status: 'OK',
+app.get('/health', asyncHandler(async (req: Request, res: Response) => {
+  // Real liveness probe — actually tests DB connectivity
+  let dbStatus: 'connected' | 'disconnected' = 'disconnected';
+  try {
+    await prisma.$runCommandRaw({ ping: 1 });
+    dbStatus = 'connected';
+  } catch { /* DB unreachable */ }
+
+  const status = dbStatus === 'connected' ? 'OK' : 'DEGRADED';
+  const code = dbStatus === 'connected' ? 200 : 503;
+
+  res.status(code).json({
+    status,
+    database: dbStatus,
     timestamp: new Date(),
     environment: process.env.NODE_ENV,
     version: process.env.APP_VERSION || '1.0.0',
+    requestId: req.requestId,
   });
-});
+}));
 
 // ============================================================================
 // API ROUTES
@@ -364,27 +380,45 @@ app.post('/api/valuation/estimate', authMiddleware, asyncHandler(async (req: Req
 // System Health API (SystemHealthPage)
 app.get('/api/system/health', authMiddleware, requirePermission('view_system_health'), asyncHandler(async (req: Request, res: Response) => {
 
+  // Real DB connectivity test
+  let dbStatus: 'operational' | 'degraded' | 'down' = 'down';
+  let dbLatencyMs = -1;
+  try {
+    const start = Date.now();
+    await prisma.$runCommandRaw({ ping: 1 });
+    dbLatencyMs = Date.now() - start;
+    dbStatus = dbLatencyMs < 500 ? 'operational' : 'degraded';
+  } catch { /* DB unreachable */ }
+
   const uptime = process.uptime();
-  res.status(200).json({
+  const mem = process.memoryUsage();
+  const overallStatus = dbStatus === 'operational' ? 'healthy' : dbStatus === 'degraded' ? 'degraded' : 'unhealthy';
+
+  res.status(dbStatus === 'down' ? 503 : 200).json({
     success: true,
     data: {
-      status: 'healthy',
+      status: overallStatus,
       uptime: Math.round(uptime),
       uptimeFormatted: `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m`,
-      database: 'connected',
+      database: {
+        status: dbStatus,
+        latencyMs: dbLatencyMs,
+      },
       memory: {
-        used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
-        total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
+        used: Math.round(mem.heapUsed / 1024 / 1024),
+        total: Math.round(mem.heapTotal / 1024 / 1024),
+        rss: Math.round(mem.rss / 1024 / 1024),
       },
       services: {
         api: 'operational',
-        database: 'operational',
+        database: dbStatus,
         whatsapp: 'not_configured',
         email: 'not_configured',
       },
-      version: '1.0.0',
+      version: process.env.APP_VERSION || '1.0.0',
       environment: process.env.NODE_ENV || 'development',
       timestamp: new Date().toISOString(),
+      requestId: req.requestId,
     },
   });
 }));

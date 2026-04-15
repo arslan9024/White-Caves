@@ -16,6 +16,8 @@ import {
 } from '../services/nadia/messageProcessor.js';
 import { getQueuedConversations, assignFromQueue } from '../services/nadia/queueManager.js';
 import { requirePermission } from '../middleware/rbac';
+import { validate, rules, validateIdParam } from '../utils/validate.js';
+import { sanitizeString } from '../utils/sanitize.js';
 
 const router = Router();
 
@@ -33,9 +35,11 @@ router.post(
   asyncHandler(async (req: Request, res: Response) => {
     const { wabaId, customerPhone, initialMessage } = req.body;
 
-    if (!customerPhone) {
-      throw new AppError('customerPhone is required', 400);
-    }
+    validate(req.body, {
+      customerPhone: rules.requiredString('Customer Phone'),
+      wabaId: rules.optionalString('WABA ID'),
+      initialMessage: rules.optionalStringWithMax('Initial Message', 4096),
+    });
 
     // Create conversation
     const conversation = await prisma.nadiaConversation.create({
@@ -71,7 +75,7 @@ router.post(
           conversationId: conversation.id,
           waMessageId: `local-${Date.now()}`,
           direction: 'inbound',
-          body: initialMessage,
+          body: sanitizeString(initialMessage),
           messageType: 'text',
           status: 'delivered',
           timestamp: new Date(),
@@ -212,6 +216,7 @@ router.patch(
   requirePermission('access_whatsapp_business'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId } = req.params;
+    validateIdParam(conversationId, 'conversation');
     const { status, agentPhone, closedReason } = req.body;
 
     const conversation = await prisma.nadiaConversation.findUnique({
@@ -225,6 +230,10 @@ router.patch(
     const updateData: any = {};
 
     if (status) {
+      const validStatuses = ['active', 'assigned_to_agent', 'closed', 'bot_handling'];
+      if (!validStatuses.includes(status)) {
+        throw new AppError(`Invalid status. Must be one of: ${validStatuses.join(', ')}`, 400);
+      }
       updateData.status = status;
       if (status === 'assigned_to_agent' && agentPhone) {
         updateData.agentPhone = agentPhone;
@@ -232,7 +241,7 @@ router.patch(
       }
       if (status === 'closed') {
         updateData.closedAt = new Date();
-        updateData.closedReason = closedReason || 'completed';
+        updateData.closedReason = closedReason ? sanitizeString(closedReason) : 'completed';
       }
     }
 
@@ -261,6 +270,7 @@ router.delete(
   requirePermission('access_whatsapp_business'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId } = req.params;
+    validateIdParam(conversationId, 'conversation');
     const { reason } = req.body;
 
     const conversation = await prisma.nadiaConversation.findUnique({
@@ -277,7 +287,7 @@ router.delete(
       data: {
         status: 'closed',
         closedAt: new Date(),
-        closedReason: reason || 'closed_by_user',
+        closedReason: reason ? sanitizeString(reason) : 'closed_by_user',
       },
       include: {
         messages: true,
@@ -305,11 +315,13 @@ router.post(
   requirePermission('access_whatsapp_business'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId } = req.params;
+    validateIdParam(conversationId, 'conversation');
     const { content, senderType = 'customer', senderPhone } = req.body;
 
-    if (!content) {
-      throw new AppError('content is required', 400);
-    }
+    validate(req.body, {
+      content: rules.requiredStringWithMax('Content', 4096),
+      senderType: rules.oneOf('Sender Type', ['customer', 'agent', 'bot']),
+    });
 
     const conversation = await prisma.nadiaConversation.findUnique({
       where: { id: conversationId },
@@ -331,7 +343,7 @@ router.post(
         conversationId,
         waMessageId: `local-${Date.now()}`,
         direction: senderType === 'customer' ? 'inbound' : 'outbound',
-        body: content,
+        body: sanitizeString(content),
         messageType: 'text',
         status: 'delivered',
         timestamp: new Date(),
@@ -435,11 +447,12 @@ router.patch(
   requirePermission('access_whatsapp_business'),
   asyncHandler(async (req: Request, res: Response) => {
     const { queueId } = req.params;
+    validateIdParam(queueId, 'queueId');
     const { agentPhone } = req.body;
 
-    if (!agentPhone) {
-      throw new AppError('agentPhone is required', 400);
-    }
+    validate(req.body, {
+      agentPhone: rules.requiredString('Agent Phone'),
+    });
 
     const assigned = await assignFromQueue(queueId, agentPhone);
 

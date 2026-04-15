@@ -8,6 +8,9 @@
 import { Router, Request, Response } from 'express';
 import { createMetaAPIClient, MetaAPIClient, WebhookEvent } from '../services/whatsapp/metaAPI';
 import { requireRole } from '../middleware/rbac';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
+import { validate, rules } from '../utils/validate.js';
+import { sanitizeString } from '../utils/sanitize.js';
 
 const router = Router();
 
@@ -41,8 +44,7 @@ function getMetaClient(): MetaAPIClient {
  * Meta webhook verification (required on first setup)
  * Query params: hub.mode, hub.challenge, hub.verify_token
  */
-router.get('/verify', (req: Request, res: Response) => {
-  try {
+router.get('/verify', asyncHandler(async (req: Request, res: Response) => {
     const mode = req.query['hub.mode'] as string;
     const challenge = req.query['hub.challenge'] as string;
     const verifyToken = req.query['hub.verify_token'] as string;
@@ -57,27 +59,15 @@ router.get('/verify', (req: Request, res: Response) => {
       res.send(result);
       console.log('[Meta Webhook] Verification successful');
     } else {
-      console.warn('[Meta Webhook] Verification failed - invalid token or mode');
-      res.status(403).json({
-        success: false,
-        error: 'Verification failed',
-      });
+      throw new AppError('Webhook verification failed — invalid token or mode', 403);
     }
-  } catch (error) {
-    console.error('[Meta Webhook] Verification error:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-});
+}));
 
 /**
  * POST /api/webhooks/meta
  * Receive messages and status updates from Meta/WhatsApp
  */
-router.post('/', async (req: Request, res: Response) => {
-  try {
+router.post('/', asyncHandler(async (req: Request, res: Response) => {
     console.log('[Meta Webhook] Incoming webhook event');
 
     // Acknowledge receipt immediately
@@ -113,12 +103,7 @@ router.post('/', async (req: Request, res: Response) => {
         }
       }
     }
-  } catch (error) {
-    console.error('[Meta Webhook] Error processing event:', error);
-    // Still return 200 to prevent retry
-    res.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
-  }
-});
+}));
 
 /**
  * Handle incoming message
@@ -189,19 +174,17 @@ async function handleStatusUpdate(status: any): Promise<void> {
  * Send message via Meta API (internal helper)
  * Body: { to: string, message: string, conversationId: string }
  */
-router.post('/send', requireRole('owner'), async (req: Request, res: Response) => {
-  try {
+router.post('/send', requireRole('owner'), asyncHandler(async (req: Request, res: Response) => {
     const { to, message, conversationId } = req.body;
 
-    if (!to || !message) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required fields: to, message',
-      });
-    }
+    validate(req.body, {
+      to: rules.requiredString('Recipient (to)'),
+      message: rules.requiredStringWithMax('Message', 4096),
+    });
 
     const meta = getMetaClient();
-    const messageId = await meta.sendMessage(to, message);
+    const safeMessage = sanitizeString(message);
+    const messageId = await meta.sendMessage(to, safeMessage);
 
     res.json({
       success: true,
@@ -209,35 +192,26 @@ router.post('/send', requireRole('owner'), async (req: Request, res: Response) =
         conversationId,
         messageId,
         to,
-        message: message.substring(0, 100) + (message.length > 100 ? '...' : ''),
+        message: safeMessage.substring(0, 100) + (safeMessage.length > 100 ? '...' : ''),
         timestamp: new Date(),
         channel: 'META_API',
       },
     });
-  } catch (error) {
-    console.error('[Meta Webhook] Error sending message:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-});
+}));
 
 /**
  * POST /api/webhooks/meta/template
  * Send template message via Meta API
  * Body: { to: string, template: string, parameters?: string[], conversationId: string }
  */
-router.post('/template', requireRole('owner'), async (req: Request, res: Response) => {
-  try {
+router.post('/template', requireRole('owner'), asyncHandler(async (req: Request, res: Response) => {
     const { to, template, parameters, conversationId } = req.body;
 
-    if (!to || !template) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required fields: to, template',
-      });
-    }
+    validate(req.body, {
+      to: rules.requiredString('Recipient (to)'),
+      template: rules.requiredString('Template Name'),
+      parameters: rules.optionalArray('Parameters'),
+    });
 
     const meta = getMetaClient();
     const messageId = await meta.sendTemplate(to, template, parameters);
@@ -253,21 +227,13 @@ router.post('/template', requireRole('owner'), async (req: Request, res: Respons
         channel: 'META_API',
       },
     });
-  } catch (error) {
-    console.error('[Meta Webhook] Error sending template:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-});
+}));
 
 /**
  * GET /api/webhooks/meta/status
  * Check Meta API connectivity
  */
-router.get('/status', requireRole('owner'), async (req: Request, res: Response) => {
-  try {
+router.get('/status', requireRole('owner'), asyncHandler(async (req: Request, res: Response) => {
     const meta = getMetaClient();
     const stats = meta.getStats();
 
@@ -285,30 +251,20 @@ router.get('/status', requireRole('owner'), async (req: Request, res: Response) 
         timestamp: new Date(),
       },
     });
-  } catch (error) {
-    console.error('[Meta Webhook] Error getting status:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-});
+}));
 
 /**
  * POST /api/webhooks/meta/image
  * Send image via Meta API
  * Body: { to: string, imageUrl: string, conversationId: string }
  */
-router.post('/image', requireRole('owner'), async (req: Request, res: Response) => {
-  try {
+router.post('/image', requireRole('owner'), asyncHandler(async (req: Request, res: Response) => {
     const { to, imageUrl, conversationId } = req.body;
 
-    if (!to || !imageUrl) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required fields: to, imageUrl',
-      });
-    }
+    validate(req.body, {
+      to: rules.requiredString('Recipient (to)'),
+      imageUrl: rules.requiredString('Image URL'),
+    });
 
     const meta = getMetaClient();
     const messageId = await meta.sendImage(to, imageUrl);
@@ -323,13 +279,6 @@ router.post('/image', requireRole('owner'), async (req: Request, res: Response) 
         channel: 'META_API',
       },
     });
-  } catch (error) {
-    console.error('[Meta Webhook] Error sending image:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-});
+}));
 
 export default router;

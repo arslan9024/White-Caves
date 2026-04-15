@@ -15,6 +15,8 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { validate, rules, validateIdParam } from '../utils/validate.js';
+import { sanitizeString } from '../utils/sanitize.js';
 
 const router = Router();
 
@@ -82,10 +84,13 @@ router.post(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { propertyId, amount, terms, expiresAt, leadId } = req.body;
-    if (!propertyId) throw new AppError('propertyId is required', 400);
-    if (!amount || typeof amount !== 'number' || amount <= 0) {
-      throw new AppError('amount must be a positive number', 400);
-    }
+    validate(req.body, {
+      propertyId: rules.requiredMongoId('Property ID'),
+      amount: rules.positiveNumber('Amount'),
+      terms: rules.optionalStringWithMax('Terms', 2000),
+      leadId: rules.optionalMongoId('Lead ID'),
+    });
+    const safeterms = terms ? sanitizeString(terms) : null;
 
     // Verify property exists and is available
     const property = await prisma.property.findUnique({ where: { id: propertyId } });
@@ -96,7 +101,7 @@ router.post(
         buyerId: userId,
         propertyId,
         amount,
-        terms: terms || null,
+        terms: safeterms,
         expiresAt: expiresAt ? new Date(expiresAt) : null,
         leadId: leadId || null,
       },
@@ -120,6 +125,7 @@ router.patch(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { id } = req.params;
+    validateIdParam(id, 'offer');
     const existing = await prisma.offer.findUnique({
       where: { id },
       include: { property: { select: { userId: true } } },
@@ -146,8 +152,8 @@ router.patch(
       updateData.status = status;
     }
     if (counterAmount !== undefined) updateData.counterAmount = counterAmount;
-    if (terms !== undefined) updateData.terms = terms;
-    if (notes !== undefined) updateData.notes = notes;
+    if (terms !== undefined) updateData.terms = sanitizeString(terms);
+    if (notes !== undefined) updateData.notes = sanitizeString(notes);
 
     const updated = await prisma.offer.update({ where: { id }, data: updateData });
 
@@ -164,6 +170,7 @@ router.delete(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { id } = req.params;
+    validateIdParam(id, 'offer');
     const existing = await prisma.offer.findUnique({ where: { id } });
     if (!existing) throw new AppError('Offer not found', 404);
     if (existing.buyerId !== userId) throw new AppError('Access denied', 403);

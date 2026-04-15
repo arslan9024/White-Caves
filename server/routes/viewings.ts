@@ -15,6 +15,8 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { validate, rules, validateIdParam } from '../utils/validate.js';
+import { sanitizeString } from '../utils/sanitize.js';
 
 const router = Router();
 
@@ -89,7 +91,11 @@ router.post(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { propertyId, scheduledAt, type, notes, leadId, duration } = req.body;
-    if (!propertyId) throw new AppError('propertyId is required', 400);
+    validate(req.body, {
+      propertyId: rules.requiredMongoId('Property ID'),
+      notes: rules.optionalStringWithMax('Notes', 1000),
+      leadId: rules.optionalMongoId('Lead ID'),
+    });
     if (!scheduledAt) throw new AppError('scheduledAt is required', 400);
 
     const scheduledDate = new Date(scheduledAt);
@@ -106,7 +112,7 @@ router.post(
         propertyId,
         scheduledAt: scheduledDate,
         type: type || 'in_person',
-        notes: notes || null,
+        notes: notes ? sanitizeString(notes) : null,
         leadId: leadId || null,
         duration: duration || 30,
       },
@@ -130,6 +136,7 @@ router.patch(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { id } = req.params;
+    validateIdParam(id, 'viewing');
     const existing = await prisma.viewing.findUnique({ where: { id } });
     if (!existing) throw new AppError('Viewing not found', 404);
     if (existing.userId !== userId) throw new AppError('Access denied', 403);
@@ -142,16 +149,24 @@ router.patch(
       if (isNaN(d.getTime())) throw new AppError('Invalid scheduledAt date', 400);
       updateData.scheduledAt = d;
     }
-    if (status !== undefined) updateData.status = status;
-    if (notes !== undefined) updateData.notes = notes;
-    if (feedback !== undefined) updateData.feedback = feedback;
+    if (status !== undefined) {
+      const validStatuses = ['scheduled', 'confirmed', 'completed', 'cancelled', 'no_show'];
+      if (!validStatuses.includes(status)) throw new AppError(`Invalid status. Must be one of: ${validStatuses.join(', ')}`, 400);
+      updateData.status = status;
+    }
+    if (notes !== undefined) updateData.notes = sanitizeString(notes);
+    if (feedback !== undefined) updateData.feedback = sanitizeString(feedback);
     if (rating !== undefined) {
       if (typeof rating !== 'number' || rating < 1 || rating > 5) {
         throw new AppError('Rating must be 1-5', 400);
       }
       updateData.rating = rating;
     }
-    if (type !== undefined) updateData.type = type;
+    if (type !== undefined) {
+      const validTypes = ['in_person', 'virtual'];
+      if (!validTypes.includes(type)) throw new AppError(`Invalid type. Must be one of: ${validTypes.join(', ')}`, 400);
+      updateData.type = type;
+    }
 
     const updated = await prisma.viewing.update({ where: { id }, data: updateData });
 
@@ -168,6 +183,7 @@ router.delete(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { id } = req.params;
+    validateIdParam(id, 'viewing');
     const existing = await prisma.viewing.findUnique({ where: { id } });
     if (!existing) throw new AppError('Viewing not found', 404);
     if (existing.userId !== userId) throw new AppError('Access denied', 403);

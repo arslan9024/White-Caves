@@ -16,6 +16,8 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { validate, rules, validateIdParam } from '../utils/validate.js';
+import { sanitizeString } from '../utils/sanitize.js';
 
 const router = Router();
 
@@ -135,22 +137,14 @@ router.post(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { propertyId, title, description, category, priority, images, scheduledDate } = req.body;
-    if (!propertyId) throw new AppError('propertyId is required', 400);
-    if (!title || typeof title !== 'string' || title.trim().length === 0) {
-      throw new AppError('title is required', 400);
-    }
-
-    // Validate category
-    const validCategories = ['plumbing', 'electrical', 'hvac', 'appliance', 'structural', 'general'];
-    if (category && !validCategories.includes(category)) {
-      throw new AppError(`Invalid category. Must be one of: ${validCategories.join(', ')}`, 400);
-    }
-
-    // Validate priority
-    const validPriorities = ['low', 'medium', 'high', 'emergency'];
-    if (priority && !validPriorities.includes(priority)) {
-      throw new AppError(`Invalid priority. Must be one of: ${validPriorities.join(', ')}`, 400);
-    }
+    validate(req.body, {
+      propertyId: rules.requiredMongoId('Property ID'),
+      title: rules.requiredStringWithMax('Title', 200),
+      description: rules.optionalStringWithMax('Description', 2000),
+      category: rules.oneOf('Category', ['plumbing', 'electrical', 'hvac', 'appliance', 'structural', 'general']),
+      priority: rules.oneOf('Priority', ['low', 'medium', 'high', 'emergency']),
+      images: rules.optionalArray('Images'),
+    });
 
     // Verify property exists
     const property = await prisma.property.findUnique({ where: { id: propertyId } });
@@ -160,8 +154,8 @@ router.post(
       data: {
         requesterId: userId,
         propertyId,
-        title: title.trim(),
-        description: description || null,
+        title: sanitizeString(title.trim()),
+        description: description ? sanitizeString(description) : null,
         category: category || 'general',
         priority: priority || 'medium',
         images: images || [],
@@ -191,6 +185,7 @@ router.patch(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { id } = req.params;
+    validateIdParam(id, 'maintenance');
     const existing = await prisma.maintenance.findUnique({ where: { id } });
     if (!existing) throw new AppError('Maintenance request not found', 404);
 
@@ -203,8 +198,8 @@ router.patch(
       req.body;
     const updateData: Record<string, unknown> = {};
 
-    if (title !== undefined) updateData.title = title;
-    if (description !== undefined) updateData.description = description;
+    if (title !== undefined) updateData.title = sanitizeString(title);
+    if (description !== undefined) updateData.description = sanitizeString(description);
     if (category !== undefined) {
       const validCategories = ['plumbing', 'electrical', 'hvac', 'appliance', 'structural', 'general'];
       if (!validCategories.includes(category)) {
@@ -249,6 +244,7 @@ router.delete(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { id } = req.params;
+    validateIdParam(id, 'maintenance');
     const existing = await prisma.maintenance.findUnique({ where: { id } });
     if (!existing) throw new AppError('Maintenance request not found', 404);
 

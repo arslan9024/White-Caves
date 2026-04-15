@@ -16,6 +16,8 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { validate, rules, validateIdParam } from '../utils/validate.js';
+import { sanitizeString } from '../utils/sanitize.js';
 
 const router = Router();
 
@@ -160,11 +162,16 @@ router.post(
 
     if (!propertyId) throw new AppError('propertyId is required', 400);
     if (!tenantId) throw new AppError('tenantId is required', 400);
+    validate(req.body, {
+      propertyId: rules.requiredMongoId('Property ID'),
+      tenantId: rules.requiredMongoId('Tenant ID'),
+      monthlyRent: rules.positiveNumber('Monthly Rent'),
+      depositAmount: rules.optionalPositiveNumber('Deposit Amount'),
+      terms: rules.optionalStringWithMax('Terms', 2000),
+      leaseNumber: rules.optionalStringWithMax('Lease Number', 100),
+    });
     if (!startDate) throw new AppError('startDate is required', 400);
     if (!endDate) throw new AppError('endDate is required', 400);
-    if (!monthlyRent || typeof monthlyRent !== 'number' || monthlyRent <= 0) {
-      throw new AppError('monthlyRent must be a positive number', 400);
-    }
 
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -190,8 +197,8 @@ router.post(
         endDate: end,
         monthlyRent,
         depositAmount: depositAmount || 0,
-        terms: terms || null,
-        leaseNumber: leaseNumber || null,
+        terms: terms ? sanitizeString(terms) : null,
+        leaseNumber: leaseNumber ? sanitizeString(leaseNumber) : null,
         documents: [],
       },
       include: {
@@ -213,6 +220,7 @@ router.patch(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { id } = req.params;
+    validateIdParam(id, 'lease');
     const existing = await prisma.lease.findUnique({ where: { id } });
     if (!existing) throw new AppError('Lease not found', 404);
 
@@ -238,11 +246,11 @@ router.patch(
       if (isNaN(d.getTime())) throw new AppError('Invalid endDate', 400);
       updateData.endDate = d;
     }
-    if (terms !== undefined) updateData.terms = terms;
+    if (terms !== undefined) updateData.terms = sanitizeString(terms);
     if (nextPaymentDue !== undefined) {
       updateData.nextPaymentDue = nextPaymentDue ? new Date(nextPaymentDue) : null;
     }
-    if (leaseNumber !== undefined) updateData.leaseNumber = leaseNumber;
+    if (leaseNumber !== undefined) updateData.leaseNumber = sanitizeString(leaseNumber);
     if (documents !== undefined) updateData.documents = documents;
 
     const updated = await prisma.lease.update({ where: { id }, data: updateData });
@@ -260,6 +268,7 @@ router.delete(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { id } = req.params;
+    validateIdParam(id, 'lease');
     const existing = await prisma.lease.findUnique({ where: { id } });
     if (!existing) throw new AppError('Lease not found', 404);
 

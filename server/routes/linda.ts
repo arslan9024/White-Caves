@@ -10,6 +10,9 @@
 import { Router, Request, Response } from 'express';
 import { LindaClient, WhatsAppMessage, getLindaClient } from '../services/whatsapp/lindaClient';
 import { requirePermission } from '../middleware/rbac';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
+import { validate, rules, validateIdParam } from '../utils/validate.js';
+import { sanitizeString } from '../utils/sanitize.js';
 
 const router = Router();
 let lindaClient: LindaClient | null = null;
@@ -40,8 +43,7 @@ async function initializeLinda(): Promise<LindaClient> {
  * GET /api/linda/status
  * Check Linda connection status
  */
-router.get('/status', requirePermission('access_whatsapp_business'), async (req: Request, res: Response) => {
-  try {
+router.get('/status', requirePermission('access_whatsapp_business'), asyncHandler(async (req: Request, res: Response) => {
     const linda = await initializeLinda();
     const stats = linda.getStats();
 
@@ -54,45 +56,34 @@ router.get('/status', requirePermission('access_whatsapp_business'), async (req:
         reconnectAttempts: stats.reconnectAttempts,
       },
     });
-  } catch (error) {
-    console.error('[Linda Routes] Error getting status:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-});
+}));
 
 /**
  * POST /api/linda/send/:conversationId
  * Send message via WhatsApp
  * Body: { phoneNumber: string, message: string }
  */
-router.post('/send/:conversationId', requirePermission('access_whatsapp_business'), async (req: Request, res: Response) => {
-  try {
+router.post('/send/:conversationId', requirePermission('access_whatsapp_business'), asyncHandler(async (req: Request, res: Response) => {
     const { phoneNumber, message } = req.body;
     const { conversationId } = req.params;
 
-    if (!phoneNumber || !message) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required fields: phoneNumber, message',
-      });
-    }
+    validate(req.body, {
+      phoneNumber: rules.requiredString('Phone Number'),
+      message: rules.requiredStringWithMax('Message', 4096),
+    });
 
     const linda = await initializeLinda();
 
     // Validate phone format
     const cleanPhone = phoneNumber.replace(/\D/g, '');
     if (cleanPhone.length < 10) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid phone number format',
-      });
+      throw new AppError('Invalid phone number format — must be at least 10 digits', 400);
     }
 
+    const safeMessage = sanitizeString(message);
+
     // Send message
-    const messageId = await linda.sendMessage(phoneNumber, message);
+    const messageId = await linda.sendMessage(phoneNumber, safeMessage);
 
     res.json({
       success: true,
@@ -100,38 +91,28 @@ router.post('/send/:conversationId', requirePermission('access_whatsapp_business
         conversationId,
         messageId,
         phoneNumber,
-        message: message.substring(0, 100) + (message.length > 100 ? '...' : ''),
+        message: safeMessage.substring(0, 100) + (safeMessage.length > 100 ? '...' : ''),
         timestamp: new Date(),
         channel: 'LINDA_WHATSAPP',
       },
     });
-  } catch (error) {
-    console.error('[Linda Routes] Error sending message:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-});
+}));
 
 /**
  * POST /api/linda/webhook
  * Receive messages from WhatsApp (via polling simulation)
  * In real implementation, Linda polls for new messages periodically
  */
-router.post('/webhook', requirePermission('access_whatsapp_business'), async (req: Request, res: Response) => {
-  try {
+router.post('/webhook', requirePermission('access_whatsapp_business'), asyncHandler(async (req: Request, res: Response) => {
     const linda = await initializeLinda();
     const messages = linda.getMessageQueue();
 
     if (messages.length === 0) {
-      return res.json({
+      res.json({
         success: true,
-        data: {
-          messages: [],
-          count: 0,
-        },
+        data: { messages: [], count: 0 },
       });
+      return;
     }
 
     // Process each message
@@ -154,21 +135,13 @@ router.post('/webhook', requirePermission('access_whatsapp_business'), async (re
         count: processedMessages.length,
       },
     });
-  } catch (error) {
-    console.error('[Linda Routes] Error processing webhook:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-});
+}));
 
 /**
  * GET /api/linda/conversations
  * Get list of active conversations
  */
-router.get('/conversations', requirePermission('access_whatsapp_business'), async (req: Request, res: Response) => {
-  try {
+router.get('/conversations', requirePermission('access_whatsapp_business'), asyncHandler(async (req: Request, res: Response) => {
     const linda = await initializeLinda();
     const conversations = await linda.getConversations();
 
@@ -179,21 +152,13 @@ router.get('/conversations', requirePermission('access_whatsapp_business'), asyn
         count: conversations.length,
       },
     });
-  } catch (error) {
-    console.error('[Linda Routes] Error getting conversations:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-});
+}));
 
 /**
  * GET /api/linda/conversations/:phoneNumber/history
  * Get conversation history
  */
-router.get('/conversations/:phoneNumber/history', requirePermission('access_whatsapp_business'), async (req: Request, res: Response) => {
-  try {
+router.get('/conversations/:phoneNumber/history', requirePermission('access_whatsapp_business'), asyncHandler(async (req: Request, res: Response) => {
     const { phoneNumber } = req.params;
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
 
@@ -208,54 +173,35 @@ router.get('/conversations/:phoneNumber/history', requirePermission('access_what
         count: history.length,
       },
     });
-  } catch (error) {
-    console.error('[Linda Routes] Error getting conversation history:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-});
+}));
 
 /**
  * POST /api/linda/ready
  * Check if Linda session is authenticated and ready
  */
-router.post('/ready', async (req: Request, res: Response) => {
-  try {
+router.post('/ready', asyncHandler(async (req: Request, res: Response) => {
     const linda = await initializeLinda();
     const isConnected = linda.isConnected();
 
     if (!isConnected) {
-      return res.status(503).json({
-        success: false,
-        error: 'Linda not connected - please scan QR code from /api/linda/qr',
-      });
+      throw new AppError('Linda not connected — please scan QR code from /api/linda/qr', 503);
     }
 
     res.json({
       success: true,
       message: 'Linda is ready',
     });
-  } catch (error) {
-    console.error('[Linda Routes] Error checking ready:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-});
+}));
 
 /**
  * GET /api/linda/health
  * Health check (simpler than status)
  */
-router.get('/health', async (req: Request, res: Response) => {
-  try {
+router.get('/health', asyncHandler(async (req: Request, res: Response) => {
     const linda = await initializeLinda();
     const stats = linda.getStats();
 
-    const healthy = stats.isConnected || stats.reconnectAttempts < stats.reconnectAttempts; // Simple heuristic
+    const healthy = stats.isConnected;
 
     res.status(healthy ? 200 : 503).json({
       success: healthy,
@@ -263,21 +209,13 @@ router.get('/health', async (req: Request, res: Response) => {
       isConnected: stats.isConnected,
       timestamp: new Date(),
     });
-  } catch (error) {
-    console.error('[Linda Routes] Error health check:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Health check failed',
-    });
-  }
-});
+}));
 
 /**
  * POST /api/linda/disconnect
  * Manually disconnect Linda
  */
-router.post('/disconnect', async (req: Request, res: Response) => {
-  try {
+router.post('/disconnect', asyncHandler(async (req: Request, res: Response) => {
     if (lindaClient) {
       await lindaClient.disconnect();
       lindaClient = null;
@@ -287,21 +225,13 @@ router.post('/disconnect', async (req: Request, res: Response) => {
       success: true,
       message: 'Linda disconnected',
     });
-  } catch (error) {
-    console.error('[Linda Routes] Error disconnecting:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-});
+}));
 
 /**
  * GET /api/linda/stats
  * Get detailed statistics
  */
-router.get('/stats', async (req: Request, res: Response) => {
-  try {
+router.get('/stats', asyncHandler(async (req: Request, res: Response) => {
     const linda = await initializeLinda();
     const stats = linda.getStats();
 
@@ -310,13 +240,6 @@ router.get('/stats', async (req: Request, res: Response) => {
       data: stats,
       timestamp: new Date(),
     });
-  } catch (error) {
-    console.error('[Linda Routes] Error getting stats:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-});
+}));
 
 export default router;

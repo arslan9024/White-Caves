@@ -16,6 +16,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { validateIdParam } from '../utils/validate.js';
 
 const router = Router();
 
@@ -99,7 +100,7 @@ router.get(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { propertyId } = req.params;
-    if (!propertyId) throw new AppError('Property ID is required', 400);
+    validateIdParam(propertyId, 'propertyId');
 
     const favorite = await prisma.favorite.findUnique({
       where: {
@@ -122,7 +123,7 @@ router.post(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { propertyId } = req.body;
-    if (!propertyId) throw new AppError('propertyId is required', 400);
+    validateIdParam(propertyId, 'propertyId');
 
     // Verify property exists
     const property = await prisma.property.findUnique({
@@ -170,7 +171,7 @@ router.delete(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { propertyId } = req.params;
-    if (!propertyId) throw new AppError('Property ID is required', 400);
+    validateIdParam(propertyId, 'propertyId');
 
     // Check it exists before deleting
     const existing = await prisma.favorite.findUnique({

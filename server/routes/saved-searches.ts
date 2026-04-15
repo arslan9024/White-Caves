@@ -15,6 +15,8 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { validateIdParam } from '../utils/validate.js';
+import { sanitizeString } from '../utils/sanitize.js';
 
 const router = Router();
 
@@ -49,9 +51,11 @@ router.post(
     if (typeof name !== 'string' || name.trim().length === 0) {
       throw new AppError('name must be a non-empty string', 400);
     }
+    if (name.length > 100) throw new AppError('name must be 100 characters or less', 400);
     if (typeof filters !== 'object') {
       throw new AppError('filters must be an object', 400);
     }
+    const safeName = sanitizeString(name.trim());
 
     // Limit saved searches per user
     const count = await prisma.savedSearch.count({ where: { userId } });
@@ -64,7 +68,7 @@ router.post(
 
     const search = await prisma.savedSearch.create({
       data: {
-        name: name.trim(),
+        name: safeName,
         filters,
         alertEnabled: alertEnabled === true,
         matchCount,
@@ -89,6 +93,7 @@ router.patch(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { id } = req.params;
+    validateIdParam(id, 'savedSearch');
     const existing = await prisma.savedSearch.findUnique({ where: { id } });
     if (!existing) throw new AppError('Saved search not found', 404);
     if (existing.userId !== userId) throw new AppError('Access denied', 403);
@@ -100,7 +105,8 @@ router.patch(
       if (typeof name !== 'string' || name.trim().length === 0) {
         throw new AppError('name must be a non-empty string', 400);
       }
-      updateData.name = name.trim();
+      if (name.length > 100) throw new AppError('name must be 100 characters or less', 400);
+      updateData.name = sanitizeString(name.trim());
     }
     if (filters !== undefined) {
       if (typeof filters !== 'object') {
@@ -133,6 +139,7 @@ router.delete(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { id } = req.params;
+    validateIdParam(id, 'savedSearch');
     const existing = await prisma.savedSearch.findUnique({ where: { id } });
     if (!existing) throw new AppError('Saved search not found', 404);
     if (existing.userId !== userId) throw new AppError('Access denied', 403);
@@ -156,6 +163,7 @@ router.post(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { id } = req.params;
+    validateIdParam(id, 'savedSearch');
     const search = await prisma.savedSearch.findUnique({ where: { id } });
     if (!search) throw new AppError('Saved search not found', 404);
     if (search.userId !== userId) throw new AppError('Access denied', 403);
