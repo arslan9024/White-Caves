@@ -8,6 +8,10 @@
 import { Router, Request, Response } from 'express';
 import { createMetaAPIClient, MetaAPIClient, WebhookEvent } from '../services/whatsapp/metaAPI';
 import { requireRole } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+import { sendSuccess, sendError } from '../utils/apiResponse';
+
+const log = createLogger('MetaWebhook');
 
 const router = Router();
 
@@ -27,7 +31,7 @@ function getMetaClient(): MetaAPIClient {
     };
 
     if (!config.accessToken || !config.businessAccountId || !config.phoneNumberId) {
-      console.warn('[Meta Webhook] Meta API not fully configured - check environment variables');
+      log.warn('Meta API not fully configured - check environment variables');
     }
 
     metaClient = createMetaAPIClient(config);
@@ -47,7 +51,7 @@ router.get('/verify', (req: Request, res: Response) => {
     const challenge = req.query['hub.challenge'] as string;
     const verifyToken = req.query['hub.verify_token'] as string;
 
-    console.log('[Meta Webhook] Verification request:', { mode, verifyToken: '***' });
+    log.info('Verification request:', { mode, verifyToken: '***' });
 
     const meta = getMetaClient();
     const result = meta.verifyWebhook(mode, challenge, verifyToken);
@@ -55,20 +59,14 @@ router.get('/verify', (req: Request, res: Response) => {
     if (result) {
       res.set('Content-Type', 'text/plain');
       res.send(result);
-      console.log('[Meta Webhook] Verification successful');
+      log.info('Verification successful');
     } else {
-      console.warn('[Meta Webhook] Verification failed - invalid token or mode');
-      res.status(403).json({
-        success: false,
-        error: 'Verification failed',
-      });
+      log.warn('Verification failed - invalid token or mode');
+      sendError(res, 403, 'Verification failed');
     }
   } catch (error) {
-    console.error('[Meta Webhook] Verification error:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+    log.error('Verification error:', error);
+    sendError(res, 500, error instanceof Error ? error.message : 'Unknown error');
   }
 });
 
@@ -78,7 +76,7 @@ router.get('/verify', (req: Request, res: Response) => {
  */
 router.post('/', async (req: Request, res: Response) => {
   try {
-    console.log('[Meta Webhook] Incoming webhook event');
+    log.info('Incoming webhook event');
 
     // Acknowledge receipt immediately
     res.json({ success: true });
@@ -89,7 +87,7 @@ router.post('/', async (req: Request, res: Response) => {
 
     // Reject if not whatsapp
     if (event.entry[0]?.changes[0]?.value?.messaging_product !== 'whatsapp') {
-      console.log('[Meta Webhook] Ignoring non-WhatsApp event');
+      log.debug('Ignoring non-WhatsApp event');
       return;
     }
 
@@ -114,7 +112,7 @@ router.post('/', async (req: Request, res: Response) => {
       }
     }
   } catch (error) {
-    console.error('[Meta Webhook] Error processing event:', error);
+    log.error('Error processing event:', error);
     // Still return 200 to prevent retry
     res.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
   }
@@ -136,7 +134,7 @@ async function handleIncomingMessage(message: any, phoneNumberId: string): Promi
       mediaId: message.image?.id || message.document?.id || message.audio?.id || message.video?.id,
     };
 
-    console.log(`[Meta Webhook] Message received from ${messageData.from}: ${messageData.content.substring(0, 50)}`);
+    log.info(`Message received from ${messageData.from}: ${messageData.content.substring(0, 50)}`);
 
     // In real implementation, this would:
     // 1. Route to NADIA message processor
@@ -150,7 +148,7 @@ async function handleIncomingMessage(message: any, phoneNumberId: string): Promi
       global.eventEmitter.emit('meta:message:received', messageData);
     }
   } catch (error) {
-    console.error('[Meta Webhook] Error handling message:', error);
+    log.error('Error handling message:', error);
   }
 }
 
@@ -159,7 +157,7 @@ async function handleIncomingMessage(message: any, phoneNumberId: string): Promi
  */
 async function handleStatusUpdate(status: any): Promise<void> {
   try {
-    console.log(`[Meta Webhook] Status update for message ${status.id}: ${status.status}`);
+    log.info(`Status update for message ${status.id}: ${status.status}`);
 
     const statusData = {
       messageId: status.id,
@@ -180,7 +178,7 @@ async function handleStatusUpdate(status: any): Promise<void> {
       global.eventEmitter.emit('meta:message:status_updated', statusData);
     }
   } catch (error) {
-    console.error('[Meta Webhook] Error handling status:', error);
+    log.error('Error handling status:', error);
   }
 }
 
@@ -194,32 +192,23 @@ router.post('/send', requireRole('owner'), async (req: Request, res: Response) =
     const { to, message, conversationId } = req.body;
 
     if (!to || !message) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required fields: to, message',
-      });
+      return sendError(res, 400, 'Missing required fields: to, message');
     }
 
     const meta = getMetaClient();
     const messageId = await meta.sendMessage(to, message);
 
-    res.json({
-      success: true,
-      data: {
-        conversationId,
-        messageId,
-        to,
-        message: message.substring(0, 100) + (message.length > 100 ? '...' : ''),
-        timestamp: new Date(),
-        channel: 'META_API',
-      },
+    sendSuccess(res, {
+      conversationId,
+      messageId,
+      to,
+      message: message.substring(0, 100) + (message.length > 100 ? '...' : ''),
+      timestamp: new Date(),
+      channel: 'META_API',
     });
   } catch (error) {
-    console.error('[Meta Webhook] Error sending message:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+    log.error('Error sending message:', error);
+    sendError(res, 500, error instanceof Error ? error.message : 'Unknown error');
   }
 });
 
@@ -233,32 +222,23 @@ router.post('/template', requireRole('owner'), async (req: Request, res: Respons
     const { to, template, parameters, conversationId } = req.body;
 
     if (!to || !template) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required fields: to, template',
-      });
+      return sendError(res, 400, 'Missing required fields: to, template');
     }
 
     const meta = getMetaClient();
     const messageId = await meta.sendTemplate(to, template, parameters);
 
-    res.json({
-      success: true,
-      data: {
-        conversationId,
-        messageId,
-        to,
-        template,
-        timestamp: new Date(),
-        channel: 'META_API',
-      },
+    sendSuccess(res, {
+      conversationId,
+      messageId,
+      to,
+      template,
+      timestamp: new Date(),
+      channel: 'META_API',
     });
   } catch (error) {
-    console.error('[Meta Webhook] Error sending template:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+    log.error('Error sending template:', error);
+    sendError(res, 500, error instanceof Error ? error.message : 'Unknown error');
   }
 });
 
@@ -276,21 +256,15 @@ router.get('/status', requireRole('owner'), async (req: Request, res: Response) 
       process.env.META_BUSINESS_ACCOUNT_ID &&
       process.env.META_PHONE_NUMBER_ID;
 
-    res.json({
-      success: true,
-      data: {
-        configured: !!isConfigured,
-        apiVersion: stats.apiVersion,
-        phoneNumberId: stats.phoneNumberId ? stats.phoneNumberId.substring(0, 5) + '***' : 'NOT_SET',
-        timestamp: new Date(),
-      },
+    sendSuccess(res, {
+      configured: !!isConfigured,
+      apiVersion: stats.apiVersion,
+      phoneNumberId: stats.phoneNumberId ? stats.phoneNumberId.substring(0, 5) + '***' : 'NOT_SET',
+      timestamp: new Date(),
     });
   } catch (error) {
-    console.error('[Meta Webhook] Error getting status:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+    log.error('Error getting status:', error);
+    sendError(res, 500, error instanceof Error ? error.message : 'Unknown error');
   }
 });
 
@@ -304,31 +278,22 @@ router.post('/image', requireRole('owner'), async (req: Request, res: Response) 
     const { to, imageUrl, conversationId } = req.body;
 
     if (!to || !imageUrl) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required fields: to, imageUrl',
-      });
+      return sendError(res, 400, 'Missing required fields: to, imageUrl');
     }
 
     const meta = getMetaClient();
     const messageId = await meta.sendImage(to, imageUrl);
 
-    res.json({
-      success: true,
-      data: {
-        conversationId,
-        messageId,
-        to,
-        imageUrl: imageUrl.substring(0, 50) + '...',
-        channel: 'META_API',
-      },
+    sendSuccess(res, {
+      conversationId,
+      messageId,
+      to,
+      imageUrl: imageUrl.substring(0, 50) + '...',
+      channel: 'META_API',
     });
   } catch (error) {
-    console.error('[Meta Webhook] Error sending image:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+    log.error('Error sending image:', error);
+    sendError(res, 500, error instanceof Error ? error.message : 'Unknown error');
   }
 });
 

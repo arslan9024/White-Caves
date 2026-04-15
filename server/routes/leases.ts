@@ -16,6 +16,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { sendSuccess, sendCreated, buildPagination } from '../utils/apiResponse';
 
 const router = Router();
 
@@ -65,11 +66,7 @@ router.get(
       prisma.lease.count({ where }),
     ]);
 
-    res.json({
-      success: true,
-      data: leases,
-      pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
-    });
+    sendSuccess(res, leases, 'OK', 200, buildPagination(page, pageSize, total));
   }),
 );
 
@@ -104,7 +101,7 @@ router.get(
       orderBy: { endDate: 'asc' },
     });
 
-    res.json({ success: true, data: leases, meta: { expiringWithinDays: days } });
+    sendSuccess(res, leases, 'OK', 200);
   }),
 );
 
@@ -136,11 +133,7 @@ router.get(
       throw new AppError('Access denied', 403);
     }
 
-    res.json({ success: true, data: lease });
-  }),
-);
-
-// ─── POST /api/leases — Create a new lease ───────────────────────────────────
+    sendSuccess(res, lease); ───────────────────────────────────
 router.post(
   '/',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -201,7 +194,7 @@ router.post(
     });
 
     logger.info('Lease created', { userId, leaseId: lease.id, propertyId, tenantId });
-    res.status(201).json({ success: true, data: lease });
+    sendCreated(res, lease);
   }),
 );
 
@@ -248,7 +241,7 @@ router.patch(
     const updated = await prisma.lease.update({ where: { id }, data: updateData });
 
     logger.info('Lease updated', { userId, leaseId: id, status: updated.status });
-    res.json({ success: true, data: updated });
+    sendSuccess(res, updated);
   }),
 );
 
@@ -277,7 +270,7 @@ router.delete(
     await prisma.lease.delete({ where: { id } });
 
     logger.info('Lease deleted', { userId, leaseId: id });
-    res.json({ success: true, message: 'Lease deleted' });
+    sendSuccess(res, null, 'Lease deleted');
   }),
 );
 

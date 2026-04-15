@@ -16,6 +16,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { sendSuccess, sendCreated, buildPagination } from '../utils/apiResponse';
 
 const router = Router();
 
@@ -65,11 +66,7 @@ router.get(
       prisma.maintenance.count({ where }),
     ]);
 
-    res.json({
-      success: true,
-      data: requests,
-      pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
-    });
+    sendSuccess(res, requests, 'OK', 200, buildPagination(page, pageSize, total));
   }),
 );
 
@@ -92,10 +89,7 @@ router.get(
       prisma.maintenance.count({ where: { ...baseWhere, priority: 'emergency' } }),
     ]);
 
-    res.json({
-      success: true,
-      data: { total, open, inProgress, completed, emergency },
-    });
+    sendSuccess(res, { total, open, inProgress, completed, emergency });
   }),
 );
 
@@ -123,11 +117,7 @@ router.get(
       throw new AppError('Access denied', 403);
     }
 
-    res.json({ success: true, data: request });
-  }),
-);
-
-// ─── POST /api/maintenance — Submit a new maintenance request ────────────────
+    sendSuccess(res, request); ────────────────
 router.post(
   '/',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -178,7 +168,7 @@ router.post(
       propertyId,
       priority: request.priority,
     });
-    res.status(201).json({ success: true, data: request });
+    sendCreated(res, request);
   }),
 );
 
@@ -236,7 +226,7 @@ router.patch(
     const updated = await prisma.maintenance.update({ where: { id }, data: updateData });
 
     logger.info('Maintenance request updated', { userId, requestId: id, status: updated.status });
-    res.json({ success: true, data: updated });
+    sendSuccess(res, updated);
   }),
 );
 
@@ -259,7 +249,7 @@ router.delete(
     await prisma.maintenance.delete({ where: { id } });
 
     logger.info('Maintenance request deleted', { userId, requestId: id });
-    res.json({ success: true, message: 'Maintenance request deleted' });
+    sendSuccess(res, null, 'Maintenance request deleted');
   }),
 );
 

@@ -15,6 +15,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { sendSuccess, sendCreated } from '../utils/apiResponse';
 
 const router = Router();
 
@@ -39,11 +40,7 @@ router.get(
       orderBy: { createdAt: 'desc' },
     });
 
-    res.json({ success: true, data: offers });
-  }),
-);
-
-// ─── GET /api/offers/received — Offers on user's properties (as seller) ──────
+    sendSuccess(res, offers);
 router.get(
   '/received',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -70,7 +67,7 @@ router.get(
       orderBy: { createdAt: 'desc' },
     });
 
-    res.json({ success: true, data: offers });
+    sendSuccess(res, offers);
   }),
 );
 
@@ -108,7 +105,7 @@ router.post(
     });
 
     logger.info('Offer submitted', { userId, offerId: offer.id, propertyId, amount });
-    res.status(201).json({ success: true, data: offer });
+    sendCreated(res, offer);
   }),
 );
 
@@ -152,7 +149,7 @@ router.patch(
     const updated = await prisma.offer.update({ where: { id }, data: updateData });
 
     logger.info('Offer updated', { userId, offerId: id, status: updated.status });
-    res.json({ success: true, data: updated });
+    sendSuccess(res, updated);
   }),
 );
 
@@ -171,7 +168,7 @@ router.delete(
     await prisma.offer.delete({ where: { id } });
 
     logger.info('Offer deleted', { userId, offerId: id });
-    res.json({ success: true, message: 'Offer deleted' });
+    sendSuccess(res, null, 'Offer deleted');
   }),
 );
 

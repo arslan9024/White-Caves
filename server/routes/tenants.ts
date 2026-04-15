@@ -11,6 +11,7 @@ import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { validateIdParam } from '../utils/validate';
 import { requirePermission, requireRole } from '../middleware/rbac';
+import { sendSuccess, sendCreated, buildPagination } from '../utils/apiResponse';
 
 const router = Router();
 
@@ -51,11 +52,7 @@ router.get(
       prisma.tenant.count({ where }),
     ]);
 
-    res.status(200).json({
-      success: true,
-      data: tenants,
-      pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
-    });
+    sendSuccess(res, tenants, 'OK', 200, buildPagination(pageNum, limit, total));
   })
 );
 
@@ -76,15 +73,12 @@ router.get(
     const statusCounts: Record<string, number> = {};
     byStatus.forEach((s) => { statusCounts[s.status] = s._count._all; });
 
-    res.status(200).json({
-      success: true,
-      data: {
+    sendSuccess(res, {
         total,
         byStatus: statusCounts,
         totalMonthlyRent: rentStats._sum.monthlyRent || 0,
         averageRent: Math.round(rentStats._avg.monthlyRent || 0),
-      },
-    });
+      });
   })
 );
 
@@ -103,7 +97,7 @@ router.get(
 
     const tenant = await prisma.tenant.findUnique({ where: { id: req.params.id } });
     if (!tenant) throw new AppError('Tenant not found', 404);
-    res.status(200).json({ success: true, data: tenant });
+    sendSuccess(res, tenant);
   })
 );
 
@@ -161,7 +155,7 @@ router.post(
       },
     });
 
-    res.status(201).json({ success: true, data: tenant });
+    sendCreated(res, tenant);
   })
 );
 
@@ -223,11 +217,7 @@ router.patch(
 
     const tenant = await prisma.tenant.update({ where: { id }, data });
 
-    res.status(200).json({ success: true, data: tenant });
-  })
-);
-
-// ─── DELETE /api/tenants/:id ────────────────────────────────────────────
+    sendSuccess(res, tenant); ────────────────────────────────────────────
 router.delete(
   '/:id',
   requireRole('owner', 'manager', 'admin'),
@@ -256,7 +246,7 @@ router.delete(
       });
     });
 
-    res.status(200).json({ success: true, message: `Tenant "${existing.name}" deleted` });
+    sendSuccess(res, null, `Tenant "${existing.name}" deleted`);
   })
 );
 
@@ -278,9 +268,7 @@ router.get(
       });
     }
 
-    res.status(200).json({
-      success: true,
-      data: property
+    sendSuccess(res, property
         ? [{
             id: `lease-${tenant.id}`,
             propertyId: property.id,
@@ -292,8 +280,7 @@ router.get(
             moveOutDate: tenant.moveOutDate,
             status: tenant.status,
           }]
-        : [],
-    });
+        : []);
   })
 );
 

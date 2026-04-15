@@ -13,6 +13,7 @@ import { sanitizeString } from '../utils/sanitize';
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { requirePermission } from '../middleware/rbac';
+import { sendSuccess, sendCreated, buildPagination } from '../utils/apiResponse';
 
 const router = Router();
 
@@ -83,11 +84,7 @@ router.get(
       prisma.property.count({ where }),
     ]);
 
-    res.status(200).json({
-      success: true,
-      data: properties,
-      pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
-    });
+    sendSuccess(res, properties, 'OK', 200, buildPagination(pageNum, limit, total));
   })
 );
 
@@ -120,9 +117,7 @@ router.get(
     const typeCounts: Record<string, number> = {};
     byType.forEach(t => { typeCounts[t.type] = t._count._all; });
 
-    res.status(200).json({
-      success: true,
-      data: {
+    sendSuccess(res, {
         total,
         byStatus: statusCounts,
         byType: typeCounts,
@@ -133,8 +128,7 @@ router.get(
           min: priceStats._min.price || 0,
           max: priceStats._max.price || 0,
         },
-      },
-    });
+      });
   })
 );
 
@@ -159,7 +153,7 @@ router.get(
 
     if (!property) throw new AppError('Property not found', 404);
 
-    res.status(200).json({ success: true, data: property });
+    sendSuccess(res, property);
   })
 );
 
@@ -216,7 +210,7 @@ router.post(
       },
     });
 
-    res.status(201).json({ success: true, data: property });
+    sendCreated(res, property);
   })
 );
 
@@ -289,7 +283,7 @@ router.patch(
       },
     });
 
-    res.status(200).json({ success: true, data: property });
+    sendSuccess(res, property);
   })
 );
 
@@ -327,7 +321,7 @@ router.delete(
       });
     });
 
-    res.status(200).json({ success: true, message: `Property "${existing.title}" deleted` });
+    sendSuccess(res, null, `Property "${existing.title}" deleted`);
   })
 );
 

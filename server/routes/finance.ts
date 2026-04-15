@@ -11,6 +11,7 @@ import { prisma } from '../database.js';
 import { validateIdParam } from '../utils/validate';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission } from '../middleware/rbac';
+import { sendSuccess, sendCreated, buildPagination } from '../utils/apiResponse';
 
 const router = Router();
 
@@ -39,9 +40,7 @@ router.get(
     const totalCommissionValue = totalCommissions._sum.amount || 0;
     const netProfit = totalRevenue - totalCommissionValue;
 
-    res.status(200).json({
-      success: true,
-      data: {
+    sendSuccess(res, {
         totalRevenue,
         totalExpenses: totalCommissionValue,
         netProfit,
@@ -56,8 +55,7 @@ router.get(
           count: c._count._all,
           value: c._sum.amount || 0,
         })),
-      },
-    });
+      });
   })
 );
 
@@ -99,11 +97,7 @@ router.get(
       prisma.commission.count({ where }),
     ]);
 
-    res.status(200).json({
-      success: true,
-      data: commissions,
-      pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
-    });
+    sendSuccess(res, commissions, 'OK', 200, buildPagination(pageNum, limit, total));
   })
 );
 
@@ -124,7 +118,7 @@ router.get(
 
     if (!commission) throw new AppError('Commission not found', 404);
 
-    res.status(200).json({ success: true, data: commission });
+    sendSuccess(res, commission);
   })
 );
 
@@ -199,7 +193,7 @@ router.post(
       },
     });
 
-    res.status(201).json({ success: true, data: commission });
+    sendCreated(res, commission);
   })
 );
 
@@ -268,11 +262,7 @@ router.patch(
       });
     }
 
-    res.status(200).json({ success: true, data: commission });
-  })
-);
-
-// ─── POST /api/finance/payments ─────────────────────────────────────────
+    sendSuccess(res, commission); ─────────────────────────────────────────
 // Bulk-pay approved commissions
 router.post(
   '/payments',
@@ -303,11 +293,7 @@ router.post(
       },
     });
 
-    res.status(200).json({
-      success: true,
-      data: { paidCount: result.count },
-      message: `${result.count} commission(s) paid successfully`,
-    });
+    sendSuccess(res, { paidCount: result.count }, `${result.count} commission(s) paid successfully`);
   })
 );
 

@@ -16,6 +16,7 @@ import {
 } from '../services/nadia/messageProcessor.js';
 import { getQueuedConversations, assignFromQueue } from '../services/nadia/queueManager.js';
 import { requirePermission } from '../middleware/rbac';
+import { sendSuccess, sendCreated } from '../utils/apiResponse';
 
 const router = Router();
 
@@ -96,10 +97,7 @@ router.post(
       },
     });
 
-    res.status(201).json({
-      success: true,
-      data: updated,
-    });
+    sendCreated(res, updated);
   })
 );
 
@@ -127,10 +125,7 @@ router.get(
       throw new AppError('Conversation not found', 404);
     }
 
-    res.status(200).json({
-      success: true,
-      data: conversation,
-    });
+    sendSuccess(res, conversation);
   })
 );
 
@@ -190,16 +185,12 @@ router.get(
       },
     });
 
-    res.status(200).json({
-      success: true,
-      data,
-      pagination: {
+    sendSuccess(res, data, 'OK', 200, {
         total,
-        offset: parseInt(offset as string) || 0,
-        limit: parseInt(limit as string) || 20,
-        hasMore: (parseInt(offset as string) || 0) + parseInt(limit as string || '20') < total,
-      },
-    });
+        page: 1,
+        pageSize: parseInt(limit as string) || 20,
+        totalPages: Math.ceil(total / (parseInt(limit as string) || 20)),
+      });
   })
 );
 
@@ -245,10 +236,7 @@ router.patch(
       },
     });
 
-    res.status(200).json({
-      success: true,
-      data: updated,
-    });
+    sendSuccess(res, updated);
   })
 );
 
@@ -285,10 +273,7 @@ router.delete(
       },
     });
 
-    res.status(200).json({
-      success: true,
-      data: closed,
-    });
+    sendSuccess(res, closed);
   })
 );
 
@@ -360,10 +345,7 @@ router.post(
       });
     }
 
-    res.status(201).json({
-      success: true,
-      data: message,
-    });
+    sendCreated(res, message);
   })
 );
 
@@ -389,15 +371,12 @@ router.get(
       where: { conversationId },
     });
 
-    res.status(200).json({
-      success: true,
-      data: messages,
-      pagination: {
+    sendSuccess(res, messages, 'OK', 200, {
         total,
-        limit: parseInt(limit as string) || 50,
-        offset: parseInt(offset as string) || 0,
-      },
-    });
+        page: 1,
+        pageSize: parseInt(limit as string) || 50,
+        totalPages: Math.ceil(total / (parseInt(limit as string) || 50)),
+      });
   })
 );
 
@@ -419,10 +398,7 @@ router.get(
       Math.min(parseInt(limit as string) || 10, 100)
     );
 
-    res.status(200).json({
-      success: true,
-      data: queued,
-    });
+    sendSuccess(res, queued);
   })
 );
 
@@ -447,10 +423,7 @@ router.patch(
       throw new AppError('Queue entry not found', 404);
     }
 
-    res.status(200).json({
-      success: true,
-      data: assigned,
-    });
+    sendSuccess(res, assigned);
   })
 );
 
@@ -470,16 +443,12 @@ router.get(
     const messageCount = await prisma.nadiaMessage.count();
     const queueCount = await prisma.nadiaConversationQueue.count();
 
-    res.status(200).json({
-      success: true,
-      status: 'operational',
-      data: {
+    sendSuccess(res, {
         conversationCount,
         messageCount,
         queueCount,
         timestamp: new Date().toISOString(),
-      },
-    });
+      });
   })
 );
 

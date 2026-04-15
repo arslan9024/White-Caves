@@ -13,6 +13,7 @@ import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission } from '../middleware/rbac';
+import { sendSuccess, sendCreated, buildPagination } from '../utils/apiResponse';
 
 const router = Router();
 
@@ -55,11 +56,7 @@ router.get(
       prisma.transaction.count({ where }),
     ]);
 
-    res.status(200).json({
-      success: true,
-      data: transactions,
-      pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
-    });
+    sendSuccess(res, transactions, 'OK', 200, buildPagination(pageNum, limit, total));
   })
 );
 
@@ -85,16 +82,13 @@ router.get(
     const statusCounts: Record<string, number> = {};
     byStatus.forEach((s) => { statusCounts[s.status] = s._count._all; });
 
-    res.status(200).json({
-      success: true,
-      data: {
+    sendSuccess(res, {
         total,
         byStatus: statusCounts,
         byType: byType.map((t) => ({ type: t.type, count: t._count._all, value: t._sum.amount || 0 })),
         totalValue: valueStats._sum.amount || 0,
         averageValue: Math.round(valueStats._avg.amount || 0),
-      },
-    });
+      });
   })
 );
 
@@ -116,7 +110,7 @@ router.get(
     });
 
     if (!transaction) throw new AppError('Transaction not found', 404);
-    res.status(200).json({ success: true, data: transaction });
+    sendSuccess(res, transaction);
   })
 );
 
@@ -175,7 +169,7 @@ router.post(
       },
     });
 
-    res.status(201).json({ success: true, data: transaction });
+    sendCreated(res, transaction);
   })
 );
 
@@ -246,11 +240,7 @@ router.patch(
       return updated;
     });
 
-    res.status(200).json({ success: true, data: transaction });
-  })
-);
-
-// ─── DELETE /api/transactions/:id ───────────────────────────────────────
+    sendSuccess(res, transaction); ───────────────────────────────────────
 router.delete(
   '/:id',
   requirePermission('process_payments'),
@@ -280,7 +270,7 @@ router.delete(
       });
     });
 
-    res.status(200).json({ success: true, message: 'Transaction deleted' });
+    sendSuccess(res, null, 'Transaction deleted');
   })
 );
 

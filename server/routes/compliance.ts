@@ -10,6 +10,7 @@ import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission, requireMinRole } from '../middleware/rbac';
+import { sendSuccess, sendCreated, buildPagination } from '../utils/apiResponse';
 
 const router = Router();
 
@@ -37,9 +38,7 @@ router.get(
     const agentCompliance = totalAgents > 0 ? Math.round((activeAgents / totalAgents) * 100) : 100;
     const overallScore = Math.round((docCompliance + agentCompliance) / 2);
 
-    res.status(200).json({
-      success: true,
-      data: {
+    sendSuccess(res, {
         compliant: overallScore >= 80,
         overallScore,
         metrics: {
@@ -49,8 +48,7 @@ router.get(
           privacyPolicy: 100, // Assumed compliant
         },
         lastAudit: new Date().toISOString(),
-      },
-    });
+      });
   })
 );
 
@@ -77,7 +75,7 @@ router.get(
       { id: 'contract-templates', name: 'Contract Templates (SPA/MOU)', category: 'legal', status: 'pending_review', dueDate: '2026-04-30' },
     ];
 
-    res.status(200).json({ success: true, data: requirements });
+    sendSuccess(res, requirements);
   })
 );
 
@@ -114,9 +112,7 @@ router.get(
       prisma.activity.count({ where }),
     ]);
 
-    res.status(200).json({
-      success: true,
-      data: logs.map((l) => ({
+    sendSuccess(res, logs.map((l) => ({
         id: l.id,
         type: l.type,
         action: l.action,
@@ -124,9 +120,7 @@ router.get(
         user: l.user ? { id: l.user.id, name: l.user.name, role: l.user.role } : null,
         timestamp: l.createdAt.toISOString(),
         metadata: l.metadata,
-      })),
-      pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
-    });
+      })), 'OK', 200, buildPagination(pageNum, limit, total));
   })
 );
 
@@ -168,15 +162,12 @@ router.post(
       },
     });
 
-    res.status(201).json({
-      success: true,
-      data: {
+    sendCreated(res, {
         id: activity.id,
         title,
         submittedAt: activity.createdAt.toISOString(),
         status: 'submitted',
-      },
-    });
+      });
   })
 );
 

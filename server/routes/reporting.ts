@@ -9,6 +9,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { requirePermission } from '../middleware/rbac';
+import { sendSuccess, buildPagination } from '../utils/apiResponse';
 
 const router = Router();
 
@@ -53,9 +54,7 @@ router.get(
       }),
     ]);
 
-    res.status(200).json({
-      success: true,
-      data: {
+    sendSuccess(res, {
         metrics: {
           totalLeads,
           hotLeads,
@@ -77,8 +76,7 @@ router.get(
           timestamp: a.createdAt.toISOString(),
           user: a.user?.name || 'System',
         })),
-      },
-    });
+      });
   })
 );
 
@@ -115,9 +113,7 @@ router.get(
       prisma.activity.count({ where }),
     ]);
 
-    res.status(200).json({
-      success: true,
-      data: activities.map((a) => ({
+    sendSuccess(res, activities.map((a) => ({
         id: a.id,
         type: a.type,
         action: a.action,
@@ -126,9 +122,7 @@ router.get(
         user: a.user?.name || 'System',
         lead: a.lead ? { id: a.lead.id, name: a.lead.name } : null,
         metadata: a.metadata,
-      })),
-      pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
-    });
+      })), 'OK', 200, buildPagination(pageNum, limit, total));
   })
 );
 
@@ -162,17 +156,14 @@ router.get(
       return map;
     };
 
-    res.status(200).json({
-      success: true,
-      data: {
+    sendSuccess(res, {
         leads: { byStatus: toMap(leadsByStatus, 'status'), bySource: toMap(leadsBySource, 'source') },
         properties: { byStatus: toMap(propertiesByStatus, 'status'), byType: toMap(propertiesByType, 'type') },
         commissions: commissionsByStatus.map((c) => ({
           status: c.status, count: c._count._all, totalValue: c._sum.amount || 0,
         })),
         portfolioValue: portfolioValue._sum.price || 0,
-      },
-    });
+      });
   })
 );
 
@@ -201,9 +192,7 @@ router.get(
       prisma.commission.aggregate({ where: { status: 'paid' }, _avg: { amount: true } }),
     ]);
 
-    res.status(200).json({
-      success: true,
-      data: {
+    sendSuccess(res, {
         period: '30d',
         kpis: {
           newLeads: newLeads30d,
@@ -212,8 +201,7 @@ router.get(
           totalRevenue: totalRevenue._sum.amount || 0,
           avgDealSize: Math.round(avgDealSize._avg.amount || 0),
         },
-      },
-    });
+      });
   })
 );
 

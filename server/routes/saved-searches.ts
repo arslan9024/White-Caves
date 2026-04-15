@@ -15,6 +15,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { sendSuccess, sendCreated } from '../utils/apiResponse';
 
 const router = Router();
 
@@ -30,10 +31,7 @@ router.get(
       orderBy: { createdAt: 'desc' },
     });
 
-    res.status(200).json({
-      success: true,
-      data: searches,
-    });
+    sendSuccess(res, searches);
   }),
 );
 
@@ -74,10 +72,7 @@ router.post(
 
     logger.info('Saved search created', { userId, searchId: search.id, name: search.name });
 
-    res.status(201).json({
-      success: true,
-      data: search,
-    });
+    sendCreated(res, search);
   }),
 );
 
@@ -118,10 +113,7 @@ router.patch(
       data: updateData,
     });
 
-    res.status(200).json({
-      success: true,
-      data: updated,
-    });
+    sendSuccess(res, updated);
   }),
 );
 
@@ -141,10 +133,7 @@ router.delete(
 
     logger.info('Saved search deleted', { userId, searchId: id });
 
-    res.status(200).json({
-      success: true,
-      message: 'Saved search deleted',
-    });
+    sendSuccess(res, null, 'Saved search deleted');
   }),
 );
 
@@ -169,14 +158,11 @@ router.post(
       data: { matchCount: newMatchCount, lastChecked: new Date() },
     });
 
-    res.status(200).json({
-      success: true,
-      data: {
+    sendSuccess(res, {
         matchCount: newMatchCount,
         previousCount,
         newMatches: Math.max(0, newMatchCount - previousCount),
-      },
-    });
+      });
   }),
 );
 

@@ -15,6 +15,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { sendSuccess, sendCreated, buildPagination } from '../utils/apiResponse';
 
 const router = Router();
 
@@ -47,11 +48,7 @@ router.get(
       prisma.viewing.count({ where }),
     ]);
 
-    res.json({
-      success: true,
-      data: viewings,
-      pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
-    });
+    sendSuccess(res, viewings, 'OK', 200, buildPagination(page, pageSize, total));
   }),
 );
 
@@ -77,11 +74,7 @@ router.get(
       take: 20,
     });
 
-    res.json({ success: true, data: viewings });
-  }),
-);
-
-// ─── POST /api/viewings — Schedule a new viewing ────────────────────────────
+    sendSuccess(res, viewings); ────────────────────────────
 router.post(
   '/',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -118,7 +111,7 @@ router.post(
     });
 
     logger.info('Viewing scheduled', { userId, viewingId: viewing.id, propertyId });
-    res.status(201).json({ success: true, data: viewing });
+    sendCreated(res, viewing);
   }),
 );
 
@@ -156,7 +149,7 @@ router.patch(
     const updated = await prisma.viewing.update({ where: { id }, data: updateData });
 
     logger.info('Viewing updated', { userId, viewingId: id, status: updated.status });
-    res.json({ success: true, data: updated });
+    sendSuccess(res, updated);
   }),
 );
 
@@ -175,7 +168,7 @@ router.delete(
     await prisma.viewing.delete({ where: { id } });
 
     logger.info('Viewing deleted', { userId, viewingId: id });
-    res.json({ success: true, message: 'Viewing deleted' });
+    sendSuccess(res, null, 'Viewing deleted');
   }),
 );
 

@@ -16,6 +16,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { sendSuccess, sendCreated, buildPagination } from '../utils/apiResponse';
 
 const router = Router();
 
@@ -59,16 +60,7 @@ router.get(
       prisma.favorite.count({ where: { userId } }),
     ]);
 
-    res.status(200).json({
-      success: true,
-      data: favorites,
-      pagination: {
-        page,
-        pageSize,
-        total,
-        totalPages: Math.ceil(total / pageSize),
-      },
-    });
+    sendSuccess(res, favorites, 'OK', 200, buildPagination(page, pageSize, total));
   }),
 );
 
@@ -84,10 +76,7 @@ router.get(
       select: { propertyId: true },
     });
 
-    res.status(200).json({
-      success: true,
-      data: favorites.map(f => f.propertyId),
-    });
+    sendSuccess(res, favorites.map(f => f.propertyId));
   }),
 );
 
@@ -107,10 +96,7 @@ router.get(
       },
     });
 
-    res.status(200).json({
-      success: true,
-      data: { isFavorited: !!favorite },
-    });
+    sendSuccess(res, { isFavorited: !!favorite });
   }),
 );
 
@@ -155,10 +141,7 @@ router.post(
 
     logger.info('Property favorited', { userId, propertyId, propertyTitle: property.title });
 
-    res.status(201).json({
-      success: true,
-      data: favorite,
-    });
+    sendCreated(res, favorite);
   }),
 );
 
@@ -191,10 +174,7 @@ router.delete(
 
     logger.info('Favorite removed', { userId, propertyId });
 
-    res.status(200).json({
-      success: true,
-      message: 'Favorite removed',
-    });
+    sendSuccess(res, null, 'Favorite removed');
   }),
 );
 

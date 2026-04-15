@@ -14,6 +14,7 @@ import { JWT_SECRET, JWT_EXPIRES_SECONDS, BCRYPT_ROUNDS } from '../config/env';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import logger from '../utils/logger.js';
+import { sendSuccess, sendCreated } from '../utils/apiResponse';
 
 const router = Router();
 
@@ -95,9 +96,7 @@ router.post(
       },
     });
 
-    res.status(200).json({
-      success: true,
-      data: {
+    sendSuccess(res, {
         token,
         user: {
           id: user.id,
@@ -107,9 +106,7 @@ router.post(
           department: user.department,
           photoUrl: user.photoUrl,
         },
-      },
-      requiresTwoFactor: false, // 2FA can be enabled later
-    });
+      });
   })
 );
 
@@ -190,9 +187,7 @@ router.post(
       },
     });
 
-    res.status(201).json({
-      success: true,
-      data: {
+    sendCreated(res, {
         token,
         user: {
           id: user.id,
@@ -201,8 +196,7 @@ router.post(
           role: user.role,
           department: user.department,
         },
-      },
-    });
+      });
   })
 );
 
@@ -230,10 +224,8 @@ router.post(
         { expiresIn: JWT_EXPIRES_SECONDS }
       );
 
-      return res.status(200).json({
-        success: true,
-        data: { token, verified: true },
-      });
+      sendSuccess(res, { token, verified: true });
+      return;
     }
 
     // TODO: Implement real 2FA verification (Twilio SMS or TOTP)
@@ -276,7 +268,7 @@ router.get(
 
     if (!user) throw new AppError('User not found', 404);
 
-    res.status(200).json({ success: true, data: user });
+    sendSuccess(res, user);
   })
 );
 
@@ -319,7 +311,7 @@ router.patch(
       },
     });
 
-    res.status(200).json({ success: true, data: user });
+    sendSuccess(res, user);
   })
 );
 
@@ -376,7 +368,7 @@ router.post(
       },
     });
 
-    res.status(200).json({ success: true, message: 'Logged out successfully' });
+    sendSuccess(res, null, 'Logged out successfully');
   })
 );
 
@@ -429,7 +421,7 @@ router.put(
       data: { passwordHash: newHash },
     });
 
-    res.status(200).json({ success: true, message: 'Password updated successfully' });
+    sendSuccess(res, null, 'Password updated successfully');
   })
 );
 

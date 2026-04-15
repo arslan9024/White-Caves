@@ -9,6 +9,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { requirePermission } from '../middleware/rbac';
+import { sendSuccess, buildPagination } from '../utils/apiResponse';
 
 const router = Router();
 
@@ -38,16 +39,13 @@ router.get(
       }),
     ]);
 
-    res.status(200).json({
-      success: true,
-      data: {
+    sendSuccess(res, {
         stats: { leads: leadCount, properties: propertyCount, agents: agentCount, activities: activityCount, hotLeads },
         recentActivity: recentActivity.map((a) => ({
           id: a.id, type: a.type, action: a.action, description: a.description,
           user: a.user?.name || 'System', timestamp: a.createdAt.toISOString(),
         })),
-      },
-    });
+      });
   })
 );
 
@@ -68,9 +66,7 @@ router.get(
       prisma.commission.aggregate({ _sum: { amount: true }, _avg: { amount: true }, _count: { _all: true } }),
     ]);
 
-    res.status(200).json({
-      success: true,
-      data: {
+    sendSuccess(res, {
         leads: {
           bySource: leadsBySource.map((s) => ({ source: s.source, count: s._count._all })),
           byStatus: leadsByStatus.map((s) => ({ status: s.status, count: s._count._all })),
@@ -83,8 +79,7 @@ router.get(
           totalValue: commissionStats._sum.amount || 0,
           averageValue: Math.round(commissionStats._avg.amount || 0),
         },
-      },
-    });
+      });
   })
 );
 
@@ -102,7 +97,8 @@ router.get(
 
     const { q } = req.query;
     if (!q || (q as string).trim().length < 2) {
-      return res.status(200).json({ success: true, data: { leads: [], properties: [], agents: [] } });
+      sendSuccess(res, { leads: [], properties: [], agents: [] });
+      return;
     }
 
     const term = (q as string).trim();
@@ -142,11 +138,7 @@ router.get(
       }),
     ]);
 
-    res.status(200).json({
-      success: true,
-      data: { leads, properties, agents },
-      pagination: { totalResults: leads.length + properties.length + agents.length },
-    });
+    sendSuccess(res, { leads, properties, agents });
   })
 );
 
@@ -259,12 +251,7 @@ router.get(
       res.setHeader('Content-Disposition', `attachment; filename="${entity}-export.csv"`);
       res.status(200).send(csvContent);
     } else {
-      res.status(200).json({
-        success: true,
-        data,
-        meta: { entity, format, count: data.length, exportedAt: new Date().toISOString() },
-        pagination: { page: pageNum, pageSize, total, totalPages: Math.ceil(total / pageSize) },
-      });
+      sendSuccess(res, data, 'OK', 200, buildPagination(pageNum, pageSize, total));
     }
   })
 );

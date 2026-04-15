@@ -11,6 +11,7 @@ import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { createLogger } from '../utils/logger';
 import { requirePermission, requireMinRole } from '../middleware/rbac';
+import { sendSuccess, buildPagination } from '../utils/apiResponse';
 
 const router = Router();
 const log = createLogger('Communications');
@@ -97,15 +98,12 @@ router.post(
       },
     });
 
-    res.status(200).json({
-      success: true,
-      data: {
+    sendSuccess(res, {
         id: activity.id,
         status: 'sent',
         channel: resolvedChannel,
         sentAt: activity.createdAt.toISOString(),
-      },
-    });
+      });
   })
 );
 
@@ -152,18 +150,14 @@ router.get(
       prisma.activity.count({ where }),
     ]);
 
-    res.status(200).json({
-      success: true,
-      data: messages.map((m) => ({
+    sendSuccess(res, messages.map((m) => ({
         id: m.id,
         type: m.action,
         description: m.description,
         sender: m.user?.name || 'System',
         timestamp: m.createdAt.toISOString(),
         metadata: m.metadata,
-      })),
-      pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
-    });
+      })), 'OK', 200, buildPagination(pageNum, limit, total));
   })
 );
 
@@ -219,7 +213,7 @@ router.get(
         lastContactAt: c.createdAt.toISOString(),
       }));
 
-    res.status(200).json({ success: true, data: conversations });
+    sendSuccess(res, conversations);
   })
 );
 
@@ -229,14 +223,11 @@ router.get(
   '/status',
   requirePermission('view_dashboard'),
   asyncHandler(async (req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: {
+    sendSuccess(res, {
         whatsapp: { connected: false, status: 'not_configured' },
         email: { connected: true, status: 'active' },
         sms: { connected: false, status: 'not_configured' },
-      },
-    });
+      });
   })
 );
 
