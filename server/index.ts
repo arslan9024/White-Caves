@@ -16,6 +16,7 @@ import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.
 import authMiddleware from './middleware/auth.js';
 import { CORS_ORIGINS, WHATSAPP_WEBHOOK_SECRET } from './config/env.js';
 import { apiLimiter, authLimiter, registerLimiter, passwordLimiter, strictLimiter } from './middleware/rateLimiter.js';
+import { auditMutations } from './middleware/auditLogger.js';
 import logger, { createLogger } from './utils/logger.js';
 
 // Route imports (ESM-compatible)
@@ -39,6 +40,7 @@ import viewingsRoutes from './routes/viewings.js';
 import offersRoutes from './routes/offers.js';
 import leasesRoutes from './routes/leases.js';
 import maintenanceRoutes from './routes/maintenance.js';
+import uploadsRoutes from './routes/uploads.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 
 // Load environment variables
@@ -93,11 +95,13 @@ app.use(express.urlencoded({ limit: '1mb', extended: true }));
 // Content-Type validation for mutation endpoints
 // Exempt paths that accept non-JSON bodies (file uploads, webhooks).
 const NON_JSON_PATHS = new Set(['/api/whatsapp/webhook']);
+const NON_JSON_PREFIXES = ['/api/uploads'];
 app.use('/api', (req: Request, res: Response, next) => {
   if (
     ['POST', 'PUT', 'PATCH'].includes(req.method) &&
     !req.is('json') &&
-    !NON_JSON_PATHS.has(req.path)
+    !NON_JSON_PATHS.has(req.path) &&
+    !NON_JSON_PREFIXES.some(prefix => req.path.startsWith(prefix.replace('/api', '')))
   ) {
     return res.status(415).json({
       success: false,
@@ -172,6 +176,9 @@ if (process.env.NODE_ENV === 'production') {
   logger.info(`Auth middleware enabled for NODE_ENV=${process.env.NODE_ENV}`);
 }
 
+// Audit logging — log all state-changing requests (POST/PUT/PATCH/DELETE)
+app.use('/api', auditMutations);
+
 // Leads API (Clara - Lead Manager)
 app.use('/api/leads', leadsRoutes);
 
@@ -222,6 +229,9 @@ app.use('/api/leases', leasesRoutes);
 
 // Maintenance API (maintenance requests for landlords and tenants)
 app.use('/api/maintenance', maintenanceRoutes);
+
+// File Uploads API (avatars, property photos, documents)
+app.use('/api/uploads', uploadsRoutes);
 
 // WhatsApp Webhook (public endpoint — requires webhook secret for verification)
 app.post('/api/whatsapp/webhook', asyncHandler(async (req: Request, res: Response) => {
