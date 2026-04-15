@@ -10,6 +10,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
+import { sendSuccess, sendCreated, buildPagination } from '../utils/apiResponse';
 
 // Unified lead status enum — single source of truth for all lead endpoints
 const VALID_LEAD_STATUSES = ['new', 'contacted', 'qualified', 'viewing', 'offered', 'negotiating', 'won', 'lost'] as const;
@@ -93,16 +94,7 @@ router.get(
       prisma.lead.count({ where }),
     ]);
 
-    res.status(200).json({
-      success: true,
-      data: leads,
-      pagination: {
-        page: pageNum,
-        pageSize: limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-      },
-    });
+    sendSuccess(res, leads, 'OK', 200, buildPagination(pageNum, limit, total));
   })
 );
 
@@ -130,15 +122,12 @@ router.get(
     const sourceCounts: Record<string, number> = {};
     bySource.forEach(s => { sourceCounts[s.source] = s._count._all; });
 
-    res.status(200).json({
-      success: true,
-      data: {
-        total,
-        byStatus: statusCounts,
-        bySource: sourceCounts,
-        averageScore: Math.round(avgScore._avg.score || 0),
-        averageBudget: Math.round(avgScore._avg.budget || 0),
-      },
+    sendSuccess(res, {
+      total,
+      byStatus: statusCounts,
+      bySource: sourceCounts,
+      averageScore: Math.round(avgScore._avg.score || 0),
+      averageBudget: Math.round(avgScore._avg.budget || 0),
     });
   })
 );
@@ -162,10 +151,7 @@ router.get(
     const conversionRate = total > 0 ? Math.round((won / total) * 100) : 0;
     const lossRate = total > 0 ? Math.round((lost / total) * 100) : 0;
 
-    res.status(200).json({
-      success: true,
-      data: { total, won, lost, active: total - won - lost, conversionRate, lossRate },
-    });
+    sendSuccess(res, { total, won, lost, active: total - won - lost, conversionRate, lossRate });
   })
 );
 
@@ -196,7 +182,7 @@ router.get(
 
     if (!lead) throw new AppError('Lead not found', 404);
 
-    res.status(200).json({ success: true, data: lead });
+    sendSuccess(res, lead);
   })
 );
 
@@ -250,7 +236,7 @@ router.post(
       },
     });
 
-    res.status(201).json({ success: true, data: lead });
+    sendCreated(res, lead, 'Lead created');
   })
 );
 
@@ -326,7 +312,7 @@ router.patch(
       },
     });
 
-    res.status(200).json({ success: true, data: lead });
+    sendSuccess(res, lead);
   })
 );
 
@@ -363,7 +349,7 @@ router.delete(
       });
     });
 
-    res.status(200).json({ success: true, message: `Lead "${existing.name}" deleted` });
+    sendSuccess(res, null, `Lead "${existing.name}" deleted`);
   })
 );
 
@@ -407,7 +393,7 @@ router.post(
 
     await prisma.lead.update({ where: { id }, data: { lastContact: new Date() } });
 
-    res.status(201).json({ success: true, data: activity });
+    sendCreated(res, activity, 'Activity created');
   })
 );
 
@@ -432,10 +418,7 @@ router.get(
       prisma.activity.count({ where: { leadId: req.params.id } }),
     ]);
 
-    res.status(200).json({
-      success: true, data: activities,
-      pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
-    });
+    sendSuccess(res, activities, 'OK', 200, buildPagination(pageNum, limit, total));
   })
 );
 
@@ -468,7 +451,7 @@ router.post(
       })),
     });
 
-    res.status(201).json({ success: true, data: { imported: results.count, total: leads.length } });
+    sendCreated(res, { imported: results.count, total: leads.length }, 'Bulk import complete');
   })
 );
 

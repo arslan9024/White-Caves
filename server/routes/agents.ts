@@ -9,6 +9,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { validateIdParam } from '../utils/validate';
+import { sendSuccess, buildPagination } from '../utils/apiResponse';
 import { requirePermission, requireRole } from '../middleware/rbac';
 
 const router = Router();
@@ -111,11 +112,7 @@ router.get(
       };
     });
 
-    res.status(200).json({
-      success: true,
-      data: enriched,
-      pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
-    });
+    sendSuccess(res, enriched, 'OK', 200, buildPagination(pageNum, limit, total));
   })
 );
 
@@ -143,10 +140,7 @@ router.get(
     const deptCounts: Record<string, number> = {};
     byDepartment.forEach(d => { deptCounts[d.department || 'Unassigned'] = d._count._all; });
 
-    res.status(200).json({
-      success: true,
-      data: { total, active: online, byDepartment: deptCounts },
-    });
+    sendSuccess(res, { total, active: online, byDepartment: deptCounts });
   })
 );
 
@@ -186,7 +180,7 @@ router.get(
 
     if (!agent) throw new AppError('Agent not found', 404);
 
-    res.status(200).json({ success: true, data: agent });
+    sendSuccess(res, agent);
   })
 );
 
@@ -226,25 +220,22 @@ router.get(
 
     const conversionRate = totalLeads > 0 ? Math.round((wonLeads / totalLeads) * 100) : 0;
 
-    res.status(200).json({
-      success: true,
-      data: {
-        agent: { id: agent.id, name: agent.name, email: agent.email, department: agent.department },
-        leads: {
-          total: totalLeads, won: wonLeads, lost: lostLeads,
-          active: totalLeads - wonLeads - lostLeads,
-          conversionRate,
-        },
-        commissions: {
-          total: totalCommissions._count._all,
-          totalValue: totalCommissions._sum.amount || 0,
-          paidValue: paidCommissions._sum.amount || 0,
-          pendingValue: (totalCommissions._sum.amount || 0) - (paidCommissions._sum.amount || 0),
-        },
-        performanceScore: Math.min(100, Math.round(
-          (conversionRate * 0.4) + (wonLeads * 3) + 30
-        )),
+    sendSuccess(res, {
+      agent: { id: agent.id, name: agent.name, email: agent.email, department: agent.department },
+      leads: {
+        total: totalLeads, won: wonLeads, lost: lostLeads,
+        active: totalLeads - wonLeads - lostLeads,
+        conversionRate,
       },
+      commissions: {
+        total: totalCommissions._count._all,
+        totalValue: totalCommissions._sum.amount || 0,
+        paidValue: paidCommissions._sum.amount || 0,
+        pendingValue: (totalCommissions._sum.amount || 0) - (paidCommissions._sum.amount || 0),
+      },
+      performanceScore: Math.min(100, Math.round(
+        (conversionRate * 0.4) + (wonLeads * 3) + 30
+      )),
     });
   })
 );
@@ -286,11 +277,7 @@ router.get(
       prisma.commission.count({ where }),
     ]);
 
-    res.status(200).json({
-      success: true,
-      data: commissions,
-      pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
-    });
+    sendSuccess(res, commissions, 'OK', 200, buildPagination(pageNum, limit, total));
   })
 );
 

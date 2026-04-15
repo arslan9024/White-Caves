@@ -475,6 +475,58 @@ model Maintenance {
   @@index([createdAt])
 }
 
+// ─── NOTIFICATION ────────────────────────────────────────────────────────
+
+model Notification {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  type        String   // lead_assigned, viewing_confirmed, offer_received, offer_accepted, offer_rejected, commission_approved, commission_paid, lease_expiry, maintenance_update, system, custom
+  title       String
+  message     String
+  data        Json?    // Additional payload (leadId, propertyId, offerId, etc.)
+  channel     String   @default("in_app") // in_app, email, push, sms
+  priority    String   @default("normal") // low, normal, high, urgent
+  read        Boolean  @default(false)
+  readAt      DateTime?
+  dismissed   Boolean  @default(false)
+  actionUrl   String?  // Deep link into the app (e.g. /leads/abc123)
+  expiresAt   DateTime? // Auto-dismiss after this time
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  userId      String   @db.ObjectId
+
+  @@index([userId])
+  @@index([userId, read])
+  @@index([type])
+  @@index([createdAt])
+  @@index([expiresAt])
+}
+
+// ─── AUDIT LOG ──────────────────────────────────────────────────────────
+
+model AuditLog {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  action      String   // create, update, delete, login, logout, export, role_change
+  entity      String   // user, property, lead, transaction, commission, lease, etc.
+  entityId    String?  // ID of the affected entity
+  userId      String?  @db.ObjectId // Who performed the action (null for system actions)
+  userEmail   String?  // Denormalized for query convenience
+  changes     Json?    // { field: { old, new } } for update actions
+  metadata    Json?    // Extra context (IP address, user agent, request path, etc.)
+  ipAddress   String?
+  userAgent   String?
+  duration    Int?     // Request duration in ms
+  statusCode  Int?     // HTTP response status
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([entity])
+  @@index([entity, entityId])
+  @@index([action])
+  @@index([createdAt])
+}
+
 // ─── JOB APPLICATION ────────────────────────────────────────────────────
 
 model JobApplication {

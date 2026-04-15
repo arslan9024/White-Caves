@@ -39,7 +39,11 @@ import viewingsRoutes from './routes/viewings.js';
 import offersRoutes from './routes/offers.js';
 import leasesRoutes from './routes/leases.js';
 import maintenanceRoutes from './routes/maintenance.js';
+import notificationsRoutes from './routes/notifications.js';
+import auditRoutes from './routes/audit.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
+import { auditService } from './services/auditService.js';
+import { scheduler } from './jobs/scheduler.js';
 
 // Load environment variables
 dotenv.config();
@@ -223,6 +227,15 @@ app.use('/api/leases', leasesRoutes);
 // Maintenance API (maintenance requests for landlords and tenants)
 app.use('/api/maintenance', maintenanceRoutes);
 
+// Notifications API (in-app notifications, unread counts, mark as read)
+app.use('/api/notifications', notificationsRoutes);
+
+// Audit Log API (admin-only — compliance trail for all mutations)
+app.use('/api/audit', auditRoutes);
+
+// Audit Logger Middleware — logs all POST/PUT/PATCH/DELETE on /api
+app.use('/api', auditService.middleware());
+
 // WhatsApp Webhook (public endpoint — requires webhook secret for verification)
 app.post('/api/whatsapp/webhook', asyncHandler(async (req: Request, res: Response) => {
   if (!WHATSAPP_WEBHOOK_SECRET) {
@@ -381,7 +394,9 @@ app.get('/api/system/health', authMiddleware, requirePermission('view_system_hea
         database: 'operational',
         whatsapp: 'not_configured',
         email: 'not_configured',
+        scheduler: 'operational',
       },
+      scheduledJobs: scheduler.getStats(),
       version: '1.0.0',
       environment: process.env.NODE_ENV || 'development',
       timestamp: new Date().toISOString(),
@@ -480,6 +495,9 @@ const startServer = async () => {
     logger.info(`Server started on ${host}`);
     logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
     logger.info(`API Base: ${host}/api`);
+
+    // Start scheduled jobs (cleanup, reminders, health checks)
+    scheduler.start();
   });
 
   return server;
@@ -509,7 +527,9 @@ process.on('uncaughtException', (error: Error) => {
 // Graceful shutdown
 const gracefulShutdown = async (signal: string) => {
   logger.info(`${signal} received — shutting down gracefully`);
-  // 1. Stop accepting new connections
+  // 1. Stop scheduled jobs
+  scheduler.stop();
+  // 2. Stop accepting new connections
   if (httpServer) {
     httpServer.close(() => {
       logger.info('HTTP server closed — no new connections');
