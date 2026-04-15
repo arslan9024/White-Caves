@@ -14,7 +14,9 @@ import { Router, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import logger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('SavedSearches');
 
 const router = Router();
 
@@ -72,7 +74,7 @@ router.post(
       },
     });
 
-    logger.info('Saved search created', { userId, searchId: search.id, name: search.name });
+    log.info('Saved search created', { userId, searchId: search.id, name: search.name });
 
     res.status(201).json({
       success: true,
@@ -139,7 +141,7 @@ router.delete(
 
     await prisma.savedSearch.delete({ where: { id } });
 
-    logger.info('Saved search deleted', { userId, searchId: id });
+    log.info('Saved search deleted', { userId, searchId: id });
 
     res.status(200).json({
       success: true,

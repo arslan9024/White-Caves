@@ -16,6 +16,9 @@ const VALID_LEAD_STATUSES = ['new', 'contacted', 'qualified', 'viewing', 'offere
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { requirePermission, requireRole } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Leads');
 
 const router = Router();
 

@@ -13,6 +13,9 @@ import { sanitizeString } from '../utils/sanitize';
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Properties');
 
 const router = Router();
 

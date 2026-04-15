@@ -10,6 +10,9 @@ import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission, requireMinRole } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Compliance');
 
 const router = Router();
 
@@ -167,6 +170,8 @@ router.post(
         },
       },
     });
+
+    log.info('Compliance report submitted', { reportId: activity.id, title: sanitizedTitle, submittedBy: req.user?.email });
 
     res.status(201).json({
       success: true,

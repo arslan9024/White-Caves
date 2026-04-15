@@ -11,6 +11,9 @@ import { prisma } from '../database.js';
 import { validateIdParam } from '../utils/validate';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Finance');
 
 const router = Router();
 
@@ -199,6 +202,8 @@ router.post(
       },
     });
 
+    log.info('Commission created', { commissionId: commission.id, amount: parsedAmount, agentId, type: type || 'sale', createdBy: req.user?.email });
+
     res.status(201).json({ success: true, data: commission });
   })
 );
@@ -268,6 +273,8 @@ router.patch(
       });
     }
 
+    log.info('Commission updated', { commissionId: id, statusChanged, updatedBy: req.user?.email });
+
     res.status(200).json({ success: true, data: commission });
   })
 );
@@ -302,6 +309,8 @@ router.post(
         userId: req.user?.id || null,
       },
     });
+
+    log.info('Bulk commission payment processed', { paidCount: result.count, commissionIds, processedBy: req.user?.email });
 
     res.status(200).json({
       success: true,

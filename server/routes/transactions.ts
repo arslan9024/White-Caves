@@ -13,6 +13,9 @@ import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Transactions');
 
 const router = Router();
 
@@ -175,6 +178,8 @@ router.post(
       },
     });
 
+    log.info('Transaction created', { transactionId: transaction.id, type: transaction.type, amount: transaction.amount, createdBy: req.user?.email });
+
     res.status(201).json({ success: true, data: transaction });
   })
 );
@@ -246,6 +251,8 @@ router.patch(
       return updated;
     });
 
+    log.info('Transaction updated', { transactionId: id, fields: Object.keys(req.body), updatedBy: req.user?.email });
+
     res.status(200).json({ success: true, data: transaction });
   })
 );
@@ -279,6 +286,8 @@ router.delete(
         },
       });
     });
+
+    log.info('Transaction deleted', { transactionId: id, amount: existing.amount, deletedBy: req.user?.email });
 
     res.status(200).json({ success: true, message: 'Transaction deleted' });
   })

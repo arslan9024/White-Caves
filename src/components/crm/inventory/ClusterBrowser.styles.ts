@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import { colors } from '../../../styles/theme/colors';
-import { typography } from '../../../../styles/theme/typography';
-import { transitions } from '../../../../styles/theme/transitions';
-import { radius } from '../../../../styles/theme/radius';
-import { spacing } from '../../../../styles/theme/spacing';
+import { typography } from '../../../styles/theme/typography';
+import { transitions } from '../../../styles/theme/transitions';
+import { radius } from '../../../styles/theme/radius';
+import { spacing } from '../../../styles/theme/spacing';
 
 export const ClusterBrowserContainer = styled.div`
   background: var(--bg-card);

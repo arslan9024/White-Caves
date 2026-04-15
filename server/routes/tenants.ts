@@ -11,6 +11,9 @@ import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { validateIdParam } from '../utils/validate';
 import { requirePermission, requireRole } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Tenants');
 
 const router = Router();
 
@@ -161,6 +164,8 @@ router.post(
       },
     });
 
+    log.info('Tenant created', { tenantId: tenant.id, name: sanitizedName, createdBy: req.user?.email });
+
     res.status(201).json({ success: true, data: tenant });
   })
 );
@@ -223,6 +228,8 @@ router.patch(
 
     const tenant = await prisma.tenant.update({ where: { id }, data });
 
+    log.info('Tenant updated', { tenantId: id, fields: Object.keys(data), updatedBy: req.user?.email });
+
     res.status(200).json({ success: true, data: tenant });
   })
 );
@@ -255,6 +262,8 @@ router.delete(
         },
       });
     });
+
+    log.info('Tenant deleted', { tenantId: id, name: existing.name, deletedBy: req.user?.email });
 
     res.status(200).json({ success: true, message: `Tenant "${existing.name}" deleted` });
   })

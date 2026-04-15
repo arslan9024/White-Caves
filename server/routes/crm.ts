@@ -9,6 +9,9 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('CRM');
 
 const router = Router();
 
@@ -175,6 +178,8 @@ router.get(
     const pageNum = Math.max(1, parseInt((req.query.page as string) || '1', 10) || 1);
     const pageSize = Math.min(MAX_EXPORT_BATCH, Math.max(1, parseInt((req.query.pageSize as string) || '500', 10) || 500));
     const skip = (pageNum - 1) * pageSize;
+
+    log.info('CRM data export initiated', { entity, format, page: pageNum, pageSize, requestedBy: req.user?.email });
 
     let data: Record<string, unknown>[] = [];
     let total = 0;
