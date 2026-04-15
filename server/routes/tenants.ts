@@ -11,6 +11,9 @@ import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { validateIdParam } from '../utils/validate';
 import { requirePermission, requireRole } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Tenants');
 
 const router = Router();
 
@@ -136,6 +139,8 @@ router.post(
       if (!property) throw new AppError('Referenced property not found', 400);
     }
 
+    log.info('Creating tenant', { name: sanitizedName, propertyId: propertyId || null, userId: req.user?.id });
+
     const tenant = await prisma.tenant.create({
       data: {
         name: sanitizedName,
@@ -221,6 +226,8 @@ router.patch(
       data.status = status;
     }
 
+    log.info('Updating tenant', { tenantId: id, changes: Object.keys(data), userId: req.user?.id });
+
     const tenant = await prisma.tenant.update({ where: { id }, data });
 
     res.status(200).json({ success: true, data: tenant });
@@ -242,6 +249,8 @@ router.delete(
     if (!isAdmin) {
       throw new AppError('Only admins or property managers can delete tenant records', 403);
     }
+
+    log.info('Deleting tenant', { tenantId: id, name: existing.name, userId: req.user?.id });
 
     await prisma.$transaction(async (tx) => {
       await tx.tenant.delete({ where: { id } });

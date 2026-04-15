@@ -4,6 +4,9 @@
  */
 
 import { prisma } from '../../database.js';
+import { createLogger } from '../../utils/logger.js';
+
+const log = createLogger('QueueManager');
 
 // ============================================================================
 // QUEUE OPERATIONS

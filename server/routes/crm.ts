@@ -9,6 +9,9 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('CRM');
 
 const router = Router();
 
@@ -160,6 +163,8 @@ router.get(
     if (!isAdmin) {
       throw new AppError('Only admins can export CRM data', 403);
     }
+
+    log.info('CRM data export requested', { entity: req.query.entity, format: req.query.format, userId: req.user?.id });
 
     const VALID_ENTITIES = ['leads', 'properties', 'agents', 'commissions'] as const;
     const rawEntity = (req.query.entity as string) || 'leads';

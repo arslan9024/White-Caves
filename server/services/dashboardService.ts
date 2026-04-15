@@ -4,6 +4,9 @@
  */
 
 import { prisma } from '../database';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Dashboard');
 
 class DashboardService {
   /**

@@ -2,6 +2,9 @@
  * Centralized Environment Configuration
  * Single source of truth for all server environment variables
  */
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('EnvConfig');
 
 // ─── Server ──────────────────────────────────────────────────────────────
 export const PORT = parseInt(process.env.PORT || '3001', 10);
@@ -17,7 +20,7 @@ if (!_jwtSecret && NODE_ENV !== 'development' && NODE_ENV !== 'test') {
   throw new Error('CRITICAL: JWT_SECRET must be set for non-development environments');
 }
 if (!_jwtSecret) {
-  console.warn('⚠️  JWT_SECRET not set — using dev-only fallback. Never deploy without it.');
+  log.warn('JWT_SECRET not set — using dev-only fallback. Never deploy without it.');
 }
 export const JWT_SECRET = _jwtSecret || 'white-caves-dev-only-secret-DO-NOT-USE-IN-PRODUCTION';
 export const JWT_EXPIRES_SECONDS = 7 * 24 * 60 * 60; // 7 days
@@ -29,7 +32,7 @@ if (!_databaseUrl && IS_PRODUCTION) {
   throw new Error('CRITICAL: DATABASE_URL environment variable must be set in production');
 }
 if (!_databaseUrl) {
-  console.warn('⚠️  DATABASE_URL not set — Prisma will fail to connect. Set it in .env');
+  log.warn('DATABASE_URL not set — Prisma will fail to connect. Set it in .env');
 }
 export const DATABASE_URL = _databaseUrl || '';
 

@@ -11,6 +11,9 @@ import { prisma } from '../database.js';
 import { validateIdParam } from '../utils/validate';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Finance');
 
 const router = Router();
 
@@ -174,6 +177,8 @@ router.post(
       if (!property) throw new AppError('Referenced property not found', 400);
     }
 
+    log.info('Creating commission', { agentId, amount: parsedAmount, type: type || 'sale', userId: req.user?.id });
+
     const commission = await prisma.commission.create({
       data: {
         agentId,
@@ -254,6 +259,8 @@ router.patch(
     if (notes !== undefined) data.notes = notes ? sanitizeString(String(notes)) : null;
     if (status === 'paid') data.paidAt = new Date();
 
+    log.info('Updating commission', { commissionId: id, changes: Object.keys(data), userId: req.user?.id });
+
     const commission = await prisma.commission.update({ where: { id }, data });
 
     const statusChanged = status !== undefined && status !== null && status !== existing.status;
@@ -288,6 +295,8 @@ router.post(
     if (!commissionIds.every((id: unknown) => typeof id === 'string' && MONGO_ID_REGEX.test(id))) {
       throw new AppError('All commission IDs must be valid 24-character hex strings', 400);
     }
+
+    log.info('Bulk payment processing', { count: commissionIds.length, userId: req.user?.id });
 
     const result = await prisma.commission.updateMany({
       where: { id: { in: commissionIds }, status: 'approved' },

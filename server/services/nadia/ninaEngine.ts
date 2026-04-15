@@ -5,6 +5,10 @@
  * Training: Hybrid (pre-built patterns + gradual learning from corrections)
  */
 
+import { createLogger } from '../../utils/logger.js';
+
+const log = createLogger('NinaEngine');
+
 export enum Intent {
   // Property-related intents
   PROPERTY_INQUIRY = 'PROPERTY_INQUIRY',

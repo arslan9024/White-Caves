@@ -4,6 +4,10 @@
  * In production, these would be replaced with real NLP engines (Nina for NLP, Meta APIs for sentiment)
  */
 
+import { createLogger } from '../../utils/logger.js';
+
+const log = createLogger('MessageProcessor');
+
 // ============================================================================
 // INTENT DETECTION
 // ============================================================================

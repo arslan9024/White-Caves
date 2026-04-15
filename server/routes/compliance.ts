@@ -10,6 +10,9 @@ import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission, requireMinRole } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Compliance');
 
 const router = Router();
 
@@ -152,6 +155,8 @@ router.post(
     const sanitizedTitle = sanitizeString(title.trim());
     const sanitizedFindings = findings ? sanitizeString(String(findings).substring(0, 10000)) : '';
     const sanitizedRecommendations = recommendations ? sanitizeString(String(recommendations).substring(0, 10000)) : '';
+
+    log.info('Compliance report submitted', { title: sanitizedTitle, userId: req.user?.id });
 
     const activity = await prisma.activity.create({
       data: {

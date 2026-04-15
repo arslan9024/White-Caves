@@ -13,6 +13,9 @@ import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Transactions');
 
 const router = Router();
 
@@ -152,6 +155,8 @@ router.post(
       validClosingDate = d;
     }
 
+    log.info('Creating transaction', { type: type || 'sale', amount, userId: req.user?.id });
+
     const transaction = await prisma.transaction.create({
       data: {
         type: type || 'sale',
@@ -194,6 +199,8 @@ router.patch(
       type:      rules.oneOf('Transaction type', ['sale', 'lease', 'rental']),
       documents: rules.optionalArray('Documents'),
     });
+
+    log.info('Updating transaction', { transactionId: id, changes: Object.keys(req.body), userId: req.user?.id });
 
     // Wrap in Prisma transaction for atomicity (prevent race conditions)
     const transaction = await prisma.$transaction(async (tx) => {
@@ -266,6 +273,8 @@ router.delete(
     if (!isAdmin) {
       throw new AppError('Only managers can delete transactions', 403);
     }
+
+    log.info('Deleting transaction', { transactionId: id, amount: existing.amount, userId: req.user?.id });
 
     await prisma.$transaction(async (tx) => {
       await tx.transaction.delete({ where: { id } });
