@@ -1,24 +1,26 @@
 /**
  * Offers API Routes
- * ─────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * CRUD endpoints for property purchase/rental offers.
  *
- * GET    /api/offers           — List user's offers (as buyer)
- * GET    /api/offers/received  — Offers received on user's properties (as seller)
- * POST   /api/offers           — Submit a new offer
- * PATCH  /api/offers/:id       — Update offer (accept, reject, counter, withdraw)
- * DELETE /api/offers/:id       — Delete an offer
+ * GET    /api/offers           â€” List user's offers (as buyer)
+ * GET    /api/offers/received  â€” Offers received on user's properties (as seller)
+ * POST   /api/offers           â€” Submit a new offer
+ * PATCH  /api/offers/:id       â€” Update offer (accept, reject, counter, withdraw)
+ * DELETE /api/offers/:id       â€” Delete an offer
  */
 
 import { Router, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import logger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Offers');
 
 const router = Router();
 
-// ─── GET /api/offers — List offers made by current user (as buyer) ───────────
+// â”€â”€â”€ GET /api/offers â€” List offers made by current user (as buyer) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -43,7 +45,7 @@ router.get(
   }),
 );
 
-// ─── GET /api/offers/received — Offers on user's properties (as seller) ──────
+// â”€â”€â”€ GET /api/offers/received â€” Offers on user's properties (as seller) â”€â”€â”€â”€â”€â”€
 router.get(
   '/received',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -74,7 +76,7 @@ router.get(
   }),
 );
 
-// ─── POST /api/offers — Submit a new offer ───────────────────────────────────
+// â”€â”€â”€ POST /api/offers â€” Submit a new offer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -107,12 +109,12 @@ router.post(
       },
     });
 
-    logger.info('Offer submitted', { userId, offerId: offer.id, propertyId, amount });
+    log.info('Offer submitted', { userId, offerId: offer.id, propertyId, amount });
     res.status(201).json({ success: true, data: offer });
   }),
 );
 
-// ─── PATCH /api/offers/:id — Update offer status ────────────────────────────
+// â”€â”€â”€ PATCH /api/offers/:id â€” Update offer status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/:id',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -151,12 +153,12 @@ router.patch(
 
     const updated = await prisma.offer.update({ where: { id }, data: updateData });
 
-    logger.info('Offer updated', { userId, offerId: id, status: updated.status });
+    log.info('Offer updated', { userId, offerId: id, status: updated.status });
     res.json({ success: true, data: updated });
   }),
 );
 
-// ─── DELETE /api/offers/:id — Delete an offer ────────────────────────────────
+// â”€â”€â”€ DELETE /api/offers/:id â€” Delete an offer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/:id',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -170,7 +172,7 @@ router.delete(
 
     await prisma.offer.delete({ where: { id } });
 
-    logger.info('Offer deleted', { userId, offerId: id });
+    log.info('Offer deleted', { userId, offerId: id });
     res.json({ success: true, message: 'Offer deleted' });
   }),
 );

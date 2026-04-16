@@ -1,5 +1,5 @@
 /**
- * Authentication Routes — Full Implementation
+ * Authentication Routes â€” Full Implementation
  * Login, logout, 2FA verification, user profile, password change
  */
 
@@ -13,7 +13,9 @@ import type { AuthRequest } from '../middleware/auth';
 import { JWT_SECRET, JWT_EXPIRES_SECONDS, BCRYPT_ROUNDS } from '../config/env';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
-import logger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Auth');
 
 const router = Router();
 
@@ -38,7 +40,7 @@ const verifyPassword = async (password: string, hash: string): Promise<boolean> 
   if (hash.startsWith('wc$')) {
     return Buffer.from(hash.slice(3), 'base64').toString() === password;
   }
-  // No plain-text fallback — reject unknown hash formats
+  // No plain-text fallback â€” reject unknown hash formats
   return false;
 };
 
@@ -74,7 +76,7 @@ router.post(
         await prisma.user.update({ where: { id: user.id }, data: { passwordHash: newHash } });
       }
     } else {
-      // No password set — reject login (admin must set password first)
+      // No password set â€” reject login (admin must set password first)
       throw new AppError('Account not configured. Contact administrator.', 401);
     }
 
@@ -115,7 +117,7 @@ router.post(
 
 /**
  * POST /api/auth/register
- * Register a new user (always assigned 'agent' role — admin must upgrade)
+ * Register a new user (always assigned 'agent' role â€” admin must upgrade)
  */
 router.post(
   '/register',
@@ -208,7 +210,7 @@ router.post(
 
 /**
  * POST /api/auth/verify-2fa
- * Verify 2FA code (placeholder — ready for SMS/TOTP integration)
+ * Verify 2FA code (placeholder â€” ready for SMS/TOTP integration)
  */
 router.post(
   '/verify-2fa',

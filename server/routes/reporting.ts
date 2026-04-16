@@ -1,5 +1,5 @@
 /**
- * Dashboard / Reporting API — Full Implementation
+ * Dashboard / Reporting API â€” Full Implementation
  * Endpoints: /api/dashboard
  * Provides: executive overview, KPIs, activity feed, analytics
  */
@@ -9,10 +9,13 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Reporting');
 
 const router = Router();
 
-// ─── GET /api/dashboard/summary  &  /api/dashboard/overview ─────────────
+// â”€â”€â”€ GET /api/dashboard/summary  &  /api/dashboard/overview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Main dashboard overview used by CRM Hub  (frontend calls /summary)
 // Also handles role-based routes: /admin/summary, /:role/summary
 router.get(
@@ -23,7 +26,7 @@ router.get(
     const userRole = req.user?.role || '';
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes(userRole)) {
-      throw new AppError('Access denied — dashboard summary requires manager or higher role', 403);
+      throw new AppError('Access denied â€” dashboard summary requires manager or higher role', 403);
     }
 
     const [
@@ -82,7 +85,7 @@ router.get(
   })
 );
 
-// ─── GET /api/dashboard/activities ──────────────────────────────────────
+// â”€â”€â”€ GET /api/dashboard/activities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Global activity feed
 router.get(
   '/activities',
@@ -91,7 +94,7 @@ router.get(
     // AUTHORIZATION: Only managers+ can access global activity feed
     const allowedRoles = ['owner', 'manager', 'admin'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — activity feed requires manager or above role', 403);
+      throw new AppError('Access denied â€” activity feed requires manager or above role', 403);
     }
 
     const { page = '1', pageSize = '20', type } = req.query;
@@ -132,7 +135,7 @@ router.get(
   })
 );
 
-// ─── GET /api/dashboard/executive ───────────────────────────────────────
+// â”€â”€â”€ GET /api/dashboard/executive â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/executive',
   requirePermission('view_all_reports'),
@@ -140,7 +143,7 @@ router.get(
     // AUTHORIZATION: Only managers+ can access executive analytics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — executive analytics requires manager or above role', 403);
+      throw new AppError('Access denied â€” executive analytics requires manager or above role', 403);
     }
     const [
       leadsByStatus, leadsBySource,
@@ -176,7 +179,7 @@ router.get(
   })
 );
 
-// ─── GET /api/dashboard/kpis ────────────────────────────────────────────
+// â”€â”€â”€ GET /api/dashboard/kpis â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/kpis',
   requirePermission('view_analytics'),
@@ -184,7 +187,7 @@ router.get(
     // AUTHORIZATION: Only managers+ can access KPI metrics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — KPI data requires manager or above role', 403);
+      throw new AppError('Access denied â€” KPI data requires manager or above role', 403);
     }
 
     const thirtyDaysAgo = new Date();

@@ -5,6 +5,9 @@
  */
 
 import { Intent, Entity, IntentResult } from './ninaEngine';
+import { createLogger } from '../../utils/logger.js';
+
+const log = createLogger('ConversationMemory');
 
 export interface Message {
   id: string;

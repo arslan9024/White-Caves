@@ -5,6 +5,10 @@
  * Training: Hybrid (pre-built patterns + gradual learning from corrections)
  */
 
+import { createLogger } from '../../utils/logger.js';
+
+const log = createLogger('NinaEngine');
+
 export enum Intent {
   // Property-related intents
   PROPERTY_INQUIRY = 'PROPERTY_INQUIRY',
@@ -271,7 +275,7 @@ export class NinaEngine {
     }
 
     // Prices (AED amounts)
-    const priceMatches = message.match(/(\d{3,},?\d{3}|\d+)\s*(aed|درهم)?/gi);
+    const priceMatches = message.match(/(\d{3,},?\d{3}|\d+)\s*(aed|Ø¯Ø±Ù‡Ù…)?/gi);
     if (priceMatches) {
       for (const price of priceMatches) {
         const cleanPrice = price.replace(/[^\d]/g, '');

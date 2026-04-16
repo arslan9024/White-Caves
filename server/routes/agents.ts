@@ -1,5 +1,5 @@
 /**
- * Agents API Routes — Full Implementation
+ * Agents API Routes â€” Full Implementation
  * Endpoints: /api/agents
  * Supports: list, detail, performance metrics, commissions
  */
@@ -10,10 +10,13 @@ import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { validateIdParam } from '../utils/validate';
 import { requirePermission, requireRole } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Agents');
 
 const router = Router();
 
-// ─── GET /api/agents ────────────────────────────────────────────────────
+// â”€â”€â”€ GET /api/agents â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/',
   requirePermission('manage_agents'),
@@ -21,7 +24,7 @@ router.get(
     // AUTHORIZATION: Agent list with performance data restricted to managers+
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — agent list requires manager or above role', 403);
+      throw new AppError('Access denied â€” agent list requires manager or above role', 403);
     }
 
     const { status, department, search, page = '1', pageSize = '50' } = req.query;
@@ -119,7 +122,7 @@ router.get(
   })
 );
 
-// ─── GET /api/agents/stats ──────────────────────────────────────────────
+// â”€â”€â”€ GET /api/agents/stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/stats',
   requirePermission('manage_agents'),
@@ -127,7 +130,7 @@ router.get(
     // AUTHORIZATION: Only managers+ can view aggregated agent statistics
     const allowedRoles = ['owner', 'manager', 'admin'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — agent statistics require manager role', 403);
+      throw new AppError('Access denied â€” agent statistics require manager role', 403);
     }
 
     const [total, online, byDepartment] = await Promise.all([
@@ -150,7 +153,7 @@ router.get(
   })
 );
 
-// ─── GET /api/agents/:id ────────────────────────────────────────────────
+// â”€â”€â”€ GET /api/agents/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/:id',
   asyncHandler(async (req: Request, res: Response) => {
@@ -161,7 +164,7 @@ router.get(
     const userId = req.user?.id || '';
     const isManagerOrAbove = ['owner', 'manager', 'admin'].includes(userRole);
     if (!isManagerOrAbove && userId !== req.params.id) {
-      throw new AppError('Access denied — you can only view your own agent profile', 403);
+      throw new AppError('Access denied â€” you can only view your own agent profile', 403);
     }
 
     const agent = await prisma.user.findUnique({
@@ -190,7 +193,7 @@ router.get(
   })
 );
 
-// ─── GET /api/agents/:id/performance ────────────────────────────────────
+// â”€â”€â”€ GET /api/agents/:id/performance â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // AUTHORIZATION: Only the agent themselves, or a manager/owner, can view performance
 router.get(
   '/:id/performance',
@@ -203,7 +206,7 @@ router.get(
     const userId = req.user?.id || '';
     const isManagerOrAbove = ['owner', 'manager', 'admin'].includes(userRole);
     if (!isManagerOrAbove && userId !== id) {
-      throw new AppError('Access denied — you can only view your own performance data', 403);
+      throw new AppError('Access denied â€” you can only view your own performance data', 403);
     }
 
     const agent = await prisma.user.findUnique({ where: { id } });
@@ -249,8 +252,8 @@ router.get(
   })
 );
 
-// ─── GET /api/agents/:id/commissions ────────────────────────────────────
-// ─── GET /api/agents/:id/commissions ────────────────────────────────────
+// â”€â”€â”€ GET /api/agents/:id/commissions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€â”€ GET /api/agents/:id/commissions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // AUTHORIZATION: Only the agent themselves, or a manager/owner, can view commissions
 router.get(
   '/:id/commissions',
@@ -262,7 +265,7 @@ router.get(
     const userId = req.user?.id || '';
     const isManagerOrAbove = ['owner', 'manager', 'admin'].includes(userRole);
     if (!isManagerOrAbove && userId !== req.params.id) {
-      throw new AppError('Access denied — you can only view your own commission data', 403);
+      throw new AppError('Access denied â€” you can only view your own commission data', 403);
     }
 
     const { status, page = '1', pageSize = '50' } = req.query;

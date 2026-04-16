@@ -1,5 +1,5 @@
 /**
- * Properties API Routes — Full CRUD Implementation
+ * Properties API Routes â€” Full CRUD Implementation
  * Endpoints: /api/properties
  * Supports: search, filter by type/status/price, pagination, stats
  */
@@ -13,10 +13,13 @@ import { sanitizeString } from '../utils/sanitize';
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Properties');
 
 const router = Router();
 
-// ─── GET /api/properties ────────────────────────────────────────────────
+// â”€â”€â”€ GET /api/properties â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/',
   requirePermission('view_properties'),
@@ -91,7 +94,7 @@ router.get(
   })
 );
 
-// ─── GET /api/properties/stats ──────────────────────────────────────────
+// â”€â”€â”€ GET /api/properties/stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/stats',
   requirePermission('view_properties'),
@@ -99,7 +102,7 @@ router.get(
     // AUTHORIZATION: Only managers+ can view aggregated property statistics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — property statistics require manager role', 403);
+      throw new AppError('Access denied â€” property statistics require manager role', 403);
     }
 
     const [total, byStatus, byType, priceStats] = await Promise.all([
@@ -138,7 +141,7 @@ router.get(
   })
 );
 
-// ─── GET /api/properties/:id ────────────────────────────────────────────
+// â”€â”€â”€ GET /api/properties/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/:id',
   requirePermission('view_properties'),
@@ -163,7 +166,7 @@ router.get(
   })
 );
 
-// ─── POST /api/properties ───────────────────────────────────────────────
+// â”€â”€â”€ POST /api/properties â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/',
   requirePermission('create_property'),
@@ -171,7 +174,7 @@ router.post(
     // AUTHORIZATION: Only owner, manager, or agents can create properties
     const allowedRoles = ['owner', 'manager', 'agent'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — insufficient permissions to create properties', 403);
+      throw new AppError('Access denied â€” insufficient permissions to create properties', 403);
     }
 
     const { title, description, type, status, price, bedrooms, bathrooms, sqft,
@@ -216,11 +219,13 @@ router.post(
       },
     });
 
+    log.info('Property created', { userId: req.user?.id, propertyId: property.id, title: property.title });
+
     res.status(201).json({ success: true, data: property });
   })
 );
 
-// ─── PATCH /api/properties/:id ──────────────────────────────────────────
+// â”€â”€â”€ PATCH /api/properties/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/:id',
   requirePermission('edit_property'),
@@ -283,7 +288,7 @@ router.patch(
         type: 'property',
         action: statusChanged ? 'status_changed' : 'updated',
         description: statusChanged
-          ? `Property "${property.title}" status: ${existing.status} → ${status}`
+          ? `Property "${property.title}" status: ${existing.status} â†’ ${status}`
           : `Property "${property.title}" updated`,
         userId: req.user?.id || null,
       },
@@ -293,7 +298,7 @@ router.patch(
   })
 );
 
-// ─── DELETE /api/properties/:id ─────────────────────────────────────────
+// â”€â”€â”€ DELETE /api/properties/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/:id',
   requirePermission('delete_property'),
@@ -326,6 +331,8 @@ router.delete(
         },
       });
     });
+
+    log.info('Property deleted', { userId: req.user?.id, propertyId: id, title: existing.title });
 
     res.status(200).json({ success: true, message: `Property "${existing.title}" deleted` });
   })

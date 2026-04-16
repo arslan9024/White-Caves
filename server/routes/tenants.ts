@@ -1,5 +1,5 @@
 /**
- * Tenants API Routes — Full Implementation
+ * Tenants API Routes â€” Full Implementation
  * Tenant management and leasing
  * Endpoints: /api/tenants
  */
@@ -11,10 +11,13 @@ import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { validateIdParam } from '../utils/validate';
 import { requirePermission, requireRole } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Tenants');
 
 const router = Router();
 
-// ─── GET /api/tenants ───────────────────────────────────────────────────
+// â”€â”€â”€ GET /api/tenants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/',
   requirePermission('view_contracts'),
@@ -22,7 +25,7 @@ router.get(
     // AUTHORIZATION: Tenant PII restricted to managers/admins
     const allowedRoles = ['owner', 'manager', 'admin'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — tenant data requires manager or above role', 403);
+      throw new AppError('Access denied â€” tenant data requires manager or above role', 403);
     }
 
     const { page = '1', pageSize = '20', status, search } = req.query;
@@ -59,14 +62,14 @@ router.get(
   })
 );
 
-// ─── GET /api/tenants/stats ─────────────────────────────────────────────
+// â”€â”€â”€ GET /api/tenants/stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/stats',
   requirePermission('view_contracts'),
   asyncHandler(async (req: Request, res: Response) => {    // Authorization: Only managers+ can view tenant statistics
     const allowedRoles = ['owner', 'manager', 'admin'];
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
-      throw new AppError('Access denied — tenant statistics require manager role', 403);
+      throw new AppError('Access denied â€” tenant statistics require manager role', 403);
     }    const [total, byStatus, rentStats] = await Promise.all([
       prisma.tenant.count(),
       prisma.tenant.groupBy({ by: ['status'], _count: { _all: true } }),
@@ -88,7 +91,7 @@ router.get(
   })
 );
 
-// ─── GET /api/tenants/:id ───────────────────────────────────────────────
+// â”€â”€â”€ GET /api/tenants/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/:id',
   requirePermission('view_contracts'),
@@ -98,7 +101,7 @@ router.get(
     // AUTHORIZATION: Tenant details restricted to managers/admins
     const allowedRoles = ['owner', 'manager', 'admin'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — tenant details require manager or above role', 403);
+      throw new AppError('Access denied â€” tenant details require manager or above role', 403);
     }
 
     const tenant = await prisma.tenant.findUnique({ where: { id: req.params.id } });
@@ -107,7 +110,7 @@ router.get(
   })
 );
 
-// ─── POST /api/tenants ──────────────────────────────────────────────────
+// â”€â”€â”€ POST /api/tenants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/',
   requirePermission('create_contracts'),
@@ -161,11 +164,13 @@ router.post(
       },
     });
 
+    log.info('Tenant created', { userId: req.user?.id, tenantId: tenant.id, name: tenant.name });
+
     res.status(201).json({ success: true, data: tenant });
   })
 );
 
-// ─── PATCH /api/tenants/:id ─────────────────────────────────────────────
+// â”€â”€â”€ PATCH /api/tenants/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/:id',
   requirePermission('create_contracts'),
@@ -227,7 +232,7 @@ router.patch(
   })
 );
 
-// ─── DELETE /api/tenants/:id ────────────────────────────────────────────
+// â”€â”€â”€ DELETE /api/tenants/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/:id',
   requireRole('owner', 'manager', 'admin'),
@@ -256,11 +261,13 @@ router.delete(
       });
     });
 
+    log.info('Tenant deleted', { userId: req.user?.id, tenantId: id, name: existing.name });
+
     res.status(200).json({ success: true, message: `Tenant "${existing.name}" deleted` });
   })
 );
 
-// ─── GET /api/tenants/:id/leases ────────────────────────────────────────
+// â”€â”€â”€ GET /api/tenants/:id/leases â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Returns the property info as a "lease" for this tenant
 router.get(
   '/:id/leases',

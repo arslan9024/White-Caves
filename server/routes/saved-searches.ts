@@ -1,24 +1,26 @@
 /**
  * Saved Searches API Routes
- * ─────────────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * CRUD for user saved search criteria with optional alert notifications.
  *
- * GET    /api/saved-searches           — List user's saved searches
- * POST   /api/saved-searches           — Create a saved search
- * PATCH  /api/saved-searches/:id       — Update a saved search
- * DELETE /api/saved-searches/:id       — Delete a saved search
- * POST   /api/saved-searches/:id/check — Check for new matches
+ * GET    /api/saved-searches           â€” List user's saved searches
+ * POST   /api/saved-searches           â€” Create a saved search
+ * PATCH  /api/saved-searches/:id       â€” Update a saved search
+ * DELETE /api/saved-searches/:id       â€” Delete a saved search
+ * POST   /api/saved-searches/:id/check â€” Check for new matches
  */
 
 import { Router, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import logger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('SavedSearches');
 
 const router = Router();
 
-// ─── GET /api/saved-searches — List all saved searches for current user ──────
+// â”€â”€â”€ GET /api/saved-searches â€” List all saved searches for current user â”€â”€â”€â”€â”€â”€
 router.get(
   '/',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -37,7 +39,7 @@ router.get(
   }),
 );
 
-// ─── POST /api/saved-searches — Create a saved search ───────────────────────
+// â”€â”€â”€ POST /api/saved-searches â€” Create a saved search â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -72,7 +74,7 @@ router.post(
       },
     });
 
-    logger.info('Saved search created', { userId, searchId: search.id, name: search.name });
+    log.info('Saved search created', { userId, searchId: search.id, name: search.name });
 
     res.status(201).json({
       success: true,
@@ -81,7 +83,7 @@ router.post(
   }),
 );
 
-// ─── PATCH /api/saved-searches/:id — Update a saved search ──────────────────
+// â”€â”€â”€ PATCH /api/saved-searches/:id â€” Update a saved search â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/:id',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -125,7 +127,7 @@ router.patch(
   }),
 );
 
-// ─── DELETE /api/saved-searches/:id — Delete a saved search ──────────────────
+// â”€â”€â”€ DELETE /api/saved-searches/:id â€” Delete a saved search â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/:id',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -139,7 +141,7 @@ router.delete(
 
     await prisma.savedSearch.delete({ where: { id } });
 
-    logger.info('Saved search deleted', { userId, searchId: id });
+    log.info('Saved search deleted', { userId, searchId: id });
 
     res.status(200).json({
       success: true,
@@ -148,7 +150,7 @@ router.delete(
   }),
 );
 
-// ─── POST /api/saved-searches/:id/check — Check for new matches ─────────────
+// â”€â”€â”€ POST /api/saved-searches/:id/check â€” Check for new matches â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/:id/check',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -180,7 +182,7 @@ router.post(
   }),
 );
 
-// ─── Helper: Build Prisma where clause from filters ──────────────────────────
+// â”€â”€â”€ Helper: Build Prisma where clause from filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function countPropertyMatches(filters: Record<string, unknown>): Promise<number> {
   const where: Record<string, unknown> = { status: 'available' };
 

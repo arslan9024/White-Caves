@@ -16,6 +16,9 @@ import {
 } from '../services/nadia/messageProcessor.js';
 import { getQueuedConversations, assignFromQueue } from '../services/nadia/queueManager.js';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Nadia');
 
 const router = Router();
 
@@ -271,7 +274,7 @@ router.delete(
       throw new AppError('Conversation not found', 404);
     }
 
-    // Don't actually delete — just mark as closed
+    // Don't actually delete â€” just mark as closed
     const closed = await prisma.nadiaConversation.update({
       where: { id: conversationId },
       data: {

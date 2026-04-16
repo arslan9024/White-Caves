@@ -1,25 +1,27 @@
 /**
  * Maintenance API Routes
- * ──────────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * CRUD endpoints for property maintenance requests.
  *
- * GET    /api/maintenance           — List maintenance requests
- * GET    /api/maintenance/:id       — Get request detail
- * POST   /api/maintenance           — Submit a new request
- * PATCH  /api/maintenance/:id       — Update request (status, assign, cost, schedule)
- * DELETE /api/maintenance/:id       — Delete a request
- * GET    /api/maintenance/stats     — Maintenance statistics
+ * GET    /api/maintenance           â€” List maintenance requests
+ * GET    /api/maintenance/:id       â€” Get request detail
+ * POST   /api/maintenance           â€” Submit a new request
+ * PATCH  /api/maintenance/:id       â€” Update request (status, assign, cost, schedule)
+ * DELETE /api/maintenance/:id       â€” Delete a request
+ * GET    /api/maintenance/stats     â€” Maintenance statistics
  */
 
 import { Router, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import logger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Maintenance');
 
 const router = Router();
 
-// ─── GET /api/maintenance — List maintenance requests ────────────────────────
+// â”€â”€â”€ GET /api/maintenance â€” List maintenance requests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -73,7 +75,7 @@ router.get(
   }),
 );
 
-// ─── GET /api/maintenance/stats — Maintenance statistics ─────────────────────
+// â”€â”€â”€ GET /api/maintenance/stats â€” Maintenance statistics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/stats',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -99,7 +101,7 @@ router.get(
   }),
 );
 
-// ─── GET /api/maintenance/:id — Get request detail ──────────────────────────
+// â”€â”€â”€ GET /api/maintenance/:id â€” Get request detail â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/:id',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -127,7 +129,7 @@ router.get(
   }),
 );
 
-// ─── POST /api/maintenance — Submit a new maintenance request ────────────────
+// â”€â”€â”€ POST /api/maintenance â€” Submit a new maintenance request â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -172,7 +174,7 @@ router.post(
       },
     });
 
-    logger.info('Maintenance request created', {
+    log.info('Maintenance request created', {
       userId,
       requestId: request.id,
       propertyId,
@@ -182,7 +184,7 @@ router.post(
   }),
 );
 
-// ─── PATCH /api/maintenance/:id — Update a maintenance request ───────────────
+// â”€â”€â”€ PATCH /api/maintenance/:id â€” Update a maintenance request â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/:id',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -235,12 +237,12 @@ router.patch(
 
     const updated = await prisma.maintenance.update({ where: { id }, data: updateData });
 
-    logger.info('Maintenance request updated', { userId, requestId: id, status: updated.status });
+    log.info('Maintenance request updated', { userId, requestId: id, status: updated.status });
     res.json({ success: true, data: updated });
   }),
 );
 
-// ─── DELETE /api/maintenance/:id — Delete a maintenance request ──────────────
+// â”€â”€â”€ DELETE /api/maintenance/:id â€” Delete a maintenance request â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/:id',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -258,7 +260,7 @@ router.delete(
 
     await prisma.maintenance.delete({ where: { id } });
 
-    logger.info('Maintenance request deleted', { userId, requestId: id });
+    log.info('Maintenance request deleted', { userId, requestId: id });
     res.json({ success: true, message: 'Maintenance request deleted' });
   }),
 );

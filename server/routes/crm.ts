@@ -1,5 +1,5 @@
 /**
- * CRM Dashboard & General Routes — Full Implementation
+ * CRM Dashboard & General Routes â€” Full Implementation
  * General CRM operations, analytics, search, and dashboard data
  * Endpoints: /api/crm
  */
@@ -9,10 +9,13 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('CRM');
 
 const router = Router();
 
-// ─── GET /api/crm/dashboard ────────────────────────────────────────────
+// â”€â”€â”€ GET /api/crm/dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/dashboard',
   requirePermission('view_dashboard'),
@@ -20,7 +23,7 @@ router.get(
     // AUTHORIZATION: Only managers+ can access CRM dashboard metrics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — CRM dashboard requires manager or above role', 403);
+      throw new AppError('Access denied â€” CRM dashboard requires manager or above role', 403);
     }
     const [
       leadCount, propertyCount, agentCount, activityCount,
@@ -51,7 +54,7 @@ router.get(
   })
 );
 
-// ─── GET /api/crm/analytics ────────────────────────────────────────────
+// â”€â”€â”€ GET /api/crm/analytics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/analytics',
   requirePermission('view_dashboard'),
@@ -59,7 +62,7 @@ router.get(
     // AUTHORIZATION: Only managers+ can access CRM analytics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — CRM analytics requires manager or above role', 403);
+      throw new AppError('Access denied â€” CRM analytics requires manager or above role', 403);
     }
     const [leadsBySource, leadsByStatus, propertiesByType, commissionStats] = await Promise.all([
       prisma.lead.groupBy({ by: ['source'], _count: { _all: true } }),
@@ -88,7 +91,7 @@ router.get(
   })
 );
 
-// ─── GET /api/crm/search ───────────────────────────────────────────────
+// â”€â”€â”€ GET /api/crm/search â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Global search across leads, properties, and agents
 router.get(
   '/search',
@@ -97,7 +100,7 @@ router.get(
     // AUTHORIZATION: Only managers+ can perform global CRM search
     const allowedRoles = ['owner', 'manager', 'admin'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — global search requires manager or above role', 403);
+      throw new AppError('Access denied â€” global search requires manager or above role', 403);
     }
 
     const { q } = req.query;
@@ -150,7 +153,7 @@ router.get(
   })
 );
 
-// ─── GET /api/crm/export ───────────────────────────────────────────────
+// â”€â”€â”€ GET /api/crm/export â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/export',
   requirePermission('view_all_reports'),
@@ -236,7 +239,7 @@ router.get(
           prisma.commission.count(),
         ]);
         break;
-      // No default needed — entity is pre-validated above
+      // No default needed â€” entity is pre-validated above
     }
 
     // Respond in requested format

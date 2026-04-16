@@ -4,6 +4,9 @@
  */
 
 import { prisma } from '../../database.js';
+import { createLogger } from '../../utils/logger.js';
+
+const log = createLogger('QueueManager');
 
 // ============================================================================
 // QUEUE OPERATIONS
@@ -51,10 +54,10 @@ export async function getQueuedConversations(limit: number = 10) {
     messageCount: q.conversation.messages.length,
     priority_label:
       q.priority <= 2
-        ? '🔥 HOT'
+        ? 'ðŸ”¥ HOT'
         : q.priority <= 5
-          ? '⭐ WARM'
-          : '❄️ COLD',
+          ? 'â­ WARM'
+          : 'â„ï¸ COLD',
   }));
 }
 

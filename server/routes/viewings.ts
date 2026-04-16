@@ -1,24 +1,26 @@
 /**
  * Viewings API Routes
- * ───────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * CRUD endpoints for property viewing/tour scheduling.
  *
- * GET    /api/viewings           — List user's viewings (upcoming & past)
- * POST   /api/viewings           — Schedule a new viewing
- * PATCH  /api/viewings/:id       — Update viewing (reschedule, cancel, add feedback)
- * DELETE /api/viewings/:id       — Delete a viewing
- * GET    /api/viewings/upcoming  — Upcoming viewings only
+ * GET    /api/viewings           â€” List user's viewings (upcoming & past)
+ * POST   /api/viewings           â€” Schedule a new viewing
+ * PATCH  /api/viewings/:id       â€” Update viewing (reschedule, cancel, add feedback)
+ * DELETE /api/viewings/:id       â€” Delete a viewing
+ * GET    /api/viewings/upcoming  â€” Upcoming viewings only
  */
 
 import { Router, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import logger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Viewings');
 
 const router = Router();
 
-// ─── GET /api/viewings — List all viewings for current user ──────────────────
+// â”€â”€â”€ GET /api/viewings â€” List all viewings for current user â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -55,7 +57,7 @@ router.get(
   }),
 );
 
-// ─── GET /api/viewings/upcoming — Only future viewings ───────────────────────
+// â”€â”€â”€ GET /api/viewings/upcoming â€” Only future viewings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/upcoming',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -81,7 +83,7 @@ router.get(
   }),
 );
 
-// ─── POST /api/viewings — Schedule a new viewing ────────────────────────────
+// â”€â”€â”€ POST /api/viewings â€” Schedule a new viewing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -117,12 +119,12 @@ router.post(
       },
     });
 
-    logger.info('Viewing scheduled', { userId, viewingId: viewing.id, propertyId });
+    log.info('Viewing scheduled', { userId, viewingId: viewing.id, propertyId });
     res.status(201).json({ success: true, data: viewing });
   }),
 );
 
-// ─── PATCH /api/viewings/:id — Update a viewing ─────────────────────────────
+// â”€â”€â”€ PATCH /api/viewings/:id â€” Update a viewing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/:id',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -155,12 +157,12 @@ router.patch(
 
     const updated = await prisma.viewing.update({ where: { id }, data: updateData });
 
-    logger.info('Viewing updated', { userId, viewingId: id, status: updated.status });
+    log.info('Viewing updated', { userId, viewingId: id, status: updated.status });
     res.json({ success: true, data: updated });
   }),
 );
 
-// ─── DELETE /api/viewings/:id — Delete a viewing ────────────────────────────
+// â”€â”€â”€ DELETE /api/viewings/:id â€” Delete a viewing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/:id',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -174,7 +176,7 @@ router.delete(
 
     await prisma.viewing.delete({ where: { id } });
 
-    logger.info('Viewing deleted', { userId, viewingId: id });
+    log.info('Viewing deleted', { userId, viewingId: id });
     res.json({ success: true, message: 'Viewing deleted' });
   }),
 );

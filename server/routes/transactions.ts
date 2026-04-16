@@ -1,5 +1,5 @@
 /**
- * Transactions API Routes — Full Implementation
+ * Transactions API Routes â€” Full Implementation
  * Sales and lease transaction management
  * Endpoints: /api/transactions
  */
@@ -13,10 +13,13 @@ import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Transactions');
 
 const router = Router();
 
-// ─── GET /api/transactions ──────────────────────────────────────────────
+// â”€â”€â”€ GET /api/transactions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/',
   requirePermission('view_payments'),
@@ -24,7 +27,7 @@ router.get(
     // AUTHORIZATION: Transactions visible to owner/manager/admin/finance/agent
     const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'agent'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — insufficient role for transaction data', 403);
+      throw new AppError('Access denied â€” insufficient role for transaction data', 403);
     }
 
     const {
@@ -63,14 +66,14 @@ router.get(
   })
 );
 
-// ─── GET /api/transactions/stats ────────────────────────────────────────
+// â”€â”€â”€ GET /api/transactions/stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/stats',
   requirePermission('view_payments'),
   asyncHandler(async (req: Request, res: Response) => {    // Authorization: Only managers+ can view transaction statistics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
-      throw new AppError('Access denied — transaction statistics require manager role', 403);
+      throw new AppError('Access denied â€” transaction statistics require manager role', 403);
     }    const [total, byStatus, byType, valueStats] = await Promise.all([
       prisma.transaction.count(),
       prisma.transaction.groupBy({ by: ['status'], _count: { _all: true } }),
@@ -98,7 +101,7 @@ router.get(
   })
 );
 
-// ─── GET /api/transactions/:id ──────────────────────────────────────────
+// â”€â”€â”€ GET /api/transactions/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/:id',
   requirePermission('view_payments'),
@@ -108,7 +111,7 @@ router.get(
     // AUTHORIZATION: Only managers/finance can view individual transaction details
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — only managers can view transaction details', 403);
+      throw new AppError('Access denied â€” only managers can view transaction details', 403);
     }
 
     const transaction = await prisma.transaction.findUnique({
@@ -120,7 +123,7 @@ router.get(
   })
 );
 
-// ─── POST /api/transactions ─────────────────────────────────────────────
+// â”€â”€â”€ POST /api/transactions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/',
   requirePermission('process_payments'),
@@ -128,7 +131,7 @@ router.post(
     // AUTHORIZATION: Only owner, manager, finance, or agents can create transactions
     const allowedRoles = ['owner', 'manager', 'finance', 'agent'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — insufficient permissions to create transactions', 403);
+      throw new AppError('Access denied â€” insufficient permissions to create transactions', 403);
     }
 
     const { type, amount, propertyId, leadId, agentId, closingDate, notes } = req.body;
@@ -170,16 +173,18 @@ router.post(
       data: {
         type: 'deal',
         action: 'created',
-        description: `New ${transaction.type} transaction created — AED ${transaction.amount.toLocaleString()}`,
+        description: `New ${transaction.type} transaction created â€” AED ${transaction.amount.toLocaleString()}`,
         userId: req.user?.id || null,
       },
     });
+
+    log.info('Transaction created', { userId: req.user?.id, transactionId: transaction.id, type: transaction.type, amount: transaction.amount });
 
     res.status(201).json({ success: true, data: transaction });
   })
 );
 
-// ─── PATCH /api/transactions/:id ────────────────────────────────────────
+// â”€â”€â”€ PATCH /api/transactions/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/:id',
   requirePermission('process_payments'),
@@ -250,7 +255,7 @@ router.patch(
   })
 );
 
-// ─── DELETE /api/transactions/:id ───────────────────────────────────────
+// â”€â”€â”€ DELETE /api/transactions/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/:id',
   requirePermission('process_payments'),
@@ -274,11 +279,13 @@ router.delete(
         data: {
           type: 'deal',
           action: 'deleted',
-          description: `Transaction deleted — AED ${existing.amount.toLocaleString()} (by ${req.user?.email})`,
+          description: `Transaction deleted â€” AED ${existing.amount.toLocaleString()} (by ${req.user?.email})`,
           userId: req.user?.id || null,
         },
       });
     });
+
+    log.info('Transaction deleted', { userId: req.user?.id, transactionId: id });
 
     res.status(200).json({ success: true, message: 'Transaction deleted' });
   })

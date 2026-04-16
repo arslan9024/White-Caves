@@ -1,5 +1,5 @@
 /**
- * Leads API Routes — Full CRUD Implementation
+ * Leads API Routes â€” Full CRUD Implementation
  * Endpoints: /api/leads
  * Supports: search, filter, pagination, bulk operations, analytics
  */
@@ -11,15 +11,18 @@ import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 
-// Unified lead status enum — single source of truth for all lead endpoints
+// Unified lead status enum â€” single source of truth for all lead endpoints
 const VALID_LEAD_STATUSES = ['new', 'contacted', 'qualified', 'viewing', 'offered', 'negotiating', 'won', 'lost'] as const;
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { requirePermission, requireRole } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Leads');
 
 const router = Router();
 
-// ─── GET /api/leads ─────────────────────────────────────────────────────
+// â”€â”€â”€ GET /api/leads â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/',
   requirePermission('view_leads'),
@@ -106,7 +109,7 @@ router.get(
   })
 );
 
-// ─── GET /api/leads/stats ───────────────────────────────────────────────
+// â”€â”€â”€ GET /api/leads/stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/stats',
   requirePermission('view_leads'),
@@ -114,7 +117,7 @@ router.get(
     // AUTHORIZATION: Only managers+ can view aggregated lead statistics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — lead statistics require manager role', 403);
+      throw new AppError('Access denied â€” lead statistics require manager role', 403);
     }
 
     const [total, byStatus, bySource, avgScore] = await Promise.all([
@@ -143,7 +146,7 @@ router.get(
   })
 );
 
-// ─── GET /api/leads/analytics/conversion ────────────────────────────────
+// â”€â”€â”€ GET /api/leads/analytics/conversion â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/analytics/conversion',
   requirePermission('view_leads'),
@@ -151,7 +154,7 @@ router.get(
     // Authorization: Only managers+ can view conversion analytics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
-      throw new AppError('Access denied — conversion analytics require manager role', 403);
+      throw new AppError('Access denied â€” conversion analytics require manager role', 403);
     }
     const [total, won, lost] = await Promise.all([
       prisma.lead.count(),
@@ -169,7 +172,7 @@ router.get(
   })
 );
 
-// ─── GET /api/leads/:id ─────────────────────────────────────────────────
+// â”€â”€â”€ GET /api/leads/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/:id',
   requirePermission('view_leads'),
@@ -200,7 +203,7 @@ router.get(
   })
 );
 
-// ─── POST /api/leads ────────────────────────────────────────────────────
+// â”€â”€â”€ POST /api/leads â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/',
   requirePermission('manage_leads'),
@@ -250,11 +253,13 @@ router.post(
       },
     });
 
+    log.info('Lead created', { userId: req.user?.id, leadId: lead.id, name: lead.name });
+
     res.status(201).json({ success: true, data: lead });
   })
 );
 
-// ─── PATCH /api/leads/:id ───────────────────────────────────────────────
+// â”€â”€â”€ PATCH /api/leads/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/:id',
   requirePermission('manage_leads'),
@@ -318,7 +323,7 @@ router.patch(
         type: 'lead',
         action: statusChanged ? 'status_changed' : 'updated',
         description: statusChanged
-          ? `Lead "${lead.name}" status: ${existing.status} → ${status}`
+          ? `Lead "${lead.name}" status: ${existing.status} â†’ ${status}`
           : `Lead "${lead.name}" updated`,
         userId: req.user?.id || null,
         leadId: lead.id,
@@ -330,7 +335,7 @@ router.patch(
   })
 );
 
-// ─── DELETE /api/leads/:id ──────────────────────────────────────────────
+// â”€â”€â”€ DELETE /api/leads/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/:id',
   requireRole('owner', 'manager', 'admin'),
@@ -363,11 +368,13 @@ router.delete(
       });
     });
 
+    log.info('Lead deleted', { userId: req.user?.id, leadId: id, name: existing.name });
+
     res.status(200).json({ success: true, message: `Lead "${existing.name}" deleted` });
   })
 );
 
-// ─── POST /api/leads/:id/activities ─────────────────────────────────────
+// â”€â”€â”€ POST /api/leads/:id/activities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/:id/activities',
   requirePermission('manage_leads'),
@@ -384,7 +391,7 @@ router.post(
     const userId = req.user?.id || '';
     const isManagerOrAbove = ['owner', 'manager', 'admin'].includes(userRole);
     if (!isManagerOrAbove && lead.assignedToId !== userId && lead.createdById !== userId) {
-      throw new AppError('Access denied — you can only add activities to your own leads', 403);
+      throw new AppError('Access denied â€” you can only add activities to your own leads', 403);
     }
 
     // Validate type and action against known enums
@@ -411,7 +418,7 @@ router.post(
   })
 );
 
-// ─── GET /api/leads/:id/activities ──────────────────────────────────────
+// â”€â”€â”€ GET /api/leads/:id/activities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/:id/activities',
   requirePermission('view_leads'),
@@ -439,7 +446,7 @@ router.get(
   })
 );
 
-// ─── POST /api/leads/bulk-import ────────────────────────────────────────
+// â”€â”€â”€ POST /api/leads/bulk-import â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/bulk-import',
   requirePermission('manage_leads'),

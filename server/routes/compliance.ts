@@ -1,5 +1,5 @@
 /**
- * Compliance API Routes — Full Implementation
+ * Compliance API Routes â€” Full Implementation
  * Regulatory compliance, audit logs, requirement tracking
  * Endpoints: /api/compliance
  */
@@ -10,10 +10,13 @@ import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission, requireMinRole } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Compliance');
 
 const router = Router();
 
-// ─── GET /api/compliance/status ─────────────────────────────────────────
+// â”€â”€â”€ GET /api/compliance/status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Overall compliance health check
 router.get(
   '/status',
@@ -22,7 +25,7 @@ router.get(
     // AUTHORIZATION: Only managers/finance can view compliance status
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — compliance data requires manager role', 403);
+      throw new AppError('Access denied â€” compliance data requires manager role', 403);
     }
 
     // Check key compliance metrics
@@ -54,7 +57,7 @@ router.get(
   })
 );
 
-// ─── GET /api/compliance/requirements ───────────────────────────────────
+// â”€â”€â”€ GET /api/compliance/requirements â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // UAE RERA compliance requirement checklist
 router.get(
   '/requirements',
@@ -63,7 +66,7 @@ router.get(
     // AUTHORIZATION: Only managers/finance can view compliance requirements
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — compliance data requires manager role', 403);
+      throw new AppError('Access denied â€” compliance data requires manager role', 403);
     }
 
     const requirements = [
@@ -81,16 +84,16 @@ router.get(
   })
 );
 
-// ─── GET /api/compliance/audit-logs ─────────────────────────────────────
-// Audit trail from activity log — RESTRICTED to owner/manager roles
+// â”€â”€â”€ GET /api/compliance/audit-logs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Audit trail from activity log â€” RESTRICTED to owner/manager roles
 router.get(
   '/audit-logs',
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
-    // AUTHORIZATION: audit logs contain sensitive info — owner/manager only
+    // AUTHORIZATION: audit logs contain sensitive info â€” owner/manager only
     const userRole = req.user?.role || '';
     if (!['owner', 'manager'].includes(userRole)) {
-      throw new AppError('Access denied — audit logs require owner or manager role', 403);
+      throw new AppError('Access denied â€” audit logs require owner or manager role', 403);
     }
 
     const { page = '1', pageSize = '50', type, action } = req.query;
@@ -130,8 +133,8 @@ router.get(
   })
 );
 
-// ─── POST /api/compliance/reports ───────────────────────────────────────
-// Submit a compliance report — RESTRICTED to owner/manager roles
+// â”€â”€â”€ POST /api/compliance/reports â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Submit a compliance report â€” RESTRICTED to owner/manager roles
 router.post(
   '/reports',
   requireMinRole('agent'),
@@ -139,7 +142,7 @@ router.post(
     // AUTHORIZATION: compliance report submission requires elevated privileges
     const userRole = req.user?.role || '';
     if (!['owner', 'manager'].includes(userRole)) {
-      throw new AppError('Access denied — only owners/managers can submit compliance reports', 403);
+      throw new AppError('Access denied â€” only owners/managers can submit compliance reports', 403);
     }
 
     const { title, findings, recommendations } = req.body;
@@ -167,6 +170,8 @@ router.post(
         },
       },
     });
+
+    log.info('Compliance report submitted', { userId: req.user?.id, title: sanitizedTitle });
 
     res.status(201).json({
       success: true,

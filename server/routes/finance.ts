@@ -1,5 +1,5 @@
 /**
- * Finance API Routes — Full Implementation
+ * Finance API Routes â€” Full Implementation
  * Commission management, financial summaries, payments
  * Endpoints: /api/finance
  */
@@ -11,10 +11,13 @@ import { prisma } from '../database.js';
 import { validateIdParam } from '../utils/validate';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Finance');
 
 const router = Router();
 
-// ─── GET /api/finance/summary ───────────────────────────────────────────
+// â”€â”€â”€ GET /api/finance/summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/summary',
   requirePermission('view_payments'),
@@ -61,7 +64,7 @@ router.get(
   })
 );
 
-// ─── GET /api/finance/commissions ───────────────────────────────────────
+// â”€â”€â”€ GET /api/finance/commissions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/commissions',
   requirePermission('view_payments'),
@@ -107,7 +110,7 @@ router.get(
   })
 );
 
-// ─── GET /api/finance/commissions/:id ───────────────────────────────────
+// â”€â”€â”€ GET /api/finance/commissions/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/commissions/:id',
   requirePermission('view_payments'),
@@ -128,7 +131,7 @@ router.get(
   })
 );
 
-// ─── POST /api/finance/commissions ──────────────────────────────────────
+// â”€â”€â”€ POST /api/finance/commissions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/commissions',
   requirePermission('process_payments'),
@@ -137,7 +140,7 @@ router.post(
 
     if (!agentId) throw new AppError('Agent ID is required', 400);
 
-    // Validate and parse amount — catch NaN
+    // Validate and parse amount â€” catch NaN
     const MAX_COMMISSION = 100_000_000; // 100M AED
     const parsedAmount = typeof amount === 'string' ? parseFloat(amount) : Number(amount);
     if (!Number.isFinite(parsedAmount) || parsedAmount <= 0 || parsedAmount > MAX_COMMISSION) {
@@ -199,11 +202,13 @@ router.post(
       },
     });
 
+    log.info('Commission created', { userId: req.user?.id, commissionId: commission.id, agentId, amount: parsedAmount });
+
     res.status(201).json({ success: true, data: commission });
   })
 );
 
-// ─── PATCH /api/finance/commissions/:id ─────────────────────────────────
+// â”€â”€â”€ PATCH /api/finance/commissions/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/commissions/:id',
   requirePermission('process_payments'),
@@ -262,17 +267,19 @@ router.patch(
         data: {
           type: 'commission',
           action: 'status_changed',
-          description: `Commission for ${existing.agent.name || existing.agent.email}: ${existing.status} → ${status} (by ${req.user?.email})`,
+          description: `Commission for ${existing.agent.name || existing.agent.email}: ${existing.status} â†’ ${status} (by ${req.user?.email})`,
           userId: req.user?.id || null,
         },
       });
     }
 
+    log.info('Commission updated', { userId: req.user?.id, commissionId: id, status: commission.status });
+
     res.status(200).json({ success: true, data: commission });
   })
 );
 
-// ─── POST /api/finance/payments ─────────────────────────────────────────
+// â”€â”€â”€ POST /api/finance/payments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Bulk-pay approved commissions
 router.post(
   '/payments',

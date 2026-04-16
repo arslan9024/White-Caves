@@ -3,6 +3,9 @@
  * Handles intent detection, lead scoring, sentiment analysis, entity extraction
  * In production, these would be replaced with real NLP engines (Nina for NLP, Meta APIs for sentiment)
  */
+import { createLogger } from '../../utils/logger.js';
+
+const log = createLogger('MessageProcessor');
 
 // ============================================================================
 // INTENT DETECTION
@@ -326,56 +329,56 @@ export function generateBotResponse(context: BotResponseContext): string {
 
   const responses: Record<string, string> = {
     property_search: `${greeting}I'd love to help you find the perfect property! To narrow down options, could you share:
-    • Type of property (villa, apartment, townhouse)?
-    • Preferred location?
-    • Budget range?
-    Looking forward to assisting you! 🏠`,
+    â€¢ Type of property (villa, apartment, townhouse)?
+    â€¢ Preferred location?
+    â€¢ Budget range?
+    Looking forward to assisting you! ðŸ `,
 
     schedule_tour: `${greeting}Great! I can help you schedule a property tour. Please let me know:
-    • Which property interests you?
-    • Your preferred date and time?
-    • Any specific time that works best for you?
-    I'll get that arranged right away! 📅`,
+    â€¢ Which property interests you?
+    â€¢ Your preferred date and time?
+    â€¢ Any specific time that works best for you?
+    I'll get that arranged right away! ðŸ“…`,
 
     information_request: `${greeting}Here's the information you're looking for! Would you like me to:
-    • Provide detailed property specs?
-    • Show you similar properties?
-    • Schedule a viewing?
-    • Connect you with a property specialist?
-    Let me know how else I can help! ℹ️`,
+    â€¢ Provide detailed property specs?
+    â€¢ Show you similar properties?
+    â€¢ Schedule a viewing?
+    â€¢ Connect you with a property specialist?
+    Let me know how else I can help! â„¹ï¸`,
 
     make_offer: `${greeting}Excellent! I'm excited about your interest. To move forward:
-    • Let me connect you with our sales specialist
-    • We'll discuss pricing and terms
-    • Get your offer documented
-    Our team will contact you within the next hour! 🎉`,
+    â€¢ Let me connect you with our sales specialist
+    â€¢ We'll discuss pricing and terms
+    â€¢ Get your offer documented
+    Our team will contact you within the next hour! ðŸŽ‰`,
 
     financing: `${greeting}Great question! We offer flexible financing options. Our finance specialist can help with:
-    • Mortgage/loan options
-    • Payment plans
-    • EMI calculations
-    • ROI projections
-    Shall I connect you with our finance expert? 💰`,
+    â€¢ Mortgage/loan options
+    â€¢ Payment plans
+    â€¢ EMI calculations
+    â€¢ ROI projections
+    Shall I connect you with our finance expert? ðŸ’°`,
 
     legal_enquiry: `${greeting}Important documents - I'll help! Our legal team handles:
-    • Property deeds and registration
-    • Contracts and agreements
-    • Ownership transfer
-    • All compliance requirements
-    Connecting you with our legal specialist now... ⚖️`,
+    â€¢ Property deeds and registration
+    â€¢ Contracts and agreements
+    â€¢ Ownership transfer
+    â€¢ All compliance requirements
+    Connecting you with our legal specialist now... âš–ï¸`,
 
     complaint: `${greeting}Sorry to hear you're experiencing an issue. Our support team is here to help:
-    • What's the specific problem?
-    • How can we assist?
-    • Any solution preferences?
-    I'm escalating this to our manager immediately! 🆘`,
+    â€¢ What's the specific problem?
+    â€¢ How can we assist?
+    â€¢ Any solution preferences?
+    I'm escalating this to our manager immediately! ðŸ†˜`,
 
     general_inquiry: `${greeting}Thanks for reaching out! I'm here to assist with:
-    • Property search and information
-    • Schedule tours and viewings
-    • Financing and legal assistance
-    • General inquiries about our services
-    How can I help you today? 😊`,
+    â€¢ Property search and information
+    â€¢ Schedule tours and viewings
+    â€¢ Financing and legal assistance
+    â€¢ General inquiries about our services
+    How can I help you today? ðŸ˜Š`,
   };
 
   return responses[intent] || responses.general_inquiry;

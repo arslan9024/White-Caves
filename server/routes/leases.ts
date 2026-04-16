@@ -1,25 +1,27 @@
 /**
  * Leases API Routes
- * ─────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * CRUD endpoints for property lease management.
  *
- * GET    /api/leases           — List leases (tenant sees own, landlord sees own)
- * GET    /api/leases/:id       — Get lease detail
- * POST   /api/leases           — Create a new lease
- * PATCH  /api/leases/:id       — Update lease (renew, terminate, update terms)
- * DELETE /api/leases/:id       — Delete a lease (draft only)
- * GET    /api/leases/expiring  — Leases expiring within N days
+ * GET    /api/leases           â€” List leases (tenant sees own, landlord sees own)
+ * GET    /api/leases/:id       â€” Get lease detail
+ * POST   /api/leases           â€” Create a new lease
+ * PATCH  /api/leases/:id       â€” Update lease (renew, terminate, update terms)
+ * DELETE /api/leases/:id       â€” Delete a lease (draft only)
+ * GET    /api/leases/expiring  â€” Leases expiring within N days
  */
 
 import { Router, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import logger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Leases');
 
 const router = Router();
 
-// ─── GET /api/leases — List leases for current user ─────────────────────────
+// â”€â”€â”€ GET /api/leases â€” List leases for current user â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -73,7 +75,7 @@ router.get(
   }),
 );
 
-// ─── GET /api/leases/expiring — Leases expiring within N days ────────────────
+// â”€â”€â”€ GET /api/leases/expiring â€” Leases expiring within N days â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/expiring',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -108,7 +110,7 @@ router.get(
   }),
 );
 
-// ─── GET /api/leases/:id — Get lease detail ──────────────────────────────────
+// â”€â”€â”€ GET /api/leases/:id â€” Get lease detail â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/:id',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -140,7 +142,7 @@ router.get(
   }),
 );
 
-// ─── POST /api/leases — Create a new lease ───────────────────────────────────
+// â”€â”€â”€ POST /api/leases â€” Create a new lease â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -200,12 +202,12 @@ router.post(
       },
     });
 
-    logger.info('Lease created', { userId, leaseId: lease.id, propertyId, tenantId });
+    log.info('Lease created', { userId, leaseId: lease.id, propertyId, tenantId });
     res.status(201).json({ success: true, data: lease });
   }),
 );
 
-// ─── PATCH /api/leases/:id — Update a lease ─────────────────────────────────
+// â”€â”€â”€ PATCH /api/leases/:id â€” Update a lease â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/:id',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -219,7 +221,7 @@ router.patch(
     // Only landlord or owner can update
     const userRole = req.user?.role;
     if (existing.landlordId !== userId && userRole !== 'owner') {
-      throw new AppError('Access denied — only landlord or owner can update leases', 403);
+      throw new AppError('Access denied â€” only landlord or owner can update leases', 403);
     }
 
     const { status, monthlyRent, endDate, terms, nextPaymentDue, leaseNumber, documents } = req.body;
@@ -247,12 +249,12 @@ router.patch(
 
     const updated = await prisma.lease.update({ where: { id }, data: updateData });
 
-    logger.info('Lease updated', { userId, leaseId: id, status: updated.status });
+    log.info('Lease updated', { userId, leaseId: id, status: updated.status });
     res.json({ success: true, data: updated });
   }),
 );
 
-// ─── DELETE /api/leases/:id — Delete a lease (draft only) ───────────────────
+// â”€â”€â”€ DELETE /api/leases/:id â€” Delete a lease (draft only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/:id',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -276,7 +278,7 @@ router.delete(
 
     await prisma.lease.delete({ where: { id } });
 
-    logger.info('Lease deleted', { userId, leaseId: id });
+    log.info('Lease deleted', { userId, leaseId: id });
     res.json({ success: true, message: 'Lease deleted' });
   }),
 );

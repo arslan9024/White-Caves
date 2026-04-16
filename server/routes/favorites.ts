@@ -1,25 +1,27 @@
 /**
  * Favorites API Routes
- * ────────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * CRUD endpoints for user property favorites.
  * Each user can favorite a property once (unique constraint).
  *
- * GET    /api/favorites           — List user's favorites (with property data)
- * POST   /api/favorites           — Add a favorite
- * DELETE /api/favorites/:propertyId — Remove a favorite
- * GET    /api/favorites/check/:propertyId — Check if a property is favorited
- * GET    /api/favorites/ids       — Get all favorited property IDs (lightweight)
+ * GET    /api/favorites           â€” List user's favorites (with property data)
+ * POST   /api/favorites           â€” Add a favorite
+ * DELETE /api/favorites/:propertyId â€” Remove a favorite
+ * GET    /api/favorites/check/:propertyId â€” Check if a property is favorited
+ * GET    /api/favorites/ids       â€” Get all favorited property IDs (lightweight)
  */
 
 import { Router, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import logger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Favorites');
 
 const router = Router();
 
-// ─── GET /api/favorites — List all favorites for current user ────────────────
+// â”€â”€â”€ GET /api/favorites â€” List all favorites for current user â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -72,7 +74,7 @@ router.get(
   }),
 );
 
-// ─── GET /api/favorites/ids — Get all favorited property IDs (lightweight) ───
+// â”€â”€â”€ GET /api/favorites/ids â€” Get all favorited property IDs (lightweight) â”€â”€â”€
 router.get(
   '/ids',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -91,7 +93,7 @@ router.get(
   }),
 );
 
-// ─── GET /api/favorites/check/:propertyId — Check if property is favorited ───
+// â”€â”€â”€ GET /api/favorites/check/:propertyId â€” Check if property is favorited â”€â”€â”€
 router.get(
   '/check/:propertyId',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -114,7 +116,7 @@ router.get(
   }),
 );
 
-// ─── POST /api/favorites — Add a favorite ────────────────────────────────────
+// â”€â”€â”€ POST /api/favorites â€” Add a favorite â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -153,7 +155,7 @@ router.post(
       },
     });
 
-    logger.info('Property favorited', { userId, propertyId, propertyTitle: property.title });
+    log.info('Property favorited', { userId, propertyId, propertyTitle: property.title });
 
     res.status(201).json({
       success: true,
@@ -162,7 +164,7 @@ router.post(
   }),
 );
 
-// ─── DELETE /api/favorites/:propertyId — Remove a favorite ───────────────────
+// â”€â”€â”€ DELETE /api/favorites/:propertyId â€” Remove a favorite â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/:propertyId',
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -189,7 +191,7 @@ router.delete(
       },
     });
 
-    logger.info('Favorite removed', { userId, propertyId });
+    log.info('Favorite removed', { userId, propertyId });
 
     res.status(200).json({
       success: true,
