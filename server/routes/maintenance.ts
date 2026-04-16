@@ -15,8 +15,9 @@ import { Router, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import logger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
 
+const log = createLogger('Maintenance');
 const router = Router();
 
 // ─── GET /api/maintenance — List maintenance requests ────────────────────────
@@ -172,7 +173,7 @@ router.post(
       },
     });
 
-    logger.info('Maintenance request created', {
+    log.info('Maintenance request created', {
       userId,
       requestId: request.id,
       propertyId,
@@ -235,7 +236,7 @@ router.patch(
 
     const updated = await prisma.maintenance.update({ where: { id }, data: updateData });
 
-    logger.info('Maintenance request updated', { userId, requestId: id, status: updated.status });
+    log.info('Maintenance request updated', { userId, requestId: id, status: updated.status });
     res.json({ success: true, data: updated });
   }),
 );
@@ -258,7 +259,7 @@ router.delete(
 
     await prisma.maintenance.delete({ where: { id } });
 
-    logger.info('Maintenance request deleted', { userId, requestId: id });
+    log.info('Maintenance request deleted', { userId, requestId: id });
     res.json({ success: true, message: 'Maintenance request deleted' });
   }),
 );

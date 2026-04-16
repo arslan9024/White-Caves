@@ -9,8 +9,10 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
 
 const router = Router();
+const log = createLogger('Reporting');
 
 // ─── GET /api/dashboard/summary  &  /api/dashboard/overview ─────────────
 // Main dashboard overview used by CRM Hub  (frontend calls /summary)
@@ -20,6 +22,7 @@ router.get(
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Financial metrics restricted to managers/owners
+    log.info('Dashboard summary requested', { role: req.user?.role });
     const userRole = req.user?.role || '';
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes(userRole)) {

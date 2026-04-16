@@ -10,7 +10,9 @@ import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { validateIdParam } from '../utils/validate';
 import { requirePermission, requireRole } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
 
+const log = createLogger('Agents');
 const router = Router();
 
 // ─── GET /api/agents ────────────────────────────────────────────────────
@@ -19,6 +21,7 @@ router.get(
   requirePermission('manage_agents'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Agent list with performance data restricted to managers+
+    log.info('Listing agents', { role: req.user?.role });
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes(req.user?.role || '')) {
       throw new AppError('Access denied — agent list requires manager or above role', 403);

@@ -25,7 +25,7 @@ export interface UseFormValidation<T extends Record<string, unknown>> {
   /** Current validation errors (only dirty/touched fields shown) */
   errors: ValidationErrors;
   /** Map of fields that have been blurred at least once */
-  touched: Record<keyof T, boolean>;
+  touched: Record<string, boolean>;
   /** Handle input change — syncs value + clears its error if field was touched */
   handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   /** Handle input blur — triggers single-field validation */
@@ -73,7 +73,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
         const fieldValidators = schema[name];
         if (fieldValidators) {
           const error = validateField(fieldValidators, newValue);
-          setErrors((prev) => {
+          setErrors((prev: ValidationErrors) => {
             if (error) return { ...prev, [name]: error };
             const next = { ...prev };
             delete next[name];
@@ -93,7 +93,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
       const fieldValidators = schema[name];
       if (fieldValidators) {
         const error = validateField(fieldValidators, (values as Record<string, unknown>)[name]);
-        setErrors((prev) => {
+        setErrors((prev: ValidationErrors) => {
           if (error) return { ...prev, [name]: error };
           const next = { ...prev };
           delete next[name];
@@ -137,7 +137,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
         const fieldValidators = schema[name as string];
         if (fieldValidators) {
           const error = validateField(fieldValidators, value);
-          setErrors((prev) => {
+          setErrors((prev: ValidationErrors) => {
             if (error) return { ...prev, [name as string]: error };
             const next = { ...prev };
             delete next[name as string];

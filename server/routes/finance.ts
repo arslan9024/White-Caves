@@ -11,6 +11,9 @@ import { prisma } from '../database.js';
 import { validateIdParam } from '../utils/validate';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Finance');
 
 const router = Router();
 
@@ -19,6 +22,7 @@ router.get(
   '/summary',
   requirePermission('view_payments'),
   asyncHandler(async (req: Request, res: Response) => {
+    log.info('Finance summary requested');
     const [
       totalCommissions,
       paidCommissions,

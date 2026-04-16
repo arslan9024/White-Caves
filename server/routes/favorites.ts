@@ -15,8 +15,9 @@ import { Router, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import logger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
 
+const log = createLogger('Favorites');
 const router = Router();
 
 // ─── GET /api/favorites — List all favorites for current user ────────────────
@@ -153,7 +154,7 @@ router.post(
       },
     });
 
-    logger.info('Property favorited', { userId, propertyId, propertyTitle: property.title });
+    log.info('Property favorited', { userId, propertyId, propertyTitle: property.title });
 
     res.status(201).json({
       success: true,
@@ -189,7 +190,7 @@ router.delete(
       },
     });
 
-    logger.info('Favorite removed', { userId, propertyId });
+    log.info('Favorite removed', { userId, propertyId });
 
     res.status(200).json({
       success: true,

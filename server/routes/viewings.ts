@@ -14,8 +14,9 @@ import { Router, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import logger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
 
+const log = createLogger('Viewings');
 const router = Router();
 
 // ─── GET /api/viewings — List all viewings for current user ──────────────────
@@ -117,7 +118,7 @@ router.post(
       },
     });
 
-    logger.info('Viewing scheduled', { userId, viewingId: viewing.id, propertyId });
+    log.info('Viewing scheduled', { userId, viewingId: viewing.id, propertyId });
     res.status(201).json({ success: true, data: viewing });
   }),
 );
@@ -155,7 +156,7 @@ router.patch(
 
     const updated = await prisma.viewing.update({ where: { id }, data: updateData });
 
-    logger.info('Viewing updated', { userId, viewingId: id, status: updated.status });
+    log.info('Viewing updated', { userId, viewingId: id, status: updated.status });
     res.json({ success: true, data: updated });
   }),
 );
@@ -174,7 +175,7 @@ router.delete(
 
     await prisma.viewing.delete({ where: { id } });
 
-    logger.info('Viewing deleted', { userId, viewingId: id });
+    log.info('Viewing deleted', { userId, viewingId: id });
     res.json({ success: true, message: 'Viewing deleted' });
   }),
 );

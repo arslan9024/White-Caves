@@ -15,8 +15,9 @@ import { Router, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import logger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
 
+const log = createLogger('Leases');
 const router = Router();
 
 // ─── GET /api/leases — List leases for current user ─────────────────────────
@@ -200,7 +201,7 @@ router.post(
       },
     });
 
-    logger.info('Lease created', { userId, leaseId: lease.id, propertyId, tenantId });
+    log.info('Lease created', { userId, leaseId: lease.id, propertyId, tenantId });
     res.status(201).json({ success: true, data: lease });
   }),
 );
@@ -247,7 +248,7 @@ router.patch(
 
     const updated = await prisma.lease.update({ where: { id }, data: updateData });
 
-    logger.info('Lease updated', { userId, leaseId: id, status: updated.status });
+    log.info('Lease updated', { userId, leaseId: id, status: updated.status });
     res.json({ success: true, data: updated });
   }),
 );
@@ -276,7 +277,7 @@ router.delete(
 
     await prisma.lease.delete({ where: { id } });
 
-    logger.info('Lease deleted', { userId, leaseId: id });
+    log.info('Lease deleted', { userId, leaseId: id });
     res.json({ success: true, message: 'Lease deleted' });
   }),
 );

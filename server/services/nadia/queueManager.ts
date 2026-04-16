@@ -4,6 +4,9 @@
  */
 
 import { prisma } from '../../database.js';
+import { createLogger } from '../../utils/logger.js';
+
+const log = createLogger('QueueManager');
 
 // ============================================================================
 // QUEUE OPERATIONS
@@ -14,6 +17,7 @@ import { prisma } from '../../database.js';
  * Hot leads (priority 1-3) are shown first
  */
 export async function getQueuedConversations(limit: number = 10) {
+  log.info('Fetching queued conversations', { limit });
   const queued = await prisma.nadiaConversationQueue.findMany({
     where: {
       status: 'queued',

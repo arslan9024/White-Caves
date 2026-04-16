@@ -11,7 +11,9 @@ import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { validateIdParam } from '../utils/validate';
 import { requirePermission, requireRole } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
 
+const log = createLogger('Tenants');
 const router = Router();
 
 // ─── GET /api/tenants ───────────────────────────────────────────────────
@@ -20,6 +22,7 @@ router.get(
   requirePermission('view_contracts'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Tenant PII restricted to managers/admins
+    log.info('Listing tenants', { role: req.user?.role });
     const allowedRoles = ['owner', 'manager', 'admin'];
     if (!allowedRoles.includes(req.user?.role || '')) {
       throw new AppError('Access denied — tenant data requires manager or above role', 403);

@@ -13,8 +13,9 @@ import type { AuthRequest } from '../middleware/auth';
 import { JWT_SECRET, JWT_EXPIRES_SECONDS, BCRYPT_ROUNDS } from '../config/env';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
-import logger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
 
+const log = createLogger('Auth');
 const router = Router();
 
 /**

@@ -10,7 +10,9 @@ import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission, requireMinRole } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
 
+const log = createLogger('Compliance');
 const router = Router();
 
 // ─── GET /api/compliance/status ─────────────────────────────────────────
@@ -20,6 +22,7 @@ router.get(
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only managers/finance can view compliance status
+    log.info('Compliance status check', { role: req.user?.role });
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes(req.user?.role || '')) {
       throw new AppError('Access denied — compliance data requires manager role', 403);

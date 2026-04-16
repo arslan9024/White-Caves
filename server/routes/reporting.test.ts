@@ -41,6 +41,10 @@ const { mockPrisma } = vi.hoisted(() => {
 });
 
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
+vi.mock('../utils/logger.js', () => ({
+  default: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
+  createLogger: () => ({ info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() }),
+}));
 vi.mock('../middleware/errorHandler', () => ({
   AppError: class extends Error {
     statusCode: number;

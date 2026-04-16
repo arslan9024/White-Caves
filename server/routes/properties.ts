@@ -13,7 +13,9 @@ import { sanitizeString } from '../utils/sanitize';
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
 
+const log = createLogger('Properties');
 const router = Router();
 
 // ─── GET /api/properties ────────────────────────────────────────────────
@@ -21,6 +23,7 @@ router.get(
   '/',
   requirePermission('view_properties'),
   asyncHandler(async (req: Request, res: Response) => {
+    log.info('Listing properties', { type: req.query.type || 'all' });
     const {
       status, type, search, featured,
       minPrice, maxPrice, minBeds, minBaths,
