@@ -53,6 +53,9 @@ vi.mock('../middleware/errorHandler', () => ({
     Promise.resolve(fn(req, res, next)).catch(next),
 }));
 vi.mock('../middleware/auth', () => ({ default: null }));
+vi.mock('../utils/logger.js', () => ({
+  createLogger: () => ({ info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() }),
+}));
 
 import reportingRoutes from './reporting';
 
