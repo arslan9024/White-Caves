@@ -4,6 +4,9 @@
  */
 
 import { prisma } from '../database';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('LeadsService');
 
 /** Input for creating a new lead */
 interface CreateLeadInput {
@@ -33,6 +36,7 @@ export class LeadsService {
    * Get all leads with filters
    */
   async getAllLeads(filters?: { status?: string; source?: string }) {
+    log.info('Fetching leads', { filters });
     // Implementation pending
     return [];
   }

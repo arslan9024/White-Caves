@@ -13,6 +13,9 @@ import { sanitizeString } from '../utils/sanitize';
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Properties');
 
 const router = Router();
 
@@ -20,8 +23,7 @@ const router = Router();
 router.get(
   '/',
   requirePermission('view_properties'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const {
+  asyncHandler(async (req: Request, res: Response) => {    log.info('Properties list requested', { query: req.query });    const {
       status, type, search, featured,
       minPrice, maxPrice, minBeds, minBaths,
       sortBy = 'createdAt', sortOrder = 'desc',

@@ -14,7 +14,9 @@ import { Router, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import logger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Offers');
 
 const router = Router();
 
@@ -107,7 +109,7 @@ router.post(
       },
     });
 
-    logger.info('Offer submitted', { userId, offerId: offer.id, propertyId, amount });
+    log.info('Offer submitted', { userId, offerId: offer.id, propertyId, amount });
     res.status(201).json({ success: true, data: offer });
   }),
 );
@@ -151,7 +153,7 @@ router.patch(
 
     const updated = await prisma.offer.update({ where: { id }, data: updateData });
 
-    logger.info('Offer updated', { userId, offerId: id, status: updated.status });
+    log.info('Offer updated', { userId, offerId: id, status: updated.status });
     res.json({ success: true, data: updated });
   }),
 );
@@ -170,7 +172,7 @@ router.delete(
 
     await prisma.offer.delete({ where: { id } });
 
-    logger.info('Offer deleted', { userId, offerId: id });
+    log.info('Offer deleted', { userId, offerId: id });
     res.json({ success: true, message: 'Offer deleted' });
   }),
 );

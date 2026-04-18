@@ -13,6 +13,9 @@ import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Transactions');
 
 const router = Router();
 
@@ -20,8 +23,7 @@ const router = Router();
 router.get(
   '/',
   requirePermission('view_payments'),
-  asyncHandler(async (req: Request, res: Response) => {
-    // AUTHORIZATION: Transactions visible to owner/manager/admin/finance/agent
+  asyncHandler(async (req: Request, res: Response) => {    log.info('Transactions list requested', { role: req.user?.role });    // AUTHORIZATION: Transactions visible to owner/manager/admin/finance/agent
     const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'agent'];
     if (!allowedRoles.includes(req.user?.role || '')) {
       throw new AppError('Access denied — insufficient role for transaction data', 403);

@@ -4,12 +4,16 @@
  */
 
 import { prisma } from '../database';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('DashboardService');
 
 class DashboardService {
   /**
    * Get dashboard summary data
    */
   async getDashboardData() {
+    log.info('Fetching dashboard data');
     // Implementation pending - will aggregate lead, property, and transaction data
     return {
       summary: {

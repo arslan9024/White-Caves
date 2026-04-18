@@ -4,6 +4,10 @@
  * In production, these would be replaced with real NLP engines (Nina for NLP, Meta APIs for sentiment)
  */
 
+import { createLogger } from '../../utils/logger.js';
+
+const log = createLogger('MessageProcessor');
+
 // ============================================================================
 // INTENT DETECTION
 // ============================================================================
@@ -85,6 +89,7 @@ const INTENT_KEYWORDS: Record<string, string[]> = {
  * Returns intent and confidence score
  */
 export function detectIntent(messageContent: string): string {
+  log.info('Detecting intent', { messageLength: messageContent.length });
   const lower = messageContent.toLowerCase();
   let bestMatch = 'general_inquiry';
   let highestKeywordCount = 0;

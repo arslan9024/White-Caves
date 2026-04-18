@@ -4,6 +4,9 @@
  */
 
 import { prisma } from '../database';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('PropertiesService');
 
 /** Input for creating a property listing */
 interface CreatePropertyInput {
@@ -47,6 +50,7 @@ export class PropertiesService {
    * Get all properties with filters
    */
   async getAllProperties(filters?: { status?: string; type?: string; priceRange?: [number, number] }) {
+    log.info('Fetching properties', { filters });
     // Implementation pending
     return [];
   }

@@ -10,10 +10,13 @@ import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission, requireMinRole } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Compliance');
 
 const router = Router();
 
-// ─── GET /api/compliance/status ─────────────────────────────────────────
+// ─── GET /api/compliance/status ───────────────────────────────────────────
 // Overall compliance health check
 router.get(
   '/status',
@@ -24,6 +27,7 @@ router.get(
     if (!allowedRoles.includes(req.user?.role || '')) {
       throw new AppError('Access denied — compliance data requires manager role', 403);
     }
+    log.info('Compliance status requested', { role: req.user?.role });
 
     // Check key compliance metrics
     const [totalProperties, propertiesWithDocs, totalAgents, activeAgents] = await Promise.all([

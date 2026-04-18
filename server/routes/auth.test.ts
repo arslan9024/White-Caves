@@ -51,7 +51,8 @@ vi.mock('../utils/sanitize', () => ({
   sanitizeString: (s: string) => s,
 }));
 vi.mock('../utils/logger.js', () => ({
-  default: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
+  default: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
+  createLogger: () => ({ info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() }),
 }));
 vi.mock('../middleware/errorHandler', () => ({
   AppError: class extends Error {

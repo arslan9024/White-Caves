@@ -9,6 +9,9 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Reporting');
 
 const router = Router();
 
@@ -25,6 +28,7 @@ router.get(
     if (!allowedRoles.includes(userRole)) {
       throw new AppError('Access denied — dashboard summary requires manager or higher role', 403);
     }
+    log.info('Dashboard summary requested', { role: userRole });
 
     const [
       totalLeads, hotLeads, wonLeads,

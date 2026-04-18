@@ -9,10 +9,13 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('CRM');
 
 const router = Router();
 
-// ─── GET /api/crm/dashboard ────────────────────────────────────────────
+// ─── GET /api/crm/dashboard ──────────────────────────────────────────────
 router.get(
   '/dashboard',
   requirePermission('view_dashboard'),
@@ -22,6 +25,7 @@ router.get(
     if (!allowedRoles.includes(req.user?.role || '')) {
       throw new AppError('Access denied — CRM dashboard requires manager or above role', 403);
     }
+    log.info('CRM dashboard requested', { role: req.user?.role });
     const [
       leadCount, propertyCount, agentCount, activityCount,
       hotLeads, recentActivity,

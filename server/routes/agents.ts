@@ -10,10 +10,13 @@ import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { validateIdParam } from '../utils/validate';
 import { requirePermission, requireRole } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Agents');
 
 const router = Router();
 
-// ─── GET /api/agents ────────────────────────────────────────────────────
+// ─── GET /api/agents ──────────────────────────────────────────────────────
 router.get(
   '/',
   requirePermission('manage_agents'),
@@ -23,6 +26,7 @@ router.get(
     if (!allowedRoles.includes(req.user?.role || '')) {
       throw new AppError('Access denied — agent list requires manager or above role', 403);
     }
+    log.info('Agents list requested', { role: req.user?.role });
 
     const { status, department, search, page = '1', pageSize = '50' } = req.query;
 

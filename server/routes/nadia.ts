@@ -16,6 +16,9 @@ import {
 } from '../services/nadia/messageProcessor.js';
 import { getQueuedConversations, assignFromQueue } from '../services/nadia/queueManager.js';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('Nadia');
 
 const router = Router();
 
@@ -31,6 +34,7 @@ router.post(
   '/conversations',
   requirePermission('access_whatsapp_business'),
   asyncHandler(async (req: Request, res: Response) => {
+    log.info('New NADIA conversation', { phone: req.body.customerPhone });
     const { wabaId, customerPhone, initialMessage } = req.body;
 
     if (!customerPhone) {
