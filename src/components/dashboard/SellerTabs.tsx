@@ -326,7 +326,7 @@ export const SellerAnalytics: React.FC = () => {
 
         const propList: DashboardProperty[] = props.data ?? props.properties ?? [];
         const offList: DashboardOffer[] = offs.data ?? [];
-        const prices = propList.map((p) => p.price).filter(Boolean);
+        const prices = propList.map((p) => p.price).filter((p): p is number => Boolean(p));
         const avg = prices.length > 0 ? prices.reduce((a: number, b: number) => a + b, 0) / prices.length : 0;
         const accepted = offList.filter((o) => o.status === 'accepted').length;
 

@@ -27,7 +27,7 @@ const log = createLogger('settledJson');
  * @param fallbacks Array of fallback values, one per request
  * @returns         Array of parsed JSON results (same order as requests)
  */
-export async function settledJson<T extends unknown[]>(
+export async function settledJson<T extends Record<string, any>[]>(
   requests: { [K in keyof T]: Promise<Response> },
   fallbacks: { [K in keyof T]: T[K] },
 ): Promise<T> {

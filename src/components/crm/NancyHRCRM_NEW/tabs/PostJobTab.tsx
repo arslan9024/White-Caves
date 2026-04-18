@@ -2,7 +2,7 @@ import { JobPostComposer } from '../../shared';
 import { useToast } from '../../../Toast';
 
 interface JobData {
-  title: string;
+  title?: string;
   department?: string;
   location?: string;
   description?: string;
@@ -10,7 +10,7 @@ interface JobData {
 }
 
 interface PostedJob {
-  title: string;
+  title?: string;
   [key: string]: unknown;
 }
 
@@ -26,9 +26,9 @@ export default function PostJobTab({ state }: PostJobTabProps) {
   const { addJob } = state;
   const toast = useToast();
 
-  const handlePostJob = (jobData: JobData) => {
+  const handlePostJob = (jobData: JobData, _platforms: string[]) => {
     const newJob = addJob(jobData);
-    toast.success(`Job posted successfully: ${newJob.title}`);
+    toast.success(`Job posted successfully: ${newJob.title ?? 'Untitled'}`);
   };
 
   return (
@@ -39,7 +39,7 @@ export default function PostJobTab({ state }: PostJobTabProps) {
       </div>
 
       <div className="post-job-form-container">
-        <JobPostComposer onPublish={(data: JobData) => handlePostJob(data)} />
+        <JobPostComposer onPublish={handlePostJob} />
       </div>
     </div>
   );

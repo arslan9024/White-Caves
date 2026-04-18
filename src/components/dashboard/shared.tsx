@@ -197,6 +197,7 @@ export function formatCurrency(amount: number | null | undefined): string {
   return formatCurrencyBase(amount);
 }
 
-export function formatStatus(status: string): string {
+export function formatStatus(status: string | undefined): string {
+  if (!status) return 'Unknown';
   return status.replace(/[_-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
