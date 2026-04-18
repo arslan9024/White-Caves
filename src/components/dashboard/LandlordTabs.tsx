@@ -157,7 +157,7 @@ export const MaintenanceRequests: React.FC = () => {
         const [reqs, st] = await settledJson(
           [authFetch('/api/maintenance?pageSize=50'), authFetch('/api/maintenance/stats')],
           [{ data: [] }, { data: null }],
-        );
+        ) as Record<string, any>[];
         setRequests(reqs.data ?? []);
         setStats(st.data);
       } catch (error) { log.warn('Failed to fetch maintenance data:', error); }
@@ -345,7 +345,7 @@ export const LeaseManagement: React.FC = () => {
         const [all, exp] = await settledJson(
           [authFetch('/api/leases?role=landlord&pageSize=50'), authFetch('/api/leases/expiring?days=60')],
           [{ data: [] }, { data: [] }],
-        );
+        ) as Record<string, any>[];
         setLeases(all.data ?? []);
         setExpiring(exp.data ?? []);
       } catch (error) { log.warn('Failed to fetch lease data:', error); }

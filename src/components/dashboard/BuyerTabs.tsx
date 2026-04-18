@@ -33,7 +33,7 @@ export const BuyerOverview: React.FC = () => {
         const [fav, view, off, sSearch] = await settledJson(
           [authFetch('/api/favorites/ids'), authFetch('/api/viewings?pageSize=5'), authFetch('/api/offers?role=buyer&pageSize=5'), authFetch('/api/saved-searches')],
           [{ data: [] }, { data: [] }, { data: [] }, { data: [] }],
-        );
+        ) as Record<string, any>[];
 
         setStats({
           favorites: fav.data?.length ?? 0,

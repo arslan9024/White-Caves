@@ -32,7 +32,7 @@ export const TenantOverview: React.FC = () => {
         const [l, m] = await settledJson(
           [authFetch('/api/leases/my-lease'), authFetch('/api/maintenance?pageSize=5')],
           [{ data: null }, { data: [] }],
-        );
+        ) as Record<string, any>[];
         setLease(l.data);
         setMaintenance(m.data ?? []);
       } catch (error) { log.warn('Failed to fetch tenant overview:', error); }

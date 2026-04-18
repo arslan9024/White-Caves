@@ -25,7 +25,7 @@ export interface UseFormValidation<T extends Record<string, unknown>> {
   /** Current validation errors (only dirty/touched fields shown) */
   errors: ValidationErrors;
   /** Map of fields that have been blurred at least once */
-  touched: Record<keyof T, boolean>;
+  touched: Record<string, boolean>;
   /** Handle input change — syncs value + clears its error if field was touched */
   handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   /** Handle input blur — triggers single-field validation */

@@ -39,7 +39,7 @@ export default function PostJobTab({ state }: PostJobTabProps) {
       </div>
 
       <div className="post-job-form-container">
-        <JobPostComposer onPublish={(data: JobData) => handlePostJob(data)} />
+        <JobPostComposer onPublish={(data, _platforms) => handlePostJob(data as JobData)} />
       </div>
     </div>
   );
