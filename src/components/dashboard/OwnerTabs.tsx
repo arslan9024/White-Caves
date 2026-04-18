@@ -31,7 +31,7 @@ export const OwnerOverview: React.FC = () => {
         const [props, leads, leases] = await settledJson(
           [authFetch('/api/properties/count'), authFetch('/api/leads/count'), authFetch('/api/leases/count')],
           [{ count: 0 }, { count: 0 }, { count: 0 }],
-        );
+        ) as any[];
         setStats({
           properties: props.count ?? props.data ?? 0,
           leads: leads.count ?? leads.data ?? 0,

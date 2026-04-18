@@ -181,7 +181,7 @@ export const LeaseContracts: React.FC = () => {
                       <span style={S.badge(
                         l.status === 'active' ? '#16a34a' : l.status === 'expired' ? '#dc2626' : '#d97706',
                         l.status === 'active' ? '#dcfce7' : l.status === 'expired' ? '#fef2f2' : '#fffbeb',
-                      )}>{S.formatStatus(l.status)}</span>
+                      )}>{S.formatStatus(l.status ?? '')}</span>
                     </td>
                   </tr>
                 ))}
@@ -214,8 +214,8 @@ export const LeasingViewings: React.FC = () => {
 
   if (loading) return <div style={S.tabContainer}>{S.loadingState}</div>;
 
-  const upcoming = viewings.filter((v) => new Date(v.scheduledDate) >= new Date());
-  const past = viewings.filter((v) => new Date(v.scheduledDate) < new Date());
+  const upcoming = viewings.filter((v) => new Date(v.scheduledDate ?? '') >= new Date());
+  const past = viewings.filter((v) => new Date(v.scheduledDate ?? '') < new Date());
 
   return (
     <div style={S.tabContainer}>
@@ -258,12 +258,12 @@ export const LeasingViewings: React.FC = () => {
                   <tr key={v.id}>
                     <td style={S.td}>{v.property?.title ?? '—'}</td>
                     <td style={S.td}>{v.lead?.name ?? v.user?.name ?? '—'}</td>
-                    <td style={S.td}>{S.formatDate(v.scheduledDate)}</td>
+                    <td style={S.td}>{S.formatDate(v.scheduledDate ?? '')}</td>
                     <td style={S.td}>
                       <span style={S.badge(
                         v.status === 'confirmed' ? '#16a34a' : v.status === 'cancelled' ? '#dc2626' : '#d97706',
                         v.status === 'confirmed' ? '#dcfce7' : v.status === 'cancelled' ? '#fef2f2' : '#fffbeb',
-                      )}>{S.formatStatus(v.status)}</span>
+                      )}>{S.formatStatus(v.status ?? '')}</span>
                     </td>
                     <td style={S.td}>{v.notes ?? '—'}</td>
                   </tr>
@@ -327,7 +327,7 @@ export const TenantApplications: React.FC = () => {
                       <span style={S.badge(
                         a.status === 'approved' ? '#16a34a' : a.status === 'rejected' ? '#dc2626' : '#d97706',
                         a.status === 'approved' ? '#dcfce7' : a.status === 'rejected' ? '#fef2f2' : '#fffbeb',
-                      )}>{S.formatStatus(a.status)}</span>
+                      )}>{S.formatStatus(a.status ?? '')}</span>
                     </td>
                     <td style={S.td}>{a.notes ?? '—'}</td>
                   </tr>
@@ -589,9 +589,9 @@ export const ActiveDeals: React.FC = () => {
                     <td style={S.td}>{o.buyer?.name ?? o.user?.name ?? '—'}</td>
                     <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(o.amount)}</td>
                     <td style={S.td}>
-                      <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(o.status)}</span>
+                      <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(o.status ?? '')}</span>
                     </td>
-                    <td style={S.td}>{S.formatDate(o.createdAt)}</td>
+                    <td style={S.td}>{S.formatDate(o.createdAt ?? '')}</td>
                   </tr>
                 ))}
               </tbody>

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../../../../styles/theme';
 
-const { spacing, radius, shadows, transitions, colors, typography , spacing , spacing } = theme;
+const { radius, shadows, transitions, colors, typography, spacing } = theme;
 
 export const MaryDetailsTabContainer = styled.div`
   padding: 0;

@@ -73,7 +73,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
         const fieldValidators = schema[name];
         if (fieldValidators) {
           const error = validateField(fieldValidators, newValue);
-          setErrors((prev) => {
+          setErrors((prev: Record<string, string>) => {
             if (error) return { ...prev, [name]: error };
             const next = { ...prev };
             delete next[name];
@@ -93,7 +93,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
       const fieldValidators = schema[name];
       if (fieldValidators) {
         const error = validateField(fieldValidators, (values as Record<string, unknown>)[name]);
-        setErrors((prev) => {
+        setErrors((prev: Record<string, string>) => {
           if (error) return { ...prev, [name]: error };
           const next = { ...prev };
           delete next[name];
@@ -137,7 +137,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
         const fieldValidators = schema[name as string];
         if (fieldValidators) {
           const error = validateField(fieldValidators, value);
-          setErrors((prev) => {
+          setErrors((prev: Record<string, string>) => {
             if (error) return { ...prev, [name as string]: error };
             const next = { ...prev };
             delete next[name as string];
@@ -159,5 +159,5 @@ export function useFormValidation<T extends Record<string, unknown>>(
     [initialValues],
   );
 
-  return { values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue, isValid, reset };
+  return { values, errors, touched: touched as Record<keyof T, boolean>, handleChange, handleBlur, handleSubmit, setFieldValue, isValid, reset };
 }
