@@ -74,7 +74,7 @@ export const SellerListings: React.FC = () => {
                         p.status === 'active' ? '#16a34a' : '#d97706',
                         p.status === 'active' ? '#dcfce7' : '#fffbeb',
                       )}>
-                        {S.formatStatus(p.status)}
+                        {S.formatStatus(p.status ?? '')}
                       </span>
                     </td>
                     <td style={S.td}>{p.views ?? 0}</td>
@@ -143,7 +143,7 @@ export const SellerInquiries: React.FC = () => {
                       <span style={S.badge('#d97706', '#fffbeb')}>{l.score ?? 0}/100</span>
                     </td>
                     <td style={S.td}>
-                      <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(l.status)}</span>
+                      <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(l.status ?? '')}</span>
                     </td>
                     <td style={S.td}>{S.formatDate(l.createdAt)}</td>
                   </tr>
@@ -286,7 +286,7 @@ export const ReceivedOffers: React.FC = () => {
                       <td style={S.td}>{o.buyer?.name ?? '—'}</td>
                       <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(o.amount)}</td>
                       <td style={S.td}>
-                        <span style={S.badge(sc.c, sc.bg)}>{S.formatStatus(o.status)}</span>
+                        <span style={S.badge(sc.c, sc.bg)}>{S.formatStatus(o.status ?? '')}</span>
                       </td>
                       <td style={S.td}>{S.formatDate(o.createdAt)}</td>
                       <td style={S.td}>
@@ -322,12 +322,12 @@ export const SellerAnalytics: React.FC = () => {
         const [props, offs] = await settledJson(
           [authFetch('/api/properties?role=seller'), authFetch('/api/offers?role=seller')],
           [{ data: [] }, { data: [] }],
-        );
+        ) as Record<string, any>[];
 
         const propList: DashboardProperty[] = props.data ?? props.properties ?? [];
         const offList: DashboardOffer[] = offs.data ?? [];
-        const prices = propList.map((p) => p.price).filter(Boolean);
-        const avg = prices.length > 0 ? prices.reduce((a: number, b: number) => a + b, 0) / prices.length : 0;
+        const prices = propList.map((p) => p.price).filter((p): p is number => p != null);
+        const avg = prices.length > 0 ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
         const accepted = offList.filter((o) => o.status === 'accepted').length;
 
         setStats({

@@ -18,9 +18,19 @@ const INITIAL_FORM_DATA = {
   email: '',
   phone: '',
   notes: '',
-} as const;
+};
 
-export type ProspectFormData = typeof INITIAL_FORM_DATA;
+export type ProspectFormData = {
+  name: string;
+  type: string;
+  size: string;
+  status: string;
+  value: number;
+  stage: string;
+  email: string;
+  phone: string;
+  notes: string;
+};
 
 export function useProspectsForm() {
   const {

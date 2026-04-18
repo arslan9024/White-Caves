@@ -32,7 +32,7 @@ export const TenantOverview: React.FC = () => {
         const [l, m] = await settledJson(
           [authFetch('/api/leases/my-lease'), authFetch('/api/maintenance?pageSize=5')],
           [{ data: null }, { data: [] }],
-        );
+        ) as Record<string, any>[];
         setLease(l.data);
         setMaintenance(m.data ?? []);
       } catch (error) { log.warn('Failed to fetch tenant overview:', error); }
@@ -83,7 +83,7 @@ export const TenantOverview: React.FC = () => {
           {maintenance.map((m) => (
             <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid #f3f4f6' }}>
               <span>{m.title}</span>
-              <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(m.status)}</span>
+              <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(m.status ?? '')}</span>
             </div>
           ))}
         </div>
@@ -162,7 +162,7 @@ export const TenantLease: React.FC = () => {
                 lease.status === 'active' ? '#16a34a' : '#d97706',
                 lease.status === 'active' ? '#dcfce7' : '#fffbeb',
               )}>
-                {S.formatStatus(lease.status)}
+                {S.formatStatus(lease.status ?? '')}
               </span>
             </p>
           </div>
@@ -251,7 +251,7 @@ export const TenantPayments: React.FC = () => {
                         p.status === 'paid' ? '#16a34a' : p.status === 'overdue' ? '#dc2626' : '#d97706',
                         p.status === 'paid' ? '#dcfce7' : p.status === 'overdue' ? '#fef2f2' : '#fffbeb',
                       )}>
-                        {S.formatStatus(p.status)}
+                        {S.formatStatus(p.status ?? '')}
                       </span>
                     </td>
                   </tr>
@@ -308,13 +308,13 @@ export const TenantMaintenance: React.FC = () => {
                     r.priority === 'emergency' ? '#dc2626' : r.priority === 'high' ? '#d97706' : '#2563eb',
                     r.priority === 'emergency' ? '#fef2f2' : r.priority === 'high' ? '#fffbeb' : '#dbeafe',
                   )}>
-                    {S.formatStatus(r.priority)}
+                    {S.formatStatus(r.priority ?? '')}
                   </span>
                 </div>
                 {r.description && <p style={{ color: '#6b7280', fontSize: '0.85rem', margin: '0 0 0.5rem 0' }}>{r.description}</p>}
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#9ca3af' }}>
                   <span>📅 {S.formatDate(r.createdAt)}</span>
-                  <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(r.status)}</span>
+                  <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(r.status ?? '')}</span>
                 </div>
               </div>
             ))}

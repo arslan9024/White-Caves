@@ -34,7 +34,7 @@ vi.mock('styled-components', async () => {
     );
     component.displayName = `styled.${tag}`;
     // Support .attrs() chain
-    (component as Record<string, unknown>).attrs = () => component;
+    (component as unknown as Record<string, unknown>).attrs = () => component;
     return component;
   };
 

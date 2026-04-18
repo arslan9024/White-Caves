@@ -19,7 +19,7 @@ export type { FormFieldProps } from './FormField';
 // Additional Components
 export { default as Popover } from './Popover';
 export { default as Tooltip } from './Tooltip';
-export { default as Tabs } from './Tabs';
+export { Tabs } from './Tabs';
 export { default as Pagination } from './Pagination';
 export { default as ProgressBar } from './ProgressBar';
 export { ToastContainer } from './ToastContainer';
