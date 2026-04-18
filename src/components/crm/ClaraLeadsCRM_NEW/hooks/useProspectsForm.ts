@@ -8,7 +8,19 @@
 import { useState, useCallback, FormEvent } from 'react';
 import { useLeadsData } from './useLeadsData';
 
-const INITIAL_FORM_DATA = {
+export interface ProspectFormData {
+  name: string;
+  type: string;
+  size: string;
+  status: string;
+  value: number;
+  stage: string;
+  email: string;
+  phone: string;
+  notes: string;
+}
+
+const INITIAL_FORM_DATA: ProspectFormData = {
   name: '',
   type: 'commercial',
   size: 'medium',
@@ -18,9 +30,7 @@ const INITIAL_FORM_DATA = {
   email: '',
   phone: '',
   notes: '',
-} as const;
-
-export type ProspectFormData = typeof INITIAL_FORM_DATA;
+};
 
 export function useProspectsForm() {
   const {
