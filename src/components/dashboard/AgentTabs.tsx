@@ -65,7 +65,7 @@ export const LeasingPipeline: React.FC = () => {
               <div key={l.id} style={{ ...S.card, marginBottom: '0.5rem', padding: '0.75rem' }}>
                 <strong style={{ fontSize: '0.85rem' }}>{l.property?.title ?? l.propertyId ?? '—'}</strong>
                 <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0.25rem 0 0 0' }}>
-                  {l.tenant?.name ?? 'Pending'} — {S.formatCurrency(l.monthlyRent)}
+                  {l.tenant?.name ?? 'Pending'} — {S.formatCurrency(l.monthlyRent as any)}
                 </p>
               </div>
             ))}
@@ -113,11 +113,11 @@ export const LeasingProperties: React.FC = () => {
                 <p style={{ ...S.headerSubtitle, margin: 0 }}>📍 {p.location}</p>
                 <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem', fontSize: '0.85rem', color: '#6b7280' }}>
                   <span>🛏️ {p.bedrooms ?? 0} BR</span>
-                  <span style={{ fontWeight: 600, color: 'var(--color-primary, #D4AF37)' }}>{S.formatCurrency(p.price)}/yr</span>
+                  <span style={{ fontWeight: 600, color: 'var(--color-primary, #D4AF37)' }}>{S.formatCurrency(p.price as any)}/yr</span>
                   <span style={S.badge(
                     p.status === 'available' ? '#16a34a' : '#d97706',
                     p.status === 'available' ? '#dcfce7' : '#fffbeb',
-                  )}>{S.formatStatus(p.status ?? 'available')}</span>
+                  )}>{S.formatStatus(p.status ?? 'available' as any)}</span>
                 </div>
               </div>
             ))}
@@ -176,12 +176,12 @@ export const LeaseContracts: React.FC = () => {
                     <td style={S.td}>{l.tenant?.name ?? '—'}</td>
                     <td style={S.td}>{S.formatDate(l.startDate)}</td>
                     <td style={S.td}>{S.formatDate(l.endDate)}</td>
-                    <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(l.monthlyRent)}</td>
+                    <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(l.monthlyRent as any)}</td>
                     <td style={S.td}>
                       <span style={S.badge(
                         l.status === 'active' ? '#16a34a' : l.status === 'expired' ? '#dc2626' : '#d97706',
                         l.status === 'active' ? '#dcfce7' : l.status === 'expired' ? '#fef2f2' : '#fffbeb',
-                      )}>{S.formatStatus(l.status)}</span>
+                      )}>{S.formatStatus(l.status as any)}</span>
                     </td>
                   </tr>
                 ))}
@@ -214,8 +214,8 @@ export const LeasingViewings: React.FC = () => {
 
   if (loading) return <div style={S.tabContainer}>{S.loadingState}</div>;
 
-  const upcoming = viewings.filter((v) => new Date(v.scheduledDate) >= new Date());
-  const past = viewings.filter((v) => new Date(v.scheduledDate) < new Date());
+  const upcoming = viewings.filter((v) => new Date(v.scheduledDate as string) >= new Date());
+  const past = viewings.filter((v) => new Date(v.scheduledDate as string) < new Date());
 
   return (
     <div style={S.tabContainer}>
@@ -263,7 +263,7 @@ export const LeasingViewings: React.FC = () => {
                       <span style={S.badge(
                         v.status === 'confirmed' ? '#16a34a' : v.status === 'cancelled' ? '#dc2626' : '#d97706',
                         v.status === 'confirmed' ? '#dcfce7' : v.status === 'cancelled' ? '#fef2f2' : '#fffbeb',
-                      )}>{S.formatStatus(v.status)}</span>
+                      )}>{S.formatStatus(v.status as any)}</span>
                     </td>
                     <td style={S.td}>{v.notes ?? '—'}</td>
                   </tr>
@@ -327,7 +327,7 @@ export const TenantApplications: React.FC = () => {
                       <span style={S.badge(
                         a.status === 'approved' ? '#16a34a' : a.status === 'rejected' ? '#dc2626' : '#d97706',
                         a.status === 'approved' ? '#dcfce7' : a.status === 'rejected' ? '#fef2f2' : '#fffbeb',
-                      )}>{S.formatStatus(a.status)}</span>
+                      )}>{S.formatStatus(a.status as any)}</span>
                     </td>
                     <td style={S.td}>{a.notes ?? '—'}</td>
                   </tr>
@@ -388,7 +388,7 @@ export const LeaseRenewals: React.FC = () => {
                     <td style={S.td}>{l.property?.title ?? '—'}</td>
                     <td style={S.td}>{l.tenant?.name ?? '—'}</td>
                     <td style={{ ...S.td, color: '#d97706', fontWeight: 600 }}>{S.formatDate(l.endDate)}</td>
-                    <td style={S.td}>{S.formatCurrency(l.monthlyRent)}</td>
+                    <td style={S.td}>{S.formatCurrency(l.monthlyRent as any)}</td>
                     <td style={S.td}>
                       <span style={S.badge('#d97706', '#fffbeb')}>Expiring</span>
                     </td>
@@ -437,7 +437,7 @@ export const SalesPipeline: React.FC = () => {
     <div style={S.tabContainer}>
       <div style={S.pageHeader}>
         <h2 style={S.headerTitle}>📊 Sales Pipeline</h2>
-        <p style={S.headerSubtitle}>{offers.length} deals — {S.formatCurrency(totalValue)} total value</p>
+        <p style={S.headerSubtitle}>{offers.length} deals — {S.formatCurrency(totalValue as any)} total value</p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: `repeat(${stages.length}, minmax(200px, 1fr))`, gap: '0.75rem', overflowX: 'auto' }}>
@@ -450,7 +450,7 @@ export const SalesPipeline: React.FC = () => {
               <div key={o.id} style={{ ...S.card, marginBottom: '0.5rem', padding: '0.75rem' }}>
                 <strong style={{ fontSize: '0.85rem' }}>{o.property?.title ?? '—'}</strong>
                 <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0.25rem 0 0 0' }}>
-                  {S.formatCurrency(o.amount)}
+                  {S.formatCurrency(o.amount as any)}
                 </p>
               </div>
             ))}
@@ -507,14 +507,14 @@ export const SalesLeads: React.FC = () => {
                 {leads.map((l) => (
                   <tr key={l.id}>
                     <td style={S.td}><strong>{l.name}</strong></td>
-                    <td style={S.td}>{S.formatStatus(l.source ?? 'direct')}</td>
+                    <td style={S.td}>{S.formatStatus(l.source ?? 'direct' as any)}</td>
                     <td style={S.td}>{l.propertyInterest ?? '—'}</td>
-                    <td style={S.td}>{S.formatCurrency(l.budget)}</td>
+                    <td style={S.td}>{S.formatCurrency(l.budget as any)}</td>
                     <td style={S.td}>
                       <span style={S.badge(
                         l.status === 'hot' ? '#dc2626' : l.status === 'warm' ? '#d97706' : '#16a34a',
                         l.status === 'hot' ? '#fef2f2' : l.status === 'warm' ? '#fffbeb' : '#dcfce7',
-                      )}>{S.formatStatus(l.status ?? 'new')}</span>
+                      )}>{S.formatStatus(l.status ?? 'new' as any)}</span>
                     </td>
                     <td style={S.td}>{S.formatDate(l.lastContactDate ?? l.updatedAt)}</td>
                   </tr>
@@ -554,7 +554,7 @@ export const ActiveDeals: React.FC = () => {
     <div style={S.tabContainer}>
       <div style={S.pageHeader}>
         <h2 style={S.headerTitle}>🤝 Active Deals</h2>
-        <p style={S.headerSubtitle}>{offers.length} active — {S.formatCurrency(totalValue)}</p>
+        <p style={S.headerSubtitle}>{offers.length} active — {S.formatCurrency(totalValue as any)}</p>
       </div>
 
       <div style={S.statsGrid}>
@@ -563,7 +563,7 @@ export const ActiveDeals: React.FC = () => {
           <span style={S.statLabel}>🤝 Active Deals</span>
         </div>
         <div style={S.statCard}>
-          <span style={S.statValue}>{S.formatCurrency(totalValue)}</span>
+          <span style={S.statValue}>{S.formatCurrency(totalValue as any)}</span>
           <span style={S.statLabel}>💰 Pipeline Value</span>
         </div>
       </div>
@@ -587,9 +587,9 @@ export const ActiveDeals: React.FC = () => {
                   <tr key={o.id}>
                     <td style={S.td}>{o.property?.title ?? '—'}</td>
                     <td style={S.td}>{o.buyer?.name ?? o.user?.name ?? '—'}</td>
-                    <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(o.amount)}</td>
+                    <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(o.amount as any)}</td>
                     <td style={S.td}>
-                      <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(o.status)}</span>
+                      <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(o.status as any)}</span>
                     </td>
                     <td style={S.td}>{S.formatDate(o.createdAt)}</td>
                   </tr>
@@ -636,7 +636,7 @@ export const AgentPerformance: React.FC = () => {
           <span style={S.statLabel}>🤝 Total Deals</span>
         </div>
         <div style={S.statCard}>
-          <span style={S.statValue}>{S.formatCurrency(stats?.totalVolume ?? 0)}</span>
+          <span style={S.statValue}>{S.formatCurrency(stats?.totalVolume ?? 0 as any)}</span>
           <span style={S.statLabel}>💰 Total Volume</span>
         </div>
         <div style={S.statCard}>

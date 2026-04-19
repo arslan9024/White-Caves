@@ -28,7 +28,7 @@ export const OwnerOverview: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const [props, leads, leases] = await settledJson(
+        const [props, leads, leases]: any[] = await settledJson(
           [authFetch('/api/properties/count'), authFetch('/api/leads/count'), authFetch('/api/leases/count')],
           [{ count: 0 }, { count: 0 }, { count: 0 }],
         );
@@ -84,7 +84,7 @@ export const OwnerOverview: React.FC = () => {
                 <span style={S.badge(
                   bot.status === 'online' ? '#16a34a' : '#d97706',
                   bot.status === 'online' ? '#dcfce7' : '#fffbeb',
-                )}>{S.formatStatus(bot.status)}</span>
+                )}>{S.formatStatus(bot.status as any)}</span>
               </div>
             ))}
           </div>
@@ -142,11 +142,11 @@ export const BusinessAnalytics: React.FC = () => {
 
       <div style={S.statsGrid}>
         <div style={S.statCard}>
-          <span style={S.statValue}>{S.formatCurrency(data?.totalRevenue ?? 0)}</span>
+          <span style={S.statValue}>{S.formatCurrency(data?.totalRevenue ?? 0 as any)}</span>
           <span style={S.statLabel}>💰 Total Revenue</span>
         </div>
         <div style={S.statCard}>
-          <span style={S.statValue}>{S.formatCurrency(data?.monthlyRevenue ?? 0)}</span>
+          <span style={S.statValue}>{S.formatCurrency(data?.monthlyRevenue ?? 0 as any)}</span>
           <span style={S.statLabel}>📅 Monthly Revenue</span>
         </div>
         <div style={S.statCard}>
@@ -235,7 +235,7 @@ export const WhatsAppDashboard: React.FC = () => {
               <span style={S.badge(
                 bot.status === 'online' ? '#16a34a' : '#d97706',
                 bot.status === 'online' ? '#dcfce7' : '#fffbeb',
-              )}>{S.formatStatus(bot.status)}</span>
+              )}>{S.formatStatus(bot.status as any)}</span>
             </div>
             <div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem', color: '#6b7280' }}>
               <span>💬 {bot.messages24h} messages</span>
@@ -295,7 +295,7 @@ export const SystemHealth: React.FC = () => {
               <span style={S.badge(
                 svc.status === 'healthy' ? '#16a34a' : svc.status === 'standby' ? '#d97706' : '#6b7280',
                 svc.status === 'healthy' ? '#dcfce7' : svc.status === 'standby' ? '#fffbeb' : '#f3f4f6',
-              )}>{S.formatStatus(svc.status)}</span>
+              )}>{S.formatStatus(svc.status as any)}</span>
             </div>
           </div>
         ))}
