@@ -58,6 +58,12 @@ interface ExpenseCollection {
   error?: string | null;
 }
 
+interface TransactionCollection {
+  items: CRMItem[];
+  loading: boolean;
+  error?: string | null;
+}
+
 interface CRMDataState {
   leads: CRMCollection<CRMItem>;
   clients: CRMCollection<CRMItem>;
@@ -66,6 +72,7 @@ interface CRMDataState {
   commissions: CommissionCollection;
   invoices: InvoiceCollection;
   expenses: ExpenseCollection;
+  transactions: TransactionCollection;
   activities: ActivityCollection;
   overview: Record<string, unknown> | null;
   lastUpdated: string;
@@ -113,6 +120,12 @@ const initialState: CRMDataState = {
   },
 
   expenses: {
+    items: [],
+    loading: false,
+    error: null
+  },
+
+  transactions: {
     items: [],
     loading: false,
     error: null
@@ -856,6 +869,120 @@ export const convertLeadToClientAPI = createAsyncThunk<
   }
 );
 
+// ============================================================================
+// TRANSACTION THUNKS
+// ============================================================================
+
+/** Fetch transactions from API — GET /api/transactions */
+export const fetchTransactionsFromAPI = createAsyncThunk<
+  { data: CRMItem[]; pagination?: Record<string, unknown> },
+  { status?: string; type?: string; page?: number; pageSize?: number },
+  { rejectValue: string }
+>(
+  'crmData/fetchTransactions',
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const query = new URLSearchParams();
+      if (params.status) query.set('status', params.status);
+      if (params.type) query.set('type', params.type);
+      if (params.page) query.set('page', String(params.page));
+      if (params.pageSize) query.set('pageSize', String(params.pageSize));
+      const url = `/api/transactions${query.toString() ? `?${query}` : ''}`;
+      const response = await authFetch(url);
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to fetch transactions'));
+      const json = await response.json();
+      return { data: json.data, pagination: json.pagination };
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch transactions'));
+    }
+  }
+);
+
+/** Create a transaction — POST /api/transactions */
+export const createTransactionAPI = createAsyncThunk<
+  CRMItem,
+  { type: string; amount: number; propertyId?: string; leadId?: string; agentId?: string; closingDate?: string; notes?: string },
+  { rejectValue: string }
+>(
+  'crmData/createTransaction',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await authFetch('/api/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to create transaction'));
+      const json = await response.json();
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to create transaction'));
+    }
+  }
+);
+
+/** Update a transaction — PATCH /api/transactions/:id */
+export const updateTransactionAPI = createAsyncThunk<
+  CRMItem,
+  { id: string; status?: string; amount?: number; type?: string; closingDate?: string; notes?: string; documents?: string[] },
+  { rejectValue: string }
+>(
+  'crmData/updateTransaction',
+  async ({ id, ...data }, { rejectWithValue }) => {
+    try {
+      const response = await authFetch(`/api/transactions/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to update transaction'));
+      const json = await response.json();
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to update transaction'));
+    }
+  }
+);
+
+/** Delete a transaction — DELETE /api/transactions/:id */
+export const deleteTransactionAPI = createAsyncThunk<
+  string,
+  string,
+  { rejectValue: string }
+>(
+  'crmData/deleteTransaction',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await authFetch(`/api/transactions/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to delete transaction'));
+      return id;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to delete transaction'));
+    }
+  }
+);
+
+/** Fetch transaction stats — GET /api/transactions/stats */
+export const fetchTransactionStatsAPI = createAsyncThunk<
+  Record<string, unknown>,
+  void,
+  { rejectValue: string }
+>(
+  'crmData/fetchTransactionStats',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authFetch('/api/transactions/stats');
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to fetch transaction stats'));
+      const json = await response.json();
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch transaction stats'));
+    }
+  }
+);
+
 const crmDataSlice = createSlice({
   name: 'crmData',
   initialState,
@@ -1080,6 +1207,16 @@ const crmDataSlice = createSlice({
 
     setExpensesLoading: (state, action: PayloadAction<boolean>) => {
       state.expenses.loading = action.payload;
+    },
+
+    // ============== TRANSACTIONS ==============
+    setTransactions: (state, action: PayloadAction<CRMItem[]>) => {
+      state.transactions.items = action.payload;
+      state.lastUpdated = new Date().toISOString();
+    },
+
+    setTransactionsLoading: (state, action: PayloadAction<boolean>) => {
+      state.transactions.loading = action.payload;
     },
 
     // ============== ACTIVITIES ==============
@@ -1599,6 +1736,69 @@ const crmDataSlice = createSlice({
         state.expenses.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to delete expense';
       });
 
+    // --- Fetch Transactions ---
+    builder
+      .addCase(fetchTransactionsFromAPI.pending, (state) => {
+        state.transactions.loading = true;
+        state.transactions.error = null;
+      })
+      .addCase(fetchTransactionsFromAPI.fulfilled, (state, action) => {
+        state.transactions.loading = false;
+        state.transactions.items = action.payload.data;
+        state.transactions.error = null;
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(fetchTransactionsFromAPI.rejected, (state, action) => {
+        state.transactions.loading = false;
+        state.transactions.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to fetch transactions';
+      });
+
+    // --- Create Transaction ---
+    builder
+      .addCase(createTransactionAPI.pending, (state) => {
+        state.transactions.loading = true;
+      })
+      .addCase(createTransactionAPI.fulfilled, (state, action) => {
+        state.transactions.loading = false;
+        state.transactions.items.unshift(action.payload);
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(createTransactionAPI.rejected, (state, action) => {
+        state.transactions.loading = false;
+        state.transactions.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to create transaction';
+      });
+
+    // --- Update Transaction ---
+    builder
+      .addCase(updateTransactionAPI.pending, (state) => {
+        state.transactions.loading = true;
+      })
+      .addCase(updateTransactionAPI.fulfilled, (state, action) => {
+        state.transactions.loading = false;
+        const idx = state.transactions.items.findIndex(t => t.id === action.payload.id);
+        if (idx !== -1) state.transactions.items[idx] = action.payload;
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(updateTransactionAPI.rejected, (state, action) => {
+        state.transactions.loading = false;
+        state.transactions.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to update transaction';
+      });
+
+    // --- Delete Transaction ---
+    builder
+      .addCase(deleteTransactionAPI.pending, (state) => {
+        state.transactions.loading = true;
+      })
+      .addCase(deleteTransactionAPI.fulfilled, (state, action) => {
+        state.transactions.loading = false;
+        state.transactions.items = state.transactions.items.filter(t => t.id !== action.payload);
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(deleteTransactionAPI.rejected, (state, action) => {
+        state.transactions.loading = false;
+        state.transactions.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to delete transaction';
+      });
+
     // --- SECURITY: Reset all CRM data on logout to prevent data leaks ---
     builder.addCase(logout, () => initialState);
   }
@@ -1639,6 +1839,8 @@ export const {
   setInvoicesLoading,
   setExpenses,
   setExpensesLoading,
+  setTransactions,
+  setTransactionsLoading,
   setActivities,
   addActivity,
   setOverviewData
@@ -1654,6 +1856,7 @@ const selectPropertiesSlice = (state: RootState) => state.crmData?.properties;
 const selectCommissionsSlice = (state: RootState) => state.crmData?.commissions;
 const selectInvoicesSlice = (state: RootState) => state.crmData?.invoices;
 const selectExpensesSlice = (state: RootState) => state.crmData?.expenses;
+const selectTransactionsSlice = (state: RootState) => state.crmData?.transactions;
 const selectActivitiesSlice = (state: RootState) => state.crmData?.activities;
 
 // ── Leads ──
@@ -1814,6 +2017,49 @@ export const selectRejectedExpenses = createSelector(
 );
 export const selectExpensesLoading = (state: RootState) => state.crmData?.expenses?.loading;
 export const selectExpensesError = (state: RootState) => state.crmData?.expenses?.error;
+
+// ── Transactions ──
+export const selectAllTransactions = createSelector(
+  selectTransactionsSlice,
+  (transactions) => transactions?.items || []
+);
+export const selectDraftTransactions = createSelector(
+  selectAllTransactions,
+  (items) => items.filter((t: CRMItem) => t.status === 'draft')
+);
+export const selectPendingTransactions = createSelector(
+  selectAllTransactions,
+  (items) => items.filter((t: CRMItem) => t.status === 'pending')
+);
+export const selectActiveTransactions = createSelector(
+  selectAllTransactions,
+  (items) => items.filter((t: CRMItem) => t.status === 'active')
+);
+export const selectCompletedTransactions = createSelector(
+  selectAllTransactions,
+  (items) => items.filter((t: CRMItem) => t.status === 'completed')
+);
+export const selectCancelledTransactions = createSelector(
+  selectAllTransactions,
+  (items) => items.filter((t: CRMItem) => t.status === 'cancelled')
+);
+export const selectSaleTransactions = createSelector(
+  selectAllTransactions,
+  (items) => items.filter((t: CRMItem) => t.type === 'sale')
+);
+export const selectLeaseTransactions = createSelector(
+  selectAllTransactions,
+  (items) => items.filter((t: CRMItem) => t.type === 'lease')
+);
+export const selectRentalTransactions = createSelector(
+  selectAllTransactions,
+  (items) => items.filter((t: CRMItem) => t.type === 'rental')
+);
+export const selectTransactionsLoading = (state: RootState) => state.crmData?.transactions?.loading;
+export const selectTransactionsError = (state: RootState) => state.crmData?.transactions?.error;
+
+export const selectTransactionsByAgent = (state: RootState, agentId: string | number) =>
+  state.crmData?.transactions?.items?.filter((t: CRMItem) => t.agentId === agentId) || [];
 
 // ── Activities ──
 export const selectAllActivities = createSelector(
