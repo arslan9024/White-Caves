@@ -499,6 +499,82 @@ model JobApplication {
 
 // ─── INVOICE ────────────────────────────────────────────────────────────
 
+// ─── CLIENT ─────────────────────────────────────────────────────────────
+
+model Client {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  name                String
+  email               String?
+  phone               String?
+  company             String?
+  category            String   @default("buyer")      // buyer, seller, landlord, tenant, investor
+  status              String   @default("active")      // active, inactive, prospect, archived
+  type                String   @default("individual")  // individual, corporate, investment_firm
+  nationality         String?
+  totalValue          Float    @default(0)             // total deal value (AED)
+  dealsCount          Int      @default(0)
+  notes               String?
+  tags                String[]
+  lastContact         DateTime?
+  convertedFromLeadId String?  @db.ObjectId            // if converted from a Lead
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations (agent ref stored as plain ID — no FK constraint)
+  assignedToId        String?  @db.ObjectId
+  communications      Communication[]
+  clientProperties    ClientProperty[]
+
+  @@index([category])
+  @@index([status])
+  @@index([type])
+  @@index([assignedToId])
+  @@index([email])
+  @@index([createdAt])
+}
+
+// ─── CLIENT ↔ PROPERTY JUNCTION ─────────────────────────────────────────
+
+model ClientProperty {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  clientId        String   @db.ObjectId
+  client          Client   @relation(fields: [clientId], references: [id])
+  propertyId      String   @db.ObjectId          // plain ref — avoids modifying Property model
+  relationship    String   @default("interested") // owner, tenant, buyer, interested, previous_owner, previous_tenant
+  notes           String?
+  createdAt       DateTime @default(now())
+
+  @@unique([clientId, propertyId])
+  @@index([clientId])
+  @@index([propertyId])
+  @@index([relationship])
+}
+
+// ─── COMMUNICATION LOG ──────────────────────────────────────────────────
+
+model Communication {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  clientId    String   @db.ObjectId
+  client      Client   @relation(fields: [clientId], references: [id])
+  type        String   @default("note")      // call, email, whatsapp, meeting, note, sms
+  direction   String   @default("outbound")  // inbound, outbound
+  subject     String?
+  body        String?
+  duration    Int?                            // seconds (for calls/meetings)
+  outcome     String?                         // interested, follow_up, not_available, closed, no_answer
+  createdAt   DateTime @default(now())
+
+  // Who logged it (plain ID — no FK constraint)
+  createdById String?  @db.ObjectId
+
+  @@index([clientId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([createdById])
+}
+
+// ─── INVOICE ────────────────────────────────────────────────────────────
+
 model Invoice {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   invoiceNumber String   @unique           // "INV-2026-0001"

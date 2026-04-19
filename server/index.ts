@@ -39,6 +39,7 @@ import viewingsRoutes from './routes/viewings.js';
 import offersRoutes from './routes/offers.js';
 import leasesRoutes from './routes/leases.js';
 import maintenanceRoutes from './routes/maintenance.js';
+import clientsRoutes from './routes/clients.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 
 // Load environment variables
@@ -192,6 +193,9 @@ app.use('/api/finance', financeRoutes);
 
 // Tenants API (Daisy - Leasing Manager)
 app.use('/api/tenants', tenantsRoutes);
+
+// Clients API (Phase 1C - Client/Owner Management)
+app.use('/api/clients', clientsRoutes);
 
 // Communications API (Nadia - WhatsApp CRM, Nina - Bot)
 app.use('/api/communications', communicationsRoutes);

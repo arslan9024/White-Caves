@@ -647,6 +647,215 @@ export const deleteExpenseAPI = createAsyncThunk<
   }
 );
 
+// ════════════════════════════════════════════════════════════════════════
+// CLIENT ASYNC THUNKS (Phase 1C)
+// ════════════════════════════════════════════════════════════════════════
+
+/** Fetch clients with filters via /api/clients */
+export const fetchClientsFromAPI = createAsyncThunk<
+  CRMItem[],
+  { status?: string; category?: string; type?: string; search?: string; assignedTo?: string; page?: number; pageSize?: number },
+  { rejectValue: string }
+>(
+  'crmData/fetchClients',
+  async (params, { rejectWithValue }) => {
+    try {
+      const query = new URLSearchParams();
+      if (params.status) query.set('status', params.status);
+      if (params.category) query.set('category', params.category);
+      if (params.type) query.set('type', params.type);
+      if (params.search) query.set('search', params.search);
+      if (params.assignedTo) query.set('assignedTo', params.assignedTo);
+      if (params.page) query.set('page', String(params.page));
+      if (params.pageSize) query.set('pageSize', String(params.pageSize));
+      const url = `/api/clients${query.toString() ? `?${query}` : ''}`;
+      const response = await authFetch(url);
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to fetch clients'));
+      const json = await response.json();
+      return json.data || [];
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch clients'));
+    }
+  }
+);
+
+/** Create a new client via POST /api/clients */
+export const createClientAPI = createAsyncThunk<
+  CRMItem,
+  Record<string, unknown>,
+  { rejectValue: string }
+>(
+  'crmData/createClient',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await authFetch('/api/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to create client'));
+      const json = await response.json();
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to create client'));
+    }
+  }
+);
+
+/** Update a client via PATCH /api/clients/:id */
+export const updateClientAPI = createAsyncThunk<
+  CRMItem,
+  { id: string; [key: string]: unknown },
+  { rejectValue: string }
+>(
+  'crmData/updateClient',
+  async ({ id, ...updates }, { rejectWithValue }) => {
+    try {
+      const response = await authFetch(`/api/clients/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to update client'));
+      const json = await response.json();
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to update client'));
+    }
+  }
+);
+
+/** Delete a client via DELETE /api/clients/:id */
+export const deleteClientAPI = createAsyncThunk<
+  string,
+  string,
+  { rejectValue: string }
+>(
+  'crmData/deleteClient',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await authFetch(`/api/clients/${id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to delete client'));
+      return id;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to delete client'));
+    }
+  }
+);
+
+/** Link a property to a client via POST /api/clients/:id/properties */
+export const linkClientPropertyAPI = createAsyncThunk<
+  CRMItem,
+  { clientId: string; propertyId: string; relationship?: string; notes?: string },
+  { rejectValue: string }
+>(
+  'crmData/linkClientProperty',
+  async ({ clientId, ...data }, { rejectWithValue }) => {
+    try {
+      const response = await authFetch(`/api/clients/${clientId}/properties`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to link property'));
+      const json = await response.json();
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to link property'));
+    }
+  }
+);
+
+/** Unlink a property from a client via DELETE /api/clients/:id/properties/:propertyId */
+export const unlinkClientPropertyAPI = createAsyncThunk<
+  { clientId: string; propertyId: string },
+  { clientId: string; propertyId: string },
+  { rejectValue: string }
+>(
+  'crmData/unlinkClientProperty',
+  async ({ clientId, propertyId }, { rejectWithValue }) => {
+    try {
+      const response = await authFetch(`/api/clients/${clientId}/properties/${propertyId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to unlink property'));
+      return { clientId, propertyId };
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to unlink property'));
+    }
+  }
+);
+
+/** Fetch communication logs for a client via GET /api/clients/:id/communications */
+export const fetchClientCommunicationsAPI = createAsyncThunk<
+  CRMItem[],
+  { clientId: string; type?: string; page?: number; pageSize?: number },
+  { rejectValue: string }
+>(
+  'crmData/fetchClientCommunications',
+  async ({ clientId, ...params }, { rejectWithValue }) => {
+    try {
+      const query = new URLSearchParams();
+      if (params.type) query.set('type', params.type);
+      if (params.page) query.set('page', String(params.page));
+      if (params.pageSize) query.set('pageSize', String(params.pageSize));
+      const url = `/api/clients/${clientId}/communications${query.toString() ? `?${query}` : ''}`;
+      const response = await authFetch(url);
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to fetch communications'));
+      const json = await response.json();
+      return json.data || [];
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch communications'));
+    }
+  }
+);
+
+/** Log a communication for a client via POST /api/clients/:id/communications */
+export const createClientCommunicationAPI = createAsyncThunk<
+  CRMItem,
+  { clientId: string; type?: string; direction?: string; subject?: string; body?: string; duration?: number; outcome?: string },
+  { rejectValue: string }
+>(
+  'crmData/createClientCommunication',
+  async ({ clientId, ...data }, { rejectWithValue }) => {
+    try {
+      const response = await authFetch(`/api/clients/${clientId}/communications`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to log communication'));
+      const json = await response.json();
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to log communication'));
+    }
+  }
+);
+
+/** Convert a lead into a client via POST /api/clients/convert-lead/:leadId */
+export const convertLeadToClientAPI = createAsyncThunk<
+  CRMItem,
+  { leadId: string; category?: string; type?: string },
+  { rejectValue: string }
+>(
+  'crmData/convertLeadToClient',
+  async ({ leadId, ...data }, { rejectWithValue }) => {
+    try {
+      const response = await authFetch(`/api/clients/convert-lead/${leadId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to convert lead'));
+      const json = await response.json();
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to convert lead'));
+    }
+  }
+);
+
 const crmDataSlice = createSlice({
   name: 'crmData',
   initialState,
@@ -1165,6 +1374,88 @@ const crmDataSlice = createSlice({
       });
 
     // --- Fetch Invoices ---
+    // --- Fetch Clients ---
+    builder
+      .addCase(fetchClientsFromAPI.pending, (state) => {
+        state.clients.loading = true;
+        state.clients.error = null;
+      })
+      .addCase(fetchClientsFromAPI.fulfilled, (state, action) => {
+        state.clients.loading = false;
+        if (Array.isArray(action.payload)) {
+          state.clients.items = action.payload;
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(fetchClientsFromAPI.rejected, (state, action) => {
+        state.clients.loading = false;
+        state.clients.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to fetch clients';
+      });
+
+    // --- Create Client ---
+    builder
+      .addCase(createClientAPI.pending, (state) => {
+        state.clients.loading = true;
+        state.clients.error = null;
+      })
+      .addCase(createClientAPI.fulfilled, (state, action) => {
+        state.clients.loading = false;
+        if (action.payload) {
+          state.clients.items.unshift(action.payload);
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(createClientAPI.rejected, (state, action) => {
+        state.clients.loading = false;
+        state.clients.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to create client';
+      });
+
+    // --- Update Client ---
+    builder
+      .addCase(updateClientAPI.pending, (state) => {
+        state.clients.loading = true;
+        state.clients.error = null;
+      })
+      .addCase(updateClientAPI.fulfilled, (state, action) => {
+        state.clients.loading = false;
+        if (action.payload) {
+          const idx = state.clients.items.findIndex(c => c.id === action.payload.id);
+          if (idx > -1) {
+            state.clients.items[idx] = { ...state.clients.items[idx], ...action.payload };
+          }
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(updateClientAPI.rejected, (state, action) => {
+        state.clients.loading = false;
+        state.clients.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to update client';
+      });
+
+    // --- Delete Client ---
+    builder
+      .addCase(deleteClientAPI.pending, (state) => {
+        state.clients.loading = true;
+      })
+      .addCase(deleteClientAPI.fulfilled, (state, action) => {
+        state.clients.loading = false;
+        state.clients.items = state.clients.items.filter(c => c.id !== action.payload);
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(deleteClientAPI.rejected, (state, action) => {
+        state.clients.loading = false;
+        state.clients.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to delete client';
+      });
+
+    // --- Convert Lead to Client ---
+    builder
+      .addCase(convertLeadToClientAPI.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.clients.items.unshift(action.payload);
+        }
+        state.lastUpdated = new Date().toISOString();
+      });
+
+    // --- Fetch Invoices ---
     builder
       .addCase(fetchInvoicesFromAPI.pending, (state) => {
         state.invoices.loading = true;
@@ -1393,6 +1684,35 @@ export const selectAllClients = createSelector(
 );
 export const selectSelectedClient = (state: RootState) => state.crmData?.clients?.selected;
 export const selectClientsLoading = (state: RootState) => state.crmData?.clients?.loading;
+export const selectClientsError = (state: RootState) => state.crmData?.clients?.error;
+
+// Client category selectors
+export const selectBuyerClients = createSelector(
+  selectAllClients,
+  (items) => items.filter((c: CRMItem) => c.category === 'buyer')
+);
+export const selectSellerClients = createSelector(
+  selectAllClients,
+  (items) => items.filter((c: CRMItem) => c.category === 'seller')
+);
+export const selectLandlordClients = createSelector(
+  selectAllClients,
+  (items) => items.filter((c: CRMItem) => c.category === 'landlord')
+);
+export const selectTenantClients = createSelector(
+  selectAllClients,
+  (items) => items.filter((c: CRMItem) => c.category === 'tenant')
+);
+export const selectInvestorClients = createSelector(
+  selectAllClients,
+  (items) => items.filter((c: CRMItem) => c.category === 'investor')
+);
+export const selectActiveClients = createSelector(
+  selectAllClients,
+  (items) => items.filter((c: CRMItem) => c.status === 'active')
+);
+export const selectClientsByAgent = (state: RootState, agentId: string | number) =>
+  state.crmData?.clients?.items?.filter((c: CRMItem) => c.assignedToId === agentId) || [];
 
 // ── Agents ──
 export const selectAllAgents = createSelector(
