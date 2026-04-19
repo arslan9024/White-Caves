@@ -34,12 +34,12 @@ vi.mock('styled-components', async () => {
     );
     component.displayName = `styled.${tag}`;
     // Support .attrs() chain
-    (component as Record<string, unknown>).attrs = () => component;
+    (component as any).attrs = () => component;
     return component;
   };
 
   const styled = new Proxy(
-    ((tag: string) => () => createMockStyled(tag)) as unknown as Record<string, unknown>,
+    ((tag: string) => () => createMockStyled(tag)) as any,
     {
       get(target, prop: string) {
         if (prop === '__esModule') return true;

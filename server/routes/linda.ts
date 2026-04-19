@@ -10,6 +10,9 @@
 import { Router, Request, Response } from 'express';
 import { LindaClient, WhatsAppMessage, getLindaClient } from '../services/whatsapp/lindaClient';
 import { requirePermission } from '../middleware/rbac';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('linda');
 
 const router = Router();
 let lindaClient: LindaClient | null = null;
@@ -28,7 +31,7 @@ async function initializeLinda(): Promise<LindaClient> {
     try {
       await lindaClient.initialize();
     } catch (error) {
-      console.error('[Linda Routes] Error initializing Linda:', error);
+      log.error('Error initializing Linda:', error);
       // Continue without throwing - Linda might be offline but other channels work
     }
   }
@@ -55,7 +58,7 @@ router.get('/status', requirePermission('access_whatsapp_business'), async (req:
       },
     });
   } catch (error) {
-    console.error('[Linda Routes] Error getting status:', error);
+    log.error('Error getting status:', error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -106,7 +109,7 @@ router.post('/send/:conversationId', requirePermission('access_whatsapp_business
       },
     });
   } catch (error) {
-    console.error('[Linda Routes] Error sending message:', error);
+    log.error('Error sending message:', error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -155,7 +158,7 @@ router.post('/webhook', requirePermission('access_whatsapp_business'), async (re
       },
     });
   } catch (error) {
-    console.error('[Linda Routes] Error processing webhook:', error);
+    log.error('Error processing webhook:', error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -180,7 +183,7 @@ router.get('/conversations', requirePermission('access_whatsapp_business'), asyn
       },
     });
   } catch (error) {
-    console.error('[Linda Routes] Error getting conversations:', error);
+    log.error('Error getting conversations:', error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -209,7 +212,7 @@ router.get('/conversations/:phoneNumber/history', requirePermission('access_what
       },
     });
   } catch (error) {
-    console.error('[Linda Routes] Error getting conversation history:', error);
+    log.error('Error getting conversation history:', error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -238,7 +241,7 @@ router.post('/ready', async (req: Request, res: Response) => {
       message: 'Linda is ready',
     });
   } catch (error) {
-    console.error('[Linda Routes] Error checking ready:', error);
+    log.error('Error checking ready:', error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -264,7 +267,7 @@ router.get('/health', async (req: Request, res: Response) => {
       timestamp: new Date(),
     });
   } catch (error) {
-    console.error('[Linda Routes] Error health check:', error);
+    log.error('Error health check:', error);
     res.status(500).json({
       success: false,
       error: 'Health check failed',
@@ -288,7 +291,7 @@ router.post('/disconnect', async (req: Request, res: Response) => {
       message: 'Linda disconnected',
     });
   } catch (error) {
-    console.error('[Linda Routes] Error disconnecting:', error);
+    log.error('Error disconnecting:', error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -311,7 +314,7 @@ router.get('/stats', async (req: Request, res: Response) => {
       timestamp: new Date(),
     });
   } catch (error) {
-    console.error('[Linda Routes] Error getting stats:', error);
+    log.error('Error getting stats:', error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',

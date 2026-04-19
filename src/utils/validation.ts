@@ -57,10 +57,10 @@ export const MAX_SQFT = 999_999;
 export type Validator = (value: unknown) => string | null;
 
 /** Schema: field name → array of validators (run in order, first error wins) */
-type ValidationSchema = Record<string, Validator[]>;
+export type ValidationSchema = Record<string, Validator[]>;
 
 /** Validation result: field name → error message (only failed fields) */
-type ValidationErrors = Record<string, string>;
+export type ValidationErrors = Record<string, string>;
 
 /* ──────────────────────────── Core Engine ─────────────────────── */
 

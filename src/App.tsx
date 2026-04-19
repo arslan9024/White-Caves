@@ -199,7 +199,7 @@ function App(): React.JSX.Element {
 
   useEffect(() => {
     const savedTheme = safeStorage.get('theme', 'light');
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.documentElement.setAttribute('data-theme', savedTheme as string);
     dispatch(setTheme(savedTheme));
   }, [dispatch]);
 
