@@ -46,12 +46,26 @@ interface ActivityCollection {
   error?: string | null;
 }
 
+interface InvoiceCollection {
+  items: CRMItem[];
+  loading: boolean;
+  error?: string | null;
+}
+
+interface ExpenseCollection {
+  items: CRMItem[];
+  loading: boolean;
+  error?: string | null;
+}
+
 interface CRMDataState {
   leads: CRMCollection<CRMItem>;
   clients: CRMCollection<CRMItem>;
   agents: CRMCollection<CRMItem>;
   properties: CRMCollection<CRMItem>;
   commissions: CommissionCollection;
+  invoices: InvoiceCollection;
+  expenses: ExpenseCollection;
   activities: ActivityCollection;
   overview: Record<string, unknown> | null;
   lastUpdated: string;
@@ -88,6 +102,18 @@ const initialState: CRMDataState = {
 
   commissions: {
     items: import.meta.env.DEV ? DEV_COMMISSIONS : [],
+    loading: false,
+    error: null
+  },
+
+  invoices: {
+    items: [],
+    loading: false,
+    error: null
+  },
+
+  expenses: {
+    items: [],
     loading: false,
     error: null
   },
@@ -437,6 +463,190 @@ export const bulkPayCommissionsAPI = createAsyncThunk<
   }
 );
 
+// ============================================================================
+// INVOICE ASYNC THUNKS — Finance API Integration
+// ============================================================================
+
+/** Fetch invoices from /api/finance/invoices */
+export const fetchInvoicesFromAPI = createAsyncThunk<
+  CRMItem[],
+  { page?: number; pageSize?: number; status?: string; client?: string },
+  { rejectValue: string }
+>(
+  'crmData/fetchInvoices',
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const query = new URLSearchParams();
+      if (params.page) query.set('page', String(params.page));
+      if (params.pageSize) query.set('pageSize', String(params.pageSize));
+      if (params.status) query.set('status', params.status);
+      if (params.client) query.set('client', params.client);
+      const response = await authFetch(`/api/finance/invoices?${query.toString()}`);
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to fetch invoices'));
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch invoices'));
+    }
+  }
+);
+
+/** Create a new invoice via /api/finance/invoices */
+export const createInvoiceAPI = createAsyncThunk<
+  CRMItem,
+  { client: string; amount: number; dueDate: string; property?: string; notes?: string; vatAmount?: number; lineItems?: unknown[] },
+  { rejectValue: string }
+>(
+  'crmData/createInvoice',
+  async (invoiceData, { rejectWithValue }) => {
+    try {
+      const response = await authFetch('/api/finance/invoices', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(invoiceData),
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to create invoice'));
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to create invoice'));
+    }
+  }
+);
+
+/** Update an invoice via /api/finance/invoices/:id */
+export const updateInvoiceAPI = createAsyncThunk<
+  CRMItem,
+  { id: string; status?: string; amount?: number; notes?: string; client?: string; dueDate?: string },
+  { rejectValue: string }
+>(
+  'crmData/updateInvoice',
+  async ({ id, ...updates }, { rejectWithValue }) => {
+    try {
+      const response = await authFetch(`/api/finance/invoices/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to update invoice'));
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to update invoice'));
+    }
+  }
+);
+
+/** Delete an invoice via /api/finance/invoices/:id */
+export const deleteInvoiceAPI = createAsyncThunk<
+  string,
+  string,
+  { rejectValue: string }
+>(
+  'crmData/deleteInvoice',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await authFetch(`/api/finance/invoices/${id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to delete invoice'));
+      return id;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to delete invoice'));
+    }
+  }
+);
+
+// ============================================================================
+// EXPENSE ASYNC THUNKS — Finance API Integration
+// ============================================================================
+
+/** Fetch expenses from /api/finance/expenses */
+export const fetchExpensesFromAPI = createAsyncThunk<
+  CRMItem[],
+  { page?: number; pageSize?: number; status?: string; category?: string },
+  { rejectValue: string }
+>(
+  'crmData/fetchExpenses',
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const query = new URLSearchParams();
+      if (params.page) query.set('page', String(params.page));
+      if (params.pageSize) query.set('pageSize', String(params.pageSize));
+      if (params.status) query.set('status', params.status);
+      if (params.category) query.set('category', params.category);
+      const response = await authFetch(`/api/finance/expenses?${query.toString()}`);
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to fetch expenses'));
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch expenses'));
+    }
+  }
+);
+
+/** Create a new expense via /api/finance/expenses */
+export const createExpenseAPI = createAsyncThunk<
+  CRMItem,
+  { category: string; description: string; amount: number; date?: string; notes?: string; receiptUrl?: string },
+  { rejectValue: string }
+>(
+  'crmData/createExpense',
+  async (expenseData, { rejectWithValue }) => {
+    try {
+      const response = await authFetch('/api/finance/expenses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(expenseData),
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to create expense'));
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to create expense'));
+    }
+  }
+);
+
+/** Update an expense via /api/finance/expenses/:id */
+export const updateExpenseAPI = createAsyncThunk<
+  CRMItem,
+  { id: string; status?: string; amount?: number; category?: string; description?: string; notes?: string },
+  { rejectValue: string }
+>(
+  'crmData/updateExpense',
+  async ({ id, ...updates }, { rejectWithValue }) => {
+    try {
+      const response = await authFetch(`/api/finance/expenses/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to update expense'));
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to update expense'));
+    }
+  }
+);
+
+/** Delete an expense via /api/finance/expenses/:id */
+export const deleteExpenseAPI = createAsyncThunk<
+  string,
+  string,
+  { rejectValue: string }
+>(
+  'crmData/deleteExpense',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await authFetch(`/api/finance/expenses/${id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to delete expense'));
+      return id;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to delete expense'));
+    }
+  }
+);
+
 const crmDataSlice = createSlice({
   name: 'crmData',
   initialState,
@@ -641,6 +851,26 @@ const crmDataSlice = createSlice({
 
     setCommissionsLoading: (state, action: PayloadAction<boolean>) => {
       state.commissions.loading = action.payload;
+    },
+
+    // ============== INVOICES ==============
+    setInvoices: (state, action: PayloadAction<CRMItem[]>) => {
+      state.invoices.items = action.payload;
+      state.lastUpdated = new Date().toISOString();
+    },
+
+    setInvoicesLoading: (state, action: PayloadAction<boolean>) => {
+      state.invoices.loading = action.payload;
+    },
+
+    // ============== EXPENSES ==============
+    setExpenses: (state, action: PayloadAction<CRMItem[]>) => {
+      state.expenses.items = action.payload;
+      state.lastUpdated = new Date().toISOString();
+    },
+
+    setExpensesLoading: (state, action: PayloadAction<boolean>) => {
+      state.expenses.loading = action.payload;
     },
 
     // ============== ACTIVITIES ==============
@@ -934,6 +1164,150 @@ const crmDataSlice = createSlice({
         state.commissions.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to process payments';
       });
 
+    // --- Fetch Invoices ---
+    builder
+      .addCase(fetchInvoicesFromAPI.pending, (state) => {
+        state.invoices.loading = true;
+        state.invoices.error = null;
+      })
+      .addCase(fetchInvoicesFromAPI.fulfilled, (state, action) => {
+        state.invoices.loading = false;
+        if (Array.isArray(action.payload)) {
+          state.invoices.items = action.payload;
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(fetchInvoicesFromAPI.rejected, (state, action) => {
+        state.invoices.loading = false;
+        state.invoices.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to fetch invoices';
+      });
+
+    // --- Create Invoice ---
+    builder
+      .addCase(createInvoiceAPI.pending, (state) => {
+        state.invoices.loading = true;
+        state.invoices.error = null;
+      })
+      .addCase(createInvoiceAPI.fulfilled, (state, action) => {
+        state.invoices.loading = false;
+        if (action.payload) {
+          state.invoices.items.unshift(action.payload);
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(createInvoiceAPI.rejected, (state, action) => {
+        state.invoices.loading = false;
+        state.invoices.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to create invoice';
+      });
+
+    // --- Update Invoice ---
+    builder
+      .addCase(updateInvoiceAPI.pending, (state) => {
+        state.invoices.loading = true;
+        state.invoices.error = null;
+      })
+      .addCase(updateInvoiceAPI.fulfilled, (state, action) => {
+        state.invoices.loading = false;
+        if (action.payload) {
+          const idx = state.invoices.items.findIndex(i => i.id === action.payload.id);
+          if (idx > -1) {
+            state.invoices.items[idx] = { ...state.invoices.items[idx], ...action.payload };
+          }
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(updateInvoiceAPI.rejected, (state, action) => {
+        state.invoices.loading = false;
+        state.invoices.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to update invoice';
+      });
+
+    // --- Delete Invoice ---
+    builder
+      .addCase(deleteInvoiceAPI.pending, (state) => {
+        state.invoices.loading = true;
+      })
+      .addCase(deleteInvoiceAPI.fulfilled, (state, action) => {
+        state.invoices.loading = false;
+        state.invoices.items = state.invoices.items.filter(i => i.id !== action.payload);
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(deleteInvoiceAPI.rejected, (state, action) => {
+        state.invoices.loading = false;
+        state.invoices.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to delete invoice';
+      });
+
+    // --- Fetch Expenses ---
+    builder
+      .addCase(fetchExpensesFromAPI.pending, (state) => {
+        state.expenses.loading = true;
+        state.expenses.error = null;
+      })
+      .addCase(fetchExpensesFromAPI.fulfilled, (state, action) => {
+        state.expenses.loading = false;
+        if (Array.isArray(action.payload)) {
+          state.expenses.items = action.payload;
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(fetchExpensesFromAPI.rejected, (state, action) => {
+        state.expenses.loading = false;
+        state.expenses.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to fetch expenses';
+      });
+
+    // --- Create Expense ---
+    builder
+      .addCase(createExpenseAPI.pending, (state) => {
+        state.expenses.loading = true;
+        state.expenses.error = null;
+      })
+      .addCase(createExpenseAPI.fulfilled, (state, action) => {
+        state.expenses.loading = false;
+        if (action.payload) {
+          state.expenses.items.unshift(action.payload);
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(createExpenseAPI.rejected, (state, action) => {
+        state.expenses.loading = false;
+        state.expenses.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to create expense';
+      });
+
+    // --- Update Expense ---
+    builder
+      .addCase(updateExpenseAPI.pending, (state) => {
+        state.expenses.loading = true;
+        state.expenses.error = null;
+      })
+      .addCase(updateExpenseAPI.fulfilled, (state, action) => {
+        state.expenses.loading = false;
+        if (action.payload) {
+          const idx = state.expenses.items.findIndex(e => e.id === action.payload.id);
+          if (idx > -1) {
+            state.expenses.items[idx] = { ...state.expenses.items[idx], ...action.payload };
+          }
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(updateExpenseAPI.rejected, (state, action) => {
+        state.expenses.loading = false;
+        state.expenses.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to update expense';
+      });
+
+    // --- Delete Expense ---
+    builder
+      .addCase(deleteExpenseAPI.pending, (state) => {
+        state.expenses.loading = true;
+      })
+      .addCase(deleteExpenseAPI.fulfilled, (state, action) => {
+        state.expenses.loading = false;
+        state.expenses.items = state.expenses.items.filter(e => e.id !== action.payload);
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(deleteExpenseAPI.rejected, (state, action) => {
+        state.expenses.loading = false;
+        state.expenses.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to delete expense';
+      });
+
     // --- SECURITY: Reset all CRM data on logout to prevent data leaks ---
     builder.addCase(logout, () => initialState);
   }
@@ -970,6 +1344,10 @@ export const {
   setCommissions,
   updateCommission,
   setCommissionsLoading,
+  setInvoices,
+  setInvoicesLoading,
+  setExpenses,
+  setExpensesLoading,
   setActivities,
   addActivity,
   setOverviewData
@@ -983,6 +1361,8 @@ const selectClientsSlice = (state: RootState) => state.crmData?.clients;
 const selectAgentsSlice = (state: RootState) => state.crmData?.agents;
 const selectPropertiesSlice = (state: RootState) => state.crmData?.properties;
 const selectCommissionsSlice = (state: RootState) => state.crmData?.commissions;
+const selectInvoicesSlice = (state: RootState) => state.crmData?.invoices;
+const selectExpensesSlice = (state: RootState) => state.crmData?.expenses;
 const selectActivitiesSlice = (state: RootState) => state.crmData?.activities;
 
 // ── Leads ──
@@ -1070,6 +1450,50 @@ export const selectCommissionsError = (state: RootState) => state.crmData?.commi
 
 export const selectCommissionsByAgent = (state: RootState, agentId: string | number) =>
   state.crmData?.commissions?.items?.filter((c: CRMItem) => c.agentId === agentId || c.agent_id === agentId) || [];
+
+// ── Invoices ──
+export const selectAllInvoices = createSelector(
+  selectInvoicesSlice,
+  (invoices) => invoices?.items || []
+);
+export const selectPendingInvoices = createSelector(
+  selectAllInvoices,
+  (items) => items.filter((i: CRMItem) => i.status === 'pending')
+);
+export const selectPaidInvoices = createSelector(
+  selectAllInvoices,
+  (items) => items.filter((i: CRMItem) => i.status === 'paid')
+);
+export const selectOverdueInvoices = createSelector(
+  selectAllInvoices,
+  (items) => items.filter((i: CRMItem) => i.status === 'overdue')
+);
+export const selectDraftInvoices = createSelector(
+  selectAllInvoices,
+  (items) => items.filter((i: CRMItem) => i.status === 'draft')
+);
+export const selectInvoicesLoading = (state: RootState) => state.crmData?.invoices?.loading;
+export const selectInvoicesError = (state: RootState) => state.crmData?.invoices?.error;
+
+// ── Expenses ──
+export const selectAllExpenses = createSelector(
+  selectExpensesSlice,
+  (expenses) => expenses?.items || []
+);
+export const selectPendingExpenses = createSelector(
+  selectAllExpenses,
+  (items) => items.filter((e: CRMItem) => e.status === 'pending')
+);
+export const selectApprovedExpenses = createSelector(
+  selectAllExpenses,
+  (items) => items.filter((e: CRMItem) => e.status === 'approved')
+);
+export const selectRejectedExpenses = createSelector(
+  selectAllExpenses,
+  (items) => items.filter((e: CRMItem) => e.status === 'rejected')
+);
+export const selectExpensesLoading = (state: RootState) => state.crmData?.expenses?.loading;
+export const selectExpensesError = (state: RootState) => state.crmData?.expenses?.error;
 
 // ── Activities ──
 export const selectAllActivities = createSelector(

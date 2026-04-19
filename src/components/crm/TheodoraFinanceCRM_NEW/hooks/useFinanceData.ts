@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { INVOICES, EXPENSES, Invoice, Expense } from '../data/finance';
+import { Invoice, Expense } from '../data/finance';
 import { FINANCE_FEATURES } from '../data/features';
 import {
   fetchCommissionsFromAPI,
@@ -14,6 +14,25 @@ import {
   selectPaidCommissions,
   selectCommissionsLoading,
   selectCommissionsError,
+  fetchInvoicesFromAPI,
+  createInvoiceAPI,
+  updateInvoiceAPI,
+  deleteInvoiceAPI,
+  selectAllInvoices,
+  selectPendingInvoices,
+  selectPaidInvoices,
+  selectOverdueInvoices,
+  selectInvoicesLoading,
+  selectInvoicesError,
+  fetchExpensesFromAPI,
+  createExpenseAPI,
+  updateExpenseAPI,
+  deleteExpenseAPI,
+  selectAllExpenses,
+  selectPendingExpenses,
+  selectApprovedExpenses,
+  selectExpensesLoading,
+  selectExpensesError,
 } from '../../../../store/crmDataSlice';
 import type { AppDispatch } from '../../../../store/store';
 
@@ -28,16 +47,30 @@ export const useFinanceData = () => {
   const commissionsLoading = useSelector(selectCommissionsLoading);
   const commissionsError = useSelector(selectCommissionsError);
 
-  // Local state for invoices/expenses (still mock — Phase 5 will add Invoice model)
-  const [invoices, setInvoices] = useState<Invoice[]>(INVOICES);
-  const [expenses, setExpenses] = useState<Expense[]>(EXPENSES);
+  // Redux state for invoices (real API data)
+  const invoices = useSelector(selectAllInvoices) as Invoice[];
+  const pendingInvoices = useSelector(selectPendingInvoices) as Invoice[];
+  const paidInvoices = useSelector(selectPaidInvoices) as Invoice[];
+  const overdueInvoices = useSelector(selectOverdueInvoices) as Invoice[];
+  const invoicesLoading = useSelector(selectInvoicesLoading);
+  const invoicesError = useSelector(selectInvoicesError);
+
+  // Redux state for expenses (real API data)
+  const expenses = useSelector(selectAllExpenses) as Expense[];
+  const pendingExpensesList = useSelector(selectPendingExpenses) as Expense[];
+  const approvedExpensesList = useSelector(selectApprovedExpenses) as Expense[];
+  const expensesLoading = useSelector(selectExpensesLoading);
+  const expensesError = useSelector(selectExpensesError);
+
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [generatedMessage, setGeneratedMessage] = useState<string>('');
   const [financeSummary, setFinanceSummary] = useState<Record<string, unknown> | null>(null);
 
-  // Fetch commissions and finance summary on mount
+  // Fetch commissions, invoices, expenses, and finance summary on mount
   useEffect(() => {
     dispatch(fetchCommissionsFromAPI({}));
+    dispatch(fetchInvoicesFromAPI({}));
+    dispatch(fetchExpensesFromAPI({}));
     dispatch(fetchFinanceSummary()).then((result) => {
       if (result.meta.requestStatus === 'fulfilled') {
         setFinanceSummary(result.payload as Record<string, unknown>);
@@ -47,35 +80,44 @@ export const useFinanceData = () => {
 
   // Compute finance stats from real data when available, fallback to mock
   const financeStats = useMemo(() => {
+    // Calculate invoice totals from real data
+    const invoiceTotalRevenue = invoices.reduce((sum, inv) => sum + (Number(inv.totalAmount ?? inv.amount) || 0), 0);
+    const invoicePendingAmount = pendingInvoices.reduce((sum, inv) => sum + (Number(inv.totalAmount ?? inv.amount) || 0), 0);
+    const invoiceOverdueAmount = overdueInvoices.reduce((sum, inv) => sum + (Number(inv.totalAmount ?? inv.amount) || 0), 0);
+    // Calculate expense totals from real data
+    const expensesTotal = expenses.reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
+    const expensesPendingTotal = pendingExpensesList.reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
+    const expensesApprovedTotal = approvedExpensesList.reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
+
     if (financeSummary) {
       const commissionsData = financeSummary.commissions as Record<string, Record<string, number>> | undefined;
       return {
-        totalRevenue: (financeSummary.totalRevenue as number) || 0,
+        totalRevenue: invoiceTotalRevenue || (financeSummary.totalRevenue as number) || 0,
         revenueTrend: 18, // TODO: Calculate from historical data
-        pendingAmount: commissionsData?.pending?.value || 0,
-        pendingCount: commissionsData?.pending?.count || pendingCommissions.length,
-        overdueAmount: 0, // TODO: Add overdue tracking
-        overdueCount: 0,
-        totalExpenses: (financeSummary.totalExpenses as number) || 0,
-        approvedExpenses: commissionsData?.approved?.value || 0,
-        pendingExpenses: commissionsData?.pending?.value || 0,
+        pendingAmount: invoicePendingAmount || commissionsData?.pending?.value || 0,
+        pendingCount: pendingInvoices.length || commissionsData?.pending?.count || pendingCommissions.length,
+        overdueAmount: invoiceOverdueAmount,
+        overdueCount: overdueInvoices.length,
+        totalExpenses: expensesTotal || (financeSummary.totalExpenses as number) || 0,
+        approvedExpenses: expensesApprovedTotal || commissionsData?.approved?.value || 0,
+        pendingExpenses: expensesPendingTotal || commissionsData?.pending?.value || 0,
       };
     }
-    // Fallback: compute from Redux commission state
-    if (commissions.length > 0) {
-      const totalCommValue = commissions.reduce((sum, c) => sum + (Number(c.amount) || 0), 0);
+    // Use real data if any exists
+    if (invoices.length > 0 || expenses.length > 0 || commissions.length > 0) {
+      const commTotalValue = commissions.reduce((sum, c) => sum + (Number(c.amount) || 0), 0);
       const pendingValue = pendingCommissions.reduce((sum, c) => sum + (Number(c.amount) || 0), 0);
       const approvedValue = approvedCommissions.reduce((sum, c) => sum + (Number(c.amount) || 0), 0);
       return {
-        totalRevenue: totalCommValue,
+        totalRevenue: invoiceTotalRevenue || commTotalValue,
         revenueTrend: 0,
-        pendingAmount: pendingValue,
-        pendingCount: pendingCommissions.length,
-        overdueAmount: 0,
-        overdueCount: 0,
-        totalExpenses: totalCommValue,
-        approvedExpenses: approvedValue,
-        pendingExpenses: pendingValue,
+        pendingAmount: invoicePendingAmount || pendingValue,
+        pendingCount: pendingInvoices.length || pendingCommissions.length,
+        overdueAmount: invoiceOverdueAmount,
+        overdueCount: overdueInvoices.length,
+        totalExpenses: expensesTotal || commTotalValue,
+        approvedExpenses: expensesApprovedTotal || approvedValue,
+        pendingExpenses: expensesPendingTotal || pendingValue,
       };
     }
     // Final fallback: hardcoded mock data for dev/demo
@@ -90,7 +132,7 @@ export const useFinanceData = () => {
       approvedExpenses: 20700,
       pendingExpenses: 2500,
     };
-  }, [financeSummary, commissions, pendingCommissions, approvedCommissions]);
+  }, [financeSummary, invoices, pendingInvoices, overdueInvoices, expenses, pendingExpensesList, approvedExpensesList, commissions, pendingCommissions, approvedCommissions]);
 
   const handleGeneratePaymentMessage = useCallback((_message?: string, _method?: string) => {
     setGeneratedMessage(_message ?? '');
@@ -101,20 +143,12 @@ export const useFinanceData = () => {
   }, []);
 
   const handleApproveExpense = useCallback((expenseId: number) => {
-    setExpenses(prev =>
-      prev.map(exp =>
-        exp.id === expenseId ? { ...exp, status: 'approved' } : exp
-      )
-    );
-  }, []);
+    dispatch(updateExpenseAPI({ id: String(expenseId), status: 'approved' }));
+  }, [dispatch]);
 
   const handleRejectExpense = useCallback((expenseId: number) => {
-    setExpenses(prev =>
-      prev.map(exp =>
-        exp.id === expenseId ? { ...exp, status: 'rejected' } : exp
-      )
-    );
-  }, []);
+    dispatch(updateExpenseAPI({ id: String(expenseId), status: 'rejected' }));
+  }, [dispatch]);
 
   // Commission-specific actions
   const handleCreateCommission = useCallback(
@@ -140,6 +174,8 @@ export const useFinanceData = () => {
 
   const handleRefreshCommissions = useCallback(() => {
     dispatch(fetchCommissionsFromAPI({}));
+    dispatch(fetchInvoicesFromAPI({}));
+    dispatch(fetchExpensesFromAPI({}));
     dispatch(fetchFinanceSummary()).then((result) => {
       if (result.meta.requestStatus === 'fulfilled') {
         setFinanceSummary(result.payload as Record<string, unknown>);
@@ -148,9 +184,20 @@ export const useFinanceData = () => {
   }, [dispatch]);
 
   return {
-    // Invoices & Expenses (still mock)
+    // Invoices (real API data)
     invoices,
+    pendingInvoices,
+    paidInvoices,
+    overdueInvoices,
+    invoicesLoading,
+    invoicesError,
+    // Expenses (real API data)
     expenses,
+    pendingExpensesList,
+    approvedExpensesList,
+    expensesLoading,
+    expensesError,
+    // UI state
     selectedInvoice,
     generatedMessage,
     financeStats,
@@ -170,5 +217,31 @@ export const useFinanceData = () => {
     handleUpdateCommission,
     handleBulkPay,
     handleRefreshCommissions,
+    // Invoice CRUD
+    handleCreateInvoice: useCallback(
+      (data: Partial<Invoice>) => dispatch(createInvoiceAPI(data)),
+      [dispatch]
+    ),
+    handleUpdateInvoice: useCallback(
+      (data: { id: string } & Partial<Invoice>) => dispatch(updateInvoiceAPI(data)),
+      [dispatch]
+    ),
+    handleDeleteInvoice: useCallback(
+      (id: string) => dispatch(deleteInvoiceAPI(id)),
+      [dispatch]
+    ),
+    // Expense CRUD
+    handleCreateExpense: useCallback(
+      (data: Partial<Expense>) => dispatch(createExpenseAPI(data)),
+      [dispatch]
+    ),
+    handleUpdateExpense: useCallback(
+      (data: { id: string } & Partial<Expense>) => dispatch(updateExpenseAPI(data)),
+      [dispatch]
+    ),
+    handleDeleteExpense: useCallback(
+      (id: string) => dispatch(deleteExpenseAPI(id)),
+      [dispatch]
+    ),
   };
 };

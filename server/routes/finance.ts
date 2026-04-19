@@ -311,4 +311,289 @@ router.post(
   })
 );
 
+// ============================================================================
+// INVOICE ENDPOINTS
+// ============================================================================
+
+// ─── GET /api/finance/invoices ──────────────────────────────────────────
+router.get(
+  '/invoices',
+  requirePermission('view_payments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const {
+      page = '1', pageSize = '20',
+      status, client,
+      sortBy = 'createdAt', sortOrder = 'desc',
+    } = req.query;
+
+    const pageNum = Math.max(1, parseInt(page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 20));
+
+    const where: Record<string, unknown> = {};
+    if (status && status !== 'all') where.status = status as string;
+    if (client) where.client = { contains: client as string, mode: 'insensitive' };
+
+    const validSorts = ['createdAt', 'amount', 'totalAmount', 'dueDate', 'status'];
+    const field = validSorts.includes(sortBy as string) ? (sortBy as string) : 'createdAt';
+    const orderBy: Record<string, 'asc' | 'desc'> = { [field]: sortOrder === 'asc' ? 'asc' : 'desc' };
+
+    const [invoices, total] = await Promise.all([
+      prisma.invoice.findMany({ where, orderBy, skip: (pageNum - 1) * limit, take: limit }),
+      prisma.invoice.count({ where }),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: invoices,
+      pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
+    });
+  })
+);
+
+// ─── GET /api/finance/invoices/:id ──────────────────────────────────────
+router.get(
+  '/invoices/:id',
+  requirePermission('view_payments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Invoice ID');
+    const invoice = await prisma.invoice.findUnique({ where: { id: req.params.id } });
+    if (!invoice) throw new AppError('Invoice not found', 404);
+    res.status(200).json({ success: true, data: invoice });
+  })
+);
+
+// ─── POST /api/finance/invoices ─────────────────────────────────────────
+router.post(
+  '/invoices',
+  requirePermission('process_payments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { client, property, amount, dueDate, notes, lineItems, vatAmount } = req.body;
+
+    if (!client) throw new AppError('Client name is required', 400);
+    const parsedAmount = Number(amount);
+    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+      throw new AppError('Amount must be a positive number', 400);
+    }
+    if (!dueDate) throw new AppError('Due date is required', 400);
+
+    // Generate sequential invoice number
+    const lastInvoice = await prisma.invoice.findFirst({ orderBy: { createdAt: 'desc' } });
+    const year = new Date().getFullYear();
+    let seq = 1;
+    if (lastInvoice?.invoiceNumber) {
+      const match = lastInvoice.invoiceNumber.match(/INV-\d{4}-(\d+)/);
+      if (match) seq = parseInt(match[1]) + 1;
+    }
+    const invoiceNumber = `INV-${year}-${String(seq).padStart(4, '0')}`;
+
+    const vat = Number(vatAmount) || 0;
+    const invoice = await prisma.invoice.create({
+      data: {
+        invoiceNumber,
+        client: sanitizeString(client),
+        property: property ? sanitizeString(property) : null,
+        amount: parsedAmount,
+        vatAmount: vat,
+        totalAmount: parsedAmount + vat,
+        status: 'pending',
+        dueDate: new Date(dueDate),
+        notes: notes ? sanitizeString(notes) : null,
+        lineItems: lineItems || null,
+        createdById: req.user?.id || null,
+      },
+    });
+
+    res.status(201).json({ success: true, data: invoice });
+  })
+);
+
+// ─── PATCH /api/finance/invoices/:id ────────────────────────────────────
+router.patch(
+  '/invoices/:id',
+  requirePermission('process_payments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Invoice ID');
+    const existing = await prisma.invoice.findUnique({ where: { id: req.params.id } });
+    if (!existing) throw new AppError('Invoice not found', 404);
+
+    const { status, amount, vatAmount, notes, client, property, dueDate } = req.body;
+    const data: Record<string, unknown> = {};
+
+    if (status !== undefined) {
+      const validStatuses = ['draft', 'pending', 'paid', 'overdue', 'cancelled', 'refunded'];
+      if (!validStatuses.includes(status)) throw new AppError(`Invalid status. Allowed: ${validStatuses.join(', ')}`, 400);
+      data.status = status;
+      if (status === 'paid') data.paidAt = new Date();
+    }
+    if (amount !== undefined) {
+      const parsed = Number(amount);
+      if (!Number.isFinite(parsed) || parsed < 0) throw new AppError('Amount must be a valid non-negative number', 400);
+      data.amount = parsed;
+      const vat = vatAmount !== undefined ? Number(vatAmount) : existing.vatAmount;
+      data.vatAmount = vat;
+      data.totalAmount = parsed + vat;
+    }
+    if (notes !== undefined) data.notes = notes ? sanitizeString(String(notes)) : null;
+    if (client !== undefined) data.client = sanitizeString(client);
+    if (property !== undefined) data.property = property ? sanitizeString(property) : null;
+    if (dueDate !== undefined) data.dueDate = new Date(dueDate);
+
+    const invoice = await prisma.invoice.update({ where: { id: req.params.id }, data });
+    res.status(200).json({ success: true, data: invoice });
+  })
+);
+
+// ─── DELETE /api/finance/invoices/:id ───────────────────────────────────
+router.delete(
+  '/invoices/:id',
+  requirePermission('process_payments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Invoice ID');
+    const existing = await prisma.invoice.findUnique({ where: { id: req.params.id } });
+    if (!existing) throw new AppError('Invoice not found', 404);
+    if (existing.status === 'paid') throw new AppError('Cannot delete a paid invoice', 400);
+
+    await prisma.invoice.delete({ where: { id: req.params.id } });
+    res.status(200).json({ success: true, message: 'Invoice deleted' });
+  })
+);
+
+// ============================================================================
+// EXPENSE ENDPOINTS
+// ============================================================================
+
+// ─── GET /api/finance/expenses ──────────────────────────────────────────
+router.get(
+  '/expenses',
+  requirePermission('view_payments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const {
+      page = '1', pageSize = '20',
+      status, category,
+      sortBy = 'createdAt', sortOrder = 'desc',
+    } = req.query;
+
+    const pageNum = Math.max(1, parseInt(page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 20));
+
+    const where: Record<string, unknown> = {};
+    if (status && status !== 'all') where.status = status as string;
+    if (category && category !== 'all') where.category = category as string;
+
+    const validSorts = ['createdAt', 'amount', 'date', 'status', 'category'];
+    const field = validSorts.includes(sortBy as string) ? (sortBy as string) : 'createdAt';
+    const orderBy: Record<string, 'asc' | 'desc'> = { [field]: sortOrder === 'asc' ? 'asc' : 'desc' };
+
+    const [expenses, total] = await Promise.all([
+      prisma.expense.findMany({ where, orderBy, skip: (pageNum - 1) * limit, take: limit }),
+      prisma.expense.count({ where }),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: expenses,
+      pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
+    });
+  })
+);
+
+// ─── GET /api/finance/expenses/:id ──────────────────────────────────────
+router.get(
+  '/expenses/:id',
+  requirePermission('view_payments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Expense ID');
+    const expense = await prisma.expense.findUnique({ where: { id: req.params.id } });
+    if (!expense) throw new AppError('Expense not found', 404);
+    res.status(200).json({ success: true, data: expense });
+  })
+);
+
+// ─── POST /api/finance/expenses ─────────────────────────────────────────
+router.post(
+  '/expenses',
+  requirePermission('process_payments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { category, description, amount, date, notes, receiptUrl } = req.body;
+
+    if (!category) throw new AppError('Category is required', 400);
+    if (!description) throw new AppError('Description is required', 400);
+    const parsedAmount = Number(amount);
+    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+      throw new AppError('Amount must be a positive number', 400);
+    }
+
+    const VALID_CATEGORIES = ['Marketing', 'Maintenance', 'Utilities', 'Salaries', 'Office', 'Legal', 'Insurance', 'Other'];
+    if (!VALID_CATEGORIES.includes(category)) {
+      throw new AppError(`Category must be one of: ${VALID_CATEGORIES.join(', ')}`, 400);
+    }
+
+    const expense = await prisma.expense.create({
+      data: {
+        category: sanitizeString(category),
+        description: sanitizeString(description),
+        amount: parsedAmount,
+        status: 'pending',
+        date: date ? new Date(date) : new Date(),
+        notes: notes ? sanitizeString(notes) : null,
+        receiptUrl: receiptUrl || null,
+        createdById: req.user?.id || null,
+      },
+    });
+
+    res.status(201).json({ success: true, data: expense });
+  })
+);
+
+// ─── PATCH /api/finance/expenses/:id ────────────────────────────────────
+router.patch(
+  '/expenses/:id',
+  requirePermission('process_payments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Expense ID');
+    const existing = await prisma.expense.findUnique({ where: { id: req.params.id } });
+    if (!existing) throw new AppError('Expense not found', 404);
+
+    const { status, amount, category, description, notes, receiptUrl } = req.body;
+    const data: Record<string, unknown> = {};
+
+    if (status !== undefined) {
+      const validStatuses = ['pending', 'approved', 'rejected', 'processed', 'reimbursed'];
+      if (!validStatuses.includes(status)) throw new AppError(`Invalid status. Allowed: ${validStatuses.join(', ')}`, 400);
+      data.status = status;
+      if (status === 'approved') {
+        data.approvedById = req.user?.id || null;
+        data.approvedAt = new Date();
+      }
+    }
+    if (amount !== undefined) {
+      const parsed = Number(amount);
+      if (!Number.isFinite(parsed) || parsed < 0) throw new AppError('Amount must be non-negative', 400);
+      data.amount = parsed;
+    }
+    if (category !== undefined) data.category = sanitizeString(category);
+    if (description !== undefined) data.description = sanitizeString(description);
+    if (notes !== undefined) data.notes = notes ? sanitizeString(String(notes)) : null;
+    if (receiptUrl !== undefined) data.receiptUrl = receiptUrl || null;
+
+    const expense = await prisma.expense.update({ where: { id: req.params.id }, data });
+    res.status(200).json({ success: true, data: expense });
+  })
+);
+
+// ─── DELETE /api/finance/expenses/:id ───────────────────────────────────
+router.delete(
+  '/expenses/:id',
+  requirePermission('process_payments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Expense ID');
+    const existing = await prisma.expense.findUnique({ where: { id: req.params.id } });
+    if (!existing) throw new AppError('Expense not found', 404);
+    if (existing.status === 'processed') throw new AppError('Cannot delete a processed expense', 400);
+
+    await prisma.expense.delete({ where: { id: req.params.id } });
+    res.status(200).json({ success: true, message: 'Expense deleted' });
+  })
+);
+
 export default router;

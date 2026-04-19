@@ -496,3 +496,59 @@ model JobApplication {
   @@index([email])
   @@index([createdAt])
 }
+
+// ─── INVOICE ────────────────────────────────────────────────────────────
+
+model Invoice {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  invoiceNumber String   @unique           // "INV-2026-0001"
+  client        String                     // Client name
+  property      String?                    // Property reference
+  amount        Float
+  vatAmount     Float    @default(0)       // 5% VAT for commercial
+  totalAmount   Float                      // amount + vatAmount
+  currency      String   @default("AED")
+  status        String   @default("draft") // draft, pending, paid, overdue, cancelled, refunded
+  date          DateTime @default(now())
+  dueDate       DateTime
+  paidAt        DateTime?
+  notes         String?
+  lineItems     Json?                      // [{ description, qty, unitPrice, total }]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  createdById   String?  @db.ObjectId
+
+  @@index([status])
+  @@index([client])
+  @@index([dueDate])
+  @@index([createdAt])
+}
+
+// ─── EXPENSE ────────────────────────────────────────────────────────────
+
+model Expense {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  category      String                     // Marketing, Maintenance, Utilities, Salaries, Office, Legal, Insurance
+  description   String
+  amount        Float
+  currency      String   @default("AED")
+  status        String   @default("pending") // pending, approved, rejected, processed, reimbursed
+  date          DateTime @default(now())
+  receiptUrl    String?                    // Receipt/document upload
+  notes         String?
+  approvedById  String?  @db.ObjectId
+  approvedAt    DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  createdById   String?  @db.ObjectId
+
+  @@index([status])
+  @@index([category])
+  @@index([date])
+  @@index([createdAt])
+  @@index([approvedById])
+}
