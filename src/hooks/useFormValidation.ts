@@ -66,7 +66,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
       const newValue =
         type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
 
-      setValues((prev) => ({ ...prev, [name]: newValue }));
+      setValues((prev: T) => ({ ...prev, [name]: newValue }));
 
       // If already touched or submit was attempted, re-validate this field immediately
       if (touched[name] || submitAttempted) {
@@ -88,7 +88,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
   const handleBlur = useCallback(
     (e: { target: { name: string } }) => {
       const { name } = e.target;
-      setTouched((prev) => ({ ...prev, [name]: true }));
+      setTouched((prev: Record<string, boolean>) => ({ ...prev, [name]: true }));
 
       const fieldValidators = schema[name];
       if (fieldValidators) {
@@ -131,7 +131,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
 
   const setFieldValue = useCallback(
     (name: keyof T, value: unknown) => {
-      setValues((prev) => ({ ...prev, [name]: value }));
+      setValues((prev: T) => ({ ...prev, [name]: value }));
 
       if (touched[name as string] || submitAttempted) {
         const fieldValidators = schema[name as string];
@@ -159,5 +159,5 @@ export function useFormValidation<T extends Record<string, unknown>>(
     [initialValues],
   );
 
-  return { values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue, isValid, reset };
+  return { values, errors, touched: touched as Record<keyof T, boolean>, handleChange, handleBlur, handleSubmit, setFieldValue, isValid, reset };
 }

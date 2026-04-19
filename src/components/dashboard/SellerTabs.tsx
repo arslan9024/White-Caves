@@ -319,15 +319,15 @@ export const SellerAnalytics: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const [props, offs] = await settledJson(
+        const [props, offs]: any[] = await settledJson(
           [authFetch('/api/properties?role=seller'), authFetch('/api/offers?role=seller')],
           [{ data: [] }, { data: [] }],
         );
 
         const propList: DashboardProperty[] = props.data ?? props.properties ?? [];
         const offList: DashboardOffer[] = offs.data ?? [];
-        const prices = propList.map((p) => p.price).filter(Boolean);
-        const avg = prices.length > 0 ? prices.reduce((a: number, b: number) => a + b, 0) / prices.length : 0;
+        const prices = propList.map((p) => p.price).filter(Boolean) as number[];
+        const avg = prices.length > 0 ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
         const accepted = offList.filter((o) => o.status === 'accepted').length;
 
         setStats({

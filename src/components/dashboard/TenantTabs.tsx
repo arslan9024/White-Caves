@@ -29,7 +29,7 @@ export const TenantOverview: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const [l, m] = await settledJson(
+        const [l, m]: any[] = await settledJson(
           [authFetch('/api/leases/my-lease'), authFetch('/api/maintenance?pageSize=5')],
           [{ data: null }, { data: [] }],
         );

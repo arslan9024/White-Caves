@@ -18,7 +18,7 @@ const INITIAL_FORM_DATA = {
   email: '',
   phone: '',
   notes: '',
-} as const;
+};
 
 export type ProspectFormData = typeof INITIAL_FORM_DATA;
 

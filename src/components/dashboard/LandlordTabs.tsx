@@ -154,7 +154,7 @@ export const MaintenanceRequests: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const [reqs, st] = await settledJson(
+        const [reqs, st]: any[] = await settledJson(
           [authFetch('/api/maintenance?pageSize=50'), authFetch('/api/maintenance/stats')],
           [{ data: [] }, { data: null }],
         );
@@ -342,7 +342,7 @@ export const LeaseManagement: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const [all, exp] = await settledJson(
+        const [all, exp]: any[] = await settledJson(
           [authFetch('/api/leases?role=landlord&pageSize=50'), authFetch('/api/leases/expiring?days=60')],
           [{ data: [] }, { data: [] }],
         );

@@ -30,7 +30,7 @@ export const BuyerOverview: React.FC = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const [fav, view, off, sSearch] = await settledJson(
+        const [fav, view, off, sSearch]: any[] = await settledJson(
           [authFetch('/api/favorites/ids'), authFetch('/api/viewings?pageSize=5'), authFetch('/api/offers?role=buyer&pageSize=5'), authFetch('/api/saved-searches')],
           [{ data: [] }, { data: [] }, { data: [] }, { data: [] }],
         );

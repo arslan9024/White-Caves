@@ -28,7 +28,7 @@ export const OwnerOverview: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const [props, leads, leases] = await settledJson(
+        const [props, leads, leases]: any[] = await settledJson(
           [authFetch('/api/properties/count'), authFetch('/api/leads/count'), authFetch('/api/leases/count')],
           [{ count: 0 }, { count: 0 }, { count: 0 }],
         );
