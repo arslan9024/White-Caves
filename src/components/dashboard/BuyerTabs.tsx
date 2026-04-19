@@ -30,7 +30,7 @@ export const BuyerOverview: React.FC = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const [fav, view, off, sSearch] = await settledJson(
+        const [fav, view, off, sSearch]: any[] = await settledJson(
           [authFetch('/api/favorites/ids'), authFetch('/api/viewings?pageSize=5'), authFetch('/api/offers?role=buyer&pageSize=5'), authFetch('/api/saved-searches')],
           [{ data: [] }, { data: [] }, { data: [] }, { data: [] }],
         );
@@ -96,7 +96,7 @@ export const BuyerOverview: React.FC = () => {
                     <td style={S.td}>{v.property?.title ?? v.propertyId}</td>
                     <td style={S.td}>{S.formatDate(v.scheduledAt)}</td>
                     <td style={S.td}>
-                      <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(v.status)}</span>
+                      <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(v.status as any)}</span>
                     </td>
                   </tr>
                 ))}
@@ -146,7 +146,7 @@ export const SavedProperties: React.FC = () => {
                 <h4 style={{ margin: 0 }}>{fav.property?.title ?? 'Property'}</h4>
                 <p style={S.headerSubtitle}>📍 {fav.property?.location ?? '—'}</p>
                 <p style={{ fontWeight: 600, color: 'var(--color-primary, #D4AF37)' }}>
-                  {S.formatCurrency(fav.property?.price)}
+                  {S.formatCurrency(fav.property?.price as any)}
                 </p>
                 {fav.property?.bedrooms != null && (
                   <span style={S.badge('#6b7280', '#f3f4f6')}>
@@ -215,7 +215,7 @@ export const ViewingSchedule: React.FC = () => {
                         v.status === 'completed' ? '#16a34a' : '#2563eb',
                         v.status === 'completed' ? '#dcfce7' : '#dbeafe',
                       )}>
-                        {S.formatStatus(v.status)}
+                        {S.formatStatus(v.status as any)}
                       </span>
                     </td>
                     <td style={S.td}>{v.rating ? `${'⭐'.repeat(v.rating)}` : '—'}</td>
@@ -336,10 +336,10 @@ export const BuyerOffers: React.FC = () => {
                   return (
                     <tr key={o.id}>
                       <td style={S.td}>{o.property?.title ?? o.propertyId}</td>
-                      <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(o.amount)}</td>
-                      <td style={S.td}>{o.counterAmount ? S.formatCurrency(o.counterAmount) : '—'}</td>
+                      <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(o.amount as any)}</td>
+                      <td style={S.td}>{o.counterAmount ? S.formatCurrency(o.counterAmount as any) : '—'}</td>
                       <td style={S.td}>
-                        <span style={S.badge(sc.c, sc.bg)}>{S.formatStatus(o.status)}</span>
+                        <span style={S.badge(sc.c, sc.bg)}>{S.formatStatus(o.status as any)}</span>
                       </td>
                       <td style={S.td}>{S.formatDate(o.createdAt)}</td>
                     </tr>

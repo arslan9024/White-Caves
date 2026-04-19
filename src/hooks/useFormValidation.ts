@@ -48,7 +48,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
 ): UseFormValidation<T> {
   const [values, setValues] = useState<T>(initialValues);
   const [errors, setErrors] = useState<ValidationErrors>({});
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [touched, setTouched] = useState<Record<keyof T, boolean>>({} as Record<keyof T, boolean>);
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
   /* ── Derived ── */
@@ -66,14 +66,14 @@ export function useFormValidation<T extends Record<string, unknown>>(
       const newValue =
         type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
 
-      setValues((prev) => ({ ...prev, [name]: newValue }));
+      setValues((prev: any) => ({ ...prev, [name]: newValue }));
 
       // If already touched or submit was attempted, re-validate this field immediately
       if (touched[name] || submitAttempted) {
         const fieldValidators = schema[name];
         if (fieldValidators) {
           const error = validateField(fieldValidators, newValue);
-          setErrors((prev) => {
+          setErrors((prev: any) => {
             if (error) return { ...prev, [name]: error };
             const next = { ...prev };
             delete next[name];
@@ -88,12 +88,12 @@ export function useFormValidation<T extends Record<string, unknown>>(
   const handleBlur = useCallback(
     (e: { target: { name: string } }) => {
       const { name } = e.target;
-      setTouched((prev) => ({ ...prev, [name]: true }));
+      setTouched((prev: any) => ({ ...prev, [name]: true }));
 
       const fieldValidators = schema[name];
       if (fieldValidators) {
         const error = validateField(fieldValidators, (values as Record<string, unknown>)[name]);
-        setErrors((prev) => {
+        setErrors((prev: any) => {
           if (error) return { ...prev, [name]: error };
           const next = { ...prev };
           delete next[name];
@@ -115,7 +115,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
         for (const key of Object.keys(schema)) {
           allTouched[key] = true;
         }
-        setTouched(allTouched);
+        setTouched(allTouched as any);
 
         // Validate all
         const allErrors = validate(schema, values as Record<string, unknown>);
@@ -131,13 +131,13 @@ export function useFormValidation<T extends Record<string, unknown>>(
 
   const setFieldValue = useCallback(
     (name: keyof T, value: unknown) => {
-      setValues((prev) => ({ ...prev, [name]: value }));
+      setValues((prev: any) => ({ ...prev, [name]: value }));
 
       if (touched[name as string] || submitAttempted) {
         const fieldValidators = schema[name as string];
         if (fieldValidators) {
           const error = validateField(fieldValidators, value);
-          setErrors((prev) => {
+          setErrors((prev: any) => {
             if (error) return { ...prev, [name as string]: error };
             const next = { ...prev };
             delete next[name as string];
@@ -153,7 +153,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
     (newValues?: Partial<T>) => {
       setValues(newValues ? { ...initialValues, ...newValues } : initialValues);
       setErrors({});
-      setTouched({});
+      setTouched({} as any);
       setSubmitAttempted(false);
     },
     [initialValues],

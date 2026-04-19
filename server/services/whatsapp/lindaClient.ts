@@ -6,6 +6,9 @@
  */
 
 import { EventEmitter } from 'events';
+import { createLogger } from '../../utils/logger.js';
+
+const log = createLogger('lindaClient');
 
 export interface WhatsAppMessage {
   id: string;
@@ -69,8 +72,8 @@ export class LindaClient extends EventEmitter {
     try {
       this.setStatus(LindaStatus.AUTHENTICATING);
 
-      console.log('[Linda] Initializing WhatsApp LocalAuth client...');
-      console.log(`[Linda] Session path: ${this.config.sessionPath}`);
+      log.info('Initializing WhatsApp LocalAuth client...');
+      log.info(`Session path: ${this.config.sessionPath}`);
 
       // In production, this would be:
       // const { Client } = require('whatsapp-web.js');
@@ -96,11 +99,11 @@ export class LindaClient extends EventEmitter {
       this.sessionActive = true;
       this.reconnectAttempts = 0;
 
-      console.log('[Linda] WhatsApp client ready!');
+      log.info('WhatsApp client ready!');
       this.emit('ready');
     } catch (error) {
       this.setStatus(LindaStatus.ERROR);
-      console.error('[Linda] Initialization failed:', error);
+      log.error('Initialization failed', error);
       this.emit('error', error);
       throw error;
     }
@@ -144,7 +147,7 @@ export class LindaClient extends EventEmitter {
     //   this.attemptReconnect();
     // });
 
-    console.log('[Linda] Event listeners setup complete');
+    log.info('Event listeners setup complete');
   }
 
   /**
@@ -173,9 +176,9 @@ export class LindaClient extends EventEmitter {
       // Emit event
       this.emit('message', wrappedMessage);
 
-      console.log(`[Linda] Message received from ${wrappedMessage.from}: ${wrappedMessage.body.substring(0, 50)}`);
+      log.info(`Message received from ${wrappedMessage.from}: ${wrappedMessage.body.substring(0, 50)}`);
     } catch (error) {
-      console.error('[Linda] Error handling message:', error);
+      log.error('Error handling message', error);
     }
   }
 
@@ -212,7 +215,7 @@ export class LindaClient extends EventEmitter {
 
       const messageId = `msg_${Date.now()}_${Math.random().toString(36)}`;
 
-      console.log(`[Linda] Message sent to ${phoneNumber}: ${message.substring(0, 50)}`);
+      log.info(`Message sent to ${phoneNumber}: ${message.substring(0, 50)}`);
 
       this.emit('message_sent', {
         to: phoneNumber,
@@ -223,7 +226,7 @@ export class LindaClient extends EventEmitter {
 
       return messageId;
     } catch (error) {
-      console.error('[Linda] Error sending message:', error);
+      log.error('Error sending message', error);
       this.emit('error', { type: 'send_failed', error });
       throw error;
     }
@@ -247,10 +250,10 @@ export class LindaClient extends EventEmitter {
       // const chats = await this.client.getChats();
       // return chats.map(chat => ({ id: chat.id, name: chat.name, lastMessage: chat.lastMessage }));
 
-      console.log('[Linda] Fetching conversations');
+      log.info('Fetching conversations');
       return [];
     } catch (error) {
-      console.error('[Linda] Error getting conversations:', error);
+      log.error('Error getting conversations', error);
       throw error;
     }
   }
@@ -265,10 +268,10 @@ export class LindaClient extends EventEmitter {
       // const chat = await this.client.getChatById(number);
       // const messages = await chat.fetchMessages({ limit });
 
-      console.log(`[Linda] Fetching conversation history for ${phoneNumber}`);
+      log.info(`Fetching conversation history for ${phoneNumber}`);
       return [];
     } catch (error) {
-      console.error('[Linda] Error getting conversation history:', error);
+      log.error('Error getting conversation history', error);
       throw error;
     }
   }
@@ -283,10 +286,10 @@ export class LindaClient extends EventEmitter {
 
       this.setStatus(LindaStatus.DISCONNECTED);
       this.sessionActive = false;
-      console.log('[Linda] Client disconnected');
+      log.info('Client disconnected');
       this.emit('disconnected');
     } catch (error) {
-      console.error('[Linda] Error disconnecting:', error);
+      log.error('Error disconnecting', error);
       throw error;
     }
   }
@@ -297,15 +300,15 @@ export class LindaClient extends EventEmitter {
   private async attemptReconnect(): Promise<void> {
     if (!this.config.autoRestart || this.reconnectAttempts >= this.config.maxReconnectAttempts) {
       this.setStatus(LindaStatus.ERROR);
-      console.error('[Linda] Max reconnection attempts reached');
+      log.error('Max reconnection attempts reached');
       return;
     }
 
     this.reconnectAttempts += 1;
     const delay = this.config.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
 
-    console.log(
-      `[Linda] Attempting reconnection (attempt ${this.reconnectAttempts}/${this.config.maxReconnectAttempts}) in ${delay}ms`
+    log.info(
+      `Attempting reconnection (attempt ${this.reconnectAttempts}/${this.config.maxReconnectAttempts}) in ${delay}ms`
     );
 
     this.setStatus(LindaStatus.RECONNECTING);
@@ -314,7 +317,7 @@ export class LindaClient extends EventEmitter {
       try {
         await this.initialize();
       } catch (error) {
-        console.error('[Linda] Reconnection failed:', error);
+        log.error('Reconnection failed', error);
         await this.attemptReconnect();
       }
     }, delay);
@@ -325,7 +328,7 @@ export class LindaClient extends EventEmitter {
    */
   private setStatus(newStatus: LindaStatus): void {
     if (this.status !== newStatus) {
-      console.log(`[Linda] Status: ${this.status} -> ${newStatus}`);
+      log.info(`Status: ${this.status} -> ${newStatus}`);
       this.status = newStatus;
       this.emit('status_changed', newStatus);
     }

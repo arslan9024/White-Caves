@@ -5,6 +5,9 @@
  */
 
 import axios, { AxiosInstance, AxiosError } from 'axios';
+import { createLogger } from '../../utils/logger.js';
+
+const log = createLogger('metaAPI');
 
 export interface MetaAPIConfig {
   accessToken: string; // Permanent access token from Meta
@@ -144,11 +147,11 @@ export class MetaAPIClient {
       const response = await this.client.post<MessageResponse>(`/${this.config.phoneNumberId}/messages`, payload);
 
       const messageId = response.data.messages[0]?.id;
-      console.log(`[Meta API] Message sent: ${messageId} to ${toPhoneNumber}`);
+      log.info(`Message sent: ${messageId} to ${toPhoneNumber}`);
 
       return messageId;
     } catch (error) {
-      console.error('[Meta API] Error sending message:', error);
+      log.error('Error sending message', error);
       throw this.handleError(error);
     }
   }
@@ -187,7 +190,7 @@ export class MetaAPIClient {
 
       return response.data.messages[0]?.id;
     } catch (error) {
-      console.error('[Meta API] Error sending template:', error);
+      log.error('Error sending template', error);
       throw this.handleError(error);
     }
   }
@@ -211,7 +214,7 @@ export class MetaAPIClient {
 
       return response.data.messages[0]?.id;
     } catch (error) {
-      console.error('[Meta API] Error sending image:', error);
+      log.error('Error sending image', error);
       throw this.handleError(error);
     }
   }
@@ -235,7 +238,7 @@ export class MetaAPIClient {
 
       return response.data.messages[0]?.id;
     } catch (error) {
-      console.error('[Meta API] Error sending document:', error);
+      log.error('Error sending document', error);
       throw this.handleError(error);
     }
   }
@@ -255,7 +258,7 @@ export class MetaAPIClient {
         error: response.data.error,
       };
     } catch (error) {
-      console.error('[Meta API] Error getting message status:', error);
+      log.error('Error getting message status', error);
       throw this.handleError(error);
     }
   }
@@ -281,7 +284,7 @@ export class MetaAPIClient {
         url: `${this.BASE_URL}/${this.config.apiVersion}/${response.data.id}`,
       };
     } catch (error) {
-      console.error('[Meta API] Error uploading media:', error);
+      log.error('Error uploading media', error);
       throw this.handleError(error);
     }
   }
@@ -297,7 +300,7 @@ export class MetaAPIClient {
 
       return Buffer.from(response.data);
     } catch (error) {
-      console.error('[Meta API] Error downloading media:', error);
+      log.error('Error downloading media', error);
       throw this.handleError(error);
     }
   }
@@ -307,10 +310,10 @@ export class MetaAPIClient {
    */
   public verifyWebhook(mode: string, challenge: string, verifyToken: string): string | null {
     if (mode === 'subscribe' && verifyToken === this.config.webhookVerifyToken) {
-      console.log('[Meta API] Webhook verified');
+      log.info('Webhook verified');
       return challenge;
     }
-    console.warn('[Meta API] Webhook verification failed');
+    log.warn('Webhook verification failed');
     return null;
   }
 
@@ -329,7 +332,7 @@ export class MetaAPIClient {
       const response = await this.client.get(`/${this.config.businessAccountId}`);
       return response.data;
     } catch (error) {
-      console.error('[Meta API] Error getting account info:', error);
+      log.error('Error getting account info', error);
       throw this.handleError(error);
     }
   }
@@ -342,7 +345,7 @@ export class MetaAPIClient {
       const response = await this.client.get(`/${this.config.phoneNumberId}`);
       return response.data;
     } catch (error) {
-      console.error('[Meta API] Error getting phone number info:', error);
+      log.error('Error getting phone number info', error);
       throw this.handleError(error);
     }
   }
