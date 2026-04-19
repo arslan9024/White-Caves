@@ -33,7 +33,7 @@ export const BuyerOverview: React.FC = () => {
         const [fav, view, off, sSearch] = await settledJson(
           [authFetch('/api/favorites/ids'), authFetch('/api/viewings?pageSize=5'), authFetch('/api/offers?role=buyer&pageSize=5'), authFetch('/api/saved-searches')],
           [{ data: [] }, { data: [] }, { data: [] }, { data: [] }],
-        );
+        ) as any[];
 
         setStats({
           favorites: fav.data?.length ?? 0,
@@ -94,9 +94,9 @@ export const BuyerOverview: React.FC = () => {
                 {recentViewings.map((v) => (
                   <tr key={v.id}>
                     <td style={S.td}>{v.property?.title ?? v.propertyId}</td>
-                    <td style={S.td}>{S.formatDate(v.scheduledAt)}</td>
+                    <td style={S.td}>{S.formatDate(v.scheduledAt ?? '')}</td>
                     <td style={S.td}>
-                      <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(v.status)}</span>
+                      <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(v.status ?? '')}</span>
                     </td>
                   </tr>
                 ))}
@@ -208,14 +208,14 @@ export const ViewingSchedule: React.FC = () => {
                   <tr key={v.id}>
                     <td style={S.td}>{v.property?.title ?? v.propertyId}</td>
                     <td style={S.td}>{v.agent?.name ?? '—'}</td>
-                    <td style={S.td}>{S.formatDate(v.scheduledAt)}</td>
+                    <td style={S.td}>{S.formatDate(v.scheduledAt ?? '')}</td>
                     <td style={S.td}>{v.scheduledAt ? new Date(v.scheduledAt).toLocaleTimeString('en-AE', { hour: '2-digit', minute: '2-digit' }) : '—'}</td>
                     <td style={S.td}>
                       <span style={S.badge(
                         v.status === 'completed' ? '#16a34a' : '#2563eb',
                         v.status === 'completed' ? '#dcfce7' : '#dbeafe',
                       )}>
-                        {S.formatStatus(v.status)}
+                        {S.formatStatus(v.status ?? '')}
                       </span>
                     </td>
                     <td style={S.td}>{v.rating ? `${'⭐'.repeat(v.rating)}` : '—'}</td>
@@ -336,12 +336,12 @@ export const BuyerOffers: React.FC = () => {
                   return (
                     <tr key={o.id}>
                       <td style={S.td}>{o.property?.title ?? o.propertyId}</td>
-                      <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(o.amount)}</td>
+                      <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(o.amount ?? 0)}</td>
                       <td style={S.td}>{o.counterAmount ? S.formatCurrency(o.counterAmount) : '—'}</td>
                       <td style={S.td}>
-                        <span style={S.badge(sc.c, sc.bg)}>{S.formatStatus(o.status)}</span>
+                        <span style={S.badge(sc.c, sc.bg)}>{S.formatStatus(o.status ?? '')}</span>
                       </td>
-                      <td style={S.td}>{S.formatDate(o.createdAt)}</td>
+                      <td style={S.td}>{S.formatDate(o.createdAt ?? '')}</td>
                     </tr>
                   );
                 })}

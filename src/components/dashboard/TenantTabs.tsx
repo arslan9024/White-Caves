@@ -32,7 +32,7 @@ export const TenantOverview: React.FC = () => {
         const [l, m] = await settledJson(
           [authFetch('/api/leases/my-lease'), authFetch('/api/maintenance?pageSize=5')],
           [{ data: null }, { data: [] }],
-        );
+        ) as any[];
         setLease(l.data);
         setMaintenance(m.data ?? []);
       } catch (error) { log.warn('Failed to fetch tenant overview:', error); }
@@ -51,11 +51,11 @@ export const TenantOverview: React.FC = () => {
 
       <div style={S.statsGrid}>
         <div style={S.statCard}>
-          <span style={S.statValue}>{lease ? S.formatCurrency(lease.monthlyRent) : '—'}</span>
+          <span style={S.statValue}>{lease ? S.formatCurrency(lease.monthlyRent ?? 0) : '—'}</span>
           <span style={S.statLabel}>💳 Monthly Rent</span>
         </div>
         <div style={S.statCard}>
-          <span style={S.statValue}>{lease ? S.formatDate(lease.endDate) : '—'}</span>
+          <span style={S.statValue}>{lease ? S.formatDate(lease.endDate ?? '') : '—'}</span>
           <span style={S.statLabel}>📅 Lease Expiry</span>
         </div>
         <div style={S.statCard}>
@@ -83,7 +83,7 @@ export const TenantOverview: React.FC = () => {
           {maintenance.map((m) => (
             <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid #f3f4f6' }}>
               <span>{m.title}</span>
-              <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(m.status)}</span>
+              <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(m.status ?? '')}</span>
             </div>
           ))}
         </div>
@@ -139,16 +139,16 @@ export const TenantLease: React.FC = () => {
           </div>
           <div>
             <strong>Start Date:</strong>
-            <p style={S.headerSubtitle}>{S.formatDate(lease.startDate)}</p>
+            <p style={S.headerSubtitle}>{S.formatDate(lease.startDate ?? '')}</p>
           </div>
           <div>
             <strong>End Date:</strong>
-            <p style={S.headerSubtitle}>{S.formatDate(lease.endDate)}</p>
+            <p style={S.headerSubtitle}>{S.formatDate(lease.endDate ?? '')}</p>
           </div>
           <div>
             <strong>Monthly Rent:</strong>
             <p style={{ ...S.headerSubtitle, color: 'var(--color-primary, #D4AF37)', fontWeight: 600 }}>
-              {S.formatCurrency(lease.monthlyRent)}
+              {S.formatCurrency(lease.monthlyRent ?? 0)}
             </p>
           </div>
           <div>
@@ -162,7 +162,7 @@ export const TenantLease: React.FC = () => {
                 lease.status === 'active' ? '#16a34a' : '#d97706',
                 lease.status === 'active' ? '#dcfce7' : '#fffbeb',
               )}>
-                {S.formatStatus(lease.status)}
+                {S.formatStatus(lease.status ?? '')}
               </span>
             </p>
           </div>
@@ -244,14 +244,14 @@ export const TenantPayments: React.FC = () => {
                   <tr key={p.id}>
                     <td style={S.td}>{S.formatDate(p.paymentDate ?? p.createdAt)}</td>
                     <td style={S.td}>{p.period ?? '—'}</td>
-                    <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(p.amount)}</td>
+                    <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(p.amount ?? 0)}</td>
                     <td style={S.td}>{S.formatStatus(p.method ?? 'bank_transfer')}</td>
                     <td style={S.td}>
                       <span style={S.badge(
                         p.status === 'paid' ? '#16a34a' : p.status === 'overdue' ? '#dc2626' : '#d97706',
                         p.status === 'paid' ? '#dcfce7' : p.status === 'overdue' ? '#fef2f2' : '#fffbeb',
                       )}>
-                        {S.formatStatus(p.status)}
+                        {S.formatStatus(p.status ?? '')}
                       </span>
                     </td>
                   </tr>
@@ -308,13 +308,13 @@ export const TenantMaintenance: React.FC = () => {
                     r.priority === 'emergency' ? '#dc2626' : r.priority === 'high' ? '#d97706' : '#2563eb',
                     r.priority === 'emergency' ? '#fef2f2' : r.priority === 'high' ? '#fffbeb' : '#dbeafe',
                   )}>
-                    {S.formatStatus(r.priority)}
+                    {S.formatStatus(r.priority ?? '')}
                   </span>
                 </div>
                 {r.description && <p style={{ color: '#6b7280', fontSize: '0.85rem', margin: '0 0 0.5rem 0' }}>{r.description}</p>}
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#9ca3af' }}>
-                  <span>📅 {S.formatDate(r.createdAt)}</span>
-                  <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(r.status)}</span>
+                  <span>📅 {S.formatDate(r.createdAt ?? '')}</span>
+                  <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(r.status ?? '')}</span>
                 </div>
               </div>
             ))}
@@ -350,7 +350,7 @@ export const TenantDocuments: React.FC = () => {
               <span style={{ fontSize: '2rem' }}>{doc.icon}</span>
               <div>
                 <h4 style={{ margin: 0 }}>{doc.name}</h4>
-                <p style={{ ...S.headerSubtitle, margin: '0.15rem 0 0 0' }}>{doc.type.toUpperCase()} — {S.formatDate(doc.date)}</p>
+                <p style={{ ...S.headerSubtitle, margin: '0.15rem 0 0 0' }}>{doc.type.toUpperCase()} — {S.formatDate(doc.date ?? '')}</p>
               </div>
             </div>
             <div style={{ marginTop: '0.75rem' }}>
