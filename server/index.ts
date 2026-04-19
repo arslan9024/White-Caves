@@ -40,6 +40,7 @@ import offersRoutes from './routes/offers.js';
 import leasesRoutes from './routes/leases.js';
 import maintenanceRoutes from './routes/maintenance.js';
 import clientsRoutes from './routes/clients.js';
+import activitiesRoutes from './routes/activities.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 
 // Load environment variables
@@ -196,6 +197,9 @@ app.use('/api/tenants', tenantsRoutes);
 
 // Clients API (Phase 1C - Client/Owner Management)
 app.use('/api/clients', clientsRoutes);
+
+// Activities API (Phase 1F - Activity Timeline & Audit Trail)
+app.use('/api/activities', activitiesRoutes);
 
 // Communications API (Nadia - WhatsApp CRM, Nina - Bot)
 app.use('/api/communications', communicationsRoutes);

@@ -870,6 +870,103 @@ export const convertLeadToClientAPI = createAsyncThunk<
 );
 
 // ============================================================================
+// ACTIVITY THUNKS
+// ============================================================================
+
+/** Fetch activities from API — GET /api/activities */
+export const fetchActivitiesFromAPI = createAsyncThunk<
+  { data: CRMItem[]; pagination?: Record<string, unknown> },
+  { type?: string; action?: string; userId?: string; leadId?: string; page?: number; pageSize?: number },
+  { rejectValue: string }
+>(
+  'crmData/fetchActivities',
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const query = new URLSearchParams();
+      if (params.type) query.set('type', params.type);
+      if (params.action) query.set('action', params.action);
+      if (params.userId) query.set('userId', params.userId);
+      if (params.leadId) query.set('leadId', params.leadId);
+      if (params.page) query.set('page', String(params.page));
+      if (params.pageSize) query.set('pageSize', String(params.pageSize));
+      const url = `/api/activities${query.toString() ? `?${query}` : ''}`;
+      const response = await authFetch(url);
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to fetch activities'));
+      const json = await response.json();
+      return { data: json.data, pagination: json.pagination };
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch activities'));
+    }
+  }
+);
+
+/** Create an activity — POST /api/activities */
+export const createActivityAPI = createAsyncThunk<
+  CRMItem,
+  { type: string; action: string; description: string; metadata?: Record<string, unknown>; leadId?: string },
+  { rejectValue: string }
+>(
+  'crmData/createActivity',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await authFetch('/api/activities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to create activity'));
+      const json = await response.json();
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to create activity'));
+    }
+  }
+);
+
+/** Update an activity — PATCH /api/activities/:id */
+export const updateActivityAPI = createAsyncThunk<
+  CRMItem,
+  { id: string; description?: string; metadata?: Record<string, unknown> },
+  { rejectValue: string }
+>(
+  'crmData/updateActivity',
+  async ({ id, ...data }, { rejectWithValue }) => {
+    try {
+      const response = await authFetch(`/api/activities/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to update activity'));
+      const json = await response.json();
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to update activity'));
+    }
+  }
+);
+
+/** Delete an activity — DELETE /api/activities/:id */
+export const deleteActivityAPI = createAsyncThunk<
+  string,
+  string,
+  { rejectValue: string }
+>(
+  'crmData/deleteActivity',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await authFetch(`/api/activities/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to delete activity'));
+      return id;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to delete activity'));
+    }
+  }
+);
+
+// ============================================================================
 // TRANSACTION THUNKS
 // ============================================================================
 
@@ -1799,6 +1896,69 @@ const crmDataSlice = createSlice({
         state.transactions.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to delete transaction';
       });
 
+    // --- Fetch Activities ---
+    builder
+      .addCase(fetchActivitiesFromAPI.pending, (state) => {
+        state.activities.loading = true;
+        state.activities.error = null;
+      })
+      .addCase(fetchActivitiesFromAPI.fulfilled, (state, action) => {
+        state.activities.loading = false;
+        state.activities.items = action.payload.data;
+        state.activities.error = null;
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(fetchActivitiesFromAPI.rejected, (state, action) => {
+        state.activities.loading = false;
+        state.activities.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to fetch activities';
+      });
+
+    // --- Create Activity ---
+    builder
+      .addCase(createActivityAPI.pending, (state) => {
+        state.activities.loading = true;
+      })
+      .addCase(createActivityAPI.fulfilled, (state, action) => {
+        state.activities.loading = false;
+        state.activities.items.unshift(action.payload);
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(createActivityAPI.rejected, (state, action) => {
+        state.activities.loading = false;
+        state.activities.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to create activity';
+      });
+
+    // --- Update Activity ---
+    builder
+      .addCase(updateActivityAPI.pending, (state) => {
+        state.activities.loading = true;
+      })
+      .addCase(updateActivityAPI.fulfilled, (state, action) => {
+        state.activities.loading = false;
+        const idx = state.activities.items.findIndex(a => a.id === action.payload.id);
+        if (idx !== -1) state.activities.items[idx] = action.payload;
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(updateActivityAPI.rejected, (state, action) => {
+        state.activities.loading = false;
+        state.activities.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to update activity';
+      });
+
+    // --- Delete Activity ---
+    builder
+      .addCase(deleteActivityAPI.pending, (state) => {
+        state.activities.loading = true;
+      })
+      .addCase(deleteActivityAPI.fulfilled, (state, action) => {
+        state.activities.loading = false;
+        state.activities.items = state.activities.items.filter(a => a.id !== action.payload);
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(deleteActivityAPI.rejected, (state, action) => {
+        state.activities.loading = false;
+        state.activities.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to delete activity';
+      });
+
     // --- SECURITY: Reset all CRM data on logout to prevent data leaks ---
     builder.addCase(logout, () => initialState);
   }
@@ -2071,6 +2231,27 @@ export const selectRecentActivities = createSelector(
   (_state: RootState, count: number = 10) => count,
   (items, count) => items ? items.slice(0, count) : []
 );
+export const selectLeadActivities = createSelector(
+  selectAllActivities,
+  (items) => items.filter((a: CRMItem) => a.type === 'lead')
+);
+export const selectDealActivities = createSelector(
+  selectAllActivities,
+  (items) => items.filter((a: CRMItem) => a.type === 'deal')
+);
+export const selectPropertyActivities = createSelector(
+  selectAllActivities,
+  (items) => items.filter((a: CRMItem) => a.type === 'property')
+);
+export const selectSystemActivities = createSelector(
+  selectAllActivities,
+  (items) => items.filter((a: CRMItem) => a.type === 'system')
+);
+export const selectActivitiesLoading = (state: RootState) => state.crmData?.activities?.loading;
+export const selectActivitiesError = (state: RootState) => state.crmData?.activities?.error;
+
+export const selectActivitiesByUser = (state: RootState, userId: string) =>
+  state.crmData?.activities?.items?.filter((a: CRMItem) => a.userId === userId) || [];
 
 // ── Overview ──
 const EMPTY_OVERVIEW: Record<string, unknown> = Object.freeze({});
