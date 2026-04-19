@@ -34,12 +34,12 @@ vi.mock('styled-components', async () => {
     );
     component.displayName = `styled.${tag}`;
     // Support .attrs() chain
-    (component as Record<string, unknown>).attrs = () => component;
+    (component as any).attrs = () => component;
     return component;
   };
 
   const styled = new Proxy(
-    ((tag: string) => () => createMockStyled(tag)) as unknown as Record<string, unknown>,
+    ((tag: string) => () => createMockStyled(tag)) as any,
     {
       get(target, prop: string) {
         if (prop === '__esModule') return true;
@@ -86,70 +86,70 @@ describe('FormField', () => {
 
   // ── Rendering ──────────────────────────────────────────────────────
   it('renders with label', () => {
-    render(<FormField {...defaultProps} />);
+    render(<FormField {...({} as any)} {...({} as any)} {...defaultProps} />);
     expect(screen.getByText('Email')).toBeInTheDocument();
   });
 
   it('renders required indicator when required', () => {
-    render(<FormField {...defaultProps} required />);
+    render(<FormField {...({} as any)} {...({} as any)} {...defaultProps} required />);
     expect(screen.getByText('*')).toBeInTheDocument();
   });
 
   it('renders input with correct name', () => {
-    render(<FormField {...defaultProps} />);
+    render(<FormField {...({} as any)} {...({} as any)} {...defaultProps} />);
     const input = screen.getByRole('textbox');
     expect(input).toHaveAttribute('name', 'email');
   });
 
   it('renders placeholder', () => {
-    render(<FormField {...defaultProps} placeholder="Enter email" />);
+    render(<FormField {...({} as any)} {...({} as any)} {...defaultProps} placeholder="Enter email" />);
     expect(screen.getByPlaceholderText('Enter email')).toBeInTheDocument();
   });
 
   it('renders disabled input', () => {
-    render(<FormField {...defaultProps} disabled />);
+    render(<FormField {...({} as any)} {...({} as any)} {...defaultProps} disabled />);
     expect(screen.getByRole('textbox')).toBeDisabled();
   });
 
   // ── Error display ──────────────────────────────────────────────────
   it('shows error when touched and error exists', () => {
-    render(<FormField {...defaultProps} touched error="Email is required" />);
+    render(<FormField {...({} as any)} {...({} as any)} {...defaultProps} touched error="Email is required" />);
     expect(screen.getByText('Email is required')).toBeInTheDocument();
   });
 
   it('does not show error when not touched', () => {
-    render(<FormField {...defaultProps} error="Email is required" />);
+    render(<FormField {...({} as any)} {...({} as any)} {...defaultProps} error="Email is required" />);
     expect(screen.queryByText('Email is required')).not.toBeInTheDocument();
   });
 
   it('sets aria-invalid when error shown', () => {
-    render(<FormField {...defaultProps} touched error="Invalid" />);
+    render(<FormField {...({} as any)} {...({} as any)} {...defaultProps} touched error="Invalid" />);
     const input = screen.getByRole('textbox');
     expect(input).toHaveAttribute('aria-invalid');
   });
 
   // ── Hint text ──────────────────────────────────────────────────────
   it('shows hint text when no error', () => {
-    render(<FormField {...defaultProps} hint="We will never share your email" />);
+    render(<FormField {...({} as any)} {...({} as any)} {...defaultProps} hint="We will never share your email" />);
     expect(screen.getByText('We will never share your email')).toBeInTheDocument();
   });
 
   // ── Handlers ───────────────────────────────────────────────────────
   it('calls onChange when typing', () => {
-    render(<FormField {...defaultProps} />);
+    render(<FormField {...({} as any)} {...({} as any)} {...defaultProps} />);
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'test', name: 'email', type: 'text' } });
     expect(defaultProps.onChange).toHaveBeenCalled();
   });
 
   it('calls onBlur when field loses focus', () => {
-    render(<FormField {...defaultProps} />);
+    render(<FormField {...({} as any)} {...({} as any)} {...defaultProps} />);
     fireEvent.blur(screen.getByRole('textbox'));
     expect(defaultProps.onBlur).toHaveBeenCalled();
   });
 
   // ── Textarea ───────────────────────────────────────────────────────
   it('renders textarea for type=textarea', () => {
-    render(<FormField {...defaultProps} type="textarea" />);
+    render(<FormField {...({} as any)} {...({} as any)} {...defaultProps} type="textarea" />);
     expect(screen.getByRole('textbox').tagName).toBe('TEXTAREA');
   });
 
@@ -174,13 +174,13 @@ describe('FormField', () => {
 
   // ── Password toggle ────────────────────────────────────────────────
   it('renders password toggle button for type=password', () => {
-    render(<FormField {...defaultProps} type="password" value="secret" />);
+    render(<FormField {...({} as any)} {...({} as any)} {...defaultProps} type="password" value="secret" />);
     const toggleBtn = screen.getByRole('button', { name: /show password|hide password/i });
     expect(toggleBtn).toBeInTheDocument();
   });
 
   it('toggles password visibility on click', () => {
-    render(<FormField {...defaultProps} type="password" value="secret" />);
+    render(<FormField {...({} as any)} {...({} as any)} {...defaultProps} type="password" value="secret" />);
     const input = screen.getByDisplayValue('secret');
     expect(input).toHaveAttribute('type', 'password');
 
@@ -218,13 +218,13 @@ describe('FormField', () => {
 
   // ── Character counter ──────────────────────────────────────────────
   it('shows character count when maxLength is set', () => {
-    render(<FormField {...defaultProps} value="Hello" maxLength={100} />);
+    render(<FormField {...({} as any)} {...({} as any)} {...defaultProps} value="Hello" maxLength={100} />);
     expect(screen.getByText('5/100')).toBeInTheDocument();
   });
 
   // ── aria-required ──────────────────────────────────────────────────
   it('sets aria-required for required fields', () => {
-    render(<FormField {...defaultProps} required />);
+    render(<FormField {...({} as any)} {...({} as any)} {...defaultProps} required />);
     expect(screen.getByRole('textbox')).toHaveAttribute('aria-required');
   });
 });

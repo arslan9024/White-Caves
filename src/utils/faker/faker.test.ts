@@ -8,7 +8,7 @@
  * - Realistic value ranges
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect , beforeAll } from 'vitest';
 import {
   generateProperties, DUBAI_COMMUNITIES, PROPERTY_TYPES, AMENITIES,
   generateAgents, AGENT_DEPARTMENTS,

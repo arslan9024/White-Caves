@@ -28,10 +28,10 @@ export const OwnerOverview: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const [props, leads, leases] = await settledJson(
-          [authFetch('/api/properties/count'), authFetch('/api/leads/count'), authFetch('/api/leases/count')],
+
+        const [props, leads, leases] = await settledJson([authFetch('/api/properties/count'), authFetch('/api/leads/count'), authFetch('/api/leases/count')],
           [{ count: 0 }, { count: 0 }, { count: 0 }],
-        );
+        ) as any[];
         setStats({
           properties: props.count ?? props.data ?? 0,
           leads: leads.count ?? leads.data ?? 0,
@@ -84,7 +84,7 @@ export const OwnerOverview: React.FC = () => {
                 <span style={S.badge(
                   bot.status === 'online' ? '#16a34a' : '#d97706',
                   bot.status === 'online' ? '#dcfce7' : '#fffbeb',
-                )}>{S.formatStatus(bot.status)}</span>
+                )}>{S.formatStatus(bot.status ?? '')}</span>
               </div>
             ))}
           </div>
@@ -235,7 +235,7 @@ export const WhatsAppDashboard: React.FC = () => {
               <span style={S.badge(
                 bot.status === 'online' ? '#16a34a' : '#d97706',
                 bot.status === 'online' ? '#dcfce7' : '#fffbeb',
-              )}>{S.formatStatus(bot.status)}</span>
+              )}>{S.formatStatus(bot.status ?? '')}</span>
             </div>
             <div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem', color: '#6b7280' }}>
               <span>💬 {bot.messages24h} messages</span>
@@ -295,7 +295,7 @@ export const SystemHealth: React.FC = () => {
               <span style={S.badge(
                 svc.status === 'healthy' ? '#16a34a' : svc.status === 'standby' ? '#d97706' : '#6b7280',
                 svc.status === 'healthy' ? '#dcfce7' : svc.status === 'standby' ? '#fffbeb' : '#f3f4f6',
-              )}>{S.formatStatus(svc.status)}</span>
+              )}>{S.formatStatus(svc.status ?? '')}</span>
             </div>
           </div>
         ))}

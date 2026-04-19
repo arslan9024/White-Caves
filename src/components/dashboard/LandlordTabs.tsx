@@ -60,13 +60,13 @@ export const LandlordProperties: React.FC = () => {
                     p.status === 'active' ? '#16a34a' : '#d97706',
                     p.status === 'active' ? '#dcfce7' : '#fffbeb',
                   )}>
-                    {S.formatStatus(p.status)}
+                    {S.formatStatus(p.status ?? '')}
                   </span>
                 </div>
                 <div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem', color: '#6b7280' }}>
                   <span>🛏️ {p.bedrooms ?? 0} BR</span>
                   <span>📐 {p.sqft ?? '—'} sqft</span>
-                  <span style={{ fontWeight: 600, color: 'var(--color-primary, #D4AF37)' }}>{S.formatCurrency(p.price)}/yr</span>
+                  <span style={{ fontWeight: 600, color: 'var(--color-primary, #D4AF37)' }}>{S.formatCurrency(p.price ?? 0)}/yr</span>
                 </div>
               </div>
             ))}
@@ -122,14 +122,14 @@ export const TenantManagement: React.FC = () => {
                   <tr key={l.id}>
                     <td style={S.td}>{l.tenant?.name ?? l.tenantId ?? '—'}</td>
                     <td style={S.td}>{l.property?.title ?? l.propertyId ?? '—'}</td>
-                    <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(l.monthlyRent)}</td>
+                    <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(l.monthlyRent ?? 0)}</td>
                     <td style={S.td}>{S.formatDate(l.endDate)}</td>
                     <td style={S.td}>
                       <span style={S.badge(
                         l.status === 'active' ? '#16a34a' : l.status === 'expiring_soon' ? '#d97706' : '#6b7280',
                         l.status === 'active' ? '#dcfce7' : l.status === 'expiring_soon' ? '#fffbeb' : '#f3f4f6',
                       )}>
-                        {S.formatStatus(l.status)}
+                        {S.formatStatus(l.status ?? '')}
                       </span>
                     </td>
                   </tr>
@@ -154,10 +154,10 @@ export const MaintenanceRequests: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const [reqs, st] = await settledJson(
-          [authFetch('/api/maintenance?pageSize=50'), authFetch('/api/maintenance/stats')],
+
+        const [reqs, st] = await settledJson([authFetch('/api/maintenance?pageSize=50'), authFetch('/api/maintenance/stats')],
           [{ data: [] }, { data: null }],
-        );
+        ) as any[];
         setRequests(reqs.data ?? []);
         setStats(st.data);
       } catch (error) { log.warn('Failed to fetch maintenance data:', error); }
@@ -226,13 +226,13 @@ export const MaintenanceRequests: React.FC = () => {
                       <td style={S.td}><strong>{r.title}</strong></td>
                       <td style={S.td}>{r.property?.title ?? '—'}</td>
                       <td style={S.td}>
-                        <span style={S.badge(pc.c, pc.bg)}>{S.formatStatus(r.priority)}</span>
+                        <span style={S.badge(pc.c, pc.bg)}>{S.formatStatus(r.priority ?? '')}</span>
                       </td>
                       <td style={S.td}>{S.formatStatus(r.category ?? '—')}</td>
                       <td style={S.td}>
-                        <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(r.status)}</span>
+                        <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(r.status ?? '')}</span>
                       </td>
-                      <td style={S.td}>{r.cost ? S.formatCurrency(r.cost) : '—'}</td>
+                      <td style={S.td}>{r.cost ? S.formatCurrency(r.cost ?? 0) : '—'}</td>
                       <td style={S.td}>{S.formatDate(r.createdAt)}</td>
                     </tr>
                   );
@@ -317,7 +317,7 @@ export const FinancialSummary: React.FC = () => {
                   <tr key={l.id}>
                     <td style={S.td}>{l.property?.title ?? '—'}</td>
                     <td style={S.td}>{l.tenant?.name ?? '—'}</td>
-                    <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(l.monthlyRent)}</td>
+                    <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(l.monthlyRent ?? 0)}</td>
                     <td style={S.td}>{S.formatDate(l.endDate)}</td>
                   </tr>
                 ))}
@@ -342,10 +342,10 @@ export const LeaseManagement: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const [all, exp] = await settledJson(
-          [authFetch('/api/leases?role=landlord&pageSize=50'), authFetch('/api/leases/expiring?days=60')],
+
+        const [all, exp] = await settledJson([authFetch('/api/leases?role=landlord&pageSize=50'), authFetch('/api/leases/expiring?days=60')],
           [{ data: [] }, { data: [] }],
-        );
+        ) as any[];
         setLeases(all.data ?? []);
         setExpiring(exp.data ?? []);
       } catch (error) { log.warn('Failed to fetch lease data:', error); }
@@ -396,13 +396,13 @@ export const LeaseManagement: React.FC = () => {
                     <td style={S.td}>{l.tenant?.name ?? '—'}</td>
                     <td style={S.td}>{S.formatDate(l.startDate)}</td>
                     <td style={S.td}>{S.formatDate(l.endDate)}</td>
-                    <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(l.monthlyRent)}</td>
+                    <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(l.monthlyRent ?? 0)}</td>
                     <td style={S.td}>
                       <span style={S.badge(
                         l.status === 'active' ? '#16a34a' : l.status === 'expired' ? '#dc2626' : '#d97706',
                         l.status === 'active' ? '#dcfce7' : l.status === 'expired' ? '#fef2f2' : '#fffbeb',
                       )}>
-                        {S.formatStatus(l.status)}
+                        {S.formatStatus(l.status ?? '')}
                       </span>
                     </td>
                   </tr>

@@ -3,7 +3,7 @@ import { keyframes } from 'styled-components';
 import { typography } from '../../../styles/theme/typography';
 import { theme } from '../../../styles/theme';
 
-const { colors, shadows, transitions, radius , spacing , spacing } = theme;
+const { colors, shadows, transitions, radius , spacing } = theme;
 
 const spin = keyframes`
   from { transform: rotate(0deg); }

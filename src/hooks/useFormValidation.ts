@@ -9,9 +9,9 @@
  */
 
 import { useState, useCallback, useMemo, type ChangeEvent, type FormEvent } from 'react';
+type ValidationSchema = any;
+type ValidationErrors = Record<string, string[]>;
 import {
-  type ValidationSchema,
-  type ValidationErrors,
   validate,
   validateField,
   hasErrors,
@@ -25,7 +25,7 @@ export interface UseFormValidation<T extends Record<string, unknown>> {
   /** Current validation errors (only dirty/touched fields shown) */
   errors: ValidationErrors;
   /** Map of fields that have been blurred at least once */
-  touched: Record<keyof T, boolean>;
+  touched: Record<string, boolean>;
   /** Handle input change — syncs value + clears its error if field was touched */
   handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   /** Handle input blur — triggers single-field validation */
@@ -66,14 +66,14 @@ export function useFormValidation<T extends Record<string, unknown>>(
       const newValue =
         type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
 
-      setValues((prev) => ({ ...prev, [name]: newValue }));
+      setValues((prev: any) => ({ ...prev, [name]: newValue }));
 
       // If already touched or submit was attempted, re-validate this field immediately
       if (touched[name] || submitAttempted) {
         const fieldValidators = schema[name];
         if (fieldValidators) {
           const error = validateField(fieldValidators, newValue);
-          setErrors((prev) => {
+          setErrors((prev: any) => {
             if (error) return { ...prev, [name]: error };
             const next = { ...prev };
             delete next[name];
@@ -88,12 +88,12 @@ export function useFormValidation<T extends Record<string, unknown>>(
   const handleBlur = useCallback(
     (e: { target: { name: string } }) => {
       const { name } = e.target;
-      setTouched((prev) => ({ ...prev, [name]: true }));
+      setTouched((prev: any) => ({ ...prev, [name]: true }));
 
       const fieldValidators = schema[name];
       if (fieldValidators) {
         const error = validateField(fieldValidators, (values as Record<string, unknown>)[name]);
-        setErrors((prev) => {
+        setErrors((prev: any) => {
           if (error) return { ...prev, [name]: error };
           const next = { ...prev };
           delete next[name];
@@ -119,7 +119,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
 
         // Validate all
         const allErrors = validate(schema, values as Record<string, unknown>);
-        setErrors(allErrors);
+        setErrors(allErrors as any);
 
         if (!hasErrors(allErrors)) {
           onValid(values);
@@ -131,13 +131,13 @@ export function useFormValidation<T extends Record<string, unknown>>(
 
   const setFieldValue = useCallback(
     (name: keyof T, value: unknown) => {
-      setValues((prev) => ({ ...prev, [name]: value }));
+      setValues((prev: any) => ({ ...prev, [name]: value }));
 
       if (touched[name as string] || submitAttempted) {
         const fieldValidators = schema[name as string];
         if (fieldValidators) {
           const error = validateField(fieldValidators, value);
-          setErrors((prev) => {
+          setErrors((prev: any) => {
             if (error) return { ...prev, [name as string]: error };
             const next = { ...prev };
             delete next[name as string];

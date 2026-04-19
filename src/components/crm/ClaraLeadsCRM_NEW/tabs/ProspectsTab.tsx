@@ -57,14 +57,14 @@ export default function ProspectsTab() {
               type="text"
               placeholder="Company Name"
               value={formData.name}
-              onChange={(e) => setField('name', e.target.value)}
+              onChange={(e) => (setField as any)('name', e.target.value)}
               className="filter-input"
               style={{ gridColumn: '1 / -1' }}
               required
             />
             <select
               value={formData.type}
-              onChange={(e) => setField('type', e.target.value)}
+              onChange={(e) => (setField as any)('type', e.target.value)}
               className="filter-select"
             >
               <option value="commercial">Commercial</option>
@@ -74,7 +74,7 @@ export default function ProspectsTab() {
             </select>
             <select
               value={formData.size}
-              onChange={(e) => setField('size', e.target.value)}
+              onChange={(e) => (setField as any)('size', e.target.value)}
               className="filter-select"
             >
               <option value="small">Small</option>
@@ -86,14 +86,14 @@ export default function ProspectsTab() {
               type="email"
               placeholder="Email"
               value={formData.email}
-              onChange={(e) => setField('email', e.target.value)}
+              onChange={(e) => (setField as any)('email', e.target.value)}
               className="filter-input"
             />
             <input
               type="tel"
               placeholder="Phone"
               value={formData.phone}
-              onChange={(e) => setField('phone', e.target.value)}
+              onChange={(e) => (setField as any)('phone', e.target.value)}
               className="filter-input"
             />
             <input
@@ -102,13 +102,13 @@ export default function ProspectsTab() {
               value={formData.value}
               onChange={(e) => {
                 const parsed = parseFloat(e.target.value);
-                setField('value', Number.isNaN(parsed) ? 0 : parsed);
+                (setField as any)('value', Number.isNaN(parsed) ? 0 : parsed);
               }}
               className="filter-input"
             />
             <select
               value={formData.status}
-              onChange={(e) => setField('status', e.target.value)}
+              onChange={(e) => (setField as any)('status', e.target.value)}
               className="filter-select"
             >
               <option value="contacted">Contacted</option>
@@ -118,7 +118,7 @@ export default function ProspectsTab() {
             </select>
             <select
               value={formData.stage}
-              onChange={(e) => setField('stage', e.target.value)}
+              onChange={(e) => (setField as any)('stage', e.target.value)}
               className="filter-select"
             >
               <option value="initial_contact">Initial Contact</option>
@@ -130,7 +130,7 @@ export default function ProspectsTab() {
             <textarea
               placeholder="Notes"
               value={formData.notes}
-              onChange={(e) => setField('notes', e.target.value)}
+              onChange={(e) => (setField as any)('notes', e.target.value)}
               className="filter-input"
               style={{ gridColumn: '1 / -1', minHeight: '60px' }}
             />

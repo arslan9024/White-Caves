@@ -314,3 +314,6 @@ export const propertyInquirySchema = createSchema({
   phone: [required('Phone is required'), phoneValidator()],
   message: [minLength(5, 'Please provide more details')],
 });
+
+export function formatStatus(s: string) { return s; }
+export function formatCurrency(n: number) { return n.toLocaleString(); }
