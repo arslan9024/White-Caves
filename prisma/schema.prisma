@@ -55,6 +55,7 @@ model Property {
   type        String   @default("apartment") // villa, apartment, penthouse, commercial, land, townhouse
   status      String   @default("available")  // available, reserved, sold, rented, off_market
   price       Float
+  currency    String   @default("AED")  // AED, USD, EUR, GBP, INR
   bedrooms    Int      @default(0)
   bathrooms   Int      @default(0)
   sqft        Int      @default(0)
@@ -100,6 +101,7 @@ model Lead {
   status      String   @default("new") // new, contacted, qualified, hot, warm, cold, won, lost
   source      String   @default("direct") // whatsapp, website, phone, referral, marketing, direct
   budget      Float?
+  budgetCurrency String @default("AED")  // AED, USD, EUR, GBP, INR
   score       Int      @default(0) // 0-100 lead score
   scoreBreakdown Json?  // { engagement, demographic, behavioral, source, lastScoredAt }
   scoreTier   String   @default("cold") // hot (80+), warm (60-79), cold (<60), inactive
@@ -164,6 +166,7 @@ model Transaction {
   type          String   @default("sale")  // sale, rental, lease
   status        String   @default("draft") // draft, pending, in_progress, completed, cancelled
   amount        Float
+  currency      String   @default("AED")  // AED, USD, EUR, GBP, INR
   closingDate   DateTime?
   notes         String?
   documents     String[]
@@ -200,6 +203,7 @@ model Tenant {
   moveOutDate   DateTime?
   monthlyRent   Float?
   deposit       Float?
+  currency      String   @default("AED")  // AED, USD, EUR, GBP, INR
   notes         String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -293,6 +297,7 @@ model NadiaConversationQueue {
 model Commission {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   amount      Float
+  currency    String   @default("AED")  // AED, USD, EUR, GBP, INR
   percentage  Float?   // Commission percentage (0-100), optional
   type        String   @default("sale")      // sale, rental, referral
   status      String   @default("pending")   // pending, approved, paid, cancelled
@@ -393,6 +398,7 @@ model Viewing {
 model Offer {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   amount        Float
+  currency      String   @default("AED")  // AED, USD, EUR, GBP, INR
   status        String   @default("pending") // pending, accepted, rejected, countered, expired, withdrawn
   expiresAt     DateTime?
   terms         String?  // Free-text negotiation terms
@@ -425,6 +431,7 @@ model Lease {
   endDate       DateTime
   monthlyRent   Float
   depositAmount Float    @default(0)
+  currency      String   @default("AED")  // AED, USD, EUR, GBP, INR
   status        String   @default("draft") // draft, active, expiring, expired, terminated, renewed
   terms         String?
   documents     String[]
@@ -460,6 +467,7 @@ model Maintenance {
   scheduledDate DateTime?
   completedAt   DateTime?
   cost          Float?
+  costCurrency  String   @default("AED")  // AED, USD, EUR, GBP, INR
   images        String[]
   notes         String?
   createdAt     DateTime @default(now())
@@ -515,7 +523,8 @@ model Client {
   status              String   @default("active")      // active, inactive, prospect, archived
   type                String   @default("individual")  // individual, corporate, investment_firm
   nationality         String?
-  totalValue          Float    @default(0)             // total deal value (AED)
+  totalValue          Float    @default(0)             // total deal value
+  totalValueCurrency  String   @default("AED")          // AED, USD, EUR, GBP, INR
   dealsCount          Int      @default(0)
   notes               String?
   tags                String[]

@@ -1252,6 +1252,67 @@ export const fetchKPIsAPI = createAsyncThunk<
 );
 
 // ============================================================================
+// CURRENCY THUNKS (Phase 2E — Multi-Currency Support)
+// ============================================================================
+
+/** Fetch exchange rates — GET /api/currency/rates */
+export const fetchExchangeRatesAPI = createAsyncThunk<
+  { base: string; rates: Record<string, number>; updatedAt: string; source: string },
+  void,
+  { rejectValue: string }
+>(
+  'crmData/fetchExchangeRates',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await authFetch('/api/currency/rates');
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to fetch exchange rates');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch exchange rates'));
+    }
+  }
+);
+
+/** Fetch supported currencies — GET /api/currency/supported */
+export const fetchSupportedCurrenciesAPI = createAsyncThunk<
+  Array<{ code: string; name: string; symbol: string; flag: string }>,
+  void,
+  { rejectValue: string }
+>(
+  'crmData/fetchSupportedCurrencies',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await authFetch('/api/currency/supported');
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to fetch currencies');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch currencies'));
+    }
+  }
+);
+
+/** Convert currency — GET /api/currency/convert */
+export const convertCurrencyAPI = createAsyncThunk<
+  { original: { amount: number; currency: string }; converted: { amount: number; currency: string } },
+  { amount: number; from: string; to: string },
+  { rejectValue: string }
+>(
+  'crmData/convertCurrency',
+  async ({ amount, from, to }, { rejectWithValue }) => {
+    try {
+      const res = await authFetch(`/api/currency/convert?amount=${amount}&from=${from}&to=${to}`);
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Conversion failed');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Conversion failed'));
+    }
+  }
+);
+
+// ============================================================================
 // ACTIVITY THUNKS
 // ============================================================================
 

@@ -60,18 +60,21 @@ export const formatCurrencyAbbreviated = (amount: number, currency: string = 'AE
  * - Abbreviated by default: "AED 2.5M", "AED 450K", "AED 1,200"
  * - With priceType: "AED 120,000/year", "AED 8,000/month"
  * - Handles null/undefined → "Price on Request"
+ * - Supports multi-currency via currency param (Phase 2E)
  */
 export const formatPrice = (
   price?: number | null,
-  options?: { priceType?: string; unit?: string; fallback?: string }
+  options?: { priceType?: string; unit?: string; fallback?: string; currency?: string }
 ): string => {
   if (price == null || isNaN(price)) return options?.fallback ?? 'Price on Request';
+
+  const currency = options?.currency ?? 'AED';
 
   // If a priceType or unit suffix is specified, use full locale format
   if (options?.priceType || options?.unit) {
     const formatted = new Intl.NumberFormat('en-AE', {
       style: 'currency',
-      currency: 'AED',
+      currency,
       maximumFractionDigits: 0,
     }).format(price);
     const suffix = options.priceType
@@ -83,7 +86,7 @@ export const formatPrice = (
   }
 
   // Default: abbreviated
-  return formatCurrencyAbbreviated(price);
+  return formatCurrencyAbbreviated(price, currency);
 };
 
 /**

@@ -43,9 +43,11 @@ import clientsRoutes from './routes/clients.js';
 import activitiesRoutes from './routes/activities.js';
 import followUpsRoutes from './routes/follow-ups.js';
 import documentsRoutes from './routes/documents.js';
+import currencyRoutes from './routes/currency.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
+import { startRateRefresh } from './services/currencyService.js';
 
 // Load environment variables
 dotenv.config();
@@ -210,6 +212,9 @@ app.use('/api/follow-ups', followUpsRoutes);
 
 // Documents API (Phase 2C - Document Generation)
 app.use('/api/documents', documentsRoutes);
+
+// Currency API (Phase 2E - Multi-Currency Support)
+app.use('/api/currency', currencyRoutes);
 
 // Communications API (Nadia - WhatsApp CRM, Nina - Bot)
 app.use('/api/communications', communicationsRoutes);
@@ -469,6 +474,7 @@ const startServer = async () => {
     // Start background services
     startLeadScoringScheduler();
     startFollowUpScheduler();
+    startRateRefresh(); // Phase 2E: refresh exchange rates every 6h
 
     // Auto-migrate any remaining legacy base64 password hashes to bcrypt
     try {
