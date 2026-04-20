@@ -42,6 +42,7 @@ import maintenanceRoutes from './routes/maintenance.js';
 import clientsRoutes from './routes/clients.js';
 import activitiesRoutes from './routes/activities.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
+import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 
 // Load environment variables
 dotenv.config();
@@ -455,6 +456,9 @@ const startServer = async () => {
     logger.info('Connecting to MongoDB...');
     await connectDatabase();
     logger.info('MongoDB connected successfully');
+
+    // Start background services
+    startLeadScoringScheduler();
 
     // Auto-migrate any remaining legacy base64 password hashes to bcrypt
     try {

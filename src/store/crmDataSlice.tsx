@@ -870,6 +870,71 @@ export const convertLeadToClientAPI = createAsyncThunk<
 );
 
 // ============================================================================
+// LEAD SCORING THUNKS
+// ============================================================================
+
+/** Score/re-score a single lead — GET /api/leads/:id/score */
+export const scoreLeadAPI = createAsyncThunk<
+  CRMItem,
+  string,
+  { rejectValue: string }
+>(
+  'crmData/scoreLead',
+  async (leadId, { rejectWithValue }) => {
+    try {
+      const response = await authFetch(`/api/leads/${leadId}/score`);
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to score lead'));
+      const json = await response.json();
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to score lead'));
+    }
+  }
+);
+
+/** Override lead score manually — POST /api/leads/:id/score/override */
+export const overrideLeadScoreAPI = createAsyncThunk<
+  CRMItem,
+  { leadId: string; score: number; reason: string },
+  { rejectValue: string }
+>(
+  'crmData/overrideLeadScore',
+  async ({ leadId, score, reason }, { rejectWithValue }) => {
+    try {
+      const response = await authFetch(`/api/leads/${leadId}/score/override`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ score, reason }),
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to override score'));
+      const json = await response.json();
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to override score'));
+    }
+  }
+);
+
+/** Trigger batch re-scoring — POST /api/leads/batch-rescore */
+export const batchRescoreLeadsAPI = createAsyncThunk<
+  Record<string, unknown>,
+  void,
+  { rejectValue: string }
+>(
+  'crmData/batchRescoreLeads',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authFetch('/api/leads/batch-rescore', { method: 'POST' });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to batch re-score'));
+      const json = await response.json();
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to batch re-score'));
+    }
+  }
+);
+
+// ============================================================================
 // ACTIVITY THUNKS
 // ============================================================================
 
@@ -2039,6 +2104,26 @@ export const selectColdLeads = createSelector(
 export const selectSelectedLead = (state: RootState) => state.crmData?.leads?.selected;
 export const selectLeadsLoading = (state: RootState) => state.crmData?.leads?.loading;
 export const selectLeadsError = (state: RootState) => state.crmData?.leads?.error;
+
+// ── Lead Scoring Tier selectors ──
+export const selectHotTierLeads = createSelector(
+  selectAllLeads,
+  (items) => items.filter((l: CRMItem) => l.scoreTier === 'hot' || (typeof l.score === 'number' && l.score >= 80))
+);
+export const selectWarmTierLeads = createSelector(
+  selectAllLeads,
+  (items) => items.filter((l: CRMItem) => l.scoreTier === 'warm' || (typeof l.score === 'number' && l.score >= 60 && l.score < 80))
+);
+export const selectColdTierLeads = createSelector(
+  selectAllLeads,
+  (items) => items.filter((l: CRMItem) => l.scoreTier === 'cold' || (typeof l.score === 'number' && l.score >= 30 && l.score < 60))
+);
+export const selectInactiveTierLeads = createSelector(
+  selectAllLeads,
+  (items) => items.filter((l: CRMItem) => l.scoreTier === 'inactive' || (typeof l.score === 'number' && l.score < 30))
+);
+export const selectLeadsByMinScore = (state: RootState, minScore: number) =>
+  state.crmData?.leads?.items?.filter((l: CRMItem) => typeof l.score === 'number' && l.score >= minScore) || [];
 
 // ── Clients ──
 export const selectAllClients = createSelector(

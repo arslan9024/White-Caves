@@ -101,6 +101,9 @@ model Lead {
   source      String   @default("direct") // whatsapp, website, phone, referral, marketing, direct
   budget      Float?
   score       Int      @default(0) // 0-100 lead score
+  scoreBreakdown Json?  // { engagement, demographic, behavioral, source, lastScoredAt }
+  scoreTier   String   @default("cold") // hot (80+), warm (60-79), cold (<60), inactive
+  lastScoredAt DateTime?
   notes       String?
   tags        String[]
   lastContact DateTime?

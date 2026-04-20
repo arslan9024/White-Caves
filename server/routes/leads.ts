@@ -16,6 +16,7 @@ const VALID_LEAD_STATUSES = ['new', 'contacted', 'qualified', 'viewing', 'offere
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { requirePermission, requireRole } from '../middleware/rbac';
+import { scoreLead, overrideScore, batchRescoreLeads } from '../services/ai/leadScoringEngine.js';
 
 const router = Router();
 
@@ -469,6 +470,94 @@ router.post(
     });
 
     res.status(201).json({ success: true, data: { imported: results.count, total: leads.length } });
+  })
+);
+
+// ─── GET /api/leads/:id/score ───────────────────────────────────────────
+// Score/re-score a single lead and return full breakdown
+router.get(
+  '/:id/score',
+  requirePermission('view_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Lead ID');
+
+    const result = await scoreLead(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        leadId: result.leadId,
+        score: result.newScore,
+        previousScore: result.previousScore,
+        tier: result.breakdown.tier,
+        previousTier: result.previousTier,
+        changed: result.changed,
+        breakdown: {
+          engagement: result.breakdown.engagement,
+          demographic: result.breakdown.demographic,
+          behavioral: result.breakdown.behavioral,
+          source: result.breakdown.source,
+        },
+        factors: result.breakdown.factors,
+        lastScoredAt: result.breakdown.lastScoredAt,
+      },
+    });
+  })
+);
+
+// ─── POST /api/leads/:id/score/override ─────────────────────────────────
+// Manual score override with justification
+router.post(
+  '/:id/score/override',
+  requirePermission('manage_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Lead ID');
+    const { score, reason } = req.body;
+
+    if (typeof score !== 'number' || score < 0 || score > 100) {
+      throw new AppError('Score must be a number between 0 and 100', 400);
+    }
+    if (!reason || typeof reason !== 'string' || reason.trim().length < 3) {
+      throw new AppError('Please provide a reason for the score override (min 3 characters)', 400);
+    }
+
+    const result = await overrideScore(
+      req.params.id,
+      score,
+      sanitizeString(reason.trim().slice(0, 500)),
+      req.user?.id,
+    );
+
+    res.status(200).json({
+      success: true,
+      data: {
+        leadId: result.leadId,
+        score: result.newScore,
+        previousScore: result.previousScore,
+        tier: result.breakdown.tier,
+        changed: result.changed,
+      },
+    });
+  })
+);
+
+// ─── POST /api/leads/batch-rescore ──────────────────────────────────────
+// Trigger batch re-scoring of all active leads (managers+)
+router.post(
+  '/batch-rescore',
+  requirePermission('manage_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Only managers can trigger batch re-scoring', 403);
+    }
+
+    const result = await batchRescoreLeads();
+
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
   })
 );
 
