@@ -1058,6 +1058,81 @@ export const fetchFollowUpStatsAPI = createAsyncThunk<
 );
 
 // ============================================================================
+// DOCUMENT GENERATION THUNKS
+// ============================================================================
+
+/** Generate a document — POST /api/documents/generate */
+export const generateDocumentAPI = createAsyncThunk<
+  Record<string, unknown>,
+  { type: string; variables: Record<string, string>; transactionId?: string; leadId?: string; propertyId?: string; commissionId?: string },
+  { rejectValue: string }
+>(
+  'crmData/generateDocument',
+  async (input, { rejectWithValue }) => {
+    try {
+      const res = await authFetch('/api/documents/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to generate document');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to generate document'));
+    }
+  }
+);
+
+/** List documents — GET /api/documents */
+export const fetchDocumentsAPI = createAsyncThunk<
+  { data: Record<string, unknown>[]; total: number },
+  { type?: string; status?: string; leadId?: string; propertyId?: string; page?: number; pageSize?: number } | void,
+  { rejectValue: string }
+>(
+  'crmData/fetchDocuments',
+  async (filters, { rejectWithValue }) => {
+    try {
+      const params = new URLSearchParams();
+      if (filters) {
+        if (filters.type) params.set('type', filters.type);
+        if (filters.status) params.set('status', filters.status);
+        if (filters.leadId) params.set('leadId', filters.leadId);
+        if (filters.propertyId) params.set('propertyId', filters.propertyId);
+        if (filters.page) params.set('page', String(filters.page));
+        if (filters.pageSize) params.set('pageSize', String(filters.pageSize));
+      }
+      const url = `/api/documents${params.toString() ? '?' + params.toString() : ''}`;
+      const res = await authFetch(url);
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to fetch documents');
+      return { data: json.data, total: json.pagination?.total || 0 };
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch documents'));
+    }
+  }
+);
+
+/** Get document types — GET /api/documents/types */
+export const fetchDocumentTypesAPI = createAsyncThunk<
+  Array<{ type: string; label: string }>,
+  void,
+  { rejectValue: string }
+>(
+  'crmData/fetchDocumentTypes',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await authFetch('/api/documents/types');
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to fetch document types');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch document types'));
+    }
+  }
+);
+
+// ============================================================================
 // ACTIVITY THUNKS
 // ============================================================================
 

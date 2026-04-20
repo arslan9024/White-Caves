@@ -687,3 +687,31 @@ model FollowUpStep {
   @@index([scheduledAt])
   @@index([channel])
 }
+
+// ─── DOCUMENT ───────────────────────────────────────────────────────────
+
+model Document {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  type          String   // mou, form_f, noc, commission_invoice, viewing_report, offer_letter
+  title         String
+  version       Int      @default(1)
+  status        String   @default("draft") // draft, final, signed, archived
+  htmlContent   String   // rendered HTML content
+  metadata      Json?    // template variables, generation context
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Related entities (optional — a document may link to any combination)
+  transactionId String?  @db.ObjectId
+  leadId        String?  @db.ObjectId
+  propertyId    String?  @db.ObjectId
+  commissionId  String?  @db.ObjectId
+  generatedById String?  @db.ObjectId
+
+  @@index([type])
+  @@index([status])
+  @@index([transactionId])
+  @@index([leadId])
+  @@index([propertyId])
+  @@index([createdAt])
+}

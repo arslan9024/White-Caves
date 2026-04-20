@@ -42,6 +42,7 @@ import maintenanceRoutes from './routes/maintenance.js';
 import clientsRoutes from './routes/clients.js';
 import activitiesRoutes from './routes/activities.js';
 import followUpsRoutes from './routes/follow-ups.js';
+import documentsRoutes from './routes/documents.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
@@ -206,6 +207,9 @@ app.use('/api/activities', activitiesRoutes);
 
 // Follow-Up Sequences API (Phase 2B - Automated Lead Follow-Up)
 app.use('/api/follow-ups', followUpsRoutes);
+
+// Documents API (Phase 2C - Document Generation)
+app.use('/api/documents', documentsRoutes);
 
 // Communications API (Nadia - WhatsApp CRM, Nina - Bot)
 app.use('/api/communications', communicationsRoutes);
