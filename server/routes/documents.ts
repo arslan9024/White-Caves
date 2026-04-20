@@ -20,6 +20,11 @@ import {
   updateDocumentStatus,
   getAvailableDocumentTypes,
 } from '../services/documents/documentGenerator.js';
+import {
+  autoFillVariables,
+  getAutoFillableEntities,
+  getEntityRequirements,
+} from '../services/documents/documentAutoFill.js';
 import { logger } from '../utils/logger.js';
 
 const router = Router();
@@ -89,6 +94,77 @@ router.get('/types', requirePermission('view_leads'), asyncHandler(async (_req: 
   res.status(200).json({
     success: true,
     data: types,
+  });
+}));
+
+// ── Get auto-fill entity requirements ───────────────────────────────────
+
+router.get('/auto-fill/entities', requirePermission('view_leads'), asyncHandler(async (_req: Request, res: Response) => {
+  const entities = getAutoFillableEntities();
+
+  res.status(200).json({
+    success: true,
+    data: entities,
+  });
+}));
+
+// ── Preview auto-filled variables (without generating) ──────────────────
+
+router.post('/auto-fill/preview', requirePermission('view_leads'), asyncHandler(async (req: Request, res: Response) => {
+  const { type, leadId, propertyId, transactionId, commissionId, viewingId, leaseId, offerId, overrides } = req.body;
+
+  if (!type) {
+    return res.status(400).json({ success: false, error: 'Document type is required' });
+  }
+
+  const result = await autoFillVariables(
+    type,
+    { leadId, propertyId, transactionId, commissionId, viewingId, leaseId, offerId },
+    overrides,
+  );
+
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+}));
+
+// ── Generate document with auto-filled variables from DB ────────────────
+
+router.post('/generate-auto', requirePermission('view_leads'), asyncHandler(async (req: Request, res: Response) => {
+  const { type, leadId, propertyId, transactionId, commissionId, viewingId, leaseId, offerId, overrides } = req.body;
+
+  if (!type) {
+    return res.status(400).json({ success: false, error: 'Document type is required' });
+  }
+
+  logger.info(`Auto-generating document: ${type}`, { leadId, transactionId, propertyId });
+
+  // 1. Auto-fill variables from DB
+  const autoFilled = await autoFillVariables(
+    type,
+    { leadId, propertyId, transactionId, commissionId, viewingId, leaseId, offerId },
+    overrides,
+  );
+
+  // 2. Generate document with filled variables
+  const document = await generateDocument({
+    type,
+    variables: autoFilled.variables,
+    transactionId,
+    leadId,
+    propertyId,
+    commissionId,
+    generatedById: req.user?.id,
+  });
+
+  res.status(201).json({
+    success: true,
+    data: {
+      document,
+      autoFillContext: autoFilled.context,
+    },
+    message: `${document.title} auto-generated successfully`,
   });
 }));
 
