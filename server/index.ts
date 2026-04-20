@@ -41,8 +41,10 @@ import leasesRoutes from './routes/leases.js';
 import maintenanceRoutes from './routes/maintenance.js';
 import clientsRoutes from './routes/clients.js';
 import activitiesRoutes from './routes/activities.js';
+import followUpsRoutes from './routes/follow-ups.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
+import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
 
 // Load environment variables
 dotenv.config();
@@ -201,6 +203,9 @@ app.use('/api/clients', clientsRoutes);
 
 // Activities API (Phase 1F - Activity Timeline & Audit Trail)
 app.use('/api/activities', activitiesRoutes);
+
+// Follow-Up Sequences API (Phase 2B - Automated Lead Follow-Up)
+app.use('/api/follow-ups', followUpsRoutes);
 
 // Communications API (Nadia - WhatsApp CRM, Nina - Bot)
 app.use('/api/communications', communicationsRoutes);
@@ -459,6 +464,7 @@ const startServer = async () => {
 
     // Start background services
     startLeadScoringScheduler();
+    startFollowUpScheduler();
 
     // Auto-migrate any remaining legacy base64 password hashes to bcrypt
     try {

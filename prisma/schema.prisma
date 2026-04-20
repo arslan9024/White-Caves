@@ -122,6 +122,7 @@ model Lead {
   commissions  Commission[]
   viewings     Viewing[]
   offers       Offer[]
+  followUpSequences FollowUpSequence[]
 
   @@index([status])
   @@index([source])
@@ -630,4 +631,59 @@ model Expense {
   @@index([date])
   @@index([createdAt])
   @@index([approvedById])
+}
+
+// ─── FOLLOW-UP SEQUENCE ─────────────────────────────────────────────────
+
+model FollowUpSequence {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  cadenceType   String   // hot, warm, cold, custom
+  status        String   @default("active") // active, paused, completed, cancelled
+  currentStep   Int      @default(0)
+  totalSteps    Int      @default(4)
+  startedAt     DateTime @default(now())
+  pausedAt      DateTime?
+  completedAt   DateTime?
+  nextStepAt    DateTime? // when the next step should fire
+  metadata      Json?    // custom overrides, notes
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  leadId        String   @db.ObjectId
+  lead          Lead     @relation(fields: [leadId], references: [id])
+  createdById   String?  @db.ObjectId
+  steps         FollowUpStep[]
+
+  @@index([status])
+  @@index([cadenceType])
+  @@index([leadId])
+  @@index([nextStepAt])
+  @@index([status, nextStepAt])
+}
+
+model FollowUpStep {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  stepNumber    Int      // 1, 2, 3, 4...
+  channel       String   // whatsapp, email, call, sms
+  status        String   @default("pending") // pending, scheduled, sent, delivered, failed, skipped
+  scheduledAt   DateTime?
+  executedAt    DateTime?
+  templateName  String?  // e.g. "follow_up_viewing", "initial_contact"
+  message       String?  // actual message content (if custom)
+  result        String?  // response outcome: replied, no_response, bounced, call_answered, call_no_answer
+  errorMessage  String?  // if failed
+  metadata      Json?    // messageId, deliveryStatus, etc.
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  sequenceId    String   @db.ObjectId
+  sequence      FollowUpSequence @relation(fields: [sequenceId], references: [id])
+
+  @@index([sequenceId])
+  @@index([status])
+  @@index([stepNumber])
+  @@index([scheduledAt])
+  @@index([channel])
 }
