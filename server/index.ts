@@ -45,10 +45,12 @@ import followUpsRoutes from './routes/follow-ups.js';
 import documentsRoutes from './routes/documents.js';
 import currencyRoutes from './routes/currency.js';
 import emailRoutes from './routes/email.js';
+import agentAvailabilityRoutes from './routes/agentAvailability.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
 import { startRateRefresh } from './services/currencyService.js';
+import { startViewingReminderScheduler } from './services/schedulingService.js';
 
 // Load environment variables
 dotenv.config();
@@ -219,6 +221,9 @@ app.use('/api/currency', currencyRoutes);
 
 // Email API (Phase 3B - Email Automation)
 app.use('/api/email', emailRoutes);
+
+// Agent Availability API (Phase 3C - Calendar/Scheduling)
+app.use('/api/agent-availability', agentAvailabilityRoutes);
 
 // Communications API (Nadia - WhatsApp CRM, Nina - Bot)
 app.use('/api/communications', communicationsRoutes);
@@ -479,6 +484,7 @@ const startServer = async () => {
     startLeadScoringScheduler();
     startFollowUpScheduler();
     startRateRefresh(); // Phase 2E: refresh exchange rates every 6h
+    startViewingReminderScheduler(); // Phase 3C: viewing reminders every 15 min
 
     // Auto-migrate any remaining legacy base64 password hashes to bcrypt
     try {

@@ -34,6 +34,8 @@ model User {
   favorites     Favorite[]
   savedSearches SavedSearch[]
   viewings      Viewing[]    @relation("ViewingUser")
+  assignedViewings Viewing[] @relation("ViewingAgent")
+  agentAvailability AgentAvailability[]
   offersAsBuyer Offer[]      @relation("OfferBuyer")
   leasesAsTenant Lease[]     @relation("LeaseTenant")
   leasesAsLandlord Lease[]   @relation("LeaseLandlord")
@@ -365,32 +367,62 @@ model SavedSearch {
 // ─── VIEWING ────────────────────────────────────────────────────────────
 
 model Viewing {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
   scheduledAt   DateTime
-  duration      Int      @default(30)  // minutes
-  status        String   @default("scheduled") // scheduled, confirmed, completed, cancelled, no_show
-  type          String   @default("in_person") // in_person, virtual, open_house
+  duration      Int       @default(30)  // minutes
+  status        String    @default("scheduled") // scheduled, confirmed, completed, cancelled, no_show
+  type          String    @default("in_person") // in_person, virtual, open_house
   notes         String?
-  feedback      String?  // Post-viewing feedback
-  rating        Int?     // 1-5 star rating
-  location      String?  // Meeting point or virtual link
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  feedback      String?   // Post-viewing feedback
+  rating        Int?      // 1-5 star rating
+  location      String?   // Meeting point or virtual link
+  reminderSent  Boolean   @default(false)  // Whether reminder notification was sent
+  confirmedAt   DateTime? // When the viewing was confirmed
+  cancelReason  String?   // Reason for cancellation
+  icsToken      String?   // Unique token for .ics calendar download
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   // Relations
   userId        String   @db.ObjectId
   user          User     @relation("ViewingUser", fields: [userId], references: [id])
+  agentId       String?  @db.ObjectId
+  agent         User?    @relation("ViewingAgent", fields: [agentId], references: [id])
   propertyId    String   @db.ObjectId
   property      Property @relation(fields: [propertyId], references: [id])
   leadId        String?  @db.ObjectId
   lead          Lead?    @relation(fields: [leadId], references: [id])
 
   @@index([userId])
+  @@index([agentId])
   @@index([propertyId])
   @@index([leadId])
   @@index([status])
   @@index([scheduledAt])
   @@index([createdAt])
+}
+
+// ─── AGENT AVAILABILITY ─────────────────────────────────────────────────
+
+model AgentAvailability {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  dayOfWeek     Int      // 0=Sunday, 1=Monday, ..., 6=Saturday
+  startTime     String   // HH:mm format (e.g. "09:00")
+  endTime       String   // HH:mm format (e.g. "18:00")
+  isActive      Boolean  @default(true)
+  slotDuration  Int      @default(30)  // minutes per slot
+  breakStart    String?  // Break start time HH:mm (e.g. "12:00")
+  breakEnd      String?  // Break end time HH:mm (e.g. "13:00")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  agentId       String   @db.ObjectId
+  agent         User     @relation(fields: [agentId], references: [id])
+
+  @@unique([agentId, dayOfWeek])
+  @@index([agentId])
+  @@index([dayOfWeek])
 }
 
 // ─── OFFER ──────────────────────────────────────────────────────────────

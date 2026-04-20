@@ -1401,6 +1401,104 @@ export const fetchEmailStatsAPI = createAsyncThunk<
 );
 
 // ============================================================================
+// SCHEDULING THUNKS (Phase 3C - Calendar/Scheduling)
+// ============================================================================
+
+/** Fetch available slots for an agent on a date — GET /api/viewings/slots */
+export const fetchAvailableSlotsAPI = createAsyncThunk<
+  { agentId: string; agentName: string; date: string; totalSlots: number; availableSlots: number; slots: Array<{ start: string; end: string; available: boolean; reason?: string }> },
+  { agentId: string; date: string; duration?: number },
+  { rejectValue: string }
+>(
+  'crmData/fetchAvailableSlots',
+  async (params, { rejectWithValue }) => {
+    try {
+      const query = new URLSearchParams({ agentId: params.agentId, date: params.date });
+      if (params.duration) query.set('duration', String(params.duration));
+      const res = await authFetch(`/api/viewings/slots?${query}`);
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to fetch slots');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch available slots'));
+    }
+  }
+);
+
+/** Fetch agent availability schedule — GET /api/agent-availability/:agentId */
+export const fetchAgentAvailabilityAPI = createAsyncThunk<
+  { agentId: string; agentName: string; schedule: Array<{ dayOfWeek: number; startTime: string; endTime: string; isActive: boolean; slotDuration: number; breakStart?: string; breakEnd?: string }> },
+  string,
+  { rejectValue: string }
+>(
+  'crmData/fetchAgentAvailability',
+  async (agentId, { rejectWithValue }) => {
+    try {
+      const res = await authFetch(`/api/agent-availability/${agentId}`);
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to fetch agent availability');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch agent availability'));
+    }
+  }
+);
+
+/** Set agent availability for a specific day — PUT /api/agent-availability */
+export const setAgentAvailabilityAPI = createAsyncThunk<
+  { dayOfWeek: number; startTime: string; endTime: string; isActive: boolean },
+  { dayOfWeek: number; startTime: string; endTime: string; isActive?: boolean; slotDuration?: number; breakStart?: string; breakEnd?: string },
+  { rejectValue: string }
+>(
+  'crmData/setAgentAvailability',
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await authFetch('/api/agent-availability', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to update availability');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to update agent availability'));
+    }
+  }
+);
+
+/** Download .ics calendar file for a viewing — GET /api/viewings/:id/ics */
+export const downloadViewingICSAPI = createAsyncThunk<
+  string,
+  { viewingId: string; token?: string },
+  { rejectValue: string }
+>(
+  'crmData/downloadViewingICS',
+  async ({ viewingId, token }, { rejectWithValue }) => {
+    try {
+      const query = token ? `?token=${token}` : '';
+      const res = await authFetch(`/api/viewings/${viewingId}/ics${query}`);
+      if (!res.ok) {
+        const json = await res.json();
+        return rejectWithValue(json.error || 'Failed to download calendar file');
+      }
+      const text = await res.text();
+      // Trigger browser download
+      const blob = new Blob([text], { type: 'text/calendar' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `viewing-${viewingId}.ics`;
+      a.click();
+      URL.revokeObjectURL(url);
+      return text;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to download calendar file'));
+    }
+  }
+);
+
+// ============================================================================
 // ACTIVITY THUNKS
 // ============================================================================
 
