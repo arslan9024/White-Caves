@@ -140,6 +140,24 @@ model Lead {
   @@index([propertyId])
 }
 
+// ─── LEAD SCORE HISTORY ─────────────────────────────────────────────────
+
+model LeadScoreHistory {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  leadId      String   @db.ObjectId
+  score       Int      // 0-100
+  tier        String   // hot, warm, cold, inactive
+  previousScore Int    // Previous score for delta tracking
+  previousTier  String // Previous tier for transition tracking
+  breakdown   Json?    // { engagement, demographic, behavioral, source }
+  trigger     String   // middleware, batch, manual, override, whatsapp
+  createdAt   DateTime @default(now())
+
+  @@index([leadId])
+  @@index([createdAt])
+  @@index([leadId, createdAt])
+}
+
 // ─── ACTIVITY ───────────────────────────────────────────────────────────
 
 model Activity {

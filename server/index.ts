@@ -52,6 +52,7 @@ import { startFollowUpScheduler } from './services/automation/followUpScheduler.
 import { startRateRefresh } from './services/currencyService.js';
 import { startViewingReminderScheduler } from './services/schedulingService.js';
 import { startRERAExpiryScheduler } from './services/compliance/reraExpiryScheduler.js';
+import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 
 // Load environment variables
 dotenv.config();
@@ -487,6 +488,7 @@ const startServer = async () => {
     startRateRefresh(); // Phase 2E: refresh exchange rates every 6h
     startViewingReminderScheduler(); // Phase 3C: viewing reminders every 15 min
     startRERAExpiryScheduler(); // Phase 3D: RERA BRN expiry checks daily
+    startAutoRouting(); // Phase 4A: auto-route hot leads to best agents
 
     // Auto-migrate any remaining legacy base64 password hashes to bcrypt
     try {

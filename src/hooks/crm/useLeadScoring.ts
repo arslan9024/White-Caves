@@ -1,9 +1,10 @@
 /**
- * useLeadScoring — Data hook for AI Lead Scoring
- * Provides: tier-filtered lead lists, scoring actions, tier stats
+ * useLeadScoring — Data hook for AI Lead Scoring (Enhanced Phase 4A)
+ * Provides: tier-filtered lead lists, scoring actions, tier stats,
+ *           score history, trending, auto-routing, WhatsApp signals
  *
  * Usage:
- *   const { hotLeads, warmLeads, coldLeads, scoreLead, overrideScore, stats } = useLeadScoring();
+ *   const { hotLeads, warmLeads, scoreLead, fetchHistory, autoRoute, stats } = useLeadScoring();
  */
 
 import { useMemo, useCallback } from 'react';
@@ -13,6 +14,13 @@ import {
   scoreLeadAPI,
   overrideLeadScoreAPI,
   batchRescoreLeadsAPI,
+  fetchScoredLeadsAPI,
+  fetchRoutingRulesAPI,
+  fetchScoreHistoryAPI,
+  fetchLeadTrendingAPI,
+  applyWhatsAppScoreAPI,
+  autoRouteLeadAPI,
+  fetchLeadRoutingAgentsAPI,
   selectAllLeads,
   selectHotTierLeads,
   selectWarmTierLeads,
@@ -86,6 +94,46 @@ export function useLeadScoring() {
     [dispatch],
   );
 
+  // ── Phase 4A Actions ──
+  const fetchScoredLeads = useCallback(
+    (params?: { tier?: string; page?: number; pageSize?: number }) =>
+      dispatch(fetchScoredLeadsAPI(params)),
+    [dispatch],
+  );
+
+  const fetchRoutingRules = useCallback(
+    () => dispatch(fetchRoutingRulesAPI()),
+    [dispatch],
+  );
+
+  const fetchHistory = useCallback(
+    (leadId: string, options?: { limit?: number; days?: number }) =>
+      dispatch(fetchScoreHistoryAPI({ leadId, ...options })),
+    [dispatch],
+  );
+
+  const fetchTrending = useCallback(
+    (options?: { days?: number; minChange?: number }) =>
+      dispatch(fetchLeadTrendingAPI(options)),
+    [dispatch],
+  );
+
+  const applyWhatsAppSignals = useCallback(
+    (leadId: string, signals: Record<string, number>) =>
+      dispatch(applyWhatsAppScoreAPI({ leadId, signals })),
+    [dispatch],
+  );
+
+  const autoRoute = useCallback(
+    (leadId: string) => dispatch(autoRouteLeadAPI(leadId)),
+    [dispatch],
+  );
+
+  const fetchAgentPerformance = useCallback(
+    () => dispatch(fetchLeadRoutingAgentsAPI()),
+    [dispatch],
+  );
+
   return {
     // Data
     allLeads,
@@ -99,10 +147,19 @@ export function useLeadScoring() {
     // Stats
     stats,
 
-    // Actions
+    // Core Actions
     scoreLead,
     overrideScore,
     batchRescore,
+
+    // Phase 4A: Enhanced Actions
+    fetchScoredLeads,
+    fetchRoutingRules,
+    fetchHistory,
+    fetchTrending,
+    applyWhatsAppSignals,
+    autoRoute,
+    fetchAgentPerformance,
   };
 }
 

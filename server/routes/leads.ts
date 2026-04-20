@@ -16,7 +16,8 @@ const VALID_LEAD_STATUSES = ['new', 'contacted', 'qualified', 'viewing', 'offere
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { requirePermission, requireRole } from '../middleware/rbac';
-import { scoreLead, overrideScore, batchRescoreLeads } from '../services/ai/leadScoringEngine.js';
+import { scoreLead, overrideScore, batchRescoreLeads, getScoreHistory, getScoreTrending, applyWhatsAppSignal } from '../services/ai/leadScoringEngine.js';
+import { getRoutingRules, getAgentPerformance, autoRouteHotLead } from '../services/ai/leadAutoRouter.js';
 
 const router = Router();
 
@@ -473,6 +474,179 @@ router.post(
   })
 );
 
+// ─── GET /api/leads/scored ──────────────────────────────────────────────
+// Get all leads with scores, sorted by score descending (for LeadScoringModule)
+router.get(
+  '/scored',
+  requirePermission('view_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { tier, minScore, maxScore, page = '1', pageSize = '50' } = req.query;
+    const pageNum = Math.max(1, parseInt(page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 50));
+
+    const where: Record<string, unknown> = {
+      score: { gt: 0 },
+    };
+
+    if (tier && typeof tier === 'string') {
+      where.scoreTier = tier;
+    }
+    if (minScore || maxScore) {
+      const scoreFilter: Record<string, number> = { gt: 0 };
+      if (minScore) {
+        const parsed = parseInt(minScore as string, 10);
+        if (!isNaN(parsed)) scoreFilter.gte = parsed;
+      }
+      if (maxScore) {
+        const parsed = parseInt(maxScore as string, 10);
+        if (!isNaN(parsed)) scoreFilter.lte = parsed;
+      }
+      where.score = scoreFilter;
+    }
+
+    const [leads, total] = await Promise.all([
+      prisma.lead.findMany({
+        where,
+        orderBy: { score: 'desc' },
+        skip: (pageNum - 1) * limit,
+        take: limit,
+        select: {
+          id: true,
+          name: true,
+          score: true,
+          scoreTier: true,
+          scoreBreakdown: true,
+          lastScoredAt: true,
+          budget: true,
+          budgetCurrency: true,
+          source: true,
+          status: true,
+          email: true,
+          phone: true,
+          company: true,
+          tags: true,
+          lastContact: true,
+          createdAt: true,
+          assignedTo: { select: { id: true, name: true } },
+          property: { select: { id: true, title: true, type: true } },
+        },
+      }),
+      prisma.lead.count({ where }),
+    ]);
+
+    // Add tier distribution
+    const [hotCount, warmCount, coldCount, inactiveCount] = await Promise.all([
+      prisma.lead.count({ where: { scoreTier: 'hot', score: { gt: 0 } } }),
+      prisma.lead.count({ where: { scoreTier: 'warm', score: { gt: 0 } } }),
+      prisma.lead.count({ where: { scoreTier: 'cold', score: { gt: 0 } } }),
+      prisma.lead.count({ where: { scoreTier: 'inactive', score: { gt: 0 } } }),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      leads: leads.map(l => ({
+        id: l.id,
+        name: l.name,
+        score: l.score,
+        tier: l.scoreTier,
+        budget: l.budget ? `${l.budgetCurrency} ${l.budget.toLocaleString()}` : 'N/A',
+        interest: l.property?.title || 'General',
+        source: l.source,
+        assignedAgent: l.assignedTo?.name || 'Unassigned',
+        email: l.email,
+        phone: l.phone,
+        company: l.company,
+        tags: l.tags,
+        lastContact: l.lastContact,
+        lastScoredAt: l.lastScoredAt,
+        breakdown: l.scoreBreakdown,
+      })),
+      distribution: { hot: hotCount, warm: warmCount, cold: coldCount, inactive: inactiveCount },
+      pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
+    });
+  })
+);
+
+// ─── GET /api/leads/routing-rules ───────────────────────────────────────
+// Get AI-generated routing rules based on agent performance
+router.get(
+  '/routing-rules',
+  requirePermission('view_leads'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const rules = await getRoutingRules();
+    const agents = await getAgentPerformance();
+
+    res.status(200).json({
+      success: true,
+      rules,
+      agents: agents.map(a => ({
+        id: a.agentId,
+        name: a.agentName,
+        conversionRate: a.conversionRate,
+        currentLoad: a.currentLoad,
+        totalLeads: a.totalLeads,
+        specializations: a.specializations,
+      })),
+    });
+  })
+);
+
+// ─── GET /api/leads/trending ────────────────────────────────────────────
+// Get warming/cooling lead trends
+router.get(
+  '/trending',
+  requirePermission('view_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { days = '7', minChange = '10' } = req.query;
+
+    const trends = await getScoreTrending({
+      days: parseInt(days as string) || 7,
+      minChange: parseInt(minChange as string) || 10,
+    });
+
+    const warming = trends.filter(t => t.direction === 'warming');
+    const cooling = trends.filter(t => t.direction === 'cooling');
+
+    res.status(200).json({
+      success: true,
+      data: {
+        trends,
+        summary: {
+          warming: warming.length,
+          cooling: cooling.length,
+          total: trends.length,
+        },
+      },
+    });
+  })
+);
+
+// ─── POST /api/leads/:id/auto-route ────────────────────────────────────
+// Manually trigger auto-routing for a lead
+router.post(
+  '/:id/auto-route',
+  requirePermission('manage_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Lead ID');
+
+    const decision = await autoRouteHotLead(req.params.id);
+
+    if (!decision) {
+      res.status(200).json({
+        success: true,
+        data: null,
+        message: 'Lead already assigned or no agents available',
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: decision,
+    });
+  })
+);
+
 // ─── GET /api/leads/:id/score ───────────────────────────────────────────
 // Score/re-score a single lead and return full breakdown
 router.get(
@@ -558,6 +732,72 @@ router.post(
       success: true,
       data: result,
     });
+  })
+);
+
+// ─── GET /api/leads/:id/score/history ───────────────────────────────────
+// Get score history for trending/charts
+router.get(
+  '/:id/score/history',
+  requirePermission('view_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Lead ID');
+    const { limit = '50', days = '90' } = req.query;
+
+    const history = await getScoreHistory(req.params.id, {
+      limit: Math.min(200, parseInt(limit as string) || 50),
+      days: Math.min(365, parseInt(days as string) || 90),
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        leadId: req.params.id,
+        history,
+        count: history.length,
+      },
+    });
+  })
+);
+
+// ─── POST /api/leads/:id/score/whatsapp ─────────────────────────────────
+// Apply WhatsApp conversation signals to lead score
+router.post(
+  '/:id/score/whatsapp',
+  requirePermission('manage_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Lead ID');
+    const { intentScore, sentimentScore, engagementScore, responseTimeScore, conversationScore } = req.body;
+
+    const result = await applyWhatsAppSignal(req.params.id, {
+      intentScore: typeof intentScore === 'number' ? intentScore : undefined,
+      sentimentScore: typeof sentimentScore === 'number' ? sentimentScore : undefined,
+      engagementScore: typeof engagementScore === 'number' ? engagementScore : undefined,
+      responseTimeScore: typeof responseTimeScore === 'number' ? responseTimeScore : undefined,
+      conversationScore: typeof conversationScore === 'number' ? conversationScore : undefined,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        leadId: result.leadId,
+        score: result.newScore,
+        previousScore: result.previousScore,
+        tier: result.newTier,
+        changed: result.changed,
+      },
+    });
+  })
+);
+
+// ─── GET /api/leads/agent-performance ───────────────────────────────────
+// Get agent performance metrics for routing dashboard
+router.get(
+  '/agent-performance',
+  requirePermission('view_analytics'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const agents = await getAgentPerformance();
+    res.status(200).json({ success: true, data: agents });
   })
 );
 

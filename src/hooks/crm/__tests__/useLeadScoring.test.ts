@@ -59,6 +59,13 @@ vi.mock('../../../store/crmDataSlice', async () => {
     scoreLeadAPI: vi.fn((leadId) => ({ type: 'mock/scoreLead', payload: leadId })),
     overrideLeadScoreAPI: vi.fn((data) => ({ type: 'mock/overrideLeadScore', payload: data })),
     batchRescoreLeadsAPI: vi.fn(() => ({ type: 'mock/batchRescoreLeads' })),
+    fetchScoredLeadsAPI: vi.fn((params) => ({ type: 'mock/fetchScoredLeads', payload: params })),
+    fetchRoutingRulesAPI: vi.fn(() => ({ type: 'mock/fetchRoutingRules' })),
+    fetchScoreHistoryAPI: vi.fn((params) => ({ type: 'mock/fetchScoreHistory', payload: params })),
+    fetchLeadTrendingAPI: vi.fn((params) => ({ type: 'mock/fetchLeadTrending', payload: params })),
+    applyWhatsAppScoreAPI: vi.fn((params) => ({ type: 'mock/applyWhatsAppScore', payload: params })),
+    autoRouteLeadAPI: vi.fn((leadId) => ({ type: 'mock/autoRouteLead', payload: leadId })),
+    fetchLeadRoutingAgentsAPI: vi.fn(() => ({ type: 'mock/fetchLeadRoutingAgents' })),
   };
 });
 
@@ -201,6 +208,91 @@ describe('useLeadScoring', () => {
       expect(result.current).toHaveProperty('loading');
       expect(result.current).toHaveProperty('error');
       expect(result.current).toHaveProperty('stats');
+    });
+
+    // Phase 4A handlers
+    it('exposes Phase 4A enhanced handlers', () => {
+      const { result } = renderHook(() => useLeadScoring());
+      expect(typeof result.current.fetchScoredLeads).toBe('function');
+      expect(typeof result.current.fetchRoutingRules).toBe('function');
+      expect(typeof result.current.fetchHistory).toBe('function');
+      expect(typeof result.current.fetchTrending).toBe('function');
+      expect(typeof result.current.applyWhatsAppSignals).toBe('function');
+      expect(typeof result.current.autoRoute).toBe('function');
+      expect(typeof result.current.fetchAgentPerformance).toBe('function');
+    });
+  });
+
+  // ────── Phase 4A Actions ──────
+  describe('Phase 4A enhanced actions', () => {
+    it('dispatches fetchScoredLeads', () => {
+      const { result } = renderHook(() => useLeadScoring());
+      act(() => {
+        result.current.fetchScoredLeads({ tier: 'hot', page: 1 });
+      });
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'mock/fetchScoredLeads' }),
+      );
+    });
+
+    it('dispatches fetchRoutingRules', () => {
+      const { result } = renderHook(() => useLeadScoring());
+      act(() => {
+        result.current.fetchRoutingRules();
+      });
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'mock/fetchRoutingRules' }),
+      );
+    });
+
+    it('dispatches fetchHistory', () => {
+      const { result } = renderHook(() => useLeadScoring());
+      act(() => {
+        result.current.fetchHistory('l1', { limit: 20, days: 30 });
+      });
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'mock/fetchScoreHistory' }),
+      );
+    });
+
+    it('dispatches fetchTrending', () => {
+      const { result } = renderHook(() => useLeadScoring());
+      act(() => {
+        result.current.fetchTrending({ days: 14, minChange: 5 });
+      });
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'mock/fetchLeadTrending' }),
+      );
+    });
+
+    it('dispatches applyWhatsAppSignals', () => {
+      const { result } = renderHook(() => useLeadScoring());
+      act(() => {
+        result.current.applyWhatsAppSignals('l1', { intentScore: 25, sentimentScore: 10 });
+      });
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'mock/applyWhatsAppScore' }),
+      );
+    });
+
+    it('dispatches autoRoute', () => {
+      const { result } = renderHook(() => useLeadScoring());
+      act(() => {
+        result.current.autoRoute('l1');
+      });
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'mock/autoRouteLead', payload: 'l1' }),
+      );
+    });
+
+    it('dispatches fetchAgentPerformance', () => {
+      const { result } = renderHook(() => useLeadScoring());
+      act(() => {
+        result.current.fetchAgentPerformance();
+      });
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'mock/fetchLeadRoutingAgents' }),
+      );
     });
   });
 });
