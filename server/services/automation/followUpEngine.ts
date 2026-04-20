@@ -348,10 +348,34 @@ export async function executeStep(
           message = 'No email on lead';
           break;
         }
-        // In production, integrate with email service:
-        //   await emailService.send({ to: lead.email, subject: resolved?.subject, body: resolved?.body });
-        message = resolved?.body || 'Email sent';
-        logger.info(`[FollowUp] Email to ${lead.email}: ${step.templateName}`);
+        try {
+          const { sendEmailTracked, wrapInBrandedTemplate } = await import('../emailService.js');
+          const subject = resolved?.subject || `Follow-up from White Caves — ${step.templateName}`;
+          const bodyText = resolved?.body || 'Thank you for your interest in White Caves properties.';
+          const htmlContent = wrapInBrandedTemplate(`<p>${bodyText}</p>`);
+
+          const emailResult = await sendEmailTracked({
+            to: lead.email,
+            subject,
+            text: bodyText,
+            html: htmlContent,
+            tags: [{ name: 'follow_up', value: step.templateName || 'generic' }],
+          });
+
+          if (emailResult.success) {
+            message = `Email sent (${emailResult.messageId || 'ok'})`;
+            logger.info(`[FollowUp] Email sent to ${lead.email}: ${step.templateName}`);
+          } else {
+            status = 'failed';
+            errorMessage = emailResult.error || 'Email send failed';
+            message = errorMessage;
+          }
+        } catch (emailErr) {
+          status = 'failed';
+          errorMessage = emailErr instanceof Error ? emailErr.message : 'Email send failed';
+          message = errorMessage;
+          logger.error(`[FollowUp] Email send failed to ${lead.email}:`, emailErr);
+        }
         break;
       }
 

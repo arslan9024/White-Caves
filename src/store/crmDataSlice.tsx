@@ -1313,6 +1313,94 @@ export const convertCurrencyAPI = createAsyncThunk<
 );
 
 // ============================================================================
+// EMAIL THUNKS (Phase 3B — Email Automation)
+// ============================================================================
+
+/** Send a custom email — POST /api/email/send */
+export const sendEmailAPI = createAsyncThunk<
+  { success: boolean; messageId?: string; devMode?: boolean },
+  { to: string; subject: string; text?: string; html?: string },
+  { rejectValue: string }
+>(
+  'crmData/sendEmail',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const res = await authFetch('/api/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to send email');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to send email'));
+    }
+  }
+);
+
+/** Send a template email — POST /api/email/template */
+export const sendTemplateEmailAPI = createAsyncThunk<
+  { success: boolean; messageId?: string; template: string },
+  { template: string; to: string; params: Record<string, string> },
+  { rejectValue: string }
+>(
+  'crmData/sendTemplateEmail',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const res = await authFetch('/api/email/template', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to send template email');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to send template email'));
+    }
+  }
+);
+
+/** Fetch email templates — GET /api/email/templates */
+export const fetchEmailTemplatesAPI = createAsyncThunk<
+  Array<{ name: string; description: string }>,
+  void,
+  { rejectValue: string }
+>(
+  'crmData/fetchEmailTemplates',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await authFetch('/api/email/templates');
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to fetch email templates');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch email templates'));
+    }
+  }
+);
+
+/** Fetch email stats — GET /api/email/stats */
+export const fetchEmailStatsAPI = createAsyncThunk<
+  { sent: number; failed: number; devMode: number; isDevMode: boolean },
+  void,
+  { rejectValue: string }
+>(
+  'crmData/fetchEmailStats',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await authFetch('/api/email/stats');
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to fetch email stats');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch email stats'));
+    }
+  }
+);
+
+// ============================================================================
 // ACTIVITY THUNKS
 // ============================================================================
 

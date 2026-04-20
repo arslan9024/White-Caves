@@ -44,6 +44,7 @@ import activitiesRoutes from './routes/activities.js';
 import followUpsRoutes from './routes/follow-ups.js';
 import documentsRoutes from './routes/documents.js';
 import currencyRoutes from './routes/currency.js';
+import emailRoutes from './routes/email.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
@@ -215,6 +216,9 @@ app.use('/api/documents', documentsRoutes);
 
 // Currency API (Phase 2E - Multi-Currency Support)
 app.use('/api/currency', currencyRoutes);
+
+// Email API (Phase 3B - Email Automation)
+app.use('/api/email', emailRoutes);
 
 // Communications API (Nadia - WhatsApp CRM, Nina - Bot)
 app.use('/api/communications', communicationsRoutes);
