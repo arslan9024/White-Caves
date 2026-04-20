@@ -46,6 +46,7 @@ import documentsRoutes from './routes/documents.js';
 import currencyRoutes from './routes/currency.js';
 import emailRoutes from './routes/email.js';
 import agentAvailabilityRoutes from './routes/agentAvailability.js';
+import analyticsRoutes from './routes/analytics.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
@@ -217,6 +218,9 @@ app.use('/api/follow-ups', followUpsRoutes);
 
 // Documents API (Phase 2C - Document Generation)
 app.use('/api/documents', documentsRoutes);
+
+// Market Analytics API (Phase 4C - Market Analyst Bot)
+app.use('/api/analytics', analyticsRoutes);
 
 // Currency API (Phase 2E - Multi-Currency Support)
 app.use('/api/currency', currencyRoutes);
