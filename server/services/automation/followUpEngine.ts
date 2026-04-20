@@ -23,6 +23,8 @@ import {
   type CadenceTemplate,
   type CadenceStep,
 } from './cadenceTemplates.js';
+import { createMetaAPIClient } from '../whatsapp/metaAPI.js';
+import { normalizePhone, rateLimiter } from '../whatsapp/whatsappUtils.js';
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -300,11 +302,43 @@ export async function executeStep(
           message = 'No phone number on lead';
           break;
         }
-        // In production, integrate with MetaAPI:
-        //   await metaClient.sendTemplate(lead.phone, step.templateName, [lead.name]);
-        // For now, log the action
-        message = resolved?.body || 'WhatsApp message sent';
-        logger.info(`[FollowUp] WhatsApp to ${lead.phone}: ${step.templateName}`);
+        const normalizedPhone = normalizePhone(lead.phone);
+        if (!normalizedPhone) {
+          status = 'skipped';
+          message = `Invalid phone number: ${lead.phone}`;
+          break;
+        }
+
+        // Send via Meta Cloud API if configured
+        const accessToken = process.env.META_ACCESS_TOKEN;
+        const phoneNumberId = process.env.META_PHONE_NUMBER_ID;
+        const businessAccountId = process.env.META_BUSINESS_ACCOUNT_ID;
+
+        if (accessToken && phoneNumberId && businessAccountId) {
+          try {
+            const rateCheck = rateLimiter.canSend(normalizedPhone);
+            if (!rateCheck.allowed) {
+              status = 'failed';
+              errorMessage = `Rate limited — retry after ${rateCheck.retryAfterMs}ms`;
+              message = errorMessage;
+              break;
+            }
+            const metaClient = createMetaAPIClient({ accessToken, businessAccountId, phoneNumberId });
+            const msgBody = resolved?.body || 'Hello from White Caves';
+            const waMessageId = await metaClient.sendMessage(normalizedPhone, msgBody);
+            message = `WhatsApp sent (${waMessageId})`;
+            logger.info(`[FollowUp] WhatsApp sent to ${normalizedPhone}: ${waMessageId}`);
+          } catch (sendErr) {
+            status = 'failed';
+            errorMessage = sendErr instanceof Error ? sendErr.message : 'WhatsApp send failed';
+            message = errorMessage;
+            logger.error(`[FollowUp] WhatsApp send failed to ${normalizedPhone}:`, sendErr);
+          }
+        } else {
+          // No Meta API configured — log only (dev/staging mode)
+          message = resolved?.body || 'WhatsApp message (dev mode — not sent)';
+          logger.info(`[FollowUp] WhatsApp (dev) to ${normalizedPhone}: ${step.templateName}`);
+        }
         break;
       }
 

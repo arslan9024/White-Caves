@@ -3,11 +3,17 @@
  * Endpoints for receiving production WhatsApp messages from Meta
  * POST /api/webhooks/meta - Receive messages
  * GET /api/webhooks/meta/verify - Webhook verification
+ *
+ * Phase 3A: Fully wired to Nadia pipeline — stores messages in DB,
+ * triggers Nina NLP, updates conversation status.
  */
 
 import { Router, Request, Response } from 'express';
-import { createMetaAPIClient, MetaAPIClient, WebhookEvent } from '../services/whatsapp/metaAPI';
-import { requireRole } from '../middleware/rbac';
+import { createMetaAPIClient, MetaAPIClient, WebhookEvent } from '../services/whatsapp/metaAPI.js';
+import { verifyWebhookSignature, normalizePhone, rateLimiter } from '../services/whatsapp/whatsappUtils.js';
+import { requireRole } from '../middleware/rbac.js';
+import { prisma } from '../database.js';
+import { detectIntent, calculateLeadScore } from '../services/nadia/messageProcessor.js';
 
 const router = Router();
 
@@ -75,9 +81,22 @@ router.get('/verify', (req: Request, res: Response) => {
 /**
  * POST /api/webhooks/meta
  * Receive messages and status updates from Meta/WhatsApp
+ * Verifies HMAC-SHA256 signature if META_APP_SECRET is set.
  */
 router.post('/', async (req: Request, res: Response) => {
   try {
+    // Verify webhook signature (if app secret is configured)
+    const appSecret = process.env.META_APP_SECRET;
+    if (appSecret) {
+      const signature = req.headers['x-hub-signature-256'] as string | undefined;
+      const rawBody = JSON.stringify(req.body);
+      if (!verifyWebhookSignature(rawBody, signature, appSecret)) {
+        console.warn('[Meta Webhook] Invalid signature — rejecting');
+        res.status(401).json({ success: false, error: 'Invalid signature' });
+        return;
+      }
+    }
+
     console.log('[Meta Webhook] Incoming webhook event');
 
     // Acknowledge receipt immediately
@@ -121,33 +140,93 @@ router.post('/', async (req: Request, res: Response) => {
 });
 
 /**
- * Handle incoming message
+ * Handle incoming message — FULL PIPELINE
+ * 1. Normalize phone number
+ * 2. Find or create NadiaConversation
+ * 3. Store NadiaMessage in DB
+ * 4. Run Nina NLP analysis
+ * 5. Update conversation with NLP results
+ * 6. Emit event for real-time listeners
  */
 async function handleIncomingMessage(message: any, phoneNumberId: string): Promise<void> {
   try {
-    const messageData = {
-      id: message.id,
-      from: message.from,
-      type: message.type,
-      timestamp: parseInt(message.timestamp),
-      phoneNumberId,
-      content: message.text?.body || '',
-      hasMedia: !!message.image || !!message.document || !!message.audio || !!message.video,
-      mediaId: message.image?.id || message.document?.id || message.audio?.id || message.video?.id,
-    };
+    const customerPhone = normalizePhone(message.from) || message.from;
+    const content = message.text?.body || '';
+    const messageType = message.type || 'text';
+    const timestamp = new Date(parseInt(message.timestamp) * 1000);
 
-    console.log(`[Meta Webhook] Message received from ${messageData.from}: ${messageData.content.substring(0, 50)}`);
+    console.log(`[Meta Webhook] Message from ${customerPhone}: ${content.substring(0, 80)}`);
 
-    // In real implementation, this would:
-    // 1. Route to NADIA message processor
-    // 2. Store in database
-    // 3. Update conversation
-    // 4. Trigger NLP analysis
-    // 5. Queue for agent if needed
+    // 1. Find or create conversation
+    let conversation = await prisma.nadiaConversation.findFirst({
+      where: { customerPhone, status: { in: ['active', 'assigned_to_agent', 'in_bot_flow'] } },
+      orderBy: { createdAt: 'desc' },
+    });
 
-    // Emit event that API/service layer can listen to
-    if (global.eventEmitter) {
-      global.eventEmitter.emit('meta:message:received', messageData);
+    if (!conversation) {
+      conversation = await prisma.nadiaConversation.create({
+        data: {
+          wabaId: phoneNumberId,
+          customerPhone,
+          status: 'active',
+        },
+      });
+      console.log(`[Meta Webhook] New conversation created: ${conversation.id}`);
+    }
+
+    // 2. Store message
+    const storedMessage = await prisma.nadiaMessage.create({
+      data: {
+        conversationId: conversation.id,
+        waMessageId: message.id,
+        direction: 'inbound',
+        body: content,
+        messageType,
+        status: 'delivered',
+        timestamp,
+      },
+    });
+
+    // 3. Run NLP analysis (Nina)
+    let nlpResult: { intent?: string; score?: number } = {};
+    try {
+      const intent = detectIntent(content);
+      const score = calculateLeadScore({
+        messageCount: 1,
+        responseTime: 0,
+        intentClarity: intent !== 'general_inquiry' ? 1 : 0.3,
+        budgetMentioned: content.toLowerCase().includes('budget') || content.toLowerCase().includes('aed'),
+        timelineMentioned: content.toLowerCase().includes('asap') || content.toLowerCase().includes('urgent'),
+        propertyInterest: content.toLowerCase().includes('property') || content.toLowerCase().includes('villa') ? 1 : 0,
+      });
+      nlpResult = { intent, score };
+    } catch (nlpErr) {
+      console.warn('[Meta Webhook] NLP processing failed:', nlpErr);
+    }
+
+    // 4. Update conversation with NLP results
+    if (nlpResult.intent || nlpResult.score) {
+      await prisma.nadiaConversation.update({
+        where: { id: conversation.id },
+        data: {
+          ...(nlpResult.intent && { intent: nlpResult.intent }),
+          ...(nlpResult.score && { leadScore: nlpResult.score }),
+          updatedAt: new Date(),
+        },
+      });
+    }
+
+    // 5. Emit event for real-time listeners
+    if ((global as any).eventEmitter) {
+      (global as any).eventEmitter.emit('meta:message:received', {
+        id: storedMessage.id,
+        conversationId: conversation.id,
+        from: customerPhone,
+        content,
+        type: messageType,
+        timestamp,
+        nlp: nlpResult,
+      });
     }
   } catch (error) {
     console.error('[Meta Webhook] Error handling message:', error);
@@ -155,29 +234,43 @@ async function handleIncomingMessage(message: any, phoneNumberId: string): Promi
 }
 
 /**
- * Handle message status update
+ * Handle message status update — FULL PIPELINE
+ * Updates NadiaMessage.status in DB when Meta reports delivery/read/failed.
  */
 async function handleStatusUpdate(status: any): Promise<void> {
   try {
-    console.log(`[Meta Webhook] Status update for message ${status.id}: ${status.status}`);
+    const waMessageId = status.id;
+    const newStatus = status.status; // sent, delivered, read, failed
 
-    const statusData = {
-      messageId: status.id,
-      status: status.status,
-      timestamp: parseInt(status.timestamp),
-      recipientId: status.recipient_id,
-      errors: status.errors,
-    };
+    console.log(`[Meta Webhook] Status update: ${waMessageId} → ${newStatus}`);
 
-    // In real implementation, this would:
-    // 1. Find message in database
-    // 2. Update status
-    // 3. Trigger callbacks/notifications
-    // 4. Log for analytics
+    // Find and update the message in DB
+    const existing = await prisma.nadiaMessage.findFirst({
+      where: { waMessageId },
+    });
+
+    if (existing) {
+      await prisma.nadiaMessage.update({
+        where: { id: existing.id },
+        data: { status: newStatus },
+      });
+    }
+
+    // If failed, log the error detail
+    if (newStatus === 'failed' && status.errors?.length) {
+      console.error(`[Meta Webhook] Message ${waMessageId} failed:`, status.errors);
+    }
 
     // Emit event
-    if (global.eventEmitter) {
-      global.eventEmitter.emit('meta:message:status_updated', statusData);
+    if ((global as any).eventEmitter) {
+      (global as any).eventEmitter.emit('meta:message:status_updated', {
+        messageId: waMessageId,
+        dbId: existing?.id,
+        status: newStatus,
+        timestamp: new Date(parseInt(status.timestamp) * 1000),
+        recipientId: status.recipient_id,
+        errors: status.errors,
+      });
     }
   } catch (error) {
     console.error('[Meta Webhook] Error handling status:', error);

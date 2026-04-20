@@ -103,7 +103,7 @@ export interface WebhookEvent {
 export class MetaAPIClient {
   private client: AxiosInstance;
   private config: MetaAPIConfig;
-  private readonly BASE_URL = 'https://graph.instagram.com';
+  private readonly BASE_URL = 'https://graph.facebook.com';
 
   constructor(config: MetaAPIConfig) {
     if (!config.accessToken || !config.businessAccountId || !config.phoneNumberId) {
