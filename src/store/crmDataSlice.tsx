@@ -1133,6 +1133,125 @@ export const fetchDocumentTypesAPI = createAsyncThunk<
 );
 
 // ============================================================================
+// REPORTING & ANALYTICS THUNKS
+// ============================================================================
+
+/** Fetch lead funnel data — GET /api/dashboard/lead-funnel */
+export const fetchLeadFunnelAPI = createAsyncThunk<
+  Record<string, unknown>,
+  void,
+  { rejectValue: string }
+>(
+  'crmData/fetchLeadFunnel',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await authFetch('/api/dashboard/lead-funnel');
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to fetch lead funnel');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch lead funnel'));
+    }
+  }
+);
+
+/** Fetch time-series trends — GET /api/dashboard/trends?days=N */
+export const fetchTrendsAPI = createAsyncThunk<
+  Record<string, unknown>,
+  { days?: number } | void,
+  { rejectValue: string }
+>(
+  'crmData/fetchTrends',
+  async (params, { rejectWithValue }) => {
+    try {
+      const days = params && 'days' in params ? params.days : 30;
+      const res = await authFetch(`/api/dashboard/trends?days=${days}`);
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to fetch trends');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch trends'));
+    }
+  }
+);
+
+/** Fetch property aging data — GET /api/dashboard/property-aging */
+export const fetchPropertyAgingAPI = createAsyncThunk<
+  Record<string, unknown>,
+  void,
+  { rejectValue: string }
+>(
+  'crmData/fetchPropertyAging',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await authFetch('/api/dashboard/property-aging');
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to fetch property aging');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch property aging'));
+    }
+  }
+);
+
+/** Fetch agent performance comparison — GET /api/dashboard/agent-performance */
+export const fetchAgentPerformanceAPI = createAsyncThunk<
+  Record<string, unknown>,
+  void,
+  { rejectValue: string }
+>(
+  'crmData/fetchAgentPerformance',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await authFetch('/api/dashboard/agent-performance');
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to fetch agent performance');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch agent performance'));
+    }
+  }
+);
+
+/** Fetch executive dashboard summary — GET /api/dashboard/executive */
+export const fetchExecutiveDashboardAPI = createAsyncThunk<
+  Record<string, unknown>,
+  void,
+  { rejectValue: string }
+>(
+  'crmData/fetchExecutiveDashboard',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await authFetch('/api/dashboard/executive');
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to fetch executive dashboard');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch executive dashboard'));
+    }
+  }
+);
+
+/** Fetch 30-day KPIs — GET /api/dashboard/kpis */
+export const fetchKPIsAPI = createAsyncThunk<
+  Record<string, unknown>,
+  void,
+  { rejectValue: string }
+>(
+  'crmData/fetchKPIs',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await authFetch('/api/dashboard/kpis');
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to fetch KPIs');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to fetch KPIs'));
+    }
+  }
+);
+
+// ============================================================================
 // ACTIVITY THUNKS
 // ============================================================================
 
