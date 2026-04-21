@@ -89,6 +89,25 @@ export const HeaderContent = styled.div`
   z-index: 1;
 `;
 
+export const ContentBreadcrumbs = styled.nav`
+  display: flex;
+  align-items: center;
+  gap: ${spacing.xs};
+  margin-bottom: ${spacing.sm};
+  opacity: 0.9;
+  font-size: 12px;
+`;
+
+export const BreadcrumbItem = styled.span<{ $isCurrent?: boolean }>`
+  font-weight: ${props => (props.$isCurrent ? 700 : 500)};
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+`;
+
+export const BreadcrumbSeparator = styled.span`
+  opacity: 0.7;
+`;
+
 export const HeaderTitle = styled.h1`
   font-size: 32px;
   font-weight: 700;
@@ -320,6 +339,12 @@ export const MetricsGrid = styled.div`
   ${mediaQueries.mobile} {
     grid-template-columns: 1fr;
   }
+`;
+
+export const LoadingSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${spacing.md};
 `;
 
 export const MetricCard = styled.div`
