@@ -48,7 +48,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
 ): UseFormValidation<T> {
   const [values, setValues] = useState<T>(initialValues);
   const [errors, setErrors] = useState<ValidationErrors>({});
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [touched, setTouched] = useState<Record<keyof T, boolean>>({} as Record<keyof T, boolean>);
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
   /* ── Derived ── */
@@ -111,9 +111,9 @@ export function useFormValidation<T extends Record<string, unknown>>(
         setSubmitAttempted(true);
 
         // Mark all fields as touched
-        const allTouched: Record<string, boolean> = {};
+        const allTouched = {} as Record<keyof T, boolean>;
         for (const key of Object.keys(schema)) {
-          allTouched[key] = true;
+          allTouched[key as keyof T] = true;
         }
         setTouched(allTouched);
 
@@ -153,7 +153,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
     (newValues?: Partial<T>) => {
       setValues(newValues ? { ...initialValues, ...newValues } : initialValues);
       setErrors({});
-      setTouched({});
+      setTouched({} as Record<keyof T, boolean>);
       setSubmitAttempted(false);
     },
     [initialValues],

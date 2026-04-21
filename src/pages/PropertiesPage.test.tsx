@@ -108,7 +108,7 @@ const createMockStore = (crmOverrides: Record<string, unknown> = {}) => {
         overview: null,
         lastUpdated: new Date().toISOString(),
         ...crmOverrides,
-      } as ReturnType<typeof crmDataReducer>,
+      } as unknown as ReturnType<typeof crmDataReducer>,
       user: {
         currentUser: null,
         loading: false,

@@ -9,7 +9,7 @@
 
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import type { AppDispatch } from '../../store';
+import type { AppDispatch } from '../../store/store';
 import {
   generateDocumentAPI,
   fetchDocumentsAPI,

@@ -79,7 +79,7 @@ const createStore = () =>
         activities: { items: [], loading: false, error: null },
         overview: null,
         lastUpdated: new Date().toISOString(),
-      } as ReturnType<typeof crmDataReducer>,
+      } as unknown as ReturnType<typeof crmDataReducer>,
       user: { currentUser: null, loading: false, error: null } as unknown as ReturnType<typeof userReducer>,
       auth: {
         user: null,

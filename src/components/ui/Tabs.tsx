@@ -199,3 +199,5 @@ export const Tabs: React.FC<TabsProps> = memo(function Tabs({
     </TabsContainer>
   );
 });
+
+export default Tabs;

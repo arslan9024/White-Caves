@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { formatDate, formatCurrency as formatCurrencyBase } from '../../utils';
+import { formatDate as formatDateBase, formatCurrency as formatCurrencyBase } from '../../utils';
 
 // ─── Common Layout Styles ────────────────────────────────────────────
 
@@ -188,8 +188,10 @@ export const errorState = (message: string, onRetry?: () => void): React.ReactNo
 );
 
 // ─── Date/Currency Formatting ────────────────────────────────────────
-// formatDate is re-exported directly from utils (identical behavior)
-export { formatDate };
+export function formatDate(value: string | Date | null | undefined): string {
+  if (value == null || value === '') return '—';
+  return formatDateBase(value);
+}
 
 /** Dashboard-specific formatCurrency: returns '—' for null (vs 'AED 0' in utils) */
 export function formatCurrency(amount: number | null | undefined): string {
@@ -197,6 +199,7 @@ export function formatCurrency(amount: number | null | undefined): string {
   return formatCurrencyBase(amount);
 }
 
-export function formatStatus(status: string): string {
+export function formatStatus(status: string | null | undefined): string {
+  if (!status) return '—';
   return status.replace(/[_-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }

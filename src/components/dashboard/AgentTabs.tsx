@@ -214,8 +214,14 @@ export const LeasingViewings: React.FC = () => {
 
   if (loading) return <div style={S.tabContainer}>{S.loadingState}</div>;
 
-  const upcoming = viewings.filter((v) => new Date(v.scheduledDate) >= new Date());
-  const past = viewings.filter((v) => new Date(v.scheduledDate) < new Date());
+  const upcoming = viewings.filter((v) => {
+    const ts = v.scheduledDate ? Date.parse(String(v.scheduledDate)) : 0;
+    return ts >= Date.now();
+  });
+  const past = viewings.filter((v) => {
+    const ts = v.scheduledDate ? Date.parse(String(v.scheduledDate)) : 0;
+    return ts < Date.now();
+  });
 
   return (
     <div style={S.tabContainer}>

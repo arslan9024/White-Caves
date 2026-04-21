@@ -36,33 +36,148 @@ import {
 } from '../../../../store/crmDataSlice';
 import type { AppDispatch } from '../../../../store/store';
 
+interface InvoiceRecord extends Invoice {
+  totalAmount?: number;
+  notes?: string;
+  vatAmount?: number;
+}
+
+interface ExpenseRecord extends Expense {
+  notes?: string;
+  receiptUrl?: string;
+}
+
+interface CommissionRecord {
+  id: string;
+  amount: number;
+  status: string;
+  agentId?: string;
+  agentName?: string;
+  agent_name?: string;
+  leadId?: string;
+  propertyId?: string;
+  percentage?: number;
+  type?: string;
+  notes?: string;
+  paidAt?: string;
+  createdAt?: string;
+  [key: string]: unknown;
+}
+
+const mapInvoiceRecord = (item: Record<string, unknown>): InvoiceRecord => ({
+  id: String(item.id ?? ''),
+  client: String(item.client ?? 'Unknown Client'),
+  property: String(item.property ?? 'N/A'),
+  amount: Number(item.amount ?? 0),
+  totalAmount: item.totalAmount !== undefined ? Number(item.totalAmount) : undefined,
+  status: String(item.status ?? 'pending'),
+  date: String(item.date ?? item.createdAt ?? new Date().toISOString().slice(0, 10)),
+  dueDate: String(item.dueDate ?? new Date().toISOString().slice(0, 10)),
+  notes: item.notes ? String(item.notes) : undefined,
+  vatAmount: item.vatAmount !== undefined ? Number(item.vatAmount) : undefined,
+});
+
+const mapExpenseRecord = (item: Record<string, unknown>): ExpenseRecord => ({
+  id: Number(item.id ?? 0),
+  category: String(item.category ?? 'General'),
+  description: String(item.description ?? ''),
+  amount: Number(item.amount ?? 0),
+  date: String(item.date ?? item.createdAt ?? new Date().toISOString().slice(0, 10)),
+  status: String(item.status ?? 'pending'),
+  notes: item.notes ? String(item.notes) : undefined,
+  receiptUrl: item.receiptUrl ? String(item.receiptUrl) : undefined,
+});
+
+const mapCommissionRecord = (item: Record<string, unknown>): CommissionRecord => ({
+  id: String(item.id ?? ''),
+  amount: Number(item.amount ?? 0),
+  status: String(item.status ?? 'pending'),
+  agentId: item.agentId ? String(item.agentId) : undefined,
+  agentName: item.agentName ? String(item.agentName) : undefined,
+  agent_name: item.agent_name ? String(item.agent_name) : undefined,
+  leadId: item.leadId ? String(item.leadId) : undefined,
+  propertyId: item.propertyId ? String(item.propertyId) : undefined,
+  percentage: item.percentage !== undefined ? Number(item.percentage) : undefined,
+  type: item.type ? String(item.type) : undefined,
+  notes: item.notes ? String(item.notes) : undefined,
+  paidAt: item.paidAt ? String(item.paidAt) : undefined,
+  createdAt: item.createdAt ? String(item.createdAt) : undefined,
+});
+
 export const useFinanceData = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   // Redux state for commissions (real API data)
-  const commissions = useSelector(selectAllCommissions);
-  const pendingCommissions = useSelector(selectPendingCommissions);
-  const approvedCommissions = useSelector(selectApprovedCommissions);
-  const paidCommissions = useSelector(selectPaidCommissions);
+  const commissionsRaw = useSelector(selectAllCommissions);
+  const pendingCommissionsRaw = useSelector(selectPendingCommissions);
+  const approvedCommissionsRaw = useSelector(selectApprovedCommissions);
+  const paidCommissionsRaw = useSelector(selectPaidCommissions);
   const commissionsLoading = useSelector(selectCommissionsLoading);
   const commissionsError = useSelector(selectCommissionsError);
 
   // Redux state for invoices (real API data)
-  const invoices = useSelector(selectAllInvoices) as Invoice[];
-  const pendingInvoices = useSelector(selectPendingInvoices) as Invoice[];
-  const paidInvoices = useSelector(selectPaidInvoices) as Invoice[];
-  const overdueInvoices = useSelector(selectOverdueInvoices) as Invoice[];
+  const invoicesRaw = useSelector(selectAllInvoices);
+  const pendingInvoicesRaw = useSelector(selectPendingInvoices);
+  const paidInvoicesRaw = useSelector(selectPaidInvoices);
+  const overdueInvoicesRaw = useSelector(selectOverdueInvoices);
   const invoicesLoading = useSelector(selectInvoicesLoading);
   const invoicesError = useSelector(selectInvoicesError);
 
   // Redux state for expenses (real API data)
-  const expenses = useSelector(selectAllExpenses) as Expense[];
-  const pendingExpensesList = useSelector(selectPendingExpenses) as Expense[];
-  const approvedExpensesList = useSelector(selectApprovedExpenses) as Expense[];
+  const expensesRaw = useSelector(selectAllExpenses);
+  const pendingExpensesRaw = useSelector(selectPendingExpenses);
+  const approvedExpensesRaw = useSelector(selectApprovedExpenses);
   const expensesLoading = useSelector(selectExpensesLoading);
   const expensesError = useSelector(selectExpensesError);
 
-  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const commissions = useMemo(
+    () => commissionsRaw.map((item) => mapCommissionRecord(item as Record<string, unknown>)),
+    [commissionsRaw],
+  );
+  const pendingCommissions = useMemo(
+    () => pendingCommissionsRaw.map((item) => mapCommissionRecord(item as Record<string, unknown>)),
+    [pendingCommissionsRaw],
+  );
+  const approvedCommissions = useMemo(
+    () => approvedCommissionsRaw.map((item) => mapCommissionRecord(item as Record<string, unknown>)),
+    [approvedCommissionsRaw],
+  );
+  const paidCommissions = useMemo(
+    () => paidCommissionsRaw.map((item) => mapCommissionRecord(item as Record<string, unknown>)),
+    [paidCommissionsRaw],
+  );
+
+  const invoices = useMemo(
+    () => invoicesRaw.map((item) => mapInvoiceRecord(item as Record<string, unknown>)),
+    [invoicesRaw],
+  );
+  const pendingInvoices = useMemo(
+    () => pendingInvoicesRaw.map((item) => mapInvoiceRecord(item as Record<string, unknown>)),
+    [pendingInvoicesRaw],
+  );
+  const paidInvoices = useMemo(
+    () => paidInvoicesRaw.map((item) => mapInvoiceRecord(item as Record<string, unknown>)),
+    [paidInvoicesRaw],
+  );
+  const overdueInvoices = useMemo(
+    () => overdueInvoicesRaw.map((item) => mapInvoiceRecord(item as Record<string, unknown>)),
+    [overdueInvoicesRaw],
+  );
+
+  const expenses = useMemo(
+    () => expensesRaw.map((item) => mapExpenseRecord(item as Record<string, unknown>)),
+    [expensesRaw],
+  );
+  const pendingExpensesList = useMemo(
+    () => pendingExpensesRaw.map((item) => mapExpenseRecord(item as Record<string, unknown>)),
+    [pendingExpensesRaw],
+  );
+  const approvedExpensesList = useMemo(
+    () => approvedExpensesRaw.map((item) => mapExpenseRecord(item as Record<string, unknown>)),
+    [approvedExpensesRaw],
+  );
+
+  const [selectedInvoice, setSelectedInvoice] = useState<InvoiceRecord | null>(null);
   const [generatedMessage, setGeneratedMessage] = useState<string>('');
   const [financeSummary, setFinanceSummary] = useState<Record<string, unknown> | null>(null);
 
@@ -138,7 +253,7 @@ export const useFinanceData = () => {
     setGeneratedMessage(_message ?? '');
   }, []);
 
-  const handleSelectInvoice = useCallback((invoice: Invoice) => {
+  const handleSelectInvoice = useCallback((invoice: InvoiceRecord) => {
     setSelectedInvoice(invoice);
   }, []);
 
@@ -219,7 +334,15 @@ export const useFinanceData = () => {
     handleRefreshCommissions,
     // Invoice CRUD
     handleCreateInvoice: useCallback(
-      (data: Partial<Invoice>) => dispatch(createInvoiceAPI(data)),
+      (data: Partial<InvoiceRecord>) => dispatch(createInvoiceAPI({
+        client: data.client ?? 'Unknown Client',
+        amount: Number(data.amount ?? 0),
+        dueDate: data.dueDate ?? new Date().toISOString().slice(0, 10),
+        property: data.property,
+        notes: data.notes,
+        vatAmount: data.vatAmount,
+        lineItems: undefined,
+      })),
       [dispatch]
     ),
     handleUpdateInvoice: useCallback(
@@ -232,7 +355,14 @@ export const useFinanceData = () => {
     ),
     // Expense CRUD
     handleCreateExpense: useCallback(
-      (data: Partial<Expense>) => dispatch(createExpenseAPI(data)),
+      (data: Partial<ExpenseRecord>) => dispatch(createExpenseAPI({
+        category: data.category ?? 'General',
+        description: data.description ?? '',
+        amount: Number(data.amount ?? 0),
+        date: data.date,
+        notes: data.notes,
+        receiptUrl: data.receiptUrl,
+      })),
       [dispatch]
     ),
     handleUpdateExpense: useCallback(

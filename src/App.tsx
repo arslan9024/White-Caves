@@ -199,8 +199,9 @@ function App(): React.JSX.Element {
 
   useEffect(() => {
     const savedTheme = safeStorage.get('theme', 'light');
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    dispatch(setTheme(savedTheme));
+    const themeValue = savedTheme ?? 'light';
+    document.documentElement.setAttribute('data-theme', themeValue);
+    dispatch(setTheme(themeValue));
   }, [dispatch]);
 
   const handleRoleSelect = (role: string): void => {

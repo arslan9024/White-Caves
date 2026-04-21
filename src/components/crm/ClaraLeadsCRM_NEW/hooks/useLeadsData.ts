@@ -135,6 +135,20 @@ export function useLeadsData() {
   // Debounce the search query to avoid excessive filtering on every keystroke
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
 
+  const normalizeSortValue = useCallback((value: unknown, key: string): number | string => {
+    if (key === 'lastContact' || key === 'createdAt') {
+      const parsed = new Date((value as string | number | Date | undefined) ?? 0).getTime();
+      return Number.isNaN(parsed) ? 0 : parsed;
+    }
+
+    if (typeof value === 'number') return value;
+    if (value instanceof Date) return value.getTime();
+    if (typeof value === 'string') return value.toLowerCase();
+    if (Array.isArray(value)) return value.map(String).join(',').toLowerCase();
+    if (value && typeof value === 'object') return JSON.stringify(value).toLowerCase();
+    return '';
+  }, []);
+
   // Filtered and sorted leads
   const filteredLeads = useMemo(() => {
     let result = leads;
@@ -162,13 +176,8 @@ export function useLeadsData() {
 
     // Apply sort — always copy to avoid mutating the source array
     return [...result].sort((a, b) => {
-      let aVal = a[sortBy as keyof Lead];
-      let bVal = b[sortBy as keyof Lead];
-
-      if (sortBy === 'lastContact' || sortBy === 'createdAt') {
-        aVal = new Date(aVal).getTime();
-        bVal = new Date(bVal).getTime();
-      }
+      const aVal = normalizeSortValue(a[sortBy as keyof Lead], sortBy);
+      const bVal = normalizeSortValue(b[sortBy as keyof Lead], sortBy);
 
       if (sortOrder === 'asc') {
         return aVal > bVal ? 1 : -1;
@@ -176,7 +185,7 @@ export function useLeadsData() {
         return aVal < bVal ? 1 : -1;
       }
     });
-  }, [leads, filterStatus, filterStage, debouncedSearch, sortBy, sortOrder]);
+  }, [leads, filterStatus, filterStage, debouncedSearch, sortBy, sortOrder, normalizeSortValue]);
 
   // Statistics
   const stats = useMemo(() => ({
