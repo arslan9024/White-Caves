@@ -418,7 +418,7 @@ const EnhancedLeftSidebar: React.FC<EnhancedLeftSidebarProps> = ({
   }, [setFocus]);
 
   return (
-    <SidebarContainer ref={sidebarRef} onKeyDown={handleNavigationKeyDown} role="navigation" aria-label="Main navigation">
+    <SidebarContainer ref={sidebarRef} onKeyDown={handleNavigationKeyDown} role="navigation" aria-label="Main navigation" data-testid="enhanced-left-sidebar">
       {/* ─── Header ────────────────────────────────────────────── */}
       <SidebarHeader>
         <SidebarLogo
@@ -431,7 +431,7 @@ const EnhancedLeftSidebar: React.FC<EnhancedLeftSidebarProps> = ({
 
       {/* ─── Quick Navigation ──────────────────────────────────── */}
       <SidebarSection>
-        <SidebarNav>
+        <SidebarNav aria-label="Quick navigation">
           {QUICK_NAV.map(item => {
             const Icon = item.icon;
             return (
@@ -443,6 +443,7 @@ const EnhancedLeftSidebar: React.FC<EnhancedLeftSidebarProps> = ({
                 onClick={() => handleQuickNavClick(item.id)}
                 onKeyDown={handleNavigationKeyDown}
                 focusProps={getItemFocusProps(`quick-${item.id}`)}
+                ariaCurrent={false}
                 title={item.label}
               />
             );
@@ -484,7 +485,7 @@ const EnhancedLeftSidebar: React.FC<EnhancedLeftSidebarProps> = ({
           />
         </AISearchContainer>
 
-        <SidebarNav>
+        <SidebarNav aria-label="AI assistants">
           {Object.entries(groupedAssistants).map(([deptId, assistants]) => {
             const deptInfo = REGISTRY_DEPARTMENTS[deptId as DepartmentId];
             return (
@@ -504,6 +505,8 @@ const EnhancedLeftSidebar: React.FC<EnhancedLeftSidebarProps> = ({
                     onClick={() => handleAssistantClick(assistant.id)}
                     onKeyDown={handleNavigationKeyDown}
                     {...(getItemFocusProps(`assistant-${assistant.id}`) ?? {})}
+                    aria-label={`${assistant.name} assistant`}
+                    aria-selected={selectedAssistantId === assistant.id}
                     title={assistant.title}
                   >
                     <AIAssistantAvatar $color={assistant.color}>
@@ -535,6 +538,7 @@ const EnhancedLeftSidebar: React.FC<EnhancedLeftSidebarProps> = ({
             onClick={() => handleQuickNavClick('admin')}
             onKeyDown={handleNavigationKeyDown}
             focusProps={getItemFocusProps('footer-admin')}
+            ariaCurrent={false}
             title="Admin Dashboard"
           />
         )}
@@ -546,6 +550,7 @@ const EnhancedLeftSidebar: React.FC<EnhancedLeftSidebarProps> = ({
           onClick={() => handleQuickNavClick('settings')}
           onKeyDown={handleNavigationKeyDown}
           focusProps={getItemFocusProps('footer-settings')}
+          ariaCurrent={false}
           title="Settings"
         />
       </SidebarFooter>

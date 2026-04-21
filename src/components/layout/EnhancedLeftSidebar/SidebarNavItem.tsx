@@ -39,6 +39,12 @@ export interface SidebarNavItemProps {
   children?: ReactNode;
   /** Focus props from useKeyboardNavigation */
   focusProps?: FocusProps;
+  ariaExpanded?: boolean;
+  ariaControls?: string;
+  ariaCurrent?: 'page' | 'step' | 'location' | 'date' | 'time' | boolean;
+  ariaSelected?: boolean;
+  ariaLevel?: number;
+  buttonRole?: React.AriaRole;
 }
 
 const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
@@ -60,6 +66,12 @@ const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
     className,
     title,
     focusProps,
+    ariaExpanded,
+    ariaControls,
+    ariaCurrent,
+    ariaSelected,
+    ariaLevel,
+    buttonRole,
     children,
   }, ref) => {
     const handleExpandClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -70,12 +82,12 @@ const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
     };
 
     return (
-      <NavItemContainer depth={depth}>
+      <NavItemContainer $depth={depth}>
         <NavItemButton
           id={id}
-          active={active}
+          $active={active}
           $color={color}
-          depth={depth}
+          $depth={depth}
           onClick={(e) => {
             handleExpandClick(e);
             onClick?.(e);
@@ -85,6 +97,12 @@ const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
           className={className}
           title={title || label}
           ref={ref}
+          role={buttonRole}
+          aria-expanded={expandable ? ariaExpanded : undefined}
+          aria-controls={ariaControls}
+          aria-current={ariaCurrent}
+          aria-selected={ariaSelected}
+          aria-level={ariaLevel}
           {...focusProps}
         >
           {Icon && <Icon size={18} />}
@@ -95,7 +113,7 @@ const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
           )}
 
           {expandable && (
-            <NavItemCaret expanded={expanded}>
+            <NavItemCaret $expanded={expanded}>
               <svg
                 viewBox="0 0 24 24"
                 fill="none"

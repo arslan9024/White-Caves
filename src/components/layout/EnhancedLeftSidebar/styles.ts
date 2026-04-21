@@ -127,14 +127,14 @@ export const SidebarNav = styled.nav`
   gap: 0;
 `;
 
-export const NavItemContainer = styled.div<{ depth?: number }>`
-  padding-left: ${props => `${(props.depth || 0) * 16 + 8}px`};
+export const NavItemContainer = styled.div<{ $depth?: number }>`
+  padding-left: ${props => `${(props.$depth || 0) * 16 + 8}px`};
 `;
 
 export const NavItemButton = styled.button<{
-  active?: boolean;
+  $active?: boolean;
   $color?: string;
-  depth?: number;
+  $depth?: number;
 }>`
   display: flex;
   align-items: center;
@@ -144,10 +144,10 @@ export const NavItemButton = styled.button<{
   margin: 0 8px;
   border: none;
   border-radius: 4px;
-  background: ${props => (props.active ? colors.primaryVeryLight : 'transparent')};
-  color: ${props => (props.active ? colors.text.primary : colors.text.secondary)};
+  background: ${props => (props.$active ? colors.primaryVeryLight : 'transparent')};
+  color: ${props => (props.$active ? colors.text.primary : colors.text.secondary)};
   font-size: 13px;
-  font-weight: ${props => (props.active ? 500 : 400)};
+  font-weight: ${props => (props.$active ? 500 : 400)};
   cursor: pointer;
   transition: all 0.15s ease;
   position: relative;
@@ -170,7 +170,7 @@ export const NavItemButton = styled.button<{
 
   /* Left accent bar for active items */
   ${props =>
-    props.active &&
+    props.$active &&
     `
     border-left: 3px solid ${props.$color || colors.primary};
     padding-left: calc(8px - 3px);
@@ -209,7 +209,7 @@ export const NavItemBadge = styled.span<{ $color?: string }>`
   margin-left: auto;
 `;
 
-export const NavItemCaret = styled.div<{ expanded?: boolean }>`
+export const NavItemCaret = styled.div<{ $expanded?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -217,7 +217,7 @@ export const NavItemCaret = styled.div<{ expanded?: boolean }>`
   height: 16px;
   flex-shrink: 0;
   transition: transform 0.2s ease;
-  ${props => props.expanded && 'transform: rotate(90deg);'}
+  ${props => props.$expanded && 'transform: rotate(90deg);'}
 
   svg {
     width: 14px;
@@ -237,11 +237,11 @@ export const TreeNodeHeader = styled(NavItemButton)`
   margin-right: 0;
 `;
 
-export const TreeNodeChildren = styled.div<{ expanded?: boolean }>`
-  display: ${props => (props.expanded ? 'flex' : 'none')};
+export const TreeNodeChildren = styled.div<{ $expanded?: boolean }>`
+  display: ${props => (props.$expanded ? 'flex' : 'none')};
   flex-direction: column;
   gap: 0;
-  max-height: ${props => (props.expanded ? '1000px' : '0')};
+  max-height: ${props => (props.$expanded ? '1000px' : '0')};
   transition: max-height 0.2s ease;
 `;
 

@@ -56,7 +56,9 @@ export function useKeyboardNavigation({
       const el = itemRefs.current.get(focusIdx);
       if (el) {
         el.focus();
-        el.scrollIntoView({ block: 'nearest' });
+        if (typeof el.scrollIntoView === 'function') {
+          el.scrollIntoView({ block: 'nearest' });
+        }
       }
     }
   }, [focusIdx, isFocused]);

@@ -78,9 +78,14 @@ const SidebarTree: React.FC<SidebarTreeProps> = ({
             onExpand={(shouldExpand) => onToggleDept(dept.id, shouldExpand)}
             onKeyDown={onItemKeyDown}
             focusProps={getFocusProps?.(`dept-${dept.id}`)}
+            buttonRole="treeitem"
+            ariaLevel={1}
+            ariaExpanded={isExpanded}
+            ariaSelected={isActive}
+            ariaControls={`dept-group-${dept.id}`}
           />
 
-          <TreeNodeChildren expanded={isExpanded}>
+          <TreeNodeChildren $expanded={isExpanded} id={`dept-group-${dept.id}`} role="group">
             {dept.services.map((service) => {
               const isActiveSvc =
                 selectedDept === dept.id && selectedService === service.id;
@@ -95,6 +100,9 @@ const SidebarTree: React.FC<SidebarTreeProps> = ({
                   depth={1}
                   onKeyDown={onItemKeyDown}
                   focusProps={getFocusProps?.(`service-${dept.id}-${service.id}`)}
+                  buttonRole="treeitem"
+                  ariaLevel={2}
+                  ariaSelected={isActiveSvc}
                   onClick={() => {
                     onServiceClick?.(dept.id, service.id);
                     service.onClick?.();
@@ -108,7 +116,7 @@ const SidebarTree: React.FC<SidebarTreeProps> = ({
     });
   }, [departments, expandedDepts, selectedDept, selectedService, onDeptClick, onServiceClick, onToggleDept, getFocusProps, onItemKeyDown]);
 
-  return <>{deptNodes}</>;
+  return <div role="tree" aria-label="Company departments tree">{deptNodes}</div>;
 };
 
 export default SidebarTree;
