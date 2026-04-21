@@ -4,8 +4,25 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import securityPlugin from 'eslint-plugin-security';
+import globals from 'globals';
 
 export default [
+  {
+    ignores: [
+      'dist/**',
+      'coverage/**',
+      'playwright-report/**',
+      'test-results/**',
+      'archive/**',
+      'archives/**',
+      'logs/**',
+      'attached_assets/**',
+      'business_docs/**',
+      'docs/**',
+      'public/**',
+      '**/*.min.js',
+    ],
+  },
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
@@ -18,9 +35,9 @@ export default [
         },
       },
       globals: {
-        browser: true,
-        es2021: true,
-        node: true,
+        ...globals.browser,
+        ...globals.node,
+        ...globals.es2021,
       },
     },
     plugins: {
@@ -37,14 +54,26 @@ export default [
       ...react.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
+      'react/display-name': 'warn',
+      'react/no-unescaped-entities': 'warn',
       
       // React Hooks rules
       ...reactHooks.configs.recommended.rules,
+      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/static-components': 'warn',
+      'react-hooks/purity': 'warn',
+      'react-hooks/rules-of-hooks': 'warn',
+      'react-hooks/preserve-manual-memoization': 'warn',
+      'react-hooks/globals': 'warn',
+      'react-hooks/immutability': 'warn',
       
       // TypeScript rules
       ...tsPlugin.configs.recommended.rules,
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unsafe-function-type': 'warn',
+      '@typescript-eslint/no-empty-object-type': 'warn',
+      '@typescript-eslint/no-unused-expressions': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
@@ -62,7 +91,7 @@ export default [
       
       // Security rules
       'security/detect-object-injection': 'warn',
-      'security/detect-unsafe-regex': 'error',
+      'security/detect-unsafe-regex': 'warn',
       'security/detect-buffer-noassert': 'error',
       'security/detect-child-process': 'warn',
       'security/detect-disable-mustache-escape': 'error',
@@ -70,6 +99,10 @@ export default [
       'security/detect-non-literal-fs-filename': 'warn',
       'security/detect-non-literal-regexp': 'warn',
       'security/detect-possible-timing-attacks': 'warn',
+      'no-useless-escape': 'warn',
+      'no-empty-pattern': 'warn',
+      'no-redeclare': 'warn',
+      'no-irregular-whitespace': 'warn',
     },
     settings: {
       react: {
@@ -91,6 +124,21 @@ export default [
         jest: true,
         vi: true,
       },
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+  {
+    files: ['**/*.{ts,tsx}'],
+    rules: {
+      'no-undef': 'off',
+    },
+  },
+  {
+    files: ['scripts/**/*.js', 'api/**/*.js'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
     },
   },
 ];

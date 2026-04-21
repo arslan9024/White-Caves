@@ -52,7 +52,7 @@ const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
     if (tabs.length > 0 && activeTab >= tabs.length) {
       setActiveTab(0);
     }
-  }, [tabs.length]); // eslint-disable-line react-hooks/exhaustive-deps — only react to tabs length changes
+  }, [tabs.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (isOpen) {
