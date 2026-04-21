@@ -1,27 +1,42 @@
 /**
  * AppLayout — Unified CRM Dashboard Layout
  *
- * Structure:
+ * Structure (Responsive):
+ *   Desktop (1024px+):
  *   ┌──────────────── TopBar (56px fixed) ─────────────────┐
  *   │ [WC Logo] | Breadcrumbs ──── [⌘K] [🔔] [👤 User ▾] │
- *   ├──────┬───────────────────────────────────────────────┤
- *   │ Rail │              Main Content                     │
- *   │ 64px │                                               │
- *   │      │  (full width — no right panel)                │
- *   └──────┴───────────────────────────────────────────────┘
+ *   ├─────────┬────────────────────────────────────────────┤
+ *   │ 280px   │              Main Content                  │
+ *   │Sidebar  │         (responsive, full width)           │
+ *   └─────────┴────────────────────────────────────────────┘
+ *
+ *   Tablet (768-1023px):
+ *   ┌──────────────── TopBar (56px) ─────────────────┐
+ *   ├────┬──────────────────────────────────────────┤
+ *   │64px│              Main Content                │
+ *   │Rail│         (responsive, full width)         │
+ *   └────┴──────────────────────────────────────────┘
+ *
+ *   Mobile (<768px):
+ *   ┌──────────────── TopBar (56px) ────────────────┐
+ *   │                Main Content                   │
+ *         + 56px bottom mobile nav (MobileBottomNav)
  *
  * - TopBar: unified breadcrumb nav, Cmd+K search, notifications, user menu
- * - SidebarContainer: 64px icon rail + 240px flyout for BOTH departments & AI assistants
+ * - Desktop: EnhancedLeftSidebar (280px, departments + AI inline)
+ * - Tablet: SidebarContainer (64px rail + 240px flyout)
+ * - Mobile: Hidden sidebar, content full width, bottom nav
  * - CommandPalette: global search overlay (Cmd+K)
- * - AI Command Center: integrated into left sidebar flyout (no separate right panel)
  */
 
 import React, { useEffect, ReactNode, lazy, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setActiveRole } from '../../store/navigationSlice';
+import { useResponsiveLayout } from '../../hooks/navigation/useResponsiveLayout';
 import { TopBar } from './TopBar';
 import SidebarContainer from './SidebarContainer';
+import EnhancedLeftSidebar from './EnhancedLeftSidebar/EnhancedLeftSidebar';
 import CommandPalette from '../common/CommandPalette';
 import { AppLayoutContainer, AppBody, AppMain } from './AppLayout/styles';
 
@@ -36,6 +51,8 @@ interface AppLayoutProps {
   children: ReactNode;
   /** Show sidebar navigation (default: true) */
   showNav?: boolean;
+  /** Is current user a super user (admin) */
+  isSuperUser?: boolean;
   /** Optional props forwarded to SidebarContainer */
   navProps?: Record<string, unknown>;
 }
@@ -48,9 +65,11 @@ const ROLE_PATHS: string[] = [
 const AppLayout: React.FC<AppLayoutProps> = ({
   children,
   showNav = true,
+  isSuperUser = false,
 }) => {
   const location = useLocation();
   const dispatch = useDispatch();
+  const { isDesktop, isTablet, isMobile } = useResponsiveLayout();
 
   // Detect role from URL and sync to Redux
   useEffect(() => {
@@ -74,12 +93,17 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       {/* ─── Command Palette Overlay (Cmd+K / Ctrl+K) ─────────────── */}
       <CommandPalette />
 
-      {/* ─── Body: Rail + Content (full width, no right panel) ─────── */}
+      {/* ─── Body: Responsive Navigation + Content ────────────────── */}
       <AppBody>
-        {/* Left icon rail (64px) + unified flyout (departments & AI) */}
-        {showNav && <SidebarContainer />}
+        {/* Desktop (1024px+): 280px Unified Sidebar */}
+        {showNav && isDesktop && <EnhancedLeftSidebar isSuperUser={isSuperUser} />}
 
-        {/* Main content area — full width */}
+        {/* Tablet (768-1023px): 64px Rail + 240px Flyout */}
+        {showNav && isTablet && <SidebarContainer />}
+
+        {/* Mobile (<768px): Hidden, content full width + bottom nav */}
+
+        {/* Main content area — responsive width based on sidebar */}
         <AppMain $withNav={showNav} id="main-content" tabIndex={-1}>
           <Suspense fallback={null}>
             <BiometricReminder />

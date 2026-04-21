@@ -4,11 +4,11 @@ import { theme } from '../../../styles/theme';
 const { colors, mediaQueries, transitions } = theme;
 
 /**
- * Unified CRM Layout: TopBar (56px) + SidebarRail (64px) + Content
+ * Unified CRM Layout: TopBar (56px) + Navigation + Content
  *
- * Desktop:  [64px Rail] [--- Content (full width) ---]
- * Tablet:   [--- Full width ---] (no sidebar)
- * Mobile:   [--- Full width ---] + 56px bottom nav
+ * Desktop (1024px+):  [280px Sidebar] [--- Content (full width) ---]
+ * Tablet (768-1023px): [64px Rail] [--- Content (full width) ---]
+ * Mobile (<768px):     [--- Full width ---] + 56px bottom nav
  */
 
 export const AppLayoutContainer = styled.div`
@@ -35,17 +35,20 @@ export const AppMain = styled.main<{ $withNav?: boolean }>`
   overflow-y: auto;
   transition: margin-left ${transitions.durations.shorter} ${transitions.easing.easeInOut};
 
-  /* When sidebar rail is shown (desktop), offset content */
+  /* When sidebar rail is shown (tablet: 768-1024px), offset content */
   ${props => props.$withNav && `
-    margin-left: 64px;
-
-    ${mediaQueries.tablet} {
-      margin-left: 0;
+    @media (max-width: 1023px) {
+      margin-left: 64px;
     }
   `}
 
-  /* Add bottom padding for MobileBottomNav on tablet/mobile */
-  ${mediaQueries.tablet} {
+  /* Desktop (1024px+): sidebar is 280px, handled by EnhancedLeftSidebar itself */
+  @media (min-width: 1024px) {
+    margin-left: 0;
+  }
+
+  /* Add bottom padding for MobileBottomNav on mobile/tablet */
+  @media (max-width: 1023px) {
     padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
   }
 
