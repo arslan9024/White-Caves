@@ -1515,6 +1515,79 @@ export const fetchOfferSpreadAPI = createAsyncThunk<
 );
 
 // ============================================================================
+// WHATSAPP ASSISTANT THUNKS (Phase 4D)
+// ============================================================================
+
+/** Classify WhatsApp intent — POST /api/nadia/assistant/classify */
+export const classifyWhatsAppIntentAPI = createAsyncThunk<
+  Record<string, unknown>,
+  { message: string },
+  { rejectValue: string }
+>(
+  'crmData/classifyWhatsAppIntent',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const res = await authFetch('/api/nadia/assistant/classify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to classify WhatsApp intent');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to classify WhatsApp intent'));
+    }
+  }
+);
+
+/** Generate auto-response preview — POST /api/nadia/assistant/auto-response */
+export const generateWhatsAppAutoResponseAPI = createAsyncThunk<
+  Record<string, unknown>,
+  { message: string; customerName?: string },
+  { rejectValue: string }
+>(
+  'crmData/generateWhatsAppAutoResponse',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const res = await authFetch('/api/nadia/assistant/auto-response', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to generate WhatsApp auto-response');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to generate WhatsApp auto-response'));
+    }
+  }
+);
+
+/** Process + persist auto-response in conversation — POST /api/nadia/assistant/respond */
+export const sendWhatsAppAutoResponseAPI = createAsyncThunk<
+  Record<string, unknown>,
+  { conversationId: string; message: string; customerName?: string },
+  { rejectValue: string }
+>(
+  'crmData/sendWhatsAppAutoResponse',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const res = await authFetch('/api/nadia/assistant/respond', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (!res.ok) return rejectWithValue(json.error || 'Failed to send WhatsApp auto-response');
+      return json.data;
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, 'Failed to send WhatsApp auto-response'));
+    }
+  }
+);
+
+// ============================================================================
 // REPORTING & ANALYTICS THUNKS
 // ============================================================================
 

@@ -149,7 +149,7 @@ Transform White Caves from a 96%-complete internal tool into Dubai's #1 real est
 - [ ] 4A. Lead Scoring Bot (3d) — real-time scoring via Prisma middleware
 - [ ] 4B. Document Generator Bot (4d) — auto-fill from DB, smart clause selection
 - [ ] 4C. Market Analyst Bot (4d) — price/sqft trends, yield calc, comparables, demand heatmap
-- [ ] 4D. WhatsApp Assistant (3d) — intent classification, auto-responses
+- [x] 4D. WhatsApp Assistant (3d) — intent classification, auto-responses
 
 ---
 
