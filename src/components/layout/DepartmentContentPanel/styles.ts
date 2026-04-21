@@ -92,10 +92,15 @@ export const HeaderContent = styled.div`
 export const ContentBreadcrumbs = styled.nav`
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: ${spacing.xs};
   margin-bottom: ${spacing.sm};
   opacity: 0.9;
   font-size: 12px;
+
+  ${mediaQueries.tablet} {
+    font-size: 11px;
+  }
 `;
 
 export const BreadcrumbItem = styled.span<{ $isCurrent?: boolean }>`
@@ -513,13 +518,21 @@ export const ServiceCardAction = styled.button`
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  padding: 0;
+  min-height: 44px;
+  padding: ${spacing.xs} 0;
   margin-top: ${spacing.xs};
   transition: ${transitions.active};
   text-align: left;
+  outline: none;
 
   &:hover {
     transform: translateX(4px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${colors.primary};
+    outline-offset: 2px;
+    border-radius: ${radius.sm};
   }
 
   ${reducedMotion} {
@@ -561,6 +574,7 @@ export const ActionButton = styled.button`
   justify-content: center;
   gap: ${spacing.sm};
   padding: ${radius.xl} ${spacing.md};
+  min-height: 44px;
   background: ${colors.background.tertiary};
   border: 1px solid ${colors.border};
   border-radius: ${radius.lg};

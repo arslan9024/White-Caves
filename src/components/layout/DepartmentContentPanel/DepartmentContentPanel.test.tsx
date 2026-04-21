@@ -136,7 +136,10 @@ vi.mock('lucide-react', () => ({
 vi.mock('./styles', () => {
   const createStyledMock = (tag: string, testId: string) => {
     const Component = React.forwardRef(({ children, ...props }: Record<string, unknown>, ref) => {
-      return React.createElement(tag, { 'data-testid': testId, ref, ...props }, children as React.ReactNode);
+      const sanitizedProps = Object.fromEntries(
+        Object.entries(props).filter(([key]) => key !== 'as' && !key.startsWith('$')),
+      );
+      return React.createElement(tag, { 'data-testid': testId, ref, ...sanitizedProps }, children as React.ReactNode);
     });
     Component.displayName = testId;
     return Component;
@@ -247,6 +250,8 @@ describe('DepartmentContentPanel', () => {
       expect(screen.getByTestId('content-breadcrumbs')).toBeInTheDocument();
       expect(screen.getAllByText('Operations').length).toBeGreaterThan(0);
       expect(screen.getByText('Overview')).toBeInTheDocument();
+      const breadcrumbItems = screen.getAllByTestId('breadcrumb-item');
+      expect(breadcrumbItems[1]).toHaveAttribute('aria-current', 'page');
     });
 
     it('renders "Department Overview" section heading', () => {
@@ -340,6 +345,7 @@ describe('DepartmentContentPanel', () => {
       cards.forEach((card) => {
         expect(card.getAttribute('role')).toBe('button');
         expect(card.getAttribute('tabindex')).toBe('0');
+        expect(card.getAttribute('aria-label')).toMatch(/^Open .* service$/);
       });
     });
 
@@ -353,8 +359,19 @@ describe('DepartmentContentPanel', () => {
     it('activates service on Space key press', () => {
       render(<DepartmentContentPanel />);
       const card = screen.getByText('Properties').closest('[data-testid="service-card"]');
-      fireEvent.keyDown(card!, { key: ' ' });
+      const didBubbleWithoutCancel = fireEvent.keyDown(card!, { key: ' ', code: 'Space', charCode: 32 });
+      expect(didBubbleWithoutCancel).toBe(false);
       expect(mockDispatch).toHaveBeenCalled();
+    });
+
+    it('connects service card description for screen readers', () => {
+      render(<DepartmentContentPanel />);
+      const card = screen.getByText('Inventory Management').closest('[data-testid="service-card"]');
+      expect(card).toHaveAttribute('aria-describedby', 'service-desc-inventory-management');
+      expect(screen.getByText('Manage All Property Inventory')).toHaveAttribute(
+        'id',
+        'service-desc-inventory-management',
+      );
     });
 
     it('does NOT dispatch on other key presses', () => {

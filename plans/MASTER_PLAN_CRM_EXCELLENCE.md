@@ -158,7 +158,7 @@ Transform White Caves from a 96%-complete internal tool into Dubai's #1 real est
 - [x] 5A. Unified Left Sidebar (3d) — Desktop 280px sidebar, AI inline, keyboard navigation
 - [x] 5B. Top Navbar Enhancement (2d) — notifications, global search, quick actions
 - [x] 5C. Dynamic Center Content (3d) — loading skeletons, breadcrumbs, empty states
-- [ ] 5D. Responsive & Accessibility (4d) — WCAG AA, 768px tablet, keyboard nav
+- [x] 5D. Responsive & Accessibility (4d) — WCAG AA, 768px tablet, keyboard nav
 
 ---
 

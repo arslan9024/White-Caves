@@ -94,8 +94,8 @@ const DepartmentContentPanel: React.FC = () => {
 
   if (!deptContent) {
     return (
-      <S.DepartmentPanel className="empty">
-        <S.EmptyState>
+      <S.DepartmentPanel className="empty" role="region" aria-label="Department content panel empty state">
+        <S.EmptyState role="status" aria-live="polite">
           <S.EmptyStateIcon as={Briefcase} size={64} />
           <S.EmptyStateHeading>Select a Department</S.EmptyStateHeading>
           <S.EmptyStateText>Choose a department from the left sidebar to view content and manage operations</S.EmptyStateText>
@@ -106,8 +106,8 @@ const DepartmentContentPanel: React.FC = () => {
 
     if (serviceNotFound) {
       return (
-        <S.DepartmentPanel className="empty">
-          <S.EmptyState>
+        <S.DepartmentPanel className="empty" role="region" aria-label="Department service unavailable state">
+          <S.EmptyState role="status" aria-live="polite">
             <S.EmptyStateIcon as={Briefcase} size={56} />
             <S.EmptyStateHeading>Service Not Found</S.EmptyStateHeading>
             <S.EmptyStateText>
@@ -119,16 +119,17 @@ const DepartmentContentPanel: React.FC = () => {
     }
 
   return (
-    <S.DepartmentPanel>
+    <S.DepartmentPanel role="region" aria-label={`${deptContent.name} department content`}>
       {/* Header */}
       <S.ContentHeader 
+        as="header"
         style={{ background: deptContent.bgGradient }}
       >
         <S.HeaderContent>
             <S.ContentBreadcrumbs aria-label="Center content breadcrumb">
               <S.BreadcrumbItem>{deptContent.name}</S.BreadcrumbItem>
               <S.BreadcrumbSeparator aria-hidden="true">/</S.BreadcrumbSeparator>
-              <S.BreadcrumbItem $isCurrent={true}>{selectedService || 'Overview'}</S.BreadcrumbItem>
+              <S.BreadcrumbItem $isCurrent={true} aria-current="page">{selectedService || 'Overview'}</S.BreadcrumbItem>
             </S.ContentBreadcrumbs>
           <S.HeaderTitle>{deptContent.name}</S.HeaderTitle>
           <S.HeaderDescription>{deptContent.description}</S.HeaderDescription>
@@ -251,15 +252,21 @@ const DepartmentContentPanel: React.FC = () => {
                     onClick={() => handleServiceCardClick(name)}
                     role="button"
                     tabIndex={0}
+                    aria-label={`Open ${name} service`}
+                    aria-describedby={`service-desc-${name.replace(/\s+/g, '-').toLowerCase()}`}
                     onKeyDown={(e: React.KeyboardEvent) => {
                       if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
                         handleServiceCardClick(name);
                       }
                     }}
                   >
                     <S.ServiceCardTitle>{name}</S.ServiceCardTitle>
-                    <S.ServiceCardDescription>{service.description}</S.ServiceCardDescription>
+                    <S.ServiceCardDescription id={`service-desc-${name.replace(/\s+/g, '-').toLowerCase()}`}>
+                      {service.description}
+                    </S.ServiceCardDescription>
                     <S.ServiceCardAction 
+                      aria-label={`View ${name} service`}
                       onClick={(e: React.MouseEvent) => {
                         e.stopPropagation();
                         handleServiceCardClick(name);
