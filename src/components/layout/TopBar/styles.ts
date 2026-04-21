@@ -246,6 +246,49 @@ export const SearchShortcut = styled.kbd`
   }
 `;
 
+export const QuickActionButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 10px;
+  background: ${colors.primaryVeryLight};
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 8px;
+  color: ${colors.primaryDark};
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #F8EFCB;
+    border-color: rgba(212, 175, 55, 0.55);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+  }
+
+  @media (max-width: 768px) {
+    span { display: none; }
+    width: 36px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: rgba(212, 175, 55, 0.35);
+    color: ${colors.primaryLight};
+
+    &:hover {
+      background: rgba(212, 175, 55, 0.22);
+    }
+  }
+`;
+
 /* ── Icon button (notifications, user, etc.) ───────────────── */
 
 export const IconButton = styled.button<{ $hasNotif?: boolean }>`

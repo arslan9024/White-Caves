@@ -60,6 +60,9 @@ vi.mock('./styles', () => ({
   SearchShortcut: ({ children, ...props }: Record<string, unknown>) => (
     <kbd data-testid="search-shortcut" {...props}>{children as React.ReactNode}</kbd>
   ),
+  QuickActionButton: ({ children, ...props }: Record<string, unknown>) => (
+    <button {...props}>{children as React.ReactNode}</button>
+  ),
   IconButton: ({ children, ...props }: Record<string, unknown>) => (
     <button data-testid="icon-button" {...props}>{children as React.ReactNode}</button>
   ),
@@ -113,6 +116,7 @@ vi.mock('lucide-react', () => ({
   LogOut: () => <svg data-testid="icon-logout" />,
   Shield: () => <svg data-testid="icon-shield" />,
   Menu: () => <svg data-testid="icon-menu" />,
+  Plus: () => <svg data-testid="icon-plus" />,
 }));
 
 import TopBar from './TopBar';
@@ -223,6 +227,12 @@ describe('TopBar', () => {
       expect(screen.getByTestId('actions-section')).toBeInTheDocument();
     });
 
+    it('renders quick actions button', () => {
+      renderTopBar();
+      expect(screen.getByTestId('quick-actions-btn')).toBeInTheDocument();
+      expect(screen.getByLabelText('Quick actions')).toBeInTheDocument();
+    });
+
     it('renders the search trigger with label', () => {
       renderTopBar();
       const trigger = screen.getByTestId('search-trigger');
@@ -323,6 +333,38 @@ describe('TopBar', () => {
     });
   });
 
+  // ── Quick Actions ───────────────────────────────────────────────────
+
+  describe('quick actions', () => {
+    it('opens quick actions dropdown', () => {
+      renderTopBar();
+      fireEvent.click(screen.getByTestId('quick-actions-btn'));
+      expect(screen.getByTestId('quick-actions-menu')).toBeInTheDocument();
+    });
+
+    it('navigates to /leads/new from quick actions', () => {
+      renderTopBar();
+      fireEvent.click(screen.getByTestId('quick-actions-btn'));
+      fireEvent.click(screen.getByText('Create Lead'));
+      expect(mockNavigate).toHaveBeenCalledWith('/leads/new');
+    });
+
+    it('navigates to /properties/new from quick actions', () => {
+      renderTopBar();
+      fireEvent.click(screen.getByTestId('quick-actions-btn'));
+      fireEvent.click(screen.getByText('Add Property'));
+      expect(mockNavigate).toHaveBeenCalledWith('/properties/new');
+    });
+
+    it('closes quick actions on Escape', () => {
+      renderTopBar();
+      fireEvent.click(screen.getByTestId('quick-actions-btn'));
+      expect(screen.getByTestId('quick-actions-menu')).toBeInTheDocument();
+      fireEvent.keyDown(window, { key: 'Escape' });
+      expect(screen.queryByTestId('quick-actions-menu')).not.toBeInTheDocument();
+    });
+  });
+
   // ── Notifications ───────────────────────────────────────────────────
 
   describe('notifications', () => {
@@ -395,6 +437,14 @@ describe('TopBar', () => {
       expect(screen.getByTestId('dropdown-overlay')).toBeInTheDocument();
       fireEvent.click(screen.getByTestId('dropdown-overlay'));
       expect(screen.queryByTestId('dropdown-overlay')).not.toBeInTheDocument();
+    });
+
+    it('closes notifications when quick actions are opened', () => {
+      renderTopBar({ notifications: [] });
+      fireEvent.click(screen.getByLabelText('Notifications'));
+      expect(screen.getByText('No new notifications')).toBeInTheDocument();
+      fireEvent.click(screen.getByTestId('quick-actions-btn'));
+      expect(screen.queryByText('No new notifications')).not.toBeInTheDocument();
     });
   });
 

@@ -14,7 +14,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Search, Bell, ChevronDown, User, Settings, LogOut, Shield, Menu } from 'lucide-react';
+import { Search, Bell, ChevronDown, User, Settings, LogOut, Shield, Menu, Plus } from 'lucide-react';
 import type { RootState } from '../../../store/store';
 import {
   selectSelectedDepartment,
@@ -35,6 +35,7 @@ import {
   SearchShortcut,
   IconButton,
   NotifBadge,
+  QuickActionButton,
   UserButton,
   UserAvatar,
   UserName,
@@ -131,8 +132,10 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
   // Dropdown state
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifMenu, setShowNotifMenu] = useState(false);
+  const [showQuickActions, setShowQuickActions] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const notifMenuRef = useRef<HTMLDivElement>(null);
+  const quickActionsRef = useRef<HTMLDivElement>(null);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -143,10 +146,38 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
         e.preventDefault();
         dispatch(toggleCommandPalette());
       }
+
+      if (e.key === 'Escape') {
+        setShowUserMenu(false);
+        setShowNotifMenu(false);
+        setShowQuickActions(false);
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [dispatch]);
+
+  // Click outside to close open dropdowns
+  useEffect(() => {
+    const onPointerDown = (e: MouseEvent) => {
+      const target = e.target as Node;
+
+      if (showUserMenu && userMenuRef.current && !userMenuRef.current.contains(target)) {
+        setShowUserMenu(false);
+      }
+
+      if (showNotifMenu && notifMenuRef.current && !notifMenuRef.current.contains(target)) {
+        setShowNotifMenu(false);
+      }
+
+      if (showQuickActions && quickActionsRef.current && !quickActionsRef.current.contains(target)) {
+        setShowQuickActions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', onPointerDown);
+    return () => document.removeEventListener('mousedown', onPointerDown);
+  }, [showUserMenu, showNotifMenu, showQuickActions]);
 
   const handleSearchClick = useCallback(() => {
     dispatch(toggleCommandPalette());
@@ -190,6 +221,45 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
 
       {/* Right actions */}
       <ActionsSection>
+        {/* Quick actions */}
+        <div style={{ position: 'relative' }} ref={quickActionsRef}>
+          <QuickActionButton
+            onClick={() => {
+              setShowQuickActions(p => !p);
+              setShowNotifMenu(false);
+              setShowUserMenu(false);
+            }}
+            aria-label="Quick actions"
+            data-testid="quick-actions-btn"
+          >
+            <Plus size={16} />
+            <span>Quick Actions</span>
+          </QuickActionButton>
+          {showQuickActions && (
+            <>
+              <DropdownOverlay onClick={() => setShowQuickActions(false)} />
+              <DropdownMenu $align="right" data-testid="quick-actions-menu">
+                <DropdownHeader>
+                  <DropdownHeaderName>Quick Actions</DropdownHeaderName>
+                </DropdownHeader>
+                <DropdownDivider />
+                <DropdownItem onClick={() => { navigate('/leads/new'); setShowQuickActions(false); }}>
+                  Create Lead
+                </DropdownItem>
+                <DropdownItem onClick={() => { navigate('/properties/new'); setShowQuickActions(false); }}>
+                  Add Property
+                </DropdownItem>
+                <DropdownItem onClick={() => { navigate('/transactions/new'); setShowQuickActions(false); }}>
+                  New Transaction
+                </DropdownItem>
+                <DropdownItem onClick={() => { dispatch(toggleCommandPalette()); setShowQuickActions(false); }}>
+                  Global Search
+                </DropdownItem>
+              </DropdownMenu>
+            </>
+          )}
+        </div>
+
         {/* Search trigger → opens Command Palette */}
         <SearchTrigger onClick={handleSearchClick} aria-label="Open search (Ctrl+K)">
           <Search size={16} />
@@ -200,7 +270,11 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
         {/* Notifications */}
         <div style={{ position: 'relative' }}>
           <IconButton
-            onClick={() => setShowNotifMenu(p => !p)}
+            onClick={() => {
+              setShowNotifMenu(p => !p);
+              setShowUserMenu(false);
+              setShowQuickActions(false);
+            }}
             aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
           >
             <Bell size={18} />
@@ -233,7 +307,14 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
 
         {/* User menu */}
         <div style={{ position: 'relative' }}>
-          <UserButton onClick={() => setShowUserMenu(p => !p)} aria-label="User menu">
+          <UserButton
+            onClick={() => {
+              setShowUserMenu(p => !p);
+              setShowNotifMenu(false);
+              setShowQuickActions(false);
+            }}
+            aria-label="User menu"
+          >
             <UserAvatar>{getInitials(user?.name || user?.email)}</UserAvatar>
             <UserName>{user?.name || user?.email || 'User'}</UserName>
             <ChevronDown size={14} style={{ color: '#9CA3AF' }} />
@@ -241,7 +322,7 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
           {showUserMenu && (
             <>
               <DropdownOverlay onClick={() => setShowUserMenu(false)} />
-              <DropdownMenu $align="right">
+              <DropdownMenu $align="right" ref={userMenuRef}>
                 <DropdownHeader>
                   <DropdownHeaderName>{user?.name || 'User'}</DropdownHeaderName>
                   <DropdownHeaderEmail>{user?.email || ''}</DropdownHeaderEmail>
