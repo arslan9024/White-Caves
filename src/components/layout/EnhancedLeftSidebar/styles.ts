@@ -6,7 +6,9 @@
  */
 
 import styled from 'styled-components';
-import { colors } from '../../../styles/theme/colors';
+import { theme } from '../../../styles/theme';
+
+const { colors } = theme;
 
 // ─── Container ───────────────────────────────────────────────────────
 
@@ -15,15 +17,15 @@ export const SidebarContainer = styled.aside`
   flex-direction: column;
   width: 280px;
   height: 100%;
-  background: ${colors.background.sidebar};
-  border-right: 1px solid ${colors.border.light};
+  background: ${colors.background.secondary};
+  border-right: 1px solid ${colors.borderLight};
   overflow-y: auto;
   overflow-x: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
   /* Smooth scrolling */
   scrollbar-width: thin;
-  scrollbar-color: ${colors.border.default} transparent;
+  scrollbar-color: ${colors.border} transparent;
 
   &::-webkit-scrollbar {
     width: 8px;
@@ -34,11 +36,11 @@ export const SidebarContainer = styled.aside`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${colors.border.default};
+    background: ${colors.border};
     border-radius: 4px;
 
     &:hover {
-      background: ${colors.border.dark};
+      background: ${colors.borderDark};
     }
   }
 
@@ -56,8 +58,8 @@ export const SidebarHeader = styled.div`
   gap: 8px;
   padding: 12px 16px;
   height: 56px;
-  border-bottom: 1px solid ${colors.border.light};
-  background: ${colors.background.sidebar};
+  border-bottom: 1px solid ${colors.borderLight};
+  background: ${colors.background.secondary};
   flex-shrink: 0;
 `;
 
@@ -94,7 +96,7 @@ export const SidebarDivider = styled.hr`
   margin: 0;
   padding: 0;
   height: 1px;
-  background: ${colors.border.light};
+  background: ${colors.borderLight};
   border: none;
 `;
 
@@ -113,7 +115,7 @@ export const SidebarSectionTitle = styled.div`
   user-select: none;
 
   &:hover {
-    background: ${colors.background.hover};
+    background: ${colors.hover};
   }
 `;
 
@@ -142,7 +144,7 @@ export const NavItemButton = styled.button<{
   margin: 0 8px;
   border: none;
   border-radius: 4px;
-  background: ${props => (props.active ? colors.background.active : 'transparent')};
+  background: ${props => (props.active ? colors.primaryVeryLight : 'transparent')};
   color: ${props => (props.active ? colors.text.primary : colors.text.secondary)};
   font-size: 13px;
   font-weight: ${props => (props.active ? 500 : 400)};
@@ -151,13 +153,13 @@ export const NavItemButton = styled.button<{
   position: relative;
 
   &:hover:not(:disabled) {
-    background: ${colors.background.hover};
+    background: ${colors.hover};
     color: ${colors.text.primary};
   }
 
   &:focus {
     outline: none;
-    background: ${colors.background.hover};
+    background: ${colors.hover};
     box-shadow: inset 0 0 0 2px ${colors.primary};
   }
 
@@ -254,9 +256,9 @@ export const AISearchContainer = styled.div`
 export const AISearchInput = styled.input`
   width: 100%;
   padding: 6px 8px;
-  border: 1px solid ${colors.border.light};
+  border: 1px solid ${colors.borderLight};
   border-radius: 4px;
-  background: ${colors.background.input};
+  background: ${colors.background.secondary};
   color: ${colors.text.primary};
   font-size: 12px;
   transition: all 0.15s ease;
@@ -281,14 +283,14 @@ export const AIAssistantItem = styled.button<{ $selected?: boolean }>`
   margin: 0 8px;
   border: none;
   border-radius: 4px;
-  background: ${props => (props.$selected ? colors.background.active : 'transparent')};
+  background: ${props => (props.$selected ? colors.primaryVeryLight : 'transparent')};
   color: ${colors.text.primary};
   font-size: 12px;
   cursor: pointer;
   transition: all 0.15s ease;
 
   &:hover {
-    background: ${colors.background.hover};
+    background: ${colors.hover};
   }
 
   &:focus {
@@ -348,8 +350,8 @@ export const SidebarFooter = styled.div`
   flex-direction: column;
   gap: 0;
   padding: 8px 0;
-  border-top: 1px solid ${colors.border.light};
-  background: ${colors.background.sidebar};
+  border-top: 1px solid ${colors.borderLight};
+  background: ${colors.background.secondary};
   flex-shrink: 0;
 `;
 

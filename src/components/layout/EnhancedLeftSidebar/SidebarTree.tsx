@@ -10,10 +10,11 @@
  * Collapse state persisted to localStorage
  */
 
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import type { LucideIcon } from 'lucide-react';
+import type { FocusProps } from '../../../hooks/navigation/useKeyboardNavigation';
 import SidebarNavItem from './SidebarNavItem';
-import { TreeNode, TreeNodeHeader, TreeNodeChildren } from './styles';
+import { TreeNode, TreeNodeChildren } from './styles';
 
 export interface DepartmentTreeNode {
   id: string;
@@ -38,10 +39,11 @@ interface SidebarTreeProps {
   selectedService?: string;
   onDeptClick?: (deptId: string) => void;
   onServiceClick?: (deptId: string, serviceId: string) => void;
-  storageKey?: string;
+  expandedDepts: Record<string, boolean>;
+  onToggleDept: (deptId: string, shouldExpand?: boolean) => void;
+  getFocusProps?: (itemId: string) => FocusProps | undefined;
+  onItemKeyDown?: (e: React.KeyboardEvent<HTMLButtonElement>) => void;
 }
-
-const STORAGE_KEY_PREFIX = 'wc-sidebar-expand-';
 
 const SidebarTree: React.FC<SidebarTreeProps> = ({
   departments,
@@ -49,39 +51,11 @@ const SidebarTree: React.FC<SidebarTreeProps> = ({
   selectedService,
   onDeptClick,
   onServiceClick,
-  storageKey = '__default__',
+  expandedDepts,
+  onToggleDept,
+  getFocusProps,
+  onItemKeyDown,
 }) => {
-  // Load initial expand state from localStorage
-  const [expandedDepts, setExpandedDepts] = useState<Record<string, boolean>>(() => {
-    try {
-      const key = `${STORAGE_KEY_PREFIX}${storageKey}`;
-      const saved = localStorage.getItem(key);
-      if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.warn('Failed to load sidebar expand state', e);
-    }
-    // Default: all expanded
-    return departments.reduce((acc, dept) => ({ ...acc, [dept.id]: true }), {});
-  });
-
-  // Persist expand state to localStorage
-  const saveExpandState = useCallback((state: Record<string, boolean>) => {
-    try {
-      const key = `${STORAGE_KEY_PREFIX}${storageKey}`;
-      localStorage.setItem(key, JSON.stringify(state));
-    } catch (e) {
-      console.warn('Failed to save sidebar expand state', e);
-    }
-  }, [storageKey]);
-
-  const toggleDeptExpand = useCallback((deptId: string) => {
-    setExpandedDepts(prev => {
-      const next = { ...prev, [deptId]: !prev[deptId] };
-      saveExpandState(next);
-      return next;
-    });
-  }, [saveExpandState]);
-
   // Memoize tree render to avoid unnecessary re-renders
   const deptNodes = useMemo(() => {
     return departments.map(dept => {
@@ -101,11 +75,13 @@ const SidebarTree: React.FC<SidebarTreeProps> = ({
             expandable={true}
             expanded={isExpanded}
             onClick={() => onDeptClick?.(dept.id)}
-            onExpand={() => toggleDeptExpand(dept.id)}
+            onExpand={(shouldExpand) => onToggleDept(dept.id, shouldExpand)}
+            onKeyDown={onItemKeyDown}
+            focusProps={getFocusProps?.(`dept-${dept.id}`)}
           />
 
           <TreeNodeChildren expanded={isExpanded}>
-            {dept.services.map((service, idx) => {
+            {dept.services.map((service) => {
               const isActiveSvc =
                 selectedDept === dept.id && selectedService === service.id;
 
@@ -117,6 +93,8 @@ const SidebarTree: React.FC<SidebarTreeProps> = ({
                   active={isActiveSvc}
                   color={dept.color}
                   depth={1}
+                  onKeyDown={onItemKeyDown}
+                  focusProps={getFocusProps?.(`service-${dept.id}-${service.id}`)}
                   onClick={() => {
                     onServiceClick?.(dept.id, service.id);
                     service.onClick?.();
@@ -128,7 +106,7 @@ const SidebarTree: React.FC<SidebarTreeProps> = ({
         </TreeNode>
       );
     });
-  }, [departments, expandedDepts, selectedDept, selectedService, onDeptClick, onServiceClick, toggleDeptExpand]);
+  }, [departments, expandedDepts, selectedDept, selectedService, onDeptClick, onServiceClick, onToggleDept, getFocusProps, onItemKeyDown]);
 
   return <>{deptNodes}</>;
 };

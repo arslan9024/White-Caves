@@ -27,10 +27,8 @@ import {
   Lock,
   Code,
   Scale,
-  Bot,
   Shield,
   Settings,
-  Search,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -43,7 +41,8 @@ import {
 } from '../../../store/slices/sidebarSlice';
 import { getAllAssistants, DEPARTMENTS as REGISTRY_DEPARTMENTS } from '../../../config/assistantRegistry';
 import type { Assistant, DepartmentId } from '../../../config/assistantRegistry';
-import { selectHotLeads, selectAllProperties, selectQueuedCount } from '../../../store/crmDataSlice';
+import { selectHotLeads, selectAllProperties } from '../../../store/crmDataSlice';
+import { selectQueuedCount } from '../../../store/slices/nadiaSlice';
 import { colors } from '../../../styles/theme/colors';
 import { createLogger } from '../../../utils/logger';
 import { useKeyboardNavigation, type NavigableItem } from '../../../hooks/navigation/useKeyboardNavigation';
@@ -70,6 +69,25 @@ import {
 } from './styles';
 
 const log = createLogger('EnhancedLeftSidebar');
+const EXPAND_STORAGE_KEY = 'wc-enhanced-sidebar-expanded';
+
+function readExpandedDepts(): Record<string, boolean> {
+  try {
+    const raw = localStorage.getItem(EXPAND_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (error) {
+    log.warn('Failed to read enhanced sidebar expand state', error);
+    return {};
+  }
+}
+
+function writeExpandedDepts(state: Record<string, boolean>) {
+  try {
+    localStorage.setItem(EXPAND_STORAGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    log.warn('Failed to persist enhanced sidebar expand state', error);
+  }
+}
 
 // ─── Quick Navigation Items ────────────────────────────────────────────
 
@@ -184,7 +202,8 @@ const EnhancedLeftSidebar: React.FC<EnhancedLeftSidebarProps> = ({
 
   // Local state
   const [aiSearch, setAiSearch] = useState('');
-  const sidebarRef = useRef<HTMLDivElement>(null);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const [expandedDepts, setExpandedDepts] = useState<Record<string, boolean>>(() => readExpandedDepts());
 
   // Badge counts
   const badgeCounts = useMemo(
@@ -243,6 +262,15 @@ const EnhancedLeftSidebar: React.FC<EnhancedLeftSidebarProps> = ({
     return groups;
   }, [filteredAssistants]);
 
+  const toggleDeptExpand = useCallback((deptId: string, shouldExpand?: boolean) => {
+    setExpandedDepts(prev => {
+      const nextValue = shouldExpand ?? !prev[deptId];
+      const next = { ...prev, [deptId]: nextValue };
+      writeExpandedDepts(next);
+      return next;
+    });
+  }, []);
+
   // Handlers
   const handleDeptClick = useCallback(
     (deptId: string) => {
@@ -275,17 +303,122 @@ const EnhancedLeftSidebar: React.FC<EnhancedLeftSidebarProps> = ({
     [onItemClick]
   );
 
-  // Keyboard navigation for entire sidebar (optional)
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      // Blur all focused elements
-      const focusedEl = document.activeElement as HTMLElement;
-      if (focusedEl) focusedEl.blur();
+  const navigableItems = useMemo<NavigableItem[]>(() => {
+    const items: NavigableItem[] = QUICK_NAV.map(item => ({
+      id: `quick-${item.id}`,
+      label: item.label,
+      depth: 0,
+    }));
+
+    deptTree.forEach(dept => {
+      const expanded = expandedDepts[dept.id] !== false;
+      items.push({
+        id: `dept-${dept.id}`,
+        label: dept.label,
+        depth: 0,
+        isExpandable: true,
+        isExpanded: expanded,
+      });
+
+      if (expanded) {
+        dept.services.forEach(service => {
+          items.push({
+            id: `service-${dept.id}-${service.id}`,
+            label: service.label,
+            depth: 1,
+            parent: dept.id,
+          });
+        });
+      }
+    });
+
+    filteredAssistants.forEach(assistant => {
+      items.push({
+        id: `assistant-${assistant.id}`,
+        label: assistant.name,
+        depth: 0,
+      });
+    });
+
+    if (isSuperUser) {
+      items.push({ id: 'footer-admin', label: 'Admin', depth: 0 });
     }
-  }, []);
+
+    items.push({ id: 'footer-settings', label: 'Settings', depth: 0 });
+    return items;
+  }, [deptTree, expandedDepts, filteredAssistants, isSuperUser]);
+
+  const handleNavigableSelect = useCallback((item: NavigableItem) => {
+    if (item.id.startsWith('quick-')) {
+      handleQuickNavClick(item.id.replace('quick-', ''));
+      return;
+    }
+
+    if (item.id.startsWith('dept-')) {
+      handleDeptClick(item.id.replace('dept-', ''));
+      return;
+    }
+
+    if (item.id.startsWith('service-')) {
+      const [, deptId, ...serviceParts] = item.id.split('-');
+      handleServiceClick(deptId, serviceParts.join('-'));
+      return;
+    }
+
+    if (item.id.startsWith('assistant-')) {
+      handleAssistantClick(item.id.replace('assistant-', ''));
+      return;
+    }
+
+    if (item.id === 'footer-admin') {
+      handleQuickNavClick('admin');
+      return;
+    }
+
+    if (item.id === 'footer-settings') {
+      handleQuickNavClick('settings');
+    }
+  }, [handleAssistantClick, handleDeptClick, handleQuickNavClick, handleServiceClick]);
+
+  const handleNavigableExpand = useCallback((item: NavigableItem, shouldExpand: boolean) => {
+    if (item.id.startsWith('dept-')) {
+      toggleDeptExpand(item.id.replace('dept-', ''), shouldExpand);
+    }
+  }, [toggleDeptExpand]);
+
+  const {
+    handleKeyDown: handleNavigationKeyDown,
+    getFocusProps,
+    setFocus,
+  } = useKeyboardNavigation({
+    items: navigableItems,
+    onSelect: handleNavigableSelect,
+    onExpand: handleNavigableExpand,
+    onEscape: () => {
+      const focusedEl = document.activeElement as HTMLElement | null;
+      focusedEl?.blur();
+    },
+  });
+
+  const getItemFocusProps = useCallback((itemId: string) => {
+    const index = navigableItems.findIndex(item => item.id === itemId);
+    return index >= 0 ? getFocusProps(index) : undefined;
+  }, [getFocusProps, navigableItems]);
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'j') {
+        event.preventDefault();
+        setFocus(0);
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [setFocus]);
 
   return (
-    <SidebarContainer ref={sidebarRef} onKeyDown={handleKeyDown} role="navigation" aria-label="Main navigation">
+    <SidebarContainer ref={sidebarRef} onKeyDown={handleNavigationKeyDown} role="navigation" aria-label="Main navigation">
       {/* ─── Header ────────────────────────────────────────────── */}
       <SidebarHeader>
         <SidebarLogo
@@ -308,6 +441,8 @@ const EnhancedLeftSidebar: React.FC<EnhancedLeftSidebarProps> = ({
                 icon={Icon}
                 label={item.label}
                 onClick={() => handleQuickNavClick(item.id)}
+                onKeyDown={handleNavigationKeyDown}
+                focusProps={getItemFocusProps(`quick-${item.id}`)}
                 title={item.label}
               />
             );
@@ -322,11 +457,14 @@ const EnhancedLeftSidebar: React.FC<EnhancedLeftSidebarProps> = ({
         <SidebarSectionTitle>Company</SidebarSectionTitle>
         <SidebarTree
           departments={deptTree}
-          selectedDept={selectedDept}
-          selectedService={selectedSvc}
+          selectedDept={selectedDept ?? undefined}
+          selectedService={selectedSvc ?? undefined}
           onDeptClick={handleDeptClick}
           onServiceClick={handleServiceClick}
-          storageKey="departments"
+          expandedDepts={expandedDepts}
+          onToggleDept={toggleDeptExpand}
+          onItemKeyDown={handleNavigationKeyDown}
+          getFocusProps={getItemFocusProps}
         />
       </SidebarSection>
 
@@ -364,6 +502,8 @@ const EnhancedLeftSidebar: React.FC<EnhancedLeftSidebarProps> = ({
                     key={assistant.id}
                     $selected={selectedAssistantId === assistant.id}
                     onClick={() => handleAssistantClick(assistant.id)}
+                    onKeyDown={handleNavigationKeyDown}
+                    {...(getItemFocusProps(`assistant-${assistant.id}`) ?? {})}
                     title={assistant.title}
                   >
                     <AIAssistantAvatar $color={assistant.color}>
@@ -393,6 +533,8 @@ const EnhancedLeftSidebar: React.FC<EnhancedLeftSidebarProps> = ({
             icon={Shield}
             label="Admin"
             onClick={() => handleQuickNavClick('admin')}
+            onKeyDown={handleNavigationKeyDown}
+            focusProps={getItemFocusProps('footer-admin')}
             title="Admin Dashboard"
           />
         )}
@@ -402,6 +544,8 @@ const EnhancedLeftSidebar: React.FC<EnhancedLeftSidebarProps> = ({
           icon={Settings}
           label="Settings"
           onClick={() => handleQuickNavClick('settings')}
+          onKeyDown={handleNavigationKeyDown}
+          focusProps={getItemFocusProps('footer-settings')}
           title="Settings"
         />
       </SidebarFooter>

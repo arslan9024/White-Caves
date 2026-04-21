@@ -31,8 +31,8 @@ interface UseKeyboardNavigationProps {
   onEscape?: () => void;
 }
 
-interface FocusProps {
-  ref: React.RefObject<HTMLElement>;
+export interface FocusProps {
+  ref: React.Ref<HTMLButtonElement>;
   tabIndex: number;
   'aria-label': string;
   'data-focus-idx'?: number;
@@ -130,11 +130,11 @@ export function useKeyboardNavigation({
 
   const getFocusProps = useCallback(
     (idx: number): FocusProps => {
-      const handleRef = (el: HTMLElement | null) => {
+      const handleRef = (el: HTMLButtonElement | null) => {
         if (el) itemRefs.current.set(idx, el);
       };
       return {
-        ref: handleRef as React.Ref<HTMLElement>,
+        ref: handleRef,
         tabIndex: focusIdx === idx ? 0 : -1,
         'aria-label': items[idx]?.label || `Item ${idx}`,
         'data-focus-idx': idx,

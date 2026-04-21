@@ -10,6 +10,7 @@
 
 import React, { ReactNode } from 'react';
 import type { LucideIcon } from 'lucide-react';
+import type { FocusProps } from '../../../hooks/navigation/useKeyboardNavigation';
 import {
   NavItemContainer,
   NavItemButton,
@@ -37,12 +38,7 @@ export interface SidebarNavItemProps {
   title?: string;
   children?: ReactNode;
   /** Focus props from useKeyboardNavigation */
-  focusProps?: {
-    ref: React.Ref<HTMLElement>;
-    tabIndex: number;
-    'aria-label': string;
-    'data-focus-idx'?: number;
-  };
+  focusProps?: FocusProps;
 }
 
 const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
@@ -76,7 +72,6 @@ const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
     return (
       <NavItemContainer depth={depth}>
         <NavItemButton
-          ref={ref}
           id={id}
           active={active}
           $color={color}
@@ -89,6 +84,7 @@ const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
           disabled={disabled}
           className={className}
           title={title || label}
+          ref={ref}
           {...focusProps}
         >
           {Icon && <Icon size={18} />}
