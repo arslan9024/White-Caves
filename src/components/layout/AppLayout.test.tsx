@@ -21,6 +21,14 @@ vi.mock('./SidebarContainer', () => ({
   default: () => <div data-testid="sidebar-container">SidebarContainer</div>,
 }));
 
+vi.mock('../../hooks/navigation/useResponsiveLayout', () => ({
+  useResponsiveLayout: () => ({
+    isDesktop: true,
+    isTablet: false,
+    isMobile: false,
+  }),
+}));
+
 vi.mock('../common/CommandPalette', () => ({
   default: () => <div data-testid="command-palette">CommandPalette</div>,
 }));
@@ -42,6 +50,7 @@ import AppLayout from './AppLayout';
 import navigationReducer from '../../store/navigationSlice';
 import userReducer from '../../store/userSlice';
 import sidebarReducer from '../../store/slices/sidebarSlice';
+import nadiaReducer from '../../store/slices/nadiaSlice';
 
 // ── Helpers ──────────────────────────────────────────────────────
 
@@ -51,6 +60,7 @@ const createMockStore = (overrides: Record<string, unknown> = {}) => {
       navigation: navigationReducer,
       user: userReducer,
       sidebar: sidebarReducer,
+      nadia: nadiaReducer,
     },
     preloadedState: {
       user: {
@@ -105,9 +115,9 @@ describe('AppLayout', () => {
       expect(screen.getByTestId('command-palette')).toBeInTheDocument();
     });
 
-    it('should render the SidebarContainer by default', () => {
+    it('should render the EnhancedLeftSidebar by default (desktop)', () => {
       renderLayout();
-      expect(screen.getByTestId('sidebar-container')).toBeInTheDocument();
+      expect(screen.getByTestId('enhanced-left-sidebar')).toBeInTheDocument();
     });
 
     it('should render BiometricReminder', () => {
@@ -144,14 +154,15 @@ describe('AppLayout', () => {
   // ── Nav Visibility ───────────────────────────────────────────
 
   describe('Nav Visibility', () => {
-    it('should hide SidebarContainer when showNav is false', () => {
+    it('should hide sidebar navigation when showNav is false', () => {
       renderLayout('/', {}, { showNav: false });
       expect(screen.queryByTestId('sidebar-container')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('enhanced-left-sidebar')).not.toBeInTheDocument();
     });
 
-    it('should show SidebarContainer when showNav is true (default)', () => {
+    it('should show EnhancedLeftSidebar when showNav is true (default)', () => {
       renderLayout();
-      expect(screen.getByTestId('sidebar-container')).toBeInTheDocument();
+      expect(screen.getByTestId('enhanced-left-sidebar')).toBeInTheDocument();
     });
   });
 
