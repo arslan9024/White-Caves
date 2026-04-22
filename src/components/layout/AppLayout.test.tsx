@@ -216,60 +216,26 @@ describe('AppLayout', () => {
   // ── Role Detection ───────────────────────────────────────────
 
   describe('Role Detection', () => {
-    it('should detect "buyer" role from URL path', () => {
+    it.each([
+      { role: 'buyer', path: '/buyer/dashboard' },
+      { role: 'seller', path: '/seller/leads' },
+      { role: 'landlord', path: '/landlord/rentals' },
+      { role: 'tenant', path: '/tenant/payments' },
+      { role: 'leasing-agent', path: '/leasing-agent/pipeline' },
+      { role: 'secondary-sales-agent', path: '/secondary-sales-agent/properties' },
+      { role: 'owner', path: '/owner/properties' },
+    ])('should detect "$role" role from URL path', ({ role, path }) => {
       const store = createMockStore();
       render(
         <Provider store={store}>
-          <MemoryRouter initialEntries={['/buyer/dashboard']}>
+          <MemoryRouter initialEntries={[path]}>
             <AppLayout>
               <div>content</div>
             </AppLayout>
           </MemoryRouter>
         </Provider>
       );
-      expect(store.getState().navigation.activeRole).toBe('buyer');
-    });
-
-    it('should detect "owner" role from URL path', () => {
-      const store = createMockStore();
-      render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/owner/properties']}>
-            <AppLayout>
-              <div>content</div>
-            </AppLayout>
-          </MemoryRouter>
-        </Provider>
-      );
-      expect(store.getState().navigation.activeRole).toBe('owner');
-    });
-
-    it('should detect "tenant" role from URL path', () => {
-      const store = createMockStore();
-      render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/tenant/payments']}>
-            <AppLayout>
-              <div>content</div>
-            </AppLayout>
-          </MemoryRouter>
-        </Provider>
-      );
-      expect(store.getState().navigation.activeRole).toBe('tenant');
-    });
-
-    it('should detect "landlord" role from URL path', () => {
-      const store = createMockStore();
-      render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/landlord/rentals']}>
-            <AppLayout>
-              <div>content</div>
-            </AppLayout>
-          </MemoryRouter>
-        </Provider>
-      );
-      expect(store.getState().navigation.activeRole).toBe('landlord');
+      expect(store.getState().navigation.activeRole).toBe(role);
     });
 
     it('should not set role for unknown path segments', () => {
