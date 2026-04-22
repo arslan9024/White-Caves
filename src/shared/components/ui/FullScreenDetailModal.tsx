@@ -57,7 +57,9 @@ const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [isFavorite, setIsFavorite] = useState(false);
   const safeActiveTab = tabs.length > 0 ? Math.min(activeTab, tabs.length - 1) : activeTab;
-  const currentImage = images.at(currentImageIndex);
+  const safeCurrentImageIndex =
+    images.length > 0 ? Math.min(currentImageIndex, images.length - 1) : 0;
+  const currentImage = images.at(safeCurrentImageIndex);
   const activeTabContent = tabs.length > 0 ? tabs.at(safeActiveTab)?.content : children;
 
   const nextImage = useCallback(() => {
@@ -84,8 +86,9 @@ const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
   }, [isOpen]);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen) return;
       if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowLeft') prevImage();
       if (e.key === 'ArrowRight') nextImage();
@@ -162,7 +165,7 @@ const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
               <div className="gallery-main">
                 <img
                   src={currentImage ?? ''}
-                  alt={`${title || 'Property'} — image ${currentImageIndex + 1} of ${images.length}`}
+                  alt={`${title || 'Property'} — image ${safeCurrentImageIndex + 1} of ${images.length}`}
                   className="gallery-main-image"
                   loading="lazy"
                   width={400}
@@ -189,7 +192,7 @@ const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
                 )}
 
                 <div className="gallery-counter">
-                  {currentImageIndex + 1} / {images.length}
+                  {safeCurrentImageIndex + 1} / {images.length}
                 </div>
               </div>
 
@@ -198,7 +201,7 @@ const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
                   {images.map((img, idx) => (
                     <button
                       key={img ?? `thumb-${idx}`}
-                      className={`thumbnail ${idx === currentImageIndex ? 'active' : ''}`}
+                      className={`thumbnail ${idx === safeCurrentImageIndex ? 'active' : ''}`}
                       onClick={() => setCurrentImageIndex(idx)}
                     >
                       <img

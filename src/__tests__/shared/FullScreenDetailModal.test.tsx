@@ -110,6 +110,12 @@ describe('FullScreenDetailModal', () => {
       fireEvent.keyDown(window, { key: 'Escape' });
       expect(defaultProps.onClose).toHaveBeenCalled();
     });
+
+    it('does not call onClose from Escape when modal is closed', () => {
+      render(<FullScreenDetailModal {...defaultProps} isOpen={false} />);
+      fireEvent.keyDown(window, { key: 'Escape' });
+      expect(defaultProps.onClose).not.toHaveBeenCalled();
+    });
   });
 
   // ─── BODY OVERFLOW ─────────────────────────────────────────
@@ -190,6 +196,21 @@ describe('FullScreenDetailModal', () => {
       expect(screen.getByAltText('Luxury Villa — image 2 of 3')).toBeInTheDocument();
       fireEvent.keyDown(window, { key: 'ArrowLeft' });
       expect(screen.getByAltText('Luxury Villa — image 1 of 3')).toBeInTheDocument();
+    });
+
+    it('clamps rendered image index when images shrink after selection', () => {
+      const { rerender } = render(<FullScreenDetailModal {...defaultProps} images={images} />);
+
+      fireEvent.click(screen.getByLabelText('Next image'));
+      fireEvent.click(screen.getByLabelText('Next image'));
+      expect(screen.getByAltText('Luxury Villa — image 3 of 3')).toBeInTheDocument();
+      expect(screen.getByText('3 / 3')).toBeInTheDocument();
+
+      rerender(<FullScreenDetailModal {...defaultProps} images={['/img1.jpg']} />);
+
+      expect(screen.getByAltText('Luxury Villa — image 1 of 1')).toBeInTheDocument();
+      expect(screen.getByText('1 / 1')).toBeInTheDocument();
+      expect(screen.queryByAltText('Luxury Villa — image 3 of 1')).not.toBeInTheDocument();
     });
   });
 
