@@ -12,7 +12,7 @@
 
 import { Router, Request, Response } from 'express';
 import { requirePermission } from '../middleware/rbac.js';
-import { asyncHandler } from '../utils/asyncHandler.js';
+import { asyncHandler } from '../middleware/errorHandler.js';
 import {
   getMarketOverview,
   getPriceTrends,
