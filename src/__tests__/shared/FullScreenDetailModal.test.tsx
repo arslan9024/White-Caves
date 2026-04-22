@@ -252,6 +252,12 @@ describe('FullScreenDetailModal', () => {
       expect(screen.queryByText('Details content')).not.toBeInTheDocument();
     });
 
+    it('clamps negative defaultTab to the first available tab', () => {
+      render(<FullScreenDetailModal {...defaultProps} tabs={tabs} defaultTab={-1} />);
+      expect(screen.getByText('Details content')).toBeInTheDocument();
+      expect(screen.queryByText('Location content')).not.toBeInTheDocument();
+    });
+
     it('keeps rendering valid tab content when tabs shrink after selection', () => {
       const { rerender } = render(<FullScreenDetailModal {...defaultProps} tabs={tabs} />);
 

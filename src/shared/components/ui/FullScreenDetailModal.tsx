@@ -56,9 +56,9 @@ const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [isFavorite, setIsFavorite] = useState(false);
-  const safeActiveTab = tabs.length > 0 ? Math.min(activeTab, tabs.length - 1) : activeTab;
+  const safeActiveTab = tabs.length > 0 ? Math.min(Math.max(activeTab, 0), tabs.length - 1) : 0;
   const safeCurrentImageIndex =
-    images.length > 0 ? Math.min(currentImageIndex, images.length - 1) : 0;
+    images.length > 0 ? Math.min(Math.max(currentImageIndex, 0), images.length - 1) : 0;
   const currentImage = images.at(safeCurrentImageIndex);
   const activeTabContent = tabs.length > 0 ? tabs.at(safeActiveTab)?.content : children;
 
