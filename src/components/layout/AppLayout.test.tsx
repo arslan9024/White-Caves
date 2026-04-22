@@ -11,6 +11,12 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { MemoryRouter } from 'react-router-dom';
 
+let responsiveLayoutMock = {
+  isDesktop: true,
+  isTablet: false,
+  isMobile: false,
+};
+
 // ── Mocks ────────────────────────────────────────────────────────
 
 vi.mock('./TopBar', () => ({
@@ -21,12 +27,12 @@ vi.mock('./SidebarContainer', () => ({
   default: () => <div data-testid="sidebar-container">SidebarContainer</div>,
 }));
 
+vi.mock('./EnhancedLeftSidebar/EnhancedLeftSidebar', () => ({
+  default: () => <div data-testid="enhanced-left-sidebar">EnhancedLeftSidebar</div>,
+}));
+
 vi.mock('../../hooks/navigation/useResponsiveLayout', () => ({
-  useResponsiveLayout: () => ({
-    isDesktop: true,
-    isTablet: false,
-    isMobile: false,
-  }),
+  useResponsiveLayout: () => responsiveLayoutMock,
 }));
 
 vi.mock('../common/CommandPalette', () => ({
@@ -38,12 +44,17 @@ vi.mock('../../features/auth/components/BiometricLogin', () => ({
 }));
 
 vi.mock('./AppLayout/styles', () => ({
-  AppLayoutContainer: ({ children, ...props }: Record<string, unknown>) =>
-    <div data-testid="app-layout-container">{children as React.ReactNode}</div>,
-  AppBody: ({ children, ...props }: Record<string, unknown>) =>
-    <div data-testid="app-body">{children as React.ReactNode}</div>,
-  AppMain: ({ children, id, tabIndex, ...props }: Record<string, unknown>) =>
-    <main data-testid="app-main" id={id as string} tabIndex={tabIndex as number}>{children as React.ReactNode}</main>,
+  AppLayoutContainer: ({ children, ..._props }: Record<string, unknown>) => (
+    <div data-testid="app-layout-container">{children as React.ReactNode}</div>
+  ),
+  AppBody: ({ children, ..._props }: Record<string, unknown>) => (
+    <div data-testid="app-body">{children as React.ReactNode}</div>
+  ),
+  AppMain: ({ children, id, tabIndex, ..._props }: Record<string, unknown>) => (
+    <main data-testid="app-main" id={id as string} tabIndex={tabIndex as number}>
+      {children as React.ReactNode}
+    </main>
+  ),
 }));
 
 import AppLayout from './AppLayout';
@@ -76,7 +87,7 @@ const createMockStore = (overrides: Record<string, unknown> = {}) => {
 const renderLayout = (
   path = '/',
   overrides: Record<string, unknown> = {},
-  props: Record<string, unknown> = {},
+  props: Record<string, unknown> = {}
 ) => {
   const store = createMockStore(overrides);
   return render(
@@ -86,8 +97,16 @@ const renderLayout = (
           <div data-testid="child-content">Hello</div>
         </AppLayout>
       </MemoryRouter>
-    </Provider>,
+    </Provider>
   );
+};
+
+const setResponsiveMode = (mode: 'desktop' | 'tablet' | 'mobile') => {
+  responsiveLayoutMock = {
+    isDesktop: mode === 'desktop',
+    isTablet: mode === 'tablet',
+    isMobile: mode === 'mobile',
+  };
 };
 
 // ── Tests ────────────────────────────────────────────────────────
@@ -95,6 +114,7 @@ const renderLayout = (
 describe('AppLayout', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    setResponsiveMode('desktop');
   });
 
   // ── Rendering ────────────────────────────────────────────────
@@ -164,6 +184,20 @@ describe('AppLayout', () => {
       renderLayout();
       expect(screen.getByTestId('enhanced-left-sidebar')).toBeInTheDocument();
     });
+
+    it('should render SidebarContainer on tablet', () => {
+      setResponsiveMode('tablet');
+      renderLayout();
+      expect(screen.getByTestId('sidebar-container')).toBeInTheDocument();
+      expect(screen.queryByTestId('enhanced-left-sidebar')).not.toBeInTheDocument();
+    });
+
+    it('should hide sidebars on mobile', () => {
+      setResponsiveMode('mobile');
+      renderLayout();
+      expect(screen.queryByTestId('sidebar-container')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('enhanced-left-sidebar')).not.toBeInTheDocument();
+    });
   });
 
   // ── Role Detection ───────────────────────────────────────────
@@ -174,9 +208,11 @@ describe('AppLayout', () => {
       render(
         <Provider store={store}>
           <MemoryRouter initialEntries={['/buyer/dashboard']}>
-            <AppLayout><div>content</div></AppLayout>
+            <AppLayout>
+              <div>content</div>
+            </AppLayout>
           </MemoryRouter>
-        </Provider>,
+        </Provider>
       );
       expect(store.getState().navigation.activeRole).toBe('buyer');
     });
@@ -186,9 +222,11 @@ describe('AppLayout', () => {
       render(
         <Provider store={store}>
           <MemoryRouter initialEntries={['/owner/properties']}>
-            <AppLayout><div>content</div></AppLayout>
+            <AppLayout>
+              <div>content</div>
+            </AppLayout>
           </MemoryRouter>
-        </Provider>,
+        </Provider>
       );
       expect(store.getState().navigation.activeRole).toBe('owner');
     });
@@ -198,9 +236,11 @@ describe('AppLayout', () => {
       render(
         <Provider store={store}>
           <MemoryRouter initialEntries={['/tenant/payments']}>
-            <AppLayout><div>content</div></AppLayout>
+            <AppLayout>
+              <div>content</div>
+            </AppLayout>
           </MemoryRouter>
-        </Provider>,
+        </Provider>
       );
       expect(store.getState().navigation.activeRole).toBe('tenant');
     });
@@ -210,9 +250,11 @@ describe('AppLayout', () => {
       render(
         <Provider store={store}>
           <MemoryRouter initialEntries={['/landlord/rentals']}>
-            <AppLayout><div>content</div></AppLayout>
+            <AppLayout>
+              <div>content</div>
+            </AppLayout>
           </MemoryRouter>
-        </Provider>,
+        </Provider>
       );
       expect(store.getState().navigation.activeRole).toBe('landlord');
     });
@@ -222,9 +264,11 @@ describe('AppLayout', () => {
       render(
         <Provider store={store}>
           <MemoryRouter initialEntries={['/unknown/route']}>
-            <AppLayout><div>content</div></AppLayout>
+            <AppLayout>
+              <div>content</div>
+            </AppLayout>
           </MemoryRouter>
-        </Provider>,
+        </Provider>
       );
       expect(store.getState().navigation.activeRole).not.toBe('unknown');
     });
