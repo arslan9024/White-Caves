@@ -4,7 +4,7 @@
  * Covers: rendering, open/close, image gallery, tabs, actions, keyboard nav, favorites, fullscreen
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 
 vi.mock('../../shared/components/ui/FullScreenDetailModal.css', () => ({}));
@@ -71,9 +71,7 @@ describe('FullScreenDetailModal', () => {
     });
 
     it('renders sidebar when provided', () => {
-      render(
-        <FullScreenDetailModal {...defaultProps} sidebar={<div>Sidebar Content</div>} />
-      );
+      render(<FullScreenDetailModal {...defaultProps} sidebar={<div>Sidebar Content</div>} />);
       expect(screen.getByText('Sidebar Content')).toBeInTheDocument();
     });
 
@@ -225,6 +223,29 @@ describe('FullScreenDetailModal', () => {
     it('respects defaultTab prop', () => {
       render(<FullScreenDetailModal {...defaultProps} tabs={tabs} defaultTab={2} />);
       expect(screen.getByText('Location content')).toBeInTheDocument();
+    });
+
+    it('safely clamps out-of-bounds defaultTab to last available tab', () => {
+      render(<FullScreenDetailModal {...defaultProps} tabs={tabs} defaultTab={99} />);
+      expect(screen.getByText('Location content')).toBeInTheDocument();
+      expect(screen.queryByText('Details content')).not.toBeInTheDocument();
+    });
+
+    it('keeps rendering valid tab content when tabs shrink after selection', () => {
+      const { rerender } = render(<FullScreenDetailModal {...defaultProps} tabs={tabs} />);
+
+      fireEvent.click(screen.getByText('Location'));
+      expect(screen.getByText('Location content')).toBeInTheDocument();
+
+      rerender(
+        <FullScreenDetailModal
+          {...defaultProps}
+          tabs={[{ label: 'Details', content: <div>Details content</div> }]}
+        />
+      );
+
+      expect(screen.getByText('Details content')).toBeInTheDocument();
+      expect(screen.queryByText('Location content')).not.toBeInTheDocument();
     });
 
     it('shows children when no tabs provided', () => {
