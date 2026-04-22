@@ -17,6 +17,10 @@ let responsiveLayoutMock = {
   isMobile: false,
 };
 
+const enhancedLeftSidebarMock = vi.fn((_props?: Record<string, unknown>) => (
+  <div data-testid="enhanced-left-sidebar">EnhancedLeftSidebar</div>
+));
+
 // ── Mocks ────────────────────────────────────────────────────────
 
 vi.mock('./TopBar', () => ({
@@ -28,7 +32,7 @@ vi.mock('./SidebarContainer', () => ({
 }));
 
 vi.mock('./EnhancedLeftSidebar/EnhancedLeftSidebar', () => ({
-  default: () => <div data-testid="enhanced-left-sidebar">EnhancedLeftSidebar</div>,
+  default: (props: Record<string, unknown>) => enhancedLeftSidebarMock(props),
 }));
 
 vi.mock('../../hooks/navigation/useResponsiveLayout', () => ({
@@ -114,6 +118,7 @@ const setResponsiveMode = (mode: 'desktop' | 'tablet' | 'mobile') => {
 describe('AppLayout', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    enhancedLeftSidebarMock.mockClear();
     setResponsiveMode('desktop');
   });
 
@@ -183,6 +188,14 @@ describe('AppLayout', () => {
     it('should show EnhancedLeftSidebar when showNav is true (default)', () => {
       renderLayout();
       expect(screen.getByTestId('enhanced-left-sidebar')).toBeInTheDocument();
+    });
+
+    it('should pass isSuperUser to EnhancedLeftSidebar on desktop', () => {
+      renderLayout('/', {}, { isSuperUser: true });
+      expect(enhancedLeftSidebarMock).toHaveBeenCalled();
+      expect(enhancedLeftSidebarMock).toHaveBeenCalledWith(
+        expect.objectContaining({ isSuperUser: true })
+      );
     });
 
     it('should render SidebarContainer on tablet', () => {
