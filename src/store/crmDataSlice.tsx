@@ -173,7 +173,21 @@ export const fetchLeadsFromAPI = createAsyncThunk<
 /** Fetch all properties from the backend API */
 export const fetchPropertiesFromAPI = createAsyncThunk<
   CRMItem[],
-  { page?: number; status?: string; type?: string },
+  {
+    page?: number;
+    pageSize?: number;
+    status?: string;
+    type?: string;
+    search?: string;
+    location?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    beds?: number;
+    baths?: number;
+    area?: string;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  },
   { rejectValue: string }
 >(
   'crmData/fetchProperties',
@@ -181,8 +195,18 @@ export const fetchPropertiesFromAPI = createAsyncThunk<
     try {
       const query = new URLSearchParams();
       if (params.page) query.set('page', String(params.page));
+      if (params.pageSize) query.set('pageSize', String(params.pageSize));
       if (params.status) query.set('status', params.status);
       if (params.type) query.set('type', params.type);
+      if (params.search) query.set('search', params.search);
+      if (params.location) query.set('location', params.location);
+      if (typeof params.minPrice === 'number') query.set('minPrice', String(params.minPrice));
+      if (typeof params.maxPrice === 'number') query.set('maxPrice', String(params.maxPrice));
+      if (typeof params.beds === 'number') query.set('beds', String(params.beds));
+      if (typeof params.baths === 'number') query.set('baths', String(params.baths));
+      if (params.area) query.set('area', params.area);
+      if (params.sortBy) query.set('sortBy', params.sortBy);
+      if (params.sortOrder) query.set('sortOrder', params.sortOrder);
       const response = await authFetch(`/api/properties?${query.toString()}`);
       if (!response.ok) throw new Error(await extractApiError(response, 'Failed to fetch properties'));
       const data = await response.json();

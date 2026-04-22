@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useCallback, useMemo, ChangeEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { RootState, AppDispatch } from '../store/store';
 import { addToFavorites, removeFromFavorites, selectFavorites } from '../store/dashboardSlice';
 import { selectAllProperties, selectPropertiesLoading, fetchPropertiesFromAPI } from '../store/crmDataSlice';
@@ -78,6 +79,7 @@ export type { PropertyType };
 
 export function usePropertyBrowser() {
   const dispatch = useDispatch<AppDispatch>();
+  const location = useLocation();
   const favorites = useSelector((state: RootState) => selectFavorites(state));
   const apiProperties = useSelector(selectAllProperties) as Record<string, unknown>[];
   const loading = useSelector(selectPropertiesLoading);
@@ -87,11 +89,40 @@ export function usePropertyBrowser() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedProperty, setSelectedProperty] = useState<PropertyType | null>(null);
 
-  // Fetch properties from API on mount
+  const queryFilters = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return {
+      search: params.get('search') || undefined,
+      location: params.get('location') || undefined,
+      type: params.get('type') || undefined,
+      beds: params.get('beds') ? Number(params.get('beds')) : undefined,
+      minPrice: params.get('minPrice') ? Number(params.get('minPrice')) : undefined,
+      maxPrice: params.get('maxPrice') ? Number(params.get('maxPrice')) : undefined,
+    };
+  }, [location.search]);
+
+  // Fetch properties from API and keep backend query in sync with current URL + Redux filters
   useEffect(() => {
-    const promise = dispatch(fetchPropertiesFromAPI({}));
+    const promise = dispatch(fetchPropertiesFromAPI({
+      search: queryFilters.search || filters.search || undefined,
+      location:
+        queryFilters.location ||
+        (filters.locations.length > 0 ? filters.locations[0] : undefined),
+      type:
+        queryFilters.type ||
+        (filters.propertyTypes.length > 0 ? filters.propertyTypes[0] : undefined),
+      beds: queryFilters.beds || (filters.beds > 0 ? filters.beds : undefined),
+      baths: filters.baths > 0 ? filters.baths : undefined,
+      minPrice: queryFilters.minPrice ?? (filters.minPrice > 0 ? filters.minPrice : undefined),
+      maxPrice:
+        queryFilters.maxPrice ??
+        (filters.maxPrice < 100_000_000 ? filters.maxPrice : undefined),
+      sortBy: filters.sortBy,
+      sortOrder: filters.sortBy === 'price_asc' ? 'asc' : 'desc',
+      pageSize: 100,
+    }));
     return () => { promise.abort?.(); };
-  }, [dispatch]);
+  }, [dispatch, queryFilters, filters]);
 
   // Map API properties to display format
   const properties = useMemo(
