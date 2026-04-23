@@ -198,4 +198,50 @@ describe('LoginSecurityPage', () => {
     expect(screen.getByText('42')).toBeInTheDocument();
     expect(screen.getByText('9.9.9.9')).toBeInTheDocument();
   });
+
+  it('POSTs to /security/unlock-ip when an IP Unlock button is clicked', async () => {
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    mockAuthFetch.mockImplementation((url: unknown, init?: { method?: string }) => {
+      const u = String(url);
+      if (u.includes('/security/unlock-ip')) {
+        return Promise.resolve({
+          ok: true, status: 200, statusText: 'OK',
+          json: () => Promise.resolve({ success: true, data: { ip: '9.9.9.9', clearedFailures: 4 } }),
+          text: () => Promise.resolve(''),
+        });
+      }
+      if (u.includes('/security/stats')) {
+        return Promise.resolve({
+          ok: true, status: 200, statusText: 'OK',
+          json: () => Promise.resolve({
+            success: true,
+            data: {
+              totals: { logins: 0, loginFailures: 4, passwordChanges: 0, passwordChangeFailures: 0, accountUnlocks: 0, ipUnlocks: 0 },
+              uniqueIpCount: 1,
+              topOffendingIps: [{ ip: '9.9.9.9', failures: 4 }],
+              topTargetedEmails: [],
+              windowMinutes: 1440,
+            },
+          }),
+        });
+      }
+      return Promise.resolve({
+        ok: true, status: 200, statusText: 'OK',
+        json: () => Promise.resolve({
+          success: true, data: [],
+          meta: { count: 0, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
+        }),
+      });
+    });
+
+    render(<LoginSecurityPage />);
+    const unlockBtn = await screen.findByRole('button', { name: /unlock ip 9\.9\.9\.9/i });
+    fireEvent.click(unlockBtn);
+
+    await waitFor(() => {
+      const calls = mockAuthFetch.mock.calls.map((c) => String(c[0]));
+      expect(calls.some((u) => u.includes('/security/unlock-ip'))).toBe(true);
+    });
+    confirmSpy.mockRestore();
+  });
 });

@@ -687,7 +687,7 @@ router.get(
       status === 'failed' ? ['login_failed']
       : status === 'success' ? ['login']
       : status === 'password' ? ['password_changed', 'password_change_failed']
-      : ['login', 'login_failed', 'password_changed', 'password_change_failed', 'account_unlocked'];
+      : ['login', 'login_failed', 'password_changed', 'password_change_failed', 'account_unlocked', 'ip_unlocked'];
 
     const since = new Date(Date.now() - sinceMinutes * 60 * 1000);
 
@@ -803,6 +803,71 @@ router.post(
 );
 
 /**
+ * POST /api/auth/security/unlock-ip
+ * Admin-only — release a falsely-flagged source IP (shared NAT, office gateway,
+ * VPN exit node) by deleting recent `login_failed` Activity rows whose
+ * `metadata.ip` matches inside the rolling lockout window. Persists an
+ * `ip_unlocked` Activity noting which admin performed the reset.
+ *
+ * Body: { ip: string }
+ */
+router.post(
+  '/security/unlock-ip',
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const role = req.user?.role;
+    const allowedRoles = ['owner', 'admin'];
+    if (!role || !allowedRoles.includes(role)) {
+      throw new AppError('Forbidden — admin access required', 403);
+    }
+
+    const ipRaw = typeof req.body?.ip === 'string' ? req.body.ip.trim() : '';
+    if (!ipRaw) throw new AppError('Provide an ip address to unlock', 400);
+    if (ipRaw.length > 64) throw new AppError('Invalid ip address', 400);
+
+    const since = new Date(Date.now() - LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000);
+    const result = await prisma.activity.deleteMany({
+      where: {
+        type: 'system',
+        action: 'login_failed',
+        createdAt: { gte: since },
+        metadata: { path: ['ip'], equals: ipRaw } as Prisma.JsonFilter,
+      },
+    });
+
+    const adminIp = getClientIp(req);
+    const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
+    await prisma.activity.create({
+      data: {
+        type: 'system',
+        action: 'ip_unlocked',
+        description: `IP ${ipRaw} unlocked by ${req.user?.email || req.user?.id} (${result.count} failed attempts cleared)`,
+        userId: req.user?.id,
+        metadata: {
+          unlockedIp: ipRaw,
+          unlockedBy: req.user?.id,
+          unlockedByEmail: req.user?.email,
+          clearedFailures: result.count,
+          ip: adminIp,
+          userAgent,
+        } as Prisma.InputJsonValue,
+      },
+    });
+
+    logger.info('IP unlocked by admin', {
+      ip: ipRaw,
+      adminId: req.user?.id,
+      clearedFailures: result.count,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: { ip: ipRaw, clearedFailures: result.count },
+    });
+  }),
+);
+
+/**
  * GET /api/auth/security/stats
  * Admin-only — aggregate counts for the Login Security dashboard.
  *
@@ -840,6 +905,7 @@ router.get(
       'password_changed',
       'password_change_failed',
       'account_unlocked',
+      'ip_unlocked',
     ];
 
     const rows = await prisma.activity.findMany({
@@ -863,6 +929,7 @@ router.get(
       passwordChanges: 0,
       passwordChangeFailures: 0,
       accountUnlocks: 0,
+      ipUnlocks: 0,
     };
 
     const ipCounts = new Map<string, number>(); // failures by ip
@@ -896,6 +963,9 @@ router.get(
           break;
         case 'account_unlocked':
           totals.accountUnlocks += 1;
+          break;
+        case 'ip_unlocked':
+          totals.ipUnlocks += 1;
           break;
       }
     }

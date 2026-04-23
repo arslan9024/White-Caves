@@ -824,6 +824,47 @@ describe('Auth Routes — /api/auth', () => {
     });
   });
 
+  // ── POST /security/unlock-ip ───────────────────────────────
+  describe('POST /api/auth/security/unlock-ip', () => {
+    it('returns 403 for non-admin roles', async () => {
+      const res = await request(createApp('agent'))
+        .post('/api/auth/security/unlock-ip')
+        .send({ ip: '9.9.9.9' });
+      expect(res.status).toBe(403);
+    });
+
+    it('returns 400 when ip is missing', async () => {
+      const res = await request(createApp('owner'))
+        .post('/api/auth/security/unlock-ip')
+        .send({});
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/ip address/i);
+    });
+
+    it('clears recent login_failed rows for the ip and writes ip_unlocked audit', async () => {
+      mockPrisma.activity.deleteMany.mockResolvedValueOnce({ count: 4 });
+      const res = await request(createApp('admin'))
+        .post('/api/auth/security/unlock-ip')
+        .send({ ip: '9.9.9.9' });
+      expect(res.status).toBe(200);
+      expect(res.body.data).toEqual({ ip: '9.9.9.9', clearedFailures: 4 });
+      expect(mockPrisma.activity.deleteMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            action: 'login_failed',
+            metadata: { path: ['ip'], equals: '9.9.9.9' },
+          }),
+        }),
+      );
+      const auditCall = mockPrisma.activity.create.mock.calls.find(
+        (c: any[]) => c[0]?.data?.action === 'ip_unlocked',
+      );
+      expect(auditCall).toBeDefined();
+      expect(auditCall[0].data.metadata.unlockedIp).toBe('9.9.9.9');
+      expect(auditCall[0].data.metadata.clearedFailures).toBe(4);
+    });
+  });
+
   // ── GET /security/stats ─────────────────────────────────────────
   describe('GET /api/auth/security/stats', () => {
     it('returns 403 for non-admin roles', async () => {
@@ -865,6 +906,7 @@ describe('Auth Routes — /api/auth', () => {
         passwordChanges: 1,
         passwordChangeFailures: 1,
         accountUnlocks: 1,
+        ipUnlocks: 0,
       });
       expect(res.body.data.windowMinutes).toBe(60);
       expect(res.body.data.uniqueIpCount).toBe(5); // 1.1.1.1, 1.1.1.2, 9.9.9.9, 8.8.8.8, 7.7.7.7

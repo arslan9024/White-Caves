@@ -25,6 +25,7 @@ interface LoginAttempt {
     | 'login'
     | 'login_failed'
     | 'account_unlocked'
+    | 'ip_unlocked'
     | 'password_changed'
     | 'password_change_failed'
     | string;
@@ -48,6 +49,7 @@ interface SecurityStats {
     passwordChanges: number;
     passwordChangeFailures: number;
     accountUnlocks: number;
+    ipUnlocks: number;
   };
   uniqueIpCount: number;
   topOffendingIps: Array<{ ip: string; failures: number }>;
@@ -81,6 +83,7 @@ const LoginSecurityPage: FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [unlockingId, setUnlockingId] = useState<string | null>(null);
+  const [unlockingIp, setUnlockingIp] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
   // RBAC guard — server enforces too, but keep buyers/agents out of the UI
@@ -174,6 +177,34 @@ const LoginSecurityPage: FC = () => {
       setToast('Unlock failed (network error).');
     } finally {
       setUnlockingId(null);
+    }
+  };
+
+  const handleUnlockIp = async (ip: string): Promise<void> => {
+    if (!ip) return;
+    if (!window.confirm(`Unlock IP ${ip}? This clears recent failed attempts from this address.`)) {
+      return;
+    }
+    try {
+      setUnlockingIp(ip);
+      const res = await authFetch('/api/auth/security/unlock-ip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ip }),
+      });
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        setToast(`Unlock IP failed: ${res.status} ${text}`);
+        return;
+      }
+      const json = await res.json();
+      setToast(`Unlocked IP ${ip}; cleared ${json.data?.clearedFailures ?? 0} failures.`);
+      await fetchAttempts();
+    } catch (err) {
+      log.error('Unlock IP request failed', err);
+      setToast('Unlock IP failed (network error).');
+    } finally {
+      setUnlockingIp(null);
     }
   };
 
@@ -272,6 +303,15 @@ const LoginSecurityPage: FC = () => {
                 {stats.topOffendingIps.map((row) => (
                   <li key={row.ip}>
                     <code>{row.ip}</code> <span className="ls-muted">({row.failures})</span>
+                    <button
+                      type="button"
+                      className="ls-ip-unlock-btn"
+                      onClick={() => handleUnlockIp(row.ip)}
+                      disabled={unlockingIp === row.ip}
+                      aria-label={`Unlock IP ${row.ip}`}
+                    >
+                      {unlockingIp === row.ip ? 'Unlocking…' : 'Unlock'}
+                    </button>
                   </li>
                 ))}
               </ul>

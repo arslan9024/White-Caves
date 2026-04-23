@@ -92,6 +92,25 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.85rem;
 }
+.ls-ip-unlock-btn {
+  margin-left: auto;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--luxury-cta-bg, #d4af37);
+  color: #1a1a1a;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.ls-ip-unlock-btn:hover:not(:disabled) {
+  background: var(--luxury-cta-bg-hover, #b8960c);
+}
+.ls-ip-unlock-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 .ls-filters {
   display: flex;
