@@ -67,7 +67,7 @@ const getClientIp = (req: Request): string => {
  */
 const recordLoginFailure = (
   req: Request,
-  reason: 'unknown_user' | 'invalid_password' | 'inactive' | 'no_password' | 'locked_out',
+  reason: 'unknown_user' | 'invalid_password' | 'inactive' | 'no_password' | 'locked_out' | 'ip_locked_out',
   emailAttempt: string,
   userId?: string,
 ): void => {
@@ -102,6 +102,53 @@ const LOGIN_LOCKOUT_WINDOW_MINUTES = Math.max(
   1,
   Number.parseInt(process.env.LOGIN_LOCKOUT_WINDOW_MINUTES || '15', 10) || 15,
 );
+
+/**
+ * Per-IP brute-force threshold — defends against credential-stuffing attacks
+ * where a single IP rotates through many usernames so the per-account
+ * lockout never triggers. Tunable via env.
+ */
+const LOGIN_IP_LOCKOUT_THRESHOLD = Math.max(
+  1,
+  Number.parseInt(process.env.LOGIN_IP_LOCKOUT_THRESHOLD || '20', 10) || 20,
+);
+
+/**
+ * Check whether the source IP should be throttled because it's responsible for
+ * too many failed logins (across any number of accounts) inside the rolling
+ * window. Returns the same shape as the per-account check so the route can
+ * treat both lockouts uniformly.
+ */
+const checkIpLockout = async (
+  ip: string,
+): Promise<{ locked: boolean; retryAfterSeconds: number; failureCount: number }> => {
+  if (!ip || ip === 'unknown') return { locked: false, retryAfterSeconds: 0, failureCount: 0 };
+  const since = new Date(Date.now() - LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000);
+  const failureCount = await prisma.activity.count({
+    where: {
+      type: 'system',
+      action: 'login_failed',
+      createdAt: { gte: since },
+      metadata: { path: ['ip'], equals: ip } as Prisma.JsonFilter,
+    },
+  });
+  if (failureCount < LOGIN_IP_LOCKOUT_THRESHOLD) {
+    return { locked: false, retryAfterSeconds: 0, failureCount };
+  }
+  const oldest = await prisma.activity.findFirst({
+    where: {
+      type: 'system',
+      action: 'login_failed',
+      createdAt: { gte: since },
+      metadata: { path: ['ip'], equals: ip } as Prisma.JsonFilter,
+    },
+    orderBy: { createdAt: 'asc' },
+  });
+  const baseTs = oldest?.createdAt?.getTime?.() ?? Date.now();
+  const unlockAt = baseTs + LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000;
+  const retryAfterSeconds = Math.max(1, Math.ceil((unlockAt - Date.now()) / 1000));
+  return { locked: true, retryAfterSeconds, failureCount };
+};
 
 /**
  * Check whether a user account should be temporarily locked due to repeated
@@ -153,6 +200,20 @@ router.post(
     }
 
     const normalizedEmail = String(email).toLowerCase().trim();
+
+    // Per-IP brute-force throttle — runs first so credential-stuffing attacks
+    // that rotate usernames hit the wall regardless of which user they target.
+    const clientIp = getClientIp(req);
+    const ipLockout = await checkIpLockout(clientIp);
+    if (ipLockout.locked) {
+      recordLoginFailure(req, 'ip_locked_out', normalizedEmail);
+      const minutes = Math.ceil(ipLockout.retryAfterSeconds / 60);
+      res.set('Retry-After', String(ipLockout.retryAfterSeconds));
+      throw new AppError(
+        `Too many failed login attempts from this network (${ipLockout.failureCount}). Try again in ${minutes} minute${minutes === 1 ? '' : 's'}.`,
+        429,
+      );
+    }
 
     // Find user by email
     const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });

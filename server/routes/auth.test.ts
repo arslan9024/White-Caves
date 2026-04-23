@@ -283,10 +283,12 @@ describe('Auth Routes — /api/auth', () => {
         id: 'user-1', email: 'test@whitecaves.ae', name: 'Test',
         role: 'agent', status: 'active', passwordHash: '$2a$10$hashedvalue',
       });
-      // 5 failures inside the 15-min window → trips the lockout
-      mockPrisma.activity.count.mockResolvedValueOnce(5);
+      // IP check (first count) → below threshold; account check (second count) → trips lockout
+      mockPrisma.activity.count
+        .mockResolvedValueOnce(0)
+        .mockResolvedValueOnce(5);
       mockPrisma.activity.findFirst.mockResolvedValueOnce({
-        createdAt: new Date(Date.now() - 60 * 1000), // 1 min ago
+        createdAt: new Date(Date.now() - 60 * 1000),
       });
       const res = await request(createApp())
         .post('/api/auth/login')
@@ -294,7 +296,6 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.status).toBe(429);
       expect(res.body.error).toMatch(/temporarily locked/i);
       expect(res.headers['retry-after']).toBeDefined();
-      // bcrypt.compare must NOT have been called — lockout short-circuits before password check
       expect(mockBcrypt.compare).not.toHaveBeenCalled();
     });
 
@@ -303,7 +304,9 @@ describe('Auth Routes — /api/auth', () => {
         id: 'user-1', email: 'test@whitecaves.ae', name: 'Test',
         role: 'agent', status: 'active', passwordHash: '$2a$10$hashedvalue',
       });
-      mockPrisma.activity.count.mockResolvedValueOnce(7);
+      mockPrisma.activity.count
+        .mockResolvedValueOnce(0)
+        .mockResolvedValueOnce(7);
       mockPrisma.activity.findFirst.mockResolvedValueOnce({
         createdAt: new Date(Date.now() - 30 * 1000),
       });
@@ -323,13 +326,46 @@ describe('Auth Routes — /api/auth', () => {
         id: 'user-1', email: 'test@whitecaves.ae', name: 'Test',
         role: 'agent', status: 'active', passwordHash: '$2a$10$hashedvalue',
       });
-      mockPrisma.activity.count.mockResolvedValueOnce(3); // below threshold (5)
+      mockPrisma.activity.count
+        .mockResolvedValueOnce(0)
+        .mockResolvedValueOnce(3);
       mockBcrypt.compare.mockResolvedValueOnce(true);
       const res = await request(createApp())
         .post('/api/auth/login')
         .send({ email: 'test@whitecaves.ae', password: 'Test1234' });
       expect(res.status).toBe(200);
       expect(mockBcrypt.compare).toHaveBeenCalled();
+    });
+
+    it('returns 429 when the source IP exceeds the per-IP brute-force threshold', async () => {
+      mockPrisma.activity.count.mockResolvedValueOnce(25);
+      mockPrisma.activity.findFirst.mockResolvedValueOnce({
+        createdAt: new Date(Date.now() - 2 * 60 * 1000),
+      });
+      const res = await request(createApp())
+        .post('/api/auth/login')
+        .send({ email: 'whoever@whitecaves.ae', password: 'Anything1' });
+      expect(res.status).toBe(429);
+      expect(res.body.error).toMatch(/this network/i);
+      expect(res.headers['retry-after']).toBeDefined();
+      expect(mockPrisma.user.findUnique).not.toHaveBeenCalled();
+      expect(mockBcrypt.compare).not.toHaveBeenCalled();
+    });
+
+    it('records a login_failed activity with reason=ip_locked_out when IP is throttled', async () => {
+      mockPrisma.activity.count.mockResolvedValueOnce(30);
+      mockPrisma.activity.findFirst.mockResolvedValueOnce({
+        createdAt: new Date(Date.now() - 60 * 1000),
+      });
+      await request(createApp())
+        .post('/api/auth/login')
+        .send({ email: 'whoever@whitecaves.ae', password: 'Anything1' });
+      await new Promise((resolve) => setImmediate(resolve));
+      const failedCall = mockPrisma.activity.create.mock.calls.find(
+        (c: any[]) => c[0]?.data?.action === 'login_failed',
+      );
+      expect(failedCall).toBeDefined();
+      expect(failedCall[0].data.metadata.reason).toBe('ip_locked_out');
     });
   });
 
