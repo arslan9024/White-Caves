@@ -50,6 +50,47 @@ const verifyPassword = async (password: string, hash: string): Promise<boolean> 
 };
 
 /**
+ * Extract a best-effort client IP from common proxy headers.
+ * Falls back to req.ip when no header is present.
+ */
+const getClientIp = (req: Request): string => {
+  const fwd = req.headers['x-forwarded-for'];
+  if (typeof fwd === 'string' && fwd.length > 0) {
+    return fwd.split(',')[0].trim();
+  }
+  return (req.ip || req.socket?.remoteAddress || 'unknown').toString();
+};
+
+/**
+ * Record a failed login attempt for audit purposes.
+ * Fire-and-forget — never blocks the response or surfaces errors to the client.
+ */
+const recordLoginFailure = (
+  req: Request,
+  reason: 'unknown_user' | 'invalid_password' | 'inactive' | 'no_password',
+  emailAttempt: string,
+  userId?: string,
+): void => {
+  const ip = getClientIp(req);
+  const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
+  logger.warn('Login failed', { reason, emailAttempt, ip, userAgent, userId });
+  // Persist as an Activity row for audit trail; don't await.
+  prisma.activity
+    .create({
+      data: {
+        type: 'system',
+        action: 'login_failed',
+        description: `Failed login attempt for ${emailAttempt} (${reason})`,
+        userId: userId ?? null,
+        metadata: { reason, emailAttempt, ip, userAgent } as Prisma.InputJsonValue,
+      },
+    })
+    .catch((err: unknown) => {
+      logger.warn('Failed to persist login_failed activity', { err });
+    });
+};
+
+/**
  * POST /api/auth/login
  * Login with email and password
  */
@@ -62,14 +103,18 @@ router.post(
       throw new AppError('Email and password are required', 400);
     }
 
+    const normalizedEmail = String(email).toLowerCase().trim();
+
     // Find user by email
-    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
+    const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (!user) {
+      recordLoginFailure(req, 'unknown_user', normalizedEmail);
       throw new AppError('Invalid email or password', 401);
     }
 
     // Only active users can authenticate
     if (user.status && user.status !== 'active') {
+      recordLoginFailure(req, 'inactive', normalizedEmail, user.id);
       throw new AppError('Account is inactive. Contact administrator.', 403);
     }
 
@@ -78,6 +123,7 @@ router.post(
     if (storedHash) {
       const valid = await verifyPassword(password, storedHash);
       if (!valid) {
+        recordLoginFailure(req, 'invalid_password', normalizedEmail, user.id);
         throw new AppError('Invalid email or password', 401);
       }
       // Auto-migrate legacy hashes to bcrypt on successful login
@@ -87,6 +133,7 @@ router.post(
       }
     } else {
       // No password set — reject login (admin must set password first)
+      recordLoginFailure(req, 'no_password', normalizedEmail, user.id);
       throw new AppError('Account not configured. Contact administrator.', 401);
     }
 
@@ -97,15 +144,19 @@ router.post(
       JWT_SIGN_OPTIONS
     );
 
-    // Log activity
+    // Log activity with enriched audit metadata (IP + UA) for forensics.
+    const ip = getClientIp(req);
+    const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
     await prisma.activity.create({
       data: {
         type: 'system',
         action: 'login',
         description: `${user.name || user.email} logged in`,
         userId: user.id,
+        metadata: { ip, userAgent } as Prisma.InputJsonValue,
       },
     });
+    logger.info('Login successful', { userId: user.id, email: user.email, ip, userAgent });
 
     res.status(200).json({
       success: true,

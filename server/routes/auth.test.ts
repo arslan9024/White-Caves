@@ -200,6 +200,79 @@ describe('Auth Routes — /api/auth', () => {
         })
       );
     });
+
+    it('enriches successful-login activity with ip + userAgent metadata', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1', email: 'test@whitecaves.ae', name: 'Test User',
+        role: 'agent', department: null, photoUrl: null,
+        passwordHash: '$2a$10$validhash',
+      });
+      mockBcrypt.compare.mockResolvedValueOnce(true);
+      await request(createApp())
+        .post('/api/auth/login')
+        .set('User-Agent', 'vitest-suite/1.0')
+        .set('X-Forwarded-For', '203.0.113.7, 10.0.0.1')
+        .send({ email: 'test@whitecaves.ae', password: 'Test1234' });
+      const successCall = mockPrisma.activity.create.mock.calls.find(
+        (c: any[]) => c[0]?.data?.action === 'login',
+      );
+      expect(successCall).toBeDefined();
+      expect(successCall[0].data.metadata).toEqual(
+        expect.objectContaining({ ip: '203.0.113.7', userAgent: 'vitest-suite/1.0' }),
+      );
+    });
+
+    it('records a login_failed activity when the user is unknown', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce(null);
+      await request(createApp())
+        .post('/api/auth/login')
+        .set('User-Agent', 'vitest-suite/1.0')
+        .send({ email: 'ghost@whitecaves.ae', password: 'Test1234' });
+      // fire-and-forget: flush microtasks
+      await new Promise((resolve) => setImmediate(resolve));
+      const failedCall = mockPrisma.activity.create.mock.calls.find(
+        (c: any[]) => c[0]?.data?.action === 'login_failed',
+      );
+      expect(failedCall).toBeDefined();
+      expect(failedCall[0].data.metadata).toEqual(
+        expect.objectContaining({ reason: 'unknown_user', emailAttempt: 'ghost@whitecaves.ae' }),
+      );
+    });
+
+    it('records a login_failed activity when the password is wrong', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1', email: 'test@whitecaves.ae', name: 'Test',
+        role: 'agent', passwordHash: '$2a$10$hashedvalue',
+      });
+      mockBcrypt.compare.mockResolvedValueOnce(false);
+      await request(createApp())
+        .post('/api/auth/login')
+        .send({ email: 'test@whitecaves.ae', password: 'WrongPass1' });
+      await new Promise((resolve) => setImmediate(resolve));
+      const failedCall = mockPrisma.activity.create.mock.calls.find(
+        (c: any[]) => c[0]?.data?.action === 'login_failed',
+      );
+      expect(failedCall).toBeDefined();
+      expect(failedCall[0].data.metadata.reason).toBe('invalid_password');
+      expect(failedCall[0].data.userId).toBe('user-1');
+    });
+
+    it('records a login_failed activity when the account is inactive', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1', email: 'test@whitecaves.ae', name: 'Test',
+        role: 'agent', status: 'suspended', passwordHash: '$2a$10$hashedvalue',
+      });
+      const res = await request(createApp())
+        .post('/api/auth/login')
+        .send({ email: 'test@whitecaves.ae', password: 'Test1234' });
+      expect(res.status).toBe(403);
+      await new Promise((resolve) => setImmediate(resolve));
+      const failedCall = mockPrisma.activity.create.mock.calls.find(
+        (c: any[]) => c[0]?.data?.action === 'login_failed',
+      );
+      expect(failedCall).toBeDefined();
+      expect(failedCall[0].data.metadata.reason).toBe('inactive');
+    });
   });
 
   // ── POST /register ───────────────────────────────────────────────
