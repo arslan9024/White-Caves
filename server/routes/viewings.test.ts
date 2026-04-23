@@ -4,7 +4,7 @@
  * All Prisma calls are mocked — no database needed.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import express from 'express';
 import request from 'supertest';
 
@@ -36,6 +36,14 @@ vi.mock('../database.js', () => ({ prisma: mockPrisma, connectDatabase: vi.fn() 
 vi.mock('../utils/logger.js', () => ({
   default: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
   createLogger: vi.fn(() => ({ info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() })),
+}));
+// Neutralize fire-and-forget email notifications so they do not consume
+// queued prisma mock values (mockResolvedValueOnce) across tests.
+vi.mock('../services/emailService.js', () => ({
+  sendEmailTracked: vi.fn().mockResolvedValue({ success: true }),
+  EMAIL_TEMPLATES: {
+    viewingConfirmation: () => ({ subject: '', html: '', text: '' }),
+  },
 }));
 
 import viewingsRoutes from './viewings';
@@ -70,6 +78,15 @@ describe('Viewings Routes — /api/viewings', () => {
     mockPrisma.viewing.delete.mockReset().mockResolvedValue({});
     mockPrisma.property.findUnique.mockReset().mockResolvedValue({ id: 'prop-1', title: 'Marina Apt' });
     app = createApp();
+  });
+
+  // Flush fire-and-forget async work (e.g. sendViewingNotification which
+  // performs an additional prisma.viewing.findUnique after the response).
+  // Without this, pending promises can consume the *next* test's queued
+  // mockResolvedValueOnce values and cause intermittent 404/403 mismatches.
+  afterEach(async () => {
+    await new Promise((resolve) => setImmediate(resolve));
+    await new Promise((resolve) => setImmediate(resolve));
   });
 
   describe('GET /api/viewings', () => {
