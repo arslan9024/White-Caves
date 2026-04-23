@@ -151,6 +151,43 @@ const LoginSecurityPage: FC = () => {
     [attempts],
   );
 
+  const handleExportCsv = (): void => {
+    if (attempts.length === 0) {
+      setToast('No rows to export.');
+      return;
+    }
+    const escape = (v: unknown): string => {
+      const s = v == null ? '' : String(v);
+      // RFC-4180: wrap in quotes; double internal quotes
+      return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const header = ['timestamp', 'action', 'email', 'reason', 'ip', 'userAgent', 'description'];
+    const rows = attempts.map((a) => {
+      const md = (a.metadata || {}) as Record<string, unknown>;
+      return [
+        new Date(a.createdAt).toISOString(),
+        a.action,
+        a.user?.email || (md.emailAttempt as string | undefined) || '',
+        (md.reason as string | undefined) || '',
+        (md.ip as string | undefined) || '',
+        (md.userAgent as string | undefined) || '',
+        a.description,
+      ].map(escape).join(',');
+    });
+    const csv = [header.join(','), ...rows].join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+    link.href = url;
+    link.download = `login-security-${status}-${stamp}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setToast(`Exported ${attempts.length} row(s).`);
+  };
+
   return (
     <div className="login-security-page">
       <header className="ls-header">
@@ -219,6 +256,15 @@ const LoginSecurityPage: FC = () => {
           disabled={loading}
         >
           {loading ? 'Refreshing…' : 'Refresh'}
+        </button>
+        <button
+          type="button"
+          className="ls-export"
+          onClick={handleExportCsv}
+          disabled={loading || attempts.length === 0}
+          aria-label="Export current view to CSV"
+        >
+          Export CSV
         </button>
       </section>
 

@@ -141,4 +141,24 @@ describe('LoginSecurityPage', () => {
 
     confirmSpy.mockRestore();
   });
+
+  it('exports the current view as CSV', async () => {
+    const createUrl = vi.fn(() => 'blob:mock');
+    const revokeUrl = vi.fn();
+    // Polyfill jsdom (URL.createObjectURL is undefined)
+    (URL as unknown as { createObjectURL: typeof createUrl }).createObjectURL = createUrl;
+    (URL as unknown as { revokeObjectURL: typeof revokeUrl }).revokeObjectURL = revokeUrl;
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+
+    render(<LoginSecurityPage />);
+    const exportBtn = await screen.findByRole('button', { name: /Export current view to CSV/i });
+    await waitFor(() => expect(exportBtn).not.toBeDisabled());
+    fireEvent.click(exportBtn);
+
+    expect(createUrl).toHaveBeenCalledTimes(1);
+    expect(clickSpy).toHaveBeenCalledTimes(1);
+    expect(revokeUrl).toHaveBeenCalledTimes(1);
+
+    clickSpy.mockRestore();
+  });
 });
