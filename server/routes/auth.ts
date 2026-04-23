@@ -741,4 +741,124 @@ router.post(
   }),
 );
 
+/**
+ * GET /api/auth/security/stats
+ * Admin-only — aggregate counts for the Login Security dashboard.
+ *
+ * Query params:
+ *   - sinceMinutes : restrict to last N minutes (default: 1440 = 24h, max: 30d)
+ *
+ * Returns:
+ *   {
+ *     totals: { logins, loginFailures, passwordChanges, passwordChangeFailures, accountUnlocks },
+ *     uniqueIpCount: number,
+ *     topOffendingIps: Array<{ ip: string, failures: number }>,  // top 5
+ *     topTargetedEmails: Array<{ email: string, failures: number }>, // top 5
+ *     windowMinutes: number,
+ *   }
+ */
+router.get(
+  '/security/stats',
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const role = req.user?.role;
+    const allowedRoles = ['owner', 'admin'];
+    if (!role || !allowedRoles.includes(role)) {
+      throw new AppError('Forbidden — admin access required', 403);
+    }
+
+    const rawSince = Number.parseInt(String(req.query.sinceMinutes ?? '1440'), 10);
+    const sinceMinutes = Number.isFinite(rawSince)
+      ? Math.min(Math.max(rawSince, 1), 60 * 24 * 30)
+      : 1440;
+    const since = new Date(Date.now() - sinceMinutes * 60 * 1000);
+
+    const trackedActions = [
+      'login',
+      'login_failed',
+      'password_changed',
+      'password_change_failed',
+      'account_unlocked',
+    ];
+
+    const rows = await prisma.activity.findMany({
+      where: {
+        type: 'system',
+        action: { in: trackedActions },
+        createdAt: { gte: since },
+      },
+      select: {
+        action: true,
+        description: true,
+        metadata: true,
+        user: { select: { email: true } },
+      },
+      take: 5000, // hard ceiling — we only need aggregates
+    });
+
+    const totals = {
+      logins: 0,
+      loginFailures: 0,
+      passwordChanges: 0,
+      passwordChangeFailures: 0,
+      accountUnlocks: 0,
+    };
+
+    const ipCounts = new Map<string, number>(); // failures by ip
+    const emailCounts = new Map<string, number>(); // failures by targeted email
+    const uniqueIps = new Set<string>();
+
+    for (const r of rows) {
+      const md = (r.metadata || {}) as Record<string, unknown>;
+      const ip = typeof md.ip === 'string' ? md.ip : null;
+      if (ip) uniqueIps.add(ip);
+
+      switch (r.action) {
+        case 'login':
+          totals.logins += 1;
+          break;
+        case 'login_failed': {
+          totals.loginFailures += 1;
+          if (ip) ipCounts.set(ip, (ipCounts.get(ip) || 0) + 1);
+          const email =
+            (typeof md.emailAttempt === 'string' && md.emailAttempt) ||
+            r.user?.email ||
+            null;
+          if (email) emailCounts.set(email, (emailCounts.get(email) || 0) + 1);
+          break;
+        }
+        case 'password_changed':
+          totals.passwordChanges += 1;
+          break;
+        case 'password_change_failed':
+          totals.passwordChangeFailures += 1;
+          break;
+        case 'account_unlocked':
+          totals.accountUnlocks += 1;
+          break;
+      }
+    }
+
+    const topOffendingIps = [...ipCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([ip, failures]) => ({ ip, failures }));
+    const topTargetedEmails = [...emailCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([email, failures]) => ({ email, failures }));
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totals,
+        uniqueIpCount: uniqueIps.size,
+        topOffendingIps,
+        topTargetedEmails,
+        windowMinutes: sinceMinutes,
+      },
+    });
+  }),
+);
+
 export default router;

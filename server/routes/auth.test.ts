@@ -787,4 +787,60 @@ describe('Auth Routes — /api/auth', () => {
       expect(auditCall[0].data.metadata.clearedFailures).toBe(7);
     });
   });
+
+  // ── GET /security/stats ─────────────────────────────────────────
+  describe('GET /api/auth/security/stats', () => {
+    it('returns 403 for non-admin roles', async () => {
+      const res = await request(createApp('agent')).get('/api/auth/security/stats');
+      expect(res.status).toBe(403);
+    });
+
+    it('aggregates totals, unique IPs, and top offending IPs/emails', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([
+        { action: 'login', description: 'ok', metadata: { ip: '1.1.1.1' }, user: null },
+        { action: 'login', description: 'ok', metadata: { ip: '1.1.1.2' }, user: null },
+        {
+          action: 'login_failed', description: 'bad',
+          metadata: { ip: '9.9.9.9', emailAttempt: 'ghost@x.ae' }, user: null,
+        },
+        {
+          action: 'login_failed', description: 'bad',
+          metadata: { ip: '9.9.9.9', emailAttempt: 'ghost@x.ae' }, user: null,
+        },
+        {
+          action: 'login_failed', description: 'bad',
+          metadata: { ip: '9.9.9.9', emailAttempt: 'ghost@x.ae' }, user: null,
+        },
+        {
+          action: 'login_failed', description: 'bad',
+          metadata: { ip: '8.8.8.8' }, user: { email: 'real@x.ae' },
+        },
+        { action: 'password_changed', description: 'pw', metadata: { ip: '1.1.1.1' }, user: null },
+        { action: 'password_change_failed', description: 'pw bad', metadata: {}, user: null },
+        { action: 'account_unlocked', description: 'ul', metadata: { ip: '7.7.7.7' }, user: null },
+      ]);
+
+      const res = await request(createApp('owner')).get('/api/auth/security/stats?sinceMinutes=60');
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.totals).toEqual({
+        logins: 2,
+        loginFailures: 4,
+        passwordChanges: 1,
+        passwordChangeFailures: 1,
+        accountUnlocks: 1,
+      });
+      expect(res.body.data.windowMinutes).toBe(60);
+      expect(res.body.data.uniqueIpCount).toBe(5); // 1.1.1.1, 1.1.1.2, 9.9.9.9, 8.8.8.8, 7.7.7.7
+      expect(res.body.data.topOffendingIps[0]).toEqual({ ip: '9.9.9.9', failures: 3 });
+      expect(res.body.data.topTargetedEmails[0]).toEqual({ email: 'ghost@x.ae', failures: 3 });
+    });
+
+    it('clamps sinceMinutes to the [1, 30 days] range', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([]);
+      const res = await request(createApp('admin')).get('/api/auth/security/stats?sinceMinutes=999999');
+      expect(res.status).toBe(200);
+      expect(res.body.data.windowMinutes).toBe(60 * 24 * 30);
+    });
+  });
 });

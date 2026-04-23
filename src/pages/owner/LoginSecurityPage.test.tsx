@@ -91,41 +91,45 @@ describe('LoginSecurityPage', () => {
 
   it('issues unlock request when Unlock button is clicked', async () => {
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    // First call (mount) returns list; second (unlock) returns ok; third (refetch) returns list.
-    mockAuthFetch
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        statusText: 'OK',
-        json: () =>
-          Promise.resolve({
+    // Dispatch responses by URL so we tolerate the parallel /security/stats fetch.
+    let listCalls = 0;
+    mockAuthFetch.mockImplementation((url: unknown, opts?: { method?: string }) => {
+      const u = String(url);
+      if (u.includes('/security/login-attempts')) {
+        listCalls += 1;
+        return Promise.resolve({
+          ok: true, status: 200, statusText: 'OK',
+          json: () => Promise.resolve({
             success: true,
-            data: sampleAttempts,
-            meta: { count: 2, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
+            data: listCalls === 1 ? sampleAttempts : [],
+            meta: { count: 0, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
           }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        statusText: 'OK',
-        text: () => Promise.resolve(''),
-        json: () =>
-          Promise.resolve({
+        });
+      }
+      if (u.includes('/security/stats')) {
+        return Promise.resolve({
+          ok: true, status: 200, statusText: 'OK',
+          json: () => Promise.resolve({
+            success: true,
+            data: {
+              totals: { logins: 0, loginFailures: 0, passwordChanges: 0, passwordChangeFailures: 0, accountUnlocks: 0 },
+              uniqueIpCount: 0, topOffendingIps: [], topTargetedEmails: [], windowMinutes: 1440,
+            },
+          }),
+        });
+      }
+      if (u.includes('/security/unlock') && opts?.method === 'POST') {
+        return Promise.resolve({
+          ok: true, status: 200, statusText: 'OK',
+          text: () => Promise.resolve(''),
+          json: () => Promise.resolve({
             success: true,
             data: { userId: 'user-1', email: 'ghost@whitecaves.ae', clearedFailures: 5 },
           }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        statusText: 'OK',
-        json: () =>
-          Promise.resolve({
-            success: true,
-            data: [],
-            meta: { count: 0, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
-          }),
-      });
+        });
+      }
+      return Promise.resolve({ ok: false, status: 404, statusText: 'NF', text: () => Promise.resolve(''), json: () => Promise.resolve({}) });
+    });
 
     render(<LoginSecurityPage />);
     const unlockBtn = await screen.findByRole('button', { name: /Unlock$/i });
@@ -160,5 +164,38 @@ describe('LoginSecurityPage', () => {
     expect(revokeUrl).toHaveBeenCalledTimes(1);
 
     clickSpy.mockRestore();
+  });
+
+  it('renders the Unique IPs stats tile when /security/stats responds', async () => {
+    mockAuthFetch.mockImplementation((url: unknown) => {
+      const u = String(url);
+      if (u.includes('/security/stats')) {
+        return Promise.resolve({
+          ok: true, status: 200, statusText: 'OK',
+          json: () => Promise.resolve({
+            success: true,
+            data: {
+              totals: { logins: 7, loginFailures: 3, passwordChanges: 1, passwordChangeFailures: 0, accountUnlocks: 2 },
+              uniqueIpCount: 42,
+              topOffendingIps: [{ ip: '9.9.9.9', failures: 3 }],
+              topTargetedEmails: [{ email: 'ghost@x.ae', failures: 3 }],
+              windowMinutes: 1440,
+            },
+          }),
+        });
+      }
+      return Promise.resolve({
+        ok: true, status: 200, statusText: 'OK',
+        json: () => Promise.resolve({
+          success: true, data: [],
+          meta: { count: 0, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
+        }),
+      });
+    });
+
+    render(<LoginSecurityPage />);
+    expect(await screen.findByText('Unique IPs')).toBeInTheDocument();
+    expect(screen.getByText('42')).toBeInTheDocument();
+    expect(screen.getByText('9.9.9.9')).toBeInTheDocument();
   });
 });

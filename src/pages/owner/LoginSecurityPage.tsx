@@ -41,6 +41,20 @@ interface AttemptsResponse {
   meta: { count: number; limit: number; sinceMinutes: number; status: string; emailFilter: string | null };
 }
 
+interface SecurityStats {
+  totals: {
+    logins: number;
+    loginFailures: number;
+    passwordChanges: number;
+    passwordChangeFailures: number;
+    accountUnlocks: number;
+  };
+  uniqueIpCount: number;
+  topOffendingIps: Array<{ ip: string; failures: number }>;
+  topTargetedEmails: Array<{ email: string; failures: number }>;
+  windowMinutes: number;
+}
+
 const STATUS_OPTIONS: { value: AttemptStatus; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'failed', label: 'Failed logins' },
@@ -63,6 +77,7 @@ const LoginSecurityPage: FC = () => {
   const [sinceMinutes, setSinceMinutes] = useState<number>(24 * 60);
   const [emailFilter, setEmailFilter] = useState<string>('');
   const [attempts, setAttempts] = useState<LoginAttempt[]>([]);
+  const [stats, setStats] = useState<SecurityStats | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [unlockingId, setUnlockingId] = useState<string | null>(null);
@@ -108,6 +123,26 @@ const LoginSecurityPage: FC = () => {
     fetchAttempts(controller.signal);
     return () => controller.abort();
   }, [fetchAttempts]);
+
+  // Stats are fetched whenever the window changes (independent of status/email filters)
+  useEffect(() => {
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await authFetch(
+          `/api/auth/security/stats?sinceMinutes=${sinceMinutes}`,
+          { signal: controller.signal },
+        );
+        if (!res.ok) return;
+        const json = await res.json();
+        setStats(json.data || null);
+      } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+        log.error('Failed to fetch security stats', err);
+      }
+    })();
+    return () => controller.abort();
+  }, [sinceMinutes]);
 
   const handleUnlock = async (target: LoginAttempt): Promise<void> => {
     const userId = target.userId;
@@ -209,6 +244,55 @@ const LoginSecurityPage: FC = () => {
           <span className="ls-summary-value">{attempts.length}</span>
         </div>
       </section>
+
+      {stats && stats.totals && (
+        <section className="ls-stats" aria-label="Aggregate stats for the selected window">
+          <div className="ls-stats-tile">
+            <span className="ls-stats-label">Unique IPs</span>
+            <span className="ls-stats-value">{stats.uniqueIpCount}</span>
+          </div>
+          <div className="ls-stats-tile">
+            <span className="ls-stats-label">Password changes</span>
+            <span className="ls-stats-value">{stats.totals.passwordChanges}</span>
+          </div>
+          <div className="ls-stats-tile">
+            <span className="ls-stats-label">Password failures</span>
+            <span className="ls-stats-value">{stats.totals.passwordChangeFailures}</span>
+          </div>
+          <div className="ls-stats-tile">
+            <span className="ls-stats-label">Account unlocks</span>
+            <span className="ls-stats-value">{stats.totals.accountUnlocks}</span>
+          </div>
+          <div className="ls-stats-tile ls-stats-list">
+            <span className="ls-stats-label">Top offending IPs</span>
+            {stats.topOffendingIps.length === 0 ? (
+              <span className="ls-muted">None</span>
+            ) : (
+              <ul>
+                {stats.topOffendingIps.map((row) => (
+                  <li key={row.ip}>
+                    <code>{row.ip}</code> <span className="ls-muted">({row.failures})</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <div className="ls-stats-tile ls-stats-list">
+            <span className="ls-stats-label">Top targeted emails</span>
+            {stats.topTargetedEmails.length === 0 ? (
+              <span className="ls-muted">None</span>
+            ) : (
+              <ul>
+                {stats.topTargetedEmails.map((row) => (
+                  <li key={row.email}>
+                    {row.email} <span className="ls-muted">({row.failures})</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+      )}
 
       <section className="ls-filters" aria-label="Filters">
         <label className="ls-filter">

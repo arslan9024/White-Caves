@@ -49,6 +49,50 @@
 .ls-summary-failed { border-left: 4px solid #EF4444; }
 .ls-summary-total { border-left: 4px solid var(--primary-color, #D4AF37); }
 
+.ls-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.ls-stats-tile {
+  background: var(--bg-secondary, #fafafa);
+  border: 1px solid var(--border-color, #e3e3e3);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.ls-stats-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary, #666);
+}
+.ls-stats-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+.ls-stats-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.ls-stats-list li {
+  font-size: 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.ls-stats-list code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85rem;
+}
+
 .ls-filters {
   display: flex;
   flex-wrap: wrap;
