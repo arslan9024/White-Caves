@@ -53,7 +53,24 @@ function createApp(role = 'buyer') {
 describe('Viewings Routes — /api/viewings', () => {
   let app: ReturnType<typeof createApp>;
 
-  beforeEach(() => { vi.clearAllMocks(); app = createApp(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Fully reset queued mock implementations to prevent cross-test pollution.
+    // (clearAllMocks does NOT clear queued mockResolvedValueOnce values.)
+    mockPrisma.viewing.findUnique.mockReset().mockResolvedValue(null);
+    mockPrisma.viewing.findMany.mockReset().mockResolvedValue([]);
+    mockPrisma.viewing.count.mockReset().mockResolvedValue(0);
+    mockPrisma.viewing.create.mockReset().mockResolvedValue({
+      id: 'v-1', userId: 'user-1', propertyId: 'prop-1',
+      scheduledAt: new Date('2026-06-15T10:00:00Z'),
+      type: 'in_person', status: 'scheduled', duration: 30, notes: null,
+      property: { id: 'prop-1', title: 'Marina Apt', location: 'Dubai Marina', price: 1500000 },
+    });
+    mockPrisma.viewing.update.mockReset().mockResolvedValue({ id: 'v-1', status: 'confirmed' });
+    mockPrisma.viewing.delete.mockReset().mockResolvedValue({});
+    mockPrisma.property.findUnique.mockReset().mockResolvedValue({ id: 'prop-1', title: 'Marina Apt' });
+    app = createApp();
+  });
 
   describe('GET /api/viewings', () => {
     it('returns 200 with empty list', async () => {
