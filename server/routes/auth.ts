@@ -17,6 +17,13 @@ import logger from '../utils/logger.js';
 
 const router = Router();
 
+const JWT_SIGN_OPTIONS: SignOptions = {
+  expiresIn: JWT_EXPIRES_SECONDS,
+  algorithm: 'HS256',
+  issuer: process.env.JWT_ISSUER || 'white-caves-crm',
+  audience: process.env.JWT_AUDIENCE || 'white-caves-clients',
+};
+
 /**
  * Hash a password using bcrypt
  */
@@ -61,6 +68,11 @@ router.post(
       throw new AppError('Invalid email or password', 401);
     }
 
+    // Only active users can authenticate
+    if (user.status && user.status !== 'active') {
+      throw new AppError('Account is inactive. Contact administrator.', 403);
+    }
+
     // Check password (uses proper passwordHash column)
     const storedHash = user.passwordHash;
     if (storedHash) {
@@ -82,7 +94,7 @@ router.post(
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_SECONDS }
+      JWT_SIGN_OPTIONS
     );
 
     // Log activity
@@ -178,7 +190,7 @@ router.post(
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_SECONDS }
+      JWT_SIGN_OPTIONS
     );
 
     await prisma.activity.create({
@@ -227,7 +239,7 @@ router.post(
       const token = jwt.sign(
         { id: user.id, email: user.email, role: user.role },
         JWT_SECRET,
-        { expiresIn: JWT_EXPIRES_SECONDS }
+        JWT_SIGN_OPTIONS
       );
 
       return res.status(200).json({
