@@ -17,11 +17,17 @@ import './LoginSecurityPage.css';
 
 const log = createLogger('LoginSecurityPage');
 
-type AttemptStatus = 'all' | 'failed' | 'success';
+type AttemptStatus = 'all' | 'failed' | 'success' | 'password';
 
 interface LoginAttempt {
   id: string;
-  action: 'login' | 'login_failed' | 'account_unlocked' | string;
+  action:
+    | 'login'
+    | 'login_failed'
+    | 'account_unlocked'
+    | 'password_changed'
+    | 'password_change_failed'
+    | string;
   description: string;
   createdAt: string;
   userId: string | null;
@@ -37,8 +43,9 @@ interface AttemptsResponse {
 
 const STATUS_OPTIONS: { value: AttemptStatus; label: string }[] = [
   { value: 'all', label: 'All' },
-  { value: 'failed', label: 'Failed' },
-  { value: 'success', label: 'Success' },
+  { value: 'failed', label: 'Failed logins' },
+  { value: 'success', label: 'Successful logins' },
+  { value: 'password', label: 'Password changes' },
 ];
 
 const SINCE_OPTIONS: { value: number; label: string }[] = [

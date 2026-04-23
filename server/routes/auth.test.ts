@@ -641,6 +641,39 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.body.success).toBe(true);
       expect(mockPrisma.user.update).toHaveBeenCalled();
     });
+
+    it('writes a password_changed audit row on success', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1', email: 'test@whitecaves.ae', passwordHash: '$2a$10$existing',
+      });
+      mockBcrypt.compare.mockResolvedValueOnce(true);
+      await request(createApp('owner'))
+        .put('/api/auth/password')
+        .send({ currentPassword: 'OldValid123', newPassword: 'NewValid456' });
+      const auditCall = mockPrisma.activity.create.mock.calls.find(
+        (c: any[]) => c[0]?.data?.action === 'password_changed',
+      );
+      expect(auditCall).toBeTruthy();
+      expect(auditCall[0].data.userId).toBe('user-1');
+    });
+
+    it('writes a password_change_failed audit row on invalid current password', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1', email: 'test@whitecaves.ae', passwordHash: '$2a$10$existing',
+      });
+      mockBcrypt.compare.mockResolvedValueOnce(false);
+      await request(createApp('owner'))
+        .put('/api/auth/password')
+        .send({ currentPassword: 'WrongOld1', newPassword: 'NewValid456' });
+      // Allow the fire-and-forget audit to flush
+      await new Promise((r) => setImmediate(r));
+      const auditCall = mockPrisma.activity.create.mock.calls.find(
+        (c: any[]) =>
+          c[0]?.data?.action === 'password_change_failed' &&
+          c[0]?.data?.metadata?.reason === 'invalid_current_password',
+      );
+      expect(auditCall).toBeTruthy();
+    });
   });
 
   // ── GET /security/login-attempts ────────────────────────────────
@@ -682,6 +715,15 @@ describe('Auth Routes — /api/auth', () => {
       await request(createApp('admin')).get('/api/auth/security/login-attempts?status=failed');
       const callArgs = mockPrisma.activity.findMany.mock.calls[0][0];
       expect(callArgs.where.action).toEqual({ in: ['login_failed'] });
+    });
+
+    it('filters by status=password to surface password change activity', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([]);
+      await request(createApp('admin')).get('/api/auth/security/login-attempts?status=password');
+      const callArgs = mockPrisma.activity.findMany.mock.calls[0][0];
+      expect(callArgs.where.action).toEqual({
+        in: ['password_changed', 'password_change_failed'],
+      });
     });
 
     it('applies an email substring filter via OR clause', async () => {

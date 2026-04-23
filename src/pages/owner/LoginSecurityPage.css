@@ -159,6 +159,8 @@
 .ls-badge-login { background: #d1fae5; color: #065f46; }
 .ls-badge-login_failed { background: #fee2e2; color: #991B1B; }
 .ls-badge-account_unlocked { background: #fef3c7; color: #78350F; }
+.ls-badge-password_changed { background: #dbeafe; color: #1E3A8A; }
+.ls-badge-password_change_failed { background: #fee2e2; color: #7F1D1D; }
 
 .ls-role {
   display: block;

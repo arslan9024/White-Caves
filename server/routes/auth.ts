@@ -536,13 +536,39 @@ router.put(
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new AppError('User not found', 404);
 
+    const ip = getClientIp(req);
+    const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
+
     const storedHash = user.passwordHash;
     if (storedHash) {
       if (!currentPassword) {
+        // Fire-and-forget audit; never block the 400 response
+        prisma.activity
+          .create({
+            data: {
+              type: 'system',
+              action: 'password_change_failed',
+              description: `Password change rejected for ${user.email}: missing current password`,
+              userId,
+              metadata: { reason: 'missing_current_password', ip, userAgent } as Prisma.InputJsonValue,
+            },
+          })
+          .catch((err) => logger.warn('Failed to audit password_change_failed', { err }));
         throw new AppError('Current password is required to change password', 400);
       }
       const valid = await verifyPassword(currentPassword, storedHash);
       if (!valid) {
+        prisma.activity
+          .create({
+            data: {
+              type: 'system',
+              action: 'password_change_failed',
+              description: `Password change rejected for ${user.email}: invalid current password`,
+              userId,
+              metadata: { reason: 'invalid_current_password', ip, userAgent } as Prisma.InputJsonValue,
+            },
+          })
+          .catch((err) => logger.warn('Failed to audit password_change_failed', { err }));
         throw new AppError('Current password is incorrect', 401);
       }
     }
@@ -552,6 +578,17 @@ router.put(
     await prisma.user.update({
       where: { id: userId },
       data: { passwordHash: newHash },
+    });
+
+    // Audit success
+    await prisma.activity.create({
+      data: {
+        type: 'system',
+        action: 'password_changed',
+        description: `Password changed for ${user.email}`,
+        userId,
+        metadata: { ip, userAgent } as Prisma.InputJsonValue,
+      },
     });
 
     res.status(200).json({ success: true, message: 'Password updated successfully' });
@@ -564,7 +601,7 @@ router.put(
  *
  * Query params:
  *   - email   : filter by emailAttempt or user.email (case-insensitive substring)
- *   - status  : 'failed' | 'success' | 'all' (default: 'all')
+ *   - status  : 'failed' | 'success' | 'password' | 'all' (default: 'all')
  *   - limit   : 1-200 (default: 50)
  *   - sinceMinutes : restrict to last N minutes (default: 1440 = 24h)
  */
@@ -588,7 +625,8 @@ router.get(
     const actions: string[] =
       status === 'failed' ? ['login_failed']
       : status === 'success' ? ['login']
-      : ['login', 'login_failed'];
+      : status === 'password' ? ['password_changed', 'password_change_failed']
+      : ['login', 'login_failed', 'password_changed', 'password_change_failed', 'account_unlocked'];
 
     const since = new Date(Date.now() - sinceMinutes * 60 * 1000);
 
