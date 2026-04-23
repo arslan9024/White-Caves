@@ -86,7 +86,7 @@ const ContactCTA = () => {
   ];
 
   return (
-    <section className="contact-cta-section" id="contact-cta">
+    <section className="contact-cta-section dubai-luxury-theme" id="contact-cta">
       <div className="contact-bg-shapes">
         <div className="cta-shape cta-shape-1" />
         <div className="cta-shape cta-shape-2" />

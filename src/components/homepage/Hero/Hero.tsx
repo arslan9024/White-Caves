@@ -125,7 +125,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="hero-section" id="home">
+    <section className="hero-section dubai-luxury-theme" id="home">
       <div className="hero-background">
         <motion.div 
           className="hero-bg-image"

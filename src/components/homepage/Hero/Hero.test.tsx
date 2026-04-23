@@ -89,6 +89,12 @@ describe('Hero', () => {
       expect(section?.tagName.toLowerCase()).toBe('section');
     });
 
+    it('applies the dubai-luxury-theme class to the hero section', () => {
+      render(<Hero />);
+      const section = document.getElementById('home');
+      expect(section?.classList.contains('dubai-luxury-theme')).toBe(true);
+    });
+
     it('displays the main heading with gradient text', () => {
       render(<Hero />);
       expect(screen.getByText(/Find Your Dream/i)).toBeTruthy();

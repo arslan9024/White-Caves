@@ -76,6 +76,12 @@ describe('ContactCTA', () => {
       expect(container.querySelector('.contact-cta-section')).toBeInTheDocument();
     });
 
+    it('applies the dubai-luxury-theme class to the section', () => {
+      const { container } = render(<ContactCTA />);
+      const section = container.querySelector('.contact-cta-section');
+      expect(section?.classList.contains('dubai-luxury-theme')).toBe(true);
+    });
+
     it('renders Get In Touch tag', () => {
       render(<ContactCTA />);
       expect(screen.getByText('Get In Touch')).toBeInTheDocument();

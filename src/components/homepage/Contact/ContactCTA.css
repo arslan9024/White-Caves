@@ -205,7 +205,8 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 1rem 2rem;
-  background: var(--primary-color);
+  /* Uses luxury gradient when inside .dubai-luxury-theme scope */
+  background: var(--luxury-cta-bg, var(--primary-color));
   color: white;
   font-family: var(--font-heading);
   font-size: 1rem;
@@ -218,7 +219,7 @@
 }
 
 .submit-btn:hover:not(:disabled) {
-  background: var(--primary-dark);
+  background: var(--luxury-cta-bg-hover, var(--primary-dark));
   box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
 }
 
