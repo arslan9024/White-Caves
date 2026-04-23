@@ -163,6 +163,13 @@ describe('PropertyDetailPage', () => {
         expect(screen.getByTestId('footer')).toBeInTheDocument();
       });
     });
+
+    it('should opt into the Dubai Luxury theme cascade', async () => {
+      renderPage('p1');
+      await waitFor(() => {
+        expect(screen.getByTestId('property-detail-page')).toHaveClass('dubai-luxury-theme');
+      });
+    });
   });
 
   // ── Specs ──────────────────────────────────────────────────────

@@ -108,7 +108,7 @@ const PropertyDetailPage: FC = () => {
   if (loading) {
     return (
       <AppLayout>
-        <div className="property-detail-page">
+        <div className="property-detail-page dubai-luxury-theme">
           <div className="detail-loading">
             <div className="loading-spinner" />
             <p>Loading property details...</p>
@@ -122,7 +122,7 @@ const PropertyDetailPage: FC = () => {
   if (!property) {
     return (
       <AppLayout>
-        <div className="property-detail-page">
+        <div className="property-detail-page dubai-luxury-theme">
           <div className="detail-not-found">
             <p style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏠</p>
             <h2>Property Not Found</h2>
@@ -141,7 +141,7 @@ const PropertyDetailPage: FC = () => {
 
   return (
     <AppLayout>
-      <div className="property-detail-page" data-testid="property-detail-page">
+      <div className="property-detail-page dubai-luxury-theme" data-testid="property-detail-page">
         {/* ─── Breadcrumb ───────────────────────────────────── */}
         <nav className="detail-breadcrumb" aria-label="Breadcrumb">
           <Link to="/properties">Properties</Link>
