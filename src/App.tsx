@@ -122,6 +122,7 @@ const NadiaPage = lazy(() => import('./pages/NadiaPage'));
 
 // Owner/MD Sub-Pages (BusinessModelPage, ClientServicesPage removed — redirected to /modern-dashboard)
 const SystemHealthPage = lazy(() => import('./pages/owner/SystemHealthPage'));
+const LoginSecurityPage = lazy(() => import('./pages/owner/LoginSecurityPage'));
 const WhatsAppDashboardPage = lazy(() => import('./pages/owner/WhatsAppDashboardPage'));
 const WhatsAppChatbotPage = lazy(() => import('./pages/owner/WhatsAppChatbotPage'));
 const WhatsAppAnalyticsPage = lazy(() => import('./pages/owner/WhatsAppAnalyticsPage'));
@@ -447,6 +448,17 @@ function App(): React.JSX.Element {
                     <RouteErrorBoundary section="System Health">
                       <Suspense fallback={<SuspenseLoader />}>
                         <SystemHealthPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/owner/login-security" element={
+                <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                  <AppLayout>
+                    <RouteErrorBoundary section="Login Security">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <LoginSecurityPage />
                       </Suspense>
                     </RouteErrorBoundary>
                   </AppLayout>
