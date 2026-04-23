@@ -27,6 +27,7 @@ const { mockPrisma, mockBcrypt, mockJwt } = vi.hoisted(() => {
       },
       activity: {
         create: fn().mockResolvedValue({ id: 'act-1' }),
+        findMany: fn().mockResolvedValue([]),
       },
     },
     mockBcrypt: {
@@ -582,6 +583,56 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(mockPrisma.user.update).toHaveBeenCalled();
+    });
+  });
+
+  // ── GET /security/login-attempts ────────────────────────────────
+  describe('GET /api/auth/security/login-attempts', () => {
+    it('returns 403 for non-admin roles', async () => {
+      const res = await request(createApp('agent')).get('/api/auth/security/login-attempts');
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/admin access required/i);
+    });
+
+    it('returns 200 with results for owner', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([
+        {
+          id: 'a1', action: 'login_failed',
+          description: 'Failed login attempt for ghost@x.ae (unknown_user)',
+          createdAt: new Date('2026-04-23T10:00:00Z'),
+          userId: null, user: null,
+          metadata: { reason: 'unknown_user', ip: '203.0.113.7', userAgent: 'ua' },
+        },
+      ]);
+      const res = await request(createApp('owner')).get('/api/auth/security/login-attempts');
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.meta).toEqual(
+        expect.objectContaining({ count: 1, limit: 50, status: 'all' }),
+      );
+    });
+
+    it('clamps limit to the [1, 200] range and forwards to Prisma', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([]);
+      await request(createApp('admin')).get('/api/auth/security/login-attempts?limit=999');
+      const callArgs = mockPrisma.activity.findMany.mock.calls[0][0];
+      expect(callArgs.take).toBe(200);
+    });
+
+    it('filters by status=failed via action whitelist', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([]);
+      await request(createApp('admin')).get('/api/auth/security/login-attempts?status=failed');
+      const callArgs = mockPrisma.activity.findMany.mock.calls[0][0];
+      expect(callArgs.where.action).toEqual({ in: ['login_failed'] });
+    });
+
+    it('applies an email substring filter via OR clause', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([]);
+      await request(createApp('owner')).get('/api/auth/security/login-attempts?email=Ghost');
+      const callArgs = mockPrisma.activity.findMany.mock.calls[0][0];
+      expect(callArgs.where.OR).toBeDefined();
+      expect(callArgs.where.OR[0].description.contains).toBe('ghost');
     });
   });
 });

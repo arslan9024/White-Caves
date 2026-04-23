@@ -496,4 +496,74 @@ router.put(
   })
 );
 
+/**
+ * GET /api/auth/security/login-attempts
+ * Admin-only forensic view of recent login activity (success + failed).
+ *
+ * Query params:
+ *   - email   : filter by emailAttempt or user.email (case-insensitive substring)
+ *   - status  : 'failed' | 'success' | 'all' (default: 'all')
+ *   - limit   : 1-200 (default: 50)
+ *   - sinceMinutes : restrict to last N minutes (default: 1440 = 24h)
+ */
+router.get(
+  '/security/login-attempts',
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const role = req.user?.role;
+    const allowedRoles = ['owner', 'admin'];
+    if (!role || !allowedRoles.includes(role)) {
+      throw new AppError('Forbidden — admin access required', 403);
+    }
+
+    const status = String(req.query.status || 'all').toLowerCase();
+    const emailFilter = req.query.email ? String(req.query.email).toLowerCase().trim() : null;
+    const rawLimit = Number.parseInt(String(req.query.limit ?? '50'), 10);
+    const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(rawLimit, 1), 200) : 50;
+    const rawSince = Number.parseInt(String(req.query.sinceMinutes ?? '1440'), 10);
+    const sinceMinutes = Number.isFinite(rawSince) ? Math.min(Math.max(rawSince, 1), 60 * 24 * 30) : 1440;
+
+    const actions: string[] =
+      status === 'failed' ? ['login_failed']
+      : status === 'success' ? ['login']
+      : ['login', 'login_failed'];
+
+    const since = new Date(Date.now() - sinceMinutes * 60 * 1000);
+
+    const where: Prisma.ActivityWhereInput = {
+      type: 'system',
+      action: { in: actions },
+      createdAt: { gte: since },
+    };
+
+    if (emailFilter) {
+      where.OR = [
+        { description: { contains: emailFilter, mode: 'insensitive' } },
+        { user: { is: { email: { contains: emailFilter, mode: 'insensitive' } } } },
+      ];
+    }
+
+    const activities = await prisma.activity.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      include: { user: { select: { id: true, email: true, name: true, role: true } } },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: activities.map((a) => ({
+        id: a.id,
+        action: a.action,
+        description: a.description,
+        createdAt: a.createdAt,
+        userId: a.userId,
+        user: a.user,
+        metadata: a.metadata,
+      })),
+      meta: { count: activities.length, limit, sinceMinutes, status, emailFilter },
+    });
+  }),
+);
+
 export default router;
