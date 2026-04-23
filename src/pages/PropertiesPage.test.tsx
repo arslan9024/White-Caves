@@ -182,6 +182,13 @@ describe('PropertiesPage', () => {
       renderPage();
       expect(screen.getByTestId('footer')).toBeInTheDocument();
     });
+
+    it('should apply the dubai-luxury-theme cascade class to the page root', () => {
+      renderPage();
+      const root = document.querySelector('.properties-page');
+      expect(root).not.toBeNull();
+      expect(root?.classList.contains('dubai-luxury-theme')).toBe(true);
+    });
   });
 
   // ── Property Cards ───────────────────────────────────────────

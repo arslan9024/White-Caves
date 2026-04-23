@@ -35,7 +35,7 @@ const PropertiesPage: FC = () => {
 
   return (
     <AppLayout>
-      <div className="properties-page">
+      <div className="properties-page dubai-luxury-theme">
         {/* ─── Hero Banner ──────────────────────────────────── */}
         <section className="properties-hero">
           <div className="properties-hero-overlay" />

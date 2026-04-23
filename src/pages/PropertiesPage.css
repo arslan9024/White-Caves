@@ -135,7 +135,8 @@
 }
 
 .purpose-tabs button.active {
-  background: var(--primary-color);
+  /* Luxury gradient inside .dubai-luxury-theme scope, falls back to flat primary elsewhere */
+  background: var(--luxury-cta-bg, var(--primary-color));
   color: white;
 }
 
@@ -310,7 +311,7 @@
 }
 
 .view-toggle button.active {
-  background: var(--primary-color);
+  background: var(--luxury-cta-bg, var(--primary-color));
   color: white;
 }
 
@@ -454,7 +455,7 @@
 }
 
 .card-badges .badge.featured {
-  background: linear-gradient(135deg, #D4AF37 0%, #B8960C 100%);
+  background: var(--luxury-cta-bg, linear-gradient(135deg, #D4AF37 0%, #B8960C 100%));
   color: white;
 }
 
