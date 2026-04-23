@@ -10,6 +10,7 @@ import { motion } from 'framer-motion';
 import { Search, MapPin, Home, BedDouble, DollarSign, ChevronDown } from 'lucide-react';
 import { setFilters, clearFilters } from '../../../store/propertySlice';
 import type { AppDispatch } from '../../../store/store';
+import '../../../styles/dubaiLuxuryTheme.css';
 import './HeroSearchBar.css';
 
 /* ─── Dubai Communities ─────────────────────────────────────────────── */
@@ -167,7 +168,7 @@ const HeroSearchBar = memo(function HeroSearchBar() {
 
   return (
     <motion.div
-      className="hero-search-container"
+      className="hero-search-container dubai-luxury-theme"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.8, ease: 'easeOut' }}

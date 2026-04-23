@@ -15,10 +15,10 @@
   align-items: center;
   gap: 0;
   padding: 0.5rem;
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--luxury-glass-bg, rgba(255, 255, 255, 0.12));
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--luxury-glass-border, rgba(255, 255, 255, 0.2));
   border-radius: 1rem;
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.25),
@@ -100,8 +100,8 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.875rem 1.75rem;
-  background: linear-gradient(135deg, #D4AF37 0%, #B8960C 100%);
-  color: #1a1a2e;
+  background: var(--luxury-cta-bg, linear-gradient(135deg, #D4AF37 0%, #B8960C 100%));
+  color: var(--luxury-text-dark, #1a1a2e);
   font-size: 0.95rem;
   font-weight: 700;
   border: none;
@@ -115,7 +115,7 @@
 }
 
 .hero-search-btn:hover {
-  background: linear-gradient(135deg, #e0c054 0%, #D4AF37 100%);
+  background: var(--luxury-cta-bg-hover, linear-gradient(135deg, #e0c054 0%, #D4AF37 100%));
   box-shadow: 0 6px 24px rgba(212, 175, 55, 0.45);
 }
 
@@ -156,7 +156,7 @@
 }
 
 .hero-search-tag:hover {
-  background: rgba(212, 175, 55, 0.2);
+  background: var(--dubai-luxury-gold-soft, rgba(212, 175, 55, 0.2));
   border-color: rgba(212, 175, 55, 0.45);
   color: #D4AF37;
 }
