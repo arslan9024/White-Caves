@@ -628,4 +628,79 @@ router.get(
   }),
 );
 
+/**
+ * POST /api/auth/security/unlock
+ * Admin-only — clear a locked account by deleting its recent `login_failed`
+ * Activity rows inside the rolling lockout window. Persists an audit trail
+ * (`account_unlocked`) noting which admin performed the reset.
+ *
+ * Body: { userId?: string, email?: string }  (one is required)
+ */
+router.post(
+  '/security/unlock',
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const role = req.user?.role;
+    const allowedRoles = ['owner', 'admin'];
+    if (!role || !allowedRoles.includes(role)) {
+      throw new AppError('Forbidden — admin access required', 403);
+    }
+
+    const { userId, email } = req.body || {};
+    if (!userId && !email) {
+      throw new AppError('Provide either userId or email', 400);
+    }
+
+    const target = userId
+      ? await prisma.user.findUnique({ where: { id: String(userId) } })
+      : await prisma.user.findUnique({ where: { email: String(email).toLowerCase().trim() } });
+
+    if (!target) throw new AppError('User not found', 404);
+
+    const since = new Date(Date.now() - LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000);
+    const result = await prisma.activity.deleteMany({
+      where: {
+        type: 'system',
+        action: 'login_failed',
+        userId: target.id,
+        createdAt: { gte: since },
+      },
+    });
+
+    const ip = getClientIp(req);
+    const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
+    await prisma.activity.create({
+      data: {
+        type: 'system',
+        action: 'account_unlocked',
+        description: `Account ${target.email} unlocked by ${req.user?.email || req.user?.id} (${result.count} failed attempts cleared)`,
+        userId: target.id,
+        metadata: {
+          unlockedBy: req.user?.id,
+          unlockedByEmail: req.user?.email,
+          clearedFailures: result.count,
+          ip,
+          userAgent,
+        } as Prisma.InputJsonValue,
+      },
+    });
+
+    logger.info('Account unlocked by admin', {
+      targetUserId: target.id,
+      targetEmail: target.email,
+      adminId: req.user?.id,
+      clearedFailures: result.count,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        userId: target.id,
+        email: target.email,
+        clearedFailures: result.count,
+      },
+    });
+  }),
+);
+
 export default router;

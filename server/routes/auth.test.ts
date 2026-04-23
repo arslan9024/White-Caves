@@ -30,6 +30,7 @@ const { mockPrisma, mockBcrypt, mockJwt } = vi.hoisted(() => {
         findMany: fn().mockResolvedValue([]),
         count: fn().mockResolvedValue(0),
         findFirst: fn().mockResolvedValue(null),
+        deleteMany: fn().mockResolvedValue({ count: 0 }),
       },
     },
     mockBcrypt: {
@@ -689,6 +690,59 @@ describe('Auth Routes — /api/auth', () => {
       const callArgs = mockPrisma.activity.findMany.mock.calls[0][0];
       expect(callArgs.where.OR).toBeDefined();
       expect(callArgs.where.OR[0].description.contains).toBe('ghost');
+    });
+  });
+
+  // ── POST /security/unlock ───────────────────────────────────────
+  describe('POST /api/auth/security/unlock', () => {
+    it('returns 403 for non-admin roles', async () => {
+      const res = await request(createApp('agent'))
+        .post('/api/auth/security/unlock')
+        .send({ userId: 'user-9' });
+      expect(res.status).toBe(403);
+    });
+
+    it('returns 400 when neither userId nor email is provided', async () => {
+      const res = await request(createApp('owner'))
+        .post('/api/auth/security/unlock')
+        .send({});
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/userId or email/i);
+    });
+
+    it('returns 404 when target user is not found', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce(null);
+      const res = await request(createApp('admin'))
+        .post('/api/auth/security/unlock')
+        .send({ email: 'ghost@whitecaves.ae' });
+      expect(res.status).toBe(404);
+    });
+
+    it('clears recent login_failed rows and writes account_unlocked audit', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-9', email: 'locked@whitecaves.ae',
+      });
+      mockPrisma.activity.deleteMany.mockResolvedValueOnce({ count: 7 });
+      const res = await request(createApp('owner'))
+        .post('/api/auth/security/unlock')
+        .send({ userId: 'user-9' });
+      expect(res.status).toBe(200);
+      expect(res.body.data).toEqual(
+        expect.objectContaining({ userId: 'user-9', clearedFailures: 7 }),
+      );
+      expect(mockPrisma.activity.deleteMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            action: 'login_failed',
+            userId: 'user-9',
+          }),
+        }),
+      );
+      const auditCall = mockPrisma.activity.create.mock.calls.find(
+        (c: any[]) => c[0]?.data?.action === 'account_unlocked',
+      );
+      expect(auditCall).toBeDefined();
+      expect(auditCall[0].data.metadata.clearedFailures).toBe(7);
     });
   });
 });
