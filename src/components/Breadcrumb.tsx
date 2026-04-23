@@ -58,6 +58,7 @@ const routeLabels: Record<string, string> = {
   'pricing-tools': 'Pricing Tools',
   'contracts': 'Contracts',
   'system-health': 'System Health',
+  'login-security': 'Login Security',
   'profile': 'Profile',
   'signin': 'Sign In',
   'select-role': 'Select Role'
