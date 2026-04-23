@@ -67,7 +67,7 @@ const getClientIp = (req: Request): string => {
  */
 const recordLoginFailure = (
   req: Request,
-  reason: 'unknown_user' | 'invalid_password' | 'inactive' | 'no_password',
+  reason: 'unknown_user' | 'invalid_password' | 'inactive' | 'no_password' | 'locked_out',
   emailAttempt: string,
   userId?: string,
 ): void => {
@@ -88,6 +88,55 @@ const recordLoginFailure = (
     .catch((err: unknown) => {
       logger.warn('Failed to persist login_failed activity', { err });
     });
+};
+
+/**
+ * Per-account brute-force lockout configuration.
+ * Tunable via env so security teams can tighten without a redeploy.
+ */
+const LOGIN_LOCKOUT_THRESHOLD = Math.max(
+  1,
+  Number.parseInt(process.env.LOGIN_LOCKOUT_THRESHOLD || '5', 10) || 5,
+);
+const LOGIN_LOCKOUT_WINDOW_MINUTES = Math.max(
+  1,
+  Number.parseInt(process.env.LOGIN_LOCKOUT_WINDOW_MINUTES || '15', 10) || 15,
+);
+
+/**
+ * Check whether a user account should be temporarily locked due to repeated
+ * failed login attempts. Counts only `login_failed` Activity rows for the
+ * given userId within the rolling window.
+ */
+const checkAccountLockout = async (
+  userId: string,
+): Promise<{ locked: boolean; retryAfterSeconds: number; failureCount: number }> => {
+  const since = new Date(Date.now() - LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000);
+  const failureCount = await prisma.activity.count({
+    where: {
+      type: 'system',
+      action: 'login_failed',
+      userId,
+      createdAt: { gte: since },
+    },
+  });
+  if (failureCount < LOGIN_LOCKOUT_THRESHOLD) {
+    return { locked: false, retryAfterSeconds: 0, failureCount };
+  }
+  // Unlock window starts from the oldest failure still inside the rolling window.
+  const oldest = await prisma.activity.findFirst({
+    where: {
+      type: 'system',
+      action: 'login_failed',
+      userId,
+      createdAt: { gte: since },
+    },
+    orderBy: { createdAt: 'asc' },
+  });
+  const baseTs = oldest?.createdAt?.getTime?.() ?? Date.now();
+  const unlockAt = baseTs + LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000;
+  const retryAfterSeconds = Math.max(1, Math.ceil((unlockAt - Date.now()) / 1000));
+  return { locked: true, retryAfterSeconds, failureCount };
 };
 
 /**
@@ -116,6 +165,19 @@ router.post(
     if (user.status && user.status !== 'active') {
       recordLoginFailure(req, 'inactive', normalizedEmail, user.id);
       throw new AppError('Account is inactive. Contact administrator.', 403);
+    }
+
+    // Per-account brute-force lockout — checked BEFORE the expensive bcrypt
+    // compare so a locked account responds quickly.
+    const lockout = await checkAccountLockout(user.id);
+    if (lockout.locked) {
+      recordLoginFailure(req, 'locked_out', normalizedEmail, user.id);
+      const minutes = Math.ceil(lockout.retryAfterSeconds / 60);
+      res.set('Retry-After', String(lockout.retryAfterSeconds));
+      throw new AppError(
+        `Account temporarily locked after ${lockout.failureCount} failed attempts. Try again in ${minutes} minute${minutes === 1 ? '' : 's'}.`,
+        429,
+      );
     }
 
     // Check password (uses proper passwordHash column)
