@@ -7,9 +7,9 @@ import dotenv from 'dotenv';
 
 // Load environment variables as early as possible to prevent import-order issues.
 // In production, load .env.production on top of .env for local production-like runs.
-dotenv.config();
+dotenv.config({ quiet: true });
 if (process.env.NODE_ENV === 'production') {
-  dotenv.config({ path: '.env.production', override: true });
+  dotenv.config({ path: '.env.production', override: true, quiet: true });
 }
 
 // ─── Server ──────────────────────────────────────────────────────────────
