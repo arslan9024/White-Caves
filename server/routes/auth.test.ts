@@ -865,6 +865,71 @@ describe('Auth Routes — /api/auth', () => {
     });
   });
 
+  // ── GET /security/active-lockouts ───────────────────────────────
+  describe('GET /api/auth/security/active-lockouts', () => {
+    it('returns 403 for non-admin roles', async () => {
+      const res = await request(createApp('agent')).get('/api/auth/security/active-lockouts');
+      expect(res.status).toBe(403);
+    });
+
+    it('surfaces accounts and IPs whose failures meet the threshold', async () => {
+      const now = Date.now();
+      // 5 failures for user-A (≥5 threshold) + 20 failures for ip 9.9.9.9 (≥20 threshold)
+      // + 2 failures for user-B (below threshold) + 1 failure for ip 8.8.8.8 (below threshold)
+      const rows: any[] = [];
+      for (let i = 0; i < 5; i++) {
+        rows.push({
+          userId: 'user-A',
+          createdAt: new Date(now - (300 - i) * 1000),
+          metadata: { ip: '9.9.9.9' },
+          user: { email: 'a@x.ae' },
+        });
+      }
+      for (let i = 0; i < 15; i++) {
+        rows.push({
+          userId: null,
+          createdAt: new Date(now - (250 - i) * 1000),
+          metadata: { ip: '9.9.9.9' },
+          user: null,
+        });
+      }
+      for (let i = 0; i < 2; i++) {
+        rows.push({
+          userId: 'user-B',
+          createdAt: new Date(now - (100 - i) * 1000),
+          metadata: { ip: '8.8.8.8' },
+          user: { email: 'b@x.ae' },
+        });
+      }
+      mockPrisma.activity.findMany.mockResolvedValueOnce(rows);
+
+      const res = await request(createApp('owner')).get('/api/auth/security/active-lockouts');
+      expect(res.status).toBe(200);
+      expect(res.body.data.accountThreshold).toBeGreaterThanOrEqual(1);
+      expect(res.body.data.ipThreshold).toBeGreaterThanOrEqual(1);
+
+      const accountIds = res.body.data.accounts.map((a: any) => a.userId);
+      expect(accountIds).toContain('user-A');
+      expect(accountIds).not.toContain('user-B');
+
+      const ips = res.body.data.ips.map((i: any) => i.ip);
+      expect(ips).toContain('9.9.9.9');
+      expect(ips).not.toContain('8.8.8.8');
+
+      const ipRow = res.body.data.ips.find((i: any) => i.ip === '9.9.9.9');
+      expect(ipRow.failures).toBe(20);
+      expect(ipRow.retryAfterSeconds).toBeGreaterThan(0);
+    });
+
+    it('returns empty arrays when no lockouts are active', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([]);
+      const res = await request(createApp('admin')).get('/api/auth/security/active-lockouts');
+      expect(res.status).toBe(200);
+      expect(res.body.data.accounts).toEqual([]);
+      expect(res.body.data.ips).toEqual([]);
+    });
+  });
+
   // ── GET /security/stats ─────────────────────────────────────────
   describe('GET /api/auth/security/stats', () => {
     it('returns 403 for non-admin roles', async () => {

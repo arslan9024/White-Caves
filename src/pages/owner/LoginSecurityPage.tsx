@@ -57,6 +57,14 @@ interface SecurityStats {
   windowMinutes: number;
 }
 
+interface ActiveLockouts {
+  windowMinutes: number;
+  accountThreshold: number;
+  ipThreshold: number;
+  accounts: Array<{ userId: string; email: string | null; failures: number; retryAfterSeconds: number }>;
+  ips: Array<{ ip: string; failures: number; retryAfterSeconds: number }>;
+}
+
 const STATUS_OPTIONS: { value: AttemptStatus; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'failed', label: 'Failed logins' },
@@ -80,6 +88,7 @@ const LoginSecurityPage: FC = () => {
   const [emailFilter, setEmailFilter] = useState<string>('');
   const [attempts, setAttempts] = useState<LoginAttempt[]>([]);
   const [stats, setStats] = useState<SecurityStats | null>(null);
+  const [activeLockouts, setActiveLockouts] = useState<ActiveLockouts | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [unlockingId, setUnlockingId] = useState<string | null>(null);
@@ -147,6 +156,28 @@ const LoginSecurityPage: FC = () => {
     return () => controller.abort();
   }, [sinceMinutes]);
 
+  // Active lockouts — polled alongside the stats fetch (same trigger)
+  const fetchActiveLockouts = useCallback(async (signal?: AbortSignal): Promise<void> => {
+    try {
+      const res = await authFetch('/api/auth/security/active-lockouts', { signal });
+      if (!res.ok) return;
+      const json = await res.json();
+      const data = json?.data;
+      if (data && Array.isArray(data.accounts) && Array.isArray(data.ips)) {
+        setActiveLockouts(data);
+      }
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
+      log.error('Failed to fetch active lockouts', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchActiveLockouts(controller.signal);
+    return () => controller.abort();
+  }, [fetchActiveLockouts, sinceMinutes]);
+
   const handleUnlock = async (target: LoginAttempt): Promise<void> => {
     const userId = target.userId;
     const email = (target.user?.email || (target.metadata?.emailAttempt as string | undefined)) ?? null;
@@ -172,6 +203,7 @@ const LoginSecurityPage: FC = () => {
       const json = await res.json();
       setToast(`Unlocked ${json.data?.email ?? email}; cleared ${json.data?.clearedFailures ?? 0} failures.`);
       await fetchAttempts();
+      await fetchActiveLockouts();
     } catch (err) {
       log.error('Unlock request failed', err);
       setToast('Unlock failed (network error).');
@@ -200,11 +232,39 @@ const LoginSecurityPage: FC = () => {
       const json = await res.json();
       setToast(`Unlocked IP ${ip}; cleared ${json.data?.clearedFailures ?? 0} failures.`);
       await fetchAttempts();
+      await fetchActiveLockouts();
     } catch (err) {
       log.error('Unlock IP request failed', err);
       setToast('Unlock IP failed (network error).');
     } finally {
       setUnlockingIp(null);
+    }
+  };
+
+  const handleUnlockAccount = async (userId: string, email: string | null): Promise<void> => {
+    const label = email || userId;
+    if (!window.confirm(`Unlock ${label}? This clears their recent failed attempts.`)) return;
+    try {
+      setUnlockingId(userId);
+      const res = await authFetch('/api/auth/security/unlock', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      });
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        setToast(`Unlock failed: ${res.status} ${text}`);
+        return;
+      }
+      const json = await res.json();
+      setToast(`Unlocked ${json.data?.email ?? label}; cleared ${json.data?.clearedFailures ?? 0} failures.`);
+      await fetchAttempts();
+      await fetchActiveLockouts();
+    } catch (err) {
+      log.error('Unlock (active) request failed', err);
+      setToast('Unlock failed (network error).');
+    } finally {
+      setUnlockingId(null);
     }
   };
 
@@ -275,6 +335,63 @@ const LoginSecurityPage: FC = () => {
           <span className="ls-summary-value">{attempts.length}</span>
         </div>
       </section>
+
+      {activeLockouts && (activeLockouts.accounts.length > 0 || activeLockouts.ips.length > 0) && (
+        <section className="ls-active-lockouts" aria-label="Currently active lockouts">
+          <h2 className="ls-active-title">
+            🔒 Active lockouts
+            <span className="ls-muted ls-active-meta">
+              {' '}({activeLockouts.windowMinutes}-min window · account ≥{activeLockouts.accountThreshold} · ip ≥{activeLockouts.ipThreshold})
+            </span>
+          </h2>
+          <div className="ls-active-grid">
+            {activeLockouts.accounts.length > 0 && (
+              <div className="ls-active-col">
+                <h3>Accounts ({activeLockouts.accounts.length})</h3>
+                <ul>
+                  {activeLockouts.accounts.map((a) => (
+                    <li key={a.userId}>
+                      <span>{a.email || a.userId}</span>
+                      <span className="ls-muted">{a.failures} fails · {Math.ceil(a.retryAfterSeconds / 60)}m left</span>
+                      <button
+                        type="button"
+                        className="ls-ip-unlock-btn"
+                        onClick={() => handleUnlockAccount(a.userId, a.email)}
+                        disabled={unlockingId === a.userId}
+                        aria-label={`Unlock account ${a.email || a.userId}`}
+                      >
+                        {unlockingId === a.userId ? 'Unlocking…' : 'Unlock'}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {activeLockouts.ips.length > 0 && (
+              <div className="ls-active-col">
+                <h3>IPs ({activeLockouts.ips.length})</h3>
+                <ul>
+                  {activeLockouts.ips.map((row) => (
+                    <li key={row.ip}>
+                      <code>{row.ip}</code>
+                      <span className="ls-muted">{row.failures} fails · {Math.ceil(row.retryAfterSeconds / 60)}m left</span>
+                      <button
+                        type="button"
+                        className="ls-ip-unlock-btn"
+                        onClick={() => handleUnlockIp(row.ip)}
+                        disabled={unlockingIp === row.ip}
+                        aria-label={`Unlock IP ${row.ip}`}
+                      >
+                        {unlockingIp === row.ip ? 'Unlocking…' : 'Unlock'}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {stats && stats.totals && (
         <section className="ls-stats" aria-label="Aggregate stats for the selected window">

@@ -244,4 +244,124 @@ describe('LoginSecurityPage', () => {
     });
     confirmSpy.mockRestore();
   });
+
+  it('renders the active-lockouts panel and POSTs /security/unlock when an active account Unlock is clicked', async () => {
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    mockAuthFetch.mockImplementation((url: unknown) => {
+      const u = String(url);
+      if (u.includes('/security/active-lockouts')) {
+        return Promise.resolve({
+          ok: true, status: 200, statusText: 'OK',
+          json: () => Promise.resolve({
+            success: true,
+            data: {
+              windowMinutes: 15,
+              accountThreshold: 5,
+              ipThreshold: 20,
+              accounts: [
+                { userId: 'user-A', email: 'locked@whitecaves.ae', failures: 6, retryAfterSeconds: 600 },
+              ],
+              ips: [
+                { ip: '9.9.9.9', failures: 25, retryAfterSeconds: 540 },
+              ],
+            },
+          }),
+        });
+      }
+      if (u.includes('/security/unlock') && !u.includes('unlock-ip')) {
+        return Promise.resolve({
+          ok: true, status: 200, statusText: 'OK',
+          text: () => Promise.resolve(''),
+          json: () => Promise.resolve({
+            success: true,
+            data: { userId: 'user-A', email: 'locked@whitecaves.ae', clearedFailures: 6 },
+          }),
+        });
+      }
+      return Promise.resolve({
+        ok: true, status: 200, statusText: 'OK',
+        json: () => Promise.resolve({
+          success: true, data: [],
+          meta: { count: 0, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
+        }),
+      });
+    });
+
+    render(<LoginSecurityPage />);
+    expect(await screen.findByText(/Active lockouts/i)).toBeInTheDocument();
+    expect(screen.getByText('locked@whitecaves.ae')).toBeInTheDocument();
+    expect(screen.getByText('9.9.9.9')).toBeInTheDocument();
+
+    const accountUnlockBtn = screen.getByRole('button', { name: /unlock account locked@whitecaves\.ae/i });
+    fireEvent.click(accountUnlockBtn);
+
+    await waitFor(() => {
+      const calls = mockAuthFetch.mock.calls.map((c) => ({ url: String(c[0]), init: c[1] }));
+      const unlockCall = calls.find(
+        (c) => c.url.includes('/security/unlock') && !c.url.includes('unlock-ip') && (c.init as { method?: string })?.method === 'POST',
+      );
+      expect(unlockCall).toBeTruthy();
+    });
+    confirmSpy.mockRestore();
+  });
+
+  it('renders the active-lockouts panel and POSTs /security/unlock when an active account Unlock is clicked', async () => {
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    mockAuthFetch.mockImplementation((url: unknown) => {
+      const u = String(url);
+      if (u.includes('/security/active-lockouts')) {
+        return Promise.resolve({
+          ok: true, status: 200, statusText: 'OK',
+          json: () => Promise.resolve({
+            success: true,
+            data: {
+              windowMinutes: 15,
+              accountThreshold: 5,
+              ipThreshold: 20,
+              accounts: [
+                { userId: 'user-A', email: 'locked@whitecaves.ae', failures: 6, retryAfterSeconds: 600 },
+              ],
+              ips: [
+                { ip: '9.9.9.9', failures: 25, retryAfterSeconds: 540 },
+              ],
+            },
+          }),
+        });
+      }
+      if (u.includes('/security/unlock') && !u.includes('unlock-ip')) {
+        return Promise.resolve({
+          ok: true, status: 200, statusText: 'OK',
+          text: () => Promise.resolve(''),
+          json: () => Promise.resolve({
+            success: true,
+            data: { userId: 'user-A', email: 'locked@whitecaves.ae', clearedFailures: 6 },
+          }),
+        });
+      }
+      return Promise.resolve({
+        ok: true, status: 200, statusText: 'OK',
+        json: () => Promise.resolve({
+          success: true, data: [],
+          meta: { count: 0, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
+        }),
+      });
+    });
+
+    render(<LoginSecurityPage />);
+    expect(await screen.findByText(/Active lockouts/i)).toBeInTheDocument();
+    expect(screen.getByText('locked@whitecaves.ae')).toBeInTheDocument();
+    expect(screen.getByText('9.9.9.9')).toBeInTheDocument();
+
+    const accountUnlockBtn = screen.getByRole('button', { name: /unlock account locked@whitecaves\.ae/i });
+    fireEvent.click(accountUnlockBtn);
+
+    await waitFor(() => {
+      const calls = mockAuthFetch.mock.calls.map((c) => ({ url: String(c[0]), init: c[1] }));
+      const unlockCall = calls.find(
+        (c) => c.url.includes('/security/unlock') && !c.url.includes('unlock-ip') && (c.init as { method?: string })?.method === 'POST',
+      );
+      expect(unlockCall).toBeTruthy();
+    });
+    confirmSpy.mockRestore();
+  });
 });

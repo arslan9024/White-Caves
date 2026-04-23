@@ -868,6 +868,120 @@ router.post(
 );
 
 /**
+ * GET /api/auth/security/active-lockouts
+ * Admin-only — surfaces accounts and IPs that are CURRENTLY locked out
+ * (failure count ≥ threshold inside the rolling window). Returned items
+ * include a retryAfterSeconds derived from the oldest in-window failure so
+ * SecOps can see how long the lockout has left to run before an admin
+ * needs to intervene.
+ *
+ * Returns:
+ *   {
+ *     windowMinutes, accountThreshold, ipThreshold,
+ *     accounts: Array<{ userId, email, failures, retryAfterSeconds }>,
+ *     ips:      Array<{ ip, failures, retryAfterSeconds }>,
+ *   }
+ */
+router.get(
+  '/security/active-lockouts',
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const role = req.user?.role;
+    const allowedRoles = ['owner', 'admin'];
+    if (!role || !allowedRoles.includes(role)) {
+      throw new AppError('Forbidden — admin access required', 403);
+    }
+
+    const since = new Date(Date.now() - LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000);
+    const rows = await prisma.activity.findMany({
+      where: {
+        type: 'system',
+        action: 'login_failed',
+        createdAt: { gte: since },
+      },
+      select: {
+        userId: true,
+        createdAt: true,
+        metadata: true,
+        user: { select: { email: true } },
+      },
+      orderBy: { createdAt: 'asc' },
+      take: 5000,
+    });
+
+    interface Bucket {
+      key: string;
+      label: string | null;
+      failures: number;
+      oldest: Date;
+    }
+    const accountBuckets = new Map<string, Bucket>();
+    const ipBuckets = new Map<string, Bucket>();
+
+    for (const r of rows) {
+      const md = (r.metadata || {}) as Record<string, unknown>;
+      if (r.userId) {
+        const b = accountBuckets.get(r.userId);
+        if (b) {
+          b.failures += 1;
+        } else {
+          accountBuckets.set(r.userId, {
+            key: r.userId,
+            label: r.user?.email ?? null,
+            failures: 1,
+            oldest: r.createdAt,
+          });
+        }
+      }
+      const ip = typeof md.ip === 'string' ? md.ip : null;
+      if (ip && ip !== 'unknown') {
+        const b = ipBuckets.get(ip);
+        if (b) {
+          b.failures += 1;
+        } else {
+          ipBuckets.set(ip, { key: ip, label: ip, failures: 1, oldest: r.createdAt });
+        }
+      }
+    }
+
+    const now = Date.now();
+    const windowMs = LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000;
+    const computeRetry = (oldest: Date): number =>
+      Math.max(1, Math.ceil((oldest.getTime() + windowMs - now) / 1000));
+
+    const accounts = [...accountBuckets.values()]
+      .filter((b) => b.failures >= LOGIN_LOCKOUT_THRESHOLD)
+      .sort((a, b) => b.failures - a.failures)
+      .map((b) => ({
+        userId: b.key,
+        email: b.label,
+        failures: b.failures,
+        retryAfterSeconds: computeRetry(b.oldest),
+      }));
+
+    const ips = [...ipBuckets.values()]
+      .filter((b) => b.failures >= LOGIN_IP_LOCKOUT_THRESHOLD)
+      .sort((a, b) => b.failures - a.failures)
+      .map((b) => ({
+        ip: b.key,
+        failures: b.failures,
+        retryAfterSeconds: computeRetry(b.oldest),
+      }));
+
+    res.status(200).json({
+      success: true,
+      data: {
+        windowMinutes: LOGIN_LOCKOUT_WINDOW_MINUTES,
+        accountThreshold: LOGIN_LOCKOUT_THRESHOLD,
+        ipThreshold: LOGIN_IP_LOCKOUT_THRESHOLD,
+        accounts,
+        ips,
+      },
+    });
+  }),
+);
+
+/**
  * GET /api/auth/security/stats
  * Admin-only — aggregate counts for the Login Security dashboard.
  *
