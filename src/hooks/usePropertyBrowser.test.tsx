@@ -167,6 +167,36 @@ describe('usePropertyBrowser', () => {
     );
   });
 
+  it('prefers URL query filters over Redux filters when both exist', () => {
+    const state = makeState();
+    state.properties.filters.search = 'redux-search';
+    state.properties.filters.locations = ['Redux Location'];
+    state.properties.filters.propertyTypes = ['Townhouse'];
+    state.properties.filters.beds = 5;
+    state.properties.filters.minPrice = 9_000_000;
+    state.properties.filters.maxPrice = 12_000_000;
+
+    useSelectorMock.mockImplementation((selector: (s: MockState) => unknown) => selector(state));
+
+    setMockLocation(
+      '?search=url-search&type=Apartment&location=URL%20Location&beds=2&minPrice=1000000&maxPrice=3000000',
+      'k4'
+    );
+
+    renderHook(() => usePropertyBrowser());
+
+    expect(fetchPropertiesFromAPIMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        search: 'url-search',
+        location: 'URL Location',
+        type: 'Apartment',
+        beds: 2,
+        minPrice: 1_000_000,
+        maxPrice: 3_000_000,
+      })
+    );
+  });
+
   it('aborts in-flight fetch on unmount', () => {
     const state = makeState();
     const abortMock = vi.fn();
