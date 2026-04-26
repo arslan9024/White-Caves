@@ -1,68 +1,61 @@
 # White Caves Real Estate — Master Plan
 
-> **Single Source of Truth** — Updated April 10, 2026  
+> **Single Source of Truth** — Updated April 26, 2026  
 > **Goal**: #1 Real Estate Platform in Dubai  
-> **Status**: 85% Overall · Phase 1 at 40% · Phase 2 planned  
-> **`as any` in production**: ~39 (mostly tests; 0 in core business logic)
+> **Status**: Infrastructure ✅ · Phase 1 (Homepage) 🚧 · Phase 2 (Landlord & Tenant Self-Service Portals) 🚧
 
 ---
 
-## ✅ Completed Phases
+## 🔢 NEW PRIORITY ORDER (April 2026 Reset)
 
-| Phase        | Description                                        | Status      | Date     |
-| ------------ | -------------------------------------------------- | ----------- | -------- |
-| Phase A1     | TypeScript Migration (strict mode, 0 errors)       | ✅ COMPLETE | Feb 2026 |
-| Phase A2     | WhatsApp Integration Service (7 routes, Redis)     | ✅ COMPLETE | Feb 2026 |
-| Phase 16     | Code Quality & DevOps Hardening (ESLint, Prettier) | ✅ COMPLETE | Mar 2026 |
-| Rounds 1-147 | Deep Codebase Audits (security, type safety, a11y) | ✅ COMPLETE | Mar 2026 |
+The development order has been reset to focus on visible, user-facing value first:
+
+| Priority | Phase | Description | Detailed Plan |
+|----------|-------|-------------|---------------|
+| **#1 — Now** | Phase 1 | Public Homepage — full UI with dummy data | [PHASE_1_HOMEPAGE.md](./PHASE_1_HOMEPAGE.md) |
+| **#2 — Next** | Phase 2 | Landlord & Tenant Self-Service Portals — simple portals for clients | [PHASE_2_LANDLORD_TENANT.md](./PHASE_2_LANDLORD_TENANT.md) |
+| **#3 — High** | Phase 3 | Full CRM — all tabs for `arslanmalikgoraha@gmail.com` (managing_director) | [PHASE_3_CRM_SUPERUSER.md](./PHASE_3_CRM_SUPERUSER.md) |
+| **#4–10** | Phases 4–10 | WhatsApp, Compliance, Arabic, RBAC (Phase 9), PWA, etc. | [PHASE_3_AND_BEYOND.md](./PHASE_3_AND_BEYOND.md) |
+
+> See each phase file for detailed task lists, acceptance criteria, and current status.
 
 ---
 
-## ⏳ Current Transformation (March 2026)
+---
 
-### Phase 0: Root File Cleanup ✅ COMPLETE
+## ✅ Foundation Already Built (Do Not Re-Do)
 
-- [x] Moved 25+ root .md files to /plans/ and /archives/
-- [x] Only README.md remains at root
-- [x] Consolidated MASTER_PLAN into single source of truth
+| Item | Description | Status |
+|------|-------------|--------|
+| TypeScript strict mode | 0 compile errors across all 666 source files | ✅ |
+| Build pipeline | Vite 7 build < 10s, GitHub Actions CI/CD | ✅ |
+| Design system | Gold/dark theme, Poppins/Inter, styled-components, design tokens | ✅ |
+| Auth infrastructure | JWT, bcrypt, Firebase OAuth, rate limiting, CORS, Helmet | ✅ |
+| Database models | 7 Prisma models (User, Property, Lead, Commission, Activity, Transaction, Tenant) | ✅ |
+| Core backend routes | leads, properties, agents, transactions, finance, tenants, compliance, crm, reporting | ✅ |
+| CRM dashboard shell | UnifiedDashboardPage, dual sidebar, 29-role tab mapping | ✅ |
+| AI assistant registry | 17 assistants registered in Redux (Clara, Mary, Nadia, Sophia, Daisy, Zoe, Laila, etc.) | ✅ |
+| AI assistant plan API | /api/assistants CRUD + plan read/write, XSS protection (Phase 0.8) | ✅ |
+| Homepage shell | HomePage.tsx with Hero, Features, Locations, Team, Testimonials, ContactCTA sections | ✅ |
+| Homepage dummy data | HOME_PROPERTIES in src/data/homeProperties.ts (10 Dubai properties) | ✅ |
+| Seed data | owner@whitecaves.ae (role: lion/owner) + 6 agents + properties + leads | ✅ |
+| Security hardening | Timing-safe webhook, CORS whitelist, Firebase 503, CRM export field projection | ✅ |
+| Code quality | ESLint, Prettier, husky pre-commit, 299 test files | ✅ |
 
-### Phase 0.2: Business Documentation → `business_docs/` ⏳ 80% COMPLETE
+---
 
-- [x] Fix duplicate folder numbering (renumbered 01–11 + archives)
-- [x] Merge /business/ content INTO /business_docs/ (canonical name) — old /business/ deleted
-- [ ] _DEFERRED_: Create 09_user_roles_permissions/ (24 frontend roles → 12 backend roles, 21 permissions, alias mapping documented in ADR-002)
-- [ ] _DEFERRED_: Create 10_design_system/ (design tokens, colors, typography, breakpoints)
-- [ ] _DEFERRED_: Create individual AI assistant .md files (24 assistants)
-- [ ] _DEFERRED_: Add Dubai-specific docs (RERA, Ejari, portal integrations)
+---
 
-### Phase 0.5: Duplicate Elimination & Freelancer Removal ✅ COMPLETE
+## 📊 Architecture Summary (Unchanged)
 
-- [x] Remove freelancer references from production code (mapped to `affiliated_agent` in roles.ts)
-- [x] Consolidate duplicate components: deleted dead Button, Modal, Card, Input, Select from `ui/` + `design-system/`
-- [x] Redirected Modal imports to canonical `shared/components/ui/Modal/`
-- [x] Cleaned barrel exports (`ui/index.ts`, `design-system/index.ts`)
-- [x] Deleted dead Modal test file
-- [x] Dead code cleanup: AIAssistantCRUD chain (6 files), CreateTenancyAgreement, sessionManager.ts, common/forms/ (14 components), design-system/Radio/
-- [x] Dead CSS cleanup: component-utilities.css, MainNavBar.css
-- [x] Stale log cleanup: 22 .txt files (2.1MB) + \_build_logs/ (0.9MB) deleted from root
-- [x] Cleaned dead Vite chunk config (GracePMODashboard_NEW, IsabelPropertyCRM_NEW)
-- [ ] _DEFERRED_: Unify CSS approach (standardize on styled-components)
+- **Frontend**: React 18, TypeScript 5 (strict), Redux Toolkit, Vite 7, styled-components, Framer Motion
+- **Backend**: Express 5, Prisma 6.6, MongoDB, JWT auth, bcrypt, rate limiting
+- **Database**: 7 Prisma models (User, Property, Lead, Commission, Activity, Transaction, Tenant), 40+ indexes
+- **RBAC**: 29 roles mapped, `lion` = super user with all 11 tabs
+- **AI Assistants**: 17 registered in code (27 documented in business_docs/)
+- **CRM Layout**: Dual sidebar (left=departments, right=AI assistants), dynamic center, 11 owner tabs
 
-### Phase 0.75: Dashboard & Layout Compliance ✅ COMPLETE
-
-- [x] Audit CRM dual-sidebar layout — SidebarContainer + AIAssistantsPanel both active, responsive at 1024px/768px
-- [x] Removed dead `commissions` tab from lion/owner/secondary-sales-agent (feature removed)
-- [x] Added tab mappings for ALL 26 roles (was 8/26 → now 26/26)
-- [x] Fixed `getRoleInfo()` fallback — shows humanized role name instead of "Unknown Role"
-- [x] Verified all 12 super-user tabs, role-specific views for existing roles
-- [x] Responsive sidebar collapse on mobile/tablet confirmed (media queries at 1024px, 768px)
-- [ ] Note: DualSidebarLayout component ~~exists but is unused~~ DELETED (custom CSS layout used instead)
-
-### Phase 1a: Rename WhatsApp AI Assistant ✅ COMPLETE
-
-- [x] Rename "Linda" → "Nadia" across 100+ references (~25 source files)
-- [x] Rename `LindaWhatsAppCRM_NEW/` folder → `NadiaWhatsAppCRM/`
-- [x] Update assistantRegistry, businessModel, Redux slices, dashboard, CSS, business_docs
+---
 
 ### Phase 1: Pending Tasks
 
@@ -192,16 +185,16 @@
 - **AI Assistants**: 24 registered (Nadia=WhatsApp CRM, Clara=Leads, Mary=Inventory, etc.)
 - **CRM Layout**: Dual sidebar (left=departments, right=AI assistants), dynamic center, 12 owner tabs
 - **Testing**: Vitest + Playwright, load testing framework, accessibility audits
-- **DevOps**: Docker, docker-compose, nginx, K8s manifests, CI/CD ready
+- **DevOps**: Docker, docker-compose, nginx, CI/CD (GitHub Actions → Vercel)
 
 ---
 
 ## 📝 Archive Reference
 
 Previous MASTER_PLAN versions:
-
 - `/archives/MASTER_PLAN.md` (March 6, 2026 — superseded)
 - `/plans/MASTER_PLAN_UPDATED_FEB_2026.md` (Feb 2026 — superseded)
+- Session summaries (SESSION_8–SESSION_10) — archived in `/plans/`
 
 Audit reports with pending security fixes:
 
