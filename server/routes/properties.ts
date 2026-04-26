@@ -12,12 +12,14 @@ import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
+import { requirePermission } from '../middleware/rbac';
 
 const router = Router();
 
 // ─── GET /api/properties ────────────────────────────────────────────────
 router.get(
   '/',
+  requirePermission('view_properties'),
   asyncHandler(async (req: Request, res: Response) => {
     const {
       status, type, search, featured,
@@ -92,6 +94,7 @@ router.get(
 // ─── GET /api/properties/stats ──────────────────────────────────────────
 router.get(
   '/stats',
+  requirePermission('view_properties'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only managers+ can view aggregated property statistics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
@@ -138,6 +141,7 @@ router.get(
 // ─── GET /api/properties/:id ────────────────────────────────────────────
 router.get(
   '/:id',
+  requirePermission('view_properties'),
   asyncHandler(async (req: Request, res: Response) => {
     validateIdParam(req.params.id, 'Property ID');
     const property = await prisma.property.findUnique({
@@ -162,6 +166,7 @@ router.get(
 // ─── POST /api/properties ───────────────────────────────────────────────
 router.post(
   '/',
+  requirePermission('create_property'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only owner, manager, or agents can create properties
     const allowedRoles = ['owner', 'manager', 'agent'];
@@ -218,6 +223,7 @@ router.post(
 // ─── PATCH /api/properties/:id ──────────────────────────────────────────
 router.patch(
   '/:id',
+  requirePermission('edit_property'),
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     validateIdParam(id, 'Property ID');
@@ -290,6 +296,7 @@ router.patch(
 // ─── DELETE /api/properties/:id ─────────────────────────────────────────
 router.delete(
   '/:id',
+  requirePermission('delete_property'),
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     validateIdParam(id, 'Property ID');

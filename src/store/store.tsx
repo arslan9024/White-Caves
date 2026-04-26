@@ -12,9 +12,11 @@ import aiAssistantDashboardReducer from './slices/aiAssistantDashboardSlice';
 import sidebarReducer from './slices/sidebarSlice';
 import notificationReducer from './slices/notificationSlice';
 import whatsappReducer from './slices/whatsappSlice';
+import nadiaReducer from './slices/nadiaSlice';
 import crmDataReducer from './crmDataSlice';
 import roleReducer from './roleSlice';
 import featuresReducer from './featuresSlice';
+import savedSearchesReducer from './slices/savedSearchesSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 import { createLogger } from '../utils/logger';
 
@@ -47,9 +49,11 @@ export const store = configureStore({
     sidebar: sidebarReducer,
     notifications: notificationReducer,
     whatsapp: whatsappReducer,
+    nadia: nadiaReducer,
     crmData: crmDataReducer,
     role: roleReducer,
     features: featuresReducer,
+    savedSearches: savedSearchesReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -13,7 +13,7 @@ interface Listing {
 interface ListingStats {
   totalViews: number;
   totalInquiries: number;
-  avgQuality: number;
+  avgQuality: number | string;
   availableListings: number;
 }
 

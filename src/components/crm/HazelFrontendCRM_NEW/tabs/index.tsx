@@ -32,17 +32,17 @@ const HazelFrontendCRM = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'overview':
-        return <OverviewTab componentStats={componentStats} accessibilityStats={accessibilityStats} performanceMetrics={performanceMetrics as any} />;
+        return <OverviewTab componentStats={componentStats} accessibilityStats={accessibilityStats} performanceMetrics={performanceMetrics} />;
       case 'components':
         return <ComponentsTab components={components} />;
       case 'design-system':
         return <DesignSystemTab designTokens={designTokens} themeMode={themeMode} onThemeChange={setThemeMode} />;
       case 'performance':
-        return <PerformanceTab metrics={performanceMetrics as any} />;
+        return <PerformanceTab metrics={performanceMetrics} />;
       case 'accessibility':
         return <AccessibilityTab audit={accessibilityAudit} />;
       default:
-        return <OverviewTab componentStats={componentStats} accessibilityStats={accessibilityStats} performanceMetrics={performanceMetrics as any} />;
+        return <OverviewTab componentStats={componentStats} accessibilityStats={accessibilityStats} performanceMetrics={performanceMetrics} />;
     }
   };
 

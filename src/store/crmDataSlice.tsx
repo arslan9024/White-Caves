@@ -276,6 +276,103 @@ export const deletePropertyAPI = createAsyncThunk(
   }
 );
 
+// ============================================================================
+// COMMISSION ASYNC THUNKS — Finance API Integration
+// ============================================================================
+
+/** Fetch commissions from /api/finance/commissions with optional filtering */
+export const fetchCommissionsFromAPI = createAsyncThunk(
+  'crmData/fetchCommissions',
+  async (params: { page?: number; pageSize?: number; status?: string; type?: string; agentId?: string } = {}, { rejectWithValue }) => {
+    try {
+      const query = new URLSearchParams();
+      if (params.page) query.set('page', String(params.page));
+      if (params.pageSize) query.set('pageSize', String(params.pageSize));
+      if (params.status) query.set('status', params.status);
+      if (params.type) query.set('type', params.type);
+      if (params.agentId) query.set('agentId', params.agentId);
+      const response = await authFetch(`/api/finance/commissions?${query.toString()}`);
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to fetch commissions'));
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch commissions');
+    }
+  }
+);
+
+/** Fetch financial summary from /api/finance/summary */
+export const fetchFinanceSummary = createAsyncThunk(
+  'crmData/fetchFinanceSummary',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authFetch('/api/finance/summary');
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to fetch finance summary'));
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch finance summary');
+    }
+  }
+);
+
+/** Create a new commission via /api/finance/commissions */
+export const createCommissionAPI = createAsyncThunk(
+  'crmData/createCommission',
+  async (commissionData: { agentId: string; amount: number; percentage?: number; type?: string; notes?: string; leadId?: string; propertyId?: string }, { rejectWithValue }) => {
+    try {
+      const response = await authFetch('/api/finance/commissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(commissionData),
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to create commission'));
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to create commission');
+    }
+  }
+);
+
+/** Update a commission via /api/finance/commissions/:id */
+export const updateCommissionAPI = createAsyncThunk(
+  'crmData/updateCommissionAPI',
+  async ({ id, ...updates }: { id: string; status?: string; amount?: number; notes?: string }, { rejectWithValue }) => {
+    try {
+      const response = await authFetch(`/api/finance/commissions/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to update commission'));
+      const data = await response.json();
+      return data.data || data;
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to update commission');
+    }
+  }
+);
+
+/** Bulk-pay approved commissions via /api/finance/payments */
+export const bulkPayCommissionsAPI = createAsyncThunk(
+  'crmData/bulkPayCommissions',
+  async (commissionIds: string[], { rejectWithValue }) => {
+    try {
+      const response = await authFetch('/api/finance/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ commissionIds }),
+      });
+      if (!response.ok) throw new Error(await extractApiError(response, 'Failed to process payments'));
+      const data = await response.json();
+      return { commissionIds, paidCount: data.data?.paidCount || 0 };
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to process commission payments');
+    }
+  }
+);
+
 const crmDataSlice = createSlice({
   name: 'crmData',
   initialState,
@@ -696,6 +793,83 @@ const crmDataSlice = createSlice({
         state.properties.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to delete property';
       });
 
+    // --- Fetch Commissions ---
+    builder
+      .addCase(fetchCommissionsFromAPI.pending, (state) => {
+        state.commissions.loading = true;
+        state.commissions.error = null;
+      })
+      .addCase(fetchCommissionsFromAPI.fulfilled, (state, action) => {
+        state.commissions.loading = false;
+        if (Array.isArray(action.payload)) {
+          state.commissions.items = action.payload;
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(fetchCommissionsFromAPI.rejected, (state, action) => {
+        state.commissions.loading = false;
+        state.commissions.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to fetch commissions';
+      });
+
+    // --- Create Commission ---
+    builder
+      .addCase(createCommissionAPI.pending, (state) => {
+        state.commissions.loading = true;
+        state.commissions.error = null;
+      })
+      .addCase(createCommissionAPI.fulfilled, (state, action) => {
+        state.commissions.loading = false;
+        if (action.payload) {
+          state.commissions.items.unshift(action.payload);
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(createCommissionAPI.rejected, (state, action) => {
+        state.commissions.loading = false;
+        state.commissions.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to create commission';
+      });
+
+    // --- Update Commission ---
+    builder
+      .addCase(updateCommissionAPI.pending, (state) => {
+        state.commissions.loading = true;
+        state.commissions.error = null;
+      })
+      .addCase(updateCommissionAPI.fulfilled, (state, action) => {
+        state.commissions.loading = false;
+        if (action.payload) {
+          const idx = state.commissions.items.findIndex(c => c.id === action.payload.id);
+          if (idx > -1) {
+            state.commissions.items[idx] = { ...state.commissions.items[idx], ...action.payload };
+          }
+        }
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(updateCommissionAPI.rejected, (state, action) => {
+        state.commissions.loading = false;
+        state.commissions.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to update commission';
+      });
+
+    // --- Bulk Pay Commissions ---
+    builder
+      .addCase(bulkPayCommissionsAPI.pending, (state) => {
+        state.commissions.loading = true;
+        state.commissions.error = null;
+      })
+      .addCase(bulkPayCommissionsAPI.fulfilled, (state, action) => {
+        state.commissions.loading = false;
+        // Mark paid commissions in state
+        const paidIds = new Set(action.payload.commissionIds);
+        state.commissions.items = state.commissions.items.map(c =>
+          paidIds.has(String(c.id)) ? { ...c, status: 'paid', paidAt: new Date().toISOString() } : c
+        );
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(bulkPayCommissionsAPI.rejected, (state, action) => {
+        state.commissions.loading = false;
+        state.commissions.error = (typeof action.payload === 'string' ? action.payload : null) || 'Failed to process payments';
+      });
+
     // --- SECURITY: Reset all CRM data on logout to prevent data leaks ---
     builder.addCase(logout, () => initialState);
   }
@@ -819,13 +993,19 @@ export const selectPendingCommissions = createSelector(
   selectAllCommissions,
   (items) => items.filter((c: CRMItem) => c.status === 'pending')
 );
+export const selectApprovedCommissions = createSelector(
+  selectAllCommissions,
+  (items) => items.filter((c: CRMItem) => c.status === 'approved')
+);
 export const selectPaidCommissions = createSelector(
   selectAllCommissions,
   (items) => items.filter((c: CRMItem) => c.status === 'paid')
 );
+export const selectCommissionsLoading = (state: RootState) => state.crmData?.commissions?.loading;
+export const selectCommissionsError = (state: RootState) => state.crmData?.commissions?.error;
 
 export const selectCommissionsByAgent = (state: RootState, agentId: string | number) =>
-  state.crmData?.commissions?.items?.filter((c: CRMItem) => c.agent_id === agentId) || [];
+  state.crmData?.commissions?.items?.filter((c: CRMItem) => c.agentId === agentId || c.agent_id === agentId) || [];
 
 // ── Activities ──
 export const selectAllActivities = createSelector(

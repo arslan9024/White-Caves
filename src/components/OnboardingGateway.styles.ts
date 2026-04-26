@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { typography } from '../styles/theme/typography';
 
 export const StyledOnboardingGateway = styled.section`
   padding: var(--spacing-3xl, 6rem) 5%;
@@ -20,7 +21,7 @@ export const StyledGatewayHeader = styled.div`
 `;
 
 export const StyledGatewayTitle = styled.h2`
-  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-family: ${typography.fontFamily.heading};
   font-size: 2.5rem;
   font-weight: 700;
   color: var(--text-primary, #212121);
@@ -32,7 +33,7 @@ export const StyledGatewayTitle = styled.h2`
 `;
 
 export const StyledGatewaySubtitle = styled.p`
-  font-family: var(--font-body, 'Open Sans', sans-serif);
+  font-family: ${typography.fontFamily.primary};
   font-size: 1.125rem;
   color: var(--text-muted, #757575);
   max-width: 500px;
@@ -145,7 +146,7 @@ export const StyledTileTextContent = styled.div`
 `;
 
 export const StyledTileTitle = styled.h3`
-  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-family: ${typography.fontFamily.heading};
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-primary, #212121);

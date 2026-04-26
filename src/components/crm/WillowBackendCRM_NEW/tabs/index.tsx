@@ -44,25 +44,25 @@ const WillowBackendCRM = () => {
       case 'overview':
         return (
           <OverviewTab
-            apiStats={apiStats as any}
-            dbHealth={dbHealth as any}
+            apiStats={apiStats}
+            dbHealth={dbHealth}
             cacheHealth={cacheHealth}
             securityStatus={securityStatus}
             realtimeStats={realtimeStats}
           />
         );
       case 'apis':
-        return <APIsTab endpoints={apis} apiStats={apiStats as any} />;
+        return <APIsTab endpoints={apis} apiStats={apiStats} />;
       case 'database':
-        return <DatabaseTab metrics={databaseMetrics as any} dbHealth={dbHealth as any} />;
+        return <DatabaseTab metrics={databaseMetrics} dbHealth={dbHealth} />;
       case 'caching':
-        return <CachingTab cacheStats={cacheStats as any} cacheHealth={cacheHealth} />;
+        return <CachingTab cacheStats={cacheStats} cacheHealth={cacheHealth} />;
       case 'security':
         return <SecurityTab checks={securityChecks} securityStatus={securityStatus} />;
       case 'realtime':
         return <RealtimeTab connections={realtimeConnections} realtimeStats={realtimeStats} />;
       default:
-        return <OverviewTab apiStats={apiStats as any} dbHealth={dbHealth as any} cacheHealth={cacheHealth} securityStatus={securityStatus} realtimeStats={realtimeStats} />;
+        return <OverviewTab apiStats={apiStats} dbHealth={dbHealth} cacheHealth={cacheHealth} securityStatus={securityStatus} realtimeStats={realtimeStats} />;
     }
   };
 

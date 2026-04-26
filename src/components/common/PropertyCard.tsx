@@ -1,6 +1,15 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToFavorites, removeFromFavorites, selectFavorites, type FavoriteItem } from '../../store/dashboardSlice';
+import {
+  addToFavorites,
+  removeFromFavorites,
+  addFavoriteThunk,
+  removeFavoriteThunk,
+  selectFavorites,
+  selectFavoriteIds,
+  type FavoriteItem,
+} from '../../store/dashboardSlice';
+import type { AppDispatch } from '../../store/store';
 import {
   PropertyCardContainer,
   PropertyCardDiv,
@@ -53,17 +62,25 @@ function PropertyCard({
   to,
   className = '',
 }: PropertyCardProps) {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const favorites: FavoriteItem[] = useSelector(selectFavorites) || [];
-  const isFavorite = favorites.some((f) => f?.id === id);
+  const favoriteIds: string[] = useSelector(selectFavoriteIds) || [];
+  // Use favoriteIds for lightweight check; fall back to full favorites array
+  const isFavorite = favoriteIds.length > 0
+    ? favoriteIds.includes(id)
+    : favorites.some((f) => f?.id === id);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (isFavorite) {
+      // Optimistic local update, then API call
       dispatch(removeFromFavorites(id));
+      dispatch(removeFavoriteThunk(id));
     } else {
-      dispatch(addToFavorites({ id, title, location, price, image }));
+      const item: FavoriteItem = { id, title, location, price, image };
+      dispatch(addToFavorites(item));
+      dispatch(addFavoriteThunk(item));
     }
   };
 

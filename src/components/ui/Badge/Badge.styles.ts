@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import { typography } from '../../../styles/theme/typography';
 
 interface BadgeProps {
   $variant?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info';
@@ -83,7 +84,7 @@ export const StyledBadge = styled.span<BadgeProps>`
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: var(--font-family-sans, 'Montserrat', sans-serif);
+  font-family: ${typography.fontFamily.heading};
   font-weight: 600;
   white-space: nowrap;
   border: 1px solid transparent;

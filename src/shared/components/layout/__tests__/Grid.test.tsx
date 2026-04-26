@@ -14,7 +14,7 @@ import Grid from '../Grid';
 const theme = {
   colors: { background: '#fff', text: '#000', border: '#ccc', primary: '#007bff' },
   spacing: { xs: '0.25rem', sm: '0.5rem', md: '1rem', lg: '1.5rem' },
-};
+} as any;
 
 function renderWithTheme(ui: React.ReactElement) {
   return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>);

@@ -7,6 +7,43 @@
 import { renderHook, act } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
+// Mock react-redux so useDispatch returns a mock that handles thunks,
+// and useSelector always returns [] / false / null for commission selectors
+const mockDispatch = vi.fn((action) => {
+  // If thunk returns a promise, return it; otherwise return a resolved promise
+  if (action && typeof action.then === 'function') return action;
+  return Promise.resolve({ meta: { requestStatus: 'rejected' }, payload: null });
+});
+
+vi.mock('react-redux', () => ({
+  useDispatch: () => mockDispatch,
+  useSelector: (selector: any) => {
+    // Return empty defaults for all commission selectors
+    const name = selector?.name || '';
+    if (name.includes('Loading')) return false;
+    if (name.includes('Error')) return null;
+    return [];
+  },
+}));
+
+// Mock the thunks to return plain action-like objects
+vi.mock('../../../../../store/crmDataSlice', async (importOriginal) => {
+  const original = await importOriginal<typeof import('../../../../../store/crmDataSlice')>();
+  return {
+    ...original,
+    fetchCommissionsFromAPI: vi.fn(() => ({ type: 'mock/fetchCommissions' })),
+    fetchFinanceSummary: vi.fn(() => ({ type: 'mock/fetchFinanceSummary' })),
+    createCommissionAPI: vi.fn(() => ({ type: 'mock/createCommission' })),
+    updateCommissionAPI: vi.fn(() => ({ type: 'mock/updateCommission' })),
+    bulkPayCommissionsAPI: vi.fn(() => ({ type: 'mock/bulkPay' })),
+  };
+});
+
+// Mock store module to avoid import errors
+vi.mock('../../../../../store/store', () => ({
+  AppDispatch: undefined,
+}));
+
 // Mock data modules
 vi.mock('../../data/finance', () => ({
   INVOICES: [

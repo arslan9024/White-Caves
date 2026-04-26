@@ -2,7 +2,7 @@
 
 > **Single Source of Truth** for all business documentation, domain knowledge, and strategic planning.
 >
-> Last updated: March 31, 2026 | **100 documents across 15 sections**
+> Last updated: April 10, 2026 | **120+ documents across 15 sections**
 
 ---
 
@@ -69,8 +69,19 @@ business_docs/
 - `roles.md` — All 22 user roles with permissions and access levels
 - `stakeholder-register.md` ✨ NEW — All internal + external stakeholders, communication plan
 
+#### 02 — Infrastructure ✨ EXPANDED
+- `README.md` — Infrastructure overview and document index
+- `WHATSAPP_THREE_ASSISTANT_ARCHITECTURE.md` — WhatsApp 3-assistant architecture
+- `disaster-recovery-plan.md` ✨ NEW — RPO 1hr/RTO 4hr, backup strategy, failover, RERA compliance during outages
+- `scaling-strategy.md` ✨ NEW — Horizontal scaling, sharding, cost projections ($175→$7K/mo)
+- `database-architecture.md` ✨ NEW — All 17 models, 90+ indexes, data lifecycle, migration workflow
+- `security-architecture.md` ✨ NEW — Auth flows, 12-role RBAC, OWASP Top 10, UAE PDPL compliance
+- `monitoring-observability.md` ✨ NEW — Health checks, alerting rules, P1-P4 incidents, 99.9% SLA
+
 #### 02 — Services
+- `README.md` ✨ NEW — Service offerings index (5 verticals, revenue models, target markets)
 - `core-services.md` — 9 core CRM services with implementation status
+- `service-level-agreements.md` ✨ NEW — SLAs: 99.9% uptime, response times, support tiers, escalation
 
 #### 03 — AI Assistants
 - 24 individual assistant profiles (atlas, aurora, cipher, clara, daisy, etc.)
@@ -109,6 +120,8 @@ business_docs/
 - `dubai-market-analysis-2026.md` — Market size, buyer profiles, trends
 - `dubai-regulatory-framework.md` — RERA, DLD, Ejari regulatory overview
 - `portal-api-research.md` — PropertyFinder + Bayut API, partnership requirements
+- `competitor-analysis.md` ✨ NEW — PropertyFinder, Bayut, Yardi, RealCube comparison, SWOT analysis
+- `customer-personas.md` ✨ NEW — 6 detailed personas (brokerage owner, agent, PM company, developer, investor, buyer)
 
 #### 09 — CRM Features
 - `lead-tracking.md` — Lead pipeline management specification
@@ -121,6 +134,11 @@ business_docs/
 - `financial-reporting.md` — 7 report types, export specs, dashboard components
 - `agent-performance.md` — KPIs, leaderboard, targets, performance dashboard
 - `marketing-campaigns.md` — WhatsApp broadcasts, campaign analytics, lead attribution
+- `property-management.md` ✨ NEW — Property lifecycle, types, search, syndication, RERA/DLD compliance
+- `landlord-portal.md` ✨ NEW — Portfolio dashboard, financial reports, maintenance, Ejari tracking
+- `tenant-portal.md` ✨ NEW — Online payments, maintenance requests, Ejari status, amenity booking
+- `analytics-dashboard.md` ✨ NEW — Executive KPIs, agent scorecards, custom reports, WebSocket feeds
+- `marketing-automation.md` ✨ NEW — Email/WhatsApp campaigns, nurturing workflows, SEO, ROI attribution
 
 #### 09 — User Roles & Permissions
 - `roles-matrix.md` — 22 roles with permissions
@@ -128,6 +146,8 @@ business_docs/
 
 #### 10 — Design System
 - Color palette, typography, component specs, spacing/layout
+- `accessibility-guidelines.md` ✨ NEW — WCAG 2.1 AA, keyboard nav, ARIA, focus management, touch targets
+- `rtl-internationalization.md` ✨ NEW — Arabic RTL, BiDi text, currency formatting, react-i18next
 
 #### 10 — Security
 - `security-policy.md` — Security controls and policies
@@ -135,6 +155,7 @@ business_docs/
 - `kyc-aml-framework.md` — KYC requirements, AML screening services, goAML SAR process
 
 #### 11 — SEO
+- `README.md` ✨ NEW — SEO strategy index: technical SEO, content, local SEO, schema markup, analytics
 - `seo-strategy.md` — SEO strategy
 
 #### 12 — SRS (Software Requirements Specification) ✨ NEW SECTION
@@ -147,12 +168,14 @@ business_docs/
 - `qa-checklist.md` — Pre-release QA checklist covering code, tests, security, compliance
 
 #### 14 — DevOps ✨ NEW SECTION
+- `README.md` ✨ NEW — DevOps documentation index: CI/CD, deployment, monitoring, incident response
 - `deployment-runbook.md` — Step-by-step deployment for frontend (Vercel) + backend (Railway/Docker) + database migrations
 - `incident-response.md` — P1–P4 severity levels, response workflow, runbooks for common incidents, post-mortem template
 - `monitoring-observability.md` — Monitoring stack, health check, key metrics, alerting rules, logging strategy
 - `environment-setup.md` — New developer setup guide: Node.js, env vars, Prisma, seed data, project structure
 
 #### 15 — Release Management ✨ NEW SECTION
+- `README.md` ✨ NEW — Release management index: process, versioning, calendar, rollback procedures
 - `release-process.md` — SemVer versioning, release calendar, step-by-step release process, hotfix process
 - `change-management.md` — Change categories, change request template, approval process, freeze periods
 
@@ -389,9 +412,9 @@ Each subdirectory has an owner responsible for maintenance:
 
 ---
 
-**Version**: March 2026  
-**Last Updated**: March 31, 2026  
-**Total Documents**: 100 across 15 sections  
+**Version**: April 2026  
+**Last Updated**: April 10, 2026  
+**Total Documents**: 120+ across 15 sections  
 **Maintained By**: Business & Product Teams  
 **Review Cycle**: Quarterly
 

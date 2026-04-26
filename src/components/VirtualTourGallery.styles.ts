@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { typography } from '../styles/theme/typography';
 import { keyframes } from 'styled-components';
 
 const pulse = keyframes`
@@ -29,7 +30,7 @@ export const HeaderContent = styled.div`
   flex: 1;
 
   h2 {
-    font-family: var(--font-heading, 'Montserrat', sans-serif);
+    font-family: ${typography.fontFamily.heading};
     font-size: 2rem;
     color: var(--primary-color, #1a365d);
     margin-bottom: 0.5rem;
@@ -68,7 +69,7 @@ export const FeaturedToursSection = styled.div`
   margin-bottom: 3rem;
 
   h3 {
-    font-family: var(--font-heading, 'Montserrat', sans-serif);
+    font-family: ${typography.fontFamily.heading};
     font-size: 1.25rem;
     color: var(--text-primary, #1a202c);
     margin-bottom: 1.5rem;
@@ -77,7 +78,7 @@ export const FeaturedToursSection = styled.div`
 
 export const AllToursSection = styled.div`
   h3 {
-    font-family: var(--font-heading, 'Montserrat', sans-serif);
+    font-family: ${typography.fontFamily.heading};
     font-size: 1.25rem;
     color: var(--text-primary, #1a202c);
     margin-bottom: 1.5rem;
@@ -152,7 +153,7 @@ export const PlayButton = styled.div`
   animation: ${pulse} 2s infinite;
 
   span {
-    font-family: var(--font-heading, 'Montserrat', sans-serif);
+    font-family: ${typography.fontFamily.heading};
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--primary-color, #1a365d);
@@ -202,7 +203,7 @@ export const TourInfo = styled.div`
   padding: 1.5rem;
 
   h4 {
-    font-family: var(--font-heading, 'Montserrat', sans-serif);
+    font-family: ${typography.fontFamily.heading};
     font-size: 1.1rem;
     color: var(--text-primary, #1a202c);
     margin-bottom: 0.5rem;
@@ -308,7 +309,7 @@ export const TourContent = styled.div`
   padding: 1.5rem;
 
   h4 {
-    font-family: var(--font-heading, 'Montserrat', sans-serif);
+    font-family: ${typography.fontFamily.heading};
     font-size: 1.1rem;
     color: var(--text-primary, #1a202c);
     margin-bottom: 0.5rem;

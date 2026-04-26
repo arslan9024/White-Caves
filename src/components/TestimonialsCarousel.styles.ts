@@ -1,4 +1,5 @@
 import styled, { keyframes } from 'styled-components';
+import { typography } from '../styles/theme/typography';
 
 const spin = keyframes`
   from {
@@ -128,7 +129,7 @@ export const QuoteIcon = styled.div`
   line-height: 1;
   color: var(--primary, #c9a962);
   opacity: 0.3;
-  font-family: Georgia, serif;
+  font-family: ${typography.fontFamily.serif};
   margin-bottom: -20px;
 
   @media (max-width: 768px) {

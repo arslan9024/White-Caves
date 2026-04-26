@@ -232,9 +232,42 @@ export const PUBLIC_ROLES = [
   ROLES.SALES_AGENT
 ];
 
+// ─── Role alias map ─────────────────────────────────────────────────────────
+// Maps frontend / UI role IDs to the 12 canonical backend roles.
+// Kept in sync with server/middleware/rbac.ts ROLE_ALIAS_MAP.
+export const ROLE_ALIAS_MAP: Record<string, string> = {
+  managing_director: 'owner',
+  real_estate_company: 'owner',
+  property_mgmt_company: 'manager',
+  super_admin: 'admin',
+  branch_manager: 'manager',
+  sales_manager: 'manager',
+  leasing_manager: 'manager',
+  marketing_manager: 'manager',
+  sales_agent: 'agent',
+  leasing_agent: 'leasing-agent',
+  property_manager: 'agent',
+  affiliated_agent: 'secondary-sales-agent',
+  property_consultant: 'viewer',
+  mortgage_consultant: 'viewer',
+  valuation_expert: 'viewer',
+  trustee_officer: 'admin',
+  legal_officer: 'admin',
+  finance_officer: 'finance',
+  document_controller: 'admin',
+  developer: 'seller',
+  investor: 'buyer',
+};
+
+/** Resolve any role string (frontend UI or canonical) to the 12-role backend key. */
+export function resolveBackendRole(role: string): string {
+  return ROLE_ALIAS_MAP[role] ?? role;
+}
+
 export function hasPermission(userRole: string | null, permission: string): boolean {
   if (!userRole || !permission) return false;
-  const rolePermissions = ROLE_PERMISSIONS[userRole] || [];
+  const resolved = resolveBackendRole(userRole);
+  const rolePermissions = ROLE_PERMISSIONS[resolved] || [];
   return rolePermissions.includes(permission);
 }
 
@@ -249,19 +282,26 @@ export function hasAllPermissions(userRole: string | null, permissions: string[]
 }
 
 export function isOwner(userRole: string | null): boolean {
-  return userRole === ROLES.OWNER;
+  if (!userRole) return false;
+  return resolveBackendRole(userRole) === ROLES.OWNER;
 }
 
 export function isAgent(userRole: string | null): boolean {
-  return userRole === ROLES.AGENT || userRole === ROLES.LEASING_AGENT || userRole === ROLES.SALES_AGENT;
+  if (!userRole) return false;
+  const resolved = resolveBackendRole(userRole);
+  return resolved === ROLES.AGENT || resolved === ROLES.LEASING_AGENT || resolved === ROLES.SALES_AGENT;
 }
 
 export function isManager(userRole: string | null): boolean {
-  return userRole === ROLES.OWNER || userRole === ROLES.MANAGER;
+  if (!userRole) return false;
+  const resolved = resolveBackendRole(userRole);
+  return resolved === ROLES.OWNER || resolved === ROLES.MANAGER;
 }
 
 export function isAdmin(userRole: string | null): boolean {
-  return userRole === ROLES.OWNER || userRole === ROLES.MANAGER || userRole === ROLES.ADMIN;
+  if (!userRole) return false;
+  const resolved = resolveBackendRole(userRole);
+  return resolved === ROLES.OWNER || resolved === ROLES.MANAGER || resolved === ROLES.ADMIN;
 }
 
 export function canAccessFeature(userRole: string | null, featureId: string): boolean {
@@ -272,7 +312,8 @@ export function canAccessFeature(userRole: string | null, featureId: string): bo
 }
 
 export function getRoleLevel(userRole: string): number {
-  return ROLE_HIERARCHY[userRole] || 0;
+  const resolved = resolveBackendRole(userRole);
+  return ROLE_HIERARCHY[resolved] || 0;
 }
 
 const EMPTY_PERMISSIONS: string[] = [];

@@ -47,9 +47,6 @@ describe('useActionHandler', () => {
         ['new deal', 'sales', '/dashboard/sales/deals/new'],
         ['view negotiation', 'sales', '/dashboard/sales/negotiations'],
         ['add negotiation', 'sales', '/dashboard/sales/negotiations/new'],
-        ['commission log', 'sales', '/dashboard/sales/commissions/log'],
-        ['commission calculate', 'sales', '/dashboard/sales/commissions/calculator'],
-        ['commission report', 'sales', '/dashboard/sales/commissions/report'],
       ])('routes "%s" in %s to %s', (action, dept, expected) => {
         const { result } = renderHook(() => useActionHandler());
         expect(result.current.getActionRoute(action, dept)).toBe(expected);

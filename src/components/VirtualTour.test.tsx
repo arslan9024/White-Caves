@@ -92,7 +92,7 @@ describe('VirtualTour', () => {
 
     it('shows current room name', () => {
       const { container } = render(<VirtualTour images={mockImages} />);
-      const infoSection = container.querySelector('.tour-info')!;
+      const infoSection = container.querySelector('.tour-info')! as HTMLElement;
       expect(within(infoSection).getByText('Living Room')).toBeInTheDocument();
     });
 
@@ -128,7 +128,7 @@ describe('VirtualTour', () => {
     it('navigates to room on thumbnail click', () => {
       const { container } = render(<VirtualTour images={mockImages} />);
       // Find the Kitchen room-name span in room navigator
-      const roomNav = container.querySelector('.room-navigator')!;
+      const roomNav = container.querySelector('.room-navigator')! as HTMLElement;
       const kitchenThumb = within(roomNav).getByText('Kitchen').closest('button');
       fireEvent.click(kitchenThumb!);
       expect(screen.getByText('2 / 3')).toBeInTheDocument();

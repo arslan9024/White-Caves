@@ -2,7 +2,7 @@ import React from 'react';
 import { DollarSign, Users, Eye, TrendingUp, Edit, Trash2 } from 'lucide-react';
 
 interface Campaign {
-  id: string | number;
+  id: number;
   name: string;
   platform: string;
   status: string;
@@ -28,7 +28,7 @@ interface CampaignsState {
   filteredCampaigns: Campaign[];
   campaignStats: CampaignStats;
   getCampaignStatusBadge: (status: string) => StatusBadgeStyle;
-  deleteCampaign: (id: string | number) => void;
+  deleteCampaign: (id: number) => void;
 }
 
 interface CampaignsTabProps {

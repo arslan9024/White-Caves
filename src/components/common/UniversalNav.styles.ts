@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { typography } from '../../styles/theme/typography';
 
 export const UniversalNavHeader = styled.header`
   position: fixed;
@@ -51,7 +52,7 @@ export const LogoText = styled.span`
   font-size: 1.25rem;
   font-weight: 700;
   color: #ffffff;
-  font-family: 'Montserrat', sans-serif;
+  font-family: ${typography.fontFamily.heading};
 `;
 
 export const MobileMenuButton = styled.button<{ $isOpen: boolean }>`
@@ -300,7 +301,7 @@ export const TimeSpan = styled.span`
   font-size: 0.85rem;
   font-weight: 600;
   color: #ffffff;
-  font-family: 'Montserrat', monospace;
+  font-family: ${typography.fontFamily.mono};
 `;
 
 export const ThemeToggle = styled.button`

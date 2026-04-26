@@ -9,7 +9,7 @@ interface ComponentStats {
 
 interface PerformanceMetric {
   metric: string;
-  value: string;
+  value: number | string;
   trend: string;
 }
 

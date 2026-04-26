@@ -15,12 +15,14 @@ import { sanitizeString } from '../utils/sanitize';
 const VALID_LEAD_STATUSES = ['new', 'contacted', 'qualified', 'viewing', 'offered', 'negotiating', 'won', 'lost'] as const;
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
+import { requirePermission, requireRole } from '../middleware/rbac';
 
 const router = Router();
 
 // ─── GET /api/leads ─────────────────────────────────────────────────────
 router.get(
   '/',
+  requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
     const {
       status,
@@ -107,6 +109,7 @@ router.get(
 // ─── GET /api/leads/stats ───────────────────────────────────────────────
 router.get(
   '/stats',
+  requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only managers+ can view aggregated lead statistics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
@@ -143,6 +146,7 @@ router.get(
 // ─── GET /api/leads/analytics/conversion ────────────────────────────────
 router.get(
   '/analytics/conversion',
+  requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
     // Authorization: Only managers+ can view conversion analytics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
@@ -168,6 +172,7 @@ router.get(
 // ─── GET /api/leads/:id ─────────────────────────────────────────────────
 router.get(
   '/:id',
+  requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
     validateIdParam(req.params.id, 'Lead ID');
     const lead = await prisma.lead.findUnique({
@@ -198,6 +203,7 @@ router.get(
 // ─── POST /api/leads ────────────────────────────────────────────────────
 router.post(
   '/',
+  requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
     const { name, email, phone, company, status, source, budget, score, notes, tags,
       assignedToId, propertyId } = req.body;
@@ -251,6 +257,7 @@ router.post(
 // ─── PATCH /api/leads/:id ───────────────────────────────────────────────
 router.patch(
   '/:id',
+  requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     validateIdParam(id, 'Lead ID');
@@ -326,6 +333,7 @@ router.patch(
 // ─── DELETE /api/leads/:id ──────────────────────────────────────────────
 router.delete(
   '/:id',
+  requireRole('owner', 'manager', 'admin'),
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     validateIdParam(id, 'Lead ID');
@@ -362,6 +370,7 @@ router.delete(
 // ─── POST /api/leads/:id/activities ─────────────────────────────────────
 router.post(
   '/:id/activities',
+  requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     validateIdParam(id, 'Lead ID');
@@ -405,6 +414,7 @@ router.post(
 // ─── GET /api/leads/:id/activities ──────────────────────────────────────
 router.get(
   '/:id/activities',
+  requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
     validateIdParam(req.params.id, 'Lead ID');
     const { page = '1', pageSize = '20' } = req.query;
@@ -432,6 +442,7 @@ router.get(
 // ─── POST /api/leads/bulk-import ────────────────────────────────────────
 router.post(
   '/bulk-import',
+  requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
     const { leads } = req.body;
     if (!Array.isArray(leads) || leads.length === 0) throw new AppError('Provide an array of leads', 400);

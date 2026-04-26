@@ -31,8 +31,8 @@ const mockSafeStorage = {
 };
 vi.mock('../utils/safeStorage', () => ({
   safeStorage: {
-    setJSON: (...args: unknown[]) => mockSafeStorage.setJSON(...args),
-    getJSON: (...args: unknown[]) => mockSafeStorage.getJSON(...args),
+    setJSON: (...args: any[]) => (mockSafeStorage.setJSON as Function)(...args),
+    getJSON: (...args: any[]) => (mockSafeStorage.getJSON as Function)(...args),
   },
 }));
 
@@ -223,7 +223,7 @@ describe('RoleGateway', () => {
 
 describe('RoleGuard', () => {
   it('shows children when user has allowed role', () => {
-    mockSafeStorage.getJSON.mockReturnValue({ role: 'buyer', selectedAt: '2024-01-01', locked: true });
+    mockSafeStorage.getJSON.mockReturnValue({ role: 'buyer', selectedAt: '2024-01-01', locked: true } as any);
     render(
       <RoleGuard allowedRoles={['buyer', 'seller']}>
         <div>Protected content</div>
@@ -244,7 +244,7 @@ describe('RoleGuard', () => {
   });
 
   it('redirects to role dashboard when role not allowed', () => {
-    mockSafeStorage.getJSON.mockReturnValue({ role: 'admin', selectedAt: '2024-01-01', locked: true });
+    mockSafeStorage.getJSON.mockReturnValue({ role: 'admin', selectedAt: '2024-01-01', locked: true } as any);
     render(
       <RoleGuard allowedRoles={['buyer']}>
         <div>Secret</div>

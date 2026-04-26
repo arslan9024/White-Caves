@@ -24,7 +24,7 @@ describe('WhatsAppButton', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null) as any;
   });
 
   describe('rendering', () => {

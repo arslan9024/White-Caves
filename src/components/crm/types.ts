@@ -10,7 +10,7 @@ export interface CRMModuleProps {
   role: string;
   user: {
     id: string;
-    name: string;
+    name?: string;
     email: string;
     role?: string;
   } | null;

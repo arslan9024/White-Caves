@@ -2,7 +2,7 @@
  * PaymentInstructionDeck – comprehensive test suite
  * Covers rendering, payment methods, bank transfer, QR, cheque, copy, expand/collapse
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, within, act } from '@testing-library/react';
 import PaymentInstructionDeck, {
   PaymentMethodSelector,
