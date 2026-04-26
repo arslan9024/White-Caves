@@ -201,6 +201,4 @@ The seed already creates a `Tenant` model record. For the portal demo, we need:
 
 ## Next Phase After This
 
-Once Phase 2 is complete, move to **[PHASE_3_AND_BEYOND.md](./PHASE_3_AND_BEYOND.md)** — starting with Phase 3 (Multi-User CRM & RBAC).
-
-The full CRM with all tabs for the managing director is detailed in **[PHASE_9_CRM_SUPERUSER.md](./PHASE_9_CRM_SUPERUSER.md)**.
+Once Phase 2 is complete, move to **[PHASE_3_CRM_SUPERUSER.md](./PHASE_3_CRM_SUPERUSER.md)** — Full CRM for `arslanmalikgoraha@gmail.com` (managing_director).

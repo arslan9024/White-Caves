@@ -66,14 +66,14 @@ The primary super user is the **Managing Director**.
 ## What Needs To Be Done 🚧
 
 ### 2.1 — Sign-In Flow End-to-End
-**Goal**: Owner can open the app, sign in, and land on the CRM dashboard in < 5 clicks.
+**Goal**: Managing director can open the app, sign in, and land on the CRM dashboard in < 5 clicks.
 
 - [ ] **Sign-in page renders cleanly** — no layout breaks, loading spinner works
-- [ ] **Email login works**: `owner@whitecaves.ae` + `password123` → success → redirect to `/dashboard`
+- [ ] **Email login works**: `arslanmalikgoraha@gmail.com` + `password123` → success → redirect to `/dashboard`
 - [ ] **JWT stored in localStorage** via `safeStorage` — verify `auth_token` is set after login
-- [ ] **Redux user state** populated: `state.user.currentUser` or `state.auth.user` has `id`, `email`, `role: 'lion'`
+- [ ] **Redux user state** populated: `state.user.currentUser` or `state.auth.user` has `id`, `email`, `role: 'managing_director'`
 - [ ] **Protected route** on `/dashboard`: redirect to `/signin` if no token
-- [ ] **"Skip category selection" for owner**: if a user logs in with role `lion`/`owner`, bypass the signup category flow and go straight to the dashboard
+- [ ] **"Skip category selection" for managing director**: if a user logs in with role `managing_director`, bypass the signup category flow and go straight to the dashboard
 - [ ] **Error state**: wrong password shows "Invalid credentials" in the form
 - [ ] **Loading state**: button shows spinner during API call, disabled while loading
 
@@ -250,7 +250,7 @@ npm run dev      # Terminal 2 (or npm run dev:all for both)
 # 4. Open the app
 # Go to http://localhost:5173
 # Click Sign In
-# Email: owner@whitecaves.ae
+# Email: arslanmalikgoraha@gmail.com
 # Password: password123
 ```
 
@@ -260,9 +260,9 @@ npm run dev      # Terminal 2 (or npm run dev:all for both)
 
 ---
 
-## Definition of Done — Phase 2
+## Definition of Done — Phase 3
 
-- [ ] Owner can sign in with `owner@whitecaves.ae` / `password123`
+- [ ] Managing director can sign in with `arslanmalikgoraha@gmail.com` / `password123`
 - [ ] Dashboard loads immediately after login with no errors
 - [ ] All 11 CRM tabs navigate without crashing
 - [ ] All 13 AI assistant dashboards render correctly

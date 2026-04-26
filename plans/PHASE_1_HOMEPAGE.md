@@ -219,4 +219,4 @@ When real data is available (Phase 3+), these files can be swapped for API calls
 
 ## Next Phase After This
 
-Once Phase 1 is complete, move to **[PHASE_2_CRM_SUPERUSER.md](./PHASE_2_CRM_SUPERUSER.md)**.
+Once Phase 1 is complete, move to **[PHASE_2_LANDLORD_TENANT.md](./PHASE_2_LANDLORD_TENANT.md)**.

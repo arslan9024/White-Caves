@@ -1,17 +1,20 @@
-# Phase 3 and Beyond — Deferred Features
+# Phase 4 and Beyond — Deferred Features
 
-> **Priority**: #3 — Deferred  
+> **Priority**: #4 — Deferred  
 > **Goal**: All advanced backend integrations, compliance, multi-user onboarding, and expansion features  
-> **Prerequisite**: Phase 1 (Homepage) and Phase 2 (Landlord & Tenant Portals) must be complete first  
+> **Prerequisite**: Phase 3 (CRM Full Super User Access) must be complete first  
 > **Status**: 🔲 Not Started
 
 ---
 
 ## Overview
 
-These features are intentionally deferred until the homepage and portals are polished and working.
+These features are intentionally deferred until the homepage, portals, and Phase 3 CRM work are polished and working.
 They require external services, third-party agreements, or significant backend work
 that is not needed to demonstrate the core product.
+
+Phase 3 is **not deferred** and is tracked separately in
+**[PHASE_3_CRM_SUPERUSER.md](./PHASE_3_CRM_SUPERUSER.md)**.
 
 ---
 
