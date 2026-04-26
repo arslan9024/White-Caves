@@ -1,17 +1,18 @@
-# Phase 9 — CRM Full Super User Access (All CRM Features, Managing Director)
+# Phase 3 — CRM Full Super User Access (All CRM Features, Managing Director)
 
-> **Priority**: #9 — Deferred  
+> **Priority**: #3 — High  
 > **Goal**: A fully working CRM accessible with the managing director super user, all features usable  
 > **Approach**: Log in as `arslanmalikgoraha@gmail.com` → access every CRM tab and feature  
-> **Status**: 🔲 Not Started — dashboard shell and routes exist, full integration deferred
+> **Status**: 🔲 Not Started — dashboard shell and routes exist, full integration in progress
 
 ---
 
-## Why This Is Phase 9
+## Why This Is Phase 3
 
-The Landlord & Tenant portals (Phase 2) give immediate client-facing value. The full internal CRM
-with all 8+ tabs for the managing director comes after the core infrastructure (RBAC, WhatsApp,
-Lease module, Compliance) is in place, so that the CRM reflects real, complete data.
+After the Landlord & Tenant portals (Phase 2) give immediate client-facing value, the next priority
+is getting the managing director's full internal CRM working end-to-end. This validates the core
+product and creates a solid foundation before bringing in multi-user RBAC, external integrations,
+and compliance features.
 
 ---
 
@@ -281,4 +282,4 @@ npm run dev      # Terminal 2 (or npm run dev:all for both)
 
 ## Next Phase After This
 
-Once Phase 9 is complete, move to **[PHASE_3_AND_BEYOND.md](./PHASE_3_AND_BEYOND.md)** Phase 10 (PWA).
+Once Phase 3 is complete, move to **[PHASE_3_AND_BEYOND.md](./PHASE_3_AND_BEYOND.md)** — starting with Phase 4 (WhatsApp Real Integration).

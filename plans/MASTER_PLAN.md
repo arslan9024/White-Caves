@@ -14,8 +14,8 @@ The development order has been reset to focus on visible, user-facing value firs
 |----------|-------|-------------|---------------|
 | **#1 — Now** | Phase 1 | Public Homepage — full UI with dummy data | [PHASE_1_HOMEPAGE.md](./PHASE_1_HOMEPAGE.md) |
 | **#2 — Next** | Phase 2 | Landlord & Tenant Self-Service Portals — simple portals for clients | [PHASE_2_LANDLORD_TENANT.md](./PHASE_2_LANDLORD_TENANT.md) |
-| **#9 — Later** | Phase 9 | Full CRM — all tabs for `arslanmalikgoraha@gmail.com` (managing_director) | [PHASE_9_CRM_SUPERUSER.md](./PHASE_9_CRM_SUPERUSER.md) |
-| **#3–10** | Phases 3–10 | Backend integrations, WhatsApp, compliance, portals, Arabic, PWA, etc. | [PHASE_3_AND_BEYOND.md](./PHASE_3_AND_BEYOND.md) |
+| **#3 — High** | Phase 3 | Full CRM — all tabs for `arslanmalikgoraha@gmail.com` (managing_director) | [PHASE_3_CRM_SUPERUSER.md](./PHASE_3_CRM_SUPERUSER.md) |
+| **#4–10** | Phases 4–10 | WhatsApp, Compliance, Arabic, RBAC (Phase 9), PWA, etc. | [PHASE_3_AND_BEYOND.md](./PHASE_3_AND_BEYOND.md) |
 
 > See each phase file for detailed task lists, acceptance criteria, and current status.
 

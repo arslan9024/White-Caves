@@ -15,9 +15,8 @@
 |----------|-------|------|-----------|
 | **#1 — Now** | Phase 1 | Public Homepage — full UI with dummy data | [PHASE_1_HOMEPAGE.md](./plans/PHASE_1_HOMEPAGE.md) |
 | **#2 — Next** | Phase 2 | Landlord & Tenant Self-Service Portals — simple client-facing login | [PHASE_2_LANDLORD_TENANT.md](./plans/PHASE_2_LANDLORD_TENANT.md) |
-| **#3–8** | Phases 3–8 | WhatsApp, RBAC, Compliance, Arabic, etc. | [PHASE_3_AND_BEYOND.md](./plans/PHASE_3_AND_BEYOND.md) |
-| **#9 — Later** | Phase 9 | Full CRM — all tabs for `arslanmalikgoraha@gmail.com` (managing_director) | [PHASE_9_CRM_SUPERUSER.md](./plans/PHASE_9_CRM_SUPERUSER.md) |
-| **#10 — Final** | Phase 10 | Mobile PWA, Cipher/Maven AI | [PHASE_3_AND_BEYOND.md](./plans/PHASE_3_AND_BEYOND.md) |
+| **#3 — High** | Phase 3 | Full CRM — all tabs for `arslanmalikgoraha@gmail.com` (managing_director) | [PHASE_3_CRM_SUPERUSER.md](./plans/PHASE_3_CRM_SUPERUSER.md) |
+| **#4–10** | Phases 4–10 | WhatsApp, Compliance, Arabic, RBAC (Phase 9), PWA, etc. | [PHASE_3_AND_BEYOND.md](./plans/PHASE_3_AND_BEYOND.md) |
 
 ---
 
@@ -67,13 +66,22 @@ Key remaining tasks:
 - [ ] `arslanmalikgoraha@gmail.com` (managing_director) signs in → CRM dashboard
 - [ ] Add `landlord@whitecaves.ae` and `tenant@whitecaves.ae` to seed
 
+### Phase 3 — Full CRM Super User (Priority #3)
+See full task list: [plans/PHASE_3_CRM_SUPERUSER.md](./plans/PHASE_3_CRM_SUPERUSER.md)
+
+Key remaining tasks:
+- [ ] Sign-in flow end-to-end: `arslanmalikgoraha@gmail.com` → dashboard
+- [ ] All 8 CRM tabs navigate without crashing
+- [ ] Properties/Leads/Agents/Users CRUD all work
+- [ ] All 13 AI assistant dashboards render without errors
+- [ ] Analytics charts render with real or dummy data
+
 ---
 
 ## 🔲 Deferred Phases
 
-All backend integrations, WhatsApp real API, compliance, and full CRM are deferred.  
-See: [plans/PHASE_3_AND_BEYOND.md](./plans/PHASE_3_AND_BEYOND.md)  
-Full CRM for managing_director: [plans/PHASE_9_CRM_SUPERUSER.md](./plans/PHASE_9_CRM_SUPERUSER.md)
+Backend integrations, WhatsApp real API, compliance, Arabic RTL, RBAC, and PWA are deferred.  
+See: [plans/PHASE_3_AND_BEYOND.md](./plans/PHASE_3_AND_BEYOND.md)
 
 ---
 
@@ -92,8 +100,8 @@ Full CRM for managing_director: [plans/PHASE_9_CRM_SUPERUSER.md](./plans/PHASE_9
 
 - `/plans/PHASE_1_HOMEPAGE.md` — Homepage detailed task list
 - `/plans/PHASE_2_LANDLORD_TENANT.md` — Landlord & Tenant portals task list
-- `/plans/PHASE_9_CRM_SUPERUSER.md` — Full CRM for managing_director (deferred)
-- `/plans/PHASE_3_AND_BEYOND.md` — All other deferred features (WhatsApp, compliance, Arabic, PWA)
+- `/plans/PHASE_3_CRM_SUPERUSER.md` — Full CRM for managing_director (Phase 3)
+- `/plans/PHASE_3_AND_BEYOND.md` — All deferred phases (WhatsApp, Compliance, Arabic, RBAC Phase 9, PWA)
 - `/business_docs/` — business requirements, AI assistant profiles, design system, roles
 - `/docs/adr/` — Architecture Decision Records
 - `/plans/` — full historical plan archive and session summaries

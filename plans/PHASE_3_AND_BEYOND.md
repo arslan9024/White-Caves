@@ -15,25 +15,21 @@ that is not needed to demonstrate the core product.
 
 ---
 
-## Phase 3 — Multi-User CRM & RBAC (After Phase 2)
+## Phase 3 — CRM Full Super User Access (After Phase 2)
 
-### 3.1 — User Registration & Role Approval Flow
-- [ ] New user signs up → enters email, name, selects role category
-- [ ] Account created with status `pending`
-- [ ] Owner sees pending users in "Users" tab with Approve/Reject actions
-- [ ] Approved users get the correct role and can log in
-- [ ] `PendingApprovalPage.tsx` already exists — wire it up to the approval flow
-- [ ] `POST /api/users/role-request` → saves to DB (Prisma model needed: `RoleRequest`)
+See **[PHASE_3_CRM_SUPERUSER.md](./PHASE_3_CRM_SUPERUSER.md)** for the full task list.
 
-### 3.2 — Role-Specific CRM Views
-- [ ] Each of the 29 roles in `ROLE_TAB_MAPPING` shows only their permitted tabs
-- [ ] Agents see: leads assigned to them, their properties, their commissions only
-- [ ] Data segmentation: agents cannot see other agents' leads/commissions (backend filter by `assignedToId`)
-- [ ] RBAC middleware on all backend routes: validate `req.user.role` matches the allowed roles list
+**Goal**: `arslanmalikgoraha@gmail.com` (managing_director) can use every CRM tab and feature
+end-to-end with real live data — Properties, Leads, Agents, Contracts, Analytics, Users, Settings,
+and all 13 AI assistant dashboards.
 
-### 3.3 — Agent Onboarding Flow
-- [ ] First login → profile completion wizard (photo, phone, department, bio)
-- [ ] Welcome email sent on approval (email service TBD)
+- [ ] All 8 managing_director CRM tabs fully wired to live data
+- [ ] All 13 AI assistant dashboards render and are navigable
+- [ ] Analytics charts show real Recharts visualisations with live DB data
+- [ ] AI Hub shows all 17+ registered assistants with clickable dashboards
+- [ ] AI Command Center accepts text instructions to assistants
+- [ ] AssistantPlanEditor accessible to managing_director (view and edit assistant plans)
+- [ ] All CRUD flows tested end-to-end (properties, leads, agents, users)
 
 ---
 
@@ -196,21 +192,25 @@ model MaintenanceRequest {
 
 ---
 
-## Phase 9 — CRM Full Super User Access (After Phase 8)
+## Phase 9 — Multi-User CRM & RBAC (After Phase 8)
 
-See **[PHASE_9_CRM_SUPERUSER.md](./PHASE_9_CRM_SUPERUSER.md)** for the full task list.
+### 9.1 — User Registration & Role Approval Flow
+- [ ] New user signs up → enters email, name, selects role category
+- [ ] Account created with status `pending`
+- [ ] Owner sees pending users in "Users" tab with Approve/Reject actions
+- [ ] Approved users get the correct role and can log in
+- [ ] `PendingApprovalPage.tsx` already exists — wire it up to the approval flow
+- [ ] `POST /api/users/role-request` → saves to DB (Prisma model needed: `RoleRequest`)
 
-**Goal**: `arslanmalikgoraha@gmail.com` (managing_director) can use every CRM tab and feature
-end-to-end with real live data — Properties, Leads, Agents, Contracts, Analytics, Users, Settings,
-and all 13 AI assistant dashboards.
+### 9.2 — Role-Specific CRM Views
+- [ ] Each of the 29 roles in `ROLE_TAB_MAPPING` shows only their permitted tabs
+- [ ] Agents see: leads assigned to them, their properties, their commissions only
+- [ ] Data segmentation: agents cannot see other agents' leads/commissions (backend filter by `assignedToId`)
+- [ ] RBAC middleware on all backend routes: validate `req.user.role` matches the allowed roles list
 
-- [ ] All 8 managing_director CRM tabs fully wired to live data
-- [ ] All 13 AI assistant dashboards render and are navigable
-- [ ] Analytics charts show real Recharts visualisations with live DB data
-- [ ] AI Hub shows all 17+ registered assistants with clickable dashboards
-- [ ] AI Command Center accepts text instructions to assistants
-- [ ] AssistantPlanEditor accessible to managing_director (view and edit assistant plans)
-- [ ] All CRUD flows tested end-to-end (properties, leads, agents, users)
+### 9.3 — Agent Onboarding Flow
+- [ ] First login → profile completion wizard (photo, phone, department, bio)
+- [ ] Welcome email sent on approval (email service TBD)
 
 ---
 
@@ -232,13 +232,13 @@ and all 13 AI assistant dashboards.
 | `node-cron` not installed | Phase 6 (RERA cron) | `npm install node-cron @types/node-cron` |
 | `exceljs` + `pdfkit` not installed | Phase 7 (reports) | `npm install exceljs pdfkit @types/pdfkit` |
 | `multer` not installed | Phase 6 (file upload) | `npm install multer @types/multer` |
-| 2FA returns 501 | Phase 3 (security) | Implement TOTP or Twilio SMS |
+| 2FA returns 501 | Phase 9 (security) | Implement TOTP or Twilio SMS |
 | Stripe backend returns 503 | Phase 5 or later | Install Stripe SDK when payments are in scope |
 | Only 2 ADRs written | Ongoing | Write ADR per significant architectural decision |
-| CSS approach inconsistent | Phase 3 | Standardise on styled-components across all components |
+| CSS approach inconsistent | Phase 9 | Standardise on styled-components across all components |
 | Archer, Quill, Oracle not in code registry | Phase 3 | Add to `src/store/slices/aiAssistant/registry.ts` |
-| OpenAPI spec not wired to server | Phase 3 | Install `swagger-ui-express`, auto-serve `openapi.json` |
-| Test coverage at ~60% | Phase 3 | Target 80% with Vitest; critical flows in Playwright |
+| OpenAPI spec not wired to server | Phase 9 | Install `swagger-ui-express`, auto-serve `openapi.json` |
+| Test coverage at ~60% | Phase 9 | Target 80% with Vitest; critical flows in Playwright |
 
 ---
 
@@ -248,11 +248,11 @@ and all 13 AI assistant dashboards.
 |-----------|--------|-----------------|------------|
 | Phase 1 Complete | May 2026 | Full homepage, all sections, mobile-ready | Nothing |
 | Phase 2 Complete | May 2026 | Landlord & Tenant portals live, `arslanmalikgoraha@gmail.com` managing_director login | Phase 1 |
-| Phase 3 Complete | June 2026 | Multi-user RBAC, agent onboarding, role approval | Phase 2 |
+| Phase 3 Complete | June 2026 | Full CRM all tabs for managing_director with live data | Phase 2 |
 | Phase 4 Complete | July 2026 | WhatsApp live, Nina bot, Olivia campaigns | Phase 3 + WABA account |
 | Phase 5 Complete | August 2026 | Full lease/tenancy, Ejari, rent schedule | Phase 4 |
 | Phase 6 Complete | September 2026 | KYC/AML/PDPL/RERA enforcement | Phase 5 + ComplyAdvantage contract |
 | Phase 7 Complete | October 2026 | Portal syndication, financial exports, multi-currency | Phase 6 + portal agreements |
 | Phase 8 Complete | November 2026 | Arabic RTL full i18n | Phase 7 |
-| Phase 9 Complete | December 2026 | Full CRM all tabs for managing_director with live data | Phase 8 |
+| Phase 9 Complete | December 2026 | Multi-user RBAC, agent onboarding, role approval | Phase 8 |
 | Phase 10 Complete | Q1 2027 | PWA, push notifications, Cipher/Maven | Phase 9 + OpenAI API |
