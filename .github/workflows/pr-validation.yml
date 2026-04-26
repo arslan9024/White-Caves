@@ -5,17 +5,27 @@ on:
     branches: [main, development]
     types: [opened, reopened, synchronize, ready_for_review]
 
+concurrency:
+  group: pr-validation-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 jobs:
   validate-pr:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           fetch-depth: 0
       
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -41,16 +51,19 @@ jobs:
       
       - name: Build check
         run: npm run build
+
+      - name: Run SEO quality gate
+        run: npm run quality:seo
       
       - name: Run unit tests
         run: npm test -- --run --coverage
       
       - name: Comment PR with build status
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
         with:
           script: |
-            const status = context.payload.pull_request.state === 'open' ? '✅ Build passed' : '❌ Build failed';
+            const status = '${{ job.status }}' === 'success' ? '✅ Build passed' : '❌ Build failed';
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -61,12 +74,13 @@ jobs:
   e2e-on-pr:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
+    timeout-minutes: 45
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -81,11 +95,10 @@ jobs:
         run: npm run build
       
       - name: Run E2E tests
-        run: npx playwright test --reporter=html
-        continue-on-error: true
+        run: npm run test:e2e
       
       - name: Upload E2E results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@10b53a9ec6c222bb4ce97aa6bd2b5f739696b536
         if: always()
         with:
           name: e2e-results-pr-${{ github.event.number }}
@@ -94,24 +107,26 @@ jobs:
       
       - name: Comment PR with E2E results link
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
         with:
           script: |
+            const e2eStatus = '${{ job.status }}' === 'success' ? '✅ Passed' : '❌ Failed';
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `📊 E2E tests completed. Check the "Artifacts" section for detailed reports.`
+              body: `📊 E2E tests completed (${e2eStatus}). Check the "Artifacts" section for detailed reports.`
             });
 
   coverage-report:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -123,13 +138,13 @@ jobs:
         run: npm test -- --run --coverage
       
       - name: Upload to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@75cd11691c0faa626561e295848008c8a7dddffe
         with:
           files: ./coverage/lcov.info
           fail_ci_if_error: false
       
       - name: Comment PR with coverage
-        uses: romeovs/lcov-reporter-action@v0.3.1
+        uses: romeovs/lcov-reporter-action@dda1c9b1fa1622b225e9acd87a248751dbcc6ada
         if: always()
         with:
           lcov-file: ./coverage/lcov.info
@@ -137,12 +152,13 @@ jobs:
 
   security-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -152,20 +168,19 @@ jobs:
       
       - name: Run npm audit
         run: npm audit --audit-level=high
-        continue-on-error: true
       
       - name: Dependency scanning
         run: npm audit fix --audit-level=high --dry-run
-        continue-on-error: true
 
   code-quality:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -182,7 +197,7 @@ jobs:
         continue-on-error: true
       
       - name: Upload quality reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@10b53a9ec6c222bb4ce97aa6bd2b5f739696b536
         if: always()
         with:
           name: code-quality-reports
@@ -192,9 +207,10 @@ jobs:
 
   documentation-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       
       - name: Check for documentation updates
         run: |
@@ -217,12 +233,13 @@ jobs:
 
   size-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -242,7 +259,7 @@ jobs:
       
       - name: Comment with size info
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
         with:
           script: |
             github.rest.issues.createComment({

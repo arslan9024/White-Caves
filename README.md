@@ -136,14 +136,25 @@ npm run build            # Production build
 npm test                 # Run tests
 npm run lint             # Run linter
 
-# Deployment
-npm run deploy:prep    # Prepare for deployment
-npm run deploy:prod    # Deploy to production
-npm run monitor        # Start monitoring dashboard
+# Deployment verification
+npm run verify-deploy         # Run deployment readiness checks (endpoints/config/env/SEO files)
+npm run verify:runtime -- --url=https://whitecaves.com # Verify live runtime endpoints (/, /api/health, robots, sitemap)
+npm run verify:runtime:dry     # Print runtime checks without network calls
+# Optional runtime verify tuning: --timeout=15000 --retries=6 --retry-delay=5000
 
-# Documentation
-npm run docs           # Generate API documentation
-npm run docs:serve     # Serve documentation
+# SEO operations
+npm run seo:generate           # Generate robots.txt + sitemap.xml for production domain
+npm run seo:generate:staging   # Generate robots.txt + sitemap.xml for staging domain
+npm run test:ops               # Run SEO ops script test suite
+npm run quality:seo            # Generate SEO assets + run SEO ops tests
+npm run quality:quick          # Lint + build + SEO ops tests
+
+# E2E testing shortcuts
+npm run test:e2e               # Run all Playwright tests
+npm run test:e2e:smoke         # Run dashboard smoke suite (src/e2e/dashboard.spec.ts)
+npm run test:e2e:accessibility # Run accessibility audit suite (src/e2e/accessibility.audit.spec.ts)
+npm run test:e2e:performance   # Run performance suite (src/e2e/performance.layer5.spec.ts, HTML report)
+npm run test:e2e:performance:json # Run performance suite (src/e2e/performance.layer5.spec.ts, JSON report)
 ```
 
 ---
