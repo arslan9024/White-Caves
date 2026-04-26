@@ -10,8 +10,9 @@
 | File | Description | Priority |
 |------|-------------|----------|
 | **[PHASE_1_HOMEPAGE.md](./PHASE_1_HOMEPAGE.md)** | Public homepage — full UI with dummy data | **#1 — Now** |
-| **[PHASE_2_CRM_SUPERUSER.md](./PHASE_2_CRM_SUPERUSER.md)** | CRM + login for one super user (`owner@whitecaves.ae`) | **#2 — Next** |
-| **[PHASE_3_AND_BEYOND.md](./PHASE_3_AND_BEYOND.md)** | All deferred features (WhatsApp, compliance, portals, Arabic) | **#3 — Later** |
+| **[PHASE_2_LANDLORD_TENANT.md](./PHASE_2_LANDLORD_TENANT.md)** | Landlord & Tenant self-service portals | **#2 — Next** |
+| **[PHASE_9_CRM_SUPERUSER.md](./PHASE_9_CRM_SUPERUSER.md)** | Full CRM — all tabs for `arslanmalikgoraha@gmail.com` (managing_director) | **#9 — Deferred** |
+| **[PHASE_3_AND_BEYOND.md](./PHASE_3_AND_BEYOND.md)** | All other deferred features (WhatsApp, RBAC, compliance, Arabic, PWA) | **#3–10** |
 | **[MASTER_PLAN.md](./MASTER_PLAN.md)** | Top-level plan with foundation summary and priority table | Reference |
 
 ---
@@ -47,10 +48,10 @@
 2. Work through sections 1.1–1.11 in order
 3. Mark each item `[x]` when done
 
-### Working on CRM (Phase 2)
-1. Open: **PHASE_2_CRM_SUPERUSER.md**
-2. Start with section 2.1 (Sign-In flow)
-3. Use seed: `npm run db:seed` → login `owner@whitecaves.ae` / `password123`
+### Working on Landlord/Tenant Portals (Phase 2)
+1. Open: **PHASE_2_LANDLORD_TENANT.md**
+2. Start with sections 2.1 (Landlord Auth) and 2.7 (Tenant Auth)
+3. Use seed: `npm run db:seed` → login `arslanmalikgoraha@gmail.com` (managing_director) or `landlord@whitecaves.ae` / `password123`
 
 ### Deploying to Production
 1. Follow: **PRODUCTION_DEPLOYMENT_RUNBOOK.md**

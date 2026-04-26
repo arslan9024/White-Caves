@@ -1,34 +1,36 @@
-# Phase 2 — CRM + Super User Login (All CRM Features, One Account)
+# Phase 9 — CRM Full Super User Access (All CRM Features, Managing Director)
 
-> **Priority**: #2 — High  
-> **Goal**: A fully working CRM accessible with one super user (owner) account, all features usable  
-> **Approach**: Log in as `owner@whitecaves.ae` → access every CRM tab and feature  
-> **Status**: 🚧 In Progress — dashboard shell and routes exist, gaps documented below
+> **Priority**: #9 — Deferred  
+> **Goal**: A fully working CRM accessible with the managing director super user, all features usable  
+> **Approach**: Log in as `arslanmalikgoraha@gmail.com` → access every CRM tab and feature  
+> **Status**: 🔲 Not Started — dashboard shell and routes exist, full integration deferred
 
 ---
 
-## Why This Is Priority #2
+## Why This Is Phase 9
 
-Once the homepage looks great, the next proof-of-concept is a fully working internal CRM. Before
-building multi-user RBAC flows, onboarding, and role approval queues, we need to demonstrate that
-**one super user** (the owner) can log in and use every single CRM feature end-to-end. This gives
-the team a working product to demo, test, and iterate on.
+The Landlord & Tenant portals (Phase 2) give immediate client-facing value. The full internal CRM
+with all 8+ tabs for the managing director comes after the core infrastructure (RBAC, WhatsApp,
+Lease module, Compliance) is in place, so that the CRM reflects real, complete data.
 
 ---
 
 ## Super User Definition
 
-The super user uses the **`lion` role** (alias: `owner`).
+The primary super user is the **Managing Director**.
 
 | Detail | Value |
 |--------|-------|
-| Email | `owner@whitecaves.ae` |
+| Email | `arslanmalikgoraha@gmail.com` |
 | Password | `password123` (change via seed env `SEED_PASSWORD`) |
-| Role | `lion` (maps to "Super User (Owner)" in ROLE_TAB_MAPPING) |
-| CRM Tabs | Overview, Properties, Agents, Leads, Contracts, Analytics, Admin, Users, AI Hub, AI Command, Settings (11 tabs) |
-| Backend access | All API endpoints (no RBAC restriction for owner/lion role) |
+| Role | `managing_director` (maps to "Managing Director" in ROLE_TAB_MAPPING) |
+| CRM Tabs | Overview, Properties, Agents, Leads, Contracts, Analytics, Users, Settings (8 tabs) |
+| Backend access | Full executive access across all API endpoints |
 
-> **How to seed**: Run `npm run db:seed` — creates `owner@whitecaves.ae` + 6 agents + sample data.
+> **No duplicate**: `owner@whitecaves.ae` is a seed/dummy data account only. The real super user
+> is `arslanmalikgoraha@gmail.com`. Do not create a second `managing_director` for this email.
+
+> **How to seed**: Run `npm run db:seed` — creates both accounts + 6 agents + sample data.
 
 ---
 
@@ -279,4 +281,4 @@ npm run dev      # Terminal 2 (or npm run dev:all for both)
 
 ## Next Phase After This
 
-Once Phase 2 is complete, move to **[PHASE_3_AND_BEYOND.md](./PHASE_3_AND_BEYOND.md)**.
+Once Phase 9 is complete, move to **[PHASE_3_AND_BEYOND.md](./PHASE_3_AND_BEYOND.md)** Phase 10 (PWA).

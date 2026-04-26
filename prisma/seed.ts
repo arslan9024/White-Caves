@@ -36,6 +36,23 @@ async function main() {
   // ─── 1. USERS (Agents & Owner) ─────────────────────────────────────────
   console.log('👤 Creating users...');
   const defaultHash = await hashPassword(DEFAULT_PASSWORD);
+
+  // Primary super user — Managing Director (real account, do NOT duplicate)
+  await prisma.user.upsert({
+    where: { email: 'arslanmalikgoraha@gmail.com' },
+    update: {},
+    create: {
+      email: 'arslanmalikgoraha@gmail.com',
+      name: 'Arslan Malik',
+      role: 'managing_director',
+      phone: '+971501234000',
+      department: 'Executive',
+      status: 'active',
+      passwordHash: defaultHash,
+    },
+  });
+
+  // Seed owner account — dummy data only (not the primary super user)
   const owner = await prisma.user.upsert({
     where: { email: 'owner@whitecaves.ae' },
     update: {},

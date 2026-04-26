@@ -1,7 +1,7 @@
 # MASTER PLAN – White Caves
 **Last Updated:** 2026-04-26  
-**Progress:** Foundation ✅ · Phase 1 (Homepage) 🚧 · Phase 2 (CRM) 🚧  
-**Priority Reset:** Frontend-first → CRM super user → Backend integrations
+**Progress:** Foundation ✅ · Phase 1 (Homepage) 🚧 · Phase 2 (Landlord/Tenant Portals) 🔲  
+**Priority Reset:** Homepage → Landlord/Tenant portals → Deferred (Phase 3–8) → Full CRM (Phase 9)
 
 > **Active phase plans:** See `/plans/` for detailed task lists per phase.  
 > **Business docs:** `/business_docs/` (canonical business documentation).  
@@ -9,15 +9,27 @@
 
 ---
 
-## 🔢 NEW PRIORITY ORDER
+## 🔢 PRIORITY ORDER
 
 | Priority | Phase | Goal | Plan File |
 |----------|-------|------|-----------|
 | **#1 — Now** | Phase 1 | Public Homepage — full UI with dummy data | [PHASE_1_HOMEPAGE.md](./plans/PHASE_1_HOMEPAGE.md) |
-| **#2 — Next** | Phase 2 | CRM + Super User Login — all features with `owner@whitecaves.ae` | [PHASE_2_CRM_SUPERUSER.md](./plans/PHASE_2_CRM_SUPERUSER.md) |
-| **#3 — Later** | Phase 3+ | WhatsApp, RBAC, Compliance, Portals, Arabic, PWA | [PHASE_3_AND_BEYOND.md](./plans/PHASE_3_AND_BEYOND.md) |
+| **#2 — Next** | Phase 2 | Landlord & Tenant Self-Service Portals — simple client-facing login | [PHASE_2_LANDLORD_TENANT.md](./plans/PHASE_2_LANDLORD_TENANT.md) |
+| **#3–8** | Phases 3–8 | WhatsApp, RBAC, Compliance, Arabic, etc. | [PHASE_3_AND_BEYOND.md](./plans/PHASE_3_AND_BEYOND.md) |
+| **#9 — Later** | Phase 9 | Full CRM — all tabs for `arslanmalikgoraha@gmail.com` (managing_director) | [PHASE_9_CRM_SUPERUSER.md](./plans/PHASE_9_CRM_SUPERUSER.md) |
+| **#10 — Final** | Phase 10 | Mobile PWA, Cipher/Maven AI | [PHASE_3_AND_BEYOND.md](./plans/PHASE_3_AND_BEYOND.md) |
 
 ---
+
+## 👤 Super User
+
+| Detail | Value |
+|--------|-------|
+| Email | `arslanmalikgoraha@gmail.com` |
+| Role | `managing_director` |
+| Seed account | `owner@whitecaves.ae` / role `owner` — dummy data only, not the primary super user |
+
+> Run `npm run db:seed` to create both accounts. Never create a second `managing_director` for `arslanmalikgoraha@gmail.com`.
 
 ---
 
@@ -45,22 +57,23 @@ Key remaining tasks:
 - [ ] Contact form shows success state on submit
 - [ ] Lighthouse Performance > 90
 
-### Phase 2 — CRM + Super User (Priority #2)
-See full task list: [plans/PHASE_2_CRM_SUPERUSER.md](./plans/PHASE_2_CRM_SUPERUSER.md)
+### Phase 2 — Landlord & Tenant Portals (Priority #2)
+See full task list: [plans/PHASE_2_LANDLORD_TENANT.md](./plans/PHASE_2_LANDLORD_TENANT.md)
 
 Key remaining tasks:
-- [ ] Sign-in flow end-to-end: `owner@whitecaves.ae` → dashboard
-- [ ] All 11 CRM tabs navigate without crashing
-- [ ] Properties/Leads/Agents CRUD all work
-- [ ] All 13 AI assistant dashboards render without errors
-- [ ] Analytics charts render with real or dummy data
+- [ ] `/landlord-portal` page with properties, tenants, payments, maintenance tabs
+- [ ] `/tenant-portal` page with lease, payments, maintenance, documents tabs
+- [ ] Role-based redirect: `landlord` → `/landlord-portal`, `tenant` → `/tenant-portal`
+- [ ] `arslanmalikgoraha@gmail.com` (managing_director) signs in → CRM dashboard
+- [ ] Add `landlord@whitecaves.ae` and `tenant@whitecaves.ae` to seed
 
 ---
 
 ## 🔲 Deferred Phases
 
-All backend integrations, WhatsApp real API, compliance, portals, and Arabic RTL are deferred.  
-See: [plans/PHASE_3_AND_BEYOND.md](./plans/PHASE_3_AND_BEYOND.md)
+All backend integrations, WhatsApp real API, compliance, and full CRM are deferred.  
+See: [plans/PHASE_3_AND_BEYOND.md](./plans/PHASE_3_AND_BEYOND.md)  
+Full CRM for managing_director: [plans/PHASE_9_CRM_SUPERUSER.md](./plans/PHASE_9_CRM_SUPERUSER.md)
 
 ---
 
@@ -78,8 +91,9 @@ See: [plans/PHASE_3_AND_BEYOND.md](./plans/PHASE_3_AND_BEYOND.md)
 ## Reference
 
 - `/plans/PHASE_1_HOMEPAGE.md` — Homepage detailed task list
-- `/plans/PHASE_2_CRM_SUPERUSER.md` — CRM + super user detailed task list
-- `/plans/PHASE_3_AND_BEYOND.md` — All deferred features (WhatsApp, compliance, portals, Arabic)
+- `/plans/PHASE_2_LANDLORD_TENANT.md` — Landlord & Tenant portals task list
+- `/plans/PHASE_9_CRM_SUPERUSER.md` — Full CRM for managing_director (deferred)
+- `/plans/PHASE_3_AND_BEYOND.md` — All other deferred features (WhatsApp, compliance, Arabic, PWA)
 - `/business_docs/` — business requirements, AI assistant profiles, design system, roles
 - `/docs/adr/` — Architecture Decision Records
 - `/plans/` — full historical plan archive and session summaries

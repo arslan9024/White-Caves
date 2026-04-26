@@ -2,22 +2,20 @@
 
 > **Priority**: #3 — Deferred  
 > **Goal**: All advanced backend integrations, compliance, multi-user onboarding, and expansion features  
-> **Prerequisite**: Phase 1 (Homepage) and Phase 2 (CRM Super User) must be complete first  
+> **Prerequisite**: Phase 1 (Homepage) and Phase 2 (Landlord & Tenant Portals) must be complete first  
 > **Status**: 🔲 Not Started
 
 ---
 
 ## Overview
 
-These features are intentionally deferred until the homepage and CRM are polished and working for
-one super user. They require external services, third-party agreements, or significant backend work
+These features are intentionally deferred until the homepage and portals are polished and working.
+They require external services, third-party agreements, or significant backend work
 that is not needed to demonstrate the core product.
 
 ---
 
 ## Phase 3 — Multi-User CRM & RBAC (After Phase 2)
-
-**Goal**: Expand from one super user to the full team with role-based access.
 
 ### 3.1 — User Registration & Role Approval Flow
 - [ ] New user signs up → enters email, name, selects role category
@@ -198,11 +196,21 @@ model MaintenanceRequest {
 
 ---
 
-## Phase 9 — Landlord & Tenant Self-Service Portals (After Phase 8)
+## Phase 9 — CRM Full Super User Access (After Phase 8)
 
-- [ ] Landlord portal: separate login, view properties, tenants, rent payments, maintenance requests
-- [ ] Tenant portal: view lease, payment schedule, submit maintenance requests, download Ejari certificate
-- [ ] Read-only access — cannot edit CRM data
+See **[PHASE_9_CRM_SUPERUSER.md](./PHASE_9_CRM_SUPERUSER.md)** for the full task list.
+
+**Goal**: `arslanmalikgoraha@gmail.com` (managing_director) can use every CRM tab and feature
+end-to-end with real live data — Properties, Leads, Agents, Contracts, Analytics, Users, Settings,
+and all 13 AI assistant dashboards.
+
+- [ ] All 8 managing_director CRM tabs fully wired to live data
+- [ ] All 13 AI assistant dashboards render and are navigable
+- [ ] Analytics charts show real Recharts visualisations with live DB data
+- [ ] AI Hub shows all 17+ registered assistants with clickable dashboards
+- [ ] AI Command Center accepts text instructions to assistants
+- [ ] AssistantPlanEditor accessible to managing_director (view and edit assistant plans)
+- [ ] All CRUD flows tested end-to-end (properties, leads, agents, users)
 
 ---
 
@@ -239,12 +247,12 @@ model MaintenanceRequest {
 | Milestone | Target | Key Deliverables | Depends On |
 |-----------|--------|-----------------|------------|
 | Phase 1 Complete | May 2026 | Full homepage, all sections, mobile-ready | Nothing |
-| Phase 2 Complete | May 2026 | CRM + owner login, all 11 tabs working | Phase 1 |
+| Phase 2 Complete | May 2026 | Landlord & Tenant portals live, `arslanmalikgoraha@gmail.com` managing_director login | Phase 1 |
 | Phase 3 Complete | June 2026 | Multi-user RBAC, agent onboarding, role approval | Phase 2 |
 | Phase 4 Complete | July 2026 | WhatsApp live, Nina bot, Olivia campaigns | Phase 3 + WABA account |
 | Phase 5 Complete | August 2026 | Full lease/tenancy, Ejari, rent schedule | Phase 4 |
 | Phase 6 Complete | September 2026 | KYC/AML/PDPL/RERA enforcement | Phase 5 + ComplyAdvantage contract |
 | Phase 7 Complete | October 2026 | Portal syndication, financial exports, multi-currency | Phase 6 + portal agreements |
 | Phase 8 Complete | November 2026 | Arabic RTL full i18n | Phase 7 |
-| Phase 9 Complete | December 2026 | Landlord/Tenant portals | Phase 8 |
+| Phase 9 Complete | December 2026 | Full CRM all tabs for managing_director with live data | Phase 8 |
 | Phase 10 Complete | Q1 2027 | PWA, push notifications, Cipher/Maven | Phase 9 + OpenAI API |
