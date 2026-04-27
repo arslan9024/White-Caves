@@ -10,16 +10,16 @@ import TrendChart from './TrendChart';
 
 // Mock recharts — render minimal SVG elements with testids
 vi.mock('recharts', () => ({
-  LineChart: ({ children, ...props }: any) => <div data-testid="line-chart">{children}</div>,
-  Line: (props: any) => <div data-testid={`line-${props.dataKey}`} />,
-  XAxis: (props: any) => <div data-testid="x-axis" data-key={props.dataKey} />,
-  YAxis: (props: any) => <div data-testid="y-axis" />,
-  CartesianGrid: () => <div data-testid="cartesian-grid" />,
-  Tooltip: () => <div data-testid="tooltip" />,
-  Legend: () => <div data-testid="legend" />,
+  LineChart: ({ children }: any) => <svg data-testid="line-chart">{children}</svg>,
+  Line: (props: any) => <g data-testid={`line-${props.dataKey}`} />,
+  XAxis: (props: any) => <g data-testid="x-axis" data-key={props.dataKey} />,
+  YAxis: () => <g data-testid="y-axis" />,
+  CartesianGrid: () => <g data-testid="cartesian-grid" />,
+  Tooltip: () => <g data-testid="tooltip" />,
+  Legend: () => <g data-testid="legend" />,
   ResponsiveContainer: ({ children }: any) => <div data-testid="responsive-container">{children}</div>,
-  Area: (props: any) => <div data-testid={`area-${props.dataKey}`} />,
-  AreaChart: ({ children, ...props }: any) => <div data-testid="area-chart">{children}</div>,
+  Area: (props: any) => <g data-testid={`area-${props.dataKey}`} />,
+  AreaChart: ({ children }: any) => <svg data-testid="area-chart">{children}</svg>,
 }));
 
 describe('TrendChart', () => {

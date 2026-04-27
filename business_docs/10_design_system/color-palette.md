@@ -1,12 +1,12 @@
-# White Caves — Luxury Gold Color Palette
+# White Caves — Brand Color Palette (Red / White Authority)
 
-> **Rebrand:** Red (#D32F2F) → Gold (#D4AF37)  
-> **Effective:** March 2026  
-> **Source files:** `src/styles/brand-tokens.ts`, `src/styles/theme/colors.ts`
+> **Brand Authority:** Primary brand palette is **Red + White**.  
+> **Effective:** April 27, 2026  
+> **Source files:** `src/styles/theme/colors.ts`, `src/styles/global.ts`
 
 ---
 
-## 1. Primary Brand Colors (Gold)
+## 1. Primary Brand Colors (Red / White)
 
 | Token | Hex | Usage |
 |-------|-----|-------|
@@ -15,15 +15,15 @@
 | `primary.200` | `#FFE082` | Soft accents, tag backgrounds |
 | `primary.300` | `#FFD54F` | Medium accents |
 | `primary.400` | `#FFCA28` | Button hover states |
-| `primary.500` | `#D4AF37` | **Primary brand color** — buttons, links, key UI |
-| `primary.600` | `#C9A030` | Active states, pressed buttons |
-| `primary.700` | `#B8860B` | Dark accents, focus rings |
-| `primary.800` | `#9A7209` | Very dark gold, text on light backgrounds |
-| `primary.900` | `#7A5B07` | Darkest gold, high-contrast text |
+| `primary.500` | `#E31E24` | **Primary brand color** — buttons, links, key UI |
+| `primary.600` | `#C62828` | Active states, pressed buttons |
+| `primary.700` | `#B71C1C` | Dark accents, focus rings |
+| `primary.800` | `#8E0000` | Very dark red, text on light backgrounds |
+| `primary.900` | `#5F0000` | Darkest red, high-contrast text |
 
-### Gold Gradient
+### Primary Brand Gradient
 ```css
-background: linear-gradient(135deg, #D4AF37 0%, #B8860B 50%, #D4AF37 100%);
+background: linear-gradient(135deg, #E31E24 0%, #B71C1C 50%, #E31E24 100%);
 ```
 
 ---
@@ -75,14 +75,14 @@ Department colors remain consistent regardless of primary brand changes:
 
 ---
 
-## 5. Elevation / Shadows (Updated for Gold)
+## 5. Elevation / Shadows (Updated for Red)
 
 | Level | Value | Usage |
 |-------|-------|-------|
 | None | `none` | Flat elements |
-| Low | `0 2px 4px rgba(212, 175, 55, 0.08)` | Subtle cards |
-| Medium | `0 4px 12px rgba(212, 175, 55, 0.12)` | Elevated cards |
-| High | `0 8px 24px rgba(212, 175, 55, 0.16)` | Modals, dropdowns |
+| Low | `0 2px 4px rgba(227, 30, 36, 0.08)` | Subtle cards |
+| Medium | `0 4px 12px rgba(227, 30, 36, 0.12)` | Elevated cards |
+| High | `0 8px 24px rgba(227, 30, 36, 0.16)` | Modals, dropdowns |
 | Overlay | `0 16px 48px rgba(0, 0, 0, 0.2)` | Full overlays |
 | Card | `0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)` | Default card |
 | Card Hover | `0 4px 12px rgba(0, 0, 0, 0.12)` | Hovered card |
@@ -99,21 +99,21 @@ Department colors remain consistent regardless of primary brand changes:
 | `dark.text` | `#FFFFFF` | Primary text |
 | `dark.textSecondary` | `#D1D5DB` | Secondary text |
 | `dark.border` | `#404040` | Borders |
-| `dark.gold` | `#E5C158` | Gold in dark mode (increased brightness for contrast) |
+| `dark.brandPrimary` | `#EF5350` | Brand red in dark mode (increased brightness for contrast) |
 
 ---
 
 ## 7. Usage Guidelines
 
 ### DO
-- ✅ Use `primary.500` (#D4AF37) for primary CTAs, links, and brand elements
+- ✅ Use `primary.500` (#E31E24) for primary CTAs, links, and brand elements
 - ✅ Use emerald (#2E5A4F) for secondary actions and success indicators
 - ✅ Use sand (#F5E6D3) for warm background areas
 - ✅ Maintain 4.5:1 contrast ratio (WCAG AA) for text on backgrounds
-- ✅ Use gold gradient for hero sections and premium features
+- ✅ Use the primary red gradient for branded hero/CTA sections
 
 ### DON'T
-- ❌ Use red (#D32F2F) as primary brand color (now reserved for errors only)
+- ❌ Reintroduce gold as the primary brand color in public-facing pages
 - ❌ Mix gold with other warm colors without sufficient contrast
 - ❌ Use gold text on white backgrounds (fails contrast — use `primary.700`+ for text)
 - ❌ Override department colors with brand colors

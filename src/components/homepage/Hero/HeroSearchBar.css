@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════
    HeroSearchBar — Luxury Glassmorphism search bar
-   Gold (#D4AF37) primary, Dark Green (#2E5A4F) secondary
+   Gold (#E31E24) primary, Dark Green (#2E5A4F) secondary
    ═══════════════════════════════════════════════════════════════════════ */
 
 .hero-search-container {
@@ -24,13 +24,23 @@
     0 8px 32px rgba(0, 0, 0, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
   transition: all 0.3s ease;
+  position: relative;
+}
+
+.hero-search-bar::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: calc(1rem - 1px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  pointer-events: none;
 }
 
 .hero-search-bar:focus-within {
-  border-color: rgba(212, 175, 55, 0.5);
+  border-color: rgba(227, 30, 36, 0.5);
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.25),
-    0 0 0 3px rgba(212, 175, 55, 0.15),
+    0 0 0 3px rgba(227, 30, 36, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
@@ -49,7 +59,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--primary-color, #D4AF37);
+  color: var(--primary-color, #E31E24);
   margin-right: 0.5rem;
 }
 
@@ -68,6 +78,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  font-family: inherit;
 }
 
 .hero-search-select option {
@@ -100,7 +111,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.875rem 1.75rem;
-  background: var(--luxury-cta-bg, linear-gradient(135deg, #D4AF37 0%, #B8960C 100%));
+  background: var(--luxury-cta-bg, linear-gradient(135deg, #E31E24 0%, #B71C1C 100%));
   color: var(--luxury-text-dark, #1a1a2e);
   font-size: 0.95rem;
   font-weight: 700;
@@ -110,17 +121,19 @@
   flex-shrink: 0;
   white-space: nowrap;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 4px 16px rgba(227, 30, 36, 0.3);
   letter-spacing: 0.01em;
+  min-height: 46px;
 }
 
 .hero-search-btn:hover {
-  background: var(--luxury-cta-bg-hover, linear-gradient(135deg, #e0c054 0%, #D4AF37 100%));
-  box-shadow: 0 6px 24px rgba(212, 175, 55, 0.45);
+  background: var(--luxury-cta-bg-hover, linear-gradient(135deg, #ef5350 0%, #E31E24 100%));
+  box-shadow: 0 6px 24px rgba(227, 30, 36, 0.45);
+  transform: translateY(-1px);
 }
 
 .hero-search-btn:focus-visible {
-  outline: 3px solid rgba(212, 175, 55, 0.5);
+  outline: 3px solid rgba(227, 30, 36, 0.5);
   outline-offset: 2px;
 }
 
@@ -153,16 +166,17 @@
   cursor: pointer;
   transition: all 0.25s ease;
   white-space: nowrap;
+  min-height: 32px;
 }
 
 .hero-search-tag:hover {
-  background: var(--dubai-luxury-gold-soft, rgba(212, 175, 55, 0.2));
-  border-color: rgba(212, 175, 55, 0.45);
-  color: #D4AF37;
+  background: var(--dubai-luxury-gold-soft, rgba(227, 30, 36, 0.2));
+  border-color: rgba(227, 30, 36, 0.45);
+  color: #E31E24;
 }
 
 .hero-search-tag:focus-visible {
-  outline: 2px solid rgba(212, 175, 55, 0.5);
+  outline: 2px solid rgba(227, 30, 36, 0.5);
   outline-offset: 2px;
 }
 
@@ -255,3 +269,4 @@
     justify-content: center;
   }
 }
+

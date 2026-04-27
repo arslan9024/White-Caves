@@ -31,7 +31,7 @@
 
 import React, { useEffect, ReactNode, lazy, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setActiveRole } from '../../store/navigationSlice';
 import { useResponsiveLayout } from '../../hooks/navigation/useResponsiveLayout';
 import { TopBar } from './TopBar';
@@ -39,6 +39,7 @@ import SidebarContainer from './SidebarContainer';
 import EnhancedLeftSidebar from './EnhancedLeftSidebar/EnhancedLeftSidebar';
 import CommandPalette from '../common/CommandPalette';
 import { AppLayoutContainer, AppBody, AppMain } from './AppLayout/styles';
+import type { RootState } from '../../store/store';
 
 // Lazy-load non-critical UI
 const BiometricReminder = lazy(() =>
@@ -69,7 +70,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({
 }) => {
   const location = useLocation();
   const dispatch = useDispatch();
-  const { isDesktop, isTablet, isMobile } = useResponsiveLayout();
+  const user = useSelector((state: RootState) => state.user.currentUser);
+  const { isDesktop, isTablet } = useResponsiveLayout();
+  const showCrmChrome = showNav && Boolean(user);
 
   // Detect role from URL and sync to Redux
   useEffect(() => {
@@ -87,24 +90,24 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         Skip to main content
       </a>
 
-      {/* ─── Top Navigation Bar (56px) ─────────────────────────────── */}
-      <TopBar />
+      {/* ─── Top Navigation Bar (CRM only for authenticated users) ─── */}
+      {showCrmChrome && <TopBar />}
 
       {/* ─── Command Palette Overlay (Cmd+K / Ctrl+K) ─────────────── */}
-      <CommandPalette />
+      {showCrmChrome && <CommandPalette />}
 
       {/* ─── Body: Responsive Navigation + Content ────────────────── */}
       <AppBody>
         {/* Desktop (1024px+): 280px Unified Sidebar */}
-        {showNav && isDesktop && <EnhancedLeftSidebar isSuperUser={isSuperUser} />}
+        {showCrmChrome && isDesktop && <EnhancedLeftSidebar isSuperUser={isSuperUser} />}
 
         {/* Tablet (768-1023px): 64px Rail + 240px Flyout */}
-        {showNav && isTablet && <SidebarContainer />}
+        {showCrmChrome && isTablet && <SidebarContainer />}
 
         {/* Mobile (<768px): Hidden, content full width + bottom nav */}
 
         {/* Main content area — responsive width based on sidebar */}
-        <AppMain $withNav={showNav} id="main-content" tabIndex={-1}>
+        <AppMain $withNav={showCrmChrome} id="main-content" tabIndex={-1}>
           <Suspense fallback={null}>
             <BiometricReminder />
           </Suspense>

@@ -138,6 +138,10 @@ model Lead {
   @@index([createdAt])
   @@index([score])
   @@index([propertyId])
+  @@index([status, createdAt])
+  @@index([source, createdAt])
+  @@index([assignedToId, status])
+  @@index([status, source, createdAt])
 }
 
 // ─── LEAD SCORE HISTORY ─────────────────────────────────────────────────

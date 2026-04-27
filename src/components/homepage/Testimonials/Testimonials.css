@@ -30,7 +30,7 @@
 .carousel-nav:hover {
   border-color: var(--primary-color);
   color: var(--primary-color);
-  background: rgba(212, 175, 55, 0.05);
+  background: rgba(227, 30, 36, 0.05);
 }
 
 .carousel-content {
@@ -50,6 +50,7 @@
   border: 1px solid var(--border-light);
   text-align: center;
   position: relative;
+  overflow: hidden;
 }
 
 .quote-icon {
@@ -162,8 +163,8 @@
 }
 
 .review-box {
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, rgba(212, 175, 55, 0.03) 100%);
-  border: 1px solid rgba(212, 175, 55, 0.15);
+  background: linear-gradient(135deg, rgba(227, 30, 36, 0.08) 0%, rgba(227, 30, 36, 0.03) 100%);
+  border: 1px solid rgba(227, 30, 36, 0.15);
   border-radius: var(--radius-xl);
   padding: 2rem;
 }
@@ -215,6 +216,73 @@
 @keyframes star-bounce {
   from { transform: translateY(0); }
   to { transform: translateY(-3px); }
+}
+
+/* ── Gold watermark quote mark ─────────────────────────── */
+.testimonial-watermark {
+  position: absolute;
+  top: 0.5rem;
+  left: 1.5rem;
+  font-size: 7rem;
+  line-height: 1;
+  font-family: Georgia, serif;
+  color: var(--dubai-luxury-gold, #E31E24);
+  opacity: 0.12;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+/* ── Verified Client badge ─────────────────────────────── */
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(227, 30, 36, 0.12);
+  border: 1px solid rgba(227, 30, 36, 0.35);
+  color: var(--dubai-luxury-gold, #E31E24);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-full, 9999px);
+  margin-bottom: 0.75rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Autoplay progress bar ─────────────────────────────── */
+.testimonial-progress-track {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(227, 30, 36, 0.15);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  overflow: hidden;
+}
+
+.testimonial-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--dubai-luxury-gold, #E31E24), #ef5350);
+  border-radius: inherit;
+  transition: width 0.05s linear;
+  will-change: width;
+}
+
+/* ── Screen reader only ────────────────────────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .review-note {
@@ -303,3 +371,4 @@
     padding: 0.5rem 1rem;
   }
 }
+

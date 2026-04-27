@@ -27,11 +27,26 @@ export const PropertyCardContainer = styled(Link)`
   display: block;
   transition: ${transitions.hover};
   cursor: pointer;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: ${radius.xl};
+    border: 1px solid rgba(212, 175, 55, 0);
+    pointer-events: none;
+    transition: ${transitions.hover};
+  }
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    transform: translateY(-6px);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.18);
     border-color: var(--color-primary);
+
+    &::before {
+      border-color: rgba(212, 175, 55, 0.42);
+    }
   }
 `;
 
@@ -43,24 +58,54 @@ export const PropertyCardDiv = styled.div<{ $clickable?: boolean }>`
   display: block;
   transition: ${transitions.hover};
   cursor: ${(props) => (props.$clickable ? 'pointer' : 'default')};
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: ${radius.xl};
+    border: 1px solid rgba(212, 175, 55, 0);
+    pointer-events: none;
+    transition: ${transitions.hover};
+  }
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    transform: translateY(-6px);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.18);
     border-color: var(--color-primary);
+
+    &::before {
+      border-color: rgba(212, 175, 55, 0.42);
+    }
   }
 `;
 
 export const PropertyCardImage = styled.div`
   position: relative;
   height: 180px;
-  background: var(--bg-tertiary);
+  background: linear-gradient(140deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
   overflow: hidden;
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.45s ease;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.28), transparent 48%);
+    pointer-events: none;
+  }
+
+  ${PropertyCardContainer}:hover &, ${PropertyCardDiv}:hover & {
+    img {
+      transform: scale(1.04);
+    }
   }
 `;
 
@@ -137,6 +182,9 @@ export const FavoriteButton = styled.button<{ $isActive?: boolean }>`
 
 export const PropertyCardContent = styled.div`
   padding: 1.25rem;
+  background:
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.06), transparent 45%),
+    var(--bg-card);
 `;
 
 export const PropertyTitle = styled.h4`
@@ -144,9 +192,11 @@ export const PropertyTitle = styled.h4`
   font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
   margin: 0 0 0.5rem 0;
-  white-space: nowrap;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
 `;
 
 export const PropertyLocation = styled.p`
@@ -160,6 +210,7 @@ export const PropertyPrice = styled.p`
   font-weight: ${typography.weights.bold};
   color: var(--color-primary);
   margin: 0 0 0.75rem 0;
+  letter-spacing: 0.01em;
 `;
 
 export const PriceSuffix = styled.span`

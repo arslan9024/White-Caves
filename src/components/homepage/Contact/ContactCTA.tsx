@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Phone, Mail, MapPin, MessageCircle, ArrowRight, LucideIcon } from 'lucide-react';
+import { Send, Phone, Mail, MapPin, MessageCircle, ArrowRight, LucideIcon, MessageSquare } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Config } from '../../../config/constants';
-import { TIMING } from '../../../constants';
 import './ContactCTA.css';
 
 interface FormData {
@@ -11,6 +10,7 @@ interface FormData {
   email: string;
   phone: string;
   message: string;
+  inquiryType: 'buy' | 'rent' | 'invest' | 'general';
 }
 
 interface ContactInfo {
@@ -20,15 +20,24 @@ interface ContactInfo {
   link: string;
 }
 
+const INQUIRY_OPTIONS = [
+  { value: 'buy',     label: 'I want to Buy' },
+  { value: 'rent',    label: 'I want to Rent' },
+  { value: 'invest',  label: 'Investment Inquiry' },
+  { value: 'general', label: 'General Inquiry' },
+] as const;
+
 const ContactCTA = () => {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     phone: '',
-    message: ''
+    message: '',
+    inquiryType: 'general',
   });
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const submitTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
@@ -37,52 +46,82 @@ const ContactCTA = () => {
     };
   }, []);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ): void => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    // Basic JS validation
-    const trimmedName = formData.name.trim();
+    setError(null);
+
+    const trimmedName  = formData.name.trim();
     const trimmedEmail = formData.email.trim();
-    const trimmedMessage = formData.message.trim();
-    if (!trimmedName || !trimmedEmail || !trimmedMessage) return;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(trimmedEmail)) return;
-    // Clear any existing timer before starting new submission
-    if (submitTimerRef.current) {
-      clearTimeout(submitTimerRef.current);
+    if (!trimmedName || !trimmedEmail) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setError('Please enter a valid email address.');
+      return;
     }
+
+    clearTimeout(submitTimerRef.current);
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, TIMING.SIMULATED_API_DELAY));
-    setIsSubmitting(false);
-    setSubmitted(true);
-    setFormData({ name: '', email: '', phone: '', message: '' });
-    // TODO: Wire to real backend API (POST /api/contact)
-    submitTimerRef.current = setTimeout(() => setSubmitted(false), TIMING.SUCCESS_DISMISS);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:        trimmedName,
+          email:       trimmedEmail,
+          phone:       formData.phone.trim() || undefined,
+          message:     formData.message.trim() || undefined,
+          inquiryType: formData.inquiryType,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({})) as { error?: string };
+        throw new Error(data.error ?? `Server error ${response.status}`);
+      }
+
+      setSubmitted(true);
+      setFormData({ name: '', email: '', phone: '', message: '', inquiryType: 'general' });
+      submitTimerRef.current = setTimeout(() => setSubmitted(false), 5000);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to send. Please try again.';
+      setError(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  // WhatsApp pre-filled CTA
+  const whatsappMessage = encodeURIComponent(
+    `Hi White Caves! I'm interested in ${INQUIRY_OPTIONS.find(o => o.value === formData.inquiryType)?.label ?? 'a property'}. Please get in touch.`
+  );
+  const whatsappHref = `https://wa.me/${Config.COMPANY.PHONE.replace(/\D/g, '')}?text=${whatsappMessage}`;
 
   const contactInfo: ContactInfo[] = [
     {
       icon: Phone,
       label: 'Call Us',
       value: Config.COMPANY.PHONE,
-      link: `tel:${Config.COMPANY.PHONE.replace(/\s/g, '')}`
+      link: `tel:${Config.COMPANY.PHONE.replace(/\s/g, '')}`,
     },
     {
       icon: Mail,
       label: 'Email Us',
       value: Config.COMPANY.EMAIL,
-      link: `mailto:${Config.COMPANY.EMAIL}`
+      link: `mailto:${Config.COMPANY.EMAIL}`,
     },
     {
       icon: MapPin,
       label: 'Visit Us',
       value: 'Office D-72, El-Shaye-4, Port Saeed, Dubai',
-      link: 'https://maps.google.com'
-    }
+      link: 'https://maps.google.com',
+    },
   ];
 
   return (
@@ -166,7 +205,25 @@ const ContactCTA = () => {
                   <p>We'll get back to you within 24 hours.</p>
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubmit} className="contact-form">
+                <form onSubmit={handleSubmit} className="contact-form" aria-busy={isSubmitting}>
+                  {/* Inquiry type dropdown */}
+                  <div className="form-group">
+                    <label htmlFor="contact-inquiry" className="sr-only">I'm interested in</label>
+                    <select
+                      id="contact-inquiry"
+                      name="inquiryType"
+                      value={formData.inquiryType}
+                      onChange={handleChange}
+                      className="form-input form-select"
+                      disabled={isSubmitting}
+                      aria-label="Inquiry type"
+                    >
+                      {INQUIRY_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                    </select>
+                  </div>
+
                   <div className="form-group">
                     <label htmlFor="contact-name" className="sr-only">Your Name</label>
                     <input
@@ -177,6 +234,7 @@ const ContactCTA = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
+                      disabled={isSubmitting}
                       className="form-input"
                       aria-label="Your name"
                     />
@@ -193,6 +251,7 @@ const ContactCTA = () => {
                         value={formData.email}
                         onChange={handleChange}
                         required
+                        disabled={isSubmitting}
                         className="form-input"
                         aria-label="Email address"
                       />
@@ -206,6 +265,7 @@ const ContactCTA = () => {
                         placeholder="Phone Number"
                         value={formData.phone}
                         onChange={handleChange}
+                        disabled={isSubmitting}
                         className="form-input"
                         aria-label="Phone number"
                       />
@@ -221,22 +281,59 @@ const ContactCTA = () => {
                       value={formData.message}
                       onChange={handleChange}
                       rows={5}
-                      required
+                      disabled={isSubmitting}
                       className="form-input"
                       aria-label="Your message"
                     />
                   </div>
+
+                  {/* Error banner */}
+                  {error && (
+                    <motion.p
+                      className="form-error"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      role="alert"
+                    >
+                      {error}
+                    </motion.p>
+                  )}
                   
-                  <motion.button 
-                    type="submit"
-                    className="form-submit"
-                    disabled={isSubmitting}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    {isSubmitting ? 'Sending...' : 'Send Message'}
-                    <Send size={18} />
-                  </motion.button>
+                  <div className="form-actions">
+                    <motion.button 
+                      type="submit"
+                      className="form-submit"
+                      disabled={isSubmitting}
+                      whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <span className="form-spinner" aria-hidden="true" />
+                          Sending…
+                        </>
+                      ) : (
+                        <>
+                          Send Message
+                          <Send size={18} />
+                        </>
+                      )}
+                    </motion.button>
+
+                    {/* WhatsApp quick-connect */}
+                    <motion.a
+                      href={whatsappHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="form-whatsapp"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      aria-label="Chat on WhatsApp"
+                    >
+                      <MessageSquare size={18} />
+                      WhatsApp Us
+                    </motion.a>
+                  </div>
                 </form>
               )}
             </div>
@@ -248,3 +345,4 @@ const ContactCTA = () => {
 };
 
 export default ContactCTA;
+

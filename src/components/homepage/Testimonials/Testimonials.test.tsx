@@ -275,3 +275,4 @@ describe('Testimonials', () => {
     expect(screen.getByText('James Richardson')).toBeTruthy();
   });
 });
+

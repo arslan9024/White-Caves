@@ -1,16 +1,15 @@
 /**
- * Color Palette - White Caves Luxury Dubai Brand
- * All colors used throughout the application, organized by purpose
- * 2026 Brand: GOLD (#D4AF37) primary, DARK GREEN (#2E5A4F) secondary
- * Luxury Dubai aesthetic — gold accents, deep emerald tones, sand warmth
+ * Color Palette - White Caves Primary Brand System
+ * All colors used throughout the application, organized by purpose.
+ * Brand authority (2026-04-27): RED/WHITE primary identity.
  */
 
 export const colors = {
-  // Primary Brand Colors (GOLD)
-  primary: '#D4AF37',
-  primaryDark: '#B8960C',
-  primaryLight: '#E8CC6E',
-  primaryVeryLight: '#FDF8E8',
+  // Primary Brand Colors (RED / WHITE)
+  primary: '#E31E24',
+  primaryDark: '#B71C1C',
+  primaryLight: '#EF5350',
+  primaryVeryLight: '#FFEBEE',
 
   // Secondary Colors (DARK GREEN)
   secondary: '#2E5A4F',
@@ -185,7 +184,7 @@ export const colors = {
   danger: '#D32F2F',
   dangerDark: '#B71C1C',
   dangerLight: 'rgba(211, 47, 47, 0.15)',
-  accentGold: '#D4AF37',
+  accentGold: '#E31E24',
   accentEmerald: '#2E5A4F',
   accentSand: '#F5E6D3',
   accentCharcoal: '#2C2C2C',
@@ -200,19 +199,19 @@ export const colors = {
 
   // ═══════════════════════════════════════════════════════════════
   // WCAG AA CONTRAST-SAFE VARIANTS
-  // Gold (#D4AF37) on white = 1.8:1 — FAILS. These variants pass.
+  // Kept key names for backward compatibility.
   // ═══════════════════════════════════════════════════════════════
 
   /** WCAG AA compliant gold for text on white backgrounds (4.5:1+) */
   a11y: {
-    /** Gold darkened for text: 4.7:1 on white. Use for gold text, labels. */
-    goldText: '#7C6408',
-    /** Gold for large text (≥18px bold / 24px normal): 3.1:1 on white. */
-    goldLargeText: '#9A7D0A',
-    /** Gold for UI elements (non-text): 3:1 on white. Borders, icons. */
-    goldUI: '#9A7D0A',
-    /** Focus ring color: 4:1 on white, visible on light and dark backgrounds. */
-    focusRing: '#9A7D0A',
+    /** Brand red darkened for text on white. */
+    goldText: '#B71C1C',
+    /** Brand red for large text. */
+    goldLargeText: '#C62828',
+    /** Brand red for UI elements (non-text). */
+    goldUI: '#C62828',
+    /** Focus ring color visible on light/dark backgrounds. */
+    focusRing: '#B71C1C',
     /** Error text: 6.6:1 on white (darkened from #D32F2F to #B71C1C). */
     errorText: '#B71C1C',
     /** Warning text: 5.6:1 on white (deep orange 900, from #E65100 to #BF360C). */

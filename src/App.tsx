@@ -286,7 +286,7 @@ function App(): React.JSX.Element {
                   </Suspense>
                 </RouteErrorBoundary>
               } />
-              <Route path="/signin" element={user ? <Navigate to="/select-role" replace /> : <RouteErrorBoundary section="Sign In"><Suspense fallback={<SuspenseLoader />}><SignInPage /></Suspense></RouteErrorBoundary>} />
+              <Route path="/signin" element={user ? <Navigate to="/dashboard" replace /> : <RouteErrorBoundary section="Sign In"><Suspense fallback={<SuspenseLoader />}><SignInPage /></Suspense></RouteErrorBoundary>} />
               <Route path="/auth/signin" element={<Navigate to="/signin" replace />} />
               <Route path="/auth/uaepass-success" element={
                 <RouteErrorBoundary section="UAE Pass">

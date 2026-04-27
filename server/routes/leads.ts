@@ -13,6 +13,7 @@ import { sanitizeString } from '../utils/sanitize';
 
 // Unified lead status enum — single source of truth for all lead endpoints
 const VALID_LEAD_STATUSES = ['new', 'contacted', 'qualified', 'viewing', 'offered', 'negotiating', 'won', 'lost'] as const;
+const VALID_LEAD_SOURCES = ['direct', 'website', 'referral', 'social', 'portal', 'cold_call', 'event', 'other'] as const;
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { requirePermission, requireRole } from '../middleware/rbac';
@@ -45,6 +46,13 @@ router.get(
     // Build where clause
     const where: Prisma.LeadWhereInput = {};
 
+    if (status && status !== 'all' && !VALID_LEAD_STATUSES.includes(status as (typeof VALID_LEAD_STATUSES)[number])) {
+      throw new AppError(`Invalid status filter: ${String(status)}`, 422);
+    }
+    if (source && source !== 'all' && !VALID_LEAD_SOURCES.includes(source as (typeof VALID_LEAD_SOURCES)[number])) {
+      throw new AppError(`Invalid source filter: ${String(source)}`, 422);
+    }
+
     if (status && status !== 'all') {
       where.status = status as string;
     }
@@ -66,7 +74,7 @@ router.get(
       }
     }
     if (search) {
-      const s = search as string;
+      const s = sanitizeString(String(search)).trim().slice(0, 120);
       where.OR = [
         { name: { contains: s, mode: 'insensitive' } },
         { email: { contains: s, mode: 'insensitive' } },
@@ -216,7 +224,7 @@ router.post(
       phone:        rules.optionalStringWithMax('Phone', 50),
       company:      rules.optionalStringWithMax('Company', 255),
       status:       rules.oneOf('Status', [...VALID_LEAD_STATUSES]),
-      source:       rules.oneOf('Source', ['direct', 'website', 'referral', 'social', 'portal', 'cold_call', 'event', 'other']),
+      source:       rules.oneOf('Source', [...VALID_LEAD_SOURCES]),
       budget:       rules.optionalPositiveNumber('Budget'),
       assignedToId: rules.optionalMongoId('Assigned agent ID'),
       propertyId:   rules.optionalMongoId('Property ID'),
@@ -273,7 +281,7 @@ router.patch(
       company:      rules.optionalStringWithMax('Company', 255),
       notes:        rules.optionalStringWithMax('Notes', 5000),
       status:       rules.oneOf('Status', [...VALID_LEAD_STATUSES]),
-      source:       rules.oneOf('Source', ['direct', 'website', 'referral', 'social', 'portal', 'cold_call', 'event', 'other']),
+      source:       rules.oneOf('Source', [...VALID_LEAD_SOURCES]),
       budget:       rules.optionalPositiveNumber('Budget'),
       assignedToId: rules.optionalMongoId('Assigned agent ID'),
       propertyId:   rules.optionalMongoId('Property ID'),

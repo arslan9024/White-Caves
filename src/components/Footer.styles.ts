@@ -4,52 +4,75 @@ import { typography } from '../styles/theme/typography';
 import { radius } from '../styles/theme/radius';
 
 export const FooterContainer = styled.footer`
-  background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+  background: linear-gradient(180deg, #111827 0%, #0a0f1e 100%);
   color: white;
-  padding: 4rem 0 0;
+  padding: 0;
+  position: relative;
+
+  /* Luxury top accent stripe */
+  &::before {
+    content: '';
+    display: block;
+    height: 3px;
+    background: linear-gradient(90deg, #dc2626 0%, #d97706 50%, #dc2626 100%);
+  }
 `;
 
 export const FooterContent = styled.div`
-  max-width: 1400px;
+  max-width: 1360px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1.5fr repeat(4, 1fr);
-  gap: 2.5rem;
-  padding: 0 2rem 3rem;
+  grid-template-columns: 1.6fr repeat(4, 1fr);
+  gap: 3rem;
+  padding: 4rem 2rem 3rem;
 
   @media (max-width: 1200px) {
-    grid-template-columns: 1.5fr repeat(2, 1fr);
+    grid-template-columns: 1.6fr repeat(2, 1fr);
+    gap: 2.5rem;
   }
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
     text-align: center;
     gap: 2rem;
-    padding: 0 1.5rem 2rem;
+    padding: 3rem 1.5rem 2rem;
   }
 `;
 
 export const FooterBrand = styled.div`
-  padding-right: 2rem;
+  padding-right: 1.5rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+
+  @media (max-width: 1200px) {
+    grid-column: 1 / -1;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    padding-right: 0;
+    padding-bottom: 2rem;
+  }
 
   @media (max-width: 768px) {
     padding-right: 0;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    padding-bottom: 1.5rem;
   }
 `;
 
 export const FooterLogo = styled.img`
-  height: 70px;
+  height: 64px;
   width: auto;
   object-fit: contain;
   margin-bottom: 1rem;
   border-radius: ${radius.lg};
+  border: 2px solid rgba(220, 38, 38, 0.25);
 `;
 
 export const FooterTagline = styled.p`
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.65);
   margin-bottom: 1.5rem;
-  line-height: 1.6;
+  line-height: 1.7;
 `;
 
 export const FooterContact = styled.div`
@@ -124,20 +147,23 @@ export const AppBtn = styled.a<{ $platform?: 'whatsapp' | 'botim' | 'gochat' }>`
 export const FooterSection = styled.div`
   h3 {
     color: white;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: ${typography.weights.bold};
     margin-bottom: 1.25rem;
     position: relative;
     padding-bottom: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 
     &::after {
       content: '';
       position: absolute;
       bottom: 0;
       left: 0;
-      width: 30px;
+      width: 28px;
       height: 2px;
-      background: var(--color-primary, #D4AF37);
+      background: linear-gradient(90deg, #dc2626, #d97706);
+      border-radius: 2px;
 
       @media (max-width: 768px) {
         left: 50%;
@@ -153,22 +179,39 @@ export const FooterSection = styled.div`
   }
 
   ul li {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.6rem;
   }
 
   a {
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.6);
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     transition: ${transitions.hover};
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+
+    &::before {
+      content: '›';
+      color: #dc2626;
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: all 0.2s ease;
+      font-size: 1rem;
+      line-height: 1;
+    }
 
     &:hover {
       color: white;
-      transform: translateX(3px);
+      padding-left: 4px;
+
+      &::before {
+        opacity: 1;
+        transform: translateX(0);
+      }
 
       @media (max-width: 768px) {
-        transform: none;
+        padding-left: 0;
       }
     }
   }
@@ -206,21 +249,25 @@ export const FooterRERA = styled.div`
 `;
 
 export const Badge = styled.span<{ type?: 'rera' | 'dld' }>`
-  display: inline-block;
-  padding: 0.375rem 0.75rem;
-  background: ${props => props.type === 'dld' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(220, 38, 38, 0.2)'};
-  border: 1px solid ${props => props.type === 'dld' ? 'rgba(59, 130, 246, 0.4)' : 'rgba(220, 38, 38, 0.4)'};
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  background: ${props => props.type === 'dld' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(220, 38, 38, 0.15)'};
+  border: 1px solid ${props => props.type === 'dld' ? 'rgba(59, 130, 246, 0.35)' : 'rgba(220, 38, 38, 0.35)'};
   border-radius: ${radius.sm};
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: ${typography.weights.semibold};
-  color: ${props => props.type === 'dld' ? '#60A5FA' : '#FF6B6B'};
-  margin-right: 0.5rem;
-  margin-bottom: 0.5rem;
+  color: ${props => props.type === 'dld' ? '#93c5fd' : '#fca5a5'};
+  margin-right: 0.4rem;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.03em;
 `;
 
 export const FooterBottom = styled.div`
-  background: rgba(0, 0, 0, 0.3);
-  padding: 1.5rem 2rem;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 1.25rem 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 `;
 
 export const FooterBottomContent = styled.div`

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, ArrowRight, Building2, Home as HomeIcon, TrendingUp } from 'lucide-react';
+import { MapPin, ArrowRight, Building2, Home as HomeIcon, TrendingUp, TrendingDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import type { LocationTrend } from '../../../store/slices/homepageSlice';
 import './Locations.css';
 
 interface Location {
@@ -12,9 +13,11 @@ interface Location {
   properties: number;
   avgPrice: string;
   trend: string;
+  trendDirection?: 'up' | 'down' | 'flat';
 }
 
-const locations: Location[] = [
+// Static fallback (used when live data is loading or empty)
+const STATIC_LOCATIONS: Location[] = [
   {
     id: 1,
     name: 'Palm Jumeirah',
@@ -22,7 +25,8 @@ const locations: Location[] = [
     image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     properties: 120,
     avgPrice: '15M AED',
-    trend: '+12%'
+    trend: '+12%',
+    trendDirection: 'up',
   },
   {
     id: 2,
@@ -31,16 +35,18 @@ const locations: Location[] = [
     image: 'https://images.unsplash.com/photo-1582672060674-bc2bd808a8b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     properties: 200,
     avgPrice: '8M AED',
-    trend: '+8%'
+    trend: '+8%',
+    trendDirection: 'up',
   },
   {
     id: 3,
     name: 'Emirates Hills',
-    description: 'Exclusive golf course villas in Dubai\'s most prestigious community',
+    description: "Exclusive golf course villas in Dubai's most prestigious community",
     image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     properties: 45,
     avgPrice: '35M AED',
-    trend: '+15%'
+    trend: '+15%',
+    trendDirection: 'up',
   },
   {
     id: 4,
@@ -49,13 +55,50 @@ const locations: Location[] = [
     image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     properties: 180,
     avgPrice: '5M AED',
-    trend: '+10%'
-  }
+    trend: '+10%',
+    trendDirection: 'up',
+  },
 ];
 
-const Locations = () => {
+const LOCATION_IMAGES: Record<string, string> = {
+  'Palm Jumeirah':  'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'Downtown Dubai': 'https://images.unsplash.com/photo-1582672060674-bc2bd808a8b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'Emirates Hills': 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'Dubai Marina':   'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+};
+
+const LOCATION_DESCRIPTIONS: Record<string, string> = {
+  'Palm Jumeirah':  'Iconic waterfront living with private beaches and stunning views',
+  'Downtown Dubai': 'Luxury apartments with Burj Khalifa views and world-class amenities',
+  'Emirates Hills': "Exclusive golf course villas in Dubai's most prestigious community",
+  'Dubai Marina':   'Vibrant waterfront lifestyle with stunning marina views',
+};
+
+interface LocationsProps {
+  locationTrends?: LocationTrend[];
+  isLoading?: boolean;
+}
+
+const Locations = ({ locationTrends, isLoading = false }: LocationsProps) => {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const navigate = useNavigate();
+
+  // Merge live trend data into the location cards; fall back to static if empty
+  const locations: Location[] =
+    locationTrends && locationTrends.length > 0
+      ? locationTrends.map((trend, i) => ({
+          id: i + 1,
+          name: trend.name,
+          description: LOCATION_DESCRIPTIONS[trend.name] ?? '',
+          image: LOCATION_IMAGES[trend.name] ?? STATIC_LOCATIONS[0].image,
+          properties: trend.propertyCount,
+          avgPrice: trend.avgPrice >= 1_000_000
+            ? `${(trend.avgPrice / 1_000_000).toFixed(0)}M AED`
+            : `${trend.avgPrice.toLocaleString()} AED`,
+          trend: `${trend.trendDirection === 'down' ? '-' : '+'}${trend.trendPercent}%`,
+          trendDirection: trend.trendDirection,
+        }))
+      : STATIC_LOCATIONS;
 
   return (
     <section className="locations-section" id="locations">
@@ -102,11 +145,21 @@ const Locations = () => {
                 <div className="location-stats-floating">
                   <div className="stat-badge">
                     <Building2 size={14} />
-                    {location.properties} Properties
+                    {isLoading ? (
+                      <span className="loc-skeleton-count" aria-hidden="true" />
+                    ) : (
+                      `${location.properties} Properties`
+                    )}
                   </div>
-                  <div className="stat-badge trend">
-                    <TrendingUp size={14} />
-                    {location.trend}
+                  <div className={`stat-badge trend ${location.trendDirection === 'down' ? 'trend--down' : 'trend--up'}`}>
+                    {location.trendDirection === 'down'
+                      ? <TrendingDown size={14} />
+                      : <TrendingUp size={14} />}
+                    {isLoading ? (
+                      <span className="loc-skeleton-trend" aria-hidden="true" />
+                    ) : (
+                      location.trend
+                    )}
                   </div>
                 </div>
               </div>
@@ -121,7 +174,13 @@ const Locations = () => {
                 <div className="location-footer">
                   <div className="location-price">
                     <span className="price-label">Avg. Price</span>
-                    <span className="price-value">{location.avgPrice}</span>
+                    <span className="price-value">
+                      {isLoading ? (
+                        <span className="loc-skeleton-price" aria-hidden="true" />
+                      ) : (
+                        location.avgPrice
+                      )}
+                    </span>
                   </div>
                   <motion.button 
                     className="location-cta"
@@ -157,3 +216,4 @@ const Locations = () => {
 };
 
 export default Locations;
+

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Star, Quote } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Star, Quote, BadgeCheck } from 'lucide-react';
 import { TIMING } from '../../../constants/app';
 import './Testimonials.css';
 
@@ -64,14 +64,38 @@ const Testimonials = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [direction, setDirection] = useState<number>(0);
   const [autoplay, setAutoplay] = useState<boolean>(true);
+  const [progress, setProgress] = useState<number>(0);
   const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
     };
   }, []);
 
+  // Progress bar tick
+  useEffect(() => {
+    if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+    const resetTimer = setTimeout(() => setProgress(0), 0);
+    if (!autoplay) return;
+    const tickMs = 50;
+    const totalMs = TIMING.CAROUSEL_AUTOPLAY as number;
+    progressIntervalRef.current = setInterval(() => {
+      setProgress((prev) => {
+        const next = prev + (tickMs / totalMs) * 100;
+        return next >= 100 ? 100 : next;
+      });
+    }, tickMs);
+    return () => {
+      clearTimeout(resetTimer);
+      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+    };
+  }, [autoplay, activeIndex]);
+
+  // Advance slide
   useEffect(() => {
     if (!autoplay) return;
     const timer = setInterval(() => {
@@ -83,6 +107,7 @@ const Testimonials = () => {
 
   const navigateCarousel = (dir: number): void => {
     setAutoplay(false);
+    setProgress(0);
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
     resumeTimerRef.current = setTimeout(() => setAutoplay(true), TIMING.CAROUSEL_RESUME);
     setDirection(dir);
@@ -107,7 +132,7 @@ const Testimonials = () => {
     }
   };
 
-  const current = testimonials[activeIndex];
+  const current = testimonials.find((_, index) => index === activeIndex) ?? testimonials[0];
 
   return (
     <section className="testimonials-section" id="testimonials">
@@ -127,7 +152,16 @@ const Testimonials = () => {
           <div className="divider" />
         </motion.div>
 
-        <div className="testimonials-carousel">
+        {/* Screen-reader live region */}
+        <div
+          aria-live="polite"
+          aria-atomic="true"
+          className="sr-only"
+        >
+          {`Testimonial ${activeIndex + 1} of ${testimonials.length}: ${current.name}, ${current.role}`}
+        </div>
+
+        <div className="testimonials-carousel" role="region" aria-label="Client testimonials">
           <motion.button 
             className="carousel-nav prev"
             onClick={() => navigateCarousel(-1)}
@@ -150,6 +184,15 @@ const Testimonials = () => {
                 exit="exit"
                 transition={{ duration: 0.4, ease: "easeInOut" }}
               >
+                {/* Gold watermark quote mark */}
+                <span className="testimonial-watermark" aria-hidden="true">&ldquo;</span>
+
+                {/* Verified Client badge */}
+                <div className="verified-badge">
+                  <BadgeCheck size={14} aria-hidden="true" />
+                  <span>Verified Client</span>
+                </div>
+
                 <div className="quote-icon">
                   <Quote size={40} />
                 </div>
@@ -161,7 +204,7 @@ const Testimonials = () => {
                 </div>
 
                 <blockquote className="testimonial-text">
-                  "{current.text}"
+                  &ldquo;{current.text}&rdquo;
                 </blockquote>
 
                 <div className="testimonial-footer">
@@ -176,6 +219,14 @@ const Testimonials = () => {
                     <p className="author-role">{current.role}</p>
                     <p className="author-property">{current.property}</p>
                   </div>
+                </div>
+
+                {/* Autoplay progress bar */}
+                <div className="testimonial-progress-track" aria-hidden="true">
+                  <motion.div
+                    className="testimonial-progress-bar"
+                    style={{ width: `${progress}%` }}
+                  />
                 </div>
               </motion.div>
             </AnimatePresence>
@@ -198,11 +249,13 @@ const Testimonials = () => {
               key={testimonial.name}
               className={`indicator ${index === activeIndex ? 'active' : ''}`}
               onClick={() => {
+                setDirection(index > activeIndex ? 1 : -1);
                 setActiveIndex(index);
+                setProgress(0);
                 setAutoplay(false);
               }}
               whileHover={{ scale: 1.2 }}
-              aria-label={`Go to testimonial ${index + 1}`}
+              aria-label={`Go to testimonial ${index + 1}: ${testimonial.name}`}
               aria-current={index === activeIndex ? 'true' : undefined}
               role="tab"
             />
@@ -212,5 +265,5 @@ const Testimonials = () => {
     </section>
   );
 };
-
 export default Testimonials;
+

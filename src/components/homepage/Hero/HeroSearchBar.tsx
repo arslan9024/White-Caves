@@ -3,12 +3,13 @@
  * Location dropdown, property type, bedrooms, price range, and "Find Now" CTA.
  * Navigates to /properties with query params on submit.
  */
-import React, { useState, useCallback, memo } from 'react';
+import React, { useState, useCallback, memo, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { Search, MapPin, Home, BedDouble, DollarSign, ChevronDown } from 'lucide-react';
 import { setFilters, clearFilters } from '../../../store/propertySlice';
+import { selectLocationTrends } from '../../../store/slices/homepageSlice';
 import type { AppDispatch } from '../../../store/store';
 import '../../../styles/dubaiLuxuryTheme.css';
 import './HeroSearchBar.css';
@@ -107,6 +108,9 @@ const HeroSearchBar = memo(function HeroSearchBar() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
+  // Live trending locations from Redux (populated by fetchHomepageData)
+  const locationTrends = useSelector(selectLocationTrends);
+
   const [location, setLocation] = useState('All Locations');
   const [propertyType, setPropertyType] = useState('All Types');
   const [beds, setBeds] = useState('0');
@@ -161,7 +165,30 @@ const HeroSearchBar = memo(function HeroSearchBar() {
     [handleSearch]
   );
 
-  const locationOptions = DUBAI_LOCATIONS.map((loc) => ({ label: loc, value: loc }));
+  // Build location options: trending locations first (with live data markers),
+  // then remaining static locations not already covered by trends.
+  const locationOptions = useMemo(() => {
+    const trendNames = locationTrends.map((t) => t.name);
+
+    // Trending entries sorted by trendPercent desc
+    const trendingOptions = [...locationTrends]
+      .sort((a, b) => b.trendPercent - a.trendPercent)
+      .map((t) => ({
+        label: `${t.name} ↑${t.trendPercent}%`,
+        value: t.name,
+      }));
+
+    // Remaining static locations not in trending list
+    const remainingStatic = DUBAI_LOCATIONS
+      .filter((loc) => loc !== 'All Locations' && !trendNames.includes(loc))
+      .map((loc) => ({ label: loc, value: loc }));
+
+    return [
+      { label: 'All Locations', value: 'All Locations' },
+      ...(trendingOptions.length > 0 ? trendingOptions : []),
+      ...remainingStatic,
+    ];
+  }, [locationTrends]);
   const typeOptions = PROPERTY_TYPES.map((t) => ({ label: t, value: t }));
   const bedOptions = BED_OPTIONS.map((b) => ({ label: b.label, value: String(b.value) }));
   const priceOptions = PRICE_RANGES.map((p, i) => ({ label: p.label, value: String(i) }));
@@ -253,3 +280,4 @@ const HeroSearchBar = memo(function HeroSearchBar() {
 
 export default HeroSearchBar;
 export { DUBAI_LOCATIONS, PROPERTY_TYPES, BED_OPTIONS, PRICE_RANGES };
+

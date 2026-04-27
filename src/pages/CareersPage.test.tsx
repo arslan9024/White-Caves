@@ -14,8 +14,8 @@ vi.mock('../hooks/useDocumentTitle', () => ({
   useDocumentTitle: vi.fn(),
 }));
 
-// Mock AppLayout
-vi.mock('../components/layout/AppLayout', () => ({
+// Mock PublicLayout
+vi.mock('../components/layout/PublicLayout', () => ({
   default: ({ children }: any) => <div data-testid="app-layout">{children}</div>,
 }));
 

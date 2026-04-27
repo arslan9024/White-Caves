@@ -1,8 +1,8 @@
 import React, { FC, lazy, Suspense } from 'react';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { usePropertyBrowser } from '../hooks/usePropertyBrowser';
-import AppLayout from '../components/layout/AppLayout';
-import Footer from '../components/Footer';
+import PublicLayout from '../components/layout/PublicLayout';
+import PageHeroBanner from '../components/layout/PageHeroBanner';
 import PropertyFilterPanel from './properties/PropertyFilterPanel';
 import { PropertyDetailModal } from '../shared/components/property';
 import { Link } from 'react-router-dom';
@@ -34,16 +34,20 @@ const PropertiesPage: FC = () => {
   } = usePropertyBrowser();
 
   return (
-    <AppLayout>
+    <PublicLayout>
       <div className="properties-page dubai-luxury-theme">
         {/* ─── Hero Banner ──────────────────────────────────── */}
-        <section className="properties-hero">
-          <div className="properties-hero-overlay" />
-          <div className="properties-hero-content">
-            <h1>Discover Luxury Properties</h1>
-            <p>Browse our exclusive collection of premium properties across Dubai</p>
-          </div>
-        </section>
+        <PageHeroBanner
+          badge="Luxury Collection"
+          title="Discover Luxury Properties"
+          subtitle="Browse our exclusive collection of premium properties across Dubai's most prestigious communities"
+          theme="dark"
+          breadcrumbs={[{ label: 'Properties' }]}
+          stat={{ value: '500+', label: 'Properties' }}
+        />
+
+        {/* ─── Content Section ─────────────────────────────── */}
+        <section className="properties-content-section">
 
         {/* ─── Filter Panel ─────────────────────────────────── */}
         <PropertyFilterPanel
@@ -225,6 +229,7 @@ const PropertiesPage: FC = () => {
             ))}
           </div>
         </section>
+        </section>
 
         {/* ─── Detail Modal ─────────────────────────────────── */}
         {selectedProperty && (
@@ -236,9 +241,8 @@ const PropertiesPage: FC = () => {
           />
         )}
 
-        <Footer />
       </div>
-    </AppLayout>
+    </PublicLayout>
   );
 };
 

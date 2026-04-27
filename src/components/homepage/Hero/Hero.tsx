@@ -4,6 +4,7 @@ import { ArrowRight, Play, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
+import type { MarketStats } from '../../../store/slices/homepageSlice';
 import HeroSearchBar from './HeroSearchBar';
 import './Hero.css';
 
@@ -11,6 +12,7 @@ interface AnimatedCounterProps {
   end: number;
   duration?: number;
   suffix?: string;
+  prefix?: string;
 }
 
 interface TypewriterTextProps {
@@ -21,12 +23,18 @@ interface TypewriterTextProps {
 interface Stat {
   number: number;
   suffix: string;
+  prefix?: string;
   label: string;
+}
+
+interface HeroProps {
+  marketStats?: MarketStats;
+  isLoading?: boolean;
 }
 
 
 
-const AnimatedCounter: React.FC<AnimatedCounterProps> = ({ end, duration = 2000, suffix = '' }) => {
+const AnimatedCounter: React.FC<AnimatedCounterProps> = ({ end, duration = 2000, suffix = '', prefix = '' }) => {
   const [count, setCount] = useState<number>(0);
   
   useEffect(() => {
@@ -47,7 +55,7 @@ const AnimatedCounter: React.FC<AnimatedCounterProps> = ({ end, duration = 2000,
     return () => cancelAnimationFrame(animationFrame);
   }, [end, duration]);
   
-  return <span>{count}{suffix}</span>;
+  return <span>{prefix}{count.toLocaleString()}{suffix}</span>;
 };
 
 const TypewriterText: React.FC<TypewriterTextProps> = ({ text, delay = 0 }) => {
@@ -79,18 +87,31 @@ const TypewriterText: React.FC<TypewriterTextProps> = ({ text, delay = 0 }) => {
   return <span>{displayText}<span className="typewriter-cursor">|</span></span>;
 };
 
-const Hero = () => {
+const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.user?.currentUser);
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 500], [0, 150]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
+  // Live stats from API, fallback to static values for instant render
   const stats: Stat[] = [
-    { number: 500, suffix: '+', label: 'Premium Properties' },
-    { number: 1000, suffix: '+', label: 'Happy Clients' },
+    {
+      number: marketStats?.totalProperties ?? 500,
+      suffix: '+',
+      label: 'Premium Properties',
+    },
+    {
+      number: marketStats?.totalProperties ? Math.round(marketStats.totalProperties * 2) : 1000,
+      suffix: '+',
+      label: 'Happy Clients',
+    },
     { number: 15, suffix: '+', label: 'Years Experience' },
-    { number: 50, suffix: '+', label: 'Expert Agents' }
+    {
+      number: marketStats?.activeAgents ?? 50,
+      suffix: '+',
+      label: 'Expert Agents',
+    },
   ];
 
   const containerVariants: Variants = {
@@ -179,7 +200,19 @@ const Hero = () => {
       >
         <motion.div className="hero-badge" variants={itemVariants}>
           <span className="badge-icon">&#9733;</span>
-          Trusted by 1000+ Clients in Dubai
+          {marketStats?.totalProperties
+            ? `${marketStats.totalProperties}+ Properties Available Today`
+            : 'Trusted by 1000+ Clients in Dubai'}
+        </motion.div>
+
+        <motion.div className="hero-market-pill" variants={itemVariants}>
+          <span className="hero-market-pill-label">Dubai Prime Districts</span>
+          <span className="hero-market-pill-separator" aria-hidden="true">•</span>
+          <span className="hero-market-pill-value">
+            {marketStats?.averagePrice
+              ? `Avg AED ${(marketStats.averagePrice / 1_000_000).toFixed(1)}M`
+              : 'Starting from AED 1M'}
+          </span>
         </motion.div>
 
         <motion.h1 className="hero-title" variants={itemVariants}>
@@ -201,7 +234,7 @@ const Hero = () => {
           <motion.button 
             className="btn btn-primary btn-lg hero-btn-primary"
             onClick={handleGetStarted}
-            whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(212, 175, 55, 0.35)" }}
+            whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(227, 30, 36, 0.35)" }}
             whileTap={{ scale: 0.98 }}
           >
             Get Started
@@ -231,7 +264,11 @@ const Hero = () => {
               transition={{ duration: 0.2 }}
             >
               <span className="hero-stat-number">
-                <AnimatedCounter end={stat.number} duration={2000} suffix={stat.suffix} />
+                {isLoading ? (
+                  <span className="hero-stat-skeleton" aria-hidden="true" />
+                ) : (
+                  <AnimatedCounter end={stat.number} duration={2000} suffix={stat.suffix} prefix={stat.prefix} />
+                )}
               </span>
               <span className="hero-stat-label">{stat.label}</span>
             </motion.div>
@@ -255,6 +292,10 @@ const Hero = () => {
             Best Value
           </div>
         </motion.div>
+
+        <motion.div className="hero-response-note" variants={itemVariants}>
+          Concierge response in under 24 hours for qualified inquiries.
+        </motion.div>
       </motion.div>
 
       <motion.div 
@@ -271,3 +312,4 @@ const Hero = () => {
 };
 
 export default Hero;
+

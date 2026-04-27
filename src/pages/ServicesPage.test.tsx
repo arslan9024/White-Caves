@@ -37,8 +37,13 @@ vi.mock('../components/WhatsAppButton', () => ({
   default: () => <div data-testid="whatsapp-button">WhatsApp</div>,
 }));
 
-vi.mock('../components/layout/AppLayout', () => ({
-  default: ({ children }: { children: React.ReactNode }) => <div data-testid="app-layout">{children}</div>,
+vi.mock('../components/layout/PublicLayout', () => ({
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="app-layout">
+      {children}
+      <div data-testid="footer">Footer</div>
+    </div>
+  ),
 }));
 
 // ─── Helpers ────────────────────────────────────────────────────

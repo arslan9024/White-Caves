@@ -24,7 +24,7 @@ const features: Feature[] = [
     icon: Home,
     title: 'Premium Properties',
     description: 'Access exclusive listings in Dubai\'s most prestigious neighborhoods including Palm Jumeirah, Emirates Hills, and Downtown.',
-    color: '#D4AF37'
+    color: '#E31E24'
   },
   {
     icon: Key,
@@ -152,3 +152,4 @@ const Features = () => {
 };
 
 export default Features;
+

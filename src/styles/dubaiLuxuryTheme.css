@@ -1,9 +1,9 @@
-/* Dubai Luxury Theme Tokens */
+/* White Caves Brand Theme Tokens (legacy filename kept for compatibility) */
 :root {
-  --dubai-luxury-gold: #D4AF37;
-  --dubai-luxury-gold-dark: #B8960C;
-  --dubai-luxury-gold-soft: rgba(212, 175, 55, 0.2);
-  --dubai-luxury-charcoal: #1a1a2e;
+  --dubai-luxury-gold: #E31E24;
+  --dubai-luxury-gold-dark: #B71C1C;
+  --dubai-luxury-gold-soft: rgba(227, 30, 36, 0.2);
+  --dubai-luxury-charcoal: #1f1f1f;
   --dubai-luxury-glass: rgba(255, 255, 255, 0.12);
   --dubai-luxury-glass-border: rgba(255, 255, 255, 0.2);
 }
@@ -11,7 +11,7 @@
 .dubai-luxury-theme {
   --primary-color: var(--dubai-luxury-gold);
   --luxury-cta-bg: linear-gradient(135deg, var(--dubai-luxury-gold) 0%, var(--dubai-luxury-gold-dark) 100%);
-  --luxury-cta-bg-hover: linear-gradient(135deg, #e0c054 0%, var(--dubai-luxury-gold) 100%);
+  --luxury-cta-bg-hover: linear-gradient(135deg, #ef5350 0%, var(--dubai-luxury-gold) 100%);
   --luxury-text-dark: var(--dubai-luxury-charcoal);
   --luxury-glass-bg: var(--dubai-luxury-glass);
   --luxury-glass-border: var(--dubai-luxury-glass-border);

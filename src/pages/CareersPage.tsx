@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
-import AppLayout from '../components/layout/AppLayout';
+import PublicLayout from '../components/layout/PublicLayout';
+import PageHeroBanner from '../components/layout/PageHeroBanner';
 import './CareersPage.css';
 
 interface JobPosition {
@@ -65,29 +66,16 @@ const CareersPage: FC = () => {
   ];
 
   return (
-    <AppLayout>
+    <PublicLayout>
       <div className="careers-page">
-        <section className="careers-hero">
-          <div className="careers-hero-overlay"></div>
-          <div className="careers-hero-content">
-            <h1>Build Your Career with White Caves</h1>
-            <p>Join Dubai's fastest-growing real estate team and unlock your potential</p>
-            <div className="careers-hero-stats">
-              <div className="hero-stat">
-                <span className="stat-number">50+</span>
-                <span className="stat-text">Team Members</span>
-              </div>
-              <div className="hero-stat">
-                <span className="stat-number">AED 2B+</span>
-                <span className="stat-text">Transactions</span>
-              </div>
-              <div className="hero-stat">
-                <span className="stat-number">100%</span>
-                <span className="stat-text">Growth Support</span>
-              </div>
-            </div>
-          </div>
-        </section>
+        <PageHeroBanner
+          badge="Join Our Team"
+          title="Build Your Career with White Caves"
+          subtitle="Join Dubai's fastest-growing real estate team and unlock your potential — 50+ team members, AED 2B+ in transactions"
+          theme="navy"
+          breadcrumbs={[{ label: 'Careers' }]}
+          stat={{ value: '50+', label: 'Team Members' }}
+        />
 
         <section className="careers-benefits">
           <div className="careers-container">
@@ -136,7 +124,7 @@ const CareersPage: FC = () => {
           </div>
         </section>
       </div>
-    </AppLayout>
+    </PublicLayout>
   );
 };
 

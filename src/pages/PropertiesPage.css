@@ -3,6 +3,11 @@
   background: var(--bg-primary);
 }
 
+.properties-content-section {
+  position: relative;
+  background: var(--bg-primary);
+}
+
 .properties-hero {
   position: relative;
   height: 280px;

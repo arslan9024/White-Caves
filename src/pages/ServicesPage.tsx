@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import type { RootState } from '../store/store';
-import AppLayout from '../components/layout/AppLayout';
-import Footer from '../components/Footer';
+import PublicLayout from '../components/layout/PublicLayout';
+import PageHeroBanner from '../components/layout/PageHeroBanner';
 import WhatsAppButton from '../components/WhatsAppButton';
 import { useToast } from '../components/Toast';
 import './ServicesPage.css';
@@ -126,23 +126,16 @@ const ServicesPage: FC = () => {
   ];
 
   return (
-    <AppLayout>
+    <PublicLayout>
       <div className="services-page">
-        <section className="services-hero">
-          <div className="hero-overlay"></div>
-          <div className="hero-content">
-            <h1>Premium Real Estate Services in Dubai</h1>
-            <p className="hero-subtitle">Expert guidance for buying, selling, and leasing properties in off-plan and secondary markets</p>
-            <div className="hero-cta">
-              <button className="btn-primary-gold" onClick={() => document.getElementById('contact-section')?.scrollIntoView({ behavior: 'smooth' })}>
-                Get Free Consultation
-              </button>
-              <button className="btn-secondary-outline" onClick={() => navigate('/')}>
-                Browse Properties
-              </button>
-            </div>
-          </div>
-        </section>
+        <PageHeroBanner
+          badge="Real Estate Services"
+          title="Premium Real Estate Services in Dubai"
+          subtitle="Expert guidance for buying, selling, and leasing properties in off-plan and secondary markets"
+          theme="navy"
+          breadcrumbs={[{ label: 'Services' }]}
+          stat={{ value: '15+', label: 'Years in Dubai' }}
+        />
 
         <section className="services-overview">
           <div className="container">
@@ -490,10 +483,9 @@ const ServicesPage: FC = () => {
           </div>
         </section>
 
-        <Footer />
         <WhatsAppButton />
       </div>
-    </AppLayout>
+    </PublicLayout>
   );
 }
 

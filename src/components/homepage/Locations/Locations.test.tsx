@@ -225,3 +225,4 @@ describe('Locations', () => {
     expect(document.querySelector('.locations-grid')).toBeTruthy();
   });
 });
+

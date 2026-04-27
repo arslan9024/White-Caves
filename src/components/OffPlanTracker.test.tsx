@@ -269,4 +269,50 @@ describe('OffPlanTracker', () => {
       expect(screen.getByText('pre-registration')).toBeInTheDocument();
     });
   });
+
+  describe('live data integration', () => {
+    it('renders live-derived projects when market/location data props are provided', () => {
+      render(
+        <OffPlanTracker
+          marketStats={{
+            totalProperties: 500,
+            availableProperties: 320,
+            averagePrice: 4500000,
+            portfolioValue: 2250000000,
+            activeAgents: 50,
+          }}
+          locationTrends={[
+            {
+              name: 'Palm Jumeirah',
+              propertyCount: 120,
+              avgPrice: 15000000,
+              trendPercent: 12,
+              trendDirection: 'up',
+            },
+          ]}
+          featuredProperties={[
+            {
+              id: 'prop-12',
+              title: 'Azure Palm Residence',
+              type: 'Villa',
+              status: 'available',
+              price: 21000000,
+              currency: 'AED',
+              bedrooms: 5,
+              bathrooms: 6,
+              sqft: 9000,
+              location: 'Palm Jumeirah',
+              amenities: ['Pool'],
+              images: ['https://example.com/azure.jpg'],
+              featured: true,
+            },
+          ]}
+        />
+      );
+
+      expect(screen.getByText('Palm Jumeirah Signature Residences')).toBeInTheDocument();
+      expect(screen.getByText(/12% Demand Momentum/)).toBeInTheDocument();
+      expect(screen.getByText(/Avg AED 15.0M/)).toBeInTheDocument();
+    });
+  });
 });

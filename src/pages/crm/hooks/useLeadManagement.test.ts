@@ -59,11 +59,11 @@ vi.mock('../../../store/crmDataSlice', () => ({
 // ─── Test data ──────────────────────────────────────────────────────────
 
 const MOCK_LEADS: Lead[] = [
-  { id: '1', name: 'Alice Johnson', company: 'Corp A', email: 'alice@corp.com', phone: '+971501234567', status: 'hot', source: 'website', budget: 500000 },
-  { id: '2', name: 'Bob Smith', company: 'Corp B', email: 'bob@corp.com', phone: '+971501234568', status: 'warm', source: 'referral', budget: 750000 },
-  { id: '3', name: 'Charlie Brown', company: 'Corp C', email: 'charlie@corp.com', phone: '+971501234569', status: 'cold', source: 'whatsapp', budget: 300000 },
-  { id: '4', name: 'Diana Prince', company: 'Corp D', email: 'diana@corp.com', phone: '+971501234570', status: 'new', source: 'direct', budget: 1000000 },
-  { id: '5', name: 'Eve Adams', company: 'Corp E', email: 'eve@corp.com', phone: '+971501234571', status: 'hot', source: 'marketing', budget: 600000 },
+  { id: '1', name: 'Alice Johnson', company: 'Corp A', email: 'alice@corp.com', phone: '+971501234567', status: 'new', source: 'website', budget: 500000 },
+  { id: '2', name: 'Bob Smith', company: 'Corp B', email: 'bob@corp.com', phone: '+971501234568', status: 'contacted', source: 'referral', budget: 750000 },
+  { id: '3', name: 'Charlie Brown', company: 'Corp C', email: 'charlie@corp.com', phone: '+971501234569', status: 'viewing', source: 'social', budget: 300000 },
+  { id: '4', name: 'Diana Prince', company: 'Corp D', email: 'diana@corp.com', phone: '+971501234570', status: 'qualified', source: 'direct', budget: 1000000 },
+  { id: '5', name: 'Eve Adams', company: 'Corp E', email: 'eve@corp.com', phone: '+971501234571', status: 'negotiating', source: 'portal', budget: 600000 },
 ];
 
 function setupSelector(leads: Lead[] = MOCK_LEADS, loading = false, error: string | null = null) {
@@ -88,7 +88,7 @@ describe('useLeadManagement', () => {
 
   describe('STATUS_CONFIG', () => {
     it('defines configs for all expected statuses', () => {
-      const expected = ['hot', 'warm', 'cold', 'new', 'contacted', 'qualified', 'won', 'lost'];
+      const expected = ['new', 'contacted', 'qualified', 'viewing', 'offered', 'negotiating', 'won', 'lost'];
       expected.forEach(status => {
         expect(STATUS_CONFIG[status]).toBeDefined();
         expect(STATUS_CONFIG[status].label).toBeTruthy();
@@ -105,7 +105,7 @@ describe('useLeadManagement', () => {
 
   describe('SOURCE_LABELS', () => {
     it('defines labels for all expected sources', () => {
-      const expected = ['whatsapp', 'website', 'phone', 'referral', 'marketing', 'direct'];
+      const expected = ['direct', 'website', 'referral', 'social', 'portal', 'cold_call', 'event', 'other'];
       expected.forEach(source => {
         expect(SOURCE_LABELS[source]).toBeTruthy();
       });
@@ -184,8 +184,8 @@ describe('useLeadManagement', () => {
 
     it('filters by status', () => {
       const { result } = renderHook(() => useLeadManagement());
-      act(() => result.current.handleStatusFilterChange('hot'));
-      expect(result.current.filteredLeads).toHaveLength(2);
+      act(() => result.current.handleStatusFilterChange('new'));
+      expect(result.current.filteredLeads).toHaveLength(1);
     });
 
     it('filters by source', () => {
@@ -198,10 +198,10 @@ describe('useLeadManagement', () => {
       const { result } = renderHook(() => useLeadManagement());
       act(() => {
         result.current.handleSearchChange('Corp');
-        result.current.handleStatusFilterChange('hot');
+        result.current.handleStatusFilterChange('new');
       });
-      // Corp A (hot) and Corp E (hot)
-      expect(result.current.filteredLeads).toHaveLength(2);
+      // Corp A (new)
+      expect(result.current.filteredLeads).toHaveLength(1);
     });
 
     it('"all" filter returns all leads', () => {
@@ -220,14 +220,14 @@ describe('useLeadManagement', () => {
     it('resets to page 1 when status filter changes', () => {
       const { result } = renderHook(() => useLeadManagement());
       act(() => result.current.setCurrentPage(2));
-      act(() => result.current.handleStatusFilterChange('hot'));
+      act(() => result.current.handleStatusFilterChange('new'));
       expect(result.current.currentPage).toBe(1);
     });
 
     it('resets to page 1 when source filter changes', () => {
       const { result } = renderHook(() => useLeadManagement());
       act(() => result.current.setCurrentPage(2));
-      act(() => result.current.handleSourceFilterChange('whatsapp'));
+      act(() => result.current.handleSourceFilterChange('social'));
       expect(result.current.currentPage).toBe(1);
     });
   });
@@ -262,10 +262,9 @@ describe('useLeadManagement', () => {
 
     it('counts by status', () => {
       const { result } = renderHook(() => useLeadManagement());
-      expect(result.current.statusCounts.hot).toBe(2);
-      expect(result.current.statusCounts.warm).toBe(1);
-      expect(result.current.statusCounts.cold).toBe(1);
+      expect(result.current.statusCounts.contacted).toBe(1);
       expect(result.current.statusCounts.new).toBe(1);
+      expect(result.current.statusCounts.qualified).toBe(1);
     });
   });
 
@@ -321,7 +320,7 @@ describe('useLeadManagement', () => {
   // ═══ CRUD OPERATIONS ════════════════════════════════════════════════
 
   describe('handleCreate', () => {
-    it('dispatches createLeadAPI on valid data', () => {
+    it('dispatches createLeadAPI on valid data', async () => {
       mockDispatch.mockReturnValue(Promise.resolve({ type: 'leads/create/fulfilled' }));
       const { result } = renderHook(() => useLeadManagement());
       act(() => result.current.openCreateModal());
@@ -335,7 +334,9 @@ describe('useLeadManagement', () => {
         budget: '500000',
         notes: 'Test note',
       }));
-      act(() => result.current.handleCreate());
+      await act(async () => {
+        await result.current.handleCreate();
+      });
       expect(mockDispatch).toHaveBeenCalled();
     });
 
@@ -386,7 +387,9 @@ describe('useLeadManagement', () => {
         ...result.current.formData,
         name: 'Updated Name',
       }));
-      act(() => result.current.handleSaveEdit());
+      await act(async () => {
+        await result.current.handleSaveEdit();
+      });
       // dispatch is called
       expect(mockDispatch).toHaveBeenCalled();
     });
@@ -404,11 +407,13 @@ describe('useLeadManagement', () => {
   });
 
   describe('handleDelete', () => {
-    it('dispatches deleteLeadAPI when lead is selected', () => {
+    it('dispatches deleteLeadAPI when lead is selected', async () => {
       mockDispatch.mockReturnValue(Promise.resolve({ type: 'leads/delete/fulfilled' }));
       const { result } = renderHook(() => useLeadManagement());
       act(() => result.current.confirmDelete(MOCK_LEADS[1]));
-      act(() => result.current.handleDelete());
+      await act(async () => {
+        await result.current.handleDelete();
+      });
       expect(mockDispatch).toHaveBeenCalled();
     });
 
@@ -427,7 +432,7 @@ describe('useLeadManagement', () => {
   describe('utility functions', () => {
     it('getStatusBadgeVariant returns correct variant', () => {
       const { result } = renderHook(() => useLeadManagement());
-      expect(result.current.getStatusBadgeVariant('hot')).toBe('error');
+      expect(result.current.getStatusBadgeVariant('negotiating')).toBe('warning');
       expect(result.current.getStatusBadgeVariant('new')).toBe('success');
       expect(result.current.getStatusBadgeVariant('unknown')).toBe('secondary');
     });

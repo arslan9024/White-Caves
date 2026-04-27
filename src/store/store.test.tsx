@@ -19,6 +19,7 @@ vi.mock('./slices/notificationSlice', () => ({ default: (s = { items: [] }) => s
 vi.mock('./slices/whatsappSlice', () => ({ default: (s = { connected: false }) => s }));
 vi.mock('./slices/nadiaSlice', () => ({ default: (s = { status: 'idle' }) => s }));
 vi.mock('./slices/savedSearchesSlice', () => ({ default: (s = { items: [] }) => s }));
+vi.mock('./slices/homepageSlice', () => ({ default: (s = { data: null }) => s }));
 vi.mock('./crmDataSlice', () => ({ default: (s = { contacts: [] }) => s }));
 vi.mock('./roleSlice', () => ({ default: (s = { currentRole: null }) => s }));
 vi.mock('./featuresSlice', () => ({ default: (s = { flags: {} }) => s }));
@@ -52,7 +53,7 @@ beforeEach(async () => {
 // =====================================================================
 
 describe('Store — Reducer Composition', () => {
-  it('creates store with all 16 reducer slices', () => {
+  it('creates store with all 17 reducer slices', () => {
     const state = store.getState();
 
     const expectedSlices = [
@@ -72,6 +73,7 @@ describe('Store — Reducer Composition', () => {
       'role',
       'features',
       'savedSearches',
+      'homepage',
     ];
 
     expectedSlices.forEach((slice) => {
@@ -82,7 +84,7 @@ describe('Store — Reducer Composition', () => {
   it('does not include unexpected slices', () => {
     const state = store.getState();
     const keys = Object.keys(state);
-    expect(keys.length).toBe(16);
+    expect(keys.length).toBe(17);
   });
 
   it('each slice has a defined initial state (not undefined)', () => {

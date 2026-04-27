@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
-import { Linkedin, Twitter, Mail, Phone } from 'lucide-react';
+import { Linkedin, Twitter, Mail, Phone, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import type { TopAgent } from '../../../store/slices/homepageSlice';
 import './Team.css';
 
 interface TeamMember {
@@ -14,9 +15,11 @@ interface TeamMember {
     twitter: string;
     email: string;
   };
+  dealsCount?: number;
 }
 
-const teamMembers: TeamMember[] = [
+// Static fallback team members
+const STATIC_TEAM_MEMBERS: TeamMember[] = [
   {
     name: 'Ahmed Al Rashid',
     role: 'CEO & Founder',
@@ -51,6 +54,20 @@ const teamMembers: TeamMember[] = [
   }
 ];
 
+const DEPT_ROLES: Record<string, string> = {
+  sales: 'Sales Agent',
+  leasing: 'Leasing Specialist',
+  management: 'Manager',
+  marketing: 'Marketing Specialist',
+  support: 'Client Support',
+  finance: 'Finance Specialist',
+};
+
+interface TeamProps {
+  topAgents?: TopAgent[];
+  isLoading?: boolean;
+}
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -68,7 +85,25 @@ const cardVariants = {
   }
 };
 
-const Team = () => {
+const Team = ({ topAgents, isLoading = false }: TeamProps) => {
+  // Merge live agent data with static fallback
+  const members: TeamMember[] =
+    topAgents && topAgents.length > 0
+      ? topAgents.map((agent) => ({
+          name: agent.name,
+          role: DEPT_ROLES[agent.department] ?? 'Property Consultant',
+          image: agent.photoUrl ?? `https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400`,
+          bio: `${agent.dealsCount} deals closed — ${agent.department} specialist`,
+          skills: [agent.department.charAt(0).toUpperCase() + agent.department.slice(1), 'Dubai Market', 'RERA Licensed'],
+          social: {
+            linkedin: 'https://linkedin.com/company/whitecaves',
+            twitter: 'https://twitter.com/whitecaves',
+            email: agent.email,
+          },
+          dealsCount: agent.dealsCount,
+        }))
+      : STATIC_TEAM_MEMBERS;
+
   return (
     <section className="team-section" id="team">
       <div className="container">
@@ -94,7 +129,7 @@ const Team = () => {
           whileInView="visible"
           viewport={{ once: true }}
         >
-          {teamMembers.map((member) => (
+          {members.map((member) => (
             <motion.div 
               key={member.name}
               className="team-card"
@@ -107,7 +142,18 @@ const Team = () => {
                   alt={member.name}
                   className="team-image"
                   loading="lazy"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src =
+                      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400';
+                  }}
                 />
+                {/* Deals badge — shown when agent data is live */}
+                {member.dealsCount !== undefined && member.dealsCount > 0 && (
+                  <div className="team-deals-badge" aria-label={`${member.dealsCount} deals closed`}>
+                    <Star size={11} fill="currentColor" />
+                    {member.dealsCount} Deals
+                  </div>
+                )}
                 <div className="team-overlay">
                   <div className="team-social">
                     <motion.a 
@@ -134,8 +180,17 @@ const Team = () => {
                       href={`mailto:${member.social.email}`}
                       whileHover={{ scale: 1.2 }}
                       className="social-link"
+                      aria-label={`Email ${member.name}`}
                     >
                       <Mail size={18} />
+                    </motion.a>
+                    <motion.a 
+                      href="/owner/whatsapp"
+                      whileHover={{ scale: 1.2 }}
+                      className="social-link social-link--whatsapp"
+                      aria-label={`WhatsApp ${member.name}`}
+                    >
+                      <Phone size={18} />
                     </motion.a>
                   </div>
                 </div>
@@ -175,3 +230,4 @@ const Team = () => {
 };
 
 export default Team;
+

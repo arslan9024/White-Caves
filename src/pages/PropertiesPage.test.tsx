@@ -13,9 +13,12 @@ import { MemoryRouter } from 'react-router-dom';
 
 // ── Mocks ────────────────────────────────────────────────────────
 
-vi.mock('../components/layout/AppLayout', () => ({
+vi.mock('../components/layout/PublicLayout', () => ({
   default: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="app-layout">{children}</div>
+    <div data-testid="app-layout">
+      {children}
+      <div data-testid="footer">Footer</div>
+    </div>
   ),
 }));
 

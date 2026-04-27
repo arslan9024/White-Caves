@@ -11,8 +11,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { usePropertyBrowser, type PropertyType } from '../hooks/usePropertyBrowser';
 import { usePublicFavorites } from '../hooks/usePublicFavorites';
-import AppLayout from '../components/layout/AppLayout';
-import Footer from '../components/Footer';
+import PublicLayout from '../components/layout/PublicLayout';
 import { PropertyImageSlider } from '../shared/components/property';
 import {
   ArrowLeft, Heart, Share2, MapPin, Bed, Bath, Maximize,
@@ -107,21 +106,20 @@ const PropertyDetailPage: FC = () => {
 
   if (loading) {
     return (
-      <AppLayout>
+      <PublicLayout>
         <div className="property-detail-page dubai-luxury-theme">
           <div className="detail-loading">
             <div className="loading-spinner" />
             <p>Loading property details...</p>
           </div>
-          <Footer />
         </div>
-      </AppLayout>
+      </PublicLayout>
     );
   }
 
   if (!property) {
     return (
-      <AppLayout>
+      <PublicLayout>
         <div className="property-detail-page dubai-luxury-theme">
           <div className="detail-not-found">
             <p style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏠</p>
@@ -131,16 +129,15 @@ const PropertyDetailPage: FC = () => {
               <ArrowLeft size={16} /> Back to Listings
             </Link>
           </div>
-          <Footer />
         </div>
-      </AppLayout>
+      </PublicLayout>
     );
   }
 
   /* ─── Main Render ───────────────────────────────────────────── */
 
   return (
-    <AppLayout>
+    <PublicLayout>
       <div className="property-detail-page dubai-luxury-theme" data-testid="property-detail-page">
         {/* ─── Breadcrumb ───────────────────────────────────── */}
         <nav className="detail-breadcrumb" aria-label="Breadcrumb">
@@ -379,9 +376,8 @@ const PropertyDetailPage: FC = () => {
           </section>
         )}
 
-        <Footer />
       </div>
-    </AppLayout>
+    </PublicLayout>
   );
 };
 

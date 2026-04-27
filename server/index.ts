@@ -52,6 +52,8 @@ import currencyRoutes from './routes/currency.js';
 import emailRoutes from './routes/email.js';
 import agentAvailabilityRoutes from './routes/agentAvailability.js';
 import analyticsRoutes from './routes/analytics.js';
+import homepageRoutes from './routes/homepage.js';
+import contactRoutes from './routes/contact.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
@@ -61,7 +63,10 @@ import { startRERAExpiryScheduler } from './services/compliance/reraExpirySchedu
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 
 const app: Express = express();
-const PORT = process.env.PORT || 3001;
+// In development, keep API on 3001 to avoid colliding with Vite (5000).
+// Use API_PORT when provided; in production/staging, respect PORT as platform-provided.
+const PORT = process.env.API_PORT
+  || (process.env.NODE_ENV === 'development' ? 3001 : (process.env.PORT || 3001));
 
 // ============================================================================
 // MIDDLEWARE SETUP
@@ -243,6 +248,12 @@ app.use('/api/follow-ups', followUpsRoutes);
 
 // Documents API (Phase 2C - Document Generation)
 app.use('/api/documents', documentsRoutes);
+
+// Homepage Aggregate API (public — no auth required)
+app.use('/api/homepage', homepageRoutes);
+
+// Contact / Lead-from-homepage API (public)
+app.use('/api/contact', contactRoutes);
 
 // Market Analytics API (Phase 4C - Market Analyst Bot)
 app.use('/api/analytics', analyticsRoutes);

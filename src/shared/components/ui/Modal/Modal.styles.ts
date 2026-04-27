@@ -26,7 +26,9 @@ const modalSlideUp = keyframes`
 export const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background:
+    radial-gradient(circle at top, rgba(212, 175, 55, 0.2), rgba(0, 0, 0, 0.72) 60%),
+    rgba(0, 0, 0, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,7 +40,9 @@ export const ModalOverlay = styled.div`
 export const ModalContainer = styled.div<{ $size?: 'small' | 'medium' | 'large' | 'full' }>`
   background: var(--card-bg, #ffffff);
   border-radius: ${radius.xxl};
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(212, 175, 55, 0.22);
   max-height: calc(100vh - 2rem);
   display: flex;
   flex-direction: column;
@@ -69,6 +73,7 @@ export const ModalHeader = styled.div`
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border-color, #e5e7eb);
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.07), rgba(255, 255, 255, 0));
 
   [data-theme="dark"] & {
     border-color: var(--border-color-dark, #374151);
@@ -121,6 +126,9 @@ export const ModalContent = styled.div`
   padding: 1.5rem;
   overflow-y: auto;
   flex: 1;
+  background:
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.06), transparent 38%),
+    var(--card-bg, #ffffff);
 `;
 
 export const ModalFooter = styled.div`
