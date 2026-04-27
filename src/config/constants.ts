@@ -10,26 +10,24 @@
  *   const url = `${Config.DOMAIN}/properties`;
  */
 
-// ─── Production Guard ─────────────────────────────────────────────────
-if (
-  import.meta.env.PROD &&
-  (!import.meta.env.VITE_API_URL || !import.meta.env.VITE_APP_URL)
-) {
-  throw new Error(
-    '[CONFIG] VITE_API_URL and VITE_APP_URL must be set in production. ' +
-    'Falling back to localhost is not allowed in production builds.'
-  );
-}
+// ─── Runtime-safe URL fallbacks ───────────────────────────────────────
+const FALLBACK_PUBLIC_ORIGIN = 'https://www.whitecaves.com';
+const runtimeOrigin = typeof window !== 'undefined' && window.location?.origin
+  ? window.location.origin
+  : FALLBACK_PUBLIC_ORIGIN;
+
+const resolvedApiUrl = import.meta.env.VITE_API_URL || '/api';
+const resolvedAppUrl = import.meta.env.VITE_APP_URL || runtimeOrigin;
 
 export const Config = {
   /** Public-facing domain (used in SEO, schema.org, Open Graph) */
-  DOMAIN: import.meta.env.VITE_DOMAIN || 'https://whitecaves.com',
+  DOMAIN: import.meta.env.VITE_DOMAIN || FALLBACK_PUBLIC_ORIGIN,
 
   /** Backend API base URL (used by apiClient, fetch calls) */
-  API_URL: import.meta.env.VITE_API_URL || 'http://localhost:3001',
+  API_URL: resolvedApiUrl,
 
   /** Frontend base URL */
-  APP_URL: import.meta.env.VITE_APP_URL || 'http://localhost:5000',
+  APP_URL: resolvedAppUrl,
 
   /** Company information */
   COMPANY: {

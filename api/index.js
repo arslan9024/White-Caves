@@ -8,7 +8,14 @@ import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
 
 const app = express();
-const prisma = new PrismaClient();
+let prisma = null;
+
+function getPrismaClient() {
+  if (!prisma) {
+    prisma = new PrismaClient();
+  }
+  return prisma;
+}
 
 // CORS: restrict origins in production
 const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || 'http://localhost:5000,http://localhost:3000')
@@ -42,7 +49,7 @@ app.get('/api/health', (_req, res) => {
 app.get('/api/system/health', async (_req, res) => {
   let dbConnected = false;
   try {
-    await prisma.$runCommandRaw({ ping: 1 });
+    await getPrismaClient().$runCommandRaw({ ping: 1 });
     dbConnected = true;
   } catch { /* db unreachable */ }
 
@@ -91,8 +98,8 @@ app.get('/api/properties', async (req, res) => {
     }
 
     const [properties, total] = await Promise.all([
-      prisma.property.findMany({ where, skip, take: limit, orderBy: { [sortBy]: sortOrder } }),
-      prisma.property.count({ where }),
+      getPrismaClient().property.findMany({ where, skip, take: limit, orderBy: { [sortBy]: sortOrder } }),
+      getPrismaClient().property.count({ where }),
     ]);
 
     res.json({
@@ -108,7 +115,7 @@ app.get('/api/properties', async (req, res) => {
 
 app.get('/api/properties/:id', async (req, res) => {
   try {
-    const property = await prisma.property.findUnique({ where: { id: req.params.id } });
+    const property = await getPrismaClient().property.findUnique({ where: { id: req.params.id } });
     if (!property) return res.status(404).json({ success: false, error: 'Property not found' });
     res.json({ success: true, property });
   } catch (error) {

@@ -40,14 +40,36 @@ export function buildRuntimeChecks(baseUrl) {
 export function checkEndpoint(url, timeoutMs = 10000) {
   return new Promise(resolve => {
     const protocol = url.startsWith('https://') ? https : http;
-    const req = protocol.get(url, res => {
+    const parsed = new URL(url);
+    const req = protocol.request(
+      {
+        protocol: parsed.protocol,
+        hostname: parsed.hostname,
+        port: parsed.port || undefined,
+        path: `${parsed.pathname}${parsed.search}`,
+        method: 'GET',
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+          Accept:
+            'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+          Connection: 'close',
+        },
+      },
+      res => {
       res.resume();
       resolve({
         url,
         statusCode: res.statusCode ?? 0,
         success: res.statusCode === 200,
       });
-    });
+      }
+    );
+
+    req.end();
 
     req.on('error', err => {
       resolve({ url, statusCode: 0, success: false, error: err.code || err.message });
