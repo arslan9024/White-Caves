@@ -3,8 +3,6 @@ import { formatCurrency } from '../../utils';
 import { Config } from '../../config/constants';
 import '../RolePages.css';
 
-interface PricingToolsPageProps {}
-
 interface MarketDataType {
   [key: string]: {
     [key: string]: number;
@@ -23,7 +21,7 @@ interface Calculations {
   netProceeds: number;
 }
 
-const PricingToolsPage: FC<PricingToolsPageProps> = () => {
+const PricingToolsPage: FC = () => {
   const [propertyType, setPropertyType] = useState<string>('apartment');
   const [location, setLocation] = useState<string>('dubai-marina');
   const [beds, setBeds] = useState<number>(2);

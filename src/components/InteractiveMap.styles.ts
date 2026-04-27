@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import { transitions } from '../styles/theme/transitions';
+import { typography } from '../styles/theme/typography';
+import { radius } from '../styles/theme/radius';
 
 export const InteractiveMapContainer = styled.div`
   padding: 3rem;
@@ -54,7 +57,7 @@ export const MapVisualContainer = styled.div`
 export const DubaiMapVisual = styled.div`
   position: relative;
   background: var(--glass-bg);
-  border-radius: 16px;
+  border-radius: ${radius.xxl};
   overflow: hidden;
   border: 1px solid var(--border-color);
   min-height: 400px;
@@ -112,7 +115,7 @@ export const LocationMarker = styled.button<{ $isActive?: boolean }>`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 1;
   padding: 0;
@@ -128,8 +131,8 @@ export const LocationMarker = styled.button<{ $isActive?: boolean }>`
 `;
 
 export const MarkerCount = styled.span`
-  font-size: 14px;
-  font-weight: 700;
+  font-size: ${typography.sizes.base};
+  font-weight: ${typography.weights.bold};
   color: #ffffff;
   line-height: 1;
 `;
@@ -161,9 +164,9 @@ export const LocationItem = styled.div<{ $isSelected?: boolean }>`
   padding: 1rem;
   background: var(--bg-primary);
   border: 2px solid ${props => props.$isSelected ? 'var(--primary-color)' : 'var(--border-color)'};
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     border-color: var(--primary-color);
@@ -173,7 +176,7 @@ export const LocationItem = styled.div<{ $isSelected?: boolean }>`
 
 export const LocationName = styled.h4`
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   margin: 0 0 0.25rem 0;
   color: var(--text-primary);
 `;
@@ -196,11 +199,11 @@ export const PropertiesGrid = styled.div`
 `;
 
 export const PropertyCard = styled.div`
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   overflow: hidden;
   background: var(--bg-primary);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   &:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
@@ -222,13 +225,13 @@ export const PropertyInfo = styled.div`
 export const PropertyTitle = styled.h3`
   margin: 0 0 0.5rem 0;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 `;
 
 export const PropertyPrice = styled.div`
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--secondary-color);
   margin-bottom: 0.5rem;
 `;

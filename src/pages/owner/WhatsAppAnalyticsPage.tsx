@@ -16,9 +16,7 @@ interface AnalyticsData {
   topKeywords: string[];
 }
 
-interface WhatsAppAnalyticsPageProps {}
-
-const WhatsAppAnalyticsPage: FC<WhatsAppAnalyticsPageProps> = () => {
+const WhatsAppAnalyticsPage: FC = () => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.user.currentUser);
   const [analytics, setAnalytics] = useState<AnalyticsData>({

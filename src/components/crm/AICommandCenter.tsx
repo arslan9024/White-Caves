@@ -159,10 +159,10 @@ const AICommandCenter = memo(() => {
             </button>
           </div>
           
-          <button className="header-action" title="Settings">
+          <button className="header-action" title="Settings" aria-label="Open settings">
             <Settings size={18} />
           </button>
-          <button className="header-action notification" title="Notifications">
+          <button className="header-action notification" title="Notifications" aria-label="View notifications">
             <Bell size={18} />
             {performance?.criticalAlerts?.length > 0 && (
               <span className="notification-badge">

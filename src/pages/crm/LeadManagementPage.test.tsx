@@ -36,6 +36,7 @@ const mockHandleSourceFilterChange = vi.fn();
 const mockSetCurrentPage = vi.fn();
 const mockRetryFetch = vi.fn();
 const mockGoBack = vi.fn();
+const mockSetErrorMessage = vi.fn();
 
 let hookOverrides: Record<string, unknown> = {};
 
@@ -56,6 +57,8 @@ vi.mock('./hooks/useLeadManagement', () => ({
     selectedLead: null,
     formData: defaultFormData,
     setFormData: mockSetFormData,
+    errorMessage: null,
+    setErrorMessage: mockSetErrorMessage,
     ITEMS_PER_PAGE: 10,
     openCreateModal: mockOpenCreateModal,
     closeCreateModal: mockCloseCreateModal,

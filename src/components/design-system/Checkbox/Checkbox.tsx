@@ -3,7 +3,7 @@
  * Form input for boolean selection
  */
 
-import React from 'react';
+import React, { forwardRef, memo } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 
@@ -73,8 +73,8 @@ const Label = styled.label`
   color: ${theme.colors.text.primary};
 `;
 
-export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
-  ({ label, error, className = '', ...rest }, ref) => {
+export const Checkbox = memo(forwardRef<HTMLInputElement, CheckboxProps>(
+  function Checkbox({ label, error, className = '', ...rest }, ref) {
     return (
       <div className={className}>
         <Label>
@@ -86,7 +86,7 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
       </div>
     );
   }
-);
+));
 
 Checkbox.displayName = 'Checkbox';
 

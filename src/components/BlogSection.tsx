@@ -1,4 +1,5 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
+import type { HomepageProperty, LocationTrend, MarketStats } from '../store/slices/homepageSlice';
 import {
   BlogSectionContainer,
   BlogContainer,
@@ -38,9 +39,13 @@ interface BlogPost {
   featured: boolean;
 }
 
-interface BlogSectionProps {}
+interface BlogSectionProps {
+  marketStats?: MarketStats;
+  featuredProperties?: HomepageProperty[];
+  locationTrends?: LocationTrend[];
+}
 
-const blogPosts: BlogPost[] = [
+const STATIC_BLOG_POSTS: BlogPost[] = [
   {
     id: 1,
     title: "Dubai Real Estate Market Trends 2025: What Buyers Need to Know",
@@ -109,18 +114,85 @@ const blogPosts: BlogPost[] = [
   }
 ];
 
-const categories = ["All", "Market Analysis", "Buying Guide", "Investment", "Lifestyle", "Legal"];
+function buildDynamicPosts(
+  marketStats?: MarketStats,
+  featuredProperties: HomepageProperty[] = [],
+  locationTrends: LocationTrend[] = []
+): BlogPost[] {
+  const dynamicPosts: BlogPost[] = [];
+  const leadingTrend = [...locationTrends].sort((a, b) => b.trendPercent - a.trendPercent)[0];
+  const leadProperty = featuredProperties[0];
 
-const BlogSection: FC<BlogSectionProps> = () => {
+  if (leadingTrend) {
+    dynamicPosts.push({
+      id: 9001,
+      title: `${leadingTrend.name} Property Trend: ${leadingTrend.trendPercent}% Momentum in Dubai Luxury Demand`,
+      excerpt: `Our live homepage market feed shows ${leadingTrend.propertyCount} active opportunities in ${leadingTrend.name}, with average pricing around AED ${(leadingTrend.avgPrice / 1_000_000).toFixed(1)}M and ${leadingTrend.trendPercent}% trend momentum.` ,
+      image: leadProperty?.images?.[0] || 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      category: 'Market Analysis',
+      author: 'White Caves Research Desk',
+      date: 'Live market update',
+      readTime: '4 min read',
+      featured: true,
+    });
+  }
+
+  if (leadProperty) {
+    dynamicPosts.push({
+      id: 9002,
+      title: `Inside ${leadProperty.location}: What Buyers Can Learn from ${leadProperty.title}`,
+      excerpt: `This ${leadProperty.type.toLowerCase()} spotlight breaks down pricing, layout expectations, and amenity demand for buyers comparing premium opportunities in ${leadProperty.location}.`,
+      image: leadProperty.images?.[0] || 'https://images.unsplash.com/photo-1582672060674-bc2bd808a8b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      category: 'Buying Guide',
+      author: 'White Caves Editorial',
+      date: 'Live inventory insight',
+      readTime: '5 min read',
+      featured: true,
+    });
+  }
+
+  if (marketStats) {
+    dynamicPosts.push({
+      id: 9003,
+      title: `Dubai Luxury Inventory Snapshot: ${marketStats.availableProperties} Available Listings Across ${marketStats.totalProperties} Properties`,
+      excerpt: `Track White Caves' live homepage inventory mix, active agent coverage, and average pricing to understand where Dubai's premium market is moving this week.`,
+      image: leadProperty?.images?.[0] || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      category: 'Investment',
+      author: 'White Caves Data Team',
+      date: 'Live portfolio snapshot',
+      readTime: '3 min read',
+      featured: false,
+    });
+  }
+
+  return dynamicPosts;
+}
+
+const BlogSection: FC<BlogSectionProps> = ({
+  marketStats,
+  featuredProperties = [],
+  locationTrends = [],
+}) => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [visiblePosts, setVisiblePosts] = useState(6);
+
+  const blogPosts = useMemo(() => {
+    const dynamicPosts = buildDynamicPosts(marketStats, featuredProperties, locationTrends);
+    return [...dynamicPosts, ...STATIC_BLOG_POSTS];
+  }, [marketStats, featuredProperties, locationTrends]);
+
+  const categories = useMemo(
+    () => ["All", ...Array.from(new Set(blogPosts.map((post) => post.category)))],
+    [blogPosts]
+  );
 
   const filteredPosts = selectedCategory === "All" 
     ? blogPosts 
     : blogPosts.filter(post => post.category === selectedCategory);
 
-  const featuredPosts = blogPosts.filter(post => post.featured);
-  const regularPosts = filteredPosts.filter(post => !post.featured);
+  const featuredPosts = blogPosts.filter(post => post.featured).slice(0, 2);
+  const featuredIds = new Set(featuredPosts.map((post) => post.id));
+  const regularPosts = filteredPosts.filter(post => !featuredIds.has(post.id));
 
   const loadMore = () => {
     setVisiblePosts(prev => prev + 3);
@@ -131,7 +203,7 @@ const BlogSection: FC<BlogSectionProps> = () => {
       <BlogContainer>
         <BlogHeader>
           <h2>Real Estate Insights</h2>
-          <p>Stay informed with the latest news, guides, and market analysis from Dubai's property experts</p>
+          <p>Stay informed with the latest news, guides, and market analysis from Dubai&apos;s property experts</p>
         </BlogHeader>
 
         <FeaturedPosts>

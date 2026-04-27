@@ -227,6 +227,7 @@ const PropertyMatrix: React.FC<PropertyMatrixProps> = ({ onPropertySelect, onOwn
                   <button 
                     className="view-btn" 
                     onClick={(e) => { e.stopPropagation(); onPropertySelect?.(property); }}
+                    aria-label="View property details"
                   >
                     <Eye size={16} />
                   </button>
@@ -242,12 +243,14 @@ const PropertyMatrix: React.FC<PropertyMatrixProps> = ({ onPropertySelect, onOwn
           <button 
             disabled={page === 1}
             onClick={() => setPage(1)}
+            aria-label="Go to first page"
           >
             First
           </button>
           <button 
             disabled={page === 1}
             onClick={() => setPage(p => Math.max(1, p - 1))}
+            aria-label="Go to previous page"
           >
             Previous
           </button>
@@ -277,12 +280,14 @@ const PropertyMatrix: React.FC<PropertyMatrixProps> = ({ onPropertySelect, onOwn
           <button 
             disabled={page === totalPages}
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            aria-label="Go to next page"
           >
             Next
           </button>
           <button 
             disabled={page === totalPages}
             onClick={() => setPage(totalPages)}
+            aria-label="Go to last page"
           >
             Last
           </button>

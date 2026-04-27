@@ -171,6 +171,20 @@ describe('Leads Routes — /api/leads', () => {
         .get('/api/leads?sortBy=score&sortOrder=desc');
       expect(res.status).toBe(200);
     });
+
+    it('returns 422 for invalid status filter', async () => {
+      const res = await request(createApp('owner'))
+        .get('/api/leads?status=invalid_status');
+      expect(res.status).toBe(422);
+      expect(res.body.success).toBe(false);
+    });
+
+    it('returns 422 for invalid source filter', async () => {
+      const res = await request(createApp('owner'))
+        .get('/api/leads?source=unknown_source');
+      expect(res.status).toBe(422);
+      expect(res.body.success).toBe(false);
+    });
   });
 
   // ── GET /stats ───────────────────────────────────────────────────

@@ -175,9 +175,9 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading, onAction }) 
                 <td>{getEjariBadge(contract.ejariStatus)}</td>
                 <td>
                   <div className="action-buttons">
-                    <button className="icon-btn" title="View" onClick={() => onAction?.('viewContract', contract.id)}>👁️</button>
-                    <button className="icon-btn" title="Download PDF" onClick={() => onAction?.('downloadContract', contract.id)}>📥</button>
-                    <button className="icon-btn" title="Edit" onClick={() => onAction?.('editContract', contract.id)}>✏️</button>
+                    <button className="icon-btn" title="View" aria-label="View contract" onClick={() => onAction?.('viewContract', contract.id)}>👁️</button>
+                    <button className="icon-btn" title="Download PDF" aria-label="Download contract PDF" onClick={() => onAction?.('downloadContract', contract.id)}>📥</button>
+                    <button className="icon-btn" title="Edit" aria-label="Edit contract" onClick={() => onAction?.('editContract', contract.id)}>✏️</button>
                   </div>
                 </td>
               </tr>

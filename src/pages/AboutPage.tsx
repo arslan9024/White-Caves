@@ -1,8 +1,7 @@
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
-import AppLayout from '../components/layout/AppLayout';
-import Footer from '../components/Footer';
+import PublicLayout from '../components/layout/PublicLayout';
+import PageHeroBanner from '../components/layout/PageHeroBanner';
 import WhatsAppButton from '../components/WhatsAppButton';
 import './AboutPage.css';
 
@@ -19,9 +18,7 @@ interface Milestone {
   desc: string;
 }
 
-interface AboutPageProps {}
-
-const AboutPage: FC<AboutPageProps> = () => {
+const AboutPage: FC = () => {
   useDocumentTitle('About Us');
   const teamMembers: TeamMember[] = [
     {
@@ -67,15 +64,16 @@ const AboutPage: FC<AboutPageProps> = () => {
   ];
 
   return (
-    <AppLayout>
+    <PublicLayout>
       <div className="about-page">
-        <section className="about-hero">
-          <div className="hero-overlay"></div>
-          <div className="hero-content">
-            <h1>About White Caves</h1>
-            <p>Dubai's Premier Luxury Real Estate Agency</p>
-          </div>
-        </section>
+        <PageHeroBanner
+          badge="About Us"
+          title="About White Caves"
+          subtitle="Dubai's Premier Luxury Real Estate Agency — trusted by clients since 2009"
+          theme="charcoal"
+          breadcrumbs={[{ label: 'About Us' }]}
+          stat={{ value: '15+', label: 'Years of Trust' }}
+        />
 
         <section className="about-intro">
           <div className="container">
@@ -165,9 +163,8 @@ const AboutPage: FC<AboutPageProps> = () => {
         </section>
 
         <WhatsAppButton />
-        <Footer />
       </div>
-    </AppLayout>
+    </PublicLayout>
   );
 };
 

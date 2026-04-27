@@ -13,9 +13,12 @@ import { sanitizeString } from '../utils/sanitize';
 
 // Unified lead status enum — single source of truth for all lead endpoints
 const VALID_LEAD_STATUSES = ['new', 'contacted', 'qualified', 'viewing', 'offered', 'negotiating', 'won', 'lost'] as const;
+const VALID_LEAD_SOURCES = ['direct', 'website', 'referral', 'social', 'portal', 'cold_call', 'event', 'other'] as const;
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { requirePermission, requireRole } from '../middleware/rbac';
+import { scoreLead, overrideScore, batchRescoreLeads, getScoreHistory, getScoreTrending, applyWhatsAppSignal } from '../services/ai/leadScoringEngine.js';
+import { getRoutingRules, getAgentPerformance, autoRouteHotLead } from '../services/ai/leadAutoRouter.js';
 
 const router = Router();
 
@@ -43,6 +46,13 @@ router.get(
     // Build where clause
     const where: Prisma.LeadWhereInput = {};
 
+    if (status && status !== 'all' && !VALID_LEAD_STATUSES.includes(status as (typeof VALID_LEAD_STATUSES)[number])) {
+      throw new AppError(`Invalid status filter: ${String(status)}`, 422);
+    }
+    if (source && source !== 'all' && !VALID_LEAD_SOURCES.includes(source as (typeof VALID_LEAD_SOURCES)[number])) {
+      throw new AppError(`Invalid source filter: ${String(source)}`, 422);
+    }
+
     if (status && status !== 'all') {
       where.status = status as string;
     }
@@ -64,7 +74,7 @@ router.get(
       }
     }
     if (search) {
-      const s = search as string;
+      const s = sanitizeString(String(search)).trim().slice(0, 120);
       where.OR = [
         { name: { contains: s, mode: 'insensitive' } },
         { email: { contains: s, mode: 'insensitive' } },
@@ -214,7 +224,7 @@ router.post(
       phone:        rules.optionalStringWithMax('Phone', 50),
       company:      rules.optionalStringWithMax('Company', 255),
       status:       rules.oneOf('Status', [...VALID_LEAD_STATUSES]),
-      source:       rules.oneOf('Source', ['direct', 'website', 'referral', 'social', 'portal', 'cold_call', 'event', 'other']),
+      source:       rules.oneOf('Source', [...VALID_LEAD_SOURCES]),
       budget:       rules.optionalPositiveNumber('Budget'),
       assignedToId: rules.optionalMongoId('Assigned agent ID'),
       propertyId:   rules.optionalMongoId('Property ID'),
@@ -271,7 +281,7 @@ router.patch(
       company:      rules.optionalStringWithMax('Company', 255),
       notes:        rules.optionalStringWithMax('Notes', 5000),
       status:       rules.oneOf('Status', [...VALID_LEAD_STATUSES]),
-      source:       rules.oneOf('Source', ['direct', 'website', 'referral', 'social', 'portal', 'cold_call', 'event', 'other']),
+      source:       rules.oneOf('Source', [...VALID_LEAD_SOURCES]),
       budget:       rules.optionalPositiveNumber('Budget'),
       assignedToId: rules.optionalMongoId('Assigned agent ID'),
       propertyId:   rules.optionalMongoId('Property ID'),
@@ -469,6 +479,333 @@ router.post(
     });
 
     res.status(201).json({ success: true, data: { imported: results.count, total: leads.length } });
+  })
+);
+
+// ─── GET /api/leads/scored ──────────────────────────────────────────────
+// Get all leads with scores, sorted by score descending (for LeadScoringModule)
+router.get(
+  '/scored',
+  requirePermission('view_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { tier, minScore, maxScore, page = '1', pageSize = '50' } = req.query;
+    const pageNum = Math.max(1, parseInt(page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 50));
+
+    const where: Record<string, unknown> = {
+      score: { gt: 0 },
+    };
+
+    if (tier && typeof tier === 'string') {
+      where.scoreTier = tier;
+    }
+    if (minScore || maxScore) {
+      const scoreFilter: Record<string, number> = { gt: 0 };
+      if (minScore) {
+        const parsed = parseInt(minScore as string, 10);
+        if (!isNaN(parsed)) scoreFilter.gte = parsed;
+      }
+      if (maxScore) {
+        const parsed = parseInt(maxScore as string, 10);
+        if (!isNaN(parsed)) scoreFilter.lte = parsed;
+      }
+      where.score = scoreFilter;
+    }
+
+    const [leads, total] = await Promise.all([
+      prisma.lead.findMany({
+        where,
+        orderBy: { score: 'desc' },
+        skip: (pageNum - 1) * limit,
+        take: limit,
+        select: {
+          id: true,
+          name: true,
+          score: true,
+          scoreTier: true,
+          scoreBreakdown: true,
+          lastScoredAt: true,
+          budget: true,
+          budgetCurrency: true,
+          source: true,
+          status: true,
+          email: true,
+          phone: true,
+          company: true,
+          tags: true,
+          lastContact: true,
+          createdAt: true,
+          assignedTo: { select: { id: true, name: true } },
+          property: { select: { id: true, title: true, type: true } },
+        },
+      }),
+      prisma.lead.count({ where }),
+    ]);
+
+    // Add tier distribution
+    const [hotCount, warmCount, coldCount, inactiveCount] = await Promise.all([
+      prisma.lead.count({ where: { scoreTier: 'hot', score: { gt: 0 } } }),
+      prisma.lead.count({ where: { scoreTier: 'warm', score: { gt: 0 } } }),
+      prisma.lead.count({ where: { scoreTier: 'cold', score: { gt: 0 } } }),
+      prisma.lead.count({ where: { scoreTier: 'inactive', score: { gt: 0 } } }),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      leads: leads.map(l => ({
+        id: l.id,
+        name: l.name,
+        score: l.score,
+        tier: l.scoreTier,
+        budget: l.budget ? `${l.budgetCurrency} ${l.budget.toLocaleString()}` : 'N/A',
+        interest: l.property?.title || 'General',
+        source: l.source,
+        assignedAgent: l.assignedTo?.name || 'Unassigned',
+        email: l.email,
+        phone: l.phone,
+        company: l.company,
+        tags: l.tags,
+        lastContact: l.lastContact,
+        lastScoredAt: l.lastScoredAt,
+        breakdown: l.scoreBreakdown,
+      })),
+      distribution: { hot: hotCount, warm: warmCount, cold: coldCount, inactive: inactiveCount },
+      pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
+    });
+  })
+);
+
+// ─── GET /api/leads/routing-rules ───────────────────────────────────────
+// Get AI-generated routing rules based on agent performance
+router.get(
+  '/routing-rules',
+  requirePermission('view_leads'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const rules = await getRoutingRules();
+    const agents = await getAgentPerformance();
+
+    res.status(200).json({
+      success: true,
+      rules,
+      agents: agents.map(a => ({
+        id: a.agentId,
+        name: a.agentName,
+        conversionRate: a.conversionRate,
+        currentLoad: a.currentLoad,
+        totalLeads: a.totalLeads,
+        specializations: a.specializations,
+      })),
+    });
+  })
+);
+
+// ─── GET /api/leads/trending ────────────────────────────────────────────
+// Get warming/cooling lead trends
+router.get(
+  '/trending',
+  requirePermission('view_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { days = '7', minChange = '10' } = req.query;
+
+    const trends = await getScoreTrending({
+      days: parseInt(days as string) || 7,
+      minChange: parseInt(minChange as string) || 10,
+    });
+
+    const warming = trends.filter(t => t.direction === 'warming');
+    const cooling = trends.filter(t => t.direction === 'cooling');
+
+    res.status(200).json({
+      success: true,
+      data: {
+        trends,
+        summary: {
+          warming: warming.length,
+          cooling: cooling.length,
+          total: trends.length,
+        },
+      },
+    });
+  })
+);
+
+// ─── POST /api/leads/:id/auto-route ────────────────────────────────────
+// Manually trigger auto-routing for a lead
+router.post(
+  '/:id/auto-route',
+  requirePermission('manage_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Lead ID');
+
+    const decision = await autoRouteHotLead(req.params.id);
+
+    if (!decision) {
+      res.status(200).json({
+        success: true,
+        data: null,
+        message: 'Lead already assigned or no agents available',
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: decision,
+    });
+  })
+);
+
+// ─── GET /api/leads/:id/score ───────────────────────────────────────────
+// Score/re-score a single lead and return full breakdown
+router.get(
+  '/:id/score',
+  requirePermission('view_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Lead ID');
+
+    const result = await scoreLead(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        leadId: result.leadId,
+        score: result.newScore,
+        previousScore: result.previousScore,
+        tier: result.breakdown.tier,
+        previousTier: result.previousTier,
+        changed: result.changed,
+        breakdown: {
+          engagement: result.breakdown.engagement,
+          demographic: result.breakdown.demographic,
+          behavioral: result.breakdown.behavioral,
+          source: result.breakdown.source,
+        },
+        factors: result.breakdown.factors,
+        lastScoredAt: result.breakdown.lastScoredAt,
+      },
+    });
+  })
+);
+
+// ─── POST /api/leads/:id/score/override ─────────────────────────────────
+// Manual score override with justification
+router.post(
+  '/:id/score/override',
+  requirePermission('manage_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Lead ID');
+    const { score, reason } = req.body;
+
+    if (typeof score !== 'number' || score < 0 || score > 100) {
+      throw new AppError('Score must be a number between 0 and 100', 400);
+    }
+    if (!reason || typeof reason !== 'string' || reason.trim().length < 3) {
+      throw new AppError('Please provide a reason for the score override (min 3 characters)', 400);
+    }
+
+    const result = await overrideScore(
+      req.params.id,
+      score,
+      sanitizeString(reason.trim().slice(0, 500)),
+      req.user?.id,
+    );
+
+    res.status(200).json({
+      success: true,
+      data: {
+        leadId: result.leadId,
+        score: result.newScore,
+        previousScore: result.previousScore,
+        tier: result.breakdown.tier,
+        changed: result.changed,
+      },
+    });
+  })
+);
+
+// ─── POST /api/leads/batch-rescore ──────────────────────────────────────
+// Trigger batch re-scoring of all active leads (managers+)
+router.post(
+  '/batch-rescore',
+  requirePermission('manage_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Only managers can trigger batch re-scoring', 403);
+    }
+
+    const result = await batchRescoreLeads();
+
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  })
+);
+
+// ─── GET /api/leads/:id/score/history ───────────────────────────────────
+// Get score history for trending/charts
+router.get(
+  '/:id/score/history',
+  requirePermission('view_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Lead ID');
+    const { limit = '50', days = '90' } = req.query;
+
+    const history = await getScoreHistory(req.params.id, {
+      limit: Math.min(200, parseInt(limit as string) || 50),
+      days: Math.min(365, parseInt(days as string) || 90),
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        leadId: req.params.id,
+        history,
+        count: history.length,
+      },
+    });
+  })
+);
+
+// ─── POST /api/leads/:id/score/whatsapp ─────────────────────────────────
+// Apply WhatsApp conversation signals to lead score
+router.post(
+  '/:id/score/whatsapp',
+  requirePermission('manage_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Lead ID');
+    const { intentScore, sentimentScore, engagementScore, responseTimeScore, conversationScore } = req.body;
+
+    const result = await applyWhatsAppSignal(req.params.id, {
+      intentScore: typeof intentScore === 'number' ? intentScore : undefined,
+      sentimentScore: typeof sentimentScore === 'number' ? sentimentScore : undefined,
+      engagementScore: typeof engagementScore === 'number' ? engagementScore : undefined,
+      responseTimeScore: typeof responseTimeScore === 'number' ? responseTimeScore : undefined,
+      conversationScore: typeof conversationScore === 'number' ? conversationScore : undefined,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        leadId: result.leadId,
+        score: result.newScore,
+        previousScore: result.previousScore,
+        tier: result.newTier,
+        changed: result.changed,
+      },
+    });
+  })
+);
+
+// ─── GET /api/leads/agent-performance ───────────────────────────────────
+// Get agent performance metrics for routing dashboard
+router.get(
+  '/agent-performance',
+  requirePermission('view_analytics'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const agents = await getAgentPerformance();
+    res.status(200).json({ success: true, data: agents });
   })
 );
 

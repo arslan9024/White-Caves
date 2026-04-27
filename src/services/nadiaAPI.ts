@@ -1,6 +1,7 @@
 /**
  * NADIA WhatsApp CRM - API Service Layer
- * Handles all HTTP requests to backend NADIA endpoints
+ * Handles all HTTP requests to backend NADIA endpoints.
+ * Uses authFetch for automatic JWT injection + session handling.
  */
 
 import {
@@ -15,9 +16,12 @@ import {
   ListConversationsQuery,
   ApiResponse,
 } from '@/types/nadia';
+import { Config } from '@/config/constants';
+import { authFetch } from '@/utils/authFetch';
+import { createLogger } from '@/utils/logger';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-const NADIA_API = `${API_BASE}/api/nadia`;
+const log = createLogger('nadiaAPI');
+const NADIA_API = `${Config.API_URL}/api/nadia`;
 
 /**
  * Generic fetch wrapper with error handling
@@ -29,16 +33,19 @@ async function fetchApi<T>(
   const url = `${NADIA_API}${endpoint}`;
 
   try {
-    const response = await fetch(url, {
+    const response = await authFetch(url, {
+      ...options,
       headers: {
         'Content-Type': 'application/json',
-        ...options.headers,
+        ...(options.headers as Record<string, string>),
       },
-      ...options,
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      const errorData = await response.json().catch(e => {
+        log.debug('Non-JSON error response:', e);
+        return {};
+      });
       throw new Error(
         errorData.error || `API Error: ${response.status} ${response.statusText}`
       );
@@ -52,7 +59,7 @@ async function fetchApi<T>(
 
     return data.data;
   } catch (error) {
-    console.error(`API Error [${endpoint}]:`, error);
+    log.error(`API Error [${endpoint}]:`, error);
     throw error;
   }
 }
@@ -60,7 +67,7 @@ async function fetchApi<T>(
 /**
  * CONVERSATIONS API
  */
-export const conversationsAPI = {
+const conversationsAPI = {
   /**
    * Create a new conversation
    */
@@ -117,7 +124,7 @@ export const conversationsAPI = {
 /**
  * MESSAGES API
  */
-export const messagesAPI = {
+const messagesAPI = {
   /**
    * Send a message in a conversation
    */
@@ -156,7 +163,7 @@ export const messagesAPI = {
 /**
  * QUEUE API
  */
-export const queueAPI = {
+const queueAPI = {
   /**
    * Get current queue of waiting conversations
    */
@@ -188,7 +195,7 @@ export const queueAPI = {
 /**
  * HEALTH API
  */
-export const healthAPI = {
+const healthAPI = {
   /**
    * Check if NADIA service is running
    */
@@ -200,7 +207,7 @@ export const healthAPI = {
 /**
  * Batch operations
  */
-export const batchAPI = {
+const batchAPI = {
   /**
    * Load all initial data for dashboard
    */
@@ -218,7 +225,7 @@ export const batchAPI = {
 
       return { conversations, queue, stats };
     } catch (error) {
-      console.error('Error loading dashboard data:', error);
+      log.error('Error loading dashboard data:', error);
       throw error;
     }
   },
@@ -238,7 +245,7 @@ export const batchAPI = {
 
       return { conversation, messages };
     } catch (error) {
-      console.error(`Error loading conversation ${conversationId}:`, error);
+      log.error(`Error loading conversation ${conversationId}:`, error);
       throw error;
     }
   },

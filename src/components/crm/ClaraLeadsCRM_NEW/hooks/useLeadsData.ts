@@ -1,11 +1,19 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { createLogger } from '../../../../utils/logger';
-import { safeStorage } from '../../../../utils/safeStorage';
 import { useDebouncedValue } from '../../../../hooks/useDebouncedValue';
+import {
+  fetchLeadsFromAPI,
+  createLeadAPI,
+  updateLeadAPI,
+  deleteLeadAPI,
+  selectAllLeads,
+  selectLeadsLoading,
+  selectLeadsError,
+} from '../../../../store/crmDataSlice';
+import type { AppDispatch } from '../../../../store/store';
 
 const log = createLogger('LeadsData');
-
-const LEADS_STORAGE_KEY = 'clara_leads_data';
 
 export interface Lead {
   id: string;
@@ -18,159 +26,128 @@ export interface Lead {
   owner: string;
   email: string;
   phone: string;
-  lastContact: Date;
+  lastContact: Date | string;
   notes: string;
   probability: number;
   deals: number;
   tasks: number;
   nextAction: string;
+  // Backend fields
+  source?: string;
+  budget?: number;
+  score?: number;
+  tags?: string[];
+  assignedToId?: string;
+  assignedTo?: { id: string; name: string; email: string };
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-// Initial leads data
-const INITIAL_LEADS: Lead[] = [
-  {
-    id: 'lead001',
-    name: 'Acme Corporation',
-    type: 'commercial',
-    size: 'enterprise',
-    status: 'qualified',
-    value: 150000,
-    stage: 'proposal',
-    owner: 'Clara AI',
-    email: 'contact@acme.com',
-    phone: '+1-555-0100',
-    lastContact: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-    notes: 'Interested in premium services',
-    probability: 75,
-    deals: 3,
-    tasks: 5,
-    nextAction: 'Send proposal follow-up'
-  },
-  {
-    id: 'lead002',
-    name: 'TechStart Inc',
-    type: 'startup',
-    size: 'small',
-    status: 'interested',
-    value: 50000,
-    stage: 'discovery',
-    owner: 'Clara AI',
-    email: 'info@techstart.io',
-    phone: '+1-555-0101',
-    lastContact: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-    notes: 'Early-stage, high growth potential',
-    probability: 45,
-    deals: 1,
-    tasks: 3,
-    nextAction: 'Schedule discovery call'
-  },
-  {
-    id: 'lead003',
-    name: 'Global Industries Ltd',
-    type: 'enterprise',
-    size: 'enterprise',
-    status: 'qualified',
-    value: 300000,
-    stage: 'negotiation',
-    owner: 'Clara AI',
-    email: 'sales@globalind.com',
-    phone: '+1-555-0102',
-    lastContact: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-    notes: 'Multi-department rollout planned',
-    probability: 85,
-    deals: 5,
-    tasks: 8,
-    nextAction: 'Attend executive meeting'
-  },
-  {
-    id: 'lead004',
-    name: 'LocalBiz Services',
-    type: 'sme',
-    size: 'medium',
-    status: 'contacted',
-    value: 30000,
-    stage: 'initial_contact',
-    owner: 'Clara AI',
-    email: 'hello@localbiz.com',
-    phone: '+1-555-0103',
-    lastContact: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
-    notes: 'Referred by existing customer',
-    probability: 30,
-    deals: 0,
-    tasks: 2,
-    nextAction: 'Send intro materials'
-  },
-  {
-    id: 'lead005',
-    name: 'Premium Partners',
-    type: 'commercial',
-    size: 'large',
-    status: 'qualified',
-    value: 200000,
-    stage: 'contract_review',
-    owner: 'Clara AI',
-    email: 'procurement@premium.co',
-    phone: '+1-555-0104',
-    lastContact: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-    notes: 'Final approval pending',
-    probability: 92,
-    deals: 4,
-    tasks: 6,
-    nextAction: 'Customer success onboarding setup'
-  }
-];
+// NOTE: Initial leads removed — data now fetched from API via Redux
 
 export function useLeadsData() {
-  const [leads, setLeads] = useState<Lead[]>(() => {
-    const stored = safeStorage.getJSON<Lead[]>(LEADS_STORAGE_KEY);
-    return stored ?? INITIAL_LEADS;
-  });
+  const dispatch = useDispatch<AppDispatch>();
 
+  // ── Redux State ──────────────────────────────────────────────────────
+  const reduxLeads = useSelector(selectAllLeads);
+  const loading = useSelector(selectLeadsLoading);
+  const error = useSelector(selectLeadsError);
+
+  // Map Redux CRMItem[] to Lead[] for backward compatibility with tabs
+  const leads = useMemo<Lead[]>(() =>
+    reduxLeads.map((item) => ({
+      id: String(item.id),
+      name: (item.name as string) || '',
+      type: (item.type as string) || 'direct',
+      size: (item.size as string) || 'medium',
+      status: (item.status as string) || 'new',
+      value: (item.budget as number) || (item.value as number) || 0,
+      stage: (item.stage as string) || 'initial_contact',
+      owner: (item.assignedTo as { name: string })?.name || (item.owner as string) || 'Unassigned',
+      email: (item.email as string) || '',
+      phone: (item.phone as string) || '',
+      lastContact: item.lastContact ? new Date(item.lastContact as string) : new Date(),
+      notes: (item.notes as string) || '',
+      probability: (item.score as number) || (item.probability as number) || 0,
+      deals: (item.deals as number) || 0,
+      tasks: (item.tasks as number) || 0,
+      nextAction: (item.nextAction as string) || '',
+      source: (item.source as string) || 'direct',
+      budget: (item.budget as number) || 0,
+      score: (item.score as number) || 0,
+      tags: (item.tags as string[]) || [],
+      assignedToId: item.assignedToId as string | undefined,
+      assignedTo: item.assignedTo as { id: string; name: string; email: string } | undefined,
+      createdAt: item.createdAt as string | undefined,
+      updatedAt: item.updatedAt as string | undefined,
+    })),
+    [reduxLeads],
+  );
+
+  // ── Filters ──────────────────────────────────────────────────────────
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterStage, setFilterStage] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('lastContact');
   const [sortOrder, setSortOrder] = useState<string>('desc');
 
-  // Debounced auto-persistence — avoids blocking the main thread on rapid mutations
-  const debouncedLeads = useDebouncedValue(leads, 500);
-
+  // ── Fetch from API on mount ──────────────────────────────────────────
   useEffect(() => {
-    try {
-      safeStorage.setJSON(LEADS_STORAGE_KEY, debouncedLeads);
-    } catch (err) {
-      log.error('Failed to persist leads:', err);
-    }
-  }, [debouncedLeads]);
+    log.info('Fetching leads from API');
+    dispatch(fetchLeadsFromAPI({}));
+  }, [dispatch]);
 
-  // Add new lead
+  // ── CRUD Actions (dispatch to API thunks) ────────────────────────────
+
   const addLead = useCallback((leadData: Partial<Lead>) => {
-    const newLead = {
-      id: `lead${Date.now()}`,
+    log.info('Creating lead via API', { name: leadData.name });
+    dispatch(createLeadAPI({
+      name: leadData.name || '',
+      email: leadData.email,
+      phone: leadData.phone,
+      status: leadData.status || 'new',
+      source: leadData.source || leadData.type || 'direct',
+      budget: leadData.value || leadData.budget,
+      notes: leadData.notes,
+      stage: leadData.stage,
+    }));
+    // Return a placeholder for immediate UI feedback
+    return {
+      id: `pending_${Date.now()}`,
       ...leadData,
       lastContact: new Date(),
       deals: 0,
       tasks: 0,
-      probability: 25
+      probability: 25,
     } as Lead;
-    setLeads(prev => [...prev, newLead]);
-    return newLead;
-  }, []);
+  }, [dispatch]);
 
-  // Update existing lead
   const updateLead = useCallback((id: string, updates: Partial<Lead>) => {
-    setLeads(prev => prev.map(lead =>
-      lead.id === id ? { ...lead, ...updates } : lead
-    ));
-  }, []);
+    log.info('Updating lead via API', { id });
+    dispatch(updateLeadAPI({ id, ...updates }));
+  }, [dispatch]);
 
-  // Delete lead
   const deleteLead = useCallback((id: string) => {
-    setLeads(prev => prev.filter(lead => lead.id !== id));
-  }, []);
+    log.info('Deleting lead via API', { id });
+    dispatch(deleteLeadAPI(id));
+  }, [dispatch]);
 
   // Debounce the search query to avoid excessive filtering on every keystroke
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
+
+  const normalizeSortValue = useCallback((value: unknown, key: string): number | string => {
+    if (key === 'lastContact' || key === 'createdAt') {
+      const parsed = new Date((value as string | number | Date | undefined) ?? 0).getTime();
+      return Number.isNaN(parsed) ? 0 : parsed;
+    }
+
+    if (typeof value === 'number') return value;
+    if (value instanceof Date) return value.getTime();
+    if (typeof value === 'string') return value.toLowerCase();
+    if (Array.isArray(value)) return value.map(String).join(',').toLowerCase();
+    if (value && typeof value === 'object') return JSON.stringify(value).toLowerCase();
+    return '';
+  }, []);
 
   // Filtered and sorted leads
   const filteredLeads = useMemo(() => {
@@ -199,13 +176,8 @@ export function useLeadsData() {
 
     // Apply sort — always copy to avoid mutating the source array
     return [...result].sort((a, b) => {
-      let aVal = a[sortBy as keyof Lead];
-      let bVal = b[sortBy as keyof Lead];
-
-      if (sortBy === 'lastContact' || sortBy === 'createdAt') {
-        aVal = new Date(aVal).getTime();
-        bVal = new Date(bVal).getTime();
-      }
+      const aVal = normalizeSortValue(a[sortBy as keyof Lead], sortBy);
+      const bVal = normalizeSortValue(b[sortBy as keyof Lead], sortBy);
 
       if (sortOrder === 'asc') {
         return aVal > bVal ? 1 : -1;
@@ -213,7 +185,7 @@ export function useLeadsData() {
         return aVal < bVal ? 1 : -1;
       }
     });
-  }, [leads, filterStatus, filterStage, debouncedSearch, sortBy, sortOrder]);
+  }, [leads, filterStatus, filterStage, debouncedSearch, sortBy, sortOrder, normalizeSortValue]);
 
   // Statistics
   const stats = useMemo(() => ({
@@ -239,6 +211,8 @@ export function useLeadsData() {
     leads,
     filteredLeads,
     stats,
+    loading,
+    error,
     // Filters
     filterStatus,
     setFilterStatus,
@@ -250,9 +224,11 @@ export function useLeadsData() {
     setSortBy,
     sortOrder,
     setSortOrder,
-    // Actions
+    // Actions (now dispatch to API)
     addLead,
     updateLead,
-    deleteLead
+    deleteLead,
+    // Refresh from API
+    refresh: () => dispatch(fetchLeadsFromAPI({})),
   };
 }

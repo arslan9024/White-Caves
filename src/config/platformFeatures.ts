@@ -32,8 +32,8 @@ export const FEATURE_STATUS = {
 // Derived Types from const assertions
 // ---------------------------------------------------------------------------
 
-export type FeatureCategory = typeof FEATURE_CATEGORIES[keyof typeof FEATURE_CATEGORIES];
-export type FeatureStatus = typeof FEATURE_STATUS[keyof typeof FEATURE_STATUS];
+type FeatureCategory = typeof FEATURE_CATEGORIES[keyof typeof FEATURE_CATEGORIES];
+type FeatureStatus = typeof FEATURE_STATUS[keyof typeof FEATURE_STATUS];
 
 // ---------------------------------------------------------------------------
 // Interfaces
@@ -57,7 +57,7 @@ export interface FeatureStats {
   readonly byStatus: Record<string, number>;
 }
 
-export interface CategoryInfo {
+interface CategoryInfo {
   readonly name: string;
   readonly icon: string;
   readonly color: string;
@@ -648,10 +648,10 @@ export const getFeatureStats = (): FeatureStats => {
 // ---------------------------------------------------------------------------
 
 export const CATEGORY_INFO: Record<FeatureCategory, CategoryInfo> = {
-  [FEATURE_CATEGORIES.AUTHENTICATION]: { name: 'Authentication', icon: '🔐', color: '#E31E24' },
+  [FEATURE_CATEGORIES.AUTHENTICATION]: { name: 'Authentication', icon: '🔐', color: '#D4AF37' },
   [FEATURE_CATEGORIES.USER_MANAGEMENT]: { name: 'User Management', icon: '👥', color: '#2563EB' },
   [FEATURE_CATEGORIES.PROPERTY]: { name: 'Property', icon: '🏠', color: '#16A34A' },
-  [FEATURE_CATEGORIES.TRANSACTIONS]: { name: 'Transactions', icon: '💰', color: '#E31E24' },
+  [FEATURE_CATEGORIES.TRANSACTIONS]: { name: 'Transactions', icon: '💰', color: '#D4AF37' },
   [FEATURE_CATEGORIES.COMMUNICATION]: { name: 'Communication', icon: '💬', color: '#8B5CF6' },
   [FEATURE_CATEGORIES.ANALYTICS]: { name: 'Analytics', icon: '📊', color: '#EC4899' },
   [FEATURE_CATEGORIES.INTEGRATIONS]: { name: 'Integrations', icon: '🔗', color: '#14B8A6' },

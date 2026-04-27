@@ -1,4 +1,3 @@
-import React from 'react';
 import { Home, Key, Users, Calendar, FileText, Clock, ArrowUp, ArrowDown, AlertCircle, DollarSign } from 'lucide-react';
 import { useLeasingData } from './hooks/useLeasingData';
 import LeasesTab from './tabs/LeasesTab';

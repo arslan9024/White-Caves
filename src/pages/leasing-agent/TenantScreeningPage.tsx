@@ -21,9 +21,7 @@ interface ApplicationData {
   progress: number;
 }
 
-interface TenantScreeningPageProps {}
-
-const TenantScreeningPage: FC<TenantScreeningPageProps> = () => {
+const TenantScreeningPage: FC = () => {
   const [activeTab, setActiveTab] = useState<string>('checklist');
 
   const screeningChecklist: ChecklistSection[] = [

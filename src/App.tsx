@@ -122,6 +122,7 @@ const NadiaPage = lazy(() => import('./pages/NadiaPage'));
 
 // Owner/MD Sub-Pages (BusinessModelPage, ClientServicesPage removed — redirected to /modern-dashboard)
 const SystemHealthPage = lazy(() => import('./pages/owner/SystemHealthPage'));
+const LoginSecurityPage = lazy(() => import('./pages/owner/LoginSecurityPage'));
 const WhatsAppDashboardPage = lazy(() => import('./pages/owner/WhatsAppDashboardPage'));
 const WhatsAppChatbotPage = lazy(() => import('./pages/owner/WhatsAppChatbotPage'));
 const WhatsAppAnalyticsPage = lazy(() => import('./pages/owner/WhatsAppAnalyticsPage'));
@@ -135,6 +136,7 @@ const AgentPerformancePage = lazy(() => import('./pages/crm/AgentPerformancePage
 
 // Public Pages
 const PropertiesPage = lazy(() => import('./pages/PropertiesPage'));
+const PropertyDetailPage = lazy(() => import('./pages/PropertyDetailPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const ServicesPage = lazy(() => import('./pages/ServicesPage'));
 const CareersPage = lazy(() => import('./pages/CareersPage'));
@@ -197,9 +199,10 @@ function App(): React.JSX.Element {
   }, [dispatch]);
 
   useEffect(() => {
-    const savedTheme = safeStorage.get('theme', 'light')!;
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    dispatch(setTheme(savedTheme));
+    const savedTheme = safeStorage.get('theme', 'light');
+    const themeValue = savedTheme ?? 'light';
+    document.documentElement.setAttribute('data-theme', themeValue);
+    dispatch(setTheme(themeValue));
   }, [dispatch]);
 
   const handleRoleSelect = (role: string): void => {
@@ -248,6 +251,13 @@ function App(): React.JSX.Element {
                   </Suspense>
                 </RouteErrorBoundary>
               } />
+              <Route path="/property/:id" element={
+                <RouteErrorBoundary section="PropertyDetail">
+                  <Suspense fallback={<SuspenseLoader />}>
+                    <PropertyDetailPage />
+                  </Suspense>
+                </RouteErrorBoundary>
+              } />
               <Route path="/about" element={
                 <RouteErrorBoundary section="About">
                   <Suspense fallback={<SuspenseLoader />}>
@@ -276,7 +286,7 @@ function App(): React.JSX.Element {
                   </Suspense>
                 </RouteErrorBoundary>
               } />
-              <Route path="/signin" element={user ? <Navigate to="/select-role" replace /> : <RouteErrorBoundary section="Sign In"><Suspense fallback={<SuspenseLoader />}><SignInPage /></Suspense></RouteErrorBoundary>} />
+              <Route path="/signin" element={user ? <Navigate to="/dashboard" replace /> : <RouteErrorBoundary section="Sign In"><Suspense fallback={<SuspenseLoader />}><SignInPage /></Suspense></RouteErrorBoundary>} />
               <Route path="/auth/signin" element={<Navigate to="/signin" replace />} />
               <Route path="/auth/uaepass-success" element={
                 <RouteErrorBoundary section="UAE Pass">
@@ -438,6 +448,17 @@ function App(): React.JSX.Element {
                     <RouteErrorBoundary section="System Health">
                       <Suspense fallback={<SuspenseLoader />}>
                         <SystemHealthPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/owner/login-security" element={
+                <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                  <AppLayout>
+                    <RouteErrorBoundary section="Login Security">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <LoginSecurityPage />
                       </Suspense>
                     </RouteErrorBoundary>
                   </AppLayout>

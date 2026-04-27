@@ -175,6 +175,9 @@ const InteractiveMap = ({ onPropertySelect }: InteractiveMapProps) => {
                 <PropertyImage 
                   src={(property.images as string[])?.[0] || 'https://via.placeholder.com/300x200'}
                   alt={property.title}
+                  width={300}
+                  height={200}
+                  loading="lazy"
                 />
                 <PropertyInfo>
                   <PropertyTitle>{property.title}</PropertyTitle>
@@ -203,6 +206,9 @@ const InteractiveMap = ({ onPropertySelect }: InteractiveMapProps) => {
                 <PropertyImage 
                   src={(property.images as string[])?.[0] || 'https://via.placeholder.com/300x200'}
                   alt={property.title}
+                  width={300}
+                  height={200}
+                  loading="lazy"
                 />
                 <PropertyInfo>
                   <PropertyTitle>{property.title?.substring(0, 35)}...</PropertyTitle>

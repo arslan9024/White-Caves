@@ -45,7 +45,7 @@ export const BotsTab: React.FC<BotsTabProps> = ({ data }) => {
             <div className="bot-header">
               <h4>{bot.name}</h4>
               <div className="bot-actions">
-                <button className="action-btn" title="More options">
+                <button className="action-btn" title="More options" aria-label="More bot options">
                   <MoreVertical size={16} />
                 </button>
               </div>

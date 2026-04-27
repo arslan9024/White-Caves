@@ -59,23 +59,25 @@ type LeadBadgeVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'error
 // ─── Constants ──────────────────────────────────────────────────────────
 
 export const STATUS_CONFIG: Record<string, { label: string; color: string; badgeVariant: LeadBadgeVariant }> = {
-  hot: { label: 'Hot', color: '#EF4444', badgeVariant: 'error' },
-  warm: { label: 'Warm', color: '#F59E0B', badgeVariant: 'warning' },
-  cold: { label: 'Cold', color: '#3B82F6', badgeVariant: 'info' },
   new: { label: 'New', color: '#10B981', badgeVariant: 'success' },
   contacted: { label: 'Contacted', color: '#8B5CF6', badgeVariant: 'primary' },
   qualified: { label: 'Qualified', color: '#EC4899', badgeVariant: 'primary' },
+  viewing: { label: 'Viewing', color: '#3B82F6', badgeVariant: 'info' },
+  offered: { label: 'Offered', color: '#F59E0B', badgeVariant: 'warning' },
+  negotiating: { label: 'Negotiating', color: '#F97316', badgeVariant: 'warning' },
   won: { label: 'Won', color: '#10B981', badgeVariant: 'success' },
   lost: { label: 'Lost', color: '#6B7280', badgeVariant: 'secondary' },
 };
 
 export const SOURCE_LABELS: Record<string, string> = {
-  whatsapp: '💬 WhatsApp',
-  website: '🌐 Website',
-  phone: '📞 Phone',
-  referral: '🤝 Referral',
-  marketing: '📣 Marketing',
   direct: '👤 Direct',
+  website: '🌐 Website',
+  referral: '🤝 Referral',
+  social: '📱 Social',
+  portal: '🏢 Portal',
+  cold_call: '📞 Cold Call',
+  event: '🎤 Event',
+  other: '🧩 Other',
 };
 
 const ITEMS_PER_PAGE = 10;
@@ -158,6 +160,7 @@ export function useLeadManagement() {
 
   const resetForm = useCallback(() => {
     setFormData({ ...EMPTY_FORM });
+    setErrorMessage(null);
   }, []);
 
   const openCreateModal = useCallback(() => {
@@ -183,8 +186,20 @@ export function useLeadManagement() {
 
   const handleCreate = useCallback(() => {
     if (!formData.name.trim()) return;
-    if (formData.email && !isValidEmail(formData.email)) return;
-    if (formData.phone && !isValidPhone(formData.phone)) return;
+    if (formData.email && !isValidEmail(formData.email)) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+    if (formData.phone && !isValidPhone(formData.phone)) {
+      setErrorMessage('Please enter a valid UAE phone number.');
+      return;
+    }
+    if (formData.budget && Number(formData.budget) < 0) {
+      setErrorMessage('Budget cannot be negative.');
+      return;
+    }
+
+    setErrorMessage(null);
 
     const leadData = {
       ...formData,
@@ -236,6 +251,20 @@ export function useLeadManagement() {
       setErrorMessage('Lead name is required.');
       return;
     }
+    if (formData.email && !isValidEmail(formData.email)) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+    if (formData.phone && !isValidPhone(formData.phone)) {
+      setErrorMessage('Please enter a valid UAE phone number.');
+      return;
+    }
+    if (formData.budget && Number(formData.budget) < 0) {
+      setErrorMessage('Budget cannot be negative.');
+      return;
+    }
+
+    setErrorMessage(null);
     if (selectedLead) {
       const nameSnapshot = formData.name;
       dispatch(updateLeadAPI({
@@ -290,6 +319,7 @@ export function useLeadManagement() {
 
   const confirmDelete = useCallback((lead: Lead) => {
     setSelectedLead(lead);
+    setErrorMessage(null);
     setShowDeleteConfirm(true);
   }, []);
 

@@ -1,4 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+/* eslint-disable react/display-name, @typescript-eslint/no-explicit-any, security/detect-object-injection */
+
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 
@@ -162,6 +164,53 @@ describe('BlogSection', () => {
       render(<BlogSection />);
       const investmentBadges = screen.getAllByText('Investment');
       expect(investmentBadges.length).toBeGreaterThanOrEqual(1); // filter button + category badges
+    });
+
+    it('generates live insight posts when homepage data props are provided', () => {
+      render(
+        <BlogSection
+          marketStats={{
+            totalProperties: 500,
+            availableProperties: 320,
+            averagePrice: 4500000,
+            portfolioValue: 2250000000,
+            activeAgents: 50,
+          }}
+          locationTrends={[
+            {
+              name: 'Palm Jumeirah',
+              propertyCount: 120,
+              avgPrice: 15000000,
+              trendPercent: 12,
+              trendDirection: 'up',
+            },
+          ]}
+          featuredProperties={[
+            {
+              id: 'prop-1',
+              title: 'Azure Palm Villa',
+              type: 'Villa',
+              status: 'available',
+              price: 15000000,
+              currency: 'AED',
+              bedrooms: 5,
+              bathrooms: 6,
+              sqft: 8200,
+              location: 'Palm Jumeirah',
+              amenities: ['Pool'],
+              images: ['https://example.com/villa.jpg'],
+              featured: true,
+            },
+          ]}
+        />
+      );
+
+      expect(
+        screen.getByText(/Palm Jumeirah Property Trend: 12% Momentum/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Dubai Luxury Inventory Snapshot: 320 Available Listings/i)
+      ).toBeInTheDocument();
     });
   });
 

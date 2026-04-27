@@ -11,6 +11,16 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { MemoryRouter } from 'react-router-dom';
 
+let responsiveLayoutMock = {
+  isDesktop: true,
+  isTablet: false,
+  isMobile: false,
+};
+
+const enhancedLeftSidebarMock = vi.fn((_props?: Record<string, unknown>) => (
+  <div data-testid="enhanced-left-sidebar">EnhancedLeftSidebar</div>
+));
+
 // ── Mocks ────────────────────────────────────────────────────────
 
 vi.mock('./TopBar', () => ({
@@ -21,8 +31,12 @@ vi.mock('./SidebarContainer', () => ({
   default: () => <div data-testid="sidebar-container">SidebarContainer</div>,
 }));
 
-vi.mock('./RightPanelContainer', () => ({
-  default: () => <div data-testid="right-panel">RightPanel</div>,
+vi.mock('./EnhancedLeftSidebar/EnhancedLeftSidebar', () => ({
+  default: (props: Record<string, unknown>) => enhancedLeftSidebarMock(props),
+}));
+
+vi.mock('../../hooks/navigation/useResponsiveLayout', () => ({
+  useResponsiveLayout: () => responsiveLayoutMock,
 }));
 
 vi.mock('../common/CommandPalette', () => ({
@@ -34,18 +48,24 @@ vi.mock('../../features/auth/components/BiometricLogin', () => ({
 }));
 
 vi.mock('./AppLayout/styles', () => ({
-  AppLayoutContainer: ({ children, ...props }: Record<string, unknown>) =>
-    <div data-testid="app-layout-container">{children as React.ReactNode}</div>,
-  AppBody: ({ children, ...props }: Record<string, unknown>) =>
-    <div data-testid="app-body">{children as React.ReactNode}</div>,
-  AppMain: ({ children, ...props }: Record<string, unknown>) =>
-    <main data-testid="app-main">{children as React.ReactNode}</main>,
+  AppLayoutContainer: ({ children, ..._props }: Record<string, unknown>) => (
+    <div data-testid="app-layout-container">{children as React.ReactNode}</div>
+  ),
+  AppBody: ({ children, ..._props }: Record<string, unknown>) => (
+    <div data-testid="app-body">{children as React.ReactNode}</div>
+  ),
+  AppMain: ({ children, id, tabIndex, ..._props }: Record<string, unknown>) => (
+    <main data-testid="app-main" id={id as string} tabIndex={tabIndex as number}>
+      {children as React.ReactNode}
+    </main>
+  ),
 }));
 
 import AppLayout from './AppLayout';
 import navigationReducer from '../../store/navigationSlice';
 import userReducer from '../../store/userSlice';
 import sidebarReducer from '../../store/slices/sidebarSlice';
+import nadiaReducer from '../../store/slices/nadiaSlice';
 
 // ── Helpers ──────────────────────────────────────────────────────
 
@@ -55,6 +75,7 @@ const createMockStore = (overrides: Record<string, unknown> = {}) => {
       navigation: navigationReducer,
       user: userReducer,
       sidebar: sidebarReducer,
+      nadia: nadiaReducer,
     },
     preloadedState: {
       user: {
@@ -70,7 +91,7 @@ const createMockStore = (overrides: Record<string, unknown> = {}) => {
 const renderLayout = (
   path = '/',
   overrides: Record<string, unknown> = {},
-  props: Record<string, unknown> = {},
+  props: Record<string, unknown> = {}
 ) => {
   const store = createMockStore(overrides);
   return render(
@@ -80,8 +101,16 @@ const renderLayout = (
           <div data-testid="child-content">Hello</div>
         </AppLayout>
       </MemoryRouter>
-    </Provider>,
+    </Provider>
   );
+};
+
+const setResponsiveMode = (mode: 'desktop' | 'tablet' | 'mobile') => {
+  responsiveLayoutMock = {
+    isDesktop: mode === 'desktop',
+    isTablet: mode === 'tablet',
+    isMobile: mode === 'mobile',
+  };
 };
 
 // ── Tests ────────────────────────────────────────────────────────
@@ -89,6 +118,8 @@ const renderLayout = (
 describe('AppLayout', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    enhancedLeftSidebarMock.mockClear();
+    setResponsiveMode('desktop');
   });
 
   // ── Rendering ────────────────────────────────────────────────
@@ -109,14 +140,9 @@ describe('AppLayout', () => {
       expect(screen.getByTestId('command-palette')).toBeInTheDocument();
     });
 
-    it('should render the SidebarContainer by default', () => {
+    it('should render the EnhancedLeftSidebar by default (desktop)', () => {
       renderLayout();
-      expect(screen.getByTestId('sidebar-container')).toBeInTheDocument();
-    });
-
-    it('should render the RightPanelContainer by default', () => {
-      renderLayout();
-      expect(screen.getByTestId('right-panel')).toBeInTheDocument();
+      expect(screen.getByTestId('enhanced-left-sidebar')).toBeInTheDocument();
     });
 
     it('should render BiometricReminder', () => {
@@ -139,76 +165,77 @@ describe('AppLayout', () => {
       renderLayout();
       expect(screen.getByTestId('app-body')).toBeInTheDocument();
     });
+
+    it('should render skip-to-content link for keyboard navigation (WCAG 2.4.1)', () => {
+      renderLayout();
+      const skipLink = screen.getByText('Skip to main content');
+      expect(skipLink).toBeInTheDocument();
+      expect(skipLink.tagName).toBe('A');
+      expect(skipLink).toHaveAttribute('href', '#main-content');
+      expect(skipLink).toHaveClass('skip-to-content');
+    });
   });
 
   // ── Nav Visibility ───────────────────────────────────────────
 
   describe('Nav Visibility', () => {
-    it('should hide SidebarContainer when showNav is false', () => {
+    it('should hide sidebar navigation when showNav is false', () => {
       renderLayout('/', {}, { showNav: false });
       expect(screen.queryByTestId('sidebar-container')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('enhanced-left-sidebar')).not.toBeInTheDocument();
     });
 
-    it('should hide RightPanelContainer when showNav is false', () => {
-      renderLayout('/', {}, { showNav: false });
-      expect(screen.queryByTestId('right-panel')).not.toBeInTheDocument();
+    it('should show EnhancedLeftSidebar when showNav is true (default)', () => {
+      renderLayout();
+      expect(screen.getByTestId('enhanced-left-sidebar')).toBeInTheDocument();
     });
 
-    it('should show SidebarContainer when showNav is true (default)', () => {
+    it('should pass isSuperUser to EnhancedLeftSidebar on desktop', () => {
+      renderLayout('/', {}, { isSuperUser: true });
+      expect(enhancedLeftSidebarMock).toHaveBeenCalled();
+      expect(enhancedLeftSidebarMock).toHaveBeenCalledWith(
+        expect.objectContaining({ isSuperUser: true })
+      );
+    });
+
+    it('should render SidebarContainer on tablet', () => {
+      setResponsiveMode('tablet');
       renderLayout();
       expect(screen.getByTestId('sidebar-container')).toBeInTheDocument();
+      expect(screen.queryByTestId('enhanced-left-sidebar')).not.toBeInTheDocument();
+    });
+
+    it('should hide sidebars on mobile', () => {
+      setResponsiveMode('mobile');
+      renderLayout();
+      expect(screen.queryByTestId('sidebar-container')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('enhanced-left-sidebar')).not.toBeInTheDocument();
     });
   });
 
   // ── Role Detection ───────────────────────────────────────────
 
   describe('Role Detection', () => {
-    it('should detect "buyer" role from URL path', () => {
+    it.each([
+      { role: 'buyer', path: '/buyer/dashboard' },
+      { role: 'seller', path: '/seller/leads' },
+      { role: 'landlord', path: '/landlord/rentals' },
+      { role: 'tenant', path: '/tenant/payments' },
+      { role: 'leasing-agent', path: '/leasing-agent/pipeline' },
+      { role: 'secondary-sales-agent', path: '/secondary-sales-agent/properties' },
+      { role: 'owner', path: '/owner/properties' },
+    ])('should detect "$role" role from URL path', ({ role, path }) => {
       const store = createMockStore();
       render(
         <Provider store={store}>
-          <MemoryRouter initialEntries={['/buyer/dashboard']}>
-            <AppLayout><div>content</div></AppLayout>
+          <MemoryRouter initialEntries={[path]}>
+            <AppLayout>
+              <div>content</div>
+            </AppLayout>
           </MemoryRouter>
-        </Provider>,
+        </Provider>
       );
-      expect(store.getState().navigation.activeRole).toBe('buyer');
-    });
-
-    it('should detect "owner" role from URL path', () => {
-      const store = createMockStore();
-      render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/owner/properties']}>
-            <AppLayout><div>content</div></AppLayout>
-          </MemoryRouter>
-        </Provider>,
-      );
-      expect(store.getState().navigation.activeRole).toBe('owner');
-    });
-
-    it('should detect "tenant" role from URL path', () => {
-      const store = createMockStore();
-      render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/tenant/payments']}>
-            <AppLayout><div>content</div></AppLayout>
-          </MemoryRouter>
-        </Provider>,
-      );
-      expect(store.getState().navigation.activeRole).toBe('tenant');
-    });
-
-    it('should detect "landlord" role from URL path', () => {
-      const store = createMockStore();
-      render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/landlord/rentals']}>
-            <AppLayout><div>content</div></AppLayout>
-          </MemoryRouter>
-        </Provider>,
-      );
-      expect(store.getState().navigation.activeRole).toBe('landlord');
+      expect(store.getState().navigation.activeRole).toBe(role);
     });
 
     it('should not set role for unknown path segments', () => {
@@ -216,9 +243,11 @@ describe('AppLayout', () => {
       render(
         <Provider store={store}>
           <MemoryRouter initialEntries={['/unknown/route']}>
-            <AppLayout><div>content</div></AppLayout>
+            <AppLayout>
+              <div>content</div>
+            </AppLayout>
           </MemoryRouter>
-        </Provider>,
+        </Provider>
       );
       expect(store.getState().navigation.activeRole).not.toBe('unknown');
     });

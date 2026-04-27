@@ -1,4 +1,3 @@
-import React from 'react';
 import { TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
 
 interface MarketHotspot {

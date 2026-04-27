@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import { theme } from '../styles/theme';
+
+const { shadows, transitions, colors, radius, typography, spacing } = theme;
 
 export const BlogSectionContainer = styled.section`
   padding: 80px 0;
@@ -21,7 +24,7 @@ export const BlogHeader = styled.div`
 
   h2 {
     font-size: 2.5rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
     color: var(--text-primary, #1a1a2e);
     margin: 0 0 16px 0;
 
@@ -46,7 +49,7 @@ export const FeaturedPosts = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   margin-bottom: 48px;
-  gap: 24px;
+  gap: ${spacing.lg};
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -57,18 +60,18 @@ export const FeaturedPost = styled.article`
   display: flex;
   background: var(--surface, #ffffff);
   overflow: hidden;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
+  border-radius: ${radius.xl};
+  box-shadow: ${shadows.card};
+  transition: all ${transitions.durations.standard} ${transitions.easing.easeOut};
 
   @media (prefers-color-scheme: dark) {
     background: rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: ${shadows.lg};
   }
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    box-shadow: ${shadows.luxuryHover};
 
     @media (prefers-color-scheme: dark) {
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
@@ -99,12 +102,12 @@ export const PostCategory = styled.span`
   position: absolute;
   top: 16px;
   left: 16px;
-  background: var(--primary, #c9a962);
+  background: var(--primary, ${colors.primary});
   color: white;
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `;
@@ -117,7 +120,7 @@ export const FeaturedContent = styled.div`
 
   h3 {
     font-size: 1.4rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
     color: var(--text-primary, #1a1a2e);
     margin: 0 0 12px 0;
     line-height: 1.4;
@@ -146,7 +149,7 @@ export const PostMeta = styled.div`
 `;
 
 export const PostAuthor = styled.span`
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   color: var(--primary, #c9a962);
 `;
 
@@ -157,14 +160,14 @@ export const ReadMoreBtn = styled.button`
   background: var(--primary, #c9a962);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
-    background: #b08d4a;
+    background: ${colors.primaryDark};
     transform: translateX(4px);
   }
 `;
@@ -184,9 +187,9 @@ export const FilterBtn = styled.button<{ $isActive?: boolean }>`
   border-radius: 25px;
   color: ${props => props.$isActive ? 'white' : 'var(--text-secondary, #6b7280)'};
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   @media (prefers-color-scheme: dark) {
     background: ${props => props.$isActive 
@@ -197,12 +200,12 @@ export const FilterBtn = styled.button<{ $isActive?: boolean }>`
 
   &:hover {
     background: ${props => props.$isActive 
-      ? '#b08d4a' 
+      ? colors.primaryDark 
       : 'var(--surface-hover, #e5e5e7)'};
 
     @media (prefers-color-scheme: dark) {
       background: ${props => props.$isActive 
-        ? '#b08d4a' 
+        ? colors.primaryDark 
         : 'rgba(255, 255, 255, 0.1)'};
     }
   }
@@ -224,19 +227,19 @@ export const BlogGrid = styled.div`
 
 export const BlogCard = styled.div`
   background: var(--surface, #ffffff);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
+  box-shadow: ${shadows.card};
+  transition: all ${transitions.durations.standard} ${transitions.easing.easeOut};
 
   @media (prefers-color-scheme: dark) {
     background: rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: ${shadows.lg};
   }
 
   &:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    box-shadow: ${shadows.luxuryHover};
 
     @media (prefers-color-scheme: dark) {
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
@@ -260,19 +263,19 @@ export const BlogCardContent = styled.div`
 
 export const BlogCardCategory = styled.span`
   display: inline-block;
-  background: var(--primary, #c9a962);
+  background: var(--primary, ${colors.primary});
   color: white;
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
   margin-bottom: 12px;
 `;
 
 export const BlogCardTitle = styled.h3`
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary, #1a1a2e);
   margin: 0 0 8px 0;
   line-height: 1.4;
@@ -303,14 +306,14 @@ export const LoadMoreBtn = styled.button`
   background: var(--primary, #c9a962);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   &:hover {
-    background: #b08d4a;
+    background: ${colors.primaryDark};
     transform: translateY(-2px);
   }
 `;
@@ -323,9 +326,9 @@ export const CardFooter = styled.div`
 `;
 
 export const ReadMoreLink = styled.a`
-  color: var(--primary-color, #c9a962);
+  color: var(--primary-color, ${colors.primary});
   text-decoration: none;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   transition: opacity 0.2s ease;
 
   &:hover {

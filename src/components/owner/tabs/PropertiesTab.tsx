@@ -147,9 +147,9 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error, onA
                 <td>{prop.agent || <span className="unassigned">Unassigned</span>}</td>
                 <td>
                   <div className="action-buttons">
-                    <button className="icon-btn" title="View" onClick={() => onAction?.('viewProperty', prop.id)}>👁️</button>
-                    <button className="icon-btn" title="Edit" onClick={() => onAction?.('editProperty', prop.id)}>✏️</button>
-                    <button className="icon-btn danger" title="Delete" onClick={() => onAction?.('deleteProperty', prop.id)}>🗑️</button>
+                    <button className="icon-btn" title="View" aria-label="View property" onClick={() => onAction?.('viewProperty', prop.id)}>👁️</button>
+                    <button className="icon-btn" title="Edit" aria-label="Edit property" onClick={() => onAction?.('editProperty', prop.id)}>✏️</button>
+                    <button className="icon-btn danger" title="Delete" aria-label="Delete property" onClick={() => onAction?.('deleteProperty', prop.id)}>🗑️</button>
                   </div>
                 </td>
               </tr>

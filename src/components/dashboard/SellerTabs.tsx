@@ -6,14 +6,23 @@
 
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../../utils/authFetch';
+import { createLogger } from '../../utils/logger';
+import { settledJson } from '../../utils/settledJson';
+import type {
+  DashboardProperty,
+  DashboardLead,
+  DashboardOffer,
+} from '@/types/dashboard';
 import * as S from './shared';
+
+const log = createLogger('Dashboard');
 
 // ═══════════════════════════════════════════════════════════════════════
 // SELLER LISTINGS
 // ═══════════════════════════════════════════════════════════════════════
 
 export const SellerListings: React.FC = () => {
-  const [properties, setProperties] = useState<any[]>([]);
+  const [properties, setProperties] = useState<DashboardProperty[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +31,7 @@ export const SellerListings: React.FC = () => {
         const res = await authFetch('/api/properties?role=seller&pageSize=50');
         const json = await res.json();
         setProperties(json.data ?? json.properties ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch properties:', error); }
       setLoading(false);
     })();
   }, []);
@@ -51,7 +60,7 @@ export const SellerListings: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {properties.map((p: any) => (
+                {properties.map((p) => (
                   <tr key={p.id}>
                     <td style={S.td}>
                       <strong>{p.title}</strong>
@@ -85,7 +94,7 @@ export const SellerListings: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const SellerInquiries: React.FC = () => {
-  const [leads, setLeads] = useState<any[]>([]);
+  const [leads, setLeads] = useState<DashboardLead[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -94,7 +103,7 @@ export const SellerInquiries: React.FC = () => {
         const res = await authFetch('/api/leads?source=inquiry&pageSize=50');
         const json = await res.json();
         setLeads(json.data ?? json.leads ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch seller inquiries:', error); }
       setLoading(false);
     })();
   }, []);
@@ -122,7 +131,7 @@ export const SellerInquiries: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {leads.map((l: any) => (
+                {leads.map((l) => (
                   <tr key={l.id}>
                     <td style={S.td}>
                       <strong>{l.name || l.contactName || '—'}</strong>
@@ -224,7 +233,7 @@ export const MarketInsights: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const ReceivedOffers: React.FC = () => {
-  const [offers, setOffers] = useState<any[]>([]);
+  const [offers, setOffers] = useState<DashboardOffer[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -233,7 +242,7 @@ export const ReceivedOffers: React.FC = () => {
         const res = await authFetch('/api/offers?role=seller&pageSize=50');
         const json = await res.json();
         setOffers(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch seller offers:', error); }
       setLoading(false);
     })();
   }, []);
@@ -269,8 +278,8 @@ export const ReceivedOffers: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {offers.map((o: any) => {
-                  const sc = statusColor(o.status);
+                {offers.map((o) => {
+                  const sc = statusColor(o.status ?? '');
                   return (
                     <tr key={o.id}>
                       <td style={S.td}>{o.property?.title ?? '—'}</td>
@@ -310,18 +319,21 @@ export const SellerAnalytics: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const [propRes, offRes] = await Promise.allSettled([
-          authFetch('/api/properties?role=seller'),
-          authFetch('/api/offers?role=seller'),
-        ]);
-        const props = propRes.status === 'fulfilled' ? await propRes.value.json() : { data: [] };
-        const offs = offRes.status === 'fulfilled' ? await offRes.value.json() : { data: [] };
+        const [props, offs] = await settledJson(
+          [authFetch('/api/properties?role=seller'), authFetch('/api/offers?role=seller')],
+          [{ data: [] }, { data: [] }],
+        ) as [
+          { data?: DashboardProperty[]; properties?: DashboardProperty[] },
+          { data?: DashboardOffer[] },
+        ];
 
-        const propList = props.data ?? props.properties ?? [];
-        const offList = offs.data ?? [];
-        const prices = propList.map((p: any) => p.price).filter(Boolean);
-        const avg = prices.length > 0 ? prices.reduce((a: number, b: number) => a + b, 0) / prices.length : 0;
-        const accepted = offList.filter((o: any) => o.status === 'accepted').length;
+        const propList: DashboardProperty[] = props.data ?? props.properties ?? [];
+        const offList: DashboardOffer[] = offs.data ?? [];
+        const prices = propList
+          .map((p) => Number(p.price ?? 0))
+          .filter((price) => Number.isFinite(price) && price > 0);
+        const avg = prices.length > 0 ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
+        const accepted = offList.filter((o) => o.status === 'accepted').length;
 
         setStats({
           totalListings: propList.length,
@@ -329,7 +341,7 @@ export const SellerAnalytics: React.FC = () => {
           avgPrice: avg,
           conversionRate: offList.length > 0 ? Math.round((accepted / offList.length) * 100) : 0,
         });
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch seller analytics:', error); }
       setLoading(false);
     })();
   }, []);

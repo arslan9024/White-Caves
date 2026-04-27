@@ -288,10 +288,10 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: Extr
                   <span>{data.fileName}</span>
                 </S.ResultSource>
                 <S.ResultActions>
-                  <button onClick={() => copyToClipboard(data)} title="Copy">
+                  <button onClick={() => copyToClipboard(data)} title="Copy" aria-label="Copy extracted data">
                     <Copy size={14} />
                   </button>
-                  <button onClick={() => removeData(data.id)} title="Remove">
+                  <button onClick={() => removeData(data.id)} title="Remove" aria-label="Remove extracted data">
                     <X size={14} />
                   </button>
                 </S.ResultActions>

@@ -1,5 +1,9 @@
 import styled from 'styled-components';
 import { X } from 'lucide-react';
+import { transitions } from '../../../styles/theme/transitions';
+import { typography } from '../../../styles/theme/typography';
+import { radius } from '../../../styles/theme/radius';
+import { spacing } from '../../../styles/theme/spacing';
 
 export const OwnerDrawerOverlay = styled.div`
   position: fixed;
@@ -41,7 +45,7 @@ export const OwnerDrawer = styled.div`
 export const DrawerHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: ${spacing.md};
   padding: 20px;
   border-bottom: 1px solid var(--border-color);
   background: var(--bg-secondary);
@@ -56,14 +60,14 @@ export const OwnerAvatar = styled.div`
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(212, 175, 55, 0.1);
   color: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
 
   [data-theme='dark'] & {
-    background: rgba(220, 38, 38, 0.2);
+    background: rgba(212, 175, 55, 0.15);
   }
 `;
 
@@ -72,8 +76,8 @@ export const OwnerInfo = styled.div`
 
   h2 {
     margin: 0;
-    font-size: 18px;
-    font-weight: 600;
+    font-size: ${typography.sizes.lg};
+    font-weight: ${typography.weights.semibold};
     color: var(--text-primary);
   }
 
@@ -83,7 +87,7 @@ export const OwnerInfo = styled.div`
 `;
 
 export const OwnerID = styled.span`
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: var(--text-secondary);
   display: block;
   margin-top: 4px;
@@ -98,11 +102,11 @@ export const DrawerCloseButton = styled.button`
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  padding: 8px;
+  padding: ${spacing.sm};
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     color: var(--text-primary);
@@ -146,9 +150,9 @@ export const DrawerSection = styled.section`
   h3 {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: 600;
+    gap: ${spacing.sm};
+    font-size: ${typography.sizes.base};
+    font-weight: ${typography.weights.semibold};
     color: var(--text-primary);
     margin: 0 0 12px;
 
@@ -161,7 +165,7 @@ export const DrawerSection = styled.section`
 export const ContactList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const ContactItem = styled.div<{ $isPrimary?: boolean }>`
@@ -170,18 +174,18 @@ export const ContactItem = styled.div<{ $isPrimary?: boolean }>`
   justify-content: space-between;
   padding: 10px 14px;
   background: var(--bg-secondary);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   border: 1px solid var(--border-color);
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   ${props =>
     props.$isPrimary &&
     `
     border-color: var(--primary);
-    background: rgba(220, 38, 38, 0.05);
+    background: rgba(212, 175, 55, 0.05);
 
     [data-theme='dark'] & {
-      background: rgba(220, 38, 38, 0.15);
+      background: rgba(212, 175, 55, 0.12);
     }
   `};
 
@@ -192,7 +196,7 @@ export const ContactItem = styled.div<{ $isPrimary?: boolean }>`
 `;
 
 export const ContactValue = styled.span`
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   color: var(--text-primary);
 
   [data-theme='dark'] & {
@@ -206,13 +210,13 @@ export const PrimaryBadge = styled.span`
   background: var(--primary);
   color: white;
   border-radius: 10px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
 `;
 
 export const PropertiesList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const PropertyItem = styled.button`
@@ -222,15 +226,15 @@ export const PropertyItem = styled.button`
   padding: 12px 14px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   text-align: left;
   width: 100%;
 
   &:hover {
     border-color: var(--primary);
-    background: rgba(220, 38, 38, 0.05);
+    background: rgba(212, 175, 55, 0.05);
   }
 
   [data-theme='dark'] & {
@@ -238,7 +242,7 @@ export const PropertyItem = styled.button`
     border-color: var(--border-color, #3a3a5a);
 
     &:hover {
-      background: rgba(220, 38, 38, 0.15);
+      background: rgba(212, 175, 55, 0.12);
     }
   }
 `;
@@ -246,12 +250,12 @@ export const PropertyItem = styled.button`
 export const PropertyItemInfo = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: ${spacing.xs};
 `;
 
 export const PropertyPNumber = styled.span`
-  font-size: 14px;
-  font-weight: 600;
+  font-size: ${typography.sizes.base};
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 
   [data-theme='dark'] & {
@@ -260,7 +264,7 @@ export const PropertyPNumber = styled.span`
 `;
 
 export const PropertyProject = styled.span`
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: var(--text-secondary);
 
   [data-theme='dark'] & {
@@ -271,7 +275,7 @@ export const PropertyProject = styled.span`
 export const PropertyLocation = styled.span`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: ${spacing.xs};
   font-size: 11px;
   color: var(--text-muted);
 
@@ -288,14 +292,14 @@ export const PropertyLocation = styled.span`
 export const PropertyItemMeta = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const PropertyStatus = styled.span<{ $status?: string }>`
   font-size: 11px;
   padding: 3px 8px;
-  border-radius: 6px;
-  font-weight: 500;
+  border-radius: ${radius.md};
+  font-weight: ${typography.weights.medium};
   text-transform: capitalize;
 
   ${props => {
@@ -333,7 +337,7 @@ export const PropertyStatus = styled.span<{ $status?: string }>`
 `;
 
 export const NoData = styled.p`
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   color: var(--text-secondary);
   font-style: italic;
   padding: 10px;

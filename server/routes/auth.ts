@@ -17,6 +17,13 @@ import logger from '../utils/logger.js';
 
 const router = Router();
 
+const JWT_SIGN_OPTIONS: SignOptions = {
+  expiresIn: JWT_EXPIRES_SECONDS,
+  algorithm: 'HS256',
+  issuer: process.env.JWT_ISSUER || 'white-caves-crm',
+  audience: process.env.JWT_AUDIENCE || 'white-caves-clients',
+};
+
 /**
  * Hash a password using bcrypt
  */
@@ -43,6 +50,143 @@ const verifyPassword = async (password: string, hash: string): Promise<boolean> 
 };
 
 /**
+ * Extract a best-effort client IP from common proxy headers.
+ * Falls back to req.ip when no header is present.
+ */
+const getClientIp = (req: Request): string => {
+  const fwd = req.headers['x-forwarded-for'];
+  if (typeof fwd === 'string' && fwd.length > 0) {
+    return fwd.split(',')[0].trim();
+  }
+  return (req.ip || req.socket?.remoteAddress || 'unknown').toString();
+};
+
+/**
+ * Record a failed login attempt for audit purposes.
+ * Fire-and-forget — never blocks the response or surfaces errors to the client.
+ */
+const recordLoginFailure = (
+  req: Request,
+  reason: 'unknown_user' | 'invalid_password' | 'inactive' | 'no_password' | 'locked_out' | 'ip_locked_out',
+  emailAttempt: string,
+  userId?: string,
+): void => {
+  const ip = getClientIp(req);
+  const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
+  logger.warn('Login failed', { reason, emailAttempt, ip, userAgent, userId });
+  // Persist as an Activity row for audit trail; don't await.
+  prisma.activity
+    .create({
+      data: {
+        type: 'system',
+        action: 'login_failed',
+        description: `Failed login attempt for ${emailAttempt} (${reason})`,
+        userId: userId ?? null,
+        metadata: { reason, emailAttempt, ip, userAgent } as Prisma.InputJsonValue,
+      },
+    })
+    .catch((err: unknown) => {
+      logger.warn('Failed to persist login_failed activity', { err });
+    });
+};
+
+/**
+ * Per-account brute-force lockout configuration.
+ * Tunable via env so security teams can tighten without a redeploy.
+ */
+const LOGIN_LOCKOUT_THRESHOLD = Math.max(
+  1,
+  Number.parseInt(process.env.LOGIN_LOCKOUT_THRESHOLD || '5', 10) || 5,
+);
+const LOGIN_LOCKOUT_WINDOW_MINUTES = Math.max(
+  1,
+  Number.parseInt(process.env.LOGIN_LOCKOUT_WINDOW_MINUTES || '15', 10) || 15,
+);
+
+/**
+ * Per-IP brute-force threshold — defends against credential-stuffing attacks
+ * where a single IP rotates through many usernames so the per-account
+ * lockout never triggers. Tunable via env.
+ */
+const LOGIN_IP_LOCKOUT_THRESHOLD = Math.max(
+  1,
+  Number.parseInt(process.env.LOGIN_IP_LOCKOUT_THRESHOLD || '20', 10) || 20,
+);
+
+/**
+ * Check whether the source IP should be throttled because it's responsible for
+ * too many failed logins (across any number of accounts) inside the rolling
+ * window. Returns the same shape as the per-account check so the route can
+ * treat both lockouts uniformly.
+ */
+const checkIpLockout = async (
+  ip: string,
+): Promise<{ locked: boolean; retryAfterSeconds: number; failureCount: number }> => {
+  if (!ip || ip === 'unknown') return { locked: false, retryAfterSeconds: 0, failureCount: 0 };
+  const since = new Date(Date.now() - LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000);
+  const failureCount = await prisma.activity.count({
+    where: {
+      type: 'system',
+      action: 'login_failed',
+      createdAt: { gte: since },
+      metadata: { path: ['ip'], equals: ip } as Prisma.JsonFilter,
+    },
+  });
+  if (failureCount < LOGIN_IP_LOCKOUT_THRESHOLD) {
+    return { locked: false, retryAfterSeconds: 0, failureCount };
+  }
+  const oldest = await prisma.activity.findFirst({
+    where: {
+      type: 'system',
+      action: 'login_failed',
+      createdAt: { gte: since },
+      metadata: { path: ['ip'], equals: ip } as Prisma.JsonFilter,
+    },
+    orderBy: { createdAt: 'asc' },
+  });
+  const baseTs = oldest?.createdAt?.getTime?.() ?? Date.now();
+  const unlockAt = baseTs + LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000;
+  const retryAfterSeconds = Math.max(1, Math.ceil((unlockAt - Date.now()) / 1000));
+  return { locked: true, retryAfterSeconds, failureCount };
+};
+
+/**
+ * Check whether a user account should be temporarily locked due to repeated
+ * failed login attempts. Counts only `login_failed` Activity rows for the
+ * given userId within the rolling window.
+ */
+const checkAccountLockout = async (
+  userId: string,
+): Promise<{ locked: boolean; retryAfterSeconds: number; failureCount: number }> => {
+  const since = new Date(Date.now() - LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000);
+  const failureCount = await prisma.activity.count({
+    where: {
+      type: 'system',
+      action: 'login_failed',
+      userId,
+      createdAt: { gte: since },
+    },
+  });
+  if (failureCount < LOGIN_LOCKOUT_THRESHOLD) {
+    return { locked: false, retryAfterSeconds: 0, failureCount };
+  }
+  // Unlock window starts from the oldest failure still inside the rolling window.
+  const oldest = await prisma.activity.findFirst({
+    where: {
+      type: 'system',
+      action: 'login_failed',
+      userId,
+      createdAt: { gte: since },
+    },
+    orderBy: { createdAt: 'asc' },
+  });
+  const baseTs = oldest?.createdAt?.getTime?.() ?? Date.now();
+  const unlockAt = baseTs + LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000;
+  const retryAfterSeconds = Math.max(1, Math.ceil((unlockAt - Date.now()) / 1000));
+  return { locked: true, retryAfterSeconds, failureCount };
+};
+
+/**
  * POST /api/auth/login
  * Login with email and password
  */
@@ -55,10 +199,46 @@ router.post(
       throw new AppError('Email and password are required', 400);
     }
 
+    const normalizedEmail = String(email).toLowerCase().trim();
+
+    // Per-IP brute-force throttle — runs first so credential-stuffing attacks
+    // that rotate usernames hit the wall regardless of which user they target.
+    const clientIp = getClientIp(req);
+    const ipLockout = await checkIpLockout(clientIp);
+    if (ipLockout.locked) {
+      recordLoginFailure(req, 'ip_locked_out', normalizedEmail);
+      const minutes = Math.ceil(ipLockout.retryAfterSeconds / 60);
+      res.set('Retry-After', String(ipLockout.retryAfterSeconds));
+      throw new AppError(
+        `Too many failed login attempts from this network (${ipLockout.failureCount}). Try again in ${minutes} minute${minutes === 1 ? '' : 's'}.`,
+        429,
+      );
+    }
+
     // Find user by email
-    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
+    const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (!user) {
+      recordLoginFailure(req, 'unknown_user', normalizedEmail);
       throw new AppError('Invalid email or password', 401);
+    }
+
+    // Only active users can authenticate
+    if (user.status && user.status !== 'active') {
+      recordLoginFailure(req, 'inactive', normalizedEmail, user.id);
+      throw new AppError('Account is inactive. Contact administrator.', 403);
+    }
+
+    // Per-account brute-force lockout — checked BEFORE the expensive bcrypt
+    // compare so a locked account responds quickly.
+    const lockout = await checkAccountLockout(user.id);
+    if (lockout.locked) {
+      recordLoginFailure(req, 'locked_out', normalizedEmail, user.id);
+      const minutes = Math.ceil(lockout.retryAfterSeconds / 60);
+      res.set('Retry-After', String(lockout.retryAfterSeconds));
+      throw new AppError(
+        `Account temporarily locked after ${lockout.failureCount} failed attempts. Try again in ${minutes} minute${minutes === 1 ? '' : 's'}.`,
+        429,
+      );
     }
 
     // Check password (uses proper passwordHash column)
@@ -66,6 +246,7 @@ router.post(
     if (storedHash) {
       const valid = await verifyPassword(password, storedHash);
       if (!valid) {
+        recordLoginFailure(req, 'invalid_password', normalizedEmail, user.id);
         throw new AppError('Invalid email or password', 401);
       }
       // Auto-migrate legacy hashes to bcrypt on successful login
@@ -75,6 +256,7 @@ router.post(
       }
     } else {
       // No password set — reject login (admin must set password first)
+      recordLoginFailure(req, 'no_password', normalizedEmail, user.id);
       throw new AppError('Account not configured. Contact administrator.', 401);
     }
 
@@ -82,18 +264,22 @@ router.post(
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_SECONDS }
+      JWT_SIGN_OPTIONS
     );
 
-    // Log activity
+    // Log activity with enriched audit metadata (IP + UA) for forensics.
+    const ip = getClientIp(req);
+    const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
     await prisma.activity.create({
       data: {
         type: 'system',
         action: 'login',
         description: `${user.name || user.email} logged in`,
         userId: user.id,
+        metadata: { ip, userAgent } as Prisma.InputJsonValue,
       },
     });
+    logger.info('Login successful', { userId: user.id, email: user.email, ip, userAgent });
 
     res.status(200).json({
       success: true,
@@ -178,7 +364,7 @@ router.post(
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_SECONDS }
+      JWT_SIGN_OPTIONS
     );
 
     await prisma.activity.create({
@@ -227,7 +413,7 @@ router.post(
       const token = jwt.sign(
         { id: user.id, email: user.email, role: user.role },
         JWT_SECRET,
-        { expiresIn: JWT_EXPIRES_SECONDS }
+        JWT_SIGN_OPTIONS
       );
 
       return res.status(200).json({
@@ -411,13 +597,39 @@ router.put(
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new AppError('User not found', 404);
 
+    const ip = getClientIp(req);
+    const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
+
     const storedHash = user.passwordHash;
     if (storedHash) {
       if (!currentPassword) {
+        // Fire-and-forget audit; never block the 400 response
+        prisma.activity
+          .create({
+            data: {
+              type: 'system',
+              action: 'password_change_failed',
+              description: `Password change rejected for ${user.email}: missing current password`,
+              userId,
+              metadata: { reason: 'missing_current_password', ip, userAgent } as Prisma.InputJsonValue,
+            },
+          })
+          .catch((err) => logger.warn('Failed to audit password_change_failed', { err }));
         throw new AppError('Current password is required to change password', 400);
       }
       const valid = await verifyPassword(currentPassword, storedHash);
       if (!valid) {
+        prisma.activity
+          .create({
+            data: {
+              type: 'system',
+              action: 'password_change_failed',
+              description: `Password change rejected for ${user.email}: invalid current password`,
+              userId,
+              metadata: { reason: 'invalid_current_password', ip, userAgent } as Prisma.InputJsonValue,
+            },
+          })
+          .catch((err) => logger.warn('Failed to audit password_change_failed', { err }));
         throw new AppError('Current password is incorrect', 401);
       }
     }
@@ -429,8 +641,469 @@ router.put(
       data: { passwordHash: newHash },
     });
 
+    // Audit success
+    await prisma.activity.create({
+      data: {
+        type: 'system',
+        action: 'password_changed',
+        description: `Password changed for ${user.email}`,
+        userId,
+        metadata: { ip, userAgent } as Prisma.InputJsonValue,
+      },
+    });
+
     res.status(200).json({ success: true, message: 'Password updated successfully' });
   })
+);
+
+/**
+ * GET /api/auth/security/login-attempts
+ * Admin-only forensic view of recent login activity (success + failed).
+ *
+ * Query params:
+ *   - email   : filter by emailAttempt or user.email (case-insensitive substring)
+ *   - status  : 'failed' | 'success' | 'password' | 'all' (default: 'all')
+ *   - limit   : 1-200 (default: 50)
+ *   - sinceMinutes : restrict to last N minutes (default: 1440 = 24h)
+ */
+router.get(
+  '/security/login-attempts',
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const role = req.user?.role;
+    const allowedRoles = ['owner', 'admin'];
+    if (!role || !allowedRoles.includes(role)) {
+      throw new AppError('Forbidden — admin access required', 403);
+    }
+
+    const status = String(req.query.status || 'all').toLowerCase();
+    const emailFilter = req.query.email ? String(req.query.email).toLowerCase().trim() : null;
+    const rawLimit = Number.parseInt(String(req.query.limit ?? '50'), 10);
+    const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(rawLimit, 1), 200) : 50;
+    const rawSince = Number.parseInt(String(req.query.sinceMinutes ?? '1440'), 10);
+    const sinceMinutes = Number.isFinite(rawSince) ? Math.min(Math.max(rawSince, 1), 60 * 24 * 30) : 1440;
+
+    const actions: string[] =
+      status === 'failed' ? ['login_failed']
+      : status === 'success' ? ['login']
+      : status === 'password' ? ['password_changed', 'password_change_failed']
+      : ['login', 'login_failed', 'password_changed', 'password_change_failed', 'account_unlocked', 'ip_unlocked'];
+
+    const since = new Date(Date.now() - sinceMinutes * 60 * 1000);
+
+    const where: Prisma.ActivityWhereInput = {
+      type: 'system',
+      action: { in: actions },
+      createdAt: { gte: since },
+    };
+
+    if (emailFilter) {
+      where.OR = [
+        { description: { contains: emailFilter, mode: 'insensitive' } },
+        { user: { is: { email: { contains: emailFilter, mode: 'insensitive' } } } },
+      ];
+    }
+
+    const activities = await prisma.activity.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      include: { user: { select: { id: true, email: true, name: true, role: true } } },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: activities.map((a) => ({
+        id: a.id,
+        action: a.action,
+        description: a.description,
+        createdAt: a.createdAt,
+        userId: a.userId,
+        user: a.user,
+        metadata: a.metadata,
+      })),
+      meta: { count: activities.length, limit, sinceMinutes, status, emailFilter },
+    });
+  }),
+);
+
+/**
+ * POST /api/auth/security/unlock
+ * Admin-only — clear a locked account by deleting its recent `login_failed`
+ * Activity rows inside the rolling lockout window. Persists an audit trail
+ * (`account_unlocked`) noting which admin performed the reset.
+ *
+ * Body: { userId?: string, email?: string }  (one is required)
+ */
+router.post(
+  '/security/unlock',
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const role = req.user?.role;
+    const allowedRoles = ['owner', 'admin'];
+    if (!role || !allowedRoles.includes(role)) {
+      throw new AppError('Forbidden — admin access required', 403);
+    }
+
+    const { userId, email } = req.body || {};
+    if (!userId && !email) {
+      throw new AppError('Provide either userId or email', 400);
+    }
+
+    const target = userId
+      ? await prisma.user.findUnique({ where: { id: String(userId) } })
+      : await prisma.user.findUnique({ where: { email: String(email).toLowerCase().trim() } });
+
+    if (!target) throw new AppError('User not found', 404);
+
+    const since = new Date(Date.now() - LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000);
+    const result = await prisma.activity.deleteMany({
+      where: {
+        type: 'system',
+        action: 'login_failed',
+        userId: target.id,
+        createdAt: { gte: since },
+      },
+    });
+
+    const ip = getClientIp(req);
+    const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
+    await prisma.activity.create({
+      data: {
+        type: 'system',
+        action: 'account_unlocked',
+        description: `Account ${target.email} unlocked by ${req.user?.email || req.user?.id} (${result.count} failed attempts cleared)`,
+        userId: target.id,
+        metadata: {
+          unlockedBy: req.user?.id,
+          unlockedByEmail: req.user?.email,
+          clearedFailures: result.count,
+          ip,
+          userAgent,
+        } as Prisma.InputJsonValue,
+      },
+    });
+
+    logger.info('Account unlocked by admin', {
+      targetUserId: target.id,
+      targetEmail: target.email,
+      adminId: req.user?.id,
+      clearedFailures: result.count,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        userId: target.id,
+        email: target.email,
+        clearedFailures: result.count,
+      },
+    });
+  }),
+);
+
+/**
+ * POST /api/auth/security/unlock-ip
+ * Admin-only — release a falsely-flagged source IP (shared NAT, office gateway,
+ * VPN exit node) by deleting recent `login_failed` Activity rows whose
+ * `metadata.ip` matches inside the rolling lockout window. Persists an
+ * `ip_unlocked` Activity noting which admin performed the reset.
+ *
+ * Body: { ip: string }
+ */
+router.post(
+  '/security/unlock-ip',
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const role = req.user?.role;
+    const allowedRoles = ['owner', 'admin'];
+    if (!role || !allowedRoles.includes(role)) {
+      throw new AppError('Forbidden — admin access required', 403);
+    }
+
+    const ipRaw = typeof req.body?.ip === 'string' ? req.body.ip.trim() : '';
+    if (!ipRaw) throw new AppError('Provide an ip address to unlock', 400);
+    if (ipRaw.length > 64) throw new AppError('Invalid ip address', 400);
+
+    const since = new Date(Date.now() - LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000);
+    const result = await prisma.activity.deleteMany({
+      where: {
+        type: 'system',
+        action: 'login_failed',
+        createdAt: { gte: since },
+        metadata: { path: ['ip'], equals: ipRaw } as Prisma.JsonFilter,
+      },
+    });
+
+    const adminIp = getClientIp(req);
+    const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
+    await prisma.activity.create({
+      data: {
+        type: 'system',
+        action: 'ip_unlocked',
+        description: `IP ${ipRaw} unlocked by ${req.user?.email || req.user?.id} (${result.count} failed attempts cleared)`,
+        userId: req.user?.id,
+        metadata: {
+          unlockedIp: ipRaw,
+          unlockedBy: req.user?.id,
+          unlockedByEmail: req.user?.email,
+          clearedFailures: result.count,
+          ip: adminIp,
+          userAgent,
+        } as Prisma.InputJsonValue,
+      },
+    });
+
+    logger.info('IP unlocked by admin', {
+      ip: ipRaw,
+      adminId: req.user?.id,
+      clearedFailures: result.count,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: { ip: ipRaw, clearedFailures: result.count },
+    });
+  }),
+);
+
+/**
+ * GET /api/auth/security/active-lockouts
+ * Admin-only — surfaces accounts and IPs that are CURRENTLY locked out
+ * (failure count ≥ threshold inside the rolling window). Returned items
+ * include a retryAfterSeconds derived from the oldest in-window failure so
+ * SecOps can see how long the lockout has left to run before an admin
+ * needs to intervene.
+ *
+ * Returns:
+ *   {
+ *     windowMinutes, accountThreshold, ipThreshold,
+ *     accounts: Array<{ userId, email, failures, retryAfterSeconds }>,
+ *     ips:      Array<{ ip, failures, retryAfterSeconds }>,
+ *   }
+ */
+router.get(
+  '/security/active-lockouts',
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const role = req.user?.role;
+    const allowedRoles = ['owner', 'admin'];
+    if (!role || !allowedRoles.includes(role)) {
+      throw new AppError('Forbidden — admin access required', 403);
+    }
+
+    const since = new Date(Date.now() - LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000);
+    const rows = await prisma.activity.findMany({
+      where: {
+        type: 'system',
+        action: 'login_failed',
+        createdAt: { gte: since },
+      },
+      select: {
+        userId: true,
+        createdAt: true,
+        metadata: true,
+        user: { select: { email: true } },
+      },
+      orderBy: { createdAt: 'asc' },
+      take: 5000,
+    });
+
+    interface Bucket {
+      key: string;
+      label: string | null;
+      failures: number;
+      oldest: Date;
+    }
+    const accountBuckets = new Map<string, Bucket>();
+    const ipBuckets = new Map<string, Bucket>();
+
+    for (const r of rows) {
+      const md = (r.metadata || {}) as Record<string, unknown>;
+      if (r.userId) {
+        const b = accountBuckets.get(r.userId);
+        if (b) {
+          b.failures += 1;
+        } else {
+          accountBuckets.set(r.userId, {
+            key: r.userId,
+            label: r.user?.email ?? null,
+            failures: 1,
+            oldest: r.createdAt,
+          });
+        }
+      }
+      const ip = typeof md.ip === 'string' ? md.ip : null;
+      if (ip && ip !== 'unknown') {
+        const b = ipBuckets.get(ip);
+        if (b) {
+          b.failures += 1;
+        } else {
+          ipBuckets.set(ip, { key: ip, label: ip, failures: 1, oldest: r.createdAt });
+        }
+      }
+    }
+
+    const now = Date.now();
+    const windowMs = LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000;
+    const computeRetry = (oldest: Date): number =>
+      Math.max(1, Math.ceil((oldest.getTime() + windowMs - now) / 1000));
+
+    const accounts = [...accountBuckets.values()]
+      .filter((b) => b.failures >= LOGIN_LOCKOUT_THRESHOLD)
+      .sort((a, b) => b.failures - a.failures)
+      .map((b) => ({
+        userId: b.key,
+        email: b.label,
+        failures: b.failures,
+        retryAfterSeconds: computeRetry(b.oldest),
+      }));
+
+    const ips = [...ipBuckets.values()]
+      .filter((b) => b.failures >= LOGIN_IP_LOCKOUT_THRESHOLD)
+      .sort((a, b) => b.failures - a.failures)
+      .map((b) => ({
+        ip: b.key,
+        failures: b.failures,
+        retryAfterSeconds: computeRetry(b.oldest),
+      }));
+
+    res.status(200).json({
+      success: true,
+      data: {
+        windowMinutes: LOGIN_LOCKOUT_WINDOW_MINUTES,
+        accountThreshold: LOGIN_LOCKOUT_THRESHOLD,
+        ipThreshold: LOGIN_IP_LOCKOUT_THRESHOLD,
+        accounts,
+        ips,
+      },
+    });
+  }),
+);
+
+/**
+ * GET /api/auth/security/stats
+ * Admin-only — aggregate counts for the Login Security dashboard.
+ *
+ * Query params:
+ *   - sinceMinutes : restrict to last N minutes (default: 1440 = 24h, max: 30d)
+ *
+ * Returns:
+ *   {
+ *     totals: { logins, loginFailures, passwordChanges, passwordChangeFailures, accountUnlocks },
+ *     uniqueIpCount: number,
+ *     topOffendingIps: Array<{ ip: string, failures: number }>,  // top 5
+ *     topTargetedEmails: Array<{ email: string, failures: number }>, // top 5
+ *     windowMinutes: number,
+ *   }
+ */
+router.get(
+  '/security/stats',
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const role = req.user?.role;
+    const allowedRoles = ['owner', 'admin'];
+    if (!role || !allowedRoles.includes(role)) {
+      throw new AppError('Forbidden — admin access required', 403);
+    }
+
+    const rawSince = Number.parseInt(String(req.query.sinceMinutes ?? '1440'), 10);
+    const sinceMinutes = Number.isFinite(rawSince)
+      ? Math.min(Math.max(rawSince, 1), 60 * 24 * 30)
+      : 1440;
+    const since = new Date(Date.now() - sinceMinutes * 60 * 1000);
+
+    const trackedActions = [
+      'login',
+      'login_failed',
+      'password_changed',
+      'password_change_failed',
+      'account_unlocked',
+      'ip_unlocked',
+    ];
+
+    const rows = await prisma.activity.findMany({
+      where: {
+        type: 'system',
+        action: { in: trackedActions },
+        createdAt: { gte: since },
+      },
+      select: {
+        action: true,
+        description: true,
+        metadata: true,
+        user: { select: { email: true } },
+      },
+      take: 5000, // hard ceiling — we only need aggregates
+    });
+
+    const totals = {
+      logins: 0,
+      loginFailures: 0,
+      passwordChanges: 0,
+      passwordChangeFailures: 0,
+      accountUnlocks: 0,
+      ipUnlocks: 0,
+    };
+
+    const ipCounts = new Map<string, number>(); // failures by ip
+    const emailCounts = new Map<string, number>(); // failures by targeted email
+    const uniqueIps = new Set<string>();
+
+    for (const r of rows) {
+      const md = (r.metadata || {}) as Record<string, unknown>;
+      const ip = typeof md.ip === 'string' ? md.ip : null;
+      if (ip) uniqueIps.add(ip);
+
+      switch (r.action) {
+        case 'login':
+          totals.logins += 1;
+          break;
+        case 'login_failed': {
+          totals.loginFailures += 1;
+          if (ip) ipCounts.set(ip, (ipCounts.get(ip) || 0) + 1);
+          const email =
+            (typeof md.emailAttempt === 'string' && md.emailAttempt) ||
+            r.user?.email ||
+            null;
+          if (email) emailCounts.set(email, (emailCounts.get(email) || 0) + 1);
+          break;
+        }
+        case 'password_changed':
+          totals.passwordChanges += 1;
+          break;
+        case 'password_change_failed':
+          totals.passwordChangeFailures += 1;
+          break;
+        case 'account_unlocked':
+          totals.accountUnlocks += 1;
+          break;
+        case 'ip_unlocked':
+          totals.ipUnlocks += 1;
+          break;
+      }
+    }
+
+    const topOffendingIps = [...ipCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([ip, failures]) => ({ ip, failures }));
+    const topTargetedEmails = [...emailCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([email, failures]) => ({ email, failures }));
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totals,
+        uniqueIpCount: uniqueIps.size,
+        topOffendingIps,
+        topTargetedEmails,
+        windowMinutes: sinceMinutes,
+      },
+    });
+  }),
 );
 
 export default router;

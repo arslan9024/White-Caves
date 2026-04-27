@@ -1,7 +1,19 @@
 /**
- * Compliance API Routes — Full Implementation
- * Regulatory compliance, audit logs, requirement tracking
- * Endpoints: /api/compliance
+ * Compliance API Routes — Phase 3D Enhanced
+ * ──────────────────────────────────────────
+ * UAE regulatory compliance, audit logs, requirement tracking,
+ * RERA BRN expiry monitoring, Ejari CSV export, VAT summary.
+ *
+ * GET    /api/compliance/status         — Overall compliance score
+ * GET    /api/compliance/requirements   — RERA/DLD checklist
+ * GET    /api/compliance/audit-logs     — Paginated audit trail
+ * POST   /api/compliance/reports        — Submit compliance report
+ * GET    /api/compliance/brn-expiry     — BRN expiry report for all agents
+ * GET    /api/compliance/ejari-export   — Ejari CSV download
+ * GET    /api/compliance/vat-summary    — VAT breakdown by property type
+ * GET    /api/compliance/overview       — Full compliance dashboard data
+ * PATCH  /api/compliance/ejari/:leaseId — Update Ejari status for a lease
+ * POST   /api/compliance/brn-check      — Trigger manual BRN expiry check
  */
 
 import { Router, Request, Response } from 'express';
@@ -10,6 +22,14 @@ import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission, requireMinRole } from '../middleware/rbac';
+import { getBRNExpiryReport, checkBRNExpirations } from '../services/compliance/reraExpiryScheduler.js';
+import {
+  generateEjariExport,
+  calculateVATSummary,
+  getComplianceOverview,
+  updateEjariStatus,
+} from '../services/compliance/complianceService.js';
+import logger from '../utils/logger.js';
 
 const router = Router();
 
@@ -178,6 +198,157 @@ router.post(
       },
     });
   })
+);
+
+// ─── GET /api/compliance/brn-expiry — BRN expiry report ─────────────────
+router.get(
+  '/brn-expiry',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — compliance data requires manager role', 403);
+    }
+
+    const report = await getBRNExpiryReport();
+
+    const summary = {
+      total: report.length,
+      valid: report.filter((a) => a.status === 'valid').length,
+      expiringSoon: report.filter((a) => a.status === 'expiring_soon').length,
+      expired: report.filter((a) => a.status === 'expired').length,
+      notSet: report.filter((a) => a.status === 'not_set').length,
+    };
+
+    res.json({ success: true, data: { agents: report, summary } });
+  }),
+);
+
+// ─── POST /api/compliance/brn-check — Manual BRN expiry check ───────────
+router.post(
+  '/brn-check',
+  requireMinRole('agent'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const userRole = req.user?.role || '';
+    if (!['owner', 'manager'].includes(userRole)) {
+      throw new AppError('Access denied — only owners/managers can trigger BRN checks', 403);
+    }
+
+    logger.info('Manual BRN expiry check triggered', { userId: req.user?.id });
+    const result = await checkBRNExpirations();
+
+    res.json({
+      success: true,
+      data: {
+        notified: result.notified,
+        errors: result.errors,
+        agents: result.agents,
+      },
+    });
+  }),
+);
+
+// ─── GET /api/compliance/ejari-export — Ejari CSV export ─────────────────
+router.get(
+  '/ejari-export',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — compliance data requires manager role', 403);
+    }
+
+    const status = req.query.status as string | undefined;
+    const fromDate = req.query.from ? new Date(req.query.from as string) : undefined;
+    const toDate = req.query.to ? new Date(req.query.to as string) : undefined;
+    const format = (req.query.format as string) || 'csv';
+
+    const result = await generateEjariExport({ status, fromDate, toDate });
+
+    if (format === 'json') {
+      res.json({ success: true, data: { rows: result.rows, count: result.count } });
+      return;
+    }
+
+    // CSV download
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="ejari-export-${new Date().toISOString().split('T')[0]}.csv"`);
+    res.send(result.csv);
+  }),
+);
+
+// ─── PATCH /api/compliance/ejari/:leaseId — Update Ejari status ──────────
+router.patch(
+  '/ejari/:leaseId',
+  requireMinRole('agent'),
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.user?.role || '';
+    if (!['owner', 'manager', 'admin'].includes(userRole)) {
+      throw new AppError('Access denied — Ejari updates require manager role', 403);
+    }
+
+    const { leaseId } = req.params;
+    const { ejariNumber, ejariStatus, ejariRegistrationDate, ejariExpiryDate } = req.body;
+
+    if (ejariStatus && !['pending', 'registered', 'expired', 'cancelled'].includes(ejariStatus)) {
+      throw new AppError('Invalid ejariStatus. Must be: pending, registered, expired, cancelled', 400);
+    }
+
+    const updated = await updateEjariStatus(leaseId, {
+      ejariNumber,
+      ejariStatus,
+      ejariRegistrationDate: ejariRegistrationDate ? new Date(ejariRegistrationDate) : undefined,
+      ejariExpiryDate: ejariExpiryDate ? new Date(ejariExpiryDate) : undefined,
+    });
+
+    // Log activity
+    await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: 'ejari_updated',
+        description: `Ejari status updated for lease ${leaseId}: ${ejariStatus || 'updated'}`,
+        userId: req.user?.id || null,
+        metadata: JSON.stringify({ leaseId, ejariNumber, ejariStatus }),
+      },
+    });
+
+    res.json({ success: true, data: updated });
+  }),
+);
+
+// ─── GET /api/compliance/vat-summary — VAT breakdown ─────────────────────
+router.get(
+  '/vat-summary',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — VAT data requires manager role', 403);
+    }
+
+    const fromDate = req.query.from ? new Date(req.query.from as string) : undefined;
+    const toDate = req.query.to ? new Date(req.query.to as string) : undefined;
+
+    const summary = await calculateVATSummary(fromDate, toDate);
+
+    res.json({ success: true, data: summary });
+  }),
+);
+
+// ─── GET /api/compliance/overview — Full dashboard data ──────────────────
+router.get(
+  '/overview',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — compliance overview requires manager role', 403);
+    }
+
+    const overview = await getComplianceOverview();
+
+    res.json({ success: true, data: overview });
+  }),
 );
 
 export default router;

@@ -14,7 +14,11 @@ import {
   extractEntities,
   generateBotResponse,
 } from '../services/nadia/messageProcessor.js';
-import { getQueuedConversations, assignFromQueue } from '../services/nadia/queueManager.js';
+import { getQueuedConversations, assignFromQueue, queueConversationForAssignment } from '../services/nadia/queueManager.js';
+import {
+  classifyWhatsAppIntent,
+  generateWhatsAppAutoResponse,
+} from '../services/nadia/whatsappAssistant.js';
 import { requirePermission } from '../middleware/rbac';
 
 const router = Router();
@@ -450,6 +454,121 @@ router.patch(
     res.status(200).json({
       success: true,
       data: assigned,
+    });
+  })
+);
+
+// ============================================================================
+// WHATSAPP ASSISTANT ENDPOINTS (Phase 4D)
+// ============================================================================
+
+/**
+ * POST /api/nadia/assistant/classify
+ * Classify intent and return assistant decision metadata
+ */
+router.post(
+  '/assistant/classify',
+  requirePermission('access_whatsapp_business'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { message } = req.body;
+    if (!message || typeof message !== 'string') {
+      throw new AppError('message is required', 400);
+    }
+
+    const result = classifyWhatsAppIntent(message);
+    res.status(200).json({ success: true, data: result });
+  })
+);
+
+/**
+ * POST /api/nadia/assistant/auto-response
+ * Generate auto-response preview from message
+ */
+router.post(
+  '/assistant/auto-response',
+  requirePermission('access_whatsapp_business'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { message, customerName } = req.body;
+    if (!message || typeof message !== 'string') {
+      throw new AppError('message is required', 400);
+    }
+
+    const result = generateWhatsAppAutoResponse({ message, customerName });
+    res.status(200).json({ success: true, data: result });
+  })
+);
+
+/**
+ * POST /api/nadia/assistant/respond
+ * Process inbound message + persist generated auto-response to conversation
+ */
+router.post(
+  '/assistant/respond',
+  requirePermission('access_whatsapp_business'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { conversationId, message, customerName } = req.body;
+
+    if (!conversationId || typeof conversationId !== 'string') {
+      throw new AppError('conversationId is required', 400);
+    }
+    if (!message || typeof message !== 'string') {
+      throw new AppError('message is required', 400);
+    }
+
+    const conversation = await prisma.nadiaConversation.findUnique({ where: { id: conversationId } });
+    if (!conversation) {
+      throw new AppError('Conversation not found', 404);
+    }
+
+    const assistant = generateWhatsAppAutoResponse({ message, customerName });
+
+    const inbound = await prisma.nadiaMessage.create({
+      data: {
+        conversationId,
+        waMessageId: `local-in-${Date.now()}`,
+        direction: 'inbound',
+        body: message,
+        messageType: 'text',
+        status: 'delivered',
+        timestamp: new Date(),
+      },
+    });
+
+    const outbound = await prisma.nadiaMessage.create({
+      data: {
+        conversationId,
+        waMessageId: `local-out-${Date.now()}`,
+        direction: 'outbound',
+        body: assistant.response,
+        messageType: 'text',
+        status: 'delivered',
+        timestamp: new Date(),
+      },
+    });
+
+    const updatedConversation = await prisma.nadiaConversation.update({
+      where: { id: conversationId },
+      data: {
+        intent: assistant.classification.intent,
+        leadScore: assistant.classification.leadScore,
+        status: assistant.classification.shouldEscalate ? 'assigned_to_agent' : 'in_bot_flow',
+        routedAt: assistant.classification.shouldEscalate ? new Date() : conversation.routedAt,
+      },
+    });
+
+    if (assistant.classification.shouldEscalate) {
+      await queueConversationForAssignment(conversationId, assistant.classification.escalationReason || 'assistant_escalation');
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        classification: assistant.classification,
+        response: assistant.response,
+        responseType: assistant.responseType,
+        messages: { inbound, outbound },
+        conversation: updatedConversation,
+      },
     });
   })
 );

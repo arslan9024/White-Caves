@@ -8,6 +8,7 @@
 import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { logout } from '../authSlice';
 import * as api from '../../services/savedSearchesApi';
+import { getErrorMessage } from '../../constants';
 
 // ─── State types ─────────────────────────────────────────────────────
 
@@ -38,7 +39,7 @@ export const fetchSavedSearches = createAsyncThunk<
     try {
       return await api.fetchSavedSearches();
     } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : 'Failed to fetch saved searches';
+      const msg = getErrorMessage(error, 'Failed to fetch saved searches');
       return rejectWithValue(msg);
     }
   },
@@ -54,7 +55,7 @@ export const createSavedSearch = createAsyncThunk<
     try {
       return await api.createSavedSearch(name, filters, alertEnabled);
     } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : 'Failed to create saved search';
+      const msg = getErrorMessage(error, 'Failed to create saved search');
       return rejectWithValue(msg);
     }
   },
@@ -70,7 +71,7 @@ export const updateSavedSearch = createAsyncThunk<
     try {
       return await api.updateSavedSearch(id, updates);
     } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : 'Failed to update saved search';
+      const msg = getErrorMessage(error, 'Failed to update saved search');
       return rejectWithValue(msg);
     }
   },
@@ -87,7 +88,7 @@ export const deleteSavedSearch = createAsyncThunk<
       await api.deleteSavedSearch(id);
       return id;
     } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : 'Failed to delete saved search';
+      const msg = getErrorMessage(error, 'Failed to delete saved search');
       return rejectWithValue(msg);
     }
   },
@@ -104,7 +105,7 @@ export const checkSearchMatches = createAsyncThunk<
       const result = await api.checkSavedSearchMatches(id);
       return { id, result };
     } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : 'Failed to check matches';
+      const msg = getErrorMessage(error, 'Failed to check matches');
       return rejectWithValue(msg);
     }
   },

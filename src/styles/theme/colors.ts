@@ -1,20 +1,58 @@
 /**
- * Color Palette - White Caves Brand Colors
- * All colors used throughout the application, organized by purpose
- * 2026 Brand: RED (#E31E24) primary, GOLD (#D4AF37) accent only
+ * Color Palette - White Caves Primary Brand System
+ * All colors used throughout the application, organized by purpose.
+ * Brand authority (2026-04-27): RED/WHITE primary identity.
  */
 
 export const colors = {
-  // Primary Brand Colors (RED)
+  // Primary Brand Colors (RED / WHITE)
   primary: '#E31E24',
-  primaryDark: '#C62828',
+  primaryDark: '#B71C1C',
   primaryLight: '#EF5350',
   primaryVeryLight: '#FFEBEE',
 
-  // Secondary Colors
+  // Secondary Colors (DARK GREEN)
   secondary: '#2E5A4F',
   secondaryDark: '#1E3A32',
   secondaryLight: '#3D7A6B',
+
+  // Gold Palette (50→900)
+  gold: {
+    50: '#FDF8E8',
+    100: '#FAF0C8',
+    200: '#F5E08E',
+    300: '#E8CC6E',
+    400: '#D4AF37',
+    500: '#B8960C',
+    600: '#9A7D0A',
+    700: '#7C6408',
+    800: '#5E4B06',
+    900: '#403204',
+  },
+
+  // Green Palette (50→900)
+  green: {
+    50: '#E8F0EE',
+    100: '#C5DAD5',
+    200: '#9EBFB7',
+    300: '#6FA396',
+    400: '#4D8676',
+    500: '#2E5A4F',
+    600: '#264B42',
+    700: '#1E3A32',
+    800: '#162B25',
+    900: '#0E1C18',
+  },
+
+  // Luxury Gradients
+  luxury: {
+    goldShimmer: 'linear-gradient(135deg, #D4AF37 0%, #E8CC6E 50%, #D4AF37 100%)',
+    goldToGreen: 'linear-gradient(135deg, #D4AF37 0%, #2E5A4F 100%)',
+    darkGreen: 'linear-gradient(135deg, #2E5A4F 0%, #1E3A32 100%)',
+    goldDark: 'linear-gradient(180deg, #D4AF37, #B8960C)',
+    warmSand: 'linear-gradient(135deg, #F5E6D3 0%, #FDF8E8 100%)',
+    premiumDark: 'linear-gradient(135deg, #1A1A1A 0%, #2E5A4F 100%)',
+  },
 
   // Semantic Colors
   success: '#388E3C',
@@ -96,7 +134,7 @@ export const colors = {
     gold: '#FFD700',
     navyBlue: '#1E40AF',
     violet: '#7C3AED',
-    crimson: '#E31E24',
+    crimson: '#D4AF37',
     royalBlue: '#2563EB',
     deepPurple: '#7C3AED',
     emerald: '#059669',
@@ -146,7 +184,7 @@ export const colors = {
   danger: '#D32F2F',
   dangerDark: '#B71C1C',
   dangerLight: 'rgba(211, 47, 47, 0.15)',
-  accentGold: '#D4AF37',
+  accentGold: '#E31E24',
   accentEmerald: '#2E5A4F',
   accentSand: '#F5E6D3',
   accentCharcoal: '#2C2C2C',
@@ -155,6 +193,34 @@ export const colors = {
   radiusMd: '8px',
   radiusLg: '12px',
   radiusSm: '6px',
+
+  // Legacy compat — components referencing old red brand
+  brandRed: '#E31E24',
+
+  // ═══════════════════════════════════════════════════════════════
+  // WCAG AA CONTRAST-SAFE VARIANTS
+  // Kept key names for backward compatibility.
+  // ═══════════════════════════════════════════════════════════════
+
+  /** WCAG AA compliant gold for text on white backgrounds (4.5:1+) */
+  a11y: {
+    /** Brand red darkened for text on white. */
+    goldText: '#B71C1C',
+    /** Brand red for large text. */
+    goldLargeText: '#C62828',
+    /** Brand red for UI elements (non-text). */
+    goldUI: '#C62828',
+    /** Focus ring color visible on light/dark backgrounds. */
+    focusRing: '#B71C1C',
+    /** Error text: 6.6:1 on white (darkened from #D32F2F to #B71C1C). */
+    errorText: '#B71C1C',
+    /** Warning text: 5.6:1 on white (deep orange 900, from #E65100 to #BF360C). */
+    warningText: '#BF360C',
+    /** Success text: 5.2:1 on white (green 800, from #388E3C to #2E7D32). */
+    successText: '#2E7D32',
+    /** Info text: 7.5:1 on white (light blue 900, from #0288D1 to #01579B). */
+    infoText: '#01579B',
+  },
 };
 
 export type Colors = typeof colors;

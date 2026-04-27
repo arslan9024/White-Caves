@@ -151,6 +151,42 @@ describe('Properties Routes — /api/properties', () => {
       expect(res.status).toBe(200);
     });
 
+    it('maps homepage alias params location/beds/baths into Prisma filters', async () => {
+      mockPrisma.property.findMany.mockResolvedValueOnce([]);
+      mockPrisma.property.count.mockResolvedValueOnce(0);
+
+      const res = await request(createApp('owner'))
+        .get('/api/properties?location=Dubai%20Marina&beds=3&baths=2');
+
+      expect(res.status).toBe(200);
+      expect(mockPrisma.property.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            location: expect.objectContaining({ contains: 'Dubai Marina', mode: 'insensitive' }),
+            bedrooms: expect.objectContaining({ gte: 3 }),
+            bathrooms: expect.objectContaining({ gte: 2 }),
+          }),
+        })
+      );
+    });
+
+    it('ignores location alias when set to All Locations', async () => {
+      mockPrisma.property.findMany.mockResolvedValueOnce([]);
+      mockPrisma.property.count.mockResolvedValueOnce(0);
+
+      const res = await request(createApp('owner'))
+        .get('/api/properties?location=All%20Locations');
+
+      expect(res.status).toBe(200);
+      expect(mockPrisma.property.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.not.objectContaining({
+            location: expect.anything(),
+          }),
+        })
+      );
+    });
+
     it('supports sort options', async () => {
       mockPrisma.property.findMany.mockResolvedValueOnce([]);
       mockPrisma.property.count.mockResolvedValueOnce(0);

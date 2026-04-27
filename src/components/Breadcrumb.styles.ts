@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { typography } from '../styles/theme/typography';
 
 export const BreadcrumbNav = styled.nav`
   padding: 0.75rem 1.5rem;
@@ -43,7 +44,7 @@ export const BreadcrumbLink = styled(Link)`
   transition: color 0.2s ease;
 
   &:hover {
-    color: var(--primary-color, #E31E24);
+    color: var(--primary-color, #D4AF37);
   }
 
   svg {
@@ -68,5 +69,5 @@ export const BreadcrumbSeparator = styled.span`
 
 export const BreadcrumbCurrent = styled.span`
   color: var(--text-primary, #212121);
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 `;

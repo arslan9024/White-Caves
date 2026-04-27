@@ -4,7 +4,7 @@
  * Professional badge component for labels, counters, and status indicators
  */
 
-import React, { FC, CSSProperties } from 'react';
+import React, { FC, CSSProperties, memo } from 'react';
 import styled from 'styled-components';
 import { X, AlertCircle } from 'lucide-react';
 import { BadgeProps, BadgeVariant, BADGE_VARIANTS } from './advancedUI.types';
@@ -150,7 +150,7 @@ const TooltipText = styled.span`
 // COMPONENT
 // ============================================================================
 
-const Badge: FC<BadgeProps> = ({
+const Badge: FC<BadgeProps> = memo(function Badge({
   variant = 'primary',
   size = 'medium',
   shape = 'rounded',
@@ -163,7 +163,7 @@ const Badge: FC<BadgeProps> = ({
   dotOnly = false,
   pulse = false,
   tooltip,
-}) => {
+}) {
   const badgeStyle: CSSProperties = pulse && !dotOnly ? { animation: 'pulse 2s infinite' } : {};
 
   const content = (
@@ -207,6 +207,6 @@ const Badge: FC<BadgeProps> = ({
       )}
     </BadgeContainer>
   );
-};
+});
 
 export default Badge;

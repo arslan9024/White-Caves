@@ -6,8 +6,12 @@ interface SidebarState {
   flyoutOpen: boolean;
   /** Which department's flyout is shown */
   flyoutDepartment: string | null;
-  /** Right AI assistant panel open */
-  rightPanelOpen: boolean;
+  /** AI Command Center flyout open (replaces right panel) */
+  aiCommandOpen: boolean;
+  /** AI assistant search query */
+  aiAssistantSearch: string;
+  /** AI assistant filter mode */
+  aiAssistantFilter: 'all' | 'active' | 'idle';
   /** Selected AI assistant */
   selectedAssistant: string | null;
   /** Selected department */
@@ -23,7 +27,9 @@ interface SidebarState {
 const initialState: SidebarState = {
   flyoutOpen: false,
   flyoutDepartment: null,
-  rightPanelOpen: false,
+  aiCommandOpen: false,
+  aiAssistantSearch: '',
+  aiAssistantFilter: 'all',
   selectedAssistant: null,
   selectedDepartment: null,
   selectedService: null,
@@ -39,6 +45,7 @@ const sidebarSlice = createSlice({
     openFlyout: (state, action: PayloadAction<string>) => {
       state.flyoutOpen = true;
       state.flyoutDepartment = action.payload;
+      state.aiCommandOpen = false; // Close AI when dept opens
     },
     closeFlyout: (state) => {
       state.flyoutOpen = false;
@@ -51,25 +58,36 @@ const sidebarSlice = createSlice({
       } else {
         state.flyoutOpen = true;
         state.flyoutDepartment = action.payload;
+        state.aiCommandOpen = false; // Close AI when dept opens
       }
     },
 
-    // ── Right panel (AI assistants) ─────────────────────────────────
-    openRightPanel: (state) => {
-      state.rightPanelOpen = true;
+    // ── AI Command Center (unified sidebar flyout) ──────────────────
+    openAICommand: (state) => {
+      state.aiCommandOpen = true;
+      state.flyoutOpen = false;
+      state.flyoutDepartment = null;
     },
-    closeRightPanel: (state) => {
-      state.rightPanelOpen = false;
+    closeAICommand: (state) => {
+      state.aiCommandOpen = false;
     },
-    toggleRightPanel: (state) => {
-      state.rightPanelOpen = !state.rightPanelOpen;
+    toggleAICommand: (state) => {
+      if (state.aiCommandOpen) {
+        state.aiCommandOpen = false;
+      } else {
+        state.aiCommandOpen = true;
+        state.flyoutOpen = false;
+        state.flyoutDepartment = null;
+      }
     },
 
     // ── Selection ───────────────────────────────────────────────────
     selectAssistant: (state, action: PayloadAction<string | null>) => {
       state.selectedAssistant = action.payload;
       if (action.payload) {
-        state.rightPanelOpen = true;
+        state.aiCommandOpen = true;
+        state.flyoutOpen = false;
+        state.flyoutDepartment = null;
       }
     },
     clearSelectedAssistant: (state) => {
@@ -109,25 +127,14 @@ const sidebarSlice = createSlice({
       state.mobileSheetOpen = false;
     },
 
-    // ── Legacy compatibility aliases ────────────────────────────────
-    toggleLeftSidebar: (state) => {
-      state.flyoutOpen = !state.flyoutOpen;
+    // ── AI Assistant Search / Filter ─────────────────────────────────
+    setAIAssistantSearch: (state, action: PayloadAction<string>) => {
+      state.aiAssistantSearch = action.payload;
     },
-    toggleRightSidebar: (state) => {
-      state.rightPanelOpen = !state.rightPanelOpen;
+    setAIAssistantFilter: (state, action: PayloadAction<'all' | 'active' | 'idle'>) => {
+      state.aiAssistantFilter = action.payload;
     },
-    setLeftCollapsed: (state, action: PayloadAction<boolean>) => {
-      state.flyoutOpen = !action.payload;
-    },
-    setRightCollapsed: (state, action: PayloadAction<boolean>) => {
-      state.rightPanelOpen = !action.payload;
-    },
-    setShowRightDrawer: (state, action: PayloadAction<boolean>) => {
-      state.rightPanelOpen = action.payload;
-    },
-    toggleShowRightDrawer: (state) => {
-      state.rightPanelOpen = !state.rightPanelOpen;
-    },
+
   },
   extraReducers: (builder) => {
     builder.addCase(logout, () => initialState);
@@ -138,41 +145,37 @@ export const {
   openFlyout,
   closeFlyout,
   toggleFlyout,
-  openRightPanel,
-  closeRightPanel,
-  toggleRightPanel,
+  // AI Command Center
+  openAICommand,
+  closeAICommand,
+  toggleAICommand,
+  setAIAssistantSearch,
+  setAIAssistantFilter,
+  // Selection
   selectAssistant,
   clearSelectedAssistant,
   selectDepartment,
   selectService,
   clearDepartmentSelection,
+  // Command Palette
   openCommandPalette,
   closeCommandPalette,
   toggleCommandPalette,
+  // Mobile
   toggleMobileSheet,
   closeMobileSheet,
-  // Legacy aliases
-  toggleLeftSidebar,
-  toggleRightSidebar,
-  setLeftCollapsed,
-  setRightCollapsed,
-  setShowRightDrawer,
-  toggleShowRightDrawer,
 } = sidebarSlice.actions;
 
 // ─── Named Selectors (stable references for useSelector) ─────────────────
 export const selectFlyoutOpen = (state: { sidebar: SidebarState }) => state.sidebar.flyoutOpen;
 export const selectFlyoutDepartment = (state: { sidebar: SidebarState }) => state.sidebar.flyoutDepartment;
-export const selectRightPanelOpen = (state: { sidebar: SidebarState }) => state.sidebar.rightPanelOpen;
+export const selectAICommandOpen = (state: { sidebar: SidebarState }) => state.sidebar.aiCommandOpen;
+export const selectAIAssistantSearch = (state: { sidebar: SidebarState }) => state.sidebar.aiAssistantSearch;
+export const selectAIAssistantFilter = (state: { sidebar: SidebarState }) => state.sidebar.aiAssistantFilter;
 export const selectSelectedAssistant = (state: { sidebar: SidebarState }) => state.sidebar.selectedAssistant;
 export const selectSelectedDepartment = (state: { sidebar: SidebarState }) => state.sidebar.selectedDepartment;
 export const selectSelectedService = (state: { sidebar: SidebarState }) => state.sidebar.selectedService;
 export const selectCommandPaletteOpen = (state: { sidebar: SidebarState }) => state.sidebar.commandPaletteOpen;
 export const selectMobileSheetOpen = (state: { sidebar: SidebarState }) => state.sidebar.mobileSheetOpen;
-
-// Legacy selectors (backward compat)
-export const selectLeftCollapsed = (state: { sidebar: SidebarState }) => !state.sidebar.flyoutOpen;
-export const selectRightCollapsed = (state: { sidebar: SidebarState }) => !state.sidebar.rightPanelOpen;
-export const selectShowRightDrawer = (state: { sidebar: SidebarState }) => state.sidebar.rightPanelOpen;
 
 export default sidebarSlice.reducer;

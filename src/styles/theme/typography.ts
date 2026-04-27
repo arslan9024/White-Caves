@@ -111,6 +111,23 @@ export const typography = {
       letterSpacing: '0.5px',
     },
   },
+
+  /**
+   * Responsive typography scales (CSS clamp values)
+   * Usage: font-size: ${typography.responsive.h1};
+   * Scales smoothly between mobile (480px) and desktop (1200px)
+   */
+  responsive: {
+    h1: 'clamp(24px, 4vw, 32px)',
+    h2: 'clamp(22px, 3.5vw, 28px)',
+    h3: 'clamp(20px, 3vw, 24px)',
+    h4: 'clamp(18px, 2.5vw, 20px)',
+    h5: 'clamp(16px, 2.25vw, 18px)',
+    h6: 'clamp(15px, 2vw, 16px)',
+    body: 'clamp(14px, 1.75vw, 14px)',
+    hero: 'clamp(28px, 6vw, 48px)',
+    display: 'clamp(24px, 5vw, 32px)',
+  },
 };
 
 export type Typography = typeof typography;

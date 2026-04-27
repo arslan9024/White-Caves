@@ -9,14 +9,19 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
-import dotenv from 'dotenv';
 import morgan from 'morgan';
 import { connectDatabase, prisma } from './database.js';
 import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.js';
 import authMiddleware from './middleware/auth.js';
 import { CORS_ORIGINS, WHATSAPP_WEBHOOK_SECRET } from './config/env.js';
-import { apiLimiter, authLimiter, registerLimiter, passwordLimiter, strictLimiter } from './middleware/rateLimiter.js';
-import logger, { createLogger } from './utils/logger.js';
+import {
+  apiLimiter,
+  authLimiter,
+  registerLimiter,
+  passwordLimiter,
+  strictLimiter,
+} from './middleware/rateLimiter.js';
+import logger from './utils/logger.js';
 
 // Route imports (ESM-compatible)
 import authRoutes from './routes/auth.js';
@@ -40,46 +45,85 @@ import viewingsRoutes from './routes/viewings.js';
 import offersRoutes from './routes/offers.js';
 import leasesRoutes from './routes/leases.js';
 import maintenanceRoutes from './routes/maintenance.js';
+import clientsRoutes from './routes/clients.js';
+import activitiesRoutes from './routes/activities.js';
+import followUpsRoutes from './routes/follow-ups.js';
+import documentsRoutes from './routes/documents.js';
+import currencyRoutes from './routes/currency.js';
+import emailRoutes from './routes/email.js';
+import agentAvailabilityRoutes from './routes/agentAvailability.js';
+import analyticsRoutes from './routes/analytics.js';
+import homepageRoutes from './routes/homepage.js';
+import contactRoutes from './routes/contact.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
-
-// Load environment variables
-dotenv.config();
+import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
+import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
+import { startRateRefresh } from './services/currencyService.js';
+import { startViewingReminderScheduler } from './services/schedulingService.js';
+import { startRERAExpiryScheduler } from './services/compliance/reraExpiryScheduler.js';
+import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 
 const app: Express = express();
-const PORT = process.env.PORT || 3001;
+// In development, keep API on 3001 to avoid colliding with Vite (5000).
+// Use API_PORT when provided; in production/staging, respect PORT as platform-provided.
+const PORT = process.env.API_PORT
+  || (process.env.NODE_ENV === 'development' ? 3001 : (process.env.PORT || 3001));
 
 // ============================================================================
 // MIDDLEWARE SETUP
 // ============================================================================
 
 // Security middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://*.firebaseapp.com", "https://*.googleapis.com"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "blob:", "https://*.unsplash.com", "https://*.googleapis.com", "https://*.gstatic.com"],
-      connectSrc: ["'self'", "https://*.firebaseio.com", "https://*.googleapis.com", "https://*.firebase.com", "wss://*.firebaseio.com", "https://api.stripe.com"],
-      frameSrc: ["https://*.firebaseapp.com", "https://js.stripe.com"],
-      objectSrc: ["'none'"],
-      baseUri: ["'self'"],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          'https://*.firebaseapp.com',
+          'https://*.googleapis.com',
+        ],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+        imgSrc: [
+          "'self'",
+          'data:',
+          'blob:',
+          'https://*.unsplash.com',
+          'https://*.googleapis.com',
+          'https://*.gstatic.com',
+        ],
+        connectSrc: [
+          "'self'",
+          'https://*.firebaseio.com',
+          'https://*.googleapis.com',
+          'https://*.firebase.com',
+          'wss://*.firebaseio.com',
+          'https://api.stripe.com',
+        ],
+        frameSrc: ['https://*.firebaseapp.com', 'https://js.stripe.com'],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+      },
     },
-  },
-  crossOriginEmbedderPolicy: false, // Required for Firebase/Stripe iframes
-}));
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (server-to-server, curl, mobile apps)
-    if (!origin || CORS_ORIGINS.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-}));
+    crossOriginEmbedderPolicy: false, // Required for Firebase/Stripe iframes
+  })
+);
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (server-to-server, curl, mobile apps)
+      if (!origin || CORS_ORIGINS.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+  })
+);
 
 // Compression
 app.use(compression());
@@ -194,6 +238,36 @@ app.use('/api/finance', financeRoutes);
 // Tenants API (Daisy - Leasing Manager)
 app.use('/api/tenants', tenantsRoutes);
 
+// Clients API (Phase 1C - Client/Owner Management)
+app.use('/api/clients', clientsRoutes);
+
+// Activities API (Phase 1F - Activity Timeline & Audit Trail)
+app.use('/api/activities', activitiesRoutes);
+
+// Follow-Up Sequences API (Phase 2B - Automated Lead Follow-Up)
+app.use('/api/follow-ups', followUpsRoutes);
+
+// Documents API (Phase 2C - Document Generation)
+app.use('/api/documents', documentsRoutes);
+
+// Homepage Aggregate API (public — no auth required)
+app.use('/api/homepage', homepageRoutes);
+
+// Contact / Lead-from-homepage API (public)
+app.use('/api/contact', contactRoutes);
+
+// Market Analytics API (Phase 4C - Market Analyst Bot)
+app.use('/api/analytics', analyticsRoutes);
+
+// Currency API (Phase 2E - Multi-Currency Support)
+app.use('/api/currency', currencyRoutes);
+
+// Email API (Phase 3B - Email Automation)
+app.use('/api/email', emailRoutes);
+
+// Agent Availability API (Phase 3C - Calendar/Scheduling)
+app.use('/api/agent-availability', agentAvailabilityRoutes);
+
 // Communications API (Nadia - WhatsApp CRM, Nina - Bot)
 app.use('/api/communications', communicationsRoutes);
 
@@ -225,27 +299,30 @@ app.use('/api/leases', leasesRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
 
 // WhatsApp Webhook (public endpoint — requires webhook secret for verification)
-app.post('/api/whatsapp/webhook', asyncHandler(async (req: Request, res: Response) => {
-  if (!WHATSAPP_WEBHOOK_SECRET) {
-    throw new AppError('WhatsApp webhook not configured — set WHATSAPP_WEBHOOK_SECRET', 500);
-  }
-  // SECURITY: Only accept webhook secret via header (never query params — they leak in logs)
-  const webhookToken = (req.headers['x-webhook-token'] || '') as string;
-  if (!webhookToken) {
-    throw new AppError('Webhook token required in x-webhook-token header', 403);
-  }
-  // Use timing-safe comparison to prevent timing attacks on secret
-  const expected = Buffer.from(WHATSAPP_WEBHOOK_SECRET, 'utf8');
-  const received = Buffer.from(webhookToken, 'utf8');
-  if (expected.length !== received.length || !crypto.timingSafeEqual(expected, received)) {
-    throw new AppError('Invalid webhook token', 403);
-  }
-  logger.debug('WhatsApp webhook received', {
-    hasEntry: !!req.body?.entry,
-    entryCount: req.body?.entry?.length ?? 0,
-  });
-  res.status(200).json({ success: true });
-}));
+app.post(
+  '/api/whatsapp/webhook',
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!WHATSAPP_WEBHOOK_SECRET) {
+      throw new AppError('WhatsApp webhook not configured — set WHATSAPP_WEBHOOK_SECRET', 500);
+    }
+    // SECURITY: Only accept webhook secret via header (never query params — they leak in logs)
+    const webhookToken = (req.headers['x-webhook-token'] || '') as string;
+    if (!webhookToken) {
+      throw new AppError('Webhook token required in x-webhook-token header', 403);
+    }
+    // Use timing-safe comparison to prevent timing attacks on secret
+    const expected = Buffer.from(WHATSAPP_WEBHOOK_SECRET, 'utf8');
+    const received = Buffer.from(webhookToken, 'utf8');
+    if (expected.length !== received.length || !crypto.timingSafeEqual(expected, received)) {
+      throw new AppError('Invalid webhook token', 403);
+    }
+    logger.debug('WhatsApp webhook received', {
+      hasEntry: !!req.body?.entry,
+      entryCount: req.body?.entry?.length ?? 0,
+    });
+    res.status(200).json({ success: true });
+  })
+);
 
 // Reporting API (Zoe - Executive Dashboard)
 app.use('/api/dashboard', reportingRoutes);
@@ -266,163 +343,395 @@ app.use('/api/assistants', assistantsRoutes);
 // ============================================================================
 
 // WhatsApp API stubs (WhatsAppSettingsPage, WhatsAppDashboardPage, WhatsAppChatbotPage)
-app.get('/api/whatsapp/stats', authMiddleware, requirePermission('access_whatsapp_business'), asyncHandler(async (_req: Request, res: Response) => {
-  res.status(200).json({ success: true, data: { totalMessages: 0, sentToday: 0, received: 0, activeChats: 0, sessions: [] } });
-}));
-app.get('/api/whatsapp/settings', authMiddleware, requirePermission('access_whatsapp_business'), asyncHandler(async (_req: Request, res: Response) => {
-  res.status(200).json({ success: true, data: { phoneNumber: '', connected: false, autoReply: false, businessHours: null } });
-}));
-app.put('/api/whatsapp/settings', authMiddleware, requireRole('owner'), asyncHandler(async (_req: Request, res: Response) => {
-  res.status(200).json({ success: true, message: 'Settings updated (stub)' });
-}));
-app.post('/api/whatsapp/session', authMiddleware, requireRole('owner'), asyncHandler(async (_req: Request, res: Response) => {
-  res.status(200).json({ success: true, data: { sessionId: 'stub-session', status: 'pending' } });
-}));
-app.post('/api/whatsapp/init', authMiddleware, requireRole('owner'), asyncHandler(async (_req: Request, res: Response) => {
-  res.status(200).json({ success: true, message: 'WhatsApp initialization pending — configure phone number first' });
-}));
-app.post('/api/whatsapp/disconnect', authMiddleware, requireRole('owner'), asyncHandler(async (_req: Request, res: Response) => {
-  res.status(200).json({ success: true, message: 'WhatsApp disconnected' });
-}));
-app.post('/api/whatsapp/message', authMiddleware, requirePermission('access_whatsapp_business'), asyncHandler(async (_req: Request, res: Response) => {
-  res.status(200).json({ success: true, data: { id: Date.now().toString(), status: 'queued' } });
-}));
-app.get('/api/whatsapp/chatbot/messages', authMiddleware, requirePermission('access_whatsapp_business'), asyncHandler(async (_req: Request, res: Response) => {
-  res.status(200).json({ success: true, data: [] });
-}));
-app.post('/api/whatsapp/chatbot/messages', authMiddleware, requirePermission('access_whatsapp_business'), asyncHandler(async (_req: Request, res: Response) => {
-  res.status(200).json({ success: true, data: { id: Date.now().toString(), role: 'user', createdAt: new Date() } });
-}));
-app.delete('/api/whatsapp/chatbot/messages/:id', authMiddleware, requirePermission('access_whatsapp_business'), asyncHandler(async (_req: Request, res: Response) => {
-  res.status(200).json({ success: true });
-}));
+app.get(
+  '/api/whatsapp/stats',
+  authMiddleware,
+  requirePermission('access_whatsapp_business'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: { totalMessages: 0, sentToday: 0, received: 0, activeChats: 0, sessions: [] },
+      });
+  })
+);
+app.get(
+  '/api/whatsapp/settings',
+  authMiddleware,
+  requirePermission('access_whatsapp_business'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: { phoneNumber: '', connected: false, autoReply: false, businessHours: null },
+      });
+  })
+);
+app.put(
+  '/api/whatsapp/settings',
+  authMiddleware,
+  requireRole('owner'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    res.status(200).json({ success: true, message: 'Settings updated (stub)' });
+  })
+);
+app.post(
+  '/api/whatsapp/session',
+  authMiddleware,
+  requireRole('owner'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    res.status(200).json({ success: true, data: { sessionId: 'stub-session', status: 'pending' } });
+  })
+);
+app.post(
+  '/api/whatsapp/init',
+  authMiddleware,
+  requireRole('owner'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: 'WhatsApp initialization pending — configure phone number first',
+      });
+  })
+);
+app.post(
+  '/api/whatsapp/disconnect',
+  authMiddleware,
+  requireRole('owner'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    res.status(200).json({ success: true, message: 'WhatsApp disconnected' });
+  })
+);
+app.post(
+  '/api/whatsapp/message',
+  authMiddleware,
+  requirePermission('access_whatsapp_business'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    res.status(200).json({ success: true, data: { id: Date.now().toString(), status: 'queued' } });
+  })
+);
+app.get(
+  '/api/whatsapp/chatbot/messages',
+  authMiddleware,
+  requirePermission('access_whatsapp_business'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    res.status(200).json({ success: true, data: [] });
+  })
+);
+app.post(
+  '/api/whatsapp/chatbot/messages',
+  authMiddleware,
+  requirePermission('access_whatsapp_business'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: { id: Date.now().toString(), role: 'user', createdAt: new Date() },
+      });
+  })
+);
+app.delete(
+  '/api/whatsapp/chatbot/messages/:id',
+  authMiddleware,
+  requirePermission('access_whatsapp_business'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    res.status(200).json({ success: true });
+  })
+);
 
 // Contracts API stubs (ContractManagementPage)
-app.get('/api/contracts', authMiddleware, requirePermission('view_contracts'), asyncHandler(async (_req: Request, res: Response) => {
-  res.status(200).json({ success: true, data: [], pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 } });
-}));
-app.post('/api/contracts', authMiddleware, requirePermission('create_contracts'), asyncHandler(async (_req: Request, res: Response) => {
-  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-}));
+app.get(
+  '/api/contracts',
+  authMiddleware,
+  requirePermission('view_contracts'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: [],
+        pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
+      });
+  })
+);
+app.post(
+  '/api/contracts',
+  authMiddleware,
+  requirePermission('create_contracts'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    res
+      .status(501)
+      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
+  })
+);
 
 // Job Applications API stubs (JobBoard, JobApplicants)
 // TODO: Add Prisma model and full CRUD when HR module is prioritised
-app.get('/api/job-applications', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
-  res.status(200).json({ success: true, data: [], pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 } });
-}));
-app.post('/api/job-applications', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  logger.info('Job application received (stub)', { body: Object.keys(req.body || {}) });
-  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-}));
-app.patch('/api/job-applications/:id', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { status } = req.body || {};
-  logger.info('Job application status update (stub)', { id, status });
-  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-}));
+app.get(
+  '/api/job-applications',
+  authMiddleware,
+  asyncHandler(async (_req: Request, res: Response) => {
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: [],
+        pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
+      });
+  })
+);
+app.post(
+  '/api/job-applications',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    logger.info('Job application received (stub)', { body: Object.keys(req.body || {}) });
+    res
+      .status(501)
+      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
+  })
+);
+app.patch(
+  '/api/job-applications/:id',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { status } = req.body || {};
+    logger.info('Job application status update (stub)', { id, status });
+    res
+      .status(501)
+      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
+  })
+);
 
 // Appointments API stubs (AppointmentScheduler)
 // TODO: Add Prisma model and full CRUD when scheduling module is prioritised
-app.post('/api/appointments', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  logger.info('Appointment created (stub)', { propertyId: req.body?.propertyId, agentId: req.body?.agentId });
-  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-}));
-app.get('/api/appointments', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
-  res.status(200).json({ success: true, data: [], pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 } });
-}));
-app.patch('/api/appointments/:id', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
-  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-}));
-app.delete('/api/appointments/:id', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
-  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-}));
+app.post(
+  '/api/appointments',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    logger.info('Appointment created (stub)', {
+      propertyId: req.body?.propertyId,
+      agentId: req.body?.agentId,
+    });
+    res
+      .status(501)
+      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
+  })
+);
+app.get(
+  '/api/appointments',
+  authMiddleware,
+  asyncHandler(async (_req: Request, res: Response) => {
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: [],
+        pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
+      });
+  })
+);
+app.patch(
+  '/api/appointments/:id',
+  authMiddleware,
+  asyncHandler(async (_req: Request, res: Response) => {
+    res
+      .status(501)
+      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
+  })
+);
+app.delete(
+  '/api/appointments/:id',
+  authMiddleware,
+  asyncHandler(async (_req: Request, res: Response) => {
+    res
+      .status(501)
+      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
+  })
+);
 
 // Tenancy Agreements API stubs (CreateTenancyAgreement)
 // TODO: Add Prisma model and full CRUD when lease management module is prioritised
-app.get('/api/tenancy-agreements', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
-  res.status(200).json({ success: true, data: [], pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 } });
-}));
-app.post('/api/tenancy-agreements', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  logger.info('Tenancy agreement created (stub)', { propertyId: req.body?.propertyId });
-  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-}));
-app.patch('/api/tenancy-agreements/:id', authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
-  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-}));
+app.get(
+  '/api/tenancy-agreements',
+  authMiddleware,
+  asyncHandler(async (_req: Request, res: Response) => {
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: [],
+        pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
+      });
+  })
+);
+app.post(
+  '/api/tenancy-agreements',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    logger.info('Tenancy agreement created (stub)', { propertyId: req.body?.propertyId });
+    res
+      .status(501)
+      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
+  })
+);
+app.patch(
+  '/api/tenancy-agreements/:id',
+  authMiddleware,
+  asyncHandler(async (_req: Request, res: Response) => {
+    res
+      .status(501)
+      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
+  })
+);
 
 // Payments API stub (Checkout — Stripe integration pending)
 // TODO: Integrate Stripe SDK when payment processing is prioritised
-app.post('/api/payments/create-payment-intent', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  logger.warn('Payment intent requested but Stripe is not configured', { amount: req.body?.amount, propertyId: req.body?.propertyId });
-  res.status(503).json({ success: false, error: 'Payment processing is not yet configured. Please contact support.' });
-}));
+app.post(
+  '/api/payments/create-payment-intent',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    logger.warn('Payment intent requested but Stripe is not configured', {
+      amount: req.body?.amount,
+      propertyId: req.body?.propertyId,
+    });
+    res
+      .status(503)
+      .json({
+        success: false,
+        error: 'Payment processing is not yet configured. Please contact support.',
+      });
+  })
+);
 
 // Valuation API stub (PropertyValuationModule — ML engine pending)
 // TODO: Integrate property valuation ML model when available
-app.post('/api/valuation/estimate', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  logger.info('Valuation estimate requested (stub)', { location: req.body?.location, area: req.body?.area });
-  // Return 501 so frontend falls back to local estimation
-  res.status(501).json({ success: false, error: 'Valuation engine not yet available' });
-}));
+app.post(
+  '/api/valuation/estimate',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    logger.info('Valuation estimate requested (stub)', {
+      location: req.body?.location,
+      area: req.body?.area,
+    });
+    // Return 501 so frontend falls back to local estimation
+    res.status(501).json({ success: false, error: 'Valuation engine not yet available' });
+  })
+);
 
 // System Health API (SystemHealthPage)
-app.get('/api/system/health', authMiddleware, requirePermission('view_system_health'), asyncHandler(async (req: Request, res: Response) => {
-
-  const uptime = process.uptime();
-  res.status(200).json({
-    success: true,
-    data: {
-      status: 'healthy',
-      uptime: Math.round(uptime),
-      uptimeFormatted: `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m`,
-      database: 'connected',
-      memory: {
-        used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
-        total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
+app.get(
+  '/api/system/health',
+  authMiddleware,
+  requirePermission('view_system_health'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const uptime = process.uptime();
+    res.status(200).json({
+      success: true,
+      data: {
+        status: 'healthy',
+        uptime: Math.round(uptime),
+        uptimeFormatted: `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m`,
+        database: 'connected',
+        memory: {
+          used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+          total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
+        },
+        services: {
+          api: 'operational',
+          database: 'operational',
+          whatsapp: 'not_configured',
+          email: 'not_configured',
+        },
+        version: '1.0.0',
+        environment: process.env.NODE_ENV || 'development',
+        timestamp: new Date().toISOString(),
       },
-      services: {
-        api: 'operational',
-        database: 'operational',
-        whatsapp: 'not_configured',
-        email: 'not_configured',
-      },
-      version: '1.0.0',
-      environment: process.env.NODE_ENV || 'development',
-      timestamp: new Date().toISOString(),
-    },
-  });
-}));
+    });
+  })
+);
 
 // Admin Role Management stubs (RoleSelectionForm, RoleApprovalQueue)
 // TODO: Add Prisma model for RoleRequest when role management module is prioritised
-app.post('/api/users/role', authMiddleware, requirePermission('manage_users'), asyncHandler(async (req: Request, res: Response) => {
-  const { userId, role } = req.body;
-  if (!userId || !role) throw new AppError('userId and role are required', 400);
-  const updated = await prisma.user.update({
-    where: { id: userId },
-    data: { role },
-    select: { id: true, email: true, name: true, role: true },
-  });
-  await prisma.activity.create({
-    data: { type: 'system', action: 'updated', description: `Role changed to ${role} for ${updated.email}`, userId: req.user?.id || null },
-  });
-  res.status(200).json({ success: true, data: updated });
-}));
-app.post('/api/users/role-request', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  const { requestedRole } = req.body;
-  if (!requestedRole) throw new AppError('requestedRole is required', 400);
-  logger.info('Role request submitted (stub)', { userId: req.user?.id, requestedRole });
-  res.status(501).json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-}));
-app.get('/api/admin/role-requests', authMiddleware, requirePermission('manage_users'), asyncHandler(async (_req: Request, res: Response) => {
-  res.status(200).json({ success: true, data: { requests: [] } });
-}));
-app.post('/api/admin/role-requests/:id/approve', authMiddleware, requirePermission('manage_users'), asyncHandler(async (req: Request, res: Response) => {
-  res.status(200).json({ success: true, data: { id: req.params.id, status: 'approved', reviewedBy: req.user?.id } });
-}));
-app.post('/api/admin/role-requests/:id/reject', authMiddleware, requirePermission('manage_users'), asyncHandler(async (req: Request, res: Response) => {
-  res.status(200).json({ success: true, data: { id: req.params.id, status: 'rejected', reviewedBy: req.user?.id, reason: req.body?.reason } });
-}));
+app.post(
+  '/api/users/role',
+  authMiddleware,
+  requirePermission('manage_users'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { userId, role } = req.body;
+    if (!userId || !role) throw new AppError('userId and role are required', 400);
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: { role },
+      select: { id: true, email: true, name: true, role: true },
+    });
+    await prisma.activity.create({
+      data: {
+        type: 'system',
+        action: 'updated',
+        description: `Role changed to ${role} for ${updated.email}`,
+        userId: req.user?.id || null,
+      },
+    });
+    res.status(200).json({ success: true, data: updated });
+  })
+);
+app.post(
+  '/api/users/role-request',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    const { requestedRole } = req.body;
+    if (!requestedRole) throw new AppError('requestedRole is required', 400);
+    logger.info('Role request submitted (stub)', { userId: req.user?.id, requestedRole });
+    res
+      .status(501)
+      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
+  })
+);
+app.get(
+  '/api/admin/role-requests',
+  authMiddleware,
+  requirePermission('manage_users'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    res.status(200).json({ success: true, data: { requests: [] } });
+  })
+);
+app.post(
+  '/api/admin/role-requests/:id/approve',
+  authMiddleware,
+  requirePermission('manage_users'),
+  asyncHandler(async (req: Request, res: Response) => {
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: { id: req.params.id, status: 'approved', reviewedBy: req.user?.id },
+      });
+  })
+);
+app.post(
+  '/api/admin/role-requests/:id/reject',
+  authMiddleware,
+  requirePermission('manage_users'),
+  asyncHandler(async (req: Request, res: Response) => {
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: {
+          id: req.params.id,
+          status: 'rejected',
+          reviewedBy: req.user?.id,
+          reason: req.body?.reason,
+        },
+      });
+  })
+);
 
 // ============================================================================
 // ERROR HANDLING
@@ -451,6 +760,14 @@ const startServer = async () => {
     logger.info('Connecting to MongoDB...');
     await connectDatabase();
     logger.info('MongoDB connected successfully');
+
+    // Start background services
+    startLeadScoringScheduler();
+    startFollowUpScheduler();
+    startRateRefresh(); // Phase 2E: refresh exchange rates every 6h
+    startViewingReminderScheduler(); // Phase 3C: viewing reminders every 15 min
+    startRERAExpiryScheduler(); // Phase 3D: RERA BRN expiry checks daily
+    startAutoRouting(); // Phase 4A: auto-route hot leads to best agents
 
     // Auto-migrate any remaining legacy base64 password hashes to bcrypt
     try {
@@ -492,9 +809,13 @@ const startServer = async () => {
 // Start the server
 let httpServer: ReturnType<typeof app.listen> | null = null;
 startServer()
-  .then((s) => { httpServer = s; })
-  .catch((err) => {
-    logger.error('Failed to start server', { error: err instanceof Error ? err.message : String(err) });
+  .then(s => {
+    httpServer = s;
+  })
+  .catch(err => {
+    logger.error('Failed to start server', {
+      error: err instanceof Error ? err.message : String(err),
+    });
     process.exit(1);
   });
 
@@ -520,7 +841,7 @@ const gracefulShutdown = async (signal: string) => {
     });
   }
   // 2. Allow in-flight requests up to 10s to finish
-  await new Promise((resolve) => setTimeout(resolve, 10_000));
+  await new Promise(resolve => setTimeout(resolve, 10_000));
   // 3. Disconnect database
   await prisma.$disconnect();
   logger.info('Database disconnected — exiting');

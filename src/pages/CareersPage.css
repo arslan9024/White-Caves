@@ -70,7 +70,7 @@
 .stat-number {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #E31E24;
+  color: #D4AF37;
 }
 
 .stat-text {
@@ -198,7 +198,7 @@
 
 .job-card:hover {
   box-shadow: 0 10px 40px rgba(0,0,0,0.12);
-  border-color: #E31E24;
+  border-color: #D4AF37;
 }
 
 .job-header {
@@ -245,7 +245,7 @@
 
 [data-theme="dark"] .job-tag.type {
   background: rgba(212, 175, 55, 0.2);
-  color: #E31E24;
+  color: #D4AF37;
 }
 
 .job-experience {
@@ -291,7 +291,7 @@
   content: '•';
   position: absolute;
   left: 0;
-  color: #E31E24;
+  color: #D4AF37;
 }
 
 .apply-btn {
@@ -308,7 +308,7 @@
 }
 
 .apply-btn:hover {
-  background: linear-gradient(135deg, #E31E24 0%, #b38600 100%);
+  background: linear-gradient(135deg, #D4AF37 0%, #b38600 100%);
   transform: translateY(-2px);
 }
 
@@ -322,7 +322,7 @@
   border-radius: 20px;
   padding: 3rem;
   box-shadow: 0 10px 50px rgba(0,0,0,0.1);
-  border: 2px solid #E31E24;
+  border: 2px solid #D4AF37;
   position: relative;
 }
 
@@ -443,7 +443,7 @@
 
 .submit-btn {
   padding: 0.875rem 2.5rem;
-  background: linear-gradient(135deg, #E31E24 0%, #b38600 100%);
+  background: linear-gradient(135deg, #D4AF37 0%, #b38600 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -525,7 +525,7 @@
 }
 
 .footer-links a:hover {
-  color: #E31E24;
+  color: #D4AF37;
 }
 
 @media (max-width: 1024px) {

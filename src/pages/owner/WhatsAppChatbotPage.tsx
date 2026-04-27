@@ -16,9 +16,7 @@ interface ChatbotMessage {
   enabled: boolean;
 }
 
-interface WhatsAppChatbotPageProps {}
-
-const WhatsAppChatbotPage: FC<WhatsAppChatbotPageProps> = () => {
+const WhatsAppChatbotPage: FC = () => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.user.currentUser);
   const toast = useToast();

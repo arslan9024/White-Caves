@@ -1,4 +1,3 @@
-import React from 'react';
 import { Search, Plus, Edit, Trash2, Eye, Download, ChevronDown } from 'lucide-react';
 
 interface Employee {

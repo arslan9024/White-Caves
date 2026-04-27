@@ -1,12 +1,16 @@
 import styled from 'styled-components';
+import { transitions } from '../../../styles/theme/transitions';
+import { typography } from '../../../styles/theme/typography';
+import { radius } from '../../../styles/theme/radius';
+import { spacing } from '../../../styles/theme/spacing';
 
 export const DataGridViewContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: ${spacing.md};
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   padding: 20px;
 
   [data-theme='dark'] & {
@@ -33,7 +37,7 @@ export const GridSearch = styled.div`
   padding: 10px 16px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   flex: 1;
   max-width: 300px;
 
@@ -46,7 +50,7 @@ export const GridSearch = styled.div`
     border: none;
     background: transparent;
     color: var(--text-primary);
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     width: 100%;
     outline: none;
 
@@ -76,15 +80,15 @@ export const GridSearch = styled.div`
 export const GridFilterButton = styled.button`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 10px 16px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     background: var(--bg-tertiary);
@@ -136,7 +140,7 @@ export const GridTableHeader = styled.th`
   text-align: left;
   padding: 12px 16px;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -155,7 +159,7 @@ export const GridTableHeader = styled.th`
   span {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: ${spacing.xs};
   }
 
   [data-theme='dark'] & {
@@ -170,7 +174,7 @@ export const GridTableHeader = styled.th`
 
 export const GridTableCell = styled.td`
   padding: 14px 16px;
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   color: var(--text-primary);
   border-bottom: 1px solid var(--border-color);
 
@@ -221,12 +225,12 @@ export const RowActionsButton = styled.button`
   border: none;
   background: transparent;
   color: var(--text-muted);
-  border-radius: 6px;
+  border-radius: ${radius.md};
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   opacity: 0;
 
   ${GridTableRow}:hover & {
@@ -265,7 +269,7 @@ export const GridPagination = styled.div`
 `;
 
 export const PaginationInfo = styled.span`
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: var(--text-muted);
 
   [data-theme='dark'] & {
@@ -276,7 +280,7 @@ export const PaginationInfo = styled.span`
 export const PaginationControls = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
 
   [data-theme='dark'] & {
   }
@@ -286,11 +290,11 @@ export const PaginationButton = styled.button<{ disabled?: boolean }>`
   padding: 8px 14px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: ${radius.md};
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover:not(:disabled) {
     background: var(--bg-tertiary);
@@ -315,7 +319,7 @@ export const PaginationButton = styled.button<{ disabled?: boolean }>`
 `;
 
 export const PageNumber = styled.span`
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   color: var(--text-secondary);
   padding: 0 8px;
 

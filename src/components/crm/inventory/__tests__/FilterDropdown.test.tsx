@@ -9,7 +9,7 @@ vi.mock('lucide-react', () => ({
 
 // Mock styled components
 vi.mock('../FilterDropdown.styles', () => ({
-  FilterDropdownContainer: ({ children, ...props }: any) => <div data-testid="filter-container" {...props}>{children}</div>,
+  FilterDropdownContainer: ({ children, $disabled, ...props }: any) => <div data-testid="filter-container" {...props}>{children}</div>,
   FilterLabel: ({ children, ...props }: any) => <label data-testid="filter-label" {...props}>{children}</label>,
   SelectWrapper: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   Select: React.forwardRef(({ children, ...props }: any, ref: any) => <select data-testid="filter-select" ref={ref} {...props}>{children}</select>),

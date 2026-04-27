@@ -1,8 +1,12 @@
 import styled from 'styled-components';
+import { transitions } from '../../../styles/theme/transitions';
+import { typography } from '../../../styles/theme/typography';
+import { radius } from '../../../styles/theme/radius';
+import { spacing } from '../../../styles/theme/spacing';
 
 export const DataQualityIndicatorsContainer = styled.div`
   background: var(--bg-card);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   padding: 20px;
   margin-bottom: 20px;
   border: 1px solid var(--border-color);
@@ -16,8 +20,8 @@ export const IndicatorsHeader = styled.div`
   color: var(--text-primary);
 
   h3 {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: ${typography.sizes.md};
+    font-weight: ${typography.weights.semibold};
     margin: 0;
   }
 
@@ -29,21 +33,21 @@ export const IndicatorsHeader = styled.div`
 export const IndicatorsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  gap: ${spacing.md};
 `;
 
 export const IndicatorCard = styled.button<{ $accentColor?: string }>`
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 16px;
+  gap: ${spacing.md};
+  padding: ${spacing.md};
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   text-align: left;
-  --accent-color: ${(props) => props.$accentColor || '#dc2626'};
+  --accent-color: ${(props) => props.$accentColor || '#D4AF37'};
 
   &:hover {
     border-color: var(--accent-color);
@@ -55,7 +59,7 @@ export const IndicatorCard = styled.button<{ $accentColor?: string }>`
 export const IndicatorIcon = styled.div`
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   background: color-mix(in srgb, var(--accent-color) 15%, transparent);
   color: var(--accent-color);
   display: flex;
@@ -76,15 +80,15 @@ export const IndicatorContent = styled.div`
 `;
 
 export const IndicatorValue = styled.span`
-  font-size: 24px;
-  font-weight: 700;
+  font-size: ${typography.sizes.xxl};
+  font-weight: ${typography.weights.bold};
   color: var(--accent-color);
   line-height: 1;
 `;
 
 export const IndicatorLabel = styled.span`
-  font-size: 13px;
-  font-weight: 600;
+  font-size: ${typography.sizes.sm};
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 `;
 

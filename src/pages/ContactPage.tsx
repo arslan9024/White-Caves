@@ -1,6 +1,9 @@
 import React, { FC, useState, useRef, useEffect, useCallback, ChangeEvent, FormEvent } from 'react';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { isValidEmail, isValidPhone, isRequired, isWithinLength, MAX_MESSAGE_LENGTH } from '../utils/validation';
+import { TIMING } from '../constants';
+import PublicLayout from '../components/layout/PublicLayout';
+import PageHeroBanner from '../components/layout/PageHeroBanner';
 import './ContactPage.css';
 
 // Type definitions
@@ -68,23 +71,25 @@ const ContactPage: FC = () => {
     setSubmitted(true);
     // Clear any existing timer, then set a new one tracked by ref for cleanup
     if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setSubmitted(false), 5000);
+    timerRef.current = setTimeout(() => setSubmitted(false), TIMING.FORM_RESET_DELAY);
     setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
     setErrors({});
   };
 
   return (
-    <div className="contact-page">
-      <div className="contact-hero">
-        <div className="contact-hero-content">
-          <h1>Contact Us</h1>
-          <p>Get in touch with Dubai's premier luxury real estate experts</p>
-        </div>
-      </div>
+    <PublicLayout>
+      <div className="contact-page">
+        <PageHeroBanner
+          badge="Get in Touch"
+          title="Contact Us"
+          subtitle="Get in touch with Dubai's premier luxury real estate experts — we respond within 24 hours"
+          theme="dark"
+          breadcrumbs={[{ label: 'Contact' }]}
+        />
 
-      <div className="contact-container">
-        <div className="contact-grid">
-          <div className="contact-info-section">
+        <div className="contact-container">
+          <div className="contact-grid">
+            <div className="contact-info-section">
             <h2>White Caves Real Estate LLC</h2>
             <p className="company-tagline">Your Gateway to Luxury Living in Dubai</p>
 
@@ -205,7 +210,7 @@ const ContactPage: FC = () => {
             </div>
           </div>
 
-          <div className="contact-form-section">
+            <div className="contact-form-section">
             <h2>Send Us a Message</h2>
             <p>Have a question or need assistance? Fill out the form below and we'll get back to you within 24 hours.</p>
 
@@ -303,28 +308,29 @@ const ContactPage: FC = () => {
               </button>
             </form>
           </div>
-        </div>
-
-        <div className="map-section">
-          <h2>Find Us</h2>
-          <div className="map-container">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3607.5678927463876!2d55.3367!3d25.2697!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjXCsDE2JzEwLjkiTiA1NcKwMjAnMTIuMSJF!5e0!3m2!1sen!2sae!4v1234567890"
-              width="100%"
-              height="400"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="White Caves Location"
-            />
           </div>
-          <p className="map-address">
-            Office D-72, El-Shaye-4, Port Saeed, Deira, Dubai, UAE
-          </p>
+
+          <div className="map-section">
+            <h2>Find Us</h2>
+            <div className="map-container">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3607.5678927463876!2d55.3367!3d25.2697!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjXCsDE2JzEwLjkiTiA1NcKwMjAnMTIuMSJF!5e0!3m2!1sen!2sae!4v1234567890"
+                width="100%"
+                height="400"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="White Caves Location"
+              />
+            </div>
+            <p className="map-address">
+              Office D-72, El-Shaye-4, Port Saeed, Deira, Dubai, UAE
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </PublicLayout>
   );
 }
 

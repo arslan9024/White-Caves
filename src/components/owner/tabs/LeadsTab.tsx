@@ -193,10 +193,10 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error, onAction }) =
                 <td>{lead.agent || <span className="unassigned">Unassigned</span>}</td>
                 <td>
                   <div className="action-buttons">
-                    <button className="icon-btn" title="View" onClick={() => onAction?.('viewLead', lead.id)}>👁️</button>
-                    <button className="icon-btn" title="Call" onClick={() => onAction?.('callLead', lead.id)}>📞</button>
-                    <button className="icon-btn" title="WhatsApp" onClick={() => onAction?.('whatsappLead', lead.id)}>💬</button>
-                    <button className="icon-btn" title="Assign" onClick={() => onAction?.('assignLead', lead.id)}>👤</button>
+                    <button className="icon-btn" title="View" aria-label="View lead" onClick={() => onAction?.('viewLead', lead.id)}>👁️</button>
+                    <button className="icon-btn" title="Call" aria-label="Call lead" onClick={() => onAction?.('callLead', lead.id)}>📞</button>
+                    <button className="icon-btn" title="WhatsApp" aria-label="WhatsApp lead" onClick={() => onAction?.('whatsappLead', lead.id)}>💬</button>
+                    <button className="icon-btn" title="Assign" aria-label="Assign lead" onClick={() => onAction?.('assignLead', lead.id)}>👤</button>
                   </div>
                 </td>
               </tr>

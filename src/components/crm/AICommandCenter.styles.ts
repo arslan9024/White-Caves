@@ -1,4 +1,8 @@
 import styled from 'styled-components';
+import { transitions } from '../../styles/theme/transitions';
+import { typography } from '../../styles/theme/typography';
+import { radius } from '../../styles/theme/radius';
+import { spacing } from '../../styles/theme/spacing';
 
 export const CommandCenterContainer = styled.div`
   min-height: 100vh;
@@ -24,13 +28,13 @@ export const CommandCenterHeader = styled.header`
 export const HeaderLeft = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: ${spacing.xs};
 `;
 
 export const CommandCenterTitle = styled.h1`
   margin: 0;
-  font-size: 24px;
-  font-weight: 700;
+  font-size: ${typography.sizes.xxl};
+  font-weight: ${typography.weights.bold};
   color: #f8fafc;
   background: linear-gradient(
     135deg,
@@ -43,7 +47,7 @@ export const CommandCenterTitle = styled.h1`
 `;
 
 export const CommandCenterSubtitle = styled.p`
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   color: #64748b;
   margin: 0;
 `;
@@ -51,14 +55,14 @@ export const CommandCenterSubtitle = styled.p`
 export const HeaderControls = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: ${spacing.md};
 `;
 
 export const ViewToggleContainer = styled.div`
   display: flex;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  padding: 4px;
+  border-radius: ${radius.lg};
+  padding: ${spacing.xs};
 `;
 
 export const ToggleBtn = styled.button<{ $active?: boolean }>`
@@ -71,12 +75,12 @@ export const ToggleBtn = styled.button<{ $active?: boolean }>`
       : 'transparent'};
   color: ${(props) =>
     props.$active ? 'white' : '#64748b'};
-  border-radius: 6px;
+  border-radius: ${radius.md};
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
 
   &:hover {
     color: #e2e8f0;
@@ -94,7 +98,7 @@ export const HeaderAction = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
   position: relative;
 
   &:hover {
@@ -113,7 +117,7 @@ export const NotificationBadge = styled.span`
   color: white;
   border-radius: 50%;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -153,7 +157,7 @@ export const LoadingContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: ${spacing.md};
   padding: 40px;
   color: #e2e8f0;
 

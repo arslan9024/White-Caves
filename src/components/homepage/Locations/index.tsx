@@ -1,2 +1,3 @@
-﻿export { default } from './Locations';
+export { default } from './Locations';
+
 

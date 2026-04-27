@@ -31,6 +31,14 @@ vi.mock('framer-motion', () => ({
       }
       return <button {...filtered}>{children}</button>;
     },
+    p: ({ children, ...props }: any) => {
+      const filtered: any = {};
+      for (const [k, v] of Object.entries(props)) {
+        if (typeof v !== 'object' || k === 'style' || k === 'className') filtered[k] = v;
+        else if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') filtered[k] = v;
+      }
+      return <p {...filtered}>{children}</p>;
+    },
   },
 }));
 
@@ -41,6 +49,7 @@ vi.mock('lucide-react', () => ({
   Mail: (props: any) => <span data-testid="icon-mail" {...props} />,
   MapPin: (props: any) => <span data-testid="icon-map" {...props} />,
   MessageCircle: (props: any) => <span data-testid="icon-msg" {...props} />,
+  MessageSquare: (props: any) => <span data-testid="icon-msg-square" {...props} />,
   ArrowRight: (props: any) => <span data-testid="icon-arrow" {...props} />,
 }));
 
@@ -64,16 +73,28 @@ import ContactCTA from './ContactCTA';
 describe('ContactCTA', () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      status: 201,
+      json: async () => ({ success: true, data: { leadId: 'lead-1' } }),
+    } as Response);
   });
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
   describe('rendering', () => {
     it('renders the section', () => {
       const { container } = render(<ContactCTA />);
       expect(container.querySelector('.contact-cta-section')).toBeInTheDocument();
+    });
+
+    it('applies the dubai-luxury-theme class to the section', () => {
+      const { container } = render(<ContactCTA />);
+      const section = container.querySelector('.contact-cta-section');
+      expect(section?.classList.contains('dubai-luxury-theme')).toBe(true);
     });
 
     it('renders Get In Touch tag', () => {
@@ -226,7 +247,7 @@ describe('ContactCTA', () => {
       act(() => { fireEvent.submit(form); });
       
       // During submission, button text changes
-      expect(screen.getByText('Sending...')).toBeInTheDocument();
+      expect(screen.getByText(/Sending/)).toBeInTheDocument();
     });
 
     it('shows success message after submission', async () => {
@@ -247,7 +268,7 @@ describe('ContactCTA', () => {
       expect(screen.getByText('Message Sent!')).toBeInTheDocument();
     });
 
-    it('auto-dismisses success message after 3 seconds', async () => {
+    it('auto-dismisses success message after 5 seconds', async () => {
       render(<ContactCTA />);
       
       fireEvent.change(screen.getByPlaceholderText('Your Name'), { target: { value: 'John' } });
@@ -264,7 +285,7 @@ describe('ContactCTA', () => {
       expect(screen.getByText('Message Sent!')).toBeInTheDocument();
       
       await act(async () => {
-        vi.advanceTimersByTime(3500);
+        vi.advanceTimersByTime(5000);
       });
       
       // Success message gone, form is back
@@ -291,7 +312,7 @@ describe('ContactCTA', () => {
       
       // After success auto-dismiss, form should have empty fields
       await act(async () => {
-        vi.advanceTimersByTime(3500);
+        vi.advanceTimersByTime(5000);
       });
       
       const newNameInput = screen.getByPlaceholderText('Your Name') as HTMLInputElement;
@@ -299,3 +320,4 @@ describe('ContactCTA', () => {
     });
   });
 });
+

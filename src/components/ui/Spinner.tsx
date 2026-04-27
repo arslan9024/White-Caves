@@ -4,9 +4,10 @@
  * Professional loading spinner with multiple variants
  */
 
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import styled from 'styled-components';
 import { SpinnerProps, SpinnerVariant, SpinnerSize } from './advancedUI.types';
+import { spacing } from '../../styles/theme/spacing';
 
 // ============================================================================
 // STYLES
@@ -61,7 +62,7 @@ const DefaultSpinner = styled.div<{ $color?: string; $size: SpinnerSize }>`
 // Dots spinner animation
 const DotsSpinner = styled.div<{ $color?: string; $size: SpinnerSize }>`
   display: flex;
-  gap: 4px;
+  gap: ${spacing.xs};
   align-items: center;
   justify-content: center;
   height: 100%;
@@ -229,13 +230,13 @@ const LoadingText = styled.div<{ $size: SpinnerSize }>`
 // COMPONENT
 // ============================================================================
 
-const Spinner: FC<SpinnerProps> = ({
+const Spinner: FC<SpinnerProps> = memo(function Spinner({
   variant = 'default',
   size = 'medium',
   color,
   label,
   className = '',
-}) => {
+}) {
   const renderSpinner = () => {
     switch (variant) {
       case 'dots':
@@ -267,6 +268,6 @@ const Spinner: FC<SpinnerProps> = ({
       {label && <LoadingText $size={size}>{label}</LoadingText>}
     </SpinnerContainer>
   );
-};
+});
 
 export default Spinner;

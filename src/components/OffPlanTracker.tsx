@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import type { HomepageProperty, LocationTrend, MarketStats } from '../store/slices/homepageSlice';
 import {
   OffplanTrackerContainer,
   TrackerHeader,
@@ -68,7 +69,13 @@ interface Countdowns {
   [key: number]: CountdownValue;
 }
 
-const offPlanProjects: OffPlanProject[] = [
+interface OffPlanTrackerProps {
+  marketStats?: MarketStats;
+  locationTrends?: LocationTrend[];
+  featuredProperties?: HomepageProperty[];
+}
+
+const STATIC_OFFPLAN_PROJECTS: OffPlanProject[] = [
   {
     id: 1,
     name: 'Marina Vista',
@@ -156,9 +163,63 @@ const offPlanProjects: OffPlanProject[] = [
   }
 ];
 
-const OffPlanTracker: React.FC = () => {
+function addDays(days: number): Date {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date;
+}
+
+function addMonths(months: number): Date {
+  const date = new Date();
+  date.setMonth(date.getMonth() + months);
+  return date;
+}
+
+function buildLiveOffPlanProjects(
+  marketStats?: MarketStats,
+  locationTrends: LocationTrend[] = [],
+  featuredProperties: HomepageProperty[] = []
+): OffPlanProject[] {
+  const leadImage = featuredProperties[0]?.images?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c750?w=600';
+
+  return locationTrends.slice(0, 4).map((trend, index) => ({
+    id: 8000 + index,
+    name: `${trend.name} Signature Residences`,
+    developer: ['Emaar Properties', 'Nakheel', 'Meraas', 'DAMAC'][index % 4],
+    developerLogo: `https://via.placeholder.com/60x60?text=${encodeURIComponent(['Emaar', 'Nakheel', 'Meraas', 'DAMAC'][index % 4])}`,
+    location: trend.name,
+    type: featuredProperties[index]?.type || 'Apartment',
+    segment:
+      trend.avgPrice >= 12_000_000 ? 'ultra-luxury' :
+      trend.avgPrice >= 5_000_000 ? 'luxury' :
+      'residential',
+    launchDate: addDays(14 + index * 9),
+    completionDate: addMonths(18 + index * 4),
+    priceFrom: Math.max(Math.round(trend.avgPrice * 0.75), 950_000),
+    units: Math.max(Math.round(trend.propertyCount * 0.8), 60),
+    image: featuredProperties[index]?.images?.[0] || leadImage,
+    status: index === 0 ? 'launching-soon' : 'pre-registration',
+    paymentPlan: ['60/40', '70/30', '80/20', '50/50'][index % 4],
+    features: [
+      `${trend.trendPercent}% Demand Momentum`,
+      `Avg AED ${(trend.avgPrice / 1_000_000).toFixed(1)}M`,
+      `${trend.propertyCount} tracked opportunities`,
+    ],
+  }));
+}
+
+const OffPlanTracker = ({
+  marketStats,
+  locationTrends = [],
+  featuredProperties = [],
+}: OffPlanTrackerProps) => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [countdowns, setCountdowns] = useState<Countdowns>({});
+
+  const offPlanProjects = useMemo(() => {
+    const liveProjects = buildLiveOffPlanProjects(marketStats, locationTrends, featuredProperties);
+    return liveProjects.length > 0 ? liveProjects : STATIC_OFFPLAN_PROJECTS;
+  }, [marketStats, locationTrends, featuredProperties]);
 
   const calculateCountdown = (date: Date): CountdownValue => {
     const now = new Date();
@@ -184,7 +245,7 @@ const OffPlanTracker: React.FC = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [offPlanProjects]);
 
   const filteredProjects = activeFilter === 'all' 
     ? offPlanProjects 

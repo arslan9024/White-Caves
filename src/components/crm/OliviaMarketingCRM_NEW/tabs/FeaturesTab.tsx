@@ -1,4 +1,3 @@
-import React from 'react';
 import AssistantFeatureMatrix from '../../shared/AssistantFeatureMatrix';
 import { OLIVIA_FEATURES } from '../data/features';
 

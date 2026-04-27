@@ -12,6 +12,7 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { logout } from '../authSlice';
+import { getErrorMessage } from '../../constants';
 
 // ── Re-export types for consumer convenience ──
 export type {
@@ -108,7 +109,7 @@ export const fetchAllAssistants = createAsyncThunk(
       };
     } catch (error) {
       return rejectWithValue(
-        error instanceof Error ? error.message : 'Unknown error',
+        getErrorMessage(error),
       );
     }
   },
@@ -124,7 +125,7 @@ export const updateAssistantMetricsAsync = createAsyncThunk(
       return { ...payload, timestamp: new Date().toISOString() };
     } catch (error) {
       return rejectWithValue(
-        error instanceof Error ? error.message : 'Unknown error',
+        getErrorMessage(error),
       );
     }
   },

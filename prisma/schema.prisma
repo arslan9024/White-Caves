@@ -21,6 +21,9 @@ model User {
   status       String   @default("active")
   passwordHash String?  // bcrypt hash — null means password not set yet
   firebaseUid  String?  // Firebase UID for social/phone auth sync (optional, indexed but not unique)
+  brnNumber    String?  // RERA Broker Registration Number
+  brnExpiry    DateTime? // BRN expiry date
+  reraLicenseNumber String? // RERA Brokerage License Number
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -34,6 +37,8 @@ model User {
   favorites     Favorite[]
   savedSearches SavedSearch[]
   viewings      Viewing[]    @relation("ViewingUser")
+  assignedViewings Viewing[] @relation("ViewingAgent")
+  agentAvailability AgentAvailability[]
   offersAsBuyer Offer[]      @relation("OfferBuyer")
   leasesAsTenant Lease[]     @relation("LeaseTenant")
   leasesAsLandlord Lease[]   @relation("LeaseLandlord")
@@ -55,6 +60,7 @@ model Property {
   type        String   @default("apartment") // villa, apartment, penthouse, commercial, land, townhouse
   status      String   @default("available")  // available, reserved, sold, rented, off_market
   price       Float
+  currency    String   @default("AED")  // AED, USD, EUR, GBP, INR
   bedrooms    Int      @default(0)
   bathrooms   Int      @default(0)
   sqft        Int      @default(0)
@@ -100,7 +106,11 @@ model Lead {
   status      String   @default("new") // new, contacted, qualified, hot, warm, cold, won, lost
   source      String   @default("direct") // whatsapp, website, phone, referral, marketing, direct
   budget      Float?
+  budgetCurrency String @default("AED")  // AED, USD, EUR, GBP, INR
   score       Int      @default(0) // 0-100 lead score
+  scoreBreakdown Json?  // { engagement, demographic, behavioral, source, lastScoredAt }
+  scoreTier   String   @default("cold") // hot (80+), warm (60-79), cold (<60), inactive
+  lastScoredAt DateTime?
   notes       String?
   tags        String[]
   lastContact DateTime?
@@ -119,6 +129,7 @@ model Lead {
   commissions  Commission[]
   viewings     Viewing[]
   offers       Offer[]
+  followUpSequences FollowUpSequence[]
 
   @@index([status])
   @@index([source])
@@ -127,6 +138,28 @@ model Lead {
   @@index([createdAt])
   @@index([score])
   @@index([propertyId])
+  @@index([status, createdAt])
+  @@index([source, createdAt])
+  @@index([assignedToId, status])
+  @@index([status, source, createdAt])
+}
+
+// ─── LEAD SCORE HISTORY ─────────────────────────────────────────────────
+
+model LeadScoreHistory {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  leadId      String   @db.ObjectId
+  score       Int      // 0-100
+  tier        String   // hot, warm, cold, inactive
+  previousScore Int    // Previous score for delta tracking
+  previousTier  String // Previous tier for transition tracking
+  breakdown   Json?    // { engagement, demographic, behavioral, source }
+  trigger     String   // middleware, batch, manual, override, whatsapp
+  createdAt   DateTime @default(now())
+
+  @@index([leadId])
+  @@index([createdAt])
+  @@index([leadId, createdAt])
 }
 
 // ─── ACTIVITY ───────────────────────────────────────────────────────────
@@ -160,6 +193,7 @@ model Transaction {
   type          String   @default("sale")  // sale, rental, lease
   status        String   @default("draft") // draft, pending, in_progress, completed, cancelled
   amount        Float
+  currency      String   @default("AED")  // AED, USD, EUR, GBP, INR
   closingDate   DateTime?
   notes         String?
   documents     String[]
@@ -196,6 +230,7 @@ model Tenant {
   moveOutDate   DateTime?
   monthlyRent   Float?
   deposit       Float?
+  currency      String   @default("AED")  // AED, USD, EUR, GBP, INR
   notes         String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -289,11 +324,14 @@ model NadiaConversationQueue {
 model Commission {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   amount      Float
+  currency    String   @default("AED")  // AED, USD, EUR, GBP, INR
   percentage  Float?   // Commission percentage (0-100), optional
   type        String   @default("sale")      // sale, rental, referral
   status      String   @default("pending")   // pending, approved, paid, cancelled
   notes       String?
   paidAt      DateTime?
+  vatRate     Float?   @default(5)  // VAT percentage: 0% residential, 5% commercial, 5% on commission
+  vatAmount   Float?   @default(0)  // Calculated VAT amount
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -356,27 +394,34 @@ model SavedSearch {
 // ─── VIEWING ────────────────────────────────────────────────────────────
 
 model Viewing {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
   scheduledAt   DateTime
-  duration      Int      @default(30)  // minutes
-  status        String   @default("scheduled") // scheduled, confirmed, completed, cancelled, no_show
-  type          String   @default("in_person") // in_person, virtual, open_house
+  duration      Int       @default(30)  // minutes
+  status        String    @default("scheduled") // scheduled, confirmed, completed, cancelled, no_show
+  type          String    @default("in_person") // in_person, virtual, open_house
   notes         String?
-  feedback      String?  // Post-viewing feedback
-  rating        Int?     // 1-5 star rating
-  location      String?  // Meeting point or virtual link
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  feedback      String?   // Post-viewing feedback
+  rating        Int?      // 1-5 star rating
+  location      String?   // Meeting point or virtual link
+  reminderSent  Boolean   @default(false)  // Whether reminder notification was sent
+  confirmedAt   DateTime? // When the viewing was confirmed
+  cancelReason  String?   // Reason for cancellation
+  icsToken      String?   // Unique token for .ics calendar download
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   // Relations
   userId        String   @db.ObjectId
   user          User     @relation("ViewingUser", fields: [userId], references: [id])
+  agentId       String?  @db.ObjectId
+  agent         User?    @relation("ViewingAgent", fields: [agentId], references: [id])
   propertyId    String   @db.ObjectId
   property      Property @relation(fields: [propertyId], references: [id])
   leadId        String?  @db.ObjectId
   lead          Lead?    @relation(fields: [leadId], references: [id])
 
   @@index([userId])
+  @@index([agentId])
   @@index([propertyId])
   @@index([leadId])
   @@index([status])
@@ -384,11 +429,35 @@ model Viewing {
   @@index([createdAt])
 }
 
+// ─── AGENT AVAILABILITY ─────────────────────────────────────────────────
+
+model AgentAvailability {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  dayOfWeek     Int      // 0=Sunday, 1=Monday, ..., 6=Saturday
+  startTime     String   // HH:mm format (e.g. "09:00")
+  endTime       String   // HH:mm format (e.g. "18:00")
+  isActive      Boolean  @default(true)
+  slotDuration  Int      @default(30)  // minutes per slot
+  breakStart    String?  // Break start time HH:mm (e.g. "12:00")
+  breakEnd      String?  // Break end time HH:mm (e.g. "13:00")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  agentId       String   @db.ObjectId
+  agent         User     @relation(fields: [agentId], references: [id])
+
+  @@unique([agentId, dayOfWeek])
+  @@index([agentId])
+  @@index([dayOfWeek])
+}
+
 // ─── OFFER ──────────────────────────────────────────────────────────────
 
 model Offer {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   amount        Float
+  currency      String   @default("AED")  // AED, USD, EUR, GBP, INR
   status        String   @default("pending") // pending, accepted, rejected, countered, expired, withdrawn
   expiresAt     DateTime?
   terms         String?  // Free-text negotiation terms
@@ -421,10 +490,15 @@ model Lease {
   endDate       DateTime
   monthlyRent   Float
   depositAmount Float    @default(0)
+  currency      String   @default("AED")  // AED, USD, EUR, GBP, INR
   status        String   @default("draft") // draft, active, expiring, expired, terminated, renewed
   terms         String?
   documents     String[]
   nextPaymentDue DateTime?
+  ejariNumber   String?   // Ejari registration number
+  ejariStatus   String?   @default("pending") // pending, registered, expired, cancelled
+  ejariRegistrationDate DateTime? // When Ejari was registered
+  ejariExpiryDate DateTime? // When Ejari registration expires
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -456,6 +530,7 @@ model Maintenance {
   scheduledDate DateTime?
   completedAt   DateTime?
   cost          Float?
+  costCurrency  String   @default("AED")  // AED, USD, EUR, GBP, INR
   images        String[]
   notes         String?
   createdAt     DateTime @default(now())
@@ -494,5 +569,221 @@ model JobApplication {
   @@index([status])
   @@index([position])
   @@index([email])
+  @@index([createdAt])
+}
+
+// ─── INVOICE ────────────────────────────────────────────────────────────
+
+// ─── CLIENT ─────────────────────────────────────────────────────────────
+
+model Client {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  name                String
+  email               String?
+  phone               String?
+  company             String?
+  category            String   @default("buyer")      // buyer, seller, landlord, tenant, investor
+  status              String   @default("active")      // active, inactive, prospect, archived
+  type                String   @default("individual")  // individual, corporate, investment_firm
+  nationality         String?
+  totalValue          Float    @default(0)             // total deal value
+  totalValueCurrency  String   @default("AED")          // AED, USD, EUR, GBP, INR
+  dealsCount          Int      @default(0)
+  notes               String?
+  tags                String[]
+  lastContact         DateTime?
+  convertedFromLeadId String?  @db.ObjectId            // if converted from a Lead
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations (agent ref stored as plain ID — no FK constraint)
+  assignedToId        String?  @db.ObjectId
+  communications      Communication[]
+  clientProperties    ClientProperty[]
+
+  @@index([category])
+  @@index([status])
+  @@index([type])
+  @@index([assignedToId])
+  @@index([email])
+  @@index([createdAt])
+}
+
+// ─── CLIENT ↔ PROPERTY JUNCTION ─────────────────────────────────────────
+
+model ClientProperty {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  clientId        String   @db.ObjectId
+  client          Client   @relation(fields: [clientId], references: [id])
+  propertyId      String   @db.ObjectId          // plain ref — avoids modifying Property model
+  relationship    String   @default("interested") // owner, tenant, buyer, interested, previous_owner, previous_tenant
+  notes           String?
+  createdAt       DateTime @default(now())
+
+  @@unique([clientId, propertyId])
+  @@index([clientId])
+  @@index([propertyId])
+  @@index([relationship])
+}
+
+// ─── COMMUNICATION LOG ──────────────────────────────────────────────────
+
+model Communication {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  clientId    String   @db.ObjectId
+  client      Client   @relation(fields: [clientId], references: [id])
+  type        String   @default("note")      // call, email, whatsapp, meeting, note, sms
+  direction   String   @default("outbound")  // inbound, outbound
+  subject     String?
+  body        String?
+  duration    Int?                            // seconds (for calls/meetings)
+  outcome     String?                         // interested, follow_up, not_available, closed, no_answer
+  createdAt   DateTime @default(now())
+
+  // Who logged it (plain ID — no FK constraint)
+  createdById String?  @db.ObjectId
+
+  @@index([clientId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([createdById])
+}
+
+// ─── INVOICE ────────────────────────────────────────────────────────────
+
+model Invoice {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  invoiceNumber String   @unique           // "INV-2026-0001"
+  client        String                     // Client name
+  property      String?                    // Property reference
+  amount        Float
+  vatAmount     Float    @default(0)       // 5% VAT for commercial
+  totalAmount   Float                      // amount + vatAmount
+  currency      String   @default("AED")
+  status        String   @default("draft") // draft, pending, paid, overdue, cancelled, refunded
+  date          DateTime @default(now())
+  dueDate       DateTime
+  paidAt        DateTime?
+  notes         String?
+  lineItems     Json?                      // [{ description, qty, unitPrice, total }]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  createdById   String?  @db.ObjectId
+
+  @@index([status])
+  @@index([client])
+  @@index([dueDate])
+  @@index([createdAt])
+}
+
+// ─── EXPENSE ────────────────────────────────────────────────────────────
+
+model Expense {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  category      String                     // Marketing, Maintenance, Utilities, Salaries, Office, Legal, Insurance
+  description   String
+  amount        Float
+  currency      String   @default("AED")
+  status        String   @default("pending") // pending, approved, rejected, processed, reimbursed
+  date          DateTime @default(now())
+  receiptUrl    String?                    // Receipt/document upload
+  notes         String?
+  approvedById  String?  @db.ObjectId
+  approvedAt    DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  createdById   String?  @db.ObjectId
+
+  @@index([status])
+  @@index([category])
+  @@index([date])
+  @@index([createdAt])
+  @@index([approvedById])
+}
+
+// ─── FOLLOW-UP SEQUENCE ─────────────────────────────────────────────────
+
+model FollowUpSequence {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  cadenceType   String   // hot, warm, cold, custom
+  status        String   @default("active") // active, paused, completed, cancelled
+  currentStep   Int      @default(0)
+  totalSteps    Int      @default(4)
+  startedAt     DateTime @default(now())
+  pausedAt      DateTime?
+  completedAt   DateTime?
+  nextStepAt    DateTime? // when the next step should fire
+  metadata      Json?    // custom overrides, notes
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  leadId        String   @db.ObjectId
+  lead          Lead     @relation(fields: [leadId], references: [id])
+  createdById   String?  @db.ObjectId
+  steps         FollowUpStep[]
+
+  @@index([status])
+  @@index([cadenceType])
+  @@index([leadId])
+  @@index([nextStepAt])
+  @@index([status, nextStepAt])
+}
+
+model FollowUpStep {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  stepNumber    Int      // 1, 2, 3, 4...
+  channel       String   // whatsapp, email, call, sms
+  status        String   @default("pending") // pending, scheduled, sent, delivered, failed, skipped
+  scheduledAt   DateTime?
+  executedAt    DateTime?
+  templateName  String?  // e.g. "follow_up_viewing", "initial_contact"
+  message       String?  // actual message content (if custom)
+  result        String?  // response outcome: replied, no_response, bounced, call_answered, call_no_answer
+  errorMessage  String?  // if failed
+  metadata      Json?    // messageId, deliveryStatus, etc.
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  sequenceId    String   @db.ObjectId
+  sequence      FollowUpSequence @relation(fields: [sequenceId], references: [id])
+
+  @@index([sequenceId])
+  @@index([status])
+  @@index([stepNumber])
+  @@index([scheduledAt])
+  @@index([channel])
+}
+
+// ─── DOCUMENT ───────────────────────────────────────────────────────────
+
+model Document {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  type          String   // mou, form_f, noc, commission_invoice, viewing_report, offer_letter
+  title         String
+  version       Int      @default(1)
+  status        String   @default("draft") // draft, final, signed, archived
+  htmlContent   String   // rendered HTML content
+  metadata      Json?    // template variables, generation context
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Related entities (optional — a document may link to any combination)
+  transactionId String?  @db.ObjectId
+  leadId        String?  @db.ObjectId
+  propertyId    String?  @db.ObjectId
+  commissionId  String?  @db.ObjectId
+  generatedById String?  @db.ObjectId
+
+  @@index([type])
+  @@index([status])
+  @@index([transactionId])
+  @@index([leadId])
+  @@index([propertyId])
   @@index([createdAt])
 }

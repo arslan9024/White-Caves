@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import { transitions } from '../styles/theme/transitions';
+import { typography } from '../styles/theme/typography';
+import { radius } from '../styles/theme/radius';
 
 export const Container = styled.div`
   min-height: 100vh;
@@ -26,7 +29,7 @@ export const Header = styled.div`
   h1 {
     font-family: ${props => props.theme?.fonts?.heading || "'Montserrat', sans-serif"};
     font-size: 2.5rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
     color: ${props => props.theme?.colors?.textPrimary || '#212121'};
     margin-bottom: 1rem;
 
@@ -47,7 +50,7 @@ export const Header = styled.div`
 export const Warning = styled.div`
   font-size: 0.875rem;
   color: ${props => props.theme?.colors?.danger || '#d32f2f'};
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   background: ${props => `rgba(211, 47, 47, 0.08)`};
   padding: 0.75rem 1.25rem;
   border-radius: ${props => props.theme?.radius?.lg || '0.75rem'};
@@ -71,7 +74,7 @@ export const RoleCard = styled.button<{ $selected?: boolean }>`
     : (props.theme?.colors?.bgPrimary || '#ffffff')
   };
   border: 2px solid ${props => props.$selected
-    ? (props.theme?.colors?.danger || '#E31E24')
+    ? (props.theme?.colors?.danger || '#D32F2F')
     : (props.theme?.colors?.borderColor || '#e0e0e0')
   };
   border-radius: ${props => props.theme?.radius?.xl || '1rem'};
@@ -90,13 +93,13 @@ export const RoleCard = styled.button<{ $selected?: boolean }>`
     left: 0;
     right: 0;
     height: 4px;
-    background: ${props => props.theme?.colors?.danger || '#E31E24'};
+    background: ${props => props.theme?.colors?.danger || '#D32F2F'};
     transform: ${props => props.$selected ? 'scaleX(1)' : 'scaleX(0)'};
     transition: transform 0.3s ease;
   }
 
   &:hover {
-    border-color: ${props => props.theme?.colors?.danger || '#E31E24'};
+    border-color: ${props => props.theme?.colors?.danger || '#D32F2F'};
     transform: translateY(-6px);
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
   }
@@ -118,7 +121,7 @@ export const RoleIcon = styled.span`
 
 export const RoleTitle = styled.h3`
   font-size: 1.125rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: ${props => props.theme?.colors?.textPrimary || '#212121'};
   margin; 0 0 0.5rem;
 `;
@@ -146,11 +149,11 @@ export const Button = styled.button<{ $variant?: 'primary' | 'secondary' }>`
   flex: 1;
   padding: 0.875rem 1.5rem;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   border: none;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   ${props => props.$variant === 'primary' ? `
     background: ${props.theme?.colors?.primary || '#0066cc'};

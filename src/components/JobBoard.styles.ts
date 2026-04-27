@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import { theme } from '../styles/theme';
+
+const { colors, shadows, transitions, radius, spacing, typography } = theme;
 
 export const JobBoardContainer = styled.div`
   padding: 2rem;
@@ -12,7 +15,7 @@ export const JobBoardContainer = styled.div`
 
 export const BoardTitle = styled.h2`
   font-size: 1.75rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
   margin-bottom: 2rem;
   margin: 0 0 2rem 0;
@@ -36,16 +39,16 @@ export const JobsList = styled.div`
 `;
 
 export const JobCard = styled.div`
-  background: white;
+  background: ${colors.background.secondary};
   padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  border-radius: ${radius.lg};
+  box-shadow: ${shadows.card};
+  transition: all ${transitions.durations.standard} ${transitions.easing.easeOut};
   display: flex;
   flex-direction: column;
 
   &:hover {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: ${shadows.luxuryHover};
     transform: translateY(-4px);
   }
 
@@ -56,7 +59,7 @@ export const JobCard = styled.div`
 
 export const JobTitle = styled.h3`
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
   margin-bottom: 0.75rem;
   margin: 0 0 0.75rem 0;
@@ -82,7 +85,7 @@ export const JobDetails = styled.div`
 `;
 
 export const DetailBadge = styled.span`
-  background: #f5f5f5;
+  background: ${colors.background.tertiary};
   padding: 0.3rem 0.8rem;
   border-radius: 15px;
   font-size: 0.9rem;
@@ -90,19 +93,19 @@ export const DetailBadge = styled.span`
 `;
 
 export const SubmitButton = styled.button`
-  background: #e41e3f;
-  color: white;
+  background: ${colors.primary};
+  color: ${colors.background.secondary};
   border: none;
   padding: 0.8rem 1.5rem;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   cursor: pointer;
   width: 100%;
   margin-top: auto;
-  font-weight: 600;
-  transition: all 0.2s ease;
+  font-weight: ${typography.weights.semibold};
+  transition: ${transitions.hover};
 
   &:hover {
-    background: #c41834;
+    background: ${colors.primaryDark};
   }
 
   &:active {
@@ -120,24 +123,24 @@ export const ApplicationForm = styled.form`
   gap: 1rem;
   margin-top: 1rem;
   padding: 1rem;
-  background: #f5f5f5;
-  border-radius: 8px;
+  background: ${colors.background.tertiary};
+  border-radius: ${radius.lg};
 `;
 
 export const FormSelect = styled.select`
   padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid ${colors.border};
+  border-radius: ${radius.sm};
   font-size: 0.9rem;
-  background: white;
+  background: ${colors.background.secondary};
   color: var(--text-primary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:focus {
     outline: none;
-    border-color: #e41e3f;
-    box-shadow: 0 0 0 2px rgba(228, 30, 63, 0.1);
+    border-color: ${colors.primary};
+    box-shadow: ${shadows.luxuryFocus};
   }
 
   option {
@@ -147,17 +150,17 @@ export const FormSelect = styled.select`
 
 export const FormInput = styled.input`
   padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid ${colors.border};
+  border-radius: ${radius.sm};
   font-size: 0.9rem;
-  background: white;
+  background: ${colors.background.secondary};
   color: var(--text-primary);
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:focus {
     outline: none;
-    border-color: #e41e3f;
-    box-shadow: 0 0 0 2px rgba(228, 30, 63, 0.1);
+    border-color: ${colors.primary};
+    box-shadow: ${shadows.luxuryFocus};
   }
 
   &[type="file"] {
@@ -167,52 +170,52 @@ export const FormInput = styled.input`
   }
 
   &[type="file"]::file-selector-button {
-    background: #e41e3f;
-    color: white;
+    background: ${colors.primary};
+    color: ${colors.background.secondary};
     border: none;
     padding: 0.5rem 1rem;
-    border-radius: 4px;
+    border-radius: ${radius.sm};
     cursor: pointer;
-    font-weight: 500;
+    font-weight: ${typography.weights.medium};
 
     &:hover {
-      background: #c41834;
+      background: ${colors.primaryDark};
     }
   }
 `;
 
 export const FormTextarea = styled.textarea`
   padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid ${colors.border};
+  border-radius: ${radius.sm};
   font-size: 0.9rem;
-  background: white;
+  background: ${colors.background.secondary};
   color: var(--text-primary);
   font-family: inherit;
   resize: vertical;
   min-height: 100px;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:focus {
     outline: none;
-    border-color: #e41e3f;
-    box-shadow: 0 0 0 2px rgba(228, 30, 63, 0.1);
+    border-color: ${colors.primary};
+    box-shadow: ${shadows.luxuryFocus};
   }
 `;
 
 export const FormSubmitButton = styled.button`
-  background: #e41e3f;
-  color: white;
+  background: ${colors.primary};
+  color: ${colors.background.secondary};
   border: none;
   padding: 0.8rem 1.5rem;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s ease;
+  font-weight: ${typography.weights.semibold};
+  transition: ${transitions.hover};
   width: 100%;
 
   &:hover {
-    background: #c41834;
+    background: ${colors.primaryDark};
   }
 
   &:active {
@@ -220,7 +223,7 @@ export const FormSubmitButton = styled.button`
   }
 
   &:disabled {
-    background: #ccc;
+    background: ${colors.borderDark};
     cursor: not-allowed;
   }
 
@@ -237,23 +240,23 @@ export const FormGroup = styled.div`
 
 export const FormLabel = styled.label`
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   color: var(--text-primary);
 `;
 
 export const ErrorMessage = styled.span`
-  color: #e41e3f;
+  color: ${colors.error};
   font-size: 0.8rem;
   margin-top: 0.25rem;
 `;
 
 export const SuccessMessage = styled.div`
-  background: #d4f5dd;
-  color: #038a3a;
+  background: #E8F5E9;
+  color: ${colors.success};
   padding: 1rem;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   margin-bottom: 1rem;
-  border-left: 4px solid #038a3a;
+  border-left: 4px solid ${colors.success};
 `;
 
 export const EmptyState = styled.div`
@@ -269,7 +272,7 @@ export const EmptyStateIcon = styled.div`
 
 export const EmptyStateTitle = styled.h3`
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   margin-bottom: 0.5rem;
   color: var(--text-primary);
 `;
@@ -292,19 +295,19 @@ export const FilterBar = styled.div`
 
 export const FilterButton = styled.button<{ $isActive?: boolean }>`
   padding: 0.6rem 1.2rem;
-  background: ${props => props.$isActive ? '#e41e3f' : '#f5f5f5'};
-  color: ${props => props.$isActive ? 'white' : 'var(--text-primary)'};
-  border: ${props => props.$isActive ? 'none' : '1px solid #ddd'};
+  background: ${props => props.$isActive ? colors.primary : colors.background.tertiary};
+  color: ${props => props.$isActive ? colors.background.secondary : 'var(--text-primary)'};
+  border: ${props => props.$isActive ? 'none' : `1px solid ${colors.border}`};
   border-radius: 20px;
   cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  font-weight: ${typography.weights.medium};
+  transition: ${transitions.hover};
   white-space: nowrap;
 
   &:hover {
     ${props => props.$isActive 
-      ? 'background: #c41834;' 
-      : 'background: #eee; border-color: #bbb;'
+      ? `background: ${colors.primaryDark};` 
+      : `background: ${colors.borderLight}; border-color: ${colors.borderDark};`
     }
   }
 
@@ -315,16 +318,16 @@ export const FilterButton = styled.button<{ $isActive?: boolean }>`
 
 export const SortDropdown = styled.select`
   padding: 0.6rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background: white;
+  border: 1px solid ${colors.border};
+  border-radius: ${radius.sm};
+  background: ${colors.background.secondary};
   color: var(--text-primary);
   cursor: pointer;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 
   &:focus {
     outline: none;
-    border-color: #e41e3f;
+    border-color: ${colors.primary};
   }
 
   @media (max-width: 768px) {

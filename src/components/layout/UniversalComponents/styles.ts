@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
+import { spacing } from '../../../styles/theme/spacing';
 
 export const TimeDisplayContainer = styled.div<{ $isVisible?: boolean }>`
   position: fixed;
@@ -8,7 +9,7 @@ export const TimeDisplayContainer = styled.div<{ $isVisible?: boolean }>`
   z-index: var(--z-toast, 810);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   transition: opacity 0.4s ease, transform 0.4s ease;
   opacity: ${props => props.$isVisible ? 1 : 0};
   transform: translateX(${props => props.$isVisible ? 0 : '-20px'});

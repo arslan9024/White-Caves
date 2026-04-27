@@ -1,4 +1,3 @@
-import React from 'react';
 import { Plus, Edit, Trash2, Users, Eye } from 'lucide-react';
 
 interface Job {

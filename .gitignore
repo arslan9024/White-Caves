@@ -132,3 +132,17 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Playwright / Vitest test artifacts
+test-results/
+playwright-report/
+test-results-*.log
+
+# Build output logs
+build-*.txt
+*-build.txt
+*-test-result*.txt
+
+# WhatsApp session data (secrets)
+.wwebjs_auth/
+.wwebjs_cache/

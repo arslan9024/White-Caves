@@ -40,7 +40,7 @@ interface UserRole {
   fromGateway: boolean;
 }
 
-const OnboardingGateway: React.FC = () => {
+const OnboardingGateway = () => {
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
@@ -59,7 +59,7 @@ const OnboardingGateway: React.FC = () => {
       ),
       path: '/seller/dashboard',
       role: 'seller',
-      color: '#D32F2F'
+      color: '#D4AF37'
     },
     {
       id: 'buyer',

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Search, Edit, Trash2, Eye, Download, Mail } from 'lucide-react';
 
 interface Applicant {
@@ -155,7 +154,7 @@ export default function ApplicantsTab({ state }: ApplicantsTabProps) {
               </div>
 
               <div className="applicant-actions">
-                <button className="action-btn secondary" title="Send Email">
+                <button className="action-btn secondary" title="Send Email" aria-label="Send email to applicant">
                   <Mail size={16} />
                 </button>
                 <button

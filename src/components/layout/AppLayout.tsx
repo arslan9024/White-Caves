@@ -1,18 +1,31 @@
 /**
  * AppLayout — Unified CRM Dashboard Layout
  *
- * Structure:
+ * Structure (Responsive):
+ *   Desktop (1024px+):
  *   ┌──────────────── TopBar (56px fixed) ─────────────────┐
  *   │ [WC Logo] | Breadcrumbs ──── [⌘K] [🔔] [👤 User ▾] │
- *   ├──────┬───────────────────────────────┬───────────────┤
- *   │ Rail │         Main Content          │   AI Panel    │
- *   │ 64px │                               │   (slide-in)  │
- *   │      │                               │               │
- *   └──────┴───────────────────────────────┴───────────────┘
+ *   ├─────────┬────────────────────────────────────────────┤
+ *   │ 280px   │              Main Content                  │
+ *   │Sidebar  │         (responsive, full width)           │
+ *   └─────────┴────────────────────────────────────────────┘
+ *
+ *   Tablet (768-1023px):
+ *   ┌──────────────── TopBar (56px) ─────────────────┐
+ *   ├────┬──────────────────────────────────────────┤
+ *   │64px│              Main Content                │
+ *   │Rail│         (responsive, full width)         │
+ *   └────┴──────────────────────────────────────────┘
+ *
+ *   Mobile (<768px):
+ *   ┌──────────────── TopBar (56px) ────────────────┐
+ *   │                Main Content                   │
+ *         + 56px bottom mobile nav (MobileBottomNav)
  *
  * - TopBar: unified breadcrumb nav, Cmd+K search, notifications, user menu
- * - SidebarContainer: 64px icon rail + 240px flyout for departments
- * - RightPanelContainer: AI assistants slide-in (triggered from rail or Ctrl+A)
+ * - Desktop: EnhancedLeftSidebar (280px, departments + AI inline)
+ * - Tablet: SidebarContainer (64px rail + 240px flyout)
+ * - Mobile: Hidden sidebar, content full width, bottom nav
  * - CommandPalette: global search overlay (Cmd+K)
  */
 
@@ -20,11 +33,13 @@ import React, { useEffect, ReactNode, lazy, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveRole } from '../../store/navigationSlice';
+import { useResponsiveLayout } from '../../hooks/navigation/useResponsiveLayout';
 import { TopBar } from './TopBar';
 import SidebarContainer from './SidebarContainer';
-import RightPanelContainer from './RightPanelContainer';
+import EnhancedLeftSidebar from './EnhancedLeftSidebar/EnhancedLeftSidebar';
 import CommandPalette from '../common/CommandPalette';
 import { AppLayoutContainer, AppBody, AppMain } from './AppLayout/styles';
+import type { RootState } from '../../store/store';
 
 // Lazy-load non-critical UI
 const BiometricReminder = lazy(() =>
@@ -37,6 +52,8 @@ interface AppLayoutProps {
   children: ReactNode;
   /** Show sidebar navigation (default: true) */
   showNav?: boolean;
+  /** Is current user a super user (admin) */
+  isSuperUser?: boolean;
   /** Optional props forwarded to SidebarContainer */
   navProps?: Record<string, unknown>;
 }
@@ -49,9 +66,13 @@ const ROLE_PATHS: string[] = [
 const AppLayout: React.FC<AppLayoutProps> = ({
   children,
   showNav = true,
+  isSuperUser = false,
 }) => {
   const location = useLocation();
   const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.user.currentUser);
+  const { isDesktop, isTablet } = useResponsiveLayout();
+  const showCrmChrome = showNav && Boolean(user);
 
   // Detect role from URL and sync to Redux
   useEffect(() => {
@@ -64,27 +85,34 @@ const AppLayout: React.FC<AppLayoutProps> = ({
 
   return (
     <AppLayoutContainer>
-      {/* ─── Top Navigation Bar (56px) ─────────────────────────────── */}
-      <TopBar />
+      {/* ─── Skip Navigation (WCAG 2.4.1) ────────────────────────── */}
+      <a href="#main-content" className="skip-to-content">
+        Skip to main content
+      </a>
+
+      {/* ─── Top Navigation Bar (CRM only for authenticated users) ─── */}
+      {showCrmChrome && <TopBar />}
 
       {/* ─── Command Palette Overlay (Cmd+K / Ctrl+K) ─────────────── */}
-      <CommandPalette />
+      {showCrmChrome && <CommandPalette />}
 
-      {/* ─── Body: Rail + Content + Right Panel ────────────────────── */}
+      {/* ─── Body: Responsive Navigation + Content ────────────────── */}
       <AppBody>
-        {/* Left icon rail (64px) + department flyout (240px) */}
-        {showNav && <SidebarContainer />}
+        {/* Desktop (1024px+): 280px Unified Sidebar */}
+        {showCrmChrome && isDesktop && <EnhancedLeftSidebar isSuperUser={isSuperUser} />}
 
-        {/* Main content area */}
-        <AppMain $withNav={showNav}>
+        {/* Tablet (768-1023px): 64px Rail + 240px Flyout */}
+        {showCrmChrome && isTablet && <SidebarContainer />}
+
+        {/* Mobile (<768px): Hidden, content full width + bottom nav */}
+
+        {/* Main content area — responsive width based on sidebar */}
+        <AppMain $withNav={showCrmChrome} id="main-content" tabIndex={-1}>
           <Suspense fallback={null}>
             <BiometricReminder />
           </Suspense>
           {children}
         </AppMain>
-
-        {/* Right slide-in AI assistant panel */}
-        {showNav && <RightPanelContainer />}
       </AppBody>
     </AppLayoutContainer>
   );

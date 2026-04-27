@@ -5,6 +5,7 @@ import InvoicesTab from './InvoicesTab';
 import PaymentsTab from './PaymentsTab';
 import ExpensesTab from './ExpensesTab';
 import ReportsTab from './ReportsTab';
+import CommissionsTab from './CommissionsTab';
 import '../TheodoraFinanceCRM.css';
 
 const TheodoraFinanceCRM = () => {
@@ -19,11 +20,22 @@ const TheodoraFinanceCRM = () => {
     handleGeneratePaymentMessage,
     handleApproveExpense,
     handleRejectExpense,
-    features
+    features,
+    // Commission data (real API)
+    commissions,
+    pendingCommissions,
+    approvedCommissions,
+    paidCommissions,
+    commissionsLoading,
+    handleCreateCommission,
+    handleUpdateCommission,
+    handleBulkPay,
+    handleRefreshCommissions,
   } = useFinanceData();
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: '📊' },
+    { id: 'commissions', label: 'Commissions', icon: '💵' },
     { id: 'invoices', label: 'Invoices', icon: '📄' },
     { id: 'payments', label: 'Payments', icon: '💳' },
     { id: 'expenses', label: 'Expenses', icon: '💰' },
@@ -34,6 +46,21 @@ const TheodoraFinanceCRM = () => {
     switch (activeTab) {
       case 'overview':
         return <OverviewTab financeStats={financeStats} />;
+      case 'commissions':
+        return (
+          <CommissionsTab
+            commissions={commissions}
+            pendingCommissions={pendingCommissions}
+            approvedCommissions={approvedCommissions}
+            paidCommissions={paidCommissions}
+            loading={commissionsLoading as boolean}
+            onApprove={(id) => handleUpdateCommission({ id, status: 'approved' })}
+            onReject={(id) => handleUpdateCommission({ id, status: 'cancelled' })}
+            onBulkPay={handleBulkPay}
+            onCreate={(data) => handleCreateCommission(data as { agentId: string; amount: number; percentage?: number; type?: string; notes?: string; leadId?: string; propertyId?: string })}
+            onRefresh={handleRefreshCommissions}
+          />
+        );
       case 'invoices':
         return <InvoicesTab invoices={invoices} onSelectInvoice={setSelectedInvoice} />;
       case 'payments':

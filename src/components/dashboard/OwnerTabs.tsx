@@ -6,33 +6,42 @@
 
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../../utils/authFetch';
+import { createLogger } from '../../utils/logger';
+import { settledJson } from '../../utils/settledJson';
+import type {
+  DashboardOwnerStats,
+  DashboardFinanceAnalytics,
+  DashboardSystemHealth,
+} from '@/types/dashboard';
 import * as S from './shared';
+
+const log = createLogger('Dashboard');
 
 // ═══════════════════════════════════════════════════════════════════════
 // OWNER OVERVIEW
 // ═══════════════════════════════════════════════════════════════════════
 
 export const OwnerOverview: React.FC = () => {
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<DashboardOwnerStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
-        const [propsRes, leadsRes, leasesRes] = await Promise.allSettled([
-          authFetch('/api/properties/count'),
-          authFetch('/api/leads/count'),
-          authFetch('/api/leases/count'),
-        ]);
-        const props = propsRes.status === 'fulfilled' ? await propsRes.value.json() : { count: 0 };
-        const leads = leadsRes.status === 'fulfilled' ? await leadsRes.value.json() : { count: 0 };
-        const leases = leasesRes.status === 'fulfilled' ? await leasesRes.value.json() : { count: 0 };
+        const [props, leads, leases] = await settledJson(
+          [authFetch('/api/properties/count'), authFetch('/api/leads/count'), authFetch('/api/leases/count')],
+          [{ count: 0 }, { count: 0 }, { count: 0 }],
+        ) as [
+          { count?: number; data?: number },
+          { count?: number; data?: number },
+          { count?: number; data?: number },
+        ];
         setStats({
           properties: props.count ?? props.data ?? 0,
           leads: leads.count ?? leads.data ?? 0,
           leases: leases.count ?? leases.data ?? 0,
         });
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch overview stats:', error); }
       setLoading(false);
     })();
   }, []);
@@ -113,7 +122,7 @@ export const OwnerOverview: React.FC = () => {
 
 export const BusinessAnalytics: React.FC = () => {
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<DashboardFinanceAnalytics | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -121,7 +130,7 @@ export const BusinessAnalytics: React.FC = () => {
         const res = await authFetch('/api/finance/analytics');
         const json = await res.json();
         setData(json.data);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch analytics data:', error); }
       setLoading(false);
     })();
   }, []);
@@ -248,7 +257,7 @@ export const WhatsAppDashboard: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const SystemHealth: React.FC = () => {
-  const [health, setHealth] = useState<any>(null);
+  const [health, setHealth] = useState<DashboardSystemHealth | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -257,7 +266,7 @@ export const SystemHealth: React.FC = () => {
         const res = await authFetch('/api/health');
         const json = await res.json();
         setHealth(json);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch health status:', error); }
       setLoading(false);
     })();
   }, []);

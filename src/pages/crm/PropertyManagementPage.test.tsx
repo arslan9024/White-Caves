@@ -83,7 +83,7 @@ const createMockStore = (properties = mockProperties, loading = false, error: st
         activities: { items: [], loading: false, error: null },
         overview: null,
         lastUpdated: new Date().toISOString(),
-      } as ReturnType<typeof crmDataReducer>,
+      } as unknown as ReturnType<typeof crmDataReducer>,
     },
   });
 };

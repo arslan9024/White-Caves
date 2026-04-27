@@ -1,9 +1,12 @@
 import styled from 'styled-components';
 import { typography } from '../../../styles/theme/typography';
+import { transitions } from '../../../styles/theme/transitions';
+import { radius } from '../../../styles/theme/radius';
+import { spacing } from '../../../styles/theme/spacing';
 
 export const PropertyMatrixContainer = styled.div`
   background: var(--bg-card);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   border: 1px solid var(--border-color);
   overflow: hidden;
 `;
@@ -15,7 +18,7 @@ export const MatrixHeader = styled.div`
   padding: 16px 20px;
   border-bottom: 1px solid var(--border-color);
   background: var(--bg-secondary);
-  gap: 16px;
+  gap: ${spacing.md};
   flex-wrap: wrap;
 `;
 
@@ -24,17 +27,17 @@ export const MatrixInfo = styled.div`
   align-items: center;
   gap: 10px;
   color: var(--text-primary);
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 `;
 
 export const MatrixSearch = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 8px 14px;
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   flex: 1;
   max-width: 400px;
 
@@ -43,7 +46,7 @@ export const MatrixSearch = styled.div`
     background: transparent;
     flex: 1;
     color: var(--text-primary);
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
 
     &:focus {
       outline: none;
@@ -62,8 +65,8 @@ export const MatrixTable = styled.table`
   th {
     padding: 12px 16px;
     text-align: left;
-    font-size: 12px;
-    font-weight: 600;
+    font-size: ${typography.sizes.xs};
+    font-weight: ${typography.weights.semibold};
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -85,7 +88,7 @@ export const MatrixTable = styled.table`
   td {
     padding: 12px 16px;
     border-top: 1px solid var(--border-color);
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     color: var(--text-primary);
   }
 
@@ -103,7 +106,7 @@ export const MatrixTable = styled.table`
 `;
 
 export const PNumberCell = styled.td`
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   font-family: ${typography.fontFamily.mono};
   color: var(--primary);
 `;
@@ -113,9 +116,9 @@ export const ClusterBadge = styled.span`
   padding: 4px 10px;
   background: rgba(139, 92, 246, 0.1);
   color: #8b5cf6;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
+  border-radius: ${radius.md};
+  font-size: ${typography.sizes.xs};
+  font-weight: ${typography.weights.medium};
 `;
 
 export const AreaCell = styled.div`
@@ -135,7 +138,7 @@ export const OwnersCell = styled.div`
 export const OwnerBadge = styled.button<{ $multiPhone?: boolean }>`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: ${spacing.xs};
   padding: 4px 8px;
   background: var(--bg-secondary);
   border: 1px solid
@@ -143,15 +146,15 @@ export const OwnerBadge = styled.button<{ $multiPhone?: boolean }>`
       props.$multiPhone
         ? '#3b82f6'
         : 'var(--border-color)'};
-  border-radius: 6px;
+  border-radius: ${radius.md};
   font-size: 11px;
   color: var(--text-primary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     border-color: var(--primary);
-    background: rgba(220, 38, 38, 0.05);
+    background: rgba(212, 175, 55, 0.05);
   }
 `;
 
@@ -169,15 +172,15 @@ export const MultiOwnerIndicator = styled.div`
   color: white;
   border-radius: 50%;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
 `;
 
 export const StatusBadge = styled.span<{ $status?: string }>`
   display: inline-block;
   padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
+  border-radius: ${radius.md};
+  font-size: ${typography.sizes.xs};
+  font-weight: ${typography.weights.medium};
   background: ${(props) => {
     switch (props.$status) {
       case 'rented':
@@ -204,8 +207,8 @@ export const Pagination = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
-  padding: 16px;
+  gap: ${spacing.sm};
+  padding: ${spacing.md};
   border-top: 1px solid var(--border-color);
 `;
 
@@ -217,10 +220,10 @@ export const PaginationBtn = styled.button<{ $active?: boolean; $disabled?: bool
     props.$active ? 'var(--primary)' : 'transparent'};
   color: ${(props) =>
     props.$active ? 'white' : 'var(--text-secondary)'};
-  border-radius: 6px;
+  border-radius: ${radius.md};
   cursor: ${(props) => (props.$disabled ? 'not-allowed' : 'pointer')};
   opacity: ${(props) => (props.$disabled ? 0.5 : 1)};
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover:not(:disabled) {
     border-color: var(--primary);

@@ -1,5 +1,10 @@
 import styled from 'styled-components';
 import { keyframes } from 'styled-components';
+import { colors } from '../styles/theme/colors';
+import { typography } from '../styles/theme/typography';
+import { transitions } from '../styles/theme/transitions';
+import { radius } from '../styles/theme/radius';
+import { spacing } from '../styles/theme/spacing';
 
 const pulse = keyframes`
   0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
@@ -43,25 +48,25 @@ export const TourTitle = styled.div`
 `;
 
 export const TourBadge = styled.div`
-  background: linear-gradient(135deg, #E31E24, #C62828);
+  background: linear-gradient(135deg, ${colors.primary}, ${colors.primaryDark});
   color: #0a0a0f;
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: ${typography.sizes.xs};
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
 `;
 
 export const TourTitleText = styled.h3`
   color: white;
   margin: 0;
-  font-size: 18px;
-  font-weight: 500;
+  font-size: ${typography.sizes.lg};
+  font-weight: ${typography.weights.medium};
 `;
 
 export const TourControlsHeader = styled.div`
   display: flex;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const TourBtn = styled.button<{ $close?: boolean; $active?: boolean }>`
@@ -76,19 +81,19 @@ export const TourBtn = styled.button<{ $close?: boolean; $active?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  transition: all 0.3s ease;
+  font-size: ${typography.sizes.md};
+  transition: ${transitions.all};
 
   &:hover {
     background: ${props => props.$close 
       ? 'rgba(255, 100, 100, 0.3)' 
       : 'rgba(212, 175, 55, 0.3)'};
-    border-color: ${props => props.$close ? '#ff6464' : '#E31E24'};
+    border-color: ${props => props.$close ? '#ff6464' : colors.primary};
   }
 
   ${props => props.$active && `
     background: rgba(212, 175, 55, 0.4);
-    border-color: #E31E24;
+    border-color: ${colors.primary};
   `}
 `;
 
@@ -129,11 +134,11 @@ export const TourHotspot = styled.button`
   justify-content: center;
   animation: ${pulse} 2s infinite;
   z-index: 5;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   &:hover {
     transform: translate(-50%, -50%) scale(1.2);
-    background: #E31E24;
+    background: ${colors.primary};
   }
 
   &.info {
@@ -142,18 +147,18 @@ export const TourHotspot = styled.button`
 `;
 
 export const HotspotIcon = styled.span`
-  font-size: 18px;
+  font-size: ${typography.sizes.lg};
 `;
 
 export const HotspotLabel = styled.div`
   position: absolute;
   bottom: -24px;
   white-space: nowrap;
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: white;
   background: rgba(0, 0, 0, 0.7);
   padding: 2px 8px;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   opacity: 0;
   transition: opacity 0.3s ease;
 
@@ -211,11 +216,11 @@ export const TourFooter = styled.div`
 export const ZoomControls = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border-radius: 25px;
-  padding: 4px;
+  padding: ${spacing.xs};
 `;
 
 export const ZoomBtn = styled.button`
@@ -225,7 +230,7 @@ export const ZoomBtn = styled.button`
   border: none;
   background: rgba(255, 255, 255, 0.2);
   color: white;
-  font-size: 18px;
+  font-size: ${typography.sizes.lg};
   cursor: pointer;
   transition: background 0.3s ease;
 
@@ -236,16 +241,16 @@ export const ZoomBtn = styled.button`
 
 export const ZoomLevel = styled.span`
   color: white;
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   min-width: 50px;
   text-align: center;
 `;
 
 export const RoomNavigator = styled.div`
   display: flex;
-  gap: 8px;
+  gap: ${spacing.sm};
   overflow-x: auto;
-  padding: 4px;
+  padding: ${spacing.xs};
   max-width: 50%;
 `;
 
@@ -253,11 +258,11 @@ export const RoomThumb = styled.button<{ $active?: boolean }>`
   flex-shrink: 0;
   width: 80px;
   height: 50px;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   overflow: hidden;
-  border: 2px solid ${props => props.$active ? '#E31E24' : 'transparent'};
+  border: 2px solid ${props => props.$active ? colors.primary : 'transparent'};
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
   position: relative;
   background: none;
   padding: 0;
@@ -292,15 +297,15 @@ export const TourInfo = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4px;
+  gap: ${spacing.xs};
 `;
 
 export const TourInfoText = styled.div`
   color: white;
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
 `;
 
 export const ViewsCount = styled.span`
-  color: #E31E24;
-  font-weight: 600;
+  color: ${colors.primary};
+  font-weight: ${typography.weights.semibold};
 `;

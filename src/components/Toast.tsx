@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
+import { TIMING } from '../constants/app';
 import './Toast.css';
 
 // ─── Types ────────────────────────────────────────────────────────────
@@ -129,7 +130,7 @@ const Toast: React.FC<ToastProps> = ({ message, type, onClose }) => {
 
   const handleClose = () => {
     setIsVisible(false);
-    closeTimerRef.current = setTimeout(onClose, 300);
+    closeTimerRef.current = setTimeout(onClose, TIMING.TOAST_EXIT_ANIMATION);
   };
 
   const getIcon = (): string => {

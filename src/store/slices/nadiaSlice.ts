@@ -6,6 +6,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '@/store/store';
 import nadiaAPI from '@/services/nadiaAPI';
+import { getErrorMessage } from '@/constants';
 import {
   Conversation,
   Message,
@@ -56,7 +57,7 @@ export const fetchConversations = createAsyncThunk<
       return await nadiaAPI.conversations.list(query);
     } catch (error) {
       return rejectWithValue(
-        error instanceof Error ? error.message : 'Failed to fetch conversations'
+        getErrorMessage(error, 'Failed to fetch conversations')
       );
     }
   }
@@ -77,7 +78,7 @@ export const fetchMessages = createAsyncThunk<
       return { conversationId, messages };
     } catch (error) {
       return rejectWithValue(
-        error instanceof Error ? error.message : 'Failed to fetch messages'
+        getErrorMessage(error, 'Failed to fetch messages')
       );
     }
   }
@@ -101,7 +102,7 @@ export const sendMessage = createAsyncThunk<
       });
     } catch (error) {
       return rejectWithValue(
-        error instanceof Error ? error.message : 'Failed to send message'
+        getErrorMessage(error, 'Failed to send message')
       );
     }
   }
@@ -125,7 +126,7 @@ export const fetchQueue = createAsyncThunk<
       return { queue, stats };
     } catch (error) {
       return rejectWithValue(
-        error instanceof Error ? error.message : 'Failed to fetch queue'
+        getErrorMessage(error, 'Failed to fetch queue')
       );
     }
   }
@@ -145,7 +146,7 @@ export const assignAgent = createAsyncThunk<
       return await nadiaAPI.queue.assignAgent(payload.queueId, payload.agentPhone);
     } catch (error) {
       return rejectWithValue(
-        error instanceof Error ? error.message : 'Failed to assign agent'
+        getErrorMessage(error, 'Failed to assign agent')
       );
     }
   }
@@ -165,7 +166,7 @@ export const closeConversation = createAsyncThunk<
       return await nadiaAPI.conversations.close(payload.conversationId, payload.reason);
     } catch (error) {
       return rejectWithValue(
-        error instanceof Error ? error.message : 'Failed to close conversation'
+        getErrorMessage(error, 'Failed to close conversation')
       );
     }
   }
@@ -342,7 +343,7 @@ export const selectSelectedConversationId = (state: RootState) =>
   state.nadia.selectedConversationId;
 export const selectSelectedConversation = (state: RootState) => {
   const id = state.nadia.selectedConversationId;
-  return state.nadia.conversations.find((c: any) => c.id === id) || null;
+  return state.nadia.conversations.find((c) => c.id === id) || null;
 };
 export const selectNadiaLoading = (state: RootState) => state.nadia.loading;
 export const selectNadiaError = (state: RootState) => state.nadia.error;
@@ -359,11 +360,11 @@ export const selectUrgentCount = (state: RootState) =>
 export const selectHighPriorityCount = (state: RootState) =>
   state.nadia.stats.byPriority.HIGH;
 export const selectActiveConversations = (state: RootState) =>
-  state.nadia.conversations.filter((c: any) => c.status === 'ACTIVE');
+  state.nadia.conversations.filter((c) => c.status === 'ACTIVE');
 export const selectHotLeads = (state: RootState) =>
   state.nadia.conversations
-    .filter((c: any) => c.leadScore >= 75)
-    .sort((a: any, b: any) => b.leadScore - a.leadScore);
+    .filter((c) => c.leadScore >= 75)
+    .sort((a, b) => b.leadScore - a.leadScore);
 
 /**
  * Reducer Export

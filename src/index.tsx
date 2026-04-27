@@ -7,6 +7,9 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './components/Toast';
 import { ThemeProvider } from './context/ThemeContext';
 import { validateEnvironment } from './config/validateEnv';
+// Dubai Luxury design tokens — loaded globally so any component opting into
+// the `dubai-luxury-theme` class inherits --luxury-cta-bg / --primary-color etc.
+import './styles/dubaiLuxuryTheme.css';
 import { createLogger } from './utils/logger';
 import { restoreAuthToken } from './services/authService';
 

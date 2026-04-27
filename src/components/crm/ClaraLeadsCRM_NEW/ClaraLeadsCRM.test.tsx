@@ -5,6 +5,46 @@ import React from 'react';
 // Mock CSS
 vi.mock('./ClaraLeadsCRM.css', () => ({}));
 
+// Mock useLeadsData hook (now Redux-based)
+const mockLeadsData = {
+  leads: [
+    { id: '1', name: 'Test Lead', stage: 'proposal', tasks: 2, value: 50000, status: 'qualified', probability: 60 },
+    { id: '2', name: 'Hot Lead', stage: 'negotiation', tasks: 1, value: 100000, status: 'qualified', probability: 80 },
+    { id: '3', name: 'Cold Lead', stage: 'initial_contact', tasks: 3, value: 25000, status: 'new', probability: 10 },
+  ],
+  stats: {
+    totalLeads: 3,
+    qualifiedLeads: 2,
+    totalValue: 175000,
+    avgProbability: 50,
+    stageCounts: {
+      initial_contact: 1, discovery: 0, proposal: 1,
+      negotiation: 1, contract_review: 0, closed_won: 0, closed_lost: 0,
+    },
+  },
+  loading: false,
+  error: null,
+  filteredLeads: [],
+  filterStatus: 'all',
+  setFilterStatus: vi.fn(),
+  filterStage: 'all',
+  setFilterStage: vi.fn(),
+  searchQuery: '',
+  setSearchQuery: vi.fn(),
+  sortBy: 'lastContact',
+  setSortBy: vi.fn(),
+  sortOrder: 'desc',
+  setSortOrder: vi.fn(),
+  addLead: vi.fn(),
+  updateLead: vi.fn(),
+  deleteLead: vi.fn(),
+  refresh: vi.fn(),
+};
+
+vi.mock('./hooks/useLeadsData', () => ({
+  useLeadsData: () => mockLeadsData,
+}));
+
 // Mock SuspenseLoader
 vi.mock('../../common/SuspenseLoader', () => ({
   default: () => <div data-testid="suspense-loader">Loading...</div>,
@@ -63,22 +103,26 @@ describe('ClaraLeadsCRM', () => {
   describe('pipeline metrics', () => {
     it('renders prospect progress label', () => {
       render(<ClaraLeadsCRM />);
+      // Dynamic: prospectRate = 100% (total/total)
       expect(screen.getByText('Prospect Progress: 100%')).toBeInTheDocument();
     });
 
     it('renders deal progress label', () => {
       render(<ClaraLeadsCRM />);
-      expect(screen.getByText('Deal Progress: 33%')).toBeInTheDocument();
+      // Dynamic: dealRate = round(2/3 * 100) = 67%
+      expect(screen.getByText('Deal Progress: 67%')).toBeInTheDocument();
     });
 
     it('renders conversion rate label', () => {
       render(<ClaraLeadsCRM />);
-      expect(screen.getByText('Conversion Rate: 8%')).toBeInTheDocument();
+      // Dynamic: closed_won = 0, so conversionRate = 0%
+      expect(screen.getByText('Conversion Rate: 0%')).toBeInTheDocument();
     });
 
     it('renders task completion label', () => {
       render(<ClaraLeadsCRM />);
-      expect(screen.getByText('Task Completion: 67%')).toBeInTheDocument();
+      // Dynamic: avgProbability = 50
+      expect(screen.getByText('Task Completion: 50%')).toBeInTheDocument();
     });
 
     it('renders 4 progress bars', () => {
@@ -103,12 +147,19 @@ describe('ClaraLeadsCRM', () => {
       render(<ClaraLeadsCRM />);
       const badges = screen.getAllByTestId('badge');
       expect(badges.length).toBe(6);
-      expect(badges[0]).toHaveTextContent('24'); // prospects
-      expect(badges[1]).toHaveTextContent('8');  // deals
-      expect(badges[2]).toHaveTextContent('12'); // tasks
-      expect(badges[3]).toHaveTextContent('45'); // activity
-      expect(badges[4]).toHaveTextContent('3');  // insights
-      expect(badges[5]).toHaveTextContent('6');  // features
+      // Dynamic counts from mock data:
+      // prospects = totalLeads = 3
+      expect(badges[0]).toHaveTextContent('3');
+      // deals = proposal + negotiation + contract_review = 2
+      expect(badges[1]).toHaveTextContent('2');
+      // tasks = sum of lead.tasks = 2+1+3 = 6
+      expect(badges[2]).toHaveTextContent('6');
+      // activity = leads.length = 3
+      expect(badges[3]).toHaveTextContent('3');
+      // insights = closed_won = 0
+      expect(badges[4]).toHaveTextContent('0');
+      // features = static 6
+      expect(badges[5]).toHaveTextContent('6');
     });
 
     it('switches to deals tab on click', async () => {

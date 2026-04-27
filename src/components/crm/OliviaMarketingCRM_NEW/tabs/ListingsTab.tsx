@@ -1,4 +1,3 @@
-import React from 'react';
 import { Eye, MessageSquare, Star, Home, Edit, Trash2 } from 'lucide-react';
 
 interface Listing {

@@ -100,7 +100,7 @@ export const StyledInput = styled.input<{
     box-shadow: ${(props) =>
       props.$hasError
         ? `0 0 0 3px rgba(198, 40, 40, 0.1)`
-        : `0 0 0 3px rgba(211, 47, 47, 0.1)`};
+        : `0 0 0 3px rgba(212, 175, 55, 0.15)`};
   }
 
   &:disabled {

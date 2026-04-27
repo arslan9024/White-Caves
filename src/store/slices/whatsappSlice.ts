@@ -12,6 +12,7 @@ import { createSlice, createAsyncThunk, createSelector, PayloadAction } from '@r
 import { logout } from '../authSlice';
 import type { RootState } from '../store';
 import { authFetch } from '../../utils/authFetch';
+import { getErrorMessage } from '../../constants';
 
 // ================================
 // Types
@@ -160,7 +161,7 @@ export const initializeWhatsAppSession = createAsyncThunk(
 
       return await response.json();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const message = getErrorMessage(error);
       return rejectWithValue(message);
     }
   }
@@ -183,7 +184,7 @@ export const connectWhatsApp = createAsyncThunk(
 
       return await response.json();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const message = getErrorMessage(error);
       return rejectWithValue(message);
     }
   }
@@ -202,7 +203,7 @@ export const getSessionStatus = createAsyncThunk(
 
       return await response.json();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const message = getErrorMessage(error);
       return rejectWithValue(message);
     }
   }
@@ -228,7 +229,7 @@ export const sendMessage = createAsyncThunk(
 
       return await response.json();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const message = getErrorMessage(error);
       return rejectWithValue(message);
     }
   }
@@ -247,7 +248,7 @@ export const getQueueStatus = createAsyncThunk(
 
       return await response.json();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const message = getErrorMessage(error);
       return rejectWithValue(message);
     }
   }
@@ -269,7 +270,7 @@ export const disconnectWhatsApp = createAsyncThunk(
 
       return await response.json();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const message = getErrorMessage(error);
       return rejectWithValue(message);
     }
   }
@@ -288,7 +289,7 @@ export const getServiceHealth = createAsyncThunk(
 
       return await response.json();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const message = getErrorMessage(error);
       return rejectWithValue(message);
     }
   }

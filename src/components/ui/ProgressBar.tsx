@@ -4,7 +4,7 @@
  * Visual progress indicator with support for determinate and indeterminate states.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import styled from 'styled-components';
 
 export type ProgressVariant =
@@ -142,7 +142,7 @@ const ProgressWrapper = styled.div`
  * Progress Bar Component
  * Visual indicator of progress with multiple styles
  */
-export const ProgressBar: React.FC<ProgressBarProps> = ({
+export const ProgressBar: React.FC<ProgressBarProps> = memo(function ProgressBar({
   value,
   variant = 'primary',
   showLabel = true,
@@ -150,7 +150,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   striped = false,
   size = 'medium',
   ariaLabel,
-}) => {
+}) {
   const isIndeterminate = value === undefined;
   const normalizedValue = Math.min(Math.max(value || 0, 0), 100);
 
@@ -177,6 +177,6 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
       </ProgressContainer>
     </ProgressWrapper>
   );
-};
+});
 
 export default ProgressBar;

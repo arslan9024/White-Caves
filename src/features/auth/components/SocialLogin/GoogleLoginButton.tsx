@@ -25,11 +25,15 @@ const GoogleLoginButton = ({ onSuccess, onError, disabled }: GoogleLoginButtonPr
     dispatch(loginStart());
     
     try {
+      if (!auth) {
+        throw new Error('Firebase auth not initialized');
+      }
+
       const provider = new GoogleAuthProvider();
       provider.addScope('email');
       provider.addScope('profile');
       
-      const result = await signInWithPopup(auth!, provider);
+      const result = await signInWithPopup(auth, provider);
       const user = result.user;
       
       const userData = {

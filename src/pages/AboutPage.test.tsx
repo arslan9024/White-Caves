@@ -21,9 +21,14 @@ vi.mock('../components/WhatsAppButton', () => ({
   default: () => <div data-testid="whatsapp-btn">WhatsApp</div>,
 }));
 
-// Mock AppLayout to just render children
-vi.mock('../components/layout/AppLayout', () => ({
-  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+// Mock PublicLayout to just render children
+vi.mock('../components/layout/PublicLayout', () => ({
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div>
+      {children}
+      <div data-testid="footer">Footer</div>
+    </div>
+  ),
 }));
 
 import AboutPage from './AboutPage';

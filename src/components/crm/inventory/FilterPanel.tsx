@@ -1,4 +1,3 @@
-import React from 'react';
 import { Filter, X, RotateCcw } from 'lucide-react';
 import FilterDropdown from './FilterDropdown';
 import {

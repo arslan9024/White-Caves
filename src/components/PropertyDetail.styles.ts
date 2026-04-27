@@ -1,4 +1,8 @@
 import styled from 'styled-components';
+import { colors } from '../styles/theme/colors';
+import { typography } from '../styles/theme/typography';
+import { transitions } from '../styles/theme/transitions';
+import { radius } from '../styles/theme/radius';
 
 export const PropertyDetailContainer = styled.div`
   max-width: 1200px;
@@ -16,7 +20,7 @@ export const PropertyHeader = styled.div`
     margin: 0 0 1rem 0;
     color: var(--text-primary);
     font-size: 2rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
 
     [data-theme='dark'] & {
       color: white;
@@ -47,12 +51,12 @@ export const ListingType = styled.span`
   background: #e41e3f;
   color: white;
   padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-weight: 600;
+  border-radius: ${radius.sm};
+  font-weight: ${typography.weights.semibold};
   font-size: 0.875rem;
 
   [data-theme='dark'] & {
-    background: #c41e3a;
+    background: ${colors.primary};
   }
 `;
 
@@ -76,7 +80,7 @@ export const PropertyImages = styled.div`
     width: 100%;
     height: 250px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: ${radius.lg};
     background: var(--bg-secondary);
     transition: transform 0.3s ease;
 
@@ -99,7 +103,7 @@ export const PropertyDescription = styled.div`
     color: var(--text-primary);
     margin: 0 0 1rem 0;
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
 
     [data-theme='dark'] & {
       color: white;
@@ -132,14 +136,14 @@ export const PropertyInfoGrid = styled.div`
 export const InfoSection = styled.div`
   background: var(--bg-secondary);
   padding: 1.5rem;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   border: 1px solid var(--border-color);
 
   h3 {
     margin-bottom: 1rem;
     color: var(--text-primary);
     font-size: 1.125rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
 
     [data-theme='dark'] & {
       color: white;
@@ -183,7 +187,7 @@ export const PropertyAmenities = styled.div`
     color: var(--text-primary);
     margin: 0 0 1rem 0;
     font-size: 1.25rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
 
     [data-theme='dark'] & {
       color: white;
@@ -210,7 +214,7 @@ export const AmenityTag = styled.span`
   font-size: 0.9rem;
   color: var(--text-secondary);
   border: 1px solid var(--border-color);
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     background: var(--primary);
@@ -224,9 +228,9 @@ export const AmenityTag = styled.span`
     border-color: var(--border-color, #3a3a5a);
 
     &:hover {
-      background: var(--primary, #dc2626);
+      background: var(--primary, ${colors.primary});
       color: white;
-      border-color: var(--primary, #dc2626);
+      border-color: var(--primary, ${colors.primary});
     }
   }
 `;
@@ -238,7 +242,7 @@ export const PropertyLocation = styled.div`
     color: var(--text-primary);
     margin: 0 0 1rem 0;
     font-size: 1.25rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
 
     [data-theme='dark'] & {
       color: white;
@@ -247,7 +251,7 @@ export const PropertyLocation = styled.div`
 
   .map {
     height: 400px;
-    border-radius: 8px;
+    border-radius: ${radius.lg};
     overflow: hidden;
     border: 1px solid var(--border-color);
 

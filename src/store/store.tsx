@@ -17,6 +17,7 @@ import crmDataReducer from './crmDataSlice';
 import roleReducer from './roleSlice';
 import featuresReducer from './featuresSlice';
 import savedSearchesReducer from './slices/savedSearchesSlice';
+import homepageReducer from './slices/homepageSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 import { createLogger } from '../utils/logger';
 
@@ -54,6 +55,7 @@ export const store = configureStore({
     role: roleReducer,
     features: featuresReducer,
     savedSearches: savedSearchesReducer,
+    homepage: homepageReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

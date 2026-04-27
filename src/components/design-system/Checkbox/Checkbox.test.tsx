@@ -10,8 +10,8 @@ vi.mock('../../../styles/theme', () => ({
       border: '#e0e0e0',
       background: { secondary: '#f5f5f5', tertiary: '#eee' },
       text: { primary: '#222', disabled: '#aaa' },
-      primary: '#E31E24',
-      error: '#C62828',
+      primary: '#D4AF37',
+      error: '#D32F2F',
     },
     typography: {
       sizes: { sm: '13px', xs: '12px' },

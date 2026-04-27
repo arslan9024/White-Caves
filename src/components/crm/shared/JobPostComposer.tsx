@@ -3,6 +3,7 @@ import {
   Briefcase, MapPin, DollarSign, Clock, Send, Save, Eye,
   Linkedin, Globe, ChevronDown, ChevronUp, Users, Star
 } from 'lucide-react';
+import { TIMING } from '../../../constants';
 import * as S from './JobComponents.styles';
 
 const JOB_PLATFORMS = [
@@ -78,7 +79,7 @@ const JobPostComposer = memo(({
   const showNotification = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     setNotification({ message, type });
     clearTimeout(notifyTimerRef.current);
-    notifyTimerRef.current = setTimeout(() => setNotification(null), 4000);
+    notifyTimerRef.current = setTimeout(() => setNotification(null), TIMING.NOTIFICATION_DISMISS);
   }, []);
   
   const handleFieldChange = useCallback((field: string, value: string) => {
@@ -101,7 +102,7 @@ const JobPostComposer = memo(({
     
     setPublishing(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, TIMING.COPY_FEEDBACK));
       
       if (onPublish) {
         onPublish(formData, selectedPlatforms);

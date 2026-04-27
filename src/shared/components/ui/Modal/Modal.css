@@ -92,12 +92,12 @@
 }
 
 .wc-modal__close:hover {
-  background: rgba(220, 38, 38, 0.1);
-  color: var(--primary-red, #DC2626);
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--primary-red, #D4AF37);
 }
 
 .wc-modal__close:focus {
-  outline: 2px solid var(--primary-red, #DC2626);
+  outline: 2px solid var(--primary-red, #D4AF37);
   outline-offset: 2px;
 }
 

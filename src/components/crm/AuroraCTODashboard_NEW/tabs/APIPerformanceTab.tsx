@@ -1,4 +1,3 @@
-import React from 'react';
 import { BarChart3, TrendingUp, AlertTriangle, CheckCircle, Zap } from 'lucide-react';
 import type { SystemComponent } from '../data/architecture';
 

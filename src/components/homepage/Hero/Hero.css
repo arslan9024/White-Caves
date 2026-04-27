@@ -40,7 +40,7 @@
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(211, 47, 47, 0.15) 50%,
+    rgba(227, 30, 36, 0.12) 50%,
     transparent 100%
   );
 }
@@ -55,7 +55,7 @@
 .shape {
   position: absolute;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(211, 47, 47, 0.3), rgba(211, 47, 47, 0.1));
+  background: linear-gradient(135deg, rgba(227, 30, 36, 0.25), rgba(227, 30, 36, 0.08));
   filter: blur(40px);
 }
 
@@ -87,7 +87,7 @@
   height: 150px;
   bottom: 20%;
   left: 15%;
-  background: linear-gradient(135deg, rgba(211, 47, 47, 0.25), rgba(211, 47, 47, 0.1));
+  background: linear-gradient(135deg, rgba(46, 90, 79, 0.2), rgba(46, 90, 79, 0.08));
 }
 
 .hero-content {
@@ -111,6 +111,36 @@
   font-size: 0.875rem;
   font-weight: 500;
   margin-bottom: 1.5rem;
+}
+
+.hero-market-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 1rem;
+  margin: 0 0 1.4rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(227, 30, 36, 0.2), rgba(255, 255, 255, 0.12));
+  border: 1px solid rgba(227, 30, 36, 0.35);
+  color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+}
+
+.hero-market-pill-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.hero-market-pill-separator {
+  color: rgba(227, 30, 36, 0.8);
+}
+
+.hero-market-pill-value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #f5dc88;
 }
 
 .visualizer-wrapper {
@@ -169,7 +199,8 @@
   align-items: center;
   gap: 0.5rem;
   padding: 1rem 2rem;
-  background: var(--primary-color);
+  /* Falls back to --primary-color outside .dubai-luxury-theme scope */
+  background: var(--luxury-cta-bg, var(--primary-color));
   color: white;
   font-size: 1.125rem;
   font-weight: 600;
@@ -177,6 +208,12 @@
   border: none;
   cursor: pointer;
   transition: all var(--transition-normal);
+  box-shadow: 0 4px 14px rgba(227, 30, 36, 0.3);
+}
+
+.hero-btn-primary:hover {
+  background: var(--luxury-cta-bg-hover, var(--primary-color));
+  box-shadow: 0 10px 30px rgba(227, 30, 36, 0.45);
 }
 
 .hero-btn-secondary {
@@ -226,6 +263,27 @@
   margin-bottom: 0.5rem;
 }
 
+/* Skeleton shimmer for stats while API data loads */
+.hero-stat-skeleton {
+  display: inline-block;
+  width: 80px;
+  height: 2.5rem;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    rgba(227, 30, 36, 0.15) 0%,
+    rgba(227, 30, 36, 0.35) 40%,
+    rgba(227, 30, 36, 0.15) 100%
+  );
+  background-size: 200% 100%;
+  animation: heroStatShimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes heroStatShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 .hero-stat-label {
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.8);
@@ -237,6 +295,13 @@
   gap: 1.5rem;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+.hero-response-note {
+  margin-top: 1.15rem;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
 }
 
 .trust-badge {
@@ -298,6 +363,12 @@
   .hero-title {
     font-size: 2.25rem;
   }
+
+  .hero-market-pill {
+    max-width: calc(100% - 2rem);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
   
   .hero-description {
     font-size: 1rem;
@@ -342,3 +413,4 @@
   .shape-3 { display: none; }
   .shape-4 { display: none; }
 }
+

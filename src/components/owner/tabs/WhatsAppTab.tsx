@@ -118,8 +118,8 @@ const WhatsAppTab: React.FC<WhatsAppTabProps> = ({ data, loading, onAction }) =>
                   </div>
                 </div>
                 <div className="message-actions">
-                  <button className="icon-btn" title="Reply" onClick={() => onAction?.('replyMessage', msg.id)}>↩️</button>
-                  <button className="icon-btn" title="Assign" onClick={() => onAction?.('assignMessage', msg.id)}>👤</button>
+                  <button className="icon-btn" title="Reply" aria-label="Reply to message" onClick={() => onAction?.('replyMessage', msg.id)}>↩️</button>
+                  <button className="icon-btn" title="Assign" aria-label="Assign message" onClick={() => onAction?.('assignMessage', msg.id)}>👤</button>
                 </div>
               </div>
             ))}

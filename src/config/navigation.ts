@@ -180,6 +180,7 @@ export const ROLE_NAV: Record<string, RoleNavConfig> = {
       { label: 'Business Model', path: '/owner/business-model', icon: '💼' },
       { label: 'Client Services', path: '/owner/client-services', icon: '🤝' },
       { label: 'System Health', path: '/owner/system-health', icon: '🔧' },
+      { label: 'Login Security', path: '/owner/login-security', icon: '🛡️' },
       { label: 'All Properties', path: '/owner/dashboard#properties', icon: '🏢' },
       { label: 'User Management', path: '/owner/dashboard#users', icon: '👥' },
       { label: 'Analytics', path: '/owner/dashboard#analytics', icon: '📈' },

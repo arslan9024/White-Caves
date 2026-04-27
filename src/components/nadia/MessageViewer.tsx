@@ -5,6 +5,9 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { useAppDispatch } from '@/store/store';
 import { sendMessage } from '@/store/slices/nadiaSlice';
+import { createLogger } from '@/utils/logger';
+
+const log = createLogger('MessageViewer');
 import { Conversation, Message, MessageSender } from '@/types/nadia';
 import {
   MessageViewerContainer,
@@ -63,7 +66,7 @@ const MessageViewer: React.FC<MessageViewerProps> = ({
           })
         ).unwrap();
       } catch (error) {
-        console.error('Failed to send message:', error);
+        log.error('Failed to send message:', error);
       } finally {
         setSending(false);
       }

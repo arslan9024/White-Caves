@@ -1,30 +1,13 @@
-import React from 'react';
 import { useLeadsData } from '../hooks/useLeadsData';
+import { useLeadsInsights } from '../hooks/useLeadsInsights';
 
 export default function InsightsTab() {
   const { leads, stats } = useLeadsData();
+  const { qualifiedPercentage, avgDealSize, leadsByType, leadsBySize } = useLeadsInsights(leads, stats);
 
   // Calculate insights
-  const qualifiedPercentage = leads.length > 0
-    ? Math.round((stats.qualifiedLeads / leads.length) * 100)
-    : 0;
-
-  const avgDealSize = stats.qualifiedLeads > 0
-    ? Math.round(stats.totalValue / stats.qualifiedLeads)
-    : 0;
-
   const winRate = 68; // Demo value
   const forecastAccuracy = 92; // Demo value
-  
-  const leadsByType = leads.reduce<Record<string, number>>((acc, lead) => {
-    acc[lead.type] = (acc[lead.type] || 0) + 1;
-    return acc;
-  }, {});
-
-  const leadsBySize = leads.reduce<Record<string, number>>((acc, lead) => {
-    acc[lead.size] = (acc[lead.size] || 0) + 1;
-    return acc;
-  }, {});
 
   return (
     <div className="insights-section">

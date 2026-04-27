@@ -1,4 +1,7 @@
 import styled, { keyframes } from 'styled-components';
+import { radius } from '../../styles/theme/radius';
+import { typography } from '../../styles/theme/typography';
+import { spacing } from '../../styles/theme/spacing';
 
 // Keyframes
 const trendUp = keyframes`
@@ -26,7 +29,7 @@ const trendDown = keyframes`
 // Enhanced Stat Card
 export const StatCardWrapper = styled.div<{ $backgroundColor: string; $borderColor: string; $isClickable?: boolean }>`
   background: ${props => props.$backgroundColor};
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   border-left: 4px solid ${props => props.$borderColor};
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -51,7 +54,7 @@ export const StatCardWrapper = styled.div<{ $backgroundColor: string; $borderCol
       rgba(255, 255, 255, 0) 100%
     );
     pointer-events: none;
-    border-radius: 12px;
+    border-radius: ${radius.xl};
   }
 
   &:hover {
@@ -80,7 +83,7 @@ export const StatCardWrapper = styled.div<{ $backgroundColor: string; $borderCol
   }
 
   @media (max-width: 768px) {
-    padding: 16px;
+    padding: ${spacing.md};
     gap: 10px;
   }
 `;
@@ -96,8 +99,8 @@ export const StatCardHeader = styled.div`
 export const StatCardLabel = styled.div`
   display: flex;
   align-items: center;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: ${typography.sizes.base};
+  font-weight: ${typography.weights.medium};
   color: rgba(0, 0, 0, 0.7);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -112,7 +115,7 @@ export const StatCardLabel = styled.div`
   }
 
   @media (max-width: 768px) {
-    font-size: 12px;
+    font-size: ${typography.sizes.xs};
   }
 `;
 
@@ -135,24 +138,24 @@ export const TrendIcon = styled.svg<{ $trendType?: 'up' | 'down' | 'stable' }>`
 export const StatCardValue = styled.div`
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const StatValue = styled.div<{ $color?: string }>`
-  font-size: 28px;
-  font-weight: 700;
+  font-size: ${typography.sizes.xxxl};
+  font-weight: ${typography.weights.bold};
   letter-spacing: -0.5px;
   color: ${props => props.$color || 'inherit'};
 
   @media (max-width: 768px) {
-    font-size: 24px;
+    font-size: ${typography.sizes.xxl};
   }
 `;
 
 export const StatUnit = styled.span`
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   color: rgba(0, 0, 0, 0.5);
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 
   @media (prefers-color-scheme: dark) {
     color: rgba(255, 255, 255, 0.5);
@@ -192,19 +195,19 @@ export const SparklineFill = styled.polyline`
 export const StatCardComparison = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
+  gap: ${spacing.sm};
+  font-size: ${typography.sizes.xs};
 `;
 
 export const ChangeValue = styled.span<{ $color?: string }>`
-  font-weight: 600;
-  font-size: 13px;
+  font-weight: ${typography.weights.semibold};
+  font-size: ${typography.sizes.sm};
   color: ${props => props.$color || 'inherit'};
 `;
 
 export const ComparisonText = styled.span`
   color: rgba(0, 0, 0, 0.5);
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
 
   @media (prefers-color-scheme: dark) {
     color: rgba(255, 255, 255, 0.5);

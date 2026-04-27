@@ -15,9 +15,7 @@ interface HealthStatus {
   lastChecked: string;
 }
 
-interface SystemHealthPageProps {}
-
-const SystemHealthPage: FC<SystemHealthPageProps> = () => {
+const SystemHealthPage: FC = () => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.user.currentUser);
   const [healthStatus, setHealthStatus] = useState<HealthStatus[]>([]);

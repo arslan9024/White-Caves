@@ -1,5 +1,15 @@
-import React, { useEffect, useState, ReactNode } from 'react';
-import { X, ChevronLeft, ChevronRight, Maximize2, Minimize2, Share2, Heart, Download, type LucideIcon } from 'lucide-react';
+import React, { useCallback, useEffect, useState, ReactNode } from 'react';
+import {
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+  Minimize2,
+  Share2,
+  Heart,
+  Download,
+  type LucideIcon,
+} from 'lucide-react';
 import './FullScreenDetailModal.css';
 
 interface ModalTab {
@@ -40,19 +50,29 @@ const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
   actions = [],
   sidebar,
   tabs = [],
-  defaultTab = 0
+  defaultTab = 0,
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [isFavorite, setIsFavorite] = useState(false);
+  const safeActiveTab = tabs.length > 0 ? Math.min(Math.max(activeTab, 0), tabs.length - 1) : 0;
+  const safeCurrentImageIndex =
+    images.length > 0 ? Math.min(Math.max(currentImageIndex, 0), images.length - 1) : 0;
+  const currentImage = images.at(safeCurrentImageIndex);
+  const activeTabContent = tabs.length > 0 ? tabs.at(safeActiveTab)?.content : children;
 
-  // Reset activeTab when tabs array changes to prevent out-of-bounds access
-  useEffect(() => {
-    if (tabs.length > 0 && activeTab >= tabs.length) {
-      setActiveTab(0);
+  const nextImage = useCallback(() => {
+    if (images.length > 0) {
+      setCurrentImageIndex(prev => (prev + 1) % images.length);
     }
-  }, [tabs.length]); // eslint-disable-line react-hooks/exhaustive-deps — only react to tabs length changes
+  }, [images.length]);
+
+  const prevImage = useCallback(() => {
+    if (images.length > 0) {
+      setCurrentImageIndex(prev => (prev - 1 + images.length) % images.length);
+    }
+  }, [images.length]);
 
   useEffect(() => {
     if (isOpen) {
@@ -66,27 +86,16 @@ const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
   }, [isOpen]);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen) return;
       if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowLeft') prevImage();
       if (e.key === 'ArrowRight') nextImage();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, currentImageIndex, onClose, images.length]); // Include all dependencies used in handler
-
-  const nextImage = () => {
-    if (images.length > 0) {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length);
-    }
-  };
-
-  const prevImage = () => {
-    if (images.length > 0) {
-      setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-    }
-  };
+  }, [isOpen, onClose, prevImage, nextImage]);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -101,18 +110,33 @@ const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fullscreen-modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label={title || 'Detail modal'}>
-      <div className="fullscreen-modal" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="fullscreen-modal-overlay"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={title || 'Detail modal'}
+    >
+      <div className="fullscreen-modal" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="modal-header">
           <div className="modal-title-section">
             <h1 className="modal-title">{title}</h1>
             {subtitle && <span className="modal-subtitle">{subtitle}</span>}
           </div>
-          
+
           <div className="modal-header-actions">
-            <button className="header-action-btn" onClick={() => setIsFavorite(!isFavorite)} aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'} aria-pressed={isFavorite}>
-              <Heart size={20} fill={isFavorite ? '#E31E24' : 'none'} color={isFavorite ? '#E31E24' : 'currentColor'} />
+            <button
+              className="header-action-btn"
+              onClick={() => setIsFavorite(!isFavorite)}
+              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+              aria-pressed={isFavorite}
+            >
+              <Heart
+                size={20}
+                fill={isFavorite ? '#D4AF37' : 'none'}
+                color={isFavorite ? '#D4AF37' : 'currentColor'}
+              />
             </button>
             <button className="header-action-btn" aria-label="Share">
               <Share2 size={20} />
@@ -120,7 +144,11 @@ const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
             <button className="header-action-btn" aria-label="Download">
               <Download size={20} />
             </button>
-            <button className="header-action-btn" onClick={toggleFullscreen} aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}>
+            <button
+              className="header-action-btn"
+              onClick={toggleFullscreen}
+              aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+            >
               {isFullscreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
             </button>
             <button className="close-btn" onClick={onClose} aria-label="Close modal">
@@ -135,40 +163,54 @@ const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
           {images.length > 0 && (
             <div className="modal-gallery">
               <div className="gallery-main">
-                <img 
-                  src={images[currentImageIndex]} 
-                  alt={`${title || 'Property'} — image ${currentImageIndex + 1} of ${images.length}`}
+                <img
+                  src={currentImage ?? ''}
+                  alt={`${title || 'Property'} — image ${safeCurrentImageIndex + 1} of ${images.length}`}
                   className="gallery-main-image"
                   loading="lazy"
                   width={400}
                   height={300}
                 />
-                
+
                 {images.length > 1 && (
                   <>
-                    <button className="gallery-nav prev" onClick={prevImage} aria-label="Previous image">
+                    <button
+                      className="gallery-nav prev"
+                      onClick={prevImage}
+                      aria-label="Previous image"
+                    >
                       <ChevronLeft size={24} />
                     </button>
-                    <button className="gallery-nav next" onClick={nextImage} aria-label="Next image">
+                    <button
+                      className="gallery-nav next"
+                      onClick={nextImage}
+                      aria-label="Next image"
+                    >
                       <ChevronRight size={24} />
                     </button>
                   </>
                 )}
-                
+
                 <div className="gallery-counter">
-                  {currentImageIndex + 1} / {images.length}
+                  {safeCurrentImageIndex + 1} / {images.length}
                 </div>
               </div>
-              
+
               {images.length > 1 && (
                 <div className="gallery-thumbnails">
                   {images.map((img, idx) => (
                     <button
                       key={img ?? `thumb-${idx}`}
-                      className={`thumbnail ${idx === currentImageIndex ? 'active' : ''}`}
+                      className={`thumbnail ${idx === safeCurrentImageIndex ? 'active' : ''}`}
                       onClick={() => setCurrentImageIndex(idx)}
                     >
-                      <img src={img} alt={`${title || 'Property'} thumbnail ${idx + 1}`} loading="lazy" />
+                      <img
+                        src={img}
+                        alt={`${title || 'Property'} thumbnail ${idx + 1}`}
+                        loading="lazy"
+                        width={80}
+                        height={80}
+                      />
                     </button>
                   ))}
                 </div>
@@ -184,7 +226,7 @@ const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
                 {tabs.map((tab, idx) => (
                   <button
                     key={tab.label ?? `tab-${idx}`}
-                    className={`modal-tab ${idx === activeTab ? 'active' : ''}`}
+                    className={`modal-tab ${idx === safeActiveTab ? 'active' : ''}`}
                     onClick={() => setActiveTab(idx)}
                   >
                     {tab.icon && <tab.icon size={16} />}
@@ -195,17 +237,11 @@ const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
             )}
 
             {/* Tab Content or Children */}
-            <div className="modal-content">
-              {tabs.length > 0 ? tabs[activeTab]?.content : children}
-            </div>
+            <div className="modal-content">{activeTabContent}</div>
           </div>
 
           {/* Sidebar */}
-          {sidebar && (
-            <div className="modal-sidebar">
-              {sidebar}
-            </div>
-          )}
+          {sidebar && <div className="modal-sidebar">{sidebar}</div>}
         </div>
 
         {/* Footer Actions */}

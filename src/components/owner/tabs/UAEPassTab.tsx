@@ -181,8 +181,8 @@ const UAEPassTab: React.FC<UAEPassTabProps> = ({ data, loading, onAction }) => {
                 <td>{user.lastLogin || '-'}</td>
                 <td>
                   <div className="action-buttons">
-                    <button className="icon-btn" title="View Profile" onClick={() => onAction?.('viewUser', user.id)}>👁️</button>
-                    <button className="icon-btn" title="Verify" onClick={() => onAction?.('verifyUser', user.id)}>✓</button>
+                    <button className="icon-btn" title="View Profile" aria-label="View user profile" onClick={() => onAction?.('viewUser', user.id)}>👁️</button>
+                    <button className="icon-btn" title="Verify" aria-label="Verify user" onClick={() => onAction?.('verifyUser', user.id)}>✓</button>
                   </div>
                 </td>
               </tr>

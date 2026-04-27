@@ -1,10 +1,10 @@
 /**
  * HomePage — Unit Tests
  * Tests: rendering, lazy-loaded sections, Redux integration,
- * document title, AppLayout usage, property click handling
+ * document title, public homepage rendering, property click handling
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -13,11 +13,17 @@ import { MemoryRouter } from 'react-router-dom';
 
 // ── Mocks ────────────────────────────────────────────────────────
 
-vi.mock('../components/layout/AppLayout', () => ({
-  default: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="app-layout">{children}</div>
-  ),
-}));
+const MOCK_MARKET_STATS = {
+  totalProperties: 500,
+  availableProperties: 320,
+  averagePrice: 4500000,
+  totalValue: 2250000000,
+  activeAgents: 24,
+};
+
+const MOCK_TOP_AGENTS: unknown[] = [];
+const MOCK_LOCATION_TRENDS: unknown[] = [];
+const MOCK_FEATURED_PROPERTIES: unknown[] = [];
 
 vi.mock('../components/Footer', () => ({
   default: () => <div data-testid="footer">Footer</div>,
@@ -27,8 +33,36 @@ vi.mock('../components/ClickToChat', () => ({
   default: () => <div data-testid="click-to-chat">ClickToChat</div>,
 }));
 
+vi.mock('../components/layout/PublicNavbar/PublicNavbar', () => ({
+  default: () => <div data-testid="public-navbar">PublicNavbar</div>,
+}));
+
 vi.mock('../components/RecentlyViewed', () => ({
   useRecentlyViewed: () => ({ addToRecent: vi.fn(), recentItems: [] }),
+}));
+
+vi.mock('../store/slices/homepageSlice', () => ({
+  fetchHomepageData: vi.fn(() => ({ type: 'homepage/fetch/mock' })),
+  selectMarketStats: () => MOCK_MARKET_STATS,
+  selectTopAgents: () => MOCK_TOP_AGENTS,
+  selectLocationTrends: () => MOCK_LOCATION_TRENDS,
+  selectFeaturedProperties: () => MOCK_FEATURED_PROPERTIES,
+  selectIsHomepageLoading: () => false,
+  default: (state = {
+    featuredProperties: [],
+    marketStats: {
+      totalProperties: 500,
+      availableProperties: 320,
+      averagePrice: 4500000,
+      portfolioValue: 2250000000,
+      activeAgents: 24,
+    },
+    topAgents: [],
+    locationTrends: [],
+    isLoading: false,
+    error: null,
+    lastFetchedAt: null,
+  }) => state,
 }));
 
 // Mock all lazy-loaded sections
@@ -38,8 +72,14 @@ vi.mock('../components/homepage/Hero', () => ({
 vi.mock('../components/homepage/Features', () => ({
   default: () => <div data-testid="features-section">Features</div>,
 }));
+vi.mock('../components/homepage/MarketStats/MarketStatsBanner', () => ({
+  default: () => <div data-testid="market-stats-banner">MarketStatsBanner</div>,
+}));
 vi.mock('../components/homepage/Locations', () => ({
   default: () => <div data-testid="locations-section">Locations</div>,
+}));
+vi.mock('../components/homepage/FeaturedProperties/FeaturedPropertiesSection', () => ({
+  default: () => <div data-testid="featured-properties-section">FeaturedProperties</div>,
 }));
 vi.mock('../components/homepage/Team', () => ({
   default: () => <div data-testid="team-section">Team</div>,
@@ -79,9 +119,6 @@ vi.mock('../components/CompanyProfile', () => ({
 vi.mock('../components/BlogSection', () => ({
   default: () => <div data-testid="blog-section">BlogSection</div>,
 }));
-vi.mock('../components/NewsletterSubscription', () => ({
-  default: () => <div data-testid="newsletter">Newsletter</div>,
-}));
 vi.mock('../components/OnboardingGateway', () => ({
   default: () => <div data-testid="onboarding">Onboarding</div>,
 }));
@@ -97,6 +134,7 @@ import HomePage from './HomePage';
 import propertyReducer from '../store/propertySlice';
 import userReducer from '../store/userSlice';
 import navigationReducer from '../store/navigationSlice';
+import homepageReducer from '../store/slices/homepageSlice';
 
 // ── Helpers ──────────────────────────────────────────────────────
 
@@ -106,6 +144,7 @@ const createMockStore = () => {
       properties: propertyReducer,
       user: userReducer,
       navigation: navigationReducer,
+      homepage: homepageReducer,
     },
     preloadedState: {
       user: {
@@ -128,6 +167,11 @@ const renderPage = () => {
   );
 };
 
+afterEach(() => {
+  document.head.querySelectorAll('[data-wc-seo="true"]').forEach((el) => el.remove());
+  document.getElementById('wc-seo-jsonld')?.remove();
+});
+
 // ── Tests ────────────────────────────────────────────────────────
 
 describe('HomePage', () => {
@@ -138,13 +182,6 @@ describe('HomePage', () => {
   // ── Rendering ────────────────────────────────────────────────
 
   describe('Rendering', () => {
-    it('should render inside AppLayout', async () => {
-      renderPage();
-      await waitFor(() => {
-        expect(screen.getByTestId('app-layout')).toBeInTheDocument();
-      });
-    });
-
     it('should render the home-page container', async () => {
       renderPage();
       await waitFor(() => {
@@ -269,13 +306,6 @@ describe('HomePage', () => {
       });
     });
 
-    it('should render NewsletterSubscription', async () => {
-      renderPage();
-      await waitFor(() => {
-        expect(screen.getByTestId('newsletter')).toBeInTheDocument();
-      });
-    });
-
     it('should render ContactCTA section', async () => {
       renderPage();
       await waitFor(() => {
@@ -306,6 +336,18 @@ describe('HomePage', () => {
       // Store should have properties set
       const state = store.getState();
       expect(state.properties.properties.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it('should apply dynamic homepage JSON-LD to the document head', async () => {
+      renderPage();
+
+      await waitFor(() => {
+        const jsonLd = document.getElementById('wc-seo-jsonld');
+        expect(jsonLd).toBeTruthy();
+        expect(jsonLd?.textContent).toContain('CollectionPage');
+        expect(jsonLd?.textContent).toContain('RealEstateAgent');
+        expect(jsonLd?.textContent).toContain('"numberOfItems":500');
+      });
     });
   });
 

@@ -4,9 +4,7 @@ import SocialLinks from './SocialLinks';
 import { Config } from '../config/constants';
 import * as S from './Footer.styles';
 
-interface FooterProps {}
-
-const Footer: FC<FooterProps> = () => {
+const Footer: FC = () => {
   const currentYear = new Date().getFullYear();
   
   return (

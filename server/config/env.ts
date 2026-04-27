@@ -3,6 +3,20 @@
  * Single source of truth for all server environment variables
  */
 
+import dotenv from 'dotenv';
+
+// Load environment variables as early as possible to prevent import-order issues.
+// In production, load .env.production on top of .env for local production-like runs.
+const runtimeEnv = process.env.NODE_ENV;
+const isTestRuntime = runtimeEnv === 'test' || process.env.VITEST === 'true';
+
+if (!isTestRuntime) {
+  dotenv.config({ quiet: true });
+}
+if (!isTestRuntime && runtimeEnv === 'production') {
+  dotenv.config({ path: '.env.production', override: true, quiet: true });
+}
+
 // ─── Server ──────────────────────────────────────────────────────────────
 export const PORT = parseInt(process.env.PORT || '3001', 10);
 export const NODE_ENV = process.env.NODE_ENV || 'development';
@@ -44,6 +58,8 @@ export const CORS_ORIGINS = (process.env.CORS_ORIGIN || 'http://localhost:5000')
 // ─── Webhooks ────────────────────────────────────────────────────────────
 const _whatsappSecret = process.env.WHATSAPP_WEBHOOK_SECRET;
 if (!_whatsappSecret && IS_PRODUCTION) {
-  throw new Error('CRITICAL: WHATSAPP_WEBHOOK_SECRET environment variable must be set in production');
+  throw new Error(
+    'CRITICAL: WHATSAPP_WEBHOOK_SECRET environment variable must be set in production'
+  );
 }
 export const WHATSAPP_WEBHOOK_SECRET = _whatsappSecret || '';

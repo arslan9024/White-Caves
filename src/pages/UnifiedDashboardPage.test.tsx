@@ -33,9 +33,6 @@ vi.mock('../components/layout/MainNavBar/MainNavBar', () => ({
 vi.mock('../components/layout/SidebarContainer/SidebarContainer', () => ({
   default: (props: Record<string, unknown>) => <aside data-testid="sidebar-container">Sidebar</aside>,
 }));
-vi.mock('../components/layout/AIAssistantsPanel/AIAssistantsPanel', () => ({
-  default: (props: Record<string, unknown>) => <aside data-testid="ai-panel">AI Panel</aside>,
-}));
 vi.mock('../components/layout/DepartmentContentPanel/DepartmentContentPanel', () => ({
   default: (props: Record<string, unknown>) => <div data-testid="dept-panel">Dept Panel</div>,
 }));
@@ -207,13 +204,6 @@ describe('UnifiedDashboardPage', () => {
       renderPage();
       await waitFor(() => {
         expect(screen.getByTestId('sidebar-container')).toBeInTheDocument();
-      });
-    });
-
-    it('should render the AI assistants panel', async () => {
-      renderPage();
-      await waitFor(() => {
-        expect(screen.getByTestId('ai-panel')).toBeInTheDocument();
       });
     });
 

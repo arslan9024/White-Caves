@@ -3,6 +3,7 @@ import {
   CreditCard, QrCode, FileText, Building2, Copy, Check, 
   Download, Share2, ChevronDown, ChevronUp
 } from 'lucide-react';
+import { TIMING } from '../../../constants/app';
 import './PaymentComponents.css';
 
 // ─── Types ──────────────────────────────────────────────────────────────
@@ -166,21 +167,21 @@ const BankTransferDetails = memo(({ amount, reference, onCopy, copied }: BankTra
       <div className="detail-row">
         <span className="detail-label">Account Holder Name</span>
         <span className="detail-value">{BANK_DETAILS.accountName}</span>
-        <button className="copy-icon" onClick={() => onCopy(BANK_DETAILS.accountName, 'accountName')}>
+        <button className="copy-icon" onClick={() => onCopy(BANK_DETAILS.accountName, 'accountName')} aria-label="Copy account holder name">
           {copied === 'accountName' ? <Check size={14} /> : <Copy size={14} />}
         </button>
       </div>
       <div className="detail-row">
         <span className="detail-label">Account Number</span>
         <span className="detail-value">{BANK_DETAILS.accountNumber}</span>
-        <button className="copy-icon" onClick={() => onCopy(BANK_DETAILS.accountNumber, 'accountNumber')}>
+        <button className="copy-icon" onClick={() => onCopy(BANK_DETAILS.accountNumber, 'accountNumber')} aria-label="Copy account number">
           {copied === 'accountNumber' ? <Check size={14} /> : <Copy size={14} />}
         </button>
       </div>
       <div className="detail-row">
         <span className="detail-label">IBAN</span>
         <span className="detail-value">{BANK_DETAILS.iban}</span>
-        <button className="copy-icon" onClick={() => onCopy(BANK_DETAILS.iban, 'iban')}>
+        <button className="copy-icon" onClick={() => onCopy(BANK_DETAILS.iban, 'iban')} aria-label="Copy IBAN">
           {copied === 'iban' ? <Check size={14} /> : <Copy size={14} />}
         </button>
       </div>
@@ -191,14 +192,14 @@ const BankTransferDetails = memo(({ amount, reference, onCopy, copied }: BankTra
       <div className="detail-row">
         <span className="detail-label">Routing Code</span>
         <span className="detail-value">{BANK_DETAILS.routingCode}</span>
-        <button className="copy-icon" onClick={() => onCopy(BANK_DETAILS.routingCode, 'routing')}>
+        <button className="copy-icon" onClick={() => onCopy(BANK_DETAILS.routingCode, 'routing')} aria-label="Copy routing code">
           {copied === 'routing' ? <Check size={14} /> : <Copy size={14} />}
         </button>
       </div>
       <div className="detail-row">
         <span className="detail-label">SWIFT Code</span>
         <span className="detail-value">{BANK_DETAILS.swiftCode}</span>
-        <button className="copy-icon" onClick={() => onCopy(BANK_DETAILS.swiftCode, 'swift')}>
+        <button className="copy-icon" onClick={() => onCopy(BANK_DETAILS.swiftCode, 'swift')} aria-label="Copy SWIFT code">
           {copied === 'swift' ? <Check size={14} /> : <Copy size={14} />}
         </button>
       </div>
@@ -213,7 +214,7 @@ const BankTransferDetails = memo(({ amount, reference, onCopy, copied }: BankTra
       <div className="detail-row highlight">
         <span className="detail-label">Reference</span>
         <span className="detail-value">{reference}</span>
-        <button className="copy-icon" onClick={() => onCopy(reference, 'reference')}>
+        <button className="copy-icon" onClick={() => onCopy(reference, 'reference')} aria-label="Copy payment reference">
           {copied === 'reference' ? <Check size={14} /> : <Copy size={14} />}
         </button>
       </div>
@@ -269,7 +270,7 @@ const PaymentInstructionDeck = memo(({
     navigator.clipboard.writeText(text);
     setCopied(field ?? null);
     clearTimeout(copyTimerRef.current);
-    copyTimerRef.current = setTimeout(() => setCopied(null), 2000);
+    copyTimerRef.current = setTimeout(() => setCopied(null), TIMING.COPY_FEEDBACK);
   }, []);
   
   const generateMessage = useCallback(() => {
@@ -290,7 +291,7 @@ const PaymentInstructionDeck = memo(({
     navigator.clipboard.writeText(message);
     setCopied('message');
     clearTimeout(copyTimerRef.current);
-    copyTimerRef.current = setTimeout(() => setCopied(null), 2000);
+    copyTimerRef.current = setTimeout(() => setCopied(null), TIMING.COPY_FEEDBACK);
   }, [selectedMethod, amount, reference, clientName, invoiceId, onGenerateMessage]);
   
   return (

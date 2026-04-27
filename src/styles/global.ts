@@ -7,6 +7,76 @@ import { createGlobalStyle } from 'styled-components';
 import { theme } from './theme';
 
 export const GlobalStyles = createGlobalStyle`
+  /* ═══ CSS Variables Bridge ═══════════════════════════════════
+     Maps JS design tokens → CSS custom properties so .css files
+     (homepage, auth, etc.) can consume the same palette.
+     ─────────────────────────────────────────────────────────── */
+  :root {
+    /* Brand */
+    --primary-color: ${theme.colors.primary};
+    --primary-dark: ${theme.colors.primaryDark};
+    --primary-light: ${theme.colors.primaryLight};
+    --primary-very-light: ${theme.colors.primaryVeryLight};
+    --accent-gold: ${theme.colors.primary};
+    --secondary-color: ${theme.colors.secondary};
+    --secondary-dark: ${theme.colors.secondaryDark};
+
+    /* Backgrounds */
+    --bg-primary: ${theme.colors.background.primary};
+    --bg-secondary: ${theme.colors.background.secondary};
+    --bg-tertiary: ${theme.colors.background.tertiary};
+
+    /* Text */
+    --text-primary: ${theme.colors.text.primary};
+    --text-secondary: ${theme.colors.text.secondary};
+    --text-muted: ${theme.colors.text.tertiary};
+
+    /* Borders */
+    --border-color: ${theme.colors.border};
+    --border-light: ${theme.colors.borderLight};
+
+    /* Typography */
+    --font-heading: ${theme.typography.fontFamily.heading};
+    --font-body: ${theme.typography.fontFamily.primary};
+
+    /* Radius */
+    --radius-xs: ${theme.radius.xs};
+    --radius-sm: ${theme.radius.sm};
+    --radius-md: ${theme.radius.md};
+    --radius-lg: ${theme.radius.lg};
+    --radius-xl: ${theme.radius.xl};
+    --radius-xxl: ${theme.radius.xxl};
+    --radius-full: ${theme.radius.full};
+
+    /* Shadows */
+    --shadow-sm: ${theme.shadows.sm};
+    --shadow-md: ${theme.shadows.md};
+    --shadow-lg: ${theme.shadows.lg};
+    --shadow-xl: ${theme.shadows.xl};
+
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.2s ease;
+    --transition-slow: 0.3s ease;
+
+    /* Semantic */
+    --success-color: ${theme.colors.success};
+    --error-color: ${theme.colors.error};
+    --warning-color: ${theme.colors.warning};
+    --info-color: ${theme.colors.info};
+
+    /* WCAG AA Contrast-Safe Variants */
+    --a11y-gold-text: ${theme.colors.a11y.goldText};
+    --a11y-gold-large: ${theme.colors.a11y.goldLargeText};
+    --a11y-gold-ui: ${theme.colors.a11y.goldUI};
+    --a11y-focus-ring: ${theme.colors.a11y.focusRing};
+    --a11y-error-text: ${theme.colors.a11y.errorText};
+    --a11y-warning-text: ${theme.colors.a11y.warningText};
+
+    /* Legacy alias (DepartmentContentPanel, Modal) */
+    --primary-red: var(--primary-color);
+  }
+
   /* CSS Reset & Base Styles */
   *,
   *::before,
@@ -91,9 +161,15 @@ export const GlobalStyles = createGlobalStyle`
       text-decoration: underline;
     }
 
-    &:focus {
-      outline: 2px solid ${theme.colors.primary};
+    &:focus-visible {
+      outline: 3px solid ${theme.colors.a11y.focusRing};
       outline-offset: 2px;
+      border-radius: 2px;
+    }
+
+    /* Remove outline for mouse-only focus (keyboard users still see it) */
+    &:focus:not(:focus-visible) {
+      outline: none;
     }
   }
 
@@ -121,7 +197,14 @@ export const GlobalStyles = createGlobalStyle`
       border-color: ${theme.colors.borderDark};
     }
 
-    &:focus {
+    &:focus-visible {
+      outline: 3px solid ${theme.colors.a11y.focusRing};
+      outline-offset: 2px;
+      border-color: ${theme.colors.a11y.goldUI};
+      box-shadow: none;
+    }
+
+    &:focus:not(:focus-visible) {
       outline: none;
       border-color: ${theme.colors.primary};
       box-shadow: ${theme.shadows.focus};
@@ -148,9 +231,14 @@ export const GlobalStyles = createGlobalStyle`
       opacity: 0.6;
     }
 
-    &:focus {
-      outline: 2px solid ${theme.colors.primary};
+    &:focus-visible {
+      outline: 3px solid ${theme.colors.a11y.focusRing};
       outline-offset: 2px;
+      border-radius: 2px;
+    }
+
+    &:focus:not(:focus-visible) {
+      outline: none;
     }
   }
 
@@ -322,17 +410,21 @@ export const GlobalStyles = createGlobalStyle`
     position: absolute;
     top: -100px;
     left: 16px;
-    background: var(--color-primary, #1a73e8);
-    color: #fff;
-    padding: 8px 16px;
-    z-index: var(--z-max, 900);
-    border-radius: 0 0 4px 4px;
+    background: ${theme.colors.secondary};
+    color: #FFFFFF;
+    padding: 12px 24px;
+    z-index: var(--z-max, 9999);
+    border-radius: 0 0 8px 8px;
     font-size: 14px;
     font-weight: 600;
     text-decoration: none;
     transition: top 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
-  .skip-to-content:focus {
+  .skip-to-content:focus,
+  .skip-to-content:focus-visible {
     top: 0;
+    outline: 3px solid ${theme.colors.a11y.focusRing};
+    outline-offset: 2px;
   }
 `;

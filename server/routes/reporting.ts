@@ -217,4 +217,206 @@ router.get(
   })
 );
 
+// ─── GET /api/dashboard/lead-funnel ─────────────────────────────────────
+// Lead conversion funnel: new → contacted → qualified → negotiating → won
+router.get(
+  '/lead-funnel',
+  requirePermission('view_analytics'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const stages = ['new', 'contacted', 'qualified', 'viewing', 'negotiating', 'won', 'lost'];
+    const counts = await Promise.all(
+      stages.map((status) => prisma.lead.count({ where: { status } })),
+    );
+    const total = counts.reduce((sum, c) => sum + c, 0);
+
+    const funnel = stages.map((stage, i) => ({
+      stage,
+      count: counts[i],
+      percentage: total > 0 ? Math.round((counts[i] / total) * 100) : 0,
+    }));
+
+    // Score tier distribution
+    const tiers = ['hot', 'warm', 'cold', 'inactive'];
+    const tierCounts = await Promise.all(
+      tiers.map((tier) => prisma.lead.count({ where: { scoreTier: tier } })),
+    );
+    const tierDistribution = tiers.map((tier, i) => ({ tier, count: tierCounts[i] }));
+
+    res.status(200).json({
+      success: true,
+      data: { funnel, tierDistribution, total },
+    });
+  })
+);
+
+// ─── GET /api/dashboard/trends ──────────────────────────────────────────
+// Time-series data: leads/transactions/commissions over period
+router.get(
+  '/trends',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const days = parseInt(req.query.days as string) || 30;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    // Get raw data in the period
+    const [leads, transactions, commissions] = await Promise.all([
+      prisma.lead.findMany({
+        where: { createdAt: { gte: startDate } },
+        select: { createdAt: true },
+        orderBy: { createdAt: 'asc' },
+      }),
+      prisma.transaction.findMany({
+        where: { createdAt: { gte: startDate } },
+        select: { createdAt: true, amount: true },
+        orderBy: { createdAt: 'asc' },
+      }),
+      prisma.commission.findMany({
+        where: { createdAt: { gte: startDate } },
+        select: { createdAt: true, amount: true },
+        orderBy: { createdAt: 'asc' },
+      }),
+    ]);
+
+    // Group by date
+    const groupByDate = <T extends { createdAt: Date }>(
+      items: T[],
+      getValue?: (item: T) => number,
+    ) => {
+      const map: Record<string, { count: number; value: number }> = {};
+      for (const item of items) {
+        const dateKey = item.createdAt.toISOString().split('T')[0];
+        if (!map[dateKey]) map[dateKey] = { count: 0, value: 0 };
+        map[dateKey].count++;
+        if (getValue) map[dateKey].value += getValue(item);
+      }
+      return map;
+    };
+
+    const leadsByDate = groupByDate(leads);
+    const transactionsByDate = groupByDate(transactions, (t) => t.amount);
+    const commissionsByDate = groupByDate(commissions, (c) => c.amount);
+
+    // Build daily series
+    const series: Array<{
+      date: string;
+      leads: number;
+      transactions: number;
+      transactionValue: number;
+      commissions: number;
+      commissionValue: number;
+    }> = [];
+
+    for (let d = 0; d < days; d++) {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + d);
+      const key = date.toISOString().split('T')[0];
+      series.push({
+        date: key,
+        leads: leadsByDate[key]?.count || 0,
+        transactions: transactionsByDate[key]?.count || 0,
+        transactionValue: transactionsByDate[key]?.value || 0,
+        commissions: commissionsByDate[key]?.count || 0,
+        commissionValue: commissionsByDate[key]?.value || 0,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: { period: `${days}d`, startDate: startDate.toISOString(), series },
+    });
+  })
+);
+
+// ─── GET /api/dashboard/property-aging ──────────────────────────────────
+// Days on market distribution for available properties
+router.get(
+  '/property-aging',
+  requirePermission('view_analytics'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const properties = await prisma.property.findMany({
+      where: { status: 'available' },
+      select: { id: true, title: true, createdAt: true, price: true, location: true },
+    });
+
+    const now = Date.now();
+    const aging = properties.map((p) => {
+      const daysOnMarket = Math.floor((now - p.createdAt.getTime()) / (86400000));
+      return { id: p.id, title: p.title, location: p.location, price: p.price, daysOnMarket };
+    });
+
+    // Buckets
+    const buckets = [
+      { label: '0-7 days', min: 0, max: 7, count: 0 },
+      { label: '8-30 days', min: 8, max: 30, count: 0 },
+      { label: '31-60 days', min: 31, max: 60, count: 0 },
+      { label: '61-90 days', min: 61, max: 90, count: 0 },
+      { label: '90+ days', min: 91, max: Infinity, count: 0 },
+    ];
+
+    for (const a of aging) {
+      const bucket = buckets.find((b) => a.daysOnMarket >= b.min && a.daysOnMarket <= b.max);
+      if (bucket) bucket.count++;
+    }
+
+    const avgDaysOnMarket = aging.length > 0
+      ? Math.round(aging.reduce((s, a) => s + a.daysOnMarket, 0) / aging.length)
+      : 0;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalAvailable: properties.length,
+        avgDaysOnMarket,
+        buckets: buckets.map(({ label, count }) => ({ label, count })),
+        staleProperties: aging.filter((a) => a.daysOnMarket > 90).slice(0, 10),
+      },
+    });
+  })
+);
+
+// ─── GET /api/dashboard/agent-performance ───────────────────────────────
+// Comparative agent performance dashboard
+router.get(
+  '/agent-performance',
+  requirePermission('view_analytics'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const agents = await prisma.user.findMany({
+      where: { role: 'agent', status: 'active' },
+      select: { id: true, name: true, email: true, department: true },
+    });
+
+    const agentPerformance = await Promise.all(
+      agents.map(async (agent) => {
+        const [totalLeads, wonLeads, commissions, activeDeals] = await Promise.all([
+          prisma.lead.count({ where: { assignedToId: agent.id } }),
+          prisma.lead.count({ where: { assignedToId: agent.id, status: 'won' } }),
+          prisma.commission.aggregate({ where: { agentId: agent.id, status: 'paid' }, _sum: { amount: true }, _count: true }),
+          prisma.transaction.count({ where: { agentId: agent.id, status: { in: ['pending', 'in_progress'] } } }),
+        ]);
+
+        return {
+          id: agent.id,
+          name: agent.name,
+          department: agent.department || 'General',
+          totalLeads,
+          wonLeads,
+          conversionRate: totalLeads > 0 ? Math.round((wonLeads / totalLeads) * 100) : 0,
+          totalCommission: commissions._sum.amount || 0,
+          dealsClosed: commissions._count || 0,
+          activeDeals,
+        };
+      })
+    );
+
+    // Sort by total commission descending
+    agentPerformance.sort((a, b) => b.totalCommission - a.totalCommission);
+
+    res.status(200).json({
+      success: true,
+      data: { agents: agentPerformance, total: agentPerformance.length },
+    });
+  })
+);
+
 export default router;

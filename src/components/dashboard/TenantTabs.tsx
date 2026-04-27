@@ -6,29 +6,39 @@
 
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../../utils/authFetch';
+import { createLogger } from '../../utils/logger';
+import { settledJson } from '../../utils/settledJson';
+import type {
+  DashboardLease,
+  DashboardMaintenanceRequest,
+  DashboardPayment,
+} from '@/types/dashboard';
 import * as S from './shared';
+
+const log = createLogger('Dashboard');
 
 // ═══════════════════════════════════════════════════════════════════════
 // TENANT OVERVIEW
 // ═══════════════════════════════════════════════════════════════════════
 
 export const TenantOverview: React.FC = () => {
-  const [lease, setLease] = useState<any>(null);
-  const [maintenance, setMaintenance] = useState<any[]>([]);
+  const [lease, setLease] = useState<DashboardLease | null>(null);
+  const [maintenance, setMaintenance] = useState<DashboardMaintenanceRequest[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
-        const [leaseRes, maintRes] = await Promise.allSettled([
-          authFetch('/api/leases/my-lease'),
-          authFetch('/api/maintenance?pageSize=5'),
-        ]);
-        const l = leaseRes.status === 'fulfilled' ? await leaseRes.value.json() : { data: null };
-        const m = maintRes.status === 'fulfilled' ? await maintRes.value.json() : { data: [] };
-        setLease(l.data);
+        const [l, m] = await settledJson(
+          [authFetch('/api/leases/my-lease'), authFetch('/api/maintenance?pageSize=5')],
+          [{ data: null }, { data: [] }],
+        ) as [
+          { data?: DashboardLease | null },
+          { data?: DashboardMaintenanceRequest[] },
+        ];
+        setLease(l.data ?? null);
         setMaintenance(m.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch tenant overview:', error); }
       setLoading(false);
     })();
   }, []);
@@ -73,7 +83,7 @@ export const TenantOverview: React.FC = () => {
       {maintenance.length > 0 && (
         <div style={S.card}>
           <h3 style={S.cardTitle}>🔧 Recent Maintenance</h3>
-          {maintenance.map((m: any) => (
+          {maintenance.map((m) => (
             <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid #f3f4f6' }}>
               <span>{m.title}</span>
               <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(m.status)}</span>
@@ -90,7 +100,7 @@ export const TenantOverview: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const TenantLease: React.FC = () => {
-  const [lease, setLease] = useState<any>(null);
+  const [lease, setLease] = useState<DashboardLease | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -99,7 +109,7 @@ export const TenantLease: React.FC = () => {
         const res = await authFetch('/api/leases/my-lease');
         const json = await res.json();
         setLease(json.data);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch lease details:', error); }
       setLoading(false);
     })();
   }, []);
@@ -177,7 +187,7 @@ export const TenantLease: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const TenantPayments: React.FC = () => {
-  const [payments, setPayments] = useState<any[]>([]);
+  const [payments, setPayments] = useState<DashboardPayment[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -186,7 +196,7 @@ export const TenantPayments: React.FC = () => {
         const res = await authFetch('/api/leases/my-payments');
         const json = await res.json();
         setPayments(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch payment history:', error); }
       setLoading(false);
     })();
   }, []);
@@ -233,7 +243,7 @@ export const TenantPayments: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {payments.map((p: any) => (
+                {payments.map((p) => (
                   <tr key={p.id}>
                     <td style={S.td}>{S.formatDate(p.paymentDate ?? p.createdAt)}</td>
                     <td style={S.td}>{p.period ?? '—'}</td>
@@ -262,7 +272,7 @@ export const TenantPayments: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const TenantMaintenance: React.FC = () => {
-  const [requests, setRequests] = useState<any[]>([]);
+  const [requests, setRequests] = useState<DashboardMaintenanceRequest[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -271,7 +281,7 @@ export const TenantMaintenance: React.FC = () => {
         const res = await authFetch('/api/maintenance?pageSize=50');
         const json = await res.json();
         setRequests(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch maintenance requests:', error); }
       setLoading(false);
     })();
   }, []);
@@ -293,7 +303,7 @@ export const TenantMaintenance: React.FC = () => {
         ? S.emptyState('🔧', 'No maintenance requests', 'Submit a request when something needs fixing.')
         : (
           <div style={S.listGrid}>
-            {requests.map((r: any) => (
+            {requests.map((r) => (
               <div key={r.id} style={S.card}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                   <h4 style={{ margin: 0 }}>{r.title}</h4>

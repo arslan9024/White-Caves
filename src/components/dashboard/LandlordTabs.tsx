@@ -6,14 +6,24 @@
 
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../../utils/authFetch';
+import { createLogger } from '../../utils/logger';
+import { settledJson } from '../../utils/settledJson';
+import type {
+  DashboardProperty,
+  DashboardLease,
+  DashboardMaintenanceRequest,
+  DashboardMaintenanceStats,
+} from '@/types/dashboard';
 import * as S from './shared';
+
+const log = createLogger('Dashboard');
 
 // ═══════════════════════════════════════════════════════════════════════
 // LANDLORD PROPERTIES
 // ═══════════════════════════════════════════════════════════════════════
 
 export const LandlordProperties: React.FC = () => {
-  const [properties, setProperties] = useState<any[]>([]);
+  const [properties, setProperties] = useState<DashboardProperty[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +32,7 @@ export const LandlordProperties: React.FC = () => {
         const res = await authFetch('/api/properties?role=landlord&pageSize=50');
         const json = await res.json();
         setProperties(json.data ?? json.properties ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch properties:', error); }
       setLoading(false);
     })();
   }, []);
@@ -39,7 +49,7 @@ export const LandlordProperties: React.FC = () => {
         ? S.emptyState('🏘️', 'No properties', 'Add your rental properties to manage tenants and leases.')
         : (
           <div style={S.listGrid}>
-            {properties.map((p: any) => (
+            {properties.map((p) => (
               <div key={p.id} style={S.card}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <div>
@@ -71,7 +81,7 @@ export const LandlordProperties: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const TenantManagement: React.FC = () => {
-  const [leases, setLeases] = useState<any[]>([]);
+  const [leases, setLeases] = useState<DashboardLease[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -80,7 +90,7 @@ export const TenantManagement: React.FC = () => {
         const res = await authFetch('/api/leases?role=landlord&pageSize=50');
         const json = await res.json();
         setLeases(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch tenant leases:', error); }
       setLoading(false);
     })();
   }, []);
@@ -108,7 +118,7 @@ export const TenantManagement: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {leases.map((l: any) => (
+                {leases.map((l) => (
                   <tr key={l.id}>
                     <td style={S.td}>{l.tenant?.name ?? l.tenantId ?? '—'}</td>
                     <td style={S.td}>{l.property?.title ?? l.propertyId ?? '—'}</td>
@@ -137,22 +147,23 @@ export const TenantManagement: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const MaintenanceRequests: React.FC = () => {
-  const [requests, setRequests] = useState<any[]>([]);
-  const [stats, setStats] = useState<any>(null);
+  const [requests, setRequests] = useState<DashboardMaintenanceRequest[]>([]);
+  const [stats, setStats] = useState<DashboardMaintenanceStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
-        const [reqRes, statsRes] = await Promise.allSettled([
-          authFetch('/api/maintenance?pageSize=50'),
-          authFetch('/api/maintenance/stats'),
-        ]);
-        const reqs = reqRes.status === 'fulfilled' ? await reqRes.value.json() : { data: [] };
-        const st = statsRes.status === 'fulfilled' ? await statsRes.value.json() : { data: null };
+        const [reqs, st] = await settledJson(
+          [authFetch('/api/maintenance?pageSize=50'), authFetch('/api/maintenance/stats')],
+          [{ data: [] }, { data: null }],
+        ) as [
+          { data?: DashboardMaintenanceRequest[] },
+          { data?: DashboardMaintenanceStats | null },
+        ];
         setRequests(reqs.data ?? []);
-        setStats(st.data);
-      } catch { /* empty */ }
+        setStats(st.data ?? null);
+      } catch (error) { log.warn('Failed to fetch maintenance data:', error); }
       setLoading(false);
     })();
   }, []);
@@ -211,8 +222,8 @@ export const MaintenanceRequests: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {requests.map((r: any) => {
-                  const pc = priorityColor(r.priority);
+                {requests.map((r) => {
+                  const pc = priorityColor(r.priority ?? '');
                   return (
                     <tr key={r.id}>
                       <td style={S.td}><strong>{r.title}</strong></td>
@@ -242,7 +253,7 @@ export const MaintenanceRequests: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const FinancialSummary: React.FC = () => {
-  const [leases, setLeases] = useState<any[]>([]);
+  const [leases, setLeases] = useState<DashboardLease[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -251,7 +262,7 @@ export const FinancialSummary: React.FC = () => {
         const res = await authFetch('/api/leases?role=landlord&pageSize=100');
         const json = await res.json();
         setLeases(json.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch financial data:', error); }
       setLoading(false);
     })();
   }, []);
@@ -305,7 +316,7 @@ export const FinancialSummary: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {activeLeases.map((l: any) => (
+                {activeLeases.map((l) => (
                   <tr key={l.id}>
                     <td style={S.td}>{l.property?.title ?? '—'}</td>
                     <td style={S.td}>{l.tenant?.name ?? '—'}</td>
@@ -327,22 +338,23 @@ export const FinancialSummary: React.FC = () => {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const LeaseManagement: React.FC = () => {
-  const [leases, setLeases] = useState<any[]>([]);
-  const [expiring, setExpiring] = useState<any[]>([]);
+  const [leases, setLeases] = useState<DashboardLease[]>([]);
+  const [expiring, setExpiring] = useState<DashboardLease[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
-        const [allRes, expRes] = await Promise.allSettled([
-          authFetch('/api/leases?role=landlord&pageSize=50'),
-          authFetch('/api/leases/expiring?days=60'),
-        ]);
-        const all = allRes.status === 'fulfilled' ? await allRes.value.json() : { data: [] };
-        const exp = expRes.status === 'fulfilled' ? await expRes.value.json() : { data: [] };
+        const [all, exp] = await settledJson(
+          [authFetch('/api/leases?role=landlord&pageSize=50'), authFetch('/api/leases/expiring?days=60')],
+          [{ data: [] }, { data: [] }],
+        ) as [
+          { data?: DashboardLease[] },
+          { data?: DashboardLease[] },
+        ];
         setLeases(all.data ?? []);
         setExpiring(exp.data ?? []);
-      } catch { /* empty */ }
+      } catch (error) { log.warn('Failed to fetch lease data:', error); }
       setLoading(false);
     })();
   }, []);
@@ -359,7 +371,7 @@ export const LeaseManagement: React.FC = () => {
       {expiring.length > 0 && (
         <div style={{ ...S.card, borderColor: '#fbbf24', background: '#fffbeb' }}>
           <h3 style={S.cardTitle}>⚠️ Expiring Soon ({expiring.length})</h3>
-          {expiring.map((l: any) => (
+          {expiring.map((l) => (
             <div key={l.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid #fde68a' }}>
               <span>{l.property?.title ?? '—'} — {l.tenant?.name ?? '—'}</span>
               <span style={{ fontWeight: 600, color: '#d97706' }}>Expires {S.formatDate(l.endDate)}</span>
@@ -384,7 +396,7 @@ export const LeaseManagement: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {leases.map((l: any) => (
+                {leases.map((l) => (
                   <tr key={l.id}>
                     <td style={S.td}>{l.property?.title ?? '—'}</td>
                     <td style={S.td}>{l.tenant?.name ?? '—'}</td>

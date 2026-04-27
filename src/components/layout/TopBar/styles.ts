@@ -1,5 +1,7 @@
 import styled, { css, keyframes } from 'styled-components';
+import { colors } from '../../../styles/theme/colors';
 import { typography } from '../../../styles/theme/typography';
+import { spacing } from '../../../styles/theme/spacing';
 
 /* ═══════════════════════════════════════════════════════════════
    TOP BAR — Single unified navbar (56px)
@@ -22,16 +24,18 @@ export const TopBarContainer = styled.header`
   height: 56px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: ${spacing.md};
   padding: 0 16px;
   background: #FFFFFF;
   border-bottom: 1px solid #E5E7EB;
+  box-shadow: 0 1px 8px rgba(212, 175, 55, 0.06);
   z-index: var(--z-navbar, 500);
   transition: background 0.2s ease, box-shadow 0.2s ease;
 
   @media (prefers-color-scheme: dark) {
     background: #1E293B;
     border-bottom-color: #334155;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
   }
 `;
 
@@ -50,12 +54,12 @@ export const LogoMark = styled.div`
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #E31E24, #C62828);
+  background: linear-gradient(135deg, ${colors.primary}, ${colors.primaryDark});
   display: flex;
   align-items: center;
   justify-content: center;
   color: #FFFFFF;
-  font-weight: 800;
+  font-weight: ${typography.weights.extrabold};
   font-size: 14px;
   font-family: ${typography.fontFamily.heading};
   letter-spacing: 0.5px;
@@ -139,7 +143,7 @@ export const BreadcrumbItem = styled.button<{ $isLast?: boolean }>`
   ${p => !p.$isLast && css`
     &:hover {
       background: #F3F4F6;
-      color: #E31E24;
+      color: ${colors.primary};
     }
   `}
 
@@ -169,7 +173,7 @@ export const BreadcrumbSeparator = styled.span`
 export const ActionsSection = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: ${spacing.xs};
   flex-shrink: 0;
 `;
 
@@ -178,7 +182,7 @@ export const ActionsSection = styled.div`
 export const SearchTrigger = styled.button`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 6px 12px;
   background: #F3F4F6;
   border: 1px solid #E5E7EB;
@@ -195,6 +199,12 @@ export const SearchTrigger = styled.button`
     color: #6B7280;
   }
 
+  &:focus-visible {
+    outline: none;
+    border-color: ${colors.primary};
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+  }
+
   @media (max-width: 640px) {
     padding: 6px 8px;
     span { display: none; }
@@ -208,6 +218,11 @@ export const SearchTrigger = styled.button`
     &:hover {
       background: #475569;
       color: #94A3B8;
+    }
+
+    &:focus-visible {
+      border-color: ${colors.primary};
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     }
   }
 `;
@@ -231,12 +246,55 @@ export const SearchShortcut = styled.kbd`
   }
 `;
 
+export const QuickActionButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 10px;
+  background: ${colors.primaryVeryLight};
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 8px;
+  color: ${colors.primaryDark};
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #F8EFCB;
+    border-color: rgba(212, 175, 55, 0.55);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+  }
+
+  @media (max-width: 768px) {
+    span { display: none; }
+    width: 36px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: rgba(212, 175, 55, 0.35);
+    color: ${colors.primaryLight};
+
+    &:hover {
+      background: rgba(212, 175, 55, 0.22);
+    }
+  }
+`;
+
 /* ── Icon button (notifications, user, etc.) ───────────────── */
 
 export const IconButton = styled.button<{ $hasNotif?: boolean }>`
   position: relative;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -250,6 +308,11 @@ export const IconButton = styled.button<{ $hasNotif?: boolean }>`
   &:hover {
     background: #F3F4F6;
     color: #111827;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -268,7 +331,7 @@ export const NotifBadge = styled.span`
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #E31E24;
+  background: ${colors.primary};
   color: #FFFFFF;
   font-size: 9px;
   font-weight: 700;
@@ -288,7 +351,7 @@ export const NotifBadge = styled.span`
 export const UserButton = styled.button`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 4px 8px 4px 4px;
   background: transparent;
   border: none;
@@ -311,7 +374,7 @@ export const UserAvatar = styled.div<{ $src?: string }>`
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: ${p => p.$src ? `url(${p.$src}) center/cover` : 'linear-gradient(135deg, #E31E24, #C62828)'};
+  background: ${p => p.$src ? `url(${p.$src}) center/cover` : `linear-gradient(135deg, ${colors.primary}, ${colors.primaryDark})`};
   color: #FFFFFF;
   font-size: 13px;
   font-weight: 600;
@@ -355,7 +418,7 @@ export const DropdownMenu = styled.div<{ $align?: 'left' | 'right' }>`
   background: #FFFFFF;
   border: 1px solid #E5E7EB;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(212, 175, 55, 0.06);
   padding: 6px;
   z-index: 600;
   animation: ${fadeIn} 0.15s ease;
@@ -363,7 +426,7 @@ export const DropdownMenu = styled.div<{ $align?: 'left' | 'right' }>`
   @media (prefers-color-scheme: dark) {
     background: #1E293B;
     border-color: #334155;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(212, 175, 55, 0.04);
   }
 `;
 
@@ -397,7 +460,7 @@ export const DropdownItem = styled.button<{ $danger?: boolean }>`
 export const DropdownDivider = styled.div`
   height: 1px;
   background: #E5E7EB;
-  margin: 4px 0;
+  margin: ${spacing.xs} 0;
 
   @media (prefers-color-scheme: dark) {
     background: #334155;
@@ -433,7 +496,49 @@ export const DropdownHeaderEmail = styled.span`
 export const DropdownHeaderRole = styled.span`
   font-size: 11px;
   font-weight: 600;
-  color: #E31E24;
+  color: ${colors.primary};
   text-transform: uppercase;
   letter-spacing: 0.5px;
+`;
+
+/* ═══════════════════════════════════════════════════════════════
+   HAMBURGER BUTTON — visible only ≤ 768px
+   ═══════════════════════════════════════════════════════════════ */
+
+export const HamburgerButton = styled.button`
+  display: none; /* Hidden on desktop */
+  width: 44px;   /* WCAG 2.1 AA touch target */
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #374151;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover, &:active {
+    background: #F3F4F6;
+    color: ${colors.primary};
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    display: flex;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    color: #E2E8F0;
+    &:hover, &:active {
+      background: #334155;
+      color: ${colors.primary};
+    }
+  }
 `;

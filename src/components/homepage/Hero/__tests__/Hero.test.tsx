@@ -37,6 +37,12 @@ vi.mock('lucide-react', async () => {
 
 // Mock CSS module
 vi.mock('../Hero.css', () => ({}));
+vi.mock('../HeroSearchBar.css', () => ({}));
+
+// Mock HeroSearchBar to isolate Hero rendering tests
+vi.mock('../HeroSearchBar', () => ({
+  default: () => <div data-testid="hero-search-bar" />,
+}));;
 
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
@@ -169,8 +175,9 @@ describe('Hero', () => {
       expect(screen.getByText('Scroll to explore')).toBeInTheDocument();
     });
 
-    it('renders ChevronDown icon', () => {
+    it('renders ChevronDown icon in scroll indicator', () => {
       renderHero();
+      // HeroSearchBar is mocked, so only the scroll indicator ChevronDown remains
       expect(screen.getByTestId('chevron-down')).toBeInTheDocument();
     });
   });
@@ -215,3 +222,4 @@ describe('Hero', () => {
     });
   });
 });
+

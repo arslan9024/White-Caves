@@ -114,7 +114,10 @@ export default function JobBoard() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        const errorData = await response.json().catch(e => {
+          log.debug('Non-JSON error response:', e);
+          return {};
+        });
         throw new Error(
           (errorData as { message?: string }).message ||
           `HTTP ${response.status}: ${response.statusText}`
@@ -161,19 +164,21 @@ export default function JobBoard() {
               <select 
                 value={applicationForm.role}
                 onChange={(e) => setApplicationForm({...applicationForm, role: e.target.value})}
+                aria-label="Select job role"
                 required
               >
                 <option value="">Select Role</option>
                 <option value="LEASING_AGENT">Leasing Agent</option>
                 <option value="SALES_AGENT_SECONDARY">Sales Agent - Secondary Properties</option>
                 <option value="SALES_AGENT_OFF_PLAN">Sales Agent - Off Plan Properties</option>
-                <option value="FREELANCE_AGENT">Freelance Agent</option>
-                <option value="FREELANCE_CONSULTANT">Freelance Consultant</option>
+                <option value="PROPERTY_CONSULTANT">Property Consultant</option>
+                <option value="MARKETING_SPECIALIST">Marketing Specialist</option>
               </select>
               
               <select 
                 value={applicationForm.workLocation}
                 onChange={(e) => setApplicationForm({...applicationForm, workLocation: e.target.value})}
+                aria-label="Select work location preference"
                 required
               >
                 <option value="">Select Work Location</option>

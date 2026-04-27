@@ -1,7 +1,7 @@
-import React, { FC, useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import React, { FC } from 'react';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
-import AppLayout from '../components/layout/AppLayout';
+import PublicLayout from '../components/layout/PublicLayout';
+import PageHeroBanner from '../components/layout/PageHeroBanner';
 import './CareersPage.css';
 
 interface JobPosition {
@@ -15,66 +15,8 @@ interface JobPosition {
   requirements: string[];
 }
 
-interface ApplicationFormData {
-  fullName: string;
-  email: string;
-  phone: string;
-  position: string;
-  experience: string;
-  currentCompany: string;
-  linkedIn: string;
-  coverLetter: string;
-  heardFrom: string;
-}
-
-interface CareersPageProps {}
-
-const CareersPage: FC<CareersPageProps> = () => {
+const CareersPage: FC = () => {
   useDocumentTitle('Careers');
-  const [selectedJob, setSelectedJob] = useState<JobPosition | null>(null);
-  const [showForm, setShowForm] = useState<boolean>(false);
-  const [formData, setFormData] = useState<ApplicationFormData>({
-    fullName: '',
-    email: '',
-    phone: '',
-    position: '',
-    experience: '',
-    currentCompany: '',
-    linkedIn: '',
-    coverLetter: '',
-    heardFrom: ''
-  });
-  const [submitted, setSubmitted] = useState<boolean>(false);
-  const scrollTimerRef = useRef<ReturnType<typeof setTimeout>>();
-
-  useEffect(() => {
-    return () => clearTimeout(scrollTimerRef.current);
-  }, []);
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>): void => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleApply = (job: JobPosition): void => {
-    setSelectedJob(job);
-    setFormData({ ...formData, position: job.title });
-    setShowForm(true);
-    clearTimeout(scrollTimerRef.current);
-    scrollTimerRef.current = setTimeout(() => {
-      document.getElementById('application-form')?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
-  };
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
-    // TODO: Wire to backend API (POST /api/careers/apply)
-    setSubmitted(true);
-    setShowForm(false);
-    clearTimeout(scrollTimerRef.current);
-    scrollTimerRef.current = setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 100);
-  };
 
   const jobPositions: JobPosition[] = [
     {
@@ -124,39 +66,16 @@ const CareersPage: FC<CareersPageProps> = () => {
   ];
 
   return (
-    <AppLayout>
+    <PublicLayout>
       <div className="careers-page">
-        <section className="careers-hero">
-          <div className="careers-hero-overlay"></div>
-          <div className="careers-hero-content">
-            <h1>Build Your Career with White Caves</h1>
-            <p>Join Dubai's fastest-growing real estate team and unlock your potential</p>
-            <div className="careers-hero-stats">
-              <div className="hero-stat">
-                <span className="stat-number">50+</span>
-                <span className="stat-text">Team Members</span>
-              </div>
-              <div className="hero-stat">
-                <span className="stat-number">AED 2B+</span>
-                <span className="stat-text">Transactions</span>
-              </div>
-              <div className="hero-stat">
-                <span className="stat-number">100%</span>
-                <span className="stat-text">Growth Support</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {submitted && (
-          <div className="careers-success-message">
-            <div className="success-content">
-              <span className="success-icon">✓</span>
-              <h3>Application Submitted Successfully!</h3>
-              <p>Thank you for your interest in joining White Caves Real Estate. Our HR team will review your application and contact you within 3-5 business days.</p>
-            </div>
-          </div>
-        )}
+        <PageHeroBanner
+          badge="Join Our Team"
+          title="Build Your Career with White Caves"
+          subtitle="Join Dubai's fastest-growing real estate team and unlock your potential — 50+ team members, AED 2B+ in transactions"
+          theme="navy"
+          breadcrumbs={[{ label: 'Careers' }]}
+          stat={{ value: '50+', label: 'Team Members' }}
+        />
 
         <section className="careers-benefits">
           <div className="careers-container">
@@ -192,19 +111,20 @@ const CareersPage: FC<CareersPageProps> = () => {
                     <span className="position-meta">{job.type} • {job.experience}</span>
                   </div>
                   <p className="position-desc">{job.description}</p>
-                  <button
+                  <a
                     className="apply-btn"
-                    onClick={() => handleApply(job)}
+                    href={`mailto:careers@whitecaves.ae?subject=Application: ${encodeURIComponent(job.title)}&body=${encodeURIComponent(`Hi,\n\nI would like to apply for the ${job.title} position.\n\nBest regards`)}`}
+                    aria-label={`Apply for ${job.title} position`}
                   >
                     Apply Now
-                  </button>
+                  </a>
                 </div>
               ))}
             </div>
           </div>
         </section>
       </div>
-    </AppLayout>
+    </PublicLayout>
   );
 };
 

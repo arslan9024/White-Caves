@@ -7,7 +7,6 @@
 import { Router, Request, Response } from 'express';
 import { Prisma } from '@prisma/client';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
-import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { validate, rules, validateIdParam } from '../utils/validate';
@@ -24,6 +23,7 @@ router.get(
     const {
       status, type, search, featured,
       minPrice, maxPrice, minBeds, minBaths,
+      beds, baths, location,
       sortBy = 'createdAt', sortOrder = 'desc',
       area,
     } = req.query;
@@ -38,6 +38,9 @@ router.get(
     if (status && status !== 'all') where.status = status as string;
     if (type && type !== 'all') where.type = type as string;
     if (area) where.area = area as string;
+    if (location && location !== 'All Locations') {
+      where.location = { contains: location as string, mode: 'insensitive' };
+    }
     if (featured === 'true') where.featured = true;
     if (minPrice || maxPrice) {
       where.price = {};
@@ -50,12 +53,14 @@ router.get(
         if (!isNaN(parsed)) where.price.lte = parsed;
       }
     }
-    if (minBeds) {
-      const parsed = parseInt(minBeds as string, 10);
+    const resolvedMinBeds = minBeds ?? beds;
+    if (resolvedMinBeds) {
+      const parsed = parseInt(resolvedMinBeds as string, 10);
       if (!isNaN(parsed)) where.bedrooms = { gte: parsed };
     }
-    if (minBaths) {
-      const parsed = parseInt(minBaths as string, 10);
+    const resolvedMinBaths = minBaths ?? baths;
+    if (resolvedMinBaths) {
+      const parsed = parseInt(resolvedMinBaths as string, 10);
       if (!isNaN(parsed)) where.bathrooms = { gte: parsed };
     }
     if (search) {

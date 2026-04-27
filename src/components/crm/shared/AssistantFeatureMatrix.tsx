@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { 
   CheckCircle, Clock, AlertCircle, Code, FileCode, 
   ChevronRight, Search, Filter, Zap, Star, Box
@@ -23,7 +23,7 @@ interface AssistantFeatureMatrixProps {
   categories?: string[];
 }
 
-export default function AssistantFeatureMatrix({ 
+const AssistantFeatureMatrix = memo(function AssistantFeatureMatrix({ 
   features, 
   title = "Programmed Capabilities",
   accentColor = "#7c3aed",
@@ -233,4 +233,6 @@ export default function AssistantFeatureMatrix({
       </div>
     </div>
   );
-}
+});
+
+export default AssistantFeatureMatrix;

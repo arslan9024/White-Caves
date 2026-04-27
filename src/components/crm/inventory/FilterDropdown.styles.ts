@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import { transitions } from '../../../styles/theme/transitions';
+import { typography } from '../../../styles/theme/typography';
+import { radius } from '../../../styles/theme/radius';
 
 export const FilterDropdownContainer = styled.div<{ $disabled?: boolean }>`
   display: flex;
@@ -11,7 +14,7 @@ export const FilterDropdownContainer = styled.div<{ $disabled?: boolean }>`
 
 export const FilterLabel = styled.label`
   font-size: 11px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -32,13 +35,13 @@ export const Select = styled.select`
   padding: 10px 32px 10px 12px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   color: var(--text-primary);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: ${typography.sizes.sm};
+  font-weight: ${typography.weights.medium};
   cursor: pointer;
   appearance: none;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     border-color: var(--primary);
@@ -47,7 +50,7 @@ export const Select = styled.select`
   &:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
   }
 
   &:disabled {
@@ -61,8 +64,8 @@ export const Select = styled.select`
     color: #e2e8f0;
 
     &:focus {
-      border-color: #dc2626;
-      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+      border-color: #D4AF37;
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     }
   }
 `;

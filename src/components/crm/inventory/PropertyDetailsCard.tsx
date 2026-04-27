@@ -120,7 +120,7 @@ const FieldItemRenderer = ({ config, value }: { config: FieldConfig; value: unkn
         justifyContent: 'center',
         width: '28px',
         height: '28px',
-        background: 'rgba(220, 38, 38, 0.1)',
+        background: 'rgba(212, 175, 55, 0.1)',
         borderRadius: '6px',
         color: 'var(--primary)',
         flexShrink: 0
@@ -200,7 +200,7 @@ const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({ property, own
                   <OwnerName>{owner.name || 'Unknown'}</OwnerName>
                   {(owner.contacts?.length ?? 0) > 0 && (
                     <OwnerContacts>
-                      {owner.contacts!.slice(0, 2).map((c, i) => (
+                      {owner.contacts?.slice(0, 2).map((c, i) => (
                         <ContactBadge key={c.value ?? `contact-${i}`}>
                           {c.type === 'email' ? <Mail size={10} /> : <Phone size={10} />}
                           {c.value}

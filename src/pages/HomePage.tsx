@@ -1,11 +1,12 @@
 import React, { FC, lazy, Suspense, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import type { RootState } from '../store/store';
-import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { useSEO, getCanonicalUrl } from '../hooks/useSEO';
 import { setProperties, type Property } from '../store/propertySlice';
-import AppLayout from '../components/layout/AppLayout';
-import Footer from '../components/Footer';
+import { fetchHomepageData, selectMarketStats, selectTopAgents, selectLocationTrends, selectFeaturedProperties, selectIsHomepageLoading } from '../store/slices/homepageSlice';
+import type { AppDispatch } from '../store/store';
+import { buildHomepageJsonLd } from './homepageSeo';
 import ClickToChat from '../components/ClickToChat';
+import PublicLayout from '../components/layout/PublicLayout';
 import { useRecentlyViewed } from '../components/RecentlyViewed';
 import { HOME_PROPERTIES } from '../data/homeProperties';
 import './HomePage.css';
@@ -13,9 +14,11 @@ import './HomePage.css';
 // Above-the-fold: lazy-loaded to defer framer-motion (~120KB) from critical path
 const Hero = lazy(() => import('../components/homepage/Hero'));
 const Features = lazy(() => import('../components/homepage/Features'));
+const MarketStatsBanner = lazy(() => import('../components/homepage/MarketStats/MarketStatsBanner'));
 
 // Below-the-fold: lazy-loaded for faster initial paint
 const Locations = lazy(() => import('../components/homepage/Locations'));
+const FeaturedPropertiesSection = lazy(() => import('../components/homepage/FeaturedProperties/FeaturedPropertiesSection'));
 const Team = lazy(() => import('../components/homepage/Team'));
 const Testimonials = lazy(() => import('../components/homepage/Testimonials'));
 const ContactCTA = lazy(() => import('../components/homepage/Contact'));
@@ -28,7 +31,6 @@ const VirtualTourGallery = lazy(() => import('../components/VirtualTourGallery')
 const DubaiMap = lazy(() => import('../components/DubaiMap'));
 const CompanyProfile = lazy(() => import('../components/CompanyProfile'));
 const BlogSection = lazy(() => import('../components/BlogSection'));
-const NewsletterSubscription = lazy(() => import('../components/NewsletterSubscription'));
 const OnboardingGateway = lazy(() => import('../components/OnboardingGateway'));
 
 /** Minimal placeholder while lazy chunks load */
@@ -39,9 +41,26 @@ const SectionLoader: FC = () => (
 );
 
 const HomePage: FC = () => {
-  useDocumentTitle('Dubai Luxury Real Estate');
-  const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.user.currentUser);
+  const dispatch = useDispatch<AppDispatch>();
+  const marketStats = useSelector(selectMarketStats);
+  const topAgents = useSelector(selectTopAgents);
+  const locationTrends = useSelector(selectLocationTrends);
+  const featuredProperties = useSelector(selectFeaturedProperties);
+  const isHomepageLoading = useSelector(selectIsHomepageLoading);
+
+  useSEO({
+    title: 'Dubai Luxury Real Estate',
+    description: 'Explore premium villas, penthouses, and investment-ready properties in Dubai with White Caves Real Estate.',
+    keywords: ['Dubai real estate', 'luxury properties Dubai', 'White Caves Real Estate', 'Dubai villas'],
+    canonicalUrl: getCanonicalUrl('/'),
+    ogType: 'website',
+    jsonLd: buildHomepageJsonLd({
+      marketStats,
+      featuredProperties,
+      topAgents,
+      locationTrends,
+    }),
+  });
   const { addToRecent } = useRecentlyViewed();
 
   const handlePropertyClick = (propertyId: number): void => {
@@ -53,42 +72,53 @@ const HomePage: FC = () => {
   };
 
   useEffect(() => {
+    // Seed Redux property store with static fallback for /properties page
     dispatch(setProperties(HOME_PROPERTIES as unknown as Property[]));
+    // Fetch live homepage data in the background (@Mira's aggregate endpoint)
+    dispatch(fetchHomepageData());
   }, [dispatch]);
 
   return (
-    <AppLayout>
+    <PublicLayout>
       <div className="home-page">
         {/* Above the fold — lazy-loaded to defer framer-motion from critical path */}
         <Suspense fallback={
-          <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)' }} />
+          <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #ffffff 0%, #fff5f5 100%)' }} />
         }>
-          <Hero />
+          <Hero marketStats={marketStats} isLoading={isHomepageLoading} />
           <Features />
+          <MarketStatsBanner marketStats={marketStats} isLoading={isHomepageLoading} />
         </Suspense>
 
         {/* Below the fold — lazy-loaded for faster initial paint */}
         <Suspense fallback={<SectionLoader />}>
           <DubaiMap onPropertySelect={(property) => handlePropertyClick(property.id)} />
-          <Locations />
+          <Locations locationTrends={locationTrends} isLoading={isHomepageLoading} />
+          <FeaturedPropertiesSection featuredProperties={featuredProperties} isLoading={isHomepageLoading} />
           <InteractiveMap />
           <PropertyComparison />
           <RentVsBuyCalculator />
-          <OffPlanTracker />
+          <OffPlanTracker
+            marketStats={marketStats}
+            locationTrends={locationTrends}
+            featuredProperties={featuredProperties}
+          />
           <NeighborhoodAnalyzer />
-          <VirtualTourGallery />
+          <VirtualTourGallery featuredProperties={featuredProperties} />
           <CompanyProfile />
-          <Team />
+          <Team topAgents={topAgents} isLoading={isHomepageLoading} />
           <Testimonials />
-          <BlogSection />
-          <NewsletterSubscription />
+          <BlogSection
+            marketStats={marketStats}
+            featuredProperties={featuredProperties}
+            locationTrends={locationTrends}
+          />
           <ContactCTA />
           <OnboardingGateway />
         </Suspense>
         <ClickToChat />
-        <Footer />
       </div>
-    </AppLayout>
+    </PublicLayout>
   );
 };
 

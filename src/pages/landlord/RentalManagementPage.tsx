@@ -16,9 +16,7 @@ interface RentalProperty {
   lastPayment: string | null;
 }
 
-interface RentalManagementPageProps {}
-
-const RentalManagementPage: FC<RentalManagementPageProps> = () => {
+const RentalManagementPage: FC = () => {
   const [filter, setFilter] = useState<string>('all');
 
   const properties: RentalProperty[] = [

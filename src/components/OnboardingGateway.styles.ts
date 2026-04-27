@@ -1,5 +1,7 @@
 import styled from 'styled-components';
+import { colors } from '../styles/theme/colors';
 import { typography } from '../styles/theme/typography';
+import { transitions } from '../styles/theme/transitions';
 
 export const StyledOnboardingGateway = styled.section`
   padding: var(--spacing-3xl, 6rem) 5%;
@@ -23,7 +25,7 @@ export const StyledGatewayHeader = styled.div`
 export const StyledGatewayTitle = styled.h2`
   font-family: ${typography.fontFamily.heading};
   font-size: 2.5rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--text-primary, #212121);
   margin-bottom: 0.75rem;
 
@@ -47,7 +49,7 @@ export const StyledGatewaySubtitle = styled.p`
 export const StyledGatewayDivider = styled.div`
   width: 80px;
   height: 4px;
-  background: var(--primary-color, #E31E24);
+  background: var(--primary-color, ${colors.primary});
   border-radius: var(--radius-full, 9999px);
   margin: 1.5rem auto 0;
 `;
@@ -131,7 +133,7 @@ export const StyledTileIconWrapper = styled.div<{ $backgroundColor: string }>`
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
   background-color: ${props => props.$backgroundColor};
 
@@ -148,7 +150,7 @@ export const StyledTileTextContent = styled.div`
 export const StyledTileTitle = styled.h3`
   font-family: ${typography.fontFamily.heading};
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--text-primary, #212121);
   margin-bottom: 0.5rem;
 
@@ -159,7 +161,7 @@ export const StyledTileTitle = styled.h3`
 
 export const StyledTileSubtitle = styled.p<{ $roleColor: string }>`
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: ${props => props.$roleColor};
   margin-bottom: 0.75rem;
 `;
@@ -184,7 +186,7 @@ export const StyledTileArrow = styled.div<{ $roleColor: string }>`
   background: var(--bg-secondary, #f5f5f5);
   border-radius: 50%;
   color: var(--text-muted, #757575);
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   [data-theme='dark'] & {
     background: #4a5568;
@@ -219,13 +221,13 @@ export const StyledFooterText = styled.p`
 `;
 
 export const StyledFooterLink = styled.a`
-  color: var(--primary-color, #E31E24);
-  font-weight: 600;
+  color: var(--primary-color, ${colors.primary});
+  font-weight: ${typography.weights.semibold};
   text-decoration: none;
   transition: color 0.2s ease;
 
   &:hover {
-    color: var(--primary-dark, #C62828);
+    color: var(--primary-dark, ${colors.primaryDark});
     text-decoration: underline;
   }
 `;

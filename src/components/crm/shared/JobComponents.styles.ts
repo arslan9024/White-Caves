@@ -1,19 +1,23 @@
 import styled from 'styled-components';
+import { theme } from '../../../styles/theme';
+
+const { colors, shadows, transitions, radius, typography } = theme;
 
 /* ============================================================================
  * JobComponents Styled Components
  * Used by: JobPostComposer.jsx
+ * Dark-themed job posting UI with slate/amber palette
  * ============================================================================ */
 
 export const JobPostComposer = styled.div`
-  background: ${(props) => (props.theme as unknown as Record<string, Record<string, string>>).colors?.background || 'rgba(15, 23, 42, 0.6)'};
-  border: 1px solid ${(props) => (props.theme as unknown as Record<string, Record<string, string>>).colors?.border || 'rgba(255, 255, 255, 0.1)'};
-  border-radius: 12px;
+  background: ${colors.background.overlay};
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: ${radius.xl};
   overflow: hidden;
   position: relative;
 
   @media (max-width: 768px) {
-    border-radius: 8px;
+    border-radius: ${radius.lg};
   }
 `;
 
@@ -22,9 +26,9 @@ export const NotificationToast = styled.div<{ $type?: 'success' | 'error' }>`
   top: 1rem;
   right: 1rem;
   padding: 0.75rem 1.25rem;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   z-index: var(--z-notification, 800);
   animation: slideIn 0.3s ease;
 
@@ -72,7 +76,7 @@ export const PlatformError = styled.div`
   text-align: center;
   padding: 0.5rem;
   background: rgba(239, 68, 68, 0.1);
-  border-radius: 6px;
+  border-radius: ${radius.md};
   margin: 0 1.5rem;
 `;
 
@@ -93,7 +97,7 @@ export const ComposerHeader = styled.div`
 export const HeaderIcon = styled.div`
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   display: flex;
   align-items: center;
@@ -123,7 +127,7 @@ export const HeaderInfo = styled.div`
   h3 {
     color: #fff;
     font-size: 1.125rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     margin: 0;
   }
 
@@ -147,7 +151,7 @@ export const PlatformSelection = styled.div`
   h4 {
     color: #94a3b8;
     font-size: 0.8125rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin: 0 0 0.75rem 0;
@@ -176,11 +180,11 @@ export const PlatformChip = styled.button<{ $selected?: boolean; $color?: string
   background: ${(props) =>
     props.$selected ? `color-mix(in srgb, ${props.$color || '#f59e0b'} 15%, transparent)` : 'rgba(255, 255, 255, 0.02)'};
   border: 1px solid ${(props) => (props.$selected ? props.$color || '#f59e0b' : 'rgba(255, 255, 255, 0.1)')};
-  border-radius: 9999px;
+  border-radius: ${radius.full};
   color: ${(props) => (props.$selected ? props.$color || '#f59e0b' : '#94a3b8')};
   font-size: 0.8125rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     background: rgba(255, 255, 255, 0.05);
@@ -217,7 +221,7 @@ export const FormSection = styled.div`
   h4 {
     color: #fff;
     font-size: 0.9375rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     margin: 0 0 1rem 0;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -255,7 +259,7 @@ export const FormField = styled.div<{ $span2?: boolean; $hasError?: boolean }>`
   label {
     color: #94a3b8;
     font-size: 0.8125rem;
-    font-weight: 500;
+    font-weight: ${typography.weights.medium};
   }
 
   .required {
@@ -269,11 +273,11 @@ export const FormField = styled.div<{ $span2?: boolean; $hasError?: boolean }>`
     padding: 0.625rem 0.75rem;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid ${(props) => (props.$hasError ? '#ef4444' : 'rgba(255, 255, 255, 0.1)')};
-    border-radius: 6px;
+    border-radius: ${radius.md};
     color: #fff;
     font-size: 0.875rem;
     font-family: inherit;
-    transition: all 0.2s ease;
+    transition: ${transitions.hover};
 
     &:focus {
       outline: none;
@@ -315,8 +319,8 @@ export const InputWithIcon = styled.div`
   padding: 0.625rem 0.75rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  border-radius: ${radius.md};
+  transition: ${transitions.hover};
 
   &:focus-within {
     border-color: #f59e0b;
@@ -358,10 +362,10 @@ export const SalaryRange = styled.div`
     padding: 0.625rem 0.75rem;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
+    border-radius: ${radius.md};
     color: #fff;
     font-size: 0.875rem;
-    transition: all 0.2s ease;
+    transition: ${transitions.hover};
 
     &:focus {
       outline: none;
@@ -376,7 +380,7 @@ export const SalaryRange = styled.div`
   span {
     color: #64748b;
     font-size: 0.8125rem;
-    font-weight: 500;
+    font-weight: ${typography.weights.medium};
     white-space: nowrap;
   }
 
@@ -410,11 +414,11 @@ export const ActionBtn = styled.button<{ $variant?: 'primary' | 'secondary' }>`
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   border: none;
   font-family: inherit;
 
@@ -465,7 +469,7 @@ export const JobPreview = styled.div`
   h4 {
     color: #94a3b8;
     font-size: 0.8125rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin: 0 0 1rem 0;
@@ -485,7 +489,7 @@ export const PreviewCard = styled.div`
 
   @media (max-width: 768px) {
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: ${radius.lg};
   }
 `;
 
@@ -493,14 +497,14 @@ export const PreviewHeader = styled.div`
   h3 {
     color: #fff;
     font-size: 1.125rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     margin: 0;
   }
 
   .company {
     color: #f59e0b;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: ${typography.weights.medium};
     margin-top: 0.25rem;
   }
 
@@ -547,7 +551,7 @@ export const PreviewSection = styled.div`
   h5 {
     color: #94a3b8;
     font-size: 0.8125rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     margin: 0 0 0.5rem 0;
   }
 

@@ -1,5 +1,4 @@
 /* CONSOLIDATED: Import base CRM styles to remove ~1.5KB duplicates */
-@import '../../../styles/crm-base.css';
 
 /* Mary-specific customizations - extends base .crm-* classes */
 
@@ -113,7 +112,7 @@
 
 .sort-order-btn:hover {
   background: var(--bg-hover, #f3f4f6);
-  color: var(--primary-color, #dc2626);
+  color: var(--primary-color, #D4AF37);
 }
 
 /* Table Styles - CONSOLIDATED & OPTIMIZED */
@@ -225,7 +224,7 @@
 }
 
 .location-cell svg {
-  color: var(--primary-color, #dc2626);
+  color: var(--primary-color, #D4AF37);
 }
 
 .specs-cell {
@@ -663,7 +662,7 @@
 }
 
 .import-steps .step.active {
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(212, 175, 55, 0.1);
   color: var(--primary);
 }
 
@@ -716,7 +715,7 @@
 
 .upload-dropzone:hover {
   border-color: var(--primary);
-  background: rgba(220, 38, 38, 0.05);
+  background: rgba(212, 175, 55, 0.05);
 }
 
 .preview-section .import-info {
@@ -818,7 +817,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(212, 175, 55, 0.1);
   border-radius: 8px;
   color: var(--primary);
 }
@@ -860,7 +859,7 @@
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(212, 175, 55, 0.1);
   border: 1px solid var(--primary);
   border-radius: 20px;
   color: var(--primary);
@@ -899,7 +898,7 @@
 
 .owner-card:hover {
   border-color: var(--primary);
-  background: rgba(220, 38, 38, 0.05);
+  background: rgba(212, 175, 55, 0.05);
 }
 
 .owner-info {
@@ -977,7 +976,7 @@
 
 .filter-toggle-btn:hover,
 .filter-toggle-btn.active {
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(212, 175, 55, 0.1);
   border-color: var(--primary);
   color: var(--primary);
 }
