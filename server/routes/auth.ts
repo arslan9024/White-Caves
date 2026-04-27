@@ -14,7 +14,7 @@ import { JWT_SECRET, JWT_EXPIRES_SECONDS, BCRYPT_ROUNDS } from '../config/env';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import logger from '../utils/logger.js';
-import { verifyFirebaseIdToken } from '../config/firebaseAdmin.js';
+import { verifyFirebaseIdToken, FirebaseAdminInitError } from '../config/firebaseAdmin.js';
 
 const router = Router();
 
@@ -558,7 +558,13 @@ router.post(
     let decodedToken;
     try {
       decodedToken = await verifyFirebaseIdToken(firebaseToken);
-    } catch {
+    } catch (error: unknown) {
+      if (error instanceof FirebaseAdminInitError) {
+        throw new AppError(
+          'Firebase Admin is not configured on the server. Set FIREBASE_SERVICE_ACCOUNT or FIREBASE_PROJECT_ID/FIREBASE_CLIENT_EMAIL/FIREBASE_PRIVATE_KEY.',
+          503
+        );
+      }
       throw new AppError('Invalid Firebase token', 401);
     }
 
