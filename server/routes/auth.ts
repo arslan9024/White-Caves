@@ -4,7 +4,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
@@ -14,6 +14,7 @@ import { JWT_SECRET, JWT_EXPIRES_SECONDS, BCRYPT_ROUNDS } from '../config/env';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import logger from '../utils/logger.js';
+import { verifyFirebaseIdToken } from '../config/firebaseAdmin.js';
 
 const router = Router();
 
@@ -67,9 +68,15 @@ const getClientIp = (req: Request): string => {
  */
 const recordLoginFailure = (
   req: Request,
-  reason: 'unknown_user' | 'invalid_password' | 'inactive' | 'no_password' | 'locked_out' | 'ip_locked_out',
+  reason:
+    | 'unknown_user'
+    | 'invalid_password'
+    | 'inactive'
+    | 'no_password'
+    | 'locked_out'
+    | 'ip_locked_out',
   emailAttempt: string,
-  userId?: string,
+  userId?: string
 ): void => {
   const ip = getClientIp(req);
   const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
@@ -96,11 +103,11 @@ const recordLoginFailure = (
  */
 const LOGIN_LOCKOUT_THRESHOLD = Math.max(
   1,
-  Number.parseInt(process.env.LOGIN_LOCKOUT_THRESHOLD || '5', 10) || 5,
+  Number.parseInt(process.env.LOGIN_LOCKOUT_THRESHOLD || '5', 10) || 5
 );
 const LOGIN_LOCKOUT_WINDOW_MINUTES = Math.max(
   1,
-  Number.parseInt(process.env.LOGIN_LOCKOUT_WINDOW_MINUTES || '15', 10) || 15,
+  Number.parseInt(process.env.LOGIN_LOCKOUT_WINDOW_MINUTES || '15', 10) || 15
 );
 
 /**
@@ -110,7 +117,7 @@ const LOGIN_LOCKOUT_WINDOW_MINUTES = Math.max(
  */
 const LOGIN_IP_LOCKOUT_THRESHOLD = Math.max(
   1,
-  Number.parseInt(process.env.LOGIN_IP_LOCKOUT_THRESHOLD || '20', 10) || 20,
+  Number.parseInt(process.env.LOGIN_IP_LOCKOUT_THRESHOLD || '20', 10) || 20
 );
 
 /**
@@ -120,7 +127,7 @@ const LOGIN_IP_LOCKOUT_THRESHOLD = Math.max(
  * treat both lockouts uniformly.
  */
 const checkIpLockout = async (
-  ip: string,
+  ip: string
 ): Promise<{ locked: boolean; retryAfterSeconds: number; failureCount: number }> => {
   if (!ip || ip === 'unknown') return { locked: false, retryAfterSeconds: 0, failureCount: 0 };
   const since = new Date(Date.now() - LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000);
@@ -156,7 +163,7 @@ const checkIpLockout = async (
  * given userId within the rolling window.
  */
 const checkAccountLockout = async (
-  userId: string,
+  userId: string
 ): Promise<{ locked: boolean; retryAfterSeconds: number; failureCount: number }> => {
   const since = new Date(Date.now() - LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000);
   const failureCount = await prisma.activity.count({
@@ -211,7 +218,7 @@ router.post(
       res.set('Retry-After', String(ipLockout.retryAfterSeconds));
       throw new AppError(
         `Too many failed login attempts from this network (${ipLockout.failureCount}). Try again in ${minutes} minute${minutes === 1 ? '' : 's'}.`,
-        429,
+        429
       );
     }
 
@@ -237,7 +244,7 @@ router.post(
       res.set('Retry-After', String(lockout.retryAfterSeconds));
       throw new AppError(
         `Account temporarily locked after ${lockout.failureCount} failed attempts. Try again in ${minutes} minute${minutes === 1 ? '' : 's'}.`,
-        429,
+        429
       );
     }
 
@@ -323,7 +330,16 @@ router.post(
       throw new AppError('Password must contain at least one letter and one number', 400);
     }
     // Block common weak passwords
-    const weakPasswords = ['password', '12345678', 'qwerty12', 'abc12345', 'admin123', 'welcome1', 'letmein12', 'changeme'];
+    const weakPasswords = [
+      'password',
+      '12345678',
+      'qwerty12',
+      'abc12345',
+      'admin123',
+      'welcome1',
+      'letmein12',
+      'changeme',
+    ];
     if (weakPasswords.includes(password.toLowerCase())) {
       throw new AppError('Password is too common. Please choose a stronger password.', 400);
     }
@@ -406,7 +422,11 @@ router.post(
     }
 
     // Dev-only 2FA bypass: requires BOTH NODE_ENV=development AND DEV_2FA_BYPASS=true
-    if (process.env.NODE_ENV === 'development' && process.env.DEV_2FA_BYPASS === 'true' && code === '000000') {
+    if (
+      process.env.NODE_ENV === 'development' &&
+      process.env.DEV_2FA_BYPASS === 'true' &&
+      code === '000000'
+    ) {
       const user = await prisma.user.findUnique({ where: { email } });
       if (!user) throw new AppError('User not found', 404);
 
@@ -491,7 +511,8 @@ router.patch(
     }
     if (photoUrl !== undefined) {
       const url = (photoUrl || '').trim();
-      if (url && !/^https?:\/\//i.test(url)) throw new AppError('Photo URL must be a valid HTTP/HTTPS URL', 400);
+      if (url && !/^https?:\/\//i.test(url))
+        throw new AppError('Photo URL must be a valid HTTP/HTTPS URL', 400);
       if (url.length > 500) throw new AppError('Photo URL must be 500 characters or less', 400);
       data.photoUrl = url || null;
     }
@@ -500,8 +521,13 @@ router.patch(
       where: { id: userId },
       data,
       select: {
-        id: true, email: true, name: true, role: true,
-        phone: true, department: true, photoUrl: true,
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        phone: true,
+        department: true,
+        photoUrl: true,
       },
     });
 
@@ -525,20 +551,100 @@ router.post(
       throw new AppError('Firebase UID is required', 400);
     }
 
-    // SECURITY: Block this endpoint until Firebase Admin SDK is configured.
-    // Without firebase-admin, we CANNOT verify the token server-side, so accepting it
-    // would allow account takeover by anyone who knows a user's email.
-    // This MUST remain disabled in ALL environments until firebase-admin token verification is added.
-    //
-    // TODO: When firebase-admin is installed and configured:
-    //   1. Verify firebaseToken with admin.auth().verifyIdToken(firebaseToken)
-    //   2. Find or create user by firebaseUid (source of truth), then by email
-    //   3. Generate JWT and return user data
-    throw new AppError(
-      'Firebase sync is disabled until firebase-admin SDK is configured for server-side token verification. ' +
-      'Contact your administrator to enable this endpoint.',
-      503
+    if (!firebaseToken || typeof firebaseToken !== 'string') {
+      throw new AppError('Firebase token is required', 400);
+    }
+
+    let decodedToken;
+    try {
+      decodedToken = await verifyFirebaseIdToken(firebaseToken);
+    } catch {
+      throw new AppError('Invalid Firebase token', 401);
+    }
+
+    if (decodedToken.uid !== firebaseUid) {
+      throw new AppError('Firebase UID mismatch', 401);
+    }
+
+    const verifiedEmail = decodedToken.email?.toLowerCase().trim();
+    if (!verifiedEmail) {
+      throw new AppError('Verified Firebase email is required', 400);
+    }
+
+    const normalizedBodyEmail = typeof email === 'string' ? email.toLowerCase().trim() : null;
+    if (normalizedBodyEmail && normalizedBodyEmail !== verifiedEmail) {
+      throw new AppError('Firebase email mismatch', 401);
+    }
+
+    const isManagingDirector = verifiedEmail === 'arslanmalikgoraha@gmail.com';
+    const resolvedName =
+      (typeof decodedToken.name === 'string' ? decodedToken.name : null) ||
+      (typeof name === 'string' ? sanitizeString(name.trim()) : null);
+    const resolvedPhotoUrl =
+      (typeof decodedToken.picture === 'string' ? decodedToken.picture : null) ||
+      (typeof photoUrl === 'string' ? photoUrl : null);
+
+    let user = await prisma.user.findUnique({
+      where: { email: verifiedEmail },
+    });
+
+    if (user) {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          firebaseUid,
+          name: resolvedName || user.name,
+          photoUrl: resolvedPhotoUrl || user.photoUrl,
+          role: isManagingDirector ? 'managing_director' : user.role,
+          status: 'active',
+        },
+      });
+    } else {
+      user = await prisma.user.create({
+        data: {
+          email: verifiedEmail,
+          name: resolvedName,
+          photoUrl: resolvedPhotoUrl,
+          firebaseUid,
+          role: isManagingDirector ? 'managing_director' : 'agent',
+          status: 'active',
+        },
+      });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      JWT_SIGN_OPTIONS
     );
+
+    const ip = getClientIp(req);
+    const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
+    await prisma.activity.create({
+      data: {
+        type: 'system',
+        action: 'login',
+        description: `${user.name || user.email} logged in via Firebase`,
+        userId: user.id,
+        metadata: { ip, userAgent, provider: 'firebase' } as Prisma.InputJsonValue,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          department: user.department,
+          photoUrl: user.photoUrl,
+        },
+      },
+      requiresTwoFactor: false,
+    });
   })
 );
 
@@ -583,7 +689,16 @@ router.put(
     }
 
     // Block common weak passwords
-    const weakPasswords = ['password', '12345678', 'qwerty12', 'abc12345', 'admin123', 'welcome1', 'letmein12', 'changeme'];
+    const weakPasswords = [
+      'password',
+      '12345678',
+      'qwerty12',
+      'abc12345',
+      'admin123',
+      'welcome1',
+      'letmein12',
+      'changeme',
+    ];
     if (weakPasswords.includes(newPassword.toLowerCase())) {
       throw new AppError('Password is too common. Please choose a stronger password.', 400);
     }
@@ -611,10 +726,14 @@ router.put(
               action: 'password_change_failed',
               description: `Password change rejected for ${user.email}: missing current password`,
               userId,
-              metadata: { reason: 'missing_current_password', ip, userAgent } as Prisma.InputJsonValue,
+              metadata: {
+                reason: 'missing_current_password',
+                ip,
+                userAgent,
+              } as Prisma.InputJsonValue,
             },
           })
-          .catch((err) => logger.warn('Failed to audit password_change_failed', { err }));
+          .catch(err => logger.warn('Failed to audit password_change_failed', { err }));
         throw new AppError('Current password is required to change password', 400);
       }
       const valid = await verifyPassword(currentPassword, storedHash);
@@ -626,10 +745,14 @@ router.put(
               action: 'password_change_failed',
               description: `Password change rejected for ${user.email}: invalid current password`,
               userId,
-              metadata: { reason: 'invalid_current_password', ip, userAgent } as Prisma.InputJsonValue,
+              metadata: {
+                reason: 'invalid_current_password',
+                ip,
+                userAgent,
+              } as Prisma.InputJsonValue,
             },
           })
-          .catch((err) => logger.warn('Failed to audit password_change_failed', { err }));
+          .catch(err => logger.warn('Failed to audit password_change_failed', { err }));
         throw new AppError('Current password is incorrect', 401);
       }
     }
@@ -681,13 +804,25 @@ router.get(
     const rawLimit = Number.parseInt(String(req.query.limit ?? '50'), 10);
     const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(rawLimit, 1), 200) : 50;
     const rawSince = Number.parseInt(String(req.query.sinceMinutes ?? '1440'), 10);
-    const sinceMinutes = Number.isFinite(rawSince) ? Math.min(Math.max(rawSince, 1), 60 * 24 * 30) : 1440;
+    const sinceMinutes = Number.isFinite(rawSince)
+      ? Math.min(Math.max(rawSince, 1), 60 * 24 * 30)
+      : 1440;
 
     const actions: string[] =
-      status === 'failed' ? ['login_failed']
-      : status === 'success' ? ['login']
-      : status === 'password' ? ['password_changed', 'password_change_failed']
-      : ['login', 'login_failed', 'password_changed', 'password_change_failed', 'account_unlocked', 'ip_unlocked'];
+      status === 'failed'
+        ? ['login_failed']
+        : status === 'success'
+          ? ['login']
+          : status === 'password'
+            ? ['password_changed', 'password_change_failed']
+            : [
+                'login',
+                'login_failed',
+                'password_changed',
+                'password_change_failed',
+                'account_unlocked',
+                'ip_unlocked',
+              ];
 
     const since = new Date(Date.now() - sinceMinutes * 60 * 1000);
 
@@ -713,7 +848,7 @@ router.get(
 
     res.status(200).json({
       success: true,
-      data: activities.map((a) => ({
+      data: activities.map(a => ({
         id: a.id,
         action: a.action,
         description: a.description,
@@ -724,7 +859,7 @@ router.get(
       })),
       meta: { count: activities.length, limit, sinceMinutes, status, emailFilter },
     });
-  }),
+  })
 );
 
 /**
@@ -799,7 +934,7 @@ router.post(
         clearedFailures: result.count,
       },
     });
-  }),
+  })
 );
 
 /**
@@ -864,7 +999,7 @@ router.post(
       success: true,
       data: { ip: ipRaw, clearedFailures: result.count },
     });
-  }),
+  })
 );
 
 /**
@@ -950,9 +1085,9 @@ router.get(
       Math.max(1, Math.ceil((oldest.getTime() + windowMs - now) / 1000));
 
     const accounts = [...accountBuckets.values()]
-      .filter((b) => b.failures >= LOGIN_LOCKOUT_THRESHOLD)
+      .filter(b => b.failures >= LOGIN_LOCKOUT_THRESHOLD)
       .sort((a, b) => b.failures - a.failures)
-      .map((b) => ({
+      .map(b => ({
         userId: b.key,
         email: b.label,
         failures: b.failures,
@@ -960,9 +1095,9 @@ router.get(
       }));
 
     const ips = [...ipBuckets.values()]
-      .filter((b) => b.failures >= LOGIN_IP_LOCKOUT_THRESHOLD)
+      .filter(b => b.failures >= LOGIN_IP_LOCKOUT_THRESHOLD)
       .sort((a, b) => b.failures - a.failures)
-      .map((b) => ({
+      .map(b => ({
         ip: b.key,
         failures: b.failures,
         retryAfterSeconds: computeRetry(b.oldest),
@@ -978,7 +1113,7 @@ router.get(
         ips,
       },
     });
-  }),
+  })
 );
 
 /**
@@ -1063,9 +1198,7 @@ router.get(
           totals.loginFailures += 1;
           if (ip) ipCounts.set(ip, (ipCounts.get(ip) || 0) + 1);
           const email =
-            (typeof md.emailAttempt === 'string' && md.emailAttempt) ||
-            r.user?.email ||
-            null;
+            (typeof md.emailAttempt === 'string' && md.emailAttempt) || r.user?.email || null;
           if (email) emailCounts.set(email, (emailCounts.get(email) || 0) + 1);
           break;
         }
@@ -1103,7 +1236,7 @@ router.get(
         windowMinutes: sinceMinutes,
       },
     });
-  }),
+  })
 );
 
 export default router;

@@ -4,6 +4,8 @@
  * All Prisma calls are mocked — no database needed.
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import express from 'express';
 import request from 'supertest';
@@ -16,13 +18,24 @@ const { mockPrisma, mockBcrypt, mockJwt } = vi.hoisted(() => {
       user: {
         findUnique: fn().mockResolvedValue(null),
         create: fn().mockResolvedValue({
-          id: 'user-1', email: 'test@whitecaves.ae', name: 'Test User',
-          role: 'agent', department: 'sales', passwordHash: '$2a$10$hashedvalue',
-          phone: null, photoUrl: null, status: 'active',
+          id: 'user-1',
+          email: 'test@whitecaves.ae',
+          name: 'Test User',
+          role: 'agent',
+          department: 'sales',
+          passwordHash: '$2a$10$hashedvalue',
+          phone: null,
+          photoUrl: null,
+          status: 'active',
         }),
         update: fn().mockResolvedValue({
-          id: 'user-1', email: 'test@whitecaves.ae', name: 'Updated',
-          role: 'agent', phone: null, department: 'sales', photoUrl: null,
+          id: 'user-1',
+          email: 'test@whitecaves.ae',
+          name: 'Updated',
+          role: 'agent',
+          phone: null,
+          department: 'sales',
+          photoUrl: null,
         }),
       },
       activity: {
@@ -43,6 +56,15 @@ const { mockPrisma, mockBcrypt, mockJwt } = vi.hoisted(() => {
   };
 });
 
+const { mockVerifyFirebaseIdToken } = vi.hoisted(() => ({
+  mockVerifyFirebaseIdToken: vi.fn().mockResolvedValue({
+    uid: 'firebase-123',
+    email: 'test@whitecaves.ae',
+    name: 'Firebase Test',
+    picture: 'https://example.com/firebase.jpg',
+  }),
+}));
+
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
 vi.mock('bcryptjs', () => ({ default: mockBcrypt }));
 vi.mock('jsonwebtoken', () => ({ default: mockJwt }));
@@ -53,6 +75,9 @@ vi.mock('../config/env', () => ({
 }));
 vi.mock('../utils/sanitize', () => ({
   sanitizeString: (s: string) => s,
+}));
+vi.mock('../config/firebaseAdmin.js', () => ({
+  verifyFirebaseIdToken: mockVerifyFirebaseIdToken,
 }));
 vi.mock('../utils/logger.js', () => ({
   default: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
@@ -102,9 +127,7 @@ describe('Auth Routes — /api/auth', () => {
   // ── POST /login ──────────────────────────────────────────────────
   describe('POST /api/auth/login', () => {
     it('returns 400 if email is missing', async () => {
-      const res = await request(createApp())
-        .post('/api/auth/login')
-        .send({ password: 'Test1234' });
+      const res = await request(createApp()).post('/api/auth/login').send({ password: 'Test1234' });
       expect(res.status).toBe(400);
       expect(res.body.error).toMatch(/email.*password.*required/i);
     });
@@ -128,8 +151,11 @@ describe('Auth Routes — /api/auth', () => {
 
     it('returns 401 if password is wrong', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', name: 'Test',
-        role: 'agent', passwordHash: '$2a$10$hashedvalue',
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test',
+        role: 'agent',
+        passwordHash: '$2a$10$hashedvalue',
       });
       mockBcrypt.compare.mockResolvedValueOnce(false);
       const res = await request(createApp())
@@ -141,8 +167,11 @@ describe('Auth Routes — /api/auth', () => {
 
     it('returns 401 if account has no passwordHash', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', name: 'Test',
-        role: 'agent', passwordHash: null,
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test',
+        role: 'agent',
+        passwordHash: null,
       });
       const res = await request(createApp())
         .post('/api/auth/login')
@@ -153,8 +182,12 @@ describe('Auth Routes — /api/auth', () => {
 
     it('returns 200 with token on successful login', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', name: 'Test User',
-        role: 'agent', department: 'sales', photoUrl: null,
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'agent',
+        department: 'sales',
+        photoUrl: null,
         passwordHash: '$2a$10$validhash',
       });
       mockBcrypt.compare.mockResolvedValueOnce(true);
@@ -171,8 +204,12 @@ describe('Auth Routes — /api/auth', () => {
     it('auto-migrates legacy wc$ password hash on login', async () => {
       const legacyHash = 'wc$' + Buffer.from('Test1234').toString('base64');
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', name: 'Test',
-        role: 'agent', department: null, photoUrl: null,
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test',
+        role: 'agent',
+        department: null,
+        photoUrl: null,
         passwordHash: legacyHash,
       });
       const res = await request(createApp())
@@ -190,8 +227,12 @@ describe('Auth Routes — /api/auth', () => {
 
     it('logs activity on successful login', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', name: 'Test User',
-        role: 'agent', department: null, photoUrl: null,
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'agent',
+        department: null,
+        photoUrl: null,
         passwordHash: '$2a$10$validhash',
       });
       mockBcrypt.compare.mockResolvedValueOnce(true);
@@ -207,8 +248,12 @@ describe('Auth Routes — /api/auth', () => {
 
     it('enriches successful-login activity with ip + userAgent metadata', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', name: 'Test User',
-        role: 'agent', department: null, photoUrl: null,
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'agent',
+        department: null,
+        photoUrl: null,
         passwordHash: '$2a$10$validhash',
       });
       mockBcrypt.compare.mockResolvedValueOnce(true);
@@ -218,11 +263,11 @@ describe('Auth Routes — /api/auth', () => {
         .set('X-Forwarded-For', '203.0.113.7, 10.0.0.1')
         .send({ email: 'test@whitecaves.ae', password: 'Test1234' });
       const successCall = mockPrisma.activity.create.mock.calls.find(
-        (c: any[]) => c[0]?.data?.action === 'login',
+        (c: any[]) => c[0]?.data?.action === 'login'
       );
       expect(successCall).toBeDefined();
       expect(successCall[0].data.metadata).toEqual(
-        expect.objectContaining({ ip: '203.0.113.7', userAgent: 'vitest-suite/1.0' }),
+        expect.objectContaining({ ip: '203.0.113.7', userAgent: 'vitest-suite/1.0' })
       );
     });
 
@@ -233,28 +278,31 @@ describe('Auth Routes — /api/auth', () => {
         .set('User-Agent', 'vitest-suite/1.0')
         .send({ email: 'ghost@whitecaves.ae', password: 'Test1234' });
       // fire-and-forget: flush microtasks
-      await new Promise((resolve) => setImmediate(resolve));
+      await new Promise(resolve => setImmediate(resolve));
       const failedCall = mockPrisma.activity.create.mock.calls.find(
-        (c: any[]) => c[0]?.data?.action === 'login_failed',
+        (c: any[]) => c[0]?.data?.action === 'login_failed'
       );
       expect(failedCall).toBeDefined();
       expect(failedCall[0].data.metadata).toEqual(
-        expect.objectContaining({ reason: 'unknown_user', emailAttempt: 'ghost@whitecaves.ae' }),
+        expect.objectContaining({ reason: 'unknown_user', emailAttempt: 'ghost@whitecaves.ae' })
       );
     });
 
     it('records a login_failed activity when the password is wrong', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', name: 'Test',
-        role: 'agent', passwordHash: '$2a$10$hashedvalue',
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test',
+        role: 'agent',
+        passwordHash: '$2a$10$hashedvalue',
       });
       mockBcrypt.compare.mockResolvedValueOnce(false);
       await request(createApp())
         .post('/api/auth/login')
         .send({ email: 'test@whitecaves.ae', password: 'WrongPass1' });
-      await new Promise((resolve) => setImmediate(resolve));
+      await new Promise(resolve => setImmediate(resolve));
       const failedCall = mockPrisma.activity.create.mock.calls.find(
-        (c: any[]) => c[0]?.data?.action === 'login_failed',
+        (c: any[]) => c[0]?.data?.action === 'login_failed'
       );
       expect(failedCall).toBeDefined();
       expect(failedCall[0].data.metadata.reason).toBe('invalid_password');
@@ -263,16 +311,20 @@ describe('Auth Routes — /api/auth', () => {
 
     it('records a login_failed activity when the account is inactive', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', name: 'Test',
-        role: 'agent', status: 'suspended', passwordHash: '$2a$10$hashedvalue',
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test',
+        role: 'agent',
+        status: 'suspended',
+        passwordHash: '$2a$10$hashedvalue',
       });
       const res = await request(createApp())
         .post('/api/auth/login')
         .send({ email: 'test@whitecaves.ae', password: 'Test1234' });
       expect(res.status).toBe(403);
-      await new Promise((resolve) => setImmediate(resolve));
+      await new Promise(resolve => setImmediate(resolve));
       const failedCall = mockPrisma.activity.create.mock.calls.find(
-        (c: any[]) => c[0]?.data?.action === 'login_failed',
+        (c: any[]) => c[0]?.data?.action === 'login_failed'
       );
       expect(failedCall).toBeDefined();
       expect(failedCall[0].data.metadata.reason).toBe('inactive');
@@ -280,13 +332,15 @@ describe('Auth Routes — /api/auth', () => {
 
     it('returns 429 with Retry-After when account is locked out', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', name: 'Test',
-        role: 'agent', status: 'active', passwordHash: '$2a$10$hashedvalue',
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test',
+        role: 'agent',
+        status: 'active',
+        passwordHash: '$2a$10$hashedvalue',
       });
       // IP check (first count) → below threshold; account check (second count) → trips lockout
-      mockPrisma.activity.count
-        .mockResolvedValueOnce(0)
-        .mockResolvedValueOnce(5);
+      mockPrisma.activity.count.mockResolvedValueOnce(0).mockResolvedValueOnce(5);
       mockPrisma.activity.findFirst.mockResolvedValueOnce({
         createdAt: new Date(Date.now() - 60 * 1000),
       });
@@ -301,21 +355,23 @@ describe('Auth Routes — /api/auth', () => {
 
     it('records a login_failed activity with reason=locked_out when locked', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', name: 'Test',
-        role: 'agent', status: 'active', passwordHash: '$2a$10$hashedvalue',
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test',
+        role: 'agent',
+        status: 'active',
+        passwordHash: '$2a$10$hashedvalue',
       });
-      mockPrisma.activity.count
-        .mockResolvedValueOnce(0)
-        .mockResolvedValueOnce(7);
+      mockPrisma.activity.count.mockResolvedValueOnce(0).mockResolvedValueOnce(7);
       mockPrisma.activity.findFirst.mockResolvedValueOnce({
         createdAt: new Date(Date.now() - 30 * 1000),
       });
       await request(createApp())
         .post('/api/auth/login')
         .send({ email: 'test@whitecaves.ae', password: 'Test1234' });
-      await new Promise((resolve) => setImmediate(resolve));
+      await new Promise(resolve => setImmediate(resolve));
       const failedCall = mockPrisma.activity.create.mock.calls.find(
-        (c: any[]) => c[0]?.data?.action === 'login_failed',
+        (c: any[]) => c[0]?.data?.action === 'login_failed'
       );
       expect(failedCall).toBeDefined();
       expect(failedCall[0].data.metadata.reason).toBe('locked_out');
@@ -323,12 +379,14 @@ describe('Auth Routes — /api/auth', () => {
 
     it('does NOT lock out when failures are below the threshold', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', name: 'Test',
-        role: 'agent', status: 'active', passwordHash: '$2a$10$hashedvalue',
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test',
+        role: 'agent',
+        status: 'active',
+        passwordHash: '$2a$10$hashedvalue',
       });
-      mockPrisma.activity.count
-        .mockResolvedValueOnce(0)
-        .mockResolvedValueOnce(3);
+      mockPrisma.activity.count.mockResolvedValueOnce(0).mockResolvedValueOnce(3);
       mockBcrypt.compare.mockResolvedValueOnce(true);
       const res = await request(createApp())
         .post('/api/auth/login')
@@ -360,9 +418,9 @@ describe('Auth Routes — /api/auth', () => {
       await request(createApp())
         .post('/api/auth/login')
         .send({ email: 'whoever@whitecaves.ae', password: 'Anything1' });
-      await new Promise((resolve) => setImmediate(resolve));
+      await new Promise(resolve => setImmediate(resolve));
       const failedCall = mockPrisma.activity.create.mock.calls.find(
-        (c: any[]) => c[0]?.data?.action === 'login_failed',
+        (c: any[]) => c[0]?.data?.action === 'login_failed'
       );
       expect(failedCall).toBeDefined();
       expect(failedCall[0].data.metadata.reason).toBe('ip_locked_out');
@@ -421,7 +479,8 @@ describe('Auth Routes — /api/auth', () => {
 
     it('returns 409 if email already registered', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'existing', email: 'existing@whitecaves.ae',
+        id: 'existing',
+        email: 'existing@whitecaves.ae',
       });
       const res = await request(createApp())
         .post('/api/auth/register')
@@ -433,8 +492,11 @@ describe('Auth Routes — /api/auth', () => {
     it('returns 201 on successful registration', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce(null);
       mockPrisma.user.create.mockResolvedValueOnce({
-        id: 'new-user', email: 'new@whitecaves.ae', name: 'New User',
-        role: 'agent', department: null,
+        id: 'new-user',
+        email: 'new@whitecaves.ae',
+        name: 'New User',
+        role: 'agent',
+        department: null,
       });
       const res = await request(createApp())
         .post('/api/auth/register')
@@ -448,8 +510,11 @@ describe('Auth Routes — /api/auth', () => {
     it('always assigns agent role regardless of input', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce(null);
       mockPrisma.user.create.mockResolvedValueOnce({
-        id: 'new-user', email: 'hack@test.com', name: 'Hacker',
-        role: 'agent', department: null,
+        id: 'new-user',
+        email: 'hack@test.com',
+        name: 'Hacker',
+        role: 'agent',
+        department: null,
       });
       await request(createApp())
         .post('/api/auth/register')
@@ -464,8 +529,11 @@ describe('Auth Routes — /api/auth', () => {
     it('logs activity on successful registration', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce(null);
       mockPrisma.user.create.mockResolvedValueOnce({
-        id: 'new-user', email: 'new@whitecaves.ae', name: 'New User',
-        role: 'agent', department: null,
+        id: 'new-user',
+        email: 'new@whitecaves.ae',
+        name: 'New User',
+        role: 'agent',
+        department: null,
       });
       await request(createApp())
         .post('/api/auth/register')
@@ -505,13 +573,18 @@ describe('Auth Routes — /api/auth', () => {
   describe('GET /api/auth/profile', () => {
     it('returns user profile when authenticated', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', name: 'Test User',
-        role: 'owner', phone: '+971501234567', department: 'management',
-        photoUrl: null, status: 'active', createdAt: new Date(),
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'owner',
+        phone: '+971501234567',
+        department: 'management',
+        photoUrl: null,
+        status: 'active',
+        createdAt: new Date(),
         _count: { leadsAssigned: 5, commissions: 3, properties: 10 },
       });
-      const res = await request(createApp('owner'))
-        .get('/api/auth/profile');
+      const res = await request(createApp('owner')).get('/api/auth/profile');
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.email).toBe('test@whitecaves.ae');
@@ -519,8 +592,7 @@ describe('Auth Routes — /api/auth', () => {
 
     it('returns 404 if user not found in database', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce(null);
-      const res = await request(createApp('owner'))
-        .get('/api/auth/profile');
+      const res = await request(createApp('owner')).get('/api/auth/profile');
       expect(res.status).toBe(404);
       expect(res.body.error).toMatch(/user not found/i);
     });
@@ -530,8 +602,13 @@ describe('Auth Routes — /api/auth', () => {
   describe('PATCH /api/auth/profile', () => {
     it('updates user name', async () => {
       mockPrisma.user.update.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', name: 'Updated Name',
-        role: 'owner', phone: null, department: null, photoUrl: null,
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Updated Name',
+        role: 'owner',
+        phone: null,
+        department: null,
+        photoUrl: null,
       });
       const res = await request(createApp('owner'))
         .patch('/api/auth/profile')
@@ -566,8 +643,12 @@ describe('Auth Routes — /api/auth', () => {
 
     it('accepts valid photo URL', async () => {
       mockPrisma.user.update.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', name: 'Test',
-        role: 'owner', phone: null, department: null,
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test',
+        role: 'owner',
+        phone: null,
+        department: null,
         photoUrl: 'https://example.com/photo.jpg',
       });
       const res = await request(createApp('owner'))
@@ -586,28 +667,58 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.status).toBe(400);
     });
 
-    it('returns 503 because firebase-admin is not configured', async () => {
+    it('returns 400 when firebaseToken is missing', async () => {
       const res = await request(createApp())
         .post('/api/auth/firebase-sync')
         .send({ firebaseUid: 'firebase-123', email: 'test@whitecaves.ae' });
-      expect(res.status).toBe(503);
-      expect(res.body.error).toMatch(/firebase.*disabled/i);
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/firebase token is required/i);
+    });
+
+    it('returns 200 and JWT when firebase token is valid', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'agent',
+        department: 'sales',
+        photoUrl: null,
+        status: 'active',
+        passwordHash: null,
+      });
+      mockPrisma.user.update.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Firebase Test',
+        role: 'agent',
+        department: 'sales',
+        photoUrl: 'https://example.com/firebase.jpg',
+      });
+
+      const res = await request(createApp()).post('/api/auth/firebase-sync').send({
+        firebaseUid: 'firebase-123',
+        firebaseToken: 'valid-token',
+        email: 'test@whitecaves.ae',
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.token).toBe('mock-jwt-token');
+      expect(mockVerifyFirebaseIdToken).toHaveBeenCalledWith('valid-token');
     });
   });
 
   // ── POST /logout ─────────────────────────────────────────────────
   describe('POST /api/auth/logout', () => {
     it('returns 200 on successful logout', async () => {
-      const res = await request(createApp('owner'))
-        .post('/api/auth/logout');
+      const res = await request(createApp('owner')).post('/api/auth/logout');
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.message).toMatch(/logged out/i);
     });
 
     it('logs activity on logout', async () => {
-      await request(createApp('owner'))
-        .post('/api/auth/logout');
+      await request(createApp('owner')).post('/api/auth/logout');
       expect(mockPrisma.activity.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({ action: 'logout' }),
@@ -644,7 +755,9 @@ describe('Auth Routes — /api/auth', () => {
 
     it('returns 401 if current password is incorrect', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', passwordHash: '$2a$10$existing',
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        passwordHash: '$2a$10$existing',
       });
       mockBcrypt.compare.mockResolvedValueOnce(false);
       const res = await request(createApp('owner'))
@@ -656,7 +769,9 @@ describe('Auth Routes — /api/auth', () => {
 
     it('returns 400 if current password is required but missing', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', passwordHash: '$2a$10$existing',
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        passwordHash: '$2a$10$existing',
       });
       const res = await request(createApp('owner'))
         .put('/api/auth/password')
@@ -667,7 +782,9 @@ describe('Auth Routes — /api/auth', () => {
 
     it('returns 200 on successful password change', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', passwordHash: '$2a$10$existing',
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        passwordHash: '$2a$10$existing',
       });
       mockBcrypt.compare.mockResolvedValueOnce(true);
       const res = await request(createApp('owner'))
@@ -680,14 +797,16 @@ describe('Auth Routes — /api/auth', () => {
 
     it('writes a password_changed audit row on success', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', passwordHash: '$2a$10$existing',
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        passwordHash: '$2a$10$existing',
       });
       mockBcrypt.compare.mockResolvedValueOnce(true);
       await request(createApp('owner'))
         .put('/api/auth/password')
         .send({ currentPassword: 'OldValid123', newPassword: 'NewValid456' });
       const auditCall = mockPrisma.activity.create.mock.calls.find(
-        (c: any[]) => c[0]?.data?.action === 'password_changed',
+        (c: any[]) => c[0]?.data?.action === 'password_changed'
       );
       expect(auditCall).toBeTruthy();
       expect(auditCall[0].data.userId).toBe('user-1');
@@ -695,18 +814,20 @@ describe('Auth Routes — /api/auth', () => {
 
     it('writes a password_change_failed audit row on invalid current password', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1', email: 'test@whitecaves.ae', passwordHash: '$2a$10$existing',
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        passwordHash: '$2a$10$existing',
       });
       mockBcrypt.compare.mockResolvedValueOnce(false);
       await request(createApp('owner'))
         .put('/api/auth/password')
         .send({ currentPassword: 'WrongOld1', newPassword: 'NewValid456' });
       // Allow the fire-and-forget audit to flush
-      await new Promise((r) => setImmediate(r));
+      await new Promise(r => setImmediate(r));
       const auditCall = mockPrisma.activity.create.mock.calls.find(
         (c: any[]) =>
           c[0]?.data?.action === 'password_change_failed' &&
-          c[0]?.data?.metadata?.reason === 'invalid_current_password',
+          c[0]?.data?.metadata?.reason === 'invalid_current_password'
       );
       expect(auditCall).toBeTruthy();
     });
@@ -723,10 +844,12 @@ describe('Auth Routes — /api/auth', () => {
     it('returns 200 with results for owner', async () => {
       mockPrisma.activity.findMany.mockResolvedValueOnce([
         {
-          id: 'a1', action: 'login_failed',
+          id: 'a1',
+          action: 'login_failed',
           description: 'Failed login attempt for ghost@x.ae (unknown_user)',
           createdAt: new Date('2026-04-23T10:00:00Z'),
-          userId: null, user: null,
+          userId: null,
+          user: null,
           metadata: { reason: 'unknown_user', ip: '203.0.113.7', userAgent: 'ua' },
         },
       ]);
@@ -735,7 +858,7 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.body.success).toBe(true);
       expect(res.body.data).toHaveLength(1);
       expect(res.body.meta).toEqual(
-        expect.objectContaining({ count: 1, limit: 50, status: 'all' }),
+        expect.objectContaining({ count: 1, limit: 50, status: 'all' })
       );
     });
 
@@ -781,9 +904,7 @@ describe('Auth Routes — /api/auth', () => {
     });
 
     it('returns 400 when neither userId nor email is provided', async () => {
-      const res = await request(createApp('owner'))
-        .post('/api/auth/security/unlock')
-        .send({});
+      const res = await request(createApp('owner')).post('/api/auth/security/unlock').send({});
       expect(res.status).toBe(400);
       expect(res.body.error).toMatch(/userId or email/i);
     });
@@ -798,7 +919,8 @@ describe('Auth Routes — /api/auth', () => {
 
     it('clears recent login_failed rows and writes account_unlocked audit', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-9', email: 'locked@whitecaves.ae',
+        id: 'user-9',
+        email: 'locked@whitecaves.ae',
       });
       mockPrisma.activity.deleteMany.mockResolvedValueOnce({ count: 7 });
       const res = await request(createApp('owner'))
@@ -806,7 +928,7 @@ describe('Auth Routes — /api/auth', () => {
         .send({ userId: 'user-9' });
       expect(res.status).toBe(200);
       expect(res.body.data).toEqual(
-        expect.objectContaining({ userId: 'user-9', clearedFailures: 7 }),
+        expect.objectContaining({ userId: 'user-9', clearedFailures: 7 })
       );
       expect(mockPrisma.activity.deleteMany).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -814,10 +936,10 @@ describe('Auth Routes — /api/auth', () => {
             action: 'login_failed',
             userId: 'user-9',
           }),
-        }),
+        })
       );
       const auditCall = mockPrisma.activity.create.mock.calls.find(
-        (c: any[]) => c[0]?.data?.action === 'account_unlocked',
+        (c: any[]) => c[0]?.data?.action === 'account_unlocked'
       );
       expect(auditCall).toBeDefined();
       expect(auditCall[0].data.metadata.clearedFailures).toBe(7);
@@ -834,9 +956,7 @@ describe('Auth Routes — /api/auth', () => {
     });
 
     it('returns 400 when ip is missing', async () => {
-      const res = await request(createApp('owner'))
-        .post('/api/auth/security/unlock-ip')
-        .send({});
+      const res = await request(createApp('owner')).post('/api/auth/security/unlock-ip').send({});
       expect(res.status).toBe(400);
       expect(res.body.error).toMatch(/ip address/i);
     });
@@ -854,10 +974,10 @@ describe('Auth Routes — /api/auth', () => {
             action: 'login_failed',
             metadata: { path: ['ip'], equals: '9.9.9.9' },
           }),
-        }),
+        })
       );
       const auditCall = mockPrisma.activity.create.mock.calls.find(
-        (c: any[]) => c[0]?.data?.action === 'ip_unlocked',
+        (c: any[]) => c[0]?.data?.action === 'ip_unlocked'
       );
       expect(auditCall).toBeDefined();
       expect(auditCall[0].data.metadata.unlockedIp).toBe('9.9.9.9');
@@ -942,20 +1062,28 @@ describe('Auth Routes — /api/auth', () => {
         { action: 'login', description: 'ok', metadata: { ip: '1.1.1.1' }, user: null },
         { action: 'login', description: 'ok', metadata: { ip: '1.1.1.2' }, user: null },
         {
-          action: 'login_failed', description: 'bad',
-          metadata: { ip: '9.9.9.9', emailAttempt: 'ghost@x.ae' }, user: null,
+          action: 'login_failed',
+          description: 'bad',
+          metadata: { ip: '9.9.9.9', emailAttempt: 'ghost@x.ae' },
+          user: null,
         },
         {
-          action: 'login_failed', description: 'bad',
-          metadata: { ip: '9.9.9.9', emailAttempt: 'ghost@x.ae' }, user: null,
+          action: 'login_failed',
+          description: 'bad',
+          metadata: { ip: '9.9.9.9', emailAttempt: 'ghost@x.ae' },
+          user: null,
         },
         {
-          action: 'login_failed', description: 'bad',
-          metadata: { ip: '9.9.9.9', emailAttempt: 'ghost@x.ae' }, user: null,
+          action: 'login_failed',
+          description: 'bad',
+          metadata: { ip: '9.9.9.9', emailAttempt: 'ghost@x.ae' },
+          user: null,
         },
         {
-          action: 'login_failed', description: 'bad',
-          metadata: { ip: '8.8.8.8' }, user: { email: 'real@x.ae' },
+          action: 'login_failed',
+          description: 'bad',
+          metadata: { ip: '8.8.8.8' },
+          user: { email: 'real@x.ae' },
         },
         { action: 'password_changed', description: 'pw', metadata: { ip: '1.1.1.1' }, user: null },
         { action: 'password_change_failed', description: 'pw bad', metadata: {}, user: null },
@@ -981,7 +1109,9 @@ describe('Auth Routes — /api/auth', () => {
 
     it('clamps sinceMinutes to the [1, 30 days] range', async () => {
       mockPrisma.activity.findMany.mockResolvedValueOnce([]);
-      const res = await request(createApp('admin')).get('/api/auth/security/stats?sinceMinutes=999999');
+      const res = await request(createApp('admin')).get(
+        '/api/auth/security/stats?sinceMinutes=999999'
+      );
       expect(res.status).toBe(200);
       expect(res.body.data.windowMinutes).toBe(60 * 24 * 30);
     });

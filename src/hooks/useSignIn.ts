@@ -88,7 +88,12 @@ export const CLIENT_ROLES: UserRole[] = [
 
 export const STAFF_ROLES: UserRole[] = [
   { id: 'leasing-agent', label: 'Leasing Agent', icon: '📋', desc: 'Property rental specialist' },
-  { id: 'secondary-sales-agent', label: 'Sales Agent', icon: '📊', desc: 'Property sales specialist' },
+  {
+    id: 'secondary-sales-agent',
+    label: 'Sales Agent',
+    icon: '📊',
+    desc: 'Property sales specialist',
+  },
   { id: 'team-leader', label: 'Team Leader', icon: '👥', desc: 'Managing agent teams' },
 ];
 
@@ -128,17 +133,28 @@ export function useSignIn() {
   const navTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
-    return () => { clearTimeout(navTimerRef.current); };
+    return () => {
+      clearTimeout(navTimerRef.current);
+    };
   }, []);
 
   // ── Helpers ────────────────────────────────────────────────────
 
-  const saveUserData = useCallback((category: string, role: string, status: string = 'active'): void => {
-    safeStorage.setJSON('userRole', { category, role, status, locked: true });
-  }, []);
+  const saveUserData = useCallback(
+    (category: string, role: string, status: string = 'active'): void => {
+      safeStorage.setJSON('userRole', { category, role, status, locked: true });
+    },
+    []
+  );
 
   const handleSignInSuccess = useCallback(
-    (user: { id: string; email: string | null; name: string | null; role?: string; photoUrl?: string | null }): void => {
+    (user: {
+      id: string;
+      email: string | null;
+      name: string | null;
+      role?: string;
+      photoUrl?: string | null;
+    }): void => {
       dispatch(
         setUser({
           id: user.id,
@@ -146,17 +162,21 @@ export function useSignIn() {
           name: user.name || undefined,
           role: user.role,
           photoURL: user.photoUrl || undefined,
-        }),
+        })
       );
-      const userRole = user.role || 'agent';
       setSuccess('Sign in successful!');
-      navTimerRef.current = setTimeout(() => navigate(`/${userRole}/dashboard`), TIMING.NAVIGATION_DELAY);
+      navTimerRef.current = setTimeout(() => navigate('/dashboard'), TIMING.NAVIGATION_DELAY);
     },
-    [dispatch, navigate],
+    [dispatch, navigate]
   );
 
   const handleSignUpSuccess = useCallback(
-    (user: { id: string; email: string | null; name: string | null; photoUrl?: string | null }): void => {
+    (user: {
+      id: string;
+      email: string | null;
+      name: string | null;
+      photoUrl?: string | null;
+    }): void => {
       setPendingUser({
         id: user.id,
         email: user.email || '',
@@ -165,7 +185,7 @@ export function useSignIn() {
       });
       setStep(2);
     },
-    [fullName],
+    [fullName]
   );
 
   // ── Step navigation ────────────────────────────────────────────
@@ -194,16 +214,22 @@ export function useSignIn() {
         name: pendingUser?.name || undefined,
         role: selectedRole,
         status,
-      }),
+      })
     );
     saveUserData(selectedCategory, selectedRole, status);
 
     if (selectedCategory === 'staff') {
       setSuccess('Registration submitted! Your account is pending approval.');
-      navTimerRef.current = setTimeout(() => navigate('/pending-approval'), TIMING.SIMULATED_API_DELAY);
+      navTimerRef.current = setTimeout(
+        () => navigate('/pending-approval'),
+        TIMING.SIMULATED_API_DELAY
+      );
     } else {
       setSuccess('Account created successfully!');
-      navTimerRef.current = setTimeout(() => navigate(`/${selectedRole}/dashboard`), TIMING.NAVIGATION_DELAY);
+      navTimerRef.current = setTimeout(
+        () => navigate(`/${selectedRole}/dashboard`),
+        TIMING.NAVIGATION_DELAY
+      );
     }
   }, [selectedRole, selectedCategory, pendingUser, dispatch, navigate, saveUserData]);
 
@@ -241,7 +267,10 @@ export function useSignIn() {
           } else {
             handleSignInSuccess(backendUser);
           }
-        } catch {
+        } catch (syncError: unknown) {
+          if (mode === 'signin') {
+            throw syncError;
+          }
           const firebaseUser = result.user;
           const fallbackUser = {
             id: firebaseUser.uid,
@@ -260,7 +289,7 @@ export function useSignIn() {
         setLoading(false);
       }
     },
-    [mode, handleSignInSuccess, handleSignUpSuccess],
+    [mode, handleSignInSuccess, handleSignUpSuccess]
   );
 
   // ── Email auth ─────────────────────────────────────────────────
@@ -307,7 +336,7 @@ export function useSignIn() {
         setLoading(false);
       }
     },
-    [mode, email, password, confirmPassword, fullName, handleSignInSuccess, handleSignUpSuccess],
+    [mode, email, password, confirmPassword, fullName, handleSignInSuccess, handleSignUpSuccess]
   );
 
   // ── Phone auth ─────────────────────────────────────────────────
@@ -330,7 +359,7 @@ export function useSignIn() {
         setLoading(false);
       }
     },
-    [phone],
+    [phone]
   );
 
   const handleOtpVerify = useCallback(
@@ -372,7 +401,7 @@ export function useSignIn() {
         setLoading(false);
       }
     },
-    [confirmationResult, otp, mode, handleSignInSuccess, handleSignUpSuccess],
+    [confirmationResult, otp, mode, handleSignInSuccess, handleSignUpSuccess]
   );
 
   // ── Mode switch ────────────────────────────────────────────────

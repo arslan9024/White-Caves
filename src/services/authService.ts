@@ -1,6 +1,6 @@
 /**
  * Authentication Service — Backend JWT Integration
- * 
+ *
  * Handles login, registration, and token management via the backend API.
  * Firebase social/phone auth results are synced to the backend for JWT issuance.
  */
@@ -73,7 +73,7 @@ export function restoreAuthToken(): string | null {
  * Returns user data and stores the JWT.
  */
 export async function loginWithEmail(email: string, password: string): Promise<LoginResponse> {
-  const response = await apiClient.post('/auth/login', { email, password }) as LoginResponse;
+  const response = (await apiClient.post('/auth/login', { email, password })) as LoginResponse;
 
   if (response.success) {
     if (!response.data?.token) {
@@ -96,13 +96,13 @@ export async function registerWithEmail(
   phone?: string,
   department?: string
 ): Promise<RegisterResponse> {
-  const response = await apiClient.post('/auth/register', {
+  const response = (await apiClient.post('/auth/register', {
     email,
     password,
     name,
     phone,
     department,
-  }) as RegisterResponse;
+  })) as RegisterResponse;
 
   if (response.success) {
     if (!response.data?.token) {
@@ -124,13 +124,18 @@ export async function syncFirebaseUser(firebaseUser: {
   email: string | null;
   displayName: string | null;
   photoURL: string | null;
+  getIdToken?: () => Promise<string>;
 }): Promise<LoginResponse> {
-  const response = await apiClient.post('/auth/firebase-sync', {
+  const firebaseToken =
+    typeof firebaseUser.getIdToken === 'function' ? await firebaseUser.getIdToken() : null;
+
+  const response = (await apiClient.post('/auth/firebase-sync', {
     firebaseUid: firebaseUser.uid,
     email: firebaseUser.email,
     name: firebaseUser.displayName,
     photoUrl: firebaseUser.photoURL,
-  }) as LoginResponse;
+    firebaseToken,
+  })) as LoginResponse;
 
   if (response.success) {
     if (!response.data?.token) {
@@ -146,17 +151,20 @@ export async function syncFirebaseUser(firebaseUser: {
  * Fetch the current user's profile using the stored JWT.
  */
 export async function fetchProfile(): Promise<ProfileResponse> {
-  return await apiClient.get('/auth/profile') as ProfileResponse;
+  return (await apiClient.get('/auth/profile')) as ProfileResponse;
 }
 
 /**
  * Change the current user's password.
  */
-export async function changePassword(currentPassword: string, newPassword: string): Promise<{ success: boolean }> {
-  return await apiClient.post('/auth/change-password', {
+export async function changePassword(
+  currentPassword: string,
+  newPassword: string
+): Promise<{ success: boolean }> {
+  return (await apiClient.post('/auth/change-password', {
     currentPassword,
     newPassword,
-  }) as { success: boolean };
+  })) as { success: boolean };
 }
 
 /**
