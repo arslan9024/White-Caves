@@ -34,6 +34,7 @@
 ### **STEP 1: Commission Components Creation** (2-3 hours)
 
 #### 1.1 Commission List Component
+
 - File: `src/components/commission/CommissionList.tsx`
 - Features:
   - Display all commission records
@@ -44,6 +45,7 @@
   - Responsive design with Pagination component
 
 #### 1.2 Commission Detail Modal
+
 - File: `src/components/commission/CommissionDetailModal.tsx`
 - Features:
   - View full commission details
@@ -53,6 +55,7 @@
   - Close/minimize functionality
 
 #### 1.3 Commission Form Component
+
 - File: `src/components/commission/CommissionForm.tsx`
 - Features:
   - Create new commission
@@ -62,6 +65,7 @@
   - Save & cancel actions
 
 #### 1.4 Commission Calculator
+
 - File: `src/components/commission/CommissionCalculator.tsx`
 - Features:
   - Real-time calculation
@@ -71,6 +75,7 @@
   - Save as template option
 
 #### 1.5 Commission Statistics Card
+
 - File: `src/components/commission/CommissionStats.tsx`
 - Features:
   - Total commissions (YTD, MTD, this quarter)
@@ -81,6 +86,7 @@
 ### **STEP 2: Redux Integration** (1-2 hours)
 
 #### 2.1 Commission Redux Slice
+
 - File: `src/redux/slices/commissionSlice.ts`
 - State structure:
   - List of commissions with pagination
@@ -90,6 +96,7 @@
   - Success notifications
 
 #### 2.2 Redux Async Thunks
+
 - `fetchCommissions` - Get paginated list with filters
 - `fetchCommissionById` - Get single commission details
 - `createCommission` - Create new commission
@@ -98,6 +105,7 @@
 - `generateCommissionReport` - Create report
 
 #### 2.3 Custom Hooks
+
 - `useCommissions()` - List all commissions
 - `useCommissionById(id)` - Single commission
 - `useCommissionActions()` - Create/Update/Delete
@@ -106,6 +114,7 @@
 ### **STEP 3: Dashboard Integration** (1.5-2 hours)
 
 #### 3.1 Commission Tab in Dashboard
+
 - File: `src/pages/UnifiedDashboardPage.tsx`
 - Add Commission tab with:
   - Commission statistics widgets
@@ -114,6 +123,7 @@
   - Commission alerts/notifications
 
 #### 3.2 Commission Manager Component
+
 - File: `src/components/commission/CommissionManager.tsx`
 - Full-featured commission management:
   - List with Pagination
@@ -125,6 +135,7 @@
 ### **STEP 4: API Integration** (1 hour)
 
 #### 4.1 Commission API Service
+
 - File: `src/services/commissionApi.ts`
 - Methods:
   - GET `/api/commissions` - List with pagination
@@ -135,6 +146,7 @@
   - GET `/api/commissions/report` - Generate report
 
 #### 4.2 Integration with existing backend
+
 - Connect to Express API endpoints (from Session 7)
 - Error handling & retry logic
 - Loading states management
@@ -142,6 +154,7 @@
 ### **STEP 5: E2E Test Updates** (1.5 hours)
 
 #### 5.1 Update commission-workflow.spec.ts
+
 - Test all commission CRUD operations
 - Test filtering & pagination
 - Test calculations
@@ -149,6 +162,7 @@
 - Test error scenarios
 
 #### 5.2 Integration Tests
+
 - Test Redux state management
 - Test API integration
 - Test form validation
@@ -157,16 +171,19 @@
 ### **STEP 6: Documentation** (1 hour)
 
 #### 6.1 Component Documentation
+
 - Props documentation
 - Usage examples
 - Integration examples
 
 #### 6.2 Redux Documentation
+
 - State structure
 - Available actions
 - Hooks usage
 
 #### 6.3 API Documentation
+
 - Endpoint details
 - Required parameters
 - Response formats
@@ -174,12 +191,14 @@
 ### **STEP 7: Build & Verification** (30 minutes)
 
 #### 7.1 Build Verification
+
 - npm run build
 - Verify 0 TypeScript errors
 - Check bundle size
 - Performance metrics
 
 #### 7.2 E2E Test Verification
+
 - Run commission E2E tests
 - Verify all tests passing
 - Check performance baselines
@@ -237,15 +256,15 @@ Code Quality
 
 ## 🚀 Execution Timeline
 
-| Step | Task | Duration | Cumulative |
-|------|------|----------|-----------|
-| 1 | Commission Components | 2-3 hrs | 2-3 hrs |
-| 2 | Redux Integration | 1-2 hrs | 3-5 hrs |
-| 3 | Dashboard Integration | 1.5-2 hrs | 4.5-7 hrs |
-| 4 | API Integration | 1 hr | 5.5-8 hrs |
-| 5 | E2E Tests Update | 1.5 hrs | 7-9.5 hrs |
-| 6 | Documentation | 1 hr | 8-10.5 hrs |
-| 7 | Build & Verify | 0.5 hrs | 8.5-11 hrs |
+| Step | Task                  | Duration  | Cumulative |
+| ---- | --------------------- | --------- | ---------- |
+| 1    | Commission Components | 2-3 hrs   | 2-3 hrs    |
+| 2    | Redux Integration     | 1-2 hrs   | 3-5 hrs    |
+| 3    | Dashboard Integration | 1.5-2 hrs | 4.5-7 hrs  |
+| 4    | API Integration       | 1 hr      | 5.5-8 hrs  |
+| 5    | E2E Tests Update      | 1.5 hrs   | 7-9.5 hrs  |
+| 6    | Documentation         | 1 hr      | 8-10.5 hrs |
+| 7    | Build & Verify        | 0.5 hrs   | 8.5-11 hrs |
 
 **Total: 8.5-11 hours (fits in 1 focused session or 2 half-sessions)**
 
@@ -289,23 +308,27 @@ Code Quality
 ## 💡 Key Considerations
 
 ### Type Safety
+
 - Use strict TypeScript types for all data
 - No 'any' types
 - Full type coverage for Redux state
 
 ### Performance
+
 - Lazy load commission components
 - Memoize expensive calculations
 - Virtualize long lists (100+ items)
 - Use proper pagination
 
 ### Accessibility
+
 - ARIA labels on all interactive elements
 - Keyboard navigation support
 - Screen reader friendly
 - Color contrast requirements
 
 ### Error Handling
+
 - Try/catch blocks on API calls
 - User-friendly error messages
 - Retry logic for failed requests
@@ -316,12 +339,14 @@ Code Quality
 ## 📞 Support Resources
 
 ### Documentation to Reference
+
 - Session 7: Commission Backend & E2E tests created
 - Session 9: CI/CD setup for automated testing
 - Redux Toolkit: Official patterns
 - React best practices for forms
 
 ### Files to Examine
+
 - `src/redux/slices/` - Existing Redux patterns
 - `src/components/crm/` - Similar component patterns
 - `src/services/` - API integration patterns
@@ -332,6 +357,7 @@ Code Quality
 ## 🎉 Phase 3 Completion Criteria
 
 All of the following must be true:
+
 - [x] 6+ commission components created & working
 - [x] Redux slice with full CRUD operations
 - [x] API service with all endpoints integrated

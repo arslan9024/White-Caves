@@ -168,6 +168,7 @@ Desktop flyout triggered on rail hover/click → shows 240px flyout
 ### Day 1: Sidebar Architecture & Components
 
 **Deliverables:**
+
 - [ ] Responsive breakpoint detection utility
 - [ ] EnhancedLeftSidebar component (desktop layout)
 - [ ] SidebarNavItem component with badge support
@@ -176,6 +177,7 @@ Desktop flyout triggered on rail hover/click → shows 240px flyout
 - [ ] CSS Grid for 280px | 64px layout
 
 **Files to Create:**
+
 - `src/components/layout/EnhancedLeftSidebar/EnhancedLeftSidebar.tsx`
 - `src/components/layout/EnhancedLeftSidebar/SidebarNavItem.tsx`
 - `src/components/layout/EnhancedLeftSidebar/SidebarTree.tsx`
@@ -184,11 +186,13 @@ Desktop flyout triggered on rail hover/click → shows 240px flyout
 - `src/hooks/navigation/useKeyboardNavigation.ts`
 
 **Files to Modify:**
+
 - `src/components/layout/AppLayout.tsx`
 - `src/components/layout/AppLayout/styles.ts`
 - `src/store/slices/navigationSlice.ts`
 
 **Tests:**
+
 - `src/components/layout/EnhancedLeftSidebar/EnhancedLeftSidebar.test.tsx`
 
 ---
@@ -196,6 +200,7 @@ Desktop flyout triggered on rail hover/click → shows 240px flyout
 ### Day 2: Keyboard Navigation & Shortcuts
 
 **Deliverables:**
+
 - [ ] Arrow key navigation (up/down within tree)
 - [ ] Ctrl+J / Cmd+J for item focus
 - [ ] Ctrl+K for global search (via CommandPalette)
@@ -204,13 +209,16 @@ Desktop flyout triggered on rail hover/click → shows 240px flyout
 - [ ] Tab to focus next item
 
 **Files to Create:**
+
 - `src/hooks/navigation/useKeyboardShortcuts.ts`
 
 **Files to Modify:**
+
 - `src/components/layout/EnhancedLeftSidebar/EnhancedLeftSidebar.tsx` (integrate keyboard handler)
 - `src/components/common/CommandPalette.tsx` (if needed, extend keyboard shortcuts)
 
 **Tests:**
+
 - `src/hooks/navigation/useKeyboardNavigation.test.ts`
 
 ---
@@ -218,6 +226,7 @@ Desktop flyout triggered on rail hover/click → shows 240px flyout
 ### Day 3: Polish, Testing & Deployment
 
 **Deliverables:**
+
 - [ ] Accessibility compliance (WCAG 2.1 AA)
   - Focus indicators (3:1+ contrast)
   - Semantic HTML (nav, button, list)
@@ -228,9 +237,11 @@ Desktop flyout triggered on rail hover/click → shows 240px flyout
 - [ ] Git commit + PR
 
 **Test Files:**
+
 - `e2e/sidebar-navigation.spec.ts`
 
 **Files to Review:**
+
 - TypeScript strict mode compliance (no `any`)
 - Import path optimization (no circular deps)
 - Redux selector performance (useMemo, reselect)
@@ -264,26 +275,26 @@ actions:
 
 ### 2. Keyboard Shortcuts Table
 
-| Shortcut       | Action                          | Scope          |
-| -------------- | ------------------------------- | -------------- |
-| **Cmd+K**      | Focus global search (Cmd+K)     | Global         |
-| **Cmd+J**      | Focus first sidebar item        | Sidebar        |
-| **Arrow Up**   | Previous item in nav tree       | Sidebar (tree) |
-| **Arrow Down** | Next item in nav tree           | Sidebar (tree) |
-| **Arrow Right**| Expand department               | Sidebar (tree) |
-| **Arrow Left** | Collapse department             | Sidebar (tree) |
-| **Enter**      | Select/activate current item    | Sidebar (tree) |
-| **Escape**     | Unfocus sidebar, restore scroll | Sidebar        |
-| **Tab**        | Move to next focusable element  | Global (std)   |
+| Shortcut        | Action                          | Scope          |
+| --------------- | ------------------------------- | -------------- |
+| **Cmd+K**       | Focus global search (Cmd+K)     | Global         |
+| **Cmd+J**       | Focus first sidebar item        | Sidebar        |
+| **Arrow Up**    | Previous item in nav tree       | Sidebar (tree) |
+| **Arrow Down**  | Next item in nav tree           | Sidebar (tree) |
+| **Arrow Right** | Expand department               | Sidebar (tree) |
+| **Arrow Left**  | Collapse department             | Sidebar (tree) |
+| **Enter**       | Select/activate current item    | Sidebar (tree) |
+| **Escape**      | Unfocus sidebar, restore scroll | Sidebar        |
+| **Tab**         | Move to next focusable element  | Global (std)   |
 
 ### 3. Responsive Breakpoints
 
 ```typescript
 // useResponsiveLayout.ts
 export const BREAKPOINTS = {
-  mobile: 0,      // < 768px
-  tablet: 768,    // 768px – 1023px
-  desktop: 1024,  // 1024px+
+  mobile: 0, // < 768px
+  tablet: 768, // 768px – 1023px
+  desktop: 1024, // 1024px+
 };
 
 export function useResponsiveLayout() {
@@ -291,7 +302,7 @@ export function useResponsiveLayout() {
     isMobile: width < 768,
     isTablet: 768 <= width < 1024,
     isDesktop: width >= 1024,
-    sidebarMode: width >= 1024 ? 'sidebar' : (width >= 768 ? 'rail' : 'hidden')
+    sidebarMode: width >= 1024 ? 'sidebar' : width >= 768 ? 'rail' : 'hidden',
   };
 }
 ```
@@ -304,7 +315,7 @@ export function useResponsiveLayout() {
   <AppBody>
     {isDesktop && <EnhancedLeftSidebar />}
     {isTablet && <SidebarContainer />} {/* existing rail + flyout */}
-    
+
     <AppMain>
       {children}
     </AppMain>
@@ -313,14 +324,14 @@ export function useResponsiveLayout() {
 
 <EnhancedLeftSidebar>
   <SidebarHeader /> {/* WC logo, title */}
-  
+
   <SidebarQuickNav>
     <NavItem icon={Home} label="Home" />
     <NavItem icon={BarChart3} label="Analytics" />
   </SidebarQuickNav>
-  
+
   <SidebarDivider />
-  
+
   <SidebarSection title="COMPANY">
     <SidebarTree>
       <TreeNode dept="operations">
@@ -333,9 +344,9 @@ export function useResponsiveLayout() {
       </TreeNode>
     </SidebarTree>
   </SidebarSection>
-  
+
   <SidebarDivider />
-  
+
   <SidebarSection title="AI COMMAND CENTER">
     <AIAssistantList>
       <AIAssistantItem bot={LeadScoringBot} />
@@ -343,9 +354,9 @@ export function useResponsiveLayout() {
       ...
     </AIAssistantList>
   </SidebarSection>
-  
+
   <SidebarSpacer />
-  
+
   <SidebarFooter>
     <NavItem icon={Shield} label="Admin" />
     <NavItem icon={Settings} label="Settings" />
@@ -440,16 +451,16 @@ Deliverables:
 
 ## Appendix: Competitor Research
 
-| Feature            | White Caves v5A | Figma Sidebar | VS Code Explorer |
-| ------------------ | --------------- | ------------- | --------------- |
-| Sidebar width      | 280px           | 248px         | 300px           |
-| Expandable groups  | Yes (9 depts)   | Yes (projects)| Yes (folders)   |
-| Inline icons       | Yes (per item)  | Minimal icons | Yes             |
-| Badge counts       | Yes (3 types)   | Minimal       | Yes (errors)    |
-| Keyboard nav       | Arrow + Enter   | Arrow + Enter | Arrow + Enter   |
-| Search integrated  | Cmd+K global    | Cmd+Shift+P   | Cmd+P files     |
-| Responsive rail    | 64px tablets    | N/A (desktop)| N/A (desktop)   |
-| AI inline          | Yes (NEW)       | N/A           | N/A (NEW)       |
+| Feature           | White Caves v5A | Figma Sidebar  | VS Code Explorer |
+| ----------------- | --------------- | -------------- | ---------------- |
+| Sidebar width     | 280px           | 248px          | 300px            |
+| Expandable groups | Yes (9 depts)   | Yes (projects) | Yes (folders)    |
+| Inline icons      | Yes (per item)  | Minimal icons  | Yes              |
+| Badge counts      | Yes (3 types)   | Minimal        | Yes (errors)     |
+| Keyboard nav      | Arrow + Enter   | Arrow + Enter  | Arrow + Enter    |
+| Search integrated | Cmd+K global    | Cmd+Shift+P    | Cmd+P files      |
+| Responsive rail   | 64px tablets    | N/A (desktop)  | N/A (desktop)    |
+| AI inline         | Yes (NEW)       | N/A            | N/A (NEW)        |
 
 ---
 

@@ -3,6 +3,7 @@
 > **Single Source of Truth** — Updated April 26, 2026  
 > **Goal**: #1 Real Estate Platform in Dubai  
 > **Status**: Infrastructure ✅ · Phase 1 (Homepage) 🚧 · Phase 2 (Landlord & Tenant Self-Service Portals) 🚧
+> **Canonical Path**: `/plans/MASTER_PLAN.md`
 
 ---
 
@@ -10,12 +11,12 @@
 
 The development order has been reset to focus on visible, user-facing value first:
 
-| Priority | Phase | Description | Detailed Plan |
-|----------|-------|-------------|---------------|
-| **#1 — Now** | Phase 1 | Public Homepage — full UI with dummy data | [PHASE_1_HOMEPAGE.md](./PHASE_1_HOMEPAGE.md) |
-| **#2 — Next** | Phase 2 | Landlord & Tenant Self-Service Portals — simple portals for clients | [PHASE_2_LANDLORD_TENANT.md](./PHASE_2_LANDLORD_TENANT.md) |
-| **#3 — High** | Phase 3 | Full CRM — all tabs for `arslanmalikgoraha@gmail.com` (managing_director) | [PHASE_3_CRM_SUPERUSER.md](./PHASE_3_CRM_SUPERUSER.md) |
-| **#4–10** | Phases 4–10 | WhatsApp, Compliance, Arabic, RBAC (Phase 9), PWA, etc. | [PHASE_3_AND_BEYOND.md](./PHASE_3_AND_BEYOND.md) |
+| Priority      | Phase       | Description                                                               | Detailed Plan                                              |
+| ------------- | ----------- | ------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **#1 — Now**  | Phase 1     | Public Homepage — full UI with dummy data                                 | [PHASE_1_HOMEPAGE.md](./PHASE_1_HOMEPAGE.md)               |
+| **#2 — Next** | Phase 2     | Landlord & Tenant Self-Service Portals — simple portals for clients       | [PHASE_2_LANDLORD_TENANT.md](./PHASE_2_LANDLORD_TENANT.md) |
+| **#3 — High** | Phase 3     | Full CRM — all tabs for `arslanmalikgoraha@gmail.com` (managing_director) | [PHASE_3_CRM_SUPERUSER.md](./PHASE_3_CRM_SUPERUSER.md)     |
+| **#4–10**     | Phases 4–10 | WhatsApp, Compliance, Arabic, RBAC (Phase 9), PWA, etc.                   | [PHASE_3_AND_BEYOND.md](./PHASE_3_AND_BEYOND.md)           |
 
 > See each phase file for detailed task lists, acceptance criteria, and current status.
 
@@ -25,22 +26,22 @@ The development order has been reset to focus on visible, user-facing value firs
 
 ## ✅ Foundation Already Built (Do Not Re-Do)
 
-| Item | Description | Status |
-|------|-------------|--------|
-| TypeScript strict mode | 0 compile errors across all 666 source files | ✅ |
-| Build pipeline | Vite 7 build < 10s, GitHub Actions CI/CD | ✅ |
-| Design system | Gold/dark theme, Poppins/Inter, styled-components, design tokens | ✅ |
-| Auth infrastructure | JWT, bcrypt, Firebase OAuth, rate limiting, CORS, Helmet | ✅ |
-| Database models | 7 Prisma models (User, Property, Lead, Commission, Activity, Transaction, Tenant) | ✅ |
-| Core backend routes | leads, properties, agents, transactions, finance, tenants, compliance, crm, reporting | ✅ |
-| CRM dashboard shell | UnifiedDashboardPage, dual sidebar, 29-role tab mapping | ✅ |
-| AI assistant registry | 17 assistants registered in Redux (Clara, Mary, Nadia, Sophia, Daisy, Zoe, Laila, etc.) | ✅ |
-| AI assistant plan API | /api/assistants CRUD + plan read/write, XSS protection (Phase 0.8) | ✅ |
-| Homepage shell | HomePage.tsx with Hero, Features, Locations, Team, Testimonials, ContactCTA sections | ✅ |
-| Homepage dummy data | HOME_PROPERTIES in src/data/homeProperties.ts (10 Dubai properties) | ✅ |
-| Seed data | owner@whitecaves.ae (role: lion/owner) + 6 agents + properties + leads | ✅ |
-| Security hardening | Timing-safe webhook, CORS whitelist, Firebase 503, CRM export field projection | ✅ |
-| Code quality | ESLint, Prettier, husky pre-commit, 299 test files | ✅ |
+| Item                   | Description                                                                             | Status |
+| ---------------------- | --------------------------------------------------------------------------------------- | ------ |
+| TypeScript strict mode | 0 compile errors across all 666 source files                                            | ✅     |
+| Build pipeline         | Vite 7 build < 10s, GitHub Actions CI/CD                                                | ✅     |
+| Design system          | Gold/dark theme, Poppins/Inter, styled-components, design tokens                        | ✅     |
+| Auth infrastructure    | JWT, bcrypt, Firebase OAuth, rate limiting, CORS, Helmet                                | ✅     |
+| Database models        | 7 Prisma models (User, Property, Lead, Commission, Activity, Transaction, Tenant)       | ✅     |
+| Core backend routes    | leads, properties, agents, transactions, finance, tenants, compliance, crm, reporting   | ✅     |
+| CRM dashboard shell    | UnifiedDashboardPage, dual sidebar, 29-role tab mapping                                 | ✅     |
+| AI assistant registry  | 17 assistants registered in Redux (Clara, Mary, Nadia, Sophia, Daisy, Zoe, Laila, etc.) | ✅     |
+| AI assistant plan API  | /api/assistants CRUD + plan read/write, XSS protection (Phase 0.8)                      | ✅     |
+| Homepage shell         | HomePage.tsx with Hero, Features, Locations, Team, Testimonials, ContactCTA sections    | ✅     |
+| Homepage dummy data    | HOME_PROPERTIES in src/data/homeProperties.ts (10 Dubai properties)                     | ✅     |
+| Seed data              | owner@whitecaves.ae (role: lion/owner) + 6 agents + properties + leads                  | ✅     |
+| Security hardening     | Timing-safe webhook, CORS whitelist, Firebase 503, CRM export field projection          | ✅     |
+| Code quality           | ESLint, Prettier, husky pre-commit, 299 test files                                      | ✅     |
 
 ---
 
@@ -192,6 +193,7 @@ The development order has been reset to focus on visible, user-facing value firs
 ## 📝 Archive Reference
 
 Previous MASTER_PLAN versions:
+
 - `/archives/MASTER_PLAN.md` (March 6, 2026 — superseded)
 - `/plans/MASTER_PLAN_UPDATED_FEB_2026.md` (Feb 2026 — superseded)
 - Session summaries (SESSION_8–SESSION_10) — archived in `/plans/`
