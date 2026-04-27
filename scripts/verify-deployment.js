@@ -5,6 +5,9 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import dotenv from 'dotenv';
+
+dotenv.config({ quiet: true });
 
 export function getRuntimeConfig() {
   const domain = process.env.VERCEL_URL || process.env.DOMAIN || 'localhost:5000';
@@ -92,8 +95,29 @@ export function checkBuildFiles() {
 
 export function checkEnvVariables() {
   const results = [];
-  const requiredVars = ['MONGODB_URI', 'VITE_FIREBASE_API_KEY'];
+  const requiredVars = [
+    'VITE_FIREBASE_API_KEY',
+    'JWT_SECRET',
+    'CORS_ORIGIN',
+    'WHATSAPP_WEBHOOK_SECRET',
+  ];
   const optionalVars = ['STRIPE_SECRET_KEY', 'GOOGLE_CLIENT_ID', 'WHATSAPP_API_KEY'];
+
+  if (process.env.DATABASE_URL) {
+    results.push({ name: 'Env: DATABASE_URL', status: '✅ Set', success: true });
+  } else if (process.env.MONGODB_URI) {
+    results.push({
+      name: 'Env: DATABASE_URL',
+      status: '⚠️  Set via MONGODB_URI (deprecated alias)',
+      success: true,
+    });
+  } else {
+    results.push({
+      name: 'Env: DATABASE_URL',
+      status: '❌ Missing (Required)',
+      success: false,
+    });
+  }
 
   for (const envVar of requiredVars) {
     if (process.env[envVar]) {

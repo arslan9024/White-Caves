@@ -39,13 +39,23 @@ export const BCRYPT_ROUNDS = 12;
 
 // ─── Database ────────────────────────────────────────────────────────────
 const _databaseUrl = process.env.DATABASE_URL;
-if (!_databaseUrl && IS_PRODUCTION) {
+const _legacyMongoUri = process.env.MONGODB_URI;
+const _usingLegacyMongoAlias = !_databaseUrl && Boolean(_legacyMongoUri);
+const _resolvedDatabaseUrl = _databaseUrl || _legacyMongoUri || '';
+
+if (_usingLegacyMongoAlias && !isTestRuntime) {
+  console.warn(
+    '⚠️  MONGODB_URI is deprecated. Please migrate to DATABASE_URL (canonical) as soon as possible.'
+  );
+}
+
+if (!_resolvedDatabaseUrl && IS_PRODUCTION) {
   throw new Error('CRITICAL: DATABASE_URL environment variable must be set in production');
 }
-if (!_databaseUrl) {
+if (!_resolvedDatabaseUrl) {
   console.warn('⚠️  DATABASE_URL not set — Prisma will fail to connect. Set it in .env');
 }
-export const DATABASE_URL = _databaseUrl || '';
+export const DATABASE_URL = _resolvedDatabaseUrl;
 
 // ─── CORS ────────────────────────────────────────────────────────────────
 if (!process.env.CORS_ORIGIN && IS_PRODUCTION) {
