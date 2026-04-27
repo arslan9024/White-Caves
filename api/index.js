@@ -157,7 +157,8 @@ app.post('/api/chatbot/test', (req, res) => {
 });
 
 // ─── Catch-all ───────────────────────────────────────────────────────────
-app.all('/api/*', (_req, res) => {
+// Express 5 + path-to-regexp requires a named wildcard or regex path.
+app.all(/^\/api\/.*$/, (_req, res) => {
   res.status(404).json({ success: false, error: 'Endpoint not found' });
 });
 
