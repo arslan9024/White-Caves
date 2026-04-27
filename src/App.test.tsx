@@ -398,14 +398,13 @@ describe('App', () => {
     });
   });
 
-  it('redirects /signin to /select-role when logged in', async () => {
+  it('redirects /signin to /dashboard when logged in', async () => {
     mockReduxState.currentUser = { id: '1', role: 'buyer', email: 'test@test.com' };
     await act(async () => {
       renderAtRoute('/signin');
     });
     await waitFor(() => {
-      // Should redirect to select-role, which renders RoleGateway
-      expect(screen.getByTestId('role-gateway')).toBeInTheDocument();
+      expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
     });
   });
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, lazy, Suspense, type ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { setUser, setLoading } from './store/userSlice';
 import { setTheme } from './store/navigationSlice';
 import { LanguageProvider } from './context/LanguageContext';
@@ -154,7 +155,6 @@ const BiometricPrompt = lazy(() => import('./features/auth/components/BiometricL
   return { default: () => null };  // Gracefully degrade — biometric is optional
 }));
 const WebVitalsTracker = lazy(() => import('./components/analytics/WebVitalsTracker'));
-const LazySpeedInsights = lazy(() => import('@vercel/speed-insights/react').then(m => ({ default: m.SpeedInsights })));
 import { StatusProvider } from './components/common/StatusNotification';
 import { createLogger } from './utils/logger';
 
@@ -225,9 +225,7 @@ function App(): React.JSX.Element {
             >
               Skip to main content
             </a>
-            <Suspense fallback={null}>
-              <LazySpeedInsights />
-            </Suspense>
+            <SpeedInsights />
             <Suspense fallback={null}>
               <WebVitalsTracker />
             </Suspense>
