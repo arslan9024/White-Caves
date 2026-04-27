@@ -66,8 +66,9 @@ import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 const app: Express = express();
 // In development, keep API on 3001 to avoid colliding with Vite (5000).
 // Use API_PORT when provided; in production/staging, respect PORT as platform-provided.
-const PORT = process.env.API_PORT
-  || (process.env.NODE_ENV === 'development' ? 3001 : (process.env.PORT || 3001));
+const PORT =
+  process.env.API_PORT ||
+  (process.env.NODE_ENV === 'development' ? 3001 : process.env.PORT || 3001);
 
 // ============================================================================
 // MIDDLEWARE SETUP
@@ -165,6 +166,16 @@ app.use('/api/auth/firebase-sync', authLimiter);
 // ============================================================================
 
 app.get('/health', (req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'OK',
+    timestamp: new Date(),
+    environment: process.env.NODE_ENV,
+    version: process.env.APP_VERSION || '1.0.0',
+  });
+});
+
+// Public API health endpoint (used by runtime/deployment verifiers and Vercel checks)
+app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({
     status: 'OK',
     timestamp: new Date(),
@@ -348,12 +359,10 @@ app.get(
   authMiddleware,
   requirePermission('access_whatsapp_business'),
   asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(200)
-      .json({
-        success: true,
-        data: { totalMessages: 0, sentToday: 0, received: 0, activeChats: 0, sessions: [] },
-      });
+    res.status(200).json({
+      success: true,
+      data: { totalMessages: 0, sentToday: 0, received: 0, activeChats: 0, sessions: [] },
+    });
   })
 );
 app.get(
@@ -361,12 +370,10 @@ app.get(
   authMiddleware,
   requirePermission('access_whatsapp_business'),
   asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(200)
-      .json({
-        success: true,
-        data: { phoneNumber: '', connected: false, autoReply: false, businessHours: null },
-      });
+    res.status(200).json({
+      success: true,
+      data: { phoneNumber: '', connected: false, autoReply: false, businessHours: null },
+    });
   })
 );
 app.put(
@@ -390,12 +397,10 @@ app.post(
   authMiddleware,
   requireRole('owner'),
   asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: 'WhatsApp initialization pending — configure phone number first',
-      });
+    res.status(200).json({
+      success: true,
+      message: 'WhatsApp initialization pending — configure phone number first',
+    });
   })
 );
 app.post(
@@ -427,12 +432,10 @@ app.post(
   authMiddleware,
   requirePermission('access_whatsapp_business'),
   asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(200)
-      .json({
-        success: true,
-        data: { id: Date.now().toString(), role: 'user', createdAt: new Date() },
-      });
+    res.status(200).json({
+      success: true,
+      data: { id: Date.now().toString(), role: 'user', createdAt: new Date() },
+    });
   })
 );
 app.delete(
@@ -450,13 +453,11 @@ app.get(
   authMiddleware,
   requirePermission('view_contracts'),
   asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(200)
-      .json({
-        success: true,
-        data: [],
-        pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
-      });
+    res.status(200).json({
+      success: true,
+      data: [],
+      pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
+    });
   })
 );
 app.post(
@@ -476,13 +477,11 @@ app.get(
   '/api/job-applications',
   authMiddleware,
   asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(200)
-      .json({
-        success: true,
-        data: [],
-        pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
-      });
+    res.status(200).json({
+      success: true,
+      data: [],
+      pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
+    });
   })
 );
 app.post(
@@ -527,13 +526,11 @@ app.get(
   '/api/appointments',
   authMiddleware,
   asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(200)
-      .json({
-        success: true,
-        data: [],
-        pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
-      });
+    res.status(200).json({
+      success: true,
+      data: [],
+      pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
+    });
   })
 );
 app.patch(
@@ -561,13 +558,11 @@ app.get(
   '/api/tenancy-agreements',
   authMiddleware,
   asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(200)
-      .json({
-        success: true,
-        data: [],
-        pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
-      });
+    res.status(200).json({
+      success: true,
+      data: [],
+      pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
+    });
   })
 );
 app.post(
@@ -600,12 +595,10 @@ app.post(
       amount: req.body?.amount,
       propertyId: req.body?.propertyId,
     });
-    res
-      .status(503)
-      .json({
-        success: false,
-        error: 'Payment processing is not yet configured. Please contact support.',
-      });
+    res.status(503).json({
+      success: false,
+      error: 'Payment processing is not yet configured. Please contact support.',
+    });
   })
 );
 
@@ -706,12 +699,10 @@ app.post(
   authMiddleware,
   requirePermission('manage_users'),
   asyncHandler(async (req: Request, res: Response) => {
-    res
-      .status(200)
-      .json({
-        success: true,
-        data: { id: req.params.id, status: 'approved', reviewedBy: req.user?.id },
-      });
+    res.status(200).json({
+      success: true,
+      data: { id: req.params.id, status: 'approved', reviewedBy: req.user?.id },
+    });
   })
 );
 app.post(
@@ -719,17 +710,15 @@ app.post(
   authMiddleware,
   requirePermission('manage_users'),
   asyncHandler(async (req: Request, res: Response) => {
-    res
-      .status(200)
-      .json({
-        success: true,
-        data: {
-          id: req.params.id,
-          status: 'rejected',
-          reviewedBy: req.user?.id,
-          reason: req.body?.reason,
-        },
-      });
+    res.status(200).json({
+      success: true,
+      data: {
+        id: req.params.id,
+        status: 'rejected',
+        reviewedBy: req.user?.id,
+        reason: req.body?.reason,
+      },
+    });
   })
 );
 
