@@ -36,6 +36,7 @@ interface Stat {
 
 interface ConsultationForm {
   name: string;
+  email: string;
   phone: string;
   service: string;
   message: string;
@@ -47,11 +48,25 @@ const ServicesPage: FC = () => {
   const [activeService, setActiveService] = useState<string>('offplan');
   const [formData, setFormData] = useState<ConsultationForm>({
     name: '',
+    email: '',
     phone: '',
     service: '',
     message: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const mapServiceToInquiryType = (service: string): 'buy' | 'rent' | 'invest' | 'general' => {
+    switch (service) {
+      case 'buying':
+        return 'buy';
+      case 'leasing':
+        return 'rent';
+      case 'selling':
+        return 'invest';
+      default:
+        return 'general';
+    }
+  };
 
   const handleFormChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -62,23 +77,46 @@ const ServicesPage: FC = () => {
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     const name = formData.name.trim();
+    const email = formData.email.trim();
     const phone = formData.phone.trim();
-    if (!name || !phone || !formData.service) {
+    if (!name || !email || !phone || !formData.service) {
       toast.error('Please fill in all required fields.');
       return;
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error('Please enter a valid email address.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      await fetch('/api/contact/inquiry', {
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          message: `[Services Page — ${formData.service}] ${formData.message.trim()}`,
+          inquiryType: mapServiceToInquiryType(formData.service),
+        }),
       });
-    } catch {
-      // Best-effort — show success regardless so users aren't blocked
-    } finally {
+
+      if (!response.ok) {
+        const data = (await response.json().catch(() => ({}))) as {
+          message?: string;
+          error?: string;
+        };
+        throw new Error(data.message ?? data.error ?? 'Failed to send inquiry. Please try again.');
+      }
+
       toast.success('Thank you for your inquiry! Our team will contact you shortly.');
-      setFormData({ name: '', phone: '', service: '', message: '' });
+      setFormData({ name: '', email: '', phone: '', service: '', message: '' });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to send inquiry. Please try again.';
+      toast.error(message);
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -492,6 +530,14 @@ const ServicesPage: FC = () => {
                     name="name"
                     placeholder="Your Name"
                     value={formData.name}
+                    onChange={handleFormChange}
+                    required
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email Address"
+                    value={formData.email}
                     onChange={handleFormChange}
                     required
                   />

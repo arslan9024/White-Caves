@@ -31,8 +31,26 @@ const ContactPage: FC = () => {
     message: '',
   });
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Partial<Record<keyof ContactForm, string>>>({});
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const mapSubjectToInquiryType = (subject: string): 'buy' | 'rent' | 'invest' | 'general' => {
+    switch (subject) {
+      case 'buy':
+      case 'offplan':
+        return 'buy';
+      case 'rent':
+      case 'landlord':
+        return 'rent';
+      case 'investment':
+      case 'sell':
+        return 'invest';
+      default:
+        return 'general';
+    }
+  };
 
   // Cleanup timeout on unmount to prevent state update on unmounted component
   useEffect(() => {
@@ -71,17 +89,53 @@ const ContactPage: FC = () => {
     if (errors[name as keyof ContactForm]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
     }
+    if (submitError) {
+      setSubmitError(null);
+    }
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     if (!validate()) return;
-    setSubmitted(true);
-    // Clear any existing timer, then set a new one tracked by ref for cleanup
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setSubmitted(false), TIMING.FORM_RESET_DELAY);
-    setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-    setErrors({});
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim() || undefined,
+          message: `[Contact Page — ${formData.subject}] ${formData.message.trim()}`,
+          inquiryType: mapSubjectToInquiryType(formData.subject),
+        }),
+      });
+
+      if (!response.ok) {
+        const data = (await response.json().catch(() => ({}))) as {
+          message?: string;
+          error?: string;
+        };
+        throw new Error(data.message ?? data.error ?? 'Failed to send message. Please try again.');
+      }
+
+      setSubmitted(true);
+      // Clear any existing timer, then set a new one tracked by ref for cleanup
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setSubmitted(false), TIMING.FORM_RESET_DELAY);
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      setErrors({});
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to send message. Please try again.';
+      setSubmitError(message);
+      setSubmitted(false);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -271,6 +325,12 @@ const ContactPage: FC = () => {
                 </div>
               )}
 
+              {submitError && (
+                <div className="field-error" role="alert" aria-live="polite">
+                  {submitError}
+                </div>
+              )}
+
               <form onSubmit={handleSubmit} className="contact-form">
                 <div className="form-group">
                   <label htmlFor="name">Full Name *</label>
@@ -366,8 +426,8 @@ const ContactPage: FC = () => {
                   />
                 </div>
 
-                <button type="submit" className="submit-btn" disabled={submitted}>
-                  {submitted ? 'Sent ✓' : 'Send Message'}
+                <button type="submit" className="submit-btn" disabled={isSubmitting}>
+                  {isSubmitting ? 'Sending…' : submitted ? 'Sent ✓' : 'Send Message'}
                 </button>
               </form>
             </div>
