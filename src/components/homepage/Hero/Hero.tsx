@@ -1,9 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { motion, useScroll, useTransform, MotionValue, type Variants } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion, useScroll, useTransform, type Variants } from 'framer-motion';
 import { ArrowRight, Play, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../../store/store';
 import type { MarketStats } from '../../../store/slices/homepageSlice';
 import HeroSearchBar from './HeroSearchBar';
 import './Hero.css';
@@ -13,11 +11,6 @@ interface AnimatedCounterProps {
   duration?: number;
   suffix?: string;
   prefix?: string;
-}
-
-interface TypewriterTextProps {
-  text: string;
-  delay?: number;
 }
 
 interface Stat {
@@ -32,64 +25,43 @@ interface HeroProps {
   isLoading?: boolean;
 }
 
-
-
-const AnimatedCounter: React.FC<AnimatedCounterProps> = ({ end, duration = 2000, suffix = '', prefix = '' }) => {
+const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
+  end,
+  duration = 2000,
+  suffix = '',
+  prefix = '',
+}) => {
   const [count, setCount] = useState<number>(0);
-  
+
   useEffect(() => {
     let startTime: number | undefined;
     let animationFrame: number;
-    
+
     const animate = (timestamp: number): void => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
       setCount(Math.floor(progress * end));
-      
+
       if (progress < 1) {
         animationFrame = requestAnimationFrame(animate);
       }
     };
-    
+
     animationFrame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animationFrame);
   }, [end, duration]);
-  
-  return <span>{prefix}{count.toLocaleString()}{suffix}</span>;
-};
 
-const TypewriterText: React.FC<TypewriterTextProps> = ({ text, delay = 0 }) => {
-  const [displayText, setDisplayText] = useState<string>('');
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      let index = 0;
-      intervalRef.current = setInterval(() => {
-        if (index <= text.length) {
-          setDisplayText(text.slice(0, index));
-          index++;
-        } else {
-          if (intervalRef.current) clearInterval(intervalRef.current);
-          intervalRef.current = null;
-        }
-      }, 50);
-    }, delay);
-    return () => {
-      clearTimeout(timeout);
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }, [text, delay]);
-  
-  return <span>{displayText}<span className="typewriter-cursor">|</span></span>;
+  return (
+    <span>
+      {prefix}
+      {count.toLocaleString()}
+      {suffix}
+    </span>
+  );
 };
 
 const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
   const navigate = useNavigate();
-  const user = useSelector((state: RootState) => state.user?.currentUser);
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 500], [0, 150]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
@@ -120,9 +92,9 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
       opacity: 1,
       transition: {
         staggerChildren: 0.15,
-        delayChildren: 0.3
-      }
-    }
+        delayChildren: 0.3,
+      },
+    },
   };
 
   const itemVariants: Variants = {
@@ -130,12 +102,16 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: "easeInOut" }
-    }
+      transition: { duration: 0.6, ease: 'easeInOut' },
+    },
   };
 
-  const handleGetStarted = (): void => {
-    navigate(user ? '/select-role' : '/signin');
+  const handleBrowseProperties = (): void => {
+    navigate('/properties');
+  };
+
+  const handleBookConsultation = (): void => {
+    navigate('/contact');
   };
 
   const scrollToContent = (): void => {
@@ -148,50 +124,47 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
   return (
     <section className="hero-section dubai-luxury-theme" id="home">
       <div className="hero-background">
-        <motion.div 
-          className="hero-bg-image"
-          style={{ y }}
-        />
+        <motion.div className="hero-bg-image" style={{ y }} />
         <div className="hero-overlay" />
         <div className="hero-gradient-overlay" />
       </div>
 
       <div className="floating-shapes">
-        <motion.div 
+        <motion.div
           className="shape shape-1"
-          animate={{ 
+          animate={{
             y: [0, -20, 0],
-            rotate: [0, 10, 0]
+            rotate: [0, 10, 0],
           }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
         />
-        <motion.div 
+        <motion.div
           className="shape shape-2"
-          animate={{ 
+          animate={{
             y: [0, 20, 0],
-            rotate: [0, -10, 0]
+            rotate: [0, -10, 0],
           }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
         />
-        <motion.div 
+        <motion.div
           className="shape shape-3"
-          animate={{ 
+          animate={{
             scale: [1, 1.1, 1],
-            opacity: [0.3, 0.5, 0.3]
+            opacity: [0.3, 0.5, 0.3],
           }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
         />
-        <motion.div 
+        <motion.div
           className="shape shape-4"
-          animate={{ 
+          animate={{
             x: [0, 15, 0],
-            y: [0, -10, 0]
+            y: [0, -10, 0],
           }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
 
-      <motion.div 
+      <motion.div
         className="hero-content container"
         style={{ opacity }}
         variants={containerVariants}
@@ -207,7 +180,9 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
 
         <motion.div className="hero-market-pill" variants={itemVariants}>
           <span className="hero-market-pill-label">Dubai Prime Districts</span>
-          <span className="hero-market-pill-separator" aria-hidden="true">•</span>
+          <span className="hero-market-pill-separator" aria-hidden="true">
+            •
+          </span>
           <span className="hero-market-pill-value">
             {marketStats?.averagePrice
               ? `Avg AED ${(marketStats.averagePrice / 1_000_000).toFixed(1)}M`
@@ -218,12 +193,13 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
         <motion.h1 className="hero-title" variants={itemVariants}>
           Find Your Dream
           <span className="gradient-text"> Luxury Home</span>
-          <br />in Dubai
+          <br />
+          in Dubai
         </motion.h1>
 
         <motion.p className="hero-description" variants={itemVariants}>
-          Experience unparalleled luxury living in Dubai's most prestigious locations.
-          White Caves Real Estate brings you exclusive properties with world-class amenities.
+          Experience unparalleled luxury living in Dubai&apos;s most prestigious locations. White
+          Caves Real Estate brings you exclusive properties with world-class amenities.
         </motion.p>
 
         <motion.div variants={itemVariants}>
@@ -231,33 +207,30 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
         </motion.div>
 
         <motion.div className="hero-cta-group" variants={itemVariants}>
-          <motion.button 
+          <motion.button
             className="btn btn-primary btn-lg hero-btn-primary"
-            onClick={handleGetStarted}
-            whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(227, 30, 36, 0.35)" }}
+            onClick={handleBrowseProperties}
+            whileHover={{ scale: 1.05, boxShadow: '0 10px 30px rgba(227, 30, 36, 0.35)' }}
             whileTap={{ scale: 0.98 }}
           >
-            Get Started
+            Browse Properties
             <ArrowRight size={20} />
           </motion.button>
-          
-          <motion.button 
+
+          <motion.button
             className="btn btn-outline-white btn-lg hero-btn-secondary"
-            onClick={() => navigate('/properties')}
+            onClick={handleBookConsultation}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
           >
             <Play size={20} />
-            View Properties
+            Book Consultation
           </motion.button>
         </motion.div>
 
-        <motion.div 
-          className="hero-stats-grid"
-          variants={itemVariants}
-        >
-          {stats.map((stat) => (
-            <motion.div 
+        <motion.div className="hero-stats-grid" variants={itemVariants}>
+          {stats.map(stat => (
+            <motion.div
               key={stat.label}
               className="hero-stat-item"
               whileHover={{ y: -5, scale: 1.02 }}
@@ -267,7 +240,12 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
                 {isLoading ? (
                   <span className="hero-stat-skeleton" aria-hidden="true" />
                 ) : (
-                  <AnimatedCounter end={stat.number} duration={2000} suffix={stat.suffix} prefix={stat.prefix} />
+                  <AnimatedCounter
+                    end={stat.number}
+                    duration={2000}
+                    suffix={stat.suffix}
+                    prefix={stat.prefix}
+                  />
                 )}
               </span>
               <span className="hero-stat-label">{stat.label}</span>
@@ -275,10 +253,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
           ))}
         </motion.div>
 
-        <motion.div 
-          className="hero-trust-badges"
-          variants={itemVariants}
-        >
+        <motion.div className="hero-trust-badges" variants={itemVariants}>
           <div className="trust-badge">
             <span className="trust-icon">&#128737;</span>
             Verified Properties
@@ -298,7 +273,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
         </motion.div>
       </motion.div>
 
-      <motion.div 
+      <motion.div
         className="scroll-indicator"
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
@@ -312,4 +287,3 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
 };
 
 export default Hero;
-

@@ -21,23 +21,23 @@ vi.mock('framer-motion', () => ({
         // Return a forwardRef component that renders the HTML element
         return React.forwardRef(function MotionProxy(
           props: Record<string, unknown>,
-          ref: React.Ref<HTMLElement>,
+          ref: React.Ref<HTMLElement>
         ) {
           // Strip framer-specific props
-          const {
-            variants,
-            initial,
-            animate,
-            whileHover,
-            whileTap,
-            transition,
-            style,
-            ...rest
-          } = props;
+          const style = props.style;
+          const rest = { ...props };
+          delete rest.variants;
+          delete rest.initial;
+          delete rest.animate;
+          delete rest.whileHover;
+          delete rest.whileTap;
+          delete rest.transition;
+          delete rest.style;
+
           return React.createElement(prop, { ...rest, style, ref });
         });
       },
-    },
+    }
   ),
   useScroll: () => ({ scrollY: { get: () => 0 } }),
   useTransform: () => 0,
@@ -66,6 +66,11 @@ vi.mock('react-redux', async () => {
 vi.mock('../../../store/propertySlice', () => ({
   setFilters: vi.fn((payload: unknown) => ({ type: 'properties/setFilters', payload })),
   clearFilters: vi.fn(() => ({ type: 'properties/clearFilters' })),
+}));
+
+// Mock HeroSearchBar to isolate Hero tests from homepageSlice selectors
+vi.mock('./HeroSearchBar', () => ({
+  default: () => <div data-testid="hero-search-bar" />,
 }));
 
 // Import after mocks
@@ -103,9 +108,7 @@ describe('Hero', () => {
 
     it('displays the description paragraph', () => {
       render(<Hero />);
-      expect(
-        screen.getByText(/Experience unparalleled luxury living/i),
-      ).toBeTruthy();
+      expect(screen.getByText(/Experience unparalleled luxury living/i)).toBeTruthy();
     });
   });
 
@@ -129,37 +132,27 @@ describe('Hero', () => {
 
     it('displays the hero badge', () => {
       render(<Hero />);
-      expect(
-        screen.getByText(/Trusted by 1000\+ Clients in Dubai/i),
-      ).toBeTruthy();
+      expect(screen.getByText(/Trusted by 1000\+ Clients in Dubai/i)).toBeTruthy();
     });
   });
 
   describe('CTA buttons', () => {
-    it('renders "Get Started" and "View Properties" buttons', () => {
+    it('renders "Browse Properties" and "Book Consultation" buttons', () => {
       render(<Hero />);
-      expect(screen.getByText('Get Started')).toBeTruthy();
-      expect(screen.getByText('View Properties')).toBeTruthy();
+      expect(screen.getByText('Browse Properties')).toBeTruthy();
+      expect(screen.getByText('Book Consultation')).toBeTruthy();
     });
 
-    it('navigates to /signin when Get Started clicked (no user)', () => {
-      mockUser = null;
+    it('navigates to /properties when Browse Properties clicked', () => {
       render(<Hero />);
-      fireEvent.click(screen.getByText('Get Started'));
-      expect(mockNavigate).toHaveBeenCalledWith('/signin');
-    });
-
-    it('navigates to /select-role when Get Started clicked (logged-in user)', () => {
-      mockUser = { id: 'u1', email: 'test@whitecaves.com', role: 'buyer' };
-      render(<Hero />);
-      fireEvent.click(screen.getByText('Get Started'));
-      expect(mockNavigate).toHaveBeenCalledWith('/select-role');
-    });
-
-    it('navigates to /properties when View Properties clicked', () => {
-      render(<Hero />);
-      fireEvent.click(screen.getByText('View Properties'));
+      fireEvent.click(screen.getByText('Browse Properties'));
       expect(mockNavigate).toHaveBeenCalledWith('/properties');
+    });
+
+    it('navigates to /contact when Book Consultation clicked', () => {
+      render(<Hero />);
+      fireEvent.click(screen.getByText('Book Consultation'));
+      expect(mockNavigate).toHaveBeenCalledWith('/contact');
     });
   });
 
@@ -170,4 +163,3 @@ describe('Hero', () => {
     });
   });
 });
-

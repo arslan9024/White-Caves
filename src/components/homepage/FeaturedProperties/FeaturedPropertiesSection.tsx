@@ -45,8 +45,8 @@ interface FeaturedCardProps {
 
 const FeaturedCard: React.FC<FeaturedCardProps> = ({ property, index }) => {
   const navigate = useNavigate();
-  const image = property.images?.[0]
-    ?? `https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&q=80`;
+  const fallbackImage = 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&q=80';
+  const image = property.images?.[0] ?? fallbackImage;
 
   const formattedPrice = new Intl.NumberFormat('en-AE', {
     style: 'currency',
@@ -67,7 +67,7 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ property, index }) => {
       role="button"
       tabIndex={0}
       aria-label={`View ${property.title}`}
-      onKeyDown={(e) => e.key === 'Enter' && navigate(`/property/${property.id}`)}
+      onKeyDown={e => e.key === 'Enter' && navigate(`/property/${property.id}`)}
     >
       {/* Image */}
       <div className="fp-card__image-wrapper">
@@ -76,6 +76,12 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ property, index }) => {
           alt={property.title}
           className="fp-card__image"
           loading="lazy"
+          onError={e => {
+            const target = e.currentTarget;
+            if (target.src !== fallbackImage) {
+              target.src = fallbackImage;
+            }
+          }}
         />
         <div className="fp-card__image-overlay" />
 
@@ -103,7 +109,7 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ property, index }) => {
         <h3 className="fp-card__title">{property.title}</h3>
         <p className="fp-card__location">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
           </svg>
           {property.location}
         </p>
@@ -112,24 +118,42 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ property, index }) => {
         <div className="fp-card__specs">
           {property.bedrooms > 0 && (
             <span className="fp-spec">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z" />
               </svg>
               {property.bedrooms} Bed{property.bedrooms !== 1 ? 's' : ''}
             </span>
           )}
           {property.bathrooms > 0 && (
             <span className="fp-spec">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M7 6c0-1.1.9-2 2-2s2 .9 2 2v1h2V6c0-2.21-1.79-4-4-4S5 3.79 5 6v2H3v8c0 1.1.9 2 2 2h.28l-.94 3H6l.94-3h10.12l.94 3h1.66l-.94-3H19c1.1 0 2-.9 2-2v-8h-2V6z"/>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M7 6c0-1.1.9-2 2-2s2 .9 2 2v1h2V6c0-2.21-1.79-4-4-4S5 3.79 5 6v2H3v8c0 1.1.9 2 2 2h.28l-.94 3H6l.94-3h10.12l.94 3h1.66l-.94-3H19c1.1 0 2-.9 2-2v-8h-2V6z" />
               </svg>
               {property.bathrooms} Bath{property.bathrooms !== 1 ? 's' : ''}
             </span>
           )}
           {property.sqft > 0 && (
             <span className="fp-spec">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
               </svg>
               {property.sqft.toLocaleString()} sqft
             </span>
@@ -140,7 +164,10 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ property, index }) => {
         <div className="fp-card__actions">
           <button
             className="fp-action-btn"
-            onClick={(e) => { e.stopPropagation(); navigate(`/property/${property.id}`); }}
+            onClick={e => {
+              e.stopPropagation();
+              navigate(`/property/${property.id}`);
+            }}
           >
             View Details
           </button>
@@ -154,7 +181,9 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ property, index }) => {
 
 const EmptyState: React.FC = () => (
   <div className="fp-empty">
-    <div className="fp-empty__icon" aria-hidden="true">🏛️</div>
+    <div className="fp-empty__icon" aria-hidden="true">
+      🏛️
+    </div>
     <p className="fp-empty__text">Featured listings coming soon</p>
     <p className="fp-empty__sub">Check back for our handpicked luxury selection</p>
   </div>
@@ -182,7 +211,7 @@ const FeaturedPropertiesSection: React.FC<FeaturedPropertiesSectionProps> = ({
           <span className="section-tag">Hand-Picked for You</span>
           <h2 className="section-title">Featured Properties</h2>
           <p className="section-subtitle">
-            Exclusive listings curated from Dubai's most prestigious addresses
+            Exclusive listings curated from Dubai&apos;s most prestigious addresses
           </p>
           <div className="divider" />
         </motion.div>
@@ -190,7 +219,9 @@ const FeaturedPropertiesSection: React.FC<FeaturedPropertiesSectionProps> = ({
         {/* Grid */}
         {isLoading ? (
           <div className="fp-grid" aria-busy="true" aria-label="Loading featured properties">
-            {[...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
+            {[...Array(6)].map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
           </div>
         ) : featuredProperties.length > 0 ? (
           <div className="fp-grid">
@@ -226,4 +257,3 @@ const FeaturedPropertiesSection: React.FC<FeaturedPropertiesSectionProps> = ({
 };
 
 export default FeaturedPropertiesSection;
-
