@@ -82,7 +82,7 @@
 }
 
 .property-popup-card.active {
-  border-left: 3px solid #D4AF37;
+  border-left: 3px solid #d4af37;
 }
 
 .popup-card-image {
@@ -102,7 +102,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--secondary-color, #2E5A4F);
+  color: var(--secondary-color, #2e5a4f);
   background: rgba(46, 90, 79, 0.08);
   padding: 2px 8px;
   border-radius: 4px;
@@ -141,7 +141,7 @@
   display: block;
   font-size: 0.95rem;
   font-weight: 800;
-  color: #D4AF37;
+  color: #d4af37;
 }
 
 .popup-featured-badge {
@@ -191,7 +191,7 @@
   display: flex;
   gap: 12px;
   font-size: 0.75rem;
-  color: var(--secondary-color, #2E5A4F);
+  color: var(--secondary-color, #2e5a4f);
   font-weight: 600;
   margin-bottom: 8px;
 }
@@ -199,7 +199,7 @@
 .community-filter-btn {
   width: 100%;
   padding: 6px 12px;
-  background: var(--secondary-color, #2E5A4F);
+  background: var(--secondary-color, #2e5a4f);
   color: white;
   font-size: 0.75rem;
   font-weight: 600;
@@ -218,7 +218,7 @@
   position: absolute;
   bottom: 16px;
   left: 16px;
-  z-index: 1000;
+  z-index: var(--z-interactive, 10);
   display: flex;
   gap: 16px;
   background: rgba(255, 255, 255, 0.95);
@@ -244,18 +244,18 @@
 }
 
 .legend-dot.featured {
-  background: #D4AF37;
+  background: #d4af37;
   box-shadow: 0 0 4px rgba(212, 175, 55, 0.5);
 }
 
 .legend-dot.standard {
-  background: var(--secondary-color, #2E5A4F);
+  background: var(--secondary-color, #2e5a4f);
 }
 
 .legend-circle {
   width: 12px;
   height: 12px;
-  border: 2px solid #D4AF37;
+  border: 2px solid #d4af37;
   border-radius: 50%;
   background: rgba(212, 175, 55, 0.15);
 }

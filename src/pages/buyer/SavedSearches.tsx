@@ -80,20 +80,16 @@ interface SearchFormProps {
 
 const SearchForm: React.FC<SearchFormProps> = ({ initial, onSave, onCancel }) => {
   const [name, setName] = useState(initial?.name ?? '');
-  const [type, setType] = useState<string>(
-    (initial?.filters?.type as string) ?? '',
-  );
-  const [location, setLocation] = useState<string>(
-    (initial?.filters?.location as string) ?? '',
-  );
+  const [type, setType] = useState<string>((initial?.filters?.type as string) ?? '');
+  const [location, setLocation] = useState<string>((initial?.filters?.location as string) ?? '');
   const [minPrice, setMinPrice] = useState<string>(
-    initial?.filters?.minPrice != null ? String(initial.filters.minPrice) : '',
+    initial?.filters?.minPrice != null ? String(initial.filters.minPrice) : ''
   );
   const [maxPrice, setMaxPrice] = useState<string>(
-    initial?.filters?.maxPrice != null ? String(initial.filters.maxPrice) : '',
+    initial?.filters?.maxPrice != null ? String(initial.filters.maxPrice) : ''
   );
   const [bedrooms, setBedrooms] = useState<string>(
-    initial?.filters?.bedrooms != null ? String(initial.filters.bedrooms) : '',
+    initial?.filters?.bedrooms != null ? String(initial.filters.bedrooms) : ''
   );
   const [alertEnabled, setAlertEnabled] = useState(initial?.alertEnabled ?? false);
 
@@ -126,13 +122,13 @@ const SearchForm: React.FC<SearchFormProps> = ({ initial, onSave, onCancel }) =>
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 1000,
+        zIndex: 300, // var(--z-modal)
       }}
       onClick={onCancel}
     >
       <form
         onSubmit={handleSubmit}
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
         style={{
           background: 'var(--color-surface, #fff)',
           borderRadius: '16px',
@@ -151,7 +147,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ initial, onSave, onCancel }) =>
           <input
             style={inputStyle}
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={e => setName(e.target.value)}
             placeholder="e.g. 3BR Apartments in JBR"
             required
           />
@@ -160,11 +156,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ initial, onSave, onCancel }) =>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
           <label>
             <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>Property Type</span>
-            <select
-              style={inputStyle}
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-            >
+            <select style={inputStyle} value={type} onChange={e => setType(e.target.value)}>
               <option value="">Any</option>
               <option value="apartment">Apartment</option>
               <option value="villa">Villa</option>
@@ -180,7 +172,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ initial, onSave, onCancel }) =>
             <input
               style={inputStyle}
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              onChange={e => setLocation(e.target.value)}
               placeholder="e.g. JBR, Downtown"
             />
           </label>
@@ -191,7 +183,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ initial, onSave, onCancel }) =>
               style={inputStyle}
               type="number"
               value={minPrice}
-              onChange={(e) => setMinPrice(e.target.value)}
+              onChange={e => setMinPrice(e.target.value)}
               placeholder="0"
               min={0}
             />
@@ -203,7 +195,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ initial, onSave, onCancel }) =>
               style={inputStyle}
               type="number"
               value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
+              onChange={e => setMaxPrice(e.target.value)}
               placeholder="∞"
               min={0}
             />
@@ -211,11 +203,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ initial, onSave, onCancel }) =>
 
           <label>
             <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>Bedrooms</span>
-            <select
-              style={inputStyle}
-              value={bedrooms}
-              onChange={(e) => setBedrooms(e.target.value)}
-            >
+            <select style={inputStyle} value={bedrooms} onChange={e => setBedrooms(e.target.value)}>
               <option value="">Any</option>
               <option value="0">Studio</option>
               <option value="1">1</option>
@@ -231,12 +219,19 @@ const SearchForm: React.FC<SearchFormProps> = ({ initial, onSave, onCancel }) =>
           <input
             type="checkbox"
             checked={alertEnabled}
-            onChange={(e) => setAlertEnabled(e.target.checked)}
+            onChange={e => setAlertEnabled(e.target.checked)}
           />
           <span style={{ fontSize: '0.9rem' }}>🔔 Notify me when new matches appear</span>
         </label>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: '0.75rem',
+            marginTop: '0.5rem',
+          }}
+        >
           <button type="button" onClick={onCancel} style={btnSecondary}>
             Cancel
           </button>
@@ -286,7 +281,7 @@ const SavedSearchesPage: React.FC = () => {
       dispatch(createSavedSearch({ name, filters, alertEnabled }));
       setShowForm(false);
     },
-    [dispatch],
+    [dispatch]
   );
 
   const handleUpdate = useCallback(
@@ -296,11 +291,11 @@ const SavedSearchesPage: React.FC = () => {
         updateSavedSearch({
           id: editingSearch.id,
           updates: { name, filters, alertEnabled },
-        }),
+        })
       );
       setEditingSearch(null);
     },
-    [dispatch, editingSearch],
+    [dispatch, editingSearch]
   );
 
   const handleDelete = useCallback(
@@ -309,7 +304,7 @@ const SavedSearchesPage: React.FC = () => {
         dispatch(deleteSavedSearch(id));
       }
     },
-    [dispatch],
+    [dispatch]
   );
 
   const handleCheck = useCallback(
@@ -318,13 +313,22 @@ const SavedSearchesPage: React.FC = () => {
       await dispatch(checkSearchMatches(id));
       setCheckingId(null);
     },
-    [dispatch],
+    [dispatch]
   );
 
   return (
     <div className="role-page no-sidebar">
       <div className="role-page-content full-width">
-        <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+        <div
+          className="page-header"
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            flexWrap: 'wrap',
+            gap: '1rem',
+          }}
+        >
           <div>
             <h1>🔍 Saved Searches</h1>
             <p>Save your search criteria and get notified when new properties match</p>
@@ -355,7 +359,10 @@ const SavedSearchesPage: React.FC = () => {
             }}
           >
             <span>{error}</span>
-            <button onClick={() => dispatch(clearError())} style={{ ...btnSecondary, padding: '0.25rem 0.75rem' }}>
+            <button
+              onClick={() => dispatch(clearError())}
+              style={{ ...btnSecondary, padding: '0.25rem 0.75rem' }}
+            >
               Dismiss
             </button>
           </div>
@@ -363,7 +370,13 @@ const SavedSearchesPage: React.FC = () => {
 
         {/* Loading */}
         {loading && (
-          <div style={{ textAlign: 'center', padding: '3rem 0', color: 'var(--color-text-secondary, #6b7280)' }}>
+          <div
+            style={{
+              textAlign: 'center',
+              padding: '3rem 0',
+              color: 'var(--color-text-secondary, #6b7280)',
+            }}
+          >
             Loading saved searches…
           </div>
         )}
@@ -381,8 +394,15 @@ const SavedSearchesPage: React.FC = () => {
           >
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
             <h3 style={{ marginBottom: '0.5rem' }}>No saved searches yet</h3>
-            <p style={{ color: 'var(--color-text-secondary, #6b7280)', maxWidth: '420px', margin: '0 auto 1.5rem' }}>
-              Create a saved search to track properties matching your criteria. You&apos;ll be notified when new matches appear.
+            <p
+              style={{
+                color: 'var(--color-text-secondary, #6b7280)',
+                maxWidth: '420px',
+                margin: '0 auto 1.5rem',
+              }}
+            >
+              Create a saved search to track properties matching your criteria. You&apos;ll be
+              notified when new matches appear.
             </p>
             <button style={btnPrimary} onClick={() => setShowForm(true)}>
               Create Your First Search
@@ -393,11 +413,17 @@ const SavedSearchesPage: React.FC = () => {
         {/* Search list */}
         {!loading && searches.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {searches.map((search) => {
+            {searches.map(search => {
               const matchResult = matchResults[search.id];
               return (
                 <div key={search.id} style={cardStyle}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                    }}
+                  >
                     <div>
                       <h3 style={{ margin: 0, fontSize: '1.1rem' }}>{search.name}</h3>
                       <p
@@ -446,7 +472,8 @@ const SavedSearchesPage: React.FC = () => {
                         color: '#16a34a',
                       }}
                     >
-                      🎉 {matchResult.newMatches} new {matchResult.newMatches === 1 ? 'property' : 'properties'} found!
+                      🎉 {matchResult.newMatches} new{' '}
+                      {matchResult.newMatches === 1 ? 'property' : 'properties'} found!
                     </div>
                   )}
 
@@ -466,16 +493,10 @@ const SavedSearchesPage: React.FC = () => {
                     >
                       {checkingId === search.id ? '⏳ Checking…' : '🔄 Check Matches'}
                     </button>
-                    <button
-                      style={btnSecondary}
-                      onClick={() => setEditingSearch(search)}
-                    >
+                    <button style={btnSecondary} onClick={() => setEditingSearch(search)}>
                       ✏️ Edit
                     </button>
-                    <button
-                      style={btnDanger}
-                      onClick={() => handleDelete(search.id)}
-                    >
+                    <button style={btnDanger} onClick={() => handleDelete(search.id)}>
                       🗑️ Delete
                     </button>
                   </div>
@@ -500,9 +521,7 @@ const SavedSearchesPage: React.FC = () => {
         )}
 
         {/* Create / Edit form modal */}
-        {showForm && (
-          <SearchForm onSave={handleCreate} onCancel={() => setShowForm(false)} />
-        )}
+        {showForm && <SearchForm onSave={handleCreate} onCancel={() => setShowForm(false)} />}
         {editingSearch && (
           <SearchForm
             initial={editingSearch}

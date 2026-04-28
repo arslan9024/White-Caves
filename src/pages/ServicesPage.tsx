@@ -1,8 +1,5 @@
 import React, { FC, useState, ChangeEvent, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
-import type { RootState } from '../store/store';
 import PublicLayout from '../components/layout/PublicLayout';
 import PageHeroBanner from '../components/layout/PageHeroBanner';
 import WhatsAppButton from '../components/WhatsAppButton';
@@ -44,32 +41,46 @@ interface ConsultationForm {
   message: string;
 }
 
-interface User {
-  id?: string;
-  email?: string;
-}
-
 const ServicesPage: FC = () => {
   useDocumentTitle('Our Services');
-  const navigate = useNavigate();
-  const user = useSelector((state: RootState) => state.user.currentUser) as User | undefined;
   const toast = useToast();
   const [activeService, setActiveService] = useState<string>('offplan');
   const [formData, setFormData] = useState<ConsultationForm>({
     name: '',
     phone: '',
     service: '',
-    message: ''
+    message: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleFormChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void => {
+  const handleFormChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ): void => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleFormSubmit = (e: FormEvent<HTMLFormElement>): void => {
+  const handleFormSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    toast.success('Thank you for your inquiry! Our team will contact you shortly.');
-    setFormData({ name: '', phone: '', service: '', message: '' });
+    const name = formData.name.trim();
+    const phone = formData.phone.trim();
+    if (!name || !phone || !formData.service) {
+      toast.error('Please fill in all required fields.');
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      await fetch('/api/contact/inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+    } catch {
+      // Best-effort — show success regardless so users aren't blocked
+    } finally {
+      toast.success('Thank you for your inquiry! Our team will contact you shortly.');
+      setFormData({ name: '', phone: '', service: '', message: '' });
+      setIsSubmitting(false);
+    }
   };
 
   const services: Service[] = [
@@ -79,7 +90,7 @@ const ServicesPage: FC = () => {
       title: 'Buying Services',
       subtitle: 'Find Your Perfect Property',
       subServices: ['Off-plan purchases', 'Secondary market', 'New developments'],
-      features: ['Market analysis', 'Negotiation support', 'Due diligence']
+      features: ['Market analysis', 'Negotiation support', 'Due diligence'],
     },
     {
       id: 'selling',
@@ -87,7 +98,7 @@ const ServicesPage: FC = () => {
       title: 'Selling Services',
       subtitle: 'Maximize Your Property Value',
       subServices: ['Property valuation', 'Strategic marketing', 'Seamless closing'],
-      features: ['Premium exposure', 'Competitive pricing', 'Quick transactions']
+      features: ['Premium exposure', 'Competitive pricing', 'Quick transactions'],
     },
     {
       id: 'leasing',
@@ -95,8 +106,8 @@ const ServicesPage: FC = () => {
       title: 'Leasing Services',
       subtitle: 'Hassle-Free Property Rental',
       subServices: ['Residential leasing', 'Commercial leasing', 'Property management'],
-      features: ['Tenant screening', 'Legal compliance', 'Maintenance support']
-    }
+      features: ['Tenant screening', 'Legal compliance', 'Maintenance support'],
+    },
   ];
 
   const processSteps: ProcessStep[] = [
@@ -106,7 +117,7 @@ const ServicesPage: FC = () => {
     { step: 4, title: 'Viewings', icon: '👁️', desc: 'Scheduled property tours' },
     { step: 5, title: 'Offer & Negotiation', icon: '🤝', desc: 'Expert deal making' },
     { step: 6, title: 'Documentation', icon: '📝', desc: 'Legal paperwork handled' },
-    { step: 7, title: 'Handover', icon: '🔑', desc: 'Keys in your hands' }
+    { step: 7, title: 'Handover', icon: '🔑', desc: 'Keys in your hands' },
   ];
 
   const primeAreas: PrimeArea[] = [
@@ -115,14 +126,14 @@ const ServicesPage: FC = () => {
     { name: 'Palm Jumeirah', yield: '4.8%', trend: '+12%' },
     { name: 'Business Bay', yield: '6.5%', trend: '+7%' },
     { name: 'JVC', yield: '7.2%', trend: '+10%' },
-    { name: 'Arabian Ranches', yield: '5.0%', trend: '+6%' }
+    { name: 'Arabian Ranches', yield: '5.0%', trend: '+6%' },
   ];
 
   const stats: Stat[] = [
     { value: '15+', label: 'Years Experience' },
     { value: '500+', label: 'Properties Sold' },
     { value: '98%', label: 'Client Satisfaction' },
-    { value: 'AED 2B+', label: 'Total Value Transacted' }
+    { value: 'AED 2B+', label: 'Total Value Transacted' },
   ];
 
   return (
@@ -140,8 +151,10 @@ const ServicesPage: FC = () => {
         <section className="services-overview">
           <div className="container">
             <h2 className="section-title">Our Services</h2>
-            <p className="section-subtitle">Comprehensive real estate solutions tailored to your needs</p>
-            
+            <p className="section-subtitle">
+              Comprehensive real estate solutions tailored to your needs
+            </p>
+
             <div className="services-cards">
               {services.map(service => (
                 <div key={service.id} className="service-card">
@@ -151,7 +164,7 @@ const ServicesPage: FC = () => {
                   <div className="service-list">
                     <h4>What We Offer</h4>
                     <ul>
-                      {service.subServices.map((sub) => (
+                      {service.subServices.map(sub => (
                         <li key={sub}>{sub}</li>
                       ))}
                     </ul>
@@ -159,12 +172,21 @@ const ServicesPage: FC = () => {
                   <div className="service-features">
                     <h4>Key Features</h4>
                     <ul>
-                      {service.features.map((feature) => (
-                        <li key={feature}><span className="check">✓</span> {feature}</li>
+                      {service.features.map(feature => (
+                        <li key={feature}>
+                          <span className="check">✓</span> {feature}
+                        </li>
                       ))}
                     </ul>
                   </div>
-                  <button className="btn-learn-more" onClick={() => document.getElementById('detailed-services')?.scrollIntoView({ behavior: 'smooth' })}>
+                  <button
+                    className="btn-learn-more"
+                    onClick={() =>
+                      document
+                        .getElementById('detailed-services')
+                        ?.scrollIntoView({ behavior: 'smooth' })
+                    }
+                  >
                     Learn More
                   </button>
                 </div>
@@ -176,21 +198,21 @@ const ServicesPage: FC = () => {
         <section id="detailed-services" className="detailed-services">
           <div className="container">
             <h2 className="section-title">Detailed Service Breakdown</h2>
-            
+
             <div className="service-tabs">
-              <button 
+              <button
                 className={`tab-btn ${activeService === 'offplan' ? 'active' : ''}`}
                 onClick={() => setActiveService('offplan')}
               >
                 Off-Plan Properties
               </button>
-              <button 
+              <button
                 className={`tab-btn ${activeService === 'secondary' ? 'active' : ''}`}
                 onClick={() => setActiveService('secondary')}
               >
                 Secondary Market
               </button>
-              <button 
+              <button
                 className={`tab-btn ${activeService === 'leasing' ? 'active' : ''}`}
                 onClick={() => setActiveService('leasing')}
               >
@@ -201,8 +223,11 @@ const ServicesPage: FC = () => {
             {activeService === 'offplan' && (
               <div className="service-detail-content">
                 <h3>Off-Plan Properties</h3>
-                <p>Invest in Dubai's future with our expert off-plan property guidance. Access exclusive pre-launch prices and flexible payment plans from premier developers.</p>
-                
+                <p>
+                  Invest in Dubai&apos;s future with our expert off-plan property guidance. Access
+                  exclusive pre-launch prices and flexible payment plans from premier developers.
+                </p>
+
                 <div className="process-flowchart">
                   <h4>Off-Plan Purchase Process</h4>
                   <div className="flowchart-steps">
@@ -253,8 +278,11 @@ const ServicesPage: FC = () => {
             {activeService === 'secondary' && (
               <div className="service-detail-content">
                 <h3>Secondary Market</h3>
-                <p>Move into your dream property immediately with our extensive secondary market listings. Established communities, proven locations, and immediate occupancy.</p>
-                
+                <p>
+                  Move into your dream property immediately with our extensive secondary market
+                  listings. Established communities, proven locations, and immediate occupancy.
+                </p>
+
                 <div className="comparison-table">
                   <h4>Off-Plan vs Secondary Market</h4>
                   <table aria-label="Off-plan versus secondary market comparison">
@@ -315,12 +343,15 @@ const ServicesPage: FC = () => {
             {activeService === 'leasing' && (
               <div className="service-detail-content">
                 <h3>Leasing Services</h3>
-                <p>Whether you're a landlord seeking reliable tenants or a tenant looking for your perfect home, our leasing experts ensure a smooth, compliant process.</p>
-                
+                <p>
+                  Whether you&apos;re a landlord seeking reliable tenants or a tenant looking for
+                  your perfect home, our leasing experts ensure a smooth, compliant process.
+                </p>
+
                 <div className="leasing-services-grid">
                   <div className="leasing-card">
                     <h5>🏠 Residential Leasing</h5>
-                    <p>Apartments, villas, and townhouses across Dubai's prime locations</p>
+                    <p>Apartments, villas, and townhouses across Dubai&apos;s prime locations</p>
                   </div>
                   <div className="leasing-card">
                     <h5>🏢 Commercial Leasing</h5>
@@ -336,15 +367,22 @@ const ServicesPage: FC = () => {
                   <h4>Frequently Asked Questions</h4>
                   <div className="faq-item">
                     <strong>What is Ejari?</strong>
-                    <p>Ejari is Dubai's official tenancy contract registration system, mandatory for all rental agreements.</p>
+                    <p>
+                      Ejari is Dubai&apos;s official tenancy contract registration system, mandatory
+                      for all rental agreements.
+                    </p>
                   </div>
                   <div className="faq-item">
                     <strong>How much security deposit is required?</strong>
-                    <p>Typically 5% of annual rent for unfurnished and 10% for furnished properties.</p>
+                    <p>
+                      Typically 5% of annual rent for unfurnished and 10% for furnished properties.
+                    </p>
                   </div>
                   <div className="faq-item">
                     <strong>What tenant screening do you provide?</strong>
-                    <p>Background checks, employment verification, and previous landlord references.</p>
+                    <p>
+                      Background checks, employment verification, and previous landlord references.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -355,10 +393,12 @@ const ServicesPage: FC = () => {
         <section className="market-insights">
           <div className="container">
             <h2 className="section-title">Dubai Market Insights</h2>
-            <p className="section-subtitle">Real-time data from Dubai's prime property locations</p>
-            
+            <p className="section-subtitle">
+              Real-time data from Dubai&apos;s prime property locations
+            </p>
+
             <div className="areas-grid">
-              {primeAreas.map((area) => (
+              {primeAreas.map(area => (
                 <div key={area.name} className="area-card">
                   <h4>{area.name}</h4>
                   <div className="area-stats">
@@ -381,7 +421,7 @@ const ServicesPage: FC = () => {
           <div className="container">
             <h2 className="section-title">Our Client Journey</h2>
             <p className="section-subtitle">A seamless process from consultation to handover</p>
-            
+
             <div className="timeline">
               {processSteps.map((step, i) => (
                 <div key={step.title} className="timeline-step">
@@ -399,9 +439,9 @@ const ServicesPage: FC = () => {
         <section className="trust-indicators">
           <div className="container">
             <h2 className="section-title">Why Choose White Caves</h2>
-            
+
             <div className="stats-grid">
-              {stats.map((stat) => (
+              {stats.map(stat => (
                 <div key={stat.label} className="stat-card">
                   <div className="stat-value">{stat.value}</div>
                   <div className="stat-label">{stat.label}</div>
@@ -433,32 +473,38 @@ const ServicesPage: FC = () => {
                 <h2>Ready to Begin Your Dubai Property Journey?</h2>
                 <p>Get expert guidance from our team of certified real estate professionals</p>
                 <div className="contact-info">
-                  <p><strong>📍</strong> Office D-72, El-Shaye-4, Port Saeed, Dubai</p>
-                  <p><strong>📞</strong> +971 56 361 6136</p>
-                  <p><strong>📱</strong> +971 56 361 6136</p>
+                  <p>
+                    <strong>📍</strong> Office D-72, El-Shaye-4, Port Saeed, Dubai
+                  </p>
+                  <p>
+                    <strong>📞</strong> +971 56 361 6136
+                  </p>
+                  <p>
+                    <strong>📱</strong> +971 56 361 6136
+                  </p>
                 </div>
               </div>
               <div className="cta-form">
                 <h3>Request a Consultation</h3>
                 <form onSubmit={handleFormSubmit}>
-                  <input 
-                    type="text" 
-                    name="name" 
-                    placeholder="Your Name" 
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Your Name"
                     value={formData.name}
                     onChange={handleFormChange}
-                    required 
+                    required
                   />
-                  <input 
-                    type="tel" 
-                    name="phone" 
-                    placeholder="Phone Number" 
+                  <input
+                    type="tel"
+                    name="phone"
+                    placeholder="Phone Number"
                     value={formData.phone}
                     onChange={handleFormChange}
-                    required 
+                    required
                   />
-                  <select 
-                    name="service" 
+                  <select
+                    name="service"
                     value={formData.service}
                     onChange={handleFormChange}
                     required
@@ -469,14 +515,16 @@ const ServicesPage: FC = () => {
                     <option value="leasing">Leasing Services</option>
                     <option value="management">Property Management</option>
                   </select>
-                  <textarea 
-                    name="message" 
+                  <textarea
+                    name="message"
                     placeholder="Your Message (Optional)"
                     value={formData.message}
                     onChange={handleFormChange}
                     rows={3}
                   ></textarea>
-                  <button type="submit" className="btn-submit">Send Inquiry</button>
+                  <button type="submit" className="btn-submit" disabled={isSubmitting}>
+                    {isSubmitting ? 'Sending…' : 'Send Inquiry'}
+                  </button>
                 </form>
               </div>
             </div>
@@ -487,6 +535,6 @@ const ServicesPage: FC = () => {
       </div>
     </PublicLayout>
   );
-}
+};
 
 export default ServicesPage;

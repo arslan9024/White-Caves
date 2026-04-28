@@ -1,4 +1,4 @@
-import styled, { keyframes, css } from 'styled-components';
+import styled, { css } from 'styled-components';
 import { theme } from '../../../styles/theme';
 
 const { colors, shadows, radius, transitions, spacing, typography } = theme;
@@ -9,16 +9,6 @@ const { colors, shadows, radius, transitions, spacing, typography } = theme;
    for mobile and tablet (≤ 768px viewport).
    ═══════════════════════════════════════════════════════════════ */
 
-const fadeIn = keyframes`
-  from { opacity: 0; }
-  to   { opacity: 1; }
-`;
-
-const slideInLeft = keyframes`
-  from { transform: translateX(-100%); }
-  to   { transform: translateX(0); }
-`;
-
 /* ── Overlay / Backdrop ────────────────────────────────────── */
 
 export const DrawerOverlay = styled.div<{ $open: boolean }>`
@@ -27,8 +17,8 @@ export const DrawerOverlay = styled.div<{ $open: boolean }>`
   z-index: 999;
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(2px);
-  pointer-events: ${p => p.$open ? 'auto' : 'none'};
-  opacity: ${p => p.$open ? 1 : 0};
+  pointer-events: ${p => (p.$open ? 'auto' : 'none')};
+  opacity: ${p => (p.$open ? 1 : 0)};
   transition: opacity 0.25s ease;
 
   @media (prefers-reduced-motion: reduce) {
@@ -48,12 +38,12 @@ export const DrawerPanel = styled.aside<{ $open: boolean }>`
   left: 0;
   bottom: 0;
   width: min(300px, 85vw);
-  z-index: 1000;
+  z-index: var(--z-overlay, 600);
   background: ${colors.background.secondary};
-  box-shadow: ${p => p.$open ? shadows.luxuryCard : 'none'};
+  box-shadow: ${p => (p.$open ? shadows.luxuryCard : 'none')};
   display: flex;
   flex-direction: column;
-  transform: ${p => p.$open ? 'translateX(0)' : 'translateX(-100%)'};
+  transform: ${p => (p.$open ? 'translateX(0)' : 'translateX(-100%)')};
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 
@@ -62,8 +52,8 @@ export const DrawerPanel = styled.aside<{ $open: boolean }>`
   }
 
   @media (prefers-color-scheme: dark) {
-    background: #1E293B;
-    box-shadow: ${p => p.$open ? '4px 0 24px rgba(0, 0, 0, 0.4)' : 'none'};
+    background: #1e293b;
+    box-shadow: ${p => (p.$open ? '4px 0 24px rgba(0, 0, 0, 0.4)' : 'none')};
   }
 `;
 
@@ -92,11 +82,11 @@ export const DrawerLogoMark = styled.div`
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #D4AF37, #B8960C);
+  background: linear-gradient(135deg, #d4af37, #b8960c);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #FFFFFF;
+  color: #ffffff;
   font-weight: ${typography.weights.extrabold};
   font-size: 14px;
   letter-spacing: 0.5px;
@@ -108,7 +98,7 @@ export const DrawerLogoName = styled.span`
   color: ${colors.text.primary};
 
   @media (prefers-color-scheme: dark) {
-    color: #F8FAFC;
+    color: #f8fafc;
   }
 `;
 
@@ -126,15 +116,17 @@ export const DrawerCloseBtn = styled.button`
   -webkit-tap-highlight-color: transparent;
   transition: ${transitions.active};
 
-  &:hover, &:active {
+  &:hover,
+  &:active {
     background: ${colors.background.tertiary};
     color: ${colors.text.primary};
   }
 
   @media (prefers-color-scheme: dark) {
-    &:hover, &:active {
+    &:hover,
+    &:active {
       background: #334155;
-      color: #E2E8F0;
+      color: #e2e8f0;
     }
   }
 `;
@@ -159,7 +151,7 @@ export const DrawerSectionLabel = styled.div`
   color: ${colors.text.tertiary};
 
   @media (prefers-color-scheme: dark) {
-    color: #64748B;
+    color: #64748b;
   }
 `;
 
@@ -171,12 +163,12 @@ export const DrawerNavItem = styled.button<{ $active?: boolean; $color?: string 
   align-items: center;
   gap: 12px;
   padding: 12px ${spacing.md};
-  background: ${p => p.$active ? 'rgba(212, 175, 55, 0.08)' : 'transparent'};
+  background: ${p => (p.$active ? 'rgba(212, 175, 55, 0.08)' : 'transparent')};
   border: none;
   cursor: pointer;
   font-size: 14px;
-  font-weight: ${p => p.$active ? 600 : 400};
-  color: ${p => p.$active ? colors.primary : colors.text.primary};
+  font-weight: ${p => (p.$active ? 600 : 400)};
+  color: ${p => (p.$active ? colors.primary : colors.text.primary)};
   text-align: left;
   min-height: 44px; /* Touch target */
   -webkit-tap-highlight-color: transparent;
@@ -184,27 +176,31 @@ export const DrawerNavItem = styled.button<{ $active?: boolean; $color?: string 
   position: relative;
 
   /* Active gold bar */
-  ${p => p.$active && css`
-    &::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 3px;
-      height: 24px;
-      border-radius: 0 ${radius.xs} ${radius.xs} 0;
-      background: ${colors.primary};
-    }
-  `}
+  ${p =>
+    p.$active &&
+    css`
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 24px;
+        border-radius: 0 ${radius.xs} ${radius.xs} 0;
+        background: ${colors.primary};
+      }
+    `}
 
   &:active {
-    background: ${p => p.$active ? 'rgba(212, 175, 55, 0.12)' : colors.background.tertiary};
+    background: ${p => (p.$active ? 'rgba(212, 175, 55, 0.12)' : colors.background.tertiary)};
   }
 
   @media (prefers-color-scheme: dark) {
-    color: ${p => p.$active ? colors.primaryLight : '#E2E8F0'};
-    &:active { background: ${p => p.$active ? 'rgba(212, 175, 55, 0.14)' : '#334155'}; }
+    color: ${p => (p.$active ? colors.primaryLight : '#E2E8F0')};
+    &:active {
+      background: ${p => (p.$active ? 'rgba(212, 175, 55, 0.14)' : '#334155')};
+    }
   }
 `;
 
@@ -215,13 +211,13 @@ export const DrawerNavIcon = styled.span<{ $color?: string }>`
   align-items: center;
   justify-content: center;
   border-radius: ${radius.lg};
-  background: ${p => p.$color ? `${p.$color}12` : colors.background.tertiary};
+  background: ${p => (p.$color ? `${p.$color}12` : colors.background.tertiary)};
   color: ${p => p.$color || colors.text.secondary};
   flex-shrink: 0;
   transition: ${transitions.active};
 
   @media (prefers-color-scheme: dark) {
-    background: ${p => p.$color ? `${p.$color}18` : '#334155'};
+    background: ${p => (p.$color ? `${p.$color}18` : '#334155')};
   }
 `;
 
@@ -234,7 +230,7 @@ export const DrawerNavBadge = styled.span`
   align-items: center;
   justify-content: center;
   background: ${colors.primary};
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 11px;
   font-weight: 700;
   border-radius: ${radius.full};
@@ -245,9 +241,11 @@ export const DrawerNavBadge = styled.span`
 
 export const DrawerSubItems = styled.div<{ $expanded: boolean }>`
   overflow: hidden;
-  max-height: ${p => p.$expanded ? '500px' : '0'};
-  opacity: ${p => p.$expanded ? 1 : 0};
-  transition: max-height 0.3s ease, opacity 0.2s ease;
+  max-height: ${p => (p.$expanded ? '500px' : '0')};
+  opacity: ${p => (p.$expanded ? 1 : 0)};
+  transition:
+    max-height 0.3s ease,
+    opacity 0.2s ease;
   padding-left: ${spacing.xl};
 
   @media (prefers-reduced-motion: reduce) {
@@ -265,8 +263,8 @@ export const DrawerSubItem = styled.button<{ $active?: boolean }>`
   border: none;
   cursor: pointer;
   font-size: 13px;
-  font-weight: ${p => p.$active ? 600 : 400};
-  color: ${p => p.$active ? colors.primary : colors.text.secondary};
+  font-weight: ${p => (p.$active ? 600 : 400)};
+  color: ${p => (p.$active ? colors.primary : colors.text.secondary)};
   text-align: left;
   min-height: 44px; /* Touch target */
   -webkit-tap-highlight-color: transparent;
@@ -277,7 +275,7 @@ export const DrawerSubItem = styled.button<{ $active?: boolean }>`
   }
 
   @media (prefers-color-scheme: dark) {
-    color: ${p => p.$active ? colors.primaryLight : '#94A3B8'};
+    color: ${p => (p.$active ? colors.primaryLight : '#94A3B8')};
   }
 `;
 
