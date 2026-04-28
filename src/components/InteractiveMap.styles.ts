@@ -85,11 +85,11 @@ export const DubaiOutlineSVG = styled.svg`
   top: 0;
   left: 0;
 
-  [data-theme="dark"] & rect {
+  [data-theme='dark'] & rect {
     fill: #1a2a3a;
   }
 
-  [data-theme="dark"] & path:nth-of-type(1) {
+  [data-theme='dark'] & path:nth-of-type(1) {
     fill: #2a3a4a;
   }
 `;
@@ -102,8 +102,10 @@ export const LocationMarkers = styled.div`
   height: 100%;
 `;
 
-export const LocationMarker = styled.button<{ $isActive?: boolean }>`
+export const LocationMarker = styled.button<{ $isActive?: boolean; $left: string; $top: string }>`
   position: absolute;
+  left: ${props => props.$left};
+  top: ${props => props.$top};
   transform: translate(-50%, -50%);
   background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
   border: 2px solid #ffffff;
@@ -122,12 +124,15 @@ export const LocationMarker = styled.button<{ $isActive?: boolean }>`
   font-size: 1rem;
   color: white;
 
-  &:hover,
-  ${props => props.$isActive && `
+  &:
+    hover,
+    ${props =>
+      props.$isActive &&
+      `
     background: linear-gradient(135deg, var(--accent-gold) 0%, #b8943f 100%);
     transform: translate(-50%, -50%) scale(1.15);
     z-index: 10;
-  `}
+  `};
 `;
 
 export const MarkerCount = styled.span`
@@ -148,6 +153,39 @@ export const SidePanel = styled.div`
   }
 `;
 
+export const SectionTitleSmall = styled.h3`
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: ${typography.weights.semibold};
+  color: var(--text-primary);
+`;
+
+export const ResultsSection = styled.div`
+  margin-top: 2rem;
+`;
+
+export const ResultsHeader = styled.div`
+  margin-bottom: 2rem;
+`;
+
+export const ResultsTitle = styled.h3`
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  font-weight: ${typography.weights.semibold};
+  color: var(--text-primary);
+`;
+
+export const ResultsMeta = styled.span`
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+`;
+
+export const PropertyLocation = styled.span`
+  display: inline-block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+`;
+
 export const LocationList = styled.div`
   display: flex;
   flex-direction: column;
@@ -163,7 +201,7 @@ export const LocationList = styled.div`
 export const LocationItem = styled.div<{ $isSelected?: boolean }>`
   padding: 1rem;
   background: var(--bg-primary);
-  border: 2px solid ${props => props.$isSelected ? 'var(--primary-color)' : 'var(--border-color)'};
+  border: 2px solid ${props => (props.$isSelected ? 'var(--primary-color)' : 'var(--border-color)')};
   border-radius: ${radius.lg};
   cursor: pointer;
   transition: ${transitions.hover};
