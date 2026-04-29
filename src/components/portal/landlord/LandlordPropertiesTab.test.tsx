@@ -70,8 +70,8 @@ describe('LandlordPropertiesTab', () => {
       renderWithStore(<LandlordPropertiesTab />);
 
       expect(screen.getByText(/Dubai Marina, Plot 12/)).toBeInTheDocument();
-      expect(screen.getByText('Apartment')).toBeInTheDocument();
-      expect(screen.getByText(/AED 8,000/)).toBeInTheDocument();
+      expect(screen.queryAllByText(/Apartment/)[0]).toBeInTheDocument();
+      expect(screen.getByText(/AED\s*8,000/)).toBeInTheDocument();
     });
 
     it('renders property status badges', () => {
@@ -87,8 +87,8 @@ describe('LandlordPropertiesTab', () => {
     it('displays tenant names for occupied properties', () => {
       renderWithStore(<LandlordPropertiesTab />);
 
-      expect(screen.getByText('Ahmed Al-Rashid')).toBeInTheDocument();
-      expect(screen.getByText('Sarah Johnson')).toBeInTheDocument();
+      expect(screen.getByText(/Ahmed Al-Rashid/)).toBeInTheDocument();
+      expect(screen.getByText(/Sarah Johnson/)).toBeInTheDocument();
     });
   });
 

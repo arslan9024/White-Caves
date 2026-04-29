@@ -3,7 +3,7 @@
  * Tests for Phase 2.1-2.6: Landlord Portal
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
@@ -13,19 +13,19 @@ import userReducer from '../../store/userSlice';
 import type { RootState } from '../../store/store';
 
 // Mock the tab components
-vi.mock('../../../components/portal/landlord/LandlordPropertiesTab', () => ({
+vi.mock('../../components/portal/landlord/LandlordPropertiesTab', () => ({
   default: () => <div data-testid="properties-tab">Properties Tab</div>,
 }));
-vi.mock('../../../components/portal/landlord/LandlordTenantsTab', () => ({
+vi.mock('../../components/portal/landlord/LandlordTenantsTab', () => ({
   default: () => <div data-testid="tenants-tab">Tenants Tab</div>,
 }));
-vi.mock('../../../components/portal/landlord/LandlordPaymentsTab', () => ({
+vi.mock('../../components/portal/landlord/LandlordPaymentsTab', () => ({
   default: () => <div data-testid="payments-tab">Payments Tab</div>,
 }));
-vi.mock('../../../components/portal/landlord/LandlordMaintenanceTab', () => ({
+vi.mock('../../components/portal/landlord/LandlordMaintenanceTab', () => ({
   default: () => <div data-testid="maintenance-tab">Maintenance Tab</div>,
 }));
-vi.mock('../../../components/portal/landlord/LandlordDocumentsTab', () => ({
+vi.mock('../../components/portal/landlord/LandlordDocumentsTab', () => ({
   default: () => <div data-testid="documents-tab">Documents Tab</div>,
 }));
 

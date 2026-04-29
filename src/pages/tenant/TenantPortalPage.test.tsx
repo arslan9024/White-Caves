@@ -13,16 +13,16 @@ import userReducer from '../../store/userSlice';
 import type { RootState } from '../../store/store';
 
 // Mock the tab components
-vi.mock('../../../components/portal/tenant/TenantLeaseTab', () => ({
+vi.mock('../../components/portal/tenant/TenantLeaseTab', () => ({
   default: () => <div data-testid="lease-tab">Lease Tab</div>,
 }));
-vi.mock('../../../components/portal/tenant/TenantPaymentHistoryTab', () => ({
+vi.mock('../../components/portal/tenant/TenantPaymentHistoryTab', () => ({
   default: () => <div data-testid="payment-history-tab">Payment History Tab</div>,
 }));
-vi.mock('../../../components/portal/tenant/TenantMaintenanceTab', () => ({
+vi.mock('../../components/portal/tenant/TenantMaintenanceTab', () => ({
   default: () => <div data-testid="maintenance-tab">Maintenance Tab</div>,
 }));
-vi.mock('../../../components/portal/tenant/TenantDocumentsTab', () => ({
+vi.mock('../../components/portal/tenant/TenantDocumentsTab', () => ({
   default: () => <div data-testid="documents-tab">Documents Tab</div>,
 }));
 
