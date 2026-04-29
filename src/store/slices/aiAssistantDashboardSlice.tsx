@@ -5,12 +5,9 @@
 // State      → ./aiAssistant/initialState.ts
 // Selectors  → ./aiAssistant/selectors.ts
 // ============================================================================
+/* eslint-disable security/detect-object-injection */
 
-import {
-  createSlice,
-  createAsyncThunk,
-  PayloadAction,
-} from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { logout } from '../authSlice';
 import { getErrorMessage } from '../../constants';
 
@@ -21,6 +18,9 @@ export type {
   Activity,
   Notification,
   Task,
+  TaskLifecycleStage,
+  TaskAction,
+  TaskResult,
   ExecutiveSuggestion,
   ExecutiveSuggestionsState,
   OliviaInsights,
@@ -39,6 +39,9 @@ import type {
   Activity,
   Notification,
   Task,
+  TaskLifecycleStage,
+  TaskAction,
+  TaskResult,
   Lead,
   ExecutiveSuggestion,
   ExecutiveSuggestionsState,
@@ -47,10 +50,7 @@ import type {
   MonitoredSite,
 } from './aiAssistant/types';
 
-import {
-  AI_ASSISTANTS_REGISTRY,
-  DEPARTMENT_COLORS,
-} from './aiAssistant/registry';
+import { AI_ASSISTANTS_REGISTRY, DEPARTMENT_COLORS } from './aiAssistant/registry';
 
 import {
   getInitialState,
@@ -93,6 +93,10 @@ export {
   selectLeadFunnelMetrics,
   selectComplianceEngine,
   selectComplianceMetrics,
+  selectTasksByLifecycleStage,
+  selectPendingActionsCount,
+  selectCompletedTasksCount,
+  selectInProgressTasksCount,
 } from './aiAssistant/selectors';
 
 // ============================================================================
@@ -108,27 +112,23 @@ export const fetchAllAssistants = createAsyncThunk(
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
-      return rejectWithValue(
-        getErrorMessage(error),
-      );
+      return rejectWithValue(getErrorMessage(error));
     }
-  },
+  }
 );
 
 export const updateAssistantMetricsAsync = createAsyncThunk(
   'aiAssistantDashboard/updateMetrics',
   async (
     payload: { assistantId: string; metrics: Partial<AssistantMetrics> },
-    { rejectWithValue },
+    { rejectWithValue }
   ) => {
     try {
       return { ...payload, timestamp: new Date().toISOString() };
     } catch (error) {
-      return rejectWithValue(
-        getErrorMessage(error),
-      );
+      return rejectWithValue(getErrorMessage(error));
     }
-  },
+  }
 );
 
 /**
@@ -144,10 +144,10 @@ export const fetchAssistantPlan = createAsyncThunk(
       return { id: assistantId, plan: response.plan };
     } catch (error) {
       return rejectWithValue(
-        error instanceof Error ? error.message : 'Failed to load assistant plan',
+        error instanceof Error ? error.message : 'Failed to load assistant plan'
       );
     }
-  },
+  }
 );
 
 // ============================================================================
@@ -165,7 +165,7 @@ const aiAssistantDashboardSlice = createSlice({
         state.recent.unshift(action.payload);
         if (state.recent.length > MAX_RECENT_ASSISTANTS) state.recent.pop();
       } else {
-        state.recent = state.recent.filter((id) => id !== action.payload);
+        state.recent = state.recent.filter(id => id !== action.payload);
         state.recent.unshift(action.payload);
       }
       state.ui.dropdownOpen = false;
@@ -183,7 +183,7 @@ const aiAssistantDashboardSlice = createSlice({
 
     updateAssistantMetrics: (
       state,
-      action: PayloadAction<{ assistantId: string; metrics: Partial<AssistantMetrics> }>,
+      action: PayloadAction<{ assistantId: string; metrics: Partial<AssistantMetrics> }>
     ) => {
       const { assistantId, metrics } = action.payload;
       if (state.allAssistants.byId[assistantId]) {
@@ -196,7 +196,7 @@ const aiAssistantDashboardSlice = createSlice({
 
     updateAssistantHealth: (
       state,
-      action: PayloadAction<{ assistantId: string; health: AssistantMetrics['systemHealth'] }>,
+      action: PayloadAction<{ assistantId: string; health: AssistantMetrics['systemHealth'] }>
     ) => {
       const { assistantId, health } = action.payload;
       if (state.allAssistants.byId[assistantId]) {
@@ -220,10 +220,10 @@ const aiAssistantDashboardSlice = createSlice({
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.ui.filters.searchQuery = action.payload;
     },
-    toggleDropdown: (state) => {
+    toggleDropdown: state => {
       state.ui.dropdownOpen = !state.ui.dropdownOpen;
     },
-    closeDropdown: (state) => {
+    closeDropdown: state => {
       state.ui.dropdownOpen = false;
     },
 
@@ -243,16 +243,15 @@ const aiAssistantDashboardSlice = createSlice({
       state.assistantPerformance.criticalAlerts.push(action.payload);
     },
     dismissAlert: (state, action: PayloadAction<string>) => {
-      state.assistantPerformance.criticalAlerts =
-        state.assistantPerformance.criticalAlerts.filter(
-          (alert) => (alert as Record<string, unknown>).id !== action.payload,
-        );
+      state.assistantPerformance.criticalAlerts = state.assistantPerformance.criticalAlerts.filter(
+        alert => (alert as Record<string, unknown>).id !== action.payload
+      );
     },
 
     // ── Owner preferences ───────────────────────────────────────────────
     updateOwnerPreferences: (
       state,
-      action: PayloadAction<Partial<typeof state.ownerPreferences>>,
+      action: PayloadAction<Partial<typeof state.ownerPreferences>>
     ) => {
       state.ownerPreferences = { ...state.ownerPreferences, ...action.payload };
     },
@@ -262,7 +261,7 @@ const aiAssistantDashboardSlice = createSlice({
     },
 
     // ── Sidebar ─────────────────────────────────────────────────────────
-    toggleSidebar: (state) => {
+    toggleSidebar: state => {
       state.sidebar.isOpen = !state.sidebar.isOpen;
     },
     collapseSidebar: (state, action: PayloadAction<boolean>) => {
@@ -278,7 +277,7 @@ const aiAssistantDashboardSlice = createSlice({
       action: PayloadAction<{
         assistantId: string;
         notification: Omit<Notification, 'id' | 'timestamp' | 'isRead'>;
-      }>,
+      }>
     ) => {
       const { assistantId, notification } = action.payload;
       if (!state.notifications.byAssistantId[assistantId]) {
@@ -294,17 +293,17 @@ const aiAssistantDashboardSlice = createSlice({
     },
     markNotificationRead: (
       state,
-      action: PayloadAction<{ assistantId: string; notificationId: string }>,
+      action: PayloadAction<{ assistantId: string; notificationId: string }>
     ) => {
       const { assistantId, notificationId } = action.payload;
       const notifications = state.notifications.byAssistantId[assistantId];
       if (notifications) {
-        const notification = notifications.find((n) => n.id === notificationId);
+        const notification = notifications.find(n => n.id === notificationId);
         if (notification && !notification.isRead) {
           notification.isRead = true;
           state.notifications.globalUnreadCount = Math.max(
             0,
-            state.notifications.globalUnreadCount - 1,
+            state.notifications.globalUnreadCount - 1
           );
         }
       }
@@ -313,11 +312,13 @@ const aiAssistantDashboardSlice = createSlice({
       const assistantId = action.payload;
       const notifications = state.notifications.byAssistantId[assistantId];
       if (notifications) {
-        const unreadCount = notifications.filter((n) => !n.isRead).length;
-        notifications.forEach((n) => { n.isRead = true; });
+        const unreadCount = notifications.filter(n => !n.isRead).length;
+        notifications.forEach(n => {
+          n.isRead = true;
+        });
         state.notifications.globalUnreadCount = Math.max(
           0,
-          state.notifications.globalUnreadCount - unreadCount,
+          state.notifications.globalUnreadCount - unreadCount
         );
       }
     },
@@ -331,7 +332,7 @@ const aiAssistantDashboardSlice = createSlice({
       action: PayloadAction<{
         assistantId: string;
         task: Omit<Task, 'id' | 'createdAt' | 'status'>;
-      }>,
+      }>
     ) => {
       const { assistantId, task } = action.payload;
       if (!state.tasks.byAssistantId[assistantId]) {
@@ -347,12 +348,12 @@ const aiAssistantDashboardSlice = createSlice({
     },
     updateTaskStatus: (
       state,
-      action: PayloadAction<{ assistantId: string; taskId: string; status: Task['status'] }>,
+      action: PayloadAction<{ assistantId: string; taskId: string; status: Task['status'] }>
     ) => {
       const { assistantId, taskId, status } = action.payload;
       const tasks = state.tasks.byAssistantId[assistantId];
       if (tasks) {
-        const task = tasks.find((t) => t.id === taskId);
+        const task = tasks.find(t => t.id === taskId);
         if (task) {
           const wasActive = task.status !== 'completed';
           task.status = status;
@@ -364,12 +365,12 @@ const aiAssistantDashboardSlice = createSlice({
     },
     assignTask: (
       state,
-      action: PayloadAction<{ assistantId: string; taskId: string; agentId: string }>,
+      action: PayloadAction<{ assistantId: string; taskId: string; agentId: string }>
     ) => {
       const { assistantId, taskId, agentId } = action.payload;
       const tasks = state.tasks.byAssistantId[assistantId];
       if (tasks) {
-        const task = tasks.find((t) => t.id === taskId);
+        const task = tasks.find(t => t.id === taskId);
         if (task) {
           task.assignedTo = agentId;
           task.status = 'assigned';
@@ -385,10 +386,10 @@ const aiAssistantDashboardSlice = createSlice({
         sourceAssistant: string;
         targetAssistants: string[];
         data: Record<string, unknown>;
-      }>,
+      }>
     ) => {
       const { actionType, sourceAssistant, targetAssistants, data } = action.payload;
-      targetAssistants.forEach((targetId) => {
+      targetAssistants.forEach(targetId => {
         if (!state.notifications.byAssistantId[targetId]) {
           state.notifications.byAssistantId[targetId] = [];
         }
@@ -410,13 +411,13 @@ const aiAssistantDashboardSlice = createSlice({
     updateOliviaSyncSchedule: (state, action: PayloadAction<string>) => {
       state.oliviaAutomation.syncSchedule = action.payload;
     },
-    toggleOliviaMonitoring: (state) => {
+    toggleOliviaMonitoring: state => {
       state.oliviaAutomation.activeMonitoring = !state.oliviaAutomation.activeMonitoring;
     },
-    updateOliviaPropertySync: (state) => {
+    updateOliviaPropertySync: state => {
       state.oliviaAutomation.lastPropertySync = new Date().toISOString();
     },
-    updateOliviaMarketResearch: (state) => {
+    updateOliviaMarketResearch: state => {
       state.oliviaAutomation.lastMarketResearch = new Date().toISOString();
     },
     updateOliviaInsights: (state, action: PayloadAction<Partial<OliviaInsights>>) => {
@@ -438,10 +439,10 @@ const aiAssistantDashboardSlice = createSlice({
         siteName: string;
         status: MonitoredSite['status'];
         dataPoints?: unknown;
-      }>,
+      }>
     ) => {
       const { siteName, status, dataPoints } = action.payload;
-      const site = state.oliviaAutomation.monitoredSites.find((s) => s.name === siteName);
+      const site = state.oliviaAutomation.monitoredSites.find(s => s.name === siteName);
       if (site) {
         site.status = status;
         site.lastCheck = new Date().toISOString();
@@ -463,7 +464,7 @@ const aiAssistantDashboardSlice = createSlice({
     // ── Executive suggestions ───────────────────────────────────────────
     addExecutiveSuggestion: (
       state,
-      action: PayloadAction<Omit<ExecutiveSuggestion, 'id' | 'timestamp' | 'status'>>,
+      action: PayloadAction<Omit<ExecutiveSuggestion, 'id' | 'timestamp' | 'status'>>
     ) => {
       const suggestion: ExecutiveSuggestion = {
         id: `sugg_${Date.now()}`,
@@ -475,22 +476,22 @@ const aiAssistantDashboardSlice = createSlice({
     },
     updateSuggestionStatus: (
       state,
-      action: PayloadAction<{ suggestionId: string; status: ExecutiveSuggestion['status'] }>,
+      action: PayloadAction<{ suggestionId: string; status: ExecutiveSuggestion['status'] }>
     ) => {
       const { suggestionId, status } = action.payload;
-      const suggestion = state.executiveSuggestions.inbox.find((s) => s.id === suggestionId);
+      const suggestion = state.executiveSuggestions.inbox.find(s => s.id === suggestionId);
       if (suggestion) suggestion.status = status;
     },
     setSuggestionFilters: (
       state,
-      action: PayloadAction<Partial<ExecutiveSuggestionsState['filters']>>,
+      action: PayloadAction<Partial<ExecutiveSuggestionsState['filters']>>
     ) => {
       state.executiveSuggestions.filters = {
         ...state.executiveSuggestions.filters,
         ...action.payload,
       };
     },
-    clearSuggestionFilters: (state) => {
+    clearSuggestionFilters: state => {
       state.executiveSuggestions.filters = {
         priority: 'all',
         department: 'all',
@@ -501,7 +502,7 @@ const aiAssistantDashboardSlice = createSlice({
     // ── Confidential vault ──────────────────────────────────────────────
     requestVaultAccess: (
       state,
-      action: PayloadAction<{ documentId: string; requesterId: string; reason: string }>,
+      action: PayloadAction<{ documentId: string; requesterId: string; reason: string }>
     ) => {
       const { documentId, requesterId, reason } = action.payload;
       state.confidentialVault.accessRequests.push({
@@ -518,20 +519,20 @@ const aiAssistantDashboardSlice = createSlice({
     },
     approveVaultRequest: (
       state,
-      action: PayloadAction<{ requestId: string; approverId: string }>,
+      action: PayloadAction<{ requestId: string; approverId: string }>
     ) => {
       const { requestId, approverId } = action.payload;
-      const request = state.confidentialVault.accessRequests.find((r) => r.id === requestId);
+      const request = state.confidentialVault.accessRequests.find(r => r.id === requestId);
       if (request) {
         request.status = 'approved';
         request.reviewedBy = approverId;
         request.reviewedAt = new Date().toISOString();
         state.confidentialVault.vaultStats.pendingRequests = Math.max(
           0,
-          state.confidentialVault.vaultStats.pendingRequests - 1,
+          state.confidentialVault.vaultStats.pendingRequests - 1
         );
         state.confidentialVault.vaultStats.recentAccesses += 1;
-        const doc = state.confidentialVault.documents.find((d) => d.id === request.documentId);
+        const doc = state.confidentialVault.documents.find(d => d.id === request.documentId);
         if (doc) {
           doc.accessLog.push({
             accessedBy: request.requesterId,
@@ -542,10 +543,10 @@ const aiAssistantDashboardSlice = createSlice({
     },
     denyVaultRequest: (
       state,
-      action: PayloadAction<{ requestId: string; approverId: string; reason: string }>,
+      action: PayloadAction<{ requestId: string; approverId: string; reason: string }>
     ) => {
       const { requestId, approverId, reason } = action.payload;
-      const request = state.confidentialVault.accessRequests.find((r) => r.id === requestId);
+      const request = state.confidentialVault.accessRequests.find(r => r.id === requestId);
       if (request) {
         request.status = 'denied';
         request.reviewedBy = approverId;
@@ -553,7 +554,7 @@ const aiAssistantDashboardSlice = createSlice({
         request.denyReason = reason;
         state.confidentialVault.vaultStats.pendingRequests = Math.max(
           0,
-          state.confidentialVault.vaultStats.pendingRequests - 1,
+          state.confidentialVault.vaultStats.pendingRequests - 1
         );
       }
     },
@@ -575,10 +576,10 @@ const aiAssistantDashboardSlice = createSlice({
         assignedIntent: unknown;
         qualificationScore: number;
         structuredData: unknown;
-      }>,
+      }>
     ) => {
       const { leadId, assignedIntent, qualificationScore, structuredData } = action.payload;
-      const lead = state.leadManagementHub.incomingLeads.find((l) => l.id === leadId);
+      const lead = state.leadManagementHub.incomingLeads.find(l => l.id === leadId);
       if (lead) {
         state.leadManagementHub.processedLeads[leadId] = {
           status: 'qualified',
@@ -593,7 +594,7 @@ const aiAssistantDashboardSlice = createSlice({
     },
     routeLeadToSpecialist: (
       state,
-      action: PayloadAction<{ leadId: string; specialist: string }>,
+      action: PayloadAction<{ leadId: string; specialist: string }>
     ) => {
       const { leadId, specialist } = action.payload;
       const processed = state.leadManagementHub.processedLeads[leadId];
@@ -612,7 +613,7 @@ const aiAssistantDashboardSlice = createSlice({
     },
     updateLeadPipelineStage: (
       state,
-      action: PayloadAction<{ leadId: string; specialist: string; stage: string }>,
+      action: PayloadAction<{ leadId: string; specialist: string; stage: string }>
     ) => {
       const { leadId, stage } = action.payload;
       const processed = state.leadManagementHub.processedLeads[leadId];
@@ -622,7 +623,7 @@ const aiAssistantDashboardSlice = createSlice({
     // ── Compliance engine ───────────────────────────────────────────────
     addComplianceAuditLog: (
       state,
-      action: PayloadAction<Omit<Record<string, unknown>, 'id' | 'timestamp'>>,
+      action: PayloadAction<Omit<Record<string, unknown>, 'id' | 'timestamp'>>
     ) => {
       const entry = {
         id: `audit_${Date.now()}`,
@@ -636,7 +637,7 @@ const aiAssistantDashboardSlice = createSlice({
     },
     flagTransaction: (
       state,
-      action: PayloadAction<Omit<Record<string, unknown>, 'id' | 'flaggedAt' | 'status'>>,
+      action: PayloadAction<Omit<Record<string, unknown>, 'id' | 'flaggedAt' | 'status'>>
     ) => {
       const transaction = {
         id: `tx_${Date.now()}`,
@@ -647,10 +648,229 @@ const aiAssistantDashboardSlice = createSlice({
       state.complianceEngine.amlMonitor.flaggedTransactions.push(transaction);
       state.complianceEngine.amlMonitor.investigationQueue.push(transaction.id as string);
     },
+
+    // ── Task lifecycle ─────────────────────────────────────────────────────
+
+    /**
+     * Moves a task to a new lifecycle stage and automatically fires a
+     * notification (info / warning / critical) for that assistant.
+     */
+    advanceTaskLifecycle: (
+      state,
+      action: PayloadAction<{
+        assistantId: string;
+        taskId: string;
+        stage: TaskLifecycleStage;
+      }>
+    ) => {
+      const { assistantId, taskId, stage } = action.payload;
+      const tasks = state.tasks.byAssistantId[assistantId];
+      if (!tasks) return;
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      const now = new Date().toISOString();
+      task.lifecycleStage = stage;
+      task.updatedAt = now;
+
+      // Sync status to lifecycle stage
+      if (stage === 'in_progress') {
+        task.status = 'in_progress';
+        task.startedAt = task.startedAt ?? now;
+      } else if (stage === 'completed') {
+        task.status = 'completed';
+        task.completedAt = now;
+        state.tasks.activeTasksCount = Math.max(0, state.tasks.activeTasksCount - 1);
+      } else if (stage === 'failed' || stage === 'cancelled') {
+        // Terminal stages: keep the task's current status unchanged so callers
+        // can see where in the workflow the failure occurred, but mark completedAt.
+        task.completedAt = now;
+      } else if (stage === 'queued' || stage === 'created') {
+        task.status = 'pending';
+      }
+
+      // Auto-generate a lifecycle notification
+      const LIFECYCLE_NOTIF: Record<
+        TaskLifecycleStage,
+        { message: string; severity: Notification['severity'] }
+      > = {
+        created: {
+          message: `Task created: "${task.title}"`,
+          severity: 'info',
+        },
+        queued: {
+          message: `Task queued and awaiting action: "${task.title}"`,
+          severity: 'info',
+        },
+        in_progress: {
+          message: `Task started — now in progress: "${task.title}"`,
+          severity: 'info',
+        },
+        pending_review: {
+          message: `Action required: "${task.title}" is waiting for your review`,
+          severity: 'warning',
+        },
+        completed: {
+          message: `✓ Task completed: "${task.title}"`,
+          severity: 'info',
+        },
+        failed: {
+          message: `✗ Task failed: "${task.title}" — please investigate`,
+          severity: 'critical',
+        },
+        cancelled: {
+          message: `Task cancelled: "${task.title}"`,
+          severity: 'info',
+        },
+      };
+
+      const notifCfg = LIFECYCLE_NOTIF[stage];
+      if (!state.notifications.byAssistantId[assistantId]) {
+        state.notifications.byAssistantId[assistantId] = [];
+      }
+      state.notifications.byAssistantId[assistantId].unshift({
+        id: `n_lc_${Date.now()}_${taskId}`,
+        type: 'task_lifecycle',
+        message: notifCfg.message,
+        severity: notifCfg.severity,
+        isRead: false,
+        timestamp: now,
+        taskId,
+        lifecycleStage: stage,
+      } as Notification);
+      state.notifications.globalUnreadCount += 1;
+    },
+
+    /**
+     * Appends an action step to a task's action log and fires a notification
+     * whose severity reflects the action's outcome (success → info, pending → warning,
+     * failed → critical).
+     */
+    addTaskAction: (
+      state,
+      action: PayloadAction<{
+        assistantId: string;
+        taskId: string;
+        taskAction: Omit<TaskAction, 'id' | 'timestamp'>;
+      }>
+    ) => {
+      const { assistantId, taskId, taskAction } = action.payload;
+      const tasks = state.tasks.byAssistantId[assistantId];
+      if (!tasks) return;
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      const now = new Date().toISOString();
+      if (!task.actions) task.actions = [];
+      task.actions.push({
+        ...taskAction,
+        id: `ta_${Date.now()}`,
+        timestamp: now,
+      } as TaskAction);
+      task.updatedAt = now;
+
+      // Auto-generate notification based on action status
+      const severity: Notification['severity'] =
+        taskAction.status === 'failed'
+          ? 'critical'
+          : taskAction.status === 'pending'
+            ? 'warning'
+            : 'info';
+
+      const message =
+        taskAction.status === 'failed'
+          ? `Action failed on "${task.title}": ${taskAction.description}`
+          : taskAction.status === 'pending'
+            ? `Pending action on "${task.title}": ${taskAction.description}`
+            : `Action completed on "${task.title}": ${taskAction.description}`;
+
+      if (!state.notifications.byAssistantId[assistantId]) {
+        state.notifications.byAssistantId[assistantId] = [];
+      }
+      state.notifications.byAssistantId[assistantId].unshift({
+        id: `n_ta_${Date.now()}`,
+        type: 'task_action',
+        message,
+        severity,
+        isRead: false,
+        timestamp: now,
+        taskId,
+        actionType: taskAction.type,
+      } as Notification);
+      state.notifications.globalUnreadCount += 1;
+    },
+
+    /**
+     * Writes the final TaskResult onto a task, moves it to the correct terminal
+     * lifecycle stage (completed / failed), and fires a result notification.
+     */
+    setTaskResult: (
+      state,
+      action: PayloadAction<{
+        assistantId: string;
+        taskId: string;
+        result: TaskResult;
+      }>
+    ) => {
+      const { assistantId, taskId, result } = action.payload;
+      const tasks = state.tasks.byAssistantId[assistantId];
+      if (!tasks) return;
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      const now = new Date().toISOString();
+      task.result = result;
+      task.updatedAt = now;
+      task.completedAt = result.completedAt;
+
+      // Map outcome to lifecycle stage:
+      //   success  → completed   (terminal, fully done)
+      //   partial  → pending_review (more action may be needed)
+      //   failed   → failed      (terminal, error state)
+      if (result.outcome === 'failed') {
+        task.lifecycleStage = 'failed';
+      } else if (result.outcome === 'partial') {
+        task.lifecycleStage = 'pending_review';
+      } else {
+        task.lifecycleStage = 'completed';
+        task.status = 'completed';
+        state.tasks.activeTasksCount = Math.max(0, state.tasks.activeTasksCount - 1);
+      }
+
+      // Auto-generate result notification
+      const severity: Notification['severity'] =
+        result.outcome === 'failed'
+          ? 'critical'
+          : result.outcome === 'partial'
+            ? 'warning'
+            : 'info';
+
+      const statusLabel =
+        result.outcome === 'failed'
+          ? '✗ Failed'
+          : result.outcome === 'partial'
+            ? '⚠ Partially completed'
+            : '✓ Completed';
+
+      if (!state.notifications.byAssistantId[assistantId]) {
+        state.notifications.byAssistantId[assistantId] = [];
+      }
+      state.notifications.byAssistantId[assistantId].unshift({
+        id: `n_res_${Date.now()}`,
+        type: 'task_result',
+        message: `${statusLabel}: "${task.title}" — ${result.summary}`,
+        severity,
+        isRead: false,
+        timestamp: now,
+        taskId,
+        outcome: result.outcome,
+      } as Notification);
+      state.notifications.globalUnreadCount += 1;
+    },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchAllAssistants.pending, (state) => {
+      .addCase(fetchAllAssistants.pending, state => {
         state.allAssistants.isLoading = true;
       })
       .addCase(fetchAllAssistants.fulfilled, (state, action) => {
@@ -736,6 +956,9 @@ export const {
   updateLeadPipelineStage,
   addComplianceAuditLog,
   flagTransaction,
+  advanceTaskLifecycle,
+  addTaskAction,
+  setTaskResult,
 } = aiAssistantDashboardSlice.actions;
 
 export { DEPARTMENT_COLORS };
