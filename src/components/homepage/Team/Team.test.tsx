@@ -4,6 +4,8 @@
  * Tests for the homepage Team section — 4 members, social links, skills, CTA
  */
 
+/* eslint-disable react/display-name, security/detect-object-injection */
+
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
@@ -70,9 +72,7 @@ describe('Team', () => {
 
   it('renders the section subtitle', () => {
     renderTeam();
-    expect(
-      screen.getByText(/Dedicated professionals committed/i)
-    ).toBeTruthy();
+    expect(screen.getByText(/Dedicated professionals committed/i)).toBeTruthy();
   });
 
   // ──────────────────────────────────────────────────────────
@@ -175,19 +175,17 @@ describe('Team', () => {
   // CTA Section
   // ──────────────────────────────────────────────────────────
 
-  it('renders "Join Our Team" CTA', () => {
+  it('renders "Meet the Full Team" CTA', () => {
     renderTeam();
-    expect(screen.getByText('Join Our Team')).toBeTruthy();
-    expect(
-      screen.getByText(/talented individuals/i)
-    ).toBeTruthy();
+    expect(screen.getByText('Meet the Full Team')).toBeTruthy();
+    expect(screen.getByText(/full leadership and advisory experts/i)).toBeTruthy();
   });
 
-  it('renders "View Open Positions" link to /careers', () => {
+  it('renders "View Team Profiles" link to /about', () => {
     renderTeam();
-    const link = screen.getByText('View Open Positions');
+    const link = screen.getByText('View Team Profiles');
     expect(link).toBeTruthy();
-    expect(link.closest('a')?.getAttribute('href')).toBe('/careers');
+    expect(link.closest('a')?.getAttribute('href')).toBe('/about');
   });
 
   // ──────────────────────────────────────────────────────────
@@ -199,4 +197,3 @@ describe('Team', () => {
     expect(document.querySelector('#team')).toBeTruthy();
   });
 });
-
