@@ -22,8 +22,8 @@ import {
 describe('config/assistantRegistry', () => {
   // ── DEPARTMENTS ───────────────────────────────────────────────────
   describe('DEPARTMENTS', () => {
-    it('has 10 departments', () => {
-      expect(Object.keys(DEPARTMENTS).length).toBe(10);
+    it('has 12 departments', () => {
+      expect(Object.keys(DEPARTMENTS).length).toBe(12);
     });
 
     it.each([
@@ -37,7 +37,10 @@ describe('config/assistantRegistry', () => {
       'technology',
       'legal',
       'intelligence',
-    ] as DepartmentId[])('has department "%s"', (deptId) => {
+      'customer_experience',
+      'data_and_ai',
+    ] as DepartmentId[])('has department "%s"', deptId => {
+      // eslint-disable-next-line security/detect-object-injection
       expect(DEPARTMENTS[deptId]).toBeDefined();
     });
 
@@ -54,17 +57,53 @@ describe('config/assistantRegistry', () => {
 
   // ── AI_ASSISTANTS ─────────────────────────────────────────────────
   describe('AI_ASSISTANTS', () => {
-    it('has 24 assistants', () => {
-      expect(Object.keys(AI_ASSISTANTS).length).toBe(24);
+    it('has 40 assistants', () => {
+      expect(Object.keys(AI_ASSISTANTS).length).toBe(40);
     });
 
     it.each([
-      'nadia', 'nina', 'mary', 'nancy', 'daisy',
-      'clara', 'sophia', 'theodora', 'olivia', 'zoe',
-      'laila', 'aurora', 'hazel', 'willow', 'evangeline',
-      'sentinel', 'hunter', 'henry', 'cipher', 'atlas',
-      'vesta', 'juno', 'kairos', 'maven',
-    ] as AssistantId[])('has assistant "%s"', (id) => {
+      'nadia',
+      'nina',
+      'mary',
+      'nancy',
+      'daisy',
+      'clara',
+      'sophia',
+      'theodora',
+      'olivia',
+      'zoe',
+      'laila',
+      'aurora',
+      'hazel',
+      'willow',
+      'evangeline',
+      'sentinel',
+      'hunter',
+      'henry',
+      'cipher',
+      'atlas',
+      'vesta',
+      'juno',
+      'kairos',
+      'maven',
+      'linda',
+      'archer',
+      'prism',
+      'sage',
+      'echo',
+      'mira',
+      'rex',
+      'iris',
+      'apex',
+      'halo',
+      'oracle',
+      'flux',
+      'nova',
+      'quill',
+      'lumen',
+      'crest',
+    ] as AssistantId[])('has assistant "%s"', id => {
+      // eslint-disable-next-line security/detect-object-injection
       expect(AI_ASSISTANTS[id]).toBeDefined();
     });
 
@@ -96,12 +135,12 @@ describe('config/assistantRegistry', () => {
 
   // ── ASSISTANT_IDS & DEPARTMENT_IDS ────────────────────────────────
   describe('ID arrays', () => {
-    it('ASSISTANT_IDS has 24 entries', () => {
-      expect(ASSISTANT_IDS).toHaveLength(24);
+    it('ASSISTANT_IDS has 40 entries', () => {
+      expect(ASSISTANT_IDS).toHaveLength(40);
     });
 
-    it('DEPARTMENT_IDS has 10 entries', () => {
-      expect(DEPARTMENT_IDS).toHaveLength(10);
+    it('DEPARTMENT_IDS has 12 entries', () => {
+      expect(DEPARTMENT_IDS).toHaveLength(12);
     });
   });
 
@@ -135,20 +174,20 @@ describe('config/assistantRegistry', () => {
     it('all assistants are covered across departments', () => {
       const allCounted = DEPARTMENT_IDS.reduce(
         (sum, deptId) => sum + getAssistantsByDepartment(deptId).length,
-        0,
+        0
       );
-      expect(allCounted).toBe(24);
+      expect(allCounted).toBe(40);
     });
   });
 
   // ── getAllAssistants & getAllDepartments ────────────────────────────
   describe('getAll functions', () => {
-    it('getAllAssistants returns 24', () => {
-      expect(getAllAssistants()).toHaveLength(24);
+    it('getAllAssistants returns 40', () => {
+      expect(getAllAssistants()).toHaveLength(40);
     });
 
-    it('getAllDepartments returns 10', () => {
-      expect(getAllDepartments()).toHaveLength(10);
+    it('getAllDepartments returns 12', () => {
+      expect(getAllDepartments()).toHaveLength(12);
     });
   });
 
@@ -167,19 +206,19 @@ describe('config/assistantRegistry', () => {
 
   // ── Counts ────────────────────────────────────────────────────────
   describe('count functions', () => {
-    it('getAssistantCount returns 24', () => {
-      expect(getAssistantCount()).toBe(24);
+    it('getAssistantCount returns 40', () => {
+      expect(getAssistantCount()).toBe(40);
     });
 
-    it('getDepartmentCount returns 10', () => {
-      expect(getDepartmentCount()).toBe(10);
+    it('getDepartmentCount returns 12', () => {
+      expect(getDepartmentCount()).toBe(12);
     });
   });
 
   // ── getDepartmentOrder ────────────────────────────────────────────
   describe('getDepartmentOrder', () => {
-    it('returns exactly 10 departments', () => {
-      expect(getDepartmentOrder()).toHaveLength(10);
+    it('returns exactly 12 departments', () => {
+      expect(getDepartmentOrder()).toHaveLength(12);
     });
 
     it('starts with communications', () => {
@@ -196,8 +235,8 @@ describe('config/assistantRegistry', () => {
 
   // ── getNavigationStructure ────────────────────────────────────────
   describe('getNavigationStructure', () => {
-    it('returns array with 10 items', () => {
-      expect(getNavigationStructure()).toHaveLength(10);
+    it('returns array with 12 items', () => {
+      expect(getNavigationStructure()).toHaveLength(12);
     });
 
     it('each item has department info and assistants array', () => {

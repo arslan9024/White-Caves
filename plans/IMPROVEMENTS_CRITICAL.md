@@ -12,9 +12,11 @@
 **File**: `server/services/WhatsAppBotService.ts`
 
 ### Problem
+
 Every method in `WhatsAppBotService` logs a line and returns immediately. No real API call is ever made. The WhatsApp inbox in the Nadia CRM tab shows UI but never sends or receives real messages.
 
 ### What Needs Doing
+
 - [ ] Implement `sendMessage()` using Meta Cloud API (`POST /messages` to `graph.facebook.com/v18.0/{PHONE_NUMBER_ID}/messages`)
 - [ ] Implement `sendTemplateMessage()` for structured templates (viewing reminders, lead follow-ups)
 - [ ] Implement `handleIncomingMessage()` to parse inbound webhook payloads and route to the correct agent inbox
@@ -24,11 +26,13 @@ Every method in `WhatsAppBotService` logs a line and returns immediately. No rea
 - [ ] Register `WHATSAPP_BOT_TOKEN` and `WHATSAPP_PHONE_NUMBER_ID` in production secrets
 
 ### Dependencies
+
 - Meta Business WABA account approval (external — register at business.facebook.com)
 - Approved WhatsApp Business phone number
 - Phase 4 must start after Phase 3 is complete
 
 ### Acceptance Criteria
+
 - Agent sends a WhatsApp message from the Nadia CRM inbox → recipient receives it on their phone
 - Customer replies → message appears in Nadia inbox within 3 seconds
 - Sending to an unregistered number returns a handled error, not a crash
@@ -41,9 +45,11 @@ Every method in `WhatsAppBotService` logs a line and returns immediately. No rea
 **File**: `server/routes/payments.ts`
 
 ### Problem
+
 `/api/payments` returns HTTP 503 Service Unavailable. The Stripe SDK is not installed. No payment flow works — bookings, deposit collection, and commission payments are all broken.
 
 ### What Needs Doing
+
 - [ ] Install `stripe` npm package: `npm install stripe`
 - [ ] Add `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` to environment config
 - [ ] Implement `POST /api/payments/intent` — create a PaymentIntent for property bookings
@@ -55,10 +61,12 @@ Every method in `WhatsAppBotService` logs a line and returns immediately. No rea
 - [ ] Handle payment failure gracefully with retry UI
 
 ### Dependencies
+
 - Stripe account with live keys (external — stripe.com)
 - Phase 5 (Lease & Tenancy) — payments are part of the rent collection flow
 
 ### Acceptance Criteria
+
 - User can pay a property booking deposit via credit card
 - Webhook correctly updates `Transaction.status` to `completed` on Stripe confirmation
 - Failed payment shows a user-friendly error with retry option
@@ -71,9 +79,11 @@ Every method in `WhatsAppBotService` logs a line and returns immediately. No rea
 **File**: `server/routes/auth.ts` (2FA verification handler)
 
 ### Problem
+
 `POST /api/auth/verify-2fa` returns HTTP 501 Not Implemented. Two-factor authentication is shown in the UI but never enforced. This is a security gap for the managing_director and owner accounts.
 
 ### What Needs Doing
+
 - [ ] Choose TOTP (recommended) — use `speakeasy` or `otplib` npm package
 - [ ] `POST /api/auth/2fa/setup` — generate TOTP secret, return QR code URI for Google Authenticator
 - [ ] `POST /api/auth/2fa/verify` — validate the 6-digit TOTP code against the stored secret
@@ -84,10 +94,12 @@ Every method in `WhatsAppBotService` logs a line and returns immediately. No rea
 - [ ] After successful TOTP verify, issue the full JWT
 
 ### Dependencies
+
 - `npm install speakeasy qrcode @types/speakeasy @types/qrcode`
 - No external service required for TOTP (app-based)
 
 ### Acceptance Criteria
+
 - Managing director can scan a QR code with Google Authenticator
 - After scanning, every login requires a 6-digit code
 - An incorrect code returns 401, correct code returns full JWT
@@ -101,9 +113,11 @@ Every method in `WhatsAppBotService` logs a line and returns immediately. No rea
 **File**: `src/i18n/translations.ts`
 
 ### Problem
+
 `translations.ts` exports an object with only the `en` key (523 lines). There is no `ar` key. The language switcher in the UI changes the setting but shows English text regardless. RTL layout is fully undocumented in CSS.
 
 ### What Needs Doing
+
 - [ ] Add complete `ar: { ... }` translation object to `src/i18n/translations.ts` mirroring all 523 English entries
 - [ ] Use professional Arabic translations (not machine-translated) for property-facing strings
 - [ ] Add `dir` toggle to the `<html>` element when `language === 'ar'`
@@ -114,10 +128,12 @@ Every method in `WhatsAppBotService` logs a line and returns immediately. No rea
 - [ ] Update Nina WhatsApp bot to detect Arabic and respond in Arabic (Phase 4 dependency)
 
 ### Dependencies
+
 - Professional Arabic translation resource for marketing copy
 - Phase 8 is after Phases 4–7
 
 ### Acceptance Criteria
+
 - Switching language to Arabic: all visible text renders in Arabic
 - Page layout flips to RTL — navigation is right-aligned, content flows right-to-left
 - No English fallback text visible after switch
@@ -125,37 +141,32 @@ Every method in `WhatsAppBotService` logs a line and returns immediately. No rea
 
 ---
 
-## Item 5 — AI Assistant Registry Gap (10 Assistants Missing)
+## Item 5 — AI Assistant Registry (Expanded to 40 Assistants) ✅ DONE
 
 **Phase**: Phase 3  
-**File**: `src/store/slices/aiAssistant/registry.ts`
+**File**: `src/config/assistantRegistry.ts`, `src/store/slices/aiAssistant/registry.ts`
 
-### Problem
-The code registry has 17 assistants. Business documentation defines 27. The 10 missing assistants — including Archer (lead scoring), Quill (document generator), and Oracle (market analyst) — are defined in `business/04_ai_assistants/` but never registered in Redux, meaning their dashboards cannot render in the CRM.
+### Status — Resolved April 2026
 
-### What Needs Doing
-- [ ] Identify all 27 assistants from `business_docs/` and `business/04_ai_assistants/`
-- [ ] Add the 10 missing assistants to `src/store/slices/aiAssistant/registry.ts` following the existing pattern
-- [ ] Create stub dashboard components for each new assistant under `src/components/owner/ai/` (same pattern as existing `ClaraDashboard`, `NadiaDashboard`, etc.)
+Both registries have been expanded to the full **40-assistant**, **12-department** roster:
+
+- `src/config/assistantRegistry.ts` — 40 assistants, 12 departments (up from 24/10)
+- `src/store/slices/aiAssistant/registry.ts` — 40 assistants, 12 DEPARTMENT_COLORS (up from 18/9)
+- All 128 registry tests pass
+
+### New Departments Added
+
+- **Customer Experience** (`#8B5CF6`) — Kairos, Echo, Mira, Halo
+- **Data & AI** (`#F97316`) — Oracle, Flux, Nova, Quill, Lumen, Crest
+
+### New Assistants Added (22 total)
+
+Henry, Cipher, Atlas, Vesta, Juno, Kairos, Maven (existing config, added to Redux),
+Linda (existing Redux, added to config),
+Archer, Prism, Sage, Echo, Mira, Rex, Iris, Apex, Halo, Oracle, Flux, Nova, Quill, Lumen, Crest (brand new to both)
+
+### Remaining Work
+
+- [ ] Create stub dashboard components for each new assistant under `src/components/owner/ai/`
 - [ ] Map each new assistant to the correct CRM tab in `src/config/ROLE_TAB_MAPPING.ts`
-- [ ] Wire the assistants to `/api/assistants` (existing CRUD API) so their plans load correctly
-- [ ] Add tests for each new assistant registry entry (follow `aiAssistantDashboardSlice.test.ts` pattern)
-
-### Missing Assistants to Register
-Based on business docs, the 10 missing entries are:
-1. **Archer** — Lead scoring bot
-2. **Quill** — Document generator
-3. **Oracle** — Market analyst
-4. **Cipher** — AI Market Intelligence (DLD data)
-5. **Maven** — Investment ROI Calculator
-6. **Prism** — Property matching AI
-7. **Atlas** — Area knowledge base
-8. **Echo** — Client communication history
-9. **Iris** — Virtual staging AI
-10. **Nova** — New development tracker
-
-### Acceptance Criteria
-- All 27 assistants appear in the AI Hub sidebar of the CRM for `managing_director`
-- Clicking each assistant opens its dashboard without a crash
-- `GET /api/assistants` returns all 27 registered assistants
-- Tests pass for all new registry entries
+- [ ] Wire the assistants to `/api/assistants` so their plans load correctly
