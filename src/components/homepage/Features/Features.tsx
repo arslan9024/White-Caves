@@ -1,14 +1,12 @@
 import { motion, type Variants } from 'framer-motion';
-import { 
-  Home, 
-  Key, 
-  TrendingUp, 
-  Shield, 
-  Users, 
-  Calculator,
-  MapPin,
-  FileText,
-  LucideIcon
+import {
+  Sparkles,
+  MessageCircle,
+  CheckCircle2,
+  Globe,
+  Clock,
+  Search,
+  LucideIcon,
 } from 'lucide-react';
 import './Features.css';
 
@@ -21,53 +19,47 @@ interface Feature {
 
 const features: Feature[] = [
   {
-    icon: Home,
-    title: 'Premium Properties',
-    description: 'Access exclusive listings in Dubai\'s most prestigious neighborhoods including Palm Jumeirah, Emirates Hills, and Downtown.',
-    color: '#E31E24'
+    icon: Sparkles,
+    title: 'AI-Powered Matching',
+    description:
+      'Intelligent property recommendations tailored to your preferences, budget, and investment goals.',
+    color: '#E31E24',
   },
   {
-    icon: Key,
-    title: 'Rental Services',
-    description: 'Find your perfect rental home with our comprehensive portfolio of furnished and unfurnished properties across Dubai.',
-    color: '#F59E0B'
+    icon: MessageCircle,
+    title: 'WhatsApp-First Communication',
+    description:
+      'Direct messaging with agents on WhatsApp for instant answers to your property questions.',
+    color: '#25D366',
   },
   {
-    icon: TrendingUp,
-    title: 'Investment Advisory',
-    description: 'Get expert guidance on property investments with market analysis, ROI projections, and portfolio management.',
-    color: '#10B981'
+    icon: CheckCircle2,
+    title: 'RERA Compliant',
+    description:
+      'Fully licensed and regulated by Dubai Real Estate Regulatory Agency for complete peace of mind.',
+    color: '#10B981',
   },
   {
-    icon: Shield,
-    title: 'RERA Certified',
-    description: 'Fully licensed and registered with Dubai Real Estate Regulatory Agency for your peace of mind.',
-    color: '#3B82F6'
+    icon: Globe,
+    title: 'Multi-Language Support',
+    description:
+      'Browse properties and communicate with our team in English, Arabic, and other languages.',
+    color: '#3B82F6',
   },
   {
-    icon: Users,
-    title: 'Expert Agents',
-    description: '50+ experienced professionals dedicated to helping you find the perfect property for your needs.',
-    color: '#8B5CF6'
+    icon: Clock,
+    title: '24/7 Availability',
+    description:
+      'Round-the-clock customer support and property inquiries &mdash; we&apos;re always here to assist you.',
+    color: '#8B5CF6',
   },
   {
-    icon: Calculator,
-    title: 'Financial Tools',
-    description: 'Use our mortgage calculator, DLD fees estimator, and rent vs buy analyzer to make informed decisions.',
-    color: '#EC4899'
+    icon: Search,
+    title: 'Verified Listings',
+    description:
+      'Every property is thoroughly verified and updated in real-time for accuracy and transparency.',
+    color: '#F59E0B',
   },
-  {
-    icon: MapPin,
-    title: 'Virtual Tours',
-    description: 'Experience properties from anywhere in the world with our immersive 3D virtual tour technology.',
-    color: '#06B6D4'
-  },
-  {
-    icon: FileText,
-    title: 'Digital Contracts',
-    description: 'Streamlined Ejari-compliant contract management with secure digital signatures and cloud storage.',
-    color: '#F97316'
-  }
 ];
 
 const containerVariants = {
@@ -76,9 +68,9 @@ const containerVariants = {
     opacity: 1,
     transition: {
       staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  }
+      delayChildren: 0.2,
+    },
+  },
 };
 
 const cardVariants: Variants = {
@@ -86,47 +78,48 @@ const cardVariants: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut" }
-  }
+    transition: { duration: 0.5, ease: 'easeOut' },
+  },
 };
 
 const Features = () => {
   return (
     <section className="features-section" id="features">
       <div className="container">
-        <motion.div 
+        <motion.div
           className="section-header"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6 }}
         >
           <span className="section-tag">Our Services</span>
           <h2 className="section-title">Why Choose White Caves?</h2>
           <p className="section-subtitle">
-            Comprehensive real estate solutions tailored to your needs in Dubai's luxury property market
+            Comprehensive real estate solutions tailored to your needs in Dubai&apos;s luxury
+            property market
           </p>
           <div className="divider" />
         </motion.div>
 
-        <motion.div 
+        <motion.div
           className="features-grid"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
+          viewport={{ once: true, margin: '-50px' }}
         >
-          {features.map((feature) => (
-            <motion.div 
+          {features.map(feature => (
+            <motion.div
               key={feature.title}
               className="feature-card"
               variants={cardVariants}
-              whileHover={{ 
-                y: -10, 
-                boxShadow: "0 20px 40px rgba(0,0,0,0.12)"
+              whileHover={{
+                y: -10,
+                boxShadow: '0 20px 40px rgba(0,0,0,0.12)',
               }}
             >
-              <div 
+              <div
                 className="feature-icon-wrapper"
                 style={{ backgroundColor: `${feature.color}15`, color: feature.color }}
               >
@@ -134,7 +127,7 @@ const Features = () => {
               </div>
               <h3 className="feature-title">{feature.title}</h3>
               <p className="feature-description">{feature.description}</p>
-              <motion.span 
+              <motion.span
                 className="feature-link"
                 whileHover={{ x: 5 }}
                 role="text"
@@ -152,4 +145,3 @@ const Features = () => {
 };
 
 export default Features;
-
