@@ -190,6 +190,44 @@ The development order has been reset to focus on visible, user-facing value firs
 
 ---
 
+---
+
+## 🔧 Improvements Backlog (April 2026 — 38 Items)
+
+> Full audit of the codebase identified **38 specific improvements** across 8 categories.
+> All items are documented with problem statement, detailed tasks, and acceptance criteria.
+> See [IMPROVEMENTS_BACKLOG.md](./IMPROVEMENTS_BACKLOG.md) for the master list.
+
+### Phase-by-Phase Assignments
+
+| Phase | Improvement Items | Count |
+|---|---|---|
+| Phase 1 (Homepage) | Dynamic OG meta tags (#27), Schema.org JSON-LD (#29) | 2 |
+| Phase 2 (Portals) | Complete landlord/tenant portal backend (#9) | 1 |
+| Phase 3 (CRM) | 2FA (#3), AI registry gap (#5), Zod validation (#13), Error format (#15), Pagination (#16), Redux over-fetch (#17), Env validation (#18), Bundle split (#21), JWT refresh (#23), Auth rate limits (#25), Seed secrets (#26), Skeletons (#30), Accessibility (#31), Mobile CRM sidebar (#32), Lead scoring (#34), Audit log UI (#37) | 16 |
+| Phase 4 (WhatsApp) | WhatsApp real API (#1), Email templates (#8), Real-time notifications (#12) | 3 |
+| Phase 5 (Lease) | Stripe payments (#2), DB connection pooling (#22), Mortgage calculator backend (#35), Calendar integration (#36) | 4 |
+| Phase 6 (Compliance) | Job scheduler/cron (#6), Image upload + cloud storage (#11), Image optimization pipeline (#20), Auto sitemap (#28) | 4 |
+| Phase 7 (Analytics) | PDF/Excel document generation (#7), Virtual tour viewer (#10), Redis response caching (#19), Multi-currency rates (#38) | 4 |
+| Phase 8 (Arabic RTL) | Arabic translations + RTL layout (#4) | 1 |
+| Phase 9 (RBAC) | API versioning (#14), CSRF protection (#24) | 2 |
+| Phase 10 (PWA) | PWA manifest + service worker (#33) | 1 |
+
+### Category Files
+
+| Category | File | Items |
+|---|---|---|
+| 🔴 Critical / Broken | [IMPROVEMENTS_CRITICAL.md](./IMPROVEMENTS_CRITICAL.md) | 5 |
+| 🟠 Incomplete Features | [IMPROVEMENTS_INCOMPLETE_FEATURES.md](./IMPROVEMENTS_INCOMPLETE_FEATURES.md) | 7 |
+| 🟡 Architecture & Code Quality | [IMPROVEMENTS_ARCHITECTURE.md](./IMPROVEMENTS_ARCHITECTURE.md) | 6 |
+| 🟢 Performance & Scalability | [IMPROVEMENTS_PERFORMANCE.md](./IMPROVEMENTS_PERFORMANCE.md) | 4 |
+| 🔵 Security | [IMPROVEMENTS_SECURITY.md](./IMPROVEMENTS_SECURITY.md) | 4 |
+| 🌐 SEO & Marketing | [IMPROVEMENTS_SEO.md](./IMPROVEMENTS_SEO.md) | 3 |
+| 📱 UX & Accessibility | [IMPROVEMENTS_UX.md](./IMPROVEMENTS_UX.md) | 4 |
+| 📊 Business & Product | [IMPROVEMENTS_PRODUCT.md](./IMPROVEMENTS_PRODUCT.md) | 5 |
+
+---
+
 ## 📝 Archive Reference
 
 Previous MASTER_PLAN versions:

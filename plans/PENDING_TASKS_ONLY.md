@@ -4,6 +4,8 @@
 
 - [`MASTER_PLAN.md`](./MASTER_PLAN.md) — official project source of truth
 
+- [ ] [`IMPROVEMENTS_BACKLOG.md`](./IMPROVEMENTS_BACKLOG.md) — 38-item improvement backlog (all phases)
+
 ## Active Pending Plans
 
 - [ ] [`PHASE_1_HOMEPAGE.md`](./PHASE_1_HOMEPAGE.md)
