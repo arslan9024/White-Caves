@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { sanitizeString, sanitizeObject, truncateString } from './sanitize';
+import { sanitizeString, sanitizeObject, sanitizeDeep, truncateString } from './sanitize';
 
 // ─── sanitizeString ─────────────────────────────────────────────────────
 describe('sanitizeString', () => {
@@ -113,6 +113,106 @@ describe('sanitizeObject', () => {
     const input = { count: 5, flag: false, items: [] };
     const result = sanitizeObject(input);
     expect(result).toEqual({ count: 5, flag: false, items: [] });
+  });
+});
+
+// ─── sanitizeDeep ───────────────────────────────────────────────────────
+describe('sanitizeDeep', () => {
+  it('sanitizes a plain string', () => {
+    expect(sanitizeDeep('<b>hello</b>')).toBe('&lt;b&gt;hello&lt;&#x2F;b&gt;');
+  });
+
+  it('sanitizes a flat object (same as sanitizeObject)', () => {
+    const input = { name: '<b>Bold</b>', count: 5 };
+    const result = sanitizeDeep(input);
+    expect(result.name).toBe('&lt;b&gt;Bold&lt;&#x2F;b&gt;');
+    expect(result.count).toBe(5);
+  });
+
+  it('sanitizes deeply nested string fields', () => {
+    const input = {
+      user: {
+        profile: {
+          bio: '<script>alert("xss")</script>',
+          age: 30,
+        },
+      },
+    };
+    const result = sanitizeDeep(input);
+    expect(result.user.profile.bio).not.toContain('<script>');
+    expect(result.user.profile.bio).toBe(
+      '&lt;script&gt;alert(&quot;xss&quot;)&lt;&#x2F;script&gt;'
+    );
+    expect(result.user.profile.age).toBe(30);
+  });
+
+  it('sanitizes strings inside arrays', () => {
+    const input = ['<b>one</b>', 'plain', '<i>two</i>'];
+    const result = sanitizeDeep(input);
+    expect(result[0]).toBe('&lt;b&gt;one&lt;&#x2F;b&gt;');
+    expect(result[1]).toBe('plain');
+    expect(result[2]).toBe('&lt;i&gt;two&lt;&#x2F;i&gt;');
+  });
+
+  it('sanitizes arrays of objects', () => {
+    const input = [{ name: '<script>bad</script>' }, { name: 'safe' }];
+    const result = sanitizeDeep(input);
+    expect(result[0].name).toContain('&lt;script&gt;');
+    expect(result[1].name).toBe('safe');
+  });
+
+  it('sanitizes arrays nested inside objects', () => {
+    const input = { tags: ['<b>tag1</b>', 'tag2'] };
+    const result = sanitizeDeep(input);
+    expect(result.tags[0]).toBe('&lt;b&gt;tag1&lt;&#x2F;b&gt;');
+    expect(result.tags[1]).toBe('tag2');
+  });
+
+  it('passes through numbers, booleans, null unchanged', () => {
+    expect(sanitizeDeep(42)).toBe(42);
+    expect(sanitizeDeep(true)).toBe(true);
+    expect(sanitizeDeep(null)).toBeNull();
+  });
+
+  it('does not mutate the original object', () => {
+    const input = { user: { name: '<b>Alice</b>' } };
+    const result = sanitizeDeep(input);
+    expect(result).not.toBe(input);
+    expect(input.user.name).toBe('<b>Alice</b>'); // original unchanged
+    expect(result.user.name).toContain('&lt;b&gt;');
+  });
+
+  it('handles an empty object', () => {
+    expect(sanitizeDeep({})).toEqual({});
+  });
+
+  it('handles an empty array', () => {
+    expect(sanitizeDeep([])).toEqual([]);
+  });
+
+  it('handles undefined', () => {
+    expect(sanitizeDeep(undefined)).toBeUndefined();
+  });
+
+  it('sanitizes a realistic nested CRM payload', () => {
+    const payload = {
+      lead: {
+        name: '<img onerror="alert(1)" src="x">',
+        notes: 'Normal text',
+        metadata: {
+          source: '<iframe src="evil.com">',
+          score: 85,
+          tags: ['<script>x</script>', 'vip'],
+        },
+      },
+    };
+    const result = sanitizeDeep(payload);
+    expect(result.lead.name).not.toContain('<img');
+    expect(result.lead.notes).toBe('Normal text');
+    expect(result.lead.metadata.source).not.toContain('<iframe');
+    expect(result.lead.metadata.score).toBe(85);
+    expect(result.lead.metadata.tags[0]).not.toContain('<script>');
+    expect(result.lead.metadata.tags[1]).toBe('vip');
   });
 });
 

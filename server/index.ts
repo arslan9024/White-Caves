@@ -13,7 +13,8 @@ import morgan from 'morgan';
 import { connectDatabase, prisma } from './database.js';
 import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.js';
 import authMiddleware from './middleware/auth.js';
-import { CORS_ORIGINS, WHATSAPP_WEBHOOK_SECRET } from './config/env.js';
+import { requestIdMiddleware } from './middleware/requestId.js';
+import { CORS_ORIGINS, WHATSAPP_WEBHOOK_SECRET, IS_PRODUCTION } from './config/env.js';
 import {
   apiLimiter,
   authLimiter,
@@ -74,6 +75,9 @@ const PORT =
 // MIDDLEWARE SETUP
 // ============================================================================
 
+// Request ID — must be first so every log/response includes correlation ID
+app.use(requestIdMiddleware);
+
 // Security middleware
 app.use(
   helmet({
@@ -82,7 +86,7 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: [
           "'self'",
-          "'unsafe-inline'",
+          "'unsafe-inline'", // Required by React hydration and Firebase/Stripe SDKs
           'https://*.firebaseapp.com',
           'https://*.googleapis.com',
         ],
@@ -107,11 +111,37 @@ app.use(
         frameSrc: ['https://*.firebaseapp.com', 'https://js.stripe.com'],
         objectSrc: ["'none'"],
         baseUri: ["'self'"],
+        // Force browser to upgrade all HTTP sub-resource requests to HTTPS in production
+        ...(IS_PRODUCTION ? { upgradeInsecureRequests: [] } : {}),
       },
     },
+    // Explicit referrer policy: send origin only on same-origin requests; omit on cross-origin
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
     crossOriginEmbedderPolicy: false, // Required for Firebase/Stripe iframes
   })
 );
+
+// Permissions-Policy: restrict access to browser features.
+// Helmet v8 does not bundle permissionsPolicy, so we set it as a custom header.
+// camera/microphone/usb/magnetometer/gyroscope/accelerometer: disabled entirely.
+// geolocation: allowed only from same origin (interactive map feature).
+// payment: allowed from same origin and Stripe's JS domain.
+app.use((_req: Request, res: Response, next: NextFunction) => {
+  res.setHeader(
+    'Permissions-Policy',
+    [
+      'camera=()',
+      'microphone=()',
+      'usb=()',
+      'magnetometer=()',
+      'gyroscope=()',
+      'accelerometer=()',
+      'geolocation=(self)',
+      'payment=(self "https://js.stripe.com")',
+    ].join(', ')
+  );
+  next();
+});
 app.use(
   cors({
     origin: (origin, callback) => {
