@@ -19,13 +19,16 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../../store/store';
-import { Home, BarChart3, Users2, Settings, Shield, Bot, X, ChevronDown } from 'lucide-react';
+import { Home, BarChart3, Users2, Settings, Shield, Bot, X, ChevronDown, Search } from 'lucide-react';
 import {
   selectSelectedDepartment,
   selectSelectedService,
+  selectGlobalSearch,
   selectDepartment,
   selectService,
   toggleAICommand,
+  setGlobalSearch,
+  clearGlobalSearch,
 } from '../../../store/slices/sidebarSlice';
 import { selectHotLeads, selectAllProperties } from '../../../store/crmDataSlice';
 import { selectQueuedCount } from '../../../store/slices/nadiaSlice';
@@ -47,6 +50,10 @@ import {
   DrawerSubDot,
   DrawerFooter,
   DrawerFooterText,
+  DrawerSearchBar,
+  DrawerSearchInput,
+  DrawerSearchIcon,
+  DrawerSearchClear,
 } from './styles';
 
 // ─── Department definitions ───────────────────────────────────────────────
@@ -76,6 +83,7 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = React.memo(function Mo
 
   const selectedDepartment = useSelector(selectSelectedDepartment);
   const selectedSvc = useSelector(selectSelectedService);
+  const globalSearch = useSelector(selectGlobalSearch);
   const userRole = useSelector((state: RootState) => state.auth?.user?.role || 'user');
   const isSuperUser = userRole === 'lion';
 
@@ -165,6 +173,17 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = React.memo(function Mo
     onClose();
   }, [dispatch, onClose]);
 
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      dispatch(setGlobalSearch(e.target.value));
+    },
+    [dispatch]
+  );
+
+  const handleSearchClear = useCallback(() => {
+    dispatch(clearGlobalSearch());
+  }, [dispatch]);
+
   return (
     <>
       <DrawerOverlay
@@ -195,6 +214,23 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = React.memo(function Mo
 
         {/* ── Body ───────────────────────────────────── */}
         <DrawerBody>
+          {/* Global Search */}
+          <DrawerSearchBar>
+            <DrawerSearchIcon aria-hidden="true"><Search size={13} /></DrawerSearchIcon>
+            <DrawerSearchInput
+              type="text"
+              placeholder="Search departments, AI…"
+              value={globalSearch}
+              onChange={handleSearchChange}
+              aria-label="Search navigation"
+            />
+            {globalSearch && (
+              <DrawerSearchClear onClick={handleSearchClear} aria-label="Clear search">
+                <X size={10} />
+              </DrawerSearchClear>
+            )}
+          </DrawerSearchBar>
+
           {/* Quick nav */}
           <DrawerSectionLabel>Navigation</DrawerSectionLabel>
           <DrawerNavItem onClick={() => handleTopNav('home')} aria-label="Dashboard">

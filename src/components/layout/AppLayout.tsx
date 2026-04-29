@@ -32,7 +32,7 @@ import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveRole } from '../../store/navigationSlice';
 import { TopBar } from './TopBar';
-import EnhancedLeftSidebar from './EnhancedLeftSidebar/EnhancedLeftSidebar';
+import UnifiedSidebar from './UnifiedSidebar';
 import CommandPalette from '../common/CommandPalette';
 import { AppLayoutContainer, AppBody, AppMain } from './AppLayout/styles';
 import type { RootState } from '../../store/store';
@@ -93,7 +93,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, showNav = true, isSuper
       {/* ─── Body: Unified Sidebar + Content ─────────────────────── */}
       <AppBody>
         {/* Unified sidebar: visible on tablet (768px+) and desktop */}
-        {showCrmChrome && <EnhancedLeftSidebar isSuperUser={isSuperUser} />}
+        {showCrmChrome && <UnifiedSidebar isSuperUser={isSuperUser} />}
 
         {/* Main content area */}
         <AppMain $withNav={showCrmChrome} id="main-content" tabIndex={-1}>

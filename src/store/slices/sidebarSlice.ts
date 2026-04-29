@@ -22,6 +22,25 @@ interface SidebarState {
   commandPaletteOpen: boolean;
   /** Mobile bottom sheet open */
   mobileSheetOpen: boolean;
+  /**
+   * Global unified search query — searches departments, services, AND AI
+   * assistants simultaneously. Used by UnifiedSidebar and MobileMenuDrawer.
+   */
+  globalSearch: string;
+  /**
+   * Whether the sidebar is in collapsed (64px icon-rail) mode.
+   * Persisted to localStorage as a side-effect in UnifiedSidebar.
+   */
+  sidebarCollapsed: boolean;
+}
+
+/** Read initial collapse state from localStorage (SSR-safe). */
+function readCollapsedFromStorage(): boolean {
+  try {
+    return localStorage.getItem('wc-sidebar-collapsed') === 'true';
+  } catch {
+    return false;
+  }
 }
 
 const initialState: SidebarState = {
@@ -35,6 +54,8 @@ const initialState: SidebarState = {
   selectedService: null,
   commandPaletteOpen: false,
   mobileSheetOpen: false,
+  globalSearch: '',
+  sidebarCollapsed: readCollapsedFromStorage(),
 };
 
 const sidebarSlice = createSlice({
@@ -135,6 +156,22 @@ const sidebarSlice = createSlice({
       state.aiAssistantFilter = action.payload;
     },
 
+    // ── Global Unified Search ─────────────────────────────────────────
+    setGlobalSearch: (state, action: PayloadAction<string>) => {
+      state.globalSearch = action.payload;
+    },
+    clearGlobalSearch: (state) => {
+      state.globalSearch = '';
+    },
+
+    // ── Sidebar Collapse ──────────────────────────────────────────────
+    setSidebarCollapsed: (state, action: PayloadAction<boolean>) => {
+      state.sidebarCollapsed = action.payload;
+    },
+    toggleSidebarCollapsed: (state) => {
+      state.sidebarCollapsed = !state.sidebarCollapsed;
+    },
+
   },
   extraReducers: (builder) => {
     builder.addCase(logout, () => initialState);
@@ -164,6 +201,12 @@ export const {
   // Mobile
   toggleMobileSheet,
   closeMobileSheet,
+  // Global search
+  setGlobalSearch,
+  clearGlobalSearch,
+  // Sidebar collapse
+  setSidebarCollapsed,
+  toggleSidebarCollapsed,
 } = sidebarSlice.actions;
 
 // ─── Named Selectors (stable references for useSelector) ─────────────────
@@ -177,5 +220,7 @@ export const selectSelectedDepartment = (state: { sidebar: SidebarState }) => st
 export const selectSelectedService = (state: { sidebar: SidebarState }) => state.sidebar.selectedService;
 export const selectCommandPaletteOpen = (state: { sidebar: SidebarState }) => state.sidebar.commandPaletteOpen;
 export const selectMobileSheetOpen = (state: { sidebar: SidebarState }) => state.sidebar.mobileSheetOpen;
+export const selectGlobalSearch = (state: { sidebar: SidebarState }) => state.sidebar.globalSearch;
+export const selectSidebarCollapsed = (state: { sidebar: SidebarState }) => state.sidebar.sidebarCollapsed;
 
 export default sidebarSlice.reducer;
