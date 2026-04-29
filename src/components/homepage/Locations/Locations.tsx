@@ -42,24 +42,46 @@ const STATIC_LOCATIONS: Location[] = [
   },
   {
     id: 3,
-    name: 'Emirates Hills',
-    description: "Exclusive golf course villas in Dubai's most prestigious community",
-    image:
-      'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    properties: 45,
-    avgPrice: '35M AED',
-    trend: '+15%',
-    trendDirection: 'up',
-  },
-  {
-    id: 4,
     name: 'Dubai Marina',
     description: 'Vibrant waterfront lifestyle with stunning marina views',
     image:
       'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    properties: 180,
-    avgPrice: '5M AED',
+    properties: 213,
+    avgPrice: '1,900 AED/sqft',
     trend: '+10%',
+    trendDirection: 'up',
+  },
+  {
+    id: 4,
+    name: 'Jumeirah Beach Residence',
+    description: 'Beachfront towers, walkable retail, and premium leisure living',
+    image:
+      'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    properties: 97,
+    avgPrice: '1,700 AED/sqft',
+    trend: '+6%',
+    trendDirection: 'up',
+  },
+  {
+    id: 5,
+    name: 'Business Bay',
+    description: 'Canal-side urban district with luxury apartments and offices',
+    image:
+      'https://images.unsplash.com/photo-1518684079-3c830dcef090?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    properties: 175,
+    avgPrice: '1,600 AED/sqft',
+    trend: '+7%',
+    trendDirection: 'up',
+  },
+  {
+    id: 6,
+    name: 'Dubai Hills Estate',
+    description: 'Master-planned green community with villas, malls, and golf views',
+    image:
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    properties: 121,
+    avgPrice: '1,800 AED/sqft',
+    trend: '+9%',
     trendDirection: 'up',
   },
 ];
@@ -69,17 +91,23 @@ const LOCATION_IMAGES: Record<string, string> = {
     'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
   'Downtown Dubai':
     'https://images.unsplash.com/photo-1582672060674-bc2bd808a8b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-  'Emirates Hills':
-    'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
   'Dubai Marina':
     'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'Jumeirah Beach Residence':
+    'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'Business Bay':
+    'https://images.unsplash.com/photo-1518684079-3c830dcef090?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'Dubai Hills Estate':
+    'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
 };
 
 const LOCATION_DESCRIPTIONS: Record<string, string> = {
   'Palm Jumeirah': 'Iconic waterfront living with private beaches and stunning views',
   'Downtown Dubai': 'Luxury apartments with Burj Khalifa views and world-class amenities',
-  'Emirates Hills': "Exclusive golf course villas in Dubai's most prestigious community",
   'Dubai Marina': 'Vibrant waterfront lifestyle with stunning marina views',
+  'Jumeirah Beach Residence': 'Beachfront towers, walkable retail, and premium leisure living',
+  'Business Bay': 'Canal-side urban district with luxury apartments and offices',
+  'Dubai Hills Estate': 'Master-planned green community with villas, malls, and golf views',
 };
 
 interface LocationsProps {
@@ -88,6 +116,15 @@ interface LocationsProps {
 }
 
 function toAreaSlug(value: string): string {
+  switch (value) {
+    case 'Jumeirah Beach Residence':
+      return 'jbr';
+    case 'Jumeirah Village Circle':
+      return 'jvc';
+    default:
+      break;
+  }
+
   return value
     .trim()
     .toLowerCase()

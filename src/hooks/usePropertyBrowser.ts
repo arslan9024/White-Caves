@@ -89,6 +89,7 @@ function normalizeAreaParam(area?: string | null): string | undefined {
   const special: Record<string, string> = {
     jbr: 'Jumeirah Beach Residence',
     jvc: 'Jumeirah Village Circle',
+    'dubai-hills': 'Dubai Hills Estate',
   };
 
   if (special[compact.toLowerCase()]) {
