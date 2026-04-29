@@ -146,6 +146,22 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
     <section className="hero-section dubai-luxury-theme" id="home">
       <div className="hero-background">
         <motion.div className="hero-bg-image" style={{ y }} />
+        {/* Hidden eager-loaded img for LCP — browser prioritises this over CSS background-image */}
+        <img
+          src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+          alt=""
+          aria-hidden="true"
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore fetchpriority is a valid HTML attribute in modern browsers
+          fetchpriority="high"
+          style={{
+            position: 'absolute',
+            width: 1,
+            height: 1,
+            opacity: 0,
+            pointerEvents: 'none',
+          }}
+        />
         <div className="hero-overlay" />
         <div className="hero-gradient-overlay" />
       </div>

@@ -125,16 +125,70 @@ const HomePage: FC = () => {
           <Locations locationTrends={locationTrends} isLoading={isHomepageLoading} />
           <DubaiMap onPropertySelect={(property) => handlePropertyClick(property.id)} />
           <FeaturedPropertiesSection featuredProperties={displayedFeatured} isLoading={isHomepageLoading} />
-          <InteractiveMap />
-          <PropertyComparison />
-          <RentVsBuyCalculator />
-          <OffPlanTracker
-            marketStats={marketStats}
-            locationTrends={locationTrends}
-            featuredProperties={featuredProperties}
-          />
-          <NeighborhoodAnalyzer />
-          <VirtualTourGallery featuredProperties={featuredProperties} />
+
+          {/* ── Tools & Insights ───────────────────────────────────────────────── */}
+          <div
+            id="tools-insights"
+            style={{
+              background: 'linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%)',
+            }}
+          >
+            <div
+              style={{
+                maxWidth: 1200,
+                margin: '0 auto',
+                padding: '3.5rem 1.5rem 1rem',
+                textAlign: 'center',
+              }}
+            >
+              <p
+                style={{
+                  color: '#E31E24',
+                  fontWeight: 600,
+                  fontSize: '0.875rem',
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  marginBottom: '0.5rem',
+                }}
+              >
+                Expert Resources
+              </p>
+              <h2
+                style={{
+                  color: '#1a1a2e',
+                  fontSize: 'clamp(1.6rem, 3vw, 2.25rem)',
+                  fontWeight: 700,
+                  marginBottom: '0.75rem',
+                }}
+              >
+                Tools &amp; Insights
+              </h2>
+              <p
+                style={{
+                  color: '#6b7280',
+                  maxWidth: 560,
+                  margin: '0 auto 0.5rem',
+                  lineHeight: 1.65,
+                }}
+              >
+                Use our interactive calculators, market data, and research tools to make
+                confident property decisions in Dubai.
+              </p>
+            </div>
+
+            <InteractiveMap />
+            <PropertyComparison />
+            <RentVsBuyCalculator />
+            <OffPlanTracker
+              marketStats={marketStats}
+              locationTrends={locationTrends}
+              featuredProperties={featuredProperties}
+            />
+            <NeighborhoodAnalyzer />
+            <VirtualTourGallery featuredProperties={featuredProperties} />
+          </div>
+          {/* ── /Tools & Insights ─────────────────────────────────────────────── */}
+
           <CompanyProfile />
           <Team topAgents={topAgents} isLoading={isHomepageLoading} />
           <Testimonials />

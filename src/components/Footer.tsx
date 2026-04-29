@@ -26,7 +26,7 @@ const Footer: FC = () => {
               <S.AppBtn href={`https://wa.me/${Config.COMPANY.WHATSAPP}`} target="_blank" rel="noopener noreferrer" $platform="whatsapp">
                 <span>WhatsApp</span>
               </S.AppBtn>
-              <S.AppBtn href={`botim://call?number=+${Config.COMPANY.WHATSAPP}`} $platform="botim">
+              <S.AppBtn href={`botim://call?number=+${Config.COMPANY.WHATSAPP}`} target="_blank" rel="noopener noreferrer" $platform="botim">
                 <span>Botim</span>
               </S.AppBtn>
               <S.AppBtn href={`https://gochat.me/+${Config.COMPANY.WHATSAPP}`} target="_blank" rel="noopener noreferrer" $platform="gochat">
