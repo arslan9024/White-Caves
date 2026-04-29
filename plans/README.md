@@ -19,6 +19,15 @@ This folder now prioritizes **active pending work only**. Completed and historic
 - [`PHASE_3_CRM_SUPERUSER.md`](./PHASE_3_CRM_SUPERUSER.md) — managing director CRM completion phase
 - [`PHASE_3_AND_BEYOND.md`](./PHASE_3_AND_BEYOND.md) — deferred future phases
 - [`PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md`](./PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md) — immediate execution checklist
+- [`IMPROVEMENTS_BACKLOG.md`](./IMPROVEMENTS_BACKLOG.md) — master list of 38 improvements (all categories + phase assignments)
+- [`IMPROVEMENTS_CRITICAL.md`](./IMPROVEMENTS_CRITICAL.md) — 5 critical/broken items (WhatsApp, Stripe, 2FA, Arabic, AI registry)
+- [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md) — 7 incomplete features (scheduler, PDF, email, portals, VR, images, notifications)
+- [`IMPROVEMENTS_ARCHITECTURE.md`](./IMPROVEMENTS_ARCHITECTURE.md) — 6 architecture items (Zod, versioning, errors, pagination, Redux, env validation)
+- [`IMPROVEMENTS_PERFORMANCE.md`](./IMPROVEMENTS_PERFORMANCE.md) — 4 performance items (Redis, image CDN, bundle split, DB pool)
+- [`IMPROVEMENTS_SECURITY.md`](./IMPROVEMENTS_SECURITY.md) — 4 security items (JWT refresh, CSRF, rate limits, seed secrets)
+- [`IMPROVEMENTS_SEO.md`](./IMPROVEMENTS_SEO.md) — 3 SEO items (OG tags, sitemap, JSON-LD)
+- [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md) — 4 UX items (skeletons, accessibility, mobile CRM, PWA groundwork)
+- [`IMPROVEMENTS_PRODUCT.md`](./IMPROVEMENTS_PRODUCT.md) — 5 product items (lead scoring, mortgage calc, calendar, audit log, multi-currency)
 - [`audit-round-66.md`](./audit-round-66.md) — active audit findings
 - [`audit-round-69.md`](./audit-round-69.md) — active audit findings
 - [`audit-round-70.md`](./audit-round-70.md) — active audit findings
