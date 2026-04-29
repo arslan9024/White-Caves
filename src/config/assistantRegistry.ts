@@ -900,6 +900,7 @@ export const AI_ASSISTANTS: Record<AssistantId, Assistant> = {
       'command_execution',
       'conversation_routing',
       'session_recovery',
+      'openclaw_gateway',
     ],
     permissions: {
       viewableBy: ['owner', 'admin', 'agent'],
