@@ -1266,7 +1266,7 @@ setInterval(() => {
   for (const [key, c] of pendingChallenges) {
     if (c.expiresAt <= now) pendingChallenges.delete(key);
   }
-}, 60 * 1000).unref?.();
+}, 60 * 1000).unref();
 
 const generateChallenge = (): string => {
   return crypto.randomBytes(32).toString('base64url');
