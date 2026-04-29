@@ -19,15 +19,6 @@ import type { RootState } from '../../../store/store';
 import {
   Home,
   BarChart3,
-  Building2,
-  DollarSign,
-  TrendingUp,
-  Megaphone,
-  MessageSquare,
-  Globe,
-  Lock,
-  Code,
-  Scale,
   Shield,
   Settings,
   ChevronLeft,
@@ -50,8 +41,8 @@ import {
 import type { Assistant, DepartmentId } from '../../../config/assistantRegistry';
 import { selectHotLeads, selectAllProperties } from '../../../store/crmDataSlice';
 import { selectQueuedCount } from '../../../store/slices/nadiaSlice';
-import { colors } from '../../../styles/theme/colors';
 import { createLogger } from '../../../utils/logger';
+import { SIDEBAR_DEPARTMENTS as DEPARTMENTS } from '../../../config/departmentConfig';
 import {
   useKeyboardNavigation,
   type NavigableItem,
@@ -135,74 +126,7 @@ const QUICK_NAV: QuickNavItem[] = [
 ];
 
 // ─── Department Registry ───────────────────────────────────────────────
-
-interface DepartmentDef {
-  icon: LucideIcon;
-  label: string;
-  color: string;
-  services: string[];
-  badgeKey?: 'hotLeads' | 'properties' | 'messages';
-}
-
-const DEPARTMENTS: Record<string, DepartmentDef> = {
-  operations: {
-    icon: Building2,
-    label: 'Operations',
-    color: '#3B82F6',
-    services: ['Inventory Management', 'Properties', 'Asset Tracking', 'Data Management'],
-    badgeKey: 'properties',
-  },
-  finance: {
-    icon: DollarSign,
-    label: 'Finance',
-    color: '#F59E0B',
-    services: ['Invoicing', 'Payment Tracking', 'Financial Reports', 'Budget Analysis'],
-  },
-  sales: {
-    icon: TrendingUp,
-    label: 'Sales',
-    color: '#10B981',
-    services: ['Lead Management', 'Negotiations', 'Deal Tracking', 'Pipeline'],
-    badgeKey: 'hotLeads',
-  },
-  marketing: {
-    icon: Megaphone,
-    label: 'Marketing',
-    color: '#EC4899',
-    services: ['Campaigns', 'Content', 'Analytics', 'Lead Generation'],
-  },
-  communications: {
-    icon: MessageSquare,
-    label: 'Communications',
-    color: '#8B5CF6',
-    services: ['Messages', 'Emails', 'Templates', 'Notifications'],
-    badgeKey: 'messages',
-  },
-  executive: {
-    icon: Globe,
-    label: 'Executive',
-    color: colors.primary,
-    services: ['Strategic Overview', 'KPIs', 'Reports', 'Insights'],
-  },
-  compliance: {
-    icon: Lock,
-    label: 'Compliance',
-    color: '#059669',
-    services: ['Regulations', 'Audits', 'Policies', 'Documentation'],
-  },
-  technology: {
-    icon: Code,
-    label: 'Technology',
-    color: '#06B6D4',
-    services: ['Systems', 'Integration', 'Support', 'Development'],
-  },
-  legal: {
-    icon: Scale,
-    label: 'Legal',
-    color: '#8B5CF6',
-    services: ['Contracts', 'Disputes', 'Compliance', 'Documentation'],
-  },
-};
+// Imported from src/config/departmentConfig.ts (single source of truth)
 
 interface EnhancedLeftSidebarProps {
   onItemClick?: (itemId: string, itemData?: unknown) => void;

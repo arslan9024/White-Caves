@@ -14,16 +14,20 @@
  * - Mobile: hidden (replaced by BottomTabBar)
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import {
-  Home, BarChart3, Users2, Settings,
-  TrendingUp, Building2, DollarSign, Megaphone,
-  MessageSquare, Globe, Lock, Code, Scale, Bot,
-  Shield, ChevronLeft, ChevronDown, Search,
+  Home,
+  BarChart3,
+  Users2,
+  Settings,
+  Bot,
+  Shield,
+  ChevronLeft,
+  ChevronDown,
+  Search,
 } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
 import {
   selectSelectedDepartment,
   selectFlyoutOpen,
@@ -49,6 +53,7 @@ import { selectAllProperties } from '../../../store/crmDataSlice';
 import { selectQueuedCount } from '../../../store/slices/nadiaSlice';
 import { colors } from '../../../styles/theme/colors';
 import { createLogger } from '../../../utils/logger';
+import { SIDEBAR_DEPARTMENTS as DEPARTMENTS } from '../../../config/departmentConfig';
 import {
   RailContainer,
   RailWrapper,
@@ -80,15 +85,7 @@ import {
 } from './styles';
 
 // ─── Department definitions ───────────────────────────────────────────────
-
-interface DepartmentDef {
-  icon: LucideIcon;
-  label: string;
-  color: string;
-  services: string[];
-  /** Redux selector key for badge count — mapped at render time */
-  badgeKey?: 'hotLeads' | 'properties' | 'messages';
-}
+// Imported from src/config/departmentConfig.ts (single source of truth)
 
 // localStorage key for persisting group collapse states
 const COLLAPSE_STORAGE_KEY = 'wc-sidebar-collapse';
@@ -108,50 +105,10 @@ function readCollapseState(): Record<string, boolean> {
 function writeCollapseState(state: Record<string, boolean>): void {
   try {
     localStorage.setItem(COLLAPSE_STORAGE_KEY, JSON.stringify(state));
-  } catch (e) { log.warn('Failed to write collapse state (quota exceeded?)', e); }
+  } catch (e) {
+    log.warn('Failed to write collapse state (quota exceeded?)', e);
+  }
 }
-
-const DEPARTMENTS: Record<string, DepartmentDef> = {
-  operations: {
-    icon: Building2, label: 'Operations', color: '#3B82F6',
-    services: ['Inventory Management', 'Properties', 'Asset Tracking', 'Data Management'],
-    badgeKey: 'properties',
-  },
-  finance: {
-    icon: DollarSign, label: 'Finance', color: '#F59E0B',
-    services: ['Invoicing', 'Payment Tracking', 'Financial Reports', 'Budget Analysis'],
-  },
-  sales: {
-    icon: TrendingUp, label: 'Sales', color: '#10B981',
-    services: ['Lead Management', 'Negotiations', 'Deal Tracking', 'Pipeline'],
-    badgeKey: 'hotLeads',
-  },
-  marketing: {
-    icon: Megaphone, label: 'Marketing', color: '#EC4899',
-    services: ['Campaigns', 'Content', 'Analytics', 'Lead Generation'],
-  },
-  communications: {
-    icon: MessageSquare, label: 'Communications', color: '#8B5CF6',
-    services: ['Messages', 'Emails', 'Templates', 'Notifications'],
-    badgeKey: 'messages',
-  },
-  executive: {
-    icon: Globe, label: 'Executive', color: colors.primary,
-    services: ['Strategic Overview', 'KPIs', 'Reports', 'Insights'],
-  },
-  compliance: {
-    icon: Lock, label: 'Compliance', color: '#059669',
-    services: ['Regulations', 'Audits', 'Policies', 'Documentation'],
-  },
-  technology: {
-    icon: Code, label: 'Technology', color: '#06B6D4',
-    services: ['Systems', 'Integration', 'Support', 'Development'],
-  },
-  legal: {
-    icon: Scale, label: 'Legal', color: '#7C3AED',
-    services: ['Contracts', 'Agreements', 'Compliance', 'Documentation'],
-  },
-};
 
 // ─── Top nav items ────────────────────────────────────────────────────────
 
@@ -190,11 +147,14 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
   const allProperties = useSelector(selectAllProperties);
   const queuedMessages = useSelector(selectQueuedCount);
 
-  const badgeCounts = useMemo<Record<string, number>>(() => ({
-    hotLeads: hotLeads?.length ?? 0,
-    properties: allProperties?.length ?? 0,
-    messages: queuedMessages ?? 0,
-  }), [hotLeads, allProperties, queuedMessages]);
+  const badgeCounts = useMemo<Record<string, number>>(
+    () => ({
+      hotLeads: hotLeads?.length ?? 0,
+      properties: allProperties?.length ?? 0,
+      messages: queuedMessages ?? 0,
+    }),
+    [hotLeads, allProperties, queuedMessages]
+  );
 
   // ── Group collapse state (persisted to localStorage) ────
   const [groupCollapse, setGroupCollapse] = useState<Record<string, boolean>>(() =>
@@ -203,6 +163,7 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
 
   const toggleGroup = useCallback((groupId: string) => {
     setGroupCollapse(prev => {
+      // eslint-disable-next-line security/detect-object-injection
       const next = { ...prev, [groupId]: !prev[groupId] };
       writeCollapseState(next);
       return next;
@@ -213,20 +174,29 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
   const [aiSearch, setAiSearch] = useState('');
   const [expandedDepts, setExpandedDepts] = useState<Record<string, boolean>>({});
 
-  const handleDeptClick = useCallback((deptId: string) => {
-    dispatch(toggleFlyout(deptId));
-    dispatch(selectDepartment(deptId));
-  }, [dispatch]);
+  const handleDeptClick = useCallback(
+    (deptId: string) => {
+      dispatch(toggleFlyout(deptId));
+      dispatch(selectDepartment(deptId));
+    },
+    [dispatch]
+  );
 
-  const handleServiceClick = useCallback((deptId: string, service: string) => {
-    dispatch(selectService({ department: deptId, service }));
-    onTabChange(`service-${deptId}`);
-  }, [dispatch, onTabChange]);
+  const handleServiceClick = useCallback(
+    (deptId: string, service: string) => {
+      dispatch(selectService({ department: deptId, service }));
+      onTabChange(`service-${deptId}`);
+    },
+    [dispatch, onTabChange]
+  );
 
-  const handleTopItemClick = useCallback((itemId: string) => {
-    dispatch(closeFlyout());
-    onTabChange(itemId);
-  }, [dispatch, onTabChange]);
+  const handleTopItemClick = useCallback(
+    (itemId: string) => {
+      dispatch(closeFlyout());
+      onTabChange(itemId);
+    },
+    [dispatch, onTabChange]
+  );
 
   const handleAIToggle = useCallback(() => {
     dispatch(toggleAICommand());
@@ -246,10 +216,11 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
   const filteredAssistants = useMemo(() => {
     if (!aiSearch.trim()) return allAssistants;
     const q = aiSearch.toLowerCase();
-    return allAssistants.filter(a =>
-      a.name.toLowerCase().includes(q) ||
-      a.title.toLowerCase().includes(q) ||
-      a.department.toLowerCase().includes(q)
+    return allAssistants.filter(
+      a =>
+        a.name.toLowerCase().includes(q) ||
+        a.title.toLowerCase().includes(q) ||
+        a.department.toLowerCase().includes(q)
     );
   }, [allAssistants, aiSearch]);
 
@@ -263,12 +234,17 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
   }, [filteredAssistants]);
 
   const toggleDeptExpand = useCallback((dept: string) => {
+    // eslint-disable-next-line security/detect-object-injection
     setExpandedDepts(prev => ({ ...prev, [dept]: !prev[dept] }));
   }, []);
 
-  const isDeptExpanded = useCallback((dept: string) => {
-    return expandedDepts[dept] !== false; // default expanded
-  }, [expandedDepts]);
+  const isDeptExpanded = useCallback(
+    (dept: string) => {
+      // eslint-disable-next-line security/detect-object-injection
+      return expandedDepts[dept] !== false; // default expanded
+    },
+    [expandedDepts]
+  );
 
   const activeDept = DEPARTMENTS[flyoutDepartment || ''];
   const anyFlyoutOpen = flyoutOpen || aiCommandOpen;
@@ -402,20 +378,21 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
         </RailWrapper>
 
         {/* ── Flyout panel — Department services OR AI Command Center ── */}
-        <FlyoutPanel $open={anyFlyoutOpen} $color={aiCommandOpen ? colors.primary : activeDept?.color}>
+        <FlyoutPanel
+          $open={anyFlyoutOpen}
+          $color={aiCommandOpen ? colors.primary : activeDept?.color}
+        >
           {/* Department flyout content */}
           {flyoutOpen && activeDept && flyoutDepartment && (
             <>
               <FlyoutHeader>
-                <FlyoutTitle $color={activeDept.color}>
-                  {activeDept.label}
-                </FlyoutTitle>
+                <FlyoutTitle $color={activeDept.color}>{activeDept.label}</FlyoutTitle>
                 <FlyoutClose onClick={() => dispatch(closeFlyout())} aria-label="Close flyout">
                   <ChevronLeft size={16} />
                 </FlyoutClose>
               </FlyoutHeader>
               <FlyoutNav>
-                {activeDept.services.map((service) => {
+                {activeDept.services.map(service => {
                   const isActiveSvc =
                     selectedDepartment === flyoutDepartment && selectedSvc === service;
                   return (
@@ -438,9 +415,7 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
           {aiCommandOpen && (
             <>
               <FlyoutHeader>
-                <FlyoutTitle $color={colors.primary}>
-                  AI Command Center
-                </FlyoutTitle>
+                <FlyoutTitle $color={colors.primary}>AI Command Center</FlyoutTitle>
                 <FlyoutClose onClick={() => dispatch(closeAICommand())} aria-label="Close AI panel">
                   <ChevronLeft size={16} />
                 </FlyoutClose>
@@ -465,7 +440,9 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
                   return (
                     <div key={deptId}>
                       <AIGroupHeader onClick={() => toggleDeptExpand(deptId)}>
-                        <span>{deptInfo?.label || deptId} ({assistants.length})</span>
+                        <span>
+                          {deptInfo?.label || deptId} ({assistants.length})
+                        </span>
                         <ChevronDown
                           size={12}
                           style={{
@@ -474,28 +451,30 @@ const SidebarContainer: React.FC<SidebarContainerProps> = ({
                           }}
                         />
                       </AIGroupHeader>
-                      {isExpanded && assistants.map(assistant => (
-                        <AIAssistantBtn
-                          key={assistant.id}
-                          $selected={selectedAssistantId === assistant.id}
-                          onClick={() => dispatch(selectAssistant(assistant.id))}
-                        >
-                          <AIAvatar $color={assistant.color}>
-                            {assistant.avatar || assistant.name[0]}
-                          </AIAvatar>
-                          <AIAssistantInfo>
-                            <AIAssistantName>{assistant.name}</AIAssistantName>
-                            <AIAssistantDesc>{assistant.title}</AIAssistantDesc>
-                          </AIAssistantInfo>
-                        </AIAssistantBtn>
-                      ))}
+                      {isExpanded &&
+                        assistants.map(assistant => (
+                          <AIAssistantBtn
+                            key={assistant.id}
+                            $selected={selectedAssistantId === assistant.id}
+                            onClick={() => dispatch(selectAssistant(assistant.id))}
+                          >
+                            <AIAvatar $color={assistant.color}>
+                              {assistant.avatar || assistant.name[0]}
+                            </AIAvatar>
+                            <AIAssistantInfo>
+                              <AIAssistantName>{assistant.name}</AIAssistantName>
+                              <AIAssistantDesc>{assistant.title}</AIAssistantDesc>
+                            </AIAssistantInfo>
+                          </AIAssistantBtn>
+                        ))}
                     </div>
                   );
                 })}
               </FlyoutNav>
 
               <AIFooter>
-                {filteredAssistants.length} assistant{filteredAssistants.length !== 1 ? 's' : ''} • <kbd>Esc</kbd> to close
+                {filteredAssistants.length} assistant{filteredAssistants.length !== 1 ? 's' : ''} •{' '}
+                <kbd>Esc</kbd> to close
               </AIFooter>
             </>
           )}
