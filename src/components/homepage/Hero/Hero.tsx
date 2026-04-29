@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { motion, useScroll, useTransform, type Variants } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, useScroll, useTransform, useReducedMotion, type Variants } from 'framer-motion';
 import { ArrowRight, Play, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { MarketStats } from '../../../store/slices/homepageSlice';
@@ -32,8 +32,28 @@ const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
   prefix = '',
 }) => {
   const [count, setCount] = useState<number>(0);
+  const [hasStarted, setHasStarted] = useState<boolean>(false);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  // Start the counter only when it enters the viewport
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasStarted(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
+    if (!hasStarted) return;
     let startTime: number | undefined;
     let animationFrame: number;
 
@@ -49,10 +69,10 @@ const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
 
     animationFrame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animationFrame);
-  }, [end, duration]);
+  }, [end, duration, hasStarted]);
 
   return (
-    <span>
+    <span ref={ref}>
       {prefix}
       {count.toLocaleString()}
       {suffix}
@@ -65,6 +85,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 500], [0, 150]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const prefersReducedMotion = useReducedMotion();
 
   // Live stats from API, fallback to static values for instant render
   const stats: Stat[] = [
@@ -74,7 +95,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
       label: 'Premium Properties',
     },
     {
-      number: marketStats?.totalProperties ? Math.round(marketStats.totalProperties * 2) : 1000,
+      number: 1000,
       suffix: '+',
       label: 'Happy Clients',
     },
@@ -132,7 +153,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
       <div className="floating-shapes">
         <motion.div
           className="shape shape-1"
-          animate={{
+          animate={prefersReducedMotion ? {} : {
             y: [0, -20, 0],
             rotate: [0, 10, 0],
           }}
@@ -140,7 +161,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
         />
         <motion.div
           className="shape shape-2"
-          animate={{
+          animate={prefersReducedMotion ? {} : {
             y: [0, 20, 0],
             rotate: [0, -10, 0],
           }}
@@ -148,7 +169,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
         />
         <motion.div
           className="shape shape-3"
-          animate={{
+          animate={prefersReducedMotion ? {} : {
             scale: [1, 1.1, 1],
             opacity: [0.3, 0.5, 0.3],
           }}
@@ -156,7 +177,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
         />
         <motion.div
           className="shape shape-4"
-          animate={{
+          animate={prefersReducedMotion ? {} : {
             x: [0, 15, 0],
             y: [0, -10, 0],
           }}

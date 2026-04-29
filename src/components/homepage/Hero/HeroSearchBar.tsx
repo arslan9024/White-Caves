@@ -111,6 +111,7 @@ const HeroSearchBar = memo(function HeroSearchBar() {
   // Live trending locations from Redux (populated by fetchHomepageData)
   const locationTrends = useSelector(selectLocationTrends);
 
+  const [mode, setMode] = useState<'buy' | 'rent'>('buy');
   const [location, setLocation] = useState('All Locations');
   const [propertyType, setPropertyType] = useState('All Types');
   const [beds, setBeds] = useState('0');
@@ -146,6 +147,7 @@ const HeroSearchBar = memo(function HeroSearchBar() {
 
     // Build query params for URL
     const params = new URLSearchParams();
+    params.set('mode', mode);
     if (location !== 'All Locations') params.set('location', location);
     if (propertyType !== 'All Types') params.set('type', propertyType);
     if (bedNum > 0) params.set('beds', String(Math.ceil(bedNum)));
@@ -203,6 +205,44 @@ const HeroSearchBar = memo(function HeroSearchBar() {
       aria-label="Property search"
       onKeyDown={handleKeyDown}
     >
+      {/* Buy / Rent mode toggle */}
+      <div
+        style={{
+          display: 'flex',
+          gap: '0.25rem',
+          marginBottom: '0.75rem',
+          background: 'rgba(255,255,255,0.1)',
+          borderRadius: '0.6rem',
+          padding: '0.25rem',
+          width: 'fit-content',
+        }}
+        role="tablist"
+        aria-label="Search mode"
+      >
+        {(['buy', 'rent'] as const).map(m => (
+          <button
+            key={m}
+            role="tab"
+            aria-selected={mode === m}
+            onClick={() => setMode(m)}
+            type="button"
+            style={{
+              padding: '0.35rem 1.1rem',
+              borderRadius: '0.4rem',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: 600,
+              fontSize: '0.88rem',
+              transition: 'all 0.2s',
+              background: mode === m ? '#E31E24' : 'transparent',
+              color: mode === m ? '#fff' : 'rgba(255,255,255,0.75)',
+            }}
+          >
+            {m === 'buy' ? 'Buy' : 'Rent'}
+          </button>
+        ))}
+      </div>
+
       <div className="hero-search-bar">
         <SelectField
           icon={<MapPin size={18} />}

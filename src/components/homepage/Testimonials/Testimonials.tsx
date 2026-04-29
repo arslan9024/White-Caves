@@ -50,6 +50,24 @@ const testimonials: Testimonial[] = [
     rating: 5,
     text: 'From the first consultation to the final handover, White Caves provided exceptional service. Their virtual tour technology helped me finalize my purchase from overseas.',
     property: 'Dubai Marina Penthouse'
+  },
+  {
+    id: 5,
+    name: 'Ravi Sharma',
+    role: 'Software Engineer, Relocated from India',
+    avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=150',
+    rating: 5,
+    text: 'Moving to Dubai for work meant finding the right apartment fast. White Caves were incredibly responsive — they shortlisted five properties within 48 hours and I signed a lease on a stunning JBR apartment the same week.',
+    property: 'JBR Apartment'
+  },
+  {
+    id: 6,
+    name: 'Natalia Ivanova',
+    role: 'Property Investor',
+    avatar: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150',
+    rating: 5,
+    text: 'I purchased two off-plan units through White Caves for investment. Their market insights and RERA compliance expertise gave me complete confidence. The ROI has surpassed my expectations.',
+    property: 'Off-Plan Units, Business Bay'
   }
 ];
 

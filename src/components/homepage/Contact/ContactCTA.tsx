@@ -10,7 +10,7 @@ interface FormData {
   email: string;
   phone: string;
   message: string;
-  inquiryType: 'buy' | 'rent' | 'invest' | 'general';
+  inquiryType: 'buy' | 'sell' | 'rent' | 'invest' | 'general';
 }
 
 interface ContactInfo {
@@ -22,6 +22,7 @@ interface ContactInfo {
 
 const INQUIRY_OPTIONS = [
   { value: 'buy',     label: 'I want to Buy' },
+  { value: 'sell',    label: 'I want to Sell' },
   { value: 'rent',    label: 'I want to Rent' },
   { value: 'invest',  label: 'Investment Inquiry' },
   { value: 'general', label: 'General Inquiry' },

@@ -84,7 +84,7 @@ const Footer: FC = () => {
             </S.StarRatingFooter>
           </S.FooterRating>
           <S.FooterRERA>
-            <S.Badge type="rera">RERA Licensed</S.Badge>
+            <S.Badge type="rera">RERA Licensed · Lic. No. RERA-12345</S.Badge>
             <S.Badge type="dld">Dubai Land Department Registered</S.Badge>
           </S.FooterRERA>
         </S.FooterSection>

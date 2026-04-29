@@ -1,8 +1,8 @@
-import React, { FC, lazy, Suspense, useEffect } from 'react';
+import React, { FC, lazy, Suspense, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSEO, getCanonicalUrl } from '../hooks/useSEO';
 import { setProperties, type Property } from '../store/propertySlice';
-import { fetchHomepageData, selectMarketStats, selectTopAgents, selectLocationTrends, selectFeaturedProperties, selectIsHomepageLoading } from '../store/slices/homepageSlice';
+import { fetchHomepageData, selectMarketStats, selectTopAgents, selectLocationTrends, selectFeaturedProperties, selectIsHomepageLoading, type HomepageProperty } from '../store/slices/homepageSlice';
 import type { AppDispatch } from '../store/store';
 import { buildHomepageJsonLd } from './homepageSeo';
 import ClickToChat from '../components/ClickToChat';
@@ -22,6 +22,7 @@ const FeaturedPropertiesSection = lazy(() => import('../components/homepage/Feat
 const Team = lazy(() => import('../components/homepage/Team'));
 const Testimonials = lazy(() => import('../components/homepage/Testimonials'));
 const ContactCTA = lazy(() => import('../components/homepage/Contact'));
+const NewsletterSubscription = lazy(() => import('../components/NewsletterSubscription'));
 const InteractiveMap = lazy(() => import('../components/InteractiveMap'));
 const PropertyComparison = lazy(() => import('../components/PropertyComparison'));
 const OffPlanTracker = lazy(() => import('../components/OffPlanTracker'));
@@ -40,6 +41,27 @@ const SectionLoader: FC = () => (
   </div>
 );
 
+/**
+ * Static fallback featured properties mapped from HOME_PROPERTIES.
+ * Displayed instantly before the API resolves so the section never shows "coming soon".
+ */
+const FALLBACK_FEATURED: HomepageProperty[] = HOME_PROPERTIES.slice(0, 6).map(p => ({
+  id: String(p.id),
+  title: p.title,
+  description: p.description,
+  type: p.type,
+  status: 'available',
+  price: p.price,
+  currency: 'AED',
+  bedrooms: p.beds,
+  bathrooms: p.baths,
+  sqft: p.sqft,
+  location: p.location,
+  amenities: p.amenities,
+  images: [],
+  featured: true,
+}));
+
 const HomePage: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const marketStats = useSelector(selectMarketStats);
@@ -48,12 +70,19 @@ const HomePage: FC = () => {
   const featuredProperties = useSelector(selectFeaturedProperties);
   const isHomepageLoading = useSelector(selectIsHomepageLoading);
 
+  // Use live data when available; fall back to static dummy data before API resolves
+  const displayedFeatured = useMemo(
+    () => (featuredProperties.length > 0 ? featuredProperties : FALLBACK_FEATURED),
+    [featuredProperties]
+  );
+
   useSEO({
-    title: 'Dubai Luxury Real Estate',
-    description: 'Explore premium villas, penthouses, and investment-ready properties in Dubai with White Caves Real Estate.',
-    keywords: ['Dubai real estate', 'luxury properties Dubai', 'White Caves Real Estate', 'Dubai villas'],
+    title: 'White Caves Real Estate — Dubai Luxury Properties',
+    description: 'Explore premium villas, penthouses, and investment-ready properties in Dubai with White Caves Real Estate. RERA-licensed agency serving luxury buyers and investors.',
+    keywords: ['Dubai real estate', 'luxury properties Dubai', 'White Caves Real Estate', 'Dubai villas', 'RERA licensed'],
     canonicalUrl: getCanonicalUrl('/'),
     ogType: 'website',
+    ogImage: 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200&h=630&fit=crop&q=80',
     jsonLd: buildHomepageJsonLd({
       marketStats,
       featuredProperties,
@@ -92,9 +121,10 @@ const HomePage: FC = () => {
 
         {/* Below the fold — lazy-loaded for faster initial paint */}
         <Suspense fallback={<SectionLoader />}>
-          <DubaiMap onPropertySelect={(property) => handlePropertyClick(property.id)} />
+          {/* Locations first so the map has context */}
           <Locations locationTrends={locationTrends} isLoading={isHomepageLoading} />
-          <FeaturedPropertiesSection featuredProperties={featuredProperties} isLoading={isHomepageLoading} />
+          <DubaiMap onPropertySelect={(property) => handlePropertyClick(property.id)} />
+          <FeaturedPropertiesSection featuredProperties={displayedFeatured} isLoading={isHomepageLoading} />
           <InteractiveMap />
           <PropertyComparison />
           <RentVsBuyCalculator />
@@ -113,6 +143,7 @@ const HomePage: FC = () => {
             featuredProperties={featuredProperties}
             locationTrends={locationTrends}
           />
+          <NewsletterSubscription />
           <ContactCTA />
           <OnboardingGateway />
         </Suspense>
