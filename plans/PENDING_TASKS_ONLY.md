@@ -24,9 +24,17 @@
 ## Immediate Pending Focus
 
 - [ ] Homepage polish: featured properties visibility, image integrity, mobile audit, contact success state, lighthouse target
-- [ ] Portals: landlord/tenant auth, role redirects, portal routes, seed accounts, maintenance flow
+- [ ] Portals: finish auth/signup redirect rules, add seed demo accounts/data, wire maintenance/payment persistence, add portal subroutes + mobile verification
 - [ ] CRM: managing director sign-in flow, dashboard landing, core tab integration, assistant dashboard render validation
 - [ ] Phase 19 week-4 hardening: baseline capture, OWASP gap closure, DR rehearsal, monitoring accuracy
+
+## Newly Completed Progress (April 29, 2026)
+
+- [x] Landlord portal UI MVP complete: Properties, Tenants, Payments, Maintenance, Documents
+- [x] Tenant portal UI MVP complete: Lease, Payment History, Maintenance, Documents
+- [x] Portal route protection present for `/landlord-portal` and `/tenant-portal`
+- [x] Focused portal regression suite passing: 139 tests
+- [x] Portal production builds verified during implementation sessions
 
 ## Archive Rule
 
