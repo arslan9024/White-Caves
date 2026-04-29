@@ -43,6 +43,15 @@ This folder now prioritizes **active pending work only**. Completed and historic
 
 ---
 
+## Department Planning Hub
+
+- [`departments/README.md`](./departments/README.md) — **Master index of all 12 departments** with AI assistant assignments, color codes, and file links
+  - 10 existing departments (Executive, Sales, Operations, Finance, Communications, Compliance, Legal, Technology, Marketing, Intelligence)
+  - 2 new departments added (Customer Experience, Data & AI)
+  - Each department has a dedicated `.md` file with full detail: mission, team structure, responsibilities, assigned AI assistants, end-to-end workflows, API endpoints, KPIs, inter-department data flows, implementation status, and future roadmap
+
+---
+
 ## Reference Docs
 
 - [`ARCHITECTURE.md`](./ARCHITECTURE.md)
