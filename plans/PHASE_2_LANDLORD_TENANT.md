@@ -173,11 +173,11 @@ The seed already creates a `Tenant` model record. For the portal demo, we need:
 
 **Tasks**:
 
-- [ ] Add `landlord@whitecaves.ae` with role `landlord` to seed script
-- [ ] Add `tenant@whitecaves.ae` with role `tenant` to seed script
-- [ ] Associate seeded `Tenant` record to `tenant@whitecaves.ae` user
-- [ ] Add 3 sample `RentPayment` records (Note: requires Phase 5 Prisma models — use Activity workaround for Phase 2 if needed)
-- [ ] Add 2 sample maintenance request Activity records
+- [x] Add `landlord@whitecaves.ae` with role `landlord` to seed script
+- [x] Add `tenant@whitecaves.ae` with role `tenant` to seed script
+- [x] Associate seeded `Tenant` record to `tenant@whitecaves.ae` user _(email-aligned in Phase 2 data model)_
+- [x] Add 3 sample `RentPayment` records _(Activity workaround used for Phase 2)_
+- [x] Add 2 sample maintenance request Activity records
 
 ---
 
@@ -209,7 +209,7 @@ The seed already creates a `Tenant` model record. For the portal demo, we need:
 - [ ] Maintenance request form submits and appears in the list
 - [ ] All portal pages are responsive at 375px
 - [ ] No console errors on any portal page
-- [ ] Seed script runs without errors: `npm run db:seed`
+- [x] Seed script runs without errors: `npm run db:seed`
 - [x] Build passes: `npm run build`
 - [x] Tests pass: focused portal Vitest suites passing (latest 139 portal tests)
 
@@ -224,11 +224,12 @@ The seed already creates a `Tenant` model record. For the portal demo, we need:
 - Protected routes for `/landlord-portal` and `/tenant-portal`
 - Redirect aliases for `/landlord/dashboard` and `/tenant/dashboard`
 - Generic `/dashboard` now auto-redirects landlord/tenant users to their dedicated portals
+- Seeded Phase 2 demo accounts: landlord@whitecaves.ae + tenant@whitecaves.ae (password123)
+- Seeded Activity-based payment + maintenance demo timeline for portal views
 - Focused regression coverage for landlord + tenant portal areas
 
 ### Still Pending Before Phase 2 Can Be Marked Complete
 
-- Seed/demo accounts and realistic payment + maintenance data
 - Tenant maintenance request persistence (currently UI/mock only)
 - Landlord tenant-detail drilldown for payment history + maintenance history
 - Tenant payments: next-payment card, late-fee display, disabled "Pay Now"
