@@ -78,11 +78,10 @@ const features: Feature[] = [
     icon: Clock,
     title: '24/7 Availability',
     description:
-      'Round-the-clock customer support and property inquiries — we\'re always here to assist you.',
+      "Round-the-clock customer support and property inquiries — we're always here to assist you.",
     color: '#8B5CF6',
     detail: {
-      details:
-        'Our AI assistant Zoe is always on. Human agents are available 9am-10pm Dubai time.',
+      details: 'Our AI assistant Zoe is always on. Human agents are available 9am-10pm Dubai time.',
       cta: { text: 'Contact Us', link: '/contact' },
     },
   },
@@ -153,7 +152,7 @@ const Features = () => {
           whileInView="visible"
           viewport={{ once: true, margin: '-50px' }}
         >
-          {features.map(feature => {
+          {features.map((feature, idx) => {
             const isOpen = expandedTitle === feature.title;
             return (
               <motion.div
@@ -166,8 +165,14 @@ const Features = () => {
                 tabIndex={0}
                 aria-expanded={isOpen}
                 style={{ cursor: 'pointer' }}
-                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(feature.title); } }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleCardClick(feature.title);
+                  }
+                }}
               >
+                <span className="feature-number">{String(idx + 1).padStart(2, '0')}</span>
                 <div
                   className="feature-icon-wrapper"
                   style={{ backgroundColor: `${feature.color}15`, color: feature.color }}
@@ -196,12 +201,21 @@ const Features = () => {
                       style={{ overflow: 'hidden' }}
                       onClick={e => e.stopPropagation()}
                     >
-                      <div style={{
-                        borderTop: `2px solid ${feature.color}30`,
-                        marginTop: '0.75rem',
-                        paddingTop: '0.75rem',
-                      }}>
-                        <p style={{ fontSize: '0.85rem', color: '#4b5563', lineHeight: 1.6, marginBottom: '0.75rem' }}>
+                      <div
+                        style={{
+                          borderTop: `2px solid ${feature.color}30`,
+                          marginTop: '0.75rem',
+                          paddingTop: '0.75rem',
+                        }}
+                      >
+                        <p
+                          style={{
+                            fontSize: '0.85rem',
+                            color: '#4b5563',
+                            lineHeight: 1.6,
+                            marginBottom: '0.75rem',
+                          }}
+                        >
                           {feature.detail.details}
                         </p>
                         <a
