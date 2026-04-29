@@ -26,22 +26,22 @@ The development order has been reset to focus on visible, user-facing value firs
 
 ## ✅ Foundation Already Built (Do Not Re-Do)
 
-| Item                   | Description                                                                             | Status |
-| ---------------------- | --------------------------------------------------------------------------------------- | ------ |
-| TypeScript strict mode | 0 compile errors across all 666 source files                                            | ✅     |
-| Build pipeline         | Vite 7 build < 10s, GitHub Actions CI/CD                                                | ✅     |
-| Design system          | Gold/dark theme, Poppins/Inter, styled-components, design tokens                        | ✅     |
-| Auth infrastructure    | JWT, bcrypt, Firebase OAuth, rate limiting, CORS, Helmet                                | ✅     |
-| Database models        | 7 Prisma models (User, Property, Lead, Commission, Activity, Transaction, Tenant)       | ✅     |
-| Core backend routes    | leads, properties, agents, transactions, finance, tenants, compliance, crm, reporting   | ✅     |
-| CRM dashboard shell    | UnifiedDashboardPage, dual sidebar, 29-role tab mapping                                 | ✅     |
-| AI assistant registry  | 17 assistants registered in Redux (Clara, Mary, Nadia, Sophia, Daisy, Zoe, Laila, etc.) | ✅     |
-| AI assistant plan API  | /api/assistants CRUD + plan read/write, XSS protection (Phase 0.8)                      | ✅     |
-| Homepage shell         | HomePage.tsx with Hero, Features, Locations, Team, Testimonials, ContactCTA sections    | ✅     |
-| Homepage dummy data    | HOME_PROPERTIES in src/data/homeProperties.ts (10 Dubai properties)                     | ✅     |
-| Seed data              | owner@whitecaves.ae (role: lion/owner) + 6 agents + properties + leads                  | ✅     |
-| Security hardening     | Timing-safe webhook, CORS whitelist, Firebase 503, CRM export field projection          | ✅     |
-| Code quality           | ESLint, Prettier, husky pre-commit, 299 test files                                      | ✅     |
+| Item                   | Description                                                                                                                        | Status |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| TypeScript strict mode | 0 compile errors across all 666 source files                                                                                       | ✅     |
+| Build pipeline         | Vite 7 build < 10s, GitHub Actions CI/CD                                                                                           | ✅     |
+| Design system          | Gold/dark theme, Poppins/Inter, styled-components, design tokens                                                                   | ✅     |
+| Auth infrastructure    | JWT, bcrypt, Firebase OAuth, rate limiting, CORS, Helmet                                                                           | ✅     |
+| Database models        | 28 Prisma models (User, Property, Lead, Lease, Maintenance, Commission, Activity, Transaction, Tenant, Client, Document, and more) | ✅     |
+| Core backend routes    | leads, properties, agents, transactions, finance, tenants, compliance, crm, reporting                                              | ✅     |
+| CRM dashboard shell    | UnifiedDashboardPage, dual sidebar, 29-role tab mapping                                                                            | ✅     |
+| AI assistant registry  | 40 assistants registered in Redux (Clara, Mary, Nadia, Sophia, Daisy, Zoe, Laila, etc.)                                            | ✅     |
+| AI assistant plan API  | /api/assistants CRUD + plan read/write, XSS protection (Phase 0.8)                                                                 | ✅     |
+| Homepage shell         | HomePage.tsx with Hero, Features, Locations, Team, Testimonials, ContactCTA sections                                               | ✅     |
+| Homepage dummy data    | HOME_PROPERTIES in src/data/homeProperties.ts (10 Dubai properties)                                                                | ✅     |
+| Seed data              | owner@whitecaves.ae (role: lion/owner) + 6 agents + properties + leads                                                             | ✅     |
+| Security hardening     | Timing-safe webhook, CORS whitelist, Firebase 503, CRM export field projection                                                     | ✅     |
+| Code quality           | ESLint, Prettier, husky pre-commit, 299 test files                                                                                 | ✅     |
 
 ---
 
@@ -51,9 +51,9 @@ The development order has been reset to focus on visible, user-facing value firs
 
 - **Frontend**: React 18, TypeScript 5 (strict), Redux Toolkit, Vite 7, styled-components, Framer Motion
 - **Backend**: Express 5, Prisma 6.6, MongoDB, JWT auth, bcrypt, rate limiting
-- **Database**: 7 Prisma models (User, Property, Lead, Commission, Activity, Transaction, Tenant), 40+ indexes
+- **Database**: 28 Prisma models (User, Property, Lead, Commission, Activity, Transaction, Tenant), 40+ indexes
 - **RBAC**: 29 roles mapped, `lion` = super user with all 11 tabs
-- **AI Assistants**: 17 registered in code (27 documented in business_docs/)
+- **AI Assistants**: 40 registered in code (27 documented in business_docs/)
 - **CRM Layout**: Dual sidebar (left=departments, right=AI assistants), dynamic center, 11 owner tabs
 
 ---
@@ -179,11 +179,11 @@ The development order has been reset to focus on visible, user-facing value firs
 
 - **Frontend**: React 18, TypeScript 5 (strict), Redux Toolkit (13 slices), Vite 7, styled-components
 - **Backend**: Express 5, Prisma 6.6, MongoDB, JWT auth, bcrypt, rate limiting
-- **Database**: 17 Prisma models (User, Property, Lead, Commission, Contract, Transaction, Message, Conversation, Notification, AuditLog, Document, Favorite, Viewing, Offer, AIAssistant, Integration, Setting), 60+ indexes
+- **Database**: 28 Prisma models (User, Property, Lead, Lease, Maintenance, Commission, Contract, Transaction, Client, Tenant, Document, Favorite, Viewing, Offer, JobApplication, Communication, Invoice, Expense, and more), 60+ indexes
 - **RBAC**: 24 frontend roles aliased to 12 backend roles, 21 permissions, per-endpoint authorization (ADR-002)
 - **Design Tokens**: Centralized at src/styles/theme/ — 90+ colors, 26+ typography, 7 spacing (ADR-007)
 - **ADRs**: 7 architecture decision records in docs/adr/
-- **AI Assistants**: 24 registered (Nadia=WhatsApp CRM, Clara=Leads, Mary=Inventory, etc.)
+- **AI Assistants**: 40 registered in both registries (Nadia=WhatsApp CRM, Clara=Leads, Mary=Inventory, etc.)
 - **CRM Layout**: Dual sidebar (left=departments, right=AI assistants), dynamic center, 12 owner tabs
 - **Testing**: Vitest + Playwright, load testing framework, accessibility audits
 - **DevOps**: Docker, docker-compose, nginx, CI/CD (GitHub Actions → Vercel)

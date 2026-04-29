@@ -69,7 +69,12 @@ const TenantPaymentHistoryTab: FC = () => {
     const outstanding = payments
       .filter(payment => payment.status === 'pending' || payment.status === 'overdue')
       .reduce((s, p) => s + p.amount, 0);
-    return { totalPaid, outstanding };
+    const nextDue =
+      payments
+        .filter(payment => payment.status === 'pending' || payment.status === 'overdue')
+        .sort((a, b) => a.month.localeCompare(b.month))[0] ?? null;
+    const overdueCount = payments.filter(payment => payment.status === 'overdue').length;
+    return { totalPaid, outstanding, nextDue, overdueCount };
   }, [payments]);
 
   if (!currentUser) {
@@ -96,6 +101,28 @@ const TenantPaymentHistoryTab: FC = () => {
           <h4>Outstanding</h4>
           <p>AED {summary.outstanding.toLocaleString()}</p>
         </div>
+        {summary.nextDue && (
+          <div
+            className={`summary-card${summary.nextDue.status === 'overdue' ? ' summary-card--alert' : ''}`}
+            data-testid="tenant-next-due-card"
+          >
+            <h4>Next Payment Due</h4>
+            <p>AED {summary.nextDue.amount.toLocaleString()}</p>
+            <p className="summary-card-meta">{summary.nextDue.month}</p>
+            {summary.nextDue.status === 'overdue' && (
+              <span className="status-badge status-overdue">Overdue</span>
+            )}
+          </div>
+        )}
+        {summary.overdueCount > 0 && (
+          <div className="summary-card summary-card--alert" data-testid="tenant-overdue-notice">
+            <h4>Late Fee Notice</h4>
+            <p>
+              {summary.overdueCount} overdue payment{summary.overdueCount > 1 ? 's' : ''}
+            </p>
+            <p className="summary-card-meta">Contact your agent for details</p>
+          </div>
+        )}
       </div>
 
       <div className="tab-controls">
@@ -142,6 +169,17 @@ const TenantPaymentHistoryTab: FC = () => {
               </div>
               <div>
                 <span className={`status-badge status-${payment.status}`}>{payment.status}</span>
+                {(payment.status === 'pending' || payment.status === 'overdue') && (
+                  <button
+                    type="button"
+                    className="btn-secondary btn-disabled"
+                    disabled
+                    title="Online payments coming soon — please pay by cheque or bank transfer"
+                    data-testid={`tenant-pay-now-btn-${payment.id}`}
+                  >
+                    Pay Now
+                  </button>
+                )}
               </div>
             </div>
           ))}

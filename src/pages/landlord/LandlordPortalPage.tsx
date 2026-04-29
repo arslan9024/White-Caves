@@ -12,8 +12,11 @@
  */
 
 import React, { FC, useState } from 'react';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../store/store';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import type { RootState, AppDispatch } from '../../store/store';
+import { logout } from '../../store/authSlice';
+import { clearUser } from '../../store/userSlice';
 import '../RolePages.css';
 import LandlordPropertiesTab from '../../components/portal/landlord/LandlordPropertiesTab';
 import LandlordTenantsTab from '../../components/portal/landlord/LandlordTenantsTab';
@@ -40,6 +43,14 @@ const tabs: Tab[] = [
 const LandlordPortalPage: FC = () => {
   const [activeTab, setActiveTab] = useState<TabKey>('properties');
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    dispatch(clearUser());
+    navigate('/signin');
+  };
 
   if (!currentUser) {
     return (
@@ -72,6 +83,28 @@ const LandlordPortalPage: FC = () => {
 
   return (
     <div className="role-page no-sidebar">
+      {/* Portal Navbar */}
+      <nav className="portal-navbar" data-testid="portal-navbar">
+        <div className="portal-navbar-brand">
+          <span className="portal-navbar-logo">🏢</span>
+          <span className="portal-navbar-title">White Caves</span>
+          <span className="portal-navbar-subtitle">Landlord</span>
+        </div>
+        <div className="portal-navbar-user">
+          <span className="portal-navbar-username" data-testid="portal-navbar-username">
+            {(currentUser.name ?? currentUser.email).split(' ')[0]}
+          </span>
+          <button
+            type="button"
+            className="portal-navbar-logout"
+            onClick={handleLogout}
+            data-testid="portal-navbar-logout"
+          >
+            Sign Out
+          </button>
+        </div>
+      </nav>
+
       <div className="role-page-content full-width">
         <div className="page-header">
           <h1>Landlord Portal</h1>

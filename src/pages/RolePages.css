@@ -1695,3 +1695,116 @@
     font-size: 1.25rem;
   }
 }
+
+/* ─── Portal Navbar (Phase 2.12) ─────────────────────────────────────────── */
+
+.portal-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-bottom: 2px solid #c8a84b;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.portal-navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.portal-navbar-logo {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.portal-navbar-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #c8a84b;
+  letter-spacing: 0.02em;
+}
+
+.portal-navbar-subtitle {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(200, 168, 75, 0.15);
+  border: 1px solid rgba(200, 168, 75, 0.3);
+  border-radius: 4px;
+  padding: 0.125rem 0.5rem;
+  margin-left: 0.25rem;
+}
+
+.portal-navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.portal-navbar-username {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+}
+
+.portal-navbar-logout {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #c8a84b;
+  background: transparent;
+  border: 1px solid #c8a84b;
+  border-radius: 6px;
+  padding: 0.375rem 0.875rem;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.portal-navbar-logout:hover {
+  background: #c8a84b;
+  color: #1a1a2e;
+}
+
+/* Summary card alert state */
+.summary-card--alert {
+  border-left: 3px solid #ef4444 !important;
+  background: rgba(239, 68, 68, 0.06) !important;
+}
+
+.summary-card-meta {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 0.125rem;
+}
+
+/* Disabled pay button */
+.btn-disabled {
+  opacity: 0.45;
+  cursor: not-allowed !important;
+}
+
+/* Newly submitted maintenance row highlight */
+.maintenance-row--new {
+  border-left: 3px solid #22c55e;
+  background: rgba(34, 197, 94, 0.06);
+}
+
+@media (max-width: 480px) {
+  .portal-navbar {
+    padding: 0.625rem 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .portal-navbar-subtitle {
+    display: none;
+  }
+
+  .portal-navbar-username {
+    display: none;
+  }
+}
