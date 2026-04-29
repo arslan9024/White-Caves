@@ -90,10 +90,10 @@ const SelectField: React.FC<SelectFieldProps> = memo(function SelectField({
       <select
         className="hero-search-select"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={e => onChange(e.target.value)}
         aria-label={ariaLabel}
       >
-        {options.map((opt) => (
+        {options.map(opt => (
           <option key={opt.value} value={opt.value}>
             {opt.label}
           </option>
@@ -135,9 +135,10 @@ const HeroSearchBar = memo(function HeroSearchBar() {
       filters.beds = Math.ceil(bedNum);
     }
     const priceIdx = parseInt(priceRange, 10);
-    if (priceIdx > 0 && priceIdx < PRICE_RANGES.length) {
-      filters.minPrice = PRICE_RANGES[priceIdx].min;
-      filters.maxPrice = PRICE_RANGES[priceIdx].max;
+    const priceEntry = priceIdx > 0 ? (PRICE_RANGES.find((_, i) => i === priceIdx) ?? null) : null;
+    if (priceEntry) {
+      filters.minPrice = priceEntry.min;
+      filters.maxPrice = priceEntry.max;
     }
 
     // Dispatch filters to Redux
@@ -151,14 +152,14 @@ const HeroSearchBar = memo(function HeroSearchBar() {
     if (location !== 'All Locations') params.set('location', location);
     if (propertyType !== 'All Types') params.set('type', propertyType);
     if (bedNum > 0) params.set('beds', String(Math.ceil(bedNum)));
-    if (priceIdx > 0) {
-      params.set('minPrice', String(PRICE_RANGES[priceIdx].min));
-      params.set('maxPrice', String(PRICE_RANGES[priceIdx].max));
+    if (priceEntry) {
+      params.set('minPrice', String(priceEntry.min));
+      params.set('maxPrice', String(priceEntry.max));
     }
 
     const queryString = params.toString();
     navigate(queryString ? `/properties?${queryString}` : '/properties');
-  }, [dispatch, navigate, location, propertyType, beds, priceRange]);
+  }, [dispatch, navigate, location, propertyType, beds, priceRange, mode]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -170,20 +171,20 @@ const HeroSearchBar = memo(function HeroSearchBar() {
   // Build location options: trending locations first (with live data markers),
   // then remaining static locations not already covered by trends.
   const locationOptions = useMemo(() => {
-    const trendNames = locationTrends.map((t) => t.name);
+    const trendNames = locationTrends.map(t => t.name);
 
     // Trending entries sorted by trendPercent desc
     const trendingOptions = [...locationTrends]
       .sort((a, b) => b.trendPercent - a.trendPercent)
-      .map((t) => ({
+      .map(t => ({
         label: `${t.name} ↑${t.trendPercent}%`,
         value: t.name,
       }));
 
     // Remaining static locations not in trending list
-    const remainingStatic = DUBAI_LOCATIONS
-      .filter((loc) => loc !== 'All Locations' && !trendNames.includes(loc))
-      .map((loc) => ({ label: loc, value: loc }));
+    const remainingStatic = DUBAI_LOCATIONS.filter(
+      loc => loc !== 'All Locations' && !trendNames.includes(loc)
+    ).map(loc => ({ label: loc, value: loc }));
 
     return [
       { label: 'All Locations', value: 'All Locations' },
@@ -191,8 +192,8 @@ const HeroSearchBar = memo(function HeroSearchBar() {
       ...remainingStatic,
     ];
   }, [locationTrends]);
-  const typeOptions = PROPERTY_TYPES.map((t) => ({ label: t, value: t }));
-  const bedOptions = BED_OPTIONS.map((b) => ({ label: b.label, value: String(b.value) }));
+  const typeOptions = PROPERTY_TYPES.map(t => ({ label: t, value: t }));
+  const bedOptions = BED_OPTIONS.map(b => ({ label: b.label, value: String(b.value) }));
   const priceOptions = PRICE_RANGES.map((p, i) => ({ label: p.label, value: String(i) }));
 
   return (
@@ -234,7 +235,7 @@ const HeroSearchBar = memo(function HeroSearchBar() {
               fontWeight: 600,
               fontSize: '0.88rem',
               transition: 'all 0.2s',
-              background: mode === m ? '#E31E24' : 'transparent',
+              background: mode === m ? 'var(--luxury-true-gold, #C9A84C)' : 'transparent',
               color: mode === m ? '#fff' : 'rgba(255,255,255,0.75)',
             }}
           >
@@ -296,7 +297,7 @@ const HeroSearchBar = memo(function HeroSearchBar() {
 
       <div className="hero-search-tags">
         <span className="hero-search-tag-label">Popular:</span>
-        {['Palm Jumeirah', 'Downtown Dubai', 'Dubai Marina', 'Penthouse'].map((tag) => (
+        {['Palm Jumeirah', 'Downtown Dubai', 'Dubai Marina', 'Penthouse'].map(tag => (
           <button
             key={tag}
             className="hero-search-tag"
@@ -320,4 +321,3 @@ const HeroSearchBar = memo(function HeroSearchBar() {
 
 export default HeroSearchBar;
 export { DUBAI_LOCATIONS, PROPERTY_TYPES, BED_OPTIONS, PRICE_RANGES };
-

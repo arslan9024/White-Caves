@@ -1,18 +1,33 @@
 /* White Caves Brand Theme Tokens (legacy filename kept for compatibility) */
 :root {
-  --dubai-luxury-gold: #E31E24;
-  --dubai-luxury-gold-dark: #B71C1C;
+  /* Brand red — used as primary throughout the app */
+  --dubai-luxury-gold: #e31e24;
+  --dubai-luxury-gold-dark: #b71c1c;
   --dubai-luxury-gold-soft: rgba(227, 30, 36, 0.2);
   --dubai-luxury-charcoal: #1f1f1f;
   --dubai-luxury-glass: rgba(255, 255, 255, 0.12);
   --dubai-luxury-glass-border: rgba(255, 255, 255, 0.2);
+
+  /* True Dubai Luxury Gold palette — used in luxury-scoped sections */
+  --luxury-true-gold: #c9a84c;
+  --luxury-true-gold-light: #e8c97a;
+  --luxury-true-gold-dark: #9a7a2e;
+  --luxury-true-gold-soft: rgba(201, 168, 76, 0.22);
+  --luxury-true-gold-glow: rgba(201, 168, 76, 0.45);
 }
 
 .dubai-luxury-theme {
   --primary-color: var(--dubai-luxury-gold);
-  --luxury-cta-bg: linear-gradient(135deg, var(--dubai-luxury-gold) 0%, var(--dubai-luxury-gold-dark) 100%);
+  --luxury-cta-bg: linear-gradient(
+    135deg,
+    var(--dubai-luxury-gold) 0%,
+    var(--dubai-luxury-gold-dark) 100%
+  );
   --luxury-cta-bg-hover: linear-gradient(135deg, #ef5350 0%, var(--dubai-luxury-gold) 100%);
   --luxury-text-dark: var(--dubai-luxury-charcoal);
   --luxury-glass-bg: var(--dubai-luxury-glass);
   --luxury-glass-border: var(--dubai-luxury-glass-border);
+
+  /* Override accent-gold to real gold within the luxury theme scope */
+  --accent-gold: var(--luxury-true-gold);
 }
