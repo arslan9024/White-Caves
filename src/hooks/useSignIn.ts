@@ -207,39 +207,64 @@ export function useSignIn() {
     setStep(3);
   }, [selectedCategory]);
 
-  const completeSignUp = useCallback((): void => {
+  const completeSignUp = useCallback(async (): Promise<void> => {
     if (!selectedRole) {
       setError('Please select a role to continue');
       return;
     }
 
+    setLoading(true);
+    setError('');
+
     const status = selectedCategory === 'staff' ? 'pending' : 'active';
 
-    dispatch(
-      setUser({
-        id: pendingUser?.id || '',
-        email: pendingUser?.email || '',
-        name: pendingUser?.name || undefined,
-        role: selectedRole,
-        status,
-      })
-    );
-    saveUserData(selectedCategory, selectedRole, status);
+    try {
+      const response = await backendRegister(
+        email,
+        password,
+        fullName || undefined,
+        undefined,
+        undefined,
+        selectedCategory,
+        selectedRole
+      );
 
-    if (selectedCategory === 'staff') {
-      setSuccess('Registration submitted! Your account is pending approval.');
-      navTimerRef.current = setTimeout(
-        () => navigate('/pending-approval'),
-        TIMING.SIMULATED_API_DELAY
+      if (!response?.data?.user) {
+        throw new Error('Invalid response: missing user data');
+      }
+
+      const backendUser = response.data.user;
+      dispatch(
+        setUser({
+          id: backendUser.id,
+          email: backendUser.email,
+          name: backendUser.name || undefined,
+          role: selectedCategory === 'staff' ? selectedRole : backendUser.role,
+          status,
+        })
       );
-    } else {
-      setSuccess('Account created successfully!');
-      navTimerRef.current = setTimeout(
-        () => navigate(`/${selectedRole}/dashboard`),
-        TIMING.NAVIGATION_DELAY
-      );
+      saveUserData(selectedCategory, selectedRole, status);
+
+      if (selectedCategory === 'staff') {
+        setSuccess('Registration submitted! Your account is pending approval.');
+        navTimerRef.current = setTimeout(
+          () => navigate('/pending-approval'),
+          TIMING.SIMULATED_API_DELAY
+        );
+      } else {
+        setSuccess('Account created successfully!');
+        navTimerRef.current = setTimeout(
+          () => navigate(`/${selectedRole}/dashboard`),
+          TIMING.NAVIGATION_DELAY
+        );
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Registration failed';
+      setError(message);
+    } finally {
+      setLoading(false);
     }
-  }, [selectedRole, selectedCategory, pendingUser, dispatch, navigate, saveUserData]);
+  }, [selectedRole, selectedCategory, email, password, fullName, dispatch, navigate, saveUserData]);
 
   // ── Social auth ────────────────────────────────────────────────
 
@@ -329,9 +354,11 @@ export function useSignIn() {
 
       try {
         if (mode === 'signup') {
-          const response = await backendRegister(email, password, fullName || undefined);
-          if (!response?.data?.user) throw new Error('Invalid response: missing user data');
-          handleSignUpSuccess(response.data.user);
+          handleSignUpSuccess({
+            id: 'pending-signup',
+            email,
+            name: fullName || email,
+          });
         } else {
           const response = await backendLogin(email, password);
           if (!response?.data?.user) throw new Error('Invalid response: missing user data');

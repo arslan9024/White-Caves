@@ -94,7 +94,9 @@ export async function registerWithEmail(
   password: string,
   name?: string,
   phone?: string,
-  department?: string
+  department?: string,
+  category?: string,
+  role?: string
 ): Promise<RegisterResponse> {
   const response = (await apiClient.post('/auth/register', {
     email,
@@ -102,6 +104,8 @@ export async function registerWithEmail(
     name,
     phone,
     department,
+    category,
+    role,
   })) as RegisterResponse;
 
   if (response.success) {

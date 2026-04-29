@@ -24,7 +24,7 @@
 ## Immediate Pending Focus
 
 - [ ] Homepage polish: featured properties visibility, image integrity, mobile audit, contact success state, lighthouse target
-- [ ] Portals: finish signup role wiring + post-login redirects, add seed demo accounts/data, wire maintenance/payment persistence, add portal subroutes + mobile verification
+- [ ] Portals: add seed demo accounts/data, wire maintenance/payment persistence, add portal subroutes + mobile verification
 - [ ] CRM: managing director sign-in flow, dashboard landing, core tab integration, assistant dashboard render validation
 - [ ] Phase 19 week-4 hardening: baseline capture, OWASP gap closure, DR rehearsal, monitoring accuracy
 

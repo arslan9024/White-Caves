@@ -314,7 +314,7 @@ router.post(
 router.post(
   '/register',
   asyncHandler(async (req: Request, res: Response) => {
-    const { email, password, name, phone, department } = req.body;
+    const { email, password, name, phone, department, category, role } = req.body;
 
     if (!email || !password) {
       throw new AppError('Email and password are required', 400);
@@ -354,18 +354,46 @@ router.post(
     // Hash password with bcrypt
     const hashedPassword = await hashPassword(password);
 
-    // Security: Always assign 'agent' role on self-registration
-    // Admin-only endpoint required for elevated role assignment
+    // Self-registration role policy:
+    // - client category: must provide one of buyer/seller/landlord/tenant
+    // - staff category: always registered as agent pending approval
+    const normalizedCategory = String(category || 'client')
+      .toLowerCase()
+      .trim();
+    const normalizedRole = String(role || '')
+      .toLowerCase()
+      .trim();
+    const clientRoles = new Set(['buyer', 'seller', 'landlord', 'tenant']);
+
+    let assignedRole = 'agent';
+    let assignedStatus: 'active' | 'pending' = 'active';
+
+    if (normalizedCategory === 'client') {
+      if (!normalizedRole || !clientRoles.has(normalizedRole)) {
+        throw new AppError(
+          'Client signup requires a valid role: buyer, seller, landlord, or tenant',
+          400
+        );
+      }
+      assignedRole = normalizedRole;
+      assignedStatus = 'active';
+    } else if (normalizedCategory === 'staff') {
+      assignedRole = 'agent';
+      assignedStatus = 'pending';
+    } else {
+      throw new AppError('Invalid signup category. Must be either client or staff', 400);
+    }
+
     let user;
     try {
       user = await prisma.user.create({
         data: {
           email: email.toLowerCase().trim(),
           name: name ? sanitizeString(name.trim()) : null,
-          role: 'agent',
+          role: assignedRole,
           phone: phone ? sanitizeString(String(phone).trim()) : null,
           department: department ? sanitizeString(String(department).trim()) : null,
-          status: 'active',
+          status: assignedStatus,
           passwordHash: hashedPassword,
         },
       });

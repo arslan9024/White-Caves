@@ -108,9 +108,7 @@ describe('authService', () => {
 
     it('throws when success=true but no token', async () => {
       mApiPost.mockResolvedValue({ success: true, data: {} });
-      await expect(loginWithEmail('a@b.com', 'pass')).rejects.toThrow(
-        /no authentication token/i,
-      );
+      await expect(loginWithEmail('a@b.com', 'pass')).rejects.toThrow(/no authentication token/i);
     });
 
     it('propagates API errors', async () => {
@@ -133,6 +131,8 @@ describe('authService', () => {
         name: 'Name',
         phone: '+971',
         department: 'Sales',
+        category: undefined,
+        role: undefined,
       });
     });
 
@@ -145,10 +145,37 @@ describe('authService', () => {
       expect(mStorageSet).toHaveBeenCalledWith('token', 'tok-2');
     });
 
+    it('sends category and role when provided', async () => {
+      mApiPost.mockResolvedValue({
+        success: true,
+        data: { token: 'tok-2', user: testUser },
+      });
+
+      await registerWithEmail(
+        'landlord@test.com',
+        'pass1234',
+        'Landlord',
+        undefined,
+        undefined,
+        'client',
+        'landlord'
+      );
+
+      expect(mApiPost).toHaveBeenCalledWith('/auth/register', {
+        email: 'landlord@test.com',
+        password: 'pass1234',
+        name: 'Landlord',
+        phone: undefined,
+        department: undefined,
+        category: 'client',
+        role: 'landlord',
+      });
+    });
+
     it('throws when success=true but no token', async () => {
       mApiPost.mockResolvedValue({ success: true, data: {} });
       await expect(registerWithEmail('a@b.com', 'pass')).rejects.toThrow(
-        /no authentication token/i,
+        /no authentication token/i
       );
     });
   });
@@ -173,6 +200,7 @@ describe('authService', () => {
         email: 'fb@x.com',
         name: 'FB User',
         photoUrl: 'http://pic.com/a.jpg',
+        firebaseToken: null,
       });
     });
 
@@ -187,9 +215,7 @@ describe('authService', () => {
 
     it('throws when success=true but no token', async () => {
       mApiPost.mockResolvedValue({ success: true, data: {} });
-      await expect(syncFirebaseUser(fbUser)).rejects.toThrow(
-        /no authentication token/i,
-      );
+      await expect(syncFirebaseUser(fbUser)).rejects.toThrow(/no authentication token/i);
     });
   });
 

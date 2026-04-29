@@ -44,8 +44,8 @@ No CRM data from other clients is visible.
 
 ### 2.1 — Landlord Authentication
 
-- [ ] Landlord can register at `/signup` with category "Landlord" → role set to `landlord`
-- [ ] Redirect after login → `/landlord-portal` (dedicated portal page, not the CRM dashboard)
+- [x] Landlord can register at `/signup` with category "Landlord" → role set to `landlord`
+- [x] Redirect after login → `/landlord-portal` (enforced via role-aware `/dashboard` redirect)
 - [x] If a user with role `landlord` navigates to `/dashboard`, redirect them to `/landlord-portal`
 - [x] Protected route: `/landlord-portal` requires `landlord` role
 
@@ -94,8 +94,8 @@ A tenant logs in and sees **only their own lease, payment schedule, and maintena
 
 ### 2.7 — Tenant Authentication
 
-- [ ] Tenant can register at `/signup` with category "Tenant" → role set to `tenant`
-- [ ] Redirect after login → `/tenant-portal`
+- [x] Tenant can register at `/signup` with category "Tenant" → role set to `tenant`
+- [x] Redirect after login → `/tenant-portal` (enforced via role-aware `/dashboard` redirect)
 - [x] If a user with role `tenant` navigates to `/dashboard`, redirect to `/tenant-portal`
 - [x] Protected route: `/tenant-portal` requires `tenant` role
 
@@ -228,7 +228,6 @@ The seed already creates a `Tenant` model record. For the portal demo, we need:
 
 ### Still Pending Before Phase 2 Can Be Marked Complete
 
-- Signup category → role wiring for landlord/tenant accounts
 - Seed/demo accounts and realistic payment + maintenance data
 - Tenant maintenance request persistence (currently UI/mock only)
 - Landlord tenant-detail drilldown for payment history + maintenance history

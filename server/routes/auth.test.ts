@@ -489,39 +489,65 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.body.error).toMatch(/already registered/i);
     });
 
-    it('returns 201 on successful registration', async () => {
+    it('returns 201 on successful client registration with requested role', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce(null);
       mockPrisma.user.create.mockResolvedValueOnce({
         id: 'new-user',
         email: 'new@whitecaves.ae',
         name: 'New User',
-        role: 'agent',
+        role: 'landlord',
         department: null,
       });
-      const res = await request(createApp())
-        .post('/api/auth/register')
-        .send({ email: 'new@whitecaves.ae', password: 'ValidPass1', name: 'New User' });
+      const res = await request(createApp()).post('/api/auth/register').send({
+        email: 'new@whitecaves.ae',
+        password: 'ValidPass1',
+        name: 'New User',
+        category: 'client',
+        role: 'landlord',
+      });
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
       expect(res.body.data.token).toBe('mock-jwt-token');
-      expect(res.body.data.user.role).toBe('agent');
+      expect(res.body.data.user.role).toBe('landlord');
     });
 
-    it('always assigns agent role regardless of input', async () => {
+    it('returns 400 when client signup role is invalid', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce(null);
+      const res = await request(createApp()).post('/api/auth/register').send({
+        email: 'hack@test.com',
+        password: 'ValidPass1',
+        name: 'Hacker',
+        category: 'client',
+        role: 'owner',
+      });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/valid role/i);
+    });
+
+    it('registers staff accounts as pending agent', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce(null);
       mockPrisma.user.create.mockResolvedValueOnce({
-        id: 'new-user',
-        email: 'hack@test.com',
-        name: 'Hacker',
+        id: 'staff-user',
+        email: 'staff@whitecaves.ae',
+        name: 'Staff User',
         role: 'agent',
         department: null,
+        status: 'pending',
       });
-      await request(createApp())
-        .post('/api/auth/register')
-        .send({ email: 'hack@test.com', password: 'ValidPass1', name: 'Hacker', role: 'owner' });
+
+      const res = await request(createApp()).post('/api/auth/register').send({
+        email: 'staff@whitecaves.ae',
+        password: 'ValidPass1',
+        name: 'Staff User',
+        category: 'staff',
+        role: 'leasing-agent',
+      });
+
+      expect(res.status).toBe(201);
       expect(mockPrisma.user.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({ role: 'agent' }),
+          data: expect.objectContaining({ role: 'agent', status: 'pending' }),
         })
       );
     });
@@ -532,12 +558,15 @@ describe('Auth Routes — /api/auth', () => {
         id: 'new-user',
         email: 'new@whitecaves.ae',
         name: 'New User',
-        role: 'agent',
+        role: 'buyer',
         department: null,
       });
-      await request(createApp())
-        .post('/api/auth/register')
-        .send({ email: 'new@whitecaves.ae', password: 'ValidPass1' });
+      await request(createApp()).post('/api/auth/register').send({
+        email: 'new@whitecaves.ae',
+        password: 'ValidPass1',
+        category: 'client',
+        role: 'buyer',
+      });
       expect(mockPrisma.activity.create).toHaveBeenCalled();
     });
   });
