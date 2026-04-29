@@ -143,6 +143,29 @@ const TitleDeedRegistrationPage: FC = () => {
             ))}
           </div>
         </div>
+
+        <div className="cta-section" style={{ marginTop: '2rem', padding: '2rem', background: 'var(--card-bg)', border: '1px solid var(--card-border)', borderRadius: '12px', textAlign: 'center' }}>
+          <h3 style={{ marginBottom: '0.5rem' }}>Ready to Begin?</h3>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+            Contact our team to start your title deed registration process. We'll guide you every step of the way.
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <a
+              href="tel:+971563616136"
+              style={{ padding: '0.75rem 1.5rem', background: 'var(--color-primary, #C6A84B)', color: '#fff', borderRadius: '8px', fontWeight: 600, textDecoration: 'none' }}
+            >
+              📞 Call Us Now
+            </a>
+            <a
+              href="https://wa.me/971563616136?text=Hi%2C%20I%20would%20like%20to%20start%20my%20title%20deed%20registration."
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ padding: '0.75rem 1.5rem', background: '#25D366', color: '#fff', borderRadius: '8px', fontWeight: 600, textDecoration: 'none' }}
+            >
+              💬 WhatsApp Us
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );
