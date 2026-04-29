@@ -31,7 +31,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  z-index: 1000;
+  z-index: 800; /* notification tier */
   animation: slideIn 0.3s ease;
 }
 

@@ -77,6 +77,29 @@
   color: white;
 }
 
+/* Trend direction variants */
+.stat-badge.trend--up   { background: rgba(16, 185, 129, 0.95); color: #fff; }
+.stat-badge.trend--down { background: rgba(239, 68, 68, 0.92);  color: #fff; }
+
+/* Skeleton shimmer for live data slots */
+@keyframes locShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.loc-skeleton-count,
+.loc-skeleton-trend,
+.loc-skeleton-price {
+  display: inline-block;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.45) 40%, rgba(255,255,255,0.2) 100%);
+  background-size: 200% 100%;
+  animation: locShimmer 1.4s ease-in-out infinite;
+}
+.loc-skeleton-count { width: 80px; height: 12px; }
+.loc-skeleton-trend { width: 36px; height: 12px; }
+.loc-skeleton-price { width: 70px; height: 14px; vertical-align: middle; }
+
 .location-content {
   padding: 1.5rem;
 }
@@ -183,3 +206,4 @@
     padding: 1.25rem;
   }
 }
+

@@ -1,0 +1,322 @@
+/**
+ * UnifiedDashboardPage — Unit Tests
+ * Tests: rendering, role-based tabs, tab switching, CRM module selection,
+ * Redux data fetching, sidebar toggles, loading/error states, stats
+ */
+
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import React from 'react';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import { MemoryRouter } from 'react-router-dom';
+
+// ── Mocks ────────────────────────────────────────────────────────
+
+vi.mock('../utils/authFetch', () => ({
+  authFetch: vi.fn().mockResolvedValue({ ok: true, json: async () => ({ data: [] }) }),
+}));
+
+vi.mock('../components/common/SuspenseLoader', () => ({
+  default: () => <div data-testid="suspense-loader">Loading...</div>,
+}));
+
+vi.mock('../components/RouteErrorBoundary', () => ({
+  default: ({ children, section }: { children: React.ReactNode; section: string }) => (
+    <div data-testid={`error-boundary-${section}`}>{children}</div>
+  ),
+}));
+
+vi.mock('../components/layout/MainNavBar/MainNavBar', () => ({
+  default: (props: Record<string, unknown>) => <nav data-testid="main-navbar">MainNavBar</nav>,
+}));
+vi.mock('../components/layout/SidebarContainer/SidebarContainer', () => ({
+  default: (props: Record<string, unknown>) => <aside data-testid="sidebar-container">Sidebar</aside>,
+}));
+vi.mock('../components/layout/DepartmentContentPanel/DepartmentContentPanel', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="dept-panel">Dept Panel</div>,
+}));
+
+// Mock tab components
+vi.mock('../components/owner/tabs/OverviewTab', () => ({
+  default: ({ data }: Record<string, unknown>) => <div data-testid="overview-tab">Overview</div>,
+}));
+vi.mock('../components/owner/tabs/PropertiesTab', () => ({
+  default: ({ data }: Record<string, unknown>) => <div data-testid="properties-tab">Properties</div>,
+}));
+vi.mock('../components/owner/tabs/AgentsTab', () => ({
+  default: ({ data }: Record<string, unknown>) => <div data-testid="agents-tab">Agents</div>,
+}));
+vi.mock('../components/owner/tabs/LeadsTab', () => ({
+  default: ({ data }: Record<string, unknown>) => <div data-testid="leads-tab">Leads</div>,
+}));
+vi.mock('../components/owner/tabs/ContractsTab', () => ({
+  default: ({ data }: Record<string, unknown>) => <div data-testid="contracts-tab">Contracts</div>,
+}));
+vi.mock('../components/owner/tabs/AnalyticsTab', () => ({
+  default: ({ data }: Record<string, unknown>) => <div data-testid="analytics-tab">Analytics</div>,
+}));
+vi.mock('../components/owner/tabs/SettingsTab', () => ({
+  default: ({ data }: Record<string, unknown>) => <div data-testid="settings-tab">Settings</div>,
+}));
+vi.mock('../components/owner/tabs/UsersTab', () => ({
+  default: () => <div data-testid="users-tab">Users</div>,
+}));
+vi.mock('../components/admin/AdminDashboard', () => ({
+  default: () => <div data-testid="admin-dashboard">Admin Dashboard</div>,
+}));
+
+// Mock lazy-loaded components
+vi.mock('../components/crm/AIAssistantHub', () => ({
+  default: () => <div data-testid="ai-hub">AI Hub</div>,
+}));
+vi.mock('../components/crm/AICommandCenter', () => ({
+  default: () => <div data-testid="ai-command">AI Command</div>,
+}));
+vi.mock('../components/crm/NadiaWhatsAppCRM', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="nadia-crm">Nadia</div>,
+}));
+vi.mock('../components/crm/MaryInventoryCRM_NEW', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="mary-crm">Mary</div>,
+}));
+vi.mock('../components/crm/ClaraLeadsCRM_NEW', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="clara-crm">Clara</div>,
+}));
+vi.mock('../components/crm/NinaWhatsAppBotCRM_NEW', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="nina-crm">Nina</div>,
+}));
+vi.mock('../components/crm/NancyHRCRM_NEW', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="nancy-crm">Nancy</div>,
+}));
+vi.mock('../components/crm/SophiaSalesCRM_NEW', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="sophia-crm">Sophia</div>,
+}));
+vi.mock('../components/crm/DaisyLeasingCRM_NEW', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="daisy-crm">Daisy</div>,
+}));
+vi.mock('../components/crm/TheodoraFinanceCRM_NEW', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="theodora-crm">Theodora</div>,
+}));
+vi.mock('../components/crm/OliviaMarketingCRM_NEW', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="olivia-crm">Olivia</div>,
+}));
+vi.mock('../components/crm/ZoeExecutiveCRM_NEW', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="zoe-crm">Zoe</div>,
+}));
+vi.mock('../components/crm/LailaComplianceCRM_NEW', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="laila-crm">Laila</div>,
+}));
+vi.mock('../components/crm/AuroraCTODashboard_NEW', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="aurora-crm">Aurora</div>,
+}));
+vi.mock('../components/crm/HazelFrontendCRM_NEW', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="hazel-crm">Hazel</div>,
+}));
+vi.mock('../components/crm/WillowBackendCRM_NEW', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="willow-crm">Willow</div>,
+}));
+vi.mock('../components/crm/UnifiedCRM', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="unified-crm">UnifiedCRM</div>,
+}));
+vi.mock('../components/crm/RERAComplianceModule', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="rera-crm">RERA</div>,
+}));
+vi.mock('../components/crm/DLDIntegrationModule', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="dld-crm">DLD</div>,
+}));
+vi.mock('../components/crm/LeadScoringModule', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="lead-scoring">Lead Scoring</div>,
+}));
+vi.mock('../components/crm/PropertyValuationModule', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="valuation-crm">Valuation</div>,
+}));
+vi.mock('../components/crm/MarketAnalyticsModule', () => ({
+  default: (props: Record<string, unknown>) => <div data-testid="market-analytics">Market Analytics</div>,
+}));
+
+import UnifiedDashboardPage from './UnifiedDashboardPage';
+import navigationReducer from '../store/navigationSlice';
+import userReducer from '../store/userSlice';
+import crmDataReducer from '../store/crmDataSlice';
+import sidebarReducer from '../store/slices/sidebarSlice';
+
+// ── Helpers ──────────────────────────────────────────────────────
+
+const createMockStore = (overrides: Record<string, unknown> = {}) => {
+  return configureStore({
+    reducer: {
+      navigation: navigationReducer,
+      user: userReducer,
+      crmData: crmDataReducer,
+      sidebar: sidebarReducer,
+    },
+    preloadedState: {
+      navigation: { activeRole: 'owner', ...((overrides.navigation as object) || {}) } as ReturnType<typeof navigationReducer>,
+      user: {
+        currentUser: { id: 'u1', name: 'Admin', email: 'admin@wc.ae', role: 'owner' },
+        loading: false,
+        error: null,
+        ...((overrides.user as object) || {}),
+      } as unknown as ReturnType<typeof userReducer>,
+    },
+  });
+};
+
+const renderPage = (tab = 'overview', overrides: Record<string, unknown> = {}) => {
+  const store = createMockStore(overrides);
+  return {
+    store,
+    ...render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[`/owner/dashboard?tab=${tab}`]}>
+          <UnifiedDashboardPage />
+        </MemoryRouter>
+      </Provider>,
+    ),
+  };
+};
+
+// ── Tests ────────────────────────────────────────────────────────
+
+describe('UnifiedDashboardPage', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  // ── Rendering ────────────────────────────────────────────────
+
+  describe('Rendering', () => {
+    it('should render the dashboard page', async () => {
+      renderPage();
+      await waitFor(() => {
+        expect(screen.getByTestId('overview-tab')).toBeInTheDocument();
+      });
+    });
+
+    it('should render the MainNavBar', async () => {
+      renderPage();
+      await waitFor(() => {
+        expect(screen.getByTestId('main-navbar')).toBeInTheDocument();
+      });
+    });
+
+    it('should render the sidebar container', async () => {
+      renderPage();
+      await waitFor(() => {
+        expect(screen.getByTestId('sidebar-container')).toBeInTheDocument();
+      });
+    });
+
+    it('should render dashboard stats badges', async () => {
+      renderPage();
+      await waitFor(() => {
+        expect(screen.getByText('Properties:')).toBeInTheDocument();
+        expect(screen.getByText('Agents:')).toBeInTheDocument();
+        expect(screen.getByText('Leads:')).toBeInTheDocument();
+      });
+    });
+  });
+
+  // ── Tab Rendering ────────────────────────────────────────────
+
+  describe('Tab Rendering', () => {
+    it('should render OverviewTab by default', async () => {
+      renderPage('overview');
+      await waitFor(() => {
+        expect(screen.getByTestId('overview-tab')).toBeInTheDocument();
+      });
+    });
+
+    it('should render PropertiesTab when tab=properties', async () => {
+      renderPage('properties');
+      await waitFor(() => {
+        expect(screen.getByTestId('properties-tab')).toBeInTheDocument();
+      });
+    });
+
+    it('should render AgentsTab when tab=agents', async () => {
+      renderPage('agents');
+      await waitFor(() => {
+        expect(screen.getByTestId('agents-tab')).toBeInTheDocument();
+      });
+    });
+
+    it('should render LeadsTab when tab=leads', async () => {
+      renderPage('leads');
+      await waitFor(() => {
+        expect(screen.getByTestId('leads-tab')).toBeInTheDocument();
+      });
+    });
+
+    it('should render ContractsTab when tab=contracts', async () => {
+      renderPage('contracts');
+      await waitFor(() => {
+        expect(screen.getByTestId('contracts-tab')).toBeInTheDocument();
+      });
+    });
+
+    it('should render AnalyticsTab when tab=analytics', async () => {
+      renderPage('analytics');
+      await waitFor(() => {
+        expect(screen.getByTestId('analytics-tab')).toBeInTheDocument();
+      });
+    });
+
+    it('should render SettingsTab when tab=settings', async () => {
+      renderPage('settings');
+      await waitFor(() => {
+        expect(screen.getByTestId('settings-tab')).toBeInTheDocument();
+      });
+    });
+
+    it('should render UsersTab when tab=users', async () => {
+      renderPage('users');
+      await waitFor(() => {
+        expect(screen.getByTestId('users-tab')).toBeInTheDocument();
+      });
+    });
+
+    it('should render AdminDashboard when tab=admin', async () => {
+      renderPage('admin');
+      await waitFor(() => {
+        expect(screen.getByTestId('admin-dashboard')).toBeInTheDocument();
+      });
+    });
+
+    it('should fallback to OverviewTab for unknown tab', async () => {
+      renderPage('unknown-tab');
+      await waitFor(() => {
+        expect(screen.getByTestId('overview-tab')).toBeInTheDocument();
+      });
+    });
+  });
+
+  // ── Error Boundaries ─────────────────────────────────────────
+
+  describe('Error Boundaries', () => {
+    it('should wrap tab content in RouteErrorBoundary', async () => {
+      renderPage('overview');
+      await waitFor(() => {
+        expect(screen.getByTestId('error-boundary-Overview')).toBeInTheDocument();
+      });
+    });
+  });
+
+  // ── Role-Based Rendering ─────────────────────────────────────
+
+  describe('Role-Based', () => {
+    it('should render with owner role', async () => {
+      renderPage('overview', { navigation: { activeRole: 'owner' } });
+      await waitFor(() => {
+        expect(screen.getByTestId('overview-tab')).toBeInTheDocument();
+      });
+    });
+
+    it('should render with buyer role', async () => {
+      renderPage('overview', { navigation: { activeRole: 'buyer' } });
+      await waitFor(() => {
+        expect(screen.getByTestId('overview-tab')).toBeInTheDocument();
+      });
+    });
+  });
+});

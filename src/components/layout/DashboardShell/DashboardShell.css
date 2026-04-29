@@ -1,8 +1,0 @@
-.dashboard-shell {
-  min-height: 100vh;
-  background: var(--bg-primary, #f8fafc);
-}
-
-[data-theme="dark"] .dashboard-shell {
-  background: var(--bg-primary, #0f172a);
-}

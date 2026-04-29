@@ -247,3 +247,14 @@ export const TYPOGRAPHY = {
 // Extract individual color/spacing objects for backward compatibility
 export const COLORS = lightTheme.colors;
 export const SPACING = lightTheme.spacing;
+
+// Backwards-compatible alias
+export const theme = lightTheme;
+
+// Backwards-compatible named exports for individual tokens
+export const colors = lightTheme.colors;
+export const typography = lightTheme.typography;
+export const transitions = lightTheme.transitions;
+export const radius = lightTheme.borderRadius;
+export const spacing = lightTheme.spacing;
+export const shadows = lightTheme.shadows;

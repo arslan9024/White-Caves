@@ -1,0 +1,285 @@
+/* ═══════════════════════════════════════════════════════════════════
+   DubaiMap.css — Luxury Map Styles for White Caves
+   Gold (#D4AF37) + Dark Green (#2E5A4F) theme
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ─── Container ─────────────────────────────────────────────────── */
+.dubai-map-container {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.dubai-map-leaflet {
+  border-radius: 16px;
+  z-index: 1;
+}
+
+/* ─── Custom Marker ─────────────────────────────────────────────── */
+.dubai-map-marker-wrapper {
+  background: transparent !important;
+  border: none !important;
+}
+
+.dubai-map-marker {
+  width: 32px;
+  height: 32px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.dubai-map-marker svg {
+  transform: rotate(45deg);
+}
+
+.dubai-map-marker-stem {
+  width: 2px;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.2);
+  margin: 0 auto;
+  border-radius: 0 0 2px 2px;
+}
+
+.leaflet-marker-icon:hover .dubai-map-marker {
+  transform: rotate(-45deg) scale(1.15);
+}
+
+/* ─── Property Popup Card ───────────────────────────────────────── */
+.property-map-popup .leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.property-map-popup .leaflet-popup-content {
+  margin: 0;
+  min-width: 240px;
+  max-width: 280px;
+}
+
+.property-map-popup .leaflet-popup-tip {
+  border-top-color: white;
+}
+
+.property-popup-card {
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s ease;
+}
+
+.property-popup-card:hover {
+  background: #fafaf5;
+}
+
+.property-popup-card.active {
+  border-left: 3px solid #d4af37;
+}
+
+.popup-card-image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  display: block;
+}
+
+.popup-card-info {
+  padding: 10px 12px 12px;
+}
+
+.popup-card-type {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--secondary-color, #2e5a4f);
+  background: rgba(46, 90, 79, 0.08);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.popup-card-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 4px 0 2px;
+  line-height: 1.2;
+}
+
+.popup-card-location {
+  font-size: 0.75rem;
+  color: #666;
+  margin: 0 0 6px;
+}
+
+.popup-card-specs {
+  display: flex;
+  gap: 8px;
+  font-size: 0.7rem;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+.popup-card-specs span {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.popup-card-price {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #d4af37;
+}
+
+.popup-featured-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(212, 175, 55, 0.95);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.03em;
+}
+
+/* ─── Community Popup ───────────────────────────────────────────── */
+.community-popup .leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(46, 90, 79, 0.15);
+}
+
+.community-popup .leaflet-popup-content {
+  margin: 0;
+  min-width: 200px;
+}
+
+.community-popup-content {
+  padding: 14px 16px;
+}
+
+.community-popup-content h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 4px;
+}
+
+.community-desc {
+  font-size: 0.75rem;
+  color: #666;
+  margin: 0 0 8px;
+  line-height: 1.4;
+}
+
+.community-stats {
+  display: flex;
+  gap: 12px;
+  font-size: 0.75rem;
+  color: var(--secondary-color, #2e5a4f);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.community-filter-btn {
+  width: 100%;
+  padding: 6px 12px;
+  background: var(--secondary-color, #2e5a4f);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.community-filter-btn:hover {
+  background: #1d3d35;
+}
+
+/* ─── Map Legend ─────────────────────────────────────────────────── */
+.dubai-map-legend {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  z-index: var(--z-interactive, 10);
+  display: flex;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  padding: 8px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  font-size: 0.72rem;
+  color: #555;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-dot.featured {
+  background: #d4af37;
+  box-shadow: 0 0 4px rgba(212, 175, 55, 0.5);
+}
+
+.legend-dot.standard {
+  background: var(--secondary-color, #2e5a4f);
+}
+
+.legend-circle {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #d4af37;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.15);
+}
+
+/* ─── Responsive ────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .dubai-map-container {
+    border-radius: 8px;
+  }
+
+  .dubai-map-legend {
+    bottom: 8px;
+    left: 8px;
+    gap: 10px;
+    padding: 6px 10px;
+    font-size: 0.65rem;
+  }
+
+  .property-map-popup .leaflet-popup-content {
+    min-width: 200px;
+    max-width: 220px;
+  }
+
+  .popup-card-image {
+    height: 100px;
+  }
+}

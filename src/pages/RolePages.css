@@ -59,13 +59,9 @@
 }
 
 .stat-card {
-  background: var(--bg-primary);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
+  /* Consolidated: corner-lg + flex-row--lg + shadow-sm */
   padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
   box-shadow: var(--shadow-sm);
 }
 
@@ -80,8 +76,7 @@
 }
 
 .stat-info {
-  display: flex;
-  flex-direction: column;
+  /* Consolidated: flex-col--gap-xs */
 }
 
 .stat-value {
@@ -115,6 +110,7 @@
 .quick-link-card {
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
+  /* Consolidated: corner-md + flex-col--gap-xs + transition-smooth + shadow-sm */
   border-radius: 12px;
   padding: 1.25rem;
   text-decoration: none;
@@ -133,6 +129,7 @@
 
 .quick-link-card:hover {
   border-color: var(--primary-color);
+  /* Consolidated: hover-lift-sm */
   transform: translateY(-2px);
 }
 
@@ -172,6 +169,7 @@
 }
 
 .items-list {
+  /* Consolidated: flex-col--gap-sm */
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -188,6 +186,7 @@
 }
 
 .item-info {
+  /* Consolidated: flex-col--gap-xs */
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -434,7 +433,7 @@
 }
 
 .result-highlight {
-  background: rgba(196, 24, 53, 0.15);
+  background: rgba(212, 175, 55, 0.12);
   border: 1px solid var(--primary-color);
   border-radius: 12px;
   padding: 1.5rem;
@@ -1331,7 +1330,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 600; /* overlay tier */
 }
 
 .deal-modal {

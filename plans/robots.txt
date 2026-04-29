@@ -4,27 +4,25 @@
 User-agent: *
 Allow: /
 
-# Allow search engines to crawl all pages
+# Public pages
 Allow: /properties
 Allow: /services
 Allow: /careers
 Allow: /contact
 Allow: /about
+Allow: /buyer/
 
-# Block admin and private areas
+# Private / operational routes
 Disallow: /admin/
 Disallow: /owner/
 Disallow: /api/
 Disallow: /leasing-agent/
 Disallow: /secondary-sales-agent/
-
-# Block temporary and duplicate content
-Disallow: /*?*
-Disallow: /pending-approval
+Disallow: /signin
 Disallow: /select-role
+Disallow: /pending-approval
 
-# Sitemap location
+# Query URLs (reduce duplicate crawl budget)
+Disallow: /*?*
+
 Sitemap: https://whitecaves.com/sitemap.xml
-
-# Crawl-delay for respectful crawling
-Crawl-delay: 1

@@ -51,18 +51,18 @@
 }
 
 .role-option:hover .role-option-content {
-  border-color: var(--primary-color, #DC2626);
-  background: rgba(220, 38, 38, 0.02);
+  border-color: var(--primary-color, #D4AF37);
+  background: rgba(212, 175, 55, 0.02);
 }
 
 .role-option.selected .role-option-content {
-  border-color: var(--primary-color, #DC2626);
-  background: rgba(220, 38, 38, 0.05);
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+  border-color: var(--primary-color, #D4AF37);
+  background: rgba(212, 175, 55, 0.05);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
 }
 
 .role-option input:focus-visible + .role-option-content {
-  outline: 2px solid var(--primary-color, #DC2626);
+  outline: 2px solid var(--primary-color, #D4AF37);
   outline-offset: 2px;
 }
 
@@ -172,7 +172,7 @@
 
 .continue-btn {
   padding: 12px 32px;
-  background: var(--primary-color, #DC2626);
+  background: var(--primary-color, #D4AF37);
   border: none;
   border-radius: 10px;
   font-size: 15px;
@@ -183,7 +183,7 @@
 }
 
 .continue-btn:hover:not(:disabled) {
-  background: #b91c1c;
+  background: #B8960C;
 }
 
 .continue-btn:disabled {
@@ -201,11 +201,11 @@
 }
 
 [data-theme="dark"] .role-option:hover .role-option-content {
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(212, 175, 55, 0.1);
 }
 
 [data-theme="dark"] .role-option.selected .role-option-content {
-  background: rgba(220, 38, 38, 0.15);
+  background: rgba(212, 175, 55, 0.15);
 }
 
 [data-theme="dark"] .role-label {

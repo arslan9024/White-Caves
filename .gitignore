@@ -79,6 +79,10 @@ web_modules/
 .env.production.local
 .env.local
 
+# Replit config (may contain secrets)
+.replit
+replit.nix
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
@@ -128,9 +132,17 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-.vercel
-.env*.local
 
-# WhatsApp Web.js authentication data
+# Playwright / Vitest test artifacts
+test-results/
+playwright-report/
+test-results-*.log
+
+# Build output logs
+build-*.txt
+*-build.txt
+*-test-result*.txt
+
+# WhatsApp session data (secrets)
 .wwebjs_auth/
 .wwebjs_cache/

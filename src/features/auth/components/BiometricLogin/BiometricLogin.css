@@ -10,8 +10,8 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 2px solid var(--primary-color, #DC2626);
-  background: linear-gradient(135deg, var(--primary-color, #DC2626) 0%, #B91C1C 100%);
+  border: 2px solid var(--primary-color, #D4AF37);
+  background: linear-gradient(135deg, var(--primary-color, #D4AF37) 0%, #B8960C 100%);
   color: #ffffff;
   min-height: 56px;
   margin-bottom: 16px;
@@ -19,7 +19,7 @@
 
 .biometric-login-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
 }
 
 .biometric-login-btn:active:not(:disabled) {
@@ -32,7 +32,7 @@
 }
 
 .biometric-login-btn:focus-visible {
-  outline: 2px solid var(--primary-color, #DC2626);
+  outline: 2px solid var(--primary-color, #D4AF37);
   outline-offset: 2px;
 }
 
@@ -73,7 +73,7 @@
 .biometric-setup-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, var(--primary-color, #DC2626) 0%, #B91C1C 100%);
+  background: linear-gradient(135deg, var(--primary-color, #D4AF37) 0%, #B8960C 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -111,12 +111,12 @@
 }
 
 .biometric-setup-btn.primary {
-  background: var(--primary-color, #DC2626);
+  background: var(--primary-color, #D4AF37);
   color: white;
 }
 
 .biometric-setup-btn.primary:hover {
-  background: #B91C1C;
+  background: #B8960C;
 }
 
 .biometric-setup-btn.secondary {
@@ -152,7 +152,7 @@
 .biometric-credential-icon {
   width: 36px;
   height: 36px;
-  background: var(--primary-color, #DC2626);
+  background: var(--primary-color, #D4AF37);
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -232,8 +232,8 @@
 }
 
 .biometric-reminder-banner {
-  background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(185, 28, 28, 0.05) 100%);
-  border: 1px solid rgba(220, 38, 38, 0.2);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(184, 150, 12, 0.05) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.2);
   border-radius: 12px;
   padding: 16px 20px;
   margin-bottom: 20px;
@@ -249,7 +249,7 @@
 .biometric-reminder-banner .reminder-icon-large {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, var(--primary-color, #DC2626) 0%, #B91C1C 100%);
+  background: linear-gradient(135deg, var(--primary-color, #D4AF37) 0%, #B8960C 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -286,8 +286,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(220, 38, 38, 0.08);
-  border: 1px solid rgba(220, 38, 38, 0.15);
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.15);
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 13px;
@@ -303,7 +303,7 @@
 }
 
 .biometric-reminder-compact .reminder-link {
-  color: var(--primary-color, #DC2626);
+  color: var(--primary-color, #D4AF37);
   font-weight: 500;
   text-decoration: none;
 }
@@ -333,7 +333,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: var(--z-modal, 300);
   padding: 20px;
   animation: fadeIn 0.2s ease;
 }
@@ -390,7 +390,7 @@
 .biometric-prompt-modal .prompt-icon {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, var(--primary-color, #DC2626) 0%, #B91C1C 100%);
+  background: linear-gradient(135deg, var(--primary-color, #D4AF37) 0%, #B8960C 100%);
   border-radius: 20px;
   display: flex;
   align-items: center;
@@ -446,13 +446,13 @@
 }
 
 .biometric-prompt-modal .prompt-actions .btn-primary {
-  background: linear-gradient(135deg, var(--primary-color, #DC2626) 0%, #B91C1C 100%);
+  background: linear-gradient(135deg, var(--primary-color, #D4AF37) 0%, #B8960C 100%);
   color: white;
 }
 
 .biometric-prompt-modal .prompt-actions .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
 }
 
 .biometric-prompt-modal .prompt-actions .btn-secondary {
@@ -484,11 +484,11 @@
 }
 
 [data-theme="dark"] .biometric-reminder-banner {
-  background: linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(185, 28, 28, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(184, 150, 12, 0.1) 100%);
 }
 
 [data-theme="dark"] .biometric-reminder-compact {
-  background: rgba(220, 38, 38, 0.12);
+  background: rgba(212, 175, 55, 0.12);
 }
 
 @media (max-width: 480px) {

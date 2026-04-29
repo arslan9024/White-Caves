@@ -1,133 +1,76 @@
-# White Caves Real Estate LLC
+﻿# /plans — Pending-First Planning Workspace
 
-**Our Real Estate Platform - Dubai, UAE**
+> **Last Updated:** April 27, 2026
+> **Canonical Master Plan:** [`MASTER_PLAN.md`](./MASTER_PLAN.md)
 
-White Caves Real Estate LLC is a comprehensive digital platform specializing in the Dubai luxury real estate market. Our platform provides end-to-end solutions for property sales, rentals, and management with AI-powered automation.
+This folder now prioritizes **active pending work only**. Completed and historical phase-plan files have been moved to:
 
----
-
-## Company Information
-
-**White Caves Real Estate LLC**
-- **Landline Phone**: +971 4 335 0592
-- **Contact**: +971 56 361 6136
-- **Email**: admin@whitecaves.com
-- **Website**: www.whitecave.com
-- **Location**: Dubai, United Arab Emirates
+- `../archives/plans/completed/`
 
 ---
 
-## Platform Features
+## Active Pending Plans
 
-### Property Management
-- Comprehensive property listings with UAE-specific fields (RERA, DLD, Ejari, DEWA, Makani)
-- Advanced search with filters for emirates, communities, property types
-- Interactive Dubai map with property markers
-- Virtual tour integration (Matterport)
-- Off-plan property tracking
-
-### Multi-Role System
-- **Buyers**: Property search, viewings, mortgage calculator
-- **Sellers/Landlords**: Property listing, analytics, lead management
-- **Tenants**: Rental applications, contract management
-- **Agents**: CRM, client management, performance tracking
-- **Administrators**: Full system control, analytics dashboard
-
-### AI-Powered Automation
-- **Bilingual Chatbot**: Arabic/English support with intent recognition
-- **Smart Agent Assignment**: Weighted algorithm matching clients with best agents
-- **Lead Scoring**: Automatic qualification based on conversation analysis
-- **WhatsApp Integration**: Business messaging with automated responses
-
-### Contract Management
-- Ejari Unified Tenancy Contract system
-- Digital signature workflows
-- PDF generation and Google Drive storage
-- Status tracking and notifications
-
-### Analytics & Reporting
-- Market analytics dashboard
-- Agent performance leaderboard
-- Transaction tracking
-- Lead source analysis
-
-### Integrations
-- **Firebase**: Authentication (Google, Facebook, Apple, Email, Phone)
-- **Stripe**: Payment processing
-- **Google Workspace**: Calendar, Drive, Tasks
-- **WhatsApp Business API**: Customer messaging
-- **Google Maps**: Property visualization
+- [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md) — fastest pending-only tracker
+- [`MASTER_PLAN.md`](./MASTER_PLAN.md) — single source of truth for status and roadmap
+- [`MASTER_PLAN_CRM_EXCELLENCE.md`](./MASTER_PLAN_CRM_EXCELLENCE.md) — longer-horizon CRM excellence roadmap
+- [`PHASE_1_HOMEPAGE.md`](./PHASE_1_HOMEPAGE.md) — current visible product phase
+- [`PHASE_2_LANDLORD_TENANT.md`](./PHASE_2_LANDLORD_TENANT.md) — next client-facing portal phase
+- [`PHASE_3_CRM_SUPERUSER.md`](./PHASE_3_CRM_SUPERUSER.md) — managing director CRM completion phase
+- [`PHASE_3_AND_BEYOND.md`](./PHASE_3_AND_BEYOND.md) — deferred future phases
+- [`PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md`](./PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md) — immediate execution checklist
+- [`IMPROVEMENTS_BACKLOG.md`](./IMPROVEMENTS_BACKLOG.md) — master list of 38 improvements (all categories + phase assignments)
+- [`IMPROVEMENTS_CRITICAL.md`](./IMPROVEMENTS_CRITICAL.md) — 5 critical/broken items (WhatsApp, Stripe, 2FA, Arabic, AI registry)
+- [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md) — 7 incomplete features (scheduler, PDF, email, portals, VR, images, notifications)
+- [`IMPROVEMENTS_ARCHITECTURE.md`](./IMPROVEMENTS_ARCHITECTURE.md) — 6 architecture items (Zod, versioning, errors, pagination, Redux, env validation)
+- [`IMPROVEMENTS_PERFORMANCE.md`](./IMPROVEMENTS_PERFORMANCE.md) — 4 performance items (Redis, image CDN, bundle split, DB pool)
+- [`IMPROVEMENTS_SECURITY.md`](./IMPROVEMENTS_SECURITY.md) — 4 security items (JWT refresh, CSRF, rate limits, seed secrets)
+- [`IMPROVEMENTS_SEO.md`](./IMPROVEMENTS_SEO.md) — 3 SEO items (OG tags, sitemap, JSON-LD)
+- [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md) — 4 UX items (skeletons, accessibility, mobile CRM, PWA groundwork)
+- [`IMPROVEMENTS_PRODUCT.md`](./IMPROVEMENTS_PRODUCT.md) — 5 product items (lead scoring, mortgage calc, calendar, audit log, multi-currency)
+- [`audit-round-66.md`](./audit-round-66.md) — active audit findings
+- [`audit-round-69.md`](./audit-round-69.md) — active audit findings
+- [`audit-round-70.md`](./audit-round-70.md) — active audit findings
 
 ---
 
-## Technology Stack
+## AI Assistants Planning Hub
 
-### Frontend
-- React 18 with Vite
-- Redux Toolkit for state management
-- Framer Motion for animations
-- Custom CSS with dark/light themes
-
-### Backend
-- Node.js with Express
-- MongoDB with Mongoose ODM
-- Firebase Admin SDK
-
-### Design
-- Red (#DC2626) and White brand colors
-- Montserrat/Open Sans typography
-- Mobile-responsive design
-- RTL support for Arabic
+- [`ai_assistants/README.md`](./ai_assistants/README.md) — **Master index of all 40 AI assistants** with status, department, and file links
+  - 18 assistants currently registered in code (`src/store/slices/aiAssistant/registry.ts`)
+  - 22 assistants planned across Phases 3–10
+  - Each assistant has a dedicated `.md` file with full detail: capabilities, end-to-end flow, API endpoints, data flows, frontend components, backend services, access control, implementation checklist, dependencies, and future enhancements
 
 ---
 
-## Deployment
+## Department Planning Hub
 
-### Production Requirements
-- Node.js 24.x
-- MongoDB database
-- Firebase project with service account
-- Required environment variables configured
-
-
-### Build Commands
-```bash
-# On Windows PowerShell, use npm.cmd instead of npm if you see script execution errors:
-npm.cmd install
-npm.cmd run build
-npm.cmd start
-# Or use Node directly for package binaries:
-node node_modules/vite/bin/vite.js
-node node_modules/vitest/vitest.mjs run
-```
-
-If you see an error like:
-> File C:\Program Files\nodejs\npm.ps1 cannot be loaded because running scripts is disabled on this system.
-
-This is a PowerShell security policy. Either use npm.cmd as above, or run:
-```powershell
-Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
-```
-to allow script execution for npm.ps1 (not recommended for most users).
-
-### Environment Variables
-- `MONGODB_URI`: MongoDB connection string
-- `FIREBASE_SERVICE_ACCOUNT`: Firebase admin credentials
-- `STRIPE_SECRET_KEY`: Stripe API key
-- `GOOGLE_CLIENT_ID`: Google OAuth client ID
-- `GOOGLE_CLIENT_SECRET`: Google OAuth secret
-- `WHATSAPP_ACCESS_TOKEN`: WhatsApp Business API token (optional)
+- [`departments/README.md`](./departments/README.md) — **Master index of all 12 departments** with AI assistant assignments, color codes, and file links
+  - 10 existing departments (Executive, Sales, Operations, Finance, Communications, Compliance, Legal, Technology, Marketing, Intelligence)
+  - 2 new departments added (Customer Experience, Data & AI)
+  - Each department has a dedicated `.md` file with full detail: mission, team structure, responsibilities, assigned AI assistants, end-to-end workflows, API endpoints, KPIs, inter-department data flows, implementation status, and future roadmap
 
 ---
 
-## Support
+## Reference Docs
 
-For technical support or inquiries, please contact:
-- **Email**: support@whitecavesrealestate.com
-- **Phone**: +971 56 361 6136
+- [`ARCHITECTURE.md`](./ARCHITECTURE.md)
+- [`API_DOCUMENTATION.md`](./API_DOCUMENTATION.md)
+- [`TECHNICAL_REFERENCE.md`](./TECHNICAL_REFERENCE.md)
+- [`DEPLOYMENT_GUIDE.md`](./DEPLOYMENT_GUIDE.md)
+- [`PRODUCTION_DEPLOYMENT_RUNBOOK.md`](./PRODUCTION_DEPLOYMENT_RUNBOOK.md)
+- [`CICD_SETUP_DOCUMENTATION.md`](./CICD_SETUP_DOCUMENTATION.md)
+- [`CICD_QUICK_REFERENCE.md`](./CICD_QUICK_REFERENCE.md)
+- [`MONITORING_AND_ALERTING_SETUP.md`](./MONITORING_AND_ALERTING_SETUP.md)
+- [`EMERGENCY_RESPONSE_PROCEDURES.md`](./EMERGENCY_RESPONSE_PROCEDURES.md)
+- [`DASHBOARD_INTEGRATION_GUIDE.md`](./DASHBOARD_INTEGRATION_GUIDE.md)
+- [`PHASE_3_E2E_TEST_PLAN.md`](./PHASE_3_E2E_TEST_PLAN.md)
 
 ---
 
-**Copyright 2024-2026 White Caves Real Estate LLC. All Rights Reserved.**
+## Master Plan Governance
 
-*This software is proprietary and confidential. Unauthorized copying, distribution, or use is strictly prohibited.*
+- **Canonical file:** `plans/MASTER_PLAN.md`
+- **Root `MASTER_PLAN.md`:** redirect/pointer only, not a second source of truth
+- **Update cadence:** whenever phase status or priorities materially change
+- **Archive policy:** completed phase plans move to `archives/plans/completed/`

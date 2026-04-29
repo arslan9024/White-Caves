@@ -475,7 +475,7 @@ body.dark-mode .btn-secondary:hover {
 }
 
 .role-card.selected {
-  background: rgba(196, 24, 53, 0.15);
+  background: rgba(212, 175, 55, 0.12);
   border-color: var(--primary-color);
 }
 
@@ -659,7 +659,7 @@ body.dark-mode .btn-secondary:hover {
 .role-badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  background: rgba(196, 24, 53, 0.15);
+  background: rgba(212, 175, 55, 0.12);
   border: 1px solid var(--primary-color);
   border-radius: 20px;
   color: var(--primary-color);

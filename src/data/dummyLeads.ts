@@ -1,0 +1,627 @@
+/**
+ * Comprehensive Dummy Data for Managing Director CRM Dashboard
+ * Includes leads, clients, agents, transactions, and activities
+ */
+
+// ============== AGENTS ==============
+export const DUMMY_AGENTS = [
+  {
+    id: 1,
+    name: 'Ahmed Hassan',
+    avatar: 'AH',
+    email: 'ahmed.hassan@whitecaves.ae',
+    phone: '+971501234567',
+    department: 'Sales',
+    status: 'online',
+    sales: 15,
+    roi: 98,
+    performance: 'Excellent',
+    rating: 4.8,
+    leads_assigned: 12,
+    deals_closed: 5,
+    avatar_color: '#FF6B6B'
+  },
+  {
+    id: 2,
+    name: 'Fatima Al-Mansoori',
+    avatar: 'FM',
+    email: 'fatima.mansoori@whitecaves.ae',
+    phone: '+971502345678',
+    department: 'Sales',
+    status: 'online',
+    sales: 13,
+    roi: 95,
+    performance: 'Excellent',
+    rating: 4.7,
+    leads_assigned: 10,
+    deals_closed: 4,
+    avatar_color: '#4ECDC4'
+  },
+  {
+    id: 3,
+    name: 'Mohammed Al-Mazrouei',
+    avatar: 'MM',
+    email: 'mohammed.mazrouei@whitecaves.ae',
+    phone: '+971503456789',
+    department: 'Operations',
+    status: 'online',
+    sales: 11,
+    roi: 92,
+    performance: 'Very Good',
+    rating: 4.6,
+    leads_assigned: 8,
+    deals_closed: 3,
+    avatar_color: '#FFD93D'
+  },
+  {
+    id: 4,
+    name: 'Leila Al-Falasiri',
+    avatar: 'LF',
+    email: 'leila.falasiri@whitecaves.ae',
+    phone: '+971504567890',
+    department: 'Sales',
+    status: 'away',
+    sales: 10,
+    roi: 88,
+    performance: 'Very Good',
+    rating: 4.5,
+    leads_assigned: 9,
+    deals_closed: 3,
+    avatar_color: '#6BCB77'
+  },
+  {
+    id: 5,
+    name: 'Rashid Al-Ketbi',
+    avatar: 'RK',
+    email: 'rashid.ketbi@whitecaves.ae',
+    phone: '+971505678901',
+    department: 'Marketing',
+    status: 'online',
+    sales: 9,
+    roi: 85,
+    performance: 'Good',
+    rating: 4.4,
+    leads_assigned: 7,
+    deals_closed: 2,
+    avatar_color: '#F38181'
+  },
+  {
+    id: 6,
+    name: 'Noor Al-Dhaheri',
+    avatar: 'ND',
+    email: 'noor.dhaheri@whitecaves.ae',
+    phone: '+971506789012',
+    department: 'Sales',
+    status: 'offline',
+    sales: 8,
+    roi: 82,
+    performance: 'Good',
+    rating: 4.3,
+    leads_assigned: 6,
+    deals_closed: 2,
+    avatar_color: '#AA96DA'
+  },
+  {
+    id: 7,
+    name: 'Hana Al-Kaabi',
+    avatar: 'HK',
+    email: 'hana.kaabi@whitecaves.ae',
+    phone: '+971507890123',
+    department: 'Operations',
+    status: 'online',
+    sales: 7,
+    roi: 78,
+    performance: 'Good',
+    rating: 4.2,
+    leads_assigned: 5,
+    deals_closed: 2,
+    avatar_color: '#FCBAD3'
+  },
+  {
+    id: 8,
+    name: 'Samir Al-Jabri',
+    avatar: 'SJ',
+    email: 'samir.jabri@whitecaves.ae',
+    phone: '+971508901234',
+    department: 'Sales',
+    status: 'online',
+    sales: 6,
+    roi: 75,
+    performance: 'Average',
+    rating: 4.0,
+    leads_assigned: 4,
+    deals_closed: 1,
+    avatar_color: '#A0D995'
+  }
+];
+
+// ============== HOT LEADS ==============
+export const DUMMY_HOT_LEADS = [
+  {
+    id: 1,
+    name: 'Samir Abdullah',
+    email: 'samir@example.com',
+    phone: '+971506123456',
+    status: 'hot',
+    priority: 'HIGH',
+    amount: 2500000,
+    stage: 'negotiation',
+    agent_id: 1,
+    agent_name: 'Ahmed Hassan',
+    last_contact: '2 hours ago',
+    next_action: 'Send contract',
+    notes: 'Very interested, waiting for final review',
+    property_interest: 'Luxury Villa, Emirates Hills'
+  },
+  {
+    id: 2,
+    name: 'Zainab Al-Ahmed',
+    email: 'zainab@example.com',
+    phone: '+971507234567',
+    status: 'hot',
+    priority: 'HIGH',
+    amount: 1800000,
+    stage: 'viewing',
+    agent_id: 2,
+    agent_name: 'Fatima Al-Mansoori',
+    last_contact: '4 hours ago',
+    next_action: 'Schedule site visit',
+    notes: 'Second viewing scheduled for tomorrow',
+    property_interest: 'Modern Apartment, Downtown Dubai'
+  },
+  {
+    id: 3,
+    name: 'Hassan Al-Marri',
+    email: 'hassan@example.com',
+    phone: '+971508345678',
+    status: 'hot',
+    priority: 'CRITICAL',
+    amount: 3200000,
+    stage: 'negotiation',
+    agent_id: 3,
+    agent_name: 'Mohammed Al-Mazrouei',
+    last_contact: '1 hour ago',
+    next_action: 'Close deal',
+    notes: 'Ready to sign, finalizing payment terms',
+    property_interest: 'Investment Property, Business Bay'
+  },
+  {
+    id: 4,
+    name: 'Maryem Al-Dhaheri',
+    email: 'maryem@example.com',
+    phone: '+971509456789',
+    status: 'warm',
+    priority: 'HIGH',
+    amount: 1500000,
+    stage: 'initial',
+    agent_id: 4,
+    agent_name: 'Leila Al-Falasiri',
+    last_contact: 'Today',
+    next_action: 'Send property catalog',
+    notes: 'First contact, interested in family villa',
+    property_interest: 'Family Villa, Arabian Ranches'
+  },
+  {
+    id: 5,
+    name: 'Omar Al-Qasimi',
+    email: 'omar@example.com',
+    phone: '+971501567890',
+    status: 'hot',
+    priority: 'HIGH',
+    amount: 2200000,
+    stage: 'viewing',
+    agent_id: 5,
+    agent_name: 'Rashid Al-Ketbi',
+    last_contact: '3 hours ago',
+    next_action: 'Prepare offer',
+    notes: 'Very motivated buyer, cash ready',
+    property_interest: 'Premium Townhouse, Jumeirah'
+  },
+  {
+    id: 6,
+    name: 'Layla Al-Mansouri',
+    email: 'layla@example.com',
+    phone: '+971502567890',
+    status: 'warm',
+    priority: 'MEDIUM',
+    amount: 1200000,
+    stage: 'viewing',
+    agent_id: 1,
+    agent_name: 'Ahmed Hassan',
+    last_contact: 'Yesterday',
+    next_action: 'Follow-up call',
+    notes: 'Interested but needs financing approval',
+    property_interest: 'Studio, Dubai Marina'
+  },
+  {
+    id: 7,
+    name: 'Sultan Al-Zaabi',
+    email: 'sultan@example.com',
+    phone: '+971503567890',
+    status: 'hot',
+    priority: 'HIGH',
+    amount: 2800000,
+    stage: 'proposal',
+    agent_id: 2,
+    agent_name: 'Fatima Al-Mansoori',
+    last_contact: '30 mins ago',
+    next_action: 'Send proposal',
+    notes: 'Waiting for investment details',
+    property_interest: 'Multi-unit Investment, DIFC'
+  },
+  {
+    id: 8,
+    name: 'Amira Hassan',
+    email: 'amira@example.com',
+    phone: '+971504567890',
+    status: 'warm',
+    priority: 'MEDIUM',
+    amount: 950000,
+    stage: 'initial',
+    agent_id: 3,
+    agent_name: 'Mohammed Al-Mazrouei',
+    last_contact: '2 days ago',
+    next_action: 'Schedule consultation',
+    notes: 'First-time buyer, needs guidance',
+    property_interest: 'Affordable Apartment, Al Barsha'
+  },
+  {
+    id: 9,
+    name: 'Faisal Al-Mansoori',
+    email: 'faisal@example.com',
+    phone: '+971505567890',
+    status: 'hot',
+    priority: 'HIGH',
+    amount: 3500000,
+    stage: 'negotiation',
+    agent_id: 4,
+    agent_name: 'Leila Al-Falasiri',
+    last_contact: '45 mins ago',
+    next_action: 'Final walkthrough',
+    notes: 'Commercial property buyer, eager to proceed',
+    property_interest: 'Commercial Space, DIFC Office'
+  },
+  {
+    id: 10,
+    name: 'Reem Al-Dhaheri',
+    email: 'reem@example.com',
+    phone: '+971506567890',
+    status: 'warm',
+    priority: 'LOW',
+    amount: 750000,
+    stage: 'research',
+    agent_id: 5,
+    agent_name: 'Rashid Al-Ketbi',
+    last_contact: '1 week ago',
+    next_action: 'Send market report',
+    notes: 'Window shopping, may convert later',
+    property_interest: 'Budget Apartment, Deira'
+  }
+];
+
+// ============== CLIENTS ==============
+export const DUMMY_CLIENTS = [
+  {
+    id: 1,
+    name: 'Samir Abdullah Holdings',
+    email: 'samir.holding@example.com',
+    phone: '+971506123456',
+    type: 'Corporate',
+    status: 'active',
+    total_value: 8500000,
+    last_contact: '2026-03-05',
+    agent_id: 1,
+    agent_name: 'Ahmed Hassan',
+    properties_owned: 3,
+    deals_count: 5,
+    avatar_color: '#FF6B6B'
+  },
+  {
+    id: 2,
+    name: 'Zainab Al-Ahmed',
+    email: 'zainab.ahmed@example.com',
+    phone: '+971507234567',
+    type: 'Individual',
+    status: 'active',
+    total_value: 4200000,
+    last_contact: '2026-03-04',
+    agent_id: 2,
+    agent_name: 'Fatima Al-Mansoori',
+    properties_owned: 1,
+    deals_count: 2,
+    avatar_color: '#4ECDC4'
+  },
+  {
+    id: 3,
+    name: 'Hassan Al-Marri Investments',
+    email: 'hassan.marri@example.com',
+    phone: '+971508345678',
+    type: 'Investment Firm',
+    status: 'active',
+    total_value: 12000000,
+    last_contact: '2026-03-06',
+    agent_id: 3,
+    agent_name: 'Mohammed Al-Mazrouei',
+    properties_owned: 8,
+    deals_count: 12,
+    avatar_color: '#FFD93D'
+  },
+  {
+    id: 4,
+    name: 'Maryem Al-Dhaheri',
+    email: 'maryem.dhaheri@example.com',
+    phone: '+971509456789',
+    type: 'Individual',
+    status: 'active',
+    total_value: 3500000,
+    last_contact: '2026-03-07',
+    agent_id: 4,
+    agent_name: 'Leila Al-Falasiri',
+    properties_owned: 2,
+    deals_count: 3,
+    avatar_color: '#6BCB77'
+  },
+  {
+    id: 5,
+    name: 'Al-Qasimi Real Estate Group',
+    email: 'alqasimi@example.com',
+    phone: '+971501567890',
+    type: 'Developer',
+    status: 'inactive',
+    total_value: 15000000,
+    last_contact: '2026-02-20',
+    agent_id: 5,
+    agent_name: 'Rashid Al-Ketbi',
+    properties_owned: 15,
+    deals_count: 25,
+    avatar_color: '#F38181'
+  },
+  {
+    id: 6,
+    name: 'Noor Al-Dhaheri Consulting',
+    email: 'noor.consulting@example.com',
+    phone: '+971502567890',
+    type: 'Corporate',
+    status: 'active',
+    total_value: 6800000,
+    last_contact: '2026-03-03',
+    agent_id: 1,
+    agent_name: 'Ahmed Hassan',
+    properties_owned: 4,
+    deals_count: 8,
+    avatar_color: '#AA96DA'
+  },
+  {
+    id: 7,
+    name: 'Hana Al-Kaabi Family Trust',
+    email: 'hana.trust@example.com',
+    phone: '+971503567890',
+    type: 'Trust/Estate',
+    status: 'active',
+    total_value: 9200000,
+    last_contact: '2026-03-05',
+    agent_id: 2,
+    agent_name: 'Fatima Al-Mansoori',
+    properties_owned: 5,
+    deals_count: 6,
+    avatar_color: '#FCBAD3'
+  },
+  {
+    id: 8,
+    name: 'Samir Al-Jabri Enterprises',
+    email: 'samir.ent@example.com',
+    phone: '+971504567890',
+    type: 'Corporate',
+    status: 'active',
+    total_value: 7100000,
+    last_contact: '2026-03-01',
+    agent_id: 3,
+    agent_name: 'Mohammed Al-Mazrouei',
+    properties_owned: 3,
+    deals_count: 4,
+    avatar_color: '#A0D995'
+  },
+  {
+    id: 9,
+    name: 'Layla Al-Mansouri',
+    email: 'layla.mansouri@example.com',
+    phone: '+971505567890',
+    type: 'Individual',
+    status: 'lead',
+    total_value: 0,
+    last_contact: '2026-03-07',
+    agent_id: 4,
+    agent_name: 'Leila Al-Falasiri',
+    properties_owned: 0,
+    deals_count: 0,
+    avatar_color: '#FFB6C1'
+  },
+  {
+    id: 10,
+    name: 'Premier Investment Group',
+    email: 'premier@example.com',
+    phone: '+971506567890',
+    type: 'Investment Firm',
+    status: 'active',
+    total_value: 18500000,
+    last_contact: '2026-03-06',
+    agent_id: 5,
+    agent_name: 'Rashid Al-Ketbi',
+    properties_owned: 12,
+    deals_count: 18,
+    avatar_color: '#DDA0DD'
+  }
+];
+
+// ============== RECENT ACTIVITIES ==============
+export const DUMMY_ACTIVITIES = [
+  {
+    id: 1,
+    timestamp: '2026-03-07 10:30',
+    action: 'Deal closed',
+    description: 'Hassan Al-Marri closed a deal worth AED 3.2M',
+    user: 'Mohammed Al-Mazrouei',
+    type: 'deal_closed',
+    icon: '✅'
+  },
+  {
+    id: 2,
+    timestamp: '2026-03-07 09:15',
+    action: 'New hot lead created',
+    description: 'Faisal Al-Mansoori added to hot leads',
+    user: 'Leila Al-Falasiri',
+    type: 'lead_created',
+    icon: '🔥'
+  },
+  {
+    id: 4,
+    timestamp: '2026-03-06 17:20',
+    action: 'Lead stage updated',
+    description: 'Samir Abdullah moved to negotiation stage',
+    user: 'Ahmed Hassan',
+    type: 'stage_change',
+    icon: '📈'
+  },
+  {
+    id: 5,
+    timestamp: '2026-03-06 14:00',
+    action: 'New client registered',
+    description: 'Premier Investment Group registered as new client',
+    user: 'Rashid Al-Ketbi',
+    type: 'client_created',
+    icon: '👤'
+  },
+  {
+    id: 6,
+    timestamp: '2026-03-05 11:30',
+    action: 'Deal cancelled',
+    description: 'Layla Al-Mansouri requested cancellation',
+    user: 'System',
+    type: 'deal_cancelled',
+    icon: '❌'
+  },
+  {
+    id: 7,
+    timestamp: '2026-03-05 09:00',
+    action: 'Property listed',
+    description: 'New luxury villa added to inventory',
+    user: 'Mohammed Al-Mazrouei',
+    type: 'property_added',
+    icon: '🏠'
+  },
+  {
+    id: 9,
+    timestamp: '2026-03-04 13:20',
+    action: 'New agent onboarded',
+    description: 'Samir Al-Jabri joined the sales team',
+    user: 'System',
+    type: 'agent_added',
+    icon: '👥'
+  },
+  {
+    id: 10,
+    timestamp: '2026-03-03 10:00',
+    action: 'Performance alert',
+    description: 'Ahmed Hassan achieved top performer status',
+    user: 'System',
+    type: 'alert',
+    icon: '⭐'
+  }
+];
+
+// ============== OVERVIEW DASHBOARD DATA ==============
+export const DUMMY_OVERVIEW_DATA = {
+  metrics: {
+    totalLeads: 245,
+    hotLeads: 23,
+    warmLeads: 67,
+    coldLeads: 155,
+    agentsOnline: 7,
+    agentsTotal: 15,
+    conversionsThisMonth: 12,
+    revenuethisMonth: 2850000,
+    activeClients: 10,
+    activeDeals: 45,
+    pendingPayments: 3
+  },
+  topAgents: DUMMY_AGENTS.slice(0, 5),
+  hotLeads: DUMMY_HOT_LEADS.slice(0, 5),
+  recentActivity: DUMMY_ACTIVITIES,
+  performance: {
+    thisMonth: {
+      deals_closed: 12,
+      revenue: 2850000,
+      new_clients: 3,
+      conversion_rate: 14.2
+    },
+    lastMonth: {
+      deals_closed: 10,
+      revenue: 2100000,
+      new_clients: 2,
+      conversion_rate: 12.1
+    }
+  }
+};
+
+// ============== ALL LEADS (INCLUDES HOT + WARM + COLD) ==============
+export const DUMMY_ALL_LEADS = [
+  ...DUMMY_HOT_LEADS,
+  // Add warm and cold leads
+  {
+    id: 101,
+    name: 'Ibrahim Al-Suwaidi',
+    email: 'ibrahim@example.com',
+    phone: '+971509123456',
+    status: 'cold',
+    priority: 'LOW',
+    amount: 500000,
+    stage: 'research',
+    agent_id: 1,
+    agent_name: 'Ahmed Hassan',
+    last_contact: '1 month ago',
+    next_action: 'Nurture campaign',
+    notes: 'Window shopping, not ready to buy',
+    property_interest: 'Budget Apartment'
+  },
+  {
+    id: 102,
+    name: 'Hana Al-Noor',
+    email: 'hana.noor@example.com',
+    phone: '+971508123456',
+    status: 'warm',
+    priority: 'MEDIUM',
+    amount: 1400000,
+    stage: 'proposal',
+    agent_id: 2,
+    agent_name: 'Fatima Al-Mansoori',
+    last_contact: '3 days ago',
+    next_action: 'Send offer',
+    notes: 'Seriously interested, comparing options',
+    property_interest: 'Studio Apartment'
+  },
+  {
+    id: 103,
+    name: 'Khalid Al-Falasi',
+    email: 'khalid@example.com',
+    phone: '+971507123456',
+    status: 'cold',
+    priority: 'LOW',
+    amount: 800000,
+    stage: 'inquiry',
+    agent_id: 3,
+    agent_name: 'Mohammed Al-Mazrouei',
+    last_contact: '2 weeks ago',
+    next_action: 'Quarterly check-in',
+    notes: 'Referred by client, early stage',
+    property_interest: 'Investment Property'
+  }
+];
+
+// ============== EXPORT SUMMARY ==============
+export const DUMMY_DATA_SUMMARY = {
+  agents: DUMMY_AGENTS.length,
+  hotLeads: DUMMY_HOT_LEADS.length,
+  clients: DUMMY_CLIENTS.length,
+  activities: DUMMY_ACTIVITIES.length,
+  totalLeads: DUMMY_ALL_LEADS.length
+};

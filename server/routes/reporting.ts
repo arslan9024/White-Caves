@@ -1,0 +1,422 @@
+/**
+ * Dashboard / Reporting API — Full Implementation
+ * Endpoints: /api/dashboard
+ * Provides: executive overview, KPIs, activity feed, analytics
+ */
+
+import { Router, Request, Response } from 'express';
+import { asyncHandler, AppError } from '../middleware/errorHandler';
+import type { AuthRequest } from '../middleware/auth';
+import { prisma } from '../database.js';
+import { requirePermission } from '../middleware/rbac';
+
+const router = Router();
+
+// ─── GET /api/dashboard/summary  &  /api/dashboard/overview ─────────────
+// Main dashboard overview used by CRM Hub  (frontend calls /summary)
+// Also handles role-based routes: /admin/summary, /:role/summary
+router.get(
+  ['/summary', '/overview', '/admin/summary', '/:role/summary'],
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    // AUTHORIZATION: Financial metrics restricted to managers/owners
+    const userRole = req.user?.role || '';
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(userRole)) {
+      throw new AppError('Access denied — dashboard summary requires manager or higher role', 403);
+    }
+
+    const [
+      totalLeads, hotLeads, wonLeads,
+      totalProperties, availableProperties,
+      totalAgents,
+      totalCommissions, paidCommissions,
+      recentActivities,
+      pipelineValue,
+    ] = await Promise.all([
+      prisma.lead.count(),
+      prisma.lead.count({ where: { status: 'qualified' } }),
+      prisma.lead.count({ where: { status: 'won' } }),
+      prisma.property.count(),
+      prisma.property.count({ where: { status: 'available' } }),
+      prisma.user.count({ where: { role: { in: ['agent', 'owner'] } } }),
+      prisma.commission.aggregate({ _sum: { amount: true }, _count: { _all: true } }),
+      prisma.commission.aggregate({ where: { status: 'paid' }, _sum: { amount: true } }),
+      prisma.activity.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+        include: { user: { select: { id: true, name: true } } },
+      }),
+      prisma.lead.aggregate({
+        where: { status: { notIn: ['won', 'lost'] } },
+        _sum: { budget: true },
+      }),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        metrics: {
+          totalLeads,
+          hotLeads,
+          wonLeads,
+          conversionRate: totalLeads > 0 ? Math.round((wonLeads / totalLeads) * 100) : 0,
+          totalProperties,
+          availableProperties,
+          totalAgents,
+          totalCommissions: totalCommissions._count._all,
+          totalCommissionValue: totalCommissions._sum.amount || 0,
+          paidCommissionValue: paidCommissions._sum.amount || 0,
+          pipelineValue: pipelineValue._sum.budget || 0,
+        },
+        recentActivities: recentActivities.map((a) => ({
+          id: a.id,
+          type: a.type,
+          action: a.action,
+          description: a.description,
+          timestamp: a.createdAt.toISOString(),
+          user: a.user?.name || 'System',
+        })),
+      },
+    });
+  })
+);
+
+// ─── GET /api/dashboard/activities ──────────────────────────────────────
+// Global activity feed
+router.get(
+  '/activities',
+  requirePermission('view_all_reports'),
+  asyncHandler(async (req: Request, res: Response) => {
+    // AUTHORIZATION: Only managers+ can access global activity feed
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — activity feed requires manager or above role', 403);
+    }
+
+    const { page = '1', pageSize = '20', type } = req.query;
+    const pageNum = Math.max(1, parseInt(page as string) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(pageSize as string) || 20));
+
+    const where: Record<string, unknown> = {};
+    if (type && type !== 'all') where.type = type as string;
+
+    const [activities, total] = await Promise.all([
+      prisma.activity.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (pageNum - 1) * limit,
+        take: limit,
+        include: {
+          user: { select: { id: true, name: true } },
+          lead: { select: { id: true, name: true } },
+        },
+      }),
+      prisma.activity.count({ where }),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: activities.map((a) => ({
+        id: a.id,
+        type: a.type,
+        action: a.action,
+        description: a.description,
+        timestamp: a.createdAt.toISOString(),
+        user: a.user?.name || 'System',
+        lead: a.lead ? { id: a.lead.id, name: a.lead.name } : null,
+        metadata: a.metadata,
+      })),
+      pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
+    });
+  })
+);
+
+// ─── GET /api/dashboard/executive ───────────────────────────────────────
+router.get(
+  '/executive',
+  requirePermission('view_all_reports'),
+  asyncHandler(async (req: Request, res: Response) => {
+    // AUTHORIZATION: Only managers+ can access executive analytics
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — executive analytics requires manager or above role', 403);
+    }
+    const [
+      leadsByStatus, leadsBySource,
+      propertiesByStatus, propertiesByType,
+      commissionsByStatus,
+      portfolioValue,
+    ] = await Promise.all([
+      prisma.lead.groupBy({ by: ['status'], _count: { _all: true } }),
+      prisma.lead.groupBy({ by: ['source'], _count: { _all: true } }),
+      prisma.property.groupBy({ by: ['status'], _count: { _all: true } }),
+      prisma.property.groupBy({ by: ['type'], _count: { _all: true } }),
+      prisma.commission.groupBy({ by: ['status'], _count: { _all: true }, _sum: { amount: true } }),
+      prisma.property.aggregate({ _sum: { price: true } }),
+    ]);
+
+    const toMap = (arr: Array<{ _count: { _all: number }; [key: string]: unknown }>, keyField: string) => {
+      const map: Record<string, number> = {};
+      arr.forEach(item => { map[String(item[keyField])] = item._count._all; });
+      return map;
+    };
+
+    res.status(200).json({
+      success: true,
+      data: {
+        leads: { byStatus: toMap(leadsByStatus, 'status'), bySource: toMap(leadsBySource, 'source') },
+        properties: { byStatus: toMap(propertiesByStatus, 'status'), byType: toMap(propertiesByType, 'type') },
+        commissions: commissionsByStatus.map((c) => ({
+          status: c.status, count: c._count._all, totalValue: c._sum.amount || 0,
+        })),
+        portfolioValue: portfolioValue._sum.price || 0,
+      },
+    });
+  })
+);
+
+// ─── GET /api/dashboard/kpis ────────────────────────────────────────────
+router.get(
+  '/kpis',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    // AUTHORIZATION: Only managers+ can access KPI metrics
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — KPI data requires manager or above role', 403);
+    }
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const [
+      newLeads30d, wonDeals30d, newProperties30d,
+      totalRevenue, avgDealSize,
+    ] = await Promise.all([
+      prisma.lead.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+      prisma.lead.count({ where: { status: 'won', updatedAt: { gte: thirtyDaysAgo } } }),
+      prisma.property.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+      prisma.commission.aggregate({ where: { status: 'paid' }, _sum: { amount: true } }),
+      prisma.commission.aggregate({ where: { status: 'paid' }, _avg: { amount: true } }),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        period: '30d',
+        kpis: {
+          newLeads: newLeads30d,
+          wonDeals: wonDeals30d,
+          newListings: newProperties30d,
+          totalRevenue: totalRevenue._sum.amount || 0,
+          avgDealSize: Math.round(avgDealSize._avg.amount || 0),
+        },
+      },
+    });
+  })
+);
+
+// ─── GET /api/dashboard/lead-funnel ─────────────────────────────────────
+// Lead conversion funnel: new → contacted → qualified → negotiating → won
+router.get(
+  '/lead-funnel',
+  requirePermission('view_analytics'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const stages = ['new', 'contacted', 'qualified', 'viewing', 'negotiating', 'won', 'lost'];
+    const counts = await Promise.all(
+      stages.map((status) => prisma.lead.count({ where: { status } })),
+    );
+    const total = counts.reduce((sum, c) => sum + c, 0);
+
+    const funnel = stages.map((stage, i) => ({
+      stage,
+      count: counts[i],
+      percentage: total > 0 ? Math.round((counts[i] / total) * 100) : 0,
+    }));
+
+    // Score tier distribution
+    const tiers = ['hot', 'warm', 'cold', 'inactive'];
+    const tierCounts = await Promise.all(
+      tiers.map((tier) => prisma.lead.count({ where: { scoreTier: tier } })),
+    );
+    const tierDistribution = tiers.map((tier, i) => ({ tier, count: tierCounts[i] }));
+
+    res.status(200).json({
+      success: true,
+      data: { funnel, tierDistribution, total },
+    });
+  })
+);
+
+// ─── GET /api/dashboard/trends ──────────────────────────────────────────
+// Time-series data: leads/transactions/commissions over period
+router.get(
+  '/trends',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const days = parseInt(req.query.days as string) || 30;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    // Get raw data in the period
+    const [leads, transactions, commissions] = await Promise.all([
+      prisma.lead.findMany({
+        where: { createdAt: { gte: startDate } },
+        select: { createdAt: true },
+        orderBy: { createdAt: 'asc' },
+      }),
+      prisma.transaction.findMany({
+        where: { createdAt: { gte: startDate } },
+        select: { createdAt: true, amount: true },
+        orderBy: { createdAt: 'asc' },
+      }),
+      prisma.commission.findMany({
+        where: { createdAt: { gte: startDate } },
+        select: { createdAt: true, amount: true },
+        orderBy: { createdAt: 'asc' },
+      }),
+    ]);
+
+    // Group by date
+    const groupByDate = <T extends { createdAt: Date }>(
+      items: T[],
+      getValue?: (item: T) => number,
+    ) => {
+      const map: Record<string, { count: number; value: number }> = {};
+      for (const item of items) {
+        const dateKey = item.createdAt.toISOString().split('T')[0];
+        if (!map[dateKey]) map[dateKey] = { count: 0, value: 0 };
+        map[dateKey].count++;
+        if (getValue) map[dateKey].value += getValue(item);
+      }
+      return map;
+    };
+
+    const leadsByDate = groupByDate(leads);
+    const transactionsByDate = groupByDate(transactions, (t) => t.amount);
+    const commissionsByDate = groupByDate(commissions, (c) => c.amount);
+
+    // Build daily series
+    const series: Array<{
+      date: string;
+      leads: number;
+      transactions: number;
+      transactionValue: number;
+      commissions: number;
+      commissionValue: number;
+    }> = [];
+
+    for (let d = 0; d < days; d++) {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + d);
+      const key = date.toISOString().split('T')[0];
+      series.push({
+        date: key,
+        leads: leadsByDate[key]?.count || 0,
+        transactions: transactionsByDate[key]?.count || 0,
+        transactionValue: transactionsByDate[key]?.value || 0,
+        commissions: commissionsByDate[key]?.count || 0,
+        commissionValue: commissionsByDate[key]?.value || 0,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: { period: `${days}d`, startDate: startDate.toISOString(), series },
+    });
+  })
+);
+
+// ─── GET /api/dashboard/property-aging ──────────────────────────────────
+// Days on market distribution for available properties
+router.get(
+  '/property-aging',
+  requirePermission('view_analytics'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const properties = await prisma.property.findMany({
+      where: { status: 'available' },
+      select: { id: true, title: true, createdAt: true, price: true, location: true },
+    });
+
+    const now = Date.now();
+    const aging = properties.map((p) => {
+      const daysOnMarket = Math.floor((now - p.createdAt.getTime()) / (86400000));
+      return { id: p.id, title: p.title, location: p.location, price: p.price, daysOnMarket };
+    });
+
+    // Buckets
+    const buckets = [
+      { label: '0-7 days', min: 0, max: 7, count: 0 },
+      { label: '8-30 days', min: 8, max: 30, count: 0 },
+      { label: '31-60 days', min: 31, max: 60, count: 0 },
+      { label: '61-90 days', min: 61, max: 90, count: 0 },
+      { label: '90+ days', min: 91, max: Infinity, count: 0 },
+    ];
+
+    for (const a of aging) {
+      const bucket = buckets.find((b) => a.daysOnMarket >= b.min && a.daysOnMarket <= b.max);
+      if (bucket) bucket.count++;
+    }
+
+    const avgDaysOnMarket = aging.length > 0
+      ? Math.round(aging.reduce((s, a) => s + a.daysOnMarket, 0) / aging.length)
+      : 0;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalAvailable: properties.length,
+        avgDaysOnMarket,
+        buckets: buckets.map(({ label, count }) => ({ label, count })),
+        staleProperties: aging.filter((a) => a.daysOnMarket > 90).slice(0, 10),
+      },
+    });
+  })
+);
+
+// ─── GET /api/dashboard/agent-performance ───────────────────────────────
+// Comparative agent performance dashboard
+router.get(
+  '/agent-performance',
+  requirePermission('view_analytics'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const agents = await prisma.user.findMany({
+      where: { role: 'agent', status: 'active' },
+      select: { id: true, name: true, email: true, department: true },
+    });
+
+    const agentPerformance = await Promise.all(
+      agents.map(async (agent) => {
+        const [totalLeads, wonLeads, commissions, activeDeals] = await Promise.all([
+          prisma.lead.count({ where: { assignedToId: agent.id } }),
+          prisma.lead.count({ where: { assignedToId: agent.id, status: 'won' } }),
+          prisma.commission.aggregate({ where: { agentId: agent.id, status: 'paid' }, _sum: { amount: true }, _count: true }),
+          prisma.transaction.count({ where: { agentId: agent.id, status: { in: ['pending', 'in_progress'] } } }),
+        ]);
+
+        return {
+          id: agent.id,
+          name: agent.name,
+          department: agent.department || 'General',
+          totalLeads,
+          wonLeads,
+          conversionRate: totalLeads > 0 ? Math.round((wonLeads / totalLeads) * 100) : 0,
+          totalCommission: commissions._sum.amount || 0,
+          dealsClosed: commissions._count || 0,
+          activeDeals,
+        };
+      })
+    );
+
+    // Sort by total commission descending
+    agentPerformance.sort((a, b) => b.totalCommission - a.totalCommission);
+
+    res.status(200).json({
+      success: true,
+      data: { agents: agentPerformance, total: agentPerformance.length },
+    });
+  })
+);
+
+export default router;
