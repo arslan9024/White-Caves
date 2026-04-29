@@ -19,7 +19,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#3B82F6',
     avatar: '👩‍💻',
     description:
-      'Manages DAMAC Hills 2 property inventory with 9,378+ units, data acquisition tools, and asset management',
+      'Mary is the single source of truth for all property inventory at White Caves, currently holding 9,378+ units across DAMAC Hills 2 and other communities. She ingests new unit data through bulk Excel/CSV uploads, OCR extraction from developer brochures, and direct API feeds from portals. Every property record includes unit type, floor level, view, size, price, availability status, floor plan, and photos. Mary enforces data quality rules — flagging duplicates, incomplete records, and price outliers — and pushes clean, enriched inventory to Clara for matching, Nadia for agent sharing, and Olivia for listing portals.',
     capabilities: [
       'property_crud',
       'data_tools',
@@ -52,7 +52,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#F59E0B',
     avatar: '👩‍💼',
     description:
-      'Manages financial operations, invoicing, payment tracking, and accounting reports',
+      "Theodora is the financial backbone of White Caves, managing every dirham that flows in and out of the business. She generates invoices and commission statements, tracks all client payments (cheques, bank transfers, crypto), manages escrow release schedules on off-plan transactions, and reconciles accounts at month-end. She monitors outstanding receivables with automated dunning sequences, integrates with VAT filing requirements, and produces profit-and-loss statements and financial KPIs for Zoe's executive dashboard.",
     capabilities: [
       'invoice_management',
       'payment_tracking',
@@ -83,7 +83,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#EC4899',
     avatar: '👩‍🎨',
     description:
-      'Manages marketing campaigns, social media, property listings, and brand communications',
+      'Olivia drives all marketing activity for White Caves — from crafting a single property listing description to orchestrating a multi-channel launch campaign. She auto-generates SEO-optimised listing copy from raw property data, schedules and publishes posts across Instagram, Facebook, LinkedIn, and portals (Bayut, Property Finder, Dubizzle), manages paid ad budgets with performance-based reallocation, tracks lead-source attribution so every marketing dirham is accountable, and compiles weekly marketing-ROI reports for Zoe. She also monitors competitor activity and portal ranking performance for White Caves listings.',
     capabilities: ['campaign_management', 'social_media', 'listing_optimization', 'analytics'],
     permissions: {
       viewableBy: ['owner', 'admin', 'marketing_manager'],
@@ -109,7 +109,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#10B981',
     avatar: '👩‍🏫',
     description:
-      'Executive support, calendar management, meeting coordination, and strategic planning assistance',
+      "Zoe is the managing director's AI chief of staff, aggregating intelligence from every other assistant to produce the executive layer's single source of truth. She compiles daily and weekly briefings — highlighting pipeline health, revenue status, compliance flags, team performance, and market movements — in a concise format tailored for strategic decision-making. Zoe manages the executive suggestions inbox where other assistants submit proposals for operational improvements, coordinates cross-department actions, maintains the strategic KPI dashboard, and generates board-ready presentation materials on demand.",
     capabilities: [
       'calendar_management',
       'meeting_scheduling',
@@ -140,7 +140,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#6366F1',
     avatar: '👩‍⚖️',
     description:
-      'Manages regulatory compliance, legal documentation, KYC/AML processes, and contract reviews',
+      'Laila is the guardian of regulatory adherence at White Caves, ensuring every transaction, employee, and business process meets UAE real estate law, RERA regulations, and AML requirements. She runs Know-Your-Customer checks on new clients — verifying passport, Emirates ID, proof of address, and source-of-funds declarations — continuously screens the client database against AML watchlists, reviews contracts for non-standard clauses, maintains a complete audit trail, and generates the regulatory reports required by DLD, RERA, and the UAE Central Bank.',
     capabilities: ['kyc_verification', 'aml_monitoring', 'contract_review', 'compliance_reports'],
     permissions: {
       viewableBy: ['owner', 'admin', 'legal_manager'],
@@ -166,7 +166,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#25D366',
     avatar: '👩‍💼',
     description:
-      'Enterprise CRM for 23+ agent WhatsApp numbers with message templates, lead assignment, broadcast campaigns, and comprehensive analytics',
+      'Nadia is the central hub for all WhatsApp communications across 23+ live agent numbers. She intelligently routes incoming conversations to the correct agent based on lead source, property type, and agent availability, enforces SLA response timers, fires automated quick-reply sequences when agents are offline, pre-qualifies leads by parsing natural-language enquiries, manages broadcast campaigns to 10,000+ opted-in contacts, monitors per-agent activity dashboards, and flags any session drops or delivery failures in real time.',
     capabilities: [
       'cloud_api_integration',
       'webhook_message_handling',
@@ -213,7 +213,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#8B5CF6',
     avatar: '🤖',
     description:
-      'Manages agent-side WhatsApp sessions with LocalAuth, real estate command execution, contact sync, and AI opportunity scoring',
+      "Linda manages the agent-device layer of White Caves' WhatsApp communications stack using the OpenClaw gateway and WhatsApp-web.js LocalAuth. Each sales agent's personal WhatsApp number runs as a dedicated authenticated session under Linda's control — she handles QR-code device linking, session persistence, recovery from disconnections, and multi-account coordination across up to 30 simultaneous agent channels. Linda enables agents to execute CRM commands directly inside WhatsApp, syncs contacts bidirectionally, applies AI-powered opportunity scoring to inbound messages, and logs every interaction for Echo's communication timeline.",
     capabilities: [
       'local_auth_management',
       'multi_account_coordination',
@@ -259,7 +259,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#8B5CF6',
     avatar: '👩‍💻',
     description:
-      'Manages sales pipeline, lead assignments, deal tracking, and sales performance analytics',
+      'Sophia controls the end-to-end sales pipeline, from the moment a qualified lead is handed over by Clara to the final deal closure. She assigns leads to the right agents based on language, specialisation, and current workload, tracks deal stages (Viewing Scheduled → Offer Made → SPA Signed → Registration), monitors individual and team targets versus actuals in real time, calculates commission splits when multiple agents collaborate on a deal, produces weekly sales-performance reports, and forecasts monthly closings using pipeline velocity data.',
     capabilities: ['pipeline_management', 'lead_assignment', 'deal_tracking', 'sales_forecasting'],
     permissions: {
       viewableBy: ['owner', 'admin', 'sales_manager', 'agent'],
@@ -285,7 +285,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#14B8A6',
     avatar: '👩‍🔧',
     description:
-      'Manages rental properties, tenant communications, lease agreements, and maintenance requests',
+      'Daisy oversees every aspect of the rental portfolio — from listing a unit for rent to collecting the final cheque on move-out. She manages tenant profiles, drafts and stores Ejari-registered tenancy contracts, tracks rent-payment schedules including PDC cheques, handles the full maintenance-request lifecycle (logging, vendor assignment, cost approval, completion sign-off), sends automated renewal reminders 90/60/30 days before lease expiry, flags chronic late-payers to Theodora, and produces rental yield summaries and occupancy-rate reports for investor clients.',
     capabilities: [
       'lease_management',
       'tenant_communications',
@@ -316,7 +316,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#EF4444',
     avatar: '👩‍🎯',
     description:
-      'Manages lead pipeline, qualification, nurturing workflows, and conversion tracking',
+      'Clara is the lead-lifecycle engine of the White Caves CRM. She receives raw leads from WhatsApp, web forms, portals, and referrals and immediately begins qualification: tagging each lead with source, budget band, preferred area, property type, and timeline to purchase. She drives structured nurturing sequences — automated follow-up messages, property suggestions, viewing invitations — maintains a granular activity timeline for every contact, calculates lead scores in collaboration with Archer, escalates hot leads to Sophia for pipeline action, and surfaces conversion analytics so managers can identify where leads are being lost.',
     capabilities: [
       'lead_management',
       'qualification',
@@ -348,7 +348,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#06B6D4',
     avatar: '🧠',
     description:
-      'Designs conversation flows with NLP intent recognition, slot filling, multi-turn dialogue, and bot analytics for real estate inquiries',
+      'Nina designs, builds, and maintains the WhatsApp automation bots that serve as the first responders in the White Caves communications stack. She uses a visual conversation-flow builder to create decision-tree dialogues handling property enquiries, viewing bookings, payment-plan requests, and FAQ responses — all without human intervention. She manages session lifecycles, trains intent classifiers on new real-estate terminology, integrates webhook callbacks from external systems, and delivers bot-performance analytics — message open-rates, resolution rates, escalation ratios — to Nadia and Aurora for review.',
     capabilities: [
       'flow_builder',
       'nlp_intent_recognition',
@@ -393,7 +393,8 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     icon: 'Users2',
     colorScheme: '#F97316',
     avatar: '👩‍💼',
-    description: 'Manages employee records, recruitment, performance reviews, and HR operations',
+    description:
+      'Nancy manages the full employee lifecycle at White Caves — from the moment a candidate applies to their final exit interview. She maintains structured profiles for all staff: contracts, RERA license numbers, visa expiry dates, commission tiers, and performance scores. Nancy runs the recruitment pipeline (job postings, CV screening, interview scheduling, offer letters), automates onboarding checklists for new agents, tracks daily attendance, schedules quarterly performance reviews, surfaces HR KPIs to Zoe, and alerts management when RERA licenses or visas approach expiry.',
     capabilities: ['employee_management', 'recruitment', 'performance_tracking', 'attendance'],
     permissions: {
       viewableBy: ['owner', 'admin', 'hr_manager'],
@@ -419,7 +420,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#0EA5E9',
     avatar: '👩‍💻',
     description:
-      'Oversees all technical operations, system architecture, deployment pipelines, and application portfolio management',
+      'Aurora is the technology command centre of White Caves. She monitors the health and performance of every service in the stack — API response times, database query durations, error rates, uptime SLAs — and surfaces anomalies before they become outages. She manages the CI/CD deployment pipeline, coordinates releases across the team, maintains the internal documentation hub so engineering knowledge stays current, acts as the AI governance layer tracking which models are running and evaluating their performance against KPIs, and ensures all AI outputs comply with White Caves ethical guidelines.',
     capabilities: [
       'system_health_monitoring',
       'deployment_pipeline',
@@ -467,7 +468,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#F472B6',
     avatar: '👩‍🎨',
     description:
-      'Designs and builds pixel-perfect UI components, maintains the design system, and ensures accessibility compliance across all interfaces',
+      'Hazel is the craftsperson responsible for every pixel of the White Caves user interface. She maintains the design-token system — colour palette, typography, spacing scales, shadow levels — ensuring the "Dubai Luxury" brand is applied consistently across the CRM, owner portal, and public website. Hazel builds and documents reusable React components in a shared library, conducts WCAG 2.1 AA accessibility audits, enforces responsive breakpoints for mobile and tablet, runs Lighthouse performance checks on every release, and collaborates with Aurora on front-end build pipelines.',
     capabilities: [
       'component_library',
       'design_system',
@@ -507,7 +508,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#22C55E',
     avatar: '👨‍💻',
     description:
-      'Architects backend services, optimizes database queries, manages API performance, and ensures system reliability and scalability',
+      'Willow architects and optimises the server-side infrastructure that powers White Caves. She designs and builds REST and WebSocket APIs, writes and tunes Prisma/PostgreSQL queries for maximum throughput, and implements caching strategies (Redis, CDN) that keep response times under 200ms even under peak load. Willow manages the data-pipeline architecture, enforces security best-practices (rate limiting, input validation, JWT token rotation, RBAC middleware), and works with Aurora on infrastructure-as-code to ensure the backend scales horizontally as the agency and its data grow.',
     capabilities: [
       'api_development',
       'database_optimization',
@@ -547,7 +548,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#D4AF37',
     avatar: '👩‍⚖️',
     description:
-      'Proactively identifies, documents, and helps resolve legal issues. Monitors contracts, regulations, and transaction compliance',
+      'Evangeline is the proactive legal risk officer who keeps White Caves ahead of contractual and regulatory threats. She monitors every live SPA, MOU, and tenancy contract for risk clauses — penalty provisions, unilateral cancellation rights, incomplete disclosure obligations — and flags them before signing. She tracks changes in UAE property law, RERA circulars, and DLD fee structures, maintains an internal best-practices library so agents always work with current compliant templates, logs identified risks on a severity-graded risk register, and drafts recommended contract amendments for legal-manager review.',
     capabilities: [
       'legal_risk_analysis',
       'contract_monitoring',
@@ -580,7 +581,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#7C3AED',
     avatar: '🛡️',
     description:
-      'IoT integration for property condition monitoring, predictive maintenance scheduling, and emergency response coordination',
+      'Sentinel is the 24/7 eyes and ears for every physical property in the White Caves portfolio. She connects to building IoT sensors (water, power, HVAC, access control, CCTV motion detectors) and translates raw telemetry into actionable maintenance alerts, distinguishing between minor issues and urgent emergencies. Sentinel runs predictive-maintenance algorithms on historical fault data to schedule servicing before breakdowns occur, dispatches work orders to approved vendors with SLA tracking, coordinates emergency-response protocols, feeds property-condition scores to Mary and Daisy, and generates monthly building-health reports for operations management.',
     capabilities: [
       'iot_monitoring',
       'predictive_maintenance',
@@ -613,7 +614,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#0D9488',
     avatar: '🎯',
     description:
-      'Scrapes and analyzes potential client databases, identifies property buying/selling patterns, and manages automated outreach',
+      'Hunter is the automated prospecting engine that constantly expands the White Caves lead funnel beyond inbound enquiries. She scans public property-transaction records (DLD), social-media signals, and third-party investor databases to identify individuals likely to be in a buying, selling, or investment cycle. Hunter enriches prospect profiles with contact details, estimated net worth signals, and previous transaction history, scores them for outreach priority, delivers enriched prospect cards to Clara for nurturing, and runs systematic competitor analysis — tracking which agencies are listing in target communities, their pricing strategies, and market-share movements.',
     capabilities: [
       'prospect_analysis',
       'market_scanning',
@@ -646,7 +647,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#7C3AED',
     avatar: '📚',
     description:
-      'Centralized memory and audit system. Creates immutable audit trails, enables cross-system analytics, provides operational clarity, and automates compliance reporting',
+      'Henry is the institutional memory of White Caves. Every action taken by every assistant — a message sent, a deal stage changed, a document generated, a KYC check run — is ingested by Henry as a timestamped, immutable event. He categorises and links events across entities (client, property, agent, transaction) to build a rich relational timeline, enables any team member to answer "what happened?" in seconds, runs SLA monitoring, detects anomalies such as unusual transaction patterns or repeated KYC failures, and generates compliance-ready audit logs exportable in PDF and CSV for regulatory submissions.',
     capabilities: [
       'universal_event_ingestion',
       'intelligent_categorization',
@@ -681,7 +682,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#0D9488',
     avatar: '🔮',
     description:
-      'Uses advanced analytics on DLD transaction data, news, and economic indicators to generate predictive reports on neighborhood trends and property valuation',
+      "Cipher is the intelligence engine that transforms raw market data into confident, forward-looking property insights. She ingests DLD transaction records, Bayut/Property Finder price feeds, UAE economic indicators, interest-rate movements, and global macro signals, then runs statistical and ML models to forecast price trajectories, rental-yield shifts, and demand hotspots at community and sub-community level. Cipher produces neighbourhood trend reports, investment-score matrices, and risk-adjusted yield projections that feed directly into Maven's portfolio advice and Zoe's executive briefings.",
     capabilities: [
       'market_trend_analysis',
       'price_prediction',
@@ -714,7 +715,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#6366F1',
     avatar: '🗺️',
     description:
-      'Analyzes zoning, DLD master plans, market gaps, and developer track records to identify high-potential off-plan projects',
+      'Atlas maps the off-plan development landscape of Dubai so White Caves can position itself and its clients ahead of the market. She analyses DLD master-plan data, zoning classifications, infrastructure-investment corridors, and developer track records to identify projects with the highest potential for capital appreciation. Atlas builds detailed feasibility profiles for each tracked development — cost per sq ft, payment-plan structures, expected handover dates, nearby amenity scores — and maintains a live pipeline of upcoming launches with ETA alerts sent to the sales team.',
     capabilities: [
       'feasibility_analysis',
       'zoning_analysis',
@@ -747,7 +748,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#F97316',
     avatar: '🏗️',
     description:
-      'Tracks construction milestones for off-plan buyers, automates developer communication, and manages the digital snagging process',
+      'Vesta is the dedicated project coordinator for buyers who have purchased off-plan properties and are waiting for handover. She tracks construction milestones published by developers, maps them against contractual timelines, sends automated progress updates to buyers, and when a snagging inspection date is set, generates a digital punch-list form and uses image-recognition analysis on uploaded photos to categorise defects. Vesta manages the full defect-resolution workflow — submitting items to the developer, tracking responses, and confirming closures — until the buyer receives a clean handover report.',
     capabilities: [
       'milestone_tracking',
       'developer_communication',
@@ -779,7 +780,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#14B8A6',
     avatar: '🏢',
     description:
-      'Integrates with building IoT systems for energy optimization, manages community events, and automates facility service requests',
+      'Juno transforms the buildings White Caves manages into smart, connected communities. She integrates with IoT infrastructure — smart meters, access-control systems, CCTV, lift sensors, parking barriers — to deliver real-time energy dashboards and automated utility billing. Juno manages community event calendars, handles facility-service requests routed in from residents via a WhatsApp chatbot powered by Nina, tracks service-provider SLAs, escalates unresolved requests to Sentinel, and produces monthly community-management summaries for building owners.',
     capabilities: [
       'iot_integration',
       'energy_optimization',
@@ -812,7 +813,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#D97706',
     avatar: '👑',
     description:
-      'Curates personalized services for high-net-worth clients: viewing schedules, interior design partners, visa and payment coordination',
+      "Kairos is the white-glove concierge for White Caves' high-net-worth and ultra-high-net-worth clients. She curates entirely personalised buying experiences: scheduling private viewings in off-hours, coordinating with interior designers and home-staging studios, arranging airport-to-property chauffeur logistics, and liaising with UAE golden-visa specialists for investor-visa processing. For clients purchasing multiple units, Kairos builds bespoke lifestyle packages — yacht bookings, school placements, healthcare referrals — from a curated partner network, and proactively surfaces new properties matching client lifestyle aspirations before they even ask.",
     capabilities: [
       'vip_client_management',
       'concierge_services',
@@ -845,7 +846,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#8B5CF6',
     avatar: '📊',
     description:
-      'Analyzes rental yields, capital appreciation trends, and tax implications to provide data-driven investment advice',
+      "Maven is the investment intelligence advisor for White Caves' portfolio clients and investor-segment buyers. She calculates gross and net rental yields for any property in the inventory, models capital-appreciation scenarios over 1-, 3-, and 5-year horizons using Cipher's market data, and runs tax-efficiency analysis for different buyer structures. For existing portfolio clients, Maven tracks asset performance against benchmarks, identifies underperforming holdings for disposal, surfaces new acquisition opportunities that improve overall portfolio yield and diversification, and generates client-facing investment proposals via Quill.",
     capabilities: [
       'portfolio_analysis',
       'yield_optimization',
@@ -878,7 +879,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#EF4444',
     avatar: '🎯',
     description:
-      'Calculates lead conversion probability scores (0–100) using enquiry source, budget signals, area preference, and engagement history',
+      'Archer assigns every lead in the White Caves CRM a conversion-probability score from 0 to 100 using a multi-factor model. Inputs include enquiry channel (WhatsApp direct scores higher than paid portal), budget specificity, community preference match against available inventory, engagement velocity, and historical patterns from thousands of past lead journeys. Archer updates scores in real time as new interactions occur, reorders agent work-queues so the hottest leads receive attention first, and surfaces scoring-rule configurations to sales managers who want to tune the model for seasonal campaigns or new communities.',
     capabilities: [
       'lead_scoring',
       'conversion_prediction',
@@ -911,7 +912,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#0EA5E9',
     avatar: '🔭',
     description:
-      'Matches buyer and tenant requirements to the best-fit properties using vector similarity search across the full inventory',
+      'Prism solves the "which property?" problem instantly. When an agent receives a buyer or tenant brief, Prism runs a vector-embedding similarity search across the full Mary inventory and returns a ranked shortlist with a percentage suitability score and a plain-language explanation for each match (e.g., "97% match: pool view confirmed, price within range, available immediately"). Prism learns from agent feedback — accepted and rejected recommendations — to continuously improve matching accuracy, and can handle ambiguous briefs by asking clarifying questions before running the search.',
     capabilities: [
       'requirement_parsing',
       'vector_similarity_search',
@@ -947,7 +948,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#14B8A6',
     avatar: '💰',
     description:
-      'Provides mortgage eligibility calculations, EIBOR rate tracking, bank comparison, and financing pathway guidance',
+      'Sage is the financial-planning advisor embedded in the White Caves sales journey for any buyer who needs financing. She calculates mortgage eligibility in real time using UAE Central Bank affordability ratios, runs EIBOR + margin calculations for variable-rate products, and builds side-by-side comparisons of offers from ADCB, Emirates NBD, HSBC, Mashreq, and other active UAE lenders. For investors, Sage models interest-coverage ratios and cash-flow projections factoring in rental income, guides clients through the pre-approval documentation process, and generates a financing-pathway summary agents can share directly in WhatsApp.',
     capabilities: [
       'mortgage_calculation',
       'eligibility_assessment',
@@ -979,7 +980,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#6366F1',
     avatar: '📜',
     description:
-      'Maintains a full, searchable communication timeline per client across WhatsApp, email, calls, and meetings',
+      "Echo is the client-memory system that ensures no conversation context is ever lost, regardless of which agent or channel a client uses next. She aggregates every touchpoint — WhatsApp messages, Linda bot sessions, emails, phone call notes, meeting records, document shares, and property viewings — into a unified, searchable timeline per client. When an agent opens a client profile, Echo surfaces the most relevant recent context so the conversation can continue seamlessly. She also detects silence — clients who haven't been contacted in 14+ days — and alerts Clara to trigger a re-engagement sequence.",
     capabilities: [
       'timeline_management',
       'cross_channel_aggregation',
@@ -1011,7 +1012,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#10B981',
     avatar: '🌍',
     description:
-      'Provides real-time Arabic ↔ English translation for client communications, marketing content, and documents',
+      'Mira breaks down the language barrier in a market where Arabic-speaking clients expect native-quality service and English-speaking agents may not be bilingual. She provides real-time Arabic ↔ English translation of WhatsApp messages, handles the subtleties of Dubai real estate terminology, preserves formal vs. informal register, and translates full documents (SPAs, NOCs, lease agreements) with layout integrity maintained for right-to-left Arabic. Mira also translates marketing content and property descriptions for Arabic-language portal listings, and detects the language of incoming messages automatically to route them to the correct agent.',
     capabilities: [
       'real_time_translation',
       'arabic_rtl_support',
@@ -1043,7 +1044,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#DC2626',
     avatar: '📋',
     description:
-      'Verifies title deeds, NOCs, Emirates IDs, and government documents using DLD API and layout integrity checks',
+      'Rex is the fraud-prevention and document-authenticity layer for every transaction White Caves processes. Before any SPA is signed or any commission is paid, Rex verifies the key documents: checks title deeds against the DLD blockchain registry, validates NOC letters against issuing authority records, cross-references Emirates IDs and passports with the ICA database, and runs layout-integrity analysis on uploaded PDFs to detect tampering or forgery. Rex assigns a verification confidence score to each document, flags anomalies for manual legal-team review, and maintains an audit log of every verification outcome.',
     capabilities: [
       'document_verification',
       'title_deed_check',
@@ -1080,7 +1081,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#A855F7',
     avatar: '🎨',
     description:
-      'Generates AI-powered virtual staging images, interactive 3D floor plans, and AR property tours',
+      'Iris elevates the presentation quality of White Caves listings using generative AI and 3D visualisation technology. For any vacant or unfurnished unit, she produces photorealistic virtual-staging images in multiple interior design styles (Contemporary, Arabian Luxury, Minimalist Scandinavian) within minutes. Iris converts 2D architectural floor plans into interactive 3D walkthroughs, generates AR-ready property tours viewable on a smartphone without an app, enhances existing listing photographs, and recommends the optimal image order and hero shot based on portal CTR data analysed by Olivia.',
     capabilities: [
       'virtual_staging',
       '3d_rendering',
@@ -1112,7 +1113,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#F59E0B',
     avatar: '🏆',
     description:
-      'Monitors and coaches sales agents on performance metrics, client communication quality, and personal branding',
+      "Apex turns performance data into agent development. She pulls every agent's metrics from Sophia, Clara, and Echo and synthesises them into individual performance profiles updated weekly. Apex benchmarks each agent against peers and against White Caves targets, identifies specific areas of underperformance — slow follow-up, low offer-to-viewing conversion, weak closing language — and generates personalised coaching plans with concrete, actionable improvement steps. She also monitors personal-branding activity (LinkedIn posts, portal profile completeness) and tracks progress against quarterly incentive targets.",
     capabilities: [
       'performance_tracking',
       'coaching_recommendations',
@@ -1148,7 +1149,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#F472B6',
     avatar: '⭐',
     description:
-      'Measures Net Promoter Score and CSAT after every sale, lease, and key client interaction',
+      "Halo is the voice-of-the-customer engine at White Caves. After every completed transaction — sale, rental, or property management handover — Halo automatically dispatches a contextualised NPS survey and CSAT questionnaire, personalising questions based on the service type. She aggregates scores into trend dashboards, detects drops in satisfaction before they escalate into public complaints, sets threshold alerts that trigger immediate management review, routes qualitative feedback to the responsible department, and feeds data directly into Apex's agent-coaching model and Olivia's reputation management.",
     capabilities: [
       'nps_surveys',
       'csat_measurement',
@@ -1180,7 +1181,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#0D9488',
     avatar: '🔮',
     description:
-      'Synthesises real-time DLD transaction data, portal price feeds, and economic indicators into narrative market summaries',
+      'Oracle is the market intelligence broadcaster of White Caves. Every week — and immediately whenever a significant event occurs (DLD volume spike, major developer announcement, interest-rate decision) — she synthesises data from Flux, Cipher, and Atlas into clear, narrative market summaries: price movements by community, transaction velocity, new supply coming to market, and forward-looking investment signals. Oracle formats summaries into three audience layers: a detailed analytical report for the MD and investment team, a concise agent briefing, and a public-friendly version for White Caves social-media channels managed by Olivia.',
     capabilities: [
       'market_synthesis',
       'dld_data_analysis',
@@ -1216,7 +1217,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#3B82F6',
     avatar: '⚡',
     description:
-      'Continuously ingests DLD transaction records, portal price changes, UAE news, and developer announcements',
+      "Flux is the real-time data pipeline that keeps the White Caves intelligence layer perpetually current. She maintains persistent connections to DLD's open-transaction API, Bayut and Property Finder price-feed webhooks, UAE News and Zawya RSS streams, and developer press-release channels. Every ingested record is normalised, deduplicated, timestamped, and routed downstream to Cipher, Crest, Oracle, and Nova. Flux monitors her own feed health — lag, record volume, schema drift — and raises alerts if any source falls behind its expected update cadence.",
     capabilities: [
       'dld_feed_ingestion',
       'portal_price_monitoring',
@@ -1252,7 +1253,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#8B5CF6',
     avatar: '🏗️',
     description:
-      'Monitors developer project milestones, payment plan releases, and launch events to keep the sales team ahead of new inventory',
+      'Nova is the dedicated intelligence feed for new developments and off-plan inventory, ensuring the White Caves sales team is always first to know about launches, payment-plan updates, and handover schedule changes. She monitors DAMAC, Emaar, Meraas, Aldar, and 40+ other active UAE developers via their investor relations pages, press releases, and DLD filings — extracting structured data on every new project. Nova sends real-time push notifications to relevant agents when a new project matches their client portfolio criteria, and feeds structured launch data to Atlas for feasibility scoring and to Mary for pre-launch inventory seeding.',
     capabilities: [
       'milestone_tracking',
       'launch_alerts',
@@ -1288,7 +1289,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#6366F1',
     avatar: '✍️',
     description:
-      'Generates SPAs, lease agreements, NOCs, invoices, market reports, and board summaries from templates and live CRM data',
+      'Quill is the document factory of White Caves, eliminating the hours agents used to spend manually drafting, formatting, and proofing transaction documents. She maintains a library of RERA-compliant, legally reviewed templates — Sale and Purchase Agreements, MOUs, Tenancy Contracts, NOC request letters, invoices, commission statements, and investor portfolio reports — and populates them in seconds by pulling live data directly from the CRM. Quill supports Arabic/English bilingual documents with RTL formatting, generates bulk batches for portfolio transactions, and routes completed documents to Evangeline for risk review before delivery.',
     capabilities: [
       'spa_generation',
       'lease_drafting',
@@ -1321,7 +1322,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#EC4899',
     avatar: '📊',
     description:
-      'Renders charts, heat maps, geospatial visualisations, and exportable dashboards from CRM and market data',
+      'Lumen is the visual intelligence layer that transforms raw data from across the White Caves CRM into charts, dashboards, and exportable reports. She renders bar charts, line graphs, funnel diagrams, and heat maps from sales pipeline data, financial summaries, marketing ROI metrics, and property-market trends, and produces geospatial visualisations — mapping transaction density, average prices, and lead origins by Dubai community. Every chart and dashboard auto-refreshes when underlying data changes, can be exported to PDF or PowerPoint for board presentations, and is accessible directly within the CRM.',
     capabilities: [
       'chart_rendering',
       'heatmap_generation',
@@ -1353,7 +1354,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#10B981',
     avatar: '🏠',
     description:
-      'Provides automated property valuations based on comparable DLD transactions, area trends, and market demand signals with a confidence score',
+      "Crest provides the Automated Valuation Model (AVM) that gives White Caves — and its clients — an independent, data-driven property value estimate within seconds. She analyses the most recent comparable DLD transactions within a configurable radius and time window, adjusts for property-specific factors (floor level, view, renovation status, community premium), applies community-wide trend corrections from Cipher's market data, and outputs an estimated market value with a confidence score and comparable-evidence summary. Crest supports bulk valuation runs for entire portfolio reviews, maintains a valuation history per unit, and feeds valuations into Maven's yield calculations and Theodora's financial reporting.",
     capabilities: [
       'automated_valuation',
       'comparable_analysis',
