@@ -12,10 +12,9 @@
  *
  *   Tablet (768-1023px):
  *   ┌──────────────── TopBar (56px) ─────────────────┐
- *   ├────┬──────────────────────────────────────────┤
- *   │64px│              Main Content                │
- *   │Rail│         (responsive, full width)         │
- *   └────┴──────────────────────────────────────────┘
+ *   ├────────────────────────────────────────────────┤
+ *   │64px Sidebar │       Main Content               │
+ *   └─────────────────────────────────────────────────┘
  *
  *   Mobile (<768px):
  *   ┌──────────────── TopBar (56px) ────────────────┐
@@ -23,8 +22,7 @@
  *         + 56px bottom mobile nav (MobileBottomNav)
  *
  * - TopBar: unified breadcrumb nav, Cmd+K search, notifications, user menu
- * - Desktop: EnhancedLeftSidebar (280px, departments + AI inline)
- * - Tablet: SidebarContainer (64px rail + 240px flyout)
+ * - Desktop/Tablet: EnhancedLeftSidebar (280px expanded / 64px collapsed)
  * - Mobile: Hidden sidebar, content full width, bottom nav
  * - CommandPalette: global search overlay (Cmd+K)
  */
@@ -33,9 +31,7 @@ import React, { useEffect, ReactNode, lazy, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveRole } from '../../store/navigationSlice';
-import { useResponsiveLayout } from '../../hooks/navigation/useResponsiveLayout';
 import { TopBar } from './TopBar';
-import SidebarContainer from './SidebarContainer';
 import EnhancedLeftSidebar from './EnhancedLeftSidebar/EnhancedLeftSidebar';
 import CommandPalette from '../common/CommandPalette';
 import { AppLayoutContainer, AppBody, AppMain } from './AppLayout/styles';
@@ -54,24 +50,22 @@ interface AppLayoutProps {
   showNav?: boolean;
   /** Is current user a super user (admin) */
   isSuperUser?: boolean;
-  /** Optional props forwarded to SidebarContainer */
-  navProps?: Record<string, unknown>;
 }
 
 const ROLE_PATHS: string[] = [
-  'buyer', 'seller', 'landlord', 'tenant',
-  'leasing-agent', 'secondary-sales-agent', 'owner',
+  'buyer',
+  'seller',
+  'landlord',
+  'tenant',
+  'leasing-agent',
+  'secondary-sales-agent',
+  'owner',
 ];
 
-const AppLayout: React.FC<AppLayoutProps> = ({
-  children,
-  showNav = true,
-  isSuperUser = false,
-}) => {
+const AppLayout: React.FC<AppLayoutProps> = ({ children, showNav = true, isSuperUser = false }) => {
   const location = useLocation();
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user.currentUser);
-  const { isDesktop, isTablet } = useResponsiveLayout();
   const showCrmChrome = showNav && Boolean(user);
 
   // Detect role from URL and sync to Redux
@@ -96,17 +90,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       {/* ─── Command Palette Overlay (Cmd+K / Ctrl+K) ─────────────── */}
       {showCrmChrome && <CommandPalette />}
 
-      {/* ─── Body: Responsive Navigation + Content ────────────────── */}
+      {/* ─── Body: Unified Sidebar + Content ─────────────────────── */}
       <AppBody>
-        {/* Desktop (1024px+): 280px Unified Sidebar */}
-        {showCrmChrome && isDesktop && <EnhancedLeftSidebar isSuperUser={isSuperUser} />}
+        {/* Unified sidebar: visible on tablet (768px+) and desktop */}
+        {showCrmChrome && <EnhancedLeftSidebar isSuperUser={isSuperUser} />}
 
-        {/* Tablet (768-1023px): 64px Rail + 240px Flyout */}
-        {showCrmChrome && isTablet && <SidebarContainer />}
-
-        {/* Mobile (<768px): Hidden, content full width + bottom nav */}
-
-        {/* Main content area — responsive width based on sidebar */}
+        {/* Main content area */}
         <AppMain $withNav={showCrmChrome} id="main-content" tabIndex={-1}>
           <Suspense fallback={null}>
             <BiometricReminder />

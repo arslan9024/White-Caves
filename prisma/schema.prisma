@@ -760,6 +760,23 @@ model FollowUpStep {
   @@index([channel])
 }
 
+// ─── WEBAUTHN CREDENTIAL ────────────────────────────────────────────────
+
+model WebAuthnCredential {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @db.ObjectId
+  credentialId    String   @unique      // base64url-encoded credential ID
+  publicKey       String               // base64url-encoded public key (COSE format)
+  counter         Int      @default(0) // signature counter for replay protection
+  deviceType      String?              // "platform" | "cross-platform"
+  transports      String[]             // ["internal", "usb", ...]
+  createdAt       DateTime @default(now())
+  lastUsedAt      DateTime?
+
+  @@index([userId])
+  @@index([credentialId])
+}
+
 // ─── DOCUMENT ───────────────────────────────────────────────────────────
 
 model Document {

@@ -3,10 +3,7 @@ import { createLogger } from '../utils/logger';
 const log = createLogger('WebAuthn');
 
 const isWebAuthnSupported = (): boolean => {
-  return !!(
-    window.PublicKeyCredential &&
-    typeof window.PublicKeyCredential === 'function'
-  );
+  return !!(window.PublicKeyCredential && typeof window.PublicKeyCredential === 'function');
 };
 
 const isPlatformAuthenticatorAvailable = async (): Promise<boolean> => {
@@ -21,16 +18,17 @@ const isPlatformAuthenticatorAvailable = async (): Promise<boolean> => {
 const bufferToBase64url = (buffer: ArrayBuffer): string => {
   const bytes = new Uint8Array(buffer);
   let binary = '';
-  bytes.forEach(byte => binary += String.fromCharCode(byte));
+  bytes.forEach(byte => (binary += String.fromCharCode(byte)));
   return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 };
 
 const base64urlToBuffer = (base64url: string): ArrayBuffer => {
   const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
-  const paddedBase64 = base64 + '=='.slice(0, (4 - base64.length % 4) % 4);
+  const paddedBase64 = base64 + '=='.slice(0, (4 - (base64.length % 4)) % 4);
   const binary = atob(paddedBase64);
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) {
+    // eslint-disable-next-line security/detect-object-injection
     bytes[i] = binary.charCodeAt(i);
   }
   return bytes.buffer;
@@ -90,18 +88,21 @@ const saveCredentialLocally = (credential: CredentialForServer, userId: string):
 const removeCredential = async (credentialId: string, userId: string): Promise<void> => {
   const credentials = getStoredCredentials().filter(c => c.id !== credentialId);
   safeStorage.setJSON(CREDENTIAL_STORAGE_KEY, credentials);
-  
+
   try {
-    await fetch(`/api/auth/webauthn/credentials/${encodeURIComponent(userId)}/${encodeURIComponent(credentialId)}`, {
-      method: 'DELETE',
-    });
+    await fetch(
+      `/api/auth/webauthn/credentials/${encodeURIComponent(userId)}/${encodeURIComponent(credentialId)}`,
+      {
+        method: 'DELETE',
+      }
+    );
   } catch (error) {
     log.error('Failed to remove credential from server:', error);
   }
 };
 
 const registerBiometric = async (userId: string, userName: string, displayName: string) => {
-  if (!await isPlatformAuthenticatorAvailable()) {
+  if (!(await isPlatformAuthenticatorAvailable())) {
     throw new Error('Biometric authentication is not available on this device');
   }
 
@@ -121,7 +122,7 @@ const registerBiometric = async (userId: string, userName: string, displayName: 
   } catch {
     throw new Error('Server returned invalid JSON for registration options');
   }
-  
+
   if (!optionsData.success) {
     throw new Error(optionsData.message || 'Failed to get registration options');
   }
@@ -130,7 +131,7 @@ const registerBiometric = async (userId: string, userName: string, displayName: 
   if (!options) {
     throw new Error('Server returned no registration options');
   }
-  
+
   const userObj = options.user as Record<string, unknown> | undefined;
   const publicKeyCredentialCreationOptions: PublicKeyCredentialCreationOptions = {
     ...(options as unknown as PublicKeyCredentialCreationOptions),
@@ -193,7 +194,8 @@ const registerBiometric = async (userId: string, userName: string, displayName: 
     };
   } catch (error: unknown) {
     log.error('WebAuthn registration error:', error);
-    const err = error instanceof Error ? error : new Error('Failed to register biometric authentication');
+    const err =
+      error instanceof Error ? error : new Error('Failed to register biometric authentication');
     if (err.name === 'NotAllowedError') {
       throw new Error('Biometric registration was cancelled');
     }
@@ -202,12 +204,12 @@ const registerBiometric = async (userId: string, userName: string, displayName: 
 };
 
 const authenticateWithBiometric = async (userId: string | null = null) => {
-  if (!await isPlatformAuthenticatorAvailable()) {
+  if (!(await isPlatformAuthenticatorAvailable())) {
     throw new Error('Biometric authentication is not available on this device');
   }
 
   const storedCredentials = getStoredCredentials();
-  
+
   if (storedCredentials.length === 0) {
     throw new Error('No biometric credentials registered. Please set up biometric login first.');
   }
@@ -228,7 +230,7 @@ const authenticateWithBiometric = async (userId: string | null = null) => {
   } catch {
     throw new Error('Server returned invalid JSON for authentication options');
   }
-  
+
   if (!optionsData.success) {
     throw new Error(optionsData.message || 'Failed to get authentication options');
   }
@@ -268,8 +270,8 @@ const authenticateWithBiometric = async (userId: string | null = null) => {
         clientDataJSON: bufferToBase64url(assertionResponse.clientDataJSON),
         authenticatorData: bufferToBase64url(assertionResponse.authenticatorData),
         signature: bufferToBase64url(assertionResponse.signature),
-        userHandle: assertionResponse.userHandle 
-          ? bufferToBase64url(assertionResponse.userHandle) 
+        userHandle: assertionResponse.userHandle
+          ? bufferToBase64url(assertionResponse.userHandle)
           : null,
       },
     };
@@ -284,7 +286,13 @@ const authenticateWithBiometric = async (userId: string | null = null) => {
       throw new Error(`Authentication verification failed (HTTP ${verifyResponse.status})`);
     }
 
-    let verifyData: { success: boolean; message?: string; userId?: string };
+    let verifyData: {
+      success: boolean;
+      message?: string;
+      userId?: string;
+      token?: string;
+      user?: Record<string, unknown>;
+    };
     try {
       verifyData = await verifyResponse.json();
     } catch {
@@ -298,8 +306,9 @@ const authenticateWithBiometric = async (userId: string | null = null) => {
     const matchedCredential = storedCredentials.find(c => c.id === pubKeyAssertion.id);
     if (matchedCredential) {
       matchedCredential.lastUsed = new Date().toISOString();
-      safeStorage.setJSON(CREDENTIAL_STORAGE_KEY,
-        storedCredentials.map(c => c.id === matchedCredential.id ? matchedCredential : c)
+      safeStorage.setJSON(
+        CREDENTIAL_STORAGE_KEY,
+        storedCredentials.map(c => (c.id === matchedCredential.id ? matchedCredential : c))
       );
     }
 
@@ -307,6 +316,8 @@ const authenticateWithBiometric = async (userId: string | null = null) => {
       success: true,
       userId: verifyData.userId,
       credentialId: pubKeyAssertion.id,
+      token: verifyData.token,
+      user: verifyData.user,
     };
   } catch (error: unknown) {
     log.error('WebAuthn authentication error:', error);
