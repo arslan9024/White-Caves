@@ -1,0 +1,60 @@
+{
+  "systemHealth": {
+    "overall": 98.5,
+    "services": [
+      { "name": "API Gateway", "status": "healthy", "uptime": 99.99, "latency": "45ms" },
+      { "name": "Database", "status": "healthy", "uptime": 99.95, "latency": "12ms" },
+      { "name": "Cache", "status": "healthy", "uptime": 99.99, "latency": "2ms" },
+      { "name": "Storage", "status": "healthy", "uptime": 99.98, "latency": "85ms" },
+      { "name": "Auth Service", "status": "healthy", "uptime": 99.97, "latency": "28ms" }
+    ]
+  },
+  "deployments": [
+    {
+      "id": "deploy-1",
+      "version": "2.5.1",
+      "environment": "production",
+      "status": "success",
+      "timestamp": "2026-01-08T14:30:00Z",
+      "changes": 12,
+      "author": "CI/CD Pipeline"
+    },
+    {
+      "id": "deploy-2",
+      "version": "2.5.2-beta",
+      "environment": "staging",
+      "status": "success",
+      "timestamp": "2026-01-09T09:15:00Z",
+      "changes": 8,
+      "author": "Developer"
+    }
+  ],
+  "applications": [
+    { "name": "White Caves Web", "version": "2.5.1", "status": "running", "instances": 3, "memory": "2.1GB", "cpu": "15%" },
+    { "name": "API Server", "version": "2.5.1", "status": "running", "instances": 2, "memory": "1.8GB", "cpu": "22%" },
+    { "name": "Worker Service", "version": "2.5.0", "status": "running", "instances": 1, "memory": "512MB", "cpu": "8%" }
+  ],
+  "apiMetrics": {
+    "requestsToday": 125000,
+    "avgLatency": "85ms",
+    "errorRate": 0.02,
+    "topEndpoints": [
+      { "path": "/api/properties", "requests": 45000, "avgLatency": "120ms" },
+      { "path": "/api/leads", "requests": 23000, "avgLatency": "65ms" },
+      { "path": "/api/auth", "requests": 18000, "avgLatency": "45ms" }
+    ]
+  },
+  "infrastructure": {
+    "servers": 8,
+    "databases": 2,
+    "cacheNodes": 3,
+    "storageUsed": "2.4TB",
+    "monthlyCost": 12500
+  },
+  "stats": {
+    "uptime": "99.97%",
+    "deploymentsThisWeek": 5,
+    "incidentsThisMonth": 1,
+    "avgResponseTime": "85ms"
+  }
+}

@@ -1,0 +1,84 @@
+# **AI Agent Task: Real Estate Web App Update**
+
+## **Objective**
+Enhance the existing real estate web application to improve user experience, increase conversion rates, and add modern real estate features while maintaining full responsiveness and performance.
+
+## **Current Assessment**
+The application currently displays property listings with basic filters, a simple map view, and standard property detail pages. Interface follows traditional design patterns with limited interactive features.
+
+## **Required Updates**
+
+### **1. Core Feature Additions**
+- **Virtual Tour Integration**: Add 360° virtual tour capability using Matterport or similar API
+- **AI-Powered Recommendations**: Implement machine learning suggestions based on user behavior
+- **Neighborhood Insights**: Add local data layers (schools, crime, amenities, walkability scores)
+- **Mortgage Calculator**: Interactive tool with real-time rate API integration
+- **Saved Searches & Alerts**: User accounts with automated property matching notifications
+
+### **2. User Interface Modernization**
+- **Map-First Interface**: Optional toggle for map-centric browsing
+- **Enhanced Filtering**:
+  - Draw search areas directly on map
+  - Price slider with instant results
+  - "Must-have" vs "Nice-to-have" toggle filters
+  - Commute time calculator (driving/public transit)
+- **Property Cards**:
+  - Hover effects showing key metrics
+  - Instant "Favorite" button
+  - Price history chart preview
+  - 3D walkthrough thumbnail
+
+### **3. Mobile Optimization**
+- **Progressive Web App (PWA)**: Installable app with offline functionality
+- **Augmented Reality**: AR view for property visualization (using device camera)
+- **Gesture Controls**: Swipe navigation between properties
+- **Voice Search**: "Find 3-bedroom homes under $500k near schools"
+
+### **4. Backend & Performance**
+- **Image Optimization**: Automatic compression and WebP conversion
+- **Lazy Loading**: Implement for images and map tiles
+- **Search Optimization**: Elasticsearch integration for faster queries
+- **API Endpoints**: 
+  - `/api/properties/ai-recommendations`
+  - `/api/mortgage/calculate`
+  - `/api/neighborhood/insights`
+
+### **5. Data Visualization**
+- **Market Trends Dashboard**: Interactive charts for price trends
+- **Investment Analysis**: ROI calculator with historical data
+- **Comparison Tool**: Side-by-side property comparison (up to 4 properties)
+
+## **Technical Requirements**
+- Maintain full responsiveness (mobile, tablet, desktop)
+- Ensure WCAG 2.1 AA accessibility compliance
+- Core Web Vitals: LCP < 2.5s, FID < 100ms, CLS < 0.1
+- Support for major browsers (last 2 versions)
+- Implement proper schema.org markup for SEO
+- API rate limiting and security headers
+
+## **Integration Points**
+- CRM system (HubSpot/Salesforce)
+- Email marketing platform
+- Social media sharing
+- Google Analytics 4 with custom events
+- Zapier/Make webhooks for automation
+
+## **Success Metrics to Track**
+- Conversion rate increase (contact forms/schedule tours)
+- Average session duration
+- Mobile engagement rate
+- Saved searches per user
+- Return visitor percentage
+
+## **Constraints & Notes**
+- Maintain existing user data and favorites
+- Preserve current URL structure for SEO
+- All updates must be compliant with fair housing laws
+- Include dark mode option
+- Budget allocation: Development (60%), Testing (20%), Marketing (20%)
+- Timeline: 6-8 weeks for phased rollout
+
+**Priority Order**: 1) Performance optimization, 2) Mobile enhancements, 3) AI features, 4) Virtual tours, 5) Advanced filtering
+
+---
+*Note: All updates should be documented with before/after analytics comparisons. Conduct A/B testing on major interface changes before full deployment.*

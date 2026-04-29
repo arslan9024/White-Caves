@@ -1,0 +1,42 @@
+~/workspace$ git push --set-upstream origin main
+Enumerating objects: 1361, done.
+Counting objects: 100% (1361/1361), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (1343/1343), done.
+Writing objects: 100% (1361/1361), 3.79 MiB | 4.82 MiB/s, done.
+Total 1361 (delta 913), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (913/913), done.
+remote: error: GH013: Repository rule violations found for refs/heads/main.
+remote: 
+remote: - GITHUB PUSH PROTECTION
+remote:   —————————————————————————————————————————
+remote:     Resolve the following violations before pushing again
+remote: 
+remote:     - Push cannot contain secrets
+remote: 
+remote:     
+remote:      (?) Learn how to resolve a blocked push
+remote:      https://docs.github.com/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line#resolving-a-blocked-push
+remote:     
+remote:     
+remote:       —— Google Cloud Service Account Credentials ——————————
+remote:        locations:
+remote:          - commit: a7c8a14aca457a4ba2c077b8356f6a104485da3b
+remote:            path: .replit:57
+remote:          - commit: d4d20e061154d8720ef56e99dc1ddd5ccb8949ce
+remote:            path: .replit:70
+remote:          - commit: d6b52c18d2f128df5caeeda3b4174ed642eff90b
+remote:            path: .replit:75
+remote:          - commit: 64877ae4ed5ec1bc6a0fe49f1fd806176b289675
+remote:            path: .replit:90
+remote:          - commit: f01b4a7e755ff954cd56b08a5477c9123f6ee1cc
+remote:            path: .replit:94
+remote:     
+remote:        (?) To push, remove secret from commit(s) or follow this URL to allow the secret.
+remote:        https://github.com/arslan9024/White-Caves/security/secret-scanning/unblock-secret/37RovOzwyJUxdBPo75O711nscmV
+remote:     
+remote: 
+remote: 
+To https://github.com/arslan9024/White-Caves
+ ! [remote rejected] main -> main (push declined due to repository rule violations)
+error: failed to push some refs to 'https://github.com/arslan9024/White-Caves'

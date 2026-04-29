@@ -17,7 +17,7 @@ const pulse = keyframes`
 export const WhatsAppFloatingBtn = styled.button`
   position: fixed;
   bottom: 30px;
-  right: 30px;
+  left: 30px;
   width: 60px;
   height: 60px;
   background-color: #25D366;
@@ -45,7 +45,7 @@ export const WhatsAppFloatingBtn = styled.button`
 
   @media (max-width: 768px) {
     bottom: 20px;
-    right: 20px;
+    left: 20px;
     width: 56px;
     height: 56px;
   }

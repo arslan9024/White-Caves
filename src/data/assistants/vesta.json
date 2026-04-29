@@ -1,0 +1,82 @@
+{
+  "handovers": [
+    {
+      "id": "ho-1",
+      "property": "VH-A-101",
+      "client": "Mohammed Al Rashid",
+      "type": "sale",
+      "status": "scheduled",
+      "scheduledDate": "2026-01-20",
+      "progress": 65,
+      "checklist": {
+        "completed": 8,
+        "total": 12
+      }
+    },
+    {
+      "id": "ho-2",
+      "property": "AM-B-205",
+      "client": "Sarah Williams",
+      "type": "rental",
+      "status": "in_progress",
+      "scheduledDate": "2026-01-15",
+      "progress": 85,
+      "checklist": {
+        "completed": 10,
+        "total": 12
+      }
+    },
+    {
+      "id": "ho-3",
+      "property": "CL-C-312",
+      "client": "Chen Wei",
+      "type": "sale",
+      "status": "completed",
+      "completedDate": "2026-01-05",
+      "progress": 100,
+      "checklist": {
+        "completed": 12,
+        "total": 12
+      }
+    }
+  ],
+  "checklist": [
+    { "id": 1, "item": "Final payment verification", "category": "finance", "required": true },
+    { "id": 2, "item": "Property inspection", "category": "property", "required": true },
+    { "id": 3, "item": "Snag list completion", "category": "property", "required": true },
+    { "id": 4, "item": "DEWA transfer", "category": "utilities", "required": true },
+    { "id": 5, "item": "Internet setup", "category": "utilities", "required": false },
+    { "id": 6, "item": "Key handover", "category": "property", "required": true },
+    { "id": 7, "item": "Access card programming", "category": "security", "required": true },
+    { "id": 8, "item": "Parking allocation", "category": "property", "required": true },
+    { "id": 9, "item": "Welcome pack delivery", "category": "service", "required": false },
+    { "id": 10, "item": "Ejari registration", "category": "legal", "required": true },
+    { "id": 11, "item": "DLD title deed transfer", "category": "legal", "required": true },
+    { "id": 12, "item": "Client satisfaction survey", "category": "service", "required": false }
+  ],
+  "inspections": [
+    {
+      "id": "insp-1",
+      "property": "VH-A-101",
+      "date": "2026-01-18",
+      "inspector": "Ahmed Hassan",
+      "status": "scheduled",
+      "snagCount": 0
+    },
+    {
+      "id": "insp-2",
+      "property": "AM-B-205",
+      "date": "2026-01-12",
+      "inspector": "Fatima Al-Sayed",
+      "status": "completed",
+      "snagCount": 3,
+      "snagsResolved": 2
+    }
+  ],
+  "stats": {
+    "pendingHandovers": 8,
+    "completedThisMonth": 12,
+    "avgCompletionTime": "5 days",
+    "satisfactionRate": 96.5
+  }
+}

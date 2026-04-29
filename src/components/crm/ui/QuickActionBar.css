@@ -1,0 +1,138 @@
+.quick-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--surface-primary, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+}
+
+[data-theme="dark"] .quick-action-bar {
+  background: var(--surface-primary, #1e293b);
+  border-color: var(--border-color, #334155);
+}
+
+.qab-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  max-width: 400px;
+  padding: 10px 16px;
+  background: var(--input-bg, #f1f5f9);
+  border-radius: 10px;
+  color: var(--text-tertiary, #94a3b8);
+}
+
+[data-theme="dark"] .qab-search {
+  background: var(--input-bg, #334155);
+}
+
+.qab-search input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: var(--text-primary, #1e293b);
+}
+
+.qab-search input::placeholder {
+  color: var(--text-tertiary, #94a3b8);
+}
+
+[data-theme="dark"] .qab-search input {
+  color: var(--text-primary, #f8fafc);
+}
+
+.qab-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qab-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--surface-secondary, #f1f5f9);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.qab-action:hover {
+  background: var(--hover-bg, #e2e8f0);
+}
+
+.qab-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+[data-theme="dark"] .qab-action {
+  background: var(--surface-secondary, #334155);
+  color: var(--text-primary, #f8fafc);
+}
+
+[data-theme="dark"] .qab-action:hover {
+  background: var(--hover-bg, #475569);
+}
+
+.qab-action.primary {
+  background: var(--primary-color, #DC2626);
+  color: white;
+}
+
+.qab-action.primary:hover {
+  background: #B91C1C;
+}
+
+.qab-action.success {
+  background: #10B981;
+  color: white;
+}
+
+.qab-action.success:hover {
+  background: #059669;
+}
+
+.qab-action.loading svg.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .quick-action-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .qab-search {
+    max-width: none;
+  }
+
+  .qab-actions {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .qab-action span {
+    display: none;
+  }
+
+  .qab-action {
+    padding: 10px;
+  }
+}

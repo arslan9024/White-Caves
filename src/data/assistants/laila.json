@@ -1,0 +1,72 @@
+{
+  "kycProfiles": [
+    {
+      "id": "kyc-1",
+      "client": "Mohammed Al Rashid",
+      "nationality": "UAE",
+      "status": "verified",
+      "riskLevel": "low",
+      "documents": ["Emirates ID", "Passport", "Proof of Income"],
+      "verifiedDate": "2025-12-20",
+      "expiryDate": "2026-12-20"
+    },
+    {
+      "id": "kyc-2",
+      "client": "Chen Wei",
+      "nationality": "China",
+      "status": "pending",
+      "riskLevel": "medium",
+      "documents": ["Passport", "Bank Statement"],
+      "missingDocuments": ["Proof of Income", "Source of Funds"],
+      "submittedDate": "2026-01-05"
+    },
+    {
+      "id": "kyc-3",
+      "client": "Marcus Weber",
+      "nationality": "Germany",
+      "status": "verified",
+      "riskLevel": "low",
+      "documents": ["Passport", "Tax Certificate", "Employment Letter"],
+      "verifiedDate": "2026-01-02",
+      "expiryDate": "2027-01-02"
+    }
+  ],
+  "amlAlerts": [
+    {
+      "id": "aml-1",
+      "type": "unusual_pattern",
+      "severity": "medium",
+      "description": "Multiple large cash deposits from unverified source",
+      "client": "Anonymous Client",
+      "status": "investigating",
+      "createdAt": "2026-01-07"
+    },
+    {
+      "id": "aml-2",
+      "type": "sanctions_check",
+      "severity": "low",
+      "description": "Name match on partial sanctions list - false positive confirmed",
+      "client": "Ahmed Al-Hassan",
+      "status": "resolved",
+      "createdAt": "2026-01-04"
+    }
+  ],
+  "auditLog": [
+    { "id": "log-1", "action": "KYC Approved", "user": "Laila AI", "target": "Mohammed Al Rashid", "timestamp": "2025-12-20T14:30:00Z" },
+    { "id": "log-2", "action": "AML Alert Created", "user": "System", "target": "Transaction #12345", "timestamp": "2026-01-07T09:15:00Z" },
+    { "id": "log-3", "action": "Document Uploaded", "user": "Chen Wei", "target": "Bank Statement", "timestamp": "2026-01-05T11:20:00Z" }
+  ],
+  "regulations": [
+    { "name": "UAE AML/CFT Law", "status": "compliant", "lastReview": "2025-12-15", "nextReview": "2026-06-15" },
+    { "name": "RERA Guidelines", "status": "compliant", "lastReview": "2025-11-20", "nextReview": "2026-05-20" },
+    { "name": "Data Protection (DIFC)", "status": "review_needed", "lastReview": "2025-06-10", "nextReview": "2026-01-10" }
+  ],
+  "stats": {
+    "totalProfiles": 847,
+    "verified": 756,
+    "pending": 67,
+    "rejected": 24,
+    "activeAlerts": 3,
+    "complianceScore": 98.2
+  }
+}

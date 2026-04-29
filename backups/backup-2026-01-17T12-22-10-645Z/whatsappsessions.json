@@ -1,0 +1,39 @@
+[
+  {
+    "_id": "695ed3988e017c01a7b5a4c5",
+    "userId": "mGln39Ga5VdQTdvNqKyaQwDhje62",
+    "ownerEmail": "arslanmalikgoraha@gmail.com",
+    "sessionId": "wa_9959e959ef8d6898e0bfc1b9df977f26",
+    "phoneNumber": null,
+    "businessName": "White Caves Real Estate",
+    "connectionStatus": "qr_pending",
+    "lastQrCode": "whatsapp://connect?session=wa_9959e959ef8d6898e0bfc1b9df977f26&token=5kJR8ioDK1KEw1aGlx91K7hM1vfHIoWohrevw7JR4NI=",
+    "qrCodeExpiry": "2026-01-08T00:15:39.940Z",
+    "sessionData": null,
+    "webhookUrl": null,
+    "autoReplyEnabled": true,
+    "chatbotEnabled": true,
+    "businessHoursOnly": false,
+    "businessHours": {
+      "start": "09:00",
+      "end": "22:00",
+      "timezone": "Asia/Dubai"
+    },
+    "awayMessage": "Thank you for contacting White Caves Real Estate. We are currently away and will respond as soon as possible.",
+    "welcomeMessage": "Welcome to White Caves Real Estate! How can we assist you today with your property needs in Dubai?",
+    "connectedAt": null,
+    "lastMessageAt": null,
+    "messageCount": {
+      "sent": 0,
+      "received": 0
+    },
+    "metaBusinessId": null,
+    "accessToken": null,
+    "refreshToken": null,
+    "tokenExpiry": null,
+    "quickReplies": [],
+    "createdAt": "2026-01-07T21:43:52.184Z",
+    "updatedAt": "2026-01-08T00:10:39.944Z",
+    "__v": 0
+  }
+]

@@ -1,0 +1,1847 @@
+# **PROJECT ANALYSIS & UI COMPLETION DASHBOARD**
+
+## **PROMPT FOR REPLIT/AURORA PROJECT ANALYSIS**
+
+```
+Create a comprehensive project analysis and UI completion tracking system for the White Caves Real Estate AI Platform that:
+
+1. **PROJECT SCANNER**: Automatically scans the entire codebase to identify all UI components and their current implementation status
+2. **ACTION COMPLETION TRACKER**: Analyzes each component to determine implemented vs. pending actions/features
+3. **DYNAMIC PROGRESS VIEW**: Shows real-time completion status above the dashboard but below top navigation
+4. **SMART COMPONENT ENHANCEMENT**: Automatically adds "Under Construction" screens for incomplete components
+5. **FEATURE PRIORITIZATION**: Identifies critical path features needed for MVP
+
+Required Analysis Dimensions:
+
+1. **COMPONENT INVENTORY**:
+   - Scan all React/Vue components in the project
+   - Identify component hierarchy and relationships
+   - Map components to SRS requirements/pillars
+   - Track component dependencies
+
+2. **ACTION ANALYSIS**:
+   - List all event handlers in each component
+   - Check if handlers have actual implementations
+   - Identify placeholder/stub functions
+   - Track API integrations (connected vs. mocked)
+
+3. **FEATURE COMPLETION METRICS**:
+   - Calculate percentage of implemented features per component
+   - Identify "zombie components" (UI with zero functionality)
+   - Track navigation/routing completeness
+   - Measure data flow completeness
+
+4. **AUTOMATIC ENHANCEMENT**:
+   - Add "Feature Under Construction" screens
+   - Implement placeholder functionality with clear messaging
+   - Add progress indicators to incomplete components
+   - Create component-specific todo lists
+
+5. **DYNAMIC DASHBOARD VIEW**:
+   - Real-time completion percentage display
+   - Component-by-component breakdown
+   - Click to see detailed component analysis
+   - Filter by pillar/department/priority
+
+Technical Requirements:
+
+- Zero manual configuration needed
+- Works with current React/Next.js structure
+- Respects existing component architecture
+- Non-intrusive (doesn't break working features)
+- Provides actionable improvement suggestions
+- Updates in real-time as code changes
+
+Success Metrics:
+- 100% component identification accuracy
+- Real-time analysis updates
+- Zero false positives for "complete" components
+- Actionable improvement suggestions
+- User-friendly progress visualization
+```
+
+---
+
+## **IMPLEMENTATION: SMART UI COMPLETION TRACKER**
+
+### **1. Project Scanner & Component Analyzer**
+
+```javascript
+// Automated Component Scanner
+class ProjectComponentAnalyzer {
+  constructor() {
+    this.components = new Map();
+    this.analysisResults = null;
+    this.scanInterval = null;
+  }
+
+  async scanEntireProject() {
+    console.log('🔍 Scanning project for UI components...');
+    
+    const scanResults = {
+      timestamp: new Date().toISOString(),
+      totalComponents: 0,
+      analyzedComponents: 0,
+      componentsByType: {},
+      completionMetrics: {},
+      issues: []
+    };
+
+    // 1. Scan for React components
+    const reactComponents = await this.scanForReactComponents();
+    scanResults.totalComponents += reactComponents.length;
+    
+    // 2. Analyze each component
+    for (const component of reactComponents) {
+      const analysis = await this.analyzeComponent(component);
+      this.components.set(component.filePath, analysis);
+      scanResults.analyzedComponents++;
+      
+      // Track by type
+      const type = analysis.componentType;
+      if (!scanResults.componentsByType[type]) {
+        scanResults.componentsByType[type] = [];
+      }
+      scanResults.componentsByType[type].push(analysis);
+    }
+
+    // 3. Calculate completion metrics
+    scanResults.completionMetrics = this.calculateCompletionMetrics();
+    
+    // 4. Identify critical issues
+    scanResults.issues = this.identifyCriticalIssues();
+    
+    this.analysisResults = scanResults;
+    return scanResults;
+  }
+
+  async scanForReactComponents() {
+    // Walk through project directory structure
+    const projectRoot = process.cwd();
+    const components = [];
+    
+    // Find all .jsx, .tsx, .js files
+    const files = await this.walkDirectory(projectRoot);
+    
+    for (const file of files) {
+      if (this.isReactComponentFile(file)) {
+        const componentInfo = await this.extractComponentInfo(file);
+        if (componentInfo) {
+          components.push(componentInfo);
+        }
+      }
+    }
+    
+    return components;
+  }
+
+  async analyzeComponent(component) {
+    const analysis = {
+      name: component.name,
+      filePath: component.filePath,
+      componentType: this.determineComponentType(component),
+      linesOfCode: component.linesOfCode,
+      
+      // Feature analysis
+      features: {
+        total: 0,
+        implemented: 0,
+        pending: 0,
+        underConstruction: 0
+      },
+      
+      // Action analysis
+      actions: {
+        total: 0,
+        implemented: 0,
+        placeholders: 0,
+        mockData: false
+      },
+      
+      // UI analysis
+      uiElements: {
+        total: 0,
+        interactive: 0,
+        static: 0
+      },
+      
+      // API integration
+      apiConnections: {
+        total: 0,
+        connected: 0,
+        mocked: 0
+      },
+      
+      // Navigation
+      navigation: {
+        internalLinks: 0,
+        externalLinks: 0,
+        brokenLinks: 0
+      },
+      
+      // Status
+      status: 'unknown',
+      completionPercentage: 0,
+      priority: 'medium',
+      
+      // Recommendations
+      recommendations: [],
+      immediateActions: []
+    };
+    
+    // Read component source code
+    const sourceCode = await this.readFile(component.filePath);
+    
+    // Analyze features
+    analysis.features = this.analyzeFeatures(sourceCode, component);
+    
+    // Analyze actions/event handlers
+    analysis.actions = this.analyzeActions(sourceCode);
+    
+    // Analyze UI elements
+    analysis.uiElements = this.analyzeUIElements(sourceCode);
+    
+    // Check API connections
+    analysis.apiConnections = this.analyzeAPIConnections(sourceCode);
+    
+    // Calculate completion percentage
+    analysis.completionPercentage = this.calculateComponentCompletion(analysis);
+    
+    // Determine status
+    analysis.status = this.determineComponentStatus(analysis);
+    
+    // Generate recommendations
+    analysis.recommendations = this.generateRecommendations(analysis);
+    analysis.immediateActions = this.getImmediateActions(analysis);
+    
+    return analysis;
+  }
+
+  analyzeActions(sourceCode) {
+    const actions = {
+      total: 0,
+      implemented: 0,
+      placeholders: 0,
+      list: []
+    };
+    
+    // Pattern matching for event handlers
+    const handlerPatterns = [
+      /onClick\s*=\s*{([^}]+)}/g,
+      /onChange\s*=\s*{([^}]+)}/g,
+      /onSubmit\s*=\s*{([^}]+)}/g,
+      /onKeyDown\s*=\s*{([^}]+)}/g,
+      /onMouseEnter\s*=\s*{([^}]+)}/g,
+      /onMouseLeave\s*=\s*{([^}]+)}/g,
+      /const\s+(\w+)\s*=\s*\([^)]*\)\s*=>\s*{[^}]*}/g,
+      /function\s+(\w+)\s*\([^)]*\)\s*{[^}]*}/g
+    ];
+    
+    for (const pattern of handlerPatterns) {
+      const matches = sourceCode.match(pattern) || [];
+      actions.total += matches.length;
+      
+      for (const match of matches) {
+        const action = {
+          name: this.extractHandlerName(match),
+          type: this.extractHandlerType(match),
+          implementation: this.analyzeHandlerImplementation(match)
+        };
+        
+        actions.list.push(action);
+        
+        if (action.implementation.status === 'implemented') {
+          actions.implemented++;
+        } else if (action.implementation.status === 'placeholder') {
+          actions.placeholders++;
+        }
+      }
+    }
+    
+    return actions;
+  }
+
+  analyzeHandlerImplementation(handlerCode) {
+    // Check if handler has real implementation
+    const placeholderPatterns = [
+      /console\.log/,
+      /\/\/\s*TODO/,
+      /\/\/\s*FIXME/,
+      /\/\*\s*TODO/,
+      /alert\(/,
+      /\/\/\s*Placeholder/,
+      /throw new Error\(["']Not implemented["']\)/,
+      /return null/,
+      /return false/
+    ];
+    
+    const isPlaceholder = placeholderPatterns.some(pattern => 
+      pattern.test(handlerCode)
+    );
+    
+    const hasRealLogic = this.hasRealLogic(handlerCode);
+    
+    return {
+      status: isPlaceholder ? 'placeholder' : 
+              hasRealLogic ? 'implemented' : 'empty',
+      isPlaceholder,
+      hasRealLogic,
+      linesOfCode: (handlerCode.match(/\n/g) || []).length + 1
+    };
+  }
+
+  calculateComponentCompletion(analysis) {
+    let totalPoints = 0;
+    let earnedPoints = 0;
+    
+    // Feature completeness (40% weight)
+    totalPoints += 40;
+    earnedPoints += (analysis.features.implemented / Math.max(analysis.features.total, 1)) * 40;
+    
+    // Action completeness (30% weight)
+    totalPoints += 30;
+    earnedPoints += (analysis.actions.implemented / Math.max(analysis.actions.total, 1)) * 30;
+    
+    // API integration (20% weight)
+    totalPoints += 20;
+    earnedPoints += (analysis.apiConnections.connected / Math.max(analysis.apiConnections.total, 1)) * 20;
+    
+    // UI completeness (10% weight)
+    totalPoints += 10;
+    earnedPoints += (analysis.uiElements.interactive / Math.max(analysis.uiElements.total, 1)) * 10;
+    
+    return Math.round((earnedPoints / totalPoints) * 100);
+  }
+
+  determineComponentStatus(analysis) {
+    if (analysis.completionPercentage >= 90) return 'complete';
+    if (analysis.completionPercentage >= 50) return 'partial';
+    if (analysis.completionPercentage >= 10) return 'under-construction';
+    return 'empty';
+  }
+
+  generateRecommendations(analysis) {
+    const recommendations = [];
+    
+    if (analysis.completionPercentage === 0) {
+      recommendations.push({
+        priority: 'high',
+        action: 'Add basic functionality or mark as under construction',
+        type: 'feature'
+      });
+    }
+    
+    if (analysis.actions.placeholders > 0) {
+      recommendations.push({
+        priority: 'medium',
+        action: `Implement ${analysis.actions.placeholders} placeholder action(s)`,
+        type: 'action'
+      });
+    }
+    
+    if (analysis.apiConnections.mocked > 0) {
+      recommendations.push({
+        priority: 'low',
+        action: `Replace ${analysis.apiConnections.mocked} mock API calls with real endpoints`,
+        type: 'api'
+      });
+    }
+    
+    return recommendations;
+  }
+
+  getImmediateActions(analysis) {
+    const actions = [];
+    
+    if (analysis.status === 'empty') {
+      actions.push({
+        type: 'enhance',
+        description: 'Add "Under Construction" screen',
+        component: 'UnderConstructionOverlay'
+      });
+    }
+    
+    if (analysis.actions.placeholders > 0 && analysis.actions.implemented === 0) {
+      actions.push({
+        type: 'implement',
+        description: 'Implement at least one action handler',
+        component: 'ActionHandlerStarter'
+      });
+    }
+    
+    return actions;
+  }
+
+  calculateCompletionMetrics() {
+    const components = Array.from(this.components.values());
+    
+    const metrics = {
+      totalComponents: components.length,
+      completedComponents: components.filter(c => c.status === 'complete').length,
+      underConstruction: components.filter(c => c.status === 'under-construction').length,
+      emptyComponents: components.filter(c => c.status === 'empty').length,
+      
+      averageCompletion: Math.round(
+        components.reduce((sum, c) => sum + c.completionPercentage, 0) / 
+        Math.max(components.length, 1)
+      ),
+      
+      totalActions: components.reduce((sum, c) => sum + c.actions.total, 0),
+      implementedActions: components.reduce((sum, c) => sum + c.actions.implemented, 0),
+      placeholderActions: components.reduce((sum, c) => sum + c.actions.placeholders, 0),
+      
+      byPillar: this.groupByPillar(components),
+      byDepartment: this.groupByDepartment(components)
+    };
+    
+    return metrics;
+  }
+
+  identifyCriticalIssues() {
+    const components = Array.from(this.components.values());
+    const issues = [];
+    
+    // Find components with zero functionality
+    const zombieComponents = components.filter(c => 
+      c.actions.total === 0 && 
+      c.uiElements.interactive === 0 &&
+      c.completionPercentage === 0
+    );
+    
+    if (zombieComponents.length > 0) {
+      issues.push({
+        type: 'zombie_components',
+        severity: 'high',
+        count: zombieComponents.length,
+        components: zombieComponents.map(c => c.name),
+        solution: 'Add basic functionality or remove component'
+      });
+    }
+    
+    // Find components with only placeholders
+    const placeholderComponents = components.filter(c => 
+      c.actions.placeholders > 0 && 
+      c.actions.implemented === 0
+    );
+    
+    if (placeholderComponents.length > 0) {
+      issues.push({
+        type: 'placeholder_components',
+        severity: 'medium',
+        count: placeholderComponents.length,
+        components: placeholderComponents.map(c => c.name),
+        solution: 'Replace placeholders with real implementations'
+      });
+    }
+    
+    return issues;
+  }
+
+  // Helper methods
+  isReactComponentFile(filePath) {
+    return /\.(jsx|tsx|js)$/.test(filePath) && 
+           !filePath.includes('node_modules') &&
+           !filePath.includes('.test.') &&
+           !filePath.includes('.spec.');
+  }
+
+  async walkDirectory(dir) {
+    // Implementation for directory walking
+    const fs = require('fs').promises;
+    const path = require('path');
+    
+    const files = [];
+    
+    async function walk(currentPath) {
+      const items = await fs.readdir(currentPath, { withFileTypes: true });
+      
+      for (const item of items) {
+        const fullPath = path.join(currentPath, item.name);
+        
+        if (item.isDirectory() && 
+            !item.name.includes('node_modules') &&
+            !item.name.startsWith('.') &&
+            item.name !== 'build' &&
+            item.name !== 'dist') {
+          await walk(fullPath);
+        } else if (item.isFile() && this.isReactComponentFile(fullPath)) {
+          files.push(fullPath);
+        }
+      }
+    }
+    
+    await walk(dir);
+    return files;
+  }
+}
+```
+
+### **2. Dynamic Completion Dashboard Component**
+
+```javascript
+// Real-time Completion Dashboard Component
+const CompletionDashboard = () => {
+  const [analysis, setAnalysis] = useState(null);
+  const [selectedComponent, setSelectedComponent] = useState(null);
+  const [filter, setFilter] = useState('all');
+  const [autoScan, setAutoScan] = useState(true);
+
+  useEffect(() => {
+    if (autoScan) {
+      loadAnalysis();
+      // Auto-scan every 5 minutes
+      const interval = setInterval(loadAnalysis, 5 * 60 * 1000);
+      return () => clearInterval(interval);
+    }
+  }, [autoScan]);
+
+  const loadAnalysis = async () => {
+    try {
+      const analyzer = new ProjectComponentAnalyzer();
+      const results = await analyzer.scanEntireProject();
+      setAnalysis(results);
+    } catch (error) {
+      console.error('Analysis failed:', error);
+    }
+  };
+
+  const handleAutoFix = async (componentName) => {
+    // Automatically add "Under Construction" overlay
+    await addUnderConstructionOverlay(componentName);
+    loadAnalysis(); // Refresh analysis
+  };
+
+  const handlePrioritize = (componentName) => {
+    // Mark component as high priority
+    prioritizeComponent(componentName);
+  };
+
+  if (!analysis) {
+    return (
+      <div className="completion-dashboard loading">
+        <div className="spinner"></div>
+        <p>Scanning project components...</p>
+      </div>
+    );
+  }
+
+  const { completionMetrics, componentsByType, issues } = analysis;
+
+  return (
+    <div className="completion-dashboard">
+      {/* Header */}
+      <div className="dashboard-header">
+        <div className="header-left">
+          <h3>
+            <i className="icon-analytics"></i>
+            Project Completion Tracker
+          </h3>
+          <span className="last-scanned">
+            Last scanned: {new Date(analysis.timestamp).toLocaleTimeString()}
+          </span>
+        </div>
+        
+        <div className="header-right">
+          <button 
+            className="btn-scan"
+            onClick={loadAnalysis}
+          >
+            <i className="icon-refresh"></i>
+            Rescan Project
+          </button>
+          <label className="auto-scan-toggle">
+            <input 
+              type="checkbox" 
+              checked={autoScan}
+              onChange={(e) => setAutoScan(e.target.checked)}
+            />
+            Auto-scan
+          </label>
+        </div>
+      </div>
+
+      {/* Overall Progress Bar */}
+      <div className="overall-progress">
+        <div className="progress-header">
+          <h4>Overall Project Completion</h4>
+          <span className="percentage">
+            {completionMetrics.averageCompletion}%
+          </span>
+        </div>
+        <div className="progress-bar-container">
+          <div 
+            className="progress-bar-fill"
+            style={{ width: `${completionMetrics.averageCompletion}%` }}
+          ></div>
+        </div>
+        <div className="progress-stats">
+          <div className="stat">
+            <span className="stat-value">{completionMetrics.completedComponents}</span>
+            <span className="stat-label">Complete</span>
+          </div>
+          <div className="stat">
+            <span className="stat-value">{completionMetrics.underConstruction}</span>
+            <span className="stat-label">Under Construction</span>
+          </div>
+          <div className="stat">
+            <span className="stat-value">{completionMetrics.emptyComponents}</span>
+            <span className="stat-label">Empty</span>
+          </div>
+          <div className="stat">
+            <span className="stat-value">{completionMetrics.totalComponents}</span>
+            <span className="stat-label">Total Components</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Critical Issues Alert */}
+      {issues.length > 0 && (
+        <div className="issues-alert">
+          <div className="alert-header">
+            <i className="icon-warning"></i>
+            <h4>Critical Issues Found</h4>
+          </div>
+          <div className="issues-list">
+            {issues.map((issue, index) => (
+              <div key={index} className={`issue severity-${issue.severity}`}>
+                <div className="issue-summary">
+                  <span className="issue-type">{issue.type.replace('_', ' ')}</span>
+                  <span className="issue-count">{issue.count} components</span>
+                </div>
+                <div className="issue-solution">
+                  <span className="solution-label">Solution:</span>
+                  <span className="solution-text">{issue.solution}</span>
+                </div>
+                {issue.components && (
+                  <div className="affected-components">
+                    Components: {issue.components.join(', ')}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Filter Bar */}
+      <div className="filter-bar">
+        <div className="filter-group">
+          <button 
+            className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
+            onClick={() => setFilter('all')}
+          >
+            All Components
+          </button>
+          <button 
+            className={`filter-btn ${filter === 'empty' ? 'active' : ''}`}
+            onClick={() => setFilter('empty')}
+          >
+            Empty ({completionMetrics.emptyComponents})
+          </button>
+          <button 
+            className={`filter-btn ${filter === 'under-construction' ? 'active' : ''}`}
+            onClick={() => setFilter('under-construction')}
+          >
+            Under Construction ({completionMetrics.underConstruction})
+          </button>
+          <button 
+            className={`filter-btn ${filter === 'complete' ? 'active' : ''}`}
+            onClick={() => setFilter('complete')}
+          >
+            Complete ({completionMetrics.completedComponents})
+          </button>
+        </div>
+        
+        <div className="filter-group">
+          <select 
+            className="pillar-filter"
+            onChange={(e) => setFilter(e.target.value)}
+            value={filter}
+          >
+            <option value="all">All Pillars</option>
+            <option value="pillar1">Pillar 1: Property Discovery</option>
+            <option value="pillar2">Pillar 2: Service Acquisition</option>
+            <option value="pillar3">Pillar 3: Departmental CRM</option>
+            <option value="pillar4">Pillar 4: Inventory Management</option>
+            <option value="pillar5">Pillar 5: AI Command Center</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Components Grid */}
+      <div className="components-grid">
+        {Object.entries(componentsByType).map(([type, components]) => (
+          <div key={type} className="component-category">
+            <h5 className="category-title">
+              {type.replace('-', ' ').toUpperCase()}
+              <span className="category-count">({components.length})</span>
+            </h5>
+            
+            <div className="components-list">
+              {components
+                .filter(comp => filter === 'all' || comp.status === filter)
+                .map(component => (
+                  <ComponentCard
+                    key={component.filePath}
+                    component={component}
+                    isSelected={selectedComponent === component.name}
+                    onSelect={() => setSelectedComponent(component.name)}
+                    onAutoFix={() => handleAutoFix(component.name)}
+                    onPrioritize={() => handlePrioritize(component.name)}
+                  />
+                ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Component Details Panel */}
+      {selectedComponent && (
+        <ComponentDetailsPanel
+          component={componentsByType.flat().find(c => c.name === selectedComponent)}
+          onClose={() => setSelectedComponent(null)}
+          onAutoFix={handleAutoFix}
+        />
+      )}
+
+      {/* Quick Actions */}
+      <div className="quick-actions">
+        <h5>Quick Actions</h5>
+        <div className="action-buttons">
+          <button 
+            className="btn-action"
+            onClick={() => handleBulkAutoFix('empty')}
+          >
+            <i className="icon-magic"></i>
+            Add "Under Construction" to All Empty Components
+          </button>
+          <button 
+            className="btn-action"
+            onClick={() => generateComponentTodoList()}
+          >
+            <i className="icon-list"></i>
+            Generate Component Todo List
+          </button>
+          <button 
+            className="btn-action"
+            onClick={() => exportAnalysisReport()}
+          >
+            <i className="icon-download"></i>
+            Export Analysis Report
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Component Card
+const ComponentCard = ({ component, isSelected, onSelect, onAutoFix, onPrioritize }) => {
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'complete': return '#10b981';
+      case 'partial': return '#f59e0b';
+      case 'under-construction': return '#6366f1';
+      case 'empty': return '#ef4444';
+      default: return '#6b7280';
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'complete': return 'icon-check-circle';
+      case 'partial': return 'icon-alert-circle';
+      case 'under-construction': return 'icon-construction';
+      case 'empty': return 'icon-x-circle';
+      default: return 'icon-help-circle';
+    }
+  };
+
+  return (
+    <div 
+      className={`component-card status-${component.status} ${isSelected ? 'selected' : ''}`}
+      onClick={onSelect}
+    >
+      <div className="card-header">
+        <div className="component-name">
+          <i className={getStatusIcon(component.status)}></i>
+          <span>{component.name}</span>
+        </div>
+        <div className="component-actions">
+          {component.status === 'empty' && (
+            <button 
+              className="btn-auto-fix"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAutoFix(component.name);
+              }}
+              title="Auto-add Under Construction overlay"
+            >
+              <i className="icon-magic"></i>
+            </button>
+          )}
+          <button 
+            className="btn-prioritize"
+            onClick={(e) => {
+              e.stopPropagation();
+              onPrioritize(component.name);
+            }}
+            title="Mark as high priority"
+          >
+            <i className="icon-flag"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div className="card-content">
+        <div className="completion-progress">
+          <div className="progress-label">Completion</div>
+          <div className="progress-bar">
+            <div 
+              className="progress-fill"
+              style={{ 
+                width: `${component.completionPercentage}%`,
+                backgroundColor: getStatusColor(component.status)
+              }}
+            ></div>
+          </div>
+          <div className="progress-percentage">
+            {component.completionPercentage}%
+          </div>
+        </div>
+        
+        <div className="component-metrics">
+          <div className="metric">
+            <span className="metric-value">{component.actions.implemented}/{component.actions.total}</span>
+            <span className="metric-label">Actions</span>
+          </div>
+          <div className="metric">
+            <span className="metric-value">{component.features.implemented}/{component.features.total}</span>
+            <span className="metric-label">Features</span>
+          </div>
+          <div className="metric">
+            <span className="metric-value">{component.apiConnections.connected}/{component.apiConnections.total}</span>
+            <span className="metric-label">APIs</span>
+          </div>
+        </div>
+        
+        {component.actions.placeholders > 0 && (
+          <div className="placeholder-warning">
+            <i className="icon-warning"></i>
+            {component.actions.placeholders} placeholder action(s)
+          </div>
+        )}
+      </div>
+      
+      <div className="card-footer">
+        <span className="file-path">{component.filePath}</span>
+        <span className="priority-badge priority-{component.priority}">
+          {component.priority}
+        </span>
+      </div>
+    </div>
+  );
+};
+
+// Component Details Panel
+const ComponentDetailsPanel = ({ component, onClose, onAutoFix }) => {
+  return (
+    <div className="component-details-panel">
+      <div className="panel-header">
+        <h4>Component Details: {component.name}</h4>
+        <button className="btn-close" onClick={onClose}>
+          <i className="icon-x"></i>
+        </button>
+      </div>
+      
+      <div className="panel-content">
+        <div className="details-section">
+          <h5>Implementation Status</h5>
+          <div className="status-grid">
+            <div className="status-item">
+              <span className="status-label">Overall Completion</span>
+              <span className="status-value">{component.completionPercentage}%</span>
+            </div>
+            <div className="status-item">
+              <span className="status-label">Component Type</span>
+              <span className="status-value">{component.componentType}</span>
+            </div>
+            <div className="status-item">
+              <span className="status-label">Lines of Code</span>
+              <span className="status-value">{component.linesOfCode}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="details-section">
+          <h5>Actions Analysis</h5>
+          <div className="actions-list">
+            {component.actions.list.map((action, index) => (
+              <div key={index} className={`action-item ${action.implementation.status}`}>
+                <div className="action-name">
+                  <i className={`icon-${action.type}`}></i>
+                  {action.name}
+                </div>
+                <div className="action-status">
+                  <span className={`status-badge ${action.implementation.status}`}>
+                    {action.implementation.status}
+                  </span>
+                  {action.implementation.isPlaceholder && (
+                    <span className="placeholder-indicator">Placeholder</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="details-section">
+          <h5>Immediate Actions Needed</h5>
+          <div className="immediate-actions">
+            {component.immediateActions.map((action, index) => (
+              <div key={index} className="immediate-action">
+                <div className="action-header">
+                  <span className="action-type">{action.type.toUpperCase()}</span>
+                  <button 
+                    className="btn-implement"
+                    onClick={() => onAutoFix(component.name)}
+                  >
+                    <i className="icon-play"></i>
+                    Implement
+                  </button>
+                </div>
+                <p className="action-description">{action.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="details-section">
+          <h5>Recommendations</h5>
+          <ul className="recommendations-list">
+            {component.recommendations.map((rec, index) => (
+              <li key={index} className={`recommendation priority-${rec.priority}`}>
+                <span className="rec-priority">{rec.priority}</span>
+                <span className="rec-action">{rec.action}</span>
+                <span className="rec-type">{rec.type}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        
+        <div className="details-section">
+          <h5>Quick Fix Options</h5>
+          <div className="fix-options">
+            <button 
+              className="btn-fix-option"
+              onClick={() => onAutoFix(component.name)}
+            >
+              <i className="icon-magic"></i>
+              Add Under Construction Overlay
+            </button>
+            <button className="btn-fix-option">
+              <i className="icon-code"></i>
+              Generate Action Stubs
+            </button>
+            <button className="btn-fix-option">
+              <i className="icon-api"></i>
+              Add Mock API Integration
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+### **3. Under Construction Overlay System**
+
+```javascript
+// Automated Under Construction Overlay System
+class UnderConstructionEnhancer {
+  constructor() {
+    this.overlayTemplate = this.getOverlayTemplate();
+    this.stubGenerator = new ActionStubGenerator();
+  }
+
+  async addOverlayToComponent(componentName, componentPath) {
+    const componentCode = await this.readComponent(componentPath);
+    
+    // Check if component already has overlay
+    if (this.hasUnderConstructionOverlay(componentCode)) {
+      console.log(`Component ${componentName} already has under construction overlay`);
+      return false;
+    }
+    
+    // Generate enhanced component with overlay
+    const enhancedCode = this.injectOverlay(componentCode, componentName);
+    
+    // Backup original
+    await this.backupComponent(componentPath);
+    
+    // Write enhanced component
+    await this.writeComponent(componentPath, enhancedCode);
+    
+    return true;
+  }
+
+  injectOverlay(originalCode, componentName) {
+    // Parse component to find render/return statement
+    const lines = originalCode.split('\n');
+    let injectionPoint = -1;
+    
+    // Find the main render return statement
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].includes('return (') || 
+          lines[i].includes('return(') ||
+          (lines[i].includes('render()') && lines[i+1]?.includes('return'))) {
+        injectionPoint = i + 1;
+        break;
+      }
+    }
+    
+    if (injectionPoint === -1) {
+      // If no return found, wrap entire component
+      return this.wrapEntireComponent(originalCode, componentName);
+    }
+    
+    // Inject overlay at the beginning of the return
+    const overlayCode = this.generateOverlayCode(componentName);
+    
+    lines.splice(injectionPoint, 0, overlayCode);
+    
+    // Add necessary imports
+    const importStatement = `import UnderConstructionOverlay from '../components/common/UnderConstructionOverlay';`;
+    if (!originalCode.includes('UnderConstructionOverlay')) {
+      lines.unshift(importStatement);
+    }
+    
+    return lines.join('\n');
+  }
+
+  wrapEntireComponent(originalCode, componentName) {
+    // For functional components without explicit return
+    const overlayCode = `
+  return (
+    <UnderConstructionOverlay 
+      componentName="${componentName}"
+      expectedCompletion="2 weeks"
+      contactPerson="Development Team"
+    >
+      ${originalCode}
+    </UnderConstructionOverlay>
+  );
+`;
+    
+    // Find the component function end
+    const lines = originalCode.split('\n');
+    const lastLine = lines[lines.length - 1];
+    
+    if (lastLine.trim() === '}') {
+      lines[lines.length - 1] = overlayCode;
+      lines.push('}');
+    }
+    
+    // Add import
+    if (!originalCode.includes('UnderConstructionOverlay')) {
+      lines.unshift(`import UnderConstructionOverlay from '../components/common/UnderConstructionOverlay';`);
+    }
+    
+    return lines.join('\n');
+  }
+
+  generateOverlayCode(componentName) {
+    return `
+      <UnderConstructionOverlay 
+        componentName="${componentName}"
+        status="under-development"
+        progress={${this.calculateProgress(componentName)}}
+        features={[
+          ${this.getExpectedFeatures(componentName).map(f => `"${f}"`).join(',\n          ')}
+        ]}
+        timeline="Next 2-3 sprints"
+        contactEmail="dev@whitecaves.ae"
+        githubIssue="#${this.generateIssueNumber(componentName)}"
+        showProgress={true}
+      >
+    `;
+  }
+
+  getOverlayTemplate() {
+    return `
+import React from 'react';
+import './UnderConstructionOverlay.css';
+
+const UnderConstructionOverlay = ({
+  componentName,
+  status = 'under-development',
+  progress = 0,
+  features = [],
+  timeline = 'Coming soon',
+  contactEmail,
+  githubIssue,
+  showProgress = true,
+  children
+}) => {
+  const getStatusColor = () => {
+    switch(status) {
+      case 'under-development': return '#3b82f6';
+      case 'planned': return '#8b5cf6';
+      case 'delayed': return '#f59e0b';
+      case 'awaiting-review': return '#10b981';
+      default: return '#6b7280';
+    }
+  };
+
+  const getStatusText = () => {
+    switch(status) {
+      case 'under-development': return 'Under Active Development';
+      case 'planned': return 'Planned for Development';
+      case 'delayed': return 'Development Delayed';
+      case 'awaiting-review': return 'Awaiting Review';
+      default: return 'Under Construction';
+    }
+  };
+
+  return (
+    <div className="under-construction-container">
+      {/* Main content */}
+      <div className="construction-content">
+        {children}
+      </div>
+      
+      {/* Overlay */}
+      <div className="construction-overlay">
+        <div className="overlay-header">
+          <div className="status-indicator" style={{ backgroundColor: getStatusColor() }}>
+            <i className="icon-construction"></i>
+          </div>
+          <div className="header-text">
+            <h3>{componentName}</h3>
+            <p className="status-text">{getStatusText()}</p>
+          </div>
+        </div>
+        
+        {showProgress && (
+          <div className="progress-section">
+            <div className="progress-label">
+              <span>Implementation Progress</span>
+              <span className="progress-percentage">{progress}%</span>
+            </div>
+            <div className="progress-bar">
+              <div 
+                className="progress-fill"
+                style={{ width: \`\${progress}%\` }}
+              ></div>
+            </div>
+          </div>
+        )}
+        
+        {features.length > 0 && (
+          <div className="features-section">
+            <h4>Planned Features</h4>
+            <ul className="features-list">
+              {features.map((feature, index) => (
+                <li key={index} className="feature-item">
+                  <i className="icon-check"></i>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        
+        <div className="timeline-section">
+          <div className="timeline-item">
+            <i className="icon-calendar"></i>
+            <span>Expected Completion: {timeline}</span>
+          </div>
+          
+          {contactEmail && (
+            <div className="timeline-item">
+              <i className="icon-mail"></i>
+              <span>Contact: {contactEmail}</span>
+            </div>
+          )}
+          
+          {githubIssue && (
+            <div className="timeline-item">
+              <i className="icon-github"></i>
+              <a href={\`https://github.com/whitecaves/issues/\${githubIssue}\`} target="_blank" rel="noopener noreferrer">
+                Track progress on GitHub
+              </a>
+            </div>
+          )}
+        </div>
+        
+        <div className="feedback-section">
+          <p className="feedback-text">
+            This component is currently under construction. 
+            Some features may not work as expected.
+          </p>
+          <button className="btn-feedback">
+            <i className="icon-message-square"></i>
+            Provide Feedback
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default UnderConstructionOverlay;
+    `;
+  }
+
+  async generateStubImplementations(componentName, missingActions) {
+    // Generate stub implementations for missing actions
+    const stubs = missingActions.map(action => 
+      this.generateActionStub(componentName, action)
+    ).join('\n\n');
+    
+    return stubs;
+  }
+
+  generateActionStub(componentName, action) {
+    return `
+  // TODO: Implement ${action.name} for ${componentName}
+  const ${action.name} = useCallback(async () => {
+    console.log('${action.name} triggered - Implementation pending');
+    
+    // Placeholder implementation
+    // Remove this and implement actual logic
+    
+    // Example implementation structure:
+    // try {
+    //   setLoading(true);
+    //   const response = await api.${action.type}('/endpoint');
+    //   setData(response.data);
+    // } catch (error) {
+    //   setError(error.message);
+    // } finally {
+    //   setLoading(false);
+    // }
+    
+    // For now, show under construction message
+    toast.info('${action.name} feature is under construction. Check back soon!');
+    
+    // Return mock data for development
+    return { success: true, message: 'Feature under construction' };
+  }, []);
+    `;
+  }
+}
+
+// Action Stub Generator
+class ActionStubGenerator {
+  generateStub(actionType, componentName) {
+    const templates = {
+      'onClick': this.generateOnClickStub(componentName),
+      'onChange': this.generateOnChangeStub(componentName),
+      'onSubmit': this.generateOnSubmitStub(componentName),
+      'onLoad': this.generateOnLoadStub(componentName),
+      'onSearch': this.generateOnSearchStub(componentName),
+      'onFilter': this.generateOnFilterStub(componentName),
+      'onSort': this.generateOnSortStub(componentName),
+      'onExport': this.generateOnExportStub(componentName),
+      'onImport': this.generateOnImportStub(componentName),
+      'onDelete': this.generateOnDeleteStub(componentName),
+      'onEdit': this.generateOnEditStub(componentName),
+      'onSave': this.generateOnSaveStub(componentName),
+      'onCancel': this.generateOnCancelStub(componentName)
+    };
+    
+    return templates[actionType] || this.generateGenericStub(actionType, componentName);
+  }
+
+  generateOnClickStub(componentName) {
+    return `
+  const handleClick = useCallback(() => {
+    // TODO: Implement click handler for ${componentName}
+    console.log('${componentName} clicked - Add your logic here');
+    
+    // Show under construction message
+    setNotification({
+      type: 'info',
+      message: 'This feature is currently under development',
+      action: {
+        label: 'View Progress',
+        onClick: () => window.open('/development/roadmap', '_blank')
+      }
+    });
+    
+    // Example: Navigate to detail view
+    // history.push('/detail/123');
+    
+    // Example: Open modal
+    // setModalOpen(true);
+    
+    // Example: Make API call
+    // const response = await api.post('/action', { data });
+  }, []);
+    `;
+  }
+
+  generateOnSubmitStub(componentName) {
+    return `
+  const handleSubmit = useCallback(async (values) => {
+    // TODO: Implement form submission for ${componentName}
+    console.log('Form submitted:', values);
+    
+    // Show construction overlay
+    setShowConstructionOverlay(true);
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Return success for now
+    return {
+      success: true,
+      message: 'Form submission feature is under construction',
+      data: values
+    };
+  }, []);
+    `;
+  }
+}
+```
+
+### **4. Integration with Existing Layout**
+
+```javascript
+// Main Layout with Completion Dashboard
+const MainLayout = ({ children }) => {
+  const [showCompletionDashboard, setShowCompletionDashboard] = useState(true);
+  const [completionStats, setCompletionStats] = useState(null);
+
+  useEffect(() => {
+    // Load initial completion stats
+    loadCompletionStats();
+  }, []);
+
+  const loadCompletionStats = async () => {
+    const analyzer = new ProjectComponentAnalyzer();
+    const results = await analyzer.scanEntireProject();
+    setCompletionStats(results.completionMetrics);
+  };
+
+  return (
+    <div className="app-layout">
+      {/* Top Navigation */}
+      <TopNavigation 
+        onToggleCompletionDashboard={() => setShowCompletionDashboard(!showCompletionDashboard)}
+        completionStats={completionStats}
+      />
+      
+      {/* Completion Dashboard (Collapsible) */}
+      {showCompletionDashboard && (
+        <div className="completion-dashboard-wrapper">
+          <CompletionDashboard />
+          <button 
+            className="toggle-dashboard"
+            onClick={() => setShowCompletionDashboard(false)}
+            title="Hide completion dashboard"
+          >
+            <i className="icon-chevron-up"></i>
+          </button>
+        </div>
+      )}
+      
+      {/* Main Content Area */}
+      <div className="main-content">
+        {children}
+      </div>
+      
+      {/* Global Under Construction Modal */}
+      <UnderConstructionModal />
+    </div>
+  );
+};
+
+// Enhanced Top Navigation with Completion Indicator
+const TopNavigation = ({ onToggleCompletionDashboard, completionStats }) => {
+  const getCompletionColor = (percentage) => {
+    if (percentage >= 80) return '#10b981';
+    if (percentage >= 50) return '#f59e0b';
+    return '#ef4444';
+  };
+
+  return (
+    <nav className="top-navigation">
+      <div className="nav-left">
+        <div className="logo">
+          <i className="icon-white-caves"></i>
+          <span>White Caves</span>
+        </div>
+        
+        {/* Completion Indicator in Nav */}
+        {completionStats && (
+          <div 
+            className="nav-completion-indicator"
+            onClick={onToggleCompletionDashboard}
+            title="Toggle completion dashboard"
+          >
+            <div className="completion-circle">
+              <div 
+                className="circle-progress"
+                style={{
+                  background: `conic-gradient(${getCompletionColor(completionStats.averageCompletion)} ${completionStats.averageCompletion * 3.6}deg, #e5e7eb 0deg)`
+                }}
+              ></div>
+              <span className="completion-percentage">
+                {completionStats.averageCompletion}%
+              </span>
+            </div>
+            <span className="completion-label">Project Complete</span>
+          </div>
+        )}
+      </div>
+      
+      <div className="nav-center">
+        {/* Navigation items */}
+        <NavMenu />
+      </div>
+      
+      <div className="nav-right">
+        <button 
+          className="btn-completion-dashboard"
+          onClick={onToggleCompletionDashboard}
+        >
+          <i className="icon-analytics"></i>
+          <span>Completion Dashboard</span>
+        </button>
+      </div>
+    </nav>
+  );
+};
+
+// Under Construction Modal (Global)
+const UnderConstructionModal = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [currentComponent, setCurrentComponent] = useState(null);
+
+  // Listen for under construction events
+  useEffect(() => {
+    const handleUnderConstruction = (event) => {
+      setCurrentComponent(event.detail.component);
+      setShowModal(true);
+    };
+
+    window.addEventListener('under-construction', handleUnderConstruction);
+    
+    return () => {
+      window.removeEventListener('under-construction', handleUnderConstruction);
+    };
+  }, []);
+
+  if (!showModal) return null;
+
+  return (
+    <div className="under-construction-modal">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h3>
+            <i className="icon-construction"></i>
+            Feature Under Construction
+          </h3>
+          <button 
+            className="btn-close"
+            onClick={() => setShowModal(false)}
+          >
+            <i className="icon-x"></i>
+          </button>
+        </div>
+        
+        <div className="modal-body">
+          <div className="feature-info">
+            <h4>{currentComponent?.name || 'This Feature'}</h4>
+            <p>is currently under active development and will be available soon.</p>
+          </div>
+          
+          <div className="progress-info">
+            <div className="progress-bar">
+              <div 
+                className="progress-fill"
+                style={{ width: `${currentComponent?.progress || 30}%` }}
+              ></div>
+            </div>
+            <div className="progress-text">
+              <span>Development Progress: {currentComponent?.progress || 30}%</span>
+              <span>ETA: {currentComponent?.eta || '2-3 weeks'}</span>
+            </div>
+          </div>
+          
+          <div className="action-buttons">
+            <button className="btn-primary">
+              <i className="icon-bell"></i>
+              Notify Me When Ready
+            </button>
+            <button className="btn-secondary">
+              <i className="icon-github"></i>
+              View on GitHub
+            </button>
+            <button className="btn-secondary">
+              <i className="icon-message-square"></i>
+              Provide Feedback
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+### **5. CSS for Completion Dashboard**
+
+```css
+/* Completion Dashboard Styles */
+.completion-dashboard {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.header-left h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.last-scanned {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.overall-progress {
+  background: #f9fafb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.progress-header h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.percentage {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.progress-bar-container {
+  height: 0.75rem;
+  background: #e5e7eb;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  border-radius: 9999px;
+  transition: width 0.5s ease;
+}
+
+.progress-stats {
+  display: flex;
+  gap: 2rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Components Grid */
+.components-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.component-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.component-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.component-card.selected {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.component-card.status-empty {
+  border-left: 4px solid #ef4444;
+}
+
+.component-card.status-under-construction {
+  border-left: 4px solid #6366f1;
+}
+
+.component-card.status-partial {
+  border-left: 4px solid #f59e0b;
+}
+
+.component-card.status-complete {
+  border-left: 4px solid #10b981;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.component-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.component-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-auto-fix, .btn-prioritize {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.btn-auto-fix:hover {
+  color: #8b5cf6;
+  background: #f5f3ff;
+}
+
+.btn-prioritize:hover {
+  color: #f59e0b;
+  background: #fef3c7;
+}
+
+/* Under Construction Overlay Styles */
+.under-construction-container {
+  position: relative;
+}
+
+.construction-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  z-index: 50;
+  border-radius: 0.75rem;
+  border: 2px dashed #e5e7eb;
+}
+
+.overlay-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.status-indicator {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+}
+
+/* Issues Alert */
+.issues-alert {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.alert-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.alert-header h4 {
+  margin: 0;
+  color: #dc2626;
+}
+
+.issue {
+  padding: 1rem;
+  background: white;
+  border-radius: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.issue.severity-high {
+  border-left: 4px solid #dc2626;
+}
+
+.issue.severity-medium {
+  border-left: 4px solid #f59e0b;
+}
+
+.issue.severity-low {
+  border-left: 4px solid #3b82f6;
+}
+
+/* Navigation Completion Indicator */
+.nav-completion-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: #f9fafb;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.nav-completion-indicator:hover {
+  background: #f3f4f6;
+}
+
+.completion-circle {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circle-progress {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.completion-percentage {
+  position: relative;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.completion-label {
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+```
+
+---
+
+## **IMPLEMENTATION ROADMAP**
+
+### **Phase 1: Basic Scanner (Week 1)**
+- Set up project structure scanner
+- Implement basic component analysis
+- Create completion metrics calculation
+- Add to main layout
+
+### **Phase 2: Action Analysis (Week 2)**
+- Enhance action handler detection
+- Implement placeholder detection
+- Add recommendation engine
+- Create Under Construction overlay system
+
+### **Phase 3: Auto-Fix Features (Week 3)**
+- Implement automatic overlay injection
+- Add action stub generation
+- Create bulk fix operations
+- Add progress tracking
+
+### **Phase 4: Integration & Polish (Week 4)**
+- Integrate with existing components
+- Add real-time scanning
+- Implement notifications
+- Add export/reporting features
+
+---
+
+## **EXPECTED RESULTS**
+
+After implementing this system:
+
+1. **100% Component Visibility**: Every UI component shows its completion status
+2. **Zero Zombie Components**: All components have at least "Under Construction" overlay
+3. **Real-time Progress Tracking**: Team can see exactly what needs work
+4. **Actionable Insights**: Clear next steps for each component
+5. **Improved User Experience**: Users know what features are coming
+6. **Better Prioritization**: Focus development on most critical components
+
+The system will automatically:
+- Add "Under Construction" overlays to empty components
+- Generate action stubs for missing functionality
+- Track progress in real-time
+- Provide clear development roadmap
+- Improve overall user experience by managing expectations

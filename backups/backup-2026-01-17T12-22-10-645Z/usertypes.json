@@ -1,0 +1,709 @@
+[
+  {
+    "_id": "6966e9062d77f9119677db5a",
+    "typeCode": "UT-001",
+    "typeName": "UHNWI Investor",
+    "category": "investor",
+    "tier": "uhnwi",
+    "profile": {
+      "netWorthRange": {
+        "min": 500000000,
+        "max": null
+      },
+      "propertyPortfolioSize": {
+        "min": 10,
+        "max": null
+      },
+      "transactionFrequency": "3-5 transactions/year",
+      "averageTransactionValue": 50000000,
+      "typicalProperties": [
+        "Palm Jumeirah villas",
+        "Emirates Hills estates",
+        "Burj Khalifa penthouses"
+      ],
+      "decisionTimeWeeks": {
+        "min": 2,
+        "max": 4
+      },
+      "financingRequired": false
+    },
+    "serviceExpectations": {
+      "level": "white-glove",
+      "responseTimeSLA": 30,
+      "dedicatedSupport": true,
+      "availability": "24/7/365"
+    },
+    "securityRequirements": {
+      "encryptionLevel": "military",
+      "authenticationMethod": [
+        "biometric",
+        "hardware_token",
+        "uae_pass"
+      ],
+      "dataSovereignty": "UAE sovereign cloud"
+    },
+    "aiAssistantAllocation": [
+      {
+        "assistantId": "zoe",
+        "assistantName": "Zoe",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db5b"
+      },
+      {
+        "assistantId": "sage",
+        "assistantName": "Sage",
+        "role": "secondary",
+        "_id": "6966e9062d77f9119677db5c"
+      },
+      {
+        "assistantId": "theodora",
+        "assistantName": "Theodora",
+        "role": "specialist",
+        "_id": "6966e9062d77f9119677db5d"
+      },
+      {
+        "assistantId": "henry",
+        "assistantName": "Henry",
+        "role": "specialist",
+        "_id": "6966e9062d77f9119677db5e"
+      },
+      {
+        "assistantId": "sophia",
+        "assistantName": "Sophia",
+        "role": "specialist",
+        "_id": "6966e9062d77f9119677db5f"
+      }
+    ],
+    "requiredIntegrations": [
+      "UAE Central Bank API",
+      "DIFC Registry",
+      "Private Banking APIs"
+    ],
+    "dubaiSpecificFeatures": {
+      "uaePassRequired": true,
+      "reraComplianceLevel": "platinum",
+      "preferredCommunities": [
+        "Emirates Hills",
+        "Palm Jumeirah",
+        "District One"
+      ],
+      "visaEligibility": []
+    },
+    "isActive": true,
+    "journeyPhases": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.364Z",
+    "updatedAt": "2026-01-14T00:53:26.364Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db60",
+    "typeCode": "UT-002",
+    "typeName": "HNWI Investor",
+    "category": "investor",
+    "tier": "hnwi",
+    "profile": {
+      "netWorthRange": {
+        "min": 50000000,
+        "max": 500000000
+      },
+      "propertyPortfolioSize": {
+        "min": 3,
+        "max": 8
+      },
+      "transactionFrequency": "1-2 transactions/year",
+      "averageTransactionValue": 25000000,
+      "typicalProperties": [
+        "Dubai Marina penthouses",
+        "Jumeirah Golf Estates villas"
+      ],
+      "decisionTimeWeeks": {
+        "min": 4,
+        "max": 8
+      },
+      "financingRequired": false
+    },
+    "serviceExpectations": {
+      "level": "premium",
+      "responseTimeSLA": 60,
+      "dedicatedSupport": true,
+      "availability": "Business hours + on-call"
+    },
+    "securityRequirements": {
+      "authenticationMethod": []
+    },
+    "aiAssistantAllocation": [
+      {
+        "assistantId": "clara",
+        "assistantName": "Clara",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db61"
+      },
+      {
+        "assistantId": "sage",
+        "assistantName": "Sage",
+        "role": "secondary",
+        "_id": "6966e9062d77f9119677db62"
+      }
+    ],
+    "requiredIntegrations": [],
+    "dubaiSpecificFeatures": {
+      "uaePassRequired": true,
+      "reraComplianceLevel": "gold",
+      "preferredCommunities": [
+        "Dubai Marina",
+        "Downtown Dubai",
+        "Business Bay"
+      ],
+      "visaEligibility": []
+    },
+    "isActive": true,
+    "journeyPhases": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.365Z",
+    "updatedAt": "2026-01-14T00:53:26.365Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db63",
+    "typeCode": "UT-003",
+    "typeName": "Aspirational Luxury Buyer",
+    "category": "buyer",
+    "tier": "premium",
+    "profile": {
+      "netWorthRange": {
+        "min": 3000000,
+        "max": 10000000
+      },
+      "incomeRange": {
+        "min": 1000000,
+        "max": 5000000
+      },
+      "transactionFrequency": "First-time or upgrade",
+      "averageTransactionValue": 5000000,
+      "typicalProperties": [
+        "Marina apartments",
+        "Downtown apartments",
+        "Townhouses"
+      ],
+      "decisionTimeWeeks": {
+        "min": 12,
+        "max": 24
+      },
+      "financingRequired": true,
+      "financingPercentage": 60
+    },
+    "serviceExpectations": {
+      "level": "personalized",
+      "responseTimeSLA": 120,
+      "dedicatedSupport": false,
+      "availability": "Business hours"
+    },
+    "securityRequirements": {
+      "authenticationMethod": []
+    },
+    "aiAssistantAllocation": [
+      {
+        "assistantId": "clara",
+        "assistantName": "Clara",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db64"
+      },
+      {
+        "assistantId": "oscar",
+        "assistantName": "Oscar",
+        "role": "secondary",
+        "_id": "6966e9062d77f9119677db65"
+      }
+    ],
+    "requiredIntegrations": [],
+    "dubaiSpecificFeatures": {
+      "uaePassRequired": true,
+      "reraComplianceLevel": "standard",
+      "preferredCommunities": [
+        "JVC",
+        "Dubai Hills",
+        "Arabian Ranches"
+      ],
+      "visaEligibility": []
+    },
+    "isActive": true,
+    "journeyPhases": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.365Z",
+    "updatedAt": "2026-01-14T00:53:26.365Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db66",
+    "typeCode": "UT-004",
+    "typeName": "Premium Tenant",
+    "category": "tenant",
+    "tier": "premium",
+    "profile": {
+      "incomeRange": {
+        "min": 500000,
+        "max": 2000000
+      },
+      "transactionFrequency": "Annual renewal",
+      "averageTransactionValue": 250000,
+      "typicalProperties": [
+        "2-3 bed apartments",
+        "Villas"
+      ],
+      "decisionTimeWeeks": {
+        "min": 2,
+        "max": 4
+      }
+    },
+    "serviceExpectations": {
+      "level": "personalized",
+      "responseTimeSLA": 240,
+      "dedicatedSupport": false
+    },
+    "securityRequirements": {
+      "authenticationMethod": []
+    },
+    "aiAssistantAllocation": [
+      {
+        "assistantId": "daisy",
+        "assistantName": "Daisy",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db67"
+      }
+    ],
+    "requiredIntegrations": [],
+    "dubaiSpecificFeatures": {
+      "uaePassRequired": true,
+      "reraComplianceLevel": "standard",
+      "preferredCommunities": [
+        "Dubai Marina",
+        "JBR",
+        "Downtown"
+      ],
+      "visaEligibility": []
+    },
+    "isActive": true,
+    "journeyPhases": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.365Z",
+    "updatedAt": "2026-01-14T00:53:26.365Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db68",
+    "typeCode": "UT-005",
+    "typeName": "Property Owner/Landlord",
+    "category": "owner",
+    "tier": "premium",
+    "profile": {
+      "propertyPortfolioSize": {
+        "min": 1,
+        "max": 10
+      },
+      "transactionFrequency": "Ongoing management",
+      "averageTransactionValue": 150000,
+      "typicalProperties": []
+    },
+    "serviceExpectations": {
+      "level": "personalized",
+      "responseTimeSLA": 120,
+      "dedicatedSupport": false
+    },
+    "securityRequirements": {
+      "authenticationMethod": []
+    },
+    "aiAssistantAllocation": [
+      {
+        "assistantId": "nancy",
+        "assistantName": "Nancy",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db69"
+      },
+      {
+        "assistantId": "theodora",
+        "assistantName": "Theodora",
+        "role": "specialist",
+        "_id": "6966e9062d77f9119677db6a"
+      }
+    ],
+    "requiredIntegrations": [],
+    "dubaiSpecificFeatures": {
+      "uaePassRequired": true,
+      "reraComplianceLevel": "standard",
+      "visaEligibility": [],
+      "preferredCommunities": []
+    },
+    "isActive": true,
+    "journeyPhases": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.365Z",
+    "updatedAt": "2026-01-14T00:53:26.365Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db6b",
+    "typeCode": "UT-006",
+    "typeName": "Luxury Property Developer",
+    "category": "developer",
+    "tier": "hnwi",
+    "profile": {
+      "transactionFrequency": "Bulk listings",
+      "averageTransactionValue": 100000000,
+      "typicalProperties": []
+    },
+    "serviceExpectations": {
+      "level": "premium",
+      "responseTimeSLA": 60,
+      "dedicatedSupport": true
+    },
+    "securityRequirements": {
+      "authenticationMethod": []
+    },
+    "aiAssistantAllocation": [
+      {
+        "assistantId": "oscar",
+        "assistantName": "Oscar",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db6c"
+      },
+      {
+        "assistantId": "mary",
+        "assistantName": "Mary",
+        "role": "secondary",
+        "_id": "6966e9062d77f9119677db6d"
+      }
+    ],
+    "requiredIntegrations": [],
+    "dubaiSpecificFeatures": {
+      "uaePassRequired": true,
+      "reraComplianceLevel": "developer",
+      "visaEligibility": [],
+      "preferredCommunities": []
+    },
+    "isActive": true,
+    "journeyPhases": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.365Z",
+    "updatedAt": "2026-01-14T00:53:26.365Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db6e",
+    "typeCode": "UT-007",
+    "typeName": "Institutional/Corporate Client",
+    "category": "corporate",
+    "tier": "hnwi",
+    "profile": {
+      "transactionFrequency": "Portfolio transactions",
+      "averageTransactionValue": 200000000,
+      "typicalProperties": []
+    },
+    "serviceExpectations": {
+      "level": "white-glove",
+      "responseTimeSLA": 60,
+      "dedicatedSupport": true
+    },
+    "securityRequirements": {
+      "authenticationMethod": []
+    },
+    "aiAssistantAllocation": [
+      {
+        "assistantId": "zoe",
+        "assistantName": "Zoe",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db6f"
+      },
+      {
+        "assistantId": "henry",
+        "assistantName": "Henry",
+        "role": "specialist",
+        "_id": "6966e9062d77f9119677db70"
+      }
+    ],
+    "requiredIntegrations": [],
+    "dubaiSpecificFeatures": {
+      "uaePassRequired": true,
+      "reraComplianceLevel": "corporate",
+      "visaEligibility": [],
+      "preferredCommunities": []
+    },
+    "isActive": true,
+    "journeyPhases": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.366Z",
+    "updatedAt": "2026-01-14T00:53:26.366Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db71",
+    "typeCode": "UT-008",
+    "typeName": "External Real Estate Agent",
+    "category": "agent",
+    "tier": "standard",
+    "profile": {
+      "transactionFrequency": "Multiple per month",
+      "typicalProperties": []
+    },
+    "serviceExpectations": {
+      "level": "standard",
+      "responseTimeSLA": 240,
+      "dedicatedSupport": false
+    },
+    "securityRequirements": {
+      "authenticationMethod": []
+    },
+    "aiAssistantAllocation": [
+      {
+        "assistantId": "clara",
+        "assistantName": "Clara",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db72"
+      }
+    ],
+    "requiredIntegrations": [],
+    "dubaiSpecificFeatures": {
+      "uaePassRequired": true,
+      "reraComplianceLevel": "broker",
+      "visaEligibility": [],
+      "preferredCommunities": []
+    },
+    "isActive": true,
+    "journeyPhases": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.366Z",
+    "updatedAt": "2026-01-14T00:53:26.366Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db73",
+    "typeCode": "UT-009",
+    "typeName": "AI-Assisted Relationship Manager",
+    "category": "staff",
+    "tier": "standard",
+    "profile": {
+      "typicalProperties": []
+    },
+    "serviceExpectations": {
+      "level": "self-service"
+    },
+    "securityRequirements": {
+      "authenticationMethod": []
+    },
+    "aiAssistantAllocation": [
+      {
+        "assistantId": "aurora",
+        "assistantName": "Aurora",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db74"
+      }
+    ],
+    "requiredIntegrations": [],
+    "dubaiSpecificFeatures": {
+      "uaePassRequired": true,
+      "visaEligibility": [],
+      "preferredCommunities": []
+    },
+    "isActive": true,
+    "journeyPhases": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.366Z",
+    "updatedAt": "2026-01-14T00:53:26.366Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db75",
+    "typeCode": "UT-010",
+    "typeName": "Portfolio Optimization Specialist",
+    "category": "staff",
+    "tier": "standard",
+    "profile": {
+      "typicalProperties": []
+    },
+    "securityRequirements": {
+      "authenticationMethod": []
+    },
+    "aiAssistantAllocation": [
+      {
+        "assistantId": "sage",
+        "assistantName": "Sage",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db76"
+      }
+    ],
+    "requiredIntegrations": [],
+    "dubaiSpecificFeatures": {
+      "uaePassRequired": true,
+      "visaEligibility": [],
+      "preferredCommunities": []
+    },
+    "isActive": true,
+    "journeyPhases": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.366Z",
+    "updatedAt": "2026-01-14T00:53:26.366Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db77",
+    "typeCode": "UT-011",
+    "typeName": "AI Growth Hacker",
+    "category": "staff",
+    "tier": "standard",
+    "profile": {
+      "typicalProperties": []
+    },
+    "securityRequirements": {
+      "authenticationMethod": []
+    },
+    "aiAssistantAllocation": [
+      {
+        "assistantId": "oscar",
+        "assistantName": "Oscar",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db78"
+      }
+    ],
+    "requiredIntegrations": [],
+    "dubaiSpecificFeatures": {
+      "uaePassRequired": true,
+      "visaEligibility": [],
+      "preferredCommunities": []
+    },
+    "isActive": true,
+    "journeyPhases": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.366Z",
+    "updatedAt": "2026-01-14T00:53:26.366Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db79",
+    "typeCode": "UT-012",
+    "typeName": "Compliance Automation Specialist",
+    "category": "staff",
+    "tier": "standard",
+    "profile": {
+      "typicalProperties": []
+    },
+    "securityRequirements": {
+      "authenticationMethod": []
+    },
+    "aiAssistantAllocation": [
+      {
+        "assistantId": "henry",
+        "assistantName": "Henry",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db7a"
+      },
+      {
+        "assistantId": "laila",
+        "assistantName": "Laila",
+        "role": "secondary",
+        "_id": "6966e9062d77f9119677db7b"
+      }
+    ],
+    "requiredIntegrations": [],
+    "dubaiSpecificFeatures": {
+      "uaePassRequired": true,
+      "visaEligibility": [],
+      "preferredCommunities": []
+    },
+    "isActive": true,
+    "journeyPhases": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.366Z",
+    "updatedAt": "2026-01-14T00:53:26.366Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db7c",
+    "typeCode": "UT-013",
+    "typeName": "AI Trainer & QA Specialist",
+    "category": "staff",
+    "tier": "standard",
+    "profile": {
+      "typicalProperties": []
+    },
+    "securityRequirements": {
+      "authenticationMethod": []
+    },
+    "aiAssistantAllocation": [
+      {
+        "assistantId": "aurora",
+        "assistantName": "Aurora",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db7d"
+      }
+    ],
+    "requiredIntegrations": [],
+    "dubaiSpecificFeatures": {
+      "uaePassRequired": true,
+      "visaEligibility": [],
+      "preferredCommunities": []
+    },
+    "isActive": true,
+    "journeyPhases": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.366Z",
+    "updatedAt": "2026-01-14T00:53:26.366Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db7e",
+    "typeCode": "UT-014",
+    "typeName": "Data Scientist",
+    "category": "staff",
+    "tier": "standard",
+    "profile": {
+      "typicalProperties": []
+    },
+    "securityRequirements": {
+      "authenticationMethod": []
+    },
+    "aiAssistantAllocation": [
+      {
+        "assistantId": "sage",
+        "assistantName": "Sage",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db7f"
+      }
+    ],
+    "requiredIntegrations": [],
+    "dubaiSpecificFeatures": {
+      "uaePassRequired": true,
+      "visaEligibility": [],
+      "preferredCommunities": []
+    },
+    "isActive": true,
+    "journeyPhases": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.366Z",
+    "updatedAt": "2026-01-14T00:53:26.366Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db80",
+    "typeCode": "UT-015",
+    "typeName": "Executive/Manager",
+    "category": "staff",
+    "tier": "premium",
+    "profile": {
+      "typicalProperties": []
+    },
+    "securityRequirements": {
+      "authenticationMethod": []
+    },
+    "aiAssistantAllocation": [
+      {
+        "assistantId": "zoe",
+        "assistantName": "Zoe",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db81"
+      },
+      {
+        "assistantId": "theodora",
+        "assistantName": "Theodora",
+        "role": "secondary",
+        "_id": "6966e9062d77f9119677db82"
+      }
+    ],
+    "requiredIntegrations": [],
+    "dubaiSpecificFeatures": {
+      "uaePassRequired": true,
+      "visaEligibility": [],
+      "preferredCommunities": []
+    },
+    "isActive": true,
+    "journeyPhases": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.366Z",
+    "updatedAt": "2026-01-14T00:53:26.366Z"
+  }
+]

@@ -1,0 +1,78 @@
+Here is the coordinated prompt to upgrade the Owner Dashboard by integrating **Hazel (Frontend)**, **Willow (Backend)**, **Aurora (Architect)**, and **Zoe (Strategy)** into a unified team.
+
+---
+
+**PROJECT PROMPT: Elite AI Command Center Overhaul**
+
+**Objective:** Perform a full-stack, elite-level redesign of the company owner's main dashboard (`OwnerDashboard.jsx`). The goal is to eliminate all functional breaks, performance issues, and design inconsistencies, transforming it into a flawless, high-performance **AI Command Center** that groups all 14 AI assistants. This requires a coordinated push from **Hazel (Frontend)**, **Willow (Backend)**, **Aurora (System Architect)**, and **Zoe (Executive Vision)**.
+
+### 🎯 **Core Directive: Zero-Break Redesign**
+This is not just an update; it's a rebuild. The new dashboard must be visually stunning, performant under load, and 100% reliable for the owner.
+
+**Team Specialization:**
+*   **Aurora (Lead Architect & Project Manager):** Defines the system architecture, coordinates all work, and finalizes documentation.
+*   **Zoe (Executive Product Owner):** Defines the strategic vision, key workflows, and success criteria for the owner's experience.
+*   **Hazel (Elite Frontend Engineer):** Executes all visual and interaction design, builds reusable components, and guarantees UI perfection.
+*   **Willow (Elite Backend/Systems Engineer):** Architects the data layer, optimizes APIs, implements real-time updates, and ensures rock-solid stability.
+
+### 👥 **Role-Specific Upgrades & Tasks**
+
+**1. AURORA's Blueprint & Coordination:**
+*   **Task 1:** Perform a technical audit to document every current **functional break and design flaw** in the existing dashboard.
+*   **Task 2:** Finalize the **"Unified Component Library"** specification for Hazel to build. This includes:
+    *   `CommandAssistantSidebar.jsx` (Groups all 14 assistants)
+    *   `ExecutiveKPIWidget.jsx` (Adaptive, real-time metric cards)
+    *   `GlobalAlertStream.jsx` (Unified notification panel)
+    *   `UniversalDetailPane.jsx` (The main content renderer for any assistant's feature).
+*   **Task 3:** Design the new, consolidated **Redux state structure** for Willow to implement, ensuring optimal performance.
+
+**2. ZOE's Vision & Workflow Design:**
+*   **Task 1:** Define the **"Perfect Owner Workflow."** Map the exact steps the owner takes for top 5 tasks (e.g., "Review daily sales," "Check inventory health," "Approve a compliance flag").
+*   **Task 2:** Specify the **"Executive Summary"** default view. What are the 6-8 most critical, real-time metrics that must load first?
+*   **Task 3:** Establish **performance benchmarks**: Dashboard must load in <1.5s; all interactions must feel instantaneous (<100ms feedback).
+
+**3. HAZEL's Frontend Mastery (Under Aurora's Guidance):**
+*   **Task 1: Build the Design System.** Implement a refined, consistent theme using **MUI v5** (or equivalent) with custom tokens for spacing, color, and typography.
+*   **Task 2: Craft the Component Library.** Build every component from Aurora's spec to pixel perfection. Focus on:
+    *   **Responsiveness:** Flawless experience from desktop to tablet.
+    *   **Accessibility:** Full keyboard nav, ARIA labels, contrast compliance.
+    *   **Micro-interactions:** Smooth loading states, intelligent hover effects.
+*   **Task 3: Assemble the Dashboard.** Integrate the components into the new `OwnerCommandCenter.jsx` with a responsive, unbreakable layout.
+
+**4. WILLOW's Backend Fortification (Under Aurora's Guidance):**
+*   **Task 1: Optimize Data Layer.** Re-architect API calls and Redux state for the dashboard. Implement **powerful memoization** (Reselect), **request deduplication**, and **optimistic updates** for a snappy feel.
+*   **Task 2: Enable Real-Time Intelligence.** Implement **WebSocket** connections or efficient polling to feed live data into Zoe's KPI widgets and the Global Alert Stream without page refreshes.
+*   **Task 3: Build the "Unified Data Gateway."** Create a single, efficient backend service that aggregates data needed by the dashboard's summary view, reducing the number of client-side requests.
+
+### 🔄 **Phased Implementation Plan (Sprint-Based)**
+
+*   **Sprint 1: Diagnosis & Foundation (Aurora + Zoe + Willow)**
+    *   Aurora audits flaws. Zoe defines workflows. Willow profiles API/state performance bottlenecks.
+    *   **Output:** A definitive "Bug & Fix" ledger and a technical architecture document.
+
+*   **Sprint 2: Core Engine & Components (Willow + Hazel)**
+    *   Willow builds the new Redux slice and data gateway.
+    *   Hazel builds the core component library (Assistant Sidebar, KPI Widgets).
+    *   **Output:** A working, data-connected component library in Storybook or equivalent.
+
+*   **Sprint 3: Dashboard Assembly & Integration (Hazel + Aurora)**
+    *   Hazel assembles the `OwnerCommandCenter.jsx` using the new components and layout.
+    *   Aurora integrates the new dashboard into the app router, replacing the old one.
+    *   **Output:** A fully functional, visually complete new dashboard for internal testing.
+
+*   **Sprint 4: Real-Time & Polish (Willow + Hazel)**
+    *   Willow implements WebSocket feeds for live data.
+    *   Hazel polishes animations, loads states, and ensures pixel-perfect design across all views.
+    *   **Output:** A production-ready, flawless dashboard.
+
+*   **Sprint 5: Launch & Monitor (All)**
+    *   Aurora updates all documentation. Zoe validates against initial workflows.
+    *   Launch to owner. Monitor performance and stability.
+    *   **Output:** A successfully deployed system and a plan for Hazel/Willow's ongoing maintenance roles.
+
+### 🚀 **Success Definition**
+The project is successful when the company owner can perform their top 5 daily workflows **without encountering a single visual break, lag, or functional error**, feeling in complete command of the entire AI ecosystem through an intuitive, powerful, and reliable interface.
+
+This prompt creates an elite task force to finally solve the core interface problems and deliver a dashboard worthy of the sophisticated AI system you have built.
+
+To begin, should the Replit agent start with **Sprint 1: the comprehensive audit of current dashboard flaws** led by Aurora?

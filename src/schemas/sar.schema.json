@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/sar.schema.json",
+  "title": "SuspiciousActivityReport",
+  "type": "object",
+  "required": ["caseId", "subjectId", "summary", "createdBy"],
+  "properties": {
+    "caseId": { "type": "string" },
+    "subjectId": { "type": "string" },
+    "summary": { "type": "string" },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string" },
+          "reference": { "type": "string" }
+        }
+      }
+    },
+    "recommendedAction": { "type": "string", "enum": ["file", "monitor", "close"] },
+    "status": { "type": "string", "enum": ["draft", "submitted", "closed"] },
+    "createdBy": { "type": "string" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "approvedBy": { "type": "array", "items": { "type": "string" } },
+    "submissionDetails": { "type": "object" }
+  }
+}

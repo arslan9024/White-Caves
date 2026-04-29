@@ -1,0 +1,271 @@
+.deal-journey-timeline {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.journey-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.journey-header .deal-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.journey-header .deal-info h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #1a1a1a;
+}
+
+.type-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.type-badge.tenancy {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.type-badge.off_plan,
+.type-badge.secondary {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.parties-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.party {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.party svg {
+  color: #B03737;
+}
+
+.timeline-container {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px 0;
+}
+
+.timeline-stage {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #f8f9fa;
+  min-width: 120px;
+}
+
+.timeline-stage:hover {
+  background: #f0f0f0;
+}
+
+.timeline-stage.completed {
+  background: #e8f5e9;
+}
+
+.timeline-stage.current {
+  background: #fff3e0;
+  border: 2px solid #ff9800;
+}
+
+.timeline-stage.pending {
+  background: #f5f5f5;
+  opacity: 0.7;
+}
+
+.stage-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stage-icon.completed {
+  background: #4caf50;
+  color: white;
+}
+
+.stage-icon.current {
+  background: #ff9800;
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+.stage-icon.pending {
+  background: #e0e0e0;
+  color: #999;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.stage-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stage-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.stage-date {
+  font-size: 0.7rem;
+  color: #888;
+}
+
+.stage-details {
+  margin-top: 8px;
+  padding: 8px;
+  background: white;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  width: 100%;
+}
+
+.stage-details p {
+  margin: 4px 0;
+  color: #555;
+}
+
+.journey-footer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.financial-summary {
+  display: flex;
+  gap: 24px;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.summary-item svg {
+  color: #B03737;
+}
+
+.broker-info {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.deal-journey-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  color: #999;
+  text-align: center;
+}
+
+.deal-journey-compact {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.compact-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.compact-header .deal-number {
+  font-weight: 600;
+  color: #333;
+}
+
+.status-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.status-badge.status-completed,
+.status-badge.status-ejari_registered {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-badge.status-contract_preparation,
+.status-badge.status-pending_signatures,
+.status-badge.status-spa_preparation {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.status-badge.status-offer_accepted,
+.status-badge.status-negotiation {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.compact-progress {
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.compact-progress .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #B03737, #d64545);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.compact-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #666;
+}

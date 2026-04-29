@@ -1,0 +1,48 @@
+Here's a prompt for the Replit AI agent that doesn't require coding from you:
+
+---
+
+**Project Requirements for Web Application Development**
+
+**Objective:**  
+Enhance and standardize the dashboard system for a multi-role web application with consistent design, reusable components, and centralized state management.
+
+**Tasks:**
+
+1. **Fix Homepage Issue**  
+   - Diagnose and resolve the blank/white page problem on the homepage.  
+   - Ensure the homepage loads correctly with all intended elements visible.
+
+2. **Design Consistency Across Dashboards**  
+   - Copy the existing design of the **main navigation bar** and **company owner dashboard**.  
+   - Apply the same visual design and layout to dashboards for all other user roles (e.g., manager, employee, admin).  
+   - Use **reusable React components** to maintain consistency.  
+   - Implement **Redux** for managing shared state (e.g., user data, UI state) across all dashboards.
+
+3. **Multi-Role Dashboard Preview**  
+   - Include a **dropdown menu** in the company owner dashboard that lists all user roles.  
+   - Allow switching between different dashboards via the dropdown to review design consistency.
+
+4. **Universal Profile Button**  
+   - Ensure every **profile button** across the application triggers the same event.  
+   - This event should display a **profile component** inside the current dashboard for viewing and completing user profiles.
+
+5. **Universal Dashboard Components**  
+   - Add **reusable components** (e.g., time display, weather widget) to all dashboards.  
+   - Verify that these components appear and function consistently across every user role's dashboard.
+
+**Deliverables:**  
+- A fully functional homepage without blank page issues.  
+- Consistently designed dashboards for all user roles using reusable React components.  
+- Redux integrated for state management.  
+- A role-switching dropdown in the company owner dashboard.  
+- A universal profile button that opens a profile component within the dashboard.  
+- Shared components (time, weather, etc.) on every dashboard.
+
+**Constraints:**  
+- Maintain existing functionality unless otherwise specified.  
+- Prioritize code reusability and consistency in UI/UX.  
+
+---  
+
+This prompt clearly outlines your requirements without needing you to write any code. You can copy and paste it directly into the Replit AI agent.

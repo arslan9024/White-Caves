@@ -1,0 +1,58 @@
+Here is a detailed prompt you can provide to your Replit AI agent to replace the static element with an interactive, animated home visualizer.
+
+---
+
+**Homepage Component Replacement & Enhancement**
+
+**Primary Objective:**  
+Replace the static text or HTML element currently displaying **"Luxury home"** on the homepage with an interactive, animated React component. This new component will allow users to visualize a future home by applying different color schemes.
+
+**1. Core Requirements:**
+
+*   **Element Replacement:** Locate the exact HTML element, component, or section containing the text "Luxury home" on the main homepage. Remove this static content and replace it with the new interactive component.
+*   **Interactive Home Model:** Implement an animated 3D or high-quality 2D illustration/vector of a modern luxury home. The model should have clearly defined sections (e.g., walls, roof, doors, trim) that can be individually re-colored.
+*   **Color Selection Feature:**
+    *   Create a user-friendly color palette selector (e.g., a grid of color swatches or a custom color picker).
+    *   Clicking a color swatch should immediately apply that color to the primary exterior walls of the home model in a smooth, animated transition.
+    *   **Advanced Option:** Include tabs or a menu to switch between painting different parts of the home (e.g., "Main Walls," "Roof," "Accents," "Door").
+*   **Animation:** Integrate subtle, continuous animations to make the home visualization engaging (e.g., gentle floating effect, soft ambient glow, or slow, cinematic rotation). Color change transitions should be smooth (e.g., a fade or fill effect).
+
+**2. Technical Specifications:**
+
+*   **Framework:** Build as a reusable React functional component (e.g., `FutureHomeVisualizer`).
+*   **State Management:** Use React `useState` to manage the currently selected color and active house part. Integrate this state with the project's existing Redux store if a global state for user preferences is required elsewhere.
+*   **Styling:** Use CSS modules or styled-components to ensure the component's styling is self-contained and does not conflict with the existing homepage CSS. The design must be consistent with the luxury aesthetic of the DAMAC Hills 2 project.
+*   **Performance:** The component should be optimized for fast loading. Consider using a lightweight SVG for the home model or implementing lazy loading for the component.
+
+**3. User Interface & Experience (UI/UX):**
+
+*   The component should be the visual centerpiece of the homepage hero section.
+*   Include a clear, appealing title or call-to-action, such as "Visualize Your Future Home."
+*   The color selector should be intuitively placed below or beside the home model.
+*   Provide visual feedback when a color is selected (e.g., the selected swatch is highlighted with a border).
+
+**4. Integration Instructions:**
+
+*   The component must be fully responsive and look excellent on all device sizes (desktop, tablet, mobile).
+*   Ensure it replaces the old element seamlessly, without breaking the existing page layout or other functionalities.
+*   Follow the same design patterns (buttons, fonts, spacing) used in the newly standardized dashboards for consistency.
+
+**5. Deliverables:**
+
+1.  A new, reusable React component: `FutureHomeVisualizer`.
+2.  Complete removal of the static "Luxury home" element and flawless integration of the new component.
+3.  A working, animated home model with a smooth color selection feature.
+4.  Responsive design that matches the project's luxury aesthetic.
+
+---
+
+### 🎨 Suggestions for Enhancing the Component
+
+Once the basic version is built, you can expand the prompt with these ideas for future iterations:
+
+*   **Pre-set Themes:** Add buttons for pre-designed themes like "Modern White," "Earthy Tones," or "Coastal."
+*   **Save & Share:** Allow users to save their color combination (to their user profile in your CRM) or generate a shareable image link.
+*   **Environment Toggle:** Let users switch the home's background between day, sunset, and night to see how colors look in different lighting.
+*   **Material Textures:** Upgrade from flat colors to material previews (e.g., brick, stone, wood siding).
+
+You can copy and paste the main prompt above directly to your Replit AI agent to begin the development. Would you like to adapt any part of this prompt, such as the specific animation style or the number of colorable sections?

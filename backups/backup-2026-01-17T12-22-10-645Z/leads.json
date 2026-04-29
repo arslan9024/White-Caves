@@ -1,0 +1,631 @@
+[
+  {
+    "_id": "6966df775a2dad4821944cda",
+    "name": "Abdulrahman Al Faisal",
+    "email": "abdulrahman@gmail.com",
+    "phone": "+966551234567",
+    "source": "website",
+    "status": "qualified",
+    "stage": "viewing-scheduled",
+    "score": 92,
+    "propertyType": "villa",
+    "budget": {
+      "min": 10000000,
+      "max": 30000000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Palm Jumeirah",
+      "Emirates Hills"
+    ],
+    "assignedAgent": {
+      "id": "WC-011",
+      "name": "Fatima Al Rashid"
+    },
+    "notes": "Cash buyer, looking for quick closing",
+    "lastContactDate": "2026-01-11T04:41:02.833Z",
+    "nextFollowUp": "2026-01-20T08:15:45.969Z",
+    "tags": [
+      "HNWI",
+      "Cash Buyer"
+    ],
+    "isActive": true,
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:39.790Z",
+    "updatedAt": "2026-01-14T00:12:39.790Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944cdc",
+    "name": "Ivan Petrov",
+    "email": "ivan.p@yandex.ru",
+    "phone": "+79161234567",
+    "source": "referral",
+    "status": "negotiating",
+    "stage": "offer-made",
+    "score": 88,
+    "propertyType": "penthouse",
+    "budget": {
+      "min": 20000000,
+      "max": 50000000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Palm Jumeirah",
+      "Bluewaters Island"
+    ],
+    "assignedAgent": {
+      "id": "WC-010",
+      "name": "Ahmed Hassan"
+    },
+    "notes": "Interested in penthouse with sea view",
+    "lastContactDate": "2026-01-11T16:38:52.159Z",
+    "nextFollowUp": "2026-01-20T14:41:12.773Z",
+    "tags": [
+      "VIP",
+      "Investor"
+    ],
+    "isActive": true,
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:39.792Z",
+    "updatedAt": "2026-01-14T00:12:39.792Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944cde",
+    "name": "Wei Chen",
+    "email": "wei.chen@qq.com",
+    "phone": "+8613512345678",
+    "source": "social-media",
+    "status": "qualified",
+    "stage": "viewing-completed",
+    "score": 85,
+    "propertyType": "apartment",
+    "budget": {
+      "min": 5000000,
+      "max": 15000000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Downtown Dubai",
+      "DIFC"
+    ],
+    "assignedAgent": {
+      "id": "WC-012",
+      "name": "Michael Chen"
+    },
+    "lastContactDate": "2026-01-09T19:16:38.653Z",
+    "nextFollowUp": "2026-01-17T02:35:49.550Z",
+    "tags": [],
+    "isActive": true,
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:39.794Z",
+    "updatedAt": "2026-01-14T00:12:39.794Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944ce0",
+    "name": "Sarah Williams",
+    "email": "sarah.w@gmail.com",
+    "phone": "+447911234567",
+    "source": "property-finder",
+    "status": "contacted",
+    "stage": "viewing-scheduled",
+    "score": 72,
+    "propertyType": "apartment",
+    "budget": {
+      "min": 2000000,
+      "max": 4000000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Dubai Marina",
+      "JBR"
+    ],
+    "assignedAgent": {
+      "id": "WC-013",
+      "name": "Priya Sharma"
+    },
+    "lastContactDate": "2026-01-10T03:25:25.063Z",
+    "nextFollowUp": "2026-01-17T22:41:51.233Z",
+    "tags": [],
+    "isActive": true,
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:39.796Z",
+    "updatedAt": "2026-01-14T00:12:39.796Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944ce2",
+    "name": "Rashid Al Maktoum",
+    "email": "rashid.m@emirates.ae",
+    "phone": "+971505678901",
+    "source": "walk-in",
+    "status": "contacted",
+    "stage": "inquiry",
+    "score": 68,
+    "propertyType": "villa",
+    "budget": {
+      "min": 3000000,
+      "max": 8000000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Arabian Ranches",
+      "Dubai Hills Estate"
+    ],
+    "lastContactDate": "2026-01-10T21:40:23.441Z",
+    "nextFollowUp": "2026-01-14T16:44:02.547Z",
+    "tags": [],
+    "isActive": true,
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:39.797Z",
+    "updatedAt": "2026-01-14T00:12:39.797Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944ce4",
+    "name": "Maria Garcia",
+    "email": "maria.g@gmail.com",
+    "phone": "+34612345678",
+    "source": "bayut",
+    "status": "qualified",
+    "stage": "viewing-scheduled",
+    "score": 75,
+    "propertyType": "apartment",
+    "budget": {
+      "min": 1500000,
+      "max": 3000000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Business Bay",
+      "City Walk"
+    ],
+    "assignedAgent": {
+      "id": "WC-012",
+      "name": "Michael Chen"
+    },
+    "lastContactDate": "2026-01-09T14:30:02.649Z",
+    "nextFollowUp": "2026-01-19T11:33:01.457Z",
+    "tags": [],
+    "isActive": true,
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:39.799Z",
+    "updatedAt": "2026-01-14T00:12:39.799Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944ce6",
+    "name": "John Smith",
+    "email": "john.s@outlook.com",
+    "phone": "+12125551234",
+    "source": "website",
+    "status": "contacted",
+    "stage": "inquiry",
+    "score": 65,
+    "propertyType": "any",
+    "budget": {
+      "min": 1000000,
+      "max": 2500000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Dubai Marina"
+    ],
+    "lastContactDate": "2026-01-11T21:38:17.074Z",
+    "nextFollowUp": "2026-01-19T19:58:40.953Z",
+    "tags": [],
+    "isActive": true,
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:41.568Z",
+    "updatedAt": "2026-01-14T00:12:41.568Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944ce8",
+    "name": "Aisha Khalil",
+    "email": "aisha.k@gmail.com",
+    "phone": "+971507890123",
+    "source": "referral",
+    "status": "qualified",
+    "stage": "viewing-completed",
+    "score": 78,
+    "propertyType": "townhouse",
+    "budget": {
+      "min": 2500000,
+      "max": 5000000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Port de La Mer",
+      "Dubai Hills Estate"
+    ],
+    "assignedAgent": {
+      "id": "WC-011",
+      "name": "Fatima Al Rashid"
+    },
+    "lastContactDate": "2026-01-09T23:44:19.357Z",
+    "nextFollowUp": "2026-01-19T10:27:57.480Z",
+    "tags": [],
+    "isActive": true,
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:41.570Z",
+    "updatedAt": "2026-01-14T00:12:41.570Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944cea",
+    "name": "Peter Johnson",
+    "email": "peter.j@gmail.com",
+    "phone": "+447912345678",
+    "source": "dubizzle",
+    "status": "new",
+    "stage": "inquiry",
+    "score": 45,
+    "propertyType": "apartment",
+    "budget": {
+      "min": 800000,
+      "max": 1500000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "JLT",
+      "Sports City"
+    ],
+    "lastContactDate": null,
+    "nextFollowUp": "2026-01-20T09:20:38.179Z",
+    "tags": [],
+    "isActive": true,
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:41.571Z",
+    "updatedAt": "2026-01-14T00:12:41.571Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944cec",
+    "name": "Elena Volkova",
+    "email": "elena.v@mail.ru",
+    "phone": "+79165678901",
+    "source": "social-media",
+    "status": "new",
+    "stage": "inquiry",
+    "score": 38,
+    "propertyType": "studio",
+    "budget": {
+      "min": 400000,
+      "max": 800000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Dubai Marina",
+      "Business Bay"
+    ],
+    "lastContactDate": null,
+    "nextFollowUp": "2026-01-20T12:11:58.606Z",
+    "tags": [],
+    "isActive": true,
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:41.573Z",
+    "updatedAt": "2026-01-14T00:12:41.573Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944cee",
+    "name": "Mohammed Al Hassan",
+    "email": "mohammed.h@gmail.com",
+    "phone": "+966559876543",
+    "source": "website",
+    "status": "contacted",
+    "stage": "inquiry",
+    "score": 52,
+    "propertyType": "villa",
+    "budget": {
+      "min": 5000000,
+      "max": 10000000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "MBR City"
+    ],
+    "lastContactDate": "2026-01-11T09:18:34.755Z",
+    "nextFollowUp": "2026-01-14T12:26:11.689Z",
+    "tags": [],
+    "isActive": true,
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:41.575Z",
+    "updatedAt": "2026-01-14T00:12:41.575Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944cf0",
+    "name": "David Lee",
+    "email": "david.l@google.com",
+    "phone": "+971508901234",
+    "source": "website",
+    "status": "qualified",
+    "stage": "viewing-scheduled",
+    "score": 80,
+    "propertyType": "apartment",
+    "budget": {
+      "min": 150000,
+      "max": 250000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "DIFC",
+      "Downtown Dubai"
+    ],
+    "assignedAgent": {
+      "id": "WC-021",
+      "name": "Raj Patel"
+    },
+    "notes": "Relocating for work, needs by end of month",
+    "lastContactDate": "2026-01-11T03:40:00.358Z",
+    "nextFollowUp": "2026-01-18T05:15:09.206Z",
+    "tags": [],
+    "isActive": true,
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:41.577Z",
+    "updatedAt": "2026-01-14T00:12:41.577Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944cf2",
+    "name": "Anna Johansson",
+    "email": "anna.j@outlook.com",
+    "phone": "+46701234567",
+    "source": "referral",
+    "status": "qualified",
+    "stage": "offer-made",
+    "score": 82,
+    "propertyType": "villa",
+    "budget": {
+      "min": 200000,
+      "max": 350000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Arabian Ranches",
+      "The Springs"
+    ],
+    "assignedAgent": {
+      "id": "WC-020",
+      "name": "Nadia Hassan"
+    },
+    "lastContactDate": "2026-01-08T06:37:16.637Z",
+    "nextFollowUp": "2026-01-17T18:28:25.670Z",
+    "tags": [],
+    "isActive": true,
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:41.578Z",
+    "updatedAt": "2026-01-14T00:12:41.578Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944cf4",
+    "name": "Tom Brown",
+    "email": "tom.b@yahoo.com",
+    "phone": "+61412345678",
+    "source": "walk-in",
+    "status": "contacted",
+    "stage": "inquiry",
+    "score": 58,
+    "propertyType": "apartment",
+    "budget": {
+      "min": 80000,
+      "max": 120000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Dubai Marina",
+      "JBR"
+    ],
+    "lastContactDate": "2026-01-08T11:18:13.932Z",
+    "nextFollowUp": "2026-01-17T22:55:15.853Z",
+    "tags": [],
+    "isActive": true,
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:41.580Z",
+    "updatedAt": "2026-01-14T00:12:41.580Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944cf6",
+    "name": "Hamad Al Nahyan",
+    "email": "hamad.n@adnoc.ae",
+    "phone": "+971502345678",
+    "source": "referral",
+    "status": "converted",
+    "stage": "closed",
+    "score": 95,
+    "propertyType": "villa",
+    "budget": {
+      "min": 15000000,
+      "max": 40000000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Palm Jumeirah"
+    ],
+    "lastContactDate": "2026-01-08T22:18:09.795Z",
+    "nextFollowUp": null,
+    "tags": [
+      "VIP",
+      "Converted"
+    ],
+    "isActive": true,
+    "convertedAt": "2024-01-10T00:00:00.000Z",
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:41.581Z",
+    "updatedAt": "2026-01-14T00:12:41.581Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944cf8",
+    "name": "Robert Chen",
+    "email": "robert.c@gmail.com",
+    "phone": "+8613612345678",
+    "source": "website",
+    "status": "converted",
+    "stage": "closed",
+    "score": 88,
+    "propertyType": "apartment",
+    "budget": {
+      "min": 3000000,
+      "max": 6000000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Downtown Dubai"
+    ],
+    "lastContactDate": "2026-01-10T23:19:23.861Z",
+    "nextFollowUp": null,
+    "tags": [],
+    "isActive": true,
+    "convertedAt": "2024-01-08T00:00:00.000Z",
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:41.583Z",
+    "updatedAt": "2026-01-14T00:12:41.583Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944cfa",
+    "name": "Michael Brown",
+    "email": "michael.b@gmail.com",
+    "phone": "+12125559876",
+    "source": "property-finder",
+    "status": "lost",
+    "stage": "negotiation",
+    "score": 70,
+    "propertyType": "apartment",
+    "budget": {
+      "min": 2000000,
+      "max": 4000000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Dubai Marina"
+    ],
+    "lastContactDate": "2026-01-11T22:07:47.635Z",
+    "nextFollowUp": null,
+    "tags": [],
+    "isActive": true,
+    "lostReason": "Purchased from competitor",
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:41.585Z",
+    "updatedAt": "2026-01-14T00:12:41.585Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944cfc",
+    "name": "Olga Smirnova",
+    "email": "olga.s@yandex.ru",
+    "phone": "+79168765432",
+    "source": "social-media",
+    "status": "lost",
+    "stage": "viewing-completed",
+    "score": 62,
+    "propertyType": "villa",
+    "budget": {
+      "min": 5000000,
+      "max": 10000000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Palm Jumeirah"
+    ],
+    "lastContactDate": "2026-01-13T18:14:29.803Z",
+    "nextFollowUp": null,
+    "tags": [],
+    "isActive": true,
+    "lostReason": "Budget constraints",
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:41.586Z",
+    "updatedAt": "2026-01-14T00:12:41.586Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944cfe",
+    "name": "Fatima Al Qasimi",
+    "email": "fatima.q@gmail.com",
+    "phone": "+971509012345",
+    "source": "website",
+    "status": "new",
+    "stage": "inquiry",
+    "score": 55,
+    "propertyType": "apartment",
+    "budget": {
+      "min": 1000000,
+      "max": 2000000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Business Bay",
+      "Dubai Creek Harbour"
+    ],
+    "lastContactDate": null,
+    "nextFollowUp": "2026-01-17T03:18:11.429Z",
+    "tags": [],
+    "isActive": true,
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:41.588Z",
+    "updatedAt": "2026-01-14T00:12:41.588Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944d00",
+    "name": "James Wilson",
+    "email": "james.w@outlook.com",
+    "phone": "+447913456789",
+    "source": "bayut",
+    "status": "new",
+    "stage": "inquiry",
+    "score": 48,
+    "propertyType": "villa",
+    "budget": {
+      "min": 4000000,
+      "max": 8000000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Dubai Hills Estate"
+    ],
+    "lastContactDate": null,
+    "nextFollowUp": "2026-01-20T06:18:33.718Z",
+    "tags": [],
+    "isActive": true,
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:41.589Z",
+    "updatedAt": "2026-01-14T00:12:41.589Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944d02",
+    "name": "Yuki Yamamoto",
+    "email": "yuki.y@gmail.com",
+    "phone": "+819012345678",
+    "source": "referral",
+    "status": "new",
+    "stage": "inquiry",
+    "score": 60,
+    "propertyType": "apartment",
+    "budget": {
+      "min": 2000000,
+      "max": 4000000,
+      "currency": "AED"
+    },
+    "preferredLocations": [
+      "Downtown Dubai",
+      "DIFC"
+    ],
+    "lastContactDate": null,
+    "nextFollowUp": "2026-01-16T06:46:27.284Z",
+    "tags": [],
+    "isActive": true,
+    "interactions": [],
+    "createdAt": "2026-01-14T00:12:41.591Z",
+    "updatedAt": "2026-01-14T00:12:41.591Z",
+    "__v": 0
+  }
+]

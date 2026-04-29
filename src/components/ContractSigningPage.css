@@ -1,0 +1,238 @@
+/* ContractSigningPage Styles */
+
+.signing-page-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.signing-page-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.background-decoration {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, white, transparent);
+  border-radius: 50%;
+  top: -100px;
+  right: -100px;
+}
+
+.background-decoration::before {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, white, transparent);
+  border-radius: 50%;
+  bottom: -50px;
+  left: -50px;
+}
+
+.signing-page-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 900px;
+}
+
+/* Loading State */
+.signing-page-loading {
+  background: white;
+  border-radius: 12px;
+  padding: 60px 40px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.signing-page-loading p {
+  color: #666;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Error State */
+.signing-page-error {
+  background: white;
+  border-radius: 12px;
+  padding: 60px 40px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.error-icon {
+  font-size: 64px;
+  color: #f44336;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.signing-page-error h2 {
+  font-size: 1.8rem;
+  color: #333;
+  margin: 0 0 16px 0;
+  font-weight: 600;
+}
+
+.signing-page-error p {
+  color: #666;
+  font-size: 1rem;
+  margin: 0 0 12px 0;
+  line-height: 1.6;
+}
+
+.error-hint {
+  color: #999;
+  font-size: 0.9rem;
+  margin: 16px 0 24px 0 !important;
+}
+
+.signing-page-error .btn {
+  margin-top: 12px;
+}
+
+/* Success State */
+.signing-page-success {
+  background: white;
+  border-radius: 12px;
+  padding: 80px 40px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.success-icon {
+  font-size: 80px;
+  color: #4caf50;
+  margin-bottom: 20px;
+  display: block;
+  animation: checkmark 0.6s ease-out;
+}
+
+@keyframes checkmark {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+.signing-page-success h2 {
+  font-size: 1.8rem;
+  color: #333;
+  margin: 0 0 16px 0;
+  font-weight: 600;
+}
+
+.signing-page-success p {
+  color: #666;
+  font-size: 1rem;
+  margin: 0 0 12px 0;
+  line-height: 1.6;
+}
+
+.success-hint {
+  color: #999;
+  font-size: 0.9rem;
+  margin: 24px 0 0 0 !important;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .signing-page-container {
+    padding: 12px;
+  }
+
+  .signing-page-loading,
+  .signing-page-error,
+  .signing-page-success {
+    padding: 40px 24px;
+  }
+
+  .signing-page-error h2,
+  .signing-page-success h2 {
+    font-size: 1.4rem;
+  }
+
+  .error-icon,
+  .success-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+
+  .signing-page-error p,
+  .signing-page-success p {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .signing-page-loading,
+  .signing-page-error,
+  .signing-page-success {
+    padding: 30px 16px;
+  }
+
+  .signing-page-error h2,
+  .signing-page-success h2 {
+    font-size: 1.2rem;
+  }
+
+  .error-icon,
+  .success-icon {
+    font-size: 42px;
+  }
+
+  .signing-page-error p,
+  .signing-page-success p {
+    font-size: 0.9rem;
+  }
+}

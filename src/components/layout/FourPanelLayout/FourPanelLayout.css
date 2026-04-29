@@ -1,0 +1,212 @@
+/* FourPanelLayout.css */
+.four-panel-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--bg-primary, #ffffff);
+  color: var(--text-primary, #1f2937);
+}
+
+.layout-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Left Sidebar */
+.left-sidebar {
+  width: 280px;
+  background-color: var(--sidebar-bg, #f9fafb);
+  border-right: 1px solid var(--border-color, #e5e7eb);
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: transform 0.3s ease;
+  z-index: 40;
+}
+
+.left-sidebar.collapsed {
+  width: 0;
+  visibility: hidden;
+}
+
+/* Central Pane */
+.central-pane {
+  flex: 1;
+  overflow-y: auto;
+  background-color: var(--bg-secondary, #f3f4f6);
+  padding: 24px;
+}
+
+/* Right Sidebar */
+.right-sidebar {
+  width: 320px;
+  background-color: var(--sidebar-bg, #f9fafb);
+  border-left: 1px solid var(--border-color, #e5e7eb);
+  overflow-y: auto;
+  transition: width 0.3s ease;
+  z-index: 30;
+}
+
+.right-sidebar.compact {
+  width: 280px;
+}
+
+/* Sidebar Overlay (Mobile) */
+.sidebar-overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 35;
+}
+
+/* Mobile Bottom Navigation */
+.mobile-bottom-nav {
+  display: none;
+  flex-direction: row;
+  justify-content: space-around;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  background-color: var(--bg-primary, #ffffff);
+  padding: 8px 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 50;
+}
+
+.mobile-bottom-nav .nav-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  background: none;
+  color: var(--text-secondary, #6b7280);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.mobile-bottom-nav .nav-btn.active {
+  color: var(--primary-color, #0a2463);
+  font-weight: 600;
+}
+
+/* Responsive Design */
+
+/* Tablet - 1024px to 1439px */
+@media (max-width: 1439px) {
+  .right-sidebar {
+    width: 280px;
+  }
+  
+  .right-sidebar.compact {
+    width: 260px;
+  }
+}
+
+/* Mobile Large - 768px to 1023px */
+@media (max-width: 1023px) {
+  .left-sidebar {
+    position: absolute;
+    height: calc(100vh - 64px);
+    left: 0;
+    top: 64px;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .right-sidebar {
+    display: none;
+  }
+  
+  .sidebar-overlay {
+    display: block;
+  }
+}
+
+/* Mobile Small - 768px and below */
+@media (max-width: 767px) {
+  .layout-container {
+    flex-direction: column;
+  }
+  
+  .left-sidebar {
+    position: fixed;
+    width: 100%;
+    height: auto;
+    max-height: 70vh;
+    bottom: 0;
+    left: 0;
+    top: auto;
+    border-right: none;
+    border-top: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 16px 16px 0 0;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    z-index: 45;
+  }
+  
+  .left-sidebar:not(.collapsed) {
+    transform: translateY(0);
+  }
+  
+  .left-sidebar.collapsed {
+    visibility: visible;
+    width: 100%;
+  }
+  
+  .close-sidebar-mobile {
+    display: block;
+  }
+  
+  .central-pane {
+    width: 100%;
+    padding: 16px;
+    overflow-y: auto;
+  }
+  
+  .right-sidebar {
+    display: none;
+  }
+  
+  .mobile-bottom-nav {
+    display: flex;
+  }
+}
+
+/* Extra Small - Less than 480px */
+@media (max-width: 479px) {
+  .central-pane {
+    padding: 12px;
+  }
+  
+  .left-sidebar {
+    max-height: 60vh;
+  }
+}
+
+/* Scrollbar Styling */
+.left-sidebar::-webkit-scrollbar,
+.right-sidebar::-webkit-scrollbar,
+.central-pane::-webkit-scrollbar {
+  width: 8px;
+}
+
+.left-sidebar::-webkit-scrollbar-track,
+.right-sidebar::-webkit-scrollbar-track,
+.central-pane::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.left-sidebar::-webkit-scrollbar-thumb,
+.right-sidebar::-webkit-scrollbar-thumb,
+.central-pane::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb, #d1d5db);
+  border-radius: 4px;
+}
+
+.left-sidebar::-webkit-scrollbar-thumb:hover,
+.right-sidebar::-webkit-scrollbar-thumb:hover,
+.central-pane::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover, #9ca3af);
+}

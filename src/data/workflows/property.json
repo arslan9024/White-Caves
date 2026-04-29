@@ -1,0 +1,155 @@
+{
+  "name": "Property Transaction Workflow",
+  "description": "Complete workflow for property buy/sell/rent transactions",
+  "stages": [
+    {
+      "id": "listing",
+      "name": "Property Listing",
+      "order": 1,
+      "status": "active",
+      "description": "Property is listed and available for marketing",
+      "tasks": [
+        { "id": "t1", "name": "Property documentation collection", "required": true },
+        { "id": "t2", "name": "Professional photography", "required": true },
+        { "id": "t3", "name": "Price evaluation", "required": true },
+        { "id": "t4", "name": "Portal listing submission", "required": false }
+      ],
+      "responsibleRole": "agent",
+      "estimatedDuration": "2-3 days"
+    },
+    {
+      "id": "inquiry",
+      "name": "Inquiry & Lead Capture",
+      "order": 2,
+      "status": "active",
+      "description": "Potential buyer/tenant expresses interest",
+      "tasks": [
+        { "id": "t5", "name": "Lead qualification", "required": true },
+        { "id": "t6", "name": "Initial requirements gathering", "required": true },
+        { "id": "t7", "name": "Budget verification", "required": true }
+      ],
+      "responsibleRole": "sales",
+      "estimatedDuration": "1-2 days"
+    },
+    {
+      "id": "viewing",
+      "name": "Property Viewing",
+      "order": 3,
+      "status": "active",
+      "description": "Client visits the property for inspection",
+      "tasks": [
+        { "id": "t8", "name": "Schedule viewing appointment", "required": true },
+        { "id": "t9", "name": "Coordinate with property owner", "required": true },
+        { "id": "t10", "name": "Conduct property tour", "required": true },
+        { "id": "t11", "name": "Collect feedback", "required": true }
+      ],
+      "responsibleRole": "agent",
+      "estimatedDuration": "1-3 days"
+    },
+    {
+      "id": "offer",
+      "name": "Offer Submission",
+      "order": 4,
+      "status": "active",
+      "description": "Client submits an offer for the property",
+      "tasks": [
+        { "id": "t12", "name": "Prepare offer document", "required": true },
+        { "id": "t13", "name": "Submit to seller/landlord", "required": true },
+        { "id": "t14", "name": "Collect initial deposit (if applicable)", "required": false }
+      ],
+      "responsibleRole": "sales",
+      "estimatedDuration": "1-2 days"
+    },
+    {
+      "id": "negotiation",
+      "name": "Negotiation",
+      "order": 5,
+      "status": "active",
+      "description": "Price and terms negotiation between parties",
+      "tasks": [
+        { "id": "t15", "name": "Negotiate price terms", "required": true },
+        { "id": "t16", "name": "Agree on payment schedule", "required": true },
+        { "id": "t17", "name": "Finalize handover date", "required": true }
+      ],
+      "responsibleRole": "manager",
+      "estimatedDuration": "3-7 days"
+    },
+    {
+      "id": "contract",
+      "name": "Contract Preparation",
+      "order": 6,
+      "status": "active",
+      "description": "Legal contract preparation and review",
+      "tasks": [
+        { "id": "t18", "name": "Draft sales/tenancy contract", "required": true },
+        { "id": "t19", "name": "Legal review", "required": true },
+        { "id": "t20", "name": "Client document collection (KYC)", "required": true },
+        { "id": "t21", "name": "Both parties sign contract", "required": true }
+      ],
+      "responsibleRole": "legal",
+      "estimatedDuration": "3-5 days"
+    },
+    {
+      "id": "payment",
+      "name": "Payment Processing",
+      "order": 7,
+      "status": "active",
+      "description": "Payment collection and verification",
+      "tasks": [
+        { "id": "t22", "name": "Collect payment (full/installment)", "required": true },
+        { "id": "t23", "name": "Issue receipt", "required": true },
+        { "id": "t24", "name": "Update financial records", "required": true }
+      ],
+      "responsibleRole": "finance",
+      "estimatedDuration": "1-3 days"
+    },
+    {
+      "id": "handover",
+      "name": "Property Handover",
+      "order": 8,
+      "status": "active",
+      "description": "Final property handover to buyer/tenant",
+      "tasks": [
+        { "id": "t25", "name": "Property inspection", "required": true },
+        { "id": "t26", "name": "Key handover", "required": true },
+        { "id": "t27", "name": "Utility transfer (DEWA, internet)", "required": true },
+        { "id": "t28", "name": "Ejari registration (for rentals)", "required": false },
+        { "id": "t29", "name": "DLD transfer (for sales)", "required": false }
+      ],
+      "responsibleRole": "operations",
+      "estimatedDuration": "1-2 days"
+    }
+  ],
+  "activeTransactions": [
+    {
+      "id": "tx-1",
+      "property": "VH-A-101 Veneto Villa",
+      "client": "Abdullah Al Maktoum",
+      "type": "sale",
+      "currentStage": "negotiation",
+      "progress": 62,
+      "startDate": "2025-12-15",
+      "expectedClose": "2026-01-25"
+    },
+    {
+      "id": "tx-2",
+      "property": "AM-B-205 Amazonia TH",
+      "client": "Sarah Williams",
+      "type": "rent",
+      "currentStage": "contract",
+      "progress": 75,
+      "startDate": "2026-01-02",
+      "expectedClose": "2026-01-15"
+    },
+    {
+      "id": "tx-3",
+      "property": "CL-C-312 Cleopatra Villa",
+      "client": "Chen Wei",
+      "type": "sale",
+      "currentStage": "payment",
+      "progress": 88,
+      "startDate": "2025-11-20",
+      "expectedClose": "2026-01-12"
+    }
+  ]
+}

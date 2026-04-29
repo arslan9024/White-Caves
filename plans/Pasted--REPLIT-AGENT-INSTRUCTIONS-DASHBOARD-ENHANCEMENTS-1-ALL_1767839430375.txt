@@ -1,0 +1,223 @@
+# REPLIT AGENT INSTRUCTIONS: DASHBOARD ENHANCEMENTS
+
+## **1. ALL USERS SEE SUB-COMPONENTS (EVEN EMPTY)**
+
+### **Implementation Requirements:**
+- Every user role dashboard must render ALL its assigned sub-components
+- Empty sub-components should show:
+  - Empty state UI (illustration + message)
+  - Suggested actions (e.g., "Add your first property")
+  - Loading skeleton while fetching data
+- Never hide/remove sub-components based on data availability
+
+### **Component Structure:**
+```
+src/shared/components/dashboard/
+├── EmptyState/
+│   ├── EmptyState.tsx (reusable empty state)
+│   ├── EmptyStateIllustration.tsx (role-specific illustrations)
+│   └── EmptyStateActions.tsx (suggested actions)
+├── LoadingStates/
+│   ├── SkeletonLoader.tsx
+│   └── ContentPlaceholder.tsx
+└── DashboardContainer.tsx (wrapper with built-in empty states)
+```
+
+### **Behavior Rules:**
+1. If data loading: Show skeleton
+2. If data loaded but empty: Show empty state with role-specific suggestions
+3. If data exists: Show data
+4. NEVER conditionally render sub-components based on data
+
+## **2. SUB-COMPONENTS WITH INSIDE NAV TABS**
+
+### **Tabbed Sub-Component Architecture:**
+```
+src/features/[role]/components/
+├── [ComponentName]/
+│   ├── [ComponentName].tsx (main component with tabs)
+│   ├── tabs/
+│   │   ├── Tab1.tsx
+│   │   ├── Tab2.tsx
+│   │   └── Tab3.tsx
+│   ├── TabNavigation.tsx (internal tab switcher)
+│   └── TabContent.tsx (tab content renderer)
+```
+
+### **Requirements:**
+- Each sub-component can have its own internal tab navigation
+- Tabs should be horizontally scrollable on mobile
+- Active tab must be visually distinct
+- Tab state should persist in Redux for each user
+- URL hash or query params can track active tab
+
+### **Example for Landlord Dashboard:**
+```typescript
+// LandlordProperties.tsx - Main component with internal tabs
+const tabs = [
+  { id: 'all', label: 'All Properties', icon: '🏠' },
+  { id: 'active', label: 'Active', icon: '✅' },
+  { id: 'vacant', label: 'Vacant', icon: '🔄' },
+  { id: 'maintenance', label: 'Under Maintenance', icon: '🔧' },
+  { id: 'archived', label: 'Archived', icon: '📁' },
+];
+```
+
+## **3. ROLE CHANGE REQUEST SYSTEM WITH STATUS UPDATES**
+
+### **Complete Workflow:**
+1. **Request Interface:**
+   - Dropdown to select desired role
+   - Reason text field (optional)
+   - Submit button
+
+2. **Redux State Management:**
+   ```typescript
+   // roleSlice.ts
+   interface RoleChangeState {
+     pendingRequests: Array<{
+       id: string;
+       userId: string;
+       currentRole: string;
+       requestedRole: string;
+       reason?: string;
+       status: 'pending' | 'approved' | 'rejected';
+       requestedAt: string;
+       reviewedAt?: string;
+       reviewedBy?: string;
+     }>;
+     userRoleRequest: {
+       isRequesting: boolean;
+       lastRequestStatus: 'idle' | 'pending' | 'success' | 'error';
+       errorMessage: string | null;
+     };
+   }
+   ```
+
+3. **Status Component:**
+   ```
+   src/shared/components/status/
+   ├── StatusMessage.tsx (reusable status display)
+   │   ├── Props: type ('success' | 'error' | 'warning' | 'info' | 'pending')
+   │   ├── Props: message (string)
+   │   └── Props: autoDismiss (boolean)
+   ├── SuccessStatus.tsx (green background, check icon)
+   ├── ErrorStatus.tsx (red background, x icon)
+   ├── PendingStatus.tsx (yellow/blue background, clock icon)
+   └── StatusHistory.tsx (list of past status updates)
+   ```
+
+4. **User Experience Flow:**
+   - User submits role change request → shows "Request Submitted (Pending Admin Approval)" in yellow/blue
+   - Admin approves → shows "Role Change Approved" in green
+   - Admin rejects → shows "Role Change Rejected" in red
+   - System error → shows error message in red
+
+5. **Dashboard Integration:**
+   - Status component appears at top of user's dashboard
+   - Automatically dismisses after 10 seconds (configurable)
+   - Click to view full status history
+   - Persistent badge on profile icon when pending
+
+## **4. ADDITIONAL REQUIREMENTS MENTIONED**
+
+### **4.1 Owner Dashboard Sub-Menus**
+- Remove Services, Inventory, Staff, Clients from main navbar
+- Create owner dashboard with these as sub-menu items
+- Each sub-menu leads to comprehensive management panels
+- Database integration with Redux state synchronization
+
+### **4.2 Leasing Broker Tenancy Contracts**
+- When landlord assigns property to leasing broker
+- Tenancy contract component appears in BOTH dashboards:
+  - Landlord: View contract status
+  - Leasing Broker: Edit/manage contract
+- Contract workflow states: Draft → Review → Signed → Active → Archived
+
+### **4.3 Universal Profile Component**
+- Avatar or dummy image
+- Dropdown menu contains:
+  - Theme toggle (moved from navbar)
+  - Edit profile
+  - Settings
+  - Role change request link
+  - Logout
+- When logged out: Acts as sign-in button
+- Show role badge with pending requests indicator
+
+## **IMPLEMENTATION PRIORITY ORDER:**
+
+### **Phase 1 (Immediate):**
+1. Create EmptyState and LoadingState components
+2. Ensure all dashboards render sub-components even when empty
+3. Build internal tab navigation for each sub-component
+
+### **Phase 2:**
+4. Implement role change request system
+5. Create universal StatusMessage component with color coding
+6. Integrate status updates into dashboard flow
+
+### **Phase 3:**
+7. Move owner features from navbar to owner dashboard
+8. Implement tenancy contract sharing between landlord/broker
+9. Enhance profile dropdown with all user controls
+
+## **KEY TECHNICAL SPECIFICATIONS:**
+
+### **Responsive Design:**
+- Tabs: Horizontal scroll on mobile, fixed width on desktop
+- Empty states: Different illustrations for mobile/desktop
+- Status messages: Full width on mobile, toast-style on desktop
+
+### **Redux Integration:**
+- All tab states stored in Redux per user
+- Role change requests persisted in Redux and synced with backend
+- Status messages managed through Redux notifications slice
+
+### **Accessibility:**
+- Tab navigation: Keyboard arrow key support
+- Status messages: ARIA live regions for screen readers
+- Color coding: Additional icons for color-blind users
+
+### **Performance:**
+- Lazy load tab content
+- Virtualize long status histories
+- Debounce role change requests
+
+## **TESTING REQUIREMENTS:**
+
+1. **Empty State Testing:**
+   - Verify all sub-components show empty states
+   - Test loading skeletons
+   - Verify suggested actions are role-appropriate
+
+2. **Tab Navigation Testing:**
+   - Test tab switching
+   - Verify state persistence
+   - Test mobile horizontal scrolling
+
+3. **Role Change Flow Testing:**
+   - Submit request → see pending status
+   - Admin approval → see success status
+   - Admin rejection → see error status
+   - Network failure → see error with retry
+
+4. **Responsive Testing:**
+   - Mobile: Tabs scroll horizontally
+   - Desktop: Tabs fixed layout
+   - Tablet: Hybrid behavior
+
+## **DELIVERABLES CHECKLIST:**
+
+✅ All users see assigned sub-components (even empty)  
+✅ Sub-components have internal tab navigation  
+✅ Role change request system implemented  
+✅ Status updates show with color coding (green=success, red=error, pending=special)  
+✅ Owner features moved to owner dashboard only  
+✅ Tenancy contract shared between landlord and leasing broker  
+✅ Profile dropdown includes theme toggle, settings, logout  
+✅ Responsive design for all components  
+✅ Redux state management for all features  
+✅ Accessibility compliance  
+
+**Execution Order:** Follow phases sequentially. Test each phase before proceeding. All existing functionality must remain intact.

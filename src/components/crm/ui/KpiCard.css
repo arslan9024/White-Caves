@@ -1,0 +1,215 @@
+.kpi-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.kpi-card.clickable {
+  cursor: pointer;
+}
+
+.kpi-card.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: var(--kpi-color, #0EA5E9);
+}
+
+.kpi-card.small {
+  padding: 12px;
+  gap: 10px;
+}
+
+.kpi-card.large {
+  padding: 20px;
+  gap: 16px;
+}
+
+.kpi-card.highlight {
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--kpi-color) 10%, transparent),
+    color-mix(in srgb, var(--kpi-color) 5%, transparent)
+  );
+  border-color: color-mix(in srgb, var(--kpi-color) 30%, transparent);
+}
+
+.kpi-card.compact {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.kpi-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--kpi-color) 15%, transparent);
+  color: var(--kpi-color);
+  flex-shrink: 0;
+}
+
+.kpi-card.small .kpi-icon {
+  width: 36px;
+  height: 36px;
+}
+
+.kpi-card.large .kpi-icon {
+  width: 52px;
+  height: 52px;
+}
+
+.kpi-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.kpi-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.kpi-card.small .kpi-title {
+  font-size: 11px;
+}
+
+.kpi-value-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kpi-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+  line-height: 1.2;
+}
+
+.kpi-card.small .kpi-value {
+  font-size: 18px;
+}
+
+.kpi-card.large .kpi-value {
+  font-size: 32px;
+}
+
+.kpi-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.kpi-trend.trend-up {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.kpi-trend.trend-down {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.kpi-trend.trend-neutral {
+  background: rgba(100, 116, 139, 0.15);
+  color: #64748b;
+}
+
+.kpi-subtitle {
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+  margin-top: 2px;
+}
+
+.kpi-card.loading .kpi-skeleton {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.skeleton-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+.skeleton-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-title {
+  width: 60%;
+  height: 12px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+.skeleton-value {
+  width: 40%;
+  height: 24px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.kpi-card-grid {
+  width: 100%;
+}
+
+@media (max-width: 1200px) {
+  .kpi-card-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .kpi-card-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+[data-theme="dark"] .kpi-card {
+  background: var(--card-bg-dark, #1e293b);
+  border-color: var(--border-color-dark, #334155);
+}
+
+[data-theme="dark"] .kpi-value {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .skeleton-icon,
+[data-theme="dark"] .skeleton-title,
+[data-theme="dark"] .skeleton-value {
+  background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%);
+  background-size: 200% 100%;
+}

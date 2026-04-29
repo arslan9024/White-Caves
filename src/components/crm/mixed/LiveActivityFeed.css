@@ -1,0 +1,238 @@
+.live-activity-feed {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.feed-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  margin-bottom: 12px;
+}
+
+.feed-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  margin: 0;
+}
+
+.feed-count {
+  font-size: 0.75rem;
+  color: var(--text-muted, #64748b);
+  background: var(--surface-secondary, #f1f5f9);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: var(--surface-secondary, #f8fafc);
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.activity-item:hover {
+  background: var(--surface-primary, #ffffff);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.activity-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activity-icon.success {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10B981;
+}
+
+.activity-icon.warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: #F59E0B;
+}
+
+.activity-icon.pending {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3B82F6;
+}
+
+.activity-icon.default {
+  background: rgba(212, 175, 55, 0.1);
+  color: #B03737;
+}
+
+.activity-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.activity-text {
+  font-size: 0.8rem;
+  color: var(--text-primary, #1e293b);
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+}
+
+.activity-actor {
+  font-weight: 600;
+  color: var(--crm-navy, #1A1A1A);
+  margin-right: 4px;
+}
+
+.activity-target {
+  font-weight: 500;
+  color: #B03737;
+  margin-left: 4px;
+}
+
+.activity-time {
+  font-size: 0.7rem;
+  color: var(--text-muted, #94a3b8);
+}
+
+.activity-arrow {
+  color: var(--text-muted, #94a3b8);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.feed-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.85rem;
+}
+
+.feed-view-all {
+  margin-top: 12px;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #B03737;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.feed-view-all:hover {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: #B03737;
+}
+
+.ai-activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  background: linear-gradient(135deg, rgba(10, 26, 58, 0.03) 0%, rgba(212, 175, 55, 0.05) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 10px;
+}
+
+.ai-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.ai-activity-content {
+  flex: 1;
+}
+
+.ai-action {
+  font-size: 0.8rem;
+  color: var(--text-primary, #1e293b);
+  margin: 0 0 2px 0;
+}
+
+.ai-name {
+  font-weight: 600;
+  color: var(--crm-navy, #1A1A1A);
+  margin-right: 4px;
+}
+
+.ai-target {
+  font-weight: 500;
+  color: #B03737;
+  margin-left: 4px;
+}
+
+.ai-time {
+  font-size: 0.7rem;
+  color: var(--text-muted, #94a3b8);
+}
+
+.ai-status {
+  flex-shrink: 0;
+}
+
+.ai-status.completed {
+  color: #10B981;
+}
+
+.ai-status.pending {
+  color: #F59E0B;
+}
+
+.ai-status.error {
+  color: #EF4444;
+}
+
+[data-theme="dark"] .feed-title {
+  color: var(--text-primary, #f8fafc);
+}
+
+[data-theme="dark"] .activity-item {
+  background: var(--surface-secondary, #0f172a);
+}
+
+[data-theme="dark"] .activity-item:hover {
+  background: var(--surface-primary, #1e293b);
+}
+
+[data-theme="dark"] .activity-text {
+  color: var(--text-primary, #f8fafc);
+}
+
+[data-theme="dark"] .activity-actor {
+  color: var(--crm-gold, #B03737);
+}
+
+[data-theme="dark"] .ai-action {
+  color: var(--text-primary, #f8fafc);
+}
+
+[data-theme="dark"] .ai-name {
+  color: var(--crm-gold, #B03737);
+}
