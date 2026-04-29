@@ -1,6 +1,9 @@
 import React, { FC } from 'react';
 import '../RolePages.css';
 
+const AGENT_PHONE = '+971563616136';
+const AGENT_WHATSAPP_URL = `https://wa.me/971563616136?text=Hi%2C%20I%20would%20like%20to%20start%20my%20title%20deed%20registration.`;
+
 interface Step {
   number: number;
   title: string;
@@ -25,50 +28,90 @@ const TitleDeedRegistrationPage: FC = () => {
       number: 1,
       title: 'Sign Memorandum of Understanding (MOU)',
       description: 'Buyer and seller sign Form F (MOU) with the agent. Buyer pays 10% deposit.',
-      documents: ['Valid Emirates ID or Passport', 'Original cheques (deposit + remaining amount)', 'Signed Form F'],
-      timeline: 'Day 1'
+      documents: [
+        'Valid Emirates ID or Passport',
+        'Original cheques (deposit + remaining amount)',
+        'Signed Form F',
+      ],
+      timeline: 'Day 1',
     },
     {
       number: 2,
       title: 'Obtain No Objection Certificate (NOC)',
       description: 'Seller applies for NOC from the developer confirming no outstanding dues.',
-      documents: ['Copy of Title Deed', 'Copy of Passport', 'Payment of outstanding service charges'],
-      timeline: '3-5 business days'
+      documents: [
+        'Copy of Title Deed',
+        'Copy of Passport',
+        'Payment of outstanding service charges',
+      ],
+      timeline: '3-5 business days',
     },
     {
       number: 3,
       title: 'Mortgage Pre-Approval (if applicable)',
       description: 'If purchasing with a mortgage, obtain final approval from your bank.',
-      documents: ['Property valuation report', 'Salary certificate', 'Bank statements', 'Signed SPA'],
-      timeline: '5-10 business days'
+      documents: [
+        'Property valuation report',
+        'Salary certificate',
+        'Bank statements',
+        'Signed SPA',
+      ],
+      timeline: '5-10 business days',
     },
     {
       number: 4,
       title: 'Block Transfer at Trustee Office',
       description: 'Visit the DLD-approved trustee to complete the blocking process.',
-      documents: ['Original NOC', 'Original Title Deed', 'Manager\'s cheques for all payments', 'Valid IDs of both parties'],
-      timeline: 'Same day'
+      documents: [
+        'Original NOC',
+        'Original Title Deed',
+        "Manager's cheques for all payments",
+        'Valid IDs of both parties',
+      ],
+      timeline: 'Same day',
     },
     {
       number: 5,
       title: 'Transfer Ownership at DLD',
       description: 'Both parties visit Dubai Land Department to complete the transfer.',
       documents: ['Blocked transfer confirmation', 'All original documents', 'Payment receipts'],
-      timeline: 'Same day'
+      timeline: 'Same day',
     },
     {
       number: 6,
       title: 'Receive New Title Deed',
-      description: 'New title deed is issued in buyer\'s name. Keep this document safe!',
+      description: "New title deed is issued in buyer's name. Keep this document safe!",
       documents: ['Registration confirmation', 'Payment of DLD fees'],
-      timeline: 'Immediate (digital) or 2-3 days (physical)'
-    }
+      timeline: 'Immediate (digital) or 2-3 days (physical)',
+    },
   ];
 
   const requiredDocuments: Document[] = [
-    { category: 'Buyer', items: ['Valid Emirates ID or Passport', 'Passport copy with visa page', 'Power of Attorney (if applicable)'] },
-    { category: 'Seller', items: ['Original Title Deed', 'Valid Emirates ID or Passport', 'NOC from Developer', 'Service charge clearance'] },
-    { category: 'Financial', items: ['Manager\'s cheques for purchase amount', 'Manager\'s cheque for DLD fees', 'Mortgage approval letter (if applicable)'] },
+    {
+      category: 'Buyer',
+      items: [
+        'Valid Emirates ID or Passport',
+        'Passport copy with visa page',
+        'Power of Attorney (if applicable)',
+      ],
+    },
+    {
+      category: 'Seller',
+      items: [
+        'Original Title Deed',
+        'Valid Emirates ID or Passport',
+        'NOC from Developer',
+        'Service charge clearance',
+      ],
+    },
+    {
+      category: 'Financial',
+      items: [
+        "Manager's cheques for purchase amount",
+        "Manager's cheque for DLD fees",
+        'Mortgage approval letter (if applicable)',
+      ],
+    },
   ];
 
   const feesSummary: FeeItem[] = [
@@ -90,7 +133,7 @@ const TitleDeedRegistrationPage: FC = () => {
         <div className="process-timeline">
           <h3>Registration Process</h3>
           <div className="timeline">
-            {steps.map((step) => (
+            {steps.map(step => (
               <div key={step.number} className="timeline-step">
                 <div className="step-number">{step.number}</div>
                 <div className="step-content">
@@ -102,7 +145,7 @@ const TitleDeedRegistrationPage: FC = () => {
                   <div className="step-documents">
                     <strong>Required:</strong>
                     <ul>
-                      {step.documents.map((doc) => (
+                      {step.documents.map(doc => (
                         <li key={doc}>{doc}</li>
                       ))}
                     </ul>
@@ -135,12 +178,60 @@ const TitleDeedRegistrationPage: FC = () => {
         <div className="fees-section">
           <h3>Transfer Fees Summary</h3>
           <div className="fees-table">
-            {feesSummary.map((fee) => (
+            {feesSummary.map(fee => (
               <div key={fee.item} className="fee-row">
                 <span className="fee-name">{fee.item}</span>
                 <span className="fee-amount">{fee.amount}</span>
               </div>
             ))}
+          </div>
+        </div>
+
+        <div
+          className="cta-section"
+          style={{
+            marginTop: '2rem',
+            padding: '2rem',
+            background: 'var(--card-bg)',
+            border: '1px solid var(--card-border)',
+            borderRadius: '12px',
+            textAlign: 'center',
+          }}
+        >
+          <h3 style={{ marginBottom: '0.5rem' }}>Ready to Begin?</h3>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+            Contact our team to start your title deed registration process. We&apos;ll guide you
+            every step of the way.
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <a
+              href={`tel:${AGENT_PHONE}`}
+              style={{
+                padding: '0.75rem 1.5rem',
+                background: 'var(--color-primary, #C6A84B)',
+                color: '#fff',
+                borderRadius: '8px',
+                fontWeight: 600,
+                textDecoration: 'none',
+              }}
+            >
+              📞 Call Us Now
+            </a>
+            <a
+              href={AGENT_WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                padding: '0.75rem 1.5rem',
+                background: '#25D366',
+                color: '#fff',
+                borderRadius: '8px',
+                fontWeight: 600,
+                textDecoration: 'none',
+              }}
+            >
+              💬 WhatsApp Us
+            </a>
           </div>
         </div>
       </div>

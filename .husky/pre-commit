@@ -1,8 +1,1 @@
-# Skip pre-commit linting during merge commits to avoid blocking large merges
-# (lint-staged runs on all 600+ staged files which is too slow/strict for merges)
-if [ -f .git/MERGE_HEAD ]; then
-  echo "Skipping lint-staged during merge commit"
-  exit 0
-fi
-
 npx lint-staged

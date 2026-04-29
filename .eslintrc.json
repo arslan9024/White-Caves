@@ -18,12 +18,7 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": [
-    "react",
-    "react-hooks",
-    "@typescript-eslint",
-    "security"
-  ],
+  "plugins": ["react", "react-hooks", "@typescript-eslint", "security"],
   "rules": {
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
@@ -39,10 +34,7 @@
     "no-console": [
       "warn",
       {
-        "allow": [
-          "warn",
-          "error"
-        ]
+        "allow": ["warn", "error"]
       }
     ],
     "security/detect-object-injection": "warn",
@@ -60,14 +52,5 @@
       "version": "18"
     }
   },
-  "ignorePatterns": [
-    "node_modules",
-    "dist",
-    "build",
-    "coverage",
-    ".next",
-    ".vite",
-    "archive",
-    "scripts/"
-  ]
+  "ignorePatterns": ["node_modules", "dist", "build", "coverage", ".next", ".vite", "archive"]
 }

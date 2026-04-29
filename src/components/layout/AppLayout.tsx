@@ -29,7 +29,7 @@
  * - CommandPalette: global search overlay (Cmd+K)
  */
 
-import React, { useEffect, ReactNode, lazy, Suspense } from 'react';
+import React, { useEffect, ReactNode, lazy, Suspense, useState, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveRole } from '../../store/navigationSlice';
@@ -40,6 +40,10 @@ import EnhancedLeftSidebar from './EnhancedLeftSidebar/EnhancedLeftSidebar';
 import CommandPalette from '../common/CommandPalette';
 import { AppLayoutContainer, AppBody, AppMain } from './AppLayout/styles';
 import type { RootState } from '../../store/store';
+import { authFetch } from '../../utils/authFetch';
+import { createLogger } from '../../utils/logger';
+
+const log = createLogger('AppLayout');
 
 // Lazy-load non-critical UI
 const BiometricReminder = lazy(() =>
@@ -59,20 +63,54 @@ interface AppLayoutProps {
 }
 
 const ROLE_PATHS: string[] = [
-  'buyer', 'seller', 'landlord', 'tenant',
-  'leasing-agent', 'secondary-sales-agent', 'owner',
+  'buyer',
+  'seller',
+  'landlord',
+  'tenant',
+  'leasing-agent',
+  'secondary-sales-agent',
+  'owner',
 ];
 
-const AppLayout: React.FC<AppLayoutProps> = ({
-  children,
-  showNav = true,
-  isSuperUser = false,
-}) => {
+const AppLayout: React.FC<AppLayoutProps> = ({ children, showNav = true, isSuperUser = false }) => {
   const location = useLocation();
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user.currentUser);
   const { isDesktop, isTablet } = useResponsiveLayout();
   const showCrmChrome = showNav && Boolean(user);
+
+  // ─── Notifications ────────────────────────────────────────────────
+  const [notifications, setNotifications] = useState<Array<{ id: string; read: boolean }>>([]);
+
+  const fetchNotifications = useCallback(async () => {
+    if (!user) return;
+    try {
+      const res = await authFetch('/api/notifications?pageSize=20');
+      if (res.ok) {
+        const json = await res.json();
+        const items = json.data || json.notifications || [];
+        setNotifications(
+          items.map((n: Record<string, unknown>) => ({
+            id: String(n.id ?? n._id ?? ''),
+            read: Boolean(n.read ?? n.isRead ?? false),
+          }))
+        );
+      }
+    } catch (err) {
+      log.warn('Failed to fetch notifications:', err);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!showCrmChrome) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchNotifications();
+    // Poll every 60 seconds for new notifications
+    const interval = setInterval(() => {
+      void fetchNotifications();
+    }, 60_000);
+    return () => clearInterval(interval);
+  }, [showCrmChrome, fetchNotifications]);
 
   // Detect role from URL and sync to Redux
   useEffect(() => {
@@ -91,7 +129,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       </a>
 
       {/* ─── Top Navigation Bar (CRM only for authenticated users) ─── */}
-      {showCrmChrome && <TopBar />}
+      {showCrmChrome && <TopBar notifications={notifications} />}
 
       {/* ─── Command Palette Overlay (Cmd+K / Ctrl+K) ─────────────── */}
       {showCrmChrome && <CommandPalette />}

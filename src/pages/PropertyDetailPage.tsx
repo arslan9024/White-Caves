@@ -6,7 +6,7 @@
  * contact agent CTA, share buttons, similar properties carousel.
  */
 
-import React, { FC, useMemo, lazy, Suspense } from 'react';
+import React, { FC, useMemo, lazy, Suspense, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { usePropertyBrowser, type PropertyType } from '../hooks/usePropertyBrowser';
@@ -14,9 +14,21 @@ import { usePublicFavorites } from '../hooks/usePublicFavorites';
 import PublicLayout from '../components/layout/PublicLayout';
 import { PropertyImageSlider } from '../shared/components/property';
 import {
-  ArrowLeft, Heart, Share2, MapPin, Bed, Bath, Maximize,
-  Calendar, Building2, Phone, Mail, MessageCircle,
-  Copy, Printer, ChevronRight,
+  ArrowLeft,
+  Heart,
+  Share2,
+  MapPin,
+  Bed,
+  Bath,
+  Maximize,
+  Calendar,
+  Building2,
+  Phone,
+  Mail,
+  MessageCircle,
+  Copy,
+  Printer,
+  ChevronRight,
 } from 'lucide-react';
 import { createLogger } from '../utils/logger';
 import './PropertyDetailPage.css';
@@ -24,6 +36,7 @@ import './PropertyDetailPage.css';
 const log = createLogger('PropertyDetailPage');
 
 const DubaiMap = lazy(() => import('../components/maps/DubaiMap'));
+const VirtualTour = lazy(() => import('../components/VirtualTour'));
 
 /* ─── Share Helpers ─────────────────────────────────────────────── */
 
@@ -73,11 +86,9 @@ const PropertyDetailPage: FC = () => {
   const navigate = useNavigate();
   const { properties, loading } = usePropertyBrowser();
   const { isFavorite, toggleFavorite } = usePublicFavorites();
+  const [showTour, setShowTour] = useState(false);
 
-  const property = useMemo(
-    () => properties.find((p) => p.id === id) || null,
-    [properties, id]
-  );
+  const property = useMemo(() => properties.find(p => p.id === id) || null, [properties, id]);
 
   useDocumentTitle(property ? `${property.title} | White Caves` : 'Property Details');
 
@@ -85,9 +96,7 @@ const PropertyDetailPage: FC = () => {
     if (!property) return [];
     return properties
       .filter(
-        (p) =>
-          p.id !== property.id &&
-          (p.location === property.location || p.type === property.type)
+        p => p.id !== property.id && (p.location === property.location || p.type === property.type)
       )
       .slice(0, 4);
   }, [properties, property]);
@@ -159,7 +168,36 @@ const PropertyDetailPage: FC = () => {
             onFavorite={() => favoriteItem && toggleFavorite(favoriteItem)}
             onShare={() => shareProperty(property)}
           />
+          {property.images && property.images.length > 0 && (
+            <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem' }}>
+              <button
+                className={`action-btn${showTour ? ' active' : ''}`}
+                style={{ fontSize: '0.85rem', padding: '0.5rem 1rem' }}
+                onClick={() => setShowTour(v => !v)}
+                aria-expanded={showTour}
+              >
+                {showTour ? '🏠 Hide 360° Tour' : '🔭 360° Virtual Tour'}
+              </button>
+            </div>
+          )}
         </section>
+
+        {/* ─── Virtual Tour (lazy) ───────────────────────────── */}
+        {showTour && property.images && property.images.length > 0 && (
+          <section className="detail-virtual-tour" style={{ marginBottom: '2rem' }}>
+            <Suspense
+              fallback={
+                <div style={{ padding: '2rem', textAlign: 'center' }}>Loading virtual tour…</div>
+              }
+            >
+              <VirtualTour
+                images={property.images.map((src: string) => ({ src, name: property.title }))}
+                propertyTitle={property.title}
+                onClose={() => setShowTour(false)}
+              />
+            </Suspense>
+          </section>
+        )}
 
         {/* ─── Content Grid: Main + Sidebar ─────────────────── */}
         <div className="detail-content-grid">
@@ -183,9 +221,7 @@ const PropertyDetailPage: FC = () => {
               </p>
 
               <div className="detail-price-row">
-                <span className="detail-price">
-                  AED {property.price.toLocaleString()}
-                </span>
+                <span className="detail-price">AED {property.price.toLocaleString()}</span>
                 {property.sqft > 0 && (
                   <span className="detail-price-sqft">
                     AED {Math.round(property.price / property.sqft).toLocaleString()}/sqft
@@ -238,7 +274,7 @@ const PropertyDetailPage: FC = () => {
               <section className="detail-amenities">
                 <h2>Amenities & Features</h2>
                 <div className="amenities-grid">
-                  {property.amenities.map((a) => (
+                  {property.amenities.map(a => (
                     <span key={a} className="amenity-tag">
                       {a}
                     </span>
@@ -257,11 +293,7 @@ const PropertyDetailPage: FC = () => {
                   </div>
                 }
               >
-                <DubaiMap
-                  properties={[property]}
-                  showCommunities={false}
-                  height="350px"
-                />
+                <DubaiMap properties={[property]} showCommunities={false} height="350px" />
               </Suspense>
             </section>
           </main>
@@ -273,10 +305,7 @@ const PropertyDetailPage: FC = () => {
               <h3>Contact Agent</h3>
               <p className="agent-subtitle">Interested in this property? Get in touch now.</p>
 
-              <button
-                className="contact-btn whatsapp"
-                onClick={() => contactWhatsApp(property)}
-              >
+              <button className="contact-btn whatsapp" onClick={() => contactWhatsApp(property)}>
                 <MessageCircle size={18} />
                 WhatsApp
               </button>
@@ -286,10 +315,7 @@ const PropertyDetailPage: FC = () => {
                 Call Agent
               </button>
 
-              <button
-                className="contact-btn email"
-                onClick={() => contactEmail(property)}
-              >
+              <button className="contact-btn email" onClick={() => contactEmail(property)}>
                 <Mail size={18} />
                 Send Email
               </button>
@@ -301,25 +327,16 @@ const PropertyDetailPage: FC = () => {
                 className={`action-btn favorite ${isFavorite(property.id) ? 'active' : ''}`}
                 onClick={() => favoriteItem && toggleFavorite(favoriteItem)}
               >
-                <Heart
-                  size={18}
-                  fill={isFavorite(property.id) ? '#DC2626' : 'none'}
-                />
+                <Heart size={18} fill={isFavorite(property.id) ? '#DC2626' : 'none'} />
                 {isFavorite(property.id) ? 'Saved' : 'Save'}
               </button>
 
-              <button
-                className="action-btn share"
-                onClick={() => shareProperty(property)}
-              >
+              <button className="action-btn share" onClick={() => shareProperty(property)}>
                 <Share2 size={18} />
                 Share
               </button>
 
-              <button
-                className="action-btn copy"
-                onClick={() => copyLink(property.id)}
-              >
+              <button className="action-btn copy" onClick={() => copyLink(property.id)}>
                 <Copy size={18} />
                 Copy Link
               </button>
@@ -331,10 +348,7 @@ const PropertyDetailPage: FC = () => {
             </div>
 
             {/* Back to Listings */}
-            <button
-              className="back-btn"
-              onClick={() => navigate('/properties')}
-            >
+            <button className="back-btn" onClick={() => navigate('/properties')}>
               <ArrowLeft size={16} />
               Back to Listings
             </button>
@@ -346,12 +360,8 @@ const PropertyDetailPage: FC = () => {
           <section className="similar-properties">
             <h2>Similar Properties</h2>
             <div className="similar-grid">
-              {similarProperties.map((sp) => (
-                <Link
-                  key={sp.id}
-                  to={`/property/${sp.id}`}
-                  className="similar-card"
-                >
+              {similarProperties.map(sp => (
+                <Link key={sp.id} to={`/property/${sp.id}`} className="similar-card">
                   <img
                     src={sp.image}
                     alt={sp.title}
@@ -366,16 +376,13 @@ const PropertyDetailPage: FC = () => {
                     <p>
                       <MapPin size={12} /> {sp.location}
                     </p>
-                    <span className="similar-price">
-                      AED {sp.price.toLocaleString()}
-                    </span>
+                    <span className="similar-price">AED {sp.price.toLocaleString()}</span>
                   </div>
                 </Link>
               ))}
             </div>
           </section>
         )}
-
       </div>
     </PublicLayout>
   );

@@ -4,7 +4,7 @@
  */
 
 import { createGlobalStyle } from 'styled-components';
-import { lightTheme as theme } from './theme';
+import { theme } from './theme';
 
 export const GlobalStyles = createGlobalStyle`
   /* ═══ CSS Variables Bridge ═══════════════════════════════════

@@ -22,17 +22,19 @@ const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || 'http://localhost:5000,http:
   .split(',')
   .map(s => s.trim());
 
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (server-to-server, health checks)
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`CORS: origin ${origin} not allowed`));
-    }
-  },
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (server-to-server, health checks)
+      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS: origin ${origin} not allowed`));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // ─── Health ──────────────────────────────────────────────────────────────
@@ -51,7 +53,9 @@ app.get('/api/system/health', async (_req, res) => {
   try {
     await getPrismaClient().$runCommandRaw({ ping: 1 });
     dbConnected = true;
-  } catch { /* db unreachable */ }
+  } catch {
+    /* db unreachable */
+  }
 
   res.json({
     server: { status: 'healthy', environment: 'production', platform: 'vercel' },
@@ -72,9 +76,16 @@ app.get('/api/system/health', async (_req, res) => {
 app.get('/api/properties', async (req, res) => {
   try {
     const {
-      type, status, area, minPrice, maxPrice,
-      search, page = '1', pageSize = '20',
-      sortBy = 'createdAt', sortOrder = 'desc',
+      type,
+      status,
+      area,
+      minPrice,
+      maxPrice,
+      search,
+      page = '1',
+      pageSize = '20',
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
     } = req.query;
 
     const limit = Math.min(100, Math.max(1, parseInt(pageSize) || 20));
@@ -98,14 +109,24 @@ app.get('/api/properties', async (req, res) => {
     }
 
     const [properties, total] = await Promise.all([
-      getPrismaClient().property.findMany({ where, skip, take: limit, orderBy: { [sortBy]: sortOrder } }),
+      getPrismaClient().property.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { [sortBy]: sortOrder },
+      }),
       getPrismaClient().property.count({ where }),
     ]);
 
     res.json({
       success: true,
       properties,
-      pagination: { page: parseInt(page) || 1, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
+      pagination: {
+        page: parseInt(page) || 1,
+        pageSize: limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     });
   } catch (error) {
     console.error('Properties API error:', error);
@@ -132,7 +153,17 @@ app.post('/api/chatbot/test', (req, res) => {
   const lower = (message || '').toLowerCase();
 
   const intents = {
-    property_inquiry: ['property', 'apartment', 'villa', 'rent', 'buy', 'شقة', 'فيلا', 'إيجار', 'شراء'],
+    property_inquiry: [
+      'property',
+      'apartment',
+      'villa',
+      'rent',
+      'buy',
+      'شقة',
+      'فيلا',
+      'إيجار',
+      'شراء',
+    ],
     viewing_request: ['view', 'visit', 'see', 'tour', 'معاينة', 'زيارة'],
     price_inquiry: ['price', 'cost', 'how much', 'سعر', 'كم'],
     agent_request: ['agent', 'contact', 'call', 'وكيل', 'اتصل'],
@@ -142,21 +173,47 @@ app.post('/api/chatbot/test', (req, res) => {
   let detected = 'general_inquiry';
   let confidence = 60;
   for (const [intent, kws] of Object.entries(intents)) {
-    if (kws.some(k => lower.includes(k))) { detected = intent; confidence = 85; break; }
+    if (kws.some(k => lower.includes(k))) {
+      detected = intent;
+      confidence = 85;
+      break;
+    }
   }
 
-  const responseMap = new Map([
-    ['property_inquiry', { en: "I'd be happy to help you find the perfect property. What type are you looking for?", ar: "يسعدني مساعدتك في العثور على العقار المثالي. ما نوع العقار؟" }],
-    ['viewing_request', { en: "I can schedule a viewing for you. When would be convenient?", ar: "يمكنني تحديد موعد للمعاينة. ما هو الوقت المناسب؟" }],
-    ['price_inquiry', { en: "Our properties range from affordable to luxury. What's your budget?", ar: "تتراوح عقاراتنا من الميزانية المعقولة إلى الفاخرة. ما ميزانيتك؟" }],
-    ['agent_request', { en: "I'll connect you with an experienced agent right away.", ar: "سأقوم بتوصيلك بأحد وكلائنا فوراً." }],
-    ['greeting', { en: "Hello! Welcome to White Caves Real Estate. How can I assist you?", ar: "مرحباً! أهلاً بك في وايت كيفز العقارية. كيف يمكنني مساعدتك؟" }],
-    ['general_inquiry', { en: "Thank you for your message. How can I help with your real estate needs?", ar: "شكراً لرسالتك. كيف يمكنني مساعدتك؟" }],
-  ]);
-  const fallback = responseMap.get('general_inquiry');
-  const matched = responseMap.get(detected) || fallback;
-  const responseText = lang === 'ar' ? matched.ar : matched.en;
+  const responses = {
+    property_inquiry: {
+      en: "I'd be happy to help you find the perfect property. What type are you looking for?",
+      ar: 'يسعدني مساعدتك في العثور على العقار المثالي. ما نوع العقار؟',
+    },
+    viewing_request: {
+      en: 'I can schedule a viewing for you. When would be convenient?',
+      ar: 'يمكنني تحديد موعد للمعاينة. ما هو الوقت المناسب؟',
+    },
+    price_inquiry: {
+      en: "Our properties range from affordable to luxury. What's your budget?",
+      ar: 'تتراوح عقاراتنا من الميزانية المعقولة إلى الفاخرة. ما ميزانيتك؟',
+    },
+    agent_request: {
+      en: "I'll connect you with an experienced agent right away.",
+      ar: 'سأقوم بتوصيلك بأحد وكلائنا فوراً.',
+    },
+    greeting: {
+      en: 'Hello! Welcome to White Caves Real Estate. How can I assist you?',
+      ar: 'مرحباً! أهلاً بك في وايت كيفز العقارية. كيف يمكنني مساعدتك؟',
+    },
+    general_inquiry: {
+      en: 'Thank you for your message. How can I help with your real estate needs?',
+      ar: 'شكراً لرسالتك. كيف يمكنني مساعدتك؟',
+    },
+  };
 
+  const responseMap = new Map(Object.entries(responses));
+  const intentResponses = responseMap.get(detected) ?? responseMap.get('general_inquiry');
+  const responseText = intentResponses
+    ? lang === 'ar'
+      ? intentResponses.ar
+      : intentResponses.en
+    : '';
   res.json({
     success: true,
     response: responseText,

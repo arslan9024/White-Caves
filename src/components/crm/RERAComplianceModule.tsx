@@ -18,7 +18,7 @@ interface RERAAgent {
 /**
  * RERA Compliance Module
  * Manages real estate agent licenses, compliance tracking, and RERA registration
- * 
+ *
  * Features:
  * - Display RERA registration status for all agents
  * - Register/update RERA numbers
@@ -27,13 +27,18 @@ interface RERAAgent {
  * - Alert system for expired licenses
  */
 
-export default function RERAComplianceModule({ role, user, data }: CRMModuleProps) {
+export default function RERAComplianceModule({
+  role: _role,
+  user: _user,
+  data: _data,
+}: CRMModuleProps) {
   const toast = useToast();
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [agents, setAgents] = useState<RERAAgent[]>([]);
-  const [reraStatus, setReraStatus] = useState<Record<string, unknown>>({});
+  const [, setReraStatus] = useState<Record<string, unknown>>({});
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedAgent, setSelectedAgent] = useState<RERAAgent | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [, setSelectedAgent] = useState<RERAAgent | null>(null);
   const [formData, setFormData] = useState({
     licenseNumber: '',
     expiryDate: '',
@@ -43,6 +48,7 @@ export default function RERAComplianceModule({ role, user, data }: CRMModuleProp
 
   const fetchRERAStatus = useCallback(async () => {
     setIsLoading(true);
+    setFetchError(null);
     try {
       const response = await authFetch('/api/rera/status');
       if (!isMountedRef.current) return;
@@ -51,21 +57,14 @@ export default function RERAComplianceModule({ role, user, data }: CRMModuleProp
         setReraStatus(data);
         setAgents(data.agents || []);
       } else {
-        // Mock data for development
-        setAgents([
-          { id: 1, name: 'Ahmed Al-Mansouri', reraNumber: 'RERA-123456', status: 'valid', expiryDate: '2025-12-31' },
-          { id: 2, name: 'Fatima Al-Naqbi', reraNumber: 'RERA-234567', status: 'expired', expiryDate: '2023-06-30' },
-          { id: 3, name: 'Mohammed Al-Ketbi', reraNumber: null, status: 'pending', expiryDate: null },
-        ]);
+        setFetchError('Failed to load RERA compliance data.');
+        setAgents([]);
       }
     } catch (error) {
       if (!isMountedRef.current) return;
       log.error('Failed to fetch RERA status:', error);
-      // Fallback to mock data
-      setAgents([
-        { id: 1, name: 'Ahmed Al-Mansouri', reraNumber: 'RERA-123456', status: 'valid', expiryDate: '2025-12-31' },
-        { id: 2, name: 'Fatima Al-Naqbi', reraNumber: 'RERA-234567', status: 'expired', expiryDate: '2023-06-30' },
-      ]);
+      setFetchError('Unable to connect to the server.');
+      setAgents([]);
     } finally {
       if (isMountedRef.current) setIsLoading(false);
     }
@@ -157,7 +156,10 @@ export default function RERAComplianceModule({ role, user, data }: CRMModuleProp
                 <td>{agent.name}</td>
                 <td>{agent.reraNumber || 'N/A'}</td>
                 <td>
-                  <span className="status-badge" style={{ backgroundColor: getStatusColor(agent.status) }}>
+                  <span
+                    className="status-badge"
+                    style={{ backgroundColor: getStatusColor(agent.status) }}
+                  >
                     {agent.status.toUpperCase()}
                   </span>
                 </td>
@@ -184,7 +186,7 @@ export default function RERAComplianceModule({ role, user, data }: CRMModuleProp
           <input
             type="text"
             value={formData.agentName}
-            onChange={(e) => setFormData({ ...formData, agentName: e.target.value })}
+            onChange={e => setFormData({ ...formData, agentName: e.target.value })}
             required
           />
         </div>
@@ -194,7 +196,7 @@ export default function RERAComplianceModule({ role, user, data }: CRMModuleProp
             type="text"
             placeholder="e.g., RERA-123456"
             value={formData.licenseNumber}
-            onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value })}
+            onChange={e => setFormData({ ...formData, licenseNumber: e.target.value })}
             required
           />
         </div>
@@ -203,11 +205,13 @@ export default function RERAComplianceModule({ role, user, data }: CRMModuleProp
           <input
             type="date"
             value={formData.expiryDate}
-            onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+            onChange={e => setFormData({ ...formData, expiryDate: e.target.value })}
             required
           />
         </div>
-        <button type="submit" className="submit-btn">Register RERA License</button>
+        <button type="submit" className="submit-btn">
+          Register RERA License
+        </button>
       </form>
     </div>
   );
@@ -237,6 +241,32 @@ export default function RERAComplianceModule({ role, user, data }: CRMModuleProp
       <div className="module-content">
         {isLoading ? (
           <div className="loading">Loading RERA data...</div>
+        ) : fetchError ? (
+          <div
+            style={{
+              padding: '1.5rem',
+              background: '#FEF2F2',
+              border: '1px solid #FECACA',
+              borderRadius: '8px',
+              color: '#B91C1C',
+              textAlign: 'center',
+            }}
+          >
+            <p style={{ marginBottom: '1rem' }}>{fetchError}</p>
+            <button
+              onClick={fetchRERAStatus}
+              style={{
+                padding: '0.5rem 1rem',
+                background: '#B91C1C',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+              }}
+            >
+              Retry
+            </button>
+          </div>
         ) : activeTab === 'dashboard' ? (
           renderDashboard()
         ) : (

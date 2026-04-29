@@ -57,39 +57,18 @@
     "db:seed:large": "tsx prisma/seed-enhanced.ts --count large",
     "db:generate": "npx prisma generate",
     "db:push": "npx prisma db push",
-    "prepare": "husky",
-    "build:api": "echo 'API ready for serverless'",
-    "test:watch": "vitest",
-    "test:unit": "vitest run --config vitest.config.js test/unit",
-    "test:integration": "vitest run test/integration",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:headed": "playwright test --headed",
-    "test:e2e:debug": "playwright test --debug",
-    "test:api": "node test-api-simple.js",
-    "test:all": "npm run test && npm run test:e2e",
-    "coverage:c8": "c8 --reporter=text --reporter=lcov --reporter=html node node_modules/vitest/vitest.mjs run",
-    "type-check": "tsc --noEmit",
-    "docker:dev": "docker-compose -f docker-compose.dev.yml up",
-    "docker:dev:build": "docker-compose -f docker-compose.dev.yml up --build",
-    "docker:prod": "docker-compose -f docker-compose.prod.yml up",
-    "docker:prod:build": "docker-compose -f docker-compose.prod.yml up --build",
-    "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f",
-    "docker:test": "docker-compose -f docker-compose.dev.yml run app npm test",
-    "seed": "node scripts/seedDatabase.js --clear",
-    "seed:small": "node scripts/seedDatabase.js --clear --count 20",
-    "seed:large": "node scripts/seedDatabase.js --clear --count 200"
+    "prepare": "husky"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --fix --max-warnings 0 --no-warn-ignored",
+      "eslint --fix --max-warnings 0",
       "prettier --write"
     ],
     "*.{js,jsx}": [
-      "eslint --fix --max-warnings 0 --no-warn-ignored",
+      "eslint --fix --max-warnings 0",
       "prettier --write"
     ],
     "*.{json,css,scss,md}": [
@@ -140,8 +119,7 @@
     "typescript": "^5.2.2",
     "vite": "^7.3.1",
     "vitest": "^3.2.4",
-    "vitest-dom": "^0.1.1",
-    "msw": "^2.12.7"
+    "vitest-dom": "^0.1.1"
   },
   "dependencies": {
     "@prisma/client": "^6.6.0",
