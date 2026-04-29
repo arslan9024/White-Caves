@@ -6,6 +6,7 @@ import { fetchHomepageData, selectMarketStats, selectTopAgents, selectLocationTr
 import type { AppDispatch } from '../store/store';
 import { buildHomepageJsonLd } from './homepageSeo';
 import ClickToChat from '../components/ClickToChat';
+import RoleSelectionModal from '../components/RoleSelectionModal';
 import PublicLayout from '../components/layout/PublicLayout';
 import { useRecentlyViewed } from '../components/RecentlyViewed';
 import { HOME_PROPERTIES } from '../data/homeProperties';
@@ -117,6 +118,7 @@ const HomePage: FC = () => {
           <OnboardingGateway />
         </Suspense>
         <ClickToChat />
+        <RoleSelectionModal />
       </div>
     </PublicLayout>
   );

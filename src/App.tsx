@@ -167,6 +167,7 @@ const BiometricPrompt = lazy(() =>
 const WebVitalsTracker = lazy(() => import('./components/analytics/WebVitalsTracker'));
 import { StatusProvider } from './components/common/StatusNotification';
 import { createLogger } from './utils/logger';
+import { useSocket } from './hooks/useSocket';
 
 const log = createLogger('App');
 
@@ -175,6 +176,10 @@ const log = createLogger('App');
 function App(): React.JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state.user.currentUser);
+
+  // Initialise real-time Socket.io connection — connects when auth token is
+  // present, disconnects on logout, and pushes server events into Redux.
+  useSocket();
 
   useEffect(() => {
     const controller = new AbortController();
