@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { configureStore, PreloadedState } from '@reduxjs/toolkit';
@@ -63,8 +63,8 @@ describe('LandlordTenantsTab', () => {
 
     it('displays tenant property assignments', () => {
       renderWithStore(<LandlordTenantsTab />);
-      expect(screen.getByText(/Marina View 2BR Apartment/)).toBeInTheDocument();
-      expect(screen.getByText(/Downtown Studio/)).toBeInTheDocument();
+      expect(screen.getAllByText(/Marina View 2BR Apartment/).length).toBeGreaterThanOrEqual(2);
+      expect(screen.getAllByText(/Downtown Studio/).length).toBeGreaterThanOrEqual(2);
     });
 
     it('displays tenant status badges', () => {
@@ -192,8 +192,9 @@ describe('LandlordTenantsTab', () => {
       fireEvent.click(tenantCard);
 
       await waitFor(() => {
-        expect(screen.getByTestId('tenant-detail-modal')).toBeInTheDocument();
-        expect(screen.getByText(/Ahmed Al-Rashid/)).toBeInTheDocument();
+        const modal = screen.getByTestId('tenant-detail-modal');
+        expect(modal).toBeInTheDocument();
+        expect(within(modal).getByText(/Ahmed Al-Rashid/)).toBeInTheDocument();
       });
     });
 
@@ -204,12 +205,13 @@ describe('LandlordTenantsTab', () => {
       fireEvent.click(tenantCard);
 
       await waitFor(() => {
-        expect(screen.getByText(/ahmed.rashid@email.ae/)).toBeInTheDocument();
-        expect(screen.getByText(/971-50-123-4567/)).toBeInTheDocument();
-        expect(screen.getByText(/Marina View 2BR Apartment/)).toBeInTheDocument();
-        expect(screen.getByText(/ART-1205/)).toBeInTheDocument();
-        expect(screen.getByText(/Jan 1, 2024/)).toBeInTheDocument();
-        expect(screen.getByText(/Dec 31, 2024/)).toBeInTheDocument();
+        const modal = screen.getByTestId('tenant-detail-modal');
+        expect(within(modal).getByText(/ahmed.rashid@email.ae/)).toBeInTheDocument();
+        expect(within(modal).getByText(/971-50-123-4567/)).toBeInTheDocument();
+        expect(within(modal).getByText(/Marina View 2BR Apartment/)).toBeInTheDocument();
+        expect(within(modal).getByText(/ART-1205/)).toBeInTheDocument();
+        expect(within(modal).getByText(/Jan 1, 2024/)).toBeInTheDocument();
+        expect(within(modal).getByText(/Dec 31, 2024/)).toBeInTheDocument();
       });
     });
 
