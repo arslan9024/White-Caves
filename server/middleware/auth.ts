@@ -16,6 +16,18 @@ export interface AuthRequest extends Request {
   };
 }
 
+/**
+ * Verify a JWT token string and return the decoded payload, or null on failure.
+ * Used by non-Express code (e.g. Socket.io middleware) that cannot call next().
+ */
+export function verifyJwt(token: string): { id: string; email: string; role: string } | null {
+  try {
+    return jwt.verify(token, JWT_SECRET) as { id: string; email: string; role: string };
+  } catch {
+    return null;
+  }
+}
+
 const authMiddleware = (
   req: AuthRequest,
   res: Response,

@@ -5,6 +5,7 @@
  */
 
 import crypto from 'crypto';
+import { createServer } from 'http';
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -64,6 +65,7 @@ import { startRateRefresh } from './services/currencyService.js';
 import { startViewingReminderScheduler } from './services/schedulingService.js';
 import { startRERAExpiryScheduler } from './services/compliance/reraExpiryScheduler.js';
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
+import { createSocketServer } from './services/socketServer.js';
 
 const app: Express = express();
 
@@ -836,17 +838,25 @@ const startServer = async () => {
 
   // Start listening regardless of DB status
   const host = process.env.API_URL || `http://localhost:${PORT}`;
-  const server = app.listen(PORT, () => {
+
+  // Wrap Express in a raw http.Server so Socket.io can share the same port
+  const httpServer = createServer(app);
+
+  // Attach Socket.io to the http server (must happen before listen)
+  createSocketServer(httpServer);
+
+  httpServer.listen(PORT, () => {
     logger.info(`Server started on ${host}`);
     logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
     logger.info(`API Base: ${host}/api`);
+    logger.info(`Socket.io: ws://${host.replace(/^https?:\/\//, '')}`);
   });
 
-  return server;
+  return httpServer;
 };
 
 // Start the server
-let httpServer: ReturnType<typeof app.listen> | null = null;
+let httpServer: ReturnType<typeof createServer> | null = null;
 startServer()
   .then(s => {
     httpServer = s;
