@@ -409,10 +409,29 @@ describe('App', () => {
     });
   });
 
+  it('renders SignInPage at /signup when not logged in', async () => {
+    await act(async () => {
+      renderAtRoute('/signup');
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId('signin-page')).toBeInTheDocument();
+    });
+  });
+
   it('redirects /signin to /dashboard when logged in', async () => {
     mockReduxState.currentUser = { id: '1', role: 'buyer', email: 'test@test.com' };
     await act(async () => {
       renderAtRoute('/signin');
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
+    });
+  });
+
+  it('redirects /signup to /dashboard when logged in', async () => {
+    mockReduxState.currentUser = { id: '1', role: 'buyer', email: 'test@test.com' };
+    await act(async () => {
+      renderAtRoute('/signup');
     });
     await waitFor(() => {
       expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();

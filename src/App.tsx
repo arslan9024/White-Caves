@@ -376,6 +376,20 @@ function App(): React.JSX.Element {
                   }
                 />
                 <Route
+                  path="/signup"
+                  element={
+                    user ? (
+                      <Navigate to="/dashboard" replace />
+                    ) : (
+                      <RouteErrorBoundary section="Sign Up">
+                        <Suspense fallback={<SuspenseLoader />}>
+                          <SignInPage />
+                        </Suspense>
+                      </RouteErrorBoundary>
+                    )
+                  }
+                />
+                <Route
                   path="/privacy-policy"
                   element={
                     <RouteErrorBoundary section="Privacy Policy">

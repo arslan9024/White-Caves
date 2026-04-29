@@ -7,7 +7,7 @@
  */
 
 import { useState, useRef, useEffect, useCallback, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../store/userSlice';
 import {
@@ -101,6 +101,7 @@ export const STAFF_ROLES: UserRole[] = [
 
 export function useSignIn() {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
 
   // ── Step & mode state ─────────────────────────────────────────
@@ -137,6 +138,13 @@ export function useSignIn() {
       clearTimeout(navTimerRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (location.pathname === '/signup') {
+      setMode('signup');
+      setStep(1);
+    }
+  }, [location.pathname]);
 
   // ── Helpers ────────────────────────────────────────────────────
 
