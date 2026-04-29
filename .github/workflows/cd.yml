@@ -23,12 +23,12 @@ jobs:
     timeout-minutes: 45
     
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
       
       - name: Setup Node.js
-        uses: actions/setup-node@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -75,6 +75,7 @@ jobs:
       - name: Notify deployment
         if: always()
         uses: 8398a7/action-slack@77eaa4f1c608a7d68b38af4e3f739dcd8cba273e
+        continue-on-error: true
         with:
           status: ${{ job.status }}
           text: 'Staging deployment: ${{ job.status }}'
@@ -87,12 +88,12 @@ jobs:
     timeout-minutes: 35
     
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
       
       - name: Setup Node.js
-        uses: actions/setup-node@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -109,7 +110,7 @@ jobs:
           TEST_BASE_URL: ${{ secrets.STAGING_URL }}
       
       - name: Upload smoke test report
-        uses: actions/upload-artifact@10b53a9ec6c222bb4ce97aa6bd2b5f739696b536
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: smoke-tests-report
@@ -123,12 +124,12 @@ jobs:
     timeout-minutes: 50
     
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
       
       - name: Setup Node.js
-        uses: actions/setup-node@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -173,12 +174,12 @@ jobs:
           npm run verify:runtime -- --url="$RUNTIME_URL" --timeout=15000 --retries=6 --retry-delay=5000
       
       - name: Create release
-        uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ github.run_number }}-${{ github.run_attempt }}
-          release_name: Release v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
           body: |
             Automated production deployment
             Commit: ${{ env.DEPLOY_SHA }}
@@ -189,6 +190,7 @@ jobs:
       - name: Notify success
         if: success()
         uses: 8398a7/action-slack@77eaa4f1c608a7d68b38af4e3f739dcd8cba273e
+        continue-on-error: true
         with:
           status: success
           text: |
@@ -200,6 +202,7 @@ jobs:
       - name: Notify failure
         if: failure()
         uses: 8398a7/action-slack@77eaa4f1c608a7d68b38af4e3f739dcd8cba273e
+        continue-on-error: true
         with:
           status: failure
           text: |
@@ -227,6 +230,7 @@ jobs:
       
       - name: Notify monitoring
         uses: 8398a7/action-slack@77eaa4f1c608a7d68b38af4e3f739dcd8cba273e
+        continue-on-error: true
         with:
           status: ${{ job.status }}
           text: 'Production monitoring: ${{ job.status }}'

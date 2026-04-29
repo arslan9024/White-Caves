@@ -8,8 +8,9 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { LindaClient, WhatsAppMessage, getLindaClient } from '../services/whatsapp/lindaClient';
-import { requirePermission } from '../middleware/rbac';
+import { LindaClient, WhatsAppMessage, getLindaClient } from '../services/whatsapp/lindaClient.js';
+import { requirePermission } from '../middleware/rbac.js';
+import { getSocketServer } from '../services/socketServer.js';
 
 const router = Router();
 let lindaClient: LindaClient | null = null;
@@ -134,18 +135,25 @@ router.post('/webhook', requirePermission('access_whatsapp_business'), async (re
       });
     }
 
-    // Process each message
-    const processedMessages = messages.map((msg) => ({
-      id: msg.id,
-      conversationId: `LINDA_${msg.from.replace(/\D/g, '')}`,
-      from: msg.from,
-      to: msg.to,
-      content: msg.body,
-      timestamp: msg.timestamp,
-      channel: 'LINDA_WHATSAPP',
-      type: msg.type,
-      hasMedia: msg.hasMedia,
-    }));
+    // Process each message and broadcast via Socket.io (Linda channel — separate from Meta API)
+    const processedMessages = messages.map((msg) => {
+      const payload = {
+        id: msg.id,
+        from: msg.from,
+        body: msg.body,
+        timestamp: msg.timestamp,
+        hasMedia: msg.hasMedia,
+        type: msg.type,
+      };
+      getSocketServer()?.emitLindaMessage(payload);
+      return {
+        ...payload,
+        conversationId: `LINDA_${msg.from.replace(/\D/g, '')}`,
+        to: msg.to,
+        content: msg.body,
+        channel: 'LINDA_WHATSAPP',
+      };
+    });
 
     res.json({
       success: true,

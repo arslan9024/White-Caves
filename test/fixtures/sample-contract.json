@@ -1,0 +1,99 @@
+{
+  "NOTE": "This is a test fixture file. Dates are set to January 2026 for testing purposes. When using this fixture in tests, consider whether dates should be dynamically generated.",
+  "_id": "contract-fixture-001",
+  "contractNumber": "WC-2026-001",
+  "type": "tenancy",
+  "status": "draft",
+  "property": {
+    "_id": "prop-fixture-001",
+    "title": "Sample Luxury Villa",
+    "location": "Dubai Marina"
+  },
+  "landlord": {
+    "name": "Ahmed Al Maktoum",
+    "email": "ahmed@example.com",
+    "phone": "+971501111111",
+    "emiratesId": "784-1234-1234567-1",
+    "address": "Villa 123, Dubai Marina"
+  },
+  "tenant": {
+    "name": "John Smith",
+    "email": "john.smith@example.com",
+    "phone": "+971502222222",
+    "emiratesId": "784-5678-9876543-2",
+    "address": "Current Address"
+  },
+  "terms": {
+    "startDate": "2026-03-01",
+    "endDate": "2027-02-28",
+    "duration": 12,
+    "monthlyRent": 5000,
+    "annualRent": 60000,
+    "securityDeposit": 5000,
+    "paymentSchedule": "monthly",
+    "paymentMethod": "bank_transfer",
+    "cheques": 12
+  },
+  "utilities": {
+    "electricity": "tenant",
+    "water": "tenant",
+    "internet": "included",
+    "cooling": "included",
+    "maintenance": "landlord"
+  },
+  "specialConditions": [
+    "No pets allowed",
+    "No smoking inside the property",
+    "Garden maintenance included",
+    "Annual rent increase capped at 5%"
+  ],
+  "signatures": {
+    "landlord": {
+      "signed": false,
+      "signedAt": null,
+      "signature": null,
+      "ip": null
+    },
+    "tenant": {
+      "signed": false,
+      "signedAt": null,
+      "signature": null,
+      "ip": null
+    },
+    "witness": {
+      "name": "",
+      "signed": false,
+      "signedAt": null,
+      "signature": null
+    }
+  },
+  "documents": [
+    {
+      "type": "title_deed",
+      "name": "Title Deed Copy",
+      "url": "documents/title_deed.pdf",
+      "uploadedAt": "2026-01-20T10:00:00.000Z"
+    },
+    {
+      "type": "emirates_id",
+      "name": "Landlord Emirates ID",
+      "url": "documents/landlord_id.pdf",
+      "uploadedAt": "2026-01-20T10:05:00.000Z"
+    }
+  ],
+  "agent": {
+    "name": "John Doe",
+    "email": "john.doe@whitecaves.com",
+    "phone": "+971501234567",
+    "commission": 2500
+  },
+  "createdAt": "2026-01-20T09:00:00.000Z",
+  "updatedAt": "2026-01-20T14:30:00.000Z",
+  "createdBy": "user-001",
+  "metadata": {
+    "version": "1.0",
+    "templateUsed": "standard_tenancy_v2",
+    "language": "en",
+    "jurisdiction": "Dubai"
+  }
+}

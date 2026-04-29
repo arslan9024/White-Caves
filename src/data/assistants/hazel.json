@@ -1,0 +1,39 @@
+{
+  "components": [
+    { "name": "Button", "category": "Core", "status": "stable", "usage": 450, "variants": 6, "lastUpdated": "2026-01-05" },
+    { "name": "Card", "category": "Core", "status": "stable", "usage": 320, "variants": 4, "lastUpdated": "2026-01-03" },
+    { "name": "Input", "category": "Form", "status": "stable", "usage": 280, "variants": 5, "lastUpdated": "2026-01-02" },
+    { "name": "Modal", "category": "Overlay", "status": "stable", "usage": 156, "variants": 3, "lastUpdated": "2025-12-28" },
+    { "name": "Timeline", "category": "Data Display", "status": "new", "usage": 45, "variants": 2, "lastUpdated": "2026-01-09" },
+    { "name": "FlowDiagram", "category": "Data Display", "status": "new", "usage": 23, "variants": 2, "lastUpdated": "2026-01-09" },
+    { "name": "StageCard", "category": "Data Display", "status": "new", "usage": 18, "variants": 1, "lastUpdated": "2026-01-09" }
+  ],
+  "designTokens": {
+    "colors": { "primary": "#D32F2F", "secondary": "#1e293b", "success": "#10B981", "warning": "#F59E0B", "error": "#EF4444" },
+    "typography": { "fontFamily": "Inter, sans-serif", "headings": "Montserrat", "baseFontSize": "14px" },
+    "spacing": { "unit": "4px", "scale": [0, 4, 8, 12, 16, 24, 32, 48, 64] },
+    "borderRadius": { "sm": "4px", "md": "8px", "lg": "12px", "xl": "16px", "full": "9999px" }
+  },
+  "performance": {
+    "bundleSize": "245KB",
+    "loadTime": "1.2s",
+    "fcp": "1.8s",
+    "lcp": "2.4s",
+    "cls": 0.05,
+    "fid": "45ms"
+  },
+  "accessibility": {
+    "score": 94,
+    "issues": [
+      { "type": "contrast", "component": "Badge", "severity": "minor", "status": "open" },
+      { "type": "aria-label", "component": "IconButton", "severity": "minor", "status": "fixed" }
+    ]
+  },
+  "stats": {
+    "totalComponents": 45,
+    "stableComponents": 38,
+    "newComponents": 5,
+    "deprecatedComponents": 2,
+    "totalUsage": 2450
+  }
+}

@@ -1,0 +1,231 @@
+/* MetricCard.module.css */
+/* Styling for individual metric cards */
+
+.metric-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.metric-card:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Size Variants */
+.metric-card--small {
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.metric-card--medium {
+  padding: 1.5rem;
+  gap: 1.5rem;
+}
+
+.metric-card--large {
+  padding: 2rem;
+  gap: 2rem;
+}
+
+/* Color Variants */
+.metric-card--blue {
+  border-left: 4px solid #3b82f6;
+}
+
+.metric-card--green {
+  border-left: 4px solid #10b981;
+}
+
+.metric-card--red {
+  border-left: 4px solid #ef4444;
+}
+
+.metric-card--amber {
+  border-left: 4px solid #f59e0b;
+}
+
+.metric-card--purple {
+  border-left: 4px solid #8b5cf6;
+}
+
+/* Icon Section */
+.metric-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  font-size: 28px;
+}
+
+.metric-card--blue .metric-card__icon {
+  background-color: #eff6ff;
+  color: #3b82f6;
+}
+
+.metric-card--green .metric-card__icon {
+  background-color: #f0fdf4;
+  color: #10b981;
+}
+
+.metric-card--red .metric-card__icon {
+  background-color: #fef2f2;
+  color: #ef4444;
+}
+
+.metric-card--amber .metric-card__icon {
+  background-color: #fffbeb;
+  color: #f59e0b;
+}
+
+.metric-card--purple .metric-card__icon {
+  background-color: #faf5ff;
+  color: #8b5cf6;
+}
+
+/* Content Section */
+.metric-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.metric-card__title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+/* Value Section */
+.metric-card__value-section {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.metric-card__value {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1f2937;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.metric-card__unit {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: capitalize;
+}
+
+/* Trend Badge */
+.metric-card__trend-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.metric-card__trend-badge--up {
+  background-color: #f0fdf4;
+  color: #10b981;
+}
+
+.metric-card__trend-badge--down {
+  background-color: #fef2f2;
+  color: #ef4444;
+}
+
+.metric-card__trend-badge--neutral {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Trend Icon */
+.metric-card__trend {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.metric-card__trend--up {
+  color: #10b981;
+}
+
+.metric-card__trend--down {
+  color: #ef4444;
+}
+
+.metric-card__trend--neutral {
+  color: #6b7280;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .metric-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .metric-card__value-section {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .metric-card__value {
+    font-size: 1.5rem;
+  }
+
+  .metric-card__icon {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .metric-card {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .metric-card__icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .metric-card__value {
+    font-size: 1.25rem;
+  }
+
+  .metric-card__title {
+    font-size: 0.75rem;
+  }
+
+  .metric-card__trend-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}

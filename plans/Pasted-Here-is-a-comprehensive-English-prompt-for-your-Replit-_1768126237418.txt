@@ -1,0 +1,70 @@
+Here is a comprehensive English prompt for your Replit agent to analyze the White Caves platform codebase. You can copy and paste this directly.
+
+**Prompt for Replit Agent:**
+```
+Act as a senior software architect and code analyst. Perform a comprehensive analysis of the entire White Caves Real Estate AI Platform codebase.
+
+Your goal is to identify errors, inconsistencies, inefficiencies, duplication, missing features, broken integrations, and security vulnerabilities. Correlate all findings with the project's SRS (Software Requirements Specification) and SDD (Software Design Document) to ensure the code fulfills the specified requirements.
+
+Follow this structured analysis framework:
+
+1.  **Architecture & Code Structure Audit:**
+    *   Check if the microservices architecture (Property Inventory, Valuation, Marketing, Portfolio, AI Command Center) is correctly implemented and isolated.
+    *   Verify adherence to the domain-driven design and CQRS patterns as specified in the SDD.
+    *   Look for monolithic code blocks that should be separated into services.
+    *   Check for consistent use of shared libraries (`shared/types`, `shared/utils`) and identify any duplicated interfaces or utility functions across services.
+
+2.  **Feature Completeness & Business Logic Check (vs. SRS/SDD):**
+    *   For each of the 5 pillars (Property Discovery, Service Acquisition, Departmental CRM, Inventory Management, AI Command Center), verify that all core features from the SRS are implemented.
+    *   Specifically check for the 32 AI Assistants (e.g., Zoe, Clara, Daisy). Are their intended functions from the SRS present in the code?
+    *   Verify the implementation of the 40+ service catalog, tiered access system, and UAE PASS integration.
+    *   Check the property lifecycle tracking, valuation engine (CMA, Income, Cost methods), and portfolio management analytics.
+
+3.  **Integration & Connection Health Check:**
+    *   Test connections to all external services: UAE PASS API, DLD/RERA APIs, Elasticsearch/OpenSearch cluster, PostgreSQL/PostGIS, MongoDB, Redis, Google Maps/Mapbox APIs, Matterport API, and payment gateways.
+    *   Look for hardcoded API keys, URLs, or configuration. These should be in environment variables.
+    *   Check for proper error handling (timeouts, retries, fallbacks) around all external API calls.
+    *   Verify that event-driven communication between internal services (using the event bus) is working and that no services are missing event listeners or publishers.
+
+4.  **Code Quality & Optimization Scan:**
+    *   Identify code duplication, especially in data validation, API response formatting, and database query patterns.
+    *   Analyze database queries for potential N+1 problems, missing indexes, or inefficient joins. Check if spatial queries using PostGIS are optimized.
+    *   Review asynchronous operations (Promises, async/await) for unhandled rejections or improper `await` usage.
+    *   Check memory usage patterns: look for potential memory leaks in event listeners or caching logic.
+    *   Suggest performance optimizations for the property search engine and valuation calculations.
+
+5.  **Security & Data Compliance Audit:**
+    *   Check for SQL/NoSQL injection vulnerabilities in database queries.
+    *   Validate that user input is sanitized for all API endpoints.
+    *   Ensure authentication/authorization is enforced at the service level, respecting the tiered access model.
+    *   Verify that PII and sensitive financial data are encrypted at rest and in transit.
+    *   Check audit trails for property transactions as required by RERA/DLD compliance.
+
+6.  **Consistency & Standards Review:**
+    *   Enforce consistent TypeScript/JavaScript coding style (naming conventions, use of `any` types).
+    *   Verify consistent REST API response structures and GraphQL schema design across all services.
+    *   Check logging format (structured JSON) and log levels are used consistently.
+    *   Ensure environment configuration is managed consistently, e.g., using a library like `dotenv` in every service.
+
+**Output Format Requirement:**
+Present your findings in a clear, prioritized report. Use this exact markdown structure for your final output:
+
+# White Caves Platform: Comprehensive Code Analysis Report
+
+## 1. Critical Errors & Broken Integrations
+*(List items that prevent the system from running or cause data loss. Include specific file paths and error snippets.)*
+
+## 2. High-Priority Inconsistencies & Missing Features
+*(List significant deviations from the SRS/SDD, major incomplete features, and security issues.)*
+
+## 3. Code Optimization & Duplication Issues
+*(List performance bottlenecks, duplicated code blocks, and inefficient patterns with specific examples.)*
+
+## 4. Medium/Low Priority Improvements & Suggestions
+*(List code style issues, minor inconsistencies, and enhancement ideas.)*
+
+## 5. Summary & Recommended Action Plan
+*(Provide a brief summary and a suggested order for fixing the issues.)*
+```
+
+This prompt will instruct the agent to conduct a systematic review. After you receive the report, you can ask for more detailed analysis on any specific high-priority area it finds.

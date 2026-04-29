@@ -1,0 +1,1052 @@
+# **Unified AI Assistant Dashboard: Company Owner Command Center**
+
+## **Project: AI Assistant Orchestrator & Dashboard Hub**
+
+### **Objective:** Create a unified React/Redux dashboard where the Company Owner can manage and access all AI assistants through an intelligent dropdown interface with real-time data visualization.
+
+---
+
+## **Part 1: Dashboard Architecture Design**
+
+### **1.1 Centralized Assistant Registry**
+
+**Backend Schema for Assistant Management:**
+```javascript
+// AI Assistant Registry Database
+{
+  aiAssistants: [{
+    id: String, // 'mary', 'theodora', 'zoe', etc.
+    name: String,
+    title: String,
+    department: ENUM('operations', 'finance', 'marketing', 'executive', 'compliance', 'sales', 'communications'),
+    icon: String, // SVG/Icon name
+    colorScheme: String, // Primary color for UI
+    permissions: {
+      viewableBy: Array, // Roles that can see this assistant
+      accessibleBy: Array, // Roles that can interact
+      dataAccessLevel: ENUM('full', 'departmental', 'limited')
+    },
+    metrics: {
+      lastActive: Date,
+      tasksCompleted: Number,
+      activeUsers: Number,
+      systemHealth: ENUM('optimal', 'degraded', 'offline')
+    },
+    quickStats: {
+      // Dynamic stats that appear in dropdown
+      today: {
+        value: Number,
+        label: String,
+        change: Number // Percentage
+      }
+    },
+    dashboardUrl: String, // Route to specific dashboard
+    apiEndpoints: Array // Available APIs for this assistant
+  }],
+  
+  // Company Owner Preferences
+  ownerPreferences: {
+    favoriteAssistants: Array,
+    defaultAssistant: String,
+    dashboardLayout: Object,
+    notificationSettings: {
+      assistantUpdates: Boolean,
+      criticalAlerts: Boolean,
+      performanceReports: Boolean
+    }
+  }
+}
+```
+
+### **1.2 Redux State Management Structure**
+
+**Redux Store Configuration:**
+```javascript
+// AI Assistant Dashboard Redux Slice
+const aiAssistantDashboardSlice = createSlice({
+  name: 'aiAssistantDashboard',
+  initialState: {
+    // Assistant Registry
+    allAssistants: {
+      byId: {},
+      allIds: [],
+      isLoading: false,
+      lastFetched: null
+    },
+    
+    // UI State
+    ui: {
+      selectedAssistant: 'mary',
+      viewMode: 'dashboard', // 'dashboard', 'details', 'compare'
+      layout: 'grid', // 'grid', 'list', 'focus'
+      filters: {
+        department: 'all',
+        status: 'all',
+        searchQuery: ''
+      }
+    },
+    
+    // Performance Data
+    assistantPerformance: {
+      // Aggregated metrics from all assistants
+      overallHealth: 95,
+      activeTasks: 0,
+      criticalAlerts: [],
+      recentActivity: []
+    },
+    
+    // Quick Access
+    favorites: [],
+    recent: [],
+    
+    // Real-time Updates
+    liveUpdates: {
+      lastUpdate: null,
+      connections: {}
+    }
+  },
+  reducers: {
+    // Action reducers
+    selectAssistant: (state, action) => {
+      state.ui.selectedAssistant = action.payload;
+      // Add to recent
+      if (!state.recent.includes(action.payload)) {
+        state.recent.unshift(action.payload);
+        if (state.recent.length > 5) state.recent.pop();
+      }
+    },
+    toggleFavorite: (state, action) => {
+      const index = state.favorites.indexOf(action.payload);
+      if (index === -1) {
+        state.favorites.push(action.payload);
+      } else {
+        state.favorites.splice(index, 1);
+      }
+    },
+    updateAssistantMetrics: (state, action) => {
+      // Update specific assistant metrics
+      const { assistantId, metrics } = action.payload;
+      if (state.allAssistants.byId[assistantId]) {
+        state.allAssistants.byId[assistantId].metrics = {
+          ...state.allAssistants.byId[assistantId].metrics,
+          ...metrics
+        };
+      }
+    }
+  }
+});
+```
+
+---
+
+## **Part 2: Intelligent Assistant Dropdown Component**
+
+### **2.1 Main Dropdown Component**
+
+**AIAssistantSelector.jsx:**
+```javascript
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { 
+  selectAssistant, 
+  toggleFavorite,
+  updateAssistantMetrics 
+} from '../redux/aiAssistantDashboardSlice';
+import { 
+  Search, 
+  Star, 
+  Activity, 
+  TrendingUp, 
+  Users,
+  AlertCircle,
+  Shield,
+  DollarSign,
+  Megaphone,
+  MessageSquare,
+  Briefcase,
+  FileText
+} from 'lucide-react';
+
+const AIAssistantSelector = () => {
+  const dispatch = useDispatch();
+  const { allAssistants, ui, favorites, recent } = useSelector(
+    state => state.aiAssistantDashboard
+  );
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // Assistant icons mapping
+  const assistantIcons = {
+    mary: <FileText className="w-5 h-5" />,
+    theodora: <DollarSign className="w-5 h-5" />,
+    olivia: <Megaphone className="w-5 h-5" />,
+    zoe: <Briefcase className="w-5 h-5" />,
+    laila: <Shield className="w-5 h-5" />,
+    linda: <MessageSquare className="w-5 h-5" />,
+    sophia: <Users className="w-5 h-5" />,
+    daisy: <Users className="w-5 h-5" />
+  };
+  
+  // Filter assistants based on search
+  const filteredAssistants = Object.values(allAssistants.byId).filter(assistant => {
+    if (!searchTerm) return true;
+    return assistant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           assistant.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           assistant.department.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+  
+  const currentAssistant = allAssistants.byId[ui.selectedAssistant];
+  
+  return (
+    <div className="ai-assistant-selector">
+      {/* Current Assistant Display */}
+      <div 
+        className="current-assistant-display"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="assistant-avatar">
+          <div className={`avatar-icon ${currentAssistant?.department}`}>
+            {assistantIcons[currentAssistant?.id]}
+          </div>
+          <div className="avatar-status" 
+               style={{ backgroundColor: currentAssistant?.metrics.systemHealth === 'optimal' ? '#10B981' : '#EF4444' }}
+          />
+        </div>
+        <div className="assistant-info">
+          <div className="assistant-name">{currentAssistant?.name}</div>
+          <div className="assistant-title">{currentAssistant?.title}</div>
+        </div>
+        <div className="dropdown-arrow">
+          {isOpen ? '▲' : '▼'}
+        </div>
+      </div>
+      
+      {/* Dropdown Menu */}
+      {isOpen && (
+        <div className="assistant-dropdown-menu">
+          {/* Search Bar */}
+          <div className="dropdown-search">
+            <Search className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search AI assistants..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+              autoFocus
+            />
+          </div>
+          
+          {/* Favorites Section */}
+          {favorites.length > 0 && (
+            <div className="dropdown-section">
+              <div className="section-header">
+                <Star className="section-icon" />
+                <span>Favorites</span>
+              </div>
+              {favorites.map(assistantId => {
+                const assistant = allAssistants.byId[assistantId];
+                if (!assistant) return null;
+                return (
+                  <AssistantItem
+                    key={assistant.id}
+                    assistant={assistant}
+                    isFavorite={true}
+                    onSelect={() => {
+                      dispatch(selectAssistant(assistant.id));
+                      setIsOpen(false);
+                    }}
+                    onToggleFavorite={() => dispatch(toggleFavorite(assistant.id))}
+                  />
+                );
+              })}
+            </div>
+          )}
+          
+          {/* Recent Section */}
+          {recent.length > 0 && (
+            <div className="dropdown-section">
+              <div className="section-header">
+                <Activity className="section-icon" />
+                <span>Recently Used</span>
+              </div>
+              {recent.map(assistantId => {
+                const assistant = allAssistants.byId[assistantId];
+                if (!assistant || favorites.includes(assistantId)) return null;
+                return (
+                  <AssistantItem
+                    key={assistant.id}
+                    assistant={assistant}
+                    onSelect={() => {
+                      dispatch(selectAssistant(assistant.id));
+                      setIsOpen(false);
+                    }}
+                    onToggleFavorite={() => dispatch(toggleFavorite(assistant.id))}
+                  />
+                );
+              })}
+            </div>
+          )}
+          
+          {/* All Assistants Section */}
+          <div className="dropdown-section">
+            <div className="section-header">
+              <Users className="section-icon" />
+              <span>All AI Assistants</span>
+            </div>
+            {filteredAssistants.map(assistant => {
+              if (favorites.includes(assistant.id) || recent.includes(assistant.id)) return null;
+              return (
+                <AssistantItem
+                  key={assistant.id}
+                  assistant={assistant}
+                  onSelect={() => {
+                    dispatch(selectAssistant(assistant.id));
+                    setIsOpen(false);
+                  }}
+                  onToggleFavorite={() => dispatch(toggleFavorite(assistant.id))}
+                />
+              );
+            })}
+          </div>
+          
+          {/* Quick Stats Footer */}
+          <div className="dropdown-footer">
+            <div className="quick-stats">
+              <div className="stat">
+                <TrendingUp className="stat-icon" />
+                <span>{filteredAssistants.length} Assistants</span>
+              </div>
+              <div className="stat">
+                <Activity className="stat-icon" />
+                <span>{filteredAssistants.filter(a => a.metrics.systemHealth === 'optimal').length} Active</span>
+              </div>
+              {assistantPerformance.criticalAlerts.length > 0 && (
+                <div className="stat alert">
+                  <AlertCircle className="stat-icon" />
+                  <span>{assistantPerformance.criticalAlerts.length} Alerts</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Assistant Item Component
+const AssistantItem = ({ assistant, isFavorite = false, onSelect, onToggleFavorite }) => {
+  const dispatch = useDispatch();
+  
+  return (
+    <div 
+      className="assistant-item"
+      onClick={onSelect}
+    >
+      <div className="item-left">
+        <div className={`item-avatar ${assistant.department}`}>
+          {assistantIcons[assistant.id]}
+        </div>
+        <div className="item-info">
+          <div className="item-name">{assistant.name}</div>
+          <div className="item-title">{assistant.title}</div>
+          <div className="item-metrics">
+            <span className="metric">
+              <Activity className="metric-icon" />
+              {assistant.metrics.activeUsers} users
+            </span>
+            <span className={`health-badge ${assistant.metrics.systemHealth}`}>
+              {assistant.metrics.systemHealth}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div className="item-right">
+        <button 
+          className="favorite-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite(assistant.id);
+          }}
+        >
+          <Star className={isFavorite ? 'filled' : ''} />
+        </button>
+        {assistant.quickStats && (
+          <div className="quick-stat">
+            <div className="stat-value">{assistant.quickStats.today.value}</div>
+            <div className="stat-label">{assistant.quickStats.today.label}</div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default AIAssistantSelector;
+```
+
+---
+
+## **Part 3: Main Dashboard Layout**
+
+### **3.1 Company Owner Dashboard**
+
+**CompanyOwnerDashboard.jsx:**
+```javascript
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import AIAssistantSelector from './components/AIAssistantSelector';
+import AssistantDashboard from './components/AssistantDashboard';
+import DashboardHeader from './components/DashboardHeader';
+import AssistantPerformanceOverview from './components/AssistantPerformanceOverview';
+import RealTimeAlerts from './components/RealTimeAlerts';
+import { 
+  fetchAllAssistants,
+  subscribeToAssistantUpdates 
+} from '../redux/aiAssistantDashboardSlice';
+
+const CompanyOwnerDashboard = () => {
+  const dispatch = useDispatch();
+  const { ui, allAssistants, assistantPerformance } = useSelector(
+    state => state.aiAssistantDashboard
+  );
+  
+  useEffect(() => {
+    // Load all assistant data
+    dispatch(fetchAllAssistants());
+    
+    // Subscribe to real-time updates
+    const unsubscribe = dispatch(subscribeToAssistantUpdates());
+    
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [dispatch]);
+  
+  const currentAssistant = allAssistants.byId[ui.selectedAssistant];
+  
+  return (
+    <div className="company-owner-dashboard">
+      {/* Top Navigation */}
+      <DashboardHeader />
+      
+      <div className="dashboard-container">
+        {/* Left Sidebar - Assistant Selector & Overview */}
+        <div className="dashboard-sidebar">
+          <div className="sidebar-section selector-section">
+            <h3 className="section-title">AI Assistant Control</h3>
+            <AIAssistantSelector />
+          </div>
+          
+          <div className="sidebar-section overview-section">
+            <AssistantPerformanceOverview />
+          </div>
+          
+          <div className="sidebar-section alerts-section">
+            <RealTimeAlerts />
+          </div>
+        </div>
+        
+        {/* Main Content - Selected Assistant Dashboard */}
+        <div className="dashboard-main">
+          <div className="main-header">
+            <div className="header-left">
+              <h2 className="assistant-name">{currentAssistant?.name}</h2>
+              <div className="assistant-metadata">
+                <span className="department-tag">{currentAssistant?.department}</span>
+                <span className={`status-dot ${currentAssistant?.metrics.systemHealth}`} />
+                <span className="last-active">
+                  Last active: {formatTimeAgo(currentAssistant?.metrics.lastActive)}
+                </span>
+              </div>
+            </div>
+            <div className="header-right">
+              <div className="quick-actions">
+                <button className="btn btn-primary">Export Report</button>
+                <button className="btn btn-secondary">Compare</button>
+                <button className="btn btn-icon">
+                  <Settings className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div className="main-content">
+            <AssistantDashboard assistantId={ui.selectedAssistant} />
+          </div>
+        </div>
+        
+        {/* Right Sidebar - Assistant Details */}
+        <div className="dashboard-sidebar right">
+          <div className="sidebar-section details-section">
+            <h3 className="section-title">Assistant Details</h3>
+            {currentAssistant && (
+              <AssistantDetails assistant={currentAssistant} />
+            )}
+          </div>
+          
+          <div className="sidebar-section activity-section">
+            <h3 className="section-title">Recent Activity</h3>
+            <AssistantActivityLog assistantId={ui.selectedAssistant} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CompanyOwnerDashboard;
+```
+
+---
+
+## **Part 4: Data Visualization Components**
+
+### **4.1 Assistant Performance Dashboard**
+
+**AssistantPerformanceOverview.jsx:**
+```javascript
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { 
+  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
+} from 'recharts';
+
+const AssistantPerformanceOverview = () => {
+  const { allAssistants, assistantPerformance } = useSelector(
+    state => state.aiAssistantDashboard
+  );
+  
+  // Prepare data for charts
+  const departmentData = Object.values(allAssistants.byId).reduce((acc, assistant) => {
+    const dept = assistant.department;
+    if (!acc[dept]) acc[dept] = 0;
+    acc[dept]++;
+    return acc;
+  }, {});
+  
+  const performanceData = Object.values(allAssistants.byId).map(assistant => ({
+    name: assistant.name,
+    tasks: assistant.metrics.tasksCompleted || 0,
+    users: assistant.metrics.activeUsers || 0,
+    health: assistant.metrics.systemHealth === 'optimal' ? 100 : 
+            assistant.metrics.systemHealth === 'degraded' ? 50 : 0
+  }));
+  
+  const departmentChartData = Object.entries(departmentData).map(([name, value]) => ({
+    name,
+    value
+  }));
+  
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+  
+  return (
+    <div className="performance-overview">
+      <h3 className="section-title">AI Assistant Overview</h3>
+      
+      <div className="chart-grid">
+        {/* Department Distribution */}
+        <div className="chart-card">
+          <h4>By Department</h4>
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie
+                data={departmentChartData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={renderCustomizedLabel}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {departmentChartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        
+        {/* Performance Comparison */}
+        <div className="chart-card">
+          <h4>Performance Metrics</h4>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={performanceData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="tasks" fill="#8884d8" name="Tasks Completed" />
+              <Bar dataKey="users" fill="#82ca9d" name="Active Users" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+      
+      {/* Quick Stats */}
+      <div className="quick-stats-grid">
+        <div className="stat-card">
+          <div className="stat-value">{assistantPerformance.overallHealth}%</div>
+          <div className="stat-label">System Health</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-value">{assistantPerformance.activeTasks}</div>
+          <div className="stat-label">Active Tasks</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-value">
+            {Object.values(allAssistants.byId).filter(a => a.metrics.systemHealth === 'optimal').length}
+          </div>
+          <div className="stat-label">Active Assistants</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+  const RADIAN = Math.PI / 180;
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  
+  return (
+    <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+      {`${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+};
+
+export default AssistantPerformanceOverview;
+```
+
+---
+
+## **Part 5: Real-time Updates & WebSocket Integration**
+
+### **5.1 WebSocket Service for Live Updates**
+
+**WebSocketService.js:**
+```javascript
+class AIAssistantWebSocketService {
+  constructor(store) {
+    this.store = store;
+    this.socket = null;
+    this.reconnectAttempts = 0;
+    this.maxReconnectAttempts = 5;
+  }
+  
+  connect() {
+    const token = localStorage.getItem('auth_token');
+    this.socket = new WebSocket(`wss://your-api/ws/ai-assistants?token=${token}`);
+    
+    this.socket.onopen = () => {
+      console.log('AI Assistant WebSocket connected');
+      this.reconnectAttempts = 0;
+      this.store.dispatch({ type: 'websocket/CONNECTED' });
+    };
+    
+    this.socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      this.handleMessage(data);
+    };
+    
+    this.socket.onclose = () => {
+      console.log('AI Assistant WebSocket disconnected');
+      this.store.dispatch({ type: 'websocket/DISCONNECTED' });
+      this.attemptReconnect();
+    };
+    
+    this.socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+  }
+  
+  handleMessage(data) {
+    switch (data.type) {
+      case 'assistant_metrics_update':
+        this.store.dispatch(updateAssistantMetrics({
+          assistantId: data.assistantId,
+          metrics: data.metrics
+        }));
+        break;
+        
+      case 'assistant_health_change':
+        this.store.dispatch({
+          type: 'aiAssistantDashboard/updateAssistantHealth',
+          payload: {
+            assistantId: data.assistantId,
+            health: data.health
+          }
+        });
+        break;
+        
+      case 'new_alert':
+        this.store.dispatch({
+          type: 'aiAssistantDashboard/addAlert',
+          payload: data.alert
+        });
+        break;
+        
+      case 'task_completed':
+        this.store.dispatch({
+          type: 'aiAssistantDashboard/updateTaskStatus',
+          payload: data.task
+        });
+        break;
+    }
+  }
+  
+  attemptReconnect() {
+    if (this.reconnectAttempts < this.maxReconnectAttempts) {
+      this.reconnectAttempts++;
+      setTimeout(() => {
+        console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+        this.connect();
+      }, 3000 * this.reconnectAttempts);
+    }
+  }
+  
+  disconnect() {
+    if (this.socket) {
+      this.socket.close();
+    }
+  }
+  
+  sendMessage(type, payload) {
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(JSON.stringify({ type, ...payload }));
+    }
+  }
+}
+
+export default AIAssistantWebSocketService;
+```
+
+---
+
+## **Part 6: CSS Styling for Dashboard**
+
+**AIAssistantDashboard.css:**
+```css
+/* Main Dashboard Layout */
+.company-owner-dashboard {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.dashboard-container {
+  display: flex;
+  flex: 1;
+  padding: 20px;
+  gap: 20px;
+}
+
+.dashboard-sidebar {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dashboard-main {
+  flex: 1;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+/* Assistant Selector */
+.ai-assistant-selector {
+  position: relative;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.current-assistant-display {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.current-assistant-display:hover {
+  background: #f8fafc;
+}
+
+.assistant-avatar {
+  position: relative;
+  margin-right: 15px;
+}
+
+.avatar-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.avatar-icon.operations { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.avatar-icon.finance { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.avatar-icon.marketing { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.avatar-icon.executive { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+
+.avatar-status {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.assistant-info {
+  flex: 1;
+}
+
+.assistant-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.assistant-title {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+/* Dropdown Menu */
+.assistant-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 15px;
+  margin-top: 10px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  z-index: 1000;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.dropdown-search {
+  padding: 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.search-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.dropdown-section {
+  padding: 15px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  padding: 0 20px 10px;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Assistant Item */
+.assistant-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.assistant-item:hover {
+  background: #f8fafc;
+}
+
+.item-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  color: white;
+}
+
+.item-info {
+  flex: 1;
+}
+
+.item-name {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.item-title {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.item-metrics {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.metric {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.health-badge {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.health-badge.optimal {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.health-badge.degraded {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* Performance Overview */
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.chart-card {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.quick-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  margin-top: 5px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .dashboard-container {
+    flex-direction: column;
+  }
+  
+  .dashboard-sidebar {
+    width: 100%;
+    flex-direction: row;
+  }
+  
+  .dashboard-sidebar.right {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-sidebar {
+    flex-direction: column;
+  }
+  
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .quick-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+```
+
+---
+
+## **Part 7: Backend API Integration**
+
+**API Endpoints for Dashboard:**
+```javascript
+// Backend API Routes for AI Assistant Dashboard
+router.get('/api/ai-assistants', authenticate, authorize(['company_owner']), getAllAssistants);
+router.get('/api/ai-assistants/:id/metrics', getAssistantMetrics);
+router.get('/api/ai-assistants/:id/activity', getAssistantActivity);
+router.get('/api/ai-assistants/performance/summary', getPerformanceSummary);
+router.post('/api/ai-assistants/preferences', updateOwnerPreferences);
+router.get('/api/ai-assistants/realtime/updates', setupWebSocketConnection);
+```
+
+---
+
+## **Part 8: Implementation Benefits**
+
+1. **Unified Management:** Single interface to control all AI assistants
+2. **Real-time Monitoring:** Live updates on assistant performance
+3. **Smart Filtering:** Search and filter assistants by department, status, or performance
+4. **Visual Analytics:** Beautiful charts and data visualizations
+5. **Quick Access:** Favorite and recent assistants for faster navigation
+6. **Responsive Design:** Works on desktop, tablet, and mobile
+7. **Role-based Access:** Only company owner can access this dashboard
+8. **Export Capabilities:** Export reports and performance data
+
+This dashboard provides the Company Owner with complete visibility and control over all AI assistants in one elegant, intuitive interface powered by React and Redux.

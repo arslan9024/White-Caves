@@ -1,0 +1,93 @@
+{
+  "name": "Events Workflow",
+  "description": "Complete workflow for open houses, property tours, and closing events",
+  "types": {
+    "openHouse": {
+      "name": "Open House Event",
+      "stages": [
+        { "id": "planning", "name": "Planning", "order": 1 },
+        { "id": "promotion", "name": "Promotion", "order": 2 },
+        { "id": "preparation", "name": "Preparation", "order": 3 },
+        { "id": "registration", "name": "Registration Open", "order": 4 },
+        { "id": "execution", "name": "Event Day", "order": 5 },
+        { "id": "followup", "name": "Follow-up", "order": 6 },
+        { "id": "analysis", "name": "Analysis", "order": 7 }
+      ]
+    },
+    "propertyTour": {
+      "name": "Property Tour",
+      "stages": [
+        { "id": "scheduling", "name": "Scheduling", "order": 1 },
+        { "id": "preparation", "name": "Property Prep", "order": 2 },
+        { "id": "clientArrival", "name": "Client Arrival", "order": 3 },
+        { "id": "tour", "name": "Tour Execution", "order": 4 },
+        { "id": "feedback", "name": "Feedback Collection", "order": 5 },
+        { "id": "nextSteps", "name": "Next Steps Discussion", "order": 6 }
+      ]
+    },
+    "closing": {
+      "name": "Closing Ceremony",
+      "stages": [
+        { "id": "scheduling", "name": "Schedule Closing", "order": 1 },
+        { "id": "documentation", "name": "Document Preparation", "order": 2 },
+        { "id": "paymentVerification", "name": "Payment Verification", "order": 3 },
+        { "id": "signing", "name": "Contract Signing", "order": 4 },
+        { "id": "keyHandover", "name": "Key Handover", "order": 5 },
+        { "id": "celebration", "name": "Celebration", "order": 6 },
+        { "id": "documentation", "name": "Final Documentation", "order": 7 }
+      ]
+    }
+  },
+  "upcomingEvents": [
+    {
+      "id": "evt-1",
+      "type": "openHouse",
+      "title": "DAMAC Hills 2 Open Day",
+      "property": "Multiple Properties",
+      "date": "2026-01-15",
+      "time": "10:00 AM - 6:00 PM",
+      "currentStage": "promotion",
+      "registrations": 45,
+      "expectedAttendance": 80
+    },
+    {
+      "id": "evt-2",
+      "type": "propertyTour",
+      "title": "VIP Villa Tour - Olympus Cluster",
+      "property": "OL-E-520",
+      "date": "2026-01-12",
+      "time": "2:00 PM",
+      "currentStage": "scheduling",
+      "client": "Chen Wei",
+      "agent": "John Smith"
+    },
+    {
+      "id": "evt-3",
+      "type": "closing",
+      "title": "Contract Signing - Al Rashid",
+      "property": "VH-A-101",
+      "date": "2026-01-20",
+      "time": "11:00 AM",
+      "currentStage": "documentation",
+      "client": "Mohammed Al Rashid",
+      "value": 3500000
+    }
+  ],
+  "pastEvents": [
+    {
+      "id": "evt-4",
+      "type": "openHouse",
+      "title": "New Year Property Showcase",
+      "date": "2026-01-02",
+      "attendance": 120,
+      "leadsGenerated": 34,
+      "dealsInitiated": 8
+    }
+  ],
+  "stats": {
+    "eventsThisMonth": 12,
+    "totalAttendance": 456,
+    "avgConversion": 28,
+    "upcomingClosings": 5
+  }
+}

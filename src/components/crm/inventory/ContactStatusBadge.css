@@ -1,0 +1,77 @@
+.contact-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1.5px solid;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.contact-status-badge:hover {
+  opacity: 0.8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Size Variants */
+.contact-status-badge.badge-xs {
+  padding: 4px 8px;
+  font-size: 11px;
+  border-radius: 4px;
+}
+
+.contact-status-badge.badge-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 5px;
+}
+
+.contact-status-badge.badge-md {
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+.contact-status-badge.badge-lg {
+  padding: 8px 14px;
+  font-size: 14px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* Icon alignment */
+.contact-status-badge svg {
+  flex-shrink: 0;
+}
+
+/* Animation for important statuses */
+.contact-status-badge[title*="follow-up"] {
+  animation: subtle-pulse 2s infinite;
+}
+
+@keyframes subtle-pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .contact-status-badge {
+    opacity: 0.9;
+  }
+
+  .contact-status-badge:hover {
+    opacity: 1;
+  }
+}

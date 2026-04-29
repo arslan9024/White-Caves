@@ -5,6 +5,7 @@
  */
 
 import crypto from 'crypto';
+import { createServer } from 'http';
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -13,13 +14,15 @@ import morgan from 'morgan';
 import { connectDatabase, prisma } from './database.js';
 import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.js';
 import authMiddleware from './middleware/auth.js';
-import { CORS_ORIGINS, WHATSAPP_WEBHOOK_SECRET } from './config/env.js';
+import { requestIdMiddleware } from './middleware/requestId.js';
+import { CORS_ORIGINS, WHATSAPP_WEBHOOK_SECRET, IS_PRODUCTION } from './config/env.js';
 import {
   apiLimiter,
   authLimiter,
   registerLimiter,
   passwordLimiter,
   strictLimiter,
+  contactLimiter,
 } from './middleware/rateLimiter.js';
 import logger from './utils/logger.js';
 
@@ -55,6 +58,7 @@ import agentAvailabilityRoutes from './routes/agentAvailability.js';
 import analyticsRoutes from './routes/analytics.js';
 import homepageRoutes from './routes/homepage.js';
 import contactRoutes from './routes/contact.js';
+import aiChatRoutes from './routes/aiChat.js';
 import jobApplicationsRoutes from './routes/jobApplications.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
@@ -63,8 +67,17 @@ import { startRateRefresh } from './services/currencyService.js';
 import { startViewingReminderScheduler } from './services/schedulingService.js';
 import { startRERAExpiryScheduler } from './services/compliance/reraExpiryScheduler.js';
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
+import { createSocketServer } from './services/socketServer.js';
 
 const app: Express = express();
+
+// Trust the first proxy in front of the server (e.g. Vercel edge, nginx, AWS ALB).
+// This makes req.ip and all express-rate-limit lookups use the real client IP
+// from the X-Forwarded-For header instead of the proxy's address.
+// IMPORTANT: only set this when the server runs behind a trusted reverse proxy.
+// Setting it on a server that is directly internet-facing allows clients to
+// spoof X-Forwarded-For and bypass IP-based rate limits.
+app.set('trust proxy', 1);
 // In development, keep API on 3001 to avoid colliding with Vite (5000).
 // Use API_PORT when provided; in production/staging, respect PORT as platform-provided.
 const PORT =
@@ -75,6 +88,9 @@ const PORT =
 // MIDDLEWARE SETUP
 // ============================================================================
 
+// Request ID — must be first so every log/response includes correlation ID
+app.use(requestIdMiddleware);
+
 // Security middleware
 app.use(
   helmet({
@@ -83,7 +99,7 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: [
           "'self'",
-          "'unsafe-inline'",
+          "'unsafe-inline'", // Required by React hydration and Firebase/Stripe SDKs
           'https://*.firebaseapp.com',
           'https://*.googleapis.com',
         ],
@@ -108,11 +124,37 @@ app.use(
         frameSrc: ['https://*.firebaseapp.com', 'https://js.stripe.com'],
         objectSrc: ["'none'"],
         baseUri: ["'self'"],
+        // Force browser to upgrade all HTTP sub-resource requests to HTTPS in production
+        ...(IS_PRODUCTION ? { upgradeInsecureRequests: [] } : {}),
       },
     },
+    // Explicit referrer policy: send origin only on same-origin requests; omit on cross-origin
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
     crossOriginEmbedderPolicy: false, // Required for Firebase/Stripe iframes
   })
 );
+
+// Permissions-Policy: restrict access to browser features.
+// Helmet v8 does not bundle permissionsPolicy, so we set it as a custom header.
+// camera/microphone/usb/magnetometer/gyroscope/accelerometer: disabled entirely.
+// geolocation: allowed only from same origin (interactive map feature).
+// payment: allowed from same origin and Stripe's JS domain.
+app.use((_req: Request, res: Response, next: NextFunction) => {
+  res.setHeader(
+    'Permissions-Policy',
+    [
+      'camera=()',
+      'microphone=()',
+      'usb=()',
+      'magnetometer=()',
+      'gyroscope=()',
+      'accelerometer=()',
+      'geolocation=(self)',
+      'payment=(self "https://js.stripe.com")',
+    ].join(', ')
+  );
+  next();
+});
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -163,6 +205,7 @@ app.use('/api/auth/verify-2fa', strictLimiter);
 app.use('/api/auth/firebase-sync', authLimiter);
 app.use('/api/auth/webauthn/register', authLimiter);
 app.use('/api/auth/webauthn/authenticate', authLimiter);
+app.use('/api/contact', contactLimiter); // Public unauthenticated — stricter: 10/hour/IP
 
 // ============================================================================
 // HEALTH CHECK ENDPOINT
@@ -193,6 +236,9 @@ app.get('/api/health', (req: Request, res: Response) => {
 
 // Authentication routes
 app.use('/api/auth', authRoutes);
+
+// Public AI chat route — no auth required
+app.use('/api/ai/chat', aiChatRoutes);
 
 // Protected routes (require authentication in production, optional in development)
 if (process.env.NODE_ENV === 'production') {
@@ -628,6 +674,16 @@ app.post(
   asyncHandler(async (req: Request, res: Response) => {
     const { userId, role } = req.body;
     if (!userId || !role) throw new AppError('userId and role are required', 400);
+
+    // Validate role against the full alias map to prevent arbitrary strings being stored
+    const { ROLE_ALIAS_MAP } = await import('./middleware/rbac.js');
+    if (!Object.hasOwn(ROLE_ALIAS_MAP, role)) {
+      throw new AppError(
+        `Invalid role: "${role}". Must be one of: ${Object.keys(ROLE_ALIAS_MAP).join(', ')}`,
+        422
+      );
+    }
+
     const updated = await prisma.user.update({
       where: { id: userId },
       data: { role },
@@ -756,17 +812,25 @@ const startServer = async () => {
 
   // Start listening regardless of DB status
   const host = process.env.API_URL || `http://localhost:${PORT}`;
-  const server = app.listen(PORT, () => {
+
+  // Wrap Express in a raw http.Server so Socket.io can share the same port
+  const httpServer = createServer(app);
+
+  // Attach Socket.io to the http server (must happen before listen)
+  createSocketServer(httpServer);
+
+  httpServer.listen(PORT, () => {
     logger.info(`Server started on ${host}`);
     logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
     logger.info(`API Base: ${host}/api`);
+    logger.info(`Socket.io: ws://${host.replace(/^https?:\/\//, '')}`);
   });
 
-  return server;
+  return httpServer;
 };
 
 // Start the server
-let httpServer: ReturnType<typeof app.listen> | null = null;
+let httpServer: ReturnType<typeof createServer> | null = null;
 startServer()
   .then(s => {
     httpServer = s;

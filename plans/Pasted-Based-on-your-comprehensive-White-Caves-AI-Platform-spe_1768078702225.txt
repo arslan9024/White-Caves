@@ -1,0 +1,185 @@
+Based on your comprehensive **White Caves AI Platform** specification, here is a complete list of possible objects structured for an **Object-Oriented Programming (OOP)** architecture. These objects are derived from your user types, AI assistants, services, and core real estate business logic.
+
+---
+
+## **OBJECT-ORIENTED DESIGN: WHITE CAVES REAL ESTATE AI PLATFORM**
+
+### **1. CORE & ABSTRACT ENTITIES**
+*(Base classes providing shared structure)*
+| Object Name | Purpose & Key Attributes |
+|-------------|--------------------------|
+| **`User`** (Abstract) | Base user with `userId`, `email`, `phone`, `userType`, `profilePicture`, `createdAt`. |
+| **`Property`** (Abstract) | Base property with `propertyId`, `title`, `description`, `location`, `price`, `status`, `propertyType`. |
+| **`Transaction`** (Abstract) | Base transaction with `transactionId`, `parties[]`, `amount`, `status`, `timestamps`. |
+| **`Document`** (Abstract) | Base document for `Form F`, `Ejari`, `Title Deed` with `docId`, `type`, `url`, `signatures[]`. |
+| **`AIAssistant`** (Abstract) | Base AI assistant with `assistantId`, `name`, `department`, `capabilities[]`. |
+
+---
+
+### **2. USER MANAGEMENT DOMAIN**
+*(Inheriting from `User`)*
+| Object Name | Inherits From | Specific Attributes & Methods |
+|-------------|---------------|-----------------------------|
+| **`InternalStaff`** | `User` | `department`, `reraLicenseNumber`, `rolePermissions`, `assignedLeads[]`, `performanceScore`. |
+| **`ClientBuyer`** | `User` | `preferredLocations[]`, `budgetRange`, `propertyWishlist[]`, `mortgagePreApproved`. |
+| **`ClientSeller`** | `User` | `propertiesListed[]`, `sellingReason`, `expectedPrice`. |
+| **`ClientTenant`** | `User` | `employmentProof`, `preferredLeaseTerm`, `coOccupants[]`. |
+| **`ClientLandlord`** | `User` | `portfolioProperties[]`, `managementPreference`. |
+| **`JobCandidate`** | `User` | `resumeUrl`, `appliedPosition`, `applicationStatus`. |
+| **`ExternalPartner`** | `User` | `companyName`, `partnerType`, `commissionRate`, `sharedInventory[]`. |
+| **`GovernmentRegulator`** | `User` | `authority`, `accessLevel`, `auditLogs[]`. |
+| **`PublicViewer`** | `User` | `savedSearches[]`, `leadScore`. |
+| **`UAE PassIdentity`** | (Composition) | `uaePassId`, `emiratesId`, `verificationLevel`, `digitalSignature`, `lastVerified`. |
+
+---
+
+### **3. PROPERTY & INVENTORY DOMAIN**
+*(Inheriting from `Property`)*
+| Object Name | Inherits From | Specific Attributes & Methods |
+|-------------|---------------|-----------------------------|
+| **`LuxuryVilla`** | `Property` | `plotSize`, `bedrooms`, `maidRoom`, `privatePool`, `viewType`. |
+| **`PremiumApartment`** | `Property` | `floorNumber`, `totalFloors`, `balconySize`, `buildingAmenities[]`. |
+| **`CommercialProperty`** | `Property` | `propertyUse`, `floorPlateSize`, `parkingSpaces`, `loadingDocks`. |
+| **`OffPlanProject`** | `Property` | `developerName`, `completionDate`, `paymentPlan[]`, `constructionProgress`. |
+| **`RentalListing`** | `Property` | `leaseTerm`, `securityDeposit`, `furnishingType`, `utilitiesIncluded[]`. |
+| **`PropertyMedia`** | (Composition) | `images[]`, `virtualTourUrl`, `floorPlans[]`, `droneFootageUrl`. |
+| **`PropertyFeature`** | (Composition) | `smartHome`, `conciergeService`, `gym`, `beachAccess`. |
+
+---
+
+### **4. TRANSACTION & SERVICE DOMAIN**
+| Object Name | Purpose & Key Attributes |
+|-------------|--------------------------|
+| **`Lead`** | `leadId`, `source`, `priorityScore`, `assignedAgent`, `status`, `interactions[]`. |
+| **`SaleTransaction`** | `saleAgreement`, `dldFees`, `transferDocuments[]`. |
+| **`RentalTransaction`** | `tenancyContract`, `ejariNumber`, `securityDepositStatus`. |
+| **`ServiceRequest`** | `serviceType`, `assignedVendor`, `quotes[]`, `completionProof`. |
+| **`Appointment`** | `viewing`, `participants[]`, `calendarEventId`, `feedback`. |
+| **`Commission`** | `transactionId`, `agentShare`, `companyShare`, `partnerShare`, `paymentStatus`. |
+
+---
+
+### **5. AI ASSISTANT FRAMEWORK**
+*(Inheriting from `AIAssistant`)*
+| Object Name | Department | Key Methods |
+|-------------|------------|-------------|
+| **`ZoeAssistant`** | Executive | `generateExecutiveReport()`, `suggestStrategicMove()`. |
+| **`ClaraAssistant`** | Sales | `scoreLead(Lead lead)`, `assignOptimalAgent()`. |
+| **`LindaAssistant`** | Communications | `sendWhatsAppTemplate()`, `escalateToHuman()`. |
+| **`MaryAssistant`** | Operations | `updateInventoryStatus()`, `syncDeveloperFeed()`. |
+| **`DaisyAssistant`** | Operations | `schedulePropertyViewing()`, `manageMaintenanceTicket()`. |
+| **`AuroraAssistant`** | Technology | `monitorSystemHealth()`, `generateAPILogs()`. |
+| **`TheodoraAssistant`** | Finance | `calculateROI()`, `generateInvoice()`. |
+| **`HenryAssistant`** | Compliance | `checkRERALicense()`, `validateUAE PASS()`. |
+| **`SophiaAssistant`** | Legal | `generateFormF()`, `verifyContractClauses()`. |
+| **`AICoordinator`** | (Orchestrator) | `routeQueryToAssistant()`, `maintainAssistantContext()`. |
+
+---
+
+### **6. INTEGRATION & EXTERNAL SERVICES**
+| Object Name | Purpose & Key Methods |
+|-------------|------------------------|
+| **`UAEPassGateway`** | `authenticateUser()`, `generateDigitalSignature()`. |
+| **`DLDAPIHandler`** | `registerEjari()`, `verifyTitleDeed()`. |
+| **`WhatsAppService`** | `sendTemplateMessage()`, `handleIncomingMessage()`. |
+| **`PaymentProcessor`** | `chargeCommission()`, `handleRefund()`. |
+| **`GoogleWorkspaceSync`** | `createCalendarEvent()`, `syncContacts()`. |
+
+---
+
+### **7. BUSINESS LOGIC & WORKFLOW**
+| Object Name | Purpose & Key Attributes |
+|-------------|--------------------------|
+| **`AgentAssignmentEngine`** | `calculateAgentScore()`, `considerUAE PASS Priority()`. |
+| **`PropertyValuator`** | `comparableProperties[]`, `locationPremium`, `amenityValue`. |
+| **`RentalYieldCalculator`** | `annualRent`, `maintenanceCosts`, `vacancyRate`, `netYield`. |
+| **`ComplianceValidator`** | `reraRules[]`, `requiredDocuments[]`, `validationStatus`. |
+| **`NotificationOrchestrator`** | `channels[]` (WhatsApp, Email, SMS), `priority`, `userPreference`. |
+
+---
+
+### **8. DATA & KNOWLEDGE DOMAIN**
+| Object Name | Purpose & Key Attributes |
+|-------------|--------------------------|
+| **`CompanyKnowledgeBase`** | `orgStructure`, `serviceCatalog`, `aiAssistantRegistry`. |
+| **`MarketAnalytics`** | `priceTrends[]`, `demandHeatmap`, `competitorAnalysis`. |
+| **`AuditLog`** | `userId`, `action`, `timestamp`, `uaePassVerified`, `ipAddress`. |
+| **`PermissionMatrix`** | `userType`, `allowedFeatures[]`, `restrictedActions[]`. |
+
+---
+
+### **9. UI & PRESENTATION LAYER**
+*(If using MVC/MVVM)*
+| Object Name | Purpose |
+|-------------|---------|
+| **`DashboardFactory`** | Creates dashboards for 6 user types. |
+| **`PropertyCardComponent`** | Displays property in search results. |
+| **`ContractSigningView`** | Embeds UAE PASS signing interface. |
+| **`AIChatInterface`** | Unified chat window for 32 assistants. |
+| **`BilingualFormatter`** | Handles EN/AR text & RTL layout. |
+
+---
+
+### **10. UTILITY & SUPPORT CLASSES**
+| Object Name | Purpose |
+|-------------|---------|
+| **`Address`** | Standardized UAE address format. |
+| **`CurrencyConverter`** | AED ↔ USD ↔ EUR etc. |
+| **`DocumentGenerator`** | PDF contracts, reports. |
+| **`SearchFilter`** | Emirates, price, property type filters. |
+| **`RatingSystem`** | Agent, property, service ratings. |
+
+---
+
+### **KEY RELATIONSHIPS & INHERITANCE TREE**
+
+```
+User (Abstract)
+├── InternalStaff
+├── Client (Abstract)
+│   ├── ClientBuyer
+│   ├── ClientSeller
+│   ├── ClientTenant
+│   └── ClientLandlord
+├── JobCandidate
+├── ExternalPartner
+├── GovernmentRegulator
+└── PublicViewer
+
+Property (Abstract)
+├── LuxuryVilla
+├── PremiumApartment
+├── CommercialProperty
+├── OffPlanProject
+└── RentalListing
+
+AIAssistant (Abstract)
+├── ZoeAssistant (Executive)
+├── ClaraAssistant (Sales)
+├── LindaAssistant (Communications)
+├── MaryAssistant (Operations)
+├── DaisyAssistant (Operations)
+├── AuroraAssistant (Technology)
+├── TheodoraAssistant (Finance)
+├── HenryAssistant (Compliance)
+└── SophiaAssistant (Legal)
+
+Transaction (Abstract)
+├── SaleTransaction
+└── RentalTransaction
+```
+
+---
+
+### **DESIGN PATTERNS RECOMMENDATION**
+
+1.  **Factory Pattern**: For creating different `Dashboard` views for your **6 user types**.
+2.  **Strategy Pattern**: For interchangeable **AI algorithms** in `AgentAssignmentEngine`.
+3.  **Observer Pattern**: For real-time notifications when `Property` status changes.
+4.  **Facade Pattern**: For simplifying complex **UAE PASS** and **DLD API** integrations.
+5.  **Singleton Pattern**: For `CompanyKnowledgeBase` and `AICoordinator`.
+6.  **Decorator Pattern**: For adding features to core `Property` objects (e.g., `PropertyWithVirtualTour`).
+
+This OOP structure provides **modularity, scalability, and clear separation of concerns**—critical for managing 32 AI assistants, 6 user types, and complex UAE real estate workflows.
+
+Would you like me to elaborate on the **class diagrams** for any specific domain (like the AI Assistant framework or Transaction workflow)?

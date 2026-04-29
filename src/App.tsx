@@ -110,6 +110,10 @@ const PricingToolsPage = lazy(() => import('./pages/seller/PricingToolsPage'));
 
 // Landlord Sub-Pages
 const RentalManagementPage = lazy(() => import('./pages/landlord/RentalManagementPage'));
+const LandlordPortalPage = lazy(() => import('./pages/landlord/LandlordPortalPage'));
+
+// Tenant Sub-Pages
+const TenantPortalPage = lazy(() => import('./pages/tenant/TenantPortalPage'));
 
 // Leasing Agent Sub-Pages
 const TenantScreeningPage = lazy(() => import('./pages/leasing-agent/TenantScreeningPage'));
@@ -167,6 +171,7 @@ const BiometricPrompt = lazy(() =>
 const WebVitalsTracker = lazy(() => import('./components/analytics/WebVitalsTracker'));
 import { StatusProvider } from './components/common/StatusNotification';
 import { createLogger } from './utils/logger';
+import { useSocket } from './hooks/useSocket';
 
 const log = createLogger('App');
 
@@ -175,6 +180,10 @@ const log = createLogger('App');
 function App(): React.JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state.user.currentUser);
+
+  // Initialise real-time Socket.io connection — connects when auth token is
+  // present, disconnects on logout, and pushes server events into Redux.
+  useSocket();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -519,6 +528,39 @@ function App(): React.JSX.Element {
                     </ProtectedRoute>
                   }
                 />
+
+                {/* ==================== LANDLORD PORTAL (Phase 2) ==================== */}
+                <Route
+                  path="/landlord-portal"
+                  element={
+                    <ProtectedRoute allowedRoles={['landlord']}>
+                      <AppLayout>
+                        <RouteErrorBoundary section="Landlord Portal">
+                          <Suspense fallback={<SuspenseLoader />}>
+                            <LandlordPortalPage />
+                          </Suspense>
+                        </RouteErrorBoundary>
+                      </AppLayout>
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* ==================== TENANT PORTAL (Phase 2) ==================== */}
+                <Route
+                  path="/tenant-portal"
+                  element={
+                    <ProtectedRoute allowedRoles={['tenant']}>
+                      <AppLayout>
+                        <RouteErrorBoundary section="Tenant Portal">
+                          <Suspense fallback={<SuspenseLoader />}>
+                            <TenantPortalPage />
+                          </Suspense>
+                        </RouteErrorBoundary>
+                      </AppLayout>
+                    </ProtectedRoute>
+                  }
+                />
+
                 <Route
                   path="/leasing-agent/tenant-screening"
                   element={
@@ -569,7 +611,15 @@ function App(): React.JSX.Element {
                 <Route path="/md/dashboard" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/buyer/dashboard" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/seller/dashboard" element={<Navigate to="/dashboard" replace />} />
-                <Route path="/landlord/dashboard" element={<Navigate to="/dashboard" replace />} />
+                {/* Landlord/Tenant redirect to their portals */}
+                <Route
+                  path="/landlord/dashboard"
+                  element={<Navigate to="/landlord-portal" replace />}
+                />
+                <Route
+                  path="/tenant/dashboard"
+                  element={<Navigate to="/tenant-portal" replace />}
+                />
                 <Route
                   path="/leasing-agent/dashboard"
                   element={<Navigate to="/dashboard" replace />}
@@ -578,7 +628,6 @@ function App(): React.JSX.Element {
                   path="/secondary-sales-agent/dashboard"
                   element={<Navigate to="/dashboard" replace />}
                 />
-                <Route path="/tenant/dashboard" element={<Navigate to="/dashboard" replace />} />
 
                 {/* ==================== LEGACY OWNER ROUTES → Redirect to Dashboard ==================== */}
                 <Route

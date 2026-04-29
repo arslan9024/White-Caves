@@ -1,0 +1,102 @@
+{
+  "suggestions": [
+    {
+      "id": "sug-1",
+      "from": "Cipher",
+      "department": "intelligence",
+      "title": "Marina District Price Surge Opportunity",
+      "description": "AI analysis indicates 15% price increase in Dubai Marina over next 6 months. Recommend increasing inventory acquisition in this area.",
+      "priority": "high",
+      "confidence": 87,
+      "impact": "AED 2.5M potential revenue",
+      "status": "pending",
+      "createdAt": "2026-01-08T14:30:00Z"
+    },
+    {
+      "id": "sug-2",
+      "from": "Theodora",
+      "department": "finance",
+      "title": "Q1 Budget Reallocation",
+      "description": "Marketing spend efficiency down 12%. Suggest reallocating AED 500K from traditional ads to digital channels.",
+      "priority": "medium",
+      "confidence": 92,
+      "impact": "15% improved ROI",
+      "status": "approved",
+      "createdAt": "2026-01-07T10:15:00Z"
+    },
+    {
+      "id": "sug-3",
+      "from": "Clara",
+      "department": "sales",
+      "title": "Lead Scoring Model Update",
+      "description": "Current model missing 23% of high-value leads. New AI model ready for deployment with 94% accuracy.",
+      "priority": "high",
+      "confidence": 94,
+      "impact": "23% more qualified leads",
+      "status": "pending",
+      "createdAt": "2026-01-06T16:45:00Z"
+    },
+    {
+      "id": "sug-4",
+      "from": "Olivia",
+      "department": "marketing",
+      "title": "Social Media Campaign Optimization",
+      "description": "Instagram Reels performing 3x better than static posts. Recommend shifting content strategy.",
+      "priority": "medium",
+      "confidence": 88,
+      "impact": "45% engagement increase",
+      "status": "implemented",
+      "createdAt": "2026-01-05T09:00:00Z"
+    }
+  ],
+  "meetings": [
+    {
+      "id": "meet-1",
+      "title": "Weekly Executive Review",
+      "date": "2026-01-09",
+      "time": "10:00 AM",
+      "duration": "1h",
+      "attendees": ["Zoe", "Mary", "Theodora", "Clara"],
+      "status": "upcoming"
+    },
+    {
+      "id": "meet-2",
+      "title": "Q1 Strategy Planning",
+      "date": "2026-01-12",
+      "time": "2:00 PM",
+      "duration": "2h",
+      "attendees": ["Full Leadership Team"],
+      "status": "scheduled"
+    },
+    {
+      "id": "meet-3",
+      "title": "Sales Pipeline Review",
+      "date": "2026-01-08",
+      "time": "11:00 AM",
+      "duration": "45m",
+      "attendees": ["Zoe", "Sophia", "Hunter"],
+      "status": "completed"
+    }
+  ],
+  "tasks": [
+    { "id": "task-1", "title": "Review Q4 2025 Performance Report", "priority": "high", "status": "in_progress", "dueDate": "2026-01-10" },
+    { "id": "task-2", "title": "Approve Marketing Budget for Ramadan Campaign", "priority": "high", "status": "pending", "dueDate": "2026-01-15" },
+    { "id": "task-3", "title": "Sign Off on New Agent Onboarding Process", "priority": "medium", "status": "pending", "dueDate": "2026-01-20" },
+    { "id": "task-4", "title": "Review Legal Compliance Updates", "priority": "low", "status": "completed", "dueDate": "2026-01-05" }
+  ],
+  "kpis": {
+    "revenue": { "current": 12500000, "target": 15000000, "change": 8.5 },
+    "leads": { "current": 847, "target": 1000, "change": 12.3 },
+    "closedDeals": { "current": 34, "target": 50, "change": 15.2 },
+    "customerSatisfaction": { "current": 4.7, "target": 4.8, "change": 2.1 },
+    "agentProductivity": { "current": 89, "target": 95, "change": 5.6 }
+  },
+  "team": [
+    { "id": "zoe", "name": "Zoe", "title": "Executive Assistant", "department": "executive", "status": "active" },
+    { "id": "mary", "name": "Mary", "title": "Inventory Manager", "department": "operations", "status": "active" },
+    { "id": "theodora", "name": "Theodora", "title": "Finance Director", "department": "finance", "status": "active" },
+    { "id": "olivia", "name": "Olivia", "title": "Marketing Manager", "department": "marketing", "status": "active" },
+    { "id": "clara", "name": "Clara", "title": "Lead Manager", "department": "sales", "status": "active" },
+    { "id": "sophia", "name": "Sophia", "title": "Sales Director", "department": "sales", "status": "active" }
+  ]
+}

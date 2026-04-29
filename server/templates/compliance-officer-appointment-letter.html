@@ -1,0 +1,315 @@
+<!-- Compliance Officer Appointment Letter Template -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AML Compliance Officer Appointment Letter</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px;
+      background-color: #f5f5f5;
+    }
+    .document {
+      background-color: white;
+      padding: 50px;
+      border: 2px solid #003366;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .header {
+      text-align: center;
+      border-bottom: 3px solid #003366;
+      padding-bottom: 30px;
+      margin-bottom: 40px;
+    }
+    .company-name {
+      font-size: 24px;
+      font-weight: bold;
+      color: #003366;
+      margin: 0;
+    }
+    .company-details {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+    .letter-date {
+      text-align: right;
+      margin-bottom: 30px;
+      font-weight: bold;
+    }
+    .recipient {
+      margin-bottom: 30px;
+    }
+    .recipient-label {
+      font-weight: bold;
+      font-size: 12px;
+      color: #666;
+      text-transform: uppercase;
+    }
+    .recipient-content {
+      margin-top: 5px;
+      font-size: 14px;
+    }
+    .subject {
+      background-color: #f0f0f0;
+      padding: 15px;
+      border-left: 4px solid #003366;
+      margin: 30px 0;
+      font-weight: bold;
+      color: #003366;
+    }
+    .salutation {
+      margin-bottom: 20px;
+    }
+    .content {
+      text-align: justify;
+      margin-bottom: 20px;
+    }
+    .content p {
+      margin: 15px 0;
+      line-height: 1.8;
+    }
+    .responsibilities {
+      margin: 30px 0;
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-left: 4px solid #003366;
+    }
+    .responsibilities h3 {
+      color: #003366;
+      margin-top: 0;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+    .responsibilities ul {
+      margin: 15px 0;
+      padding-left: 20px;
+    }
+    .responsibilities li {
+      margin: 8px 0;
+      line-height: 1.6;
+    }
+    .signature-block {
+      margin-top: 50px;
+      page-break-inside: avoid;
+    }
+    .signature-line {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+    }
+    .signature-item {
+      text-align: center;
+      width: 45%;
+    }
+    .signature-space {
+      border-top: 2px solid #333;
+      width: 100%;
+      height: 60px;
+      margin-bottom: 10px;
+    }
+    .signature-name {
+      font-weight: bold;
+      font-size: 13px;
+    }
+    .signature-title {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+    .signature-date {
+      font-size: 12px;
+      color: #666;
+      margin-top: 10px;
+    }
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #ccc;
+      text-align: center;
+      font-size: 11px;
+      color: #999;
+    }
+    .stamp-area {
+      margin-top: 30px;
+      padding: 30px;
+      border: 2px dashed #666;
+      text-align: center;
+      color: #666;
+      font-size: 12px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .important {
+      background-color: #fffacd;
+      padding: 15px;
+      border-left: 4px solid #ffaa00;
+      margin: 20px 0;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="document">
+    <!-- Header -->
+    <div class="header">
+      <h1 class="company-name">WHITE CAVES REAL ESTATE LLC</h1>
+      <div class="company-details">
+        <p>Trade License No: 1388443 | Commercial Register No: 2365938</p>
+        <p>Dubai, United Arab Emirates</p>
+      </div>
+    </div>
+
+    <!-- Date -->
+    <div class="letter-date">
+      <p>Date: {{appointmentDate}}</p>
+    </div>
+
+    <!-- Recipient -->
+    <div class="recipient">
+      <div class="recipient-label">To:</div>
+      <div class="recipient-content">
+        <strong>{{officerName}}</strong><br>
+        {{officerTitle}}<br>
+        {{email}}<br>
+        {{phone}}
+      </div>
+    </div>
+
+    <!-- Subject -->
+    <div class="subject">
+      APPOINTMENT AS ANTI-MONEY LAUNDERING (AML) COMPLIANCE OFFICER
+    </div>
+
+    <!-- Salutation -->
+    <div class="salutation">
+      <p>Dear {{officerFirstName}},</p>
+    </div>
+
+    <!-- Body -->
+    <div class="content">
+      <p>
+        In accordance with the <strong>Federal Decree Law No (20) of 2018 on Anti-Money Laundering and Combating the Financing of Terrorism (AML/CFT)</strong> 
+        and the <strong>Cabinet Decision No (10) of 2019</strong> implementing said law, as well as the guidelines issued by the 
+        <strong>Department of Economic Development (DED)</strong> and the <strong>UAE Financial Intelligence Unit (FIU)</strong>, 
+        <strong>White Caves Real Estate LLC</strong> hereby formally appoints you as the <strong>AML Compliance Officer</strong> 
+        for all AML/CFT matters.
+      </p>
+
+      <p>
+        This appointment is effective as of <strong>{{effectiveDate}}</strong> and will continue until further notice or until your 
+        resignation/termination from this position.
+      </p>
+    </div>
+
+    <!-- Scope of Responsibilities -->
+    <div class="responsibilities">
+      <h3>Scope of Responsibilities</h3>
+      <p>As the AML Compliance Officer, you are authorized and responsible for the following:</p>
+      <ul>
+        <li><strong>Register and Maintain Company Profile on goAML Portal:</strong> Register and maintain White Caves Real Estate LLC's profile on the UAE FIU's goAML portal as the authorized point of contact for all AML/CFT communications.</li>
+        
+        <li><strong>Ensure Company-Wide AML/CFT Compliance:</strong> Ensure that all employees, agents, and representatives of White Caves adhere strictly to the AML/CFT policy and procedures established by the company.</li>
+        
+        <li><strong>Conduct Customer Due Diligence (CDD):</strong> Oversee and approve Customer Due Diligence and Enhanced Due Diligence (EDD) for all customers, particularly for high-risk transactions exceeding AED 5,000,000 or involving Politically Exposed Persons (PEPs).</li>
+        
+        <li><strong>Monitor Transactions and Report Suspicious Activity:</strong> Monitor all property transactions for suspicious activity and file Suspicious Transaction Reports (STRs) with the UAE FIU via the goAML portal within the prescribed timeline.</li>
+        
+        <li><strong>Maintain Compliance Records:</strong> Maintain and organize all AML/CFT compliance records, including customer identification documents, CDD forms, transaction records, and training documentation, for a minimum of five (5) years.</li>
+        
+        <li><strong>Liaison with Regulatory Authorities:</strong> Represent White Caves Real Estate LLC in all AML/CFT-related communications with the UAE FIU, DED, and other regulatory authorities, including responding to inquiries and participating in compliance inspections.</li>
+        
+        <li><strong>Conduct Staff Training:</strong> Develop, deliver, and track annual mandatory AML/CFT training for all staff members, ensuring 100% participation and maintaining training records and certificates.</li>
+        
+        <li><strong>Update and Review Policies:</strong> Review the company's AML/CFT policies and procedures annually, update them as required by regulatory changes, and obtain Board approval for revisions.</li>
+        
+        <li><strong>Perform Risk Assessment:</strong> Assess and identify ML/FT risks specific to White Caves' real estate business and implement appropriate risk mitigation measures.</li>
+        
+        <li><strong>Conduct Internal Audits:</strong> Perform periodic internal audits to evaluate the effectiveness of the AML/CFT compliance program and recommend improvements.</li>
+      </ul>
+    </div>
+
+    <!-- Authority Statement -->
+    <div class="important">
+      <p><strong>AUTHORITY STATEMENT:</strong></p>
+      <p>
+        You are hereby authorized to represent <strong>White Caves Real Estate LLC</strong> in all AML/CFT-related matters and to execute all necessary acts 
+        and decisions required for the company's compliance with AML/CFT laws and regulations. Your authority includes, but is not limited to:
+      </p>
+      <ul style="margin: 10px 0; padding-left: 20px;">
+        <li>Filing Suspicious Transaction Reports (STRs) on the goAML portal</li>
+        <li>Approving Customer Due Diligence assessments and customer risk classifications</li>
+        <li>Conducting PEP screening and sanctions checks</li>
+        <li>Approving high-risk transactions</li>
+        <li>Conducting staff training and issuing certificates</li>
+        <li>Approving amendments to AML/CFT policies (subject to Board ratification)</li>
+      </ul>
+    </div>
+
+    <!-- Closing -->
+    <div class="content">
+      <p>
+        This appointment confirms your authority and places the responsibility for AML/CFT compliance directly with you. 
+        Your diligence in this role is critical to ensuring that White Caves Real Estate LLC operates in full compliance with 
+        UAE AML/CFT laws and avoids serious regulatory penalties.
+      </p>
+
+      <p>
+        Should you have any questions regarding your responsibilities or require clarification on any aspect of this appointment, 
+        please contact the undersigned immediately.
+      </p>
+    </div>
+
+    <!-- Signature Block -->
+    <div class="signature-block">
+      <p>Sincerely,</p>
+      <p>FOR WHITE CAVES REAL ESTATE LLC</p>
+
+      <div class="signature-line">
+        <div class="signature-item">
+          <div class="signature-space"></div>
+          <div class="signature-name">{{ceoName}}</div>
+          <div class="signature-title">Managing Director / Owner</div>
+          <div class="signature-date">Date: _______________</div>
+        </div>
+        <div class="signature-item">
+          <div class="stamp-area">
+            [COMPANY SEAL]
+          </div>
+        </div>
+      </div>
+
+      <!-- Board Acknowledgment (if signed) -->
+      <div style="margin-top: 50px; border-top: 2px solid #ccc; padding-top: 30px;">
+        <p><strong>BOARD ACKNOWLEDGMENT</strong></p>
+        <p>
+          This appointment is hereby acknowledged and ratified by the Board of Directors of White Caves Real Estate LLC.
+        </p>
+        <div class="signature-line">
+          <div class="signature-item">
+            <div class="signature-space"></div>
+            <div class="signature-name">{{boardRepresentative}}</div>
+            <div class="signature-title">Board Representative</div>
+            <div class="signature-date">Date: _______________</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>CONFIDENTIAL - FOR INTERNAL USE ONLY</p>
+      <p>This document is the official record of AML Compliance Officer appointment and must be maintained in the company's compliance vault.</p>
+      <p>Document Version: 1.0 | Generated: {{generatedDate}}</p>
+    </div>
+  </div>
+</body>
+</html>

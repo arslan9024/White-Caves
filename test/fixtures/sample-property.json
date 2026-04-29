@@ -1,0 +1,77 @@
+{
+  "NOTE": "This is a test fixture file. Dates are set to January 2026 for testing purposes. When using this fixture in tests, consider whether dates should be dynamically generated.",
+  "_id": "prop-fixture-001",
+  "title": "Sample Luxury Villa",
+  "location": "Dubai Marina",
+  "community": "Marina Heights",
+  "bedrooms": 4,
+  "bathrooms": 5,
+  "price": 5000,
+  "pricePerSqft": 1.43,
+  "type": "villa",
+  "status": "available",
+  "furnishing": "furnished",
+  "size": 3500,
+  "plotSize": 5000,
+  "images": [
+    "https://example.com/villa1.jpg",
+    "https://example.com/villa2.jpg",
+    "https://example.com/villa3.jpg"
+  ],
+  "description": "Stunning 4-bedroom luxury villa with panoramic sea views, private pool, and modern amenities in the heart of Dubai Marina.",
+  "amenities": [
+    "Private Pool",
+    "Gym",
+    "24/7 Security",
+    "Covered Parking",
+    "Maid's Room",
+    "Garden",
+    "Balcony",
+    "Central AC"
+  ],
+  "features": [
+    "Sea View",
+    "Modern Kitchen",
+    "Walk-in Closet",
+    "Smart Home"
+  ],
+  "agent": {
+    "name": "John Doe",
+    "email": "john.doe@whitecaves.com",
+    "phone": "+971501234567"
+  },
+  "owner": {
+    "name": "Ahmed Al Maktoum",
+    "phone": "+971501111111",
+    "email": "ahmed@example.com"
+  },
+  "availability": {
+    "availableFrom": "2026-03-01",
+    "minimumContract": 12,
+    "noticePeriod": 60
+  },
+  "utilities": {
+    "electricity": "tenant",
+    "water": "tenant",
+    "internet": "included",
+    "cooling": "included"
+  },
+  "coordinates": {
+    "lat": 25.0805,
+    "lng": 55.1411
+  },
+  "nearbyPlaces": [
+    {
+      "name": "Dubai Marina Mall",
+      "distance": "500m",
+      "type": "mall"
+    },
+    {
+      "name": "Marina Beach",
+      "distance": "200m",
+      "type": "beach"
+    }
+  ],
+  "createdAt": "2026-01-15T10:30:00.000Z",
+  "updatedAt": "2026-01-20T14:45:00.000Z"
+}

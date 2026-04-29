@@ -12,7 +12,7 @@ npm-debug.log*
 *.swo
 server/
 scripts/
-docs/
+/docs/
 *.md
 !README.md
 .nvmrc

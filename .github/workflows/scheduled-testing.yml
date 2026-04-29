@@ -11,10 +11,10 @@ jobs:
     timeout-minutes: 90
     
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@v4
       
       - name: Setup Node.js
-        uses: actions/setup-node@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -35,7 +35,7 @@ jobs:
         run: npm run test:e2e
       
       - name: Generate test report
-        uses: actions/upload-artifact@10b53a9ec6c222bb4ce97aa6bd2b5f739696b536
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: comprehensive-test-report
@@ -45,6 +45,7 @@ jobs:
       - name: Notify test results
         if: always()
         uses: 8398a7/action-slack@77eaa4f1c608a7d68b38af4e3f739dcd8cba273e
+        continue-on-error: true
         with:
           status: ${{ job.status }}
           text: |
@@ -57,10 +58,10 @@ jobs:
     timeout-minutes: 25
     
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@v4
       
       - name: Setup Node.js
-        uses: actions/setup-node@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -92,10 +93,10 @@ jobs:
     timeout-minutes: 45
     
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@v4
       
       - name: Setup Node.js
-        uses: actions/setup-node@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -119,7 +120,7 @@ jobs:
           # Add comparison logic here if needed
       
       - name: Upload performance data
-        uses: actions/upload-artifact@10b53a9ec6c222bb4ce97aa6bd2b5f739696b536
+        uses: actions/upload-artifact@v4
         with:
           name: performance-results
           path: performance-results.json
@@ -127,6 +128,7 @@ jobs:
       
       - name: Notify performance results
         uses: 8398a7/action-slack@77eaa4f1c608a7d68b38af4e3f739dcd8cba273e
+        continue-on-error: true
         with:
           status: ${{ job.status }}
           text: 'Performance benchmark complete - check artifacts'
@@ -137,10 +139,10 @@ jobs:
     timeout-minutes: 35
     
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@v4
       
       - name: Setup Node.js
-        uses: actions/setup-node@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -178,10 +180,10 @@ jobs:
     timeout-minutes: 45
     
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@v4
       
       - name: Setup Node.js
-        uses: actions/setup-node@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -200,7 +202,7 @@ jobs:
         continue-on-error: true
       
       - name: Upload accessibility audit
-        uses: actions/upload-artifact@10b53a9ec6c222bb4ce97aa6bd2b5f739696b536
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: accessibility-audit
@@ -209,6 +211,7 @@ jobs:
       
       - name: Notify accessibility results
         uses: 8398a7/action-slack@77eaa4f1c608a7d68b38af4e3f739dcd8cba273e
+        continue-on-error: true
         with:
           status: ${{ job.status }}
           text: 'Accessibility audit complete'

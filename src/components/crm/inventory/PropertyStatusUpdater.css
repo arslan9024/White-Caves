@@ -1,0 +1,265 @@
+.property-status-updater {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 20px;
+  border: 1px solid #e5e7eb;
+}
+
+.property-status-updater.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 250px;
+}
+
+.property-status-updater .empty-state {
+  text-align: center;
+  color: #9ca3af;
+}
+
+.property-status-updater .empty-state svg {
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.property-status-updater .empty-state p {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Header */
+.property-status-updater .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f3f4f6;
+}
+
+.property-status-updater .card-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.property-status-updater .btn-edit {
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.property-status-updater .btn-edit:hover {
+  background: #059669;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Alert Messages */
+.property-status-updater .alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.property-status-updater .alert-error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.property-status-updater .alert svg {
+  flex-shrink: 0;
+}
+
+/* Form Section */
+.property-status-updater .form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.property-status-updater .status-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.property-status-updater .status-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.property-status-updater .status-group label svg {
+  color: #10b981;
+}
+
+.property-status-updater .button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.property-status-updater .status-button {
+  padding: 10px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.property-status-updater .status-button:hover:not(.selected) {
+  border-color: #10b981;
+  background: #f0fdf4;
+  color: #10b981;
+}
+
+.property-status-updater .status-button.selected {
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Form Actions */
+.property-status-updater .form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.property-status-updater .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.property-status-updater .btn-primary {
+  background: #10b981;
+  color: white;
+}
+
+.property-status-updater .btn-primary:hover:not(:disabled) {
+  background: #059669;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.property-status-updater .btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.property-status-updater .btn-secondary:hover:not(:disabled) {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.property-status-updater .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Info Section */
+.property-status-updater .info-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.property-status-updater .status-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.property-status-updater .status-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.property-status-updater .status-label svg {
+  color: #10b981;
+}
+
+.property-status-updater .status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  flex: 1;
+  justify-content: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .property-status-updater {
+    padding: 16px;
+  }
+
+  .property-status-updater .button-group {
+    gap: 8px;
+  }
+
+  .property-status-updater .status-button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .property-status-updater .info-section {
+    grid-template-columns: 1fr;
+  }
+
+  .property-status-updater .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .property-status-updater .btn-edit {
+    width: 100%;
+  }
+}

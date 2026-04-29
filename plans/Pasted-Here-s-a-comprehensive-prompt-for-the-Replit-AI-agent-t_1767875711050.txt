@@ -1,0 +1,112 @@
+Here's a comprehensive prompt for the Replit AI agent to handle your Excel-to-database inventory update:
+
+---
+
+**Excel Data Processing & Inventory CRM Enhancement for DAMAC Hills 2**
+
+**Objective:**  
+Create a secure, automated system for company owners to import Excel data into the inventory CRM, eliminating duplicates and combining multiple properties per owner with reusable components.
+
+**Context:**  
+- **Area:** DAMAC Hills 2 (5 years of management history)
+- **Exclusive Access:** Company owner account only
+- **Goal:** Organize and streamline inventory management with professional CRM standards
+
+**Core Requirements:**
+
+1. **Excel Data Processing Module:**
+   - Create a secure upload interface exclusively for company owners
+   - Read Excel/CSV files with columns for: Property ID, Owner Name, Unit Numbers, Mobile, Email, Property Type, Status, Last Maintenance Date, Notes
+   - Implement validation for required fields and data formats
+
+2. **Duplicate Detection & Removal:**
+   - Detect duplicates using multiple criteria:
+     - Same property with different spelling/variations
+     - Same owner with different contact information
+     - Same unit numbers across different entries
+   - Provide a preview of detected duplicates with merge/replace options
+   - Create an audit log of all duplicate resolutions
+
+3. **Smart Owner-Property Consolidation:**
+   - Identify same owners across multiple properties
+   - Create reusable "Owner Profile Aggregator" component that:
+     - Combines all properties under single owner record
+     - Updates contact information (mobile, email) with most recent data
+     - Preserves all unit numbers in structured format
+     - Maintains property-specific notes and statuses
+
+4. **Database Update System:**
+   - Use Redux for state management during batch operations
+   - Implement transactional updates (rollback on failure)
+   - Create "Update Preview" before final commit
+   - Generate summary report: X properties added, Y updated, Z duplicates removed
+
+5. **DAMAC Hills 2 Specific Features:**
+   - Area-specific validation rules based on 5-year management patterns
+   - Historical data preservation for all updates
+   - Custom fields for DAMAC community requirements
+   - Maintenance schedule integration based on property age
+
+**User Experience Requirements:**
+
+1. **Owner-Only Dashboard Section:**
+   - Create "Data Import" section in company owner dashboard
+   - Step-by-step wizard: Upload → Validate → Preview → Confirm → Report
+   - Progress tracking for large file imports
+
+2. **Reusable Components to Build:**
+   - `ExcelPreviewTable`: Displays parsed data with validation highlights
+   - `DuplicateResolver`: Interactive component to handle merge decisions
+   - `OwnerConsolidator`: Groups properties by owner with edit capabilities
+   - `BatchUpdateProgress`: Real-time progress bar with detailed logging
+
+3. **Consistent Design Integration:**
+   - Match existing dashboard styling (navigation, colors, components)
+   - Use universal time/weather components on import screens
+   - Implement consistent button states and feedback patterns
+
+4. **Safety Features:**
+   - Backup current database before any batch update
+   - "Dry Run" mode for testing
+   - Manual override for any automated decisions
+   - Complete undo/redo capability within session
+
+**Technical Specifications:**
+
+1. **Frontend:**
+   - React with reusable functional components
+   - Redux for import state management
+   - File upload with drag-and-drop support
+   - Real-time validation feedback
+
+2. **Backend Processing:**
+   - Server-side duplicate detection algorithms
+   - Batch processing with progress tracking
+   - Error handling with detailed user messages
+   - Email notifications for completion/failures
+
+3. **Database Structure:**
+   - Enhanced owner table with consolidated properties array
+   - Property history tracking table
+   - Import session logs
+   - Duplicate resolution records
+
+**Deliverables:**
+1. Secure Excel upload interface (company owner only)
+2. Intelligent duplicate detection and resolution system
+3. Owner-property consolidation with reusable components
+4. Batch update with preview and confirmation
+5. DAMAC Hills 2 optimized inventory organization
+6. Comprehensive reporting and audit trails
+7. Consistent integration with existing dashboard design
+
+**Special Instructions:**
+- Prioritize data integrity over speed
+- Create reusable patterns for future area expansions
+- Consider 5 years of historical DAMAC Hills 2 management patterns
+- Maintain strict access control (company owner exclusive)
+- Design for scalability (1000+ properties)
+
+---
+
+This prompt gives the AI agent clear direction while emphasizing your DAMAC Hills 2 expertise and the need for professional inventory organization.

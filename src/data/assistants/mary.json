@@ -1,0 +1,97 @@
+{
+  "properties": [
+    {
+      "id": "prop-1",
+      "unit": "VH-A-101",
+      "cluster": "Veneto",
+      "type": "Villa",
+      "bedrooms": 4,
+      "size": 3500,
+      "price": 2800000,
+      "status": "available",
+      "owner": "Mohammed Al Rashid",
+      "listingDate": "2025-12-15"
+    },
+    {
+      "id": "prop-2",
+      "unit": "AM-B-205",
+      "cluster": "Amazonia",
+      "type": "Townhouse",
+      "bedrooms": 3,
+      "size": 2200,
+      "price": 1650000,
+      "status": "reserved",
+      "owner": "Sarah Williams",
+      "listingDate": "2025-11-20"
+    },
+    {
+      "id": "prop-3",
+      "unit": "CL-C-312",
+      "cluster": "Cleopatra",
+      "type": "Villa",
+      "bedrooms": 5,
+      "size": 4200,
+      "price": 3500000,
+      "status": "available",
+      "owner": "Ahmed Khalil",
+      "listingDate": "2025-10-05"
+    },
+    {
+      "id": "prop-4",
+      "unit": "TU-D-418",
+      "cluster": "Turia",
+      "type": "Townhouse",
+      "bedrooms": 3,
+      "size": 1800,
+      "price": 1200000,
+      "status": "sold",
+      "owner": "John Smith",
+      "listingDate": "2025-08-22"
+    },
+    {
+      "id": "prop-5",
+      "unit": "OL-E-520",
+      "cluster": "Olympus",
+      "type": "Villa",
+      "bedrooms": 6,
+      "size": 5500,
+      "price": 4800000,
+      "status": "available",
+      "owner": "Maria Garcia",
+      "listingDate": "2025-12-28"
+    }
+  ],
+  "clusters": [
+    { "id": "veneto", "name": "Veneto", "units": 1250, "available": 342, "avgPrice": 2500000 },
+    { "id": "amazonia", "name": "Amazonia", "units": 980, "available": 189, "avgPrice": 1800000 },
+    { "id": "cleopatra", "name": "Cleopatra", "units": 1100, "available": 267, "avgPrice": 3200000 },
+    { "id": "turia", "name": "Turia", "units": 850, "available": 145, "avgPrice": 1400000 },
+    { "id": "olympus", "name": "Olympus", "units": 720, "available": 98, "avgPrice": 4200000 },
+    { "id": "marbella", "name": "Marbella", "units": 1500, "available": 412, "avgPrice": 2100000 },
+    { "id": "sahara", "name": "Sahara", "units": 890, "available": 203, "avgPrice": 1600000 },
+    { "id": "morocco", "name": "Morocco", "units": 1088, "available": 298, "avgPrice": 1900000 }
+  ],
+  "owners": [
+    { "id": "owner-1", "name": "Mohammed Al Rashid", "properties": 3, "totalValue": 7500000, "status": "active" },
+    { "id": "owner-2", "name": "Sarah Williams", "properties": 1, "totalValue": 1650000, "status": "active" },
+    { "id": "owner-3", "name": "Ahmed Khalil", "properties": 5, "totalValue": 12000000, "status": "vip" },
+    { "id": "owner-4", "name": "John Smith", "properties": 2, "totalValue": 3200000, "status": "inactive" },
+    { "id": "owner-5", "name": "Maria Garcia", "properties": 4, "totalValue": 9500000, "status": "active" }
+  ],
+  "dataQuality": {
+    "totalProperties": 9378,
+    "withPhotos": 8542,
+    "withFloorPlans": 7891,
+    "withOwnerInfo": 9102,
+    "withPricing": 9378,
+    "lastSync": "2026-01-09T08:00:00Z"
+  },
+  "stats": {
+    "totalUnits": 9378,
+    "availableUnits": 1954,
+    "reservedUnits": 523,
+    "soldUnits": 6901,
+    "avgPricePerSqFt": 1250,
+    "totalInventoryValue": 18750000000
+  }
+}

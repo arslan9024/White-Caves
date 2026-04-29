@@ -1,0 +1,118 @@
+**PROJECT: COMPREHENSIVE NAVIGATION & SIDEBAR REFACTOR FOR MERN APPLICATION**
+
+**OBJECTIVE:** Execute a complete, strategic overhaul of the application's navigation architecture. This fix mandates a two-tier system: 1) a public-facing main navbar for the homepage, and 2) a dynamic, large-format application sidebar for logged-in users that intelligently manages components (like user profile) and features a live "Software Implementation Updates" feed. The goal is to resolve persistent rendering/display bugs and create a scalable, logical structure that reflects our learn-and-update development cycle.
+
+**CORE PHILOSOPHY:** This is not a cosmetic change. This is an architectural refactor. The sidebar's state, content, and behavior must be derived from a single source of truth (Redux/configuration), not scattered logic.
+
+---
+
+### **PHASE 1: AUDIT & STRATEGIC PLANNING (MANDATORY FIRST STEP)**
+
+**1.1. Full Code Audit:**
+- **ACTION:** Recursively analyze all files related to layout: `App.jsx`, `Layout.jsx`, `Sidebar.jsx`, `Navbar.jsx`, `Header.jsx`, any related Redux slices.
+- **DELIVERABLE:** A brief report identifying:
+    - Where sidebar width/visibility state is currently managed (component state, Redux, Context).
+    - All conditional logic for showing/hiding elements based on authentication.
+    - The current CSS mechanism controlling sidebar width, overflow, and responsiveness.
+    - Any hard-coded navigation items versus dynamically generated lists.
+
+**1.2. Define the Two-Tier Navigation Concept Clearly:**
+- **TIER 1: Main Navbar (`MainNavbar`):**
+    - **Scope:** Used only in the main `Homepage` component and public routes.
+    - **Content:** Brand logo, public links (About, Contact), "Login/Signup" buttons.
+    - **Behavior:** **Absolutely must not render the user profile component or app sidebar.** It disappears upon successful authentication and entry into the app proper.
+- **TIER 2: Application Sidebar (`AppSidebar`):**
+    - **Scope:** The primary navigation for **all authenticated dashboard/application views** (e.g., `/dashboard/*`, `/zoe/*`, `/properties`).
+    - **Content:** App logo, main navigation menu, dynamically relocated **user profile component**, and the new "Updates Feed" section.
+    - **Behavior:** Must be persistently visible on desktop. Collapsible to a minimal icon bar on mobile. Its width and content are controlled by a central Redux state.
+
+---
+
+### **PHASE 2: BUILD THE CENTRAL CONFIGURATION & STATE**
+
+**2.1. Create the Navigation Configuration System:**
+- **ACTION:** Create `/src/config/navigation.js`.
+- **CONTENT:** Define two central configuration objects:
+    1.  `publicNavItems`: Array for the **Main Navbar** (Home, About, Login).
+    2.  `appNavItems`: Array for the **App Sidebar**. Structure each item with `id`, `title`, `path`, `icon`, `requiredRole`. Include entries for "Dashboard," "Zoe Features" (with nested children for Overview, AI Hub, Command Center), "Property Search," "Aurora Registry," etc.
+- **PURPOSE:** This file is the single source of truth for menu structure. Adding a feature here automatically adds it to the UI.
+
+**2.2. Redesign the Redux UI State (Create `uiSlice` if non-existent):**
+- **ACTION:** Create/Modify the Redux slice (`src/store/slices/uiSlice.js`) to govern navigation.
+- **STATE SHAPE:**
+    ```javascript
+    {
+        isSidebarOpen: true, // Controls mobile hamburger menu
+        sidebarWidth: 288, // Default width in pixels (for a "large" sidebar). MUST BE PERSISTED to localStorage.
+        activeNavItem: 'dashboard', // Tracks currently selected item
+        // Feed for the updates section
+        implementationUpdates: [
+            { id: 1, componentId: 1001, componentName: 'PropertySearchBar', change: 'Added pet-friendly filter', date: '2023-10-27', version: '1.1' },
+            // ...populated from the `registry.json` or a dedicated API
+        ]
+    }
+    ```
+- **ACTIONS:** Create actions to: `setSidebarWidth(width)`, `toggleSidebar()`, `addUpdate(update)`.
+
+---
+
+### **PHASE 3: IMPLEMENTATION - BUILDING THE NEW COMPONENTS**
+
+**3.1. Component 1: `MainNavbar.jsx` (Public Tier)**
+- **PROPS:** Receives `navigationConfig={publicNavItems}`.
+- **LOGIC:** Simple mapping of config to links. Contains **NO** user profile logic. A simple "Login" button that links to `/login`.
+- **INTEGRATION:** Rendered **only** by the `Homepage.jsx` component and public route layouts.
+
+**3.2. Component 2: `AppSidebar.jsx` (Application Tier) - THE CRITICAL FIX**
+- **PROPS:** Connects to Redux to get `sidebarWidth`, `appNavItems` (via selector), `implementationUpdates`.
+- **KEY FIX - SIDEBAR WIDTH & LAYOUT:**
+    1.  **Styling:** The sidebar's main container must have its width controlled by an inline style: `style={{ width: `${sidebarWidth}px` }}`. This is non-negotiable for dynamic resizing.
+    2.  **Resize Handle:** Implement a draggable `<div>` on the right edge of the sidebar. On `mouseDown`, track mouse movement (`onMouseMove`). Calculate the new width and dispatch `setSidebarWidth()`. Store the final width in `localStorage` on `mouseUp`.
+    3.  **Content Overflow:** Apply `overflow-y: auto` and `height: calc(100vh - headerHeight)` to the sidebar's internal scroll container. This ensures all items are accessible regardless of the sidebar's height.
+- **DYNAMIC PROFILE RELOCATION:**
+    1.  **Locate the existing `<UserProfile>` component.**
+    2.  **Remove it** from its current location in the `Navbar` or `Header`.
+    3.  **Place it prominently at the top or bottom** of the new `AppSidebar`.
+    4.  Conditionally render it only if `user` data exists in the Redux `authSlice`.
+- **UPDATES FEED SECTION:**
+    1.  Add a section titled "Implementation Updates" or "Dev Log".
+    2.  Map through the `implementationUpdates` array from the `uiSlice`.
+    3.  Display each update as a card with: `[v{version}] {componentName}: {change}`.
+    4.  **Data Source:** Create a utility function that reads the latest changes from your `data/registry.json` file (especially the `lastUpdated` field) and dispatches `addUpdate()` actions to populate this feed.
+
+**3.3. Component 3: `AppLayout.jsx` (The New Orchestrator)**
+- **PURPOSE:** This component wraps all authenticated application routes.
+- **LOGIC:**
+    1.  It checks Redux for authentication status.
+    2.  It **DOES NOT** render the `MainNavbar`.
+    3.  It renders the `AppSidebar` and a main content area (`<Outlet />` from React Router).
+    4.  It provides the visual structure (CSS Grid or Flexbox) that ensures the sidebar and main content resize together fluidly.
+
+---
+
+### **PHASE 4: INTEGRATION, TESTING & DEPLOYMENT**
+
+**4.1. Integration Steps:**
+1.  Update `App.jsx` routing: Public routes use a simple layout with `MainNavbar`. All private routes are nested under `AppLayout`.
+2.  Ensure the `authSlice` logic correctly logs the user in and populates user data.
+3.  Connect the `AppSidebar` to the `uiSlice` and `authSlice`.
+
+**4.2. Testing Instructions for the Agent:**
+- **Visual Test:** Sign in. The `MainNavbar` must vanish, replaced by the `AppSidebar` with the user profile inside it.
+- **Sidebar Fix Verification:** Drag the resize handle. The sidebar must widen/shrink smoothly. The width must persist on page refresh (check `localStorage`).
+- **Overflow Test:** Add many dummy items to the nav config. Ensure the sidebar scrolls internally without breaking the page layout.
+- **Updates Feed Test:** Manually dispatch a test `addUpdate` action. Verify it appears in the new sidebar section.
+- **Responsive Test:** On mobile view, the sidebar should be hidden (`isSidebarOpen: false`), accessible via a hamburger menu in the app's header.
+
+**4.3. Final Deliverables Checklist:**
+- [ ] `navigation.js` config file.
+- [ ] Updated/New `uiSlice` with width and updates state.
+- [ ] `MainNavbar.jsx` component (public).
+- [ ] **CRITICAL:** `AppSidebar.jsx` component with **functional drag-to-resize**, **integrated user profile**, and **live updates feed**.
+- [ ] `AppLayout.jsx` component.
+- [ ] Updated `App.jsx` routing structure.
+- [ ] Verified persistence of sidebar width across sessions.
+- [ ] Confirmed absence of visual bugs and correct overflow scrolling.
+
+---
+**INSTRUCTION FOR REPLIT AGENT:** Begin with **PHASE 1.1** and present the audit findings before proceeding. Do not write code until the audit is reviewed. This prompt provides the complete strategic plan; your task is to execute it systematically, phase by phase, confirming completion of each deliverable.

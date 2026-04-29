@@ -10,6 +10,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
+import { getSocketServer } from '../services/socketServer.js';
 
 // Unified lead status enum — single source of truth for all lead endpoints
 const VALID_LEAD_STATUSES = ['new', 'contacted', 'qualified', 'viewing', 'offered', 'negotiating', 'won', 'lost'] as const;
@@ -334,6 +335,15 @@ router.patch(
         leadId: lead.id,
         metadata: statusChanged ? { oldStatus: existing.status, newStatus: status } : undefined,
       },
+    });
+
+    // Emit real-time lead:updated event to all CRM users
+    getSocketServer()?.emitLeadUpdated({
+      leadId: lead.id,
+      status: lead.status,
+      assignedTo: lead.assignedTo?.id,
+      score: lead.score ?? undefined,
+      updatedBy: req.user?.id,
     });
 
     res.status(200).json({ success: true, data: lead });

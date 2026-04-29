@@ -14,6 +14,7 @@ import { verifyWebhookSignature, normalizePhone, rateLimiter } from '../services
 import { requireRole } from '../middleware/rbac.js';
 import { prisma } from '../database.js';
 import { detectIntent, calculateLeadScore } from '../services/nadia/messageProcessor.js';
+import { getSocketServer } from '../services/socketServer.js';
 
 const router = Router();
 
@@ -216,18 +217,16 @@ async function handleIncomingMessage(message: any, phoneNumberId: string): Promi
       });
     }
 
-    // 5. Emit event for real-time listeners
-    if ((global as any).eventEmitter) {
-      (global as any).eventEmitter.emit('meta:message:received', {
-        id: storedMessage.id,
-        conversationId: conversation.id,
-        from: customerPhone,
-        content,
-        type: messageType,
-        timestamp,
-        nlp: nlpResult,
-      });
-    }
+    // 5. Emit real-time event via Socket.io (Meta API channel — Nadia / Nina pipeline)
+    getSocketServer()?.emitMetaMessage({
+      id: storedMessage.id,
+      conversationId: conversation.id,
+      from: customerPhone,
+      content,
+      type: messageType,
+      timestamp,
+      nlp: nlpResult,
+    });
   } catch (error) {
     console.error('[Meta Webhook] Error handling message:', error);
   }
@@ -261,17 +260,15 @@ async function handleStatusUpdate(status: any): Promise<void> {
       console.error(`[Meta Webhook] Message ${waMessageId} failed:`, status.errors);
     }
 
-    // Emit event
-    if ((global as any).eventEmitter) {
-      (global as any).eventEmitter.emit('meta:message:status_updated', {
-        messageId: waMessageId,
-        dbId: existing?.id,
-        status: newStatus,
-        timestamp: new Date(parseInt(status.timestamp) * 1000),
-        recipientId: status.recipient_id,
-        errors: status.errors,
-      });
-    }
+    // Emit real-time status update via Socket.io (Meta API channel)
+    getSocketServer()?.emitMetaStatus({
+      messageId: waMessageId,
+      dbId: existing?.id,
+      status: newStatus,
+      timestamp: new Date(parseInt(status.timestamp) * 1000),
+      recipientId: status.recipient_id,
+      errors: status.errors,
+    });
   } catch (error) {
     console.error('[Meta Webhook] Error handling status:', error);
   }

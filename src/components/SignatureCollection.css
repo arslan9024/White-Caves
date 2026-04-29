@@ -1,0 +1,546 @@
+/* SignatureCollection Modal Styles */
+
+.signature-collection-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.signature-collection-modal {
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+.signature-collection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.signature-collection-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.signature-collection-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #999;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.signature-collection-close:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+/* Progress Indicator */
+.signature-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 24px 32px;
+  background: #f9f9f9;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.progress-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.progress-step.active .progress-number {
+  background: linear-gradient(135deg, #B03737, #B8860B);
+  color: white;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.progress-step.completed .progress-number {
+  background: #4caf50;
+  color: white;
+}
+
+.progress-label {
+  font-size: 0.85rem;
+  color: #999;
+  font-weight: 500;
+}
+
+.progress-step.active .progress-label {
+  color: #333;
+  font-weight: 600;
+}
+
+.progress-line {
+  width: 40px;
+  height: 2px;
+  background: #e0e0e0;
+}
+
+.progress-step.completed ~ .progress-line {
+  background: #4caf50;
+}
+
+/* Content */
+.signature-collection-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+}
+
+.signature-step {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Review Step */
+.review-step h3 {
+  font-size: 1.1rem;
+  color: #333;
+  margin: 0 0 20px 0;
+  font-weight: 600;
+}
+
+.contract-info {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.contract-info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.contract-info-row:last-child {
+  border-bottom: none;
+}
+
+.contract-info-row label {
+  font-weight: 600;
+  color: #666;
+  flex: 1;
+}
+
+.contract-info-row span {
+  color: #333;
+  font-weight: 500;
+  text-align: right;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+.signer-info {
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.signer-info h4 {
+  margin: 0 0 16px 0;
+  font-size: 1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.signer-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #666;
+}
+
+.detail-value {
+  color: #333;
+}
+
+.contract-preview {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.contract-preview h4 {
+  margin: 0 0 12px 0;
+  font-size: 0.95rem;
+  color: #856404;
+  font-weight: 600;
+}
+
+.preview-content {
+  color: #856404;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.preview-content p {
+  margin: 0;
+}
+
+/* Sign Step */
+.sign-step {
+  display: flex;
+  flex-direction: column;
+}
+
+.sign-step .signature-pad-container {
+  background: white;
+  border: none;
+  padding: 0;
+}
+
+.sign-step .signature-pad-canvas-wrapper {
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  min-height: 300px;
+}
+
+/* Confirm Step */
+.confirm-step h3 {
+  font-size: 1.1rem;
+  color: #333;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.confirm-subtitle {
+  color: #999;
+  margin: 0 0 20px 0;
+  font-size: 0.9rem;
+}
+
+.signature-preview {
+  background: #f9f9f9;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+  text-align: center;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signature-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 4px;
+}
+
+.confirmation-checklist {
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  cursor: pointer;
+}
+
+.checkbox-item:not(:last-child) {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.checkbox-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #B03737;
+}
+
+.checkbox-item span {
+  color: #333;
+  font-size: 0.95rem;
+}
+
+/* Complete Step */
+.complete-step {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.success-icon {
+  font-size: 64px;
+  color: #4caf50;
+  margin-bottom: 20px;
+}
+
+.complete-step h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin: 0 0 12px 0;
+  font-weight: 600;
+}
+
+.success-message {
+  color: #666;
+  margin: 0 0 24px 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.completion-details {
+  background: #e8f5e9;
+  border: 1px solid #4caf50;
+  border-radius: 8px;
+  padding: 16px;
+  color: #2e7d32;
+}
+
+.completion-details p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Alerts */
+.error-alert {
+  background: #ffebee;
+  border: 1px solid #ef5350;
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #c62828;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+/* Footer */
+.signature-collection-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 24px 32px;
+  border-top: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 100px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #B03737, #B8860B);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.btn-secondary {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #d0d0d0;
+}
+
+.btn-outline {
+  background: white;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .signature-collection-modal {
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .signature-collection-header,
+  .signature-progress,
+  .signature-collection-content,
+  .signature-collection-footer {
+    padding: 16px;
+  }
+
+  .signature-progress {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .progress-line {
+    display: none;
+  }
+
+  .progress-step {
+    flex: 1;
+    min-width: 60px;
+  }
+
+  .progress-number {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+
+  .progress-label {
+    font-size: 0.75rem;
+  }
+
+  .signature-collection-footer {
+    flex-direction: column-reverse;
+  }
+
+  .btn {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .signature-collection-content {
+    padding: 20px 16px;
+  }
+
+  .signature-preview {
+    min-height: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  .signature-collection-header {
+    padding: 16px;
+  }
+
+  .signature-collection-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .signature-progress {
+    padding: 12px;
+    gap: 6px;
+  }
+
+  .progress-number {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+
+  .review-step h3,
+  .confirm-step h3 {
+    font-size: 1rem;
+  }
+
+  .contract-info,
+  .signer-info,
+  .confirmation-checklist {
+    padding: 16px;
+  }
+}

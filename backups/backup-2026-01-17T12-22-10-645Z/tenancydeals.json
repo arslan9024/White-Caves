@@ -1,0 +1,492 @@
+[
+  {
+    "_id": "6966df795a2dad4821944d05",
+    "dealNumber": "TD-2024-001",
+    "status": "ejari_registered",
+    "property": {
+      "address": "Apt 4502, Address Sky View, Downtown Dubai",
+      "area": "Downtown Dubai",
+      "propertyType": "apartment",
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "size": 1650,
+      "annualRent": 280000,
+      "securityDeposit": 14000
+    },
+    "landlord": {
+      "name": "Sheikh Abdullah",
+      "email": "abdullah@emirates.ae",
+      "phone": "+971505678901",
+      "landlordType": "individual"
+    },
+    "tenant": {
+      "name": "Sarah Johnson",
+      "email": "sarah.j@gmail.com",
+      "phone": "+971507890123",
+      "employer": "Google Dubai",
+      "monthlyIncome": 45000,
+      "kycStatus": "verified"
+    },
+    "broker": {
+      "name": "Raj Patel",
+      "brnNumber": "BRN-45678",
+      "assignedBy": "Daisy AI"
+    },
+    "offer": {
+      "monthlyRent": 23333,
+      "securityDeposit": 14000,
+      "agencyFee": 14000,
+      "paymentSchedule": "4_cheques",
+      "startDate": "2024-01-15T00:00:00.000Z",
+      "endDate": "2025-01-14T00:00:00.000Z",
+      "duration": 12,
+      "specialConditions": []
+    },
+    "ejari": {
+      "ejariNumber": "EJ-2024-789456",
+      "registeredAt": "2024-01-12T00:00:00.000Z"
+    },
+    "timeline": [
+      {
+        "stage": "inquiry",
+        "status": "completed",
+        "timestamp": "2025-12-31T00:12:41.593Z",
+        "actor": "System",
+        "notes": "Lead received",
+        "_id": "6966df795a2dad4821944d06"
+      },
+      {
+        "stage": "viewing_scheduled",
+        "status": "completed",
+        "timestamp": "2026-01-01T00:12:41.593Z",
+        "actor": "Raj Patel",
+        "_id": "6966df795a2dad4821944d07"
+      },
+      {
+        "stage": "viewing_completed",
+        "status": "completed",
+        "timestamp": "2026-01-02T00:12:41.593Z",
+        "actor": "Raj Patel",
+        "_id": "6966df795a2dad4821944d08"
+      },
+      {
+        "stage": "offer_submitted",
+        "status": "completed",
+        "timestamp": "2026-01-03T00:12:41.593Z",
+        "actor": "Raj Patel",
+        "_id": "6966df795a2dad4821944d09"
+      },
+      {
+        "stage": "landlord_review",
+        "status": "completed",
+        "timestamp": "2026-01-04T00:12:41.593Z",
+        "actor": "Raj Patel",
+        "_id": "6966df795a2dad4821944d0a"
+      },
+      {
+        "stage": "offer_accepted",
+        "status": "completed",
+        "timestamp": "2026-01-05T00:12:41.593Z",
+        "actor": "Raj Patel",
+        "_id": "6966df795a2dad4821944d0b"
+      },
+      {
+        "stage": "contract_preparation",
+        "status": "completed",
+        "timestamp": "2026-01-06T00:12:41.593Z",
+        "actor": "Raj Patel",
+        "_id": "6966df795a2dad4821944d0c"
+      },
+      {
+        "stage": "pending_signatures",
+        "status": "completed",
+        "timestamp": "2026-01-07T00:12:41.593Z",
+        "actor": "Raj Patel",
+        "_id": "6966df795a2dad4821944d0d"
+      },
+      {
+        "stage": "signed",
+        "status": "completed",
+        "timestamp": "2026-01-08T00:12:41.593Z",
+        "actor": "Raj Patel",
+        "_id": "6966df795a2dad4821944d0e"
+      },
+      {
+        "stage": "ejari_submitted",
+        "status": "completed",
+        "timestamp": "2026-01-09T00:12:41.593Z",
+        "actor": "Raj Patel",
+        "_id": "6966df795a2dad4821944d0f"
+      },
+      {
+        "stage": "ejari_registered",
+        "status": "in_progress",
+        "timestamp": "2026-01-10T00:12:41.593Z",
+        "actor": "Raj Patel",
+        "_id": "6966df795a2dad4821944d10"
+      }
+    ],
+    "kycVerification": {
+      "landlordVerified": false,
+      "tenantVerified": false
+    },
+    "financials": {
+      "commissionPaid": false,
+      "paymentsReceived": []
+    },
+    "notifications": [],
+    "isDemo": false,
+    "createdAt": "2026-01-14T00:12:41.597Z",
+    "updatedAt": "2026-01-14T00:12:41.597Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944d12",
+    "dealNumber": "TD-2024-002",
+    "status": "pending_signatures",
+    "property": {
+      "address": "Villa S8-45, Springs 8",
+      "area": "The Springs",
+      "propertyType": "villa",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "size": 2400,
+      "annualRent": 145000,
+      "securityDeposit": 7250
+    },
+    "landlord": {
+      "name": "Maria Fernandez",
+      "email": "maria.f@gmail.com",
+      "phone": "+34612345678",
+      "landlordType": "individual"
+    },
+    "tenant": {
+      "name": "Thomas Mueller",
+      "email": "thomas.m@gmail.com",
+      "phone": "+971509012345",
+      "employer": "SAP Middle East",
+      "monthlyIncome": 55000,
+      "kycStatus": "verified"
+    },
+    "broker": {
+      "name": "Nadia Hassan",
+      "brnNumber": "BRN-45679",
+      "assignedBy": "Daisy AI"
+    },
+    "offer": {
+      "monthlyRent": 12083,
+      "securityDeposit": 7250,
+      "agencyFee": 7250,
+      "paymentSchedule": "2_cheques",
+      "startDate": "2024-02-01T00:00:00.000Z",
+      "endDate": "2025-01-31T00:00:00.000Z",
+      "duration": 12,
+      "specialConditions": []
+    },
+    "timeline": [
+      {
+        "stage": "inquiry",
+        "status": "completed",
+        "timestamp": "2025-12-31T00:12:41.603Z",
+        "actor": "System",
+        "notes": "Lead received",
+        "_id": "6966df795a2dad4821944d13"
+      },
+      {
+        "stage": "viewing_scheduled",
+        "status": "completed",
+        "timestamp": "2026-01-01T00:12:41.603Z",
+        "actor": "Nadia Hassan",
+        "_id": "6966df795a2dad4821944d14"
+      },
+      {
+        "stage": "viewing_completed",
+        "status": "completed",
+        "timestamp": "2026-01-02T00:12:41.603Z",
+        "actor": "Nadia Hassan",
+        "_id": "6966df795a2dad4821944d15"
+      },
+      {
+        "stage": "offer_submitted",
+        "status": "completed",
+        "timestamp": "2026-01-03T00:12:41.603Z",
+        "actor": "Nadia Hassan",
+        "_id": "6966df795a2dad4821944d16"
+      },
+      {
+        "stage": "landlord_review",
+        "status": "completed",
+        "timestamp": "2026-01-04T00:12:41.603Z",
+        "actor": "Nadia Hassan",
+        "_id": "6966df795a2dad4821944d17"
+      },
+      {
+        "stage": "offer_accepted",
+        "status": "completed",
+        "timestamp": "2026-01-05T00:12:41.603Z",
+        "actor": "Nadia Hassan",
+        "_id": "6966df795a2dad4821944d18"
+      },
+      {
+        "stage": "contract_preparation",
+        "status": "completed",
+        "timestamp": "2026-01-06T00:12:41.603Z",
+        "actor": "Nadia Hassan",
+        "_id": "6966df795a2dad4821944d19"
+      },
+      {
+        "stage": "pending_signatures",
+        "status": "in_progress",
+        "timestamp": "2026-01-07T00:12:41.603Z",
+        "actor": "Nadia Hassan",
+        "_id": "6966df795a2dad4821944d1a"
+      }
+    ],
+    "kycVerification": {
+      "landlordVerified": false,
+      "tenantVerified": false
+    },
+    "financials": {
+      "commissionPaid": false,
+      "paymentsReceived": []
+    },
+    "notifications": [],
+    "isDemo": false,
+    "createdAt": "2026-01-14T00:12:41.605Z",
+    "updatedAt": "2026-01-14T00:12:41.605Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944d1c",
+    "dealNumber": "TD-2024-003",
+    "status": "viewing_scheduled",
+    "property": {
+      "address": "Apt 2804, Marina Gate, Dubai Marina",
+      "area": "Dubai Marina",
+      "propertyType": "apartment",
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "size": 1400,
+      "annualRent": 145000,
+      "securityDeposit": 7250
+    },
+    "landlord": {
+      "name": "George Chen",
+      "email": "george.c@gmail.com",
+      "phone": "+8613912345678",
+      "landlordType": "individual"
+    },
+    "tenant": {
+      "name": "Olga Ivanova",
+      "email": "olga.i@gmail.com",
+      "phone": "+971501122334",
+      "employer": "Jumeirah Hotels",
+      "monthlyIncome": 28000,
+      "kycStatus": "pending"
+    },
+    "broker": {
+      "name": "Anna Petrova",
+      "brnNumber": "BRN-45680",
+      "assignedBy": "System"
+    },
+    "offer": {
+      "paymentSchedule": "1_cheque",
+      "duration": 12,
+      "specialConditions": []
+    },
+    "timeline": [
+      {
+        "stage": "inquiry",
+        "status": "completed",
+        "timestamp": "2025-12-31T00:12:41.607Z",
+        "actor": "System",
+        "notes": "Lead received",
+        "_id": "6966df795a2dad4821944d1d"
+      },
+      {
+        "stage": "viewing_scheduled",
+        "status": "in_progress",
+        "timestamp": "2026-01-01T00:12:41.607Z",
+        "actor": "Anna Petrova",
+        "_id": "6966df795a2dad4821944d1e"
+      }
+    ],
+    "kycVerification": {
+      "landlordVerified": false,
+      "tenantVerified": false
+    },
+    "financials": {
+      "commissionPaid": false,
+      "paymentsReceived": []
+    },
+    "notifications": [],
+    "isDemo": false,
+    "createdAt": "2026-01-14T00:12:41.608Z",
+    "updatedAt": "2026-01-14T00:12:41.608Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944d20",
+    "dealNumber": "TD-2024-004",
+    "status": "offer_accepted",
+    "property": {
+      "address": "Apt 2508, Sadaf, JBR",
+      "area": "Jumeirah Beach Residence",
+      "propertyType": "apartment",
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "size": 1550,
+      "annualRent": 165000,
+      "securityDeposit": 8250
+    },
+    "landlord": {
+      "name": "Hamad Al Maktoum",
+      "email": "hamad.m@gmail.com",
+      "phone": "+971506789012",
+      "landlordType": "individual"
+    },
+    "tenant": {
+      "name": "Lisa Anderson",
+      "email": "lisa.a@gmail.com",
+      "phone": "+971503344556",
+      "employer": "HSBC Dubai",
+      "monthlyIncome": 50000,
+      "kycStatus": "verified"
+    },
+    "broker": {
+      "name": "Raj Patel",
+      "brnNumber": "BRN-45678",
+      "assignedBy": "Daisy AI"
+    },
+    "offer": {
+      "monthlyRent": 13750,
+      "securityDeposit": 8250,
+      "agencyFee": 8250,
+      "paymentSchedule": "4_cheques",
+      "startDate": "2024-02-15T00:00:00.000Z",
+      "endDate": "2025-02-14T00:00:00.000Z",
+      "duration": 12,
+      "specialConditions": []
+    },
+    "timeline": [
+      {
+        "stage": "inquiry",
+        "status": "completed",
+        "timestamp": "2025-12-31T00:12:41.609Z",
+        "actor": "System",
+        "notes": "Lead received",
+        "_id": "6966df795a2dad4821944d21"
+      },
+      {
+        "stage": "viewing_scheduled",
+        "status": "completed",
+        "timestamp": "2026-01-01T00:12:41.609Z",
+        "actor": "Raj Patel",
+        "_id": "6966df795a2dad4821944d22"
+      },
+      {
+        "stage": "viewing_completed",
+        "status": "completed",
+        "timestamp": "2026-01-02T00:12:41.609Z",
+        "actor": "Raj Patel",
+        "_id": "6966df795a2dad4821944d23"
+      },
+      {
+        "stage": "offer_submitted",
+        "status": "completed",
+        "timestamp": "2026-01-03T00:12:41.609Z",
+        "actor": "Raj Patel",
+        "_id": "6966df795a2dad4821944d24"
+      },
+      {
+        "stage": "landlord_review",
+        "status": "completed",
+        "timestamp": "2026-01-04T00:12:41.609Z",
+        "actor": "Raj Patel",
+        "_id": "6966df795a2dad4821944d25"
+      },
+      {
+        "stage": "offer_accepted",
+        "status": "in_progress",
+        "timestamp": "2026-01-05T00:12:41.609Z",
+        "actor": "Raj Patel",
+        "_id": "6966df795a2dad4821944d26"
+      }
+    ],
+    "kycVerification": {
+      "landlordVerified": false,
+      "tenantVerified": false
+    },
+    "financials": {
+      "commissionPaid": false,
+      "paymentsReceived": []
+    },
+    "notifications": [],
+    "isDemo": false,
+    "createdAt": "2026-01-14T00:12:41.611Z",
+    "updatedAt": "2026-01-14T00:12:41.611Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df795a2dad4821944d28",
+    "dealNumber": "TD-2024-005",
+    "status": "inquiry",
+    "property": {
+      "address": "Apt 4503, Index Tower, DIFC",
+      "area": "DIFC",
+      "propertyType": "apartment",
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "size": 1800,
+      "annualRent": 195000,
+      "securityDeposit": 9750
+    },
+    "landlord": {
+      "name": "Sheikh Abdullah",
+      "email": "abdullah@emirates.ae",
+      "phone": "+971505678901",
+      "landlordType": "individual"
+    },
+    "tenant": {
+      "name": "Mark Stevens",
+      "email": "mark.s@gmail.com",
+      "phone": "+971505566778",
+      "employer": "KPMG Dubai",
+      "monthlyIncome": 42000,
+      "kycStatus": "pending"
+    },
+    "broker": {
+      "name": "Anna Petrova",
+      "brnNumber": "BRN-45680",
+      "assignedBy": "System"
+    },
+    "offer": {
+      "paymentSchedule": "1_cheque",
+      "duration": 12,
+      "specialConditions": []
+    },
+    "timeline": [
+      {
+        "stage": "inquiry",
+        "status": "completed",
+        "timestamp": "2025-12-31T00:12:41.613Z",
+        "actor": "System",
+        "notes": "Lead received",
+        "_id": "6966df795a2dad4821944d29"
+      }
+    ],
+    "kycVerification": {
+      "landlordVerified": false,
+      "tenantVerified": false
+    },
+    "financials": {
+      "commissionPaid": false,
+      "paymentsReceived": []
+    },
+    "notifications": [],
+    "isDemo": false,
+    "createdAt": "2026-01-14T00:12:41.614Z",
+    "updatedAt": "2026-01-14T00:12:41.614Z",
+    "__v": 0
+  }
+]

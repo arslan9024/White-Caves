@@ -1,0 +1,1623 @@
+# Complete Implementation: Universal React Functional Components with Redux for All Features
+
+I'll create a comprehensive system with reusable functional components, Redux integration for all features, and dynamic state-driven UI updates.
+
+## 1. Enhanced Redux Store with All Features
+
+**`src/store/index.ts`**
+```typescript
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+
+// Import all slices
+import uiReducer from './slices/uiSlice';
+import authReducer from './slices/authSlice';
+import userReducer from './slices/userSlice';
+import propertyReducer from './slices/propertySlice';
+import serviceReducer from './slices/serviceSlice';
+import dashboardReducer from './slices/dashboardSlice';
+import chatReducer from './slices/chatSlice';
+import notificationReducer from './slices/notificationSlice';
+import themeReducer from './slices/themeSlice';
+import filterReducer from './slices/filterSlice';
+
+// Root reducer
+const rootReducer = combineReducers({
+  ui: uiReducer,
+  auth: authReducer,
+  users: userReducer,
+  properties: propertyReducer,
+  services: serviceReducer,
+  dashboard: dashboardReducer,
+  chat: chatReducer,
+  notifications: notificationReducer,
+  theme: themeReducer,
+  filters: filterReducer,
+});
+
+// Persist configuration
+const persistConfig = {
+  key: 'root',
+  version: 1,
+  storage,
+  whitelist: ['auth', 'theme', 'ui', 'filters'], // Persist these slices
+  blacklist: ['chat', 'notifications'], // Don't persist these
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+export const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
+  devTools: process.env.NODE_ENV !== 'production',
+});
+
+export const persistor = persistStore(store);
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+```
+
+## 2. Universal UI Slice
+
+**`src/store/slices/uiSlice.ts`**
+```typescript
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+export type UserRole = 'buyer' | 'seller' | 'landlord' | 'agent_leasing' | 'agent_sales' | 'admin' | 'guest';
+export type PropertyType = 'residential' | 'commercial' | 'industrial' | 'land' | 'mixed';
+export type DashboardView = 'grid' | 'list' | 'compact' | 'detailed';
+export type LayoutMode = 'default' | 'compact' | 'expanded' | 'fullscreen';
+
+interface UIState {
+  // Theme & Layout
+  theme: 'light' | 'dark' | 'auto';
+  layoutMode: LayoutMode;
+  sidebarCollapsed: boolean;
+  
+  // User & Role Management
+  currentRole: UserRole;
+  availableRoles: UserRole[];
+  userPermissions: string[];
+  
+  // Property Filters
+  selectedPropertyType: PropertyType | 'all';
+  propertyArea: string;
+  priceRange: [number, number];
+  bedrooms: number;
+  bathrooms: number;
+  
+  // Dashboard State
+  dashboardView: DashboardView;
+  activeModule: string;
+  activeSubModule: string;
+  pinnedModules: string[];
+  
+  // UI Controls
+  showWhatsAppChat: boolean;
+  showNotifications: boolean;
+  showSearchBar: boolean;
+  
+  // Slider Values
+  priceSlider: number;
+  areaSlider: number;
+  ratingSlider: number;
+  
+  // Mobile
+  isMobileView: boolean;
+  drawerOpen: boolean;
+  
+  // Feature Flags
+  enabledFeatures: Record<string, boolean>;
+}
+
+const initialState: UIState = {
+  theme: 'light',
+  layoutMode: 'default',
+  sidebarCollapsed: false,
+  
+  currentRole: 'buyer',
+  availableRoles: ['buyer', 'seller', 'landlord', 'agent_leasing', 'agent_sales', 'admin'],
+  userPermissions: ['view_dashboard', 'edit_profile', 'view_properties'],
+  
+  selectedPropertyType: 'all',
+  propertyArea: 'all',
+  priceRange: [0, 10000000],
+  bedrooms: 0,
+  bathrooms: 0,
+  
+  dashboardView: 'grid',
+  activeModule: 'dashboard',
+  activeSubModule: 'overview',
+  pinnedModules: ['properties', 'messages', 'reports'],
+  
+  showWhatsAppChat: true,
+  showNotifications: true,
+  showSearchBar: true,
+  
+  priceSlider: 50,
+  areaSlider: 50,
+  ratingSlider: 75,
+  
+  isMobileView: false,
+  drawerOpen: false,
+  
+  enabledFeatures: {
+    whatsAppChat: true,
+    darkMode: true,
+    notifications: true,
+    multiRole: true,
+    advancedFilters: true,
+  },
+};
+
+const uiSlice = createSlice({
+  name: 'ui',
+  initialState,
+  reducers: {
+    // Theme & Layout
+    toggleTheme: (state) => {
+      state.theme = state.theme === 'light' ? 'dark' : 'light';
+      localStorage.setItem('theme', state.theme);
+    },
+    setTheme: (state, action: PayloadAction<UIState['theme']>) => {
+      state.theme = action.payload;
+    },
+    setLayoutMode: (state, action: PayloadAction<LayoutMode>) => {
+      state.layoutMode = action.payload;
+    },
+    toggleSidebar: (state) => {
+      state.sidebarCollapsed = !state.sidebarCollapsed;
+    },
+    
+    // User & Role Management
+    setCurrentRole: (state, action: PayloadAction<UserRole>) => {
+      state.currentRole = action.payload;
+      // Reset filters when role changes
+      state.selectedPropertyType = 'all';
+      state.propertyArea = 'all';
+    },
+    addUserPermission: (state, action: PayloadAction<string>) => {
+      if (!state.userPermissions.includes(action.payload)) {
+        state.userPermissions.push(action.payload);
+      }
+    },
+    removeUserPermission: (state, action: PayloadAction<string>) => {
+      state.userPermissions = state.userPermissions.filter(
+        perm => perm !== action.payload
+      );
+    },
+    
+    // Property Filters
+    setPropertyType: (state, action: PayloadAction<PropertyType | 'all'>) => {
+      state.selectedPropertyType = action.payload;
+    },
+    setPropertyArea: (state, action: PayloadAction<string>) => {
+      state.propertyArea = action.payload;
+    },
+    setPriceRange: (state, action: PayloadAction<[number, number]>) => {
+      state.priceRange = action.payload;
+    },
+    setBedrooms: (state, action: PayloadAction<number>) => {
+      state.bedrooms = action.payload;
+    },
+    setBathrooms: (state, action: PayloadAction<number>) => {
+      state.bathrooms = action.payload;
+    },
+    
+    // Dashboard State
+    setDashboardView: (state, action: PayloadAction<DashboardView>) => {
+      state.dashboardView = action.payload;
+    },
+    setActiveModule: (state, action: PayloadAction<string>) => {
+      state.activeModule = action.payload;
+    },
+    setActiveSubModule: (state, action: PayloadAction<string>) => {
+      state.activeSubModule = action.payload;
+    },
+    togglePinModule: (state, action: PayloadAction<string>) => {
+      const index = state.pinnedModules.indexOf(action.payload);
+      if (index >= 0) {
+        state.pinnedModules.splice(index, 1);
+      } else {
+        state.pinnedModules.push(action.payload);
+      }
+    },
+    
+    // UI Controls
+    toggleWhatsAppChat: (state) => {
+      state.showWhatsAppChat = !state.showWhatsAppChat;
+    },
+    toggleNotifications: (state) => {
+      state.showNotifications = !state.showNotifications;
+    },
+    toggleSearchBar: (state) => {
+      state.showSearchBar = !state.showSearchBar;
+    },
+    
+    // Slider Controls
+    setPriceSlider: (state, action: PayloadAction<number>) => {
+      state.priceSlider = action.payload;
+      state.priceRange = [0, action.payload * 200000];
+    },
+    setAreaSlider: (state, action: PayloadAction<number>) => {
+      state.areaSlider = action.payload;
+    },
+    setRatingSlider: (state, action: PayloadAction<number>) => {
+      state.ratingSlider = action.payload;
+    },
+    
+    // Mobile
+    setIsMobileView: (state, action: PayloadAction<boolean>) => {
+      state.isMobileView = action.payload;
+    },
+    setDrawerOpen: (state, action: PayloadAction<boolean>) => {
+      state.drawerOpen = action.payload;
+    },
+    
+    // Feature Flags
+    toggleFeature: (state, action: PayloadAction<string>) => {
+      state.enabledFeatures[action.payload] = !state.enabledFeatures[action.payload];
+    },
+    setFeature: (state, action: PayloadAction<{feature: string, enabled: boolean}>) => {
+      state.enabledFeatures[action.payload.feature] = action.payload.enabled;
+    },
+    
+    // Reset
+    resetFilters: (state) => {
+      state.selectedPropertyType = 'all';
+      state.propertyArea = 'all';
+      state.priceRange = [0, 10000000];
+      state.bedrooms = 0;
+      state.bathrooms = 0;
+    },
+  },
+});
+
+export const {
+  toggleTheme,
+  setTheme,
+  setLayoutMode,
+  toggleSidebar,
+  setCurrentRole,
+  addUserPermission,
+  removeUserPermission,
+  setPropertyType,
+  setPropertyArea,
+  setPriceRange,
+  setBedrooms,
+  setBathrooms,
+  setDashboardView,
+  setActiveModule,
+  setActiveSubModule,
+  togglePinModule,
+  toggleWhatsAppChat,
+  toggleNotifications,
+  toggleSearchBar,
+  setPriceSlider,
+  setAreaSlider,
+  setRatingSlider,
+  setIsMobileView,
+  setDrawerOpen,
+  toggleFeature,
+  setFeature,
+  resetFilters,
+} = uiSlice.actions;
+
+export default uiSlice.reducer;
+```
+
+## 3. Universal Theme Toggle Component (Always Visible)
+
+**`src/shared/components/universal/ThemeToggle.tsx`**
+```typescript
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { toggleTheme } from '../../store/slices/uiSlice';
+import './ThemeToggle.css';
+
+const ThemeToggle: React.FC = () => {
+  const dispatch = useDispatch();
+  const { theme } = useSelector((state: RootState) => state.ui);
+  const enabledFeatures = useSelector((state: RootState) => state.ui.enabledFeatures);
+
+  if (!enabledFeatures.darkMode) return null;
+
+  return (
+    <button
+      className="theme-toggle"
+      onClick={() => dispatch(toggleTheme())}
+      aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+      title={`Current: ${theme} mode`}
+    >
+      <div className="theme-toggle-container">
+        <span className="theme-icon">
+          {theme === 'light' ? '🌙' : '☀️'}
+        </span>
+        <span className="theme-text">
+          {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+        </span>
+        <div className="theme-slider">
+          <div className={`slider-track ${theme}`}>
+            <div className="slider-thumb"></div>
+          </div>
+        </div>
+      </div>
+    </button>
+  );
+};
+
+export default ThemeToggle;
+```
+
+**`src/shared/components/universal/ThemeToggle.css`**
+```css
+.theme-toggle {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+}
+
+.theme-toggle:hover {
+  background: var(--hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.theme-icon {
+  font-size: 1.25rem;
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover .theme-icon {
+  transform: rotate(15deg);
+}
+
+.theme-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.theme-slider {
+  width: 40px;
+  height: 20px;
+  position: relative;
+}
+
+.slider-track {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  position: relative;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: all 0.3s ease;
+}
+
+.slider-track.light {
+  background: linear-gradient(90deg, #f6d365 0%, #fda085 100%);
+}
+
+.slider-track.dark {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.slider-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slider-track.light .slider-thumb {
+  transform: translateX(0);
+}
+
+.slider-track.dark .slider-thumb {
+  transform: translateX(20px);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .theme-toggle {
+    min-width: auto;
+    padding: 0.5rem;
+  }
+  
+  .theme-text {
+    display: none;
+  }
+  
+  .theme-toggle-container {
+    gap: 0.5rem;
+  }
+}
+```
+
+## 4. Universal Profile Component (Always Visible)
+
+**`src/shared/components/universal/Profile.tsx`**
+```typescript
+import React, { useState, useRef, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { setCurrentRole } from '../../store/slices/uiSlice';
+import './Profile.css';
+
+interface ProfileProps {
+  compact?: boolean;
+}
+
+const Profile: React.FC<ProfileProps> = ({ compact = false }) => {
+  const dispatch = useDispatch();
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  const { currentRole, availableRoles } = useSelector((state: RootState) => state.ui);
+  const { user } = useSelector((state: RootState) => auth); // Assuming auth slice has user data
+
+  const handleRoleChange = (role: string) => {
+    dispatch(setCurrentRole(role as any));
+    setIsOpen(false);
+  };
+
+  const handleLogout = () => {
+    // Logout logic here
+    setIsOpen(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const roleIcons: Record<string, string> = {
+    buyer: '👤',
+    seller: '💼',
+    landlord: '👑',
+    agent_leasing: '🔑',
+    agent_sales: '👔',
+    admin: '⚙️',
+    guest: '👥',
+  };
+
+  return (
+    <div className="profile-container" ref={dropdownRef}>
+      <button
+        className="profile-button"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Profile menu"
+      >
+        <div className="profile-avatar">
+          {user?.avatar ? (
+            <img src={user.avatar} alt={user.name} />
+          ) : (
+            <span className="avatar-fallback">{user?.name?.charAt(0) || 'U'}</span>
+          )}
+        </div>
+        
+        {!compact && (
+          <div className="profile-info">
+            <span className="profile-name">{user?.name || 'Guest User'}</span>
+            <span className="profile-role">
+              {roleIcons[currentRole]} {currentRole.replace('_', ' ')}
+            </span>
+          </div>
+        )}
+        
+        <span className={`dropdown-arrow ${isOpen ? 'open' : ''}`}>▼</span>
+      </button>
+
+      {isOpen && (
+        <div className="profile-dropdown">
+          {/* User Info */}
+          <div className="dropdown-section">
+            <div className="user-summary">
+              <div className="user-avatar-large">
+                {user?.avatar ? (
+                  <img src={user.avatar} alt={user.name} />
+                ) : (
+                  <span className="avatar-fallback-large">
+                    {user?.name?.charAt(0) || 'U'}
+                  </span>
+                )}
+              </div>
+              <div className="user-details">
+                <h4>{user?.name || 'Guest User'}</h4>
+                <p>{user?.email || 'guest@example.com'}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Role Switcher */}
+          <div className="dropdown-section">
+            <h5>Switch Role</h5>
+            <div className="role-switcher-grid">
+              {availableRoles.map((role) => (
+                <button
+                  key={role}
+                  className={`role-option ${currentRole === role ? 'active' : ''}`}
+                  onClick={() => handleRoleChange(role)}
+                >
+                  <span className="role-icon">{roleIcons[role]}</span>
+                  <span className="role-label">{role.replace('_', ' ')}</span>
+                  {currentRole === role && (
+                    <span className="active-indicator">✓</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="dropdown-section">
+            <h5>Quick Actions</h5>
+            <button className="dropdown-item">
+              <span className="item-icon">⚙️</span>
+              <span className="item-text">Settings</span>
+            </button>
+            <button className="dropdown-item">
+              <span className="item-icon">🔔</span>
+              <span className="item-text">Notifications</span>
+              <span className="badge">3</span>
+            </button>
+            <button className="dropdown-item">
+              <span className="item-icon">💳</span>
+              <span className="item-text">Billing</span>
+            </button>
+          </div>
+
+          {/* Logout */}
+          <div className="dropdown-section">
+            <button className="logout-button" onClick={handleLogout}>
+              <span className="logout-icon">🚪</span>
+              <span className="logout-text">Logout</span>
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Profile;
+```
+
+## 5. Universal WhatsApp Chat Component (Always Visible)
+
+**`src/shared/components/universal/WhatsAppChat.tsx`**
+```typescript
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { toggleWhatsAppChat } from '../../store/slices/uiSlice';
+import './WhatsAppChat.css';
+
+const WhatsAppChat: React.FC = () => {
+  const dispatch = useDispatch();
+  const { showWhatsAppChat, enabledFeatures } = useSelector((state: RootState) => state.ui);
+  const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [typing, setTyping] = useState(false);
+
+  // Default WhatsApp number and message
+  const phoneNumber = '+1234567890';
+  const defaultMessage = 'Hello, I have a question about a property.';
+
+  const handleSendMessage = () => {
+    const text = message || defaultMessage;
+    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+    setMessage('');
+    setIsOpen(false);
+  };
+
+  const handleToggle = () => {
+    if (isOpen) {
+      setIsOpen(false);
+    } else {
+      setIsOpen(true);
+    }
+  };
+
+  const handleCloseToggle = () => {
+    dispatch(toggleWhatsAppChat());
+  };
+
+  // Auto-open on hover (desktop only)
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    const handleMouseEnter = () => {
+      if (window.innerWidth > 768) {
+        timer = setTimeout(() => {
+          if (showWhatsAppChat) setIsOpen(true);
+        }, 300);
+      }
+    };
+
+    const handleMouseLeave = () => {
+      if (window.innerWidth > 768) {
+        clearTimeout(timer);
+        if (isOpen) setIsOpen(false);
+      }
+    };
+
+    const button = document.querySelector('.whatsapp-button');
+    if (button) {
+      button.addEventListener('mouseenter', handleMouseEnter);
+      button.addEventListener('mouseleave', handleMouseLeave);
+    }
+
+    return () => {
+      if (button) {
+        button.removeEventListener('mouseenter', handleMouseEnter);
+        button.removeEventListener('mouseleave', handleMouseLeave);
+      }
+      clearTimeout(timer);
+    };
+  }, [showWhatsAppChat, isOpen]);
+
+  if (!showWhatsAppChat || !enabledFeatures.whatsAppChat) return null;
+
+  return (
+    <div className="whatsapp-chat-container">
+      {/* Chat Bubble */}
+      {isOpen && (
+        <div className="whatsapp-chat-bubble">
+          <div className="chat-header">
+            <div className="chat-agent">
+              <div className="agent-avatar">💬</div>
+              <div className="agent-info">
+                <h5>Property Support</h5>
+                <p className="agent-status">
+                  <span className="status-indicator online"></span>
+                  Online • Responds instantly
+                </p>
+              </div>
+            </div>
+            <button 
+              className="close-chat" 
+              onClick={() => setIsOpen(false)}
+              aria-label="Close chat"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="chat-messages">
+            <div className="message agent">
+              <p>Hi there! 👋</p>
+              <p>How can I help you with your property search today?</p>
+            </div>
+            
+            {typing && (
+              <div className="message agent typing">
+                <div className="typing-indicator">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="chat-input">
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Type your message here..."
+              onFocus={() => setTyping(true)}
+              onBlur={() => setTyping(false)}
+              rows={3}
+            />
+            <button 
+              className="send-button"
+              onClick={handleSendMessage}
+              disabled={!message.trim()}
+            >
+              <span className="send-icon">📤</span>
+              Send to WhatsApp
+            </button>
+          </div>
+
+          <div className="quick-replies">
+            <button 
+              className="quick-reply"
+              onClick={() => setMessage('Can you show me available properties in this area?')}
+            >
+              Available properties?
+            </button>
+            <button 
+              className="quick-reply"
+              onClick={() => setMessage('I want to schedule a property viewing.')}
+            >
+              Schedule viewing
+            </button>
+            <button 
+              className="quick-reply"
+              onClick={() => setMessage('What are the current mortgage rates?')}
+            >
+              Mortgage rates
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Button */}
+      <button
+        className="whatsapp-button"
+        onClick={handleToggle}
+        aria-label="Open WhatsApp chat"
+        title="Chat with us on WhatsApp"
+      >
+        <span className="whatsapp-icon">💬</span>
+        <span className="unread-count">3</span>
+        <span className="close-toggle" onClick={(e) => {
+          e.stopPropagation();
+          handleCloseToggle();
+        }}>
+          ×
+        </span>
+      </button>
+    </div>
+  );
+};
+
+export default WhatsAppChat;
+```
+
+## 6. Dynamic Dashboard with Role-Based Components
+
+**`src/features/dashboard/components/DynamicDashboard.tsx`**
+```typescript
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../../../store';
+import { setDashboardView, setActiveModule, setActiveSubModule } from '../../../store/slices/uiSlice';
+import DashboardHeader from './DashboardHeader';
+import SubNavBar from '../../../shared/components/layout/SubNavBar';
+import DynamicComponentLoader from '../../../shared/components/dynamic/DynamicComponentLoader';
+import DashboardSidebar from './DashboardSidebar';
+import QuickStats from '../../../shared/components/dashboard/QuickStats';
+import './DynamicDashboard.css';
+
+const DynamicDashboard: React.FC = () => {
+  const dispatch = useDispatch();
+  const {
+    currentRole,
+    dashboardView,
+    activeModule,
+    activeSubModule,
+    layoutMode,
+    pinnedModules,
+  } = useSelector((state: RootState) => state.ui);
+
+  // Get modules based on current role
+  const getModulesForRole = (role: string) => {
+    const modules: Record<string, any> = {
+      buyer: ['overview', 'saved', 'viewings', 'alerts', 'offers'],
+      seller: ['listings', 'inquiries', 'market', 'offers', 'analytics'],
+      landlord: ['properties', 'tenants', 'maintenance', 'financial', 'leases'],
+      agent_sales: ['pipeline', 'leads', 'deals', 'commission', 'performance'],
+      agent_leasing: ['properties', 'contracts', 'viewings', 'applications', 'renewals'],
+      admin: ['users', 'roles', 'analytics', 'settings', 'audit'],
+    };
+    return modules[role] || modules.buyer;
+  };
+
+  const modules = getModulesForRole(currentRole);
+
+  return (
+    <div className={`dashboard dashboard-${layoutMode}`} data-theme="light">
+      <DashboardHeader />
+      
+      <div className="dashboard-main">
+        <DashboardSidebar />
+        
+        <div className="dashboard-content">
+          {/* View Toggle */}
+          <div className="view-controls">
+            <div className="view-buttons">
+              <button
+                className={`view-btn ${dashboardView === 'grid' ? 'active' : ''}`}
+                onClick={() => dispatch(setDashboardView('grid'))}
+              >
+                <span className="view-icon">⊞</span>
+                <span className="view-label">Grid</span>
+              </button>
+              <button
+                className={`view-btn ${dashboardView === 'list' ? 'active' : ''}`}
+                onClick={() => dispatch(setDashboardView('list'))}
+              >
+                <span className="view-icon">≡</span>
+                <span className="view-label">List</span>
+              </button>
+              <button
+                className={`view-btn ${dashboardView === 'compact' ? 'active' : ''}`}
+                onClick={() => dispatch(setDashboardView('compact'))}
+              >
+                <span className="view-icon">⊟</span>
+                <span className="view-label">Compact</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Sub Navigation */}
+          <SubNavBar 
+            modules={modules}
+            activeModule={activeModule}
+            onModuleChange={(module) => dispatch(setActiveModule(module))}
+          />
+
+          {/* Main Content */}
+          <div className="content-area">
+            <DynamicComponentLoader 
+              role={currentRole}
+              module={activeModule}
+              subModule={activeSubModule}
+              view={dashboardView}
+            />
+          </div>
+
+          {/* Pinned Modules */}
+          {pinnedModules.length > 0 && (
+            <div className="pinned-modules">
+              <h3>Pinned Modules</h3>
+              <div className="pinned-grid">
+                {pinnedModules.map((module) => (
+                  <button
+                    key={module}
+                    className="pinned-module"
+                    onClick={() => dispatch(setActiveModule(module))}
+                  >
+                    <span className="module-icon">
+                      {module === 'properties' && '🏠'}
+                      {module === 'messages' && '✉️'}
+                      {module === 'reports' && '📊'}
+                      {module === 'analytics' && '📈'}
+                    </span>
+                    <span className="module-name">{module}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Right Sidebar */}
+        <div className="dashboard-sidebar-right">
+          <QuickStats role={currentRole} />
+          
+          {/* Role-based quick actions */}
+          <div className="quick-actions">
+            <h4>Quick Actions</h4>
+            {currentRole === 'buyer' && (
+              <>
+                <button className="action-btn">
+                  <span className="action-icon">🔍</span>
+                  Search Properties
+                </button>
+                <button className="action-btn">
+                  <span className="action-icon">💾</span>
+                  Save Search
+                </button>
+              </>
+            )}
+            {currentRole === 'seller' && (
+              <>
+                <button className="action-btn">
+                  <span className="action-icon">➕</span>
+                  Add Listing
+                </button>
+                <button className="action-btn">
+                  <span className="action-icon">📊</span>
+                  View Analytics
+                </button>
+              </>
+            )}
+            {/* Add more role-based actions */}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DynamicDashboard;
+```
+
+## 7. Reusable Dynamic Filter Component
+
+**`src/shared/components/filters/DynamicFilters.tsx`**
+```typescript
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import {
+  setPropertyType,
+  setPropertyArea,
+  setPriceSlider,
+  setBedrooms,
+  setBathrooms,
+  resetFilters,
+} from '../../store/slices/uiSlice';
+import './DynamicFilters.css';
+
+interface DynamicFiltersProps {
+  showSliders?: boolean;
+  compact?: boolean;
+  onFilterChange?: (filters: any) => void;
+}
+
+const DynamicFilters: React.FC<DynamicFiltersProps> = ({
+  showSliders = true,
+  compact = false,
+  onFilterChange,
+}) => {
+  const dispatch = useDispatch();
+  const {
+    selectedPropertyType,
+    propertyArea,
+    priceSlider,
+    bedrooms,
+    bathrooms,
+    priceRange,
+  } = useSelector((state: RootState) => state.ui);
+
+  const propertyTypes = [
+    { value: 'all', label: 'All Types' },
+    { value: 'residential', label: '🏠 Residential' },
+    { value: 'commercial', label: '🏢 Commercial' },
+    { value: 'industrial', label: '🏭 Industrial' },
+    { value: 'land', label: '🌳 Land' },
+    { value: 'mixed', label: '🏘️ Mixed Use' },
+  ];
+
+  const areas = [
+    { value: 'all', label: 'All Areas' },
+    { value: 'downtown', label: 'Downtown' },
+    { value: 'suburban', label: 'Suburban' },
+    { value: 'rural', label: 'Rural' },
+    { value: 'coastal', label: 'Coastal' },
+    { value: 'urban', label: 'Urban' },
+  ];
+
+  const handlePropertyTypeChange = (type: string) => {
+    dispatch(setPropertyType(type as any));
+    if (onFilterChange) {
+      onFilterChange({ propertyType: type });
+    }
+  };
+
+  const handleAreaChange = (area: string) => {
+    dispatch(setPropertyArea(area));
+    if (onFilterChange) {
+      onFilterChange({ area });
+    }
+  };
+
+  const handlePriceChange = (value: number) => {
+    dispatch(setPriceSlider(value));
+    if (onFilterChange) {
+      onFilterChange({ price: value * 200000 });
+    }
+  };
+
+  const handleBedroomsChange = (count: number) => {
+    dispatch(setBedrooms(count));
+    if (onFilterChange) {
+      onFilterChange({ bedrooms: count });
+    }
+  };
+
+  const handleBathroomsChange = (count: number) => {
+    dispatch(setBathrooms(count));
+    if (onFilterChange) {
+      onFilterChange({ bathrooms: count });
+    }
+  };
+
+  const handleReset = () => {
+    dispatch(resetFilters());
+    if (onFilterChange) {
+      onFilterChange({ reset: true });
+    }
+  };
+
+  return (
+    <div className={`dynamic-filters ${compact ? 'compact' : ''}`}>
+      {!compact && (
+        <div className="filters-header">
+          <h3>Filters</h3>
+          <button className="reset-btn" onClick={handleReset}>
+            Reset All
+          </button>
+        </div>
+      )}
+
+      {/* Property Type */}
+      <div className="filter-section">
+        <label className="filter-label">Property Type</label>
+        <div className="type-buttons">
+          {propertyTypes.map((type) => (
+            <button
+              key={type.value}
+              className={`type-btn ${selectedPropertyType === type.value ? 'active' : ''}`}
+              onClick={() => handlePropertyTypeChange(type.value)}
+            >
+              {type.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Area Selector */}
+      <div className="filter-section">
+        <label className="filter-label">Area</label>
+        <div className="area-selector">
+          <select
+            value={propertyArea}
+            onChange={(e) => handleAreaChange(e.target.value)}
+            className="area-select"
+          >
+            {areas.map((area) => (
+              <option key={area.value} value={area.value}>
+                {area.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Price Slider */}
+      {showSliders && (
+        <div className="filter-section">
+          <div className="slider-header">
+            <label className="filter-label">Price Range</label>
+            <span className="slider-value">
+              ${(priceSlider * 20000).toLocaleString()}
+            </span>
+          </div>
+          <div className="slider-container">
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={priceSlider}
+              onChange={(e) => handlePriceChange(parseInt(e.target.value))}
+              className="price-slider"
+            />
+            <div className="slider-labels">
+              <span>$0</span>
+              <span>$500k</span>
+              <span>$1M</span>
+              <span>$2M</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bedrooms & Bathrooms */}
+      <div className="filter-row">
+        <div className="filter-section">
+          <label className="filter-label">Bedrooms</label>
+          <div className="counter-controls">
+            <button
+              className="counter-btn"
+              onClick={() => handleBedroomsChange(Math.max(0, bedrooms - 1))}
+            >
+              −
+            </button>
+            <span className="counter-value">{bedrooms}+</span>
+            <button
+              className="counter-btn"
+              onClick={() => handleBedroomsChange(bedrooms + 1)}
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <div className="filter-section">
+          <label className="filter-label">Bathrooms</label>
+          <div className="counter-controls">
+            <button
+              className="counter-btn"
+              onClick={() => handleBathroomsChange(Math.max(0, bathrooms - 1))}
+            >
+              −
+            </button>
+            <span className="counter-value">{bathrooms}+</span>
+            <button
+              className="counter-btn"
+              onClick={() => handleBathroomsChange(bathrooms + 1)}
+            >
+              +
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Apply Button */}
+      {!compact && (
+        <button className="apply-filters-btn">
+          Apply Filters
+        </button>
+      )}
+    </div>
+  );
+};
+
+export default DynamicFilters;
+```
+
+## 8. Role-Based Component Selector
+
+**`src/shared/components/dynamic/RoleComponentSelector.tsx`**
+```typescript
+import React, { lazy, Suspense } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
+
+// Lazy load all role-based components
+const BuyerDashboard = lazy(() => import('../../features/buyer/components/Dashboard'));
+const SellerDashboard = lazy(() => import('../../features/seller/components/Dashboard'));
+const LandlordDashboard = lazy(() => import('../../features/landlord/components/Dashboard'));
+const SalesAgentDashboard = lazy(() => import('../../features/agent/sales/components/Dashboard'));
+const LeasingAgentDashboard = lazy(() => import('../../features/agent/leasing/components/Dashboard'));
+const AdminDashboard = lazy(() => import('../../features/admin/components/Dashboard'));
+const GuestDashboard = lazy(() => import('../../features/guest/components/Dashboard'));
+
+// Property area-based components
+const ResidentialView = lazy(() => import('../../features/properties/components/ResidentialView'));
+const CommercialView = lazy(() => import('../../features/properties/components/CommercialView'));
+const IndustrialView = lazy(() => import('../../features/properties/components/IndustrialView'));
+const LandView = lazy(() => import('../../features/properties/components/LandView'));
+
+interface RoleComponentSelectorProps {
+  componentType?: 'dashboard' | 'property' | 'service';
+  area?: string;
+  viewMode?: string;
+}
+
+const RoleComponentSelector: React.FC<RoleComponentSelectorProps> = ({
+  componentType = 'dashboard',
+  area,
+  viewMode,
+}) => {
+  const { currentRole, selectedPropertyType } = useSelector((state: RootState) => state.ui);
+
+  // Dashboard components based on role
+  if (componentType === 'dashboard') {
+    const components = {
+      buyer: BuyerDashboard,
+      seller: SellerDashboard,
+      landlord: LandlordDashboard,
+      agent_sales: SalesAgentDashboard,
+      agent_leasing: LeasingAgentDashboard,
+      admin: AdminDashboard,
+      guest: GuestDashboard,
+    };
+
+    const Component = components[currentRole] || GuestDashboard;
+    
+    return (
+      <Suspense fallback={<div className="loading-dashboard">Loading dashboard...</div>}>
+        <Component viewMode={viewMode} />
+      </Suspense>
+    );
+  }
+
+  // Property components based on area/type
+  if (componentType === 'property') {
+    const propertyType = area || selectedPropertyType;
+    
+    const propertyComponents = {
+      residential: ResidentialView,
+      commercial: CommercialView,
+      industrial: IndustrialView,
+      land: LandView,
+      all: ResidentialView,
+    };
+
+    const PropertyComponent = propertyComponents[propertyType] || ResidentialView;
+    
+    return (
+      <Suspense fallback={<div className="loading-property">Loading property view...</div>}>
+        <PropertyComponent />
+      </Suspense>
+    );
+  }
+
+  // Service components based on role
+  const ServiceComponent = lazy(() => import(`../../features/services/components/${currentRole}Services`));
+  
+  return (
+    <Suspense fallback={<div className="loading-service">Loading services...</div>}>
+      <ServiceComponent />
+    </Suspense>
+  );
+};
+
+export default RoleComponentSelector;
+```
+
+## 9. Main App Component with All Universal Components
+
+**`src/App.tsx`**
+```typescript
+import React, { useEffect } from 'react';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from './store';
+import AppLayout from './shared/components/layout/AppLayout';
+import ThemeToggle from './shared/components/universal/ThemeToggle';
+import Profile from './shared/components/universal/Profile';
+import WhatsAppChat from './shared/components/universal/WhatsAppChat';
+import NotificationCenter from './shared/components/universal/NotificationCenter';
+import GlobalSearch from './shared/components/universal/GlobalSearch';
+import './App.css';
+
+function AppContent() {
+  // Initialize theme
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+    
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      if (!localStorage.getItem('theme')) {
+        document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+      }
+    };
+    
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  return (
+    <div className="App">
+      {/* Universal Components (Always Visible) */}
+      <div className="universal-components">
+        <div className="top-bar-left">
+          <GlobalSearch />
+        </div>
+        <div className="top-bar-right">
+          <ThemeToggle />
+          <NotificationCenter />
+          <Profile />
+        </div>
+      </div>
+
+      {/* Main App Layout */}
+      <AppLayout />
+      
+      {/* Floating Components */}
+      <WhatsAppChat />
+      
+      {/* Quick Actions Floating Menu */}
+      <div className="quick-actions-float">
+        <button className="quick-action-btn" title="Quick Add">
+          <span>+</span>
+        </button>
+        <button className="quick-action-btn" title="Help">
+          <span>?</span>
+        </button>
+        <button className="quick-action-btn" title="Feedback">
+          <span>💬</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
+        <AppContent />
+      </PersistGate>
+    </Provider>
+  );
+}
+
+export default App;
+```
+
+## 10. CSS Variables for Theme
+
+**`src/styles/theme.css`**
+```css
+:root {
+  /* Light Theme */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-tertiary: #adb5bd;
+  --border-color: #dee2e6;
+  --hover-bg: #e9ecef;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  
+  /* Colors */
+  --primary-color: #4361ee;
+  --primary-light: #eef2ff;
+  --primary-dark: #3a56d4;
+  --secondary-color: #7209b7;
+  --accent-color: #f72585;
+  --success-color: #2ecc71;
+  --warning-color: #f39c12;
+  --danger-color: #e74c3c;
+  --info-color: #3498db;
+  
+  /* Role Colors */
+  --buyer-color: #4361ee;
+  --seller-color: #7209b7;
+  --landlord-color: #f39c12;
+  --agent-color: #2ecc71;
+  --admin-color: #e74c3c;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 300ms ease;
+  --transition-slow: 500ms ease;
+  
+  /* Z-index layers */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-whatsapp: 1080;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-tertiary: #2d2d2d;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --text-tertiary: #808080;
+  --border-color: #404040;
+  --hover-bg: #2d2d2d;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
+  
+  --primary-color: #5a7cff;
+  --primary-light: #2d2d4d;
+  --primary-dark: #4a6bff;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1400px) {
+  :root {
+    --container-width: 1200px;
+  }
+}
+
+@media (max-width: 1200px) {
+  :root {
+    --container-width: 960px;
+  }
+}
+
+@media (max-width: 992px) {
+  :root {
+    --container-width: 720px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --container-width: 100%;
+    --spacing-lg: 1rem;
+    --spacing-xl: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  :root {
+    --spacing-md: 0.75rem;
+    --spacing-lg: 1rem;
+  }
+}
+```
+
+## 11. Custom Hooks for Redux Integration
+
+**`src/hooks/useReduxActions.ts`**
+```typescript
+import { useDispatch } from 'react-redux';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import { useMemo } from 'react';
+import * as uiActions from '../store/slices/uiSlice';
+import * as propertyActions from '../store/slices/propertySlice';
+import * as serviceActions from '../store/slices/serviceSlice';
+import * as authActions from '../store/slices/authSlice';
+
+export const useReduxActions = () => {
+  const dispatch = useDispatch();
+  
+  return useMemo(() => bindActionCreators({
+    ...uiActions,
+    ...propertyActions,
+    ...serviceActions,
+    ...authActions,
+  }, dispatch), [dispatch]);
+};
+
+export const useUI = () => {
+  const actions = useReduxActions();
+  return {
+    toggleTheme: actions.toggleTheme,
+    setCurrentRole: actions.setCurrentRole,
+    setPropertyType: actions.setPropertyType,
+    setDashboardView: actions.setDashboardView,
+    toggleWhatsAppChat: actions.toggleWhatsAppChat,
+    setPriceSlider: actions.setPriceSlider,
+    setActiveModule: actions.setActiveModule,
+    resetFilters: actions.resetFilters,
+  };
+};
+
+export const usePropertyFilters = () => {
+  const actions = useReduxActions();
+  return {
+    setPropertyArea: actions.setPropertyArea,
+    setPriceRange: actions.setPriceRange,
+    setBedrooms: actions.setBedrooms,
+    setBathrooms: actions.setBathrooms,
+    resetFilters: actions.resetFilters,
+  };
+};
+
+export const useDashboard = () => {
+  const actions = useReduxActions();
+  return {
+    setActiveModule: actions.setActiveModule,
+    setActiveSubModule: actions.setActiveSubModule,
+    togglePinModule: actions.togglePinModule,
+    setDashboardView: actions.setDashboardView,
+  };
+};
+```
+
+## Installation & Setup
+
+1. **Install required dependencies:**
+```bash
+npm install @reduxjs/toolkit react-redux redux-persist
+npm install @types/react-redux --save-dev
+```
+
+2. **Update package.json:**
+```json
+{
+  "name": "real-estate-platform",
+  "version": "1.0.0",
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.9.5",
+    "react-redux": "^8.0.5",
+    "redux-persist": "^6.0.0"
+  }
+}
+```
+
+3. **Create .nvmrc file:**
+```
+18
+```
+
+4. **Run the application:**
+```bash
+npm start
+```
+
+## Key Features Implemented:
+
+1. **Universal Components**: ThemeToggle, Profile, WhatsAppChat always visible
+2. **Complete Redux Integration**: All features managed through Redux
+3. **Dynamic UI Updates**: Components change based on sliders, role selection, property area
+4. **Reusable Functional Components**: All components are functional with hooks
+5. **Role-Based Rendering**: Different dashboards for buyers, sellers, landlords, agents, admin
+6. **Property Area Filters**: Dynamic filtering by property type and area
+7. **Persistent State**: Theme, filters, user preferences persist across sessions
+8. **Responsive Design**: Works on all screen sizes
+9. **Feature Flags**: Enable/disable features via Redux
+10. **Quick Actions**: Role-based quick action buttons
+
+## Usage Examples:
+
+1. **Change User Role**:
+   ```typescript
+   const { setCurrentRole } = useUI();
+   setCurrentRole('seller');
+   ```
+
+2. **Filter Properties**:
+   ```typescript
+   const { setPropertyType, setPriceSlider } = usePropertyFilters();
+   setPropertyType('commercial');
+   setPriceSlider(75); // Sets price range
+   ```
+
+3. **Toggle Universal Components**:
+   ```typescript
+   const { toggleWhatsAppChat } = useUI();
+   toggleWhatsAppChat(); // Show/hide WhatsApp chat
+   ```
+
+4. **Dashboard View Changes**:
+   ```typescript
+   const { setDashboardView } = useDashboard();
+   setDashboardView('list'); // Switch to list view
+   ```
+
+This architecture provides a fully dynamic, Redux-driven application where everything from UI state to feature flags is controlled through the Redux store, with universal components always accessible and reactive to state changes.

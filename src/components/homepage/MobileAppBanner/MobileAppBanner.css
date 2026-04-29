@@ -1,0 +1,141 @@
+.mobile-app-section {
+  padding: 80px 24px;
+  background: #FFFFFF;
+}
+
+.mobile-app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.app-content {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+
+.app-text {
+  flex: 1;
+}
+
+.app-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 16px;
+}
+
+.app-subtitle {
+  font-size: 1.1rem;
+  color: #6B7280;
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.app-buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.app-store-btn,
+.play-store-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.app-store-btn {
+  background: #1A1A1A;
+  color: #FFFFFF;
+  border: none;
+}
+
+.play-store-btn {
+  background: #FFFFFF;
+  color: #1A1A1A;
+  border: 2px solid #1A1A1A;
+}
+
+.app-store-btn:hover,
+.play-store-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.btn-label {
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+.btn-store {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.coming-soon {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: #B03737;
+  font-weight: 500;
+}
+
+.app-mockup {
+  flex: 0 0 auto;
+}
+
+.phone-frame {
+  width: 200px;
+  height: 400px;
+  background: linear-gradient(135deg, #FAFAFA 0%, #E5E7EB 100%);
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 8px solid #1A1A1A;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.phone-icon {
+  color: #B03737;
+  opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+  .mobile-app-section {
+    padding: 48px 16px;
+  }
+
+  .app-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .app-title {
+    font-size: 1.75rem;
+  }
+
+  .app-buttons {
+    justify-content: center;
+  }
+
+  .app-mockup {
+    order: -1;
+  }
+
+  .phone-frame {
+    width: 160px;
+    height: 320px;
+  }
+}

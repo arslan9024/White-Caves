@@ -1,0 +1,379 @@
+# **Replit Agent Implementation Prompt: Real Estate CRM with AI Assistants**
+
+## **PROJECT OVERVIEW**
+Build a complete custom real estate CRM system with two specialized AI assistants for White Caves Real Estate LLC, Dubai.
+
+## **TECH STACK REQUIREMENTS**
+```
+FRONTEND: React (TypeScript preferred)
+BACKEND: Node.js (Express/NestJS)
+DATABASE: MongoDB with Mongoose ODM
+REAL-TIME: Socket.io
+AI/ML: Open-source models (Llama 2/3, Mistral, or similar)
+AUTH: JWT with role-based access
+DEPLOYMENT: Vercel for frontend, backend APIs as serverless functions
+STORAGE: Vercel Blob or AWS S3 for property images
+```
+
+## **SYSTEM ARCHITECTURE**
+```
+React Frontend (Vercel)
+    ↓
+REST API (Node.js on Vercel Serverless)
+    ↓
+Socket.io Server (Real-time updates)
+    ↓
+[Service Layer]
+├── Auth Service
+├── Property Service (Mary's core)
+├── AI Service (Mary/Zoe brains)
+├── CRM Service (Contacts, Deals, Tasks)
+├── Analytics Service
+└── Notification Service
+    ↓
+MongoDB Atlas (Production Database)
+```
+
+## **CORE FEATURES - PHASED IMPLEMENTATION**
+
+### **PHASE 1: FOUNDATION (WEEK 1-2)**
+1. **Project Setup**
+   - Initialize monorepo with Turborepo or separate frontend/backend
+   - Configure TypeScript, ESLint, Prettier
+   - Set up MongoDB Atlas connection
+
+2. **Database Schema Design (MongoDB Models)**
+```javascript
+// Core Models Needed:
+// 1. User (agents, admin, MD)
+// 2. Property (with status history)
+// 3. InventoryTransaction
+// 4. CRM Contact/Lead
+// 5. Deal/Pipeline
+// 6. AI Conversation Log
+// 7. MarketData (cached)
+```
+
+### **PHASE 2: AUTH & CORE CRM (WEEK 3-4)**
+1. **Authentication System**
+   - JWT-based auth with roles (MD, Inventory Manager, Agent, Client)
+   - Protected routes with role-based permissions
+
+2. **Basic Property Management**
+   - CRUD operations for properties
+   - Property status lifecycle management
+   - Image upload with Vercel Blob
+
+3. **Socket.io Integration**
+   - Real-time property status updates
+   - Live chat between agents
+   - Notification system
+
+### **PHASE 3: AI ASSISTANTS - MARY (WEEK 5-6)**
+1. **Mary - Inventory AI Service**
+```javascript
+// Core Mary Functions to Implement:
+class MaryAIService {
+  async queryInventory(query: string, userRole: string) {
+    // 1. Parse natural language query using open-source NLP
+    // 2. Convert to MongoDB query
+    // 3. Execute and format response
+  }
+  
+  async updatePropertyStatus(propertyId, newStatus, agentId) {
+    // Update with validation
+    // Log transaction
+    // Emit Socket.io event
+    // Trigger notifications
+  }
+  
+  async generateInventoryReport(timeframe, filters) {
+    // Aggregate data
+    // Format for dashboard
+    // Include insights
+  }
+}
+```
+
+2. **React Components for Mary**
+   - Property search interface with natural language input
+   - Inventory dashboard with real-time updates
+   - Status management widgets
+
+### **PHASE 4: AI ASSISTANTS - ZOE (WEEK 7-8)**
+1. **Zoe - Executive AI Service**
+```javascript
+class ZoeAIService {
+  async generateExecutiveBrief(date) {
+    // Pull data from Mary's service
+    // Fetch market data from external APIs
+    // Generate insights using LLM
+    // Format as structured report
+  }
+  
+  async answerExecutiveQuery(query, context) {
+    // Process complex multi-source queries
+    // Access Mary's data + CRM data
+    // Generate actionable insights
+  }
+  
+  async draftCommunication(template, data) {
+    // Fill templates with real data
+    // Generate professional communications
+  }
+}
+```
+
+2. **Executive Dashboard (React)**
+   - MD-only view with key metrics
+   - Interactive data visualizations (Chart.js or Recharts)
+   - Briefing generator interface
+
+### **PHASE 5: INTEGRATION & DEPLOYMENT (WEEK 9-10)**
+1. **Mobile Responsive Design**
+2. **Vercel Deployment Configuration**
+3. **Testing & Security**
+4. **Documentation**
+
+## **SPECIFIC IMPLEMENTATION DETAILS**
+
+### **1. MongoDB Schema Examples**
+```javascript
+// Property Schema
+const propertySchema = new Schema({
+  title: String,
+  type: { type: String, enum: ['Villa', 'Apartment', 'Office', 'Land'] },
+  location: {
+    area: String, // e.g., 'Downtown Dubai'
+    building: String,
+    coordinates: { lat: Number, lng: Number }
+  },
+  price: { amount: Number, currency: { type: String, default: 'AED' } },
+  status: { 
+    type: String, 
+    enum: ['Available', 'Under Offer', 'Sold', 'Under Maintenance'],
+    default: 'Available'
+  },
+  statusHistory: [{
+    status: String,
+    changedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+    changedAt: Date,
+    notes: String
+  }],
+  features: [String],
+  agentAssigned: { type: Schema.Types.ObjectId, ref: 'User' },
+  aiInsights: {
+    lastAnalysis: Date,
+    marketComparison: Number, // % above/below market
+    daysOnMarket: Number,
+    recommendedAction: String
+  }
+}, { timestamps: true });
+
+// AI Conversation Log Schema
+const aiConversationSchema = new Schema({
+  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  assistant: { type: String, enum: ['mary', 'zoe'], required: true },
+  query: String,
+  response: String,
+  intent: String,
+  entities: mongoose.Schema.Types.Mixed,
+  metadata: {
+    responseTime: Number,
+    sourcesUsed: [String],
+    confidence: Number
+  }
+}, { timestamps: true });
+```
+
+### **2. REST API Endpoints Structure**
+```
+/auth
+  POST /login
+  POST /register
+  POST /refresh-token
+
+/properties
+  GET / - List properties with filters
+  GET /:id - Get single property
+  POST / - Create property (admin only)
+  PUT /:id/status - Update status (triggers Mary)
+  GET /:id/history - Get status history
+
+/inventory (Mary's domain)
+  POST /query - Natural language query
+  GET /report/:type - Generate inventory reports
+  GET /analytics - Inventory KPIs
+  POST /alert - Set up inventory alerts
+
+/executive (Zoe's domain - MD only)
+  GET /briefing - Daily/weekly briefing
+  POST /query - Executive queries
+  GET /market-insights - Aggregated market data
+  POST /generate-document - Draft communications
+
+/crm
+  /contacts - Lead management
+  /deals - Sales pipeline
+  /tasks - Agent assignments
+  /activities - Timeline of all actions
+```
+
+### **3. Open-source AI Integration**
+```javascript
+// Using Transformers.js for in-browser AI or Ollama for local server
+// Option 1: Local AI server with Ollama
+const setupAIServices = async () => {
+  // Mary - Inventory focused model (fine-tuned for real estate queries)
+  // Use a smaller, efficient model for inventory queries
+  
+  // Zoe - Executive insights model
+  // Use a more capable model for analysis and generation
+  
+  // Implementation approach:
+  // 1. Start with a base model (Mistral 7B or Llama 2 7B)
+  // 2. Create prompt templates for each assistant
+  // 3. Implement RAG (Retrieval Augmented Generation) for accurate data
+  // 4. Cache frequent queries to reduce LLM calls
+};
+
+// Prompt Template Example for Mary
+const maryPromptTemplate = `
+You are Mary, the inventory AI assistant for White Caves Real Estate in Dubai.
+You help agents and managers with property inventory queries.
+
+CONTEXT:
+Available properties: {{availableCount}}
+Under offer: {{underOfferCount}}
+Recent transactions: {{recentTransactions}}
+
+USER QUERY: {{userQuery}}
+
+RESPONSE FORMAT:
+1. Direct answer to query
+2. Relevant data points
+3. Suggested actions if any
+4. Confidence level of information
+`;
+```
+
+### **4. Vercel Deployment Configuration**
+```json
+// vercel.json for frontend
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "outputDirectory": "build",
+  "framework": "create-react-app",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://api.whitecaves.vercel.app/:path*" }
+  ]
+}
+
+// Each API route as serverless function in /api directory
+// Example: /api/properties/query.js
+export default async function handler(req, res) {
+  // Connect to MongoDB
+  // Process request
+  // Return response
+}
+```
+
+### **5. Real-time Features with Socket.io**
+```javascript
+// Server setup
+const io = new Server(server);
+io.on('connection', (socket) => {
+  console.log('Client connected');
+  
+  // Join room based on user role/team
+  socket.on('join-room', (room) => {
+    socket.join(room);
+  });
+  
+  // Listen for property status updates
+  socket.on('property-status-update', (data) => {
+    // Validate user permissions
+    // Update in database
+    // Broadcast to relevant rooms
+    io.to('inventory-team').emit('inventory-update', data);
+    io.to('management').emit('executive-alert', data);
+  });
+  
+  // Mary AI query responses
+  socket.on('ask-mary', async (query) => {
+    const response = await maryAIService.processQuery(query);
+    socket.emit('mary-response', response);
+  });
+});
+```
+
+## **IMMEDIATE TASKS FOR REPLIT AGENT**
+
+### **Task 1: Initialize Project Structure**
+```
+whitecaves-crm/
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── dashboard/
+│   │   │   ├── inventory/
+│   │   │   ├── crm/
+│   │   │   └── ai/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   └── utils/
+│   └── package.json
+├── backend/
+│   ├── src/
+│   │   ├── models/ (MongoDB schemas)
+│   │   ├── services/ (Mary, Zoe, etc.)
+│   │   ├── routes/
+│   │   ├── middleware/
+│   │   └── utils/
+│   └── package.json
+├── shared/ (TypeScript interfaces, constants)
+└── package.json (monorepo config)
+```
+
+### **Task 2: Implement First Critical Components**
+1. **MongoDB connection and User model**
+2. **JWT authentication middleware**
+3. **Basic Property CRUD API**
+4. **React authentication context**
+5. **Property listing page**
+
+### **Task 3: Begin Mary AI Implementation**
+1. **Set up Ollama or Hugging Face integration**
+2. **Create natural language query parser**
+3. **Build inventory search interface**
+
+## **TESTING REQUIREMENTS**
+1. Unit tests for AI services
+2. Integration tests for API endpoints
+3. Socket.io connection testing
+4. Role-based access testing
+5. Mobile responsiveness testing
+
+## **SECURITY CONSIDERATIONS**
+1. Dubai data privacy compliance
+2. API rate limiting
+3. Input sanitization for AI queries
+4. Secure WebSocket connections
+5. Environment variable management
+
+## **DELIVERY MILESTONES**
+- **Week 1-2:** Working authentication + basic property management
+- **Week 3-4:** Complete CRM features (contacts, deals, tasks)
+- **Week 5-6:** Mary AI assistant fully functional
+- **Week 7-8:** Zoe AI assistant + executive dashboard
+- **Week 9-10:** Polish, testing, deployment to Vercel
+
+---
+
+**START WITH:** Setting up the monorepo structure with React frontend, Node.js backend, MongoDB connection, and basic authentication system.
+
+**IMPLEMENT** the User and Property models first, then the login/register flow, followed by the property listing dashboard.
+
+**USE** this exact tech stack as specified - no substitutions unless technically impossible.

@@ -1,0 +1,530 @@
+[
+  {
+    "_id": "69628e8245cb93bb5db1d228",
+    "name": "Executive",
+    "code": "EXEC",
+    "description": "Strategic leadership and company-wide decision making",
+    "color": "#10B981",
+    "icon": "Briefcase",
+    "head": {
+      "name": "Arslan Malik",
+      "email": "arslan@whitecaves.ae",
+      "title": "CEO & Founder"
+    },
+    "assistants": [
+      "69628e8245cb93bb5db1d250"
+    ],
+    "teams": [
+      "69628e8445cb93bb5db1d417"
+    ],
+    "services": [],
+    "kpis": [
+      {
+        "name": "Revenue Target",
+        "target": 600000000,
+        "current": 425000000,
+        "unit": "AED",
+        "_id": "69628e8245cb93bb5db1d229"
+      },
+      {
+        "name": "AI Assistants Online",
+        "target": 32,
+        "current": 28,
+        "unit": "count",
+        "_id": "69628e8245cb93bb5db1d22a"
+      }
+    ],
+    "budget": {
+      "allocated": 5000000,
+      "spent": 3200000,
+      "currency": "AED"
+    },
+    "status": "active",
+    "order": 1,
+    "createdAt": "2026-01-10T17:38:10.282Z",
+    "updatedAt": "2026-01-10T17:38:13.416Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8245cb93bb5db1d22c",
+    "name": "Operations",
+    "code": "OPS",
+    "description": "Inventory management, maintenance, and facility coordination",
+    "color": "#3B82F6",
+    "icon": "Building2",
+    "head": {
+      "name": "Omar Siddiqui",
+      "email": "omar@whitecaves.ae",
+      "title": "Director of Operations"
+    },
+    "assistants": [
+      "69628e8245cb93bb5db1d257",
+      "69628e8245cb93bb5db1d25c",
+      "69628e8245cb93bb5db1d261",
+      "69628e8245cb93bb5db1d2b7",
+      "69628e8245cb93bb5db1d2bc",
+      "69628e8245cb93bb5db1d2c1"
+    ],
+    "teams": [
+      "69628e8445cb93bb5db1d41a",
+      "69628e8445cb93bb5db1d41d"
+    ],
+    "services": [
+      "69628e8545cb93bb5db1d477",
+      "69628e8545cb93bb5db1d485",
+      "69628e8545cb93bb5db1d4b5",
+      "69628e8545cb93bb5db1d4cb",
+      "69628e8545cb93bb5db1d4d6",
+      "69628e8545cb93bb5db1d4f5",
+      "69628e8545cb93bb5db1d50a",
+      "69628e8545cb93bb5db1d515",
+      "69628e8545cb93bb5db1d571",
+      "69628e8545cb93bb5db1d597",
+      "69628e8545cb93bb5db1d59f"
+    ],
+    "kpis": [
+      {
+        "name": "Properties Managed",
+        "target": 10000,
+        "current": 9378,
+        "unit": "count",
+        "_id": "69628e8245cb93bb5db1d22d"
+      },
+      {
+        "name": "Occupancy Rate",
+        "target": 90,
+        "current": 87,
+        "unit": "percent",
+        "_id": "69628e8245cb93bb5db1d22e"
+      }
+    ],
+    "budget": {
+      "allocated": 2500000,
+      "spent": 1850000,
+      "currency": "AED"
+    },
+    "status": "active",
+    "order": 2,
+    "createdAt": "2026-01-10T17:38:10.289Z",
+    "updatedAt": "2026-01-10T17:38:13.419Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8245cb93bb5db1d230",
+    "name": "Sales",
+    "code": "SALES",
+    "description": "Property sales, lead management, and deal pipeline",
+    "color": "#8B5CF6",
+    "icon": "TrendingUp",
+    "head": {
+      "name": "Rashid Al Futtaim",
+      "email": "rashid@whitecaves.ae",
+      "title": "Director of Sales"
+    },
+    "assistants": [
+      "69628e8245cb93bb5db1d266",
+      "69628e8245cb93bb5db1d26b",
+      "69628e8245cb93bb5db1d270",
+      "69628e8245cb93bb5db1d275"
+    ],
+    "teams": [
+      "69628e8445cb93bb5db1d420",
+      "69628e8445cb93bb5db1d423",
+      "69628e8445cb93bb5db1d426"
+    ],
+    "services": [
+      "69628e8545cb93bb5db1d43e",
+      "69628e8545cb93bb5db1d44f",
+      "69628e8545cb93bb5db1d45c",
+      "69628e8545cb93bb5db1d46b",
+      "69628e8545cb93bb5db1d4be",
+      "69628e8545cb93bb5db1d521",
+      "69628e8545cb93bb5db1d536"
+    ],
+    "kpis": [
+      {
+        "name": "Monthly Deals",
+        "target": 50,
+        "current": 42,
+        "unit": "count",
+        "_id": "69628e8245cb93bb5db1d231"
+      },
+      {
+        "name": "Pipeline Value",
+        "target": 100000000,
+        "current": 79800000,
+        "unit": "AED",
+        "_id": "69628e8245cb93bb5db1d232"
+      }
+    ],
+    "budget": {
+      "allocated": 3500000,
+      "spent": 2800000,
+      "currency": "AED"
+    },
+    "status": "active",
+    "order": 3,
+    "createdAt": "2026-01-10T17:38:10.292Z",
+    "updatedAt": "2026-01-10T17:38:13.421Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8245cb93bb5db1d234",
+    "name": "Finance",
+    "code": "FIN",
+    "description": "Payment processing, invoicing, and investment advisory",
+    "color": "#F59E0B",
+    "icon": "Wallet",
+    "head": {
+      "name": "Hana Al Zaabi",
+      "email": "hana@whitecaves.ae",
+      "title": "Director of Finance"
+    },
+    "assistants": [
+      "69628e8245cb93bb5db1d283",
+      "69628e8245cb93bb5db1d288",
+      "69628e8245cb93bb5db1d2c6",
+      "69628e8245cb93bb5db1d2ca"
+    ],
+    "teams": [
+      "69628e8445cb93bb5db1d429"
+    ],
+    "services": [
+      "69628e8545cb93bb5db1d48f",
+      "69628e8545cb93bb5db1d4eb",
+      "69628e8545cb93bb5db1d52b",
+      "69628e8545cb93bb5db1d540",
+      "69628e8545cb93bb5db1d568"
+    ],
+    "kpis": [
+      {
+        "name": "Monthly Revenue",
+        "target": 50000000,
+        "current": 35000000,
+        "unit": "AED",
+        "_id": "69628e8245cb93bb5db1d235"
+      },
+      {
+        "name": "Collections Rate",
+        "target": 98,
+        "current": 94,
+        "unit": "percent",
+        "_id": "69628e8245cb93bb5db1d236"
+      }
+    ],
+    "budget": {
+      "allocated": 1500000,
+      "spent": 1100000,
+      "currency": "AED"
+    },
+    "status": "active",
+    "order": 4,
+    "createdAt": "2026-01-10T17:38:10.295Z",
+    "updatedAt": "2026-01-10T17:38:13.423Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8245cb93bb5db1d238",
+    "name": "Marketing",
+    "code": "MKT",
+    "description": "Property marketing, campaigns, and portal publishing",
+    "color": "#EC4899",
+    "icon": "Megaphone",
+    "head": {
+      "name": "Layla Al Suwaidi",
+      "email": "layla@whitecaves.ae",
+      "title": "Director of Marketing"
+    },
+    "assistants": [
+      "69628e8245cb93bb5db1d28c",
+      "69628e8245cb93bb5db1d2ce",
+      "69628e8245cb93bb5db1d2d2"
+    ],
+    "teams": [
+      "69628e8545cb93bb5db1d42c"
+    ],
+    "services": [
+      "69628e8545cb93bb5db1d4a9",
+      "69628e8545cb93bb5db1d4ff",
+      "69628e8545cb93bb5db1d579",
+      "69628e8545cb93bb5db1d583",
+      "69628e8545cb93bb5db1d58d"
+    ],
+    "kpis": [
+      {
+        "name": "Leads Generated",
+        "target": 500,
+        "current": 450,
+        "unit": "count",
+        "_id": "69628e8245cb93bb5db1d239"
+      },
+      {
+        "name": "Portal Views",
+        "target": 150000,
+        "current": 125000,
+        "unit": "count",
+        "_id": "69628e8245cb93bb5db1d23a"
+      }
+    ],
+    "budget": {
+      "allocated": 2000000,
+      "spent": 1600000,
+      "currency": "AED"
+    },
+    "status": "active",
+    "order": 5,
+    "createdAt": "2026-01-10T17:38:10.300Z",
+    "updatedAt": "2026-01-10T17:38:13.425Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8245cb93bb5db1d23c",
+    "name": "Communications",
+    "code": "COMM",
+    "description": "Customer messaging, WhatsApp operations, and chatbot management",
+    "color": "#25D366",
+    "icon": "MessageSquare",
+    "head": {
+      "name": "Khalid Al Mansoori",
+      "email": "khalid@whitecaves.ae",
+      "title": "Director of Communications"
+    },
+    "assistants": [
+      "69628e8245cb93bb5db1d279",
+      "69628e8245cb93bb5db1d27e"
+    ],
+    "teams": [
+      "69628e8545cb93bb5db1d42f"
+    ],
+    "services": [],
+    "kpis": [
+      {
+        "name": "Response Time",
+        "target": 2,
+        "current": 2.3,
+        "unit": "minutes",
+        "_id": "69628e8245cb93bb5db1d23d"
+      },
+      {
+        "name": "Satisfaction Score",
+        "target": 95,
+        "current": 94,
+        "unit": "percent",
+        "_id": "69628e8245cb93bb5db1d23e"
+      }
+    ],
+    "budget": {
+      "allocated": 1200000,
+      "spent": 900000,
+      "currency": "AED"
+    },
+    "status": "active",
+    "order": 6,
+    "createdAt": "2026-01-10T17:38:10.302Z",
+    "updatedAt": "2026-01-10T17:38:13.426Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8245cb93bb5db1d240",
+    "name": "Compliance",
+    "code": "COMP",
+    "description": "KYC verification, AML monitoring, and RERA compliance",
+    "color": "#6366F1",
+    "icon": "Shield",
+    "head": {
+      "name": "Nadia Ibrahim",
+      "email": "nadia@whitecaves.ae",
+      "title": "Director of Compliance"
+    },
+    "assistants": [
+      "69628e8245cb93bb5db1d291",
+      "69628e8245cb93bb5db1d2d6"
+    ],
+    "teams": [
+      "69628e8545cb93bb5db1d432"
+    ],
+    "services": [
+      "69628e8545cb93bb5db1d4df"
+    ],
+    "kpis": [
+      {
+        "name": "Compliance Score",
+        "target": 100,
+        "current": 98,
+        "unit": "percent",
+        "_id": "69628e8245cb93bb5db1d241"
+      },
+      {
+        "name": "KYC Profiles",
+        "target": 100,
+        "current": 89,
+        "unit": "count",
+        "_id": "69628e8245cb93bb5db1d242"
+      }
+    ],
+    "budget": {
+      "allocated": 800000,
+      "spent": 550000,
+      "currency": "AED"
+    },
+    "status": "active",
+    "order": 7,
+    "createdAt": "2026-01-10T17:38:10.305Z",
+    "updatedAt": "2026-01-10T17:38:13.428Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8245cb93bb5db1d244",
+    "name": "Technology",
+    "code": "TECH",
+    "description": "Platform development, AI systems, and infrastructure",
+    "color": "#0EA5E9",
+    "icon": "Server",
+    "head": {
+      "name": "Tariq Al Qasimi",
+      "email": "tariq@whitecaves.ae",
+      "title": "Director of Technology"
+    },
+    "assistants": [
+      "69628e8245cb93bb5db1d296",
+      "69628e8245cb93bb5db1d29b",
+      "69628e8245cb93bb5db1d2a0",
+      "69628e8245cb93bb5db1d2a4"
+    ],
+    "teams": [
+      "69628e8545cb93bb5db1d435"
+    ],
+    "services": [
+      "69628e8545cb93bb5db1d5b3"
+    ],
+    "kpis": [
+      {
+        "name": "System Uptime",
+        "target": 99.99,
+        "current": 99.97,
+        "unit": "percent",
+        "_id": "69628e8245cb93bb5db1d245"
+      },
+      {
+        "name": "API Requests",
+        "target": 150000,
+        "current": 125000,
+        "unit": "daily",
+        "_id": "69628e8245cb93bb5db1d246"
+      }
+    ],
+    "budget": {
+      "allocated": 3000000,
+      "spent": 2400000,
+      "currency": "AED"
+    },
+    "status": "active",
+    "order": 8,
+    "createdAt": "2026-01-10T17:38:10.308Z",
+    "updatedAt": "2026-01-10T17:38:13.430Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8245cb93bb5db1d248",
+    "name": "Intelligence",
+    "code": "INTEL",
+    "description": "Market research, analytics, and off-plan tracking",
+    "color": "#0D9488",
+    "icon": "Brain",
+    "head": {
+      "name": "Yusuf Al Ghurair",
+      "email": "yusuf@whitecaves.ae",
+      "title": "Director of Intelligence"
+    },
+    "assistants": [
+      "69628e8245cb93bb5db1d2a9",
+      "69628e8245cb93bb5db1d2ae",
+      "69628e8245cb93bb5db1d2e3"
+    ],
+    "teams": [
+      "69628e8545cb93bb5db1d438"
+    ],
+    "services": [
+      "69628e8545cb93bb5db1d55d"
+    ],
+    "kpis": [
+      {
+        "name": "Forecast Accuracy",
+        "target": 90,
+        "current": 87,
+        "unit": "percent",
+        "_id": "69628e8245cb93bb5db1d249"
+      },
+      {
+        "name": "Off-Plan Projects",
+        "target": 50,
+        "current": 42,
+        "unit": "count",
+        "_id": "69628e8245cb93bb5db1d24a"
+      }
+    ],
+    "budget": {
+      "allocated": 1000000,
+      "spent": 750000,
+      "currency": "AED"
+    },
+    "status": "active",
+    "order": 9,
+    "createdAt": "2026-01-10T17:38:10.311Z",
+    "updatedAt": "2026-01-10T17:38:13.432Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8245cb93bb5db1d24c",
+    "name": "Legal",
+    "code": "LEGAL",
+    "description": "Contract management, legal reviews, and dispute resolution",
+    "color": "#DC2626",
+    "icon": "Scale",
+    "head": {
+      "name": "Aisha Al Ketbi",
+      "email": "aisha@whitecaves.ae",
+      "title": "Director of Legal"
+    },
+    "assistants": [
+      "69628e8245cb93bb5db1d2b2",
+      "69628e8245cb93bb5db1d2da",
+      "69628e8245cb93bb5db1d2de"
+    ],
+    "teams": [
+      "69628e8545cb93bb5db1d43b"
+    ],
+    "services": [
+      "69628e8545cb93bb5db1d49c",
+      "69628e8545cb93bb5db1d549",
+      "69628e8545cb93bb5db1d554",
+      "69628e8545cb93bb5db1d5a8"
+    ],
+    "kpis": [
+      {
+        "name": "Contracts Reviewed",
+        "target": 200,
+        "current": 156,
+        "unit": "count",
+        "_id": "69628e8245cb93bb5db1d24d"
+      },
+      {
+        "name": "Avg Review Time",
+        "target": 2,
+        "current": 2.5,
+        "unit": "days",
+        "_id": "69628e8245cb93bb5db1d24e"
+      }
+    ],
+    "budget": {
+      "allocated": 900000,
+      "spent": 680000,
+      "currency": "AED"
+    },
+    "status": "active",
+    "order": 10,
+    "createdAt": "2026-01-10T17:38:10.314Z",
+    "updatedAt": "2026-01-10T17:38:13.434Z",
+    "__v": 0
+  }
+]

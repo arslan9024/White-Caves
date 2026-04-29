@@ -145,18 +145,20 @@ app.post('/api/chatbot/test', (req, res) => {
     if (kws.some(k => lower.includes(k))) { detected = intent; confidence = 85; break; }
   }
 
-  const responses = {
-    property_inquiry: { en: "I'd be happy to help you find the perfect property. What type are you looking for?", ar: "يسعدني مساعدتك في العثور على العقار المثالي. ما نوع العقار؟" },
-    viewing_request: { en: "I can schedule a viewing for you. When would be convenient?", ar: "يمكنني تحديد موعد للمعاينة. ما هو الوقت المناسب؟" },
-    price_inquiry: { en: "Our properties range from affordable to luxury. What's your budget?", ar: "تتراوح عقاراتنا من الميزانية المعقولة إلى الفاخرة. ما ميزانيتك؟" },
-    agent_request: { en: "I'll connect you with an experienced agent right away.", ar: "سأقوم بتوصيلك بأحد وكلائنا فوراً." },
-    greeting: { en: "Hello! Welcome to White Caves Real Estate. How can I assist you?", ar: "مرحباً! أهلاً بك في وايت كيفز العقارية. كيف يمكنني مساعدتك؟" },
-    general_inquiry: { en: "Thank you for your message. How can I help with your real estate needs?", ar: "شكراً لرسالتك. كيف يمكنني مساعدتك؟" },
-  };
+  const responses = new Map([
+    ['property_inquiry', { en: "I'd be happy to help you find the perfect property. What type are you looking for?", ar: "يسعدني مساعدتك في العثور على العقار المثالي. ما نوع العقار؟" }],
+    ['viewing_request', { en: "I can schedule a viewing for you. When would be convenient?", ar: "يمكنني تحديد موعد للمعاينة. ما هو الوقت المناسب؟" }],
+    ['price_inquiry', { en: "Our properties range from affordable to luxury. What's your budget?", ar: "تتراوح عقاراتنا من الميزانية المعقولة إلى الفاخرة. ما ميزانيتك؟" }],
+    ['agent_request', { en: "I'll connect you with an experienced agent right away.", ar: "سأقوم بتوصيلك بأحد وكلائنا فوراً." }],
+    ['greeting', { en: "Hello! Welcome to White Caves Real Estate. How can I assist you?", ar: "مرحباً! أهلاً بك في وايت كيفز العقارية. كيف يمكنني مساعدتك؟" }],
+    ['general_inquiry', { en: "Thank you for your message. How can I help with your real estate needs?", ar: "شكراً لرسالتك. كيف يمكنني مساعدتك؟" }],
+  ]);
+  const entry = responses.get(detected);
+  const responseText = entry ? (lang === 'ar' ? entry.ar : entry.en) : '';
 
   res.json({
     success: true,
-    response: responses[detected][lang],
+    response: responseText,
     intent: detected,
     confidence,
     language: lang,

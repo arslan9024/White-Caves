@@ -1,0 +1,3787 @@
+[
+  {
+    "_id": "69628e8545cb93bb5db1d43e",
+    "name": "Luxury Property Concierge",
+    "code": "WC-SVC-001",
+    "category": "Property Sales",
+    "description": "Exclusive end-to-end service for ultra-high-net-worth clients with properties over AED 10 million",
+    "shortDescription": "White-glove service for properties valued over AED 10M",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d230",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Client Onboarding",
+          "duration": "3 days",
+          "actions": [
+            "Initial meeting",
+            "Requirements capture"
+          ],
+          "_id": "69628e8545cb93bb5db1d43f"
+        },
+        {
+          "order": 2,
+          "name": "Requirements Analysis",
+          "duration": "5 days",
+          "actions": [
+            "Property profiling",
+            "Budget analysis"
+          ],
+          "_id": "69628e8545cb93bb5db1d440"
+        },
+        {
+          "order": 3,
+          "name": "Property Shortlist",
+          "duration": "14 days",
+          "actions": [
+            "Market search",
+            "Shortlist creation"
+          ],
+          "_id": "69628e8545cb93bb5db1d441"
+        },
+        {
+          "order": 4,
+          "name": "Private Viewings",
+          "duration": "21 days",
+          "actions": [
+            "Schedule viewings",
+            "Property tours"
+          ],
+          "_id": "69628e8545cb93bb5db1d442"
+        },
+        {
+          "order": 5,
+          "name": "Negotiation",
+          "duration": "14 days",
+          "actions": [
+            "Price negotiation",
+            "Terms discussion"
+          ],
+          "_id": "69628e8545cb93bb5db1d443"
+        },
+        {
+          "order": 6,
+          "name": "Due Diligence",
+          "duration": "30 days",
+          "actions": [
+            "Legal review",
+            "Title verification"
+          ],
+          "_id": "69628e8545cb93bb5db1d444"
+        },
+        {
+          "order": 7,
+          "name": "Contract Execution",
+          "duration": "7 days",
+          "actions": [
+            "SPA signing",
+            "Payment coordination"
+          ],
+          "_id": "69628e8545cb93bb5db1d445"
+        },
+        {
+          "order": 8,
+          "name": "Handover",
+          "duration": "14 days",
+          "actions": [
+            "Keys handover",
+            "Documentation"
+          ],
+          "_id": "69628e8545cb93bb5db1d446"
+        }
+      ],
+      "estimatedDuration": "120 days"
+    },
+    "pricing": {
+      "type": "percentage",
+      "amount": 50000,
+      "percentage": 2,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Emirates ID",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d447"
+      },
+      {
+        "name": "Passport",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d448"
+      },
+      {
+        "name": "Proof of Funds",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d449"
+      },
+      {
+        "name": "Source of Wealth Declaration",
+        "mandatory": false,
+        "_id": "69628e8545cb93bb5db1d44a"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Property Title Deed",
+        "format": "Physical/PDF",
+        "_id": "69628e8545cb93bb5db1d44b"
+      },
+      {
+        "name": "Completion Certificate",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d44c"
+      },
+      {
+        "name": "Handover Documentation",
+        "format": "Physical/PDF",
+        "_id": "69628e8545cb93bb5db1d44d"
+      }
+    ],
+    "targetAudience": [
+      "investors",
+      "buyers"
+    ],
+    "metrics": {
+      "totalRequests": 45,
+      "completedRequests": 38,
+      "avgCompletionTime": 95,
+      "satisfactionScore": 98,
+      "revenue": 4500000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.282Z",
+    "updatedAt": "2026-01-10T17:38:13.282Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d44f",
+    "name": "Off-Plan Investment Advisory",
+    "code": "WC-SVC-002",
+    "category": "Property Sales",
+    "description": "Comprehensive advisory service for investors looking to purchase off-plan properties with payment plan optimization",
+    "shortDescription": "Expert guidance for off-plan property investments",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d230",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Investment Profiling",
+          "duration": "2 days",
+          "actions": [
+            "Risk assessment",
+            "Goals analysis"
+          ],
+          "_id": "69628e8545cb93bb5db1d450"
+        },
+        {
+          "order": 2,
+          "name": "Market Analysis",
+          "duration": "5 days",
+          "actions": [
+            "Trend research",
+            "ROI projections"
+          ],
+          "_id": "69628e8545cb93bb5db1d451"
+        },
+        {
+          "order": 3,
+          "name": "Project Selection",
+          "duration": "7 days",
+          "actions": [
+            "Developer research",
+            "Project comparison"
+          ],
+          "_id": "69628e8545cb93bb5db1d452"
+        },
+        {
+          "order": 4,
+          "name": "Developer Due Diligence",
+          "duration": "10 days",
+          "actions": [
+            "Track record review",
+            "Financial check"
+          ],
+          "_id": "69628e8545cb93bb5db1d453"
+        },
+        {
+          "order": 5,
+          "name": "Payment Plan Negotiation",
+          "duration": "7 days",
+          "actions": [
+            "Terms negotiation",
+            "Discount negotiation"
+          ],
+          "_id": "69628e8545cb93bb5db1d454"
+        },
+        {
+          "order": 6,
+          "name": "Booking & SPA",
+          "duration": "14 days",
+          "actions": [
+            "Booking form",
+            "SPA signing"
+          ],
+          "_id": "69628e8545cb93bb5db1d455"
+        }
+      ],
+      "estimatedDuration": "45 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 25000,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Emirates ID or Passport",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d456"
+      },
+      {
+        "name": "Investment Budget Confirmation",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d457"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Investment Report",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d458"
+      },
+      {
+        "name": "SPA Copy",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d459"
+      },
+      {
+        "name": "Payment Schedule",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d45a"
+      }
+    ],
+    "targetAudience": [
+      "investors",
+      "buyers"
+    ],
+    "metrics": {
+      "totalRequests": 180,
+      "completedRequests": 165,
+      "avgCompletionTime": 42,
+      "satisfactionScore": 94,
+      "revenue": 4125000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.287Z",
+    "updatedAt": "2026-01-10T17:38:13.287Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d45c",
+    "name": "Secondary Market Sale",
+    "code": "WC-SVC-003",
+    "category": "Property Sales",
+    "description": "Full-service secondary market sale with valuation, marketing, and transaction management",
+    "shortDescription": "Professional resale property services",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d230",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Property Valuation",
+          "duration": "3 days",
+          "actions": [
+            "Market comparison",
+            "Expert assessment"
+          ],
+          "_id": "69628e8545cb93bb5db1d45d"
+        },
+        {
+          "order": 2,
+          "name": "Photography & Staging",
+          "duration": "5 days",
+          "actions": [
+            "Professional photos",
+            "Virtual tours"
+          ],
+          "_id": "69628e8545cb93bb5db1d45e"
+        },
+        {
+          "order": 3,
+          "name": "Portal Listing",
+          "duration": "2 days",
+          "actions": [
+            "Multi-portal listing",
+            "Marketing launch"
+          ],
+          "_id": "69628e8545cb93bb5db1d45f"
+        },
+        {
+          "order": 4,
+          "name": "Buyer Viewings",
+          "duration": "30 days",
+          "actions": [
+            "Viewing coordination",
+            "Feedback collection"
+          ],
+          "_id": "69628e8545cb93bb5db1d460"
+        },
+        {
+          "order": 5,
+          "name": "Offer Negotiation",
+          "duration": "14 days",
+          "actions": [
+            "Offer management",
+            "Counter-offers"
+          ],
+          "_id": "69628e8545cb93bb5db1d461"
+        },
+        {
+          "order": 6,
+          "name": "Contract & NOC",
+          "duration": "21 days",
+          "actions": [
+            "SPA drafting",
+            "NOC application"
+          ],
+          "_id": "69628e8545cb93bb5db1d462"
+        },
+        {
+          "order": 7,
+          "name": "Transfer",
+          "duration": "14 days",
+          "actions": [
+            "DLD transfer",
+            "Payment coordination"
+          ],
+          "_id": "69628e8545cb93bb5db1d463"
+        }
+      ],
+      "estimatedDuration": "90 days"
+    },
+    "pricing": {
+      "type": "percentage",
+      "percentage": 2,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Title Deed",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d464"
+      },
+      {
+        "name": "Owner Emirates ID",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d465"
+      },
+      {
+        "name": "NOC from Developer",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d466"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Buyer SPA",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d467"
+      },
+      {
+        "name": "Transfer Documentation",
+        "format": "Physical",
+        "_id": "69628e8545cb93bb5db1d468"
+      },
+      {
+        "name": "Payment Confirmation",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d469"
+      }
+    ],
+    "targetAudience": [
+      "sellers",
+      "landlords"
+    ],
+    "metrics": {
+      "totalRequests": 320,
+      "completedRequests": 285,
+      "avgCompletionTime": 78,
+      "satisfactionScore": 92,
+      "revenue": 9600000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.291Z",
+    "updatedAt": "2026-01-10T17:38:13.291Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d46b",
+    "name": "Property Acquisition",
+    "code": "WC-SVC-004",
+    "category": "Property Sales",
+    "description": "Dedicated buyer representation service including property search, due diligence, and purchase support",
+    "shortDescription": "Buyer representation and property search",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d230",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Requirement Analysis",
+          "duration": "3 days",
+          "actions": [
+            "Needs assessment",
+            "Budget planning"
+          ],
+          "_id": "69628e8545cb93bb5db1d46c"
+        },
+        {
+          "order": 2,
+          "name": "Property Search",
+          "duration": "14 days",
+          "actions": [
+            "Market search",
+            "Property matching"
+          ],
+          "_id": "69628e8545cb93bb5db1d46d"
+        },
+        {
+          "order": 3,
+          "name": "Shortlist Review",
+          "duration": "7 days",
+          "actions": [
+            "Comparative analysis",
+            "Recommendation"
+          ],
+          "_id": "69628e8545cb93bb5db1d46e"
+        },
+        {
+          "order": 4,
+          "name": "Viewings",
+          "duration": "14 days",
+          "actions": [
+            "Property tours",
+            "Expert guidance"
+          ],
+          "_id": "69628e8545cb93bb5db1d46f"
+        },
+        {
+          "order": 5,
+          "name": "Negotiation Support",
+          "duration": "7 days",
+          "actions": [
+            "Offer preparation",
+            "Price negotiation"
+          ],
+          "_id": "69628e8545cb93bb5db1d470"
+        },
+        {
+          "order": 6,
+          "name": "Transaction Coordination",
+          "duration": "14 days",
+          "actions": [
+            "Documentation",
+            "Transfer support"
+          ],
+          "_id": "69628e8545cb93bb5db1d471"
+        }
+      ],
+      "estimatedDuration": "60 days"
+    },
+    "pricing": {
+      "type": "percentage",
+      "percentage": 1,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Emirates ID or Passport",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d472"
+      },
+      {
+        "name": "Budget Confirmation",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d473"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Property Shortlist Report",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d474"
+      },
+      {
+        "name": "Purchase Documentation",
+        "format": "Physical/PDF",
+        "_id": "69628e8545cb93bb5db1d475"
+      }
+    ],
+    "targetAudience": [
+      "buyers",
+      "investors"
+    ],
+    "metrics": {
+      "totalRequests": 450,
+      "completedRequests": 398,
+      "avgCompletionTime": 52,
+      "satisfactionScore": 95,
+      "revenue": 6750000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.296Z",
+    "updatedAt": "2026-01-10T17:38:13.296Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d477",
+    "name": "Annual Lease Management",
+    "code": "WC-SVC-005",
+    "category": "Property Rentals",
+    "description": "End-to-end annual lease management including Ejari registration, payment collection, and renewal handling",
+    "shortDescription": "Complete tenancy contract services",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d22c",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Tenant Screening",
+          "duration": "3 days",
+          "actions": [
+            "Background check",
+            "References"
+          ],
+          "_id": "69628e8545cb93bb5db1d478"
+        },
+        {
+          "order": 2,
+          "name": "Document Collection",
+          "duration": "2 days",
+          "actions": [
+            "ID copies",
+            "Employment letter"
+          ],
+          "_id": "69628e8545cb93bb5db1d479"
+        },
+        {
+          "order": 3,
+          "name": "Contract Drafting",
+          "duration": "1 day",
+          "actions": [
+            "Terms finalization",
+            "Contract prep"
+          ],
+          "_id": "69628e8545cb93bb5db1d47a"
+        },
+        {
+          "order": 4,
+          "name": "Signing",
+          "duration": "1 day",
+          "actions": [
+            "Contract signing",
+            "Cheque collection"
+          ],
+          "_id": "69628e8545cb93bb5db1d47b"
+        },
+        {
+          "order": 5,
+          "name": "Ejari Registration",
+          "duration": "2 days",
+          "actions": [
+            "RERA registration",
+            "Ejari certificate"
+          ],
+          "_id": "69628e8545cb93bb5db1d47c"
+        },
+        {
+          "order": 6,
+          "name": "Key Handover",
+          "duration": "1 day",
+          "actions": [
+            "Move-in inspection",
+            "Keys handover"
+          ],
+          "_id": "69628e8545cb93bb5db1d47d"
+        }
+      ],
+      "estimatedDuration": "14 days"
+    },
+    "pricing": {
+      "type": "percentage",
+      "percentage": 5,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Tenant Emirates ID",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d47e"
+      },
+      {
+        "name": "Employment Contract",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d47f"
+      },
+      {
+        "name": "Landlord Emirates ID",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d480"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Ejari Certificate",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d481"
+      },
+      {
+        "name": "Tenancy Contract",
+        "format": "Physical/PDF",
+        "_id": "69628e8545cb93bb5db1d482"
+      },
+      {
+        "name": "Move-in Report",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d483"
+      }
+    ],
+    "targetAudience": [
+      "landlords",
+      "tenants"
+    ],
+    "metrics": {
+      "totalRequests": 850,
+      "completedRequests": 820,
+      "avgCompletionTime": 10,
+      "satisfactionScore": 96,
+      "revenue": 2125000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.302Z",
+    "updatedAt": "2026-01-10T17:38:13.302Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d485",
+    "name": "Property Management",
+    "code": "WC-SVC-006",
+    "category": "Property Management",
+    "description": "Comprehensive property management including maintenance, tenant relations, and financial management",
+    "shortDescription": "Full property management services",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d22c",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Property Onboarding",
+          "duration": "5 days",
+          "actions": [
+            "Inspection",
+            "Documentation"
+          ],
+          "_id": "69628e8545cb93bb5db1d486"
+        },
+        {
+          "order": 2,
+          "name": "Tenant Management",
+          "duration": "Ongoing",
+          "actions": [
+            "Rent collection",
+            "Communication"
+          ],
+          "_id": "69628e8545cb93bb5db1d487"
+        },
+        {
+          "order": 3,
+          "name": "Maintenance Coordination",
+          "duration": "As needed",
+          "actions": [
+            "Repairs",
+            "Inspections"
+          ],
+          "_id": "69628e8545cb93bb5db1d488"
+        },
+        {
+          "order": 4,
+          "name": "Financial Reporting",
+          "duration": "Monthly",
+          "actions": [
+            "Statements",
+            "Disbursements"
+          ],
+          "_id": "69628e8545cb93bb5db1d489"
+        }
+      ],
+      "estimatedDuration": "Ongoing"
+    },
+    "pricing": {
+      "type": "percentage",
+      "percentage": 8,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Property Title Deed",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d48a"
+      },
+      {
+        "name": "Owner POA (if applicable)",
+        "mandatory": false,
+        "_id": "69628e8545cb93bb5db1d48b"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Monthly Statements",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d48c"
+      },
+      {
+        "name": "Annual Property Report",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d48d"
+      }
+    ],
+    "targetAudience": [
+      "landlords",
+      "investors"
+    ],
+    "metrics": {
+      "totalRequests": 120,
+      "completedRequests": 118,
+      "avgCompletionTime": 0,
+      "satisfactionScore": 94,
+      "revenue": 1440000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.309Z",
+    "updatedAt": "2026-01-10T17:38:13.309Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d48f",
+    "name": "Mortgage Advisory",
+    "code": "WC-SVC-007",
+    "category": "Financial Services",
+    "description": "Comprehensive mortgage advisory including bank liaison, documentation, and approval tracking",
+    "shortDescription": "Expert mortgage and financing solutions",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d234",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Financial Assessment",
+          "duration": "2 days",
+          "actions": [
+            "Income review",
+            "Eligibility check"
+          ],
+          "_id": "69628e8545cb93bb5db1d490"
+        },
+        {
+          "order": 2,
+          "name": "Bank Selection",
+          "duration": "3 days",
+          "actions": [
+            "Rate comparison",
+            "Bank shortlist"
+          ],
+          "_id": "69628e8545cb93bb5db1d491"
+        },
+        {
+          "order": 3,
+          "name": "Application",
+          "duration": "5 days",
+          "actions": [
+            "Documentation",
+            "Submission"
+          ],
+          "_id": "69628e8545cb93bb5db1d492"
+        },
+        {
+          "order": 4,
+          "name": "Approval Process",
+          "duration": "15 days",
+          "actions": [
+            "Bank processing",
+            "Valuation"
+          ],
+          "_id": "69628e8545cb93bb5db1d493"
+        },
+        {
+          "order": 5,
+          "name": "Disbursement",
+          "duration": "5 days",
+          "actions": [
+            "Final approval",
+            "Fund transfer"
+          ],
+          "_id": "69628e8545cb93bb5db1d494"
+        }
+      ],
+      "estimatedDuration": "30 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 15000,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Salary Certificate",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d495"
+      },
+      {
+        "name": "Bank Statements (6 months)",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d496"
+      },
+      {
+        "name": "Emirates ID",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d497"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Pre-approval Letter",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d498"
+      },
+      {
+        "name": "Final Offer Letter",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d499"
+      },
+      {
+        "name": "Mortgage Documents",
+        "format": "Physical",
+        "_id": "69628e8545cb93bb5db1d49a"
+      }
+    ],
+    "targetAudience": [
+      "buyers",
+      "investors"
+    ],
+    "metrics": {
+      "totalRequests": 280,
+      "completedRequests": 245,
+      "avgCompletionTime": 28,
+      "satisfactionScore": 91,
+      "revenue": 4200000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.315Z",
+    "updatedAt": "2026-01-10T17:38:13.315Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d49c",
+    "name": "Legal Conveyancing",
+    "code": "WC-SVC-008",
+    "category": "Legal & Compliance",
+    "description": "Full legal conveyancing including contract review, DLD registration, and compliance verification",
+    "shortDescription": "Property legal services and compliance",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d24c",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Document Review",
+          "duration": "3 days",
+          "actions": [
+            "Contract analysis",
+            "Risk assessment"
+          ],
+          "_id": "69628e8545cb93bb5db1d49d"
+        },
+        {
+          "order": 2,
+          "name": "Due Diligence",
+          "duration": "5 days",
+          "actions": [
+            "Title search",
+            "Lien verification"
+          ],
+          "_id": "69628e8545cb93bb5db1d49e"
+        },
+        {
+          "order": 3,
+          "name": "Contract Finalization",
+          "duration": "5 days",
+          "actions": [
+            "Amendments",
+            "Final draft"
+          ],
+          "_id": "69628e8545cb93bb5db1d49f"
+        },
+        {
+          "order": 4,
+          "name": "DLD Registration",
+          "duration": "5 days",
+          "actions": [
+            "Fee payment",
+            "Registration"
+          ],
+          "_id": "69628e8545cb93bb5db1d4a0"
+        },
+        {
+          "order": 5,
+          "name": "Completion",
+          "duration": "3 days",
+          "actions": [
+            "Title issuance",
+            "File closure"
+          ],
+          "_id": "69628e8545cb93bb5db1d4a1"
+        }
+      ],
+      "estimatedDuration": "21 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 12000,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Signed SPA",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4a2"
+      },
+      {
+        "name": "Party Identification",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4a3"
+      },
+      {
+        "name": "Payment Receipts",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4a4"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Legal Opinion",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d4a5"
+      },
+      {
+        "name": "Registered Title Deed",
+        "format": "Physical",
+        "_id": "69628e8545cb93bb5db1d4a6"
+      },
+      {
+        "name": "Closing Statement",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d4a7"
+      }
+    ],
+    "targetAudience": [
+      "buyers",
+      "sellers",
+      "landlords",
+      "tenants"
+    ],
+    "metrics": {
+      "totalRequests": 420,
+      "completedRequests": 405,
+      "avgCompletionTime": 18,
+      "satisfactionScore": 97,
+      "revenue": 5040000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.321Z",
+    "updatedAt": "2026-01-10T17:38:13.321Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d4a9",
+    "name": "Property Marketing",
+    "code": "WC-SVC-009",
+    "category": "Marketing",
+    "description": "High-end property marketing including photography, virtual tours, and multi-channel campaigns",
+    "shortDescription": "Premium property marketing campaigns",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d238",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Photography Session",
+          "duration": "2 days",
+          "actions": [
+            "Professional shoot",
+            "Drone footage"
+          ],
+          "_id": "69628e8545cb93bb5db1d4aa"
+        },
+        {
+          "order": 2,
+          "name": "Content Creation",
+          "duration": "4 days",
+          "actions": [
+            "Copywriting",
+            "Video editing"
+          ],
+          "_id": "69628e8545cb93bb5db1d4ab"
+        },
+        {
+          "order": 3,
+          "name": "Virtual Tour",
+          "duration": "3 days",
+          "actions": [
+            "3D scanning",
+            "Tour creation"
+          ],
+          "_id": "69628e8545cb93bb5db1d4ac"
+        },
+        {
+          "order": 4,
+          "name": "Campaign Launch",
+          "duration": "3 days",
+          "actions": [
+            "Portal listing",
+            "Social media"
+          ],
+          "_id": "69628e8545cb93bb5db1d4ad"
+        },
+        {
+          "order": 5,
+          "name": "Performance Tracking",
+          "duration": "Ongoing",
+          "actions": [
+            "Analytics",
+            "Optimization"
+          ],
+          "_id": "69628e8545cb93bb5db1d4ae"
+        }
+      ],
+      "estimatedDuration": "14 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 8000,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Property Access",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4af"
+      },
+      {
+        "name": "Marketing Authorization",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4b0"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Professional Photos",
+        "format": "Digital",
+        "_id": "69628e8545cb93bb5db1d4b1"
+      },
+      {
+        "name": "Virtual Tour Link",
+        "format": "URL",
+        "_id": "69628e8545cb93bb5db1d4b2"
+      },
+      {
+        "name": "Marketing Report",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d4b3"
+      }
+    ],
+    "targetAudience": [
+      "sellers",
+      "landlords",
+      "developers"
+    ],
+    "metrics": {
+      "totalRequests": 350,
+      "completedRequests": 340,
+      "avgCompletionTime": 12,
+      "satisfactionScore": 93,
+      "revenue": 2800000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.327Z",
+    "updatedAt": "2026-01-10T17:38:13.327Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d4b5",
+    "name": "Property Valuation",
+    "code": "WC-SVC-010",
+    "category": "Client Services",
+    "description": "RERA-certified property valuation for sale, mortgage, or insurance purposes",
+    "shortDescription": "Professional property valuation",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d22c",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Site Inspection",
+          "duration": "1 day",
+          "actions": [
+            "Property visit",
+            "Measurement"
+          ],
+          "_id": "69628e8545cb93bb5db1d4b6"
+        },
+        {
+          "order": 2,
+          "name": "Market Analysis",
+          "duration": "2 days",
+          "actions": [
+            "Comparable sales",
+            "Market trends"
+          ],
+          "_id": "69628e8545cb93bb5db1d4b7"
+        },
+        {
+          "order": 3,
+          "name": "Report Preparation",
+          "duration": "2 days",
+          "actions": [
+            "Valuation calculation",
+            "Report writing"
+          ],
+          "_id": "69628e8545cb93bb5db1d4b8"
+        }
+      ],
+      "estimatedDuration": "5 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 3500,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Title Deed",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4b9"
+      },
+      {
+        "name": "Property Access",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4ba"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Valuation Report",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d4bb"
+      },
+      {
+        "name": "RERA Certificate",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d4bc"
+      }
+    ],
+    "targetAudience": [
+      "sellers",
+      "landlords",
+      "buyers",
+      "investors"
+    ],
+    "metrics": {
+      "totalRequests": 680,
+      "completedRequests": 670,
+      "avgCompletionTime": 4,
+      "satisfactionScore": 96,
+      "revenue": 2380000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.330Z",
+    "updatedAt": "2026-01-10T17:38:13.330Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d4be",
+    "name": "Golden Visa Assistance",
+    "code": "WC-SVC-011",
+    "category": "Client Services",
+    "description": "Complete assistance for obtaining UAE Golden Visa through property investment of AED 2M+",
+    "shortDescription": "UAE Golden Visa property investment route",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d230",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Eligibility Assessment",
+          "duration": "2 days",
+          "actions": [
+            "Investment review",
+            "Criteria check"
+          ],
+          "_id": "69628e8545cb93bb5db1d4bf"
+        },
+        {
+          "order": 2,
+          "name": "Document Preparation",
+          "duration": "7 days",
+          "actions": [
+            "Document collection",
+            "Translation"
+          ],
+          "_id": "69628e8545cb93bb5db1d4c0"
+        },
+        {
+          "order": 3,
+          "name": "Application Submission",
+          "duration": "3 days",
+          "actions": [
+            "Online application",
+            "Fee payment"
+          ],
+          "_id": "69628e8545cb93bb5db1d4c1"
+        },
+        {
+          "order": 4,
+          "name": "ICP Processing",
+          "duration": "21 days",
+          "actions": [
+            "Government review",
+            "Approval wait"
+          ],
+          "_id": "69628e8545cb93bb5db1d4c2"
+        },
+        {
+          "order": 5,
+          "name": "Visa Stamping",
+          "duration": "7 days",
+          "actions": [
+            "Medical test",
+            "Emirates ID"
+          ],
+          "_id": "69628e8545cb93bb5db1d4c3"
+        }
+      ],
+      "estimatedDuration": "45 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 20000,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Property Title Deed (2M+)",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4c4"
+      },
+      {
+        "name": "Passport",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4c5"
+      },
+      {
+        "name": "Photos",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4c6"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Golden Visa",
+        "format": "Physical",
+        "_id": "69628e8545cb93bb5db1d4c7"
+      },
+      {
+        "name": "Emirates ID",
+        "format": "Physical",
+        "_id": "69628e8545cb93bb5db1d4c8"
+      },
+      {
+        "name": "Process Completion Report",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d4c9"
+      }
+    ],
+    "targetAudience": [
+      "investors",
+      "buyers"
+    ],
+    "metrics": {
+      "totalRequests": 95,
+      "completedRequests": 88,
+      "avgCompletionTime": 40,
+      "satisfactionScore": 99,
+      "revenue": 1900000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.334Z",
+    "updatedAt": "2026-01-10T17:38:13.334Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d4cb",
+    "name": "Snagging & Handover",
+    "code": "WC-SVC-012",
+    "category": "Property Management",
+    "description": "Professional snagging inspection and handover coordination for new properties",
+    "shortDescription": "New property inspection services",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d22c",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Pre-Inspection",
+          "duration": "1 day",
+          "actions": [
+            "Schedule coordination",
+            "Checklist prep"
+          ],
+          "_id": "69628e8545cb93bb5db1d4cc"
+        },
+        {
+          "order": 2,
+          "name": "Snagging Inspection",
+          "duration": "1 day",
+          "actions": [
+            "Full inspection",
+            "Issue logging"
+          ],
+          "_id": "69628e8545cb93bb5db1d4cd"
+        },
+        {
+          "order": 3,
+          "name": "Report Generation",
+          "duration": "2 days",
+          "actions": [
+            "Photo documentation",
+            "Report creation"
+          ],
+          "_id": "69628e8545cb93bb5db1d4ce"
+        },
+        {
+          "order": 4,
+          "name": "Developer Follow-up",
+          "duration": "3 days",
+          "actions": [
+            "Issue submission",
+            "Resolution tracking"
+          ],
+          "_id": "69628e8545cb93bb5db1d4cf"
+        }
+      ],
+      "estimatedDuration": "7 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 2500,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Handover Appointment",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4d0"
+      },
+      {
+        "name": "Property Access",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4d1"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Snagging Report",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d4d2"
+      },
+      {
+        "name": "Photo Documentation",
+        "format": "Digital",
+        "_id": "69628e8545cb93bb5db1d4d3"
+      },
+      {
+        "name": "Resolution Tracker",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d4d4"
+      }
+    ],
+    "targetAudience": [
+      "buyers",
+      "investors"
+    ],
+    "metrics": {
+      "totalRequests": 220,
+      "completedRequests": 215,
+      "avgCompletionTime": 5,
+      "satisfactionScore": 95,
+      "revenue": 550000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.338Z",
+    "updatedAt": "2026-01-10T17:38:13.338Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d4d6",
+    "name": "Tenant Screening",
+    "code": "WC-SVC-013",
+    "category": "Property Rentals",
+    "description": "Thorough tenant screening including background checks, employment verification, and reference checks",
+    "shortDescription": "Comprehensive tenant verification",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d22c",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Document Collection",
+          "duration": "1 day",
+          "actions": [
+            "ID collection",
+            "Employment docs"
+          ],
+          "_id": "69628e8545cb93bb5db1d4d7"
+        },
+        {
+          "order": 2,
+          "name": "Verification",
+          "duration": "1 day",
+          "actions": [
+            "Employment check",
+            "Reference calls"
+          ],
+          "_id": "69628e8545cb93bb5db1d4d8"
+        },
+        {
+          "order": 3,
+          "name": "Report",
+          "duration": "1 day",
+          "actions": [
+            "Risk assessment",
+            "Recommendation"
+          ],
+          "_id": "69628e8545cb93bb5db1d4d9"
+        }
+      ],
+      "estimatedDuration": "3 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 1500,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Applicant Emirates ID",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4da"
+      },
+      {
+        "name": "Employment Letter",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4db"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Screening Report",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d4dc"
+      },
+      {
+        "name": "Risk Assessment",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d4dd"
+      }
+    ],
+    "targetAudience": [
+      "landlords"
+    ],
+    "metrics": {
+      "totalRequests": 450,
+      "completedRequests": 445,
+      "avgCompletionTime": 2,
+      "satisfactionScore": 94,
+      "revenue": 675000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.341Z",
+    "updatedAt": "2026-01-10T17:38:13.341Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d4df",
+    "name": "KYC & AML Compliance",
+    "code": "WC-SVC-014",
+    "category": "Legal & Compliance",
+    "description": "Complete KYC and AML compliance services as per UAE Central Bank and RERA requirements",
+    "shortDescription": "Regulatory compliance verification",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d240",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Document Collection",
+          "duration": "1 day",
+          "actions": [
+            "ID verification",
+            "Address proof"
+          ],
+          "_id": "69628e8545cb93bb5db1d4e0"
+        },
+        {
+          "order": 2,
+          "name": "Background Screening",
+          "duration": "2 days",
+          "actions": [
+            "PEP check",
+            "Sanctions screening"
+          ],
+          "_id": "69628e8545cb93bb5db1d4e1"
+        },
+        {
+          "order": 3,
+          "name": "Source of Funds",
+          "duration": "1 day",
+          "actions": [
+            "Fund verification",
+            "Bank confirmation"
+          ],
+          "_id": "69628e8545cb93bb5db1d4e2"
+        },
+        {
+          "order": 4,
+          "name": "Compliance Report",
+          "duration": "1 day",
+          "actions": [
+            "Risk rating",
+            "Clearance issuance"
+          ],
+          "_id": "69628e8545cb93bb5db1d4e3"
+        }
+      ],
+      "estimatedDuration": "5 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 5000,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Emirates ID / Passport",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4e4"
+      },
+      {
+        "name": "Bank Statements",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4e5"
+      },
+      {
+        "name": "Source of Funds Declaration",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4e6"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "KYC Report",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d4e7"
+      },
+      {
+        "name": "AML Clearance",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d4e8"
+      },
+      {
+        "name": "Risk Rating Certificate",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d4e9"
+      }
+    ],
+    "targetAudience": [
+      "buyers",
+      "sellers",
+      "investors",
+      "all"
+    ],
+    "metrics": {
+      "totalRequests": 380,
+      "completedRequests": 375,
+      "avgCompletionTime": 4,
+      "satisfactionScore": 98,
+      "revenue": 1900000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.344Z",
+    "updatedAt": "2026-01-10T17:38:13.344Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d4eb",
+    "name": "Rental Yield Analysis",
+    "code": "WC-SVC-015",
+    "category": "Financial Services",
+    "description": "Detailed rental yield and investment return analysis for property investment decisions",
+    "shortDescription": "Investment return calculations",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d234",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Property Assessment",
+          "duration": "1 day",
+          "actions": [
+            "Property details",
+            "Location analysis"
+          ],
+          "_id": "69628e8545cb93bb5db1d4ec"
+        },
+        {
+          "order": 2,
+          "name": "Market Research",
+          "duration": "2 days",
+          "actions": [
+            "Rental comparisons",
+            "Occupancy rates"
+          ],
+          "_id": "69628e8545cb93bb5db1d4ed"
+        },
+        {
+          "order": 3,
+          "name": "Financial Modeling",
+          "duration": "1 day",
+          "actions": [
+            "Yield calculation",
+            "ROI projections"
+          ],
+          "_id": "69628e8545cb93bb5db1d4ee"
+        },
+        {
+          "order": 4,
+          "name": "Report Delivery",
+          "duration": "1 day",
+          "actions": [
+            "Report preparation",
+            "Presentation"
+          ],
+          "_id": "69628e8545cb93bb5db1d4ef"
+        }
+      ],
+      "estimatedDuration": "5 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 4000,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Property Details",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4f0"
+      },
+      {
+        "name": "Purchase Price / Value",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4f1"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Yield Analysis Report",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d4f2"
+      },
+      {
+        "name": "Investment Recommendation",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d4f3"
+      }
+    ],
+    "targetAudience": [
+      "investors",
+      "landlords"
+    ],
+    "metrics": {
+      "totalRequests": 240,
+      "completedRequests": 235,
+      "avgCompletionTime": 4,
+      "satisfactionScore": 93,
+      "revenue": 960000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.348Z",
+    "updatedAt": "2026-01-10T17:38:13.348Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d4f5",
+    "name": "Maintenance Coordination",
+    "code": "WC-SVC-016",
+    "category": "Property Management",
+    "description": "Complete maintenance coordination including contractor management and quality assurance",
+    "shortDescription": "Property maintenance services",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d22c",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Request Logging",
+          "duration": "1 hour",
+          "actions": [
+            "Issue recording",
+            "Prioritization"
+          ],
+          "_id": "69628e8545cb93bb5db1d4f6"
+        },
+        {
+          "order": 2,
+          "name": "Contractor Dispatch",
+          "duration": "24 hours",
+          "actions": [
+            "Vendor selection",
+            "Scheduling"
+          ],
+          "_id": "69628e8545cb93bb5db1d4f7"
+        },
+        {
+          "order": 3,
+          "name": "Work Execution",
+          "duration": "Variable",
+          "actions": [
+            "Supervision",
+            "Quality check"
+          ],
+          "_id": "69628e8545cb93bb5db1d4f8"
+        },
+        {
+          "order": 4,
+          "name": "Completion",
+          "duration": "1 day",
+          "actions": [
+            "Final inspection",
+            "Invoice processing"
+          ],
+          "_id": "69628e8545cb93bb5db1d4f9"
+        }
+      ],
+      "estimatedDuration": "As needed"
+    },
+    "pricing": {
+      "type": "percentage",
+      "percentage": 10,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Property Access",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4fa"
+      },
+      {
+        "name": "Issue Description",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d4fb"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Work Completion Report",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d4fc"
+      },
+      {
+        "name": "Invoice",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d4fd"
+      }
+    ],
+    "targetAudience": [
+      "landlords",
+      "tenants"
+    ],
+    "metrics": {
+      "totalRequests": 1200,
+      "completedRequests": 1150,
+      "avgCompletionTime": 3,
+      "satisfactionScore": 91,
+      "revenue": 360000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.351Z",
+    "updatedAt": "2026-01-10T17:38:13.351Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d4ff",
+    "name": "Interior Design Consultation",
+    "code": "WC-SVC-017",
+    "category": "Client Services",
+    "description": "Professional interior design consultation for property staging or renovation",
+    "shortDescription": "Property interior design services",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d238",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Initial Consultation",
+          "duration": "2 days",
+          "actions": [
+            "Style assessment",
+            "Budget planning"
+          ],
+          "_id": "69628e8545cb93bb5db1d500"
+        },
+        {
+          "order": 2,
+          "name": "Concept Development",
+          "duration": "5 days",
+          "actions": [
+            "Mood boards",
+            "3D visualization"
+          ],
+          "_id": "69628e8545cb93bb5db1d501"
+        },
+        {
+          "order": 3,
+          "name": "Sourcing",
+          "duration": "7 days",
+          "actions": [
+            "Furniture selection",
+            "Vendor coordination"
+          ],
+          "_id": "69628e8545cb93bb5db1d502"
+        },
+        {
+          "order": 4,
+          "name": "Implementation",
+          "duration": "7 days",
+          "actions": [
+            "Installation",
+            "Styling"
+          ],
+          "_id": "69628e8545cb93bb5db1d503"
+        }
+      ],
+      "estimatedDuration": "21 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 10000,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Property Access",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d504"
+      },
+      {
+        "name": "Design Brief",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d505"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Design Concept",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d506"
+      },
+      {
+        "name": "3D Renders",
+        "format": "Digital",
+        "_id": "69628e8545cb93bb5db1d507"
+      },
+      {
+        "name": "Shopping List",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d508"
+      }
+    ],
+    "targetAudience": [
+      "buyers",
+      "landlords",
+      "sellers"
+    ],
+    "metrics": {
+      "totalRequests": 85,
+      "completedRequests": 80,
+      "avgCompletionTime": 18,
+      "satisfactionScore": 96,
+      "revenue": 850000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.354Z",
+    "updatedAt": "2026-01-10T17:38:13.354Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d50a",
+    "name": "Relocation Assistance",
+    "code": "WC-SVC-018",
+    "category": "Client Services",
+    "description": "End-to-end relocation assistance including moving, utility setup, and area orientation",
+    "shortDescription": "Complete relocation services",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d22c",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Planning",
+          "duration": "2 days",
+          "actions": [
+            "Moving assessment",
+            "Schedule planning"
+          ],
+          "_id": "69628e8545cb93bb5db1d50b"
+        },
+        {
+          "order": 2,
+          "name": "Utility Setup",
+          "duration": "5 days",
+          "actions": [
+            "DEWA",
+            "Internet",
+            "Cooling"
+          ],
+          "_id": "69628e8545cb93bb5db1d50c"
+        },
+        {
+          "order": 3,
+          "name": "Moving Day",
+          "duration": "1 day",
+          "actions": [
+            "Coordination",
+            "Supervision"
+          ],
+          "_id": "69628e8545cb93bb5db1d50d"
+        },
+        {
+          "order": 4,
+          "name": "Area Orientation",
+          "duration": "2 days",
+          "actions": [
+            "Neighborhood tour",
+            "Essential services"
+          ],
+          "_id": "69628e8545cb93bb5db1d50e"
+        }
+      ],
+      "estimatedDuration": "14 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 5000,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Tenancy Contract / Title Deed",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d50f"
+      },
+      {
+        "name": "Emirates ID",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d510"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Utility Confirmation",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d511"
+      },
+      {
+        "name": "Area Guide",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d512"
+      },
+      {
+        "name": "Welcome Pack",
+        "format": "Physical",
+        "_id": "69628e8545cb93bb5db1d513"
+      }
+    ],
+    "targetAudience": [
+      "buyers",
+      "tenants"
+    ],
+    "metrics": {
+      "totalRequests": 180,
+      "completedRequests": 175,
+      "avgCompletionTime": 12,
+      "satisfactionScore": 94,
+      "revenue": 900000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.357Z",
+    "updatedAt": "2026-01-10T17:38:13.357Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d515",
+    "name": "Holiday Home Management",
+    "code": "WC-SVC-019",
+    "category": "Property Rentals",
+    "description": "Complete holiday home management including DTCM licensing, guest management, and revenue optimization",
+    "shortDescription": "Short-term rental management",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d22c",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "DTCM Licensing",
+          "duration": "14 days",
+          "actions": [
+            "Application",
+            "Approval"
+          ],
+          "_id": "69628e8545cb93bb5db1d516"
+        },
+        {
+          "order": 2,
+          "name": "Platform Setup",
+          "duration": "7 days",
+          "actions": [
+            "Airbnb",
+            "Booking.com",
+            "Photos"
+          ],
+          "_id": "69628e8545cb93bb5db1d517"
+        },
+        {
+          "order": 3,
+          "name": "Operations",
+          "duration": "Ongoing",
+          "actions": [
+            "Guest management",
+            "Cleaning",
+            "Maintenance"
+          ],
+          "_id": "69628e8545cb93bb5db1d518"
+        },
+        {
+          "order": 4,
+          "name": "Reporting",
+          "duration": "Monthly",
+          "actions": [
+            "Revenue report",
+            "Performance analysis"
+          ],
+          "_id": "69628e8545cb93bb5db1d519"
+        }
+      ],
+      "estimatedDuration": "Ongoing"
+    },
+    "pricing": {
+      "type": "percentage",
+      "percentage": 20,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Title Deed",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d51a"
+      },
+      {
+        "name": "Owner Emirates ID",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d51b"
+      },
+      {
+        "name": "Furnished Property",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d51c"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "DTCM License",
+        "format": "Physical",
+        "_id": "69628e8545cb93bb5db1d51d"
+      },
+      {
+        "name": "Monthly Revenue Report",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d51e"
+      },
+      {
+        "name": "Guest Reviews Summary",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d51f"
+      }
+    ],
+    "targetAudience": [
+      "landlords",
+      "investors"
+    ],
+    "metrics": {
+      "totalRequests": 65,
+      "completedRequests": 62,
+      "avgCompletionTime": 0,
+      "satisfactionScore": 92,
+      "revenue": 780000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.360Z",
+    "updatedAt": "2026-01-10T17:38:13.360Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d521",
+    "name": "Commercial Leasing",
+    "code": "WC-SVC-020",
+    "category": "Property Rentals",
+    "description": "Professional commercial property leasing including office, retail, and warehouse spaces",
+    "shortDescription": "Commercial property leasing services",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d230",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Requirements Analysis",
+          "duration": "3 days",
+          "actions": [
+            "Space needs",
+            "Budget assessment"
+          ],
+          "_id": "69628e8545cb93bb5db1d522"
+        },
+        {
+          "order": 2,
+          "name": "Property Search",
+          "duration": "7 days",
+          "actions": [
+            "Market search",
+            "Shortlisting"
+          ],
+          "_id": "69628e8545cb93bb5db1d523"
+        },
+        {
+          "order": 3,
+          "name": "Viewings & Negotiation",
+          "duration": "10 days",
+          "actions": [
+            "Site visits",
+            "Terms negotiation"
+          ],
+          "_id": "69628e8545cb93bb5db1d524"
+        },
+        {
+          "order": 4,
+          "name": "Contract & Handover",
+          "duration": "10 days",
+          "actions": [
+            "Legal review",
+            "Contract signing",
+            "Fit-out"
+          ],
+          "_id": "69628e8545cb93bb5db1d525"
+        }
+      ],
+      "estimatedDuration": "30 days"
+    },
+    "pricing": {
+      "type": "percentage",
+      "percentage": 5,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Trade License",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d526"
+      },
+      {
+        "name": "Company Emirates ID",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d527"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Commercial Lease Agreement",
+        "format": "Physical",
+        "_id": "69628e8545cb93bb5db1d528"
+      },
+      {
+        "name": "Ejari Certificate",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d529"
+      }
+    ],
+    "targetAudience": [
+      "landlords",
+      "tenants",
+      "investors"
+    ],
+    "metrics": {
+      "totalRequests": 140,
+      "completedRequests": 125,
+      "avgCompletionTime": 25,
+      "satisfactionScore": 90,
+      "revenue": 1750000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.363Z",
+    "updatedAt": "2026-01-10T17:38:13.363Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d52b",
+    "name": "Portfolio Management",
+    "code": "WC-SVC-021",
+    "category": "Financial Services",
+    "description": "Comprehensive portfolio management for investors with multiple properties",
+    "shortDescription": "Multi-property portfolio services",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d234",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Portfolio Assessment",
+          "duration": "7 days",
+          "actions": [
+            "Asset valuation",
+            "Performance review"
+          ],
+          "_id": "69628e8545cb93bb5db1d52c"
+        },
+        {
+          "order": 2,
+          "name": "Strategy Development",
+          "duration": "5 days",
+          "actions": [
+            "Optimization plan",
+            "Risk assessment"
+          ],
+          "_id": "69628e8545cb93bb5db1d52d"
+        },
+        {
+          "order": 3,
+          "name": "Implementation",
+          "duration": "Ongoing",
+          "actions": [
+            "Buy/Sell recommendations",
+            "Rebalancing"
+          ],
+          "_id": "69628e8545cb93bb5db1d52e"
+        },
+        {
+          "order": 4,
+          "name": "Reporting",
+          "duration": "Quarterly",
+          "actions": [
+            "Performance reports",
+            "Market updates"
+          ],
+          "_id": "69628e8545cb93bb5db1d52f"
+        }
+      ],
+      "estimatedDuration": "Ongoing"
+    },
+    "pricing": {
+      "type": "percentage",
+      "percentage": 1,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Portfolio Details",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d530"
+      },
+      {
+        "name": "Investment Goals",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d531"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Portfolio Strategy",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d532"
+      },
+      {
+        "name": "Quarterly Reports",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d533"
+      },
+      {
+        "name": "Tax Documentation",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d534"
+      }
+    ],
+    "targetAudience": [
+      "investors"
+    ],
+    "metrics": {
+      "totalRequests": 35,
+      "completedRequests": 34,
+      "avgCompletionTime": 0,
+      "satisfactionScore": 97,
+      "revenue": 850000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.366Z",
+    "updatedAt": "2026-01-10T17:38:13.366Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d536",
+    "name": "Developer Project Sales",
+    "code": "WC-SVC-022",
+    "category": "Property Sales",
+    "description": "Exclusive sales representation for developer off-plan projects",
+    "shortDescription": "Off-plan project sales",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d230",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Project Onboarding",
+          "duration": "14 days",
+          "actions": [
+            "Training",
+            "Marketing materials"
+          ],
+          "_id": "69628e8545cb93bb5db1d537"
+        },
+        {
+          "order": 2,
+          "name": "Lead Generation",
+          "duration": "Ongoing",
+          "actions": [
+            "Marketing",
+            "Roadshows"
+          ],
+          "_id": "69628e8545cb93bb5db1d538"
+        },
+        {
+          "order": 3,
+          "name": "Sales",
+          "duration": "Ongoing",
+          "actions": [
+            "Presentations",
+            "Bookings"
+          ],
+          "_id": "69628e8545cb93bb5db1d539"
+        },
+        {
+          "order": 4,
+          "name": "After-sales",
+          "duration": "Ongoing",
+          "actions": [
+            "Progress updates",
+            "Handover coordination"
+          ],
+          "_id": "69628e8545cb93bb5db1d53a"
+        }
+      ],
+      "estimatedDuration": "Project duration"
+    },
+    "pricing": {
+      "type": "percentage",
+      "percentage": 3,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Exclusive Agreement",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d53b"
+      },
+      {
+        "name": "Marketing Materials",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d53c"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Sales Reports",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d53d"
+      },
+      {
+        "name": "Marketing Analytics",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d53e"
+      }
+    ],
+    "targetAudience": [
+      "developers",
+      "investors",
+      "buyers"
+    ],
+    "metrics": {
+      "totalRequests": 8,
+      "completedRequests": 6,
+      "avgCompletionTime": 0,
+      "satisfactionScore": 94,
+      "revenue": 12000000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.369Z",
+    "updatedAt": "2026-01-10T17:38:13.369Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d540",
+    "name": "Property Insurance",
+    "code": "WC-SVC-023",
+    "category": "Financial Services",
+    "description": "Insurance advisory and procurement for property owners and tenants",
+    "shortDescription": "Property insurance advisory",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d234",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Needs Assessment",
+          "duration": "1 day",
+          "actions": [
+            "Coverage requirements",
+            "Risk profile"
+          ],
+          "_id": "69628e8545cb93bb5db1d541"
+        },
+        {
+          "order": 2,
+          "name": "Quote Comparison",
+          "duration": "3 days",
+          "actions": [
+            "Multiple quotes",
+            "Coverage analysis"
+          ],
+          "_id": "69628e8545cb93bb5db1d542"
+        },
+        {
+          "order": 3,
+          "name": "Policy Procurement",
+          "duration": "3 days",
+          "actions": [
+            "Documentation",
+            "Payment",
+            "Policy issuance"
+          ],
+          "_id": "69628e8545cb93bb5db1d543"
+        }
+      ],
+      "estimatedDuration": "7 days"
+    },
+    "pricing": {
+      "type": "percentage",
+      "percentage": 5,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Property Details",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d544"
+      },
+      {
+        "name": "Owner/Tenant ID",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d545"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Insurance Policy",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d546"
+      },
+      {
+        "name": "Coverage Summary",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d547"
+      }
+    ],
+    "targetAudience": [
+      "landlords",
+      "tenants",
+      "buyers"
+    ],
+    "metrics": {
+      "totalRequests": 320,
+      "completedRequests": 310,
+      "avgCompletionTime": 5,
+      "satisfactionScore": 92,
+      "revenue": 320000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.372Z",
+    "updatedAt": "2026-01-10T17:38:13.372Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d549",
+    "name": "Will & Succession Planning",
+    "code": "WC-SVC-024",
+    "category": "Legal & Compliance",
+    "description": "DIFC Wills and succession planning for property owners",
+    "shortDescription": "Property inheritance services",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d24c",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Consultation",
+          "duration": "2 days",
+          "actions": [
+            "Asset review",
+            "Beneficiary discussion"
+          ],
+          "_id": "69628e8545cb93bb5db1d54a"
+        },
+        {
+          "order": 2,
+          "name": "Will Drafting",
+          "duration": "7 days",
+          "actions": [
+            "Legal drafting",
+            "Review"
+          ],
+          "_id": "69628e8545cb93bb5db1d54b"
+        },
+        {
+          "order": 3,
+          "name": "DIFC Registration",
+          "duration": "14 days",
+          "actions": [
+            "Submission",
+            "Witnessing"
+          ],
+          "_id": "69628e8545cb93bb5db1d54c"
+        },
+        {
+          "order": 4,
+          "name": "Completion",
+          "duration": "7 days",
+          "actions": [
+            "Registration confirmation",
+            "Secure storage"
+          ],
+          "_id": "69628e8545cb93bb5db1d54d"
+        }
+      ],
+      "estimatedDuration": "30 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 15000,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Property Title Deeds",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d54e"
+      },
+      {
+        "name": "Passport",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d54f"
+      },
+      {
+        "name": "Beneficiary Details",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d550"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Registered Will",
+        "format": "Physical",
+        "_id": "69628e8545cb93bb5db1d551"
+      },
+      {
+        "name": "Registration Certificate",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d552"
+      }
+    ],
+    "targetAudience": [
+      "landlords",
+      "investors",
+      "buyers"
+    ],
+    "metrics": {
+      "totalRequests": 75,
+      "completedRequests": 72,
+      "avgCompletionTime": 25,
+      "satisfactionScore": 99,
+      "revenue": 1125000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.375Z",
+    "updatedAt": "2026-01-10T17:38:13.375Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d554",
+    "name": "Dispute Resolution",
+    "code": "WC-SVC-025",
+    "category": "Legal & Compliance",
+    "description": "Mediation and dispute resolution services for landlord-tenant and buyer-seller conflicts",
+    "shortDescription": "Property dispute mediation",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d24c",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Case Assessment",
+          "duration": "2 days",
+          "actions": [
+            "Document review",
+            "Claim analysis"
+          ],
+          "_id": "69628e8545cb93bb5db1d555"
+        },
+        {
+          "order": 2,
+          "name": "Mediation",
+          "duration": "Variable",
+          "actions": [
+            "Negotiation",
+            "Settlement attempts"
+          ],
+          "_id": "69628e8545cb93bb5db1d556"
+        },
+        {
+          "order": 3,
+          "name": "Resolution",
+          "duration": "Variable",
+          "actions": [
+            "Agreement drafting",
+            "Execution"
+          ],
+          "_id": "69628e8545cb93bb5db1d557"
+        }
+      ],
+      "estimatedDuration": "Variable"
+    },
+    "pricing": {
+      "type": "hourly",
+      "amount": 1000,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Dispute Details",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d558"
+      },
+      {
+        "name": "Supporting Documents",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d559"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Resolution Agreement",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d55a"
+      },
+      {
+        "name": "Case Summary",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d55b"
+      }
+    ],
+    "targetAudience": [
+      "landlords",
+      "tenants",
+      "buyers",
+      "sellers"
+    ],
+    "metrics": {
+      "totalRequests": 45,
+      "completedRequests": 38,
+      "avgCompletionTime": 30,
+      "satisfactionScore": 85,
+      "revenue": 380000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.379Z",
+    "updatedAt": "2026-01-10T17:38:13.379Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d55d",
+    "name": "Market Intelligence Reports",
+    "code": "WC-SVC-026",
+    "category": "Client Services",
+    "description": "Tailored market intelligence reports for investors and developers",
+    "shortDescription": "Custom market research",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d248",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Brief Definition",
+          "duration": "2 days",
+          "actions": [
+            "Scope definition",
+            "Data requirements"
+          ],
+          "_id": "69628e8545cb93bb5db1d55e"
+        },
+        {
+          "order": 2,
+          "name": "Data Collection",
+          "duration": "7 days",
+          "actions": [
+            "Primary research",
+            "Secondary research"
+          ],
+          "_id": "69628e8545cb93bb5db1d55f"
+        },
+        {
+          "order": 3,
+          "name": "Analysis",
+          "duration": "7 days",
+          "actions": [
+            "Data analysis",
+            "Trend identification"
+          ],
+          "_id": "69628e8545cb93bb5db1d560"
+        },
+        {
+          "order": 4,
+          "name": "Report Delivery",
+          "duration": "5 days",
+          "actions": [
+            "Report writing",
+            "Presentation"
+          ],
+          "_id": "69628e8545cb93bb5db1d561"
+        }
+      ],
+      "estimatedDuration": "21 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 25000,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Research Brief",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d562"
+      },
+      {
+        "name": "Geographic Scope",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d563"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Market Intelligence Report",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d564"
+      },
+      {
+        "name": "Data Dashboard Access",
+        "format": "Digital",
+        "_id": "69628e8545cb93bb5db1d565"
+      },
+      {
+        "name": "Executive Presentation",
+        "format": "PPT",
+        "_id": "69628e8545cb93bb5db1d566"
+      }
+    ],
+    "targetAudience": [
+      "investors",
+      "developers"
+    ],
+    "metrics": {
+      "totalRequests": 28,
+      "completedRequests": 26,
+      "avgCompletionTime": 18,
+      "satisfactionScore": 96,
+      "revenue": 700000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.382Z",
+    "updatedAt": "2026-01-10T17:38:13.382Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d568",
+    "name": "Rent Collection",
+    "code": "WC-SVC-027",
+    "category": "Property Management",
+    "description": "Systematic rent collection and payment tracking for property owners",
+    "shortDescription": "Automated rent collection",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d234",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Setup",
+          "duration": "3 days",
+          "actions": [
+            "Payment schedule",
+            "Tenant onboarding"
+          ],
+          "_id": "69628e8545cb93bb5db1d569"
+        },
+        {
+          "order": 2,
+          "name": "Collection",
+          "duration": "Monthly",
+          "actions": [
+            "Reminders",
+            "Payment processing"
+          ],
+          "_id": "69628e8545cb93bb5db1d56a"
+        },
+        {
+          "order": 3,
+          "name": "Reporting",
+          "duration": "Monthly",
+          "actions": [
+            "Statement generation",
+            "Disbursement"
+          ],
+          "_id": "69628e8545cb93bb5db1d56b"
+        }
+      ],
+      "estimatedDuration": "Ongoing"
+    },
+    "pricing": {
+      "type": "percentage",
+      "percentage": 3,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Tenancy Contract",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d56c"
+      },
+      {
+        "name": "Bank Details",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d56d"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Monthly Statement",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d56e"
+      },
+      {
+        "name": "Annual Summary",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d56f"
+      }
+    ],
+    "targetAudience": [
+      "landlords"
+    ],
+    "metrics": {
+      "totalRequests": 280,
+      "completedRequests": 275,
+      "avgCompletionTime": 0,
+      "satisfactionScore": 94,
+      "revenue": 504000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.385Z",
+    "updatedAt": "2026-01-10T17:38:13.385Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d571",
+    "name": "Ejari Registration",
+    "code": "WC-SVC-028",
+    "category": "Legal & Compliance",
+    "description": "Complete Ejari registration service for tenancy contracts",
+    "shortDescription": "Official tenancy registration",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d22c",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Document Collection",
+          "duration": "1 day",
+          "actions": [
+            "Contract copy",
+            "ID copies"
+          ],
+          "_id": "69628e8545cb93bb5db1d572"
+        },
+        {
+          "order": 2,
+          "name": "Registration",
+          "duration": "1 day",
+          "actions": [
+            "RERA submission",
+            "Certificate issuance"
+          ],
+          "_id": "69628e8545cb93bb5db1d573"
+        }
+      ],
+      "estimatedDuration": "2 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 500,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Signed Tenancy Contract",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d574"
+      },
+      {
+        "name": "Landlord Emirates ID",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d575"
+      },
+      {
+        "name": "Tenant Emirates ID",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d576"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Ejari Certificate",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d577"
+      }
+    ],
+    "targetAudience": [
+      "landlords",
+      "tenants"
+    ],
+    "metrics": {
+      "totalRequests": 1500,
+      "completedRequests": 1490,
+      "avgCompletionTime": 1,
+      "satisfactionScore": 98,
+      "revenue": 750000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.388Z",
+    "updatedAt": "2026-01-10T17:38:13.388Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d579",
+    "name": "Property Photography",
+    "code": "WC-SVC-029",
+    "category": "Marketing",
+    "description": "High-quality professional photography and videography for property listings",
+    "shortDescription": "Professional property photography",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d238",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Scheduling",
+          "duration": "1 day",
+          "actions": [
+            "Appointment booking",
+            "Preparation tips"
+          ],
+          "_id": "69628e8545cb93bb5db1d57a"
+        },
+        {
+          "order": 2,
+          "name": "Photo Shoot",
+          "duration": "1 day",
+          "actions": [
+            "Interior photos",
+            "Exterior photos",
+            "Drone shots"
+          ],
+          "_id": "69628e8545cb93bb5db1d57b"
+        },
+        {
+          "order": 3,
+          "name": "Post-processing",
+          "duration": "1 day",
+          "actions": [
+            "Editing",
+            "Delivery"
+          ],
+          "_id": "69628e8545cb93bb5db1d57c"
+        }
+      ],
+      "estimatedDuration": "3 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 2500,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Property Access",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d57d"
+      },
+      {
+        "name": "Prepared Property",
+        "mandatory": false,
+        "_id": "69628e8545cb93bb5db1d57e"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "HD Photos (20+)",
+        "format": "Digital",
+        "_id": "69628e8545cb93bb5db1d57f"
+      },
+      {
+        "name": "Drone Footage",
+        "format": "Video",
+        "_id": "69628e8545cb93bb5db1d580"
+      },
+      {
+        "name": "Floor Plan",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d581"
+      }
+    ],
+    "targetAudience": [
+      "sellers",
+      "landlords"
+    ],
+    "metrics": {
+      "totalRequests": 480,
+      "completedRequests": 475,
+      "avgCompletionTime": 2,
+      "satisfactionScore": 95,
+      "revenue": 1200000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.391Z",
+    "updatedAt": "2026-01-10T17:38:13.391Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d583",
+    "name": "Virtual Tour Creation",
+    "code": "WC-SVC-030",
+    "category": "Marketing",
+    "description": "Immersive 3D virtual tours using Matterport technology",
+    "shortDescription": "3D virtual property tours",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d238",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "3D Scanning",
+          "duration": "1 day",
+          "actions": [
+            "Property scan",
+            "Data capture"
+          ],
+          "_id": "69628e8545cb93bb5db1d584"
+        },
+        {
+          "order": 2,
+          "name": "Processing",
+          "duration": "2 days",
+          "actions": [
+            "Cloud processing",
+            "Model creation"
+          ],
+          "_id": "69628e8545cb93bb5db1d585"
+        },
+        {
+          "order": 3,
+          "name": "Enhancement",
+          "duration": "2 days",
+          "actions": [
+            "Hotspots",
+            "Information tags",
+            "Branding"
+          ],
+          "_id": "69628e8545cb93bb5db1d586"
+        }
+      ],
+      "estimatedDuration": "5 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 4000,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Property Access",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d587"
+      },
+      {
+        "name": "Staged Property",
+        "mandatory": false,
+        "_id": "69628e8545cb93bb5db1d588"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Matterport Tour Link",
+        "format": "URL",
+        "_id": "69628e8545cb93bb5db1d589"
+      },
+      {
+        "name": "Embedded Player",
+        "format": "HTML",
+        "_id": "69628e8545cb93bb5db1d58a"
+      },
+      {
+        "name": "Floor Plan",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d58b"
+      }
+    ],
+    "targetAudience": [
+      "sellers",
+      "landlords",
+      "developers"
+    ],
+    "metrics": {
+      "totalRequests": 180,
+      "completedRequests": 175,
+      "avgCompletionTime": 4,
+      "satisfactionScore": 97,
+      "revenue": 720000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.394Z",
+    "updatedAt": "2026-01-10T17:38:13.394Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d58d",
+    "name": "Social Media Marketing",
+    "code": "WC-SVC-031",
+    "category": "Marketing",
+    "description": "Targeted social media marketing campaigns for property promotion",
+    "shortDescription": "Property social media campaigns",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d238",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Strategy",
+          "duration": "3 days",
+          "actions": [
+            "Target audience",
+            "Content plan"
+          ],
+          "_id": "69628e8545cb93bb5db1d58e"
+        },
+        {
+          "order": 2,
+          "name": "Content Creation",
+          "duration": "5 days",
+          "actions": [
+            "Graphics",
+            "Video content"
+          ],
+          "_id": "69628e8545cb93bb5db1d58f"
+        },
+        {
+          "order": 3,
+          "name": "Campaign Launch",
+          "duration": "7 days",
+          "actions": [
+            "Ads setup",
+            "Initial optimization"
+          ],
+          "_id": "69628e8545cb93bb5db1d590"
+        },
+        {
+          "order": 4,
+          "name": "Optimization",
+          "duration": "15 days",
+          "actions": [
+            "A/B testing",
+            "Performance tracking"
+          ],
+          "_id": "69628e8545cb93bb5db1d591"
+        }
+      ],
+      "estimatedDuration": "30 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 6000,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Property Photos",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d592"
+      },
+      {
+        "name": "Marketing Budget",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d593"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Campaign Report",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d594"
+      },
+      {
+        "name": "Lead Report",
+        "format": "Excel",
+        "_id": "69628e8545cb93bb5db1d595"
+      }
+    ],
+    "targetAudience": [
+      "sellers",
+      "landlords",
+      "developers"
+    ],
+    "metrics": {
+      "totalRequests": 120,
+      "completedRequests": 115,
+      "avgCompletionTime": 28,
+      "satisfactionScore": 88,
+      "revenue": 720000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.397Z",
+    "updatedAt": "2026-01-10T17:38:13.397Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d597",
+    "name": "Move-in/Move-out Inspection",
+    "code": "WC-SVC-032",
+    "category": "Property Management",
+    "description": "Detailed property inspection reports for move-in and move-out",
+    "shortDescription": "Property condition reports",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d22c",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Inspection",
+          "duration": "1 day",
+          "actions": [
+            "Full property check",
+            "Photo documentation"
+          ],
+          "_id": "69628e8545cb93bb5db1d598"
+        },
+        {
+          "order": 2,
+          "name": "Report",
+          "duration": "1 day",
+          "actions": [
+            "Condition report",
+            "Recommendations"
+          ],
+          "_id": "69628e8545cb93bb5db1d599"
+        }
+      ],
+      "estimatedDuration": "2 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 800,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Property Access",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d59a"
+      },
+      {
+        "name": "Both Parties Present",
+        "mandatory": false,
+        "_id": "69628e8545cb93bb5db1d59b"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Inspection Report",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d59c"
+      },
+      {
+        "name": "Photo Documentation",
+        "format": "Digital",
+        "_id": "69628e8545cb93bb5db1d59d"
+      }
+    ],
+    "targetAudience": [
+      "landlords",
+      "tenants"
+    ],
+    "metrics": {
+      "totalRequests": 650,
+      "completedRequests": 645,
+      "avgCompletionTime": 1,
+      "satisfactionScore": 94,
+      "revenue": 520000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.402Z",
+    "updatedAt": "2026-01-10T17:38:13.402Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d59f",
+    "name": "Lease Renewal",
+    "code": "WC-SVC-033",
+    "category": "Property Rentals",
+    "description": "Complete lease renewal service including negotiation and Ejari update",
+    "shortDescription": "Tenancy renewal services",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d22c",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Renewal Notice",
+          "duration": "3 days",
+          "actions": [
+            "Tenant communication",
+            "Terms proposal"
+          ],
+          "_id": "69628e8545cb93bb5db1d5a0"
+        },
+        {
+          "order": 2,
+          "name": "Negotiation",
+          "duration": "7 days",
+          "actions": [
+            "Rent discussion",
+            "Terms finalization"
+          ],
+          "_id": "69628e8545cb93bb5db1d5a1"
+        },
+        {
+          "order": 3,
+          "name": "Documentation",
+          "duration": "4 days",
+          "actions": [
+            "Addendum signing",
+            "Ejari update"
+          ],
+          "_id": "69628e8545cb93bb5db1d5a2"
+        }
+      ],
+      "estimatedDuration": "14 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 1500,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Current Tenancy Contract",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d5a3"
+      },
+      {
+        "name": "Renewal Intent",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d5a4"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Renewal Addendum",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d5a5"
+      },
+      {
+        "name": "Updated Ejari",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d5a6"
+      }
+    ],
+    "targetAudience": [
+      "landlords",
+      "tenants"
+    ],
+    "metrics": {
+      "totalRequests": 420,
+      "completedRequests": 410,
+      "avgCompletionTime": 10,
+      "satisfactionScore": 93,
+      "revenue": 630000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.406Z",
+    "updatedAt": "2026-01-10T17:38:13.406Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d5a8",
+    "name": "Eviction Support",
+    "code": "WC-SVC-034",
+    "category": "Legal & Compliance",
+    "description": "Legal support for property eviction cases through RERA and RDC",
+    "shortDescription": "Legal eviction assistance",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d24c",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Case Assessment",
+          "duration": "5 days",
+          "actions": [
+            "Legal review",
+            "Evidence collection"
+          ],
+          "_id": "69628e8545cb93bb5db1d5a9"
+        },
+        {
+          "order": 2,
+          "name": "Notice Period",
+          "duration": "30 days",
+          "actions": [
+            "Legal notice",
+            "Documentation"
+          ],
+          "_id": "69628e8545cb93bb5db1d5aa"
+        },
+        {
+          "order": 3,
+          "name": "RDC Filing",
+          "duration": "14 days",
+          "actions": [
+            "Case filing",
+            "Hearing scheduling"
+          ],
+          "_id": "69628e8545cb93bb5db1d5ab"
+        },
+        {
+          "order": 4,
+          "name": "Resolution",
+          "duration": "41 days",
+          "actions": [
+            "Court proceedings",
+            "Execution"
+          ],
+          "_id": "69628e8545cb93bb5db1d5ac"
+        }
+      ],
+      "estimatedDuration": "90 days"
+    },
+    "pricing": {
+      "type": "fixed",
+      "amount": 8000,
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Tenancy Contract",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d5ad"
+      },
+      {
+        "name": "Evidence of Breach",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d5ae"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Legal Opinion",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d5af"
+      },
+      {
+        "name": "Court Order",
+        "format": "Physical",
+        "_id": "69628e8545cb93bb5db1d5b0"
+      },
+      {
+        "name": "Eviction Execution",
+        "format": "Physical",
+        "_id": "69628e8545cb93bb5db1d5b1"
+      }
+    ],
+    "targetAudience": [
+      "landlords"
+    ],
+    "metrics": {
+      "totalRequests": 25,
+      "completedRequests": 20,
+      "avgCompletionTime": 75,
+      "satisfactionScore": 82,
+      "revenue": 200000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.409Z",
+    "updatedAt": "2026-01-10T17:38:13.409Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d5b3",
+    "name": "API Integration Services",
+    "code": "WC-SVC-035",
+    "category": "Technology",
+    "description": "Custom API integrations for property portals and management systems",
+    "shortDescription": "Property tech integration",
+    "icon": "Briefcase",
+    "department": "69628e8245cb93bb5db1d244",
+    "workflow": {
+      "stages": [
+        {
+          "order": 1,
+          "name": "Requirements",
+          "duration": "5 days",
+          "actions": [
+            "Scope definition",
+            "Technical assessment"
+          ],
+          "_id": "69628e8545cb93bb5db1d5b4"
+        },
+        {
+          "order": 2,
+          "name": "Development",
+          "duration": "Variable",
+          "actions": [
+            "API development",
+            "Integration"
+          ],
+          "_id": "69628e8545cb93bb5db1d5b5"
+        },
+        {
+          "order": 3,
+          "name": "Testing",
+          "duration": "7 days",
+          "actions": [
+            "QA testing",
+            "UAT"
+          ],
+          "_id": "69628e8545cb93bb5db1d5b6"
+        },
+        {
+          "order": 4,
+          "name": "Deployment",
+          "duration": "3 days",
+          "actions": [
+            "Go-live",
+            "Documentation"
+          ],
+          "_id": "69628e8545cb93bb5db1d5b7"
+        }
+      ],
+      "estimatedDuration": "30-90 days"
+    },
+    "pricing": {
+      "type": "custom",
+      "details": "Quote-based",
+      "currency": "AED"
+    },
+    "requirements": [
+      {
+        "name": "Technical Requirements",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d5b8"
+      },
+      {
+        "name": "API Access",
+        "mandatory": true,
+        "_id": "69628e8545cb93bb5db1d5b9"
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "API Documentation",
+        "format": "Digital",
+        "_id": "69628e8545cb93bb5db1d5ba"
+      },
+      {
+        "name": "Integration Guide",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d5bb"
+      },
+      {
+        "name": "Support SLA",
+        "format": "PDF",
+        "_id": "69628e8545cb93bb5db1d5bc"
+      }
+    ],
+    "targetAudience": [
+      "developers",
+      "investors"
+    ],
+    "metrics": {
+      "totalRequests": 12,
+      "completedRequests": 10,
+      "avgCompletionTime": 45,
+      "satisfactionScore": 94,
+      "revenue": 600000
+    },
+    "status": "active",
+    "isPublic": true,
+    "order": 0,
+    "relatedServices": [],
+    "createdAt": "2026-01-10T17:38:13.413Z",
+    "updatedAt": "2026-01-10T17:38:13.413Z",
+    "__v": 0
+  }
+]
