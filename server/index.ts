@@ -58,6 +58,7 @@ import agentAvailabilityRoutes from './routes/agentAvailability.js';
 import analyticsRoutes from './routes/analytics.js';
 import homepageRoutes from './routes/homepage.js';
 import contactRoutes from './routes/contact.js';
+import aiChatRoutes from './routes/aiChat.js';
 import jobApplicationsRoutes from './routes/jobApplications.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
@@ -233,6 +234,9 @@ app.get('/api/health', (req: Request, res: Response) => {
 
 // Authentication routes
 app.use('/api/auth', authRoutes);
+
+// Public AI chat route — no auth required
+app.use('/api/ai/chat', aiChatRoutes);
 
 // Protected routes (require authentication in production, optional in development)
 if (process.env.NODE_ENV === 'production') {
