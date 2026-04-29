@@ -3,11 +3,12 @@
  * ─────────────────
  * CRUD endpoints for property purchase/rental offers.
  *
- * GET    /api/offers           — List user's offers (as buyer)
- * GET    /api/offers/received  — Offers received on user's properties (as seller)
- * POST   /api/offers           — Submit a new offer
- * PATCH  /api/offers/:id       — Update offer (accept, reject, counter, withdraw)
- * DELETE /api/offers/:id       — Delete an offer
+ * GET    /api/offers                — List user's offers (as buyer/tenant)
+ * GET    /api/offers/received       — Offers received on user's properties (as seller/landlord)
+ * POST   /api/offers                — Submit a new offer
+ * PATCH  /api/offers/:id            — Update offer (accept, reject, counter, withdraw)
+ * PATCH  /api/offers/:id/decision   — Accept / reject / counter with full lifecycle handling
+ * DELETE /api/offers/:id            — Delete an offer
  */
 
 import { Router, Response } from 'express';
@@ -81,7 +82,7 @@ router.post(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { propertyId, amount, terms, expiresAt, leadId } = req.body;
+    const { propertyId, amount, terms, expiresAt, leadId, offerType } = req.body;
     if (!propertyId) throw new AppError('propertyId is required', 400);
     if (!amount || typeof amount !== 'number' || amount <= 0) {
       throw new AppError('amount must be a positive number', 400);
@@ -91,11 +92,15 @@ router.post(
     const property = await prisma.property.findUnique({ where: { id: propertyId } });
     if (!property) throw new AppError('Property not found', 404);
 
+    const validOfferTypes = ['lease', 'sale'];
+    const resolvedOfferType = offerType && validOfferTypes.includes(offerType) ? offerType : 'lease';
+
     const offer = await prisma.offer.create({
       data: {
         buyerId: userId,
         propertyId,
         amount,
+        offerType: resolvedOfferType,
         terms: terms || null,
         expiresAt: expiresAt ? new Date(expiresAt) : null,
         leadId: leadId || null,
@@ -131,7 +136,7 @@ router.patch(
     const isPropertyOwner = existing.property?.userId === userId;
     if (!isBuyer && !isPropertyOwner) throw new AppError('Access denied', 403);
 
-    const { status, counterAmount, terms, notes } = req.body;
+    const { status, counterAmount, terms, notes, rejectionReason } = req.body;
     const updateData: Record<string, unknown> = {};
 
     if (status !== undefined) {
@@ -145,9 +150,17 @@ router.patch(
       }
       updateData.status = status;
     }
-    if (counterAmount !== undefined) updateData.counterAmount = counterAmount;
+    if (counterAmount !== undefined) {
+      updateData.counterAmount = counterAmount;
+      // Track counter history
+      const existing2 = await prisma.offer.findUnique({ where: { id }, select: { counterHistory: true } });
+      const history = Array.isArray(existing2?.counterHistory) ? existing2.counterHistory as unknown[] : [];
+      history.push({ amount: counterAmount, terms, by: userId, at: new Date().toISOString() });
+      updateData.counterHistory = history;
+    }
     if (terms !== undefined) updateData.terms = terms;
     if (notes !== undefined) updateData.notes = notes;
+    if (rejectionReason !== undefined) updateData.rejectionReason = rejectionReason;
 
     const updated = await prisma.offer.update({ where: { id }, data: updateData });
 
@@ -172,6 +185,82 @@ router.delete(
 
     logger.info('Offer deleted', { userId, offerId: id });
     res.json({ success: true, message: 'Offer deleted' });
+  }),
+);
+
+// ─── PATCH /api/offers/:id/decision — Accept / Reject / Counter ─────────────
+// Dedicated endpoint for lifecycle decisions with full side-effect handling
+router.patch(
+  '/:id/decision',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
+
+    const { id } = req.params;
+    const existing = await prisma.offer.findUnique({
+      where: { id },
+      include: { property: { select: { userId: true, title: true, id: true } } },
+    });
+    if (!existing) throw new AppError('Offer not found', 404);
+
+    // Only property owner / landlord or owner (admin) can make this decision
+    const isPropertyOwner = existing.property?.userId === userId;
+    const userRole = req.user?.role;
+    if (!isPropertyOwner && userRole !== 'owner') {
+      throw new AppError('Access denied — only property owner or admin can decide on offers', 403);
+    }
+
+    const { decision, counterAmount, terms, rejectionReason } = req.body;
+    const validDecisions = ['accepted', 'rejected', 'countered'];
+    if (!decision || !validDecisions.includes(decision)) {
+      throw new AppError(`decision must be one of: ${validDecisions.join(', ')}`, 400);
+    }
+
+    if (decision === 'countered' && (!counterAmount || typeof counterAmount !== 'number' || counterAmount <= 0)) {
+      throw new AppError('counterAmount is required and must be a positive number for counter decisions', 400);
+    }
+    if (decision === 'rejected' && !rejectionReason) {
+      throw new AppError('rejectionReason is required when rejecting an offer', 400);
+    }
+
+    // Build counter history
+    const history = Array.isArray(existing.counterHistory) ? existing.counterHistory as unknown[] : [];
+    if (decision === 'countered') {
+      history.push({ amount: counterAmount, terms, by: userId, at: new Date().toISOString() });
+    }
+
+    const updated = await prisma.offer.update({
+      where: { id },
+      data: {
+        status: decision,
+        ...(decision === 'countered' ? { counterAmount, counterHistory: history } : {}),
+        ...(decision === 'rejected' ? { rejectionReason } : {}),
+        ...(terms ? { terms } : {}),
+      },
+      include: {
+        property: { select: { id: true, title: true, location: true } },
+        buyer: { select: { id: true, name: true, email: true } },
+      },
+    });
+
+    // If accepted, advance associated lead to stage 6 (Deposit)
+    if (decision === 'accepted' && existing.leadId) {
+      await prisma.lead.update({
+        where: { id: existing.leadId },
+        data: { leasingStage: 6, status: 'qualified' },
+      }).catch((err) => logger.warn('Failed to advance lead stage on offer acceptance', { err }));
+    }
+
+    // If rejected, revert lead to stage 2 (Matching) so agent can find alternatives
+    if (decision === 'rejected' && existing.leadId) {
+      await prisma.lead.update({
+        where: { id: existing.leadId },
+        data: { leasingStage: 2, status: 'warm' },
+      }).catch((err) => logger.warn('Failed to revert lead stage on offer rejection', { err }));
+    }
+
+    logger.info('Offer decision recorded', { userId, offerId: id, decision });
+    res.json({ success: true, data: updated, message: `Offer ${decision}` });
   }),
 );
 
