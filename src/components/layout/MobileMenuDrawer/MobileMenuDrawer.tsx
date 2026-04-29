@@ -19,27 +19,19 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../../store/store';
-import {
-  Home, BarChart3, Users2, Settings, Shield, Bot, X,
-  TrendingUp, Building2, DollarSign, Megaphone,
-  MessageSquare, Globe, Lock, Code, Scale,
-  ChevronDown, Search,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { Home, BarChart3, Users2, Settings, Shield, Bot, X, ChevronDown, Search } from 'lucide-react';
 import {
   selectSelectedDepartment,
   selectSelectedService,
+  selectGlobalSearch,
   selectDepartment,
   selectService,
   toggleAICommand,
+  setGlobalSearch,
+  clearGlobalSearch,
 } from '../../../store/slices/sidebarSlice';
 import { selectHotLeads, selectAllProperties } from '../../../store/crmDataSlice';
 import { selectQueuedCount } from '../../../store/slices/nadiaSlice';
-import {
-  getAllAssistants,
-  DEPARTMENTS as REGISTRY_DEPARTMENTS,
-} from '../../../config/assistantRegistry';
-import type { DepartmentId } from '../../../config/assistantRegistry';
 import {
   DrawerOverlay,
   DrawerPanel,
@@ -58,59 +50,15 @@ import {
   DrawerSubDot,
   DrawerFooter,
   DrawerFooterText,
+  DrawerSearchBar,
+  DrawerSearchInput,
+  DrawerSearchIcon,
+  DrawerSearchClear,
 } from './styles';
 
-// ─── Department definitions (mirrored from SidebarContainer) ──────────────
-
-interface DepartmentDef {
-  icon: LucideIcon;
-  label: string;
-  color: string;
-  services: string[];
-  badgeKey?: 'hotLeads' | 'properties' | 'messages';
-}
-
-const DEPARTMENTS: Record<string, DepartmentDef> = {
-  operations: {
-    icon: Building2, label: 'Operations', color: '#3B82F6',
-    services: ['Inventory Management', 'Properties', 'Asset Tracking', 'Data Management'],
-    badgeKey: 'properties',
-  },
-  finance: {
-    icon: DollarSign, label: 'Finance', color: '#F59E0B',
-    services: ['Invoicing', 'Payment Tracking', 'Financial Reports', 'Budget Analysis'],
-  },
-  sales: {
-    icon: TrendingUp, label: 'Sales', color: '#10B981',
-    services: ['Lead Management', 'Negotiations', 'Deal Tracking', 'Pipeline'],
-    badgeKey: 'hotLeads',
-  },
-  marketing: {
-    icon: Megaphone, label: 'Marketing', color: '#EC4899',
-    services: ['Campaigns', 'Content', 'Analytics', 'Lead Generation'],
-  },
-  communications: {
-    icon: MessageSquare, label: 'Communications', color: '#8B5CF6',
-    services: ['Messages', 'Emails', 'Templates', 'Notifications'],
-    badgeKey: 'messages',
-  },
-  executive: {
-    icon: Globe, label: 'Executive', color: '#D4AF37',
-    services: ['Strategic Overview', 'KPIs', 'Reports', 'Insights'],
-  },
-  compliance: {
-    icon: Lock, label: 'Compliance', color: '#059669',
-    services: ['Regulations', 'Audits', 'Policies', 'Documentation'],
-  },
-  technology: {
-    icon: Code, label: 'Technology', color: '#06B6D4',
-    services: ['Systems', 'Integration', 'Support', 'Development'],
-  },
-  legal: {
-    icon: Scale, label: 'Legal', color: '#7C3AED',
-    services: ['Contracts', 'Agreements', 'Compliance', 'Documentation'],
-  },
-};
+// ─── Department definitions ───────────────────────────────────────────────
+// Imported from src/config/departmentConfig.ts (single source of truth)
+import { SIDEBAR_DEPARTMENTS as DEPARTMENTS } from '../../../config/departmentConfig';
 
 // ─── Props ────────────────────────────────────────────────────────────────
 
@@ -135,6 +83,7 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = React.memo(function Mo
 
   const selectedDepartment = useSelector(selectSelectedDepartment);
   const selectedSvc = useSelector(selectSelectedService);
+  const globalSearch = useSelector(selectGlobalSearch);
   const userRole = useSelector((state: RootState) => state.auth?.user?.role || 'user');
   const isSuperUser = userRole === 'lion';
 
@@ -143,16 +92,20 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = React.memo(function Mo
   const allProperties = useSelector(selectAllProperties);
   const queuedMessages = useSelector(selectQueuedCount);
 
-  const badgeCounts = useMemo<Record<string, number>>(() => ({
-    hotLeads: hotLeads?.length ?? 0,
-    properties: allProperties?.length ?? 0,
-    messages: queuedMessages ?? 0,
-  }), [hotLeads, allProperties, queuedMessages]);
+  const badgeCounts = useMemo<Record<string, number>>(
+    () => ({
+      hotLeads: hotLeads?.length ?? 0,
+      properties: allProperties?.length ?? 0,
+      messages: queuedMessages ?? 0,
+    }),
+    [hotLeads, allProperties, queuedMessages]
+  );
 
   // Expanded departments
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const toggleExpand = useCallback((deptId: string) => {
+    // eslint-disable-next-line security/detect-object-injection
     setExpanded(prev => ({ ...prev, [deptId]: !prev[deptId] }));
   }, []);
 
@@ -173,7 +126,9 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = React.memo(function Mo
     } else {
       document.body.style.overflow = '';
     }
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [open]);
 
   // ── Focus trap — focus first element when opened ────────────
@@ -187,27 +142,47 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = React.memo(function Mo
   }, [open]);
 
   // ── Handlers ────────────────────────────────────────────────
-  const handleTopNav = useCallback((tabId: string) => {
-    onTabChange(tabId);
-    onClose();
-  }, [onTabChange, onClose]);
+  const handleTopNav = useCallback(
+    (tabId: string) => {
+      onTabChange(tabId);
+      onClose();
+    },
+    [onTabChange, onClose]
+  );
 
-  const handleDeptClick = useCallback((deptId: string) => {
-    dispatch(selectDepartment(deptId));
-    toggleExpand(deptId);
-  }, [dispatch, toggleExpand]);
+  const handleDeptClick = useCallback(
+    (deptId: string) => {
+      dispatch(selectDepartment(deptId));
+      toggleExpand(deptId);
+    },
+    [dispatch, toggleExpand]
+  );
 
-  const handleServiceClick = useCallback((deptId: string, service: string) => {
-    dispatch(selectDepartment(deptId));
-    dispatch(selectService({ department: deptId, service }));
-    onTabChange(`service-${deptId}`);
-    onClose();
-  }, [dispatch, onTabChange, onClose]);
+  const handleServiceClick = useCallback(
+    (deptId: string, service: string) => {
+      dispatch(selectDepartment(deptId));
+      dispatch(selectService({ department: deptId, service }));
+      onTabChange(`service-${deptId}`);
+      onClose();
+    },
+    [dispatch, onTabChange, onClose]
+  );
 
   const handleAIOpen = useCallback(() => {
     dispatch(toggleAICommand());
     onClose();
   }, [dispatch, onClose]);
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      dispatch(setGlobalSearch(e.target.value));
+    },
+    [dispatch]
+  );
+
+  const handleSearchClear = useCallback(() => {
+    dispatch(clearGlobalSearch());
+  }, [dispatch]);
 
   return (
     <>
@@ -239,18 +214,41 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = React.memo(function Mo
 
         {/* ── Body ───────────────────────────────────── */}
         <DrawerBody>
+          {/* Global Search */}
+          <DrawerSearchBar>
+            <DrawerSearchIcon aria-hidden="true"><Search size={13} /></DrawerSearchIcon>
+            <DrawerSearchInput
+              type="text"
+              placeholder="Search departments, AI…"
+              value={globalSearch}
+              onChange={handleSearchChange}
+              aria-label="Search navigation"
+            />
+            {globalSearch && (
+              <DrawerSearchClear onClick={handleSearchClear} aria-label="Clear search">
+                <X size={10} />
+              </DrawerSearchClear>
+            )}
+          </DrawerSearchBar>
+
           {/* Quick nav */}
           <DrawerSectionLabel>Navigation</DrawerSectionLabel>
           <DrawerNavItem onClick={() => handleTopNav('home')} aria-label="Dashboard">
-            <DrawerNavIcon><Home size={18} /></DrawerNavIcon>
+            <DrawerNavIcon>
+              <Home size={18} />
+            </DrawerNavIcon>
             Dashboard
           </DrawerNavItem>
           <DrawerNavItem onClick={() => handleTopNav('analytics')} aria-label="Analytics">
-            <DrawerNavIcon><BarChart3 size={18} /></DrawerNavIcon>
+            <DrawerNavIcon>
+              <BarChart3 size={18} />
+            </DrawerNavIcon>
             Analytics
           </DrawerNavItem>
           <DrawerNavItem onClick={() => handleTopNav('clients')} aria-label="Clients">
-            <DrawerNavIcon><Users2 size={18} /></DrawerNavIcon>
+            <DrawerNavIcon>
+              <Users2 size={18} />
+            </DrawerNavIcon>
             Clients
           </DrawerNavItem>
 
@@ -259,6 +257,7 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = React.memo(function Mo
           {Object.entries(DEPARTMENTS).map(([deptId, dept]) => {
             const Icon = dept.icon;
             const isActive = selectedDepartment === deptId;
+            // eslint-disable-next-line security/detect-object-injection
             const isExpanded = !!expanded[deptId];
             const badge = dept.badgeKey ? badgeCounts[dept.badgeKey] : 0;
 
@@ -322,7 +321,10 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = React.memo(function Mo
           {isSuperUser && (
             <>
               <DrawerSectionLabel>Admin</DrawerSectionLabel>
-              <DrawerNavItem onClick={() => handleTopNav('admin-dashboard')} aria-label="Admin Dashboard">
+              <DrawerNavItem
+                onClick={() => handleTopNav('admin-dashboard')}
+                aria-label="Admin Dashboard"
+              >
                 <DrawerNavIcon $color="#EF4444">
                   <Shield size={18} />
                 </DrawerNavIcon>
@@ -335,7 +337,9 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = React.memo(function Mo
         {/* ── Footer ─────────────────────────────────── */}
         <DrawerFooter>
           <DrawerNavItem onClick={() => handleTopNav('settings')} aria-label="Settings">
-            <DrawerNavIcon><Settings size={18} /></DrawerNavIcon>
+            <DrawerNavIcon>
+              <Settings size={18} />
+            </DrawerNavIcon>
             Settings
           </DrawerNavItem>
           <DrawerFooterText>White Caves CRM v2.0</DrawerFooterText>

@@ -1,13 +1,13 @@
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 
-const { colors, mediaQueries, transitions } = theme;
+const { colors, transitions } = theme;
 
 /**
- * Unified CRM Layout: TopBar (56px) + Navigation + Content
+ * Unified CRM Layout: TopBar (56px) + Sidebar + Content
  *
  * Desktop (1024px+):  [280px Sidebar] [--- Content (full width) ---]
- * Tablet (768-1023px): [64px Rail] [--- Content (full width) ---]
+ * Tablet (768-1023px): [64px collapsed Sidebar] [--- Content ---]
  * Mobile (<768px):     [--- Full width ---] + 56px bottom nav
  */
 
@@ -35,20 +35,8 @@ export const AppMain = styled.main<{ $withNav?: boolean }>`
   overflow-y: auto;
   transition: margin-left ${transitions.durations.shorter} ${transitions.easing.easeInOut};
 
-  /* When sidebar rail is shown (tablet: 768-1024px), offset content */
-  ${props => props.$withNav && `
-    @media (max-width: 1023px) {
-      margin-left: 64px;
-    }
-  `}
-
-  /* Desktop (1024px+): sidebar is 280px, handled by EnhancedLeftSidebar itself */
-  @media (min-width: 1024px) {
-    margin-left: 0;
-  }
-
-  /* Add bottom padding for MobileBottomNav on mobile/tablet */
-  @media (max-width: 1023px) {
+  /* Add bottom padding for MobileBottomNav on mobile */
+  @media (max-width: 767px) {
     padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
   }
 

@@ -203,6 +203,8 @@ app.use('/api/auth/register', registerLimiter);
 app.use('/api/auth/password', passwordLimiter);
 app.use('/api/auth/verify-2fa', strictLimiter);
 app.use('/api/auth/firebase-sync', authLimiter);
+app.use('/api/auth/webauthn/register', authLimiter);
+app.use('/api/auth/webauthn/authenticate', authLimiter);
 app.use('/api/contact', contactLimiter); // Public unauthenticated — stricter: 10/hour/IP
 
 // ============================================================================

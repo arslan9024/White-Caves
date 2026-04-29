@@ -78,7 +78,7 @@ const features: Feature[] = [
     icon: Clock,
     title: '24/7 Availability',
     description:
-      'Round-the-clock customer support and property inquiries &mdash; we&apos;re always here to assist you.',
+      'Round-the-clock customer support and property inquiries — we\'re always here to assist you.',
     color: '#8B5CF6',
     detail: {
       details:

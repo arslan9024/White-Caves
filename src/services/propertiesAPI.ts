@@ -15,13 +15,7 @@ const log = createLogger('propertiesAPI');
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
-export type PropertyStatus =
-  | 'draft'
-  | 'listed'
-  | 'under_offer'
-  | 'sold'
-  | 'leased'
-  | 'withdrawn';
+export type PropertyStatus = 'draft' | 'listed' | 'under_offer' | 'sold' | 'leased' | 'withdrawn';
 
 export type PropertyType =
   | 'apartment'
@@ -115,7 +109,7 @@ export interface PropertyStats {
  */
 export function calculateDLDFee(
   price: number,
-  transactionType: 'sale' | 'lease',
+  transactionType: 'sale' | 'lease'
 ): { fee: number; adminFee: number; total: number; percentage: number } {
   if (transactionType === 'sale') {
     const fee = price * 0.04;
@@ -129,14 +123,16 @@ export function calculateDLDFee(
 }
 
 /**
- * Calculate commission based on Dubai standards.
+ * Calculate commission for a property transaction (Dubai standards).
  * - Sales: 2% of sale price
  * - Rental: 5% of annual rent
+ *
+ * For full commission calculations including VAT, see commissionsAPI.ts.
  */
-export function calculateCommission(
+export function calculatePropertyCommission(
   price: number,
   transactionType: 'sale' | 'rental',
-  customRate?: number,
+  customRate?: number
 ): { amount: number; rate: number } {
   const rate = customRate ?? (transactionType === 'sale' ? 2 : 5);
   return { amount: price * (rate / 100), rate };
@@ -148,7 +144,7 @@ export function calculateCommission(
  * Fetch properties with pagination, filtering, and sorting.
  */
 export async function fetchProperties(
-  params: PropertiesListParams = {},
+  params: PropertiesListParams = {}
 ): Promise<PaginatedResponse<Property>> {
   const query = new URLSearchParams();
   if (params.page) query.set('page', String(params.page));
@@ -189,9 +185,7 @@ export async function fetchProperty(id: string): Promise<SingleResponse<Property
 /**
  * Create a new property listing.
  */
-export async function createProperty(
-  data: Partial<Property>,
-): Promise<SingleResponse<Property>> {
+export async function createProperty(data: Partial<Property>): Promise<SingleResponse<Property>> {
   log.info('Creating property', { title: data.title });
   const response = await authFetch('/api/properties', {
     method: 'POST',
@@ -208,7 +202,7 @@ export async function createProperty(
  */
 export async function updateProperty(
   id: string,
-  data: Partial<Property>,
+  data: Partial<Property>
 ): Promise<SingleResponse<Property>> {
   log.info('Updating property', { id });
   const response = await authFetch(`/api/properties/${id}`, {
@@ -224,9 +218,7 @@ export async function updateProperty(
 /**
  * Delete a property listing.
  */
-export async function deleteProperty(
-  id: string,
-): Promise<{ success: boolean; message: string }> {
+export async function deleteProperty(id: string): Promise<{ success: boolean; message: string }> {
   log.info('Deleting property', { id });
   const response = await authFetch(`/api/properties/${id}`, { method: 'DELETE' });
   if (!response.ok) {
@@ -242,11 +234,11 @@ export async function deleteProperty(
 export async function uploadPropertyMedia(
   propertyId: string,
   files: File[],
-  mediaType: 'image' | 'video' | 'floorplan' = 'image',
+  mediaType: 'image' | 'video' | 'floorplan' = 'image'
 ): Promise<SingleResponse<{ urls: string[] }>> {
   log.info('Uploading property media', { propertyId, count: files.length, mediaType });
   const formData = new FormData();
-  files.forEach((file) => formData.append('media', file));
+  files.forEach(file => formData.append('media', file));
   formData.append('mediaType', mediaType);
 
   const response = await authFetch(`/api/properties/${propertyId}/media`, {
@@ -264,7 +256,7 @@ export async function uploadPropertyMedia(
  */
 export async function assignPropertyAgent(
   propertyId: string,
-  agentId: string,
+  agentId: string
 ): Promise<SingleResponse<Property>> {
   log.info('Assigning agent to property', { propertyId, agentId });
   const response = await authFetch(`/api/properties/${propertyId}/assign`, {
