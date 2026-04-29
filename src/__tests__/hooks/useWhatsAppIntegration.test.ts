@@ -3,15 +3,15 @@
  */
 
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useWhatsAppIntegration } from '../../../hooks/whatsapp/useWhatsAppIntegration';
-import { whatsappService } from '../../../services/whatsapp/whatsapp.service';
+import { useWhatsAppIntegration } from '../../hooks/whatsapp/useWhatsAppIntegration';
+import { whatsappService } from '../../services/whatsapp/whatsapp.service';
 
 // Mock the service
-jest.mock('../../../services/whatsapp/whatsapp.service');
+vi.mock('../../services/whatsapp/whatsapp.service');
 
 describe('useWhatsAppIntegration', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('initialization', () => {
@@ -29,7 +29,7 @@ describe('useWhatsAppIntegration', () => {
         { accountId: '1', name: 'Account 1', isConnected: true },
       ];
 
-      (whatsappService.listAccounts as jest.Mock).mockResolvedValue({
+      (whatsappService.listAccounts as vi.Mock).mockResolvedValue({
         data: { accounts: mockAccounts },
       });
 
@@ -47,7 +47,7 @@ describe('useWhatsAppIntegration', () => {
     it('should initiate device linking', async () => {
       const { result } = renderHook(() => useWhatsAppIntegration());
 
-      (whatsappService.initiateDeviceLink as jest.Mock).mockResolvedValue({
+      (whatsappService.initiateDeviceLink as vi.Mock).mockResolvedValue({
         data: { qrCode: 'qr-data', sessionId: 'session-123' },
       });
 
@@ -63,7 +63,7 @@ describe('useWhatsAppIntegration', () => {
       const { result } = renderHook(() => useWhatsAppIntegration());
 
       const error = new Error('Link failed');
-      (whatsappService.initiateDeviceLink as jest.Mock).mockRejectedValue(
+      (whatsappService.initiateDeviceLink as vi.Mock).mockRejectedValue(
         error
       );
 
@@ -83,11 +83,11 @@ describe('useWhatsAppIntegration', () => {
     it('should confirm device link', async () => {
       const mockAccount = { accountId: '1', name: 'Account 1', isConnected: true };
 
-      (whatsappService.listAccounts as jest.Mock).mockResolvedValue({
+      (whatsappService.listAccounts as vi.Mock).mockResolvedValue({
         data: { accounts: [mockAccount] },
       });
 
-      (whatsappService.confirmDeviceLink as jest.Mock).mockResolvedValue({
+      (whatsappService.confirmDeviceLink as vi.Mock).mockResolvedValue({
         data: mockAccount,
       });
 
@@ -113,7 +113,7 @@ describe('useWhatsAppIntegration', () => {
         isConnected: true,
       };
 
-      (whatsappService.connectAccount as jest.Mock).mockResolvedValue({
+      (whatsappService.connectAccount as vi.Mock).mockResolvedValue({
         data: connectedAccount,
       });
 
@@ -135,7 +135,7 @@ describe('useWhatsAppIntegration', () => {
         isConnected: false,
       };
 
-      (whatsappService.disconnectAccount as jest.Mock).mockResolvedValue({
+      (whatsappService.disconnectAccount as vi.Mock).mockResolvedValue({
         data: disconnectedAccount,
       });
 
@@ -151,7 +151,7 @@ describe('useWhatsAppIntegration', () => {
     it('should unlink an account', async () => {
       const { result } = renderHook(() => useWhatsAppIntegration());
 
-      (whatsappService.unlinkAccount as jest.Mock).mockResolvedValue({});
+      (whatsappService.unlinkAccount as vi.Mock).mockResolvedValue({});
 
       await act(async () => {
         await result.current.unlinkAccount('account-1');
@@ -166,7 +166,7 @@ describe('useWhatsAppIntegration', () => {
       const { result } = renderHook(() => useWhatsAppIntegration());
 
       // Trigger an error
-      (whatsappService.listAccounts as jest.Mock).mockRejectedValue(
+      (whatsappService.listAccounts as vi.Mock).mockRejectedValue(
         new Error('Load failed')
       );
 

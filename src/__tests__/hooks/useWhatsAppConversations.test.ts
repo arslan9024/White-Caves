@@ -3,14 +3,14 @@
  */
 
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useWhatsAppConversations } from '../../../hooks/whatsapp/useWhatsAppConversations';
-import { whatsappService } from '../../../services/whatsapp/whatsapp.service';
+import { useWhatsAppConversations } from '../../hooks/whatsapp/useWhatsAppConversations';
+import { whatsappService } from '../../services/whatsapp/whatsapp.service';
 
-jest.mock('../../../services/whatsapp/whatsapp.service');
+vi.mock('../../services/whatsapp/whatsapp.service');
 
 describe('useWhatsAppConversations', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('initialization', () => {
@@ -36,7 +36,7 @@ describe('useWhatsAppConversations', () => {
         },
       ];
 
-      (whatsappService.listConversations as jest.Mock).mockResolvedValue({
+      (whatsappService.listConversations as vi.Mock).mockResolvedValue({
         data: { conversations: mockConversations },
       });
 
@@ -54,7 +54,7 @@ describe('useWhatsAppConversations', () => {
     });
 
     it('should handle loading errors', async () => {
-      (whatsappService.listConversations as jest.Mock).mockRejectedValue(
+      (whatsappService.listConversations as vi.Mock).mockRejectedValue(
         new Error('Load failed')
       );
 
@@ -83,7 +83,7 @@ describe('useWhatsAppConversations', () => {
         },
       ];
 
-      (whatsappService.listConversations as jest.Mock).mockResolvedValue({
+      (whatsappService.listConversations as vi.Mock).mockResolvedValue({
         data: { conversations: mockConversations },
       });
 
@@ -112,7 +112,7 @@ describe('useWhatsAppConversations', () => {
         { id: 'msg-2', text: 'Hello', isOwn: true, timestamp: new Date() },
       ];
 
-      (whatsappService.getConversationHistory as jest.Mock).mockResolvedValue({
+      (whatsappService.getConversationHistory as vi.Mock).mockResolvedValue({
         data: { messages: mockMessages },
       });
 
@@ -139,7 +139,7 @@ describe('useWhatsAppConversations', () => {
         timestamp: new Date(),
       };
 
-      (whatsappService.sendMessage as jest.Mock).mockResolvedValue({
+      (whatsappService.sendMessage as vi.Mock).mockResolvedValue({
         data: { message: mockMessage },
       });
 
@@ -157,7 +157,7 @@ describe('useWhatsAppConversations', () => {
     });
 
     it('should handle send errors', async () => {
-      (whatsappService.sendMessage as jest.Mock).mockRejectedValue(
+      (whatsappService.sendMessage as vi.Mock).mockRejectedValue(
         new Error('Send failed')
       );
 
@@ -177,7 +177,7 @@ describe('useWhatsAppConversations', () => {
 
   describe('markAsRead', () => {
     it('should mark conversation as read', async () => {
-      (whatsappService.markConversationAsRead as jest.Mock).mockResolvedValue({});
+      (whatsappService.markConversationAsRead as vi.Mock).mockResolvedValue({});
 
       const { result } = renderHook(() => useWhatsAppConversations());
 
@@ -203,7 +203,7 @@ describe('useWhatsAppConversations', () => {
         },
       ];
 
-      (whatsappService.searchConversations as jest.Mock).mockResolvedValue({
+      (whatsappService.searchConversations as vi.Mock).mockResolvedValue({
         data: { conversations: mockResults },
       });
 

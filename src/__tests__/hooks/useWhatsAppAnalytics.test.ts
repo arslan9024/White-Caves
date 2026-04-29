@@ -3,14 +3,14 @@
  */
 
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useWhatsAppAnalytics } from '../../../hooks/whatsapp/useWhatsAppAnalytics';
-import { whatsappService } from '../../../services/whatsapp/whatsapp.service';
+import { useWhatsAppAnalytics } from '../../hooks/whatsapp/useWhatsAppAnalytics';
+import { whatsappService } from '../../services/whatsapp/whatsapp.service';
 
-jest.mock('../../../services/whatsapp/whatsapp.service');
+vi.mock('../../services/whatsapp/whatsapp.service');
 
 describe('useWhatsAppAnalytics', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('initialization', () => {
@@ -34,7 +34,7 @@ describe('useWhatsAppAnalytics', () => {
         topConversations: [],
       };
 
-      (whatsappService.getAnalytics as jest.Mock).mockResolvedValue({
+      (whatsappService.getAnalytics as vi.Mock).mockResolvedValue({
         data: mockAnalytics,
       });
 
@@ -52,7 +52,7 @@ describe('useWhatsAppAnalytics', () => {
     });
 
     it('should handle loading errors', async () => {
-      (whatsappService.getAnalytics as jest.Mock).mockRejectedValue(
+      (whatsappService.getAnalytics as vi.Mock).mockRejectedValue(
         new Error('Load failed')
       );
 
@@ -94,7 +94,7 @@ describe('useWhatsAppAnalytics', () => {
         messageTypes: { text: 80, media: 20 },
       };
 
-      (whatsappService.getMessageStats as jest.Mock).mockResolvedValue({
+      (whatsappService.getMessageStats as vi.Mock).mockResolvedValue({
         data: mockStats,
       });
 
@@ -117,7 +117,7 @@ describe('useWhatsAppAnalytics', () => {
         topConversations: [],
       };
 
-      (whatsappService.getConversationStats as jest.Mock).mockResolvedValue({
+      (whatsappService.getConversationStats as vi.Mock).mockResolvedValue({
         data: mockStats,
       });
 
@@ -134,15 +134,15 @@ describe('useWhatsAppAnalytics', () => {
 
   describe('exportAnalytics', () => {
     it('should export analytics as CSV', async () => {
-      (whatsappService.exportAnalytics as jest.Mock).mockResolvedValue({
+      (whatsappService.exportAnalytics as vi.Mock).mockResolvedValue({
         data: 'name,count\nmessages,100',
       });
 
       const { result } = renderHook(() => useWhatsAppAnalytics());
 
       // Mock the download function
-      global.URL.createObjectURL = jest.fn();
-      global.URL.revokeObjectURL = jest.fn();
+      global.URL.createObjectURL = vi.fn();
+      global.URL.revokeObjectURL = vi.fn();
 
       await act(async () => {
         await result.current.exportAnalytics('account-1', 'csv');
@@ -157,14 +157,14 @@ describe('useWhatsAppAnalytics', () => {
     });
 
     it('should export analytics as JSON', async () => {
-      (whatsappService.exportAnalytics as jest.Mock).mockResolvedValue({
+      (whatsappService.exportAnalytics as vi.Mock).mockResolvedValue({
         data: '{"messages":100}',
       });
 
       const { result } = renderHook(() => useWhatsAppAnalytics());
 
-      global.URL.createObjectURL = jest.fn();
-      global.URL.revokeObjectURL = jest.fn();
+      global.URL.createObjectURL = vi.fn();
+      global.URL.revokeObjectURL = vi.fn();
 
       await act(async () => {
         await result.current.exportAnalytics('account-1', 'json');
@@ -200,7 +200,7 @@ describe('useWhatsAppAnalytics', () => {
         deliveryRate: 98,
       };
 
-      (whatsappService.getAnalytics as jest.Mock).mockResolvedValue({
+      (whatsappService.getAnalytics as vi.Mock).mockResolvedValue({
         data: mockAnalytics,
       });
 

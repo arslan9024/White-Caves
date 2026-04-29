@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { DashboardShell, DataCard, KPI, Table } from '../../components/shared/dashboard';
+import { DashboardShell, DataCard, KPI, Table } from '../../../components/shared/dashboard';
 
 /**
  * Shared Dashboard Components Tests
@@ -152,7 +152,7 @@ describe('Table Component', () => {
   });
 
   test('calls onRowClick handler', () => {
-    const mockOnRowClick = jest.fn();
+    const mockOnRowClick = vi.fn();
     render(
       <Table columns={mockColumns} data={mockData} onRowClick={mockOnRowClick} />
     );

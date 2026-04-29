@@ -7,7 +7,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useWhatsAppIntegration } from '../../hooks/whatsapp';
+import { useWhatsAppIntegration } from '../../../hooks/whatsapp';
 
 const Container = styled.div`
   padding: 20px;

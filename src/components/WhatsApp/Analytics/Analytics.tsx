@@ -7,7 +7,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useWhatsAppAnalytics } from '../../hooks/whatsapp';
+import { useWhatsAppAnalytics } from '../../../hooks/whatsapp';
 
 const Container = styled.div`
   padding: 24px;

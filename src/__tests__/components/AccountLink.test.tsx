@@ -5,16 +5,16 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AccountLink } from '../../../components/WhatsApp/AccountLink';
-import { whatsappService } from '../../../services/whatsapp/whatsapp.service';
+import { AccountLink } from '../../components/WhatsApp/AccountLink';
+import { whatsappService } from '../../services/whatsapp/whatsapp.service';
 
-jest.mock('../../../services/whatsapp/whatsapp.service');
-jest.mock('../../../hooks/whatsapp/useWhatsAppIntegration');
+vi.mock('../../services/whatsapp/whatsapp.service');
+vi.mock('../../hooks/whatsapp/useWhatsAppIntegration');
 
 // Import the hook mock after mocking the service
-import { useWhatsAppIntegration } from '../../../hooks/whatsapp/useWhatsAppIntegration';
+import { useWhatsAppIntegration } from '../../hooks/whatsapp/useWhatsAppIntegration';
 
-const mockUseWhatsAppIntegration = useWhatsAppIntegration as jest.MockedFunction<
+const mockUseWhatsAppIntegration = useWhatsAppIntegration as vi.MockedFunction<
   typeof useWhatsAppIntegration
 >;
 
@@ -29,19 +29,19 @@ describe('AccountLink Component', () => {
     isLinking: false,
     qrCode: null,
     sessionId: null,
-    loadAccounts: jest.fn(),
-    selectAccount: jest.fn(),
-    linkDevice: jest.fn(),
-    confirmLink: jest.fn(),
-    connectAccount: jest.fn(),
-    disconnectAccount: jest.fn(),
-    unlinkAccount: jest.fn(),
-    clearError: jest.fn(),
-    refresh: jest.fn(),
+    loadAccounts: vi.fn(),
+    selectAccount: vi.fn(),
+    linkDevice: vi.fn(),
+    confirmLink: vi.fn(),
+    connectAccount: vi.fn(),
+    disconnectAccount: vi.fn(),
+    unlinkAccount: vi.fn(),
+    clearError: vi.fn(),
+    refresh: vi.fn(),
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockUseWhatsAppIntegration.mockReturnValue(mockHookReturn);
   });
 
@@ -155,13 +155,13 @@ describe('AccountLink Component', () => {
 
   describe('callbacks', () => {
     it('should call onSuccess callback on success', () => {
-      const onSuccess = jest.fn();
+      const onSuccess = vi.fn();
       render(<AccountLink onSuccess={onSuccess} />);
       // Would need to complete the linking flow to test this
     });
 
     it('should call onCancel callback when cancel button clicked', () => {
-      const onCancel = jest.fn();
+      const onCancel = vi.fn();
       render(<AccountLink onCancel={onCancel} />);
 
       const cancelButton = screen.getByRole('button', { name: /Cancel/i });

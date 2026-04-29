@@ -3,8 +3,8 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import '@testing-library/jest-dom';
-import ExecutiveView from '../../components/departmentViews/ExecutiveView';
-import relationalSidebarSlice from '../../redux/slices/relationalSidebarSlice';
+import ExecutiveView from '../../../components/departmentViews/ExecutiveView';
+import relationalSidebarSlice from '../../../redux/slices/relationalSidebarSlice';
 
 /**
  * ExecutiveView Component Tests
@@ -24,7 +24,7 @@ describe('ExecutiveView', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('renders without crashing', () => {
@@ -53,7 +53,7 @@ describe('ExecutiveView', () => {
       boardReports: [],
     };
 
-    global.fetch = jest.fn(() =>
+    global.fetch = vi.fn(() =>
       Promise.resolve({
         ok: true,
         json: () => Promise.resolve(mockData),
@@ -72,7 +72,7 @@ describe('ExecutiveView', () => {
   });
 
   test('displays error message on failed data fetch', async () => {
-    global.fetch = jest.fn(() =>
+    global.fetch = vi.fn(() =>
       Promise.reject(new Error('Network error'))
     );
 
@@ -90,7 +90,7 @@ describe('ExecutiveView', () => {
   test('renders subitem content when subitemId is provided', async () => {
     const mockData = { kpis: [] };
 
-    global.fetch = jest.fn(() =>
+    global.fetch = vi.fn(() =>
       Promise.resolve({
         ok: true,
         json: () => Promise.resolve(mockData),
@@ -111,7 +111,7 @@ describe('ExecutiveView', () => {
   test('fetches data from correct API endpoint', async () => {
     const mockData = { announcements: [] };
 
-    global.fetch = jest.fn(() =>
+    global.fetch = vi.fn(() =>
       Promise.resolve({
         ok: true,
         json: () => Promise.resolve(mockData),
@@ -137,7 +137,7 @@ describe('ExecutiveView', () => {
       boardReports: [],
     };
 
-    global.fetch = jest.fn(() =>
+    global.fetch = vi.fn(() =>
       Promise.resolve({
         ok: true,
         json: () => Promise.resolve(mockData),

@@ -13,7 +13,7 @@ import {
   searchDepartmentData,
   exportDepartmentData,
 } from '../../src/mocks/apiHandler';
-import { getDepartmentData, getAvailableDepartments } from '../../src/mocks/departmentData';
+import { getMockDepartmentData, getAvailableDepartments } from '../../src/mocks/departmentData';
 
 describe('Mock API Handler', () => {
   describe('fetchDepartmentDataFromApi', () => {
@@ -233,20 +233,20 @@ describe('Mock Department Data', () => {
     });
 
     it('should retrieve department by code', () => {
-      const data = getDepartmentData('SALES');
+      const data = getMockDepartmentData('SALES');
       expect(data).toBeDefined();
       expect(data?.departmentCode).toBe('SALES');
     });
 
     it('should return null for invalid department', () => {
-      const data = getDepartmentData('INVALID_CODE');
+      const data = getMockDepartmentData('INVALID_CODE');
       expect(data).toBeNull();
     });
   });
 
   describe('Department Data Completeness', () => {
     it('should have required fields for Sales department', () => {
-      const data = getDepartmentData('SALES');
+      const data = getMockDepartmentData('SALES');
       
       expect(data?.departmentCode).toBe('SALES');
       expect(data?.departmentName).toBeDefined();
@@ -255,8 +255,8 @@ describe('Mock Department Data', () => {
     });
 
     it('should have department-specific data', () => {
-      const salesData = getDepartmentData('SALES');
-      const financeData = getDepartmentData('FINANCE');
+      const salesData = getMockDepartmentData('SALES');
+      const financeData = getMockDepartmentData('FINANCE');
       
       // Sales should have sales-specific fields
       expect(salesData?.activeDeals).toBeDefined();

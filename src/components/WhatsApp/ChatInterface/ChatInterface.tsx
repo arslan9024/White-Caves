@@ -7,7 +7,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { useWhatsAppConversations } from '../../hooks/whatsapp';
+import { useWhatsAppConversations } from '../../../hooks/whatsapp';
 
 const Container = styled.div`
   display: flex;

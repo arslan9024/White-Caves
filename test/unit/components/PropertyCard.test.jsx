@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { screen } from '@testing-library/react';
 import { render } from '../../utils/testHelpers';
-import PropertyCard from '../../../../src/components/dashboard/InventoryDashboard/PropertyCard';
+import PropertyCard from '../../../src/components/dashboard/InventoryDashboard/PropertyCard';
 
 describe('PropertyCard Component', () => {
   const mockProperty = {
