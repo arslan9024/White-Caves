@@ -227,13 +227,15 @@ describe('Agent Availability Routes — /api/agent-availability', () => {
     });
 
     it('accepts valid break times', async () => {
-      const res = await request(createApp()).put('/api/agent-availability').send({
-        dayOfWeek: 1,
-        startTime: '09:00',
-        endTime: '18:00',
-        breakStart: '12:30',
-        breakEnd: '13:30',
-      });
+      const res = await request(createApp())
+        .put('/api/agent-availability')
+        .send({
+          dayOfWeek: 1,
+          startTime: '09:00',
+          endTime: '18:00',
+          breakStart: '12:30',
+          breakEnd: '13:30',
+        });
 
       expect(res.status).toBe(200);
     });

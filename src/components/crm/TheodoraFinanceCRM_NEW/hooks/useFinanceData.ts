@@ -131,50 +131,50 @@ export const useFinanceData = () => {
   const expensesError = useSelector(selectExpensesError);
 
   const commissions = useMemo(
-    () => commissionsRaw.map(item => mapCommissionRecord(item as Record<string, unknown>)),
-    [commissionsRaw]
+    () => commissionsRaw.map((item) => mapCommissionRecord(item as Record<string, unknown>)),
+    [commissionsRaw],
   );
   const pendingCommissions = useMemo(
-    () => pendingCommissionsRaw.map(item => mapCommissionRecord(item as Record<string, unknown>)),
-    [pendingCommissionsRaw]
+    () => pendingCommissionsRaw.map((item) => mapCommissionRecord(item as Record<string, unknown>)),
+    [pendingCommissionsRaw],
   );
   const approvedCommissions = useMemo(
-    () => approvedCommissionsRaw.map(item => mapCommissionRecord(item as Record<string, unknown>)),
-    [approvedCommissionsRaw]
+    () => approvedCommissionsRaw.map((item) => mapCommissionRecord(item as Record<string, unknown>)),
+    [approvedCommissionsRaw],
   );
   const paidCommissions = useMemo(
-    () => paidCommissionsRaw.map(item => mapCommissionRecord(item as Record<string, unknown>)),
-    [paidCommissionsRaw]
+    () => paidCommissionsRaw.map((item) => mapCommissionRecord(item as Record<string, unknown>)),
+    [paidCommissionsRaw],
   );
 
   const invoices = useMemo(
-    () => invoicesRaw.map(item => mapInvoiceRecord(item as Record<string, unknown>)),
-    [invoicesRaw]
+    () => invoicesRaw.map((item) => mapInvoiceRecord(item as Record<string, unknown>)),
+    [invoicesRaw],
   );
   const pendingInvoices = useMemo(
-    () => pendingInvoicesRaw.map(item => mapInvoiceRecord(item as Record<string, unknown>)),
-    [pendingInvoicesRaw]
+    () => pendingInvoicesRaw.map((item) => mapInvoiceRecord(item as Record<string, unknown>)),
+    [pendingInvoicesRaw],
   );
   const paidInvoices = useMemo(
-    () => paidInvoicesRaw.map(item => mapInvoiceRecord(item as Record<string, unknown>)),
-    [paidInvoicesRaw]
+    () => paidInvoicesRaw.map((item) => mapInvoiceRecord(item as Record<string, unknown>)),
+    [paidInvoicesRaw],
   );
   const overdueInvoices = useMemo(
-    () => overdueInvoicesRaw.map(item => mapInvoiceRecord(item as Record<string, unknown>)),
-    [overdueInvoicesRaw]
+    () => overdueInvoicesRaw.map((item) => mapInvoiceRecord(item as Record<string, unknown>)),
+    [overdueInvoicesRaw],
   );
 
   const expenses = useMemo(
-    () => expensesRaw.map(item => mapExpenseRecord(item as Record<string, unknown>)),
-    [expensesRaw]
+    () => expensesRaw.map((item) => mapExpenseRecord(item as Record<string, unknown>)),
+    [expensesRaw],
   );
   const pendingExpensesList = useMemo(
-    () => pendingExpensesRaw.map(item => mapExpenseRecord(item as Record<string, unknown>)),
-    [pendingExpensesRaw]
+    () => pendingExpensesRaw.map((item) => mapExpenseRecord(item as Record<string, unknown>)),
+    [pendingExpensesRaw],
   );
   const approvedExpensesList = useMemo(
-    () => approvedExpensesRaw.map(item => mapExpenseRecord(item as Record<string, unknown>)),
-    [approvedExpensesRaw]
+    () => approvedExpensesRaw.map((item) => mapExpenseRecord(item as Record<string, unknown>)),
+    [approvedExpensesRaw],
   );
 
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceRecord | null>(null);
@@ -186,7 +186,7 @@ export const useFinanceData = () => {
     dispatch(fetchCommissionsFromAPI({}));
     dispatch(fetchInvoicesFromAPI({}));
     dispatch(fetchExpensesFromAPI({}));
-    dispatch(fetchFinanceSummary()).then(result => {
+    dispatch(fetchFinanceSummary()).then((result) => {
       if (result.meta.requestStatus === 'fulfilled') {
         setFinanceSummary(result.payload as Record<string, unknown>);
       }
@@ -196,39 +196,21 @@ export const useFinanceData = () => {
   // Compute finance stats from real data when available, fallback to mock
   const financeStats = useMemo(() => {
     // Calculate invoice totals from real data
-    const invoiceTotalRevenue = invoices.reduce(
-      (sum, inv) => sum + (Number(inv.totalAmount ?? inv.amount) || 0),
-      0
-    );
-    const invoicePendingAmount = pendingInvoices.reduce(
-      (sum, inv) => sum + (Number(inv.totalAmount ?? inv.amount) || 0),
-      0
-    );
-    const invoiceOverdueAmount = overdueInvoices.reduce(
-      (sum, inv) => sum + (Number(inv.totalAmount ?? inv.amount) || 0),
-      0
-    );
+    const invoiceTotalRevenue = invoices.reduce((sum, inv) => sum + (Number(inv.totalAmount ?? inv.amount) || 0), 0);
+    const invoicePendingAmount = pendingInvoices.reduce((sum, inv) => sum + (Number(inv.totalAmount ?? inv.amount) || 0), 0);
+    const invoiceOverdueAmount = overdueInvoices.reduce((sum, inv) => sum + (Number(inv.totalAmount ?? inv.amount) || 0), 0);
     // Calculate expense totals from real data
     const expensesTotal = expenses.reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
-    const expensesPendingTotal = pendingExpensesList.reduce(
-      (sum, exp) => sum + (Number(exp.amount) || 0),
-      0
-    );
-    const expensesApprovedTotal = approvedExpensesList.reduce(
-      (sum, exp) => sum + (Number(exp.amount) || 0),
-      0
-    );
+    const expensesPendingTotal = pendingExpensesList.reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
+    const expensesApprovedTotal = approvedExpensesList.reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
 
     if (financeSummary) {
-      const commissionsData = financeSummary.commissions as
-        | Record<string, Record<string, number>>
-        | undefined;
+      const commissionsData = financeSummary.commissions as Record<string, Record<string, number>> | undefined;
       return {
         totalRevenue: invoiceTotalRevenue || (financeSummary.totalRevenue as number) || 0,
         revenueTrend: 18, // TODO: Calculate from historical data
         pendingAmount: invoicePendingAmount || commissionsData?.pending?.value || 0,
-        pendingCount:
-          pendingInvoices.length || commissionsData?.pending?.count || pendingCommissions.length,
+        pendingCount: pendingInvoices.length || commissionsData?.pending?.count || pendingCommissions.length,
         overdueAmount: invoiceOverdueAmount,
         overdueCount: overdueInvoices.length,
         totalExpenses: expensesTotal || (financeSummary.totalExpenses as number) || 0,
@@ -240,10 +222,7 @@ export const useFinanceData = () => {
     if (invoices.length > 0 || expenses.length > 0 || commissions.length > 0) {
       const commTotalValue = commissions.reduce((sum, c) => sum + (Number(c.amount) || 0), 0);
       const pendingValue = pendingCommissions.reduce((sum, c) => sum + (Number(c.amount) || 0), 0);
-      const approvedValue = approvedCommissions.reduce(
-        (sum, c) => sum + (Number(c.amount) || 0),
-        0
-      );
+      const approvedValue = approvedCommissions.reduce((sum, c) => sum + (Number(c.amount) || 0), 0);
       return {
         totalRevenue: invoiceTotalRevenue || commTotalValue,
         revenueTrend: 0,
@@ -268,18 +247,7 @@ export const useFinanceData = () => {
       approvedExpenses: 0,
       pendingExpenses: 0,
     };
-  }, [
-    financeSummary,
-    invoices,
-    pendingInvoices,
-    overdueInvoices,
-    expenses,
-    pendingExpensesList,
-    approvedExpensesList,
-    commissions,
-    pendingCommissions,
-    approvedCommissions,
-  ]);
+  }, [financeSummary, invoices, pendingInvoices, overdueInvoices, expenses, pendingExpensesList, approvedExpensesList, commissions, pendingCommissions, approvedCommissions]);
 
   const handleGeneratePaymentMessage = useCallback((_message?: string, _method?: string) => {
     setGeneratedMessage(_message ?? '');
@@ -289,31 +257,17 @@ export const useFinanceData = () => {
     setSelectedInvoice(invoice);
   }, []);
 
-  const handleApproveExpense = useCallback(
-    (expenseId: number) => {
-      dispatch(updateExpenseAPI({ id: String(expenseId), status: 'approved' }));
-    },
-    [dispatch]
-  );
+  const handleApproveExpense = useCallback((expenseId: number) => {
+    dispatch(updateExpenseAPI({ id: String(expenseId), status: 'approved' }));
+  }, [dispatch]);
 
-  const handleRejectExpense = useCallback(
-    (expenseId: number) => {
-      dispatch(updateExpenseAPI({ id: String(expenseId), status: 'rejected' }));
-    },
-    [dispatch]
-  );
+  const handleRejectExpense = useCallback((expenseId: number) => {
+    dispatch(updateExpenseAPI({ id: String(expenseId), status: 'rejected' }));
+  }, [dispatch]);
 
   // Commission-specific actions
   const handleCreateCommission = useCallback(
-    (data: {
-      agentId: string;
-      amount: number;
-      percentage?: number;
-      type?: string;
-      notes?: string;
-      leadId?: string;
-      propertyId?: string;
-    }) => {
+    (data: { agentId: string; amount: number; percentage?: number; type?: string; notes?: string; leadId?: string; propertyId?: string }) => {
       return dispatch(createCommissionAPI(data));
     },
     [dispatch]
@@ -337,7 +291,7 @@ export const useFinanceData = () => {
     dispatch(fetchCommissionsFromAPI({}));
     dispatch(fetchInvoicesFromAPI({}));
     dispatch(fetchExpensesFromAPI({}));
-    dispatch(fetchFinanceSummary()).then(result => {
+    dispatch(fetchFinanceSummary()).then((result) => {
       if (result.meta.requestStatus === 'fulfilled') {
         setFinanceSummary(result.payload as Record<string, unknown>);
       }
@@ -380,44 +334,44 @@ export const useFinanceData = () => {
     handleRefreshCommissions,
     // Invoice CRUD
     handleCreateInvoice: useCallback(
-      (data: Partial<InvoiceRecord>) =>
-        dispatch(
-          createInvoiceAPI({
-            client: data.client ?? 'Unknown Client',
-            amount: Number(data.amount ?? 0),
-            dueDate: data.dueDate ?? new Date().toISOString().slice(0, 10),
-            property: data.property,
-            notes: data.notes,
-            vatAmount: data.vatAmount,
-            lineItems: undefined,
-          })
-        ),
+      (data: Partial<InvoiceRecord>) => dispatch(createInvoiceAPI({
+        client: data.client ?? 'Unknown Client',
+        amount: Number(data.amount ?? 0),
+        dueDate: data.dueDate ?? new Date().toISOString().slice(0, 10),
+        property: data.property,
+        notes: data.notes,
+        vatAmount: data.vatAmount,
+        lineItems: undefined,
+      })),
       [dispatch]
     ),
     handleUpdateInvoice: useCallback(
       (data: { id: string } & Partial<Invoice>) => dispatch(updateInvoiceAPI(data)),
       [dispatch]
     ),
-    handleDeleteInvoice: useCallback((id: string) => dispatch(deleteInvoiceAPI(id)), [dispatch]),
+    handleDeleteInvoice: useCallback(
+      (id: string) => dispatch(deleteInvoiceAPI(id)),
+      [dispatch]
+    ),
     // Expense CRUD
     handleCreateExpense: useCallback(
-      (data: Partial<ExpenseRecord>) =>
-        dispatch(
-          createExpenseAPI({
-            category: data.category ?? 'General',
-            description: data.description ?? '',
-            amount: Number(data.amount ?? 0),
-            date: data.date,
-            notes: data.notes,
-            receiptUrl: data.receiptUrl,
-          })
-        ),
+      (data: Partial<ExpenseRecord>) => dispatch(createExpenseAPI({
+        category: data.category ?? 'General',
+        description: data.description ?? '',
+        amount: Number(data.amount ?? 0),
+        date: data.date,
+        notes: data.notes,
+        receiptUrl: data.receiptUrl,
+      })),
       [dispatch]
     ),
     handleUpdateExpense: useCallback(
       (data: { id: string } & Partial<Expense>) => dispatch(updateExpenseAPI(data)),
       [dispatch]
     ),
-    handleDeleteExpense: useCallback((id: string) => dispatch(deleteExpenseAPI(id)), [dispatch]),
+    handleDeleteExpense: useCallback(
+      (id: string) => dispatch(deleteExpenseAPI(id)),
+      [dispatch]
+    ),
   };
 };

@@ -34,7 +34,7 @@ const FavoriteListings: React.FC = () => {
     (propertyId: string) => {
       dispatch(removeFavoriteThunk(propertyId));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const sortedFavorites = React.useMemo(() => {
@@ -72,7 +72,7 @@ const FavoriteListings: React.FC = () => {
           </span>
           <select
             value={sortBy}
-            onChange={e => setSortBy(e.target.value as typeof sortBy)}
+            onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
             style={{
               padding: '0.5rem 1rem',
               borderRadius: '8px',
@@ -91,11 +91,7 @@ const FavoriteListings: React.FC = () => {
         {/* Loading */}
         {loading && (
           <div
-            style={{
-              textAlign: 'center',
-              padding: '3rem 0',
-              color: 'var(--color-text-secondary, #6b7280)',
-            }}
+            style={{ textAlign: 'center', padding: '3rem 0', color: 'var(--color-text-secondary, #6b7280)' }}
           >
             Loading your favorites…
           </div>
@@ -116,13 +112,7 @@ const FavoriteListings: React.FC = () => {
             <h3 style={{ marginBottom: '0.5rem', color: 'var(--color-text, #111827)' }}>
               No favorites yet
             </h3>
-            <p
-              style={{
-                color: 'var(--color-text-secondary, #6b7280)',
-                maxWidth: '400px',
-                margin: '0 auto 1.5rem',
-              }}
-            >
+            <p style={{ color: 'var(--color-text-secondary, #6b7280)', maxWidth: '400px', margin: '0 auto 1.5rem' }}>
               Browse properties and tap the heart icon to save them here for quick access.
             </p>
             <Link
@@ -152,7 +142,7 @@ const FavoriteListings: React.FC = () => {
               gap: '1.5rem',
             }}
           >
-            {sortedFavorites.map(fav => (
+            {sortedFavorites.map((fav) => (
               <div key={fav.id} style={{ position: 'relative' }}>
                 <PropertyCard
                   id={fav.id}
@@ -193,12 +183,10 @@ const FavoriteListings: React.FC = () => {
 
         {/* Pagination */}
         {favorites.length >= 20 && (
-          <div
-            style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}
-          >
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}>
             <button
               disabled={page <= 1}
-              onClick={() => setPage(p => Math.max(1, p - 1))}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
               style={{
                 padding: '0.5rem 1.5rem',
                 borderRadius: '8px',
@@ -213,7 +201,7 @@ const FavoriteListings: React.FC = () => {
               Page {page}
             </span>
             <button
-              onClick={() => setPage(p => p + 1)}
+              onClick={() => setPage((p) => p + 1)}
               style={{
                 padding: '0.5rem 1.5rem',
                 borderRadius: '8px',

@@ -70,9 +70,10 @@ const RentalManagementPage: FC = () => {
     };
   }, []);
 
-  const isOccupied = (lease: Lease) => ['active', 'expiring'].includes(lease.status.toLowerCase());
+  const isOccupied = (lease: Lease) =>
+    ['active', 'expiring'].includes(lease.status.toLowerCase());
 
-  const filteredLeases = leases.filter(l => {
+  const filteredLeases = leases.filter((l) => {
     if (filter === 'all') return true;
     if (filter === 'occupied') return isOccupied(l);
     if (filter === 'available') return !isOccupied(l);
@@ -82,7 +83,8 @@ const RentalManagementPage: FC = () => {
   const formatDate = (iso: string): string =>
     new Date(iso).toLocaleDateString('en-AE', { day: 'numeric', month: 'short', year: 'numeric' });
 
-  const formatRent = (monthly: number): string => `AED ${(monthly * 12).toLocaleString()}/yr`;
+  const formatRent = (monthly: number): string =>
+    `AED ${(monthly * 12).toLocaleString()}/yr`;
 
   const handleFilterChange = (newFilter: string): void => {
     setFilter(newFilter);
@@ -97,61 +99,25 @@ const RentalManagementPage: FC = () => {
         </div>
 
         <div className="filter-bar">
-          <button
-            className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-            onClick={() => handleFilterChange('all')}
-          >
-            All Properties
-          </button>
-          <button
-            className={`filter-btn ${filter === 'occupied' ? 'active' : ''}`}
-            onClick={() => handleFilterChange('occupied')}
-          >
-            Occupied
-          </button>
-          <button
-            className={`filter-btn ${filter === 'available' ? 'active' : ''}`}
-            onClick={() => handleFilterChange('available')}
-          >
-            Available
-          </button>
+          <button className={`filter-btn ${filter === 'all' ? 'active' : ''}`} onClick={() => handleFilterChange('all')}>All Properties</button>
+          <button className={`filter-btn ${filter === 'occupied' ? 'active' : ''}`} onClick={() => handleFilterChange('occupied')}>Occupied</button>
+          <button className={`filter-btn ${filter === 'available' ? 'active' : ''}`} onClick={() => handleFilterChange('available')}>Available</button>
         </div>
 
         {loading && (
-          <div
-            className="loading-state"
-            style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}
-          >
+          <div className="loading-state" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
             Loading leases…
           </div>
         )}
 
         {error && (
-          <div
-            className="error-state"
-            style={{
-              padding: '1rem',
-              background: '#FEF2F2',
-              border: '1px solid #FECACA',
-              borderRadius: '8px',
-              color: '#B91C1C',
-              marginBottom: '1rem',
-            }}
-          >
+          <div className="error-state" style={{ padding: '1rem', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', color: '#B91C1C', marginBottom: '1rem' }}>
             {error}
           </div>
         )}
 
         {!loading && !error && filteredLeases.length === 0 && (
-          <div
-            className="empty-state"
-            style={{
-              textAlign: 'center',
-              padding: '4rem 2rem',
-              border: '2px dashed var(--border-color, #e5e7eb)',
-              borderRadius: '12px',
-            }}
-          >
+          <div className="empty-state" style={{ textAlign: 'center', padding: '4rem 2rem', border: '2px dashed var(--border-color, #e5e7eb)', borderRadius: '12px' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏠</div>
             <h3 style={{ marginBottom: '0.5rem' }}>No leases found</h3>
             <p style={{ color: 'var(--text-secondary)' }}>
@@ -163,19 +129,12 @@ const RentalManagementPage: FC = () => {
         <div className="properties-grid">
           {filteredLeases.map(lease => {
             const occupied = isOccupied(lease);
-            const statusLabel = occupied
-              ? 'Occupied'
-              : lease.status.charAt(0).toUpperCase() + lease.status.slice(1);
+            const statusLabel = occupied ? 'Occupied' : lease.status.charAt(0).toUpperCase() + lease.status.slice(1);
             return (
-              <div
-                key={lease.id}
-                className={`property-card ${occupied ? 'occupied' : 'available'}`}
-              >
+              <div key={lease.id} className={`property-card ${occupied ? 'occupied' : 'available'}`}>
                 <div className="property-card-header">
                   <h3>{lease.property.title}</h3>
-                  <span className={`status-badge ${occupied ? 'occupied' : 'available'}`}>
-                    {statusLabel}
-                  </span>
+                  <span className={`status-badge ${occupied ? 'occupied' : 'available'}`}>{statusLabel}</span>
                 </div>
 
                 <div className="property-details">
@@ -217,9 +176,7 @@ const RentalManagementPage: FC = () => {
                       Call Tenant
                     </a>
                   )}
-                  <button className="btn-outline" disabled title="Feature coming soon">
-                    View Details
-                  </button>
+                  <button className="btn-outline" disabled title="Feature coming soon">View Details</button>
                 </div>
               </div>
             );

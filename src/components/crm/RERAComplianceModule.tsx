@@ -18,7 +18,7 @@ interface RERAAgent {
 /**
  * RERA Compliance Module
  * Manages real estate agent licenses, compliance tracking, and RERA registration
- *
+ * 
  * Features:
  * - Display RERA registration status for all agents
  * - Register/update RERA numbers
@@ -27,18 +27,14 @@ interface RERAAgent {
  * - Alert system for expired licenses
  */
 
-export default function RERAComplianceModule({
-  role: _role,
-  user: _user,
-  data: _data,
-}: CRMModuleProps) {
+export default function RERAComplianceModule({ role, user, data }: CRMModuleProps) {
   const toast = useToast();
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [agents, setAgents] = useState<RERAAgent[]>([]);
-  const [, setReraStatus] = useState<Record<string, unknown>>({});
+  const [reraStatus, setReraStatus] = useState<Record<string, unknown>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
-  const [, setSelectedAgent] = useState<RERAAgent | null>(null);
+  const [selectedAgent, setSelectedAgent] = useState<RERAAgent | null>(null);
   const [formData, setFormData] = useState({
     licenseNumber: '',
     expiryDate: '',
@@ -156,10 +152,7 @@ export default function RERAComplianceModule({
                 <td>{agent.name}</td>
                 <td>{agent.reraNumber || 'N/A'}</td>
                 <td>
-                  <span
-                    className="status-badge"
-                    style={{ backgroundColor: getStatusColor(agent.status) }}
-                  >
+                  <span className="status-badge" style={{ backgroundColor: getStatusColor(agent.status) }}>
                     {agent.status.toUpperCase()}
                   </span>
                 </td>
@@ -186,7 +179,7 @@ export default function RERAComplianceModule({
           <input
             type="text"
             value={formData.agentName}
-            onChange={e => setFormData({ ...formData, agentName: e.target.value })}
+            onChange={(e) => setFormData({ ...formData, agentName: e.target.value })}
             required
           />
         </div>
@@ -196,7 +189,7 @@ export default function RERAComplianceModule({
             type="text"
             placeholder="e.g., RERA-123456"
             value={formData.licenseNumber}
-            onChange={e => setFormData({ ...formData, licenseNumber: e.target.value })}
+            onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value })}
             required
           />
         </div>
@@ -205,13 +198,11 @@ export default function RERAComplianceModule({
           <input
             type="date"
             value={formData.expiryDate}
-            onChange={e => setFormData({ ...formData, expiryDate: e.target.value })}
+            onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
             required
           />
         </div>
-        <button type="submit" className="submit-btn">
-          Register RERA License
-        </button>
+        <button type="submit" className="submit-btn">Register RERA License</button>
       </form>
     </div>
   );
@@ -242,28 +233,9 @@ export default function RERAComplianceModule({
         {isLoading ? (
           <div className="loading">Loading RERA data...</div>
         ) : fetchError ? (
-          <div
-            style={{
-              padding: '1.5rem',
-              background: '#FEF2F2',
-              border: '1px solid #FECACA',
-              borderRadius: '8px',
-              color: '#B91C1C',
-              textAlign: 'center',
-            }}
-          >
+          <div style={{ padding: '1.5rem', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', color: '#B91C1C', textAlign: 'center' }}>
             <p style={{ marginBottom: '1rem' }}>{fetchError}</p>
-            <button
-              onClick={fetchRERAStatus}
-              style={{
-                padding: '0.5rem 1rem',
-                background: '#B91C1C',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-              }}
-            >
+            <button onClick={fetchRERAStatus} style={{ padding: '0.5rem 1rem', background: '#B91C1C', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
               Retry
             </button>
           </div>

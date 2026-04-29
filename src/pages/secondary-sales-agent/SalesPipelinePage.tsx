@@ -61,8 +61,8 @@ const SalesPipelinePage: FC = () => {
         if (!isMountedRef.current) return;
         if (res.ok) {
           const json = await res.json();
-          const allLeads: Lead[] = json.data || json.leads || [];
-          setLeads(allLeads.filter(l => l.status !== 'lost'));
+          const allLeads: Lead[] = (json.data || json.leads || []);
+          setLeads(allLeads.filter((l) => l.status !== 'lost'));
         } else {
           setError('Failed to load pipeline data.');
         }
@@ -84,7 +84,7 @@ const SalesPipelinePage: FC = () => {
   }, []);
 
   const getLeadsByStage = (stageId: string): Lead[] =>
-    leads.filter(l => (STATUS_TO_STAGE[l.status] ?? 'new') === stageId);
+    leads.filter((l) => (STATUS_TO_STAGE[l.status] ?? 'new') === stageId);
 
   const totalPipelineValue = leads.reduce((sum, lead) => sum + (lead.budget || 0), 0);
 
@@ -108,16 +108,7 @@ const SalesPipelinePage: FC = () => {
         )}
 
         {error && (
-          <div
-            style={{
-              padding: '1rem',
-              background: '#FEF2F2',
-              border: '1px solid #FECACA',
-              borderRadius: '8px',
-              color: '#B91C1C',
-              marginBottom: '1rem',
-            }}
-          >
+          <div style={{ padding: '1rem', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', color: '#B91C1C', marginBottom: '1rem' }}>
             {error}
           </div>
         )}
@@ -136,30 +127,21 @@ const SalesPipelinePage: FC = () => {
             </div>
 
             {leads.length === 0 ? (
-              <div
-                style={{
-                  textAlign: 'center',
-                  padding: '4rem 2rem',
-                  border: '2px dashed var(--border-color, #e5e7eb)',
-                  borderRadius: '12px',
-                }}
-              >
+              <div style={{ textAlign: 'center', padding: '4rem 2rem', border: '2px dashed var(--border-color, #e5e7eb)', borderRadius: '12px' }}>
                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📋</div>
                 <h3 style={{ marginBottom: '0.5rem' }}>No active deals</h3>
-                <p style={{ color: 'var(--text-secondary)' }}>
-                  Leads will appear here as they move through the pipeline.
-                </p>
+                <p style={{ color: 'var(--text-secondary)' }}>Leads will appear here as they move through the pipeline.</p>
               </div>
             ) : (
               <div className="pipeline-board">
-                {PIPELINE_STAGES.map(stage => (
+                {PIPELINE_STAGES.map((stage) => (
                   <div key={stage.id} className="pipeline-column">
                     <div className="column-header" style={{ borderTopColor: stage.color }}>
                       <h3>{stage.name}</h3>
                       <span className="deal-count">{getLeadsByStage(stage.id).length}</span>
                     </div>
                     <div className="column-deals">
-                      {getLeadsByStage(stage.id).map(lead => (
+                      {getLeadsByStage(stage.id).map((lead) => (
                         <div
                           key={lead.id}
                           className="deal-card"
@@ -171,16 +153,9 @@ const SalesPipelinePage: FC = () => {
                             {lead.budget ? (
                               <span className="deal-price">{formatCurrency(lead.budget)}</span>
                             ) : (
-                              <span
-                                className="deal-price"
-                                style={{ color: 'var(--text-secondary)' }}
-                              >
-                                No budget
-                              </span>
+                              <span className="deal-price" style={{ color: 'var(--text-secondary)' }}>No budget</span>
                             )}
-                            <span className="deal-days" style={{ textTransform: 'capitalize' }}>
-                              {lead.source || ''}
-                            </span>
+                            <span className="deal-days" style={{ textTransform: 'capitalize' }}>{lead.source || ''}</span>
                           </div>
                         </div>
                       ))}
@@ -193,17 +168,9 @@ const SalesPipelinePage: FC = () => {
         )}
 
         {selectedLead && (
-          <div
-            className="deal-modal-overlay"
-            onClick={() => setSelectedLead(null)}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Deal details"
-          >
-            <div className="deal-modal" onClick={e => e.stopPropagation()}>
-              <button className="modal-close" onClick={() => setSelectedLead(null)}>
-                ×
-              </button>
+          <div className="deal-modal-overlay" onClick={() => setSelectedLead(null)} role="dialog" aria-modal="true" aria-label="Deal details">
+            <div className="deal-modal" onClick={(e) => e.stopPropagation()}>
+              <button className="modal-close" onClick={() => setSelectedLead(null)}>×</button>
               <h2>{selectedLead.name}</h2>
               <div className="modal-details">
                 {selectedLead.company && (
@@ -214,27 +181,19 @@ const SalesPipelinePage: FC = () => {
                 )}
                 <div className="detail-row">
                   <span className="detail-label">Budget</span>
-                  <span className="detail-value">
-                    {selectedLead.budget ? formatCurrency(selectedLead.budget) : '—'}
-                  </span>
+                  <span className="detail-value">{selectedLead.budget ? formatCurrency(selectedLead.budget) : '—'}</span>
                 </div>
                 <div className="detail-row">
                   <span className="detail-label">Stage</span>
-                  <span className="detail-value" style={{ textTransform: 'capitalize' }}>
-                    {selectedLead.status}
-                  </span>
+                  <span className="detail-value" style={{ textTransform: 'capitalize' }}>{selectedLead.status}</span>
                 </div>
                 <div className="detail-row">
                   <span className="detail-label">Source</span>
-                  <span className="detail-value" style={{ textTransform: 'capitalize' }}>
-                    {selectedLead.source || '—'}
-                  </span>
+                  <span className="detail-value" style={{ textTransform: 'capitalize' }}>{selectedLead.source || '—'}</span>
                 </div>
               </div>
               <div className="modal-actions">
-                <button className="btn btn-secondary" onClick={() => setSelectedLead(null)}>
-                  Close
-                </button>
+                <button className="btn btn-secondary" onClick={() => setSelectedLead(null)}>Close</button>
               </div>
             </div>
           </div>
@@ -254,18 +213,14 @@ const SalesPipelinePage: FC = () => {
               <span className="step-number">2</span>
               <div className="step-content">
                 <h4>Viewing</h4>
-                <p>
-                  Property viewings. Show matching properties, gather feedback, address concerns.
-                </p>
+                <p>Property viewings. Show matching properties, gather feedback, address concerns.</p>
               </div>
             </div>
             <div className="process-step">
               <span className="step-number">3</span>
               <div className="step-content">
                 <h4>Negotiating</h4>
-                <p>
-                  Price negotiation. Facilitate offers between buyer and seller, reach agreement.
-                </p>
+                <p>Price negotiation. Facilitate offers between buyer and seller, reach agreement.</p>
               </div>
             </div>
           </div>
@@ -276,3 +231,4 @@ const SalesPipelinePage: FC = () => {
 };
 
 export default SalesPipelinePage;
+

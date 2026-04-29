@@ -17,16 +17,16 @@ interface ContractData {
 
 const SignContractPage: FC = () => {
   useDocumentTitle('Sign Contract');
-  const { token } = useParams<{ token: string }>();
+  const { token } = useParams<{token: string}>();
   const navigate = useNavigate();
   const { isDark } = useTheme();
   const toast = useToast();
   const sigRef = useRef<SignatureCanvas | null>(null);
-
+  
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [contract, setContract] = useState<ContractData | null>(null);
-  const [, setRole] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
   const [signerName, setSignerName] = useState<string>('');
   const [isSigning, setIsSigning] = useState<boolean>(false);
   const [signed, setSigned] = useState<boolean>(false);
@@ -45,38 +45,32 @@ const SignContractPage: FC = () => {
     const controller = new AbortController();
     abortControllerRef.current = controller;
     fetchContractData(controller.signal);
-    return () => {
-      controller.abort();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => { controller.abort(); };
   }, [token]);
 
-  const fetchContractData = useCallback(
-    async (signal?: AbortSignal): Promise<void> => {
-      try {
-        const response = await authFetch(`/api/signature/${token}`, { signal });
-        if (!response.ok) {
-          throw new Error(`Failed to load contract (HTTP ${response.status})`);
-        }
-        const data = await response.json();
-
-        if (!data.success) {
-          setError(data.error);
-          return;
-        }
-
-        setContract(data.contract);
-        setRole(data.role);
-        setSignerName(data.signerName || '');
-      } catch (err) {
-        if (err instanceof DOMException && err.name === 'AbortError') return;
-        setError(err instanceof Error ? err.message : 'Failed to load contract. Please try again.');
-      } finally {
-        setLoading(false);
+  const fetchContractData = useCallback(async (signal?: AbortSignal): Promise<void> => {
+    try {
+      const response = await authFetch(`/api/signature/${token}`, { signal });
+      if (!response.ok) {
+        throw new Error(`Failed to load contract (HTTP ${response.status})`);
       }
-    },
-    [token]
-  );
+      const data = await response.json();
+      
+      if (!data.success) {
+        setError(data.error);
+        return;
+      }
+      
+      setContract(data.contract);
+      setRole(data.role);
+      setSignerName(data.signerName || '');
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
+      setError(err instanceof Error ? err.message : 'Failed to load contract. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
 
   const clearSignature = (): void => {
     sigRef.current?.clear();
@@ -107,26 +101,27 @@ const SignContractPage: FC = () => {
     // Capture signature data synchronously BEFORE any async state updates
     const signature = sigCanvas.toDataURL('image/png');
     setIsSigning(true);
-
+    
     try {
+      
       const response = await authFetch(`/api/signature/${token}/sign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ signature, signerName: signerName.trim() }),
+        body: JSON.stringify({ signature, signerName: signerName.trim() })
       });
-
+      
       if (!response.ok) {
         throw new Error(`Signature submission failed (HTTP ${response.status})`);
       }
-
+      
       const data = await response.json();
-
+      
       if (data.success) {
         setSigned(true);
       } else {
         setError(data.error);
       }
-    } catch {
+    } catch (err) {
       setError('Failed to submit signature. Please try again.');
     } finally {
       setIsSigning(false);
@@ -151,15 +146,11 @@ const SignContractPage: FC = () => {
         {contract && (
           <div className="contract-details">
             <h2>Contract Details</h2>
-            <p>
-              <strong>Amount:</strong> {formatCurrency(contract.amount)}
-            </p>
-            <p>
-              <strong>Date:</strong> {formatDate(contract.date)}
-            </p>
+            <p><strong>Amount:</strong> {formatCurrency(contract.amount)}</p>
+            <p><strong>Date:</strong> {formatDate(contract.date)}</p>
           </div>
         )}
-
+        
         {!signed && (
           <div className="signature-section">
             <h3>Sign Here</h3>
@@ -167,38 +158,34 @@ const SignContractPage: FC = () => {
               type="text"
               placeholder="Enter your full name"
               value={signerName}
-              onChange={e => setSignerName(e.target.value)}
+              onChange={(e) => setSignerName(e.target.value)}
               className="signer-name-input"
             />
-            <SignatureCanvas ref={sigRef} canvasProps={{ className: 'signature-canvas' }} />
+            <SignatureCanvas
+              ref={sigRef}
+              canvasProps={{ className: 'signature-canvas' }}
+            />
             <div className="signature-actions">
-              <button onClick={undoLastStroke} className="btn-clear" title="Undo last stroke">
-                Undo
-              </button>
-              <button onClick={clearSignature} className="btn-clear">
-                Clear
-              </button>
+              <button onClick={undoLastStroke} className="btn-clear" title="Undo last stroke">Undo</button>
+              <button onClick={clearSignature} className="btn-clear">Clear</button>
               <button onClick={handleSign} disabled={isSigning} className="btn-sign">
                 {isSigning ? 'Signing...' : 'Sign Contract'}
               </button>
             </div>
           </div>
         )}
-
+        
         {signed && (
           <div className="success-message">
             <h2>✓ Contract Signed Successfully</h2>
             <p>Your signature has been recorded and the contract is now complete.</p>
           </div>
         )}
-
+        
         {error && (
           <div className="error-message">
             <p>{error}</p>
-            <div
-              className="error-actions"
-              style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem' }}
-            >
+            <div className="error-actions" style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem' }}>
               <button
                 className="btn-clear"
                 onClick={() => {

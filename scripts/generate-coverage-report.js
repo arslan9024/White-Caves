@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console, @typescript-eslint/no-explicit-any, security/detect-non-literal-fs-filename */
+/* eslint-disable */
 
 /**
  * Coverage Report Generator
@@ -57,7 +57,7 @@ async function generateCoverageReport(): Promise<void> {
         cwd: rootDir,
         stdio: 'inherit',
       });
-    } catch {
+    } catch (e) {
       // E2E tests may fail if server not running, that's ok
       console.log('Note: E2E tests require dev server running');
     }

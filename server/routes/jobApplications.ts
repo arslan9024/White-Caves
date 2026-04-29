@@ -15,15 +15,7 @@ import { requireRole } from '../middleware/rbac.js';
 
 const router = Router();
 
-const VALID_STATUSES = [
-  'received',
-  'reviewed',
-  'shortlisted',
-  'interview',
-  'offered',
-  'hired',
-  'rejected',
-] as const;
+const VALID_STATUSES = ['received', 'reviewed', 'shortlisted', 'interview', 'offered', 'hired', 'rejected'] as const;
 
 // ─── POST /api/job-applications — Public: submit a job application ────────
 router.post(

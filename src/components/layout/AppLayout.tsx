@@ -63,16 +63,15 @@ interface AppLayoutProps {
 }
 
 const ROLE_PATHS: string[] = [
-  'buyer',
-  'seller',
-  'landlord',
-  'tenant',
-  'leasing-agent',
-  'secondary-sales-agent',
-  'owner',
+  'buyer', 'seller', 'landlord', 'tenant',
+  'leasing-agent', 'secondary-sales-agent', 'owner',
 ];
 
-const AppLayout: React.FC<AppLayoutProps> = ({ children, showNav = true, isSuperUser = false }) => {
+const AppLayout: React.FC<AppLayoutProps> = ({
+  children,
+  showNav = true,
+  isSuperUser = false,
+}) => {
   const location = useLocation();
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user.currentUser);
@@ -103,12 +102,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, showNav = true, isSuper
 
   useEffect(() => {
     if (!showCrmChrome) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void fetchNotifications();
+    fetchNotifications();
     // Poll every 60 seconds for new notifications
-    const interval = setInterval(() => {
-      void fetchNotifications();
-    }, 60_000);
+    const interval = setInterval(fetchNotifications, 60_000);
     return () => clearInterval(interval);
   }, [showCrmChrome, fetchNotifications]);
 
@@ -129,7 +125,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, showNav = true, isSuper
       </a>
 
       {/* ─── Top Navigation Bar (CRM only for authenticated users) ─── */}
-      {showCrmChrome && <TopBar notifications={notifications} />}
+      {showCrmChrome && (
+        <TopBar
+          notifications={notifications}
+        />
+      )}
 
       {/* ─── Command Palette Overlay (Cmd+K / Ctrl+K) ─────────────── */}
       {showCrmChrome && <CommandPalette />}
