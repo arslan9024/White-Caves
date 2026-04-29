@@ -37,6 +37,22 @@ interface ProtectedRouteProps {
   allowedRoles?: string[];
 }
 
+function resolveEffectiveRole(
+  user: { role?: string } | null,
+  storedRoleData: UserRoleData | null
+): string | null {
+  const serverRole = user?.role;
+
+  if (storedRoleData && typeof storedRoleData.role === 'string') {
+    const isPrivileged =
+      serverRole === 'owner' || serverRole === 'admin' || serverRole === 'super_user';
+
+    return isPrivileged ? storedRoleData.role : (serverRole ?? storedRoleData.role);
+  }
+
+  return serverRole ?? null;
+}
+
 // ─── Protected Route ────────────────────────────────────────────────────
 
 function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
@@ -58,17 +74,13 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
     // SECURITY: Use server-issued user.role as source of truth, not localStorage.
     // localStorage 'userRole' is only used for sub-role preference (e.g., which dashboard view),
     // but the server role must always gate access.
-    const serverRole = user.role;
     const stored = safeStorage.getJSON<UserRoleData>('userRole');
-    if (stored && typeof stored.role === 'string') {
-      // Validate that the stored role is consistent with the server role.
-      // Owners/admins can select any sub-view; others must match server role.
-      const isPrivileged =
-        serverRole === 'owner' || serverRole === 'admin' || serverRole === 'super_user';
-      const effectiveRole = isPrivileged ? stored.role : (serverRole ?? stored.role);
+    const effectiveRole = resolveEffectiveRole(user, stored);
+
+    if (stored && typeof stored.role === 'string' && effectiveRole) {
       setUserData({ ...stored, role: effectiveRole });
     } else {
-      setUserData(serverRole ? ({ role: serverRole } as UserRoleData) : null);
+      setUserData(effectiveRole ? ({ role: effectiveRole } as UserRoleData) : null);
     }
     setIsLoading(false);
   }, [user, isAuthLoading]);
@@ -94,6 +106,30 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   }
 
   return <>{children}</>;
+}
+
+function DashboardEntryRoute() {
+  const user = useSelector((state: RootState) => state.user.currentUser);
+  const storedRoleData = safeStorage.getJSON<UserRoleData>('userRole');
+  const effectiveRole = resolveEffectiveRole(user, storedRoleData);
+
+  if (effectiveRole === 'landlord') {
+    return <Navigate to="/landlord-portal" replace />;
+  }
+
+  if (effectiveRole === 'tenant') {
+    return <Navigate to="/tenant-portal" replace />;
+  }
+
+  return (
+    <AppLayout>
+      <RouteErrorBoundary section="Dashboard">
+        <Suspense fallback={<SuspenseLoader />}>
+          <UnifiedDashboardPage />
+        </Suspense>
+      </RouteErrorBoundary>
+    </AppLayout>
+  );
 }
 
 // ==================== LAZY-LOADED PAGES ====================
@@ -418,13 +454,7 @@ function App(): React.JSX.Element {
                   path="/dashboard"
                   element={
                     <ProtectedRoute>
-                      <AppLayout>
-                        <RouteErrorBoundary section="Dashboard">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <UnifiedDashboardPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
+                      <DashboardEntryRoute />
                     </ProtectedRoute>
                   }
                 />

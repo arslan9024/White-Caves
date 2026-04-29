@@ -4,6 +4,7 @@
  * Covers: routing, auth state, protected routes, role redirects,
  *         theme initialization, lazy-loaded pages, ProtectedRoute logic
  */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import React from 'react';
@@ -66,7 +67,9 @@ vi.mock('./components/common/SuspenseLoader', () => ({
 
 // Mock RouteErrorBoundary
 vi.mock('./components/RouteErrorBoundary', () => ({
-  default: ({ children, section }: any) => <div data-testid={`error-boundary-${section}`}>{children}</div>,
+  default: ({ children, section }: any) => (
+    <div data-testid={`error-boundary-${section}`}>{children}</div>
+  ),
 }));
 
 // Mock lazy-loaded page components with simple stubs
@@ -138,6 +141,14 @@ vi.mock('./pages/landlord/RentalManagementPage', () => ({
   default: () => <div data-testid="rental-page">Rental Management</div>,
 }));
 
+vi.mock('./pages/landlord/LandlordPortalPage', () => ({
+  default: () => <div data-testid="landlord-portal-page">Landlord Portal</div>,
+}));
+
+vi.mock('./pages/tenant/TenantPortalPage', () => ({
+  default: () => <div data-testid="tenant-portal-page">Tenant Portal</div>,
+}));
+
 vi.mock('./pages/leasing-agent/TenantScreeningPage', () => ({
   default: () => <div data-testid="tenant-screening-page">Tenant Screening</div>,
 }));
@@ -195,7 +206,7 @@ vi.mock('./pages/DesignSystemTest', () => ({
 }));
 
 vi.mock('./components/RoleGateway', () => ({
-  default: ({ user, onRoleSelect }: any) => (
+  default: ({ onRoleSelect }: any) => (
     <div data-testid="role-gateway">
       <button onClick={() => onRoleSelect('buyer')}>Select Buyer</button>
     </div>
@@ -457,7 +468,10 @@ describe('App', () => {
     await act(async () => {
       renderAtRoute('/');
     });
-    expect(mockAuthFetch).toHaveBeenCalledWith('/api/auth/profile', expect.objectContaining({ signal: expect.any(AbortSignal) }));
+    expect(mockAuthFetch).toHaveBeenCalledWith(
+      '/api/auth/profile',
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
+    );
   });
 
   it('sets theme from localStorage on mount', async () => {
@@ -525,6 +539,32 @@ describe('App', () => {
     // ProtectedRoute uses server role as fallback, so dashboard renders
     await waitFor(() => {
       expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
+    });
+  });
+
+  it('redirects landlord from /dashboard to /landlord-portal', async () => {
+    mockReduxState.currentUser = { id: '1', role: 'landlord', email: 'landlord@test.com' };
+    mockSafeStorage.getJSON.mockReturnValue(null);
+
+    await act(async () => {
+      renderAtRoute('/dashboard');
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('landlord-portal-page')).toBeInTheDocument();
+    });
+  });
+
+  it('redirects tenant from /dashboard to /tenant-portal using server role as source of truth', async () => {
+    mockReduxState.currentUser = { id: '1', role: 'tenant', email: 'tenant@test.com' };
+    mockSafeStorage.getJSON.mockReturnValue({ role: 'owner', selectedAt: '', locked: true } as any);
+
+    await act(async () => {
+      renderAtRoute('/dashboard');
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('tenant-portal-page')).toBeInTheDocument();
     });
   });
 

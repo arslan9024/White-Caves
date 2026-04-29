@@ -46,7 +46,7 @@ No CRM data from other clients is visible.
 
 - [ ] Landlord can register at `/signup` with category "Landlord" → role set to `landlord`
 - [ ] Redirect after login → `/landlord-portal` (dedicated portal page, not the CRM dashboard)
-- [ ] If a user with role `landlord` navigates to `/dashboard`, redirect them to `/landlord-portal`
+- [x] If a user with role `landlord` navigates to `/dashboard`, redirect them to `/landlord-portal`
 - [x] Protected route: `/landlord-portal` requires `landlord` role
 
 ### 2.2 — Landlord Portal: My Properties
@@ -96,7 +96,7 @@ A tenant logs in and sees **only their own lease, payment schedule, and maintena
 
 - [ ] Tenant can register at `/signup` with category "Tenant" → role set to `tenant`
 - [ ] Redirect after login → `/tenant-portal`
-- [ ] If a user with role `tenant` navigates to `/dashboard`, redirect to `/tenant-portal`
+- [x] If a user with role `tenant` navigates to `/dashboard`, redirect to `/tenant-portal`
 - [x] Protected route: `/tenant-portal` requires `tenant` role
 
 ### 2.8 — Tenant Portal: My Lease
@@ -204,8 +204,8 @@ The seed already creates a `Tenant` model record. For the portal demo, we need:
 - [ ] `arslanmalikgoraha@gmail.com` signs in → managing_director CRM dashboard (8 tabs) loads without error
 - [ ] `landlord@whitecaves.ae` signs in → `/landlord-portal` loads with their properties, tenants, payments
 - [ ] `tenant@whitecaves.ae` signs in → `/tenant-portal` loads with their lease, payments, maintenance
-- [ ] If landlord navigates to `/dashboard` → redirect to `/landlord-portal`
-- [ ] If tenant navigates to `/dashboard` → redirect to `/tenant-portal`
+- [x] If landlord navigates to `/dashboard` → redirect to `/landlord-portal`
+- [x] If tenant navigates to `/dashboard` → redirect to `/tenant-portal`
 - [ ] Maintenance request form submits and appears in the list
 - [ ] All portal pages are responsive at 375px
 - [ ] No console errors on any portal page
@@ -223,12 +223,12 @@ The seed already creates a `Tenant` model record. For the portal demo, we need:
 - Tenant portal page + 4 tenant tabs implemented and tested
 - Protected routes for `/landlord-portal` and `/tenant-portal`
 - Redirect aliases for `/landlord/dashboard` and `/tenant/dashboard`
+- Generic `/dashboard` now auto-redirects landlord/tenant users to their dedicated portals
 - Focused regression coverage for landlord + tenant portal areas
 
 ### Still Pending Before Phase 2 Can Be Marked Complete
 
 - Signup category → role wiring for landlord/tenant accounts
-- Redirect authenticated landlord/tenant users away from generic `/dashboard`
 - Seed/demo accounts and realistic payment + maintenance data
 - Tenant maintenance request persistence (currently UI/mock only)
 - Landlord tenant-detail drilldown for payment history + maintenance history
