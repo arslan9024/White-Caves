@@ -701,7 +701,7 @@ app.post(
 
     // Validate role against the full alias map to prevent arbitrary strings being stored
     const { ROLE_ALIAS_MAP } = await import('./middleware/rbac.js');
-    if (!Object.prototype.hasOwnProperty.call(ROLE_ALIAS_MAP, role)) {
+    if (!Object.hasOwn(ROLE_ALIAS_MAP, role)) {
       throw new AppError(
         `Invalid role: "${role}". Must be one of: ${Object.keys(ROLE_ALIAS_MAP).join(', ')}`,
         422
