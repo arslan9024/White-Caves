@@ -149,20 +149,17 @@ router.get(
   '/inventory-stats',
   requirePermission('view_properties'),
   asyncHandler(async (_req: Request, res: Response) => {
-    const [stageCounts, docAlerts, total] = await Promise.all([
-      prisma.property.groupBy({
-        by: ['inventoryStage'],
-        _count: { _all: true },
-      }),
-      prisma.property.aggregate({
-        _sum: {
-          titleDeedMissing: true,
-          landlordPassportMissing: true,
-          ejariMissing: true,
-        },
-      }),
-      prisma.property.count(),
-    ]);
+    const [stageCounts, titleDeedMissing, landlordPassportMissing, ejariMissing, total] =
+      await Promise.all([
+        prisma.property.groupBy({
+          by: ['inventoryStage'],
+          _count: { _all: true },
+        }),
+        prisma.property.count({ where: { titleDeedMissing: true } }),
+        prisma.property.count({ where: { landlordPassportMissing: true } }),
+        prisma.property.count({ where: { ejariMissing: true } }),
+        prisma.property.count(),
+      ]);
 
     const stages: Record<string, number> = {};
     stageCounts.forEach(s => {
@@ -173,11 +170,7 @@ router.get(
       success: true,
       total,
       stages,
-      docAlerts: {
-        titleDeedMissing: docAlerts._sum.titleDeedMissing ?? 0,
-        landlordPassportMissing: docAlerts._sum.landlordPassportMissing ?? 0,
-        ejariMissing: docAlerts._sum.ejariMissing ?? 0,
-      },
+      docAlerts: { titleDeedMissing, landlordPassportMissing, ejariMissing },
     });
   })
 );
@@ -347,7 +340,10 @@ router.patch(
     const VALID_STAGES = ['draft_collected', 'verified_active', 'under_offer', 'leased_sold', 'handed_over'];
     if (unitNumber !== undefined) data.unitNumber = unitNumber ? sanitizeString(String(unitNumber).trim()) : null;
     if (floorPlan !== undefined) data.floorPlan = floorPlan ? sanitizeString(String(floorPlan).trim()) : null;
-    if (rentalPrice !== undefined) data.rentalPrice = rentalPrice !== null ? (parseFloat(rentalPrice as string) || null) : null;
+    if (rentalPrice !== undefined) {
+      const parsedRentalPrice = rentalPrice !== null ? (parseFloat(rentalPrice as string) || null) : null;
+      data.rentalPrice = parsedRentalPrice;
+    }
     if (commissionPercent !== undefined) data.commissionPercent = parseFloat(commissionPercent as string) || 5;
     if (availabilityDate !== undefined) data.availabilityDate = availabilityDate ? new Date(availabilityDate as string) : null;
     if (inventoryStage !== undefined && VALID_STAGES.includes(inventoryStage as string)) {
