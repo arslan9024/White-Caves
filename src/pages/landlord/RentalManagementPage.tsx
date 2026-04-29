@@ -176,7 +176,7 @@ const RentalManagementPage: FC = () => {
                       Call Tenant
                     </a>
                   )}
-                  <button className="btn-outline" disabled>View Details</button>
+                  <button className="btn-outline" disabled title="Feature coming soon">View Details</button>
                 </div>
               </div>
             );

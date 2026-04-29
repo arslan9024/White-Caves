@@ -79,7 +79,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   const showCrmChrome = showNav && Boolean(user);
 
   // ─── Notifications ────────────────────────────────────────────────
-  const [notifications, setNotifications] = useState<Array<{ id: string; read: boolean; title?: string; message?: string }>>([]);
+  const [notifications, setNotifications] = useState<Array<{ id: string; read: boolean }>>([]);
 
   const fetchNotifications = useCallback(async () => {
     if (!user) return;

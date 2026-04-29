@@ -232,11 +232,6 @@ const SalesPipelinePage: FC = () => {
 
 export default SalesPipelinePage;
 
-interface PipelineStage {
-  id: string;
-  name: string;
-  color: string;
-}
 
 interface Deal {
   id: number;

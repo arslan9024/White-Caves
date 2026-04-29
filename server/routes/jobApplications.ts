@@ -26,7 +26,19 @@ router.post(
     if (!name || typeof name !== 'string' || !name.trim()) {
       throw new AppError('Applicant name is required', 400);
     }
-    if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!email || typeof email !== 'string') {
+      throw new AppError('Valid email address is required', 400);
+    }
+    const trimmedEmail = email.trim();
+    // Validate email: must contain exactly one @, non-empty local part,
+    // non-empty domain with at least one dot — bounded length prevents ReDoS.
+    if (trimmedEmail.length > 254 || !trimmedEmail.includes('@')) {
+      throw new AppError('Valid email address is required', 400);
+    }
+    const atIdx = trimmedEmail.lastIndexOf('@');
+    const localPart = trimmedEmail.slice(0, atIdx);
+    const domainPart = trimmedEmail.slice(atIdx + 1);
+    if (!localPart || !domainPart || !domainPart.includes('.')) {
       throw new AppError('Valid email address is required', 400);
     }
     if (!position || typeof position !== 'string' || !position.trim()) {
@@ -36,7 +48,7 @@ router.post(
     const application = await prisma.jobApplication.create({
       data: {
         name: sanitizeString(name.trim()),
-        email: email.trim().toLowerCase(),
+        email: trimmedEmail.toLowerCase(),
         phone: phone ? sanitizeString(String(phone).trim()) : null,
         position: sanitizeString(position.trim()),
         experience: experience ? sanitizeString(String(experience).trim()) : null,
