@@ -333,7 +333,7 @@ export class BasePortalAdapter {
 
     this.autoSyncInterval = setInterval(() => {
       this.sync().catch(err => 
-        
+        console.error('Auto-sync error:', err)
       );
     }, interval);
 

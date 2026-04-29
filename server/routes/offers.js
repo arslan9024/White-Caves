@@ -1,10 +1,11 @@
-const express = require('express');
+import express from 'express';
+import Offer from '../models/Offer.js';
+import PropertyInventory from '../models/PropertyInventory.js';
+import DealJourney from '../models/DealJourney.js';
+import User from '../models/User.js';
+import Owner from '../models/Owner.js';
+
 const router = express.Router();
-const Offer = require('../models/Offer');
-const PropertyInventory = require('../models/PropertyInventory');
-const DealJourney = require('../models/DealJourney');
-const User = require('../models/User');
-const Owner = require('../models/Owner');
 
 // Create a new offer
 router.post('/', async (req, res) => {
@@ -397,4 +398,4 @@ router.get('/:id/status', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

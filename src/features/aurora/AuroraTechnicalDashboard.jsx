@@ -140,7 +140,7 @@ const AuroraTechnicalDashboard = () => {
       </section>
 
       <section className="aurora-section">
-        <h3>📈 Error Rate Trend (Target: <0.5%)</h3>
+        <h3>📈 Error Rate Trend (Target: &lt;0.5%)</h3>
         <ResponsiveContainer width="100%" height={300}>
           <AreaChart data={errorRateTrend}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />

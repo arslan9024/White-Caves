@@ -257,7 +257,7 @@ export const frontendMonitoring = {
 };
 
 // 10. Lighthouse Target Scores
-export const lighthouseTa rgets = {
+export const lighthouseTargets = {
   performance: 90,
   accessibility: 95,
   bestPractices: 90,

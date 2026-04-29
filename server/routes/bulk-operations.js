@@ -1,5 +1,5 @@
-const express = require('express');
-const BulkOperationsService = require('../services/BulkOperationsService');
+import express from 'express';
+import BulkOperationsService from '../services/BulkOperationsService.js';
 
 const router = express.Router();
 
@@ -277,4 +277,4 @@ router.post('/undo', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -53,7 +53,7 @@ const ZoeExecutiveDashboard = () => {
           <div className="metric-card">
             <div className="metric-label">Lead Conversion</div>
             <div className="metric-value">{businessMetrics.leadConversion}%</div>
-            <div className="metric-target">Target: >10%</div>
+            <div className="metric-target">Target: &gt;10%</div>
             <div className={`metric-status ${businessMetrics.leadConversion > 10 ? 'success' : 'pending'}`}>
               {businessMetrics.leadConversion > 10 ? '✓ On Track' : '⏳ In Progress'}
             </div>
@@ -71,7 +71,7 @@ const ZoeExecutiveDashboard = () => {
           <div className="metric-card">
             <div className="metric-label">Error Rate</div>
             <div className="metric-value">{businessMetrics.errorRate}%</div>
-            <div className="metric-target">Target: <0.5%</div>
+            <div className="metric-target">Target: &lt;0.5%</div>
             <div className={`metric-status ${businessMetrics.errorRate < 0.5 ? 'success' : 'warning'}`}>
               {businessMetrics.errorRate < 0.5 ? '✓ Acceptable' : '⚠ Monitor'}
             </div>
@@ -80,7 +80,7 @@ const ZoeExecutiveDashboard = () => {
           <div className="metric-card">
             <div className="metric-label">API Response Time</div>
             <div className="metric-value">{businessMetrics.apiResponseTime}ms</div>
-            <div className="metric-target">Target: <500ms</div>
+            <div className="metric-target">Target: &lt;500ms</div>
             <div className={`metric-status ${businessMetrics.apiResponseTime < 500 ? 'success' : 'warning'}`}>
               {businessMetrics.apiResponseTime < 500 ? '✓ Fast' : '⚠ Slow'}
             </div>

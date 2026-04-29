@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
+import DealJourney from '../models/DealJourney.js';
+
 const router = express.Router();
-const DealJourney = require('../models/DealJourney');
-const Notification = require('../models/Notification');
 
 // Get deal journey by offer ID
 router.get('/by-offer/:offerId', async (req, res) => {
@@ -279,4 +279,4 @@ router.get('/:userId/notifications', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

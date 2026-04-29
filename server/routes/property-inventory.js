@@ -1,9 +1,10 @@
-const express = require('express');
+import express from 'express';
+import PropertyInventory from '../models/PropertyInventory.js';
+import InventoryProperty from '../models/InventoryProperty.js';
+import FilterService from '../services/FilterService.js';
+import AnalyticsService from '../services/AnalyticsService.js';
+
 const router = express.Router();
-const PropertyInventory = require('../models/PropertyInventory');
-const InventoryProperty = require('../models/InventoryProperty');
-const FilterService = require('../services/FilterService');
-const AnalyticsService = require('../services/AnalyticsService');
 
 // Create or get property inventory entry
 router.post('/:propertyId/inventory', async (req, res) => {
@@ -692,4 +693,4 @@ router.get('/analytics/export', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

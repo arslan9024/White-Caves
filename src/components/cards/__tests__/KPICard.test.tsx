@@ -6,6 +6,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 import { KPICard } from '../KPICard';
 
 describe('KPICard Component', () => {
@@ -200,7 +201,7 @@ describe('KPICard Component', () => {
 
   describe('User Interactions', () => {
     test('calls onClick handler when card is clicked', () => {
-      const handleClick = jest.fn();
+      const handleClick = vi.fn();
       render(
         <KPICard
           label="Clickable"

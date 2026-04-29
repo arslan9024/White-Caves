@@ -26,7 +26,7 @@ const AreaSummaryCard = ({
   };
 
   return (
-    <div className={rea-summary-card \}>
+    <div className="area-summary-card">
       <div className='area-header' onClick={onToggleExpand}>
         <div className='area-name'>
           <h3>{area}</h3>
