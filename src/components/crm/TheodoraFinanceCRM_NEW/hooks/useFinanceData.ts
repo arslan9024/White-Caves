@@ -235,17 +235,17 @@ export const useFinanceData = () => {
         pendingExpenses: expensesPendingTotal || pendingValue,
       };
     }
-    // Final fallback: hardcoded mock data for dev/demo
+    // No data available yet — return zeros so the UI shows an empty state
     return {
-      totalRevenue: 4200000,
-      revenueTrend: 18,
-      pendingAmount: 860000,
-      pendingCount: 12,
-      overdueAmount: 95000,
-      overdueCount: 3,
-      totalExpenses: 470700,
-      approvedExpenses: 20700,
-      pendingExpenses: 2500,
+      totalRevenue: 0,
+      revenueTrend: 0,
+      pendingAmount: 0,
+      pendingCount: 0,
+      overdueAmount: 0,
+      overdueCount: 0,
+      totalExpenses: 0,
+      approvedExpenses: 0,
+      pendingExpenses: 0,
     };
   }, [financeSummary, invoices, pendingInvoices, overdueInvoices, expenses, pendingExpensesList, approvedExpensesList, commissions, pendingCommissions, approvedCommissions]);
 

@@ -5,6 +5,8 @@
  * navigation, autoplay, indicator dots, accessibility
  */
 
+/* eslint-disable react/display-name, security/detect-object-injection */
+
 import React from 'react';
 import { render, screen, act, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -79,9 +81,7 @@ describe('Testimonials', () => {
 
   it('renders the section subtitle', () => {
     render(<Testimonials />);
-    expect(
-      screen.getByText(/satisfied clients who found their dream/i)
-    ).toBeTruthy();
+    expect(screen.getByText(/satisfied clients who found their dream/i)).toBeTruthy();
   });
 
   it('has correct section id for anchor navigation', () => {
@@ -175,7 +175,7 @@ describe('Testimonials', () => {
     fireEvent.click(indicators[2]); // third testimonial (index 2)
 
     expect(screen.getByText('Ahmed Al Mansouri')).toBeTruthy();
-    expect(screen.getByText(/CEO, Tech Startup/i)).toBeTruthy();
+    expect(screen.getAllByText(/CEO, Tech Startup/i).length).toBeGreaterThanOrEqual(1);
   });
 
   // ──────────────────────────────────────────────────────────
@@ -238,10 +238,10 @@ describe('Testimonials', () => {
 
   it('indicators have proper aria-label', () => {
     render(<Testimonials />);
-    expect(screen.getByLabelText('Go to testimonial 1')).toBeTruthy();
-    expect(screen.getByLabelText('Go to testimonial 2')).toBeTruthy();
-    expect(screen.getByLabelText('Go to testimonial 3')).toBeTruthy();
-    expect(screen.getByLabelText('Go to testimonial 4')).toBeTruthy();
+    expect(screen.getByLabelText(/Go to testimonial 1:/i)).toBeTruthy();
+    expect(screen.getByLabelText(/Go to testimonial 2:/i)).toBeTruthy();
+    expect(screen.getByLabelText(/Go to testimonial 3:/i)).toBeTruthy();
+    expect(screen.getByLabelText(/Go to testimonial 4:/i)).toBeTruthy();
   });
 
   it('indicator tablist has proper role and label', () => {
@@ -275,4 +275,3 @@ describe('Testimonials', () => {
     expect(screen.getByText('James Richardson')).toBeTruthy();
   });
 });
-

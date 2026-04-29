@@ -6,7 +6,7 @@
  * contact agent CTA, share buttons, similar properties carousel.
  */
 
-import React, { FC, useMemo, lazy, Suspense } from 'react';
+import React, { FC, useMemo, lazy, Suspense, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { usePropertyBrowser, type PropertyType } from '../hooks/usePropertyBrowser';
@@ -24,6 +24,7 @@ import './PropertyDetailPage.css';
 const log = createLogger('PropertyDetailPage');
 
 const DubaiMap = lazy(() => import('../components/maps/DubaiMap'));
+const VirtualTour = lazy(() => import('../components/VirtualTour'));
 
 /* ─── Share Helpers ─────────────────────────────────────────────── */
 
@@ -73,6 +74,7 @@ const PropertyDetailPage: FC = () => {
   const navigate = useNavigate();
   const { properties, loading } = usePropertyBrowser();
   const { isFavorite, toggleFavorite } = usePublicFavorites();
+  const [showTour, setShowTour] = useState(false);
 
   const property = useMemo(
     () => properties.find((p) => p.id === id) || null,
@@ -159,7 +161,32 @@ const PropertyDetailPage: FC = () => {
             onFavorite={() => favoriteItem && toggleFavorite(favoriteItem)}
             onShare={() => shareProperty(property)}
           />
+          {property.images && property.images.length > 0 && (
+            <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem' }}>
+              <button
+                className={`action-btn${showTour ? ' active' : ''}`}
+                style={{ fontSize: '0.85rem', padding: '0.5rem 1rem' }}
+                onClick={() => setShowTour((v) => !v)}
+                aria-expanded={showTour}
+              >
+                {showTour ? '🏠 Hide 360° Tour' : '🔭 360° Virtual Tour'}
+              </button>
+            </div>
+          )}
         </section>
+
+        {/* ─── Virtual Tour (lazy) ───────────────────────────── */}
+        {showTour && property.images && property.images.length > 0 && (
+          <section className="detail-virtual-tour" style={{ marginBottom: '2rem' }}>
+            <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center' }}>Loading virtual tour…</div>}>
+              <VirtualTour
+                images={property.images.map((src: string) => ({ src, name: property.title }))}
+                propertyTitle={property.title}
+                onClose={() => setShowTour(false)}
+              />
+            </Suspense>
+          </section>
+        )}
 
         {/* ─── Content Grid: Main + Sidebar ─────────────────── */}
         <div className="detail-content-grid">
