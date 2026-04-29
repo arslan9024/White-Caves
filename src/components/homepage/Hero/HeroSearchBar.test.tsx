@@ -6,6 +6,7 @@
  *
  * 28 tests across 6 describe blocks.
  */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
@@ -20,22 +21,14 @@ vi.mock('framer-motion', () => ({
       get: (_target, prop: string) => {
         return React.forwardRef(function MotionProxy(
           props: Record<string, unknown>,
-          ref: React.Ref<HTMLElement>,
+          ref: React.Ref<HTMLElement>
         ) {
-          const {
-            variants,
-            initial,
-            animate,
-            whileHover,
-            whileTap,
-            transition,
-            style,
-            ...rest
-          } = props;
+          const { variants, initial, animate, whileHover, whileTap, transition, style, ...rest } =
+            props;
           return React.createElement(prop, { ...rest, style, ref });
         });
       },
-    },
+    }
   ),
 }));
 
@@ -52,7 +45,11 @@ vi.mock('react-redux', async () => {
     ...actual,
     useDispatch: () => mockDispatch,
     useSelector: (selector: (state: Record<string, unknown>) => unknown) =>
-      selector({}),
+      selector({
+        homepage: {
+          locationTrends: [],
+        },
+      }),
   };
 });
 
@@ -107,10 +104,10 @@ describe('HeroSearchBar', () => {
       render(<HeroSearchBar />);
       expect(screen.getByText('Popular:')).toBeDefined();
       // Tags also appear as select options, so query by role=button
-      const tagButtons = screen.getAllByRole('button').filter(
-        (btn) => btn.classList.contains('hero-search-tag')
-      );
-      const tagTexts = tagButtons.map((btn) => btn.textContent);
+      const tagButtons = screen
+        .getAllByRole('button')
+        .filter(btn => btn.classList.contains('hero-search-tag'));
+      const tagTexts = tagButtons.map(btn => btn.textContent);
       expect(tagTexts).toContain('Palm Jumeirah');
       expect(tagTexts).toContain('Downtown Dubai');
       expect(tagTexts).toContain('Dubai Marina');
@@ -122,8 +119,8 @@ describe('HeroSearchBar', () => {
     it('shows all Dubai locations as options', () => {
       render(<HeroSearchBar />);
       const select = screen.getByLabelText('Select location') as HTMLSelectElement;
-      const options = Array.from(select.options).map((o) => o.text);
-      DUBAI_LOCATIONS.forEach((loc) => {
+      const options = Array.from(select.options).map(o => o.text);
+      DUBAI_LOCATIONS.forEach(loc => {
         expect(options).toContain(loc);
       });
     });
@@ -146,8 +143,8 @@ describe('HeroSearchBar', () => {
     it('shows all property types', () => {
       render(<HeroSearchBar />);
       const select = screen.getByLabelText('Select property type') as HTMLSelectElement;
-      const options = Array.from(select.options).map((o) => o.text);
-      PROPERTY_TYPES.forEach((type) => {
+      const options = Array.from(select.options).map(o => o.text);
+      PROPERTY_TYPES.forEach(type => {
         expect(options).toContain(type);
       });
     });
@@ -163,8 +160,8 @@ describe('HeroSearchBar', () => {
     it('shows all bed options', () => {
       render(<HeroSearchBar />);
       const select = screen.getByLabelText('Select bedrooms') as HTMLSelectElement;
-      const options = Array.from(select.options).map((o) => o.text);
-      BED_OPTIONS.forEach((opt) => {
+      const options = Array.from(select.options).map(o => o.text);
+      BED_OPTIONS.forEach(opt => {
         expect(options).toContain(opt.label);
       });
     });
@@ -180,8 +177,8 @@ describe('HeroSearchBar', () => {
     it('shows all price ranges', () => {
       render(<HeroSearchBar />);
       const select = screen.getByLabelText('Select price range') as HTMLSelectElement;
-      const options = Array.from(select.options).map((o) => o.text);
-      PRICE_RANGES.forEach((range) => {
+      const options = Array.from(select.options).map(o => o.text);
+      PRICE_RANGES.forEach(range => {
         expect(options).toContain(range.label);
       });
     });
@@ -213,9 +210,7 @@ describe('HeroSearchBar', () => {
         target: { value: 'Dubai Marina' },
       });
       fireEvent.click(screen.getByLabelText('Search properties'));
-      expect(mockNavigate).toHaveBeenCalledWith(
-        expect.stringContaining('location=Dubai+Marina')
-      );
+      expect(mockNavigate).toHaveBeenCalledWith(expect.stringContaining('location=Dubai+Marina'));
     });
 
     it('navigates with type param when a property type is selected', () => {
@@ -224,9 +219,7 @@ describe('HeroSearchBar', () => {
         target: { value: 'Villa' },
       });
       fireEvent.click(screen.getByLabelText('Search properties'));
-      expect(mockNavigate).toHaveBeenCalledWith(
-        expect.stringContaining('type=Villa')
-      );
+      expect(mockNavigate).toHaveBeenCalledWith(expect.stringContaining('type=Villa'));
     });
 
     it('navigates with beds param when bedrooms are selected', () => {
@@ -235,9 +228,7 @@ describe('HeroSearchBar', () => {
         target: { value: '3' },
       });
       fireEvent.click(screen.getByLabelText('Search properties'));
-      expect(mockNavigate).toHaveBeenCalledWith(
-        expect.stringContaining('beds=3')
-      );
+      expect(mockNavigate).toHaveBeenCalledWith(expect.stringContaining('beds=3'));
     });
 
     it('navigates with price params when a price range is selected', () => {
@@ -246,12 +237,8 @@ describe('HeroSearchBar', () => {
         target: { value: '3' }, // 3M – 5M
       });
       fireEvent.click(screen.getByLabelText('Search properties'));
-      expect(mockNavigate).toHaveBeenCalledWith(
-        expect.stringContaining('minPrice=3000000')
-      );
-      expect(mockNavigate).toHaveBeenCalledWith(
-        expect.stringContaining('maxPrice=5000000')
-      );
+      expect(mockNavigate).toHaveBeenCalledWith(expect.stringContaining('minPrice=3000000'));
+      expect(mockNavigate).toHaveBeenCalledWith(expect.stringContaining('maxPrice=5000000'));
     });
 
     it('dispatches setFilters with location when one is selected', () => {
@@ -261,9 +248,7 @@ describe('HeroSearchBar', () => {
       });
       fireEvent.click(screen.getByLabelText('Search properties'));
       // Second dispatch call is setFilters (first is clearFilters)
-      expect(setFilters).toHaveBeenCalledWith(
-        expect.objectContaining({ locations: ['DIFC'] })
-      );
+      expect(setFilters).toHaveBeenCalledWith(expect.objectContaining({ locations: ['DIFC'] }));
     });
 
     it('dispatches setFilters with propertyTypes when one is selected', () => {
@@ -302,18 +287,16 @@ describe('HeroSearchBar', () => {
         target: { value: 'JBR' },
       });
       fireEvent.keyDown(screen.getByRole('search'), { key: 'Enter' });
-      expect(mockNavigate).toHaveBeenCalledWith(
-        expect.stringContaining('location=JBR')
-      );
+      expect(mockNavigate).toHaveBeenCalledWith(expect.stringContaining('location=JBR'));
     });
   });
 
   describe('Popular tags', () => {
     /** Helper: get tag button by text (avoids matching select options) */
     const getTagButton = (text: string) => {
-      const buttons = screen.getAllByRole('button').filter(
-        (btn) => btn.classList.contains('hero-search-tag') && btn.textContent === text
-      );
+      const buttons = screen
+        .getAllByRole('button')
+        .filter(btn => btn.classList.contains('hero-search-tag') && btn.textContent === text);
       return buttons[0];
     };
 
@@ -360,4 +343,3 @@ describe('HeroSearchBar', () => {
     });
   });
 });
-

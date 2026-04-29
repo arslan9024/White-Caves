@@ -1,8 +1,10 @@
 /**
  * Features Component Tests
  * ========================
- * Tests for the homepage Features section — 8 service cards with animations
+ * Tests for the homepage Features section — 6 service cards with animations
  */
+
+/* eslint-disable react/display-name, security/detect-object-injection */
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
@@ -62,42 +64,38 @@ describe('Features', () => {
 
   it('renders the section subtitle', () => {
     render(<Features />);
-    expect(
-      screen.getByText(/Comprehensive real estate solutions/i)
-    ).toBeTruthy();
+    expect(screen.getByText(/Comprehensive real estate solutions/i)).toBeTruthy();
   });
 
   // ──────────────────────────────────────────────────────────
-  // Feature Cards (all 8)
+  // Feature Cards (all 6)
   // ──────────────────────────────────────────────────────────
 
   const featureTitles = [
-    'Premium Properties',
-    'Rental Services',
-    'Investment Advisory',
-    'RERA Certified',
-    'Expert Agents',
-    'Financial Tools',
-    'Virtual Tours',
-    'Digital Contracts',
+    'AI-Powered Matching',
+    'WhatsApp-First Communication',
+    'RERA Compliant',
+    'Multi-Language Support',
+    '24/7 Availability',
+    'Verified Listings',
   ];
 
-  it('renders all 8 feature cards', () => {
+  it('renders all 6 feature cards', () => {
     render(<Features />);
     for (const title of featureTitles) {
       expect(screen.getByText(title)).toBeTruthy();
     }
   });
 
-  it.each(featureTitles)('renders "%s" feature with description', (title) => {
+  it.each(featureTitles)('renders "%s" feature with description', title => {
     render(<Features />);
     expect(screen.getByText(title)).toBeTruthy();
   });
 
-  it('renders 8 "Learn more" links', () => {
+  it('renders 6 "Learn more" links', () => {
     render(<Features />);
     const links = screen.getAllByText('Learn more');
-    expect(links.length).toBe(8);
+    expect(links.length).toBe(6);
   });
 
   // ──────────────────────────────────────────────────────────
@@ -107,9 +105,7 @@ describe('Features', () => {
   it('has aria-label on each "Learn more" link', () => {
     render(<Features />);
     for (const title of featureTitles) {
-      expect(
-        screen.getByLabelText(`Learn more about ${title}`)
-      ).toBeTruthy();
+      expect(screen.getByLabelText(`Learn more about ${title}`)).toBeTruthy();
     }
   });
 
@@ -125,15 +121,9 @@ describe('Features', () => {
 
   it('renders feature descriptions', () => {
     render(<Features />);
-    expect(
-      screen.getByText(/Palm Jumeirah, Emirates Hills/i)
-    ).toBeTruthy();
-    expect(
-      screen.getByText(/mortgage calculator/i)
-    ).toBeTruthy();
-    expect(
-      screen.getByText(/Ejari-compliant/i)
-    ).toBeTruthy();
+    expect(screen.getByText(/Intelligent property recommendations/i)).toBeTruthy();
+    expect(screen.getByText(/Direct messaging with agents on WhatsApp/i)).toBeTruthy();
+    expect(screen.getByText(/thoroughly verified and updated in real-time/i)).toBeTruthy();
   });
 
   it('renders the divider element', () => {
@@ -145,7 +135,6 @@ describe('Features', () => {
   it('renders arrow symbols in learn-more links', () => {
     render(<Features />);
     const arrows = document.querySelectorAll('.arrow');
-    expect(arrows.length).toBe(8);
+    expect(arrows.length).toBe(6);
   });
 });
-

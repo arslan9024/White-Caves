@@ -1,9 +1,11 @@
 /**
  * Locations Component Tests
  * =========================
- * Tests for the homepage Locations section — 4 Dubai neighborhoods,
+ * Tests for the homepage Locations section — 6 Dubai neighborhoods,
  * property stats, navigation, hover interactions, accessibility
  */
+
+/* eslint-disable react/display-name, security/detect-object-injection */
 
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -82,9 +84,7 @@ describe('Locations', () => {
 
   it('renders the section subtitle', () => {
     renderLocations();
-    expect(
-      screen.getByText(/exclusive properties in the most sought-after/i)
-    ).toBeTruthy();
+    expect(screen.getByText(/exclusive properties in the most sought-after/i)).toBeTruthy();
   });
 
   it('has correct id for anchor navigation', () => {
@@ -93,17 +93,19 @@ describe('Locations', () => {
   });
 
   // ──────────────────────────────────────────────────────────
-  // Location Cards (all 4)
+  // Location Cards (all 6)
   // ──────────────────────────────────────────────────────────
 
   const locationNames = [
     'Palm Jumeirah',
     'Downtown Dubai',
-    'Emirates Hills',
     'Dubai Marina',
+    'Jumeirah Beach Residence',
+    'Business Bay',
+    'Dubai Hills Estate',
   ];
 
-  it('renders all 4 location cards', () => {
+  it('renders all 6 location cards', () => {
     renderLocations();
     for (const name of locationNames) {
       expect(screen.getByText(name)).toBeTruthy();
@@ -114,8 +116,10 @@ describe('Locations', () => {
     renderLocations();
     expect(screen.getByText(/Iconic waterfront living/i)).toBeTruthy();
     expect(screen.getByText(/Burj Khalifa views/i)).toBeTruthy();
-    expect(screen.getByText(/golf course villas/i)).toBeTruthy();
     expect(screen.getByText(/Vibrant waterfront lifestyle/i)).toBeTruthy();
+    expect(screen.getByText(/Beachfront towers/i)).toBeTruthy();
+    expect(screen.getByText(/Canal-side urban district/i)).toBeTruthy();
+    expect(screen.getByText(/Master-planned green community/i)).toBeTruthy();
   });
 
   it('renders alt text matching location names', () => {
@@ -133,24 +137,30 @@ describe('Locations', () => {
     renderLocations();
     expect(screen.getByText(/120 Properties/)).toBeTruthy();
     expect(screen.getByText(/200 Properties/)).toBeTruthy();
-    expect(screen.getByText(/45 Properties/)).toBeTruthy();
-    expect(screen.getByText(/180 Properties/)).toBeTruthy();
+    expect(screen.getByText(/213 Properties/)).toBeTruthy();
+    expect(screen.getByText(/97 Properties/)).toBeTruthy();
+    expect(screen.getByText(/175 Properties/)).toBeTruthy();
+    expect(screen.getByText(/121 Properties/)).toBeTruthy();
   });
 
   it('renders trend percentages', () => {
     renderLocations();
     expect(screen.getByText('+12%')).toBeTruthy();
     expect(screen.getByText('+8%')).toBeTruthy();
-    expect(screen.getByText('+15%')).toBeTruthy();
     expect(screen.getByText('+10%')).toBeTruthy();
+    expect(screen.getByText('+6%')).toBeTruthy();
+    expect(screen.getByText('+7%')).toBeTruthy();
+    expect(screen.getByText('+9%')).toBeTruthy();
   });
 
   it('renders average prices', () => {
     renderLocations();
     expect(screen.getByText('15M AED')).toBeTruthy();
     expect(screen.getByText('8M AED')).toBeTruthy();
-    expect(screen.getByText('35M AED')).toBeTruthy();
-    expect(screen.getByText('5M AED')).toBeTruthy();
+    expect(screen.getByText('1,900 AED/sqft')).toBeTruthy();
+    expect(screen.getByText('1,700 AED/sqft')).toBeTruthy();
+    expect(screen.getByText('1,600 AED/sqft')).toBeTruthy();
+    expect(screen.getByText('1,800 AED/sqft')).toBeTruthy();
   });
 
   // ──────────────────────────────────────────────────────────
@@ -160,10 +170,10 @@ describe('Locations', () => {
   it('navigates to properties page with location filter on card click', () => {
     renderLocations();
     const cards = document.querySelectorAll('.location-card');
-    expect(cards.length).toBe(4);
+    expect(cards.length).toBe(6);
 
     fireEvent.click(cards[0]); // Palm Jumeirah
-    expect(mockNavigate).toHaveBeenCalledWith('/properties?location=Palm Jumeirah');
+    expect(mockNavigate).toHaveBeenCalledWith('/properties?area=palm-jumeirah');
   });
 
   it('navigates to correct location for each card', () => {
@@ -171,10 +181,10 @@ describe('Locations', () => {
     const cards = document.querySelectorAll('.location-card');
 
     fireEvent.click(cards[1]); // Downtown Dubai
-    expect(mockNavigate).toHaveBeenCalledWith('/properties?location=Downtown Dubai');
+    expect(mockNavigate).toHaveBeenCalledWith('/properties?area=downtown-dubai');
 
-    fireEvent.click(cards[2]); // Emirates Hills
-    expect(mockNavigate).toHaveBeenCalledWith('/properties?location=Emirates Hills');
+    fireEvent.click(cards[3]); // Jumeirah Beach Residence
+    expect(mockNavigate).toHaveBeenCalledWith('/properties?area=jbr');
   });
 
   it('"Explore All Locations" button navigates to /properties', () => {
@@ -190,22 +200,22 @@ describe('Locations', () => {
   // UI Elements
   // ──────────────────────────────────────────────────────────
 
-  it('renders 4 "View Properties" CTAs', () => {
+  it('renders 6 "View Properties" CTAs', () => {
     renderLocations();
     const ctas = screen.getAllByText('View Properties');
-    expect(ctas.length).toBe(4);
+    expect(ctas.length).toBe(6);
   });
 
   it('renders "Avg. Price" labels', () => {
     renderLocations();
     const labels = screen.getAllByText('Avg. Price');
-    expect(labels.length).toBe(4);
+    expect(labels.length).toBe(6);
   });
 
   it('renders location images with lazy loading', () => {
     renderLocations();
     const images = document.querySelectorAll<HTMLImageElement>('.location-image');
-    expect(images.length).toBe(4);
+    expect(images.length).toBe(6);
     for (const img of images) {
       expect(img.getAttribute('loading')).toBe('lazy');
     }
@@ -225,4 +235,3 @@ describe('Locations', () => {
     expect(document.querySelector('.locations-grid')).toBeTruthy();
   });
 });
-

@@ -58,6 +58,7 @@ import agentAvailabilityRoutes from './routes/agentAvailability.js';
 import analyticsRoutes from './routes/analytics.js';
 import homepageRoutes from './routes/homepage.js';
 import contactRoutes from './routes/contact.js';
+import jobApplicationsRoutes from './routes/jobApplications.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
@@ -513,41 +514,8 @@ app.post(
   })
 );
 
-// Job Applications API stubs (JobBoard, JobApplicants)
-// TODO: Add Prisma model and full CRUD when HR module is prioritised
-app.get(
-  '/api/job-applications',
-  authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: [],
-      pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
-    });
-  })
-);
-app.post(
-  '/api/job-applications',
-  authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
-    logger.info('Job application received (stub)', { body: Object.keys(req.body || {}) });
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
-app.patch(
-  '/api/job-applications/:id',
-  authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { status } = req.body || {};
-    logger.info('Job application status update (stub)', { id, status });
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
+// Job Applications API
+app.use('/api/job-applications', jobApplicationsRoutes);
 
 // Appointments API stubs (AppointmentScheduler)
 // TODO: Add Prisma model and full CRUD when scheduling module is prioritised
