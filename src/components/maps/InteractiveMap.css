@@ -65,8 +65,8 @@
 .map-loading-spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(212, 175, 55, 0.2);
-  border-top-color: #D4AF37;
+  border: 3px solid rgba(227, 30, 36, 0.2);
+  border-top-color: #E31E24;
   border-radius: 50%;
   animation: map-spin 0.8s linear infinite;
 }

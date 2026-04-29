@@ -24,7 +24,7 @@ const AI_ASSISTANTS = [
   { id: 'atlas', name: 'Atlas', role: 'Project Manager', dept: 'Technology', status: 'active', tasks: 234, accuracy: 92, color: '#0891B2', description: 'Project tracking and resource allocation' },
   { id: 'vesta', name: 'Vesta', role: 'Handover Coordinator', dept: 'Operations', status: 'active', tasks: 156, accuracy: 96, color: '#059669', description: 'Property handover and documentation' },
   { id: 'juno', name: 'Juno', role: 'Community Manager', dept: 'Communications', status: 'active', tasks: 278, accuracy: 93, color: '#DB2777', description: 'Community engagement and social media' },
-  { id: 'kairos', name: 'Kairos', role: 'Luxury Specialist', dept: 'Sales', status: 'active', tasks: 89, accuracy: 97, color: '#D4AF37', description: 'Ultra-luxury property transactions' },
+  { id: 'kairos', name: 'Kairos', role: 'Luxury Specialist', dept: 'Sales', status: 'active', tasks: 89, accuracy: 97, color: '#E31E24', description: 'Ultra-luxury property transactions' },
   { id: 'maven', name: 'Maven', role: 'Investment Advisor', dept: 'Finance', status: 'active', tasks: 67, accuracy: 98, color: '#B45309', description: 'Investment analysis and portfolio advice' },
 ];
 

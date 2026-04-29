@@ -57,7 +57,7 @@ export const StatusBadge = styled.span<{ $status?: string }>`
       case 'available':
         return '#3b82f6';
       case 'sold':
-        return '#D4AF37';
+        return '#E31E24';
       case 'reserved':
         return '#f59e0b';
       default:

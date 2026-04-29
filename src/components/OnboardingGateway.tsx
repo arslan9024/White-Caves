@@ -59,7 +59,7 @@ const OnboardingGateway = () => {
       ),
       path: '/seller/dashboard',
       role: 'seller',
-      color: '#D4AF37'
+      color: '#E31E24'
     },
     {
       id: 'buyer',
@@ -104,7 +104,7 @@ const OnboardingGateway = () => {
       ),
       path: '/signin',
       role: 'agent',
-      color: '#FFB300'
+      color: '#E31E24'
     }
   ];
 

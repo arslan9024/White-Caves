@@ -252,7 +252,7 @@
 .form-group textarea:focus {
   outline: none;
   border-color: #B03737;
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.2);
 }
 
 .form-group input::placeholder,
@@ -285,7 +285,7 @@
 
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 8px 25px rgba(227, 30, 36, 0.4);
 }
 
 .map-section {

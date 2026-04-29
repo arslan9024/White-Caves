@@ -2,7 +2,7 @@
 
 > **Updated:** 2026-04-29  
 > **Branch:** `copilot/research-implementation-plan-details`  
-> **Goal:** Complete the remaining ~40% of the platform with a Dubai Luxury (Gold / Black / White) aesthetic.
+> **Goal:** Complete the remaining ~40% of the platform with a Red (#E31E24) + White aesthetic.
 
 ---
 
@@ -27,23 +27,23 @@
 
 ### Milestone 1 — Dubai Luxury Hero Upgrade ✅ (2026-04-29)
 
-**Objective:** Apply true Gold / Black / White Dubai Luxury aesthetic to the Homepage Hero section.
+**Objective:** Apply true Red (#E31E24) + White Dubai Luxury aesthetic to the Homepage Hero section.
 
 **Changes shipped:**
 
-- `src/styles/dubaiLuxuryTheme.css` — Added `--luxury-true-gold` (#C9A84C), `--luxury-true-gold-light`, `--luxury-true-gold-dark`, `--luxury-true-gold-soft`, `--luxury-true-gold-glow` CSS variables. `--accent-gold` now overrides to real gold inside `.dubai-luxury-theme` scope.
+- `src/styles/dubaiLuxuryTheme.css` — Added `--primary-color` (#E31E24), `--primary-color-light`, `--primary-color-dark`, `--primary-color-soft`, `--primary-color-glow` CSS variables. `--accent-color` now overrides to real brand red inside `.dubai-luxury-theme` scope.
 - `src/components/homepage/Hero/Hero.css`:
-  - Floating shapes → gold gradient blobs instead of red
-  - `hero-gradient-overlay` → subtle gold wash instead of red
-  - `hero-market-pill` → gold border/gradient
-  - `hero-market-pill-separator` → gold
-  - `hero-stats-grid` → gold border + gold glow box-shadow
-  - `hero-stat-number` → `--luxury-true-gold` (#C9A84C)
-  - `hero-stat-skeleton` → gold shimmer animation
+  - Floating shapes → brand red gradient blobs
+  - `hero-gradient-overlay` → brand red overlay
+  - `hero-market-pill` → brand red border
+  - `hero-market-pill-separator` → brand red
+  - `hero-stats-grid` → brand red border + brand red glow box-shadow
+  - `hero-stat-number` → `--primary-color` (#E31E24)
+  - `hero-stat-skeleton` → brand red shimmer animation
 - `src/components/homepage/Hero/HeroSearchBar.tsx`:
-  - Buy/Rent mode toggle active tab → gold (`--luxury-true-gold`) instead of hardcoded `#E31E24`
+  - Buy/Rent mode toggle active tab → brand red (`--primary-color`) instead of hardcoded `#E31E24`
 
-**Result:** Hero section is now Gold / Black / White — matching the Dubai Luxury brand aesthetic — while the rest of the app continues to use the White Caves brand red.
+**Result:** Hero section is now Red (#E31E24) + White — matching the White Caves brand Red/White aesthetic — while the rest of the app continues to use the White Caves brand red.
 
 ---
 
@@ -96,7 +96,7 @@
 
 | Decision                      | Choice                                                                         | Reason                                                                  |
 | ----------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
-| CSS variable scoping for gold | `.dubai-luxury-theme` class                                                    | Keeps brand red intact app-wide; luxury sections opt-in                 |
+| CSS variable scoping for brand red | `.dubai-luxury-theme` class                                                    | Keeps brand red intact app-wide; brand tokens scoped                 |
 | AI assistant registry         | `src/config/assistantRegistry.ts` + `src/store/slices/aiAssistant/registry.ts` | Single source of truth, 40 assistants, 12 departments                   |
 | Portal authentication         | JWT + role guard middleware                                                    | `managing_director` gets 8 CRM tabs; landlord/tenant get scoped portals |
 | Database ORM                  | Prisma (28 models)                                                             | Type-safe, auto-generated client, compatible with Neon Postgres         |

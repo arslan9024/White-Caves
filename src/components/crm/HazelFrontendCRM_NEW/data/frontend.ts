@@ -39,7 +39,7 @@ export const COMPONENT_LIBRARY: ComponentEntry[] = [
 ];
 
 export const DESIGN_TOKENS: DesignTokens = {
-  colors: { primary: '#D4AF37', secondary: '#1A1A2E', accent: '#43E97B', surface: '#16213E' },
+  colors: { primary: '#E31E24', secondary: '#1A1A2E', accent: '#43E97B', surface: '#16213E' },
   typography: { heading: 'Montserrat', body: 'Open Sans', mono: 'JetBrains Mono' },
   spacing: ['4px', '8px', '12px', '16px', '24px', '32px', '48px', '64px'],
   radius: ['4px', '8px', '12px', '16px', '24px', '9999px']

@@ -95,7 +95,7 @@ export const FilterSelect = styled.select`
 // ─── Buttons ────────────────────────────────────────────────────────────
 
 export const PrimaryButton = styled.button`
-  background: linear-gradient(135deg, #D4AF37 0%, #B8960C 100%);
+  background: linear-gradient(135deg, #E31E24 0%, #B71C1C 100%);
   color: #1a1a2e;
   border: none;
   border-radius: 8px;
@@ -109,7 +109,7 @@ export const PrimaryButton = styled.button`
   gap: 0.4rem;
 
   &:hover {
-    background: linear-gradient(135deg, #e2c35a 0%, #D4AF37 100%);
+    background: linear-gradient(135deg, #e2c35a 0%, #E31E24 100%);
     box-shadow: 0 8px 18px rgba(212, 175, 55, 0.28);
   }
 
@@ -231,7 +231,7 @@ export const FormInput = styled.input`
   transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
 
   &:focus {
-    border-color: #D4AF37;
+    border-color: #E31E24;
     box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     background: white;
   }
@@ -251,7 +251,7 @@ export const FormTextarea = styled.textarea`
   transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
 
   &:focus {
-    border-color: #D4AF37;
+    border-color: #E31E24;
     box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     background: white;
   }
@@ -269,7 +269,7 @@ export const FormSelect = styled.select`
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
 
   &:focus {
-    border-color: #D4AF37;
+    border-color: #E31E24;
     box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
   }
 `;

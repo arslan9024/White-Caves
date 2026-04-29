@@ -235,7 +235,7 @@ const HeroSearchBar = memo(function HeroSearchBar() {
               fontWeight: 600,
               fontSize: '0.88rem',
               transition: 'all 0.2s',
-              background: mode === m ? 'var(--luxury-true-gold, #C9A84C)' : 'transparent',
+              background: mode === m ? '#E31E24' : 'transparent',
               color: mode === m ? '#fff' : 'rgba(255,255,255,0.75)',
             }}
           >

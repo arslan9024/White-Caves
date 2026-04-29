@@ -24,7 +24,7 @@ export const COLOR_TOKENS = {
 
   // Accent Colors
   accent: {
-    gold: '#D4AF37',          // Luxury gold accent
+    gold: '#E31E24',          // Luxury gold accent
     blackGold: '#1A1A1A',     // Deep black for elegance
     platinum: '#E8E8E8',      // Platinum gray
   },
@@ -180,7 +180,7 @@ export const COLOR_TOKENS = {
 
   // Gradient System
   gradients: {
-    redGold: 'linear-gradient(135deg, #C41E3A 0%, #D4AF37 100%)',
+    redGold: 'linear-gradient(135deg, #C41E3A 0%, #E31E24 100%)',
     redWhite: 'linear-gradient(135deg, #C41E3A 0%, #FFFFFF 100%)',
     whiteRed: 'linear-gradient(135deg, #FFFFFF 0%, #C41E3A 100%)',
     redBlack: 'linear-gradient(135deg, #C41E3A 0%, #1A1A1A 100%)',

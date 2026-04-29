@@ -6,7 +6,7 @@
  * - Cluster grouping when zoomed out
  * - Community boundary circles
  * - Click-to-filter integration with Redux propertySlice
- * - Gold (#D4AF37) theme pins matching White Caves branding
+ * - Brand Red (#E31E24) + White theme pins
  */
 
 import React, { FC, useMemo, useCallback, useRef, useEffect } from 'react';
@@ -69,9 +69,9 @@ interface DubaiMapProps {
   className?: string;
 }
 
-/* ─── Custom Gold Marker Icon ───────────────────────────────────── */
+/* ─── Custom Marker Icon ────────────────────────────────────────── */
 
-function createGoldIcon(featured: boolean = false): L.DivIcon {
+function createMarkerIcon(featured: boolean = false): L.DivIcon {
   const bg = featured ? colors.primary : colors.secondary;
   const border = featured ? colors.primaryDark : colors.secondaryDark;
   return L.divIcon({
@@ -91,8 +91,8 @@ function createGoldIcon(featured: boolean = false): L.DivIcon {
   });
 }
 
-const goldIcon = createGoldIcon(true);
-const greenIcon = createGoldIcon(false);
+const featuredIcon = createMarkerIcon(true);
+const standardIcon = createMarkerIcon(false);
 
 /* ─── Map Fit Helper ────────────────────────────────────────────── */
 
@@ -146,14 +146,15 @@ const DubaiMap: FC<DubaiMapProps> = ({
 
   // Community stats (count per community)
   const communityStats = useMemo(() => {
-    const stats: Record<string, { count: number; avgPrice: number }> = {};
+    const stats = new Map<string, { count: number; avgPrice: number }>();
     properties.forEach((p) => {
-      if (!stats[p.location]) stats[p.location] = { count: 0, avgPrice: 0 };
-      stats[p.location].count += 1;
-      stats[p.location].avgPrice += p.price;
+      const entry = stats.get(p.location) ?? { count: 0, avgPrice: 0 };
+      entry.count += 1;
+      entry.avgPrice += p.price;
+      stats.set(p.location, entry);
     });
-    Object.keys(stats).forEach((key) => {
-      stats[key].avgPrice = Math.round(stats[key].avgPrice / stats[key].count);
+    stats.forEach((entry) => {
+      entry.avgPrice = Math.round(entry.avgPrice / entry.count);
     });
     return stats;
   }, [properties]);
@@ -192,7 +193,7 @@ const DubaiMap: FC<DubaiMapProps> = ({
         {/* Community boundary circles */}
         {showCommunities &&
           COMMUNITY_COORDS.map((community) => {
-            const stats = communityStats[community.name];
+            const stats = communityStats.get(community.name);
             return (
               <Circle
                 key={community.name}
@@ -200,7 +201,7 @@ const DubaiMap: FC<DubaiMapProps> = ({
                 radius={community.radius}
                 pathOptions={{
                   color: stats ? colors.primary : colors.secondary,
-                  fillColor: stats ? 'rgba(212, 175, 55, 0.08)' : 'rgba(46, 90, 79, 0.04)',
+                  fillColor: stats ? 'rgba(227, 30, 36, 0.08)' : 'rgba(46, 90, 79, 0.04)',
                   fillOpacity: 0.4,
                   weight: stats ? 2 : 1,
                   dashArray: stats ? undefined : '4 6',
@@ -236,7 +237,7 @@ const DubaiMap: FC<DubaiMapProps> = ({
           <Marker
             key={marker.id}
             position={[marker.lat, marker.lng]}
-            icon={marker.featured ? goldIcon : greenIcon}
+            icon={marker.featured ? featuredIcon : standardIcon}
             eventHandlers={{
               click: () => onPropertyClick?.(marker),
             }}

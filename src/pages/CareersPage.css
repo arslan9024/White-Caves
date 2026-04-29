@@ -234,7 +234,7 @@
 }
 
 .job-tag.type {
-  background: rgba(212, 175, 55, 0.2);
+  background: rgba(227, 30, 36, 0.2);
   color: #b38600;
 }
 
@@ -244,7 +244,7 @@
 }
 
 [data-theme="dark"] .job-tag.type {
-  background: rgba(212, 175, 55, 0.2);
+  background: rgba(227, 30, 36, 0.2);
   color: #B03737;
 }
 

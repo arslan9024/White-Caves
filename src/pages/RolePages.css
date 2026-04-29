@@ -433,7 +433,7 @@
 }
 
 .result-highlight {
-  background: rgba(212, 175, 55, 0.12);
+  background: rgba(227, 30, 36, 0.12);
   border: 1px solid var(--primary-color);
   border-radius: 12px;
   padding: 1.5rem;

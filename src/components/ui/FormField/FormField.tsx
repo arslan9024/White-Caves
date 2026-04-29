@@ -125,7 +125,7 @@ const inputBaseStyles = css<{ $hasError: boolean; $isValid: boolean }>`
     border-color: ${(p) =>
       p.$hasError
         ? p.theme.colors?.error || '#B71C1C'
-        : p.theme.colors?.primary || '#D4AF37'};
+        : p.theme.colors?.primary || '#E31E24'};
     box-shadow: 0 0 0 3px
       ${(p) =>
         p.$hasError

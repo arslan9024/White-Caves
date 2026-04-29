@@ -150,7 +150,7 @@ export const TenantLease: React.FC = () => {
           </div>
           <div>
             <strong>Monthly Rent:</strong>
-            <p style={{ ...S.headerSubtitle, color: 'var(--color-primary, #D4AF37)', fontWeight: 600 }}>
+            <p style={{ ...S.headerSubtitle, color: 'var(--color-primary, #E31E24)', fontWeight: 600 }}>
               {S.formatCurrency(lease.monthlyRent)}
             </p>
           </div>

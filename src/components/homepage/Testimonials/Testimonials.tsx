@@ -217,7 +217,7 @@ const Testimonials = () => {
                 
                 <div className="testimonial-rating">
                   {[...Array(current.rating)].map((_, i) => (
-                    <Star key={`star-${i}`} size={20} fill="#FFB300" color="#FFB300" />
+                    <Star key={`star-${i}`} size={20} fill="#E31E24" color="#E31E24" />
                   ))}
                 </div>
 

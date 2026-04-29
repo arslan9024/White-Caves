@@ -123,10 +123,10 @@ export default function PropertySearchHero() {
     <div className="property-search-hero">
       <div className="search-hero-content">
         <h1 className="search-hero-title">
-          Find Your Perfect <span className="gold-text">Luxury Property</span> in Dubai
+          Find Your Perfect <span className="red-text">Property</span> in Dubai
         </h1>
         <p className="search-hero-subtitle">
-          Explore exclusive properties in Dubai's most prestigious communities
+          Explore exclusive properties in Dubai&apos;s most prestigious communities
         </p>
 
         <div className="search-box-container">

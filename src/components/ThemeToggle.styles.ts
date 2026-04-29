@@ -41,7 +41,7 @@ export const ToggleIcons = styled.div`
 `;
 
 export const IconSun = styled.span<{ $isDark: boolean }>`
-  color: ${props => props.theme?.colors?.accentGold || '#FFC107'};
+  color: ${props => props.theme?.colors?.accentGold || '#E31E24'};
   opacity: ${props => props.$isDark ? 0.5 : 1};
   transition: opacity 0.3s ease;
 `;

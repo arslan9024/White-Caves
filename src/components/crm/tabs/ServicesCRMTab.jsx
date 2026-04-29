@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 const SERVICE_CATEGORIES = [
-  { id: 'luxury-property-transactions', name: 'Luxury Property Transactions', code: 'LPT', count: 5, color: '#D4AF37', icon: Crown },
+  { id: 'luxury-property-transactions', name: 'Luxury Property Transactions', code: 'LPT', count: 5, color: '#E31E24', icon: Crown },
   { id: 'premium-leasing-services', name: 'Premium Leasing Services', code: 'PLS', count: 5, color: '#3B82F6', icon: Key },
   { id: 'property-portfolio-management', name: 'Property & Portfolio Management', code: 'PPM', count: 5, color: '#8B5CF6', icon: Settings },
   { id: 'investment-advisory', name: 'Investment Advisory', code: 'IA', count: 5, color: '#10B981', icon: TrendingUp },
@@ -65,7 +65,7 @@ const TIER_CONFIG = {
   basic: { label: 'Basic', color: '#6B7280', bg: 'rgba(107, 114, 128, 0.1)' },
   essential: { label: 'Essential', color: '#3B82F6', bg: 'rgba(59, 130, 246, 0.1)' },
   premium: { label: 'Premium', color: '#8B5CF6', bg: 'rgba(139, 92, 246, 0.1)' },
-  ultra: { label: 'Ultra-Premium', color: '#D4AF37', bg: 'rgba(212, 175, 55, 0.15)' },
+  ultra: { label: 'Ultra-Premium', color: '#E31E24', bg: 'rgba(212, 175, 55, 0.15)' },
   corporate: { label: 'Corporate', color: '#0A1A3A', bg: 'rgba(10, 26, 58, 0.1)' },
 };
 

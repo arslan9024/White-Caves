@@ -71,9 +71,9 @@
 }
 
 .header-btn:hover {
-  background: var(--primary-color, #D4AF37);
+  background: var(--primary-color, #E31E24);
   color: white;
-  border-color: var(--primary-color, #D4AF37);
+  border-color: var(--primary-color, #E31E24);
 }
 
 .stats-grid {

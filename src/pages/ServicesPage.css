@@ -69,7 +69,7 @@
 }
 
 .btn-primary-gold {
-  background: linear-gradient(135deg, #D4AF37, #B8960C);
+  background: linear-gradient(135deg, #E31E24, #B71C1C);
   color: #0A2463;
   border: none;
   padding: 1rem 2.5rem;
@@ -78,18 +78,18 @@
   border-radius: 50px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 4px 15px rgba(227, 30, 36, 0.4);
 }
 
 .btn-primary-gold:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 25px rgba(212, 175, 55, 0.6);
+  box-shadow: 0 6px 25px rgba(227, 30, 36, 0.6);
 }
 
 .btn-secondary-outline {
   background: transparent;
   color: white;
-  border: 2px solid #D4AF37;
+  border: 2px solid #E31E24;
   padding: 1rem 2.5rem;
   font-size: 1.1rem;
   font-weight: 600;
@@ -99,7 +99,7 @@
 }
 
 .btn-secondary-outline:hover {
-  background: rgba(212, 175, 55, 0.2);
+  background: rgba(227, 30, 36, 0.2);
   transform: translateY(-3px);
 }
 
@@ -161,7 +161,7 @@
 }
 
 .service-subtitle {
-  color: #D4AF37;
+  color: #E31E24;
   font-weight: 500;
   margin-bottom: 1.5rem;
 }
@@ -183,7 +183,7 @@
 
 [data-theme="dark"] .service-list h4,
 [data-theme="dark"] .service-features h4 {
-  color: #D4AF37;
+  color: #E31E24;
 }
 
 .service-list ul,
@@ -224,7 +224,7 @@
 }
 
 .btn-learn-more:hover {
-  background: #D4AF37;
+  background: #E31E24;
   color: #0A2463;
 }
 
@@ -252,7 +252,7 @@
 }
 
 .tab-btn:hover {
-  border-color: #D4AF37;
+  border-color: #E31E24;
 }
 
 .tab-btn.active {
@@ -292,7 +292,7 @@
 }
 
 [data-theme="dark"] .process-flowchart h4 {
-  color: #D4AF37;
+  color: #E31E24;
 }
 
 .flowchart-steps {
@@ -324,7 +324,7 @@
 
 .flow-arrow {
   font-size: 1.5rem;
-  color: #D4AF37;
+  color: #E31E24;
 }
 
 .benefits-grid {
@@ -362,7 +362,7 @@
 }
 
 [data-theme="dark"] .comparison-table h4 {
-  color: #D4AF37;
+  color: #E31E24;
 }
 
 .comparison-table table {
@@ -389,7 +389,7 @@
 }
 
 .comparison-table tr:hover {
-  background: rgba(212, 175, 55, 0.1);
+  background: rgba(227, 30, 36, 0.1);
 }
 
 .success-metrics {
@@ -400,7 +400,7 @@
 }
 
 .metric {
-  background: linear-gradient(135deg, #D4AF37, #B8960C);
+  background: linear-gradient(135deg, #E31E24, #B71C1C);
   color: #0A2463;
   padding: 2rem;
   border-radius: 12px;
@@ -452,7 +452,7 @@
 }
 
 [data-theme="dark"] .faq-section h4 {
-  color: #D4AF37;
+  color: #E31E24;
 }
 
 .faq-item {
@@ -505,7 +505,7 @@
 }
 
 .area-card h4 {
-  color: #D4AF37;
+  color: #E31E24;
   margin-bottom: 1rem;
   font-size: 1.1rem;
 }
@@ -569,7 +569,7 @@
   top: -15px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #D4AF37, #B8960C);
+  background: linear-gradient(135deg, #E31E24, #B71C1C);
   color: #0A2463;
   width: 30px;
   height: 30px;
@@ -620,7 +620,7 @@
 .trust-indicators .stat-value {
   font-size: 2.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #0A2463, #D4AF37);
+  background: linear-gradient(135deg, #0A2463, #E31E24);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -711,12 +711,12 @@
 .cta-form select:focus,
 .cta-form textarea:focus {
   outline: none;
-  border-color: #D4AF37;
+  border-color: #E31E24;
 }
 
 .btn-submit {
   width: 100%;
-  background: linear-gradient(135deg, #D4AF37, #B8960C);
+  background: linear-gradient(135deg, #E31E24, #B71C1C);
   color: #0A2463;
   border: none;
   padding: 1rem;
@@ -729,7 +729,7 @@
 
 .btn-submit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 4px 15px rgba(227, 30, 36, 0.4);
 }
 
 @media (max-width: 1024px) {

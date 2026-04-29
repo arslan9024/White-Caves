@@ -64,7 +64,7 @@ export const Select = styled.select`
     color: #e2e8f0;
 
     &:focus {
-      border-color: #D4AF37;
+      border-color: #E31E24;
       box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     }
   }

@@ -136,7 +136,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
-    color: '#FFD700',
+    color: '#E31E24',
     icon: 'Crown',
     features: ['Dashboard', 'VIP', 'Concierge', 'Lifestyle', 'Partners'],
     dataFlows: ['VIP Database', 'Partner Services', 'Luxury Vendors'],

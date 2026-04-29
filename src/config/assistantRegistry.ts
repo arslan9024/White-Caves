@@ -167,8 +167,8 @@ export const DEPARTMENTS: Record<DepartmentId, Department> = {
   legal: {
     id: 'legal',
     label: 'Legal',
-    color: '#D4AF37',
-    gradient: 'linear-gradient(135deg, #D4AF37 0%, #B8960C 100%)',
+    color: '#E31E24',
+    gradient: 'linear-gradient(135deg, #E31E24 0%, #B71C1C 100%)',
     icon: 'Scale',
   },
   intelligence: {
@@ -596,7 +596,7 @@ export const AI_ASSISTANTS: Record<AssistantId, Assistant> = {
     title: 'Legal Risk Analyst',
     department: 'legal',
     icon: 'Scale',
-    color: '#D4AF37',
+    color: '#E31E24',
     avatar: '👩‍⚖️',
     description:
       'Proactively identifies, documents, and helps resolve legal issues. Monitors contracts, regulations, and transaction compliance',

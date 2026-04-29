@@ -127,7 +127,7 @@ export const btnPrimary: React.CSSProperties = {
   padding: '0.5rem 1.25rem',
   borderRadius: '8px',
   border: 'none',
-  background: 'var(--color-primary, #D4AF37)',
+  background: 'var(--color-primary, #E31E24)',
   color: '#fff',
   fontWeight: 600,
   cursor: 'pointer',

@@ -235,7 +235,7 @@
 
 .nav-group.active-group > .nav-group-header {
   color: var(--crm-navy);
-  background: rgba(212, 175, 55, 0.1);
+  background: rgba(227, 30, 36, 0.1);
 }
 
 .nav-group-icon {
@@ -567,7 +567,7 @@
 .ai-assistant-item.active {
   background: var(--surface-primary);
   border-color: var(--crm-gold);
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0 0 2px rgba(227, 30, 36, 0.2);
 }
 
 .ai-assistant-avatar {
@@ -665,7 +665,7 @@
 }
 
 .crm-stat-icon.navy { background: rgba(10, 26, 58, 0.1); color: var(--crm-navy); }
-.crm-stat-icon.gold { background: rgba(212, 175, 55, 0.1); color: var(--crm-gold); }
+.crm-stat-icon.gold { background: rgba(227, 30, 36, 0.1); color: var(--crm-gold); }
 .crm-stat-icon.success { background: rgba(16, 185, 129, 0.1); color: #10B981; }
 .crm-stat-icon.info { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
 
@@ -859,7 +859,7 @@
 .crm-btn-gold:hover {
   background: var(--crm-gold-light);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
+  box-shadow: 0 4px 12px rgba(227, 30, 36, 0.35);
 }
 
 /* Loading State */
@@ -1056,7 +1056,7 @@
 
 .ai-assistant-item.team-lead {
   border-left: 3px solid var(--crm-gold);
-  background: rgba(212, 175, 55, 0.05);
+  background: rgba(227, 30, 36, 0.05);
 }
 
 /* Responsive */

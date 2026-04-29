@@ -113,7 +113,7 @@ export const LeasingProperties: React.FC = () => {
                 <p style={{ ...S.headerSubtitle, margin: 0 }}>📍 {p.location}</p>
                 <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem', fontSize: '0.85rem', color: '#6b7280' }}>
                   <span>🛏️ {p.bedrooms ?? 0} BR</span>
-                  <span style={{ fontWeight: 600, color: 'var(--color-primary, #D4AF37)' }}>{S.formatCurrency(p.price)}/yr</span>
+                  <span style={{ fontWeight: 600, color: 'var(--color-primary, #E31E24)' }}>{S.formatCurrency(p.price)}/yr</span>
                   <span style={S.badge(
                     p.status === 'available' ? '#16a34a' : '#d97706',
                     p.status === 'available' ? '#dcfce7' : '#fffbeb',
@@ -662,7 +662,7 @@ export const AgentPerformance: React.FC = () => {
             style={{
               height: '100%',
               width: `${Math.min((stats?.closedThisMonth ?? 0) / (stats?.monthlyTarget ?? 10) * 100, 100)}%`,
-              background: 'linear-gradient(90deg, #D4AF37, #B8860B)',
+              background: 'linear-gradient(90deg, #E31E24, #B8860B)',
               borderRadius: '8px',
               transition: 'width 0.5s ease',
             }}

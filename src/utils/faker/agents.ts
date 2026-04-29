@@ -28,7 +28,7 @@ const LAST_NAMES = [
 ];
 
 const AVATAR_COLORS = [
-  '#D4AF37', '#2E5A4F', '#E67E22', '#3498DB', '#9B59B6',
+  '#E31E24', '#2E5A4F', '#E67E22', '#3498DB', '#9B59B6',
   '#1ABC9C', '#E74C3C', '#F39C12', '#2ECC71', '#34495E',
 ];
 

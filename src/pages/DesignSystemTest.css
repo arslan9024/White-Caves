@@ -16,7 +16,7 @@
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 8px;
-  background: linear-gradient(135deg, #D4AF37 0%, #F59E0B 100%);
+  background: linear-gradient(135deg, #E31E24 0%, #F59E0B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -36,7 +36,7 @@
   font-weight: 700;
   margin-bottom: 24px;
   padding-bottom: 12px;
-  border-bottom: 2px solid #D4AF37;
+  border-bottom: 2px solid #E31E24;
   display: inline-block;
 }
 

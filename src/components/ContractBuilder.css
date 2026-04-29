@@ -79,8 +79,8 @@
 }
 
 .template-card:hover {
-  border-color: #d4af37;
-  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.15);
+  border-color: #E31E24;
+  box-shadow: 0 4px 16px rgba(227, 30, 36, 0.15);
   transform: translateY(-2px);
 }
 
@@ -103,7 +103,7 @@
 
 .template-category {
   display: inline-block;
-  background: #d4af37;
+  background: #E31E24;
   color: #1a1a2e;
   padding: 4px 12px;
   border-radius: 20px;
@@ -168,8 +168,8 @@ legend {
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #d4af37;
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+  border-color: #E31E24;
+  box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.1);
 }
 
 .form-group input::placeholder {
@@ -232,14 +232,14 @@ legend {
 }
 
 .btn-primary {
-  background-color: #d4af37;
+  background-color: #E31E24;
   color: #1a1a2e;
 }
 
 .btn-primary:hover:not(:disabled) {
   background-color: #c49f2f;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 4px 12px rgba(227, 30, 36, 0.3);
 }
 
 .btn-primary:disabled {

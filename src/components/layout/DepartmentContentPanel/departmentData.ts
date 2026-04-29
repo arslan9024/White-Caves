@@ -7,7 +7,7 @@
  */
 
 import {
-  FileText, Download, Plus, Settings, TrendingUp, Users, AlertCircle,
+  FileText, Download, Plus, Settings, TrendingUp, Users,
   Clock, CheckCircle, Activity, Briefcase, BarChart3, MessageSquare,
   type LucideIcon,
 } from 'lucide-react';
@@ -388,8 +388,8 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
   executive: {
     name: 'Executive',
     icon: 'Globe',
-    color: '#D4AF37',
-    bgGradient: 'linear-gradient(135deg, #D4AF37 0%, #991B1B 100%)',
+    color: '#E31E24',
+    bgGradient: 'linear-gradient(135deg, #E31E24 0%, #991B1B 100%)',
     description: 'Strategic oversight, KPIs, executive reports, and board insights',
     metrics: [
       { label: 'Revenue YTD', value: 'AED 24.8M', change: '+32%', trend: 'up' },

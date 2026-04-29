@@ -53,7 +53,7 @@
 }
 
 .social-login-btn:focus-visible {
-  outline: 2px solid var(--primary-color, #D4AF37);
+  outline: 2px solid var(--primary-color, #E31E24);
   outline-offset: 2px;
 }
 
