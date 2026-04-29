@@ -1,5 +1,5 @@
 const PropertyInventory = require('../models/PropertyInventory');
-// const Notification = require('../models/Notification');  // TODO: Create Notification model
+const Notification = require('../models/Notification');
 
 class BulkOperationsService {
   /**
@@ -150,32 +150,26 @@ class BulkOperationsService {
 
   /**
    * Send notifications for multiple properties
-   * TODO: Implement when Notification model is created
    */
   static async sendNotifications(propertyIds, message, type = 'info') {
     try {
-      // Notification model not yet implemented
+      const notifications = propertyIds.map((propertyId) => ({
+        userId: 'system',
+        type: 'property_update',
+        title: 'Bulk property update',
+        message,
+        priority: type === 'urgent' ? 'high' : 'normal',
+        relatedEntity: { entityType: 'property', entityId: String(propertyId) },
+        metadata: { bulkOperation: true },
+      }));
+
+      const result = await Notification.insertMany(notifications);
+
       return {
         success: true,
-        sent: propertyIds.length,
-        message: `Notification feature not yet implemented`,
+        sent: result.length,
+        message: `Sent ${result.length} notifications`,
       };
-      
-      // const notifications = propertyIds.map((propertyId) => ({
-      //   propertyId,
-      //   message,
-      //   type,
-      //   createdAt: new Date(),
-      //   read: false,
-      // }));
-      //
-      // const result = await Notification.insertMany(notifications);
-      //
-      // return {
-      //   success: true,
-      //   sent: result.length,
-      //   message: `Sent notification to ${result.length} properties`,
-      // };
     } catch (error) {
       throw new Error(`Failed to send notifications: ${error.message}`);
     }

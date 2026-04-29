@@ -42,6 +42,9 @@ import contractGeneratorRoutes from './routes/contract-generator.js';
 import relationalSidebarRoutes from './routes/relational-sidebar.js';
 import OliviaService from './services/oliviaService.js';
 import schedulerService from './services/schedulerService.js';
+import notificationsRoutes from './routes/notifications.js';
+import rentPaymentsRoutes from './routes/rent-payments.js';
+import maintenanceRoutes from './routes/maintenance.js';
 
 let firebaseInitialized = false;
 try {
@@ -112,6 +115,9 @@ app.use('/api/property-inventory', propertyInventoryRoutes);
 app.use('/api/bulk', bulkOperationsRoutes);
 app.use('/api/deal-journey', dealJourneyRoutes);
 app.use('/api/relational-sidebar', relationalSidebarRoutes);
+app.use('/api/notifications', notificationsRoutes);
+app.use('/api/rent-payments', rentPaymentsRoutes);
+app.use('/api/maintenance', maintenanceRoutes);
 app.use('/api', statusRoutes);
 
 // Serve static files from the dist folder in production
