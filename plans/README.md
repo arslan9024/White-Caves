@@ -34,6 +34,15 @@ This folder now prioritizes **active pending work only**. Completed and historic
 
 ---
 
+## AI Assistants Planning Hub
+
+- [`ai_assistants/README.md`](./ai_assistants/README.md) — **Master index of all 40 AI assistants** with status, department, and file links
+  - 18 assistants currently registered in code (`src/store/slices/aiAssistant/registry.ts`)
+  - 22 assistants planned across Phases 3–10
+  - Each assistant has a dedicated `.md` file with full detail: capabilities, end-to-end flow, API endpoints, data flows, frontend components, backend services, access control, implementation checklist, dependencies, and future enhancements
+
+---
+
 ## Reference Docs
 
 - [`ARCHITECTURE.md`](./ARCHITECTURE.md)
