@@ -10,7 +10,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { RootState, AppDispatch } from '../store/store';
 import { addToFavorites, removeFromFavorites, selectFavorites } from '../store/dashboardSlice';
-import { selectAllProperties, selectPropertiesLoading, fetchPropertiesFromAPI } from '../store/crmDataSlice';
+import {
+  selectAllProperties,
+  selectPropertiesLoading,
+  fetchPropertiesFromAPI,
+} from '../store/crmDataSlice';
 
 interface PropertyType {
   id: string;
@@ -35,9 +39,8 @@ const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1600596542815-ffad4
 
 /** Map a CRM API property to the display format */
 function mapApiProperty(p: Record<string, unknown>): PropertyType {
-  const images = Array.isArray(p.images) && p.images.length > 0
-    ? (p.images as string[])
-    : [PLACEHOLDER_IMAGE];
+  const images =
+    Array.isArray(p.images) && p.images.length > 0 ? (p.images as string[]) : [PLACEHOLDER_IMAGE];
   return {
     id: String(p.id || ''),
     title: String(p.title || 'Untitled Property'),
@@ -77,6 +80,24 @@ function sortProperties(props: PropertyType[], sortBy: string): PropertyType[] {
 
 export type { PropertyType };
 
+function normalizeAreaParam(area?: string | null): string | undefined {
+  if (!area) return undefined;
+
+  const compact = area.trim();
+  if (!compact) return undefined;
+
+  const special: Record<string, string> = {
+    jbr: 'Jumeirah Beach Residence',
+    jvc: 'Jumeirah Village Circle',
+  };
+
+  if (special[compact.toLowerCase()]) {
+    return special[compact.toLowerCase()];
+  }
+
+  return compact.replace(/-/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
+}
+
 export function usePropertyBrowser() {
   const dispatch = useDispatch<AppDispatch>();
   const location = useLocation();
@@ -91,9 +112,13 @@ export function usePropertyBrowser() {
 
   const queryFilters = useMemo(() => {
     const params = new URLSearchParams(location.search);
+    const area = params.get('area');
+    const locationParam = params.get('location');
+    const resolvedLocation = locationParam || normalizeAreaParam(area);
+
     return {
       search: params.get('search') || undefined,
-      location: params.get('location') || undefined,
+      location: resolvedLocation || undefined,
       type: params.get('type') || undefined,
       beds: params.get('beds') ? Number(params.get('beds')) : undefined,
       minPrice: params.get('minPrice') ? Number(params.get('minPrice')) : undefined,
@@ -103,32 +128,32 @@ export function usePropertyBrowser() {
 
   // Fetch properties from API and keep backend query in sync with current URL + Redux filters
   useEffect(() => {
-    const promise = dispatch(fetchPropertiesFromAPI({
-      search: queryFilters.search || filters.search || undefined,
-      location:
-        queryFilters.location ||
-        (filters.locations.length > 0 ? filters.locations[0] : undefined),
-      type:
-        queryFilters.type ||
-        (filters.propertyTypes.length > 0 ? filters.propertyTypes[0] : undefined),
-      beds: queryFilters.beds || (filters.beds > 0 ? filters.beds : undefined),
-      baths: filters.baths > 0 ? filters.baths : undefined,
-      minPrice: queryFilters.minPrice ?? (filters.minPrice > 0 ? filters.minPrice : undefined),
-      maxPrice:
-        queryFilters.maxPrice ??
-        (filters.maxPrice < 100_000_000 ? filters.maxPrice : undefined),
-      sortBy: filters.sortBy,
-      sortOrder: filters.sortBy === 'price_asc' ? 'asc' : 'desc',
-      pageSize: 100,
-    }));
-    return () => { promise.abort?.(); };
+    const promise = dispatch(
+      fetchPropertiesFromAPI({
+        search: queryFilters.search || filters.search || undefined,
+        location:
+          queryFilters.location ||
+          (filters.locations.length > 0 ? filters.locations[0] : undefined),
+        type:
+          queryFilters.type ||
+          (filters.propertyTypes.length > 0 ? filters.propertyTypes[0] : undefined),
+        beds: queryFilters.beds || (filters.beds > 0 ? filters.beds : undefined),
+        baths: filters.baths > 0 ? filters.baths : undefined,
+        minPrice: queryFilters.minPrice ?? (filters.minPrice > 0 ? filters.minPrice : undefined),
+        maxPrice:
+          queryFilters.maxPrice ?? (filters.maxPrice < 100_000_000 ? filters.maxPrice : undefined),
+        sortBy: filters.sortBy,
+        sortOrder: filters.sortBy === 'price_asc' ? 'asc' : 'desc',
+        pageSize: 100,
+      })
+    );
+    return () => {
+      promise.abort?.();
+    };
   }, [dispatch, queryFilters, filters]);
 
   // Map API properties to display format
-  const properties = useMemo(
-    () => apiProperties.map(mapApiProperty),
-    [apiProperties]
-  );
+  const properties = useMemo(() => apiProperties.map(mapApiProperty), [apiProperties]);
 
   // Apply Redux filters + local search
   const filteredProperties = useMemo(() => {
@@ -138,7 +163,7 @@ export function usePropertyBrowser() {
     const term = (searchTerm || filters.search || '').toLowerCase().trim();
     if (term) {
       result = result.filter(
-        (p) =>
+        p =>
           p.title.toLowerCase().includes(term) ||
           p.location.toLowerCase().includes(term) ||
           p.type.toLowerCase().includes(term)
@@ -147,45 +172,43 @@ export function usePropertyBrowser() {
 
     // Location filter
     if (filters.locations.length > 0) {
-      result = result.filter((p) => filters.locations.includes(p.location));
+      result = result.filter(p => filters.locations.includes(p.location));
     }
 
     // Property type filter
     if (filters.propertyTypes.length > 0) {
-      result = result.filter((p) => filters.propertyTypes.includes(p.type));
+      result = result.filter(p => filters.propertyTypes.includes(p.type));
     }
 
     // Bedrooms
     if (filters.beds > 0) {
-      result = result.filter((p) => p.beds >= filters.beds);
+      result = result.filter(p => p.beds >= filters.beds);
     }
 
     // Bathrooms
     if (filters.baths > 0) {
-      result = result.filter((p) => p.baths >= filters.baths);
+      result = result.filter(p => p.baths >= filters.baths);
     }
 
     // Price range
     if (filters.minPrice > 0) {
-      result = result.filter((p) => p.price >= filters.minPrice);
+      result = result.filter(p => p.price >= filters.minPrice);
     }
     if (filters.maxPrice < 100_000_000) {
-      result = result.filter((p) => p.price <= filters.maxPrice);
+      result = result.filter(p => p.price <= filters.maxPrice);
     }
 
     // Area (sqft)
     if (filters.minSqft > 0) {
-      result = result.filter((p) => p.sqft >= filters.minSqft);
+      result = result.filter(p => p.sqft >= filters.minSqft);
     }
     if (filters.maxSqft < 20_000) {
-      result = result.filter((p) => p.sqft <= filters.maxSqft);
+      result = result.filter(p => p.sqft <= filters.maxSqft);
     }
 
     // Amenities
     if (filters.amenities.length > 0) {
-      result = result.filter((p) =>
-        filters.amenities.every((a) => p.amenities.includes(a))
-      );
+      result = result.filter(p => filters.amenities.every(a => p.amenities.includes(a)));
     }
 
     // Sort
@@ -194,20 +217,25 @@ export function usePropertyBrowser() {
     return result;
   }, [properties, searchTerm, filters]);
 
-  const handleFavoriteToggle = useCallback((property: PropertyType) => {
-    const isFavorited = favorites.some(f => f.id === property.id);
-    if (isFavorited) {
-      dispatch(removeFromFavorites(property.id));
-    } else {
-      dispatch(addToFavorites({
-        id: property.id,
-        title: property.title,
-        location: property.location,
-        price: property.price.toLocaleString(),
-        image: property.image,
-      }));
-    }
-  }, [favorites, dispatch]);
+  const handleFavoriteToggle = useCallback(
+    (property: PropertyType) => {
+      const isFavorited = favorites.some(f => f.id === property.id);
+      if (isFavorited) {
+        dispatch(removeFromFavorites(property.id));
+      } else {
+        dispatch(
+          addToFavorites({
+            id: property.id,
+            title: property.title,
+            location: property.location,
+            price: property.price.toLocaleString(),
+            image: property.image,
+          })
+        );
+      }
+    },
+    [favorites, dispatch]
+  );
 
   const handleSearchChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);

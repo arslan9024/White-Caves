@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, ArrowRight, Building2, Home as HomeIcon, TrendingUp, TrendingDown } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { MapPin, ArrowRight, Building2, TrendingUp, TrendingDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { LocationTrend } from '../../../store/slices/homepageSlice';
 import './Locations.css';
@@ -22,7 +22,8 @@ const STATIC_LOCATIONS: Location[] = [
     id: 1,
     name: 'Palm Jumeirah',
     description: 'Iconic waterfront living with private beaches and stunning views',
-    image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    image:
+      'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     properties: 120,
     avgPrice: '15M AED',
     trend: '+12%',
@@ -32,7 +33,8 @@ const STATIC_LOCATIONS: Location[] = [
     id: 2,
     name: 'Downtown Dubai',
     description: 'Luxury apartments with Burj Khalifa views and world-class amenities',
-    image: 'https://images.unsplash.com/photo-1582672060674-bc2bd808a8b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    image:
+      'https://images.unsplash.com/photo-1582672060674-bc2bd808a8b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     properties: 200,
     avgPrice: '8M AED',
     trend: '+8%',
@@ -42,7 +44,8 @@ const STATIC_LOCATIONS: Location[] = [
     id: 3,
     name: 'Emirates Hills',
     description: "Exclusive golf course villas in Dubai's most prestigious community",
-    image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    image:
+      'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     properties: 45,
     avgPrice: '35M AED',
     trend: '+15%',
@@ -52,7 +55,8 @@ const STATIC_LOCATIONS: Location[] = [
     id: 4,
     name: 'Dubai Marina',
     description: 'Vibrant waterfront lifestyle with stunning marina views',
-    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    image:
+      'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     properties: 180,
     avgPrice: '5M AED',
     trend: '+10%',
@@ -61,22 +65,35 @@ const STATIC_LOCATIONS: Location[] = [
 ];
 
 const LOCATION_IMAGES: Record<string, string> = {
-  'Palm Jumeirah':  'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-  'Downtown Dubai': 'https://images.unsplash.com/photo-1582672060674-bc2bd808a8b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-  'Emirates Hills': 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-  'Dubai Marina':   'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'Palm Jumeirah':
+    'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'Downtown Dubai':
+    'https://images.unsplash.com/photo-1582672060674-bc2bd808a8b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'Emirates Hills':
+    'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'Dubai Marina':
+    'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
 };
 
 const LOCATION_DESCRIPTIONS: Record<string, string> = {
-  'Palm Jumeirah':  'Iconic waterfront living with private beaches and stunning views',
+  'Palm Jumeirah': 'Iconic waterfront living with private beaches and stunning views',
   'Downtown Dubai': 'Luxury apartments with Burj Khalifa views and world-class amenities',
   'Emirates Hills': "Exclusive golf course villas in Dubai's most prestigious community",
-  'Dubai Marina':   'Vibrant waterfront lifestyle with stunning marina views',
+  'Dubai Marina': 'Vibrant waterfront lifestyle with stunning marina views',
 };
 
 interface LocationsProps {
   locationTrends?: LocationTrend[];
   isLoading?: boolean;
+}
+
+function toAreaSlug(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
 }
 
 const Locations = ({ locationTrends, isLoading = false }: LocationsProps) => {
@@ -92,9 +109,10 @@ const Locations = ({ locationTrends, isLoading = false }: LocationsProps) => {
           description: LOCATION_DESCRIPTIONS[trend.name] ?? '',
           image: LOCATION_IMAGES[trend.name] ?? STATIC_LOCATIONS[0].image,
           properties: trend.propertyCount,
-          avgPrice: trend.avgPrice >= 1_000_000
-            ? `${(trend.avgPrice / 1_000_000).toFixed(0)}M AED`
-            : `${trend.avgPrice.toLocaleString()} AED`,
+          avgPrice:
+            trend.avgPrice >= 1_000_000
+              ? `${(trend.avgPrice / 1_000_000).toFixed(0)}M AED`
+              : `${trend.avgPrice.toLocaleString()} AED`,
           trend: `${trend.trendDirection === 'down' ? '-' : '+'}${trend.trendPercent}%`,
           trendDirection: trend.trendDirection,
         }))
@@ -103,7 +121,7 @@ const Locations = ({ locationTrends, isLoading = false }: LocationsProps) => {
   return (
     <section className="locations-section" id="locations">
       <div className="container">
-        <motion.div 
+        <motion.div
           className="section-header"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -111,7 +129,7 @@ const Locations = ({ locationTrends, isLoading = false }: LocationsProps) => {
           transition={{ duration: 0.6 }}
         >
           <span className="section-tag">Premier Locations</span>
-          <h2 className="section-title">Explore Dubai's Finest Neighborhoods</h2>
+          <h2 className="section-title">Explore Dubai&apos;s Finest Neighborhoods</h2>
           <p className="section-subtitle">
             Discover exclusive properties in the most sought-after locations across Dubai
           </p>
@@ -129,11 +147,11 @@ const Locations = ({ locationTrends, isLoading = false }: LocationsProps) => {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               onMouseEnter={() => setHoveredId(location.id)}
               onMouseLeave={() => setHoveredId(null)}
-              onClick={() => navigate(`/properties?location=${location.name}`)}
+              onClick={() => navigate(`/properties?area=${toAreaSlug(location.name)}`)}
             >
               <div className="location-image-wrapper">
-                <motion.img 
-                  src={location.image} 
+                <motion.img
+                  src={location.image}
                   alt={location.name}
                   className="location-image"
                   loading="lazy"
@@ -141,7 +159,7 @@ const Locations = ({ locationTrends, isLoading = false }: LocationsProps) => {
                   transition={{ duration: 0.4 }}
                 />
                 <div className="location-overlay" />
-                
+
                 <div className="location-stats-floating">
                   <div className="stat-badge">
                     <Building2 size={14} />
@@ -151,10 +169,14 @@ const Locations = ({ locationTrends, isLoading = false }: LocationsProps) => {
                       `${location.properties} Properties`
                     )}
                   </div>
-                  <div className={`stat-badge trend ${location.trendDirection === 'down' ? 'trend--down' : 'trend--up'}`}>
-                    {location.trendDirection === 'down'
-                      ? <TrendingDown size={14} />
-                      : <TrendingUp size={14} />}
+                  <div
+                    className={`stat-badge trend ${location.trendDirection === 'down' ? 'trend--down' : 'trend--up'}`}
+                  >
+                    {location.trendDirection === 'down' ? (
+                      <TrendingDown size={14} />
+                    ) : (
+                      <TrendingUp size={14} />
+                    )}
                     {isLoading ? (
                       <span className="loc-skeleton-trend" aria-hidden="true" />
                     ) : (
@@ -163,14 +185,14 @@ const Locations = ({ locationTrends, isLoading = false }: LocationsProps) => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="location-content">
                 <div className="location-header">
                   <MapPin size={18} className="location-pin" />
                   <h3 className="location-name">{location.name}</h3>
                 </div>
                 <p className="location-description">{location.description}</p>
-                
+
                 <div className="location-footer">
                   <div className="location-price">
                     <span className="price-label">Avg. Price</span>
@@ -182,10 +204,7 @@ const Locations = ({ locationTrends, isLoading = false }: LocationsProps) => {
                       )}
                     </span>
                   </div>
-                  <motion.button 
-                    className="location-cta"
-                    whileHover={{ x: 5 }}
-                  >
+                  <motion.button className="location-cta" whileHover={{ x: 5 }}>
                     View Properties
                     <ArrowRight size={16} />
                   </motion.button>
@@ -195,17 +214,14 @@ const Locations = ({ locationTrends, isLoading = false }: LocationsProps) => {
           ))}
         </div>
 
-        <motion.div 
+        <motion.div
           className="locations-cta"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
-          <button 
-            className="btn btn-primary btn-lg"
-            onClick={() => navigate('/properties')}
-          >
+          <button className="btn btn-primary btn-lg" onClick={() => navigate('/properties')}>
             Explore All Locations
             <ArrowRight size={20} />
           </button>
@@ -216,4 +232,3 @@ const Locations = ({ locationTrends, isLoading = false }: LocationsProps) => {
 };
 
 export default Locations;
-
