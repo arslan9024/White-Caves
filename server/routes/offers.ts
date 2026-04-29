@@ -151,6 +151,39 @@ router.patch(
 
     const updated = await prisma.offer.update({ where: { id }, data: updateData });
 
+    // AVAILABILITY GUARD: lock property when offer is accepted, unlock when rejected/withdrawn
+    if (status === 'accepted' && existing.propertyId) {
+      await prisma.property.update({
+        where: { id: existing.propertyId },
+        data: {
+          isLocked: true,
+          lockedAt: new Date(),
+          inventoryStage: 'under_offer',
+          status: 'reserved',
+        },
+      });
+    } else if ((status === 'rejected' || status === 'withdrawn') && existing.propertyId) {
+      // Unlock only if no other accepted offers exist for this property
+      const otherAccepted = await prisma.offer.count({
+        where: {
+          propertyId: existing.propertyId,
+          status: 'accepted',
+          id: { not: id },
+        },
+      });
+      if (otherAccepted === 0) {
+        await prisma.property.update({
+          where: { id: existing.propertyId },
+          data: {
+            isLocked: false,
+            lockedAt: null,
+            inventoryStage: 'verified_active',
+            status: 'available',
+          },
+        });
+      }
+    }
+
     logger.info('Offer updated', { userId, offerId: id, status: updated.status });
     res.json({ success: true, data: updated });
   }),

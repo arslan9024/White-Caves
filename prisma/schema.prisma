@@ -70,6 +70,23 @@ model Property {
   images      String[]
   featured    Boolean  @default(false)
   agentName   String?
+
+  // ─── @Mary Intelligent Inventory Fields ──────────────────────────────
+  unitNumber        String?              // e.g. "A-1204"
+  floorPlan         String?              // e.g. "2BR-TypeA"
+  rentalPrice       Float?               // Annual rental price in AED
+  commissionPercent Float?  @default(5) // Agent commission %
+  availabilityDate  DateTime?            // Date property is available to lease
+  inventoryStage    String  @default("draft_collected")
+  // Inventory stages: draft_collected | verified_active | under_offer | leased_sold | handed_over
+  isLocked          Boolean @default(false) // Locked when an offer is approved
+  lockedAt          DateTime?            // Timestamp when locked
+
+  // Document flags — flagged when missing
+  titleDeedMissing         Boolean @default(false)
+  landlordPassportMissing  Boolean @default(false)
+  ejariMissing             Boolean @default(false)
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -93,6 +110,9 @@ model Property {
   @@index([price])
   @@index([userId])
   @@index([area])
+  @@index([inventoryStage])
+  @@index([isLocked])
+  @@index([availabilityDate])
 }
 
 // ─── LEAD ───────────────────────────────────────────────────────────────

@@ -143,6 +143,45 @@ router.get(
   })
 );
 
+// ─── GET /api/properties/inventory-stats ───────────────────────────────
+// Returns per-stage counts and document-alert totals for the Inventory Dashboard.
+router.get(
+  '/inventory-stats',
+  requirePermission('view_properties'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const [stageCounts, docAlerts, total] = await Promise.all([
+      prisma.property.groupBy({
+        by: ['inventoryStage'],
+        _count: { _all: true },
+      }),
+      prisma.property.aggregate({
+        _sum: {
+          titleDeedMissing: true,
+          landlordPassportMissing: true,
+          ejariMissing: true,
+        },
+      }),
+      prisma.property.count(),
+    ]);
+
+    const stages: Record<string, number> = {};
+    stageCounts.forEach(s => {
+      stages[s.inventoryStage ?? 'draft_collected'] = s._count._all;
+    });
+
+    res.status(200).json({
+      success: true,
+      total,
+      stages,
+      docAlerts: {
+        titleDeedMissing: docAlerts._sum.titleDeedMissing ?? 0,
+        landlordPassportMissing: docAlerts._sum.landlordPassportMissing ?? 0,
+        ejariMissing: docAlerts._sum.ejariMissing ?? 0,
+      },
+    });
+  })
+);
+
 // ─── GET /api/properties/:id ────────────────────────────────────────────
 router.get(
   '/:id',
@@ -180,18 +219,23 @@ router.post(
     }
 
     const { title, description, type, status, price, bedrooms, bathrooms, sqft,
-      location, area, amenities, images, featured, agentName } = req.body;
+      location, area, amenities, images, featured, agentName,
+      unitNumber, floorPlan, rentalPrice, commissionPercent, availabilityDate,
+      inventoryStage, titleDeedMissing, landlordPassportMissing, ejariMissing } = req.body;
 
     validate(req.body, {
       title:       rules.requiredStringWithMax('Property title', 255),
       price:       rules.positiveNumber('Price'),
       location:    rules.requiredStringWithMax('Location', 500),
-      type:        rules.oneOf('Property type', ['apartment', 'villa', 'townhouse', 'penthouse', 'office', 'retail', 'land', 'warehouse']),
+      type:        rules.oneOf('Property type', ['apartment', 'villa', 'townhouse', 'penthouse', 'office', 'retail', 'land', 'warehouse', 'studio', 'duplex', 'commercial']),
       status:      rules.oneOf('Status', ['available', 'reserved', 'sold', 'rented', 'off_market']),
       amenities:   rules.optionalArray('Amenities'),
       images:      rules.optionalArray('Images'),
       description: rules.optionalStringWithMax('Description', 5000),
     });
+
+    const VALID_STAGES = ['draft_collected', 'verified_active', 'under_offer', 'leased_sold', 'handed_over'];
+    const resolvedStage = inventoryStage && VALID_STAGES.includes(inventoryStage) ? inventoryStage : 'draft_collected';
 
     const property = await prisma.property.create({
       data: {
@@ -209,6 +253,16 @@ router.post(
         images: (images || []).filter((i: unknown): i is string => typeof i === 'string' && i.trim().length > 0).map(sanitizeString),
         featured: featured || false,
         agentName: agentName ? sanitizeString(agentName) : null,
+        // @Mary Intelligent Inventory fields
+        unitNumber: unitNumber ? sanitizeString(String(unitNumber).trim()) : null,
+        floorPlan: floorPlan ? sanitizeString(String(floorPlan).trim()) : null,
+        rentalPrice: rentalPrice !== undefined ? parseFloat(rentalPrice) || null : null,
+        commissionPercent: commissionPercent !== undefined ? parseFloat(commissionPercent) || 5 : 5,
+        availabilityDate: availabilityDate ? new Date(availabilityDate) : null,
+        inventoryStage: resolvedStage,
+        titleDeedMissing: titleDeedMissing === true || titleDeedMissing === 'true',
+        landlordPassportMissing: landlordPassportMissing === true || landlordPassportMissing === 'true',
+        ejariMissing: ejariMissing === true || ejariMissing === 'true',
         userId: req.user?.id || 'system',
       },
     });
@@ -233,7 +287,9 @@ router.patch(
     const { id } = req.params;
     validateIdParam(id, 'Property ID');
     const { title, description, type, status, price, bedrooms, bathrooms, sqft,
-      location, area, amenities, images, featured, agentName } = req.body;
+      location, area, amenities, images, featured, agentName,
+      unitNumber, floorPlan, rentalPrice, commissionPercent, availabilityDate,
+      inventoryStage, titleDeedMissing, landlordPassportMissing, ejariMissing } = req.body;
 
     validate(req.body, {
       title:       rules.optionalStringWithMax('Property title', 255),
@@ -257,6 +313,14 @@ router.patch(
       throw new AppError('You do not have permission to update this property', 403);
     }
 
+    // AVAILABILITY GUARD: A locked property may only be unlocked by managers/owners
+    if (existing.isLocked && !isAdmin) {
+      throw new AppError(
+        'This property is locked under an active offer. Only a manager can modify it.',
+        423
+      );
+    }
+
     const data: Record<string, unknown> = {};
     if (title !== undefined) data.title = sanitizeString(String(title).trim());
     if (description !== undefined) data.description = description ? sanitizeString(String(description)) : null;
@@ -278,6 +342,30 @@ router.patch(
     if (images !== undefined) data.images = Array.isArray(images) ? images.map((i: unknown) => typeof i === 'string' ? sanitizeString(i) : String(i)) : [];
     if (featured !== undefined) data.featured = featured === true || featured === 'true';
     if (agentName !== undefined) data.agentName = agentName ? sanitizeString(String(agentName)) : null;
+
+    // @Mary Intelligent Inventory fields
+    const VALID_STAGES = ['draft_collected', 'verified_active', 'under_offer', 'leased_sold', 'handed_over'];
+    if (unitNumber !== undefined) data.unitNumber = unitNumber ? sanitizeString(String(unitNumber).trim()) : null;
+    if (floorPlan !== undefined) data.floorPlan = floorPlan ? sanitizeString(String(floorPlan).trim()) : null;
+    if (rentalPrice !== undefined) data.rentalPrice = rentalPrice !== null ? (parseFloat(rentalPrice as string) || null) : null;
+    if (commissionPercent !== undefined) data.commissionPercent = parseFloat(commissionPercent as string) || 5;
+    if (availabilityDate !== undefined) data.availabilityDate = availabilityDate ? new Date(availabilityDate as string) : null;
+    if (inventoryStage !== undefined && VALID_STAGES.includes(inventoryStage as string)) {
+      data.inventoryStage = inventoryStage;
+      // Auto-lock when moving to under_offer
+      if (inventoryStage === 'under_offer' && !existing.isLocked) {
+        data.isLocked = true;
+        data.lockedAt = new Date();
+      }
+      // Auto-unlock when offer falls through and stage moves back
+      if (['draft_collected', 'verified_active'].includes(inventoryStage as string) && existing.isLocked && isAdmin) {
+        data.isLocked = false;
+        data.lockedAt = null;
+      }
+    }
+    if (titleDeedMissing !== undefined) data.titleDeedMissing = titleDeedMissing === true || titleDeedMissing === 'true';
+    if (landlordPassportMissing !== undefined) data.landlordPassportMissing = landlordPassportMissing === true || landlordPassportMissing === 'true';
+    if (ejariMissing !== undefined) data.ejariMissing = ejariMissing === true || ejariMissing === 'true';
 
     const statusChanged = status !== undefined && status !== null && status !== existing.status;
 
