@@ -17,11 +17,19 @@ const HTML_ENTITY_REGEX = /[&<>"'/]/g;
 /**
  * Escape HTML special characters to prevent XSS when rendering user input.
  * Does NOT modify URLs, emails, or non-string values.
+ *
+ * @param input   The string to sanitize.
+ * @param maxLength  Optional maximum character length; the string is truncated
+ *                   (with a trailing ellipsis) after sanitizing when provided.
  */
-export function sanitizeString(input: string): string {
+export function sanitizeString(input: string, maxLength?: number): string {
   if (!input || typeof input !== 'string') return input;
   // eslint-disable-next-line security/detect-object-injection
-  return input.replace(HTML_ENTITY_REGEX, char => HTML_ENTITIES[char] || char);
+  const sanitized = input.replace(HTML_ENTITY_REGEX, char => HTML_ENTITIES[char] || char);
+  if (maxLength !== undefined && sanitized.length > maxLength) {
+    return sanitized.slice(0, Math.max(0, maxLength - 1)) + '\u2026';
+  }
+  return sanitized;
 }
 
 /**

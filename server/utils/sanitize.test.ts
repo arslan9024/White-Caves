@@ -64,6 +64,59 @@ describe('sanitizeString', () => {
     expect(sanitizeString(null as unknown as string)).toBeNull();
     expect(sanitizeString(undefined as unknown as string)).toBeUndefined();
   });
+
+  describe('maxLength parameter', () => {
+    it('does not truncate when string is shorter than maxLength', () => {
+      expect(sanitizeString('hello', 10)).toBe('hello');
+    });
+
+    it('does not truncate when string equals maxLength after sanitization', () => {
+      // 'hello' is 5 chars — maxLength=5 means no truncation
+      expect(sanitizeString('hello', 5)).toBe('hello');
+    });
+
+    it('truncates and appends ellipsis when sanitized string exceeds maxLength', () => {
+      // 'hello world' is 11 chars — maxLength=8 → 7 chars + ellipsis
+      const result = sanitizeString('hello world', 8);
+      expect(result.length).toBe(8);
+      expect(result).toBe('hello w\u2026');
+    });
+
+    it('applies maxLength after sanitization so HTML entities count as a single char', () => {
+      // '<b>' sanitizes to '&lt;b&gt;' (9 chars) — maxLength=5 → 4 chars + ellipsis
+      const result = sanitizeString('<b>hello</b>', 5);
+      expect(result.length).toBe(5);
+      expect(result.endsWith('\u2026')).toBe(true);
+    });
+
+    it('works correctly with maxLength=1 (returns just ellipsis)', () => {
+      const result = sanitizeString('hello', 1);
+      expect(result).toBe('\u2026');
+    });
+
+    it('works with no maxLength (existing behavior unchanged)', () => {
+      expect(sanitizeString('<b>hello</b>')).toBe('&lt;b&gt;hello&lt;&#x2F;b&gt;');
+    });
+
+    it('enforces maxLength on contact-form name field (max=100)', () => {
+      const longName = 'A'.repeat(200);
+      const result = sanitizeString(longName, 100);
+      expect(result.length).toBe(100);
+      expect(result.endsWith('\u2026')).toBe(true);
+    });
+
+    it('enforces maxLength on contact-form phone field (max=30)', () => {
+      const longPhone = '1'.repeat(50);
+      const result = sanitizeString(longPhone, 30);
+      expect(result.length).toBe(30);
+    });
+
+    it('enforces maxLength on contact-form message field (max=2000)', () => {
+      const longMessage = 'x'.repeat(3000);
+      const result = sanitizeString(longMessage, 2000);
+      expect(result.length).toBe(2000);
+    });
+  });
 });
 
 // ─── sanitizeObject ─────────────────────────────────────────────────────

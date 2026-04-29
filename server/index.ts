@@ -21,6 +21,7 @@ import {
   registerLimiter,
   passwordLimiter,
   strictLimiter,
+  contactLimiter,
 } from './middleware/rateLimiter.js';
 import logger from './utils/logger.js';
 
@@ -65,6 +66,14 @@ import { startRERAExpiryScheduler } from './services/compliance/reraExpirySchedu
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 
 const app: Express = express();
+
+// Trust the first proxy in front of the server (e.g. Vercel edge, nginx, AWS ALB).
+// This makes req.ip and all express-rate-limit lookups use the real client IP
+// from the X-Forwarded-For header instead of the proxy's address.
+// IMPORTANT: only set this when the server runs behind a trusted reverse proxy.
+// Setting it on a server that is directly internet-facing allows clients to
+// spoof X-Forwarded-For and bypass IP-based rate limits.
+app.set('trust proxy', 1);
 // In development, keep API on 3001 to avoid colliding with Vite (5000).
 // Use API_PORT when provided; in production/staging, respect PORT as platform-provided.
 const PORT =
@@ -190,6 +199,7 @@ app.use('/api/auth/register', registerLimiter);
 app.use('/api/auth/password', passwordLimiter);
 app.use('/api/auth/verify-2fa', strictLimiter);
 app.use('/api/auth/firebase-sync', authLimiter);
+app.use('/api/contact', contactLimiter); // Public unauthenticated — stricter: 10/hour/IP
 
 // ============================================================================
 // HEALTH CHECK ENDPOINT
@@ -688,6 +698,16 @@ app.post(
   asyncHandler(async (req: Request, res: Response) => {
     const { userId, role } = req.body;
     if (!userId || !role) throw new AppError('userId and role are required', 400);
+
+    // Validate role against the full alias map to prevent arbitrary strings being stored
+    const { ROLE_ALIAS_MAP } = await import('./middleware/rbac.js');
+    if (!Object.prototype.hasOwnProperty.call(ROLE_ALIAS_MAP, role)) {
+      throw new AppError(
+        `Invalid role: "${role}". Must be one of: ${Object.keys(ROLE_ALIAS_MAP).join(', ')}`,
+        422
+      );
+    }
+
     const updated = await prisma.user.update({
       where: { id: userId },
       data: { role },
