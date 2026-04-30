@@ -168,6 +168,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'create_contracts',
     'view_payments',
     'view_analytics',
+    'view_commissions',
   ],
   finance: [
     'view_dashboard',
@@ -176,6 +177,9 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'process_payments',
     'view_analytics',
     'view_all_reports',
+    'view_commissions',
+    'approve_commissions',
+    'export_financial_reports',
   ],
   viewer: [
     'view_dashboard',
@@ -203,6 +207,9 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'manage_users',
     'manage_agents',
     'view_all_reports',
+    'view_commissions',
+    'approve_commissions',
+    'export_leads',
   ],
   manager: [
     'view_dashboard',
@@ -222,6 +229,9 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'manage_agents',
     'view_all_reports',
     'modify_settings',
+    'view_commissions',
+    'approve_commissions',
+    'export_leads',
   ],
   owner: [
     'view_dashboard',
@@ -245,6 +255,10 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'configure_chatbot',
     'view_all_reports',
     'modify_settings',
+    'view_commissions',
+    'approve_commissions',
+    'export_leads',
+    'export_financial_reports',
   ],
 };
 

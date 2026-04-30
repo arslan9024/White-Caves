@@ -192,6 +192,10 @@ const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const ToolsPage = lazy(() => import('./pages/ToolsPage'));
 
+// Phase 7 / 8 stubs
+const AIIntelligencePage = lazy(() => import('./pages/AIIntelligencePage'));
+const OffPlanPortalPage = lazy(() => import('./pages/OffPlanPortalPage'));
+
 // Auth Pages
 const UAEPassSuccessPage = lazy(() => import('./pages/auth/UAEPassSuccessPage'));
 const SignContractPage = lazy(() => import('./pages/SignContractPage'));
@@ -420,6 +424,26 @@ function App(): React.JSX.Element {
                     <RouteErrorBoundary section="Tools">
                       <Suspense fallback={<SuspenseLoader />}>
                         <ToolsPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/ai-intelligence"
+                  element={
+                    <RouteErrorBoundary section="AI Intelligence">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <AIIntelligencePage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/off-plan"
+                  element={
+                    <RouteErrorBoundary section="Off-Plan Portal">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <OffPlanPortalPage />
                       </Suspense>
                     </RouteErrorBoundary>
                   }
