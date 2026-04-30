@@ -388,8 +388,24 @@ const AdminDashboard = () => {
               e.preventDefault();
               const formData = new FormData(e.currentTarget);
               const settings = Object.fromEntries(formData.entries());
-              // TODO: POST settings to /api/admin/settings
-              createLogger('AdminDashboard').info('Settings form submitted (backend pending):', settings);
+              const token = localStorage.getItem('auth_token') ?? '';
+              fetch('/api/admin/settings', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({ settings }),
+              })
+                .then(res => res.json())
+                .then(data => {
+                  if (data.success) {
+                    createLogger('AdminDashboard').info('Settings saved successfully', data.data);
+                  } else {
+                    createLogger('AdminDashboard').warn('Settings save failed', data);
+                  }
+                })
+                .catch(err => createLogger('AdminDashboard').error('Settings POST error', err));
             }}>
               <S.SettingGroup>
                 <h4>General Settings</h4>

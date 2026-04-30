@@ -905,3 +905,16 @@ model RoleRequest {
   @@index([requestedRole])
   @@index([createdAt])
 }
+
+// ─── SYSTEM SETTINGS ────────────────────────────────────────────────────────
+
+model SystemSetting {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String   @unique              // unique setting key, e.g. "company_name"
+  value     Json                          // any JSON-serialisable value
+  category  String   @default("general") // general, notifications, branding, compliance, etc.
+  updatedAt DateTime @updatedAt
+  updatedBy String?  @db.ObjectId        // userId who last updated
+
+  @@index([category])
+}

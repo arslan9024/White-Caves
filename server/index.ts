@@ -64,6 +64,8 @@ import contractsRoutes from './routes/contracts.js';
 import appointmentsRoutes from './routes/appointments.js';
 import { roleRequestRouter, adminRoleRequestRouter } from './routes/roleRequests.js';
 import phase6Routes from './routes/phase6.routes.js';
+import landlordPortalRoutes from './routes/landlord.js';
+import tenantPortalRoutes from './routes/tenantPortal.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
@@ -547,6 +549,12 @@ app.use('/api/appointments', authMiddleware, appointmentsRoutes);
 // /api/tenancy-agreements is an alias for /api/leases: same model, different UI label.
 app.use('/api/tenancy-agreements', authMiddleware, leasesRoutes);
 
+// Landlord Portal API — stats, properties, maintenance, finances for the portal
+app.use('/api/landlord', authMiddleware, landlordPortalRoutes);
+
+// Tenant Portal API — lease, payments, documents, maintenance for the tenant portal
+app.use('/api/portal/tenant', authMiddleware, tenantPortalRoutes);
+
 // Payments API stub (Checkout — Stripe integration pending)
 // TODO: Integrate Stripe SDK when payment processing is prioritised
 app.post(
@@ -752,6 +760,48 @@ app.post(
 );
 app.use('/api/users/role-request', authMiddleware, roleRequestRouter);
 app.use('/api/admin/role-requests', authMiddleware, adminRoleRequestRouter);
+
+// Admin Settings — read and write system-wide configuration
+app.get(
+  '/api/admin/settings',
+  authMiddleware,
+  requirePermission('manage_users'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const settings = await prisma.systemSetting.findMany({ orderBy: { category: 'asc' } });
+    const settingsMap = Object.fromEntries(settings.map(s => [s.key, s.value]));
+    res.json({ success: true, data: settingsMap, meta: { count: settings.length } });
+  })
+);
+app.post(
+  '/api/admin/settings',
+  authMiddleware,
+  requirePermission('manage_users'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { settings } = req.body;
+    if (!settings || typeof settings !== 'object' || Array.isArray(settings)) {
+      throw new AppError('Request body must contain a "settings" object', 400);
+    }
+
+    const userId = (req as Request & { user?: { id: string } }).user?.id;
+    const entries = Object.entries(settings as Record<string, unknown>);
+    if (entries.length === 0) throw new AppError('No settings provided', 400);
+    if (entries.length > 50) throw new AppError('Cannot update more than 50 settings at once', 400);
+
+    // Upsert each key
+    const updated = await Promise.all(
+      entries.map(([key, value]) =>
+        prisma.systemSetting.upsert({
+          where: { key },
+          create: { key, value: value as Parameters<typeof prisma.systemSetting.create>[0]['data']['value'], updatedBy: userId },
+          update: { value: value as Parameters<typeof prisma.systemSetting.update>[0]['data']['value'], updatedBy: userId },
+        })
+      )
+    );
+
+    logger.info('Admin settings updated', { keys: entries.map(([k]) => k), userId });
+    res.json({ success: true, data: { updatedCount: updated.length } });
+  })
+);
 
 // Phase 6 — queue, analytics, notifications, encryption, presence
 // The phase6 router uses x-user-id header auth; bridge it from the JWT-authenticated user.

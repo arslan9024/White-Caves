@@ -10,7 +10,7 @@
  * @component
  */
 
-import React, { FC, useState, useMemo } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import './LandlordPropertiesTab.css';
@@ -106,47 +106,57 @@ const PropertyDetailModal: FC<DetailModalProps> = ({ property, onClose }) => {
 
 const LandlordPropertiesTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
+  const token = useSelector((state: RootState) => (state.auth as { token?: string } | undefined)?.token);
   const [selectedProperty, setSelectedProperty] = useState<PropertyData | null>(null);
+  const [properties, setProperties] = useState<PropertyData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // TODO: Replace with actual Redux selector or API call
-  // For now, using mock data. Will be connected to Redux store in full implementation.
-  const mockProperties: PropertyData[] = useMemo(
-    () => [
-      {
-        id: 'prop-1',
-        title: 'Marina View 2BR Apartment',
-        address: 'Dubai Marina, Plot 12',
-        type: 'Apartment',
-        status: 'occupied',
-        monthlyRent: 8000,
-        tenantName: 'Ahmed Al-Rashid',
-        leaseStart: 'Jan 1, 2024',
-        leaseEnd: 'Dec 31, 2024',
-        deposit: 16000,
-      },
-      {
-        id: 'prop-2',
-        title: 'Downtown Studio',
-        address: 'Downtown Dubai, Tower A',
-        type: 'Studio',
-        status: 'occupied',
-        monthlyRent: 5000,
-        tenantName: 'Sarah Johnson',
-        leaseStart: 'Jul 1, 2023',
-        leaseEnd: 'Jun 30, 2024',
-        deposit: 10000,
-      },
-      {
-        id: 'prop-3',
-        title: 'JBR 3BR Villa',
-        address: 'Jumeirah Beach Residence, Block C',
-        type: 'Villa',
-        status: 'vacant',
-        monthlyRent: 12000,
-      },
-    ],
-    []
-  );
+  useEffect(() => {
+    if (!currentUser) return;
+    setLoading(true);
+    setError(null);
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    fetch('/api/landlord/properties', { headers })
+      .then(res => {
+        if (!res.ok) throw new Error(`Server error ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        setProperties(
+          (data.properties ?? []).map(
+            (p: {
+              id: string;
+              title: string;
+              address: string;
+              type: string;
+              status: 'occupied' | 'vacant';
+              monthlyRent: number;
+              tenantName?: string;
+              leaseStart?: string;
+              leaseEnd?: string;
+              deposit?: number;
+            }) => ({
+              id: p.id,
+              title: p.title,
+              address: p.address ?? '',
+              type: p.type ?? 'Apartment',
+              status: p.status ?? 'vacant',
+              monthlyRent: p.monthlyRent ?? 0,
+              tenantName: p.tenantName ?? undefined,
+              leaseStart: p.leaseStart ? new Date(p.leaseStart).toLocaleDateString() : undefined,
+              leaseEnd: p.leaseEnd ? new Date(p.leaseEnd).toLocaleDateString() : undefined,
+              deposit: p.deposit,
+            })
+          )
+        );
+      })
+      .catch(err => {
+        setError((err as Error).message ?? 'Failed to load properties');
+      })
+      .finally(() => setLoading(false));
+  }, [currentUser, token]);
 
   if (!currentUser) {
     return (
@@ -156,15 +166,31 @@ const LandlordPropertiesTab: FC = () => {
     );
   }
 
+  if (loading) {
+    return (
+      <div className="empty-state" data-testid="loading-state">
+        <p>Loading your properties…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="empty-state error-state" data-testid="error-state">
+        <p>Unable to load properties: {error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="landlord-properties-tab">
-      {mockProperties.length === 0 ? (
+      {properties.length === 0 ? (
         <div className="empty-state" data-testid="empty-state">
           <p>No properties registered yet. Contact your agent to add your properties.</p>
         </div>
       ) : (
         <div className="properties-grid">
-          {mockProperties.map(property => (
+          {properties.map(property => (
             <div
               key={property.id}
               className={`property-card ${property.status}`}
