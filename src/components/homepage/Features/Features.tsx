@@ -58,7 +58,7 @@ const features: Feature[] = [
     color: '#10B981',
     detail: {
       details:
-        'White Caves holds RERA license #XXXX. All listings are verified and agents are registered with DLD.',
+        'White Caves operates as a RERA-compliant real estate brokerage in Dubai. All listings are verified and our agents are registered with DLD.',
       cta: { text: 'View Our Credentials', link: '/about' },
     },
   },

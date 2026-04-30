@@ -6,30 +6,31 @@ import { getFeatureById } from '../../config/assistantFeatures';
 import GenericFeatureView from './ui/GenericFeatureView';
 import './FeatureRenderer.css';
 
-const ZoeExecutiveCRM = lazy(() => import('./ZoeExecutiveCRM'));
-const MaryInventoryCRM = lazy(() => import('./MaryInventoryCRM'));
-const ClaraLeadsCRM = lazy(() => import('./ClaraLeadsCRM'));
-const LindaWhatsAppCRM = lazy(() => import('./LindaWhatsAppCRM'));
-const NinaWhatsAppBotCRM = lazy(() => import('./NinaWhatsAppBotCRM'));
-const SophiaSalesCRM = lazy(() => import('./SophiaSalesCRM'));
-const NancyHRCRM = lazy(() => import('./NancyHRCRM'));
-const DaisyLeasingCRM = lazy(() => import('./DaisyLeasingCRM'));
-const TheodoraFinanceCRM = lazy(() => import('./TheodoraFinanceCRM'));
-const OliviaMarketingCRM = lazy(() => import('./OliviaMarketingCRM'));
-const LailaComplianceCRM = lazy(() => import('./LailaComplianceCRM'));
-const AuroraCTODashboard = lazy(() => import('./AuroraCTODashboard'));
-const HazelFrontendCRM = lazy(() => import('./HazelFrontendCRM'));
-const WillowBackendCRM = lazy(() => import('./WillowBackendCRM'));
-const EvangelineLegalCRM = lazy(() => import('./EvangelineLegalCRM'));
-const SentinelPropertyCRM = lazy(() => import('./SentinelPropertyCRM'));
-const HunterProspectingCRM = lazy(() => import('./HunterProspectingCRM'));
-const HenryAuditCRM = lazy(() => import('./HenryAuditCRM'));
-const CipherMarketCRM = lazy(() => import('./CipherMarketCRM'));
-const AtlasProjectsCRM = lazy(() => import('./AtlasProjectsCRM'));
-const VestaHandoverCRM = lazy(() => import('./VestaHandoverCRM'));
-const JunoCommunity = lazy(() => import('./JunoCommunity'));
-const KairosLuxuryCRM = lazy(() => import('./KairosLuxuryCRM'));
-const MavenInvestmentCRM = lazy(() => import('./MavenInvestmentCRM'));
+// Use _NEW TypeScript versions where available for improved type safety
+const ZoeExecutiveCRM = lazy(() => import('./ZoeExecutiveCRM_NEW'));
+const MaryInventoryCRM = lazy(() => import('./MaryInventoryCRM_NEW'));
+const ClaraLeadsCRM = lazy(() => import('./ClaraLeadsCRM_NEW'));
+const LindaWhatsAppCRM = lazy(() => import('./LindaWhatsAppCRM')); // no _NEW yet
+const NinaWhatsAppBotCRM = lazy(() => import('./NinaWhatsAppBotCRM_NEW'));
+const SophiaSalesCRM = lazy(() => import('./SophiaSalesCRM_NEW'));
+const NancyHRCRM = lazy(() => import('./NancyHRCRM_NEW'));
+const DaisyLeasingCRM = lazy(() => import('./DaisyLeasingCRM_NEW'));
+const TheodoraFinanceCRM = lazy(() => import('./TheodoraFinanceCRM_NEW'));
+const OliviaMarketingCRM = lazy(() => import('./OliviaMarketingCRM_NEW'));
+const LailaComplianceCRM = lazy(() => import('./LailaComplianceCRM_NEW'));
+const AuroraCTODashboard = lazy(() => import('./AuroraCTODashboard_NEW'));
+const HazelFrontendCRM = lazy(() => import('./HazelFrontendCRM_NEW'));
+const WillowBackendCRM = lazy(() => import('./WillowBackendCRM_NEW'));
+const EvangelineLegalCRM = lazy(() => import('./EvangelineLegalCRM')); // no _NEW yet
+const SentinelPropertyCRM = lazy(() => import('./SentinelPropertyCRM')); // no _NEW yet
+const HunterProspectingCRM = lazy(() => import('./HunterProspectingCRM')); // no _NEW yet
+const HenryAuditCRM = lazy(() => import('./HenryAuditCRM')); // no _NEW yet
+const CipherMarketCRM = lazy(() => import('./CipherMarketCRM')); // no _NEW yet
+const AtlasProjectsCRM = lazy(() => import('./AtlasProjectsCRM')); // no _NEW yet
+const VestaHandoverCRM = lazy(() => import('./VestaHandoverCRM')); // no _NEW yet
+const JunoCommunity = lazy(() => import('./JunoCommunity')); // no _NEW yet
+const KairosLuxuryCRM = lazy(() => import('./KairosLuxuryCRM')); // no _NEW yet
+const MavenInvestmentCRM = lazy(() => import('./MavenInvestmentCRM')); // no _NEW yet
 
 const ASSISTANT_CRM_MAP = {
   zoe: ZoeExecutiveCRM,

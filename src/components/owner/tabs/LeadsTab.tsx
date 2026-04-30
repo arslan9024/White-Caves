@@ -26,7 +26,9 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
   const itemsPerPage = 5;
 
   // CRUD state
-  const [localLeads, setLocalLeads]   = useState<Lead[]>(() => data?.leads ?? MOCK_LEADS);
+  // Use data from props (API/Redux) first; fall back to empty array in production
+  // MOCK_LEADS kept below for development reference only
+  const [localLeads, setLocalLeads]   = useState<Lead[]>(() => data?.leads ?? []);
   const [modalMode, setModalMode]     = useState<ModalMode>('none');
   const [editTarget, setEditTarget]   = useState<Lead | null>(null);
   const [form, setForm]               = useState<Omit<Lead, 'id' | 'createdAt'>>(EMPTY_LEAD);
