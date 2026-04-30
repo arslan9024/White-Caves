@@ -269,3 +269,234 @@
 **Document Owner:** Operations + Technology (Jaime + Lisa)
 **Update Frequency:** Quarterly or when new vendor added / contract changes
 **Related:** `business/09_operations/partnership-framework.md`, `business/05_srs_and_engineering/technical-debt-register.md`
+
+
+---
+
+## 4. Additional Technology Vendors
+
+### 4.1 Sentry (Error Tracking — Phase 2)
+
+| Field | Details |
+|-------|---------|
+| Vendor | Functional Software Inc. (Sentry) |
+| Service | Application error tracking and performance monitoring |
+| Plan | Team ($26/month) or Business ($80/month) |
+| Status | ⏳ Pending — implement Phase 2 |
+| SDK | `@sentry/node` (backend) + `@sentry/react` (frontend) |
+| SLA | 99.9% uptime |
+| DPA | Available at sentry.io/legal/dpa |
+| Data residency | US (default); EU option available |
+| PII consideration | Stack traces may contain PII — configure `scrubFields` + `denyUrls` |
+| Cost | ~$26/month Team plan |
+| Key contact | Sentry dashboard |
+| Action | Sign DPA; configure PII scrubbing before enabling in production |
+
+---
+
+### 4.2 Google Maps API (Property Search)
+
+| Field | Details |
+|-------|---------|
+| Vendor | Google LLC |
+| Service | Maps JavaScript API, Geocoding API, Places API |
+| Plan | Pay-as-you-go (Maps: $7/1,000 loads; Geocoding: $5/1,000 requests) |
+| Status | ⏳ Phase 3 (interactive map search) |
+| Budget estimate | < AED 500/month at expected traffic volume (Phase 3) |
+| DPA | Google Cloud Master Agreement + DPA |
+| Rate limits | 50 requests/second per project default |
+| Key security | Restrict API key by HTTP referrer (whitecaves.ae only) |
+| Action | Create project in Google Cloud Console; restrict key before going live |
+
+---
+
+### 4.3 DocuSign (E-Signatures — Phase 2)
+
+| Field | Details |
+|-------|---------|
+| Vendor | DocuSign Inc. (US) |
+| Service | Electronic signature for MOU, SPA, tenancy contracts |
+| Plan | Business Pro (AED 400/month); unlimited envelopes |
+| Status | ⏳ Phase 2 |
+| Legal validity | UAE Electronic Transactions Law No. 1 of 2006 — e-signatures legally binding |
+| DPA | DocuSign GDPR-compliant DPA available at docusign.com/legal |
+| API | DocuSign eSignature REST API v2.1 |
+| Integration | Phase 2: CRM generates pre-filled PDF → DocuSign envelope → signatories notified by email |
+| Completion webhook | DocuSign → White Caves webhook → CRM document status updated |
+| Action | Sign DocuSign DPA; register account; create envelope templates for Form A, Form B, MOU |
+
+---
+
+### 4.4 Matterport (3D Virtual Tours — Phase 7)
+
+| Field | Details |
+|-------|---------|
+| Vendor | Matterport Inc. (US) |
+| Service | 3D virtual tour hosting and embedding |
+| Plan | Professional ($309/year); up to 25 active spaces |
+| Status | ⏳ Phase 7 |
+| Camera | Matterport Pro2 (purchase AED 4,500) or rent from local photographer |
+| Embed | Matterport embed code → White Caves property page `<iframe>` |
+| DPA | Available at matterport.com/legal |
+| Action | Register account; coordinate with property photographer training |
+
+---
+
+### 4.5 SendGrid (Email Delivery)
+
+| Field | Details |
+|-------|---------|
+| Vendor | Twilio SendGrid (US) |
+| Service | Transactional email delivery + marketing campaigns |
+| Plan | Essentials $19.95/month (50,000 emails/month) |
+| Status | ✅ Integrated (transactional emails); ⏳ marketing campaigns Phase 3 |
+| SDK | `@sendgrid/mail` npm package |
+| DPA | Twilio Data Protection Addendum (DPA) — sign at sendgrid.com/policies/dpa |
+| Email categories | Transactional (lead notifications, portal alerts) + Marketing (property newsletters) |
+| PDPL compliance | Consent required before marketing emails; unsubscribe mechanism mandatory |
+| SPF/DKIM | Configure for whitecaves.ae domain to prevent spam flagging |
+| Action | Sign SendGrid DPA immediately; configure DKIM records for whitecaves.ae |
+
+---
+
+### 4.6 Prometheus + Grafana (Monitoring — Phase 2)
+
+| Field | Details |
+|-------|---------|
+| Vendor | Open-source (self-hosted) |
+| Service | API metrics collection (Prometheus) + visualisation (Grafana) |
+| Hosting | Deployed alongside API server on Railway/Render |
+| Status | ⏳ Phase 2 |
+| Cost | Infrastructure only (~$10–20/month additional compute) |
+| DPA | N/A (self-hosted; no data leaves White Caves infrastructure) |
+| Key metrics | API response time p95, request rate, error rate, database query time |
+| Dashboards | Grafana: API health, CRM usage, lead velocity, database performance |
+| Alerts | PagerDuty-free alternative: Grafana alerting → email + WhatsApp to on-call |
+| Action | Configure Prometheus metrics middleware in Express; set up Grafana dashboards |
+
+---
+
+### 4.7 Exchange Rate API (Currency Conversion)
+
+| Field | Details |
+|-------|---------|
+| Vendor | ExchangeRate-API (exchangerate-api.com) or Open Exchange Rates |
+| Service | Real-time currency conversion (AED → GBP/EUR/USD/INR/RUB) |
+| Plan | Free tier (1,500 requests/month) → Standard $12/month |
+| Status | ⏳ Phase 3 |
+| Use case | Property prices displayed in buyer's home currency; mortgage calculators |
+| Cache strategy | Cache exchange rates for 4 hours (rates don't change minute-by-minute) |
+| DPA | Review terms; no PII processed — low risk |
+
+---
+
+## 5. Vendor Risk Assessment
+
+| Vendor | Criticality | SPOF Risk | Data Exposure | Regulatory Risk | Alternative | BCP Action |
+|--------|------------|-----------|-------------|----------------|------------|-----------|
+| MongoDB Atlas | Mission-Critical | High — entire data layer | ALL PII + KYC | PDPL data residency compliant | PlanetScale/Supabase (migration cost high) | Multi-region Atlas cluster; daily backups |
+| Vercel | High | Medium — frontend only | Minimal (edge logs) | Low | Railway, Netlify, AWS Amplify | Maintain build export; deploy to Netlify within 4h |
+| Railway/Render | High | Medium — API layer | All API data in transit | Medium (US host, SCCs needed) | Fly.io, AWS EC2, Azure | Dockerised API → deploy to Fly.io within 2h |
+| Google Firebase | High | Low — auth only; JWT cached | Email, name, UID | Low (Google Cloud DPA) | Auth0, Supabase Auth | JWT tokens valid 1h; fallback email/password auth |
+| Stripe | High | Low (Phase 2+) — payments | Payment tokens, billing address | PCI-DSS — compliant | Checkout.com, PayTabs (UAE) | Disable payment feature; switch to manual bank transfer |
+| Meta/WhatsApp | Medium | Medium (Phase 4) | Phone numbers, message content | High (Meta US; SCCs required) | Twilio for SMS; email fallback | Fall back to email + phone for 48h |
+| SendGrid | Medium | Low — email delivery | Email addresses, content | Medium (US; SCCs needed) | Postmark, Amazon SES | Switch to alternative SMTP within 24h |
+| Google Maps | Medium | Low — map display | IP address (user-side) | Low | Mapbox, Leaflet + OpenStreetMap | Fallback to static map image + address text |
+| Sentry | Low | Low — monitoring only | Error data (PII scrubbed) | Low | Datadog, Rollbar | Logging to file; manual error review |
+| Matterport | Low | Low — tours only | None (public tours) | Low | EyeSpy360, Kuula | Remove tour embed; photos only |
+
+---
+
+## 6. Contract & SLA Management
+
+| Vendor | Contract Type | Term | Renewal Date | Auto-Renew | Notice Period | SLA Uptime | Penalty for Breach | Owner |
+|--------|-------------|------|-------------|-----------|-------------|-----------|------------------|-------|
+| MongoDB Atlas | Pay-per-use + DPA | Monthly | N/A (rolling) | Yes | 30 days to cancel | 99.995% | SLA credits (up to 30% monthly fee) | Lisa |
+| Vercel | Subscription | Annual | [Date TBD] | Yes | 30 days | 99.99% | SLA credits | Lisa |
+| Railway/Render | Subscription | Monthly | N/A | Yes | 14 days | 99.5–99.9% | No financial penalty | Lisa |
+| Firebase | Pay-per-use | Monthly | N/A | Yes | N/A | 99.95% | SLA credits | Daniela |
+| Stripe | Revenue share | Ongoing | N/A | Yes | N/A | 99.999% | SLA credits | Theodora |
+| SendGrid | Subscription | Monthly | N/A | Yes | 30 days | 99.9% | SLA credits | Aurora |
+| Meta/WhatsApp | API access | Annual | [Phase 4] | Yes | 30 days | 99.9% | No formal SLA | Nina |
+| DocuSign | Subscription | Annual | [Phase 2] | Yes | 30 days | 99.9% | SLA credits | Laila |
+| Google Maps API | Pay-per-use | Monthly | N/A | Yes | N/A | 99.9% | SLA credits | Aurora |
+| Matterport | Subscription | Annual | [Phase 7] | Yes | 60 days | 99.9% | No formal SLA | Fei-Fei |
+
+---
+
+## 7. Vendor Escalation Procedures
+
+### 7.1 Escalation Matrix
+
+| Level | Trigger | Channel | Response SLA |
+|-------|---------|---------|-------------|
+| L1 Self-service | Minor issue; documentation or configuration | Vendor docs, status page, community forum | Self-resolve in < 4 hours |
+| L2 Support ticket | Persistent issue affecting non-critical feature | Vendor support portal | 24–48 hours |
+| L3 Account manager | Billing dispute, SLA breach, service degradation affecting critical feature | Account manager email/phone | 4 hours (business day) |
+| L4 Executive escalation | Extended outage affecting production; data breach | Executive contact + White Caves MD | Immediate |
+
+### 7.2 Vendor-Specific Escalation
+
+| Vendor | L2 Channel | L3 Contact | L4 Emergency |
+|--------|-----------|-----------|-------------|
+| MongoDB Atlas | support.mongodb.com | Account manager | 24/7 Priority Support (M30+ plan) |
+| Vercel | vercel.com/support | Success team | vercel.com/help/emergency |
+| Stripe | dashboard.stripe.com/support | Account executive | support@stripe.com + phone |
+| Google Firebase | Firebase Console → Support | Google Cloud account manager | Google Cloud Critical Support |
+| Meta/WhatsApp | developers.facebook.com/support | Partner manager (Phase 4) | Meta Business Support Centre |
+
+---
+
+## 8. Procurement Process — New Vendor Approval
+
+Before any new vendor is used for production data, complete this process:
+
+### 8.1 Evaluation Steps
+
+```
+Step 1: Requirements gathering (1 day)
+   └── Define: what data will be processed? what service is needed? what alternatives exist?
+
+Step 2: Market research (1–3 days)
+   └── Identify 3 candidate vendors; compare features, pricing, compliance
+
+Step 3: Security assessment (2–5 days)
+   └── Review: SOC 2 report, ISO 27001 certificate, pen-test results, DPA availability
+
+Step 4: PDPL compliance check (1 day)
+   └── Is data residency acceptable? Are SCCs available? DPA signed before data flows?
+
+Step 5: Legal review (3–7 days)
+   └── Legal counsel reviews contract for: data ownership, IP, liability caps, termination rights
+
+Step 6: MD approval (1 day)
+   └── One-page briefing: vendor name, service, cost, risk, recommendation
+
+Step 7: DPA signing (1–3 days)
+   └── Execute DPA before any personal data flows to vendor
+
+Step 8: Onboarding (1–5 days)
+   └── Configure, test in staging environment, security review of integration code
+```
+
+### 8.2 Minimum Requirements for Any Vendor Processing PII
+
+| Requirement | Minimum Standard |
+|------------|----------------|
+| Security certification | SOC 2 Type II OR ISO 27001 |
+| DPA availability | DPA must be available and signed before go-live |
+| Data residency | UAE preferred; US acceptable with SCCs |
+| SLA | ≥ 99.9% uptime for critical vendors |
+| Encryption | TLS 1.3 in transit; AES-256 at rest |
+| Incident notification | Breach notification to White Caves within 72 hours |
+| Sub-processors | Must disclose all sub-processors; notify of changes |
+
+---
+
+**Document Owner:** Operations / Technology (Jaime + Lisa)
+**Version History:** v1.0 April 2026 (initial)
+**Review Cycle:** Quarterly — updated whenever new vendor added or contract renewed
+**Related Documents:**
+- `business/09_operations/partnership-framework.md`
+- `business/08_compliance/data-privacy-impact-assessment.md` (Third-Party Processor Assessment)
+- `business/08_compliance/gdpr-equivalence-assessment.md`

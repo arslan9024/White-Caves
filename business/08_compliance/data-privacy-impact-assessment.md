@@ -233,3 +233,200 @@ All personal data processing activities conducted by White Caves Real Estate LLC
 **Document Owner:** Compliance (Laila) + Technology (Radia)
 **Next Review:** Before Phase 4 (WhatsApp) launch
 **Related:** `business/06_flowcharts/data-privacy-flow.md`, `business/08_compliance/gdpr-equivalence-assessment.md`
+
+---
+
+## 9. Privacy by Design Implementation
+
+The seven Privacy by Design principles (Cavoukian, 2009) are embedded throughout the White Caves platform architecture:
+
+### 9.1 Proactive Not Reactive — Preventative Not Remedial
+White Caves does not wait for privacy failures before acting. Measures implemented before launch:
+- Threat modelling completed during Phase 1 architecture review
+- Data flows documented (this DPIA) before any personal data collected
+- Security header defaults (Helmet.js) active from day one
+- No analytics or tracking cookies activated without consent banner live first
+
+### 9.2 Privacy as the Default
+If a user does nothing, their privacy is protected automatically:
+- New leads assigned only to the handling agent — no broadcast to full team
+- API responses return only fields the requesting role is authorised to see (RBAC projection)
+- KYC documents accessible to Compliance Officer + MD only — not general agents
+- Logs retain 90 days by default; full 7-year audit log is compliance-tier only
+
+### 9.3 Privacy Embedded into Design
+Privacy is not bolted on — it is part of core data architecture:
+- MongoDB schema: sensitive fields (passport, source of funds) stored in separate sub-document with tighter ACL
+- Prisma models have `@omit` annotations to prevent accidental serialisation of sensitive fields
+- AI assistants process anonymised data only — lead name replaced with leadId before passing to inference layer
+- WhatsApp conversations stored with phone number tokenised — original number accessible only via compliance decrypt
+
+### 9.4 Full Functionality — Positive-Sum
+Privacy and functionality are not traded off:
+- Agents can see the data they need to do their job (full lead profile) without seeing KYC documents they don't need
+- Compliance officer has deep access to KYC without seeing full sales pipeline (role separation)
+- Analytics use aggregated/anonymised data — individual PII never sent to analytics layer
+
+### 9.5 End-to-End Security — Full Lifecycle Protection
+Data is protected from collection to deletion:
+```
+Collection → Transmission → Storage → Processing → Retention → Deletion
+   HTTPS       TLS 1.3      AES-256    RBAC filter   Auto-cron   Shred
+```
+- Deletion is cryptographic erasure: AES key destroyed → data unreadable even if bytes remain
+- Backups deleted in sync with primary retention policies (MongoDB Atlas point-in-time recovery within retention window only)
+
+### 9.6 Visibility and Transparency
+White Caves is open about its data practices:
+- Privacy policy published on website (Phase 2) — plain English summary + full legal text
+- All data categories, purposes, and retention listed in this DPIA (public summary version available)
+- Data subject rights mechanism published and accessible without login
+- Annual DPIA review published as internal report; summary shared with staff
+
+### 9.7 Respect for User Privacy
+Data subjects are the priority:
+- Subject access requests fulfilled in 30 days (faster if possible)
+- Erasure requests actioned promptly — exceptions communicated with legal basis
+- Consent is granular — users can consent to email but not WhatsApp marketing independently
+- Right to be forgotten honoured for all personal data not subject to legal retention (AML records exempt for 5 years)
+
+---
+
+## 10. Data Subject Rights Request Procedure
+
+### 10.1 How to Submit a Request
+
+Data subjects can submit requests by:
+- **Email:** privacy@whitecaves.ae (primary channel)
+- **Written letter:** White Caves Real Estate LLC, [Office Address], Dubai
+- **CRM portal:** Data subjects with portal accounts can submit via their account settings (Phase 3)
+
+### 10.2 Identity Verification
+
+Before processing any request, verify identity:
+```
+For clients:
+1. Email from registered email address → acceptable for low-risk requests
+2. Phone call + CRM reference → for higher-risk requests (erasure, correction)
+3. Emirates ID copy + selfie → for KYC document access requests
+4. Notarised ID → for requests from third parties on behalf of data subject
+
+For staff:
+1. Internal request via HR system with manager approval
+```
+
+### 10.3 Processing Each Right
+
+| Right | Steps | Response Template | Timeline |
+|-------|-------|------------------|----------|
+| **Access (SAR)** | 1. Log request in CRM with timestamp; 2. Extract all data via CRM admin export; 3. Review for third-party data (remove if they don't have right to see); 4. Package as PDF + JSON; 5. Deliver via secure email | "Attached is all personal data we hold about you..." | 30 calendar days |
+| **Rectification** | 1. Verify claim with supporting evidence; 2. Update CRM record; 3. Log correction in audit trail; 4. Confirm change to data subject | "We have updated your [field] to [new value]..." | 10 business days |
+| **Erasure** | 1. Check if legal hold applies (AML: 5yr, Finance: 7yr, RERA: ongoing); 2. If no hold: anonymise PII in place (do not delete record IDs for audit integrity); 3. Mark record as `deleted=true`; 4. Confirm to data subject with exceptions noted | "We have erased your personal data. Note: [exception if any]..." | 30 calendar days |
+| **Portability** | 1. Export all data in machine-readable format (JSON); 2. Include: contact details, property preferences, activity log, communications history; 3. Exclude: internal scoring, compliance notes, third-party data | "Attached is your data in machine-readable JSON format..." | 30 calendar days |
+| **Restriction** | 1. Flag record in CRM as `processingRestricted=true`; 2. Suspend all automated processing (scoring, AI, marketing); 3. Manual-only access permitted; 4. Notify data subject when restriction lifted | "We have restricted processing of your data pending review..." | Immediate (restriction), 30 days (decision) |
+| **Object** | 1. Receive objection (must specify grounds — legitimate interests override or direct marketing); 2. For direct marketing: immediate cessation; 3. For other processing: assess compelling legitimate grounds; 4. Respond with decision | "We have stopped [processing] / We have assessed your objection and..." | 10 business days |
+
+### 10.4 Conflicts with Legal Retention
+
+| Scenario | Resolution |
+|---------|-----------|
+| Erasure requested but AML retention applies (5 years) | Partial erasure: erase marketing data, retain AML records with legal basis communicated |
+| Erasure requested but Finance records required (7 years) | Partial erasure: erase contact preferences, retain transaction records |
+| Erasure requested but RERA Form A on file | Retain Form A (RERA audit requirement); erase supplementary personal data |
+| SAR requested for data subject about a third party | Redact third-party personal data before disclosure |
+
+---
+
+## 11. Data Breach Response Plan
+
+### 11.1 Breach Detection Sources
+- Automated: MongoDB Atlas security alerts, API error rate spikes, unusual access patterns
+- Staff report: Any staff member who suspects a breach must report to compliance@whitecaves.ae immediately
+- Vendor notification: Third-party processor notifies White Caves of breach affecting White Caves data
+- Security researcher disclosure: Bug bounty / responsible disclosure
+
+### 11.2 Severity Classification
+
+| Severity | Description | Examples | Response SLA |
+|---------|------------|---------|-------------|
+| **Critical** | Mass personal data exposure, KYC documents accessed unauthorised | Database dump exfiltrated; all KYC documents downloaded | Immediate (< 1 hour) |
+| **High** | Limited PII exposure, financial data at risk | Single agent account compromised; 10–100 records exposed | < 4 hours |
+| **Medium** | Internal access violation, no external exposure | Staff member accessed records outside their role | < 24 hours |
+| **Low** | No personal data at risk | System misconfiguration detected before exploitation | < 72 hours |
+
+### 11.3 Response Steps by Severity
+
+**Critical / High Breach:**
+```
+HOUR 0-1:  Detection → Immediate containment (disable affected account/endpoint)
+HOUR 1-4:  Assess scope (how many records? what data categories?)
+HOUR 4-24: Begin UAE Data Office notification preparation (required ≤ 72h)
+HOUR 24-48: Individual notifications if high risk to rights/freedoms
+HOUR 48-72: UAE Data Office formal notification via uaedata.gov.ae portal
+WEEK 2:    Post-mortem → root cause → remediation plan
+WEEK 4:    Implement technical remediation
+MONTH 2:   Independent security assessment + updated DPIA
+```
+
+**Medium / Low Breach:**
+```
+DAY 1: Detection → Internal investigation → Scope assessment
+DAY 3: Decision on notification (is risk high enough for individual notification?)
+DAY 5: Internal post-mortem + remediation plan
+DAY 30: Remediation implemented + documented
+```
+
+### 11.4 UAE Data Office Notification Content (Critical/High)
+
+The notification to the UAE Data Office must include:
+- Nature of the breach (what happened)
+- Categories and approximate number of data subjects affected
+- Categories and approximate number of personal data records affected
+- Name and contact of Data Protection Contact (compliance@whitecaves.ae)
+- Likely consequences of the breach
+- Measures taken or proposed to address the breach
+
+### 11.5 Emergency Contact List
+
+| Contact | Name | Phone | Email |
+|---------|------|-------|-------|
+| Data Protection Contact | Laila (Compliance) | [Phone] | compliance@whitecaves.ae |
+| CTO / Technical Lead | Aurora (Tech Lead) | [Phone] | tech@whitecaves.ae |
+| Managing Director | Arslan | [Phone] | arslanmalikgoraha@gmail.com |
+| UAE Data Office | — | 800-UAEDATA | incident@uaedata.gov.ae |
+| MongoDB Atlas Security | — | — | security@mongodb.com |
+| Legal Counsel | [Law Firm] | [Phone] | [Email] |
+
+---
+
+## 12. Third-Party Processor Assessment
+
+| Processor | Data Shared | DPA Status | Location | Security Cert | Transfer Mechanism | Risk |
+|----------|------------|-----------|---------|------------|-----------------|------|
+| **MongoDB Atlas** | All CRM data (PII, KYC) | ✅ DPA signed | UAE (primary) | SOC 2 Type II, ISO 27001 | UAE residency = no transfer | LOW |
+| **Vercel** | Frontend code only; no personal data processed | ✅ DPA available | Global CDN | SOC 2 Type II | SCCs for EU visitors' IP logs | LOW |
+| **Railway/Render** | API requests (includes PII in transit) | ⏳ DPA needed | US | SOC 2 (Render only) | SCCs required Phase 2 | MEDIUM |
+| **Google Firebase** | Auth tokens, display name, email | ✅ Google Cloud DPA | US (GCP) | ISO 27001, SOC 2 | SCCs (Google Cloud EU SCCs) | LOW |
+| **Stripe** | Payment data (tokenised), billing address | ⏳ DPA needed | US | PCI-DSS Level 1, SOC 2 | SCCs required Phase 2 | MEDIUM |
+| **Meta/WhatsApp** | Phone numbers, message content, contacts | ⏳ DPA needed | US | ISO 27001, SOC 2 | SCCs required Phase 4 | HIGH |
+| **SendGrid (Twilio)** | Email addresses, message content | ⏳ DPA needed | US | ISO 27001, SOC 2 | SCCs required Phase 2 | MEDIUM |
+| **Sentry** | Error logs (may contain PII in stack traces) | ⏳ Assess Phase 2 | US | SOC 2 | SCCs; configure PII scrubbing | MEDIUM |
+| **Google Analytics** | Pseudonymous web analytics (IP, behaviour) | ✅ Google DPA | US | ISO 27001 | SCCs; IP anonymisation ON | LOW |
+
+**Priority Actions:**
+1. ⚠️ **Stripe DPA** — required before Phase 2 (payment processing)
+2. ⚠️ **Railway/Render DPA** — required immediately (API processes all data)
+3. ⚠️ **Meta DPA** — required before Phase 4 (WhatsApp integration)
+4. ⚠️ **SendGrid DPA** — required before any email marketing
+5. ⚠️ **Sentry PII scrubbing** — configure before Phase 2 (production error tracking)
+
+---
+
+**Document Owner:** Compliance (Laila) + Technology (Radia)
+**Next Full Review:** Before Phase 4 (WhatsApp) launch — estimated Q4 2026
+**Version History:** v1.0 April 2026 (initial)
+**Related Documents:**
+- `business/08_compliance/gdpr-equivalence-assessment.md`
+- `business/08_compliance/aml-risk-assessment.md`
+- `business/06_flowcharts/data-privacy-flow.md`
+- `business_docs/05_requirements/compliance-requirements.md`

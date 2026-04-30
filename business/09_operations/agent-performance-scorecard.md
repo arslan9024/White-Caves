@@ -203,3 +203,276 @@ Visible to: Managing Director, Sales Manager (their team only)
 **Document Owner:** HR Department + Katherine (QA)
 **Review Cycle:** KPIs reviewed quarterly; targets updated annually
 **Related:** `business/07_strategy/kpi-dashboard-spec.md`, `business/09_operations/onboarding-checklist.md`
+
+---
+
+## 8. Worked Examples
+
+### Example A — Exceeds Expectations (Sales Agent)
+
+**Agent:** Sarah K. | **Period:** Q3 2026
+
+| KPI | Weight | Actual | Band | Score |
+|-----|--------|--------|------|-------|
+| Lead response time | 15% | 48 min AVG | Gold (< 1h) | 3 |
+| Lead qualification rate | 15% | 52% | Gold (> 50%) | 3 |
+| Viewing conversion | 15% | 68% | Silver (> 50%) | 2 |
+| Deal closure rate | 20% | 38% | Gold (> 35%) | 3 |
+| CRM data quality | 10% | 97% | Gold (> 95%) | 3 |
+| Compliance adherence | 15% | 100% | Gold | 3 |
+| Client satisfaction | 10% | 9.2 | Gold (> 9.0) | 3 |
+
+**Calculation:**
+```
+Weighted sum = (3×0.15) + (3×0.15) + (2×0.15) + (3×0.20) + (3×0.10) + (3×0.15) + (3×0.10)
+             = 0.45 + 0.45 + 0.30 + 0.60 + 0.30 + 0.45 + 0.30
+             = 2.85 out of max 3.0
+Score = 2.85 / 3.0 × 100 = 95%
+```
+**Band: Exceeds Expectations** ✅ — Bonus eligible, leaderboard position #1
+
+**Recommended Action:** Nominate for Agent of the Quarter; assign as buddy mentor for new hire.
+
+---
+
+### Example B — Meets Expectations (Sales Agent)
+
+**Agent:** James T. | **Period:** Q3 2026
+
+| KPI | Weight | Actual | Band | Score |
+|-----|--------|--------|------|-------|
+| Lead response time | 15% | 2h 15min AVG | Silver (< 2h miss) → Bronze (< 4h) | 1 |
+| Lead qualification rate | 15% | 38% | Silver (> 35%) | 2 |
+| Viewing conversion | 15% | 53% | Silver (> 50%) | 2 |
+| Deal closure rate | 20% | 22% | Silver (> 20%) | 2 |
+| CRM data quality | 10% | 88% | Silver (> 85%) | 2 |
+| Compliance adherence | 15% | 100% | Gold | 3 |
+| Client satisfaction | 10% | 8.1 | Silver (> 8.0) | 2 |
+
+**Calculation:**
+```
+Weighted sum = (1×0.15) + (2×0.15) + (2×0.15) + (2×0.20) + (2×0.10) + (3×0.15) + (2×0.10)
+             = 0.15 + 0.30 + 0.30 + 0.40 + 0.20 + 0.45 + 0.20
+             = 2.00 out of max 3.0
+Score = 2.00 / 3.0 × 100 = 67%
+```
+**Band: Meets Expectations** — No bonus; satisfactory performance.
+
+**Recommended Action:** Focus on lead response time (missed Silver by 15 min AVG) — set target of < 1h50min by Q4. Coaching session on speed-to-lead.
+
+---
+
+### Example C — Developing (Sales Agent)
+
+**Agent:** David L. | **Period:** Q3 2026
+
+| KPI | Weight | Actual | Band | Score |
+|-----|--------|--------|------|-------|
+| Lead response time | 15% | 5h 30min AVG | Below Bronze (> 4h) | 0 |
+| Lead qualification rate | 15% | 18% | Below Bronze (< 20%) | 0 |
+| Viewing conversion | 15% | 32% | Bronze (> 30%) | 1 |
+| Deal closure rate | 20% | 12% | Bronze (> 10%) | 1 |
+| CRM data quality | 10% | 74% | Bronze (> 70%) | 1 |
+| Compliance adherence | 15% | 100% | Gold | 3 |
+| Client satisfaction | 10% | 7.2 | Bronze (> 7.0) | 1 |
+
+**Calculation:**
+```
+Weighted sum = (0×0.15) + (0×0.15) + (1×0.15) + (1×0.20) + (1×0.10) + (3×0.15) + (1×0.10)
+             = 0 + 0 + 0.15 + 0.20 + 0.10 + 0.45 + 0.10
+             = 1.00 out of max 3.0
+Score = 1.00 / 3.0 × 100 = 33%
+```
+**Band: Below Expectations** — PIP required within 5 business days.
+
+**Recommended Action:** Immediate 1:1 with manager. PIP focusing on response time (mandatory < 2h target) and qualification rate (minimum 25% by end of PIP). Assign buddy agent. Daily check-in for first 2 weeks.
+
+---
+
+## 9. Calibration & Benchmark Data
+
+White Caves scorecard thresholds are validated against Dubai real estate market benchmarks:
+
+### 9.1 Industry Benchmarks
+
+| KPI | Dubai Market Average | Top Quartile | White Caves Gold Target | Source |
+|-----|---------------------|-------------|----------------------|--------|
+| Lead response time | 4–6 hours | < 1 hour | < 1 hour | RERA Agent Performance Survey 2025 |
+| Lead-to-qualified conversion | 15–20% | > 35% | > 50% | Dubai Sotheby's internal benchmark |
+| Viewing-to-offer rate | 20–30% | > 45% | > 70% | Industry (estimated) |
+| Offer-to-close rate | 30–40% | > 55% | > 35% (of viewing leads) | RERA transaction data 2024 |
+| CRM data quality | 60–70% field completion | > 90% | > 95% | Internal CRM audit benchmark |
+| Client satisfaction (CSAT) | 7.5/10 average | > 9.0 | > 9.0 | PropertyFinder agent ratings 2025 |
+| Ejari registration time | 15–25 days | < 7 days | < 7 days | Ejari data (anecdotal) |
+| Lease renewal rate | 55–65% | > 75% | > 80% | Allsopp & Allsopp published data |
+
+**Note:** White Caves' Gold targets are set at or above market top-quartile. This is intentional — White Caves competes on quality of service, and top-quartile performance is the minimum standard for excellence recognition.
+
+### 9.2 Why These Thresholds
+
+- **Lead response time Gold < 1 hour:** Research consistently shows that contacting a lead within 5 minutes increases conversion by 9× vs. 30 minutes (InsideSales.com). Dubai's competitive market means a lead may have contacted 3 agents simultaneously — first to respond often wins.
+- **Deal closure rate Gold > 35%:** A top Dubai sales agent (DAMAC Hills 2 specialist) should be closing more than 1 in 3 viewing-stage leads. Below 10% (Bronze floor) indicates either poor qualification upstream or closing skills gap.
+- **Compliance KPIs at 100% for all bands:** Not negotiable. Dubai's AML/RERA regime means a single KYC miss could result in a fine that exceeds an agent's annual commission. Bronze = 100%.
+
+---
+
+## 10. Bonus & Incentive Structure
+
+### 10.1 Quarterly Bonus — Sales Agent
+
+| Score Band | Bonus Eligibility | Calculation |
+|-----------|------------------|-------------|
+| Exceeds Expectations (85–100%) | ✅ Eligible | 8% of commission earned that quarter |
+| Meets Expectations (65–84%) | ❌ Not eligible | — |
+| Developing or Below | ❌ Not eligible | — |
+
+**Discretionary Manager Uplift:** Sales Manager may add up to 20% uplift for exceptional contribution not captured in KPIs (e.g., training a new colleague, landing a particularly difficult deal). Requires MD approval.
+
+**Example Bonus Calculation:**
+- Sarah K. earns AED 180,000 commission in Q3 2026
+- Score: 95% (Exceeds Expectations)
+- Quarterly bonus: AED 180,000 × 8% = **AED 14,400**
+- Manager uplift (10%): AED 14,400 × 10% = AED 1,440
+- **Total bonus: AED 15,840**
+
+### 10.2 Annual Bonus
+
+- Agents who achieve Exceeds Expectations in 3 or more quarters out of 4 are eligible for an annual bonus
+- Annual bonus: 15% of total annual commission earned
+- MD final approval required for annual bonuses
+- Paid in January of the following year
+
+### 10.3 Non-Monetary Recognition
+
+| Recognition | Criteria | Award |
+|------------|---------|-------|
+| Agent of the Month | Highest scorecard score in the month | WhatsApp team shout-out + LinkedIn post + AED 500 gift card |
+| Agent of the Quarter | Highest total quarterly score | Certificate + LinkedIn feature + AED 2,000 dining voucher |
+| Deal of the Quarter | Largest single commission deal | Team recognition + LinkedIn feature |
+| Compliance Champion | 12 consecutive months of 100% compliance | RERA CPD hours gifted (company pays) + certificate |
+| Team Bonus | Whole team hits Gold average for a quarter | Team dinner (company-paid, max AED 3,000) |
+
+### 10.4 Commission Clawback Policy
+
+If a deal is lost after commission was paid (e.g., buyer pulls out, mortgage rejected), commission is clawed back as follows:
+- Transaction cancelled within 30 days: 100% clawback
+- Transaction cancelled 30–90 days: 50% clawback
+- Transaction cancelled > 90 days: No clawback (contract was in force)
+- Commission clawback deducted from next month's commission payment
+
+---
+
+## 11. Career Progression Framework
+
+### 11.1 Career Ladder
+
+```
+Junior Sales Agent
+       ↓  (min. 6 months + avg. Meets Expectations)
+Sales Agent
+       ↓  (min. 12 months + avg. Exceeds Expectations × 2 quarters)
+Senior Sales Agent
+       ↓  (min. 18 months + 1× quarterly top performer + MD recommendation)
+Team Lead / Senior Agent
+       ↓  (min. 6 months team lead + team avg. Meets Expectations)
+Sales Manager
+       ↓  (min. 2 years + company growth + board approval)
+Head of Sales / Director
+```
+
+### 11.2 Role Requirements Matrix
+
+| Level | Min. Time in Role | Avg. Score Required | Skills Required | Comp. Band |
+|-------|-----------------|---------------------|----------------|------------|
+| Junior Sales Agent | — | N/A (learning) | RERA BRN; CRM basics; DAMAC Hills 2 knowledge | AED 4,000–6,000/month base |
+| Sales Agent | 6 months | Meets Expectations | Full CRM proficiency; 5+ closed viewings | AED 5,000–8,000/month + commission |
+| Senior Sales Agent | 12 months | Exceeds Expectations (2 quarters) | BANT mastery; complex negotiation; mentoring | AED 6,000–10,000/month + commission |
+| Team Lead | 18 months | Top performer × 1 quarter | Management basics; conflict resolution | AED 8,000–12,000/month + override commission |
+| Sales Manager | 6 months as Team Lead | Team avg. Meets Expectations | Full P&L ownership; hiring; strategy | AED 15,000–25,000/month + team bonus |
+
+### 11.3 Promotion Process
+
+1. Agent nominates themselves OR manager nominates them (both allowed)
+2. Manager prepares promotion case: last 4 quarters' scores + qualitative assessment
+3. MD reviews + approves/declines within 2 weeks
+4. If approved: new contract issued + salary adjustment effective first of next month
+5. If declined: specific feedback given + 90-day re-evaluation date set
+
+---
+
+## 12. Underperformance Management
+
+### 12.1 Performance Improvement Plan (PIP) — Full Template
+
+```
+PERFORMANCE IMPROVEMENT PLAN
+
+Employee: _______________
+Role: _______________
+Manager: _______________
+PIP Start Date: _______________
+PIP Review Date: _______________ (30 days from start)
+
+PERFORMANCE CONCERN:
+[Specific KPI and score — e.g., "Lead response time averaging 5.5h; below 4h Bronze threshold"]
+
+IMPROVEMENT TARGET:
+[Specific, measurable target — e.g., "Lead response time < 2h (Silver) by review date"]
+
+SUPPORT PROVIDED:
+☐ Weekly 1:1 coaching sessions (every Monday, 30 min)
+☐ Call recording review (manager reviews 3 calls per week)
+☐ Pair with buddy agent for first 2 weeks
+☐ CRM training refresher (1 hour, scheduled Week 1)
+☐ Mobile alert set for new lead assignments (immediate phone notification)
+Other: _______________
+
+REVIEW MEETING DATE: _______________
+
+OUTCOMES:
+☐ Targets met → Return to normal review cycle; note improvement in file
+☐ Targets partially met → Extend PIP by 30 days with revised targets
+☐ Targets not met → Escalate to HR; formal disciplinary process
+☐ Resignation during PIP → Standard leaver procedure
+
+Signatures:
+Employee: _______________ Date: _______________
+Manager: _______________ Date: _______________
+HR Representative: _______________ Date: _______________
+```
+
+### 12.2 UAE Labour Law Considerations
+
+Before initiating any formal disciplinary action:
+- UAE Labour Law No. 33 of 2021 (amended) applies to all employment relationships
+- Written warning required before termination (except gross misconduct)
+- Minimum notice periods: 1 month (< 5 years service); 2 months (5+ years service)
+- Gratuity calculation: required by law on termination/resignation
+- Consult HR + legal counsel before any termination — wrongful termination claims in UAE can be costly
+- RERA license: terminated agent's BRN association must be removed within 7 days (compliance obligation)
+
+### 12.3 Gross Misconduct (Immediate Action)
+
+The following warrant immediate suspension pending investigation (no PIP):
+- RERA violation (advertising without permit, forging documents)
+- AML/KYC falsification
+- Client fund misappropriation
+- Data breach caused by intentional action
+- Harassment or discrimination
+
+**Procedure for gross misconduct:**
+1. Suspend with pay (pending investigation)
+2. Collect all evidence (CRM records, communications)
+3. Conduct investigative interview
+4. Consult legal counsel before next step
+5. If confirmed: terminate for cause + report to RERA within 7 days
+
+---
+
+**Document Owner:** HR Department + Katherine (QA)
+**Version History:** v1.0 April 2026 (initial)
+**Review Cycle:** KPIs reviewed quarterly; targets updated annually
+**Related Documents:**
+- `business/07_strategy/kpi-dashboard-spec.md`
+- `business/09_operations/onboarding-checklist.md`
+- UAE Labour Law No. 33 of 2021
