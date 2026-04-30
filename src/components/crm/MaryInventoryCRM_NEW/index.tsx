@@ -4,34 +4,50 @@ import './MaryInventoryCRM.css';
 
 // Lazy-load all tabs
 const MaryInventoryTab = lazy(() => import('./tabs/MaryInventoryTab'));
+const MaryAcquisitionTab = lazy(() => import('./tabs/MaryAcquisitionTab'));
+const MaryPipelineTab = lazy(() => import('./tabs/MaryPipelineTab'));
 const MaryDataToolsTab = lazy(() => import('./tabs/MaryDataToolsTab'));
 const MaryFeaturesTab = lazy(() => import('./tabs/MaryFeaturesTab'));
 const MaryDetailsTab = lazy(() => import('./tabs/MaryDetailsTab'));
 
 export default function MaryInventoryCRM() {
-  const [activeTab, setActiveTab] = useState('inventory');
+  const [activeTab, setActiveTab] = useState('acquisition');
 
   const tabs = [
+    {
+      id: 'acquisition',
+      label: '+ Acquire',
+      description: 'Add new property to inventory',
+      component: MaryAcquisitionTab,
+      order: 0
+    },
+    {
+      id: 'pipeline',
+      label: 'Pipeline',
+      description: '5-stage inventory lifecycle & document compliance',
+      component: MaryPipelineTab,
+      order: 1
+    },
     {
       id: 'inventory',
       label: 'Inventory',
       description: 'Manage properties and owners',
       component: MaryInventoryTab,
-      order: 1
+      order: 2
     },
     {
       id: 'datatools',
       label: 'Data Tools',
       description: 'Data collection & extraction',
       component: MaryDataToolsTab,
-      order: 2
+      order: 3
     },
     {
       id: 'features',
       label: 'Features',
       description: 'Available capabilities',
       component: MaryFeaturesTab,
-      order: 3
+      order: 4
     },
     {
       id: 'details',
