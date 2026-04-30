@@ -60,6 +60,7 @@ import homepageRoutes from './routes/homepage.js';
 import contactRoutes from './routes/contact.js';
 import aiChatRoutes from './routes/aiChat.js';
 import jobApplicationsRoutes from './routes/jobApplications.js';
+import invoicesLeaseRoutes from './routes/invoicesLease.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
@@ -354,6 +355,9 @@ app.use('/api/offers', offersRoutes);
 
 // Leases API (lease management for landlords, tenants, leasing agents)
 app.use('/api/leases', leasesRoutes);
+
+// Lease Invoices API (deposit and rent invoices for leasing workflow)
+app.use('/api/invoices/lease', invoicesLeaseRoutes);
 
 // Maintenance API (maintenance requests for landlords and tenants)
 app.use('/api/maintenance', maintenanceRoutes);

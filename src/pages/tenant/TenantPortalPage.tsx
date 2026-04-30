@@ -1,11 +1,12 @@
 /**
  * TenantPortalPage — Phase 2.7-2.11: Tenant Self-Service Portal
  *
- * Provides tenants with read-only access to:
+ * Provides tenants with access to:
  * - My Lease (2.8)
- * - Payment History (2.9)
+ * - Payment History + PDC Schedule (2.9)
  * - Maintenance Requests (2.10)
  * - Documents (2.11)
+ * - Key Handover (Stage 8 leasing lifecycle)
  *
  * @component
  */
@@ -21,8 +22,9 @@ import TenantLeaseTab from '../../components/portal/tenant/TenantLeaseTab';
 import TenantPaymentHistoryTab from '../../components/portal/tenant/TenantPaymentHistoryTab';
 import TenantMaintenanceTab from '../../components/portal/tenant/TenantMaintenanceTab';
 import TenantDocumentsTab from '../../components/portal/tenant/TenantDocumentsTab';
+import TenantKeyHandoverTab from '../../components/portal/tenant/TenantKeyHandoverTab';
 
-type TabKey = 'lease' | 'payments' | 'maintenance' | 'documents';
+type TabKey = 'lease' | 'payments' | 'maintenance' | 'documents' | 'key_handover';
 
 interface Tab {
   key: TabKey;
@@ -35,6 +37,7 @@ const tabs: Tab[] = [
   { key: 'payments', label: 'Payment History', icon: '💳' },
   { key: 'maintenance', label: 'Maintenance', icon: '🔧' },
   { key: 'documents', label: 'Documents', icon: '📄' },
+  { key: 'key_handover', label: 'Key Handover', icon: '🔑' },
 ];
 
 const TenantPortalPage: FC = () => {
@@ -71,6 +74,8 @@ const TenantPortalPage: FC = () => {
         return <TenantMaintenanceTab />;
       case 'documents':
         return <TenantDocumentsTab />;
+      case 'key_handover':
+        return <TenantKeyHandoverTab />;
       default:
         return <TenantLeaseTab />;
     }
@@ -139,3 +144,4 @@ const TenantPortalPage: FC = () => {
 };
 
 export default TenantPortalPage;
+

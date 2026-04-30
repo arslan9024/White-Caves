@@ -207,3 +207,166 @@ design — purpose-built for mid-to-premium UAE brokerages."
 - [RealCube](https://www.realcube.estate) — PropTech comparison
 - [RERA Dubai](https://www.rera.gov.ae) — Regulatory compliance benchmarks
 - [Statista Real Estate UAE](https://www.statista.com/outlook/fmo/real-estate/uae) — Market data
+
+
+---
+
+## 7. Battle Cards — Competing Against Key Rivals
+
+### Battle Card 1: When a Client Mentions PropertyFinder
+
+**Situation:** "I saw this property on PropertyFinder from another agent…"
+
+| Element | Content |
+|---------|---------|
+| **Their strength** | PropertyFinder is widely trusted; clients feel "safe" using the biggest portal |
+| **The gap** | PF is a portal, not an agent — the client still needs a licensed broker to handle negotiations, documents, and DLD transfer. White Caves IS the agent. |
+| **Counter-positioning** | "PropertyFinder is a discovery tool — like Google for properties. White Caves is your specialist broker. We listed that property too, and we're RERA-licensed to represent you through the full transaction." |
+| **Proof points** | White Caves' listings appear on PropertyFinder (Phase 8); White Caves agents have RERA BRN; DAMAC Hills 2 specialist |
+| **Closing question** | "Would you like me to arrange a viewing of that specific property for you?" |
+
+---
+
+### Battle Card 2: When a Client Mentions Bayut or Another Portal
+
+**Situation:** "I've been browsing Bayut and have a shortlist…"
+
+| Element | Content |
+|---------|---------|
+| **Their strength** | Bayut has a large catalogue; "TruCheck" badge creates trust perception |
+| **The gap** | Bayut can't negotiate on your behalf, check if a listing is truly available, or handle your KYC and DLD transfer |
+| **Counter-positioning** | "Bayut is a great starting point. White Caves can verify which of those listings are genuinely available today, arrange viewings, and negotiate the best price on your behalf — at no extra cost to you as a buyer." |
+| **Proof points** | Agent response time < 1h (vs. portals that just send emails); direct access to developer inventory not always on Bayut |
+| **Closing question** | "Can I look at your shortlist and tell you which ones are still available and what they last transacted for at DLD?" |
+
+---
+
+### Battle Card 3: When a Client Has Used Allsopp & Allsopp
+
+**Situation:** "I worked with Allsopp & Allsopp on my last purchase…"
+
+| Element | Content |
+|---------|---------|
+| **Their strength** | Allsopp is the largest Dubai agency by volume; strong brand trust with British expat market |
+| **The gap** | Large agency = many agents, less personal service; general coverage vs. White Caves' DAMAC Hills 2 specialisation |
+| **Counter-positioning** | "Allsopp is a great agency — we have a lot of respect for them. The difference is focus: White Caves specialises exclusively in DAMAC Hills 2 and premium communities. You get a specialist, not a generalist." |
+| **Proof points** | Deep community knowledge (sub-community pricing, developer relationships, neighbour context); faster response (smaller team = more attention) |
+| **Closing question** | "What did you buy last time, and what's changed in your property goals since then?" |
+
+---
+
+### Battle Card 4: When a Client Mentions Betterhomes
+
+**Situation:** "Betterhomes called me after I submitted an inquiry…"
+
+| Element | Content |
+|---------|---------|
+| **Their strength** | Betterhomes has strong brand recognition; multi-location offices across Dubai |
+| **The gap** | Large call centres → many agents calling from one inquiry → impersonal experience; general market not specialists |
+| **Counter-positioning** | "At White Caves, when you contact us, you deal with one specialist from start to keys. No call centre, no handoffs, no re-explaining your requirements to three different agents." |
+| **Proof points** | Single point of contact; DAMAC Hills 2 specialist; WhatsApp-first communication (agent's direct line) |
+| **Closing question** | "How many agents from different agencies have contacted you so far? How would you prefer to handle this search?" |
+
+---
+
+## 8. Win/Loss Analysis Framework
+
+Every time a lead is CLOSED (Won or Lost), the following must be recorded in CRM:
+
+### 8.1 Won Deal — Record
+
+```
+CRM fields when status → WON:
+- won_reason: enum [priced_right, trusted_agent, quick_response, community_expertise, referral, only_listing_available]
+- won_vs_competitor: string? // which competitor was displaced, if any
+- days_to_close: auto-calculated (createdAt → wonAt)
+- source: auto (lead.source)
+- notes: free text for context
+```
+
+### 8.2 Lost Deal — Record
+
+```
+CRM fields when status → LOST:
+- lost_reason: enum [price_too_high, chose_competitor, no_longer_looking, mortgage_rejected, personal_circumstances, unresponsive, used_different_agent, timing_not_right]
+- lost_to_competitor: string? // name of winning agency
+- lost_at_stage: enum [lead, qualified, viewing, offer, under_offer]
+- could_have_won: boolean // agent's honest assessment
+- notes: free text
+```
+
+### 8.3 Monthly Win/Loss Review
+
+**Meeting:** Monthly, 45 minutes, Sales Manager + all agents
+
+**Agenda:**
+1. Win/loss ratio vs. target (10 min): what % of viewing-stage leads are we winning?
+2. Lost reasons analysis (15 min): which reason is most common? Trend up/down?
+3. Competitor intelligence (10 min): who are we losing to? Any patterns (e.g., losing to Allsopp on rentals but winning on sales)?
+4. One key action for next month (10 min): specific measurable change based on analysis
+
+**Dashboard:** CRM executive view → "Win/Loss by Reason" bar chart (built Phase 3)
+
+### 8.4 Feeding Insights into Product Roadmap
+
+| Insight Type | Example | Action |
+|------------|---------|--------|
+| Feature gap | "Clients want floor plans on the listing — we keep losing to PF who shows them" | Add floor plan upload to CRM (immediate) |
+| Pricing intelligence | "Lost 4 deals because clients say our commission is higher than [competitor]" | Review commission structure; add value-add services |
+| Market intelligence | "Clients increasingly asking for payment plans on ready properties" | Research developer part-financing; add to product marketing |
+| Competitor action | "[Competitor] just launched a new community specialist landing page" | Accelerate DAMAC Hills 2 microsite (Phase 8) |
+
+---
+
+## 9. Price Sensitivity Analysis
+
+### 9.1 DAMAC Hills 2 Market Pricing
+
+| Property Type | Size Range (sqft) | Price Range (AED) | Price/sqft |
+|-------------|-----------------|-----------------|-----------|
+| 1-bed apartment | 600–900 | 550,000–750,000 | AED 700–900 |
+| 2-bed apartment | 900–1,400 | 750,000–1,100,000 | AED 750–850 |
+| 3-bed apartment | 1,200–1,800 | 950,000–1,500,000 | AED 780–850 |
+| 3-bed townhouse | 1,600–2,200 | 1,200,000–1,800,000 | AED 730–820 |
+| 4-bed villa | 2,800–4,000 | 2,000,000–3,500,000 | AED 700–900 |
+| 5-bed villa (premium) | 4,000–6,000 | 3,200,000–5,500,000 | AED 800–950 |
+
+*Based on DLD transaction data Q1 2026; subject to market change*
+
+### 9.2 Commission Structure
+
+| Scenario | Rate | Notes |
+|---------|------|-------|
+| Standard sale (sole agent) | 2% of sale price | Paid by seller |
+| Standard sale (co-brokerage) | 1% (White Caves portion) | Split 50/50 with listing agent |
+| Rental (long-term) | 5% of annual rent | Paid by landlord |
+| Rental (short-term) | 10–15% of annual rent | Market rate for holiday/serviced rentals |
+| Off-plan new project | 5–7% (developer-paid) | Varies by developer; specified in NOC |
+| **Minimum commission floor** | **1.5% (sales) / 4% (rental)** | Never negotiate below this |
+| **Walk-away point** | < 1.5% (sales) | Not financially viable; politely decline |
+
+### 9.3 Value-Add Justification for Full Commission
+
+When a client pushes back on commission:
+
+| Value Element | What It Means to the Client |
+|-------------|--------------------------|
+| RERA-licensed agent (BRN) | Client is legally protected; agent accountable to RERA |
+| DAMAC Hills 2 specialist | Accurate pricing, not guesswork |
+| Full DLD guidance | Stress-free title transfer — agent manages all paperwork |
+| KYC/AML handled | No client risk of compliance issues |
+| WhatsApp CRM | Real-time updates; no chasing the agent |
+| One point of contact | No handoffs, no repeating requirements |
+| Post-sale support | Welcome pack, concierge referrals, landlord portal |
+
+**Script for commission negotiation:** "Our fee is 2% — the RERA standard. What you get for that is a RERA-licensed specialist, full DLD transfer management, and a dedicated contact throughout. Many agents charge the same but deliver far less. Would you like to proceed on that basis?"
+
+---
+
+**Document Owner:** Strategy (Dena) + Sales (Sophia)
+**Version History:** v1.0 April 2026 (initial); battle cards updated quarterly
+**Review Cycle:** Quarterly or when major competitor changes
+**Related Documents:**
+- `business/07_strategy/competitive-positioning.md`
+- `business/09_operations/agent-performance-scorecard.md`
+- `business/08_market_research/dubai_regulations.md`

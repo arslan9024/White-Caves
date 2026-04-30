@@ -419,4 +419,112 @@ router.get(
   })
 );
 
+// ─── GET /api/dashboard/leasing — Leasing P&L Dashboard ────────────────────
+router.get(
+  '/leasing',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'managing_director'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — leasing dashboard requires manager or above role', 403);
+    }
+
+    const now = new Date();
+    const thirtyDaysFromNow = new Date(now); thirtyDaysFromNow.setDate(now.getDate() + 30);
+    const sixtyDaysFromNow = new Date(now); sixtyDaysFromNow.setDate(now.getDate() + 60);
+    const ninetyDaysFromNow = new Date(now); ninetyDaysFromNow.setDate(now.getDate() + 90);
+    const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const [
+      activeLeases,
+      expiringIn30,
+      expiringIn60,
+      expiringIn90,
+      totalLeases,
+      leasingLeads,
+      pendingOffers,
+      acceptedOffers,
+      pdcCleared,
+      pdcBounced,
+      pdcPending,
+      maintenanceCosts,
+      commissions,
+    ] = await Promise.all([
+      prisma.lease.findMany({
+        where: { status: 'active' },
+        select: {
+          id: true, leaseNumber: true, monthlyRent: true, currency: true,
+          endDate: true, ejariStatus: true, ejariNumber: true,
+          property: { select: { id: true, title: true, location: true } },
+          tenant: { select: { id: true, name: true, email: true } },
+          landlord: { select: { id: true, name: true } },
+        },
+        orderBy: { endDate: 'asc' },
+      }),
+      prisma.lease.count({ where: { status: 'active', endDate: { lte: thirtyDaysFromNow, gte: now } } }),
+      prisma.lease.count({ where: { status: 'active', endDate: { lte: sixtyDaysFromNow, gte: now } } }),
+      prisma.lease.count({ where: { status: 'active', endDate: { lte: ninetyDaysFromNow, gte: now } } }),
+      prisma.lease.count(),
+      prisma.lead.count({ where: { dealType: 'lease' } }),
+      prisma.offer.count({ where: { offerType: 'lease', status: 'pending' } }),
+      prisma.offer.count({ where: { offerType: 'lease', status: 'accepted' } }),
+      prisma.pDCSchedule.aggregate({ where: { status: 'cleared' }, _sum: { amount: true }, _count: { _all: true } }),
+      prisma.pDCSchedule.aggregate({ where: { status: 'bounced' }, _sum: { amount: true }, _count: { _all: true } }),
+      prisma.pDCSchedule.aggregate({ where: { status: 'pending' }, _sum: { amount: true }, _count: { _all: true } }),
+      prisma.maintenance.aggregate({ where: { status: 'completed' }, _sum: { cost: true } }),
+      prisma.commission.findMany({
+        where: { type: 'rental' },
+        select: { amount: true, status: true },
+      }),
+    ]);
+
+    // Monthly recurring revenue = sum of monthly rent for all active leases
+    const mrr = activeLeases.reduce((s, l) => s + l.monthlyRent, 0);
+
+    // Commission pipeline
+    const totalCommission = commissions.reduce((s, c) => s + c.amount, 0);
+    const paidCommission = commissions.filter((c) => c.status === 'paid').reduce((s, c) => s + c.amount, 0);
+    const pendingCommission = commissions.filter((c) => c.status === 'pending').reduce((s, c) => s + c.amount, 0);
+
+    // P&L
+    const totalRentCollected = pdcCleared._sum.amount || 0;
+    const totalExpenses = (maintenanceCosts._sum.cost || 0) + totalCommission;
+    const netProfit = totalRentCollected - totalExpenses;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        summary: {
+          totalLeases,
+          activeLeases: activeLeases.length,
+          mrr,
+          currency: 'AED',
+          leasingLeads,
+          pendingOffers,
+          acceptedOffers,
+        },
+        renewalForecast: {
+          expiringIn30,
+          expiringIn60,
+          expiringIn90,
+        },
+        activeLeasesList: activeLeases,
+        pdc: {
+          cleared: { count: pdcCleared._count._all, amount: pdcCleared._sum.amount || 0 },
+          pending: { count: pdcPending._count._all, amount: pdcPending._sum.amount || 0 },
+          bounced: { count: pdcBounced._count._all, amount: pdcBounced._sum.amount || 0 },
+        },
+        pnl: {
+          totalRentCollected,
+          totalCommission,
+          paidCommission,
+          pendingCommission,
+          maintenanceCost: maintenanceCosts._sum.cost || 0,
+          netProfit,
+        },
+      },
+    });
+  })
+);
+
 export default router;
