@@ -607,4 +607,3 @@ export const CommissionsTab: React.FC<CommissionsTabProps> = ({ onAction }) => {
   );
 };
 
-export default CommissionsTab;

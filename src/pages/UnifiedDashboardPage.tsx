@@ -208,7 +208,6 @@ const UnifiedDashboardPage: FC = () => {
             <AnalyticsTab data={tabData<AnalyticsData>(dataToRender)} />
           </RouteErrorBoundary>
         );
-      case 'admin':
       case 'commissions':
         return (
           <RouteErrorBoundary section="Commissions">
