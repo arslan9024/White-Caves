@@ -115,6 +115,11 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error }) =
   const [form, setForm] = useState<Omit<Property, 'id' | 'code'>>(EMPTY_FORM);
   const [toast, setToast] = useState<string | null>(null);
 
+  // ✅ useEffect BEFORE early returns — Rules of Hooks compliant
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, typeFilter]);
+
   const showToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);

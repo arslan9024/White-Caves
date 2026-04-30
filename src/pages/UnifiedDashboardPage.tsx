@@ -458,7 +458,12 @@ const UnifiedDashboardPage: FC = () => {
                       className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
                       onClick={() => setActiveTab(tab.id)}
                     >
-                      <span className="tab-icon">{tab.icon}</span>
+                      <span className="tab-icon-wrap">
+                        <span className="tab-icon">{tab.icon}</span>
+                        {tab.badge !== undefined && tab.badge > 0 && (
+                          <span className="tab-badge">{tab.badge}</span>
+                        )}
+                      </span>
                       <span className="tab-label">{tab.label}</span>
                     </button>
                   ))}
@@ -469,7 +474,7 @@ const UnifiedDashboardPage: FC = () => {
                       <div className="tab-divider"></div>
                       <div className="crm-modules-dropdown">
                         <button className="crm-modules-button">
-                          <span className="tab-icon">bot</span>
+                          <span className="tab-icon">🤖</span>
                           <span className="tab-label">AI CRM Modules</span>
                           <span className="dropdown-arrow">▼</span>
                         </button>

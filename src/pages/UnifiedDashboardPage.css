@@ -202,6 +202,34 @@
   font-size: 16px;
 }
 
+.tab-icon-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: #c41e3a;
+  color: #fafafa;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 2px 6px rgba(196, 30, 58, 0.5);
+  pointer-events: none;
+}
+
 .tab-label {
   font-size: 13px;
 }
