@@ -4,6 +4,7 @@ import LeasesTab from './tabs/LeasesTab';
 import InquiriesTab from './tabs/InquiriesTab';
 import MaintenanceTab from './tabs/MaintenanceTab';
 import RenewalsTab from './tabs/RenewalsTab';
+import AssistantLifecycleTab from '../shared/AssistantLifecycleTab';
 import '../AssistantDashboard.css';
 import './DaisyLeasingCRM.css';
 
@@ -88,7 +89,7 @@ const DaisyLeasingCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['leases', 'inquiries', 'maintenance', 'renewals'].map(tab => (
+        {['leases', 'inquiries', 'maintenance', 'renewals', 'lifecycle'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -118,6 +119,10 @@ const DaisyLeasingCRM = () => {
 
         {activeTab === 'renewals' && (
           <RenewalsTab renewalStats={renewalStats} renewalList={[]} />
+        )}
+
+        {activeTab === 'lifecycle' && (
+          <AssistantLifecycleTab assistantId="daisy" color="#14B8A6" assistantName="Daisy" />
         )}
       </div>
     </div>

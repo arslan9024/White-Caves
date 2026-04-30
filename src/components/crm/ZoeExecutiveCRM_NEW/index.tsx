@@ -1,11 +1,12 @@
 import React, { Suspense } from 'react';
-import { Briefcase, Calendar, CheckCircle, Users, BarChart3, Bell, Inbox, AlertCircle, ArrowUp, ArrowDown } from 'lucide-react';
+import { Briefcase, Calendar, CheckCircle, Users, BarChart3, Bell, Inbox, AlertCircle, ArrowUp, ArrowDown, GitBranch } from 'lucide-react';
 import { useExecutiveData } from './hooks/useExecutiveData';
 import SuggestionsTab from './tabs/SuggestionsTab';
 import CalendarTab from './tabs/CalendarTab';
 import TasksTab from './tabs/TasksTab';
 import ExecutivesTab from './tabs/ExecutivesTab';
 import ReportsTab from './tabs/ReportsTab';
+import AssistantLifecycleTab from '../shared/AssistantLifecycleTab';
 import '../AssistantDashboard.css';
 import './ZoeExecutiveCRM.css';
 
@@ -93,13 +94,13 @@ const ZoeExecutiveCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['suggestions', 'calendar', 'tasks', 'executives', 'reports'].map(tab => (
+        {['suggestions', 'calendar', 'tasks', 'executives', 'reports', 'lifecycle'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === 'lifecycle' ? 'Lifecycle' : tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
@@ -141,6 +142,10 @@ const ZoeExecutiveCRM = () => {
               complianceMetrics={complianceMetrics}
               vault={vault}
             />
+          )}
+
+          {activeTab === 'lifecycle' && (
+            <AssistantLifecycleTab assistantId="zoe" color="#06B6D4" assistantName="Zoe" />
           )}
         </Suspense>
       </div>

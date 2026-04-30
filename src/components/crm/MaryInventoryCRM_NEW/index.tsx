@@ -1,5 +1,6 @@
 import React, { Suspense, lazy, useState } from 'react';
 import SuspenseLoader from '../../common/SuspenseLoader';
+import AssistantLifecycleTab from '../shared/AssistantLifecycleTab';
 import './MaryInventoryCRM.css';
 
 // Lazy-load all tabs
@@ -40,6 +41,13 @@ export default function MaryInventoryCRM() {
       component: MaryDetailsTab,
       order: 4,
       hidden: true  // This tab is shown via modal, not main nav
+    },
+    {
+      id: 'lifecycle',
+      label: 'Lifecycle',
+      description: 'Task lifecycle board',
+      component: null,
+      order: 5
     }
   ];
 
@@ -65,7 +73,11 @@ export default function MaryInventoryCRM() {
       {/* Tab Content with Suspense */}
       <div className="mary-tabs-content">
         <Suspense fallback={<SuspenseLoader />}>
-          {ActiveTabComponent && <ActiveTabComponent />}
+          {activeTab === 'lifecycle' ? (
+            <AssistantLifecycleTab assistantId="mary" color="#3B82F6" assistantName="Mary" />
+          ) : (
+            ActiveTabComponent && <ActiveTabComponent />
+          )}
         </Suspense>
       </div>
     </div>

@@ -6,6 +6,7 @@ import PaymentsTab from './PaymentsTab';
 import ExpensesTab from './ExpensesTab';
 import ReportsTab from './ReportsTab';
 import CommissionsTab from './CommissionsTab';
+import AssistantLifecycleTab from '../../shared/AssistantLifecycleTab';
 import '../TheodoraFinanceCRM.css';
 
 const TheodoraFinanceCRM = () => {
@@ -39,7 +40,8 @@ const TheodoraFinanceCRM = () => {
     { id: 'invoices', label: 'Invoices', icon: '📄' },
     { id: 'payments', label: 'Payments', icon: '💳' },
     { id: 'expenses', label: 'Expenses', icon: '💰' },
-    { id: 'reports', label: 'Reports', icon: '📈' }
+    { id: 'reports', label: 'Reports', icon: '📈' },
+    { id: 'lifecycle', label: 'Lifecycle', icon: '🔄' }
   ];
 
   const renderContent = () => {
@@ -69,6 +71,8 @@ const TheodoraFinanceCRM = () => {
         return <ExpensesTab expenses={expenses} onApprove={handleApproveExpense} onReject={handleRejectExpense} />;
       case 'reports':
         return <ReportsTab invoices={invoices} expenses={expenses} />;
+      case 'lifecycle':
+        return <AssistantLifecycleTab assistantId="theodora" color="#F59E0B" assistantName="Theodora" />;
       default:
         return <OverviewTab financeStats={financeStats} />;
     }

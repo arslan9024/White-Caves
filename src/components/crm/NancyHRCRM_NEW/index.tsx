@@ -10,11 +10,13 @@ import {
   PenTool,
   Zap,
   CheckCircle,
-  UserPlus
+  UserPlus,
+  GitBranch
 } from 'lucide-react';
 import { useHRData } from './hooks/useHRData';
 import { NANCY_FEATURES } from './data/features';
 import SuspenseLoader from '../../common/SuspenseLoader';
+import AssistantLifecycleTab from '../shared/AssistantLifecycleTab';
 import './NancyHRCRM.css';
 
 // Lazy-loaded tabs
@@ -144,6 +146,13 @@ export default function NancyHRCRM() {
           <Zap size={16} />
           Features ({NANCY_FEATURES.length})
         </button>
+        <button
+          className={`nancy-tab ${activeTab === 'lifecycle' ? 'active' : ''}`}
+          onClick={() => setActiveTab('lifecycle')}
+        >
+          <GitBranch size={16} />
+          Lifecycle
+        </button>
       </div>
 
       <div className="nancy-content">
@@ -155,6 +164,9 @@ export default function NancyHRCRM() {
           {activeTab === 'performance' && <PerformanceTab state={state} />}
           {activeTab === 'post-job' && <PostJobTab state={state as never} />}
           {activeTab === 'features' && <FeaturesTab />}
+          {activeTab === 'lifecycle' && (
+            <AssistantLifecycleTab assistantId="nancy" color="#10B981" assistantName="Nancy" />
+          )}
         </Suspense>
       </div>
     </div>

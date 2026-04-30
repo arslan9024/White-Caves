@@ -29,3 +29,4 @@ export { default as WeeklyResearchModule } from './WeeklyResearchModule';
 export { default as TaskLifecyclePanel } from './TaskLifecyclePanel';
 export { default as LifecycleNotificationFeed } from './LifecycleNotificationFeed';
 export { default as TaskLifecycleBoard } from './TaskLifecycleBoard';
+export { default as AssistantLifecycleTab } from './AssistantLifecycleTab';
