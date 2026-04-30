@@ -100,16 +100,16 @@ export const SubNavItem = styled.button<{ $isActive?: boolean }>`
   transition: ${transitions.hover};
   position: relative;
   white-space: nowrap;
-  color: ${(props) => (props.$isActive ? 'white' : 'var(--text-secondary, #6b7280)')};
+  color: ${props => (props.$isActive ? 'white' : 'var(--text-secondary, #6b7280)')};
   font-weight: ${typography.weights.medium};
   font-size: 0.875rem;
   font-family: inherit;
 
-  ${(props) =>
+  ${props =>
     props.$isActive
       ? `
     background: var(--primary-color, ${colors.primary});
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
+    box-shadow: 0 4px 12px rgba(227, 30, 36, 0.25);
 
     &:hover {
       background: var(--primary-dark, ${colors.primaryDark});
@@ -132,7 +132,7 @@ export const SubNavItem = styled.button<{ $isActive?: boolean }>`
   `}
 
   [data-theme='dark'] & {
-    color: ${(props) => (props.$isActive ? 'white' : 'var(--text-secondary, #9ca3af)')};
+    color: ${props => (props.$isActive ? 'white' : 'var(--text-secondary, #9ca3af)')};
   }
 
   @media (max-width: 992px) {
@@ -154,7 +154,8 @@ export const SubNavLabel = styled.span`
 `;
 
 export const SubNavBadge = styled.span<{ $isActive?: boolean }>`
-  background: ${(props) => (props.$isActive ? 'rgba(255, 255, 255, 0.3)' : 'var(--accent-color, #f59e0b)')};
+  background: ${props =>
+    props.$isActive ? 'rgba(255, 255, 255, 0.3)' : 'var(--accent-color, #f59e0b)'};
   color: white;
   font-size: 0.7rem;
   padding: 0.1rem 0.4rem;
@@ -188,7 +189,11 @@ export const SubNavActionButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, var(--primary-color, ${colors.primary}), var(--accent-color, #f59e0b));
+  background: linear-gradient(
+    135deg,
+    var(--primary-color, ${colors.primary}),
+    var(--accent-color, #f59e0b)
+  );
   color: white;
   border: none;
   border-radius: ${radius.lg};
@@ -200,7 +205,7 @@ export const SubNavActionButton = styled.button`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 6px 16px rgba(227, 30, 36, 0.3);
   }
 `;
 

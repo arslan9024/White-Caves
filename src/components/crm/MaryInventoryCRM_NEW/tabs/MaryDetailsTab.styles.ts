@@ -467,7 +467,7 @@ export const PropertyCard = styled.div<{ $isSelected: boolean }>`
     props.$isSelected &&
     `
     border-color: var(--primary);
-    background: rgba(212, 175, 55, 0.05);
+    background: rgba(227, 30, 36, 0.05);
   `}
 
   &:hover {
@@ -488,7 +488,7 @@ export const PropertyCard = styled.div<{ $isSelected: boolean }>`
       props.$isSelected &&
       `
       border-color: var(--primary, ${colors.primary});
-      background: rgba(212, 175, 55, 0.08);
+      background: rgba(227, 30, 36, 0.08);
     `}
   }
 `;

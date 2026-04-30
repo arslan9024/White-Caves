@@ -6,7 +6,7 @@ import { radius } from '../../../styles/theme/radius';
 
 export const PropertyCardGrid = styled.div<{ $columns?: number }>`
   display: grid;
-  grid-template-columns: repeat(${(props) => props.$columns || 3}, 1fr);
+  grid-template-columns: repeat(${props => props.$columns || 3}, 1fr);
   gap: 1.5rem;
 
   @media (max-width: 992px) {
@@ -34,7 +34,7 @@ export const PropertyCardContainer = styled(Link)`
     position: absolute;
     inset: 0;
     border-radius: ${radius.xl};
-    border: 1px solid rgba(212, 175, 55, 0);
+    border: 1px solid rgba(227, 30, 36, 0);
     pointer-events: none;
     transition: ${transitions.hover};
   }
@@ -45,7 +45,7 @@ export const PropertyCardContainer = styled(Link)`
     border-color: var(--color-primary);
 
     &::before {
-      border-color: rgba(212, 175, 55, 0.42);
+      border-color: rgba(227, 30, 36, 0.42);
     }
   }
 `;
@@ -57,7 +57,7 @@ export const PropertyCardDiv = styled.div<{ $clickable?: boolean }>`
   overflow: hidden;
   display: block;
   transition: ${transitions.hover};
-  cursor: ${(props) => (props.$clickable ? 'pointer' : 'default')};
+  cursor: ${props => (props.$clickable ? 'pointer' : 'default')};
   position: relative;
 
   &::before {
@@ -65,7 +65,7 @@ export const PropertyCardDiv = styled.div<{ $clickable?: boolean }>`
     position: absolute;
     inset: 0;
     border-radius: ${radius.xl};
-    border: 1px solid rgba(212, 175, 55, 0);
+    border: 1px solid rgba(227, 30, 36, 0);
     pointer-events: none;
     transition: ${transitions.hover};
   }
@@ -76,7 +76,7 @@ export const PropertyCardDiv = styled.div<{ $clickable?: boolean }>`
     border-color: var(--color-primary);
 
     &::before {
-      border-color: rgba(212, 175, 55, 0.42);
+      border-color: rgba(227, 30, 36, 0.42);
     }
   }
 `;
@@ -130,7 +130,7 @@ export const PropertyStatusBadgeStyled = styled.span<{ $statusType?: string }>`
   text-transform: capitalize;
   z-index: 2;
 
-  ${(props) => {
+  ${props => {
     const status = props.$statusType?.toLowerCase().replace(/\s+/g, '-') || 'available';
     switch (status) {
       case 'available':
@@ -173,7 +173,7 @@ export const FavoriteButton = styled.button<{ $isActive?: boolean }>`
     transform: scale(1.1);
   }
 
-  ${(props) =>
+  ${props =>
     props.$isActive &&
     `
     background: rgba(239, 68, 68, 0.1);
@@ -183,8 +183,7 @@ export const FavoriteButton = styled.button<{ $isActive?: boolean }>`
 export const PropertyCardContent = styled.div`
   padding: 1.25rem;
   background:
-    radial-gradient(circle at top right, rgba(212, 175, 55, 0.06), transparent 45%),
-    var(--bg-card);
+    radial-gradient(circle at top right, rgba(227, 30, 36, 0.06), transparent 45%), var(--bg-card);
 `;
 
 export const PropertyTitle = styled.h4`

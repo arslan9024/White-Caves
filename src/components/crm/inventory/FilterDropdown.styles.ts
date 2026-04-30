@@ -8,8 +8,8 @@ export const FilterDropdownContainer = styled.div<{ $disabled?: boolean }>`
   flex-direction: column;
   gap: 6px;
   min-width: 140px;
-  opacity: ${props => props.$disabled ? 0.5 : 1};
-  pointer-events: ${props => props.$disabled ? 'none' : 'auto'};
+  opacity: ${props => (props.$disabled ? 0.5 : 1)};
+  pointer-events: ${props => (props.$disabled ? 'none' : 'auto')};
 `;
 
 export const FilterLabel = styled.label`
@@ -50,7 +50,7 @@ export const Select = styled.select`
   &:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.15);
   }
 
   &:disabled {
@@ -64,8 +64,8 @@ export const Select = styled.select`
     color: #e2e8f0;
 
     &:focus {
-      border-color: #E31E24;
-      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+      border-color: #e31e24;
+      box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.2);
     }
   }
 `;

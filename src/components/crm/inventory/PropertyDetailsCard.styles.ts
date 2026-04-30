@@ -9,7 +9,7 @@ export const PropertyDetailsCardContainer = styled.div`
   border: 1px solid var(--border-color);
   border-radius: ${radius.xl};
   overflow: hidden;
-  font-size: ${(props) => (props.className?.includes('compact') ? '13px' : '14px')};
+  font-size: ${props => (props.className?.includes('compact') ? '13px' : '14px')};
 `;
 
 export const CardHeader = styled.div`
@@ -36,7 +36,7 @@ export const StatusBadge = styled.span<{ $status?: string }>`
   font-size: ${typography.sizes.xs};
   font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
-  background: ${(props) => {
+  background: ${props => {
     switch (props.$status) {
       case 'rented':
         return 'rgba(34, 197, 94, 0.15)';
@@ -50,7 +50,7 @@ export const StatusBadge = styled.span<{ $status?: string }>`
         return 'rgba(107, 114, 128, 0.15)';
     }
   }};
-  color: ${(props) => {
+  color: ${props => {
     switch (props.$status) {
       case 'rented':
         return '#22c55e';
@@ -111,10 +111,10 @@ export const FieldItem = styled.div<{ $empty?: boolean }>`
   background: var(--bg-secondary);
   border-radius: ${radius.lg};
   transition: ${transitions.hover};
-  opacity: ${(props) => (props.$empty ? '0.5' : '1')};
+  opacity: ${props => (props.$empty ? '0.5' : '1')};
 
   &:hover {
-    background: rgba(212, 175, 55, 0.05);
+    background: rgba(227, 30, 36, 0.05);
   }
 `;
 
@@ -124,7 +124,7 @@ export const FieldIcon = styled.div`
   justify-content: center;
   width: 28px;
   height: 28px;
-  background: rgba(212, 175, 55, 0.1);
+  background: rgba(227, 30, 36, 0.1);
   border-radius: ${radius.md};
   color: var(--primary);
   flex-shrink: 0;
@@ -193,11 +193,7 @@ export const OwnerItem = styled.button`
 export const OwnerAvatar = styled.div`
   width: 40px;
   height: 40px;
-  background: linear-gradient(
-    135deg,
-    var(--primary),
-    #ff6b6b
-  );
+  background: linear-gradient(135deg, var(--primary), #ff6b6b);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -239,7 +235,7 @@ export const ContactBadge = styled.span`
 
 export const MoreContacts = styled.span`
   padding: 3px 8px;
-  background: rgba(212, 175, 55, 0.1);
+  background: rgba(227, 30, 36, 0.1);
   border-radius: ${radius.sm};
   font-size: 11px;
   color: var(--primary);

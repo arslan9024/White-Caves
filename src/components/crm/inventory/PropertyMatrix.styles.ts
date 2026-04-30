@@ -141,11 +141,7 @@ export const OwnerBadge = styled.button<{ $multiPhone?: boolean }>`
   gap: ${spacing.xs};
   padding: 4px 8px;
   background: var(--bg-secondary);
-  border: 1px solid
-    ${(props) =>
-      props.$multiPhone
-        ? '#3b82f6'
-        : 'var(--border-color)'};
+  border: 1px solid ${props => (props.$multiPhone ? '#3b82f6' : 'var(--border-color)')};
   border-radius: ${radius.md};
   font-size: 11px;
   color: var(--text-primary);
@@ -154,7 +150,7 @@ export const OwnerBadge = styled.button<{ $multiPhone?: boolean }>`
 
   &:hover {
     border-color: var(--primary);
-    background: rgba(212, 175, 55, 0.05);
+    background: rgba(227, 30, 36, 0.05);
   }
 `;
 
@@ -181,7 +177,7 @@ export const StatusBadge = styled.span<{ $status?: string }>`
   border-radius: ${radius.md};
   font-size: ${typography.sizes.xs};
   font-weight: ${typography.weights.medium};
-  background: ${(props) => {
+  background: ${props => {
     switch (props.$status) {
       case 'rented':
         return 'rgba(59, 130, 246, 0.1)';
@@ -191,7 +187,7 @@ export const StatusBadge = styled.span<{ $status?: string }>`
         return 'rgba(107, 114, 128, 0.1)';
     }
   }};
-  color: ${(props) => {
+  color: ${props => {
     switch (props.$status) {
       case 'rented':
         return '#3b82f6';
@@ -216,13 +212,11 @@ export const PaginationBtn = styled.button<{ $active?: boolean; $disabled?: bool
   width: 36px;
   height: 36px;
   border: 1px solid var(--border-color);
-  background: ${(props) =>
-    props.$active ? 'var(--primary)' : 'transparent'};
-  color: ${(props) =>
-    props.$active ? 'white' : 'var(--text-secondary)'};
+  background: ${props => (props.$active ? 'var(--primary)' : 'transparent')};
+  color: ${props => (props.$active ? 'white' : 'var(--text-secondary)')};
   border-radius: ${radius.md};
-  cursor: ${(props) => (props.$disabled ? 'not-allowed' : 'pointer')};
-  opacity: ${(props) => (props.$disabled ? 0.5 : 1)};
+  cursor: ${props => (props.$disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${props => (props.$disabled ? 0.5 : 1)};
   transition: ${transitions.hover};
 
   &:hover:not(:disabled) {

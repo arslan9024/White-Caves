@@ -19,7 +19,7 @@ export const ErrorBoundaryContent = styled.div`
   padding: 60px 40px;
   max-width: 500px;
   text-align: center;
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(227, 30, 36, 0.2);
   animation: fadeIn 0.5s ease;
 
   @keyframes fadeIn {
@@ -72,8 +72,8 @@ export const RedirectNotice = styled.p`
 
 export const Countdown = styled.span`
   display: inline-block;
-  background: linear-gradient(135deg, #EF5350, #D32F2F);
-  color: #FFFFFF;
+  background: linear-gradient(135deg, #ef5350, #d32f2f);
+  color: #ffffff;
   width: 28px;
   height: 28px;
   line-height: 28px;
@@ -100,7 +100,7 @@ export const ErrorButton = styled.button<{ $variant?: 'primary' | 'secondary' }>
   border: none;
   outline: none;
 
-  ${(props) => {
+  ${props => {
     if (props.$variant === 'secondary') {
       return `
         background: transparent;

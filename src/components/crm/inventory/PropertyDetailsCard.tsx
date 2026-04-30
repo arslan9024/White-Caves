@@ -1,7 +1,17 @@
 import React from 'react';
-import { 
-  Home, MapPin, Building2, Layers, Eye, DollarSign, 
-  FileText, Hash, Calendar, Phone, Mail, User, Zap
+import {
+  Home,
+  MapPin,
+  Building2,
+  Layers,
+  Eye,
+  DollarSign,
+  FileText,
+  Hash,
+  Phone,
+  Mail,
+  User,
+  Zap,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { InventoryProperty, InventoryOwner } from '../../../store/slices/inventorySlice';
@@ -25,7 +35,7 @@ import {
   OwnerName,
   OwnerContacts,
   ContactBadge,
-  MoreContacts
+  MoreContacts,
 } from './PropertyDetailsCard.styles';
 
 interface FieldConfig {
@@ -55,7 +65,7 @@ const FIELD_CONFIGS: FieldConfig[] = [
   { key: 'sd', label: 'SD', icon: FileText, section: 'identification' },
   { key: 'registration', label: 'Registration', icon: FileText, section: 'identification' },
   { key: 'municipalityNo', label: 'Municipality No', icon: FileText, section: 'identification' },
-  
+
   { key: 'area', label: 'Area', icon: MapPin, section: 'location' },
   { key: 'project', label: 'Project', icon: Building2, section: 'location' },
   { key: 'cluster', label: 'Cluster', icon: Layers, section: 'location' },
@@ -63,17 +73,23 @@ const FIELD_CONFIGS: FieldConfig[] = [
   { key: 'building', label: 'Building', icon: Building2, section: 'location' },
   { key: 'unitNumber', label: 'Unit Number', icon: Home, section: 'location' },
   { key: 'floor', label: 'Floor', icon: Layers, section: 'location' },
-  
+
   { key: 'layout', label: 'Layout', icon: Layers, section: 'specifications' },
   { key: 'view', label: 'View', icon: Eye, section: 'specifications' },
   { key: 'rooms', label: 'Rooms', icon: Home, section: 'specifications' },
   { key: 'actualArea', label: 'Actual Area', icon: Layers, section: 'specifications' },
-  
+
   { key: 'status', label: 'Status', icon: FileText, section: 'status' },
-  { key: 'askingPrice', label: 'Asking Price', icon: DollarSign, section: 'status', format: 'currency' },
-  
+  {
+    key: 'askingPrice',
+    label: 'Asking Price',
+    icon: DollarSign,
+    section: 'status',
+    format: 'currency',
+  },
+
   { key: 'otp', label: 'OTP (Dubai REST)', icon: FileText, section: 'utilities' },
-  { key: 'dewaPremiseNumber', label: 'DEWA Premise', icon: Zap, section: 'utilities' }
+  { key: 'dewaPremiseNumber', label: 'DEWA Premise', icon: Zap, section: 'utilities' },
 ];
 
 const SECTIONS: SectionConfig[] = [
@@ -81,7 +97,7 @@ const SECTIONS: SectionConfig[] = [
   { id: 'location', label: 'Location' },
   { id: 'specifications', label: 'Specifications' },
   { id: 'status', label: 'Status & Pricing' },
-  { id: 'utilities', label: 'Utilities' }
+  { id: 'utilities', label: 'Utilities' },
 ];
 
 const formatValue = (value: unknown, format?: string): string => {
@@ -89,10 +105,10 @@ const formatValue = (value: unknown, format?: string): string => {
     return '-';
   }
   if (format === 'currency' && typeof value === 'number') {
-    return new Intl.NumberFormat('en-AE', { 
-      style: 'currency', 
+    return new Intl.NumberFormat('en-AE', {
+      style: 'currency',
       currency: 'AED',
-      minimumFractionDigits: 0 
+      minimumFractionDigits: 0,
     }).format(value);
   }
   return String(value);
@@ -102,29 +118,33 @@ const FieldItemRenderer = ({ config, value }: { config: FieldConfig; value: unkn
   const Icon = config.icon;
   const displayValue = formatValue(value, config.format);
   const isEmpty = displayValue === '-';
-  
+
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'flex-start',
-      gap: '10px',
-      padding: '10px 12px',
-      background: 'var(--bg-secondary)',
-      borderRadius: '8px',
-      transition: 'all 0.2s ease',
-      opacity: isEmpty ? '0.5' : '1'
-    }}>
-      <div style={{
+    <div
+      style={{
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '28px',
-        height: '28px',
-        background: 'rgba(212, 175, 55, 0.1)',
-        borderRadius: '6px',
-        color: 'var(--primary)',
-        flexShrink: 0
-      }}>
+        alignItems: 'flex-start',
+        gap: '10px',
+        padding: '10px 12px',
+        background: 'var(--bg-secondary)',
+        borderRadius: '8px',
+        transition: 'all 0.2s ease',
+        opacity: isEmpty ? '0.5' : '1',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '28px',
+          height: '28px',
+          background: 'rgba(227, 30, 36, 0.1)',
+          borderRadius: '6px',
+          color: 'var(--primary)',
+          flexShrink: 0,
+        }}
+      >
         <Icon size={14} />
       </div>
       <FieldContent>
@@ -135,7 +155,12 @@ const FieldItemRenderer = ({ config, value }: { config: FieldConfig; value: unkn
   );
 };
 
-const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({ property, owners = [], onOwnerClick, compact = false }) => {
+const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({
+  property,
+  owners = [],
+  onOwnerClick,
+  compact = false,
+}) => {
   if (!property) return null;
 
   const renderSection = (section: SectionConfig) => {
@@ -144,19 +169,15 @@ const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({ property, own
       const val = property[f.key];
       return val !== null && val !== undefined && val !== '' && val !== '.';
     });
-    
+
     if (!hasValues && compact) return null;
-    
+
     return (
       <DetailsSection key={section.id}>
         <SectionTitle>{section.label}</SectionTitle>
         <FieldsGrid>
           {fields.map(config => (
-            <FieldItemRenderer 
-              key={config.key} 
-              config={config} 
-              value={property[config.key]} 
-            />
+            <FieldItemRenderer key={config.key} config={config} value={property[config.key]} />
           ))}
         </FieldsGrid>
       </DetailsSection>
@@ -171,31 +192,32 @@ const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({ property, own
           <span>{property.pNumber || 'N/A'}</span>
         </PropertyId>
         {property.status && (
-          <StatusBadge $status={property.status.toLowerCase()}>
-            {property.status}
-          </StatusBadge>
+          <StatusBadge $status={property.status.toLowerCase()}>{property.status}</StatusBadge>
         )}
       </CardHeader>
 
-      <SectionsContainer>
-        {SECTIONS.map(renderSection)}
-      </SectionsContainer>
+      <SectionsContainer>{SECTIONS.map(renderSection)}</SectionsContainer>
 
       {owners.length > 0 && (
         <OwnersSection>
-          <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 600, marginBottom: '12px', marginTop: 0 }}>
+          <h4
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontSize: '13px',
+              fontWeight: 600,
+              marginBottom: '12px',
+              marginTop: 0,
+            }}
+          >
             <User size={16} />
             Owners ({owners.length})
           </h4>
           <OwnersList>
             {owners.map((owner, idx) => (
-              <OwnerItem 
-                key={owner.id || idx}
-                onClick={() => onOwnerClick?.(owner)}
-              >
-                <OwnerAvatar>
-                  {(owner.name || 'U').charAt(0)}
-                </OwnerAvatar>
+              <OwnerItem key={owner.id || idx} onClick={() => onOwnerClick?.(owner)}>
+                <OwnerAvatar>{(owner.name || 'U').charAt(0)}</OwnerAvatar>
                 <OwnerInfo>
                   <OwnerName>{owner.name || 'Unknown'}</OwnerName>
                   {(owner.contacts?.length ?? 0) > 0 && (

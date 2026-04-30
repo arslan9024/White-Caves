@@ -40,7 +40,7 @@ export const DepartmentPanel = styled.div`
   }
 
   /* Dark Mode */
-  [data-theme="dark"] & {
+  [data-theme='dark'] & {
     background: ${colors.background.dark};
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
@@ -275,7 +275,7 @@ export const StatCard = styled.div`
   }
 
   /* Dark Mode */
-  [data-theme="dark"] & {
+  [data-theme='dark'] & {
     background: ${colors.background.darkSecondary};
     border-color: #333333;
   }
@@ -353,7 +353,11 @@ export const LoadingSection = styled.div`
 `;
 
 export const MetricCard = styled.div`
-  background: linear-gradient(135deg, ${colors.background.tertiary} 0%, ${colors.primaryVeryLight} 100%);
+  background: linear-gradient(
+    135deg,
+    ${colors.background.tertiary} 0%,
+    ${colors.primaryVeryLight} 100%
+  );
   padding: 20px;
   border-radius: 10px;
   border: 1px solid ${colors.border};
@@ -371,12 +375,18 @@ export const MetricCard = styled.div`
 
   ${reducedMotion} {
     transition: none;
-    &:hover { transform: none; }
+    &:hover {
+      transform: none;
+    }
   }
 
   /* Dark Mode */
-  [data-theme="dark"] & {
-    background: linear-gradient(135deg, ${colors.background.darkSecondary} 0%, rgba(212, 175, 55, 0.04) 100%);
+  [data-theme='dark'] & {
+    background: linear-gradient(
+      135deg,
+      ${colors.background.darkSecondary} 0%,
+      rgba(227, 30, 36, 0.04) 100%
+    );
     border-color: #333333;
   }
 `;
@@ -483,11 +493,13 @@ export const ServiceCard = styled.div`
 
   ${reducedMotion} {
     transition: none;
-    &:hover { transform: none; }
+    &:hover {
+      transform: none;
+    }
   }
 
   /* Dark Mode */
-  [data-theme="dark"] & {
+  [data-theme='dark'] & {
     background: ${colors.background.darkSecondary};
     border-color: #333333;
   }
@@ -537,7 +549,9 @@ export const ServiceCardAction = styled.button`
 
   ${reducedMotion} {
     transition: none;
-    &:hover { transform: none; }
+    &:hover {
+      transform: none;
+    }
   }
 `;
 
@@ -609,11 +623,13 @@ export const ActionButton = styled.button`
 
   ${reducedMotion} {
     transition: none;
-    &:hover { transform: none; }
+    &:hover {
+      transform: none;
+    }
   }
 
   /* Dark Mode */
-  [data-theme="dark"] & {
+  [data-theme='dark'] & {
     background: ${colors.background.darkSecondary};
     border-color: #333333;
   }
