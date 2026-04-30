@@ -107,7 +107,8 @@ router.get(
     // Row-level security: agents only see their own assigned leads.
     // scopeToOwn('assignedToId') sets req.ownershipFilter to { assignedToId: userId }
     // for non-supervisor roles; supervisors get {} (no restriction).
-    // The ownership filter takes precedence over the `assignedTo` query param for agents.
+    // For agents, Object.assign overwrites any caller-supplied ?assignedTo param
+    // so they cannot query other agents' leads.
     const ownerFilter = req.ownershipFilter ?? {};
     if (Object.keys(ownerFilter).length > 0) {
       Object.assign(where, ownerFilter);

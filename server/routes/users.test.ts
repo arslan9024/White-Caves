@@ -365,6 +365,29 @@ describe('Users Routes — /api/users', () => {
         .send({ name: 'Updated Name' });
       expect(res.status).toBe(200);
     });
+
+    it('normalises a role alias (managing_director → owner) before saving', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce(existingUser);
+      mockPrisma.user.update.mockResolvedValueOnce({ ...existingUser, role: 'owner' });
+      const res = await request(createApp('owner', OTHER_VALID_ID.replace(OTHER_VALID_ID[0], 'a')))
+        .patch(`/api/users/${OTHER_VALID_ID}`)
+        .send({ role: 'managing_director' });
+      expect(res.status).toBe(200);
+      // The update call must receive the canonical 'owner' role, not the alias
+      const updateCall = mockPrisma.user.update.mock.calls[0]?.[0];
+      expect(updateCall?.data?.role).toBe('owner');
+    });
+
+    it('returns 409 when trying to demote the last active owner', async () => {
+      const ownerUser = { ...existingUser, role: 'owner' };
+      mockPrisma.user.findUnique.mockResolvedValueOnce(ownerUser);
+      mockPrisma.user.count.mockResolvedValueOnce(1); // only 1 active owner
+      const res = await request(createApp('owner', OTHER_VALID_ID.replace(OTHER_VALID_ID[0], 'a')))
+        .patch(`/api/users/${OTHER_VALID_ID}`)
+        .send({ role: 'manager' });
+      expect(res.status).toBe(409);
+      expect(res.body.error).toMatch(/last active owner/i);
+    });
   });
 
   // ── PATCH /:id/status ────────────────────────────────────────────

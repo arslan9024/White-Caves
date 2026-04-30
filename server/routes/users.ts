@@ -281,12 +281,15 @@ router.patch(
     const { role, status, department, name, phone } = req.body;
     const data: Record<string, unknown> = {};
 
+    // Validate role early (before DB lookup) to return 400 fast on bad input
+    let canonicalRole: string | undefined;
     if (role !== undefined) {
-      const normalized = String(role).toLowerCase().trim();
-      if (!ALL_VALID_ROLES.includes(normalized)) {
+      const rawRole = String(role).toLowerCase().trim();
+      if (!ALL_VALID_ROLES.includes(rawRole)) {
         throw new AppError(`Invalid role. Must be one of: ${ALL_VALID_ROLES.join(', ')}`, 400);
       }
-      data.role = normalized;
+      // Resolve alias → canonical (e.g. 'managing_director' → 'owner')
+      canonicalRole = resolveBackendRole(rawRole);
     }
 
     if (status !== undefined) {
@@ -312,12 +315,28 @@ router.patch(
       data.phone = sanitized || null;
     }
 
-    if (Object.keys(data).length === 0) {
+    if (canonicalRole === undefined && Object.keys(data).length === 0) {
       throw new AppError('No valid fields provided to update', 400);
     }
 
     const target = await prisma.user.findUnique({ where: { id: targetId } });
     if (!target) throw new AppError('User not found', 404);
+
+    if (canonicalRole !== undefined) {
+      // Guard: prevent demoting the last active owner in the system
+      if (target.role === 'owner' && canonicalRole !== 'owner') {
+        const ownerCount = await prisma.user.count({
+          where: { role: 'owner', status: 'active' },
+        });
+        if (ownerCount <= 1) {
+          throw new AppError(
+            'Cannot demote the last active owner. Promote another user to owner first.',
+            409
+          );
+        }
+      }
+      data.role = canonicalRole; // Always persist canonical role, never an alias
+    }
 
     const updated = await prisma.user.update({
       where: { id: targetId },

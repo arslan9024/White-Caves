@@ -87,7 +87,7 @@ router.get(
       ];
     }
 
-    // Row-level security: agents only see properties they own (userId = their id).
+    // Row-level security: agents only see properties they created (where property.userId = their id).
     // scopeToOwn('userId') sets req.ownershipFilter; supervisors get {} (no restriction).
     const ownerFilter = req.ownershipFilter ?? {};
     if (Object.keys(ownerFilter).length > 0) {
