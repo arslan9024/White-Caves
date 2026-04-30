@@ -1511,7 +1511,7 @@ export const generateActivities = (): Activity[] => {
     {
       id: 13,
       assistantId: 'linda',
-      action: 'OpenClaw gateway session initialised',
+      action: 'OpenClaw gateway session initialized',
       target: 'Agent channel: agent_7',
       timestamp: new Date(now - 3900000).toISOString(),
       type: 'active',
