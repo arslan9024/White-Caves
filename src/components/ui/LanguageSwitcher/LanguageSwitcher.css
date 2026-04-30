@@ -1,0 +1,57 @@
+/* ============================================================
+   LanguageSwitcher — White Caves brand style
+   ============================================================ */
+
+.lang-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(227, 30, 36, 0.35);
+  background: transparent;
+  color: #e31e24;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.lang-switcher:hover,
+.lang-switcher:focus-visible {
+  background: #e31e24;
+  border-color: #e31e24;
+  color: #ffffff;
+  outline: none;
+}
+
+.lang-switcher:focus-visible {
+  box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.3);
+}
+
+.lang-switcher--ar {
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.85rem;
+}
+
+.lang-switcher__icon {
+  flex-shrink: 0;
+}
+
+.lang-switcher__label {
+  flex-shrink: 0;
+}
+
+/* Compact variant inside mobile drawer */
+.lang-switcher--mobile {
+  width: 100%;
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
