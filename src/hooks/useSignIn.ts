@@ -175,12 +175,9 @@ export function useSignIn() {
         })
       );
       setSuccess('Sign in successful!');
-      const destination =
-        user.role === 'tenant'
-          ? '/tenant/portal'
-          : user.role === 'landlord'
-            ? '/landlord/portal'
-            : '/dashboard';
+      let destination = '/dashboard';
+      if (user.role === 'tenant') destination = '/tenant/portal';
+      else if (user.role === 'landlord') destination = '/landlord/portal';
       navTimerRef.current = setTimeout(() => navigate(destination), TIMING.NAVIGATION_DELAY);
     },
     [dispatch, navigate]

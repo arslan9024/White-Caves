@@ -1616,12 +1616,12 @@ router.post(
     if (!userId) throw new AppError('Not authenticated', 401);
 
     const { role, category } = req.body;
-    const normalizedCategory = String(category || '')
-      .toLowerCase()
-      .trim();
-    const normalizedRole = String(role || '')
-      .toLowerCase()
-      .trim();
+    if (!category || !role) {
+      throw new AppError('category and role are required', 400);
+    }
+
+    const normalizedCategory = String(category).toLowerCase().trim();
+    const normalizedRole = String(role).toLowerCase().trim();
     const clientRoles = new Set(['buyer', 'seller', 'landlord', 'tenant']);
 
     let assignedRole: string;

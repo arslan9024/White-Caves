@@ -33,6 +33,7 @@ const FacebookLoginButton = ({ onSuccess, onError, disabled }: FacebookLoginButt
       provider.addScope('email');
       provider.addScope('public_profile');
 
+      // auth is guaranteed non-null here: the component returns null above when auth === null
       const result = await signInWithPopup(auth!, provider);
 
       // Sync with backend to get a proper backend JWT (not a short-lived Firebase token)
