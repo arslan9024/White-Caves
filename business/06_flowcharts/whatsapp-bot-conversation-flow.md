@@ -306,3 +306,90 @@ Marketing campaign triggered (Olivia — Marketing Manager)
 
 **Document Owner:** Communications (Nina + Nadia)
 **Related:** `business_docs/04_workflows/whatsapp-bot-flowchart.md`, `server/services/WhatsAppBotService.ts`
+
+
+---
+
+## 9. WhatsApp Campaign Management
+
+### 9.1 Broadcast Campaign Flow (Phase 4)
+
+```
+Marketing Manager (or Olivia AI) creates campaign:
+├── Target segment: e.g., "Leads in NURTURING with budget > AED 1.5M"
+├── Message template: must be WhatsApp approved (24-hour window rule applies)
+├── Scheduled send: e.g., Tuesday 10am (avoid Ramadan timing rules)
+└── A/B test: 2 message variants (50/50 split)
+
+Approval workflow:
+1. Olivia creates draft campaign
+2. MD or Marketing Manager reviews and approves
+3. Send scheduled
+4. WhatsApp Cloud API sends via approved template
+5. Delivery confirmed → logged in CRM per lead
+
+Compliance rules:
+- Only send to opted-in contacts
+- Must include "Reply STOP to unsubscribe"
+- Honour unsubscribes within 24 hours
+- Maximum 2 marketing campaigns per contact per week
+- PDPL: consent must be recorded with timestamp
+```
+
+### 9.2 Message Template Categories
+
+| Category | Content Type | Approval Required | Examples |
+|---------|-------------|------------------|---------|
+| **Utility** | Transaction updates, appointment confirmations | Meta pre-approval | "Your viewing at DAMAC Hills 2 is confirmed for [DATE]" |
+| **Authentication** | OTP, login codes | Meta pre-approval | "Your OTP is [CODE]. Do not share this." |
+| **Marketing** | Property promotions, market updates | Meta pre-approval | "New listing: 4-bed villa in DAMAC Hills 2 from AED 2.1M" |
+
+**Meta Template Approval Process:**
+1. Submit template in WhatsApp Business Manager
+2. Meta reviews within 24–72 hours
+3. If rejected: review rejection reason → edit → resubmit
+4. Once approved: template is permanent (edits require re-approval)
+
+### 9.3 Conversation Categories (Meta Billing)
+
+Meta charges per 24-hour "conversation window" (not per message):
+
+| Conversation Type | Rate (approx.) | Trigger |
+|----------------|--------------|---------|
+| User-initiated | $0.005 (lowest) | Customer messages first |
+| Utility (business-initiated) | $0.02 | Appointment, transaction update |
+| Authentication | $0.02 | OTP |
+| Marketing | $0.05–0.08 | Promotional message |
+
+**Cost estimate at scale:**
+- 1,000 new WhatsApp leads/month × $0.005 = $5/month (user-initiated)
+- 500 marketing broadcasts/month × $0.06 = $30/month
+- Total: ~$50–100/month at Phase 4 launch scale
+
+---
+
+## 10. WhatsApp Analytics Dashboard
+
+### 10.1 Key Metrics to Track
+
+| Metric | Measurement | Target | Action if Below |
+|--------|------------|--------|----------------|
+| Message delivery rate | Delivered / sent | > 98% | Check phone number validity; remove bad numbers |
+| Response rate | Leads who replied / leads messaged | > 60% | Review message quality, timing, personalisation |
+| Opt-out rate | STOP replies / messages sent | < 2% | Review frequency; improve content quality |
+| Bot-to-human escalation rate | Escalations / conversations | < 30% | Improve bot BANT questions; expand bot knowledge |
+| WhatsApp lead-to-viewing rate | Viewings / WA-sourced leads | > 25% | Review qualification questions in bot flow |
+| Response time after handoff | AVG(first agent reply after handoff) | < 1 hour | Monitor agent WhatsApp inbox responsiveness |
+
+### 10.2 Reporting in CRM
+
+- **Source attribution:** All leads from WhatsApp have `source: "WHATSAPP"` — tracked through full pipeline
+- **Campaign attribution:** Campaign-triggered leads tagged with `campaignId` for ROI measurement
+- **Bot vs. agent messages:** `Activity.channel` distinguishes `whatsapp_bot` vs. `whatsapp_agent`
+- **Conversation export:** Full conversation transcript exportable as PDF for compliance records
+
+---
+
+**Document Owner:** Technology (@Nina — WhatsApp Bot Agent) + Sales (@Harmony — Agent Relations)
+**Version History:** v1.0 April 2026; v2.0 April 2026 (campaign management, analytics)
+**Related:** `plans/PHASE_4_WHATSAPP.md`, `business/08_compliance/data-privacy-impact-assessment.md`

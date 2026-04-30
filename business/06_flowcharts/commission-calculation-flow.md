@@ -329,3 +329,177 @@ Agent disputes commission amount
 
 **Document Owner:** Finance Department (Theodora)
 **Related:** `business_docs/09_crm_features/commission-tracking.md`, `business_docs/07_business_model/revenue-model.md`
+
+
+---
+
+## 8. Off-Plan Commission Structure
+
+Off-plan deals typically pay higher commission (developer-sponsored) at different stages:
+
+### 8.1 Payment Schedule for Off-Plan Commissions
+
+```
+SPA Signed (off-plan):
+Agent receives 50% of agreed commission immediately upon DLD registration
+                                    │
+                                    ▼
+Handover (keys given to buyer):
+Agent receives remaining 50% upon successful handover
+                                    │
+                                    ▼
+(Some developers pay 100% at SPA — check per project NOC terms)
+```
+
+| Developer | Commission Rate | Payment Timing |
+|---------|---------------|--------------|
+| DAMAC Properties | 5–7% | 50% at SPA; 50% at handover |
+| Emaar Properties | 4–5% | 100% at SPA registration |
+| Nakheel | 5% | 50% at SPA; 50% at completion |
+| Meraas | 5% | 100% at DLD registration |
+
+**Note:** Rates verified per NOC — subject to developer policy changes. Always check NOC terms before listing.
+
+### 8.2 Off-Plan Commission at Risk
+
+Off-plan deals have a higher commission clawback risk:
+- Buyer cancels during cooling-off period (14 days): 100% clawback
+- Buyer defaults on payment plan: 50% clawback if within first year
+- Developer project cancelled by DLD: No clawback — White Caves keeps earned commission
+
+---
+
+## 9. Co-Brokerage Commission Accounting
+
+### 9.1 Inbound Co-Brokerage (White Caves has buyer; partner has listing)
+
+```
+Deal closes at AED 2,000,000
+Commission agreed: 2% total = AED 40,000
+
+CRM records:
+├── Gross commission: AED 40,000
+├── Co-brokerage partner: [Partner Agency Name + ORN]
+├── Partner share: 50% = AED 20,000 (per Form I)
+└── White Caves net: AED 20,000
+
+Finance processing:
+├── Invoice to seller for full AED 40,000 (White Caves is billing agent)
+├── Pay partner AED 20,000 upon receipt
+└── White Caves keeps AED 20,000
+Agent commission: % of White Caves net = AED 20,000 × 40% = AED 8,000
+```
+
+### 9.2 Outbound Co-Brokerage (White Caves has listing; partner has buyer)
+
+```
+Deal closes at AED 2,000,000
+Commission: 2% = AED 40,000
+
+CRM records:
+├── Partner agency has buyer — Form I signed
+├── Split: 50/50 = AED 20,000 each
+
+Finance:
+├── Seller pays White Caves AED 40,000
+├── White Caves pays partner AED 20,000 within 5 business days of receipt
+└── Listing agent earns % of White Caves net = AED 20,000 × 40% = AED 8,000
+```
+
+### 9.3 Form I Filing Requirement
+
+RERA Form I must be signed before any showing to co-brokerage buyer. Unsigned Form I = grounds for commission dispute. White Caves policy: **no showing without signed Form I on file.**
+
+---
+
+## 10. VAT on Commissions — Detailed Calculation
+
+### 10.1 Residential Property Sale
+
+```
+Transaction: AED 2,000,000 residential sale
+Commission: 2% = AED 40,000
+
+VAT treatment:
+├── Residential property sale: 0% VAT (zero-rated)
+├── Agent commission (service): 5% VAT = AED 2,000
+├── Invoice total: AED 42,000
+└── VAT payable to FTA: AED 2,000
+
+Client Invoice:
+  White Caves Real Estate LLC | TRN: [XXXXXXXXXXXXX]
+  Commission for sale of Unit [X], DAMAC Hills 2 ......... AED 40,000
+  VAT (5%) .......................................................... AED  2,000
+  Total Due ........................................................ AED 42,000
+```
+
+### 10.2 Commercial Property Transaction
+
+```
+Transaction: AED 5,000,000 commercial warehouse sale
+Commission: 2% = AED 100,000
+
+VAT treatment:
+├── Commercial property sale: 5% VAT on property (paid by buyer — not agent's concern)
+├── Agent commission (service): 5% VAT = AED 5,000
+├── Invoice total: AED 105,000
+└── VAT payable to FTA: AED 5,000
+```
+
+### 10.3 Rental Commission
+
+```
+Annual rent: AED 120,000 (AED 10,000/month)
+Commission: 5% of annual rent = AED 6,000
+
+VAT treatment:
+├── Long-term residential rental: 0% VAT (exempt)
+├── Agent commission on residential rental: 5% VAT = AED 300
+├── Invoice: AED 6,300
+└── VAT payable to FTA: AED 300
+```
+
+---
+
+## 11. Quarterly Commission Reconciliation Process
+
+**Owner:** Theodora (Finance AI) + Finance Officer
+
+```
+WEEK 1 of new quarter:
+
+1. Extract all WON deals from CRM (previous quarter)
+   └── CRM report: filter status=WON, closedAt in quarter range
+
+2. Cross-reference with commission receipts
+   └── Each WON deal must have: signed commission agreement + receipt number
+
+3. Calculate gross commission per deal
+   └── Theodora auto-generates from CRM data
+
+4. Apply agent contract split
+   └── Each agent has contract % on file (CRM User.commissionSplit)
+
+5. Apply deductions (if any)
+   └── Advance draws, co-brokerage splits, clawbacks
+
+6. Net agent commission = gross × split% − deductions
+
+7. Finance Officer reviews for accuracy
+   └── Spot-check 20% of deals
+
+8. MD final approval
+   └── All commissions > AED 50,000 require MD sign-off
+
+9. Process payroll
+   └── Commission paid by 15th of the month following quarter end
+
+10. Generate commission statements
+    └── Each agent receives PDF via CRM / email
+```
+
+---
+
+**Document Owner:** Finance Department (Theodora + Finance Officer)
+**Version History:** v1.0 April 2026; v2.0 April 2026 (off-plan, co-brokerage, VAT details, reconciliation)
+**Related:** `business_docs/09_crm_features/commission-tracking.md`, `business/08_market_research/dubai_regulations.md`

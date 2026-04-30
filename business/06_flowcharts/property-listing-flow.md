@@ -318,3 +318,140 @@ Off-plan project data received from developer (DAMAC, Emaar, etc.)
 
 **Document Owner:** Operations Department (Mary)
 **Related:** `business_docs/09_crm_features/property-management.md`, `business/08_compliance/rera-compliance-checklist.md`
+
+
+---
+
+## 8. Property Photography Standards
+
+High-quality photos are the #1 factor in listing performance. RERA also prohibits misleading or AI-generated photos presented as real.
+
+### 8.1 Photography Brief
+
+| Specification | Standard |
+|-------------|---------|
+| Camera | DSLR or mirrorless, full-frame preferred (Sony A7, Canon R5, iPhone 14 Pro minimum) |
+| Lens | 16–24mm wide angle for rooms; 50mm for details |
+| Resolution | Minimum 3,000px on longest edge (JPEG, high quality) |
+| Format | JPEG (primary) + RAW backup |
+| Lighting | All lights on; curtains/blinds open; natural light preferred |
+| Time of day | Morning for east-facing units; afternoon for west-facing; golden hour for exterior |
+| Minimum photos | 15 photos for apartments; 25 for villas |
+| Maximum photos | 50 (portal limit; CRM stores unlimited) |
+| Staging | Property clean, tidy, depersonalised (no family photos visible in KYC-exposed photos) |
+| Prohibited | AI-generated photos presented as real; extreme HDR that misrepresents space; virtual views |
+
+### 8.2 Required Shots per Property Type
+
+**Apartment (minimum 15 shots):**
+```
+REQUIRED:                                     RECOMMENDED:
+☐ Living room (corner wide angle)             ☐ Living room (feature wall)
+☐ Dining area                                 ☐ Kitchen close-up (counters, appliances)
+☐ Master bedroom                              ☐ Built-in wardrobe
+☐ Master bathroom                             ☐ Second bedroom
+☐ Kitchen (wide angle)                        ☐ Guest bathroom
+☐ Balcony / terrace                           ☐ Laundry area
+☐ View from balcony                           ☐ Utility / storage
+☐ Building exterior                           ☐ Lobby / common areas
+☐ Parking space                               ☐ Pool / gym
+```
+
+**Villa (minimum 25 shots):**
+```
+REQUIRED:                                     RECOMMENDED:
+All apartment shots plus:                     ☐ Garden (all angles)
+☐ Ground floor reception / living             ☐ Private pool (if any)
+☐ All bedrooms (minimum 3)                    ☐ Study/office
+☐ All bathrooms                               ☐ Maid's room
+☐ Family living area                          ☐ Laundry
+☐ Entrance foyer                              ☐ Garage interior
+☐ Rear garden / BBQ area                      ☐ Roof terrace (if any)
+☐ Front of property (kerb appeal)             ☐ Community park/amenity nearby
+```
+
+### 8.3 Photo Editing Standards
+
+- **Allowed:** Basic exposure correction, minor saturation boost, straighten horizon
+- **Not allowed:** Adding objects not present, changing wall colours, removing furniture, extending room size, adding views
+- **RERA rule:** Photos must represent the property as it exists — not as it could look
+
+---
+
+## 9. Listing Copy (Property Description) Standards
+
+Quill (Document Generator AI) can generate listing copy from structured data. Human review required before publish.
+
+### 9.1 Listing Description Structure
+
+```
+[HEADLINE] — 8–12 words
+  Must include: property type + community + key USP
+  Example: "Stunning 4-Bed Villa with Private Pool — DAMAC Hills 2"
+
+[OPENING PARAGRAPH] — 3–4 sentences
+  Cover: size, type, location, brief atmosphere
+  Example: "This exceptional 4-bedroom villa in the prestigious Pelham community 
+  of DAMAC Hills 2 spans 4,200 sqft of beautifully designed living space. 
+  Located on a quiet street backing onto the golf course, this home offers 
+  both luxury and privacy in one of Dubai's most sought-after family 
+  communities."
+
+[PROPERTY FEATURES] — bullet list
+  • Bedrooms: [X] beds + maids
+  • Bathrooms: [X] ensuite + [X] guest
+  • Total area: [X] sqft (BUA) / [X] sqft (plot)
+  • Floor: [X] / [X] (apartments) or G+[X] (villas)
+  • Parking: [X] spaces
+  • View: [community/golf course/pool/park/skyline]
+  • Condition: [ready to move / vacant / rented / tenanted until MONTH YEAR]
+  • Furnishing: [fully furnished / part furnished / unfurnished]
+
+[COMMUNITY SECTION] — 2–3 sentences
+  Describe the community: amenities, lifestyle, nearby schools/supermarkets/hospitals
+
+[DEVELOPER / BUILDING INFO]
+  Developer: [Name] | Year built: [Year] | Service charge: [AED/sqft/year]
+
+[CALL TO ACTION]
+  "Contact [Agent Name] today to arrange a private viewing."
+```
+
+### 9.2 Forbidden Phrases
+
+RERA and White Caves prohibit:
+- "Sea view" unless the property has a genuine sea view (satellite verified)
+- "Motivated seller" without seller's written consent
+- Fabricated urgency: "Only 1 unit remaining" (if not true)
+- Price claims not backed by DLD data: "Best price per sqft in Dubai"
+- "Negotiable" without seller's confirmed agreement to negotiate
+
+---
+
+## 10. Portal Syndication Quality Checklist
+
+Before syncing any listing to PropertyFinder / Bayut:
+
+```
+MANDATORY (listing rejected by portal if missing):
+☐ Valid Trakheesi permit number (not expired)
+☐ Agent BRN
+☐ Company ORN
+☐ Minimum 10 photos (PF requirement), 8 photos (Bayut)
+☐ Description minimum 200 words (PF)
+☐ Accurate price (within 5% of market; misleading price = RERA violation)
+☐ Property type and bedrooms accurately stated
+
+STRONGLY RECOMMENDED:
+☐ Floor plan uploaded (boosts ranking by 20–30% on PF)
+☐ Video walkthrough link
+☐ Virtual tour URL (Matterport)
+☐ All amenities accurately listed
+☐ Community image
+```
+
+---
+
+**Document Owner:** Sales Department (Sophia + Compliance Laila)
+**Version History:** v1.0 April 2026; v2.0 April 2026 (photography standards, copy standards, portal checklist)
+**Related:** `business/08_compliance/rera-compliance-checklist.md`, `business/09_operations/partnership-framework.md`

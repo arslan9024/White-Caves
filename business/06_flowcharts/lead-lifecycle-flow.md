@@ -343,3 +343,111 @@ Agent inactivity on lead > 8 days (no activity logged)
 
 **Document Owner:** Sales Department (Clara + Sophia)
 **Related:** `business_docs/09_crm_features/lead-tracking.md`, `business_docs/04_workflows/lead-to-sale-flowchart.md`
+
+
+---
+
+## 9. Lead Reactivation Flow
+
+Leads that have gone DORMANT or were marked LOST can be reactivated:
+
+### 9.1 Automatic Re-Engagement (Nurturing)
+
+```
+DORMANT lead (no activity > 30 days)
+          │
+          ▼
+Archer AI reassesses score
+          │
+  Score ≥ 40 (still valuable)?
+          ├── YES → Move to NURTURING
+          │    │
+          │    ▼
+          │   Schedule drip campaign:
+          │   Week 1: "Market Update for DAMAC Hills 2" (email)
+          │   Week 3: "New listings in your budget" (WhatsApp)
+          │   Week 6: "Have your requirements changed?" (call prompt)
+          │    │
+          │    ▼
+          │   Lead engages → Return to CONTACTED → Normal pipeline
+          │
+          └── NO → Mark LOST (dormant)
+               Retain in CRM for 3 years (PDPL retention period)
+               Annual re-engagement attempt
+```
+
+### 9.2 Manual Lead Revival
+
+Manager can manually revive a LOST lead:
+- Unlock lead from LOST status: Manager permission required
+- Mandatory note: "Why is this lead being revived? What changed?"
+- Reassign to agent (original or new)
+- System auto-creates task: "Re-introduction call — revived lead"
+- Track separately in "Revived Lead" pipeline view
+
+### 9.3 Lost Reason Analysis (Quarterly)
+
+| Lost Reason | Count (Q3 2026 est.) | Action |
+|------------|---------------------|--------|
+| Chose competitor | 45% | Battle card training; response time audit |
+| No longer looking | 20% | Nurturing campaign (re-enter market in 6–12 months) |
+| Mortgage rejected | 10% | Refer to Mortgage Finder; lower-value properties |
+| Personal circumstances | 15% | Sympathy; maintain relationship; re-engage in 3 months |
+| Price too high | 10% | Review pricing; offer alternative properties |
+
+---
+
+## 10. Multi-Lead Management (Agent View)
+
+High-performing agents manage 50–100+ active leads simultaneously. CRM design principles for scale:
+
+### 10.1 Lead Priority Inbox
+
+```
+Archer AI prioritises agent's lead list into tiers:
+
+TIER 1 (Act Now — HOT):
+├── Score ≥ 80
+├── New WhatsApp received in last 30 min
+├── Viewing scheduled today
+└── Offer stage reached
+
+TIER 2 (Act Today — WARM):
+├── Score 50–79
+├── Activity in last 24h
+└── Follow-up task due today
+
+TIER 3 (Act This Week — COOL):
+├── Score 30–49
+├── Last activity 2–7 days ago
+└── No overdue tasks
+
+TIER 4 (Nurturing):
+├── Score < 30
+└── Last activity > 7 days ago
+```
+
+### 10.2 Agent Daily Workflow (Based on Priority Inbox)
+
+```
+8:30am  Open CRM → Priority Inbox view
+         ├── Process all TIER 1 leads first (WhatsApps, calls, offers)
+         ├── Review TIER 2 leads → plan follow-ups for today
+         └── Glance at TIER 3 → any quick actions possible?
+
+During day:
+         ├── All client interactions logged in CRM within 1 hour
+         ├── New lead assigned → respond within 1 hour (KPI requirement)
+         └── Viewing completed → log outcome + schedule follow-up
+
+End of day:
+         ├── Update all status changes
+         ├── Create tomorrow's tasks for any pending follow-ups
+         └── Score update: Archer recalculates all leads overnight
+```
+
+---
+
+**Document Owner:** Sales Department (Clara + Sophia)
+**Version History:** v1.0 April 2026; v2.0 April 2026 (reactivation flow, agent inbox)
+**Related:** `business_docs/09_crm_features/lead-tracking.md`, `business/07_strategy/kpi-dashboard-spec.md`

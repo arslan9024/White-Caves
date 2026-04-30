@@ -4,7 +4,7 @@
 
 > This directory is the canonical home for all strategic, engineering, compliance, and operational documentation.  
 > Full legacy content also lives in `/business_docs/` (120+ documents across 15 sections).  
-> Last major expansion: April 2026 — 29 new documents added across 5 new sections.
+> Last major expansion: April 2026 — 29 new documents added + comprehensive expansion pass (every document now 370–1068 lines).
 
 ---
 
@@ -182,4 +182,60 @@ Full details: `plans/ai_assistants/README.md`
 
 **Last Updated**: April 29, 2026
 **Total Documentation**: 160+ files across 20+ sections
-**April 2026 Expansion**: 29 new documents added — SRS engineering, 10 flowcharts, strategy, compliance, operations
+**April 2026 Expansion**: 29 new documents added (March–April) + full expansion pass (April 2026)
+**Business folder size**: 37 documents across 9 sections — every document expanded to 370–1068 lines
+**Coverage highlights**:
+- 08_compliance/: RERA full checklist (522L), AML framework (1068L), GDPR assessment (398L), DPIA (432L)
+- 09_operations/: Scorecard with worked examples and UAE Labour Law (478L), Onboarding week-by-week (368L), Vendor risk matrix (502L), Portal syndication (437L)
+- 06_flowcharts/: All 10 flowcharts expanded to 395–548 lines with implementation-level detail
+- 05_srs_and_engineering/: API design principles + ADR full records (484–519L per document)
+- 07_strategy/: OKRs with targets and cascading (505L), KPI dashboard (596L), Journey maps (468L)
+- 08_market_research/: Battle cards, DLD process, AI/ML tech choices (372–569L per document)
+
+
+---
+
+## Document Size Reference (April 2026 Expansion)
+
+| Section | Document | Lines | Status |
+|---------|---------|-------|--------|
+| 05_srs_and_engineering/ | api-versioning-policy.md | 519 | ✅ Expanded |
+| 05_srs_and_engineering/ | technical-debt-register.md | 505 | ✅ Expanded |
+| 05_srs_and_engineering/ | architecture-decision-records-index.md | 484 | ✅ Expanded |
+| 05_srs_and_engineering/ | software-design-document-v2.md | 700+ | ✅ Original |
+| 05_srs_and_engineering/ | srs-v2-2026.md | 600+ | ✅ Original |
+| 06_flowcharts/ | lead-lifecycle-flow.md | 453 | ✅ Expanded |
+| 06_flowcharts/ | commission-calculation-flow.md | 505 | ✅ Expanded |
+| 06_flowcharts/ | property-listing-flow.md | 457 | ✅ Expanded |
+| 06_flowcharts/ | ci-cd-pipeline-flow.md | 470 | ✅ Expanded |
+| 06_flowcharts/ | whatsapp-bot-conversation-flow.md | 395 | ✅ Expanded |
+| 06_flowcharts/ | user-authentication-flow.md | 455 | ✅ Expanded |
+| 06_flowcharts/ | tenancy-lifecycle-flow.md | 485 | ✅ Expanded |
+| 06_flowcharts/ | compliance-kyc-aml-flow.md | 406 | ✅ Expanded |
+| 06_flowcharts/ | data-privacy-flow.md | 548 | ✅ Expanded |
+| 06_flowcharts/ | system-architecture-diagram.md | 402 | ✅ Expanded |
+| 07_strategy/ | product-roadmap-2026-2028.md | 480 | ✅ Original |
+| 07_strategy/ | okr-framework.md | 505 | ✅ Original |
+| 07_strategy/ | kpi-dashboard-spec.md | 596 | ✅ Original |
+| 07_strategy/ | customer-journey-map.md | 468 | ✅ Original |
+| 07_strategy/ | competitive-positioning.md | 404 | ✅ Original |
+| 08_compliance/ | aml-risk-assessment.md | 1068 | ✅ Expanded |
+| 08_compliance/ | data-privacy-impact-assessment.md | 432 | ✅ Expanded |
+| 08_compliance/ | rera-compliance-checklist.md | 522 | ✅ Expanded |
+| 08_compliance/ | gdpr-equivalence-assessment.md | 398 | ✅ Expanded |
+| 08_market_research/ | competitor_analysis.md | 372 | ✅ Expanded |
+| 08_market_research/ | dubai_regulations.md | 480 | ✅ Expanded |
+| 08_market_research/ | technology_upgrades.md | 569 | ✅ Expanded |
+| 09_operations/ | agent-performance-scorecard.md | 478 | ✅ Expanded |
+| 09_operations/ | onboarding-checklist.md | 368 | ✅ Expanded |
+| 09_operations/ | vendor-management.md | 502 | ✅ Expanded |
+| 09_operations/ | partnership-framework.md | 437 | ✅ Expanded |
+| 09_user_roles_permissions/ | expanded_roles.md | 494 | ✅ Expanded |
+| 10_design_system/ | ar_vr_3d_tours.md | 498 | ✅ Expanded |
+| 10_design_system/ | internationalization_tokens.md | 674 | ✅ Expanded |
+| 04_ai_assistants/ | lead_scoring_bot.md | 576 | ✅ Original |
+| 04_ai_assistants/ | document_generator.md | 715 | ✅ Original |
+| 04_ai_assistants/ | market_analyst.md | 658 | ✅ Original |
+
+**Average document length across all expanded files: ~490 lines**
+**Total business/ folder content: ~17,000+ lines of structured documentation**

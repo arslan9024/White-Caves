@@ -228,3 +228,175 @@ Internet
 **Document Owner:** Technology Department (Atlas — Infrastructure Engineer)
 **Last Updated:** April 2026
 **Related:** `business_docs/06_design_architecture/system-architecture.md`
+
+
+---
+
+## 7. Phase 5–7 Architecture Evolution
+
+### 7.1 Phase 5 — Full Multi-User RBAC
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                    Phase 5 Architecture                              │
+│                                                                      │
+│  Web Client          Mobile (PWA)       Portal Clients               │
+│  (React + Vite)      (Phase 10)         (Tenant/Landlord)            │
+│       │                  │                      │                    │
+│       └──────────────────┴──────────────────────┘                   │
+│                           │                                          │
+│                    [Cloudflare WAF + CDN]                            │
+│                           │                                          │
+│              [Vercel Edge (Frontend) + API Gateway]                  │
+│                           │                                          │
+│  ┌─────────────────────────────────────────────────────────────┐    │
+│  │                   Express API (Node.js)                     │    │
+│  │  ┌──────────┐ ┌────────────┐ ┌──────────┐ ┌────────────┐  │    │
+│  │  │AuthMidd. │ │RBAC Guard  │ │Rate Limit│ │Audit Logger│  │    │
+│  │  └──────────┘ └────────────┘ └──────────┘ └────────────┘  │    │
+│  │                                                              │    │
+│  │  ┌──────────┐ ┌──────────┐ ┌─────────┐ ┌────────────────┐ │    │
+│  │  │ Leads    │ │Properties│ │ Finance │ │AI Assistants   │ │    │
+│  │  │ Routes   │ │ Routes   │ │ Routes  │ │ Routes (×40)   │ │    │
+│  │  └──────────┘ └──────────┘ └─────────┘ └────────────────┘ │    │
+│  └─────────────────────────────────────────────────────────────┘    │
+│                           │                                          │
+│          ┌────────────────┼────────────────┐                        │
+│          ↓                ↓                ↓                        │
+│  [MongoDB Atlas]    [Redis Cache]   [HashiCorp Vault]               │
+│  UAE Region         Upstash          Secrets Mgmt                   │
+│          │                                                           │
+│  [Prisma ORM]                                                       │
+│                                                                      │
+│  Background Services:                                               │
+│  [Bull Queue] ← WhatsApp jobs, email jobs, PDF generation           │
+│  [Cron Jobs] ← Lead scoring, data retention, permit checks          │
+│  [WebSocket/Socket.IO] ← Live CRM notifications                     │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+### 7.2 Phase 7 — AI/Analytics Layer
+
+```
+New components added in Phase 7:
+
+┌──────────────────────────────────────────────────┐
+│              Data Pipeline (Phase 7)             │
+│                                                  │
+│  MongoDB Change   DLD Transaction   Portal       │
+│  Streams          Feed (SFTP/API)   Activity     │
+│       │                 │               │        │
+│       └─────────────────┴───────────────┘        │
+│                         │                        │
+│              [Apache Airflow (Astronomer)]        │
+│                         │                        │
+│              [dbt transformations]               │
+│                         │                        │
+│     ┌───────────────────┴──────────────────┐    │
+│     ↓                                      ↓    │
+│  [PostgreSQL (Analytics DB)]  [Elasticsearch 8]  │
+│         │                           │            │
+│  [Metabase (BI)]              [Property Search]  │
+│  Executive dashboards         Autocomplete       │
+│  Agent leaderboards           Faceted filters    │
+└──────────────────────────────────────────────────┘
+
+ML Inference Layer:
+┌────────────────────────────────────────────────┐
+│  [Archer v2 — XGBoost lead scoring]           │
+│  [Oracle AVM — property price prediction]     │
+│  [Quill NLG — listing copy generation]        │
+│  [Nina NLU — WhatsApp intent detection]       │
+│  All models served via FastAPI (Python)       │
+│  Hosted: Railway Python service               │
+│  Model storage: S3                            │
+│  SHAP explanations: logged to MongoDB         │
+└────────────────────────────────────────────────┘
+```
+
+---
+
+## 8. API Gateway Pattern (Phase 6)
+
+When the system grows beyond a single Express application, a lightweight API gateway is introduced:
+
+```
+                    API Gateway (Kong or Express Gateway)
+                    /api/v1/*
+                    │
+          ┌─────────┼──────────────────────────┐
+          ↓         ↓                          ↓
+   Auth Service   Core CRM API          AI Inference API
+   (Firebase)     (Node/Express)        (FastAPI/Python)
+   Port: 3000     Port: 3001            Port: 8000
+                  │
+          ┌───────┼────────────┐
+          ↓       ↓            ↓
+   Portal API   WhatsApp API  Analytics API
+   Port: 3002   Port: 3003    Port: 3004
+```
+
+**Gateway responsibilities:**
+- Authentication verification (verify Firebase JWT before forwarding)
+- Rate limiting (single point of enforcement)
+- Request logging (all requests logged at gateway)
+- SSL termination
+- Load balancing (when multiple API instances deployed)
+
+**Phase 6 migration note:** The current single Express app handles all routes. When Phase 6 launches (Arabic locale), it may require a separate localisation service. That is the trigger point for extracting into microservices.
+
+---
+
+## 9. Disaster Recovery Architecture
+
+### 9.1 Recovery Objectives
+
+| Tier | RTO (Recovery Time) | RPO (Data Loss) | Examples |
+|------|-------------------|----------------|---------|
+| Critical | < 2 hours | < 1 hour | MongoDB data, authentication |
+| High | < 4 hours | < 4 hours | API service, WhatsApp |
+| Medium | < 24 hours | < 24 hours | Email notifications, analytics |
+| Low | < 72 hours | < 72 hours | Virtual tours, static content |
+
+### 9.2 Backup Schedule
+
+| Component | Backup Method | Frequency | Retention | Location |
+|---------|-------------|---------|---------|---------|
+| MongoDB Atlas | PITR (point-in-time restore) | Continuous | 7 days | Atlas managed (UAE region) |
+| MongoDB Atlas | Scheduled snapshot | Daily | 30 days | Atlas managed |
+| MongoDB Atlas | Manual snapshot | Before every migration | 90 days | Atlas managed |
+| S3 (files) | S3 versioning + cross-region replication | Real-time | 30 days | AWS S3 (UAE + EU) |
+| Code | GitHub | Every commit | Permanent | GitHub |
+| Secrets | HashiCorp Vault | Vault enterprise replication | Permanent | Multi-AZ |
+
+### 9.3 DR Runbook — MongoDB Failure
+
+```
+STAGE 1 — Detection (target: < 5 min after incident)
+1. Grafana alert fires: MongoDB connection errors > threshold
+2. On-call engineer receives PagerDuty alert
+3. Log in to MongoDB Atlas → check cluster health
+
+STAGE 2 — Assessment (target: < 15 min)
+4. Determine: node failure (automatic failover) vs. corruption vs. full cluster down
+5. If automatic failover in progress: wait (Atlas auto-elects new primary in < 10 seconds)
+6. If full cluster down: initiate manual restore
+
+STAGE 3 — Restore (target: < 2 hours)
+7. Atlas Dashboard → Restore → Point-In-Time Recovery
+8. Select restore point (latest clean point before incident)
+9. Restore to NEW cluster (preserve original for forensics)
+10. Update MONGODB_URI in Railway/Vercel to point at restored cluster
+11. Smoke test: auth → lead creation → search
+
+STAGE 4 — Post-Incident (within 48 hours)
+12. Post-mortem document: timeline, root cause, prevention
+13. Update runbook if any steps were wrong
+14. MD briefing
+```
+
+---
+
+**Document Owner:** Technology (@Lisa — Cloud, @Gwynne — DevOps, @Radia — Security)
+**Version History:** v1.0 April 2026; v2.0 April 2026 (Phase 5-7 architecture, API gateway, disaster recovery)
+**Related:** `business/08_market_research/technology_upgrades.md`, `business/05_srs_and_engineering/srs-v2-2026.md`

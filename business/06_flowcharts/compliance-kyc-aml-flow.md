@@ -305,3 +305,102 @@ Before marketing any property:
 
 **Document Owner:** Compliance Department (Laila)
 **Related:** `business_docs/10_security/kyc-aml-framework.md`, `business/08_compliance/aml-risk-assessment.md`, `business/08_compliance/rera-compliance-checklist.md`
+
+
+---
+
+## 8. AML Screening Tools and Integration
+
+### 8.1 Recommended Screening Services
+
+| Provider | Coverage | Integration | Cost |
+|---------|---------|------------|------|
+| **ComplyAdvantage** | Sanctions, PEP, adverse media — 200+ lists | REST API; webhooks | $300–800/month (volume-based) |
+| **World-Check (Refinitiv)** | FATF lists, DBI sanctions, PEP — industry standard | REST API | $500–2,000/month |
+| **Dow Jones Risk & Compliance** | Comprehensive; banking-grade | API | $1,000–3,000/month |
+| **UAE-specific: goAML portal** | UAE FIU — SAR submission | Web portal (no API) | Free (FIU-mandated) |
+
+**Recommendation for White Caves:** ComplyAdvantage (AED 1,100–2,900/month) — best cost/coverage for a brokerage of White Caves' size. API integration with CRM (Phase 2).
+
+### 8.2 CRM AML API Integration (Phase 2)
+
+```typescript
+// Compliance service — AML screening
+interface AMLScreeningRequest {
+  clientId: string;
+  name: string;            // full legal name from ID
+  nationality: string;     // ISO 3166 country code
+  dateOfBirth: string;     // YYYY-MM-DD
+  idNumber: string;        // passport or Emirates ID
+  screeningTypes: ('sanctions' | 'pep' | 'adverse_media')[];
+}
+
+interface AMLScreeningResult {
+  screeningId: string;     // provider reference
+  status: 'CLEAR' | 'POTENTIAL_MATCH' | 'CONFIRMED_MATCH';
+  riskScore: number;       // 0–100
+  matches?: AMLMatch[];
+  screenedAt: Date;
+  validUntil: Date;        // re-screen after 12 months for existing clients
+}
+```
+
+### 8.3 SAR (Suspicious Activity Report) Process
+
+```
+Trigger: Compliance officer suspects money laundering / terrorism financing
+
+Step 1: Do NOT inform the client (tipping-off is a criminal offence)
+Step 2: Document suspicion in CRM (compliance-only access)
+Step 3: Escalate internally to MD within 24 hours
+Step 4: File SAR on UAE FIU goAML portal within 30 days
+         └── Required information:
+             ├── Reporter details (White Caves + compliance officer)
+             ├── Suspicious person/entity details
+             ├── Nature of suspicion (narrative)
+             ├── Relevant transactions/documents
+             └── Actions taken (e.g., transaction halted)
+Step 5: Do NOT complete the transaction until FIU response
+         └── FIU has 7 days to consent or refuse
+Step 6: Record SAR reference number in SAR register (CRM compliance module)
+Step 7: Annual SAR register audit by MD + compliance officer
+```
+
+**goAML portal:** aml.gov.ae
+**FIU contact:** Financial Intelligence Unit, Central Bank of UAE, P.O. Box 854, Abu Dhabi
+
+---
+
+## 9. Enhanced Due Diligence (EDD) Triggers
+
+Standard KYC is sufficient for most clients. EDD (Enhanced Due Diligence) is required when:
+
+| Trigger | Action |
+|---------|--------|
+| Transaction value > AED 2,000,000 | Full source of funds declaration + supporting documents |
+| Client is a PEP (Politically Exposed Person) | Senior management approval required; enhanced ongoing monitoring |
+| Client from FATF high-risk jurisdiction | EDD mandatory; consider whether to proceed at all |
+| Complex or unusual transaction structure | Document business rationale; escalate to MD |
+| Multiple related transactions just below AED 55,000 threshold (structuring) | Aggregate and treat as one — file SAR |
+| Client reluctant to provide documents | Consider refusal; document reasons |
+| Business purpose unclear | Request full explanation in writing |
+
+### 9.1 EDD Process
+
+```
+EDD = Standard KYC PLUS:
+1. Certified copies of identity documents (not just copies)
+2. Source of funds: salary slips, bank statements (3 months), investment statements
+3. Source of wealth: how did client accumulate their wealth overall?
+4. Business purpose: why this property? why Dubai? why now?
+5. Ultimate Beneficial Owner declaration (if buying through company)
+6. Third-party verification where possible (e.g., employer letter for salaried)
+7. MD sign-off before proceeding with transaction
+8. Ongoing monitoring: re-screen AML at 6 months AND at any significant transaction
+```
+
+---
+
+**Document Owner:** Compliance Department (Laila — Compliance Officer)
+**Version History:** v1.0 April 2026; v2.0 April 2026 (AML tools integration, SAR process, EDD)
+**Related:** `business/08_compliance/aml-risk-assessment.md`, `business/08_compliance/rera-compliance-checklist.md`

@@ -332,3 +332,217 @@ Potential data breach detected:
 
 **Document Owner:** Compliance Department (Laila) + Technology (Radia)
 **Related:** `business/08_compliance/data-privacy-impact-assessment.md`, `business_docs/10_security/uae-pdpl-compliance.md`
+
+
+---
+
+## 8. Data Privacy by Default — Technical Controls
+
+### 8.1 API Response Filtering
+
+All API responses must filter out fields the requesting user is not authorised to see:
+
+```typescript
+// Example: Lead response filtered by role
+const getLeadForRole = (lead: FullLead, requestingRole: UserRole): PartialLead => {
+  const baseFields = {
+    id: lead.id,
+    firstName: lead.firstName,
+    lastName: lead.lastName,
+    status: lead.status,
+    source: lead.source,
+    budget: lead.budget,
+    propertyPreference: lead.propertyPreference,
+  };
+
+  // Compliance officer can see KYC data
+  const kycFields = isComplianceRole(requestingRole) ? {
+    passportNumber: lead.passportNumber,
+    emiratesIdNumber: lead.emiratesIdNumber,
+    sourceOfFunds: lead.sourceOfFunds,
+    amlStatus: lead.amlStatus,
+  } : {};
+
+  // Managers can see agent assignment and score
+  const managerFields = isManagerRole(requestingRole) ? {
+    agentId: lead.agentId,
+    agentName: lead.agentName,
+    leadScore: lead.leadScore,
+    internalNotes: lead.internalNotes,
+  } : {};
+
+  return { ...baseFields, ...kycFields, ...managerFields };
+};
+```
+
+### 8.2 Column-Level Encryption for Sensitive Fields (Phase 5)
+
+```typescript
+// Sensitive fields encrypted before storage in MongoDB
+import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+
+const ENCRYPTION_ALGORITHM = 'aes-256-gcm';
+const KEY_ID = process.env.ENCRYPTION_KEY_ID!; // HashiCorp Vault reference
+
+const encryptField = async (plaintext: string): Promise<EncryptedField> => {
+  const key = await vaultClient.getKey(KEY_ID); // 256-bit key from Vault
+  const iv = randomBytes(12); // 96-bit IV for GCM mode
+  const cipher = createCipheriv(ENCRYPTION_ALGORITHM, key, iv);
+  const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
+  const authTag = cipher.getAuthTag();
+  return {
+    ciphertext: encrypted.toString('base64'),
+    iv: iv.toString('base64'),
+    authTag: authTag.toString('base64'),
+    keyId: KEY_ID,
+  };
+};
+
+// Fields encrypted:
+// Lead: passportNumber, emiratesIdNumber, sourceOfFunds
+// Client: passportScan (reference), bankDetails
+// Transaction: chequeNumbers, mortgageDetails
+```
+
+### 8.3 Audit Log Architecture
+
+```typescript
+// Every data access that touches PII or sensitive fields is logged
+interface AuditLogEntry {
+  id: string;
+  timestamp: Date;
+  actorId: string;         // who performed the action
+  actorRole: UserRole;
+  action: 'READ' | 'CREATE' | 'UPDATE' | 'DELETE' | 'EXPORT';
+  resource: string;        // e.g., 'Lead', 'Client', 'KYCDocument'
+  resourceId: string;
+  fieldsAccessed?: string[];  // for READ: which sensitive fields were accessed
+  fieldsModified?: {          // for UPDATE: what changed
+    field: string;
+    oldHash?: string;        // hash of old value (not stored plain)
+    newHash?: string;
+  }[];
+  ipAddress: string;
+  userAgent: string;
+  requestId: string;       // correlates with API request log
+  retentionExpiresAt: Date; // 7 years for compliance audit logs
+}
+```
+
+---
+
+## 9. Data Subject Rights — Technical Implementation
+
+### 9.1 Subject Access Request (SAR) API
+
+```typescript
+// POST /api/v1/privacy/access-request (auth required)
+interface SARRequest {
+  requestType: 'access' | 'erasure' | 'portability' | 'restriction' | 'correction';
+  scope: 'all_data' | 'specific_data';
+  specificDataTypes?: string[]; // e.g., ['contact_details', 'property_preferences']
+  reason?: string;              // optional explanation
+}
+
+// System action for 'access' request:
+// 1. Create PrivacyRequest record with status 'RECEIVED'
+// 2. Email confirmation to data subject (within 24h)
+// 3. Notify Compliance Officer via CRM alert
+// 4. Generate GDPR/PDPL-compliant export (within 30 days)
+// 5. Deliver via secure link (expires 7 days)
+```
+
+### 9.2 Right to Erasure — Technical Implementation
+
+```typescript
+// Erasure does NOT delete records — it anonymises PII in place
+// This preserves referential integrity and audit logs
+const anonymiseLead = async (leadId: string): Promise<void> => {
+  const anonymisedId = `ERASED-${randomUUID().substring(0, 8)}`;
+  
+  await prisma.lead.update({
+    where: { id: leadId },
+    data: {
+      firstName: 'ERASED',
+      lastName: 'ERASED',
+      email: `${anonymisedId}@erased.invalid`,
+      phone: 'ERASED',
+      passportNumber: null,
+      emiratesIdNumber: null,
+      // Preserve for audit:
+      status: lead.status,  // Keep for business reporting
+      source: lead.source,  // Keep for analytics (anonymised)
+      budget: null,         // Remove financial data
+      isErased: true,
+      erasedAt: new Date(),
+      erasureRequestId: requestId,
+    },
+  });
+  
+  // Audit log: erasure event
+  await auditLog.create({ action: 'DELETE', resource: 'Lead', resourceId: leadId });
+};
+```
+
+---
+
+## 10. Cookie Compliance Implementation
+
+### 10.1 Cookie Categories and Scripts
+
+```typescript
+// Cookie consent state
+interface CookieConsentState {
+  necessary: true;          // always true — cannot opt out
+  analytics: boolean;       // Google Analytics, Hotjar
+  marketing: boolean;       // Meta Pixel, Google Ads
+  functional: boolean;      // language, currency preferences
+  consentVersion: string;   // '2026-04-15' — triggers re-consent when updated
+  consentTimestamp: Date;
+  consentIp: string;
+}
+
+// Scripts gated by consent (do not load until consent given)
+const consentGatedScripts = {
+  analytics: [
+    { id: 'ga4', src: 'https://www.googletagmanager.com/gtag/js?id=G-XXXX' },
+    { id: 'hotjar', src: 'https://static.hotjar.com/c/hotjar-XXXX.js' },
+  ],
+  marketing: [
+    { id: 'meta-pixel', inline: '/* fbq snippet */' },
+    { id: 'google-ads', src: 'https://www.googletagmanager.com/gtag/js?id=AW-XXXX' },
+  ],
+};
+
+// Load scripts only when user has consented
+useEffect(() => {
+  if (cookieConsent.analytics) {
+    loadScript(consentGatedScripts.analytics);
+  }
+  if (cookieConsent.marketing) {
+    loadScript(consentGatedScripts.marketing);
+  }
+}, [cookieConsent]);
+```
+
+### 10.2 Content Security Policy (CSP) Headers
+
+```
+# CSP header — blocks unauthorised scripts until consent
+Content-Security-Policy:
+  default-src 'self';
+  script-src 'self' 'nonce-{RANDOM}' https://www.googletagmanager.com https://static.hotjar.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  img-src 'self' data: https://cdn.whitecaves.ae https://www.google.com;
+  connect-src 'self' https://api.whitecaves.ae https://www.google-analytics.com;
+  font-src 'self' https://fonts.gstatic.com;
+  frame-src https://www.youtube.com https://player.matterport.com;
+  object-src 'none';
+  base-uri 'self';
+```
+
+---
+
+**Document Owner:** Technology (@Radia — Security, @Aurora — Platform Lead) + Compliance (Laila)
+**Version History:** v1.0 April 2026; v2.0 April 2026 (technical controls, SAR API, erasure, CSP)
+**Related:** `business/08_compliance/data-privacy-impact-assessment.md`, `business/08_compliance/gdpr-equivalence-assessment.md`

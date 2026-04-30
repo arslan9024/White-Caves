@@ -359,3 +359,127 @@ Tenant submits maintenance request (via portal or WhatsApp)
 
 **Document Owner:** Operations Department (Daisy — Leasing & Tenant Manager)
 **Related:** `business_docs/09_crm_features/tenancy-ejari.md`, `business_docs/09_crm_features/tenant-portal.md`
+
+
+---
+
+## 10. Rent Review Process (RERA Rent Index)
+
+### 10.1 How RERA Rent Increases Work
+
+Dubai's rent increase framework is governed by RERA Decree No. 43 of 2013 (the "Rent Cap"). A landlord can only increase rent if:
+1. The current rent is below the RERA Rental Price Index (RPI) for that area/unit type
+2. The permitted increase percentage is tied to how much below RPI the current rent is
+
+### 10.2 RERA Rent Increase Calculator
+
+| Current Rent vs. RERA RPI | Maximum Permitted Increase |
+|--------------------------|--------------------------|
+| Current rent < 10% below RPI | 0% (no increase permitted) |
+| Current rent 11–20% below RPI | Maximum 5% increase |
+| Current rent 21–30% below RPI | Maximum 10% increase |
+| Current rent 31–40% below RPI | Maximum 15% increase |
+| Current rent > 40% below RPI | Maximum 20% increase |
+
+**Source:** Dubai Decree No. 43 of 2013; verified via RERA's Rental Price Calculator at smartservices.rera.gov.ae
+
+### 10.3 Rent Review Process in CRM
+
+```
+TRIGGER: 90 days before lease end date (system auto-alert)
+
+Step 1: Agent pulls RERA RPI for this unit type + area
+   └── Check: smartservices.rera.gov.ae/RentalPriceCalculator
+
+Step 2: Compare current rent to RERA RPI
+   └── If current rent = RPI or above → 0% increase (must tell landlord)
+   └── If current rent < RPI → calculate max increase using table above
+
+Step 3: Landlord consultation (agent calls/WhatsApp)
+   ├── Inform landlord of RERA-permitted increase
+   ├── Recommend increase (if within RERA limits)
+   └── Landlord confirms decision: increase / no increase
+
+Step 4: Tenant notification
+   ├── Minimum 90 days notice required for any rent increase
+   ├── Written notice via: Registered letter OR email (CRM-generated) OR WhatsApp (with read receipt)
+   └── CRM: log notification date + method + increase amount
+
+Step 5: Lease renewal / termination decision
+   ├── Tenant accepts → Proceed to renewal flow (Section 5)
+   ├── Tenant counter-proposes → Negotiate (Section 6)
+   └── Tenant refuses + landlord insists → Tenant can refer to RDSC
+```
+
+### 10.4 Landlord Rights on Non-Renewal
+
+Under Law No. 26 of 2007 (amended by Law No. 33 of 2008), a landlord can refuse renewal only for specific reasons:
+1. The landlord or a first-degree family member needs to occupy the unit
+2. The property requires maintenance/demolition (must get DLD approval)
+3. Tenant has materially breached the lease
+
+**Required notice for non-renewal:** 12 months (one full year notice required before eviction)
+**Failure to comply:** Landlord is liable to compensate tenant
+
+**CRM alert:** If `Lease.renewalDecision = 'NOT_RENEWING'` → system creates task: "Issue 12-month eviction notice" with 12-month countdown.
+
+---
+
+## 11. Maintenance Request Lifecycle
+
+### 11.1 Maintenance Request Flow
+
+```
+Tenant submits request via Tenant Portal:
+├── Category: Plumbing / Electrical / AC / Structural / General
+├── Urgency: Emergency (water leak, no power) / Urgent / Standard
+├── Description + photos (optional but recommended)
+└── Preferred time for inspection
+
+System routes based on urgency:
+├── EMERGENCY → Property Manager + Landlord notified within 30 min
+│   └── Contractor dispatched within 2 hours (24/7 emergency line)
+├── URGENT → Property Manager within 4 hours
+│   └── Contractor within 24 hours
+└── STANDARD → Property Manager next business day
+    └── Contractor within 5 business days
+
+Property Manager actions:
+1. Review request + assess responsibility (tenant vs. landlord?)
+2. If landlord's responsibility: contact landlord → get approval
+3. If tenant's responsibility: inform tenant (wear & tear exclusions)
+4. Book contractor from approved vendor list
+5. CRM: record contractor name, quote, appointment date
+
+Completion:
+1. Contractor completes work
+2. Property Manager confirms + CRM status → COMPLETED
+3. Invoice to landlord (if applicable) via Theodora AI
+4. Tenant rates maintenance experience (CSAT 1–5) in portal
+5. Photo evidence uploaded: before + after
+
+Timeline targets:
+├── Emergency: resolved < 4 hours
+├── Urgent: resolved < 48 hours
+└── Standard: resolved < 10 business days
+```
+
+### 11.2 Responsibility Matrix
+
+| Issue | Landlord Responsible? | Tenant Responsible? |
+|-------|--------------------|------------------|
+| AC unit failure | ✅ (if unit is not working) | If damaged by tenant misuse |
+| AC filter cleaning | ❌ | ✅ (routine maintenance) |
+| Water heater failure | ✅ | If damaged by improper use |
+| Plumbing (internal pipes) | ✅ | If caused by blockage due to misuse |
+| Window/door locks | ✅ | If damaged by tenant |
+| Light bulb replacement | ❌ | ✅ |
+| Painting (general wear) | ✅ (after lease end) | ✅ if excessive |
+| Structural cracks | ✅ | ❌ |
+| Key replacement | ❌ | ✅ |
+
+---
+
+**Document Owner:** Operations (Daisy — Leasing AI, Harmony — Tenant Relations AI)
+**Version History:** v1.0 April 2026; v2.0 April 2026 (rent review, maintenance lifecycle)
+**Related:** `plans/PHASE_2_LANDLORD_TENANT.md`, `business/08_compliance/rera-compliance-checklist.md`

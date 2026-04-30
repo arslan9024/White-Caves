@@ -322,3 +322,134 @@ Login succeeds (email/password validated)
 
 **Document Owner:** Technology / Daniela (Auth Specialist)
 **Related:** `business_docs/10_security/security-policy.md`, `server/middleware/auth.ts`
+
+
+---
+
+## 9. Session Management and Token Security
+
+### 9.1 JWT Configuration
+
+```typescript
+// JWT token structure — access token
+interface AccessTokenPayload {
+  userId: string;
+  email: string;
+  role: UserRole;           // one of 29 roles
+  department: string;       // for RBAC scoping
+  permissions: string[];    // cached permission list (avoid DB lookup per request)
+  portalType?: 'landlord' | 'tenant';  // for portal-specific routes
+  iat: number;              // issued at
+  exp: number;              // expires in 1 hour
+  iss: 'whitecaves.ae';
+  aud: 'whitecaves-api';
+}
+
+// JWT token structure — refresh token (stored httpOnly cookie)
+interface RefreshTokenPayload {
+  userId: string;
+  tokenFamily: string;      // for refresh token rotation security
+  iat: number;
+  exp: number;              // expires in 7 days
+}
+```
+
+### 9.2 Token Refresh Flow
+
+```
+Client makes API request:
+│
+Access token valid (< 1 hour old)?
+├── YES → Request proceeds normally
+└── NO (expired) →
+     Client sends refresh token (httpOnly cookie)
+                │
+     Refresh token valid?
+     ├── NO → 401 → User must re-login
+     └── YES →
+          ├── Issue new access token (1 hour)
+          ├── Issue new refresh token (7 days) [token rotation]
+          ├── Invalidate old refresh token (prevents token reuse)
+          └── Set new refresh token as httpOnly cookie
+```
+
+**Token rotation security:** Each refresh token can only be used once. If a stolen refresh token is used, the legitimate user's next refresh attempt fails → they are logged out and must re-authenticate → security event logged → Sentry alert → investigation.
+
+### 9.3 Concurrent Session Policy
+
+| Role | Max Concurrent Sessions | Policy |
+|------|------------------------|--------|
+| Managing Director | 3 (laptop, mobile, tablet) | All active simultaneously |
+| Sales Agent | 2 (laptop, mobile) | Second login prompts: "New login detected. Continue?" |
+| Compliance Officer | 2 | As above |
+| Tenant Portal | 1 per user | New login terminates previous session (except explicit multi-device) |
+| Landlord Portal | 1 per user | As above |
+
+### 9.4 Suspicious Login Detection (Phase 5)
+
+```
+Alert triggers (sent to user via email + WhatsApp):
+├── Login from new country (not UAE) — except known IP ranges
+├── Login from new device (device fingerprint)
+├── Login after > 30 days of inactivity
+└── Multiple failed login attempts before success
+
+For Critical roles (MD, Compliance):
+└── All logins trigger Sentry log + internal audit record
+```
+
+---
+
+## 10. Phase 9 — Multi-Factor Authentication Rollout Plan
+
+### 10.1 MFA Methods Supported
+
+| Method | Security Level | UX Friction | Implementation |
+|--------|-------------|-----------|--------------|
+| **TOTP Authenticator (Google/Authy)** | High | Low (once set up) | Firebase Auth TOTP (Phase 9) |
+| **SMS OTP** | Medium | Medium | Firebase SMS verification |
+| **Email OTP** | Medium | Medium | SendGrid + custom OTP endpoint |
+| **Hardware Key (WebAuthn)** | Very High | Low (tap key) | Phase 10 — for MD/Compliance only |
+
+**Phase 9 rollout order:**
+1. MD (Arslan) — mandatory from day 1 of Phase 9
+2. Compliance Officer — mandatory same day
+3. Finance Officer — mandatory same week
+4. All agents — mandatory within 30 days of Phase 9 launch
+5. Portal users (landlords/tenants) — optional; recommended
+
+### 10.2 MFA Enforcement in Code
+
+```typescript
+// authMiddleware.ts (Phase 9 addition)
+const requireMFA = (req: AuthRequest, res: Response, next: NextFunction) => {
+  const { mfaVerified, role, mfaEnforcedRoles } = req.user;
+  
+  if (mfaEnforcedRoles.includes(role) && !mfaVerified) {
+    return res.status(403).json({
+      error: 'mfa_required',
+      message: 'Multi-factor authentication required for your role.',
+      setupUrl: '/settings/security/mfa-setup',
+    });
+  }
+  
+  next();
+};
+
+// Apply to all routes after Phase 9:
+app.use('/api/v1', authMiddleware, requireMFA, routes);
+```
+
+### 10.3 Backup Codes
+
+Every user enrolled in MFA receives 8 one-time backup codes:
+- Stored hashed in database (bcrypt)
+- Displayed once to user at MFA setup — user must download/print
+- Each code single-use (marked used on first authentication)
+- Can regenerate backup codes at any time (old codes invalidated)
+
+---
+
+**Document Owner:** Technology (@Daniela — Auth Specialist, @Radia — Security)
+**Version History:** v1.0 April 2026; v2.0 April 2026 (JWT deep dive, session management, MFA roadmap)
+**Related:** `plans/PHASE_9_RBAC.md`, `business/08_compliance/data-privacy-impact-assessment.md`
