@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { KPICard } from '../cards/KPICard';
+import { KPICard } from '../components/cards/KPICard';
 import styled from 'styled-components';
 
 const KPIGridContainer = styled.div`

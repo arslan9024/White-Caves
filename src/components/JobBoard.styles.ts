@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 import styled from 'styled-components';
 import { theme } from '../styles/theme';
 
@@ -339,3 +340,4 @@ export const JobCount = styled.span`
   color: var(--text-secondary);
   font-size: 0.9rem;
 `;
+

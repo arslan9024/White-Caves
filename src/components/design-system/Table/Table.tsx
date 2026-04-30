@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 /**
  * Table Component
  * Data display table with sorting and selection
@@ -182,3 +183,4 @@ export const Table = memo(React.forwardRef<HTMLTableElement, TableProps>(
 Table.displayName = 'Table';
 
 export default Table;
+

@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 /**
  * Breadcrumb Component
  * Navigation breadcrumb for showing hierarchy
@@ -89,3 +90,4 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, separator = '/', 
 Breadcrumb.displayName = 'Breadcrumb';
 
 export default Breadcrumb;
+

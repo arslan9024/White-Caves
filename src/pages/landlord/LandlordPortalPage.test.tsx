@@ -7,12 +7,21 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import { configureStore, PreloadedState } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import LandlordPortalPage from './LandlordPortalPage';
 import userReducer from '../../store/userSlice';
-import type { RootState } from '../../store/store';
 
 // Mock the tab components
+vi.mock('../../components/portal/landlord/LandlordPortalHome', () => ({
+  default: ({ onNavigate }: { onNavigate?: (key: string) => void }) => (
+    <div data-testid="home-tab">
+      Home Tab
+      <button onClick={() => onNavigate?.('properties')} data-testid="home-nav-properties">
+        Go Properties
+      </button>
+    </div>
+  ),
+}));
 vi.mock('../../components/portal/landlord/LandlordPropertiesTab', () => ({
   default: () => <div data-testid="properties-tab">Properties Tab</div>,
 }));
@@ -44,7 +53,9 @@ const mockUser = {
   photoUrl: null,
 };
 
-const createMockStore = (preloadedState?: PreloadedState<RootState>) => {
+type TestState = { user: ReturnType<typeof userReducer> };
+
+const createMockStore = (preloadedState?: Partial<TestState>) => {
   return configureStore({
     reducer: {
       user: userReducer,
@@ -57,12 +68,12 @@ const createMockStore = (preloadedState?: PreloadedState<RootState>) => {
       },
       ...preloadedState,
     },
-  });
+  } as any);
 };
 
 const renderWithStore = (
   component: React.ReactElement,
-  preloadedState?: PreloadedState<RootState>
+  preloadedState?: Partial<TestState>
 ) => {
   const store = createMockStore(preloadedState);
   return render(
@@ -77,6 +88,7 @@ describe('LandlordPortalPage', () => {
     it('renders all tab buttons', () => {
       renderWithStore(<LandlordPortalPage />);
 
+      expect(screen.getByTestId('tab-home')).toBeInTheDocument();
       expect(screen.getByTestId('tab-properties')).toBeInTheDocument();
       expect(screen.getByTestId('tab-tenants')).toBeInTheDocument();
       expect(screen.getByTestId('tab-payments')).toBeInTheDocument();
@@ -87,6 +99,7 @@ describe('LandlordPortalPage', () => {
     it('displays tab labels correctly', () => {
       renderWithStore(<LandlordPortalPage />);
 
+      expect(screen.getByText('Dashboard')).toBeInTheDocument();
       expect(screen.getByText('My Properties')).toBeInTheDocument();
       expect(screen.getByText('Tenants')).toBeInTheDocument();
       expect(screen.getByText('Rent Payments')).toBeInTheDocument();
@@ -94,31 +107,28 @@ describe('LandlordPortalPage', () => {
       expect(screen.getByText('Documents')).toBeInTheDocument();
     });
 
-    it('renders properties tab by default', () => {
+    it('renders home dashboard tab by default', () => {
       renderWithStore(<LandlordPortalPage />);
 
-      expect(screen.getByTestId('properties-tab')).toBeInTheDocument();
-      expect(screen.getByTestId('tabpanel-properties')).toBeInTheDocument();
+      expect(screen.getByTestId('tab-home')).toBeInTheDocument();
+      expect(screen.getByTestId('home-tab')).toBeInTheDocument();
+      expect(screen.getByTestId('tabpanel-home')).toBeInTheDocument();
     });
 
-    it('has properties tab marked as active initially', () => {
+    it('has home tab marked as active initially', () => {
       renderWithStore(<LandlordPortalPage />);
 
-      const propertiesTab = screen.getByTestId('tab-properties');
-      expect(propertiesTab).toHaveClass('active');
+      const homeTab = screen.getByTestId('tab-home');
+      expect(homeTab).toHaveClass('active');
     });
-  });
 
-  describe('Tab Switching', () => {
-    it('switches to tenants tab when clicked', async () => {
+    it('navigates to properties tab via home quick link', async () => {
       renderWithStore(<LandlordPortalPage />);
 
-      const tenantsTab = screen.getByTestId('tab-tenants');
-      fireEvent.click(tenantsTab);
+      fireEvent.click(screen.getByTestId('home-nav-properties'));
 
       await waitFor(() => {
-        expect(tenantsTab).toHaveClass('active');
-        expect(screen.getByTestId('tab-properties')).not.toHaveClass('active');
+        expect(screen.getByTestId('tab-properties')).toHaveClass('active');
       });
     });
 
@@ -130,7 +140,7 @@ describe('LandlordPortalPage', () => {
 
       await waitFor(() => {
         expect(paymentsTab).toHaveClass('active');
-        expect(screen.getByTestId('tab-properties')).not.toHaveClass('active');
+        expect(screen.getByTestId('tab-home')).not.toHaveClass('active');
       });
     });
 
@@ -142,7 +152,7 @@ describe('LandlordPortalPage', () => {
 
       await waitFor(() => {
         expect(maintenanceTab).toHaveClass('active');
-        expect(screen.getByTestId('tab-properties')).not.toHaveClass('active');
+        expect(screen.getByTestId('tab-home')).not.toHaveClass('active');
       });
     });
 
@@ -154,7 +164,7 @@ describe('LandlordPortalPage', () => {
 
       await waitFor(() => {
         expect(documentsTab).toHaveClass('active');
-        expect(screen.getByTestId('tab-properties')).not.toHaveClass('active');
+        expect(screen.getByTestId('tab-home')).not.toHaveClass('active');
       });
     });
   });
@@ -203,8 +213,8 @@ describe('LandlordPortalPage', () => {
     it('tab buttons have proper aria-selected attributes', () => {
       renderWithStore(<LandlordPortalPage />);
 
-      const propertiesTab = screen.getByTestId('tab-properties');
-      expect(propertiesTab).toHaveAttribute('aria-selected', 'true');
+      const homeTab = screen.getByTestId('tab-home');
+      expect(homeTab).toHaveAttribute('aria-selected', 'true');
 
       const tenantsTab = screen.getByTestId('tab-tenants');
       expect(tenantsTab).toHaveAttribute('aria-selected', 'false');
@@ -213,7 +223,7 @@ describe('LandlordPortalPage', () => {
     it('tab panels have proper role attributes', () => {
       renderWithStore(<LandlordPortalPage />);
 
-      const tabpanel = screen.getByTestId('tabpanel-properties');
+      const tabpanel = screen.getByTestId('tabpanel-home');
       expect(tabpanel).toHaveAttribute('role', 'tabpanel');
     });
 
@@ -235,8 +245,8 @@ describe('LandlordPortalPage', () => {
     it('renders tab content with proper id', () => {
       renderWithStore(<LandlordPortalPage />);
 
-      const tabpanel = screen.getByTestId('tabpanel-properties');
-      expect(tabpanel).toHaveAttribute('id', 'tabpanel-properties');
+      const tabpanel = screen.getByTestId('tabpanel-home');
+      expect(tabpanel).toHaveAttribute('id', 'tabpanel-home');
     });
 
     it('updates tabpanel id when tab changes', async () => {

@@ -222,7 +222,9 @@ export function useUnifiedDashboard() {
   const isSuperUser =
     user?.role === 'owner' ||
     user?.role === 'admin' ||
-    currentRole === 'lion';
+    user?.role === 'managing_director' ||
+    currentRole === 'lion' ||
+    currentRole === 'managing_director';
 
   // ─── Role-Based Data Filtering ────────────────────────────
   const filteredData = useMemo<DashboardData>(() => {

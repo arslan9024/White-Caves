@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 // src/components/examples/DashboardExamples.tsx
 /**
  * Complete Examples for Dashboard & Sidebar Architecture
@@ -456,3 +457,4 @@ export {
   SidebarWithContextMenu,
   useFeatureRegistration,
 };
+

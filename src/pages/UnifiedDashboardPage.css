@@ -191,9 +191,10 @@
 }
 
 .tab-button.active {
-  color: var(--primary-color, #0066cc);
-  border-bottom-color: var(--primary-color, #0066cc);
-  background: var(--bg-active, #f0f7ff);
+  color: #C41E3A;
+  border-bottom-color: #C41E3A;
+  background: rgba(196, 30, 58, 0.06);
+  font-weight: 600;
 }
 
 .tab-icon {
@@ -408,6 +409,10 @@
   color: #ffffff;
 }
 
+[data-theme="dark"] .tab-button:hover {
+  background: rgba(196, 30, 58, 0.08);
+  color: #FAFAFA;
+}
 [data-theme="dark"] .tab-button.active {
   color: #00a0ff;
 }

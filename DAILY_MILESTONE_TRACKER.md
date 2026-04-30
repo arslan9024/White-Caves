@@ -44,6 +44,11 @@
 | Apr 26 | Phase 3 — `ContactCTA.tsx` — wired to API + toasts + WhatsApp | @Una+@Mira | ✅ Done | `src/components/homepage/Contact/ContactCTA.tsx` |
 | Apr 26 | Phase 3B — `server/routes/contact.ts` — creates lead from form | @Mira | ✅ Done | `server/routes/contact.ts` |
 | Apr 27 | Quality sweep — targeted lint cleanup on homepage milestone files (`HomePage`, `BlogSection`, `VirtualTourGallery`, `Testimonials`) | @Grace+@Katherine | ✅ Done | 41 warnings → 0 warnings (targeted scope fully clean) |
+| Current | Phase 2.12 — `PortalNavbar.tsx` + `PortalLayout.tsx` — portal-specific nav (Logo, badge, user avatar, logout) | @Una+@Mira | ✅ Done | `src/components/portal/PortalNavbar.tsx`, `PortalLayout.tsx` |
+| Current | Phase 2.12 — App.tsx — portal routes now use `PortalLayout` instead of full CRM `AppLayout` | @Mira | ✅ Done | `src/App.tsx` |
+| Current | Phase 2.9 — Late fee calculation (5%) + overdue-first ordering in TenantPaymentHistoryTab | @Mira | ✅ Done | `TenantPaymentHistoryTab.tsx` |
+| Current | Phase 2.10 — Priority field (low/medium/high) added to TenantMaintenanceTab form + list display | @Mira | ✅ Done | `TenantMaintenanceTab.tsx` |
+| Current | CSS — Portal navbar, priority badges, late fee notice styles added to RolePages.css | @Una | ✅ Done | `src/pages/RolePages.css` |
 
 ---
 

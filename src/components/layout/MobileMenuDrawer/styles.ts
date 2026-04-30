@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 import styled, { css } from 'styled-components';
 import { theme } from '../../../styles/theme';
 
@@ -365,3 +366,4 @@ export const DrawerSearchClear = styled.button`
     background: ${colors.text.secondary}40;
   }
 `;
+

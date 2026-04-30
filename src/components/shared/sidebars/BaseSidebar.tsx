@@ -1,4 +1,4 @@
-// src/components/shared/sidebars/BaseSidebar.tsx
+﻿// src/components/shared/sidebars/BaseSidebar.tsx
 import React, { useState, useCallback, useEffect } from 'react';
 import {
   SidebarContainer,
@@ -12,7 +12,7 @@ import {
 } from './styled/SidebarStyledComponents';
 import { useSidebarState } from '../../../hooks/useSidebarState';
 
-interface BaseSidebarProps {
+export interface BaseSidebarProps {
   name: string;
   title: string;
   icon?: React.ReactNode;
@@ -149,3 +149,4 @@ export const BaseSidebar: React.FC<BaseSidebarProps> = ({
 };
 
 export default BaseSidebar;
+

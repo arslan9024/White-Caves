@@ -296,8 +296,11 @@ export class PerformanceMonitor {
    * Get memory usage in MB
    */
   getMemoryUsage(): number {
-    if (typeof performance !== 'undefined' && performance.memory) {
-      return performance.memory.usedJSHeapSize / 1024 / 1024;
+    const perfWithMemory = performance as Performance & {
+      memory?: { usedJSHeapSize?: number };
+    };
+    if (typeof performance !== 'undefined' && perfWithMemory.memory?.usedJSHeapSize) {
+      return perfWithMemory.memory.usedJSHeapSize / 1024 / 1024;
     }
     return 0;
   }

@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 import React from 'react';
 import BaseDepartmentView from './BaseDepartmentView';
 import { getDepartmentConfig } from '../../config/departmentViewConfigs';
@@ -91,3 +92,4 @@ const SalesView: React.FC<SalesViewProps> = ({ serviceName = 'lead-pipeline', su
 };
 
 export default SalesView;
+

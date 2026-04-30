@@ -33,7 +33,7 @@ const ProfileButton = styled.button`
   cursor: pointer;
   padding: ${theme.spacing.sm};
   border-radius: 50%;
-  transition: ${theme.transitions.create('all', theme.transitions.durations.standard)};
+  transition: ${theme.transitions.all};
 
   &:hover {
     background: ${theme.colors.background.secondary};
@@ -69,12 +69,12 @@ const UserInfo = styled.div`
 const UserName = styled.div`
   font-weight: ${theme.typography.weights.semibold};
   color: ${theme.colors.text.primary};
-  font-size: ${theme.typography.sizes.sm};
+  font-size: 0.875rem;
 `;
 
 const UserEmail = styled.div`
   color: ${theme.colors.text.secondary};
-  font-size: ${theme.typography.sizes.xs};
+  font-size: 0.75rem;
   margin-top: ${theme.spacing.xs};
   word-break: break-word;
 `;
@@ -90,10 +90,10 @@ const MenuItem = styled.button`
   padding: ${theme.spacing.md};
   color: ${theme.colors.text.primary};
   cursor: pointer;
-  font-size: ${theme.typography.sizes.sm};
+  font-size: 0.875rem;
   text-align: left;
   width: 100%;
-  transition: ${theme.transitions.create('all', theme.transitions.durations.standard)};
+  transition: all 250ms ease;
 
   &:hover {
     background: ${theme.colors.background.secondary};

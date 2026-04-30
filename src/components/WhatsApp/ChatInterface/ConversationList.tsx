@@ -283,18 +283,18 @@ export const ConversationList: React.FC<ConversationListProps> = ({
               onClick={() =>
                 onSelectConversation(
                   conversation.conversationId,
-                  conversation.recipientNumber || '',
-                  conversation.recipientName || conversation.recipientNumber || 'Unknown'
+                  conversation.recipientPhone || '',
+                  conversation.recipientName || conversation.recipientPhone || 'Unknown'
                 )
               }
             >
               <Avatar bg={`hsl(${Math.random() * 360}, 70%, 60%)`}>
-                {(conversation.recipientName || conversation.recipientNumber || '?')[0]?.toUpperCase()}
+                {(conversation.recipientName || conversation.recipientPhone || '?')[0]?.toUpperCase()}
               </Avatar>
 
               <ConversationDetails>
                 <ContactName unread={conversation.unreadCount > 0}>
-                  {conversation.recipientName || conversation.recipientNumber}
+                  {conversation.recipientName || conversation.recipientPhone}
                 </ContactName>
                 <MessagePreview unread={conversation.unreadCount > 0}>
                   {conversation.lastMessage || 'No messages yet'}

@@ -37,7 +37,7 @@ export const useDepartments = () => {
     // Only fetch if we don't have departments yet
     if (departments.length === 0 && !loading) {
       console.log('[Hook] Fetching departments...');
-      dispatch(fetchAllDepartments() as any);
+      dispatch(fetchAllDepartments(false) as any);
     }
   }, [dispatch, departments.length, loading]);
 
@@ -69,7 +69,7 @@ export const useDepartmentData = (code: string | null) => {
     // Fetch data when code changes and data not already loaded
     if (code && !data) {
       console.log(`[Hook] Fetching data for department: ${code}`);
-      dispatch(fetchDepartmentData(code) as any);
+      dispatch(fetchDepartmentData({ code }) as any);
     }
   }, [code, dispatch, data]);
 
@@ -290,12 +290,12 @@ export const useRefreshDepartmentData = () => {
 
   const refreshDepartments = useCallback(() => {
     console.log('[Hook] Manually refreshing departments...');
-    dispatch(fetchAllDepartments() as any);
+    dispatch(fetchAllDepartments(false) as any);
   }, [dispatch]);
 
   const refreshDepartmentData = useCallback((code: string) => {
     console.log(`[Hook] Manually refreshing data for department: ${code}`);
-    dispatch(fetchDepartmentData(code) as any);
+    dispatch(fetchDepartmentData({ code }) as any);
   }, [dispatch]);
 
   const refreshKPIs = useCallback((code: string, dateRange?: DateRange) => {
@@ -319,7 +319,7 @@ export const useRefreshDepartmentData = () => {
 
   const refreshAll = useCallback((code: string) => {
     console.log(`[Hook] Manually refreshing all data for department: ${code}`);
-    dispatch(fetchDepartmentData(code) as any);
+    dispatch(fetchDepartmentData({ code }) as any);
     dispatch(fetchDepartmentKPIs({ code }) as any);
     dispatch(fetchDepartmentTrends({ code }) as any);
     dispatch(fetchDepartmentSummary(code) as any);

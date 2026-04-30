@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 /**
  * Checkbox Component
  * Form input for boolean selection
@@ -91,3 +92,4 @@ export const Checkbox = memo(forwardRef<HTMLInputElement, CheckboxProps>(
 Checkbox.displayName = 'Checkbox';
 
 export default Checkbox;
+

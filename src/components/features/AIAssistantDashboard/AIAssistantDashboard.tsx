@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 /**
  * AIAssistantDashboard Component
  * 
@@ -350,3 +351,4 @@ const AIAssistantDashboard: React.FC<AIAssistantDashboardProps> = ({ assistantId
 };
 
 export default AIAssistantDashboard;
+

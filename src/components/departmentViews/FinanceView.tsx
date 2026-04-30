@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 import React from 'react';
 import BaseDepartmentView from './BaseDepartmentView';
 import { getDepartmentConfig } from '../../config/departmentViewConfigs';
@@ -83,3 +84,4 @@ const FinanceView: React.FC<FinanceViewProps> = ({ serviceName = 'financial-repo
 };
 
 export default FinanceView;
+

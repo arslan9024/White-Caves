@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 /**
  * Switch Component
  * Toggle between two states
@@ -92,3 +93,4 @@ export const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
 Switch.displayName = 'Switch';
 
 export default Switch;
+

@@ -60,7 +60,7 @@ const AdminButton = styled.button`
   cursor: pointer;
   padding: ${theme.spacing.sm};
   border-radius: 50%;
-  transition: ${theme.transitions.create('all', theme.transitions.durations.standard)};
+  transition: ${theme.transitions.all};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -96,10 +96,10 @@ const MenuItem = styled.button`
   padding: ${theme.spacing.md};
   color: ${theme.colors.text.primary};
   cursor: pointer;
-  font-size: ${theme.typography.sizes.sm};
+  font-size: 0.875rem;
   text-align: left;
   width: 100%;
-  transition: ${theme.transitions.create('all', theme.transitions.durations.standard)};
+  transition: ${theme.transitions.all};
   border-bottom: 1px solid ${theme.colors.border};
 
   &:last-child {

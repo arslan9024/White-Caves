@@ -244,17 +244,107 @@ export const TYPOGRAPHY = {
   caption: { fontSize: '0.75rem', fontWeight: 500, lineHeight: 1.4 },
 };
 
+const legacyColors = {
+  ...lightTheme.colors,
+  primaryDark: '#A81831',
+  primaryLight: '#FCE4E6',
+  primaryVeryLight: '#FFF5F5',
+  secondaryDark: '#0284C7',
+  border: lightTheme.colors.border.medium,
+  borderDark: lightTheme.colors.border.dark,
+  background: {
+    ...lightTheme.colors.background,
+    dark: '#1E293B',
+  },
+  a11y: {
+    goldText: '#8A6A1D',
+    goldLargeText: '#A07822',
+    goldUI: '#B8922F',
+    focusRing: '#2563EB',
+    errorText: '#B91C1C',
+    warningText: '#B45309',
+  },
+};
+
+const legacyTypography = {
+  ...lightTheme.typography,
+  fontFamily: {
+    primary: 'Inter, system-ui, -apple-system, sans-serif',
+    heading: 'Inter, system-ui, -apple-system, sans-serif',
+  },
+  weights: {
+    regular: 400,
+    medium: 500,
+    semibold: 600,
+    bold: 700,
+  },
+  styles: {
+    h1: lightTheme.typography.h1,
+    h2: lightTheme.typography.h2,
+    h3: lightTheme.typography.h3,
+    h4: lightTheme.typography.h4,
+    h5: lightTheme.typography.h5,
+    h6: lightTheme.typography.body,
+    body: lightTheme.typography.body,
+  },
+};
+
+const legacyTransitions = {
+  ...lightTheme.transitions,
+  all: lightTheme.transitions.standard,
+  hover: lightTheme.transitions.fast,
+  color: lightTheme.transitions.standard,
+  background: lightTheme.transitions.standard,
+  durations: {
+    shorter: '150ms',
+    short: '200ms',
+    standard: '250ms',
+    long: '300ms',
+  },
+  easing: {
+    ...lightTheme.easing,
+    easeInOut: lightTheme.easing.inOut,
+  },
+};
+
+const legacyRadius = {
+  ...lightTheme.borderRadius,
+  xxl: lightTheme.borderRadius.xl,
+};
+
+const legacySpacing = {
+  ...lightTheme.spacing,
+  xs: lightTheme.spacing[1],
+  sm: lightTheme.spacing[2],
+  md: lightTheme.spacing[4],
+  lg: lightTheme.spacing[6],
+  xl: lightTheme.spacing[8],
+};
+
+const legacyShadows = {
+  ...lightTheme.shadows,
+  focus: `0 0 0 3px ${legacyColors.a11y.focusRing}33`,
+};
+
 // Extract individual color/spacing objects for backward compatibility
-export const COLORS = lightTheme.colors;
-export const SPACING = lightTheme.spacing;
+export const COLORS = legacyColors;
+export const SPACING = legacySpacing;
 
 // Backwards-compatible alias
-export const theme = lightTheme;
+export const theme = {
+  ...lightTheme,
+  colors: legacyColors,
+  typography: legacyTypography,
+  transitions: legacyTransitions,
+  radius: legacyRadius,
+  spacing: legacySpacing,
+  shadows: legacyShadows,
+};
 
 // Backwards-compatible named exports for individual tokens
-export const colors = lightTheme.colors;
-export const typography = lightTheme.typography;
-export const transitions = lightTheme.transitions;
-export const radius = lightTheme.borderRadius;
-export const spacing = lightTheme.spacing;
-export const shadows = lightTheme.shadows;
+export const colors = legacyColors;
+export const typography = legacyTypography;
+export const transitions = legacyTransitions;
+export const radius = legacyRadius;
+export const spacing = legacySpacing;
+export const shadows = legacyShadows;

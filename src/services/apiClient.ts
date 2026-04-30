@@ -3,7 +3,7 @@
  * Handles HTTP requests with interceptors, authentication, retries, and error handling
  */
 
-import axios, { AxiosInstance, AxiosError, AxiosResponse, AxiosConfig } from 'axios';
+import axios, { AxiosInstance, AxiosError, AxiosResponse } from 'axios';
 import {
   API_CONFIG,
   API_HEADERS,

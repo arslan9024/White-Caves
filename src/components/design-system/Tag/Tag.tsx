@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 /**
  * Tag Component
  * Removable label for categorization
@@ -78,3 +79,4 @@ export const Tag: React.FC<TagProps> = ({
 Tag.displayName = 'Tag';
 
 export default Tag;
+

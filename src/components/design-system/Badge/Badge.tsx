@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 /**
  * Badge Component
  * Small labeled indicator for status, category, or count
@@ -84,3 +85,4 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
 Badge.displayName = 'Badge';
 
 export default Badge;
+

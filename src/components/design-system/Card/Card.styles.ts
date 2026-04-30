@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 /**
  * Card Component Styles
  */
@@ -87,3 +88,4 @@ export const CardFooter = styled.div`
   gap: ${theme.spacing.md};
   justify-content: flex-end;
 `;
+

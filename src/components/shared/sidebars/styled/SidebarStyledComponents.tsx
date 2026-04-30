@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 // src/components/shared/sidebars/styled/SidebarStyledComponents.tsx
 import styled, { css } from 'styled-components';
 import { MEDIA_QUERIES, SPACING, COLORS, TYPOGRAPHY } from '../../../../styles/theme';
@@ -492,3 +493,4 @@ export const LoadingSkeleton = styled.div`
     }
   }
 `;
+

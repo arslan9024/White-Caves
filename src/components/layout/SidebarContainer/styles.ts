@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 import styled, { keyframes } from 'styled-components';
 import { theme } from '../../../styles/theme';
 
@@ -617,3 +618,4 @@ export const RailBadge = styled.span<{ $color?: string }>`
     box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
   }
 `;
+

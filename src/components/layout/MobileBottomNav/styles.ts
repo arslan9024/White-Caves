@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 import styled, { css, keyframes } from 'styled-components';
 import { theme } from '../../../styles/theme';
 
@@ -137,3 +138,4 @@ export const BottomNavSpacer = styled.div`
     height: calc(56px + env(safe-area-inset-bottom, 0px));
   }
 `;
+

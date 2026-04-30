@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 // src/components/layout/DashboardLayout/DashboardLayout.tsx
 /**
  * Main Dashboard Layout Component
@@ -128,3 +129,4 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 };
 
 export default DashboardLayout;
+

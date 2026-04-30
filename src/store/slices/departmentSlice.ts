@@ -22,7 +22,7 @@ import { apiIntegration } from '../../services/apiIntegration';
  */
 export const fetchAllDepartments = createAsyncThunk(
   'departments/fetchAll',
-  async (forceRefresh = false, { rejectWithValue }) => {
+  async (forceRefresh: boolean = false, { rejectWithValue }) => {
     try {
       console.log('[Redux] Fetching all departments (optimized)...');
       const departments = await apiIntegration.getDepartments(forceRefresh);

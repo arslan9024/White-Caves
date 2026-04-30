@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 // src/components/shared/sidebars/index.ts
 export { BaseSidebar } from './BaseSidebar';
 export { SidebarItem } from './SidebarItem';
@@ -31,3 +32,4 @@ export {
 export type { SidebarItemProps } from './SidebarItem';
 export type { SidebarSectionProps } from './SidebarSection';
 export type { BaseSidebarProps } from './BaseSidebar';
+

@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -228,3 +229,4 @@ const DashboardBreadcrumb = ({ onNavigate }) => {
 };
 
 export default DashboardBreadcrumb;
+

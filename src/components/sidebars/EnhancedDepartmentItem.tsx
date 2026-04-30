@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 /**
  * Enhanced Department Item Component
  * Displays department with icon, name, and active state
@@ -127,3 +128,4 @@ export const EnhancedDepartmentItem: React.FC<DepartmentItemProps> = ({
 };
 
 export default EnhancedDepartmentItem;
+

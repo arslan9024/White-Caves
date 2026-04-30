@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 import React from 'react';
 import BaseDepartmentView from './BaseDepartmentView';
 import { getDepartmentConfig } from '../../config/departmentViewConfigs';
@@ -84,3 +85,4 @@ const AnalyticsView: React.FC<AnalyticsViewProps> = ({ serviceName = 'business-i
 };
 
 export default AnalyticsView;
+

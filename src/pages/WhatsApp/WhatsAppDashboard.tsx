@@ -224,10 +224,10 @@ export const WhatsAppDashboard: React.FC = () => {
                 }}
               >
                 <p>
-                  <strong>Name:</strong> {currentAccount.name || 'Unnamed'}
+                  <strong>Name:</strong> {currentAccount.accountId || currentAccount.phoneNumber || 'Unnamed'}
                 </p>
                 <p>
-                  <strong>Business Name:</strong> {currentAccount.businessName || 'N/A'}
+                  <strong>Business Name:</strong> {'N/A'}
                 </p>
                 <p>
                   <strong>Phone:</strong> {currentAccount.phoneNumber || 'N/A'}
@@ -236,10 +236,10 @@ export const WhatsAppDashboard: React.FC = () => {
                   <strong>Status:</strong>{' '}
                   <span
                     style={{
-                      color: currentAccount.isConnected ? '#25d366' : '#f44336',
+                      color: currentAccount.status === 'connected' ? '#25d366' : '#f44336',
                     }}
                   >
-                    {currentAccount.isConnected ? 'Connected' : 'Disconnected'}
+                    {currentAccount.status === 'connected' ? 'Connected' : 'Disconnected'}
                   </span>
                 </p>
               </div>

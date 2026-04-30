@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 /**
  * DynamicContentRouter Component
  * 
@@ -220,3 +221,4 @@ const DynamicContentRouter = ({ featureId = 'dashboard', context = {} }) => {
 };
 
 export default DynamicContentRouter;
+

@@ -1,4 +1,4 @@
-// src/components/shared/sidebars/SidebarItem.tsx
+﻿// src/components/shared/sidebars/SidebarItem.tsx
 import React, { useState, useCallback } from 'react';
 import {
   SidebarItemWrapper,
@@ -11,7 +11,7 @@ import {
 } from './styled/SidebarStyledComponents';
 import { useSidebarState } from '../../../hooks/useSidebarState';
 
-interface SidebarItemProps {
+export interface SidebarItemProps {
   id: string;
   label: string;
   icon?: React.ReactNode;
@@ -166,3 +166,6 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
 };
 
 export default SidebarItem;
+
+
+

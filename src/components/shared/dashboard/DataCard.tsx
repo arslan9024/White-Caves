@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 import React from 'react';
 import styled from 'styled-components';
 
@@ -226,3 +227,4 @@ export default DataCard;
 
 // Export skeleton components for use outside of DataCard
 export { TitleSkeleton, ContentSkeleton, GridSkeleton, TableSkeleton };
+

@@ -11,6 +11,9 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import '../../../pages/RolePages.css';
 
+/** Late fee rate: 5% of monthly rent per overdue payment */
+const LATE_FEE_RATE = 0.05;
+
 const TenantPaymentHistoryTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
   const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'pending' | 'overdue'>('all');
@@ -69,12 +72,14 @@ const TenantPaymentHistoryTab: FC = () => {
     const outstanding = payments
       .filter(payment => payment.status === 'pending' || payment.status === 'overdue')
       .reduce((s, p) => s + p.amount, 0);
-    const nextDue =
-      payments
-        .filter(payment => payment.status === 'pending' || payment.status === 'overdue')
-        .sort((a, b) => a.month.localeCompare(b.month))[0] ?? null;
-    const overdueCount = payments.filter(payment => payment.status === 'overdue').length;
-    return { totalPaid, outstanding, nextDue, overdueCount };
+    // Overdue takes priority over pending as the most urgent item
+    const nextPayment =
+      payments.find(p => p.status === 'overdue') ??
+      payments.find(p => p.status === 'pending') ??
+      null;
+    const overduePayments = payments.filter(p => p.status === 'overdue');
+    const lateFees = overduePayments.reduce((sum, p) => sum + Math.round(p.amount * LATE_FEE_RATE), 0);
+    return { totalPaid, outstanding, nextPayment, lateFees, overdueCount: overduePayments.length };
   }, [payments]);
 
   if (!currentUser) {
@@ -101,28 +106,46 @@ const TenantPaymentHistoryTab: FC = () => {
           <h4>Outstanding</h4>
           <p>AED {summary.outstanding.toLocaleString()}</p>
         </div>
-        {summary.nextDue && (
-          <div
-            className={`summary-card${summary.nextDue.status === 'overdue' ? ' summary-card--alert' : ''}`}
-            data-testid="tenant-next-due-card"
-          >
-            <h4>Next Payment Due</h4>
-            <p>AED {summary.nextDue.amount.toLocaleString()}</p>
-            <p className="summary-card-meta">{summary.nextDue.month}</p>
-            {summary.nextDue.status === 'overdue' && (
-              <span className="status-badge status-overdue">Overdue</span>
-            )}
+        <div className="summary-card next-payment-card" data-testid="tenant-next-payment-card">
+          <h4>Next Payment Due</h4>
+          {summary.nextPayment ? (
+            <>
+              <p data-testid="tenant-next-payment-month">{summary.nextPayment.month}</p>
+              <p className="next-payment-amount">
+                AED {summary.nextPayment.amount.toLocaleString()}
+              </p>
+              {summary.nextPayment.status === 'overdue' && (
+                <span className="status-badge status-overdue" data-testid="tenant-overdue-badge">
+                  Overdue
+                </span>
+              )}
+              {summary.lateFees > 0 && (
+                <p
+                  className="late-fee-notice"
+                  data-testid="tenant-late-fee"
+                  aria-label={`Late fee of AED ${summary.lateFees.toLocaleString()} applied`}
+                >
+                  + AED {summary.lateFees.toLocaleString()} late fee
+                </p>
+              )}
+            </>
+          ) : (
+            <p data-testid="tenant-no-payment-due">No upcoming payments</p>
+          )}
+          <div className="pay-now-wrapper">
+            <button
+              type="button"
+              className="btn-primary btn-disabled"
+              disabled
+              aria-disabled="true"
+              title="Online payments coming in Phase 5"
+              data-testid="tenant-pay-now-btn"
+            >
+              Pay Now
+            </button>
+            <span className="pay-now-tooltip">Online payments coming in Phase 5</span>
           </div>
-        )}
-        {summary.overdueCount > 0 && (
-          <div className="summary-card summary-card--alert" data-testid="tenant-overdue-notice">
-            <h4>Late Fee Notice</h4>
-            <p>
-              {summary.overdueCount} overdue payment{summary.overdueCount > 1 ? 's' : ''}
-            </p>
-            <p className="summary-card-meta">Contact your agent for details</p>
-          </div>
-        )}
+        </div>
       </div>
 
       <div className="tab-controls">
@@ -169,17 +192,6 @@ const TenantPaymentHistoryTab: FC = () => {
               </div>
               <div>
                 <span className={`status-badge status-${payment.status}`}>{payment.status}</span>
-                {(payment.status === 'pending' || payment.status === 'overdue') && (
-                  <button
-                    type="button"
-                    className="btn-secondary btn-disabled"
-                    disabled
-                    title="Online payments coming soon — please pay by cheque or bank transfer"
-                    data-testid={`tenant-pay-now-btn-${payment.id}`}
-                  >
-                    Pay Now
-                  </button>
-                )}
               </div>
             </div>
           ))}

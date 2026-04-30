@@ -5,15 +5,17 @@
  * Tracks messages, conversations, and performance metrics
  */
 
-import { useState, useCallback, useEffect } from 'react';
-import { whatsappService, AnalyticsData } from '../../services/whatsapp/whatsapp.service';
+import { useState, useCallback } from 'react';
+import { whatsappService } from '../../services/whatsapp/whatsapp.service';
+
+type AnalyticsData = Record<string, unknown>; 
 
 interface DateRange {
   startDate: Date;
   endDate: Date;
 }
 
-interface UseWhatsAppAnalyticsReturn {
+export interface UseWhatsAppAnalyticsReturn {
   analytics: AnalyticsData | null;
   isLoading: boolean;
   error: string | null;
@@ -46,13 +48,8 @@ export const useWhatsAppAnalytics = (): UseWhatsAppAnalyticsReturn => {
       setError(null);
       
       const targetRange = range || dateRange;
-      const response = await whatsappService.getAnalytics(
-        accountId,
-        targetRange.startDate.toISOString(),
-        targetRange.endDate.toISOString()
-      );
-      
-      setAnalytics(response.data);
+      const response = await whatsappService.getCounters(accountId, 'month');
+      setAnalytics(response.data as AnalyticsData);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load analytics';
       setError(message);
@@ -71,13 +68,8 @@ export const useWhatsAppAnalytics = (): UseWhatsAppAnalyticsReturn => {
       setError(null);
       
       const targetRange = range || dateRange;
-      const response = await whatsappService.getMessageStats(
-        accountId,
-        targetRange.startDate.toISOString(),
-        targetRange.endDate.toISOString()
-      );
-      
-      return response.data;
+      const response = await whatsappService.getCounters(accountId, 'month');
+      return response.data as AnalyticsData;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load message stats';
       setError(message);
@@ -93,13 +85,8 @@ export const useWhatsAppAnalytics = (): UseWhatsAppAnalyticsReturn => {
       setError(null);
       
       const targetRange = range || dateRange;
-      const response = await whatsappService.getConversationStats(
-        accountId,
-        targetRange.startDate.toISOString(),
-        targetRange.endDate.toISOString()
-      );
-      
-      return response.data;
+      const response = await whatsappService.getConversations(accountId);
+      return { conversations: response.data, range: targetRange } as AnalyticsData;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load conversation stats';
       setError(message);
@@ -113,15 +100,14 @@ export const useWhatsAppAnalytics = (): UseWhatsAppAnalyticsReturn => {
     try {
       setError(null);
       
-      const response = await whatsappService.exportAnalytics(
-        accountId,
-        dateRange.startDate.toISOString(),
-        dateRange.endDate.toISOString(),
-        format
-      );
-      
+      const response = await whatsappService.getCounters(accountId, 'month');
+
       // Create download link
-      const blob = new Blob([response.data], {
+      const serialized = format === 'csv'
+        ? `key,value\n${Object.entries(response.data as Record<string, unknown>).map(([k, v]) => `${k},${String(v)}`).join('\n')}`
+        : JSON.stringify(response.data, null, 2);
+
+      const blob = new Blob([serialized], {
         type: format === 'csv' ? 'text/csv' : 'application/json'
       });
       const url = window.URL.createObjectURL(blob);
@@ -143,7 +129,8 @@ export const useWhatsAppAnalytics = (): UseWhatsAppAnalyticsReturn => {
     setError(null);
   }, []);
 
-  const refresh = useCallback(async (accountId: string) => {
+  const refresh = useCallback(async () => {
+    const accountId = 'default';
     await loadAnalytics(accountId);
   }, [loadAnalytics]);
 

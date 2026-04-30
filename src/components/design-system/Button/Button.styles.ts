@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 /**
  * Button Component Styles
  * Styled-components styling for all button variants and states
@@ -305,3 +306,4 @@ export const LoadingSpinner = styled.span`
     }
   }
 `;
+

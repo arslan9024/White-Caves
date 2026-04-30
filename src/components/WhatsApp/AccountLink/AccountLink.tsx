@@ -349,7 +349,7 @@ export const AccountLink: React.FC<AccountLinkProps> = ({ onSuccess, onCancel })
             <Select value={selectedAccountId} onChange={handleAccountSelect} disabled={isLoading}>
               {accounts.map(account => (
                 <option key={account.accountId} value={account.accountId}>
-                  {account.name || account.businessName || 'Unnamed Account'}
+                  {account.phoneNumber || 'Unnamed Account'}
                 </option>
               ))}
             </Select>

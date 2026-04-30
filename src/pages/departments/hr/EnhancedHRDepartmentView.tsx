@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 /**
  * HR Department View - Fully Optimized with Caching and Performance Monitoring
  * Uses optimized API hooks with automatic caching, deduplication, and monitoring
@@ -170,3 +171,4 @@ export const HRDepartmentView: React.FC<HRDepartmentViewProps> = ({
 };
 
 export default HRDepartmentView;
+

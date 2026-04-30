@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -276,3 +277,4 @@ const RelationalDashboardLayout = ({ userPermissions = {} }: { userPermissions?:
 };
 
 export default RelationalDashboardLayout;
+

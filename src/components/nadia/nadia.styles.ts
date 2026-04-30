@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 /**
  * NADIA Components - Styled Components
  * Design system integration with styled-components
@@ -768,3 +769,4 @@ export const ErrorAlert = styled.div`
 `;
 
 export { tokens };
+

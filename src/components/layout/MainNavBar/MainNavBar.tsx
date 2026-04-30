@@ -8,6 +8,7 @@ import {
   Zap, Activity, Users, Home, TrendingUp, AlertCircle, Command,
   Menu, X
 } from 'lucide-react';
+import ThemeToggle from '../../ThemeToggle';
 import {
   NavBarContainer,
   NavLeftSection,
@@ -277,12 +278,7 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
       </NavCenterSection>
 
       <NavRightSection>
-        <NavIconButton
-          onClick={onThemeToggle}
-          title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-        >
-          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-        </NavIconButton>
+        <ThemeToggle />
 
         <DropdownContainer ref={notifRef}>
           <NavIconButton

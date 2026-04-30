@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { MediaFile } from '../../../types/phase6.types';
+import { MediaFile } from '../../types/phase6.types';
 
 interface FilterOptions {
   type?: 'image' | 'document' | 'audio' | 'video' | 'all';

@@ -5,10 +5,7 @@
  */
 
 export { useWhatsAppIntegration } from './useWhatsAppIntegration';
-export type { UseWhatsAppIntegrationReturn } from './useWhatsAppIntegration';
-
 export { useWhatsAppConversations } from './useWhatsAppConversations';
 export type { UseWhatsAppConversationsReturn } from './useWhatsAppConversations';
-
 export { useWhatsAppAnalytics } from './useWhatsAppAnalytics';
 export type { UseWhatsAppAnalyticsReturn } from './useWhatsAppAnalytics';

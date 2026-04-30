@@ -7,6 +7,7 @@ import { setTheme } from './store/navigationSlice';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './styles/ThemeProvider';
 import AppLayout from './components/layout/AppLayout';
+import PortalLayout from './components/portal/PortalLayout';
 import SuspenseLoader from './components/common/SuspenseLoader';
 import RouteErrorBoundary from './components/RouteErrorBoundary';
 import type { RootState, AppDispatch } from './store/store';
@@ -589,13 +590,13 @@ function App(): React.JSX.Element {
                   path="/landlord-portal"
                   element={
                     <ProtectedRoute allowedRoles={['landlord']}>
-                      <AppLayout>
+                      <PortalLayout portalType="landlord">
                         <RouteErrorBoundary section="Landlord Portal">
                           <Suspense fallback={<SuspenseLoader />}>
                             <LandlordPortalPage />
                           </Suspense>
                         </RouteErrorBoundary>
-                      </AppLayout>
+                      </PortalLayout>
                     </ProtectedRoute>
                   }
                 />
@@ -605,13 +606,13 @@ function App(): React.JSX.Element {
                   path="/tenant-portal"
                   element={
                     <ProtectedRoute allowedRoles={['tenant']}>
-                      <AppLayout>
+                      <PortalLayout portalType="tenant">
                         <RouteErrorBoundary section="Tenant Portal">
                           <Suspense fallback={<SuspenseLoader />}>
                             <TenantPortalPage />
                           </Suspense>
                         </RouteErrorBoundary>
-                      </AppLayout>
+                      </PortalLayout>
                     </ProtectedRoute>
                   }
                 />

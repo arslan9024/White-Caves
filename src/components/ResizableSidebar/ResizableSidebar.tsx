@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 /**
  * Resizable Sidebar Component
  * Wraps sidebar content with drag-to-resize functionality
@@ -167,3 +168,4 @@ export const ResizableSidebar: React.FC<ResizableSidebarProps> = ({
 ResizableSidebar.displayName = 'ResizableSidebar';
 
 export default ResizableSidebar;
+

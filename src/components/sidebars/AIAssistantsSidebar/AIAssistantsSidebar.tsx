@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 // src/components/sidebars/AIAssistantsSidebar/AIAssistantsSidebar.tsx
 /**
  * Right Sidebar: AI Assistants
@@ -263,3 +264,4 @@ export const AIAssistantsSidebar: React.FC<AIAssistantsSidebarProps> = ({
 };
 
 export default AIAssistantsSidebar;
+

@@ -1,4 +1,4 @@
-// src/components/shared/sidebars/SidebarSection.tsx
+﻿// src/components/shared/sidebars/SidebarSection.tsx
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   SidebarSection as StyledSection,
@@ -8,7 +8,7 @@ import {
 } from './styled/SidebarStyledComponents';
 import { useSidebarState } from '../../../hooks/useSidebarState';
 
-interface SidebarSectionProps {
+export interface SidebarSectionProps {
   id: string;
   title: string;
   icon?: React.ReactNode;
@@ -119,3 +119,6 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
 };
 
 export default SidebarSection;
+
+
+

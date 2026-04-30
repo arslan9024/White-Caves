@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Analytics Component
  * 
  * Dashboard displaying WhatsApp messaging analytics
@@ -117,8 +117,8 @@ const CardSubtext = styled.div`
   color: #999;
 `;
 
-const Trend = styled.span<{ positive?: boolean }>`
-  color: ${props => (props.positive ? '#25d366' : '#f44336')};
+const Trend = styled.span<{ $positive?: boolean }>`
+  color: ${props => (props.$positive ? '#25d366' : '#f44336')};
   font-weight: 600;
 `;
 
@@ -335,34 +335,43 @@ export const Analytics: React.FC<AnalyticsProps> = ({ accountId }) => {
         </Button>
       </FilterBar>
 
-      {analytics && (
+      {analytics && (() => {
+        const a = analytics as {
+          totalMessages?: number;
+          activeConversations?: number;
+          avgResponseTime?: string | number;
+          deliveryRate?: number;
+          messagesByDate?: Array<{ date: string; count: number }>;
+          topConversations?: Array<{ recipientName?: string; recipientPhone?: string; messageCount?: number }>;
+        };
+        return (
         <>
           <Grid>
             <Card>
               <CardTitle>Total Messages</CardTitle>
-              <CardValue>{analytics.totalMessages || 0}</CardValue>
+              <CardValue>{a.totalMessages || 0}</CardValue>
               <CardSubtext>
-                <Trend positive>{(Math.random() * 20).toFixed(1)}%</Trend> increase
+                <Trend $positive={true}>{(Math.random() * 20).toFixed(1)}%</Trend> increase
               </CardSubtext>
             </Card>
 
             <Card>
               <CardTitle>Active Conversations</CardTitle>
-              <CardValue>{analytics.activeConversations || 0}</CardValue>
+              <CardValue>{a.activeConversations || 0}</CardValue>
               <CardSubtext>
-                <Trend positive>{(Math.random() * 15).toFixed(1)}%</Trend> increase
+                <Trend $positive={true}>{(Math.random() * 15).toFixed(1)}%</Trend> increase
               </CardSubtext>
             </Card>
 
             <Card>
               <CardTitle>Avg Response Time</CardTitle>
-              <CardValue>{analytics.avgResponseTime || '--'}</CardValue>
+              <CardValue>{a.avgResponseTime || '--'}</CardValue>
               <CardSubtext>Minutes per message</CardSubtext>
             </Card>
 
             <Card>
               <CardTitle>Message Delivery Rate</CardTitle>
-              <CardValue>{analytics.deliveryRate || 0}%</CardValue>
+              <CardValue>{a.deliveryRate || 0}%</CardValue>
               <CardSubtext>Successfully delivered</CardSubtext>
             </Card>
           </Grid>
@@ -379,19 +388,23 @@ export const Analytics: React.FC<AnalyticsProps> = ({ accountId }) => {
             </SimpleChart>
           </ChartContainer>
 
-          {analytics.topConversations && analytics.topConversations.length > 0 && (
+          {Array.isArray(a.topConversations) && (a.topConversations as Array<{ recipientName?: string; recipientPhone?: string; messageCount?: number }>).length > 0 && (
             <TopConversations>
               <ChartTitle>Top Conversations</ChartTitle>
-              {analytics.topConversations.map((conv, index) => (
+              {(a.topConversations as Array<{ recipientName?: string; recipientPhone?: string; messageCount?: number }>).map((conv, index) => (
                 <ConversationRow key={index}>
-                  <ConversationName>{conv.recipientName || conv.recipientNumber}</ConversationName>
+                  <ConversationName>{conv.recipientName || conv.recipientPhone}</ConversationName>
                   <ConversationCount>{conv.messageCount} messages</ConversationCount>
                 </ConversationRow>
               ))}
             </TopConversations>
           )}
         </>
-      )}
+        );
+      })()}
     </Container>
   );
 };
+
+
+

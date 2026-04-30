@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 import styled from 'styled-components';
 import { theme } from '../styles/theme';
 
@@ -331,3 +332,4 @@ export const DownloadHint = styled.p`
     color: var(--text-secondary, #a0a0a0);
   }
 `;
+

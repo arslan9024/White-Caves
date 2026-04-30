@@ -54,6 +54,22 @@ describe('TenantPaymentHistoryTab', () => {
     expect(screen.getByTestId('tenant-outstanding-card')).toHaveTextContent('AED 16,000');
   });
 
+  it('renders next payment due card with pending month', () => {
+    renderWithStore(<TenantPaymentHistoryTab />);
+
+    expect(screen.getByTestId('tenant-next-payment-card')).toBeInTheDocument();
+    // March 2026 is the first pending payment
+    expect(screen.getByTestId('tenant-next-payment-month')).toHaveTextContent('March 2026');
+  });
+
+  it('renders disabled Pay Now button with tooltip', () => {
+    renderWithStore(<TenantPaymentHistoryTab />);
+
+    const btn = screen.getByTestId('tenant-pay-now-btn');
+    expect(btn).toBeDisabled();
+    expect(btn).toHaveAttribute('title', 'Online payments coming in Phase 5');
+  });
+
   it('renders all payment rows', () => {
     renderWithStore(<TenantPaymentHistoryTab />);
 
@@ -114,3 +130,4 @@ describe('TenantPaymentHistoryTab', () => {
     ).toBeInTheDocument();
   });
 });
+

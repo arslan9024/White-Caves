@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { MediaFile } from '../../../types/phase6.types';
+import type { MediaFile } from '../../types/phase6.types';
 
 interface UploadResponse {
   id: string;

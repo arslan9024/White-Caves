@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Notification Center Component
  * Bell icon with notification dropdown
  */
@@ -37,7 +37,7 @@ const BellButton = styled.button`
   cursor: pointer;
   padding: ${spacing.sm};
   position: relative;
-  transition: ${theme.transitions.create('all', theme.transitions.durations.standard)};
+  transition: ${theme.transitions.all};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -100,7 +100,7 @@ const NotificationItem = styled.div<{ $read: boolean }>`
   background: ${(props) =>
     props.$read ? theme.colors.background.primary : theme.colors.background.secondary};
   cursor: pointer;
-  transition: ${theme.transitions.create('all', theme.transitions.durations.standard)};
+  transition: ${theme.transitions.all};
 
   &:hover {
     background: ${theme.colors.background.secondary};
@@ -115,25 +115,25 @@ const NotificationTitle = styled.div`
   font-weight: ${theme.typography.weights.semibold};
   color: ${theme.colors.text.primary};
   margin-bottom: ${theme.spacing.xs};
-  font-size: ${theme.typography.sizes.sm};
+  font-size: ${'0.875rem'};
 `;
 
 const NotificationMessage = styled.div`
   color: ${theme.colors.text.secondary};
-  font-size: ${theme.typography.sizes.xs};
+  font-size: ${'0.75rem'};
   margin-bottom: ${theme.spacing.xs};
 `;
 
 const NotificationTime = styled.div`
-  color: ${theme.colors.text.disabled};
-  font-size: ${theme.typography.sizes.xs};
+  color: ${theme.colors.disabled};
+  font-size: ${'0.75rem'};
 `;
 
 const EmptyState = styled.div`
   padding: ${theme.spacing.lg};
   text-align: center;
-  color: ${theme.colors.text.disabled};
-  font-size: ${theme.typography.sizes.sm};
+  color: ${theme.colors.disabled};
+  font-size: ${'0.875rem'};
 `;
 
 const ViewAllButton = styled.button`
@@ -145,7 +145,7 @@ const ViewAllButton = styled.button`
   border-radius: 0;
   cursor: pointer;
   font-weight: ${theme.typography.weights.medium};
-  transition: ${theme.transitions.create('all', theme.transitions.durations.standard)};
+  transition: ${theme.transitions.all};
 
   &:hover {
     background: ${theme.colors.primary};
@@ -230,3 +230,4 @@ const Backdrop = styled.div`
 NotificationCenter.displayName = 'NotificationCenter';
 
 export default NotificationCenter;
+

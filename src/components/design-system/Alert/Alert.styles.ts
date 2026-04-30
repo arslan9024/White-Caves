@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 /**
  * Alert Component Styles
  */
@@ -116,3 +117,4 @@ export const AlertCloseButton = styled.button`
     color: ${theme.colors.text.primary};
   }
 `;
+

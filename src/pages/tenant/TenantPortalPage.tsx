@@ -1,30 +1,28 @@
 /**
- * TenantPortalPage — Phase 2.7-2.11: Tenant Self-Service Portal
+ * TenantPortalPage — Phase 2.7-2.11 + 2.13: Tenant Self-Service Portal
  *
- * Provides tenants with access to:
+ * Provides tenants with read-only access to:
+ * - Home Dashboard (2.13) ← default landing
  * - My Lease (2.8)
- * - Payment History + PDC Schedule (2.9)
+ * - Payment History (2.9)
  * - Maintenance Requests (2.10)
  * - Documents (2.11)
- * - Key Handover (Stage 8 leasing lifecycle)
  *
  * @component
  */
 
 import React, { FC, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import type { RootState, AppDispatch } from '../../store/store';
-import { logout } from '../../store/authSlice';
-import { clearUser } from '../../store/userSlice';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../store/store';
 import '../RolePages.css';
+import TenantPortalHome from '../../components/portal/tenant/TenantPortalHome';
 import TenantLeaseTab from '../../components/portal/tenant/TenantLeaseTab';
 import TenantPaymentHistoryTab from '../../components/portal/tenant/TenantPaymentHistoryTab';
 import TenantMaintenanceTab from '../../components/portal/tenant/TenantMaintenanceTab';
 import TenantDocumentsTab from '../../components/portal/tenant/TenantDocumentsTab';
-import TenantKeyHandoverTab from '../../components/portal/tenant/TenantKeyHandoverTab';
+import PortalProfileTab from '../../components/portal/PortalProfileTab';
 
-type TabKey = 'lease' | 'payments' | 'maintenance' | 'documents' | 'key_handover';
+type TabKey = 'home' | 'lease' | 'payments' | 'maintenance' | 'documents' | 'profile';
 
 interface Tab {
   key: TabKey;
@@ -33,24 +31,17 @@ interface Tab {
 }
 
 const tabs: Tab[] = [
+  { key: 'home', label: 'Dashboard', icon: '🏠' },
   { key: 'lease', label: 'My Lease', icon: '📋' },
   { key: 'payments', label: 'Payment History', icon: '💳' },
   { key: 'maintenance', label: 'Maintenance', icon: '🔧' },
   { key: 'documents', label: 'Documents', icon: '📄' },
-  { key: 'key_handover', label: 'Key Handover', icon: '🔑' },
+  { key: 'profile', label: 'My Profile', icon: '👤' },
 ];
 
 const TenantPortalPage: FC = () => {
-  const [activeTab, setActiveTab] = useState<TabKey>('lease');
+  const [activeTab, setActiveTab] = useState<TabKey>('home');
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
-  const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    dispatch(logout());
-    dispatch(clearUser());
-    navigate('/signin');
-  };
 
   if (!currentUser) {
     return (
@@ -66,6 +57,8 @@ const TenantPortalPage: FC = () => {
 
   const renderTabContent = () => {
     switch (activeTab) {
+      case 'home':
+        return <TenantPortalHome onNavigate={key => setActiveTab(key as TabKey)} />;
       case 'lease':
         return <TenantLeaseTab />;
       case 'payments':
@@ -74,37 +67,15 @@ const TenantPortalPage: FC = () => {
         return <TenantMaintenanceTab />;
       case 'documents':
         return <TenantDocumentsTab />;
-      case 'key_handover':
-        return <TenantKeyHandoverTab />;
+      case 'profile':
+        return <PortalProfileTab />;
       default:
-        return <TenantLeaseTab />;
+        return <TenantPortalHome onNavigate={key => setActiveTab(key as TabKey)} />;
     }
   };
 
   return (
     <div className="role-page no-sidebar">
-      {/* Portal Navbar */}
-      <nav className="portal-navbar" data-testid="portal-navbar">
-        <div className="portal-navbar-brand">
-          <span className="portal-navbar-logo">🏠</span>
-          <span className="portal-navbar-title">White Caves</span>
-          <span className="portal-navbar-subtitle">Tenant</span>
-        </div>
-        <div className="portal-navbar-user">
-          <span className="portal-navbar-username" data-testid="portal-navbar-username">
-            {(currentUser.name ?? currentUser.email).split(' ')[0]}
-          </span>
-          <button
-            type="button"
-            className="portal-navbar-logout"
-            onClick={handleLogout}
-            data-testid="portal-navbar-logout"
-          >
-            Sign Out
-          </button>
-        </div>
-      </nav>
-
       <div className="role-page-content full-width">
         <div className="page-header">
           <h1>Tenant Portal</h1>

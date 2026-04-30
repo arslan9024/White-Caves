@@ -433,7 +433,7 @@
 }
 
 .result-highlight {
-  background: rgba(227, 30, 36, 0.12);
+  background: rgba(212, 175, 55, 0.12);
   border: 1px solid var(--primary-color);
   border-radius: 12px;
   padding: 1.5rem;
@@ -913,6 +913,95 @@
 /* ──────────────────────────────────────────────── */
 /* Portal Tab Navigation (LandlordPortalPage, TenantPortalPage) */
 /* ──────────────────────────────────────────────── */
+/* Portal Home Dashboard (Phase 2.13)              */
+/* ──────────────────────────────────────────────── */
+
+.portal-welcome-banner {
+  background: linear-gradient(135deg, var(--primary-color, #2563eb) 0%, #1d4ed8 100%);
+  border-radius: 16px;
+  padding: 2rem 2.5rem;
+  margin-bottom: 2rem;
+  color: #fff;
+}
+
+.portal-welcome-banner h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+.portal-welcome-subtitle {
+  font-size: 1rem;
+  opacity: 0.85;
+  margin: 0;
+}
+
+.metric-icon {
+  font-size: 1.75rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.metric-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0.25rem 0;
+}
+
+.metric-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.portal-quick-links {
+  margin-top: 2rem;
+}
+
+.portal-quick-links h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.quick-links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.quick-link-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.quick-link-tile:hover {
+  border-color: var(--primary-color, #2563eb);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+}
+
+.quick-link-icon {
+  font-size: 1.75rem;
+}
+
+.quick-link-label {
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* ──────────────────────────────────────────────── */
 
 .portal-tab-navigation {
   display: flex;
@@ -1309,6 +1398,49 @@
   text-align: center;
 }
 
+.next-payment-card {
+  border-color: var(--accent-gold, #c9a84c);
+}
+
+.next-payment-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent-gold, #c9a84c);
+}
+
+.pay-now-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-top: 0.75rem;
+}
+
+.btn-disabled:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pay-now-tooltip {
+  display: none;
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--card-border, #e5e7eb);
+  border-radius: 6px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  color: var(--text-secondary, #6b7280);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.pay-now-wrapper:hover .pay-now-tooltip {
+  display: block;
+}
+
 .summary-label {
   display: block;
   font-size: 0.875rem;
@@ -1696,115 +1828,385 @@
   }
 }
 
-/* ─── Portal Navbar (Phase 2.12) ─────────────────────────────────────────── */
+/* ================================================ */
+/* PortalNavbar + PortalLayout (Phase 2.12)         */
+/* ================================================ */
 
+/* --- PortalLayout wrapper --- */
+.portal-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--background, #f9fafb);
+}
+
+.portal-layout__main {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* --- PortalNavbar --- */
 .portal-navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  border-bottom: 2px solid #c8a84b;
+  height: 60px;
+  padding: 0 1.5rem;
+  background: var(--card-bg, #ffffff);
+  border-bottom: 2px solid var(--card-border, #e5e7eb);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
-.portal-navbar-brand {
+.portal-navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.portal-navbar__logo {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  text-decoration: none;
+  color: var(--text-primary);
 }
 
-.portal-navbar-logo {
-  font-size: 1.5rem;
-  line-height: 1;
-}
-
-.portal-navbar-title {
-  font-size: 1.125rem;
+.portal-navbar__company {
+  font-size: 1rem;
   font-weight: 700;
-  color: #c8a84b;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.portal-navbar__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
   letter-spacing: 0.02em;
 }
 
-.portal-navbar-subtitle {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
-  background: rgba(200, 168, 75, 0.15);
-  border: 1px solid rgba(200, 168, 75, 0.3);
-  border-radius: 4px;
-  padding: 0.125rem 0.5rem;
-  margin-left: 0.25rem;
-}
-
-.portal-navbar-user {
+.portal-navbar__actions {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.portal-navbar-username {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.85);
+.portal-navbar__user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--text-primary);
   font-weight: 500;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  padding: 0.375rem 0.75rem;
+  transition: background 0.15s ease;
 }
 
-.portal-navbar-logout {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #c8a84b;
+.portal-navbar__user:hover {
+  background: var(--card-bg-hover, rgba(0,0,0,0.05));
+}
+
+.portal-navbar__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary-color, #2563eb);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.portal-navbar__username {
+  font-size: 0.875rem;
+}
+
+.portal-navbar__logout {
+  padding: 0.4rem 1rem;
   background: transparent;
-  border: 1px solid #c8a84b;
-  border-radius: 6px;
-  padding: 0.375rem 0.875rem;
+  border: 1.5px solid var(--card-border, #e5e7eb);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
   cursor: pointer;
-  transition:
-    background 0.15s ease,
-    color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
-.portal-navbar-logout:hover {
-  background: #c8a84b;
-  color: #1a1a2e;
+.portal-navbar__logout:hover {
+  border-color: #C41E3A;
+  color: #C41E3A;
+  background: rgba(196,30,58,0.05);
 }
 
-/* Summary card alert state */
-.summary-card--alert {
-  border-left: 3px solid #ef4444 !important;
-  background: rgba(239, 68, 68, 0.06) !important;
-}
+/* Responsive portal layout */
+@media (max-width: 768px) {
+  .portal-layout__main {
+    padding: 1rem;
+  }
 
-.summary-card-meta {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
-  margin-top: 0.125rem;
-}
+  .portal-navbar {
+    padding: 0 1rem;
+    height: 56px;
+  }
 
-/* Disabled pay button */
-.btn-disabled {
-  opacity: 0.45;
-  cursor: not-allowed !important;
-}
+  .portal-navbar__company {
+    display: none;
+  }
 
-/* Newly submitted maintenance row highlight */
-.maintenance-row--new {
-  border-left: 3px solid #22c55e;
-  background: rgba(34, 197, 94, 0.06);
+  .portal-navbar__username {
+    display: none;
+  }
+
+  .portal-navbar__badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+  }
 }
 
 @media (max-width: 480px) {
-  .portal-navbar {
-    padding: 0.625rem 1rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .portal-navbar-subtitle {
+  .portal-navbar__badge {
     display: none;
   }
+}
 
-  .portal-navbar-username {
-    display: none;
-  }
+/* ================================================ */
+/* Priority Badges & Late Fee (Phase 2.9 + 2.10)   */
+/* ================================================ */
+
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 100px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: 0.5rem;
+}
+
+.priority-badge.priority-low {
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+  border: 1px solid rgba(22, 163, 74, 0.25);
+}
+
+.priority-badge.priority-medium {
+  background: rgba(217, 119, 6, 0.1);
+  color: #d97706;
+  border: 1px solid rgba(217, 119, 6, 0.25);
+}
+
+.priority-badge.priority-high {
+  background: rgba(196, 30, 58, 0.1);
+  color: #C41E3A;
+  border: 1px solid rgba(196, 30, 58, 0.3);
+}
+
+/* Late fee notice in next-payment card */
+.late-fee-notice {
+  font-size: 0.8rem;
+  color: #C41E3A;
+  font-weight: 600;
+  margin: 0.25rem 0 0;
+  padding: 0.25rem 0.5rem;
+  background: rgba(196, 30, 58, 0.08);
+  border-radius: 4px;
+  border-left: 3px solid #C41E3A;
+}
+
+/* Next payment amount emphasis */
+.next-payment-amount {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0.25rem 0;
+}
+
+/* Maintenance priority select label */
+.maintenance-tab-content label {
+  display: block;
+  margin-top: 0.75rem;
+}
+
+/* ================================================ */
+/* Tenant Detail Modal (Phase 2.3)                  */
+/* ================================================ */
+
+.modal-content--wide {
+  max-width: 680px;
+  width: 90%;
+}
+
+.modal-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.modal-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0 0 1rem;
+}
+
+.modal-tabs {
+  border-bottom: 2px solid var(--card-border);
+  margin-bottom: 1.25rem;
+}
+
+.detail-section {
+  animation: fadeIn 0.2s ease;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.detail-grid > div strong {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 0.2rem;
+}
+
+.detail-grid > div p {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.empty-state-text {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 2rem 0;
+  font-size: 0.9rem;
+}
+
+/* ================================================ */
+/* Portal Profile Settings (Phase 2.14)             */
+/* ================================================ */
+
+.portal-profile-tab {
+  max-width: 600px;
+}
+
+.profile-section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.profile-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.profile-section h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem;
+}
+
+.profile-field {
+  margin-bottom: 1rem;
+}
+
+.profile-field label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  margin-bottom: 0.35rem;
+}
+
+.profile-field input {
+  width: 100%;
+  padding: 0.6rem 0.875rem;
+  border: 1.5px solid var(--card-border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+
+.profile-field input:focus {
+  outline: none;
+  border-color: var(--primary-color, #2563eb);
+}
+
+.profile-field input[disabled],
+.profile-field input[aria-readonly='true'] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: rgba(0,0,0,0.04);
+}
+
+.profile-field .field-hint {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.profile-save-btn {
+  padding: 0.6rem 1.5rem;
+  background: var(--primary-color, #2563eb);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.profile-save-btn:hover {
+  opacity: 0.88;
+}
+
+.profile-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.profile-success-msg {
+  font-size: 0.875rem;
+  color: #16a34a;
+  font-weight: 600;
+  margin-top: 0.75rem;
+}
+
+.profile-error-msg {
+  font-size: 0.875rem;
+  color: #C41E3A;
+  font-weight: 600;
+  margin-top: 0.75rem;
 }

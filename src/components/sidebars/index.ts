@@ -11,4 +11,4 @@ export { AIAssistantsSidebar } from './AIAssistantsSidebar/AIAssistantsSidebar';
 export type { AIAssistantsSidebarProps } from './AIAssistantsSidebar/AIAssistantsSidebar';
 
 // Re-export shared sidebar components
-export * from './shared';
+// export * from './shared'; // shared module not yet implemented

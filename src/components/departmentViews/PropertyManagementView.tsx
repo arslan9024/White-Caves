@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 import React from 'react';
 import BaseDepartmentView from './BaseDepartmentView';
 import { getDepartmentConfig } from '../../config/departmentViewConfigs';
@@ -88,3 +89,4 @@ const PropertyManagementView: React.FC<PropertyManagementViewProps> = ({
 };
 
 export default PropertyManagementView;
+

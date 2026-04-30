@@ -1,0 +1,94 @@
+/**
+ * ThemeToggle.css
+ * @agent @Una (Luxury UI/UX Specialist)
+ *
+ * Red/White/Black design system
+ * Supports light + dark modes via [data-theme] attribute on <html>
+ */
+
+/* ── Container ────────────────────────────────────────── */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+[data-theme='dark'] .theme-toggle {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ── Buttons ──────────────────────────────────────────── */
+.theme-toggle__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  outline-offset: 2px;
+}
+
+.theme-toggle__btn:focus-visible {
+  outline: 2px solid #C41E3A;
+}
+
+.theme-toggle__btn:hover:not(.theme-toggle__btn--active) {
+  background: rgba(196, 30, 58, 0.08);
+  color: #C41E3A;
+}
+
+[data-theme='dark'] .theme-toggle__btn {
+  color: rgba(250, 250, 250, 0.5);
+}
+
+[data-theme='dark'] .theme-toggle__btn:hover:not(.theme-toggle__btn--active) {
+  background: rgba(196, 30, 58, 0.15);
+  color: #FF4D6D;
+}
+
+/* ── Active State ─────────────────────────────────────── */
+.theme-toggle__btn--active {
+  background: #C41E3A;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(196, 30, 58, 0.35);
+}
+
+.theme-toggle__btn--active:hover {
+  background: #a51830 !important;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .theme-toggle__btn--active {
+  background: #C41E3A;
+  color: #ffffff;
+  box-shadow: 0 2px 12px rgba(196, 30, 58, 0.5);
+}
+
+/* ── Label text ───────────────────────────────────────── */
+.theme-toggle__label {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.6875rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* ── Icon-only variant ────────────────────────────────── */
+.theme-toggle--icon-only .theme-toggle__btn {
+  padding: 6px;
+  width: 30px;
+  height: 30px;
+  justify-content: center;
+}

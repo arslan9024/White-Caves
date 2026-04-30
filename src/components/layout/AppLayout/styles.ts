@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 
 const { colors, transitions } = theme;
+const darkBackground = colors.background.secondary;
+const standardTransition = transitions.standard;
 
 /**
  * Unified CRM Layout: TopBar (56px) + Sidebar + Content
@@ -18,7 +20,7 @@ export const AppLayoutContainer = styled.div`
   background: ${colors.background.primary};
 
   @media (prefers-color-scheme: dark) {
-    background: ${colors.background.dark};
+    background: ${darkBackground};
   }
 `;
 
@@ -33,7 +35,7 @@ export const AppMain = styled.main<{ $withNav?: boolean }>`
   min-height: calc(100vh - 56px);
   background: ${colors.background.primary};
   overflow-y: auto;
-  transition: margin-left ${transitions.durations.shorter} ${transitions.easing.easeInOut};
+  transition: margin-left ${standardTransition};
 
   /* Add bottom padding for MobileBottomNav on mobile */
   @media (max-width: 767px) {
@@ -41,6 +43,6 @@ export const AppMain = styled.main<{ $withNav?: boolean }>`
   }
 
   @media (prefers-color-scheme: dark) {
-    background: ${colors.background.dark};
+    background: ${darkBackground};
   }
 `;

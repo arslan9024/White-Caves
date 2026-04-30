@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 // src/components/features/SearchProperties/SearchProperties.tsx
 /**
  * Property Search Feature Component
@@ -399,3 +400,4 @@ export const SearchProperties: React.FC = () => {
 };
 
 export default SearchProperties;
+

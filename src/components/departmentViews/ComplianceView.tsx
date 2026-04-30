@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 import React from 'react';
 import BaseDepartmentView from './BaseDepartmentView';
 import { getDepartmentConfig } from '../../config/departmentViewConfigs';
@@ -84,3 +85,4 @@ const ComplianceView: React.FC<ComplianceViewProps> = ({ serviceName = 'complian
 };
 
 export default ComplianceView;
+

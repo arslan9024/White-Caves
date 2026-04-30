@@ -20,9 +20,17 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data, onAction, onSave }) => 
     leadAutoAssign: true,
     darkMode: false
   });
+  const [saved, setSaved] = useState(false);
 
   const handleChange = (key: string, value: string | boolean) => {
     setSettings(prev => ({ ...prev, [key]: value }));
+    setSaved(false);
+  };
+
+  const handleSave = () => {
+    onSave?.(settings);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 3000);
   };
 
   const integrations = [
@@ -43,9 +51,10 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data, onAction, onSave }) => 
 
   return (
     <div className="settings-tab">
+      {saved && <div className="crud-toast" role="status">✅ Settings saved successfully</div>}
       <div className="tab-header">
         <h3>System Settings</h3>
-        <button className="primary-btn" onClick={() => onSave?.(settings)}>
+        <button className="primary-btn" onClick={handleSave}>
           <span>💾</span> Save Changes
         </button>
       </div>

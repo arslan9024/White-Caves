@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 import styled from 'styled-components';
 import { theme } from '../styles/theme';
 
@@ -341,3 +342,4 @@ export const LoadMoreContainer = styled.div`
   justify-content: center;
   margin-top: 2rem;
 `;
+

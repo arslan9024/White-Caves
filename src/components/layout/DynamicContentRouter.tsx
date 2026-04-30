@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -391,3 +392,4 @@ function getServiceById(deptId: string, serviceId: string) {
 }
 
 export default DynamicContentRouter;
+

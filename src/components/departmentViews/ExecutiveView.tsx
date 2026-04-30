@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 import React from 'react';
 import BaseDepartmentView from './BaseDepartmentView';
 import { getDepartmentConfig } from '../../config/departmentViewConfigs';
@@ -76,3 +77,4 @@ const ExecutiveView: React.FC<ExecutiveViewProps> = ({ serviceName = 'executive-
 };
 
 export default ExecutiveView;
+

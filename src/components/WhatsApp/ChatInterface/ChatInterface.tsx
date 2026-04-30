@@ -386,13 +386,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           </EmptyState>
         ) : (
           messages.map((message, index) => (
-            <div key={message.id || index}>
-              <MessageGroup isOwn={message.isOwn}>
+            <div key={message.messageId || index}>
+              <MessageGroup isOwn={message.direction === 'outgoing'}>
                 <div>
-                  <MessageBubble isOwn={message.isOwn}>
-                    {message.text}
+                  <MessageBubble isOwn={message.direction === 'outgoing'}>
+                    {message.body}
                   </MessageBubble>
-                  <MessageTime isOwn={message.isOwn}>
+                  <MessageTime isOwn={message.direction === 'outgoing'}>
                     {new Date(message.timestamp).toLocaleTimeString([], {
                       hour: '2-digit',
                       minute: '2-digit',
