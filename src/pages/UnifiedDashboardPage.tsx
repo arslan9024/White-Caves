@@ -16,6 +16,7 @@ import AgentsTab from '../components/owner/tabs/AgentsTab';
 import LeadsTab from '../components/owner/tabs/LeadsTab';
 import ContractsTab from '../components/owner/tabs/ContractsTab';
 import AnalyticsTab from '../components/owner/tabs/AnalyticsTab';
+import { CommissionsTab } from '../components/owner/tabs/CommissionsTab';
 import SettingsTab from '../components/owner/tabs/SettingsTab';
 import UsersTab from '../components/owner/tabs/UsersTab';
 import type {
@@ -205,6 +206,13 @@ const UnifiedDashboardPage: FC = () => {
         return (
           <RouteErrorBoundary section="Analytics">
             <AnalyticsTab data={tabData<AnalyticsData>(dataToRender)} />
+          </RouteErrorBoundary>
+        );
+      case 'admin':
+      case 'commissions':
+        return (
+          <RouteErrorBoundary section="Commissions">
+            <CommissionsTab />
           </RouteErrorBoundary>
         );
       case 'admin':
