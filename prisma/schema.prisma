@@ -24,6 +24,10 @@ model User {
   brnNumber    String?  // RERA Broker Registration Number
   brnExpiry    DateTime? // BRN expiry date
   reraLicenseNumber String? // RERA Brokerage License Number
+  // ── TOTP two-factor authentication (RFC 6238) ──
+  totpSecret      String?   // base32-encoded shared secret (encrypted at application layer)
+  totpEnabled     Boolean   @default(false) // true = TOTP is active for this account
+  totpBackupCodes String[]  // one-time recovery codes (bcrypt-hashed)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

@@ -19,6 +19,94 @@ import { verifyFirebaseIdToken, FirebaseAdminInitError } from '../config/firebas
 
 const router = Router();
 
+// ─── TOTP (RFC 6238) helpers — no external dependencies ─────────────────────
+
+/** Encode a buffer as a base32 string (RFC 4648, no padding). */
+function base32Encode(buf: Buffer): string {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  let bits = 0;
+  let value = 0;
+  let output = '';
+  for (let i = 0; i < buf.length; i++) {
+    // eslint-disable-next-line security/detect-object-injection
+    value = (value << 8) | buf[i];
+    bits += 8;
+    while (bits >= 5) {
+      bits -= 5;
+      output += alphabet[(value >>> bits) & 0x1f];
+    }
+  }
+  if (bits > 0) {
+    output += alphabet[(value << (5 - bits)) & 0x1f];
+  }
+  return output;
+}
+
+/** Decode a base32 string to Buffer. */
+function base32Decode(encoded: string): Buffer {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  const clean = encoded.toUpperCase().replace(/=+$/, '');
+  let bits = 0;
+  let value = 0;
+  const bytes: number[] = [];
+  for (const char of clean) {
+    const idx = alphabet.indexOf(char);
+    if (idx < 0) continue;
+    value = (value << 5) | idx;
+    bits += 5;
+    if (bits >= 8) {
+      bits -= 8;
+      bytes.push((value >>> bits) & 0xff);
+    }
+  }
+  return Buffer.from(bytes);
+}
+
+/**
+ * Compute a HOTP value from key + counter (RFC 4226).
+ * Returns a 6-digit string.
+ */
+function hotpCode(key: Buffer, counter: bigint): string {
+  const msg = Buffer.alloc(8);
+  msg.writeBigUInt64BE(counter);
+  const hmac = crypto.createHmac('sha1', key).update(msg).digest();
+  const offset = hmac[19] & 0x0f;
+  // Extract 4 bytes at the dynamic offset — safe: offset is 0–15, hmac is 20 bytes
+  // eslint-disable-next-line security/detect-object-injection
+  const b = [hmac[offset], hmac[offset + 1], hmac[offset + 2], hmac[offset + 3]] as const;
+  const code =
+    (((b[0] & 0x7f) << 24) | ((b[1] & 0xff) << 16) | ((b[2] & 0xff) << 8) | (b[3] & 0xff)) %
+    1_000_000;
+  return code.toString().padStart(6, '0');
+}
+
+const TOTP_STEP = 30; // seconds per time step
+const TOTP_WINDOW = 1; // ± 1 step tolerance
+
+/**
+ * Verify a TOTP code against a base32-encoded secret.
+ * Allows ±TOTP_WINDOW steps of clock drift.
+ */
+function verifyTOTP(secret: string, userCode: string): boolean {
+  if (!/^\d{6}$/.test(userCode)) return false;
+  const key = base32Decode(secret);
+  const counter = BigInt(Math.floor(Date.now() / 1000 / TOTP_STEP));
+  for (let delta = -TOTP_WINDOW; delta <= TOTP_WINDOW; delta++) {
+    if (hotpCode(key, counter + BigInt(delta)) === userCode) return true;
+  }
+  return false;
+}
+
+/** Generate a new TOTP secret (20 random bytes → base32). */
+function generateTOTPSecret(): string {
+  return base32Encode(crypto.randomBytes(20));
+}
+
+/** Generate N one-time backup codes (8 hex chars each). */
+function generateBackupCodes(n = 8): string[] {
+  return Array.from({ length: n }, () => crypto.randomBytes(4).toString('hex').toUpperCase());
+}
+
 const JWT_SIGN_OPTIONS: SignOptions = {
   expiresIn: JWT_EXPIRES_SECONDS,
   algorithm: 'HS256',
@@ -439,7 +527,8 @@ router.post(
 
 /**
  * POST /api/auth/verify-2fa
- * Verify 2FA code (placeholder — ready for SMS/TOTP integration)
+ * Verify TOTP code to complete login when 2FA is required.
+ * Accepts 6-digit TOTP code or an 8-char backup recovery code.
  */
 router.post(
   '/verify-2fa',
@@ -471,8 +560,216 @@ router.post(
       });
     }
 
-    // TODO: Implement real 2FA verification (Twilio SMS or TOTP)
-    throw new AppError('2FA verification not yet configured', 501);
+    const sanitizedEmail = sanitizeString(email).toLowerCase().trim();
+    const user = await prisma.user.findUnique({ where: { email: sanitizedEmail } });
+    if (!user) throw new AppError('Invalid credentials', 401);
+
+    if (!user.totpEnabled || !user.totpSecret) {
+      throw new AppError('Two-factor authentication is not enabled for this account', 400);
+    }
+
+    // Try TOTP code first, then backup codes
+    const codeStr = String(code).trim().toUpperCase();
+    let verified = false;
+
+    if (/^\d{6}$/.test(codeStr)) {
+      // Regular 6-digit TOTP
+      verified = verifyTOTP(user.totpSecret, codeStr);
+    } else if (/^[A-F0-9]{8}$/.test(codeStr)) {
+      // Backup recovery code — check against hashed list
+      for (const hashed of user.totpBackupCodes) {
+        if (await bcrypt.compare(codeStr, hashed)) {
+          // Consume the backup code (single-use)
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { totpBackupCodes: user.totpBackupCodes.filter(h => h !== hashed) },
+          });
+          verified = true;
+          break;
+        }
+      }
+    }
+
+    if (!verified) {
+      logger.warn('Failed 2FA attempt', { userId: user.id });
+      throw new AppError('Invalid verification code', 401);
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      JWT_SIGN_OPTIONS
+    );
+
+    logger.info('2FA verification successful', { userId: user.id });
+    res.status(200).json({ success: true, data: { token, verified: true } });
+  })
+);
+
+/**
+ * POST /api/auth/2fa/setup
+ * Generate a new TOTP secret for the authenticated user.
+ * Returns the secret and an otpauth:// URI for QR-code display.
+ * The user must still call /enable after scanning to activate.
+ */
+router.post(
+  '/2fa/setup',
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
+
+    const secret = generateTOTPSecret();
+    const appName = encodeURIComponent('White Caves CRM');
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
+    if (!user) throw new AppError('User not found', 404);
+
+    const accountLabel = encodeURIComponent(user.email);
+    const otpauthUri = `otpauth://totp/${appName}:${accountLabel}?secret=${secret}&issuer=${appName}&algorithm=SHA1&digits=6&period=30`;
+
+    // Temporarily store secret (not yet enabled — no DB write until /enable confirms)
+    // Store as pending in a short-lived signed token so the secret never sits idle in the DB
+    const pendingToken = jwt.sign({ userId, totpSecret: secret }, JWT_SECRET, { expiresIn: 600 });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        secret,
+        otpauthUri,
+        pendingToken,
+        instructions: [
+          '1. Scan the QR code (or enter the secret) in your authenticator app (Google Authenticator, Authy, etc.)',
+          '2. Enter the 6-digit code from your app to confirm setup at POST /api/auth/2fa/enable',
+        ],
+      },
+    });
+  })
+);
+
+/**
+ * POST /api/auth/2fa/enable
+ * Activate TOTP 2FA by verifying the first code from the authenticator app.
+ * Requires { pendingToken, code } in the request body.
+ */
+router.post(
+  '/2fa/enable',
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
+
+    const { pendingToken, code } = req.body;
+    if (!pendingToken || !code) {
+      throw new AppError('pendingToken and code are required', 400);
+    }
+
+    // Decode the pending token to retrieve the secret
+    let totpSecret: string;
+    try {
+      const payload = jwt.verify(pendingToken, JWT_SECRET) as { userId: string; totpSecret: string };
+      if (payload.userId !== userId) throw new AppError('Token does not match the current user', 403);
+      totpSecret = payload.totpSecret;
+    } catch (err) {
+      if (err instanceof AppError) throw err;
+      throw new AppError('Setup token is invalid or has expired — please restart 2FA setup', 400);
+    }
+
+    if (!verifyTOTP(totpSecret, String(code).trim())) {
+      throw new AppError('Verification code is incorrect — ensure your device clock is accurate', 400);
+    }
+
+    // Generate backup codes and hash them
+    const plainCodes = generateBackupCodes(8);
+    const hashedCodes = await Promise.all(plainCodes.map(c => bcrypt.hash(c, BCRYPT_ROUNDS)));
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { totpSecret, totpEnabled: true, totpBackupCodes: hashedCodes },
+    });
+
+    logger.info('TOTP 2FA enabled', { userId });
+    res.status(200).json({
+      success: true,
+      data: {
+        enabled: true,
+        backupCodes: plainCodes,
+        message: 'Two-factor authentication is now active. Store your backup codes in a safe place — they will not be shown again.',
+      },
+    });
+  })
+);
+
+/**
+ * POST /api/auth/2fa/disable
+ * Deactivate TOTP 2FA after confirming with a valid code.
+ * Requires { code } — either a current TOTP or a backup code.
+ */
+router.post(
+  '/2fa/disable',
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
+
+    const { code } = req.body;
+    if (!code) throw new AppError('Verification code is required to disable 2FA', 400);
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { totpSecret: true, totpEnabled: true, totpBackupCodes: true },
+    });
+    if (!user) throw new AppError('User not found', 404);
+    if (!user.totpEnabled || !user.totpSecret) {
+      throw new AppError('Two-factor authentication is not enabled', 400);
+    }
+
+    const codeStr = String(code).trim().toUpperCase();
+    let verified = false;
+
+    if (/^\d{6}$/.test(codeStr)) {
+      verified = verifyTOTP(user.totpSecret, codeStr);
+    } else if (/^[A-F0-9]{8}$/.test(codeStr)) {
+      for (const hashed of user.totpBackupCodes) {
+        if (await bcrypt.compare(codeStr, hashed)) { verified = true; break; }
+      }
+    }
+
+    if (!verified) throw new AppError('Invalid verification code', 401);
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { totpEnabled: false, totpSecret: null, totpBackupCodes: [] },
+    });
+
+    logger.info('TOTP 2FA disabled', { userId });
+    res.status(200).json({ success: true, data: { enabled: false, message: 'Two-factor authentication has been disabled.' } });
+  })
+);
+
+/**
+ * GET /api/auth/2fa/status
+ * Return whether 2FA is enabled for the current user.
+ */
+router.get(
+  '/2fa/status',
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { totpEnabled: true, totpBackupCodes: true },
+    });
+    if (!user) throw new AppError('User not found', 404);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totpEnabled: user.totpEnabled,
+        backupCodesRemaining: user.totpBackupCodes.length,
+      },
+    });
   })
 );
 

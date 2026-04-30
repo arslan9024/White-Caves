@@ -63,6 +63,7 @@ import jobApplicationsRoutes from './routes/jobApplications.js';
 import contractsRoutes from './routes/contracts.js';
 import appointmentsRoutes from './routes/appointments.js';
 import { roleRequestRouter, adminRoleRequestRouter } from './routes/roleRequests.js';
+import phase6Routes from './routes/phase6.routes.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
@@ -475,26 +476,60 @@ app.get(
   '/api/whatsapp/chatbot/messages',
   authMiddleware,
   requirePermission('access_whatsapp_business'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({ success: true, data: [] });
+  asyncHandler(async (req: Request, res: Response) => {
+    const conversationId = req.query.conversationId as string | undefined;
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 50));
+
+    const where = conversationId ? { conversationId } : {};
+    const messages = await prisma.nadiaMessage.findMany({
+      where,
+      orderBy: { timestamp: 'desc' },
+      take: limit,
+      include: { conversation: { select: { id: true, customerPhone: true, status: true } } },
+    });
+
+    res.status(200).json({ success: true, data: messages.reverse() });
   })
 );
 app.post(
   '/api/whatsapp/chatbot/messages',
   authMiddleware,
   requirePermission('access_whatsapp_business'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: { id: Date.now().toString(), role: 'user', createdAt: new Date() },
+  asyncHandler(async (req: Request, res: Response) => {
+    const { conversationId, body, messageType = 'text', direction = 'outbound' } = req.body;
+    if (!conversationId || !body) {
+      throw new AppError('conversationId and body are required', 400);
+    }
+
+    const conversation = await prisma.nadiaConversation.findUnique({ where: { id: conversationId } });
+    if (!conversation) throw new AppError('Conversation not found', 404);
+
+    const message = await prisma.nadiaMessage.create({
+      data: {
+        conversationId,
+        waMessageId: `manual-${Date.now()}`,
+        direction: ['inbound', 'outbound'].includes(direction) ? direction : 'outbound',
+        body: String(body).slice(0, 4096),
+        messageType: ['text', 'image', 'document', 'audio', 'video'].includes(messageType)
+          ? messageType
+          : 'text',
+        status: 'sent',
+        timestamp: new Date(),
+      },
     });
+
+    res.status(201).json({ success: true, data: message });
   })
 );
 app.delete(
   '/api/whatsapp/chatbot/messages/:id',
   authMiddleware,
   requirePermission('access_whatsapp_business'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const message = await prisma.nadiaMessage.findUnique({ where: { id } });
+    if (!message) throw new AppError('Message not found', 404);
+    await prisma.nadiaMessage.delete({ where: { id } });
     res.status(200).json({ success: true });
   })
 );
@@ -508,38 +543,9 @@ app.use('/api/job-applications', jobApplicationsRoutes);
 // Appointments API — full CRUD via appointments router
 app.use('/api/appointments', authMiddleware, appointmentsRoutes);
 
-// Tenancy Agreements API — delegated to leases router (same concept, different label)
-// GET returns active leases, POST creates a new lease record
-app.get(
-  '/api/tenancy-agreements',
-  authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: [],
-      pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
-    });
-  })
-);
-app.post(
-  '/api/tenancy-agreements',
-  authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
-    logger.info('Tenancy agreement created (stub)', { propertyId: req.body?.propertyId });
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
-app.patch(
-  '/api/tenancy-agreements/:id',
-  authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
+// Tenancy Agreements API — fully delegated to the leases router.
+// /api/tenancy-agreements is an alias for /api/leases: same model, different UI label.
+app.use('/api/tenancy-agreements', authMiddleware, leasesRoutes);
 
 // Payments API stub (Checkout — Stripe integration pending)
 // TODO: Integrate Stripe SDK when payment processing is prioritised
@@ -746,6 +752,20 @@ app.post(
 );
 app.use('/api/users/role-request', authMiddleware, roleRequestRouter);
 app.use('/api/admin/role-requests', authMiddleware, adminRoleRequestRouter);
+
+// Phase 6 — queue, analytics, notifications, encryption, presence
+// The phase6 router uses x-user-id header auth; bridge it from the JWT-authenticated user.
+app.use(
+  '/api/platform',
+  authMiddleware,
+  (req: Request, _res: Response, next: NextFunction) => {
+    // Bridge JWT identity into the x-user-id header expected by phase6 routes
+    const userId = (req as Request & { user?: { id: string } }).user?.id;
+    if (userId) req.headers['x-user-id'] = userId;
+    next();
+  },
+  phase6Routes
+);
 
 // ============================================================================
 // ERROR HANDLING
