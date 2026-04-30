@@ -61,6 +61,7 @@ import contactRoutes from './routes/contact.js';
 import aiChatRoutes from './routes/aiChat.js';
 import jobApplicationsRoutes from './routes/jobApplications.js';
 import invoicesLeaseRoutes from './routes/invoicesLease.js';
+import usersRoutes from './routes/users.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
@@ -287,8 +288,8 @@ app.use('/api/properties', propertiesRoutes);
 // Agents API
 app.use('/api/agents', agentsRoutes);
 
-// Users API — alias for /api/agents (frontend calls /api/users?role=agent)
-app.use('/api/users', agentsRoutes);
+// Users API — user management (list all roles, approve/reject, update role/status)
+app.use('/api/users', usersRoutes);
 
 // Transactions API (Sophia - Pipeline, Theodora - Finance)
 app.use('/api/transactions', transactionsRoutes);

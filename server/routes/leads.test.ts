@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Leads Routes — Unit Tests
  * Tests /api/leads endpoints: list, stats, analytics, CRUD, activities
@@ -26,12 +27,18 @@ const { mockPrisma } = vi.hoisted(() => {
         findUnique: fn().mockResolvedValue(null),
         count: fn().mockResolvedValue(0),
         create: fn().mockResolvedValue({
-          id: 'lead-1', name: 'John Client', email: 'john@client.com',
-          status: 'new', source: 'direct', score: 50,
+          id: 'lead-1',
+          name: 'John Client',
+          email: 'john@client.com',
+          status: 'new',
+          source: 'direct',
+          score: 50,
           assignedTo: null,
         }),
         update: fn().mockResolvedValue({
-          id: 'lead-1', name: 'Updated Lead', status: 'contacted',
+          id: 'lead-1',
+          name: 'Updated Lead',
+          status: 'contacted',
           assignedTo: null,
         }),
         groupBy: fn().mockResolvedValue([]),
@@ -39,7 +46,9 @@ const { mockPrisma } = vi.hoisted(() => {
       },
       activity: {
         create: fn().mockResolvedValue({
-          id: 'act-1', type: 'lead', action: 'created',
+          id: 'act-1',
+          type: 'lead',
+          action: 'created',
           user: { id: 'user-1', name: 'Agent' },
         }),
       },
@@ -87,7 +96,9 @@ vi.mock('../config/pagination', () => ({
   parsePagination: ({ page, limit }: { page?: string; limit?: string }) => ({
     page: Math.max(1, parseInt(page || '1') || 1),
     limit: Math.min(100, Math.max(1, parseInt(limit || '20') || 20)),
-    skip: (Math.max(1, parseInt(page || '1') || 1) - 1) * Math.min(100, Math.max(1, parseInt(limit || '20') || 20)),
+    skip:
+      (Math.max(1, parseInt(page || '1') || 1) - 1) *
+      Math.min(100, Math.max(1, parseInt(limit || '20') || 20)),
   }),
 }));
 
@@ -124,8 +135,7 @@ describe('Leads Routes — /api/leads', () => {
         { id: 'lead-1', name: 'John', status: 'new' },
       ]);
       mockPrisma.lead.count.mockResolvedValueOnce(1);
-      const res = await request(createApp('agent'))
-        .get('/api/leads');
+      const res = await request(createApp('agent')).get('/api/leads');
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data).toHaveLength(1);
@@ -135,55 +145,70 @@ describe('Leads Routes — /api/leads', () => {
     it('supports search filter', async () => {
       mockPrisma.lead.findMany.mockResolvedValueOnce([]);
       mockPrisma.lead.count.mockResolvedValueOnce(0);
-      const res = await request(createApp('owner'))
-        .get('/api/leads?search=John');
+      const res = await request(createApp('owner')).get('/api/leads?search=John');
       expect(res.status).toBe(200);
     });
 
     it('supports status and source filters', async () => {
       mockPrisma.lead.findMany.mockResolvedValueOnce([]);
       mockPrisma.lead.count.mockResolvedValueOnce(0);
-      const res = await request(createApp('owner'))
-        .get('/api/leads?status=qualified&source=referral');
+      const res = await request(createApp('owner')).get(
+        '/api/leads?status=qualified&source=referral'
+      );
       expect(res.status).toBe(200);
     });
 
     it('supports score range filters', async () => {
       mockPrisma.lead.findMany.mockResolvedValueOnce([]);
       mockPrisma.lead.count.mockResolvedValueOnce(0);
-      const res = await request(createApp('owner'))
-        .get('/api/leads?minScore=50&maxScore=100');
+      const res = await request(createApp('owner')).get('/api/leads?minScore=50&maxScore=100');
       expect(res.status).toBe(200);
     });
 
     it('supports assignedTo filter', async () => {
       mockPrisma.lead.findMany.mockResolvedValueOnce([]);
       mockPrisma.lead.count.mockResolvedValueOnce(0);
-      const res = await request(createApp('owner'))
-        .get('/api/leads?assignedTo=agent-1');
+      const res = await request(createApp('owner')).get('/api/leads?assignedTo=agent-1');
       expect(res.status).toBe(200);
     });
 
     it('supports sort options', async () => {
       mockPrisma.lead.findMany.mockResolvedValueOnce([]);
       mockPrisma.lead.count.mockResolvedValueOnce(0);
-      const res = await request(createApp('owner'))
-        .get('/api/leads?sortBy=score&sortOrder=desc');
+      const res = await request(createApp('owner')).get('/api/leads?sortBy=score&sortOrder=desc');
       expect(res.status).toBe(200);
     });
 
     it('returns 422 for invalid status filter', async () => {
-      const res = await request(createApp('owner'))
-        .get('/api/leads?status=invalid_status');
+      const res = await request(createApp('owner')).get('/api/leads?status=invalid_status');
       expect(res.status).toBe(422);
       expect(res.body.success).toBe(false);
     });
 
     it('returns 422 for invalid source filter', async () => {
-      const res = await request(createApp('owner'))
-        .get('/api/leads?source=unknown_source');
+      const res = await request(createApp('owner')).get('/api/leads?source=unknown_source');
       expect(res.status).toBe(422);
       expect(res.body.success).toBe(false);
+    });
+
+    it('scopes agent to their own leads via ownershipFilter', async () => {
+      // Regression: agents previously saw ALL leads. Now scopeToOwn('assignedToId')
+      // restricts the DB query to only leads where assignedToId === req.user.id.
+      mockPrisma.lead.findMany.mockResolvedValueOnce([]);
+      mockPrisma.lead.count.mockResolvedValueOnce(0);
+      const res = await request(createApp('agent', 'agent-xyz')).get('/api/leads');
+      expect(res.status).toBe(200);
+      const callArgs = mockPrisma.lead.findMany.mock.calls[0][0];
+      expect(callArgs.where.assignedToId).toBe('agent-xyz');
+    });
+
+    it('does NOT restrict owner query (supervisor sees all leads)', async () => {
+      mockPrisma.lead.findMany.mockResolvedValueOnce([]);
+      mockPrisma.lead.count.mockResolvedValueOnce(0);
+      const res = await request(createApp('owner', 'owner-id')).get('/api/leads');
+      expect(res.status).toBe(200);
+      const callArgs = mockPrisma.lead.findMany.mock.calls[0][0];
+      expect(callArgs.where.assignedToId).toBeUndefined();
     });
   });
 
@@ -197,16 +222,24 @@ describe('Leads Routes — /api/leads', () => {
       mockPrisma.lead.aggregate.mockResolvedValueOnce({
         _avg: { score: 65, budget: 500000 },
       });
-      const res = await request(createApp('manager'))
-        .get('/api/leads/stats');
+      const res = await request(createApp('manager')).get('/api/leads/stats');
       expect(res.status).toBe(200);
       expect(res.body.data.total).toBe(42);
       expect(res.body.data.averageScore).toBeDefined();
     });
 
+    it('returns 200 for managing_director role (role alias → owner)', async () => {
+      // Regression: inline check used raw role strings and failed for managing_director.
+      // Now uses requireMinRole('manager') which resolves aliases first.
+      mockPrisma.lead.count.mockResolvedValueOnce(5);
+      mockPrisma.lead.groupBy.mockResolvedValue([]);
+      mockPrisma.lead.aggregate.mockResolvedValueOnce({ _avg: { score: 0, budget: 0 } });
+      const res = await request(createApp('managing_director')).get('/api/leads/stats');
+      expect(res.status).toBe(200);
+    });
+
     it('returns 403 for agent role', async () => {
-      const res = await request(createApp('agent'))
-        .get('/api/leads/stats');
+      const res = await request(createApp('agent')).get('/api/leads/stats');
       expect(res.status).toBe(403);
     });
   });
@@ -215,20 +248,30 @@ describe('Leads Routes — /api/leads', () => {
   describe('GET /api/leads/analytics/conversion', () => {
     it('returns conversion analytics for manager', async () => {
       mockPrisma.lead.count
-        .mockResolvedValueOnce(100)  // total
-        .mockResolvedValueOnce(20)   // won
-        .mockResolvedValueOnce(10);  // lost
-      const res = await request(createApp('manager'))
-        .get('/api/leads/analytics/conversion');
+        .mockResolvedValueOnce(100) // total
+        .mockResolvedValueOnce(20) // won
+        .mockResolvedValueOnce(10); // lost
+      const res = await request(createApp('manager')).get('/api/leads/analytics/conversion');
       expect(res.status).toBe(200);
       expect(res.body.data.total).toBe(100);
       expect(res.body.data.conversionRate).toBe(20);
       expect(res.body.data.lossRate).toBe(10);
     });
 
+    it('returns 200 for managing_director role (role alias → owner)', async () => {
+      // Regression: same bug as /stats — inline check bypassed resolveBackendRole.
+      mockPrisma.lead.count
+        .mockResolvedValueOnce(0)
+        .mockResolvedValueOnce(0)
+        .mockResolvedValueOnce(0);
+      const res = await request(createApp('managing_director')).get(
+        '/api/leads/analytics/conversion'
+      );
+      expect(res.status).toBe(200);
+    });
+
     it('returns 403 for agent role', async () => {
-      const res = await request(createApp('agent'))
-        .get('/api/leads/analytics/conversion');
+      const res = await request(createApp('agent')).get('/api/leads/analytics/conversion');
       expect(res.status).toBe(403);
     });
 
@@ -237,8 +280,7 @@ describe('Leads Routes — /api/leads', () => {
         .mockResolvedValueOnce(0)
         .mockResolvedValueOnce(0)
         .mockResolvedValueOnce(0);
-      const res = await request(createApp('owner'))
-        .get('/api/leads/analytics/conversion');
+      const res = await request(createApp('owner')).get('/api/leads/analytics/conversion');
       expect(res.status).toBe(200);
       expect(res.body.data.conversionRate).toBe(0);
       expect(res.body.data.lossRate).toBe(0);
@@ -249,20 +291,23 @@ describe('Leads Routes — /api/leads', () => {
   describe('GET /api/leads/:id', () => {
     it('returns lead details', async () => {
       mockPrisma.lead.findUnique.mockResolvedValueOnce({
-        id: VALID_ID, name: 'John Client', status: 'qualified',
-        assignedTo: null, createdBy: null, property: null,
-        activities: [], commissions: [],
+        id: VALID_ID,
+        name: 'John Client',
+        status: 'qualified',
+        assignedTo: null,
+        createdBy: null,
+        property: null,
+        activities: [],
+        commissions: [],
       });
-      const res = await request(createApp('agent'))
-        .get(`/api/leads/${VALID_ID}`);
+      const res = await request(createApp('agent')).get(`/api/leads/${VALID_ID}`);
       expect(res.status).toBe(200);
       expect(res.body.data.name).toBe('John Client');
     });
 
     it('returns 404 if not found', async () => {
       mockPrisma.lead.findUnique.mockResolvedValueOnce(null);
-      const res = await request(createApp('agent'))
-        .get(`/api/leads/${VALID_ID}`);
+      const res = await request(createApp('agent')).get(`/api/leads/${VALID_ID}`);
       expect(res.status).toBe(404);
     });
   });
@@ -271,7 +316,10 @@ describe('Leads Routes — /api/leads', () => {
   describe('POST /api/leads', () => {
     it('returns 201 on successful creation', async () => {
       mockPrisma.lead.create.mockResolvedValueOnce({
-        id: 'lead-new', name: 'New Lead', status: 'new', source: 'direct',
+        id: 'lead-new',
+        name: 'New Lead',
+        status: 'new',
+        source: 'direct',
         assignedTo: null,
       });
       const res = await request(createApp('agent'))
@@ -283,8 +331,11 @@ describe('Leads Routes — /api/leads', () => {
 
     it('logs activity on creation', async () => {
       mockPrisma.lead.create.mockResolvedValueOnce({
-        id: 'lead-new', name: 'Activity Lead', status: 'new',
-        company: 'Big Corp', assignedTo: null,
+        id: 'lead-new',
+        name: 'Activity Lead',
+        status: 'new',
+        company: 'Big Corp',
+        assignedTo: null,
       });
       await request(createApp('agent'))
         .post('/api/leads')
@@ -292,7 +343,8 @@ describe('Leads Routes — /api/leads', () => {
       expect(mockPrisma.activity.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
-            type: 'lead', action: 'created',
+            type: 'lead',
+            action: 'created',
           }),
         })
       );
@@ -303,10 +355,15 @@ describe('Leads Routes — /api/leads', () => {
   describe('PATCH /api/leads/:id', () => {
     it('returns 200 on successful update by admin', async () => {
       mockPrisma.lead.findUnique.mockResolvedValueOnce({
-        id: VALID_ID, name: 'Old Lead', status: 'new', createdById: 'other',
+        id: VALID_ID,
+        name: 'Old Lead',
+        status: 'new',
+        createdById: 'other',
       });
       mockPrisma.lead.update.mockResolvedValueOnce({
-        id: VALID_ID, name: 'Updated Lead', status: 'contacted',
+        id: VALID_ID,
+        name: 'Updated Lead',
+        status: 'contacted',
         assignedTo: null,
       });
       const res = await request(createApp('owner'))
@@ -317,10 +374,15 @@ describe('Leads Routes — /api/leads', () => {
 
     it('allows lead creator to update their own lead', async () => {
       mockPrisma.lead.findUnique.mockResolvedValueOnce({
-        id: VALID_ID, name: 'My Lead', status: 'new', createdById: 'user-1',
+        id: VALID_ID,
+        name: 'My Lead',
+        status: 'new',
+        createdById: 'user-1',
       });
       mockPrisma.lead.update.mockResolvedValueOnce({
-        id: VALID_ID, name: 'My Updated Lead', status: 'contacted',
+        id: VALID_ID,
+        name: 'My Updated Lead',
+        status: 'contacted',
         assignedTo: null,
       });
       const res = await request(createApp('agent', 'user-1'))
@@ -331,7 +393,10 @@ describe('Leads Routes — /api/leads', () => {
 
     it('returns 403 if not admin and not creator', async () => {
       mockPrisma.lead.findUnique.mockResolvedValueOnce({
-        id: VALID_ID, name: 'Other Lead', status: 'new', createdById: 'other-user',
+        id: VALID_ID,
+        name: 'Other Lead',
+        status: 'new',
+        createdById: 'other-user',
       });
       const res = await request(createApp('agent', 'user-1'))
         .patch(`/api/leads/${VALID_ID}`)
@@ -349,10 +414,15 @@ describe('Leads Routes — /api/leads', () => {
 
     it('logs status_changed activity on status update', async () => {
       mockPrisma.lead.findUnique.mockResolvedValueOnce({
-        id: VALID_ID, name: 'Status Lead', status: 'new', createdById: 'user-1',
+        id: VALID_ID,
+        name: 'Status Lead',
+        status: 'new',
+        createdById: 'user-1',
       });
       mockPrisma.lead.update.mockResolvedValueOnce({
-        id: VALID_ID, name: 'Status Lead', status: 'qualified',
+        id: VALID_ID,
+        name: 'Status Lead',
+        status: 'qualified',
         assignedTo: null,
       });
       await request(createApp('owner'))
@@ -370,42 +440,43 @@ describe('Leads Routes — /api/leads', () => {
   describe('DELETE /api/leads/:id', () => {
     it('returns 200 on successful deletion by admin', async () => {
       mockPrisma.lead.findUnique.mockResolvedValueOnce({
-        id: VALID_ID, name: 'To Delete', createdById: 'other',
+        id: VALID_ID,
+        name: 'To Delete',
+        createdById: 'other',
       });
-      const res = await request(createApp('owner'))
-        .delete(`/api/leads/${VALID_ID}`);
+      const res = await request(createApp('owner')).delete(`/api/leads/${VALID_ID}`);
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
     });
 
     it('allows lead creator to delete their own lead', async () => {
       mockPrisma.lead.findUnique.mockResolvedValueOnce({
-        id: VALID_ID, name: 'My Lead', createdById: 'user-1',
+        id: VALID_ID,
+        name: 'My Lead',
+        createdById: 'user-1',
       });
-      const res = await request(createApp('admin', 'user-1'))
-        .delete(`/api/leads/${VALID_ID}`);
+      const res = await request(createApp('admin', 'user-1')).delete(`/api/leads/${VALID_ID}`);
       expect(res.status).toBe(200);
     });
 
     it('returns 403 for agent role (blocked by RBAC)', async () => {
-      const res = await request(createApp('agent', 'user-1'))
-        .delete(`/api/leads/${VALID_ID}`);
+      const res = await request(createApp('agent', 'user-1')).delete(`/api/leads/${VALID_ID}`);
       expect(res.status).toBe(403);
     });
 
     it('returns 404 if not found', async () => {
       mockPrisma.lead.findUnique.mockResolvedValueOnce(null);
-      const res = await request(createApp('owner'))
-        .delete(`/api/leads/${VALID_ID}`);
+      const res = await request(createApp('owner')).delete(`/api/leads/${VALID_ID}`);
       expect(res.status).toBe(404);
     });
 
     it('cleans up commissions and activities in transaction', async () => {
       mockPrisma.lead.findUnique.mockResolvedValueOnce({
-        id: VALID_ID, name: 'Cleanup', createdById: 'user-1',
+        id: VALID_ID,
+        name: 'Cleanup',
+        createdById: 'user-1',
       });
-      await request(createApp('owner'))
-        .delete(`/api/leads/${VALID_ID}`);
+      await request(createApp('owner')).delete(`/api/leads/${VALID_ID}`);
       expect(mockPrisma.$transaction).toHaveBeenCalled();
     });
   });
@@ -414,7 +485,10 @@ describe('Leads Routes — /api/leads', () => {
   describe('POST /api/leads/:id/activities', () => {
     it('returns 201 on successful activity creation by manager', async () => {
       mockPrisma.lead.findUnique.mockResolvedValueOnce({
-        id: VALID_ID, name: 'Active Lead', assignedToId: null, createdById: 'other',
+        id: VALID_ID,
+        name: 'Active Lead',
+        assignedToId: null,
+        createdById: 'other',
       });
       mockPrisma.lead.update = vi.fn().mockResolvedValueOnce({});
       const res = await request(createApp('manager'))
@@ -433,8 +507,10 @@ describe('Leads Routes — /api/leads', () => {
 
     it('returns 403 if agent is not assigned and not creator', async () => {
       mockPrisma.lead.findUnique.mockResolvedValueOnce({
-        id: VALID_ID, name: 'Other Lead',
-        assignedToId: 'other-agent', createdById: 'other-user',
+        id: VALID_ID,
+        name: 'Other Lead',
+        assignedToId: 'other-agent',
+        createdById: 'other-user',
       });
       const res = await request(createApp('agent', 'user-1'))
         .post(`/api/leads/${VALID_ID}/activities`)
@@ -444,8 +520,10 @@ describe('Leads Routes — /api/leads', () => {
 
     it('allows assigned agent to add activity', async () => {
       mockPrisma.lead.findUnique.mockResolvedValueOnce({
-        id: VALID_ID, name: 'My Lead',
-        assignedToId: 'user-1', createdById: 'other',
+        id: VALID_ID,
+        name: 'My Lead',
+        assignedToId: 'user-1',
+        createdById: 'other',
       });
       mockPrisma.lead.update = vi.fn().mockResolvedValueOnce({});
       const res = await request(createApp('agent', 'user-1'))

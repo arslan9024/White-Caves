@@ -11,7 +11,7 @@ import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
-import { requirePermission } from '../middleware/rbac';
+import { requirePermission, scopeToOwn, requireMinRole } from '../middleware/rbac';
 
 const router = Router();
 
@@ -19,16 +19,30 @@ const router = Router();
 router.get(
   '/',
   requirePermission('view_properties'),
+  scopeToOwn('userId'),
   asyncHandler(async (req: Request, res: Response) => {
     const {
-      status, type, search, featured,
-      minPrice, maxPrice, minBeds, minBaths,
-      beds, baths, location,
-      sortBy = 'createdAt', sortOrder = 'desc',
+      status,
+      type,
+      search,
+      featured,
+      minPrice,
+      maxPrice,
+      minBeds,
+      minBaths,
+      beds,
+      baths,
+      location,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
       area,
     } = req.query;
 
-    const { page: pageNum, limit, skip } = parsePagination({
+    const {
+      page: pageNum,
+      limit,
+      skip,
+    } = parsePagination({
       page: req.query.page as string,
       limit: req.query.pageSize as string,
     });
@@ -73,13 +87,25 @@ router.get(
       ];
     }
 
+    // Row-level security: agents only see properties they own (userId = their id).
+    // scopeToOwn('userId') sets req.ownershipFilter; supervisors get {} (no restriction).
+    const ownerFilter = req.ownershipFilter ?? {};
+    if (Object.keys(ownerFilter).length > 0) {
+      Object.assign(where, ownerFilter);
+    }
+
     const validSortFields = ['createdAt', 'updatedAt', 'price', 'title', 'sqft', 'bedrooms'];
     const field = validSortFields.includes(sortBy as string) ? (sortBy as string) : 'createdAt';
-    const orderBy: Prisma.PropertyOrderByWithRelationInput = { [field]: sortOrder === 'asc' ? 'asc' : 'desc' };
+    const orderBy: Prisma.PropertyOrderByWithRelationInput = {
+      [field]: sortOrder === 'asc' ? 'asc' : 'desc',
+    };
 
     const [properties, total] = await Promise.all([
       prisma.property.findMany({
-        where, orderBy, skip, take: limit,
+        where,
+        orderBy,
+        skip,
+        take: limit,
         include: {
           user: { select: { id: true, name: true, email: true } },
           _count: { select: { leads: true, commissions: true } },
@@ -100,13 +126,8 @@ router.get(
 router.get(
   '/stats',
   requirePermission('view_properties'),
-  asyncHandler(async (req: Request, res: Response) => {
-    // AUTHORIZATION: Only managers+ can view aggregated property statistics
-    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — property statistics require manager role', 403);
-    }
-
+  requireMinRole('manager'),
+  asyncHandler(async (_req: Request, res: Response) => {
     const [total, byStatus, byType, priceStats] = await Promise.all([
       prisma.property.count(),
       prisma.property.groupBy({ by: ['status'], _count: { _all: true } }),
@@ -120,10 +141,14 @@ router.get(
     ]);
 
     const statusCounts: Record<string, number> = {};
-    byStatus.forEach(s => { statusCounts[s.status] = s._count._all; });
+    byStatus.forEach(s => {
+      statusCounts[s.status] = s._count._all;
+    });
 
     const typeCounts: Record<string, number> = {};
-    byType.forEach(t => { typeCounts[t.type] = t._count._all; });
+    byType.forEach(t => {
+      typeCounts[t.type] = t._count._all;
+    });
 
     res.status(200).json({
       success: true,
@@ -211,24 +236,64 @@ router.post(
       throw new AppError('Access denied — insufficient permissions to create properties', 403);
     }
 
-    const { title, description, type, status, price, bedrooms, bathrooms, sqft,
-      location, area, amenities, images, featured, agentName,
-      unitNumber, floorPlan, rentalPrice, commissionPercent, availabilityDate,
-      inventoryStage, titleDeedMissing, landlordPassportMissing, ejariMissing } = req.body;
+    const {
+      title,
+      description,
+      type,
+      status,
+      price,
+      bedrooms,
+      bathrooms,
+      sqft,
+      location,
+      area,
+      amenities,
+      images,
+      featured,
+      agentName,
+      unitNumber,
+      floorPlan,
+      rentalPrice,
+      commissionPercent,
+      availabilityDate,
+      inventoryStage,
+      titleDeedMissing,
+      landlordPassportMissing,
+      ejariMissing,
+    } = req.body;
 
     validate(req.body, {
-      title:       rules.requiredStringWithMax('Property title', 255),
-      price:       rules.positiveNumber('Price'),
-      location:    rules.requiredStringWithMax('Location', 500),
-      type:        rules.oneOf('Property type', ['apartment', 'villa', 'townhouse', 'penthouse', 'office', 'retail', 'land', 'warehouse', 'studio', 'duplex', 'commercial']),
-      status:      rules.oneOf('Status', ['available', 'reserved', 'sold', 'rented', 'off_market']),
-      amenities:   rules.optionalArray('Amenities'),
-      images:      rules.optionalArray('Images'),
+      title: rules.requiredStringWithMax('Property title', 255),
+      price: rules.positiveNumber('Price'),
+      location: rules.requiredStringWithMax('Location', 500),
+      type: rules.oneOf('Property type', [
+        'apartment',
+        'villa',
+        'townhouse',
+        'penthouse',
+        'office',
+        'retail',
+        'land',
+        'warehouse',
+        'studio',
+        'duplex',
+        'commercial',
+      ]),
+      status: rules.oneOf('Status', ['available', 'reserved', 'sold', 'rented', 'off_market']),
+      amenities: rules.optionalArray('Amenities'),
+      images: rules.optionalArray('Images'),
       description: rules.optionalStringWithMax('Description', 5000),
     });
 
-    const VALID_STAGES = ['draft_collected', 'verified_active', 'under_offer', 'leased_sold', 'handed_over'];
-    const resolvedStage = inventoryStage && VALID_STAGES.includes(inventoryStage) ? inventoryStage : 'draft_collected';
+    const VALID_STAGES = [
+      'draft_collected',
+      'verified_active',
+      'under_offer',
+      'leased_sold',
+      'handed_over',
+    ];
+    const resolvedStage =
+      inventoryStage && VALID_STAGES.includes(inventoryStage) ? inventoryStage : 'draft_collected';
 
     const property = await prisma.property.create({
       data: {
@@ -242,19 +307,30 @@ router.post(
         sqft: Math.max(0, parseInt(sqft, 10) || 0),
         location: sanitizeString(location.trim()),
         area: area ? sanitizeString(area) : null,
-        amenities: (amenities || []).filter((a: unknown): a is string => typeof a === 'string' && a.trim().length > 0).map(sanitizeString),
-        images: (images || []).filter((i: unknown): i is string => typeof i === 'string' && i.trim().length > 0).map(sanitizeString),
+        amenities: (amenities || [])
+          .filter((a: unknown): a is string => typeof a === 'string' && a.trim().length > 0)
+          .map(sanitizeString),
+        images: (images || [])
+          .filter((i: unknown): i is string => typeof i === 'string' && i.trim().length > 0)
+          .map(sanitizeString),
         featured: featured || false,
         agentName: agentName ? sanitizeString(agentName) : null,
         // @Mary Intelligent Inventory fields
         unitNumber: unitNumber ? sanitizeString(String(unitNumber).trim()) : null,
         floorPlan: floorPlan ? sanitizeString(String(floorPlan).trim()) : null,
-        rentalPrice: (rentalPrice !== undefined && rentalPrice !== null && rentalPrice !== '') ? (parseFloat(rentalPrice) || 0) : null,
-        commissionPercent: (commissionPercent !== undefined && commissionPercent !== null && commissionPercent !== '') ? (parseFloat(commissionPercent) || 5) : 5,
+        rentalPrice:
+          rentalPrice !== undefined && rentalPrice !== null && rentalPrice !== ''
+            ? parseFloat(rentalPrice) || 0
+            : null,
+        commissionPercent:
+          commissionPercent !== undefined && commissionPercent !== null && commissionPercent !== ''
+            ? parseFloat(commissionPercent) || 5
+            : 5,
         availabilityDate: availabilityDate ? new Date(availabilityDate) : null,
         inventoryStage: resolvedStage,
         titleDeedMissing: titleDeedMissing === true || titleDeedMissing === 'true',
-        landlordPassportMissing: landlordPassportMissing === true || landlordPassportMissing === 'true',
+        landlordPassportMissing:
+          landlordPassportMissing === true || landlordPassportMissing === 'true',
         ejariMissing: ejariMissing === true || ejariMissing === 'true',
         userId: req.user?.id || 'system',
       },
@@ -262,7 +338,8 @@ router.post(
 
     await prisma.activity.create({
       data: {
-        type: 'property', action: 'created',
+        type: 'property',
+        action: 'created',
         description: `New property listed: ${property.title} - AED ${property.price.toLocaleString()}`,
         userId: req.user?.id || null,
       },
@@ -279,21 +356,51 @@ router.patch(
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     validateIdParam(id, 'Property ID');
-    const { title, description, type, status, price, bedrooms, bathrooms, sqft,
-      location, area, amenities, images, featured, agentName,
-      unitNumber, floorPlan, rentalPrice, commissionPercent, availabilityDate,
-      inventoryStage, titleDeedMissing, landlordPassportMissing, ejariMissing } = req.body;
+    const {
+      title,
+      description,
+      type,
+      status,
+      price,
+      bedrooms,
+      bathrooms,
+      sqft,
+      location,
+      area,
+      amenities,
+      images,
+      featured,
+      agentName,
+      unitNumber,
+      floorPlan,
+      rentalPrice,
+      commissionPercent,
+      availabilityDate,
+      inventoryStage,
+      titleDeedMissing,
+      landlordPassportMissing,
+      ejariMissing,
+    } = req.body;
 
     validate(req.body, {
-      title:       rules.optionalStringWithMax('Property title', 255),
+      title: rules.optionalStringWithMax('Property title', 255),
       description: rules.optionalStringWithMax('Description', 5000),
-      location:    rules.optionalStringWithMax('Location', 500),
-      area:        rules.optionalStringWithMax('Area', 255),
-      agentName:   rules.optionalStringWithMax('Agent name', 255),
-      type:      rules.oneOf('Property type', ['apartment', 'villa', 'townhouse', 'penthouse', 'office', 'retail', 'land', 'warehouse']),
-      status:    rules.oneOf('Status', ['available', 'reserved', 'sold', 'rented', 'off_market']),
+      location: rules.optionalStringWithMax('Location', 500),
+      area: rules.optionalStringWithMax('Area', 255),
+      agentName: rules.optionalStringWithMax('Agent name', 255),
+      type: rules.oneOf('Property type', [
+        'apartment',
+        'villa',
+        'townhouse',
+        'penthouse',
+        'office',
+        'retail',
+        'land',
+        'warehouse',
+      ]),
+      status: rules.oneOf('Status', ['available', 'reserved', 'sold', 'rented', 'off_market']),
       amenities: rules.optionalArray('Amenities'),
-      images:    rules.optionalArray('Images'),
+      images: rules.optionalArray('Images'),
     });
 
     const existing = await prisma.property.findUnique({ where: { id } });
@@ -316,7 +423,8 @@ router.patch(
 
     const data: Record<string, unknown> = {};
     if (title !== undefined) data.title = sanitizeString(String(title).trim());
-    if (description !== undefined) data.description = description ? sanitizeString(String(description)) : null;
+    if (description !== undefined)
+      data.description = description ? sanitizeString(String(description)) : null;
     if (type !== undefined) data.type = type;
     if (status !== undefined) data.status = status;
     if (price !== undefined) {
@@ -326,26 +434,56 @@ router.patch(
       }
       data.price = parsedPrice;
     }
-    if (bedrooms !== undefined) data.bedrooms = Math.max(0, !isNaN(parseInt(bedrooms as string, 10)) ? parseInt(bedrooms as string, 10) : 0);
-    if (bathrooms !== undefined) data.bathrooms = Math.max(0, !isNaN(parseInt(bathrooms as string, 10)) ? parseInt(bathrooms as string, 10) : 0);
-    if (sqft !== undefined) data.sqft = Math.max(0, !isNaN(parseInt(sqft as string, 10)) ? parseInt(sqft as string, 10) : 0);
+    if (bedrooms !== undefined)
+      data.bedrooms = Math.max(
+        0,
+        !isNaN(parseInt(bedrooms as string, 10)) ? parseInt(bedrooms as string, 10) : 0
+      );
+    if (bathrooms !== undefined)
+      data.bathrooms = Math.max(
+        0,
+        !isNaN(parseInt(bathrooms as string, 10)) ? parseInt(bathrooms as string, 10) : 0
+      );
+    if (sqft !== undefined)
+      data.sqft = Math.max(
+        0,
+        !isNaN(parseInt(sqft as string, 10)) ? parseInt(sqft as string, 10) : 0
+      );
     if (location !== undefined) data.location = sanitizeString(String(location).trim());
     if (area !== undefined) data.area = area ? sanitizeString(String(area)) : null;
-    if (amenities !== undefined) data.amenities = Array.isArray(amenities) ? amenities.map((a: unknown) => typeof a === 'string' ? sanitizeString(a) : String(a)) : [];
-    if (images !== undefined) data.images = Array.isArray(images) ? images.map((i: unknown) => typeof i === 'string' ? sanitizeString(i) : String(i)) : [];
+    if (amenities !== undefined)
+      data.amenities = Array.isArray(amenities)
+        ? amenities.map((a: unknown) => (typeof a === 'string' ? sanitizeString(a) : String(a)))
+        : [];
+    if (images !== undefined)
+      data.images = Array.isArray(images)
+        ? images.map((i: unknown) => (typeof i === 'string' ? sanitizeString(i) : String(i)))
+        : [];
     if (featured !== undefined) data.featured = featured === true || featured === 'true';
-    if (agentName !== undefined) data.agentName = agentName ? sanitizeString(String(agentName)) : null;
+    if (agentName !== undefined)
+      data.agentName = agentName ? sanitizeString(String(agentName)) : null;
 
     // @Mary Intelligent Inventory fields
-    const VALID_STAGES = ['draft_collected', 'verified_active', 'under_offer', 'leased_sold', 'handed_over'];
-    if (unitNumber !== undefined) data.unitNumber = unitNumber ? sanitizeString(String(unitNumber).trim()) : null;
-    if (floorPlan !== undefined) data.floorPlan = floorPlan ? sanitizeString(String(floorPlan).trim()) : null;
+    const VALID_STAGES = [
+      'draft_collected',
+      'verified_active',
+      'under_offer',
+      'leased_sold',
+      'handed_over',
+    ];
+    if (unitNumber !== undefined)
+      data.unitNumber = unitNumber ? sanitizeString(String(unitNumber).trim()) : null;
+    if (floorPlan !== undefined)
+      data.floorPlan = floorPlan ? sanitizeString(String(floorPlan).trim()) : null;
     if (rentalPrice !== undefined) {
-      const parsedRentalPrice = rentalPrice !== null ? (parseFloat(rentalPrice as string) || null) : null;
+      const parsedRentalPrice =
+        rentalPrice !== null ? parseFloat(rentalPrice as string) || null : null;
       data.rentalPrice = parsedRentalPrice;
     }
-    if (commissionPercent !== undefined) data.commissionPercent = parseFloat(commissionPercent as string) || 5;
-    if (availabilityDate !== undefined) data.availabilityDate = availabilityDate ? new Date(availabilityDate as string) : null;
+    if (commissionPercent !== undefined)
+      data.commissionPercent = parseFloat(commissionPercent as string) || 5;
+    if (availabilityDate !== undefined)
+      data.availabilityDate = availabilityDate ? new Date(availabilityDate as string) : null;
     if (inventoryStage !== undefined && VALID_STAGES.includes(inventoryStage as string)) {
       data.inventoryStage = inventoryStage;
       // Auto-lock when moving to under_offer
@@ -354,14 +492,22 @@ router.patch(
         data.lockedAt = new Date();
       }
       // Auto-unlock when offer falls through and stage moves back
-      if (['draft_collected', 'verified_active'].includes(inventoryStage as string) && existing.isLocked && isAdmin) {
+      if (
+        ['draft_collected', 'verified_active'].includes(inventoryStage as string) &&
+        existing.isLocked &&
+        isAdmin
+      ) {
         data.isLocked = false;
         data.lockedAt = null;
       }
     }
-    if (titleDeedMissing !== undefined) data.titleDeedMissing = titleDeedMissing === true || titleDeedMissing === 'true';
-    if (landlordPassportMissing !== undefined) data.landlordPassportMissing = landlordPassportMissing === true || landlordPassportMissing === 'true';
-    if (ejariMissing !== undefined) data.ejariMissing = ejariMissing === true || ejariMissing === 'true';
+    if (titleDeedMissing !== undefined)
+      data.titleDeedMissing = titleDeedMissing === true || titleDeedMissing === 'true';
+    if (landlordPassportMissing !== undefined)
+      data.landlordPassportMissing =
+        landlordPassportMissing === true || landlordPassportMissing === 'true';
+    if (ejariMissing !== undefined)
+      data.ejariMissing = ejariMissing === true || ejariMissing === 'true';
 
     const statusChanged = status !== undefined && status !== null && status !== existing.status;
 
@@ -400,7 +546,7 @@ router.delete(
       throw new AppError('You do not have permission to delete this property', 403);
     }
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async tx => {
       // Clean up references to avoid orphaned records
       await tx.commission.updateMany({ where: { propertyId: id }, data: { propertyId: null } });
       await tx.lead.updateMany({ where: { propertyId: id }, data: { propertyId: null } });
@@ -409,7 +555,8 @@ router.delete(
 
       await tx.activity.create({
         data: {
-          type: 'property', action: 'deleted',
+          type: 'property',
+          action: 'deleted',
           description: `Property deleted: ${existing.title} (by ${req.user?.email})`,
           userId: req.user?.id || null,
         },
