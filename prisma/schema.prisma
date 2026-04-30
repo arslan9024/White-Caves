@@ -774,7 +774,6 @@ model WebAuthnCredential {
   lastUsedAt      DateTime?
 
   @@index([userId])
-  @@index([credentialId])
 }
 
 // ─── DOCUMENT ───────────────────────────────────────────────────────────
@@ -802,5 +801,103 @@ model Document {
   @@index([transactionId])
   @@index([leadId])
   @@index([propertyId])
+  @@index([createdAt])
+}
+
+// ─── CONTRACT ───────────────────────────────────────────────────────────
+
+model Contract {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  contractNumber   String   @unique            // "WC-C-2026-0001"
+  type             String   @default("sale")   // sale, rental, mou, form_f, listing, management
+  status           String   @default("draft")  // draft, pending_signature, active, expired, terminated, cancelled
+  title            String
+  description      String?
+  value            Float?                       // contract value (AED)
+  currency         String   @default("AED")
+  startDate        DateTime?
+  endDate          DateTime?
+  signedAt         DateTime?
+  terminatedAt     DateTime?
+  terminationReason String?
+  parties          Json?                        // [{ role, name, email, phone }]
+  terms            String?                      // free-text contract terms / notes
+  attachmentUrls   String[]                     // uploaded document URLs
+  metadata         Json?                        // extra key/value pairs
+
+  // Relations
+  propertyId       String?  @db.ObjectId
+  leadId           String?  @db.ObjectId
+  transactionId    String?  @db.ObjectId
+  createdById      String?  @db.ObjectId
+  assignedToId     String?  @db.ObjectId
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([status])
+  @@index([type])
+  @@index([propertyId])
+  @@index([leadId])
+  @@index([createdById])
+  @@index([createdAt])
+}
+
+// ─── APPOINTMENT ────────────────────────────────────────────────────────
+
+model Appointment {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  type           String   @default("viewing")  // viewing, meeting, call, inspection, signing
+  status         String   @default("scheduled") // scheduled, confirmed, completed, cancelled, no_show
+  scheduledAt    DateTime
+  durationMins   Int      @default(60)
+  location       String?
+  notes          String?
+  cancelReason   String?
+  reminderSentAt DateTime?
+  completedAt    DateTime?
+
+  // Participants
+  clientName     String?
+  clientEmail    String?
+  clientPhone    String?
+  agentId        String?  @db.ObjectId
+  propertyId     String?  @db.ObjectId
+  leadId         String?  @db.ObjectId
+  createdById    String?  @db.ObjectId
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([status])
+  @@index([type])
+  @@index([scheduledAt])
+  @@index([agentId])
+  @@index([propertyId])
+  @@index([leadId])
+  @@index([createdById])
+  @@index([createdAt])
+}
+
+// ─── ROLE REQUEST ───────────────────────────────────────────────────────
+
+model RoleRequest {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  requestedRole  String                         // role being requested
+  currentRole    String                         // user's current role at time of request
+  reason         String?                        // why they need this role
+  status         String   @default("pending")   // pending, approved, rejected
+  reviewNote     String?                        // admin notes on decision
+  reviewedById   String?  @db.ObjectId
+  reviewedAt     DateTime?
+
+  userId         String   @db.ObjectId
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([requestedRole])
   @@index([createdAt])
 }

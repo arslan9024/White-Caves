@@ -13,13 +13,42 @@ import { sanitizeString } from '../utils/sanitize';
 import { getSocketServer } from '../services/socketServer.js';
 
 // Unified lead status enum — single source of truth for all lead endpoints
-const VALID_LEAD_STATUSES = ['new', 'contacted', 'qualified', 'viewing', 'offered', 'negotiating', 'won', 'lost'] as const;
-const VALID_LEAD_SOURCES = ['direct', 'website', 'referral', 'social', 'portal', 'cold_call', 'event', 'other'] as const;
+const VALID_LEAD_STATUSES = [
+  'new',
+  'contacted',
+  'qualified',
+  'viewing',
+  'offered',
+  'negotiating',
+  'won',
+  'lost',
+] as const;
+const VALID_LEAD_SOURCES = [
+  'direct',
+  'website',
+  'referral',
+  'social',
+  'portal',
+  'cold_call',
+  'event',
+  'other',
+] as const;
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { requirePermission, requireRole } from '../middleware/rbac';
-import { scoreLead, overrideScore, batchRescoreLeads, getScoreHistory, getScoreTrending, applyWhatsAppSignal } from '../services/ai/leadScoringEngine.js';
-import { getRoutingRules, getAgentPerformance, autoRouteHotLead } from '../services/ai/leadAutoRouter.js';
+import {
+  scoreLead,
+  overrideScore,
+  batchRescoreLeads,
+  getScoreHistory,
+  getScoreTrending,
+  applyWhatsAppSignal,
+} from '../services/ai/leadScoringEngine.js';
+import {
+  getRoutingRules,
+  getAgentPerformance,
+  autoRouteHotLead,
+} from '../services/ai/leadAutoRouter.js';
 
 const router = Router();
 
@@ -39,7 +68,11 @@ router.get(
       assignedTo,
     } = req.query;
 
-    const { page: pageNum, limit, skip } = parsePagination({
+    const {
+      page: pageNum,
+      limit,
+      skip,
+    } = parsePagination({
       page: req.query.page as string,
       limit: req.query.pageSize as string,
     });
@@ -47,10 +80,18 @@ router.get(
     // Build where clause
     const where: Prisma.LeadWhereInput = {};
 
-    if (status && status !== 'all' && !VALID_LEAD_STATUSES.includes(status as (typeof VALID_LEAD_STATUSES)[number])) {
+    if (
+      status &&
+      status !== 'all' &&
+      !VALID_LEAD_STATUSES.includes(status as (typeof VALID_LEAD_STATUSES)[number])
+    ) {
       throw new AppError(`Invalid status filter: ${String(status)}`, 422);
     }
-    if (source && source !== 'all' && !VALID_LEAD_SOURCES.includes(source as (typeof VALID_LEAD_SOURCES)[number])) {
+    if (
+      source &&
+      source !== 'all' &&
+      !VALID_LEAD_SOURCES.includes(source as (typeof VALID_LEAD_SOURCES)[number])
+    ) {
       throw new AppError(`Invalid source filter: ${String(source)}`, 422);
     }
 
@@ -87,7 +128,9 @@ router.get(
     // Build orderBy
     const validSortFields = ['createdAt', 'updatedAt', 'name', 'status', 'score', 'budget'];
     const field = validSortFields.includes(sortBy as string) ? (sortBy as string) : 'createdAt';
-    const orderBy: Prisma.LeadOrderByWithRelationInput = { [field]: sortOrder === 'asc' ? 'asc' : 'desc' };
+    const orderBy: Prisma.LeadOrderByWithRelationInput = {
+      [field]: sortOrder === 'asc' ? 'asc' : 'desc',
+    };
 
     const [leads, total] = await Promise.all([
       prisma.lead.findMany({
@@ -136,10 +179,14 @@ router.get(
     ]);
 
     const statusCounts: Record<string, number> = {};
-    byStatus.forEach(s => { statusCounts[s.status] = s._count._all; });
+    byStatus.forEach(s => {
+      statusCounts[s.status] = s._count._all;
+    });
 
     const sourceCounts: Record<string, number> = {};
-    bySource.forEach(s => { sourceCounts[s.source] = s._count._all; });
+    bySource.forEach(s => {
+      sourceCounts[s.source] = s._count._all;
+    });
 
     res.status(200).json({
       success: true,
@@ -191,7 +238,9 @@ router.get(
       include: {
         assignedTo: { select: { id: true, name: true, email: true, phone: true } },
         createdBy: { select: { id: true, name: true, email: true } },
-        property: { select: { id: true, title: true, type: true, status: true, price: true, location: true } },
+        property: {
+          select: { id: true, title: true, type: true, status: true, price: true, location: true },
+        },
         activities: {
           orderBy: { createdAt: 'desc' },
           take: 20,
@@ -216,21 +265,33 @@ router.post(
   '/',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { name, email, phone, company, status, source, budget, score, notes, tags,
-      assignedToId, propertyId } = req.body;
+    const {
+      name,
+      email,
+      phone,
+      company,
+      status,
+      source,
+      budget,
+      score,
+      notes,
+      tags,
+      assignedToId,
+      propertyId,
+    } = req.body;
 
     validate(req.body, {
-      name:         rules.requiredStringWithMax('Lead name', 255),
-      email:        rules.optionalEmail('Email'),
-      phone:        rules.optionalStringWithMax('Phone', 50),
-      company:      rules.optionalStringWithMax('Company', 255),
-      status:       rules.oneOf('Status', [...VALID_LEAD_STATUSES]),
-      source:       rules.oneOf('Source', [...VALID_LEAD_SOURCES]),
-      budget:       rules.optionalPositiveNumber('Budget'),
+      name: rules.requiredStringWithMax('Lead name', 255),
+      email: rules.optionalEmail('Email'),
+      phone: rules.optionalStringWithMax('Phone', 50),
+      company: rules.optionalStringWithMax('Company', 255),
+      status: rules.oneOf('Status', [...VALID_LEAD_STATUSES]),
+      source: rules.oneOf('Source', [...VALID_LEAD_SOURCES]),
+      budget: rules.optionalPositiveNumber('Budget'),
       assignedToId: rules.optionalMongoId('Assigned agent ID'),
-      propertyId:   rules.optionalMongoId('Property ID'),
-      tags:         rules.optionalArray('Tags'),
-      notes:        rules.optionalStringWithMax('Notes', 5000),
+      propertyId: rules.optionalMongoId('Property ID'),
+      tags: rules.optionalArray('Tags'),
+      notes: rules.optionalStringWithMax('Notes', 5000),
     });
 
     const lead = await prisma.lead.create({
@@ -244,7 +305,9 @@ router.post(
         budget: budget ? parseFloat(budget) : null,
         score: score ? Math.max(0, Math.min(100, parseInt(String(score), 10) || 0)) : 0,
         notes: notes ? sanitizeString(notes) : null,
-        tags: (tags || []).map((t: unknown) => typeof t === 'string' ? sanitizeString(t) : String(t)),
+        tags: (tags || []).map((t: unknown) =>
+          typeof t === 'string' ? sanitizeString(t) : String(t)
+        ),
         assignedToId: assignedToId || null,
         createdById: req.user?.id || null,
         propertyId: propertyId || null,
@@ -254,11 +317,17 @@ router.post(
 
     await prisma.activity.create({
       data: {
-        type: 'lead', action: 'created',
+        type: 'lead',
+        action: 'created',
         description: `New lead created: ${lead.name}${lead.company ? ` (${lead.company})` : ''}`,
         userId: req.user?.id || null,
         leadId: lead.id,
       },
+    });
+
+    // Fire-and-forget: auto-score new lead in the background
+    scoreLead(lead.id).catch(() => {
+      /* non-blocking — scoring failure should not affect the response */
     });
 
     res.status(201).json({ success: true, data: lead });
@@ -272,21 +341,33 @@ router.patch(
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     validateIdParam(id, 'Lead ID');
-    const { name, email, phone, company, status, source, budget, score, notes, tags,
-      assignedToId, propertyId } = req.body;
+    const {
+      name,
+      email,
+      phone,
+      company,
+      status,
+      source,
+      budget,
+      score,
+      notes,
+      tags,
+      assignedToId,
+      propertyId,
+    } = req.body;
 
     validate(req.body, {
-      name:         rules.optionalStringWithMax('Lead name', 255),
-      email:        rules.optionalEmail('Email'),
-      phone:        rules.optionalStringWithMax('Phone', 50),
-      company:      rules.optionalStringWithMax('Company', 255),
-      notes:        rules.optionalStringWithMax('Notes', 5000),
-      status:       rules.oneOf('Status', [...VALID_LEAD_STATUSES]),
-      source:       rules.oneOf('Source', [...VALID_LEAD_SOURCES]),
-      budget:       rules.optionalPositiveNumber('Budget'),
+      name: rules.optionalStringWithMax('Lead name', 255),
+      email: rules.optionalEmail('Email'),
+      phone: rules.optionalStringWithMax('Phone', 50),
+      company: rules.optionalStringWithMax('Company', 255),
+      notes: rules.optionalStringWithMax('Notes', 5000),
+      status: rules.oneOf('Status', [...VALID_LEAD_STATUSES]),
+      source: rules.oneOf('Source', [...VALID_LEAD_SOURCES]),
+      budget: rules.optionalPositiveNumber('Budget'),
       assignedToId: rules.optionalMongoId('Assigned agent ID'),
-      propertyId:   rules.optionalMongoId('Property ID'),
-      tags:         rules.optionalArray('Tags'),
+      propertyId: rules.optionalMongoId('Property ID'),
+      tags: rules.optionalArray('Tags'),
     });
 
     const existing = await prisma.lead.findUnique({ where: { id } });
@@ -303,7 +384,8 @@ router.patch(
     if (name !== undefined) data.name = sanitizeString(String(name).trim());
     if (email !== undefined) data.email = email ? String(email).trim().toLowerCase() : null;
     if (phone !== undefined) data.phone = phone ? String(phone).trim() : null;
-    if (company !== undefined) data.company = company ? sanitizeString(String(company).trim()) : null;
+    if (company !== undefined)
+      data.company = company ? sanitizeString(String(company).trim()) : null;
     if (status !== undefined) data.status = status;
     if (source !== undefined) data.source = source;
     if (budget !== undefined) data.budget = budget ? parseFloat(budget) : null;
@@ -312,7 +394,10 @@ router.patch(
       data.score = !isNaN(parsed) ? Math.max(0, Math.min(100, parsed)) : 0;
     }
     if (notes !== undefined) data.notes = notes ? sanitizeString(notes) : null;
-    if (tags !== undefined) data.tags = Array.isArray(tags) ? tags.map((t: unknown) => typeof t === 'string' ? sanitizeString(t) : String(t)) : [];
+    if (tags !== undefined)
+      data.tags = Array.isArray(tags)
+        ? tags.map((t: unknown) => (typeof t === 'string' ? sanitizeString(t) : String(t)))
+        : [];
     if (assignedToId !== undefined) data.assignedToId = assignedToId || null;
     if (propertyId !== undefined) data.propertyId = propertyId || null;
 
@@ -346,6 +431,11 @@ router.patch(
       updatedBy: req.user?.id,
     });
 
+    // Fire-and-forget: re-score lead after update (status/budget/source may have changed)
+    scoreLead(lead.id).catch(() => {
+      /* non-blocking */
+    });
+
     res.status(200).json({ success: true, data: lead });
   })
 );
@@ -368,7 +458,7 @@ router.delete(
       throw new AppError('You do not have permission to delete this lead', 403);
     }
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async tx => {
       // Clean up references to avoid orphaned records
       await tx.commission.updateMany({ where: { leadId: id }, data: { leadId: null } });
       await tx.activity.deleteMany({ where: { leadId: id } });
@@ -376,7 +466,8 @@ router.delete(
 
       await tx.activity.create({
         data: {
-          type: 'lead', action: 'deleted',
+          type: 'lead',
+          action: 'deleted',
           description: `Lead deleted: ${existing.name} (by ${req.user?.email})`,
           userId: req.user?.id || null,
         },
@@ -409,7 +500,16 @@ router.post(
 
     // Validate type and action against known enums
     const VALID_TYPES = ['lead', 'property', 'deal', 'commission', 'agent', 'client', 'system'];
-    const VALID_ACTIONS = ['created', 'updated', 'deleted', 'status_changed', 'note_added', 'call', 'email', 'visit'];
+    const VALID_ACTIONS = [
+      'created',
+      'updated',
+      'deleted',
+      'status_changed',
+      'note_added',
+      'call',
+      'email',
+      'visit',
+    ];
     const resolvedType = VALID_TYPES.includes(type) ? type : 'lead';
     const resolvedAction = VALID_ACTIONS.includes(action) ? action : 'note_added';
     const sanitizedDesc = sanitizeString((description || 'Activity logged').substring(0, 2000));
@@ -453,7 +553,8 @@ router.get(
     ]);
 
     res.status(200).json({
-      success: true, data: activities,
+      success: true,
+      data: activities,
       pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
     });
   })
@@ -465,7 +566,8 @@ router.post(
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
     const { leads } = req.body;
-    if (!Array.isArray(leads) || leads.length === 0) throw new AppError('Provide an array of leads', 400);
+    if (!Array.isArray(leads) || leads.length === 0)
+      throw new AppError('Provide an array of leads', 400);
     if (leads.length > 500) throw new AppError('Maximum 500 leads per batch', 400);
 
     // Validate email format
@@ -475,13 +577,33 @@ router.post(
 
     const results = await prisma.lead.createMany({
       data: leads.map((l: Record<string, string | number | string[] | null>) => ({
-        name: sanitizeString((typeof l.name === 'string' ? l.name.trim() : 'Unknown').slice(0, 200)),
-        email: typeof l.email === 'string' && emailRegex.test(l.email.trim()) ? l.email.trim().toLowerCase().slice(0, 254) : null,
-        phone: typeof l.phone === 'string' && phoneRegex.test(l.phone.trim()) ? l.phone.trim().slice(0, 20) : null,
-        company: sanitizeString((typeof l.company === 'string' ? l.company.trim() : '').slice(0, 200)) || null,
-        status: typeof l.status === 'string' && VALID_LEAD_STATUSES.includes(l.status as typeof VALID_LEAD_STATUSES[number]) ? l.status : 'new',
-        source: typeof l.source === 'string' ? sanitizeString(l.source.trim().slice(0, 100)) : 'direct',
-        budget: typeof l.budget === 'number' ? l.budget : (typeof l.budget === 'string' ? parseFloat(l.budget) || null : null),
+        name: sanitizeString(
+          (typeof l.name === 'string' ? l.name.trim() : 'Unknown').slice(0, 200)
+        ),
+        email:
+          typeof l.email === 'string' && emailRegex.test(l.email.trim())
+            ? l.email.trim().toLowerCase().slice(0, 254)
+            : null,
+        phone:
+          typeof l.phone === 'string' && phoneRegex.test(l.phone.trim())
+            ? l.phone.trim().slice(0, 20)
+            : null,
+        company:
+          sanitizeString((typeof l.company === 'string' ? l.company.trim() : '').slice(0, 200)) ||
+          null,
+        status:
+          typeof l.status === 'string' &&
+          VALID_LEAD_STATUSES.includes(l.status as (typeof VALID_LEAD_STATUSES)[number])
+            ? l.status
+            : 'new',
+        source:
+          typeof l.source === 'string' ? sanitizeString(l.source.trim().slice(0, 100)) : 'direct',
+        budget:
+          typeof l.budget === 'number'
+            ? l.budget
+            : typeof l.budget === 'string'
+              ? parseFloat(l.budget) || null
+              : null,
         score: typeof l.score === 'number' ? Math.min(Math.max(Math.round(l.score), 0), 100) : 0,
         notes: sanitizeString((typeof l.notes === 'string' ? l.notes : '').slice(0, 5000)) || null,
         tags: Array.isArray(l.tags) ? l.tags.slice(0, 20).map(t => String(t).slice(0, 50)) : [],
@@ -717,7 +839,7 @@ router.post(
       req.params.id,
       score,
       sanitizeString(reason.trim().slice(0, 500)),
-      req.user?.id,
+      req.user?.id
     );
 
     res.status(200).json({
@@ -785,7 +907,8 @@ router.post(
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
     validateIdParam(req.params.id, 'Lead ID');
-    const { intentScore, sentimentScore, engagementScore, responseTimeScore, conversationScore } = req.body;
+    const { intentScore, sentimentScore, engagementScore, responseTimeScore, conversationScore } =
+      req.body;
 
     const result = await applyWhatsAppSignal(req.params.id, {
       intentScore: typeof intentScore === 'number' ? intentScore : undefined,

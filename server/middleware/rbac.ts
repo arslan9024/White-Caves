@@ -69,6 +69,7 @@ export const ROLE_ALIAS_MAP: Record<string, string> = {
  * the canonical 12-role backend key used by ROLE_HIERARCHY / ROLE_PERMISSIONS.
  */
 export function resolveBackendRole(role: string): string {
+  // eslint-disable-next-line security/detect-object-injection
   return ROLE_ALIAS_MAP[role] ?? role;
 }
 
@@ -91,71 +92,184 @@ export const ROLE_HIERARCHY: Record<string, number> = {
 // ─── Permission map (mirrored from src/utils/permissions.ts) ─────────────────
 export const ROLE_PERMISSIONS: Record<string, string[]> = {
   buyer: [
-    'view_dashboard', 'edit_profile', 'view_properties',
-    'view_contracts', 'sign_contracts', 'view_payments',
+    'view_dashboard',
+    'edit_profile',
+    'view_properties',
+    'view_contracts',
+    'sign_contracts',
+    'view_payments',
+    'view_appointments',
   ],
   seller: [
-    'view_dashboard', 'edit_profile', 'view_properties', 'create_property',
-    'edit_property', 'view_leads', 'view_contracts', 'view_analytics',
+    'view_dashboard',
+    'edit_profile',
+    'view_properties',
+    'create_property',
+    'edit_property',
+    'view_leads',
+    'view_contracts',
+    'view_analytics',
+    'view_appointments',
   ],
   landlord: [
-    'view_dashboard', 'edit_profile', 'view_properties', 'create_property',
-    'edit_property', 'view_leads', 'view_contracts', 'create_contracts',
-    'view_payments', 'view_analytics',
+    'view_dashboard',
+    'edit_profile',
+    'view_properties',
+    'create_property',
+    'edit_property',
+    'view_leads',
+    'view_contracts',
+    'create_contracts',
+    'view_payments',
+    'view_analytics',
+    'view_appointments',
   ],
   tenant: [
-    'view_dashboard', 'edit_profile', 'view_properties',
-    'view_contracts', 'sign_contracts', 'view_payments',
+    'view_dashboard',
+    'edit_profile',
+    'view_properties',
+    'view_contracts',
+    'sign_contracts',
+    'view_payments',
+    'view_appointments',
   ],
   'leasing-agent': [
-    'view_dashboard', 'edit_profile', 'view_properties', 'create_property',
-    'edit_property', 'view_leads', 'manage_leads', 'view_contracts',
-    'create_contracts', 'view_payments', 'view_analytics',
+    'view_dashboard',
+    'edit_profile',
+    'view_properties',
+    'create_property',
+    'edit_property',
+    'view_leads',
+    'manage_leads',
+    'view_contracts',
+    'create_contracts',
+    'view_payments',
+    'view_analytics',
+    'view_appointments',
+    'manage_appointments',
   ],
   'secondary-sales-agent': [
-    'view_dashboard', 'edit_profile', 'view_properties', 'create_property',
-    'edit_property', 'view_leads', 'manage_leads', 'view_contracts',
-    'create_contracts', 'view_payments', 'process_payments', 'view_analytics',
+    'view_dashboard',
+    'edit_profile',
+    'view_properties',
+    'create_property',
+    'edit_property',
+    'view_leads',
+    'manage_leads',
+    'view_contracts',
+    'create_contracts',
+    'view_payments',
+    'process_payments',
+    'view_analytics',
+    'view_appointments',
+    'manage_appointments',
   ],
   agent: [
-    'view_dashboard', 'edit_profile', 'view_properties', 'create_property',
-    'edit_property', 'view_leads', 'manage_leads', 'view_contracts',
-    'create_contracts', 'view_payments', 'view_analytics',
+    'view_dashboard',
+    'edit_profile',
+    'view_properties',
+    'create_property',
+    'edit_property',
+    'view_leads',
+    'manage_leads',
+    'view_contracts',
+    'create_contracts',
+    'view_payments',
+    'view_analytics',
+    'view_appointments',
+    'manage_appointments',
   ],
   finance: [
-    'view_dashboard', 'edit_profile', 'view_payments', 'process_payments',
-    'view_analytics', 'view_all_reports',
+    'view_dashboard',
+    'edit_profile',
+    'view_payments',
+    'process_payments',
+    'view_analytics',
+    'view_all_reports',
+    'view_appointments',
   ],
   viewer: [
-    'view_dashboard', 'edit_profile', 'view_properties', 'view_leads',
-    'view_contracts', 'view_payments', 'view_analytics',
+    'view_dashboard',
+    'edit_profile',
+    'view_properties',
+    'view_leads',
+    'view_contracts',
+    'view_payments',
+    'view_analytics',
+    'view_appointments',
   ],
   admin: [
-    'view_dashboard', 'edit_profile', 'view_properties', 'create_property',
-    'edit_property', 'delete_property', 'view_leads', 'manage_leads',
-    'view_contracts', 'create_contracts', 'view_payments', 'view_analytics',
-    'view_system_health', 'manage_users', 'manage_agents', 'view_all_reports',
+    'view_dashboard',
+    'edit_profile',
+    'view_properties',
+    'create_property',
+    'edit_property',
+    'delete_property',
+    'view_leads',
+    'manage_leads',
+    'view_contracts',
+    'create_contracts',
+    'view_payments',
+    'view_analytics',
+    'view_system_health',
+    'manage_users',
+    'manage_agents',
+    'view_all_reports',
+    'view_appointments',
+    'manage_appointments',
   ],
   manager: [
-    'view_dashboard', 'edit_profile', 'view_properties', 'create_property',
-    'edit_property', 'delete_property', 'view_leads', 'manage_leads',
-    'view_contracts', 'create_contracts', 'view_payments', 'process_payments',
-    'view_analytics', 'view_system_health', 'manage_agents', 'view_all_reports',
+    'view_dashboard',
+    'edit_profile',
+    'view_properties',
+    'create_property',
+    'edit_property',
+    'delete_property',
+    'view_leads',
+    'manage_leads',
+    'view_contracts',
+    'create_contracts',
+    'view_payments',
+    'process_payments',
+    'view_analytics',
+    'view_system_health',
+    'manage_agents',
+    'view_all_reports',
     'modify_settings',
+    'view_appointments',
+    'manage_appointments',
   ],
   owner: [
-    'view_dashboard', 'edit_profile', 'view_properties', 'create_property',
-    'edit_property', 'delete_property', 'view_leads', 'manage_leads',
-    'view_contracts', 'create_contracts', 'sign_contracts', 'view_payments',
-    'process_payments', 'view_analytics', 'view_system_health', 'manage_users',
-    'manage_agents', 'access_whatsapp_business', 'configure_chatbot',
-    'view_all_reports', 'modify_settings',
+    'view_dashboard',
+    'edit_profile',
+    'view_properties',
+    'create_property',
+    'edit_property',
+    'delete_property',
+    'view_leads',
+    'manage_leads',
+    'view_contracts',
+    'create_contracts',
+    'sign_contracts',
+    'view_payments',
+    'process_payments',
+    'view_analytics',
+    'view_system_health',
+    'manage_users',
+    'manage_agents',
+    'access_whatsapp_business',
+    'configure_chatbot',
+    'view_all_reports',
+    'modify_settings',
+    'view_appointments',
+    'manage_appointments',
   ],
 };
 
 // ─── Helper: check permission for a role ─────────────────────────────────────
 export function roleHasPermission(role: string, permission: string): boolean {
   const resolved = resolveBackendRole(role);
+  // eslint-disable-next-line security/detect-object-injection
   const perms = ROLE_PERMISSIONS[resolved];
   if (!perms) return false;
   return perms.includes(permission);
@@ -177,12 +291,7 @@ export function requireRole(...allowedRoles: string[]) {
     }
     const resolved = resolveBackendRole(userRole);
     if (!allowedRoles.includes(resolved)) {
-      return next(
-        new AppError(
-          `Access denied — requires role: ${allowedRoles.join(' | ')}`,
-          403,
-        ),
-      );
+      return next(new AppError(`Access denied — requires role: ${allowedRoles.join(' | ')}`, 403));
     }
     next();
   };
@@ -207,10 +316,7 @@ export function requirePermission(...requiredPermissions: string[]) {
     const hasAny = requiredPermissions.some(p => roleHasPermission(resolved, p));
     if (!hasAny) {
       return next(
-        new AppError(
-          `Access denied — requires permission: ${requiredPermissions.join(' | ')}`,
-          403,
-        ),
+        new AppError(`Access denied — requires permission: ${requiredPermissions.join(' | ')}`, 403)
       );
     }
     next();
@@ -236,8 +342,8 @@ export function requireAllPermissions(...requiredPermissions: string[]) {
       return next(
         new AppError(
           `Access denied — requires all permissions: ${requiredPermissions.join(', ')}`,
-          403,
-        ),
+          403
+        )
       );
     }
     next();
@@ -253,6 +359,7 @@ export function requireAllPermissions(...requiredPermissions: string[]) {
  *   // agent(50), finance(70), admin(80), manager(90), owner(100) all pass
  */
 export function requireMinRole(minRole: string) {
+  // eslint-disable-next-line security/detect-object-injection
   const minLevel = ROLE_HIERARCHY[minRole] || 0;
   return (req: AuthRequest, _res: Response, next: NextFunction) => {
     const userRole = req.user?.role;
@@ -260,14 +367,10 @@ export function requireMinRole(minRole: string) {
       return next(new AppError('Authentication required', 401));
     }
     const resolved = resolveBackendRole(userRole);
+    // eslint-disable-next-line security/detect-object-injection
     const userLevel = ROLE_HIERARCHY[resolved] || 0;
     if (userLevel < minLevel) {
-      return next(
-        new AppError(
-          `Access denied — minimum role required: ${minRole}`,
-          403,
-        ),
-      );
+      return next(new AppError(`Access denied — minimum role required: ${minRole}`, 403));
     }
     next();
   };
