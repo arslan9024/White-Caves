@@ -102,10 +102,17 @@ The development order has been reset to focus on visible, user-facing value firs
 
 ### 2.4 i18n (Arabic + English)
 
-- [ ] react-i18next integration + language detection
-- [ ] Complete Arabic translations (currently 3/~20 sections)
-- [ ] RTL layout support
-- [ ] Date/number/currency locale formatting
+- [x] Custom LanguageContext with `t()`, `formatCurrency/Date/Number`, RTL toggling, localStorage persistence ✅
+- [x] Complete Arabic translations — 13 sections (common, navigation, property, uae, search, appointment, agent, chatbot, forms, dashboard, footer, company, hero, nav) ✅
+- [x] RTL layout support — `dir="rtl"` on `<html>`, `src/styles/rtl.css` global utility overrides ✅
+- [x] Arabic font (Cairo) loaded via Google Fonts in `index.html` ✅
+- [x] Date/number/currency locale formatting via `Intl` APIs ✅
+- [x] Language detection from localStorage with fallback to English ✅
+- [x] `LanguageSwitcher` component — EN↔AR globe-icon toggle in `PublicNavbar` ✅
+- [x] `PublicNavbar` — all nav labels use `t()` (Home, Properties, Services, Company, Contact, List Property, Sign In) ✅
+- [x] `Hero` section — all user-facing strings use `t()` (title, description, CTAs, stats, trust badges) ✅
+- [ ] RTL layout polish — remaining pages (Properties, About, Services, Contact, Portals)
+- [ ] Arabic content in remaining homepage sections (Features, Locations, Testimonials, Team, Footer)
 
 ### 2.5 API Documentation
 
@@ -156,22 +163,22 @@ The development order has been reset to focus on visible, user-facing value firs
 
 ## 📊 Code Quality Metrics (Verified April 10, 2026)
 
-| Metric                   | Target        | Current                  | Status |
-| ------------------------ | ------------- | ------------------------ | ------ |
-| TypeScript Strict Mode   | 100%          | 100% (0 tsc errors)      | ✅     |
-| Build Success Rate       | 100%          | 100% (Vite build 17.86s) | ✅     |
-| Production Build Time    | <20s          | 17.86s                   | ✅     |
-| Unit Tests               | All pass      | 309 files, 7,744 tests   | ✅     |
-| E2E Test Specs           | Full coverage | 11 spec files            | ⏳     |
-| npm audit                | 0 vulns       | 7 vulns (1 critical)     | ⚠️     |
-| Lighthouse SEO           | >90           | ~95                      | ✅     |
-| Lighthouse Accessibility | >90           | ~92                      | ✅     |
-| Dead Code Removed        | 0             | ~190KB (24 files)        | ✅     |
-| Stale Logs Cleaned       | 0             | 3.0MB (23 files + dir)   | ✅     |
-| `any` types              | 0             | ~39 (mostly tests)       | ⏳     |
-| Stub endpoints           | 0             | 8 (501/503)              | ⏳     |
-| OpenAPI paths            | 30+           | 10                       | ⏳     |
-| i18n coverage            | en+ar         | en ✅, ar partial        | ⏳     |
+| Metric                   | Target        | Current                                                | Status |
+| ------------------------ | ------------- | ------------------------------------------------------ | ------ |
+| TypeScript Strict Mode   | 100%          | 100% (0 tsc errors)                                    | ✅     |
+| Build Success Rate       | 100%          | 100% (Vite build 17.86s)                               | ✅     |
+| Production Build Time    | <20s          | 17.86s                                                 | ✅     |
+| Unit Tests               | All pass      | 309 files, 7,744 tests                                 | ✅     |
+| E2E Test Specs           | Full coverage | 11 spec files                                          | ⏳     |
+| npm audit                | 0 vulns       | 7 vulns (1 critical)                                   | ⚠️     |
+| Lighthouse SEO           | >90           | ~95                                                    | ✅     |
+| Lighthouse Accessibility | >90           | ~92                                                    | ✅     |
+| Dead Code Removed        | 0             | ~190KB (24 files)                                      | ✅     |
+| Stale Logs Cleaned       | 0             | 3.0MB (23 files + dir)                                 | ✅     |
+| `any` types              | 0             | ~39 (mostly tests)                                     | ⏳     |
+| Stub endpoints           | 0             | 8 (501/503)                                            | ⏳     |
+| OpenAPI paths            | 30+           | 10                                                     | ⏳     |
+| i18n coverage            | en+ar         | en ✅, ar ✅ (13 sections, LanguageSwitcher in navbar) | ✅     |
 
 ---
 

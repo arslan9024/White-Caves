@@ -32,7 +32,7 @@ export const translations = {
       previous: 'Previous',
       language: 'Language',
       english: 'English',
-      arabic: 'Arabic'
+      arabic: 'Arabic',
     },
 
     navigation: {
@@ -44,7 +44,7 @@ export const translations = {
       profile: 'Profile',
       settings: 'Settings',
       adminPanel: 'Admin Panel',
-      agentTools: 'Agent Tools'
+      agentTools: 'Agent Tools',
     },
 
     property: {
@@ -96,7 +96,7 @@ export const translations = {
         office: 'Office',
         warehouse: 'Warehouse',
         land: 'Land',
-        studio: 'Studio'
+        studio: 'Studio',
       },
       emirates: {
         dubai: 'Dubai',
@@ -105,8 +105,8 @@ export const translations = {
         ajman: 'Ajman',
         rak: 'Ras Al Khaimah',
         fujairah: 'Fujairah',
-        uaq: 'Umm Al Quwain'
-      }
+        uaq: 'Umm Al Quwain',
+      },
     },
 
     uae: {
@@ -128,7 +128,7 @@ export const translations = {
       maintenanceFee: 'Maintenance Fee',
       securityDeposit: 'Security Deposit',
       agencyFee: 'Agency Fee',
-      commission: 'Commission'
+      commission: 'Commission',
     },
 
     search: {
@@ -145,7 +145,7 @@ export const translations = {
       selectPropertyType: 'Select Property Type',
       advancedSearch: 'Advanced Search',
       recentSearches: 'Recent Searches',
-      popularAreas: 'Popular Areas'
+      popularAreas: 'Popular Areas',
     },
 
     appointment: {
@@ -160,7 +160,7 @@ export const translations = {
       completed: 'Completed',
       reschedule: 'Reschedule',
       confirmAppointment: 'Confirm Appointment',
-      appointmentDetails: 'Appointment Details'
+      appointmentDetails: 'Appointment Details',
     },
 
     agent: {
@@ -177,7 +177,7 @@ export const translations = {
       licenseNumber: 'License Number',
       callNow: 'Call Now',
       sendMessage: 'Send Message',
-      whatsappChat: 'WhatsApp Chat'
+      whatsappChat: 'WhatsApp Chat',
     },
 
     chatbot: {
@@ -190,7 +190,7 @@ export const translations = {
       scheduleViewing: 'Would you like to schedule a viewing?',
       connectAgent: 'Let me connect you with one of our agents',
       thankYou: 'Thank you for your inquiry. An agent will contact you shortly.',
-      typingIndicator: 'Agent is typing...'
+      typingIndicator: 'Agent is typing...',
     },
 
     forms: {
@@ -209,7 +209,7 @@ export const translations = {
       passportNumber: 'Passport Number',
       nationality: 'Nationality',
       company: 'Company',
-      designation: 'Designation'
+      designation: 'Designation',
     },
 
     dashboard: {
@@ -229,7 +229,7 @@ export const translations = {
       upcomingAppointments: 'Upcoming Appointments',
       recentMessages: 'Recent Messages',
       tasksList: 'Tasks List',
-      quickActions: 'Quick Actions'
+      quickActions: 'Quick Actions',
     },
 
     footer: {
@@ -245,7 +245,7 @@ export const translations = {
       enterEmail: 'Enter your email',
       subscribe: 'Subscribe',
       allRightsReserved: 'All Rights Reserved',
-      licensedBy: 'Licensed by RERA Dubai'
+      licensedBy: 'Licensed by RERA Dubai',
     },
 
     company: {
@@ -255,8 +255,35 @@ export const translations = {
       phone: '+971 4 335 0592',
       mobile: '+971 56 361 6136',
       email: 'admin@whitecaves.com',
-      workingHours: '9:00 AM - 10:00 PM (GST)'
-    }
+      workingHours: '9:00 AM - 10:00 PM (GST)',
+    },
+
+    nav: {
+      services: 'Services',
+      company: 'Company',
+      listProperty: 'List Property',
+      signIn: 'Sign In',
+    },
+
+    hero: {
+      title: 'Find Your Dream',
+      titleHighlight: 'Luxury Home',
+      titleSuffix: 'in Dubai',
+      description:
+        "Experience unparalleled luxury living in Dubai's most prestigious locations. White Caves Real Estate brings you exclusive properties with world-class amenities.",
+      browseProperties: 'Browse Properties',
+      bookConsultation: 'Book Consultation',
+      scrollToExplore: 'Scroll to explore',
+      premiumProperties: 'Premium Properties',
+      happyClients: 'Happy Clients',
+      yearsExperience: 'Years Experience',
+      expertAgents: 'Expert Agents',
+      verifiedProperties: 'Verified Properties',
+      reraLicensed: 'RERA Licensed',
+      bestValue: 'Best Value',
+      trustedByClients: 'Trusted by {count}+ Clients in Dubai',
+      propertiesAvailable: '{count}+ Properties Available Today',
+    },
   },
 
   ar: {
@@ -292,7 +319,7 @@ export const translations = {
       previous: 'السابق',
       language: 'اللغة',
       english: 'الإنجليزية',
-      arabic: 'العربية'
+      arabic: 'العربية',
     },
 
     navigation: {
@@ -304,7 +331,7 @@ export const translations = {
       profile: 'الملف الشخصي',
       settings: 'الإعدادات',
       adminPanel: 'لوحة الإدارة',
-      agentTools: 'أدوات الوكيل'
+      agentTools: 'أدوات الوكيل',
     },
 
     property: {
@@ -356,7 +383,7 @@ export const translations = {
         office: 'مكتب',
         warehouse: 'مستودع',
         land: 'أرض',
-        studio: 'استوديو'
+        studio: 'استوديو',
       },
       emirates: {
         dubai: 'دبي',
@@ -365,8 +392,8 @@ export const translations = {
         ajman: 'عجمان',
         rak: 'رأس الخيمة',
         fujairah: 'الفجيرة',
-        uaq: 'أم القيوين'
-      }
+        uaq: 'أم القيوين',
+      },
     },
 
     uae: {
@@ -388,7 +415,7 @@ export const translations = {
       maintenanceFee: 'رسوم الصيانة',
       securityDeposit: 'مبلغ التأمين',
       agencyFee: 'رسوم الوكالة',
-      commission: 'العمولة'
+      commission: 'العمولة',
     },
 
     search: {
@@ -405,7 +432,7 @@ export const translations = {
       selectPropertyType: 'اختر نوع العقار',
       advancedSearch: 'بحث متقدم',
       recentSearches: 'عمليات البحث الأخيرة',
-      popularAreas: 'المناطق الشائعة'
+      popularAreas: 'المناطق الشائعة',
     },
 
     appointment: {
@@ -420,7 +447,7 @@ export const translations = {
       completed: 'مكتمل',
       reschedule: 'إعادة الجدولة',
       confirmAppointment: 'تأكيد الموعد',
-      appointmentDetails: 'تفاصيل الموعد'
+      appointmentDetails: 'تفاصيل الموعد',
     },
 
     agent: {
@@ -437,7 +464,7 @@ export const translations = {
       licenseNumber: 'رقم الترخيص',
       callNow: 'اتصل الآن',
       sendMessage: 'إرسال رسالة',
-      whatsappChat: 'محادثة واتساب'
+      whatsappChat: 'محادثة واتساب',
     },
 
     chatbot: {
@@ -450,7 +477,7 @@ export const translations = {
       scheduleViewing: 'هل تود حجز موعد للمعاينة؟',
       connectAgent: 'دعني أوصلك بأحد وكلائنا',
       thankYou: 'شكراً لاستفسارك. سيتواصل معك أحد الوكلاء قريباً.',
-      typingIndicator: 'الوكيل يكتب...'
+      typingIndicator: 'الوكيل يكتب...',
     },
 
     forms: {
@@ -469,7 +496,7 @@ export const translations = {
       passportNumber: 'رقم جواز السفر',
       nationality: 'الجنسية',
       company: 'الشركة',
-      designation: 'المسمى الوظيفي'
+      designation: 'المسمى الوظيفي',
     },
 
     dashboard: {
@@ -489,7 +516,7 @@ export const translations = {
       upcomingAppointments: 'المواعيد القادمة',
       recentMessages: 'الرسائل الأخيرة',
       tasksList: 'قائمة المهام',
-      quickActions: 'إجراءات سريعة'
+      quickActions: 'إجراءات سريعة',
     },
 
     footer: {
@@ -505,7 +532,7 @@ export const translations = {
       enterEmail: 'أدخل بريدك الإلكتروني',
       subscribe: 'اشترك',
       allRightsReserved: 'جميع الحقوق محفوظة',
-      licensedBy: 'مرخصة من ريرا دبي'
+      licensedBy: 'مرخصة من ريرا دبي',
     },
 
     company: {
@@ -515,9 +542,36 @@ export const translations = {
       phone: '+971 4 335 0592',
       mobile: '+971 56 361 6136',
       email: 'admin@whitecaves.com',
-      workingHours: '9:00 صباحاً - 10:00 مساءً (توقيت الخليج)'
-    }
-  }
+      workingHours: '9:00 صباحاً - 10:00 مساءً (توقيت الخليج)',
+    },
+
+    nav: {
+      services: 'خدماتنا',
+      company: 'الشركة',
+      listProperty: 'أضف عقارك',
+      signIn: 'تسجيل الدخول',
+    },
+
+    hero: {
+      title: 'ابحث عن منزل',
+      titleHighlight: 'أحلامك الفاخر',
+      titleSuffix: 'في دبي',
+      description:
+        'استمتع بحياة فاخرة لا مثيل لها في أرقى مناطق دبي. وايت كيفز للعقارات تقدم لك عقارات حصرية بمرافق عالمية.',
+      browseProperties: 'تصفح العقارات',
+      bookConsultation: 'احجز استشارة',
+      scrollToExplore: 'استكشف المزيد',
+      premiumProperties: 'عقار مميز',
+      happyClients: 'عميل سعيد',
+      yearsExperience: 'سنوات خبرة',
+      expertAgents: 'وكيل متخصص',
+      verifiedProperties: 'عقارات موثقة',
+      reraLicensed: 'مرخص من ريرا',
+      bestValue: 'أفضل قيمة',
+      trustedByClients: 'موثوق من +{count} عميل في دبي',
+      propertiesAvailable: '+{count} عقار متاح اليوم',
+    },
+  },
 };
 
 export default translations;

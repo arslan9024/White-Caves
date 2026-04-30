@@ -49,6 +49,38 @@ vi.mock('../HeroSearchBar', () => ({
   default: () => <div data-testid="hero-search-bar" />,
 }));
 
+// Mock LanguageContext — return English translations via t()
+vi.mock('../../../../context/LanguageContext', () => ({
+  useLanguage: () => ({
+    language: 'en',
+    isRTL: false,
+    t: (key: string, params?: Record<string, string | number>) => {
+      const map: Record<string, string> = {
+        'hero.premiumProperties': 'Premium Properties',
+        'hero.happyClients': 'Happy Clients',
+        'hero.yearsExperience': 'Years Experience',
+        'hero.expertAgents': 'Expert Agents',
+        'hero.title': 'Find Your Dream',
+        'hero.titleHighlight': 'Luxury Home',
+        'hero.titleSuffix': 'in Dubai',
+        'hero.description':
+          "Experience unparalleled luxury living in Dubai's most prestigious locations. White Caves Real Estate brings you exclusive properties with world-class amenities.",
+        'hero.browseProperties': 'Browse Properties',
+        'hero.bookConsultation': 'Book Consultation',
+        'hero.scrollToExplore': 'Scroll to explore',
+        'hero.verifiedProperties': 'Verified Properties',
+        'hero.reraLicensed': 'RERA Licensed',
+        'hero.bestValue': 'Best Value',
+        'hero.trustedByClients': `Trusted by ${params?.count ?? 1000}+ Clients in Dubai`,
+        'hero.propertiesAvailable': `${params?.count}+ Properties Available Today`,
+      };
+      return Object.hasOwn(map, key) ? map[key] : key;
+    },
+  }),
+  LanguageProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  LANGUAGES: { EN: 'en', AR: 'ar' },
+}));
+
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
