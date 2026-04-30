@@ -232,7 +232,7 @@ const ServicesPage: FC = () => {
         {/* ── Hero CTA strip ───────────────────────────────────────────────── */}
         <div className="services-hero-cta">
           <motion.button
-            className="btn-primary-gold"
+            className="btn-primary-red"
             whileHover={{ scale: 1.04, boxShadow: '0 8px 30px rgba(212,175,55,0.55)' }}
             whileTap={{ scale: 0.97 }}
             onClick={() =>
