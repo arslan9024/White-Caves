@@ -19,6 +19,7 @@ import {
   Lock,
   Code,
   Scale,
+  KeySquare,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { colors } from '../styles/theme/colors';
@@ -95,5 +96,19 @@ export const SIDEBAR_DEPARTMENTS: Record<string, DepartmentDef> = {
     label: 'Legal',
     color: '#7C3AED',
     services: ['Contracts', 'Agreements', 'Compliance', 'Documentation'],
+  },
+  leasing: {
+    icon: KeySquare,
+    label: 'Leasing',
+    color: '#E31E24',
+    services: [
+      'Leasing Pipeline',
+      'Active Leases',
+      'Viewing Calendar',
+      'Offer Management',
+      'Contract Center',
+      'PDC Tracker',
+      'Leasing P&L Report',
+    ],
   },
 };
