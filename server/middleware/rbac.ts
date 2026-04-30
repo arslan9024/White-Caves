@@ -403,12 +403,10 @@ export function scopeToOwn(ownerField = 'userId') {
 
     // Supervisors see everything
     if (SUPERVISOR_ROLES.includes(resolved)) {
-      (req as AuthRequest & { ownershipFilter: Record<string, unknown> }).ownershipFilter = {};
+      req.ownershipFilter = {};
     } else {
       // Agents/others see only their own data
-      (req as AuthRequest & { ownershipFilter: Record<string, unknown> }).ownershipFilter = {
-        [ownerField]: userId,
-      };
+      req.ownershipFilter = { [ownerField]: userId };
     }
     next();
   };

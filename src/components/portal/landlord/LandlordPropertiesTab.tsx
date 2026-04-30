@@ -106,7 +106,9 @@ const PropertyDetailModal: FC<DetailModalProps> = ({ property, onClose }) => {
 
 const LandlordPropertiesTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
-  const token = useSelector((state: RootState) => (state.auth as { token?: string } | undefined)?.token);
+  const token = useSelector(
+    (state: RootState) => (state.auth as { token?: string } | undefined)?.token
+  );
   const [selectedProperty, setSelectedProperty] = useState<PropertyData | null>(null);
   const [properties, setProperties] = useState<PropertyData[]>([]);
   const [loading, setLoading] = useState(false);
@@ -114,16 +116,15 @@ const LandlordPropertiesTab: FC = () => {
 
   useEffect(() => {
     if (!currentUser) return;
-    setLoading(true);
-    setError(null);
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    fetch('/api/landlord/properties', { headers })
-      .then(res => {
+    const load = async (): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      try {
+        const res = await fetch('/api/landlord/properties', { headers });
         if (!res.ok) throw new Error(`Server error ${res.status}`);
-        return res.json();
-      })
-      .then(data => {
+        const data = await res.json();
         setProperties(
           (data.properties ?? []).map(
             (p: {
@@ -151,11 +152,13 @@ const LandlordPropertiesTab: FC = () => {
             })
           )
         );
-      })
-      .catch(err => {
+      } catch (err) {
         setError((err as Error).message ?? 'Failed to load properties');
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
   }, [currentUser, token]);
 
   if (!currentUser) {

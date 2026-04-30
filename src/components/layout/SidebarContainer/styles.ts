@@ -53,12 +53,14 @@ export const RailWrapper = styled.nav`
   box-shadow: ${shadows.sidebar};
 
   /* Hide scrollbar */
-  &::-webkit-scrollbar { width: 0; }
+  &::-webkit-scrollbar {
+    width: 0;
+  }
   scrollbar-width: none;
 
   @media (prefers-color-scheme: dark) {
     background: ${colors.background.dark};
-    border-right-color: #2D2D44;
+    border-right-color: #2d2d44;
     box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
   }
 `;
@@ -90,16 +92,20 @@ export const RailIconButton = styled.button<{
   align-items: center;
   justify-content: center;
   background: ${p =>
-    p.$active ? 'rgba(212, 175, 55, 0.10)' :
-    p.$isFlyoutTarget ? '${colors.background.tertiary}' :
-    'transparent'};
+    p.$active
+      ? 'rgba(227, 30, 36, 0.10)'
+      : p.$isFlyoutTarget
+        ? '${colors.background.tertiary}'
+        : 'transparent'};
   border: none;
   border-radius: ${radius.xl};
   cursor: pointer;
   color: ${p =>
-    p.$active ? '${colors.primary}' :
-    p.$color && p.$isFlyoutTarget ? p.$color :
-    '${colors.text.tertiary}'};
+    p.$active
+      ? '${colors.primary}'
+      : p.$color && p.$isFlyoutTarget
+        ? p.$color
+        : '${colors.text.tertiary}'};
   position: relative;
   transition: ${transitions.active};
 
@@ -115,34 +121,34 @@ export const RailIconButton = styled.button<{
     top: 50%;
     transform: translateY(-50%);
     width: 3px;
-    height: ${p => p.$active ? '24px' : '0'};
+    height: ${p => (p.$active ? '24px' : '0')};
     border-radius: 0 ${radius.xs} ${radius.xs} 0;
     background: ${colors.primary};
     transition: height ${transitions.durations.shorter} ${transitions.easing.easeInOut};
   }
 
   &:hover {
-    background: ${p => p.$active ? 'rgba(212, 175, 55, 0.12)' : '${colors.background.tertiary}'};
-    color: ${p => p.$active ? '${colors.primary}' : p.$color || '${colors.text.primary}'};
+    background: ${p => (p.$active ? 'rgba(227, 30, 36, 0.12)' : '${colors.background.tertiary}')};
+    color: ${p => (p.$active ? '${colors.primary}' : p.$color || '${colors.text.primary}')};
 
     &::before {
-      height: ${p => p.$active ? '24px' : '16px'};
+      height: ${p => (p.$active ? '24px' : '16px')};
     }
   }
 
   @media (prefers-color-scheme: dark) {
     background: ${p =>
-      p.$active ? 'rgba(212, 175, 55, 0.15)' :
-      p.$isFlyoutTarget ? 'rgba(255, 255, 255, 0.05)' :
-      'transparent'};
+      p.$active
+        ? 'rgba(227, 30, 36, 0.15)'
+        : p.$isFlyoutTarget
+          ? 'rgba(255, 255, 255, 0.05)'
+          : 'transparent'};
     color: ${p =>
-      p.$active ? '${colors.primaryLight}' :
-      p.$color && p.$isFlyoutTarget ? p.$color :
-      '#94A3B8'};
+      p.$active ? '${colors.primaryLight}' : p.$color && p.$isFlyoutTarget ? p.$color : '#94A3B8'};
 
     &:hover {
-      background: ${p => p.$active ? 'rgba(212, 175, 55, 0.18)' : 'rgba(255, 255, 255, 0.08)'};
-      color: ${p => p.$active ? '${colors.primaryLight}' : p.$color || '#E2E8F0'};
+      background: ${p => (p.$active ? 'rgba(227, 30, 36, 0.18)' : 'rgba(255, 255, 255, 0.08)')};
+      color: ${p => (p.$active ? '${colors.primaryLight}' : p.$color || '#E2E8F0')};
     }
   }
 `;
@@ -164,8 +170,9 @@ export const RailTooltip = styled.span`
   pointer-events: none;
   opacity: 0;
   z-index: 600;
-  transition: opacity ${transitions.durations.shortest} ${transitions.easing.easeOut},
-             transform ${transitions.durations.shortest} ${transitions.easing.easeOut};
+  transition:
+    opacity ${transitions.durations.shortest} ${transitions.easing.easeOut},
+    transform ${transitions.durations.shortest} ${transitions.easing.easeOut};
   box-shadow: ${shadows.dropdown};
 
   &::before {
@@ -189,7 +196,7 @@ export const RailDivider = styled.div`
   flex-shrink: 0;
 
   @media (prefers-color-scheme: dark) {
-    background: #2D2D44;
+    background: #2d2d44;
   }
 `;
 
@@ -212,24 +219,24 @@ export const FlyoutBackdrop = styled.div`
 `;
 
 export const FlyoutPanel = styled.div<{ $open?: boolean; $color?: string }>`
-  width: ${p => p.$open ? '240px' : '0'};
+  width: ${p => (p.$open ? '240px' : '0')};
   height: 100%;
   background: ${colors.background.secondary};
-  border-right: ${p => p.$open ? `1px solid ${colors.border}` : 'none'};
+  border-right: ${p => (p.$open ? `1px solid ${colors.border}` : 'none')};
   overflow: hidden;
   transition: width ${transitions.durations.short} ${transitions.easing.easeInOut};
   display: flex;
   flex-direction: column;
-  box-shadow: ${p => p.$open ? shadows.luxuryCard : 'none'};
+  box-shadow: ${p => (p.$open ? shadows.luxuryCard : 'none')};
 
   ${reducedMotion} {
     transition: none;
   }
 
   @media (prefers-color-scheme: dark) {
-    background: #1E293B;
+    background: #1e293b;
     border-right-color: #334155;
-    box-shadow: ${p => p.$open ? '4px 0 24px rgba(0, 0, 0, 0.3)' : 'none'};
+    box-shadow: ${p => (p.$open ? '4px 0 24px rgba(0, 0, 0, 0.3)' : 'none')};
   }
 `;
 
@@ -277,7 +284,10 @@ export const FlyoutClose = styled.button`
   }
 
   @media (prefers-color-scheme: dark) {
-    &:hover { background: #334155; color: #E2E8F0; }
+    &:hover {
+      background: #334155;
+      color: #e2e8f0;
+    }
   }
 `;
 
@@ -301,13 +311,13 @@ export const FlyoutItem = styled.button<{ $active?: boolean; $color?: string }>`
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  background: ${p => p.$active ? `${p.$color}12` : 'transparent'};
+  background: ${p => (p.$active ? `${p.$color}12` : 'transparent')};
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
-  font-weight: ${p => p.$active ? '600' : '400'};
-  color: ${p => p.$active ? (p.$color || colors.primary) : colors.text.primary};
+  font-weight: ${p => (p.$active ? '600' : '400')};
+  color: ${p => (p.$active ? p.$color || colors.primary : colors.text.primary)};
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
@@ -315,14 +325,16 @@ export const FlyoutItem = styled.button<{ $active?: boolean; $color?: string }>`
   transition: ${transitions.active};
 
   &:hover {
-    background: ${p => p.$active ? `${p.$color}18` : colors.background.tertiary};
+    background: ${p => (p.$active ? `${p.$color}18` : colors.background.tertiary)};
     color: ${p => p.$color || colors.primary};
   }
 
   @media (prefers-color-scheme: dark) {
-    color: ${p => p.$active ? (p.$color || colors.primaryLight) : '#E2E8F0'};
-    background: ${p => p.$active ? `${p.$color}18` : 'transparent'};
-    &:hover { background: ${p => p.$active ? `${p.$color}22` : '#334155'}; }
+    color: ${p => (p.$active ? p.$color || colors.primaryLight : '#E2E8F0')};
+    background: ${p => (p.$active ? `${p.$color}18` : 'transparent')};
+    &:hover {
+      background: ${p => (p.$active ? `${p.$color}22` : '#334155')};
+    }
   }
 `;
 
@@ -344,7 +356,7 @@ export const AISearchBar = styled.div`
   border-bottom: 1px solid ${colors.background.tertiary};
 
   @media (prefers-color-scheme: dark) {
-    border-bottom-color: #2D2D44;
+    border-bottom-color: #2d2d44;
   }
 `;
 
@@ -373,13 +385,22 @@ export const AISearchInput = styled.div`
     color: ${colors.text.primary};
     font-family: inherit;
 
-    &::placeholder { color: ${colors.text.tertiary}; }
+    &::placeholder {
+      color: ${colors.text.tertiary};
+    }
   }
 
   @media (prefers-color-scheme: dark) {
     background: #334155;
-    &:focus-within { background: #1E293B; }
-    input { color: #E2E8F0; &::placeholder { color: #64748B; } }
+    &:focus-within {
+      background: #1e293b;
+    }
+    input {
+      color: #e2e8f0;
+      &::placeholder {
+        color: #64748b;
+      }
+    }
   }
 `;
 
@@ -399,11 +420,15 @@ export const AIGroupHeader = styled.button`
   letter-spacing: 0.5px;
   transition: ${transitions.active};
 
-  &:hover { color: ${colors.text.secondary}; }
+  &:hover {
+    color: ${colors.text.secondary};
+  }
 
   @media (prefers-color-scheme: dark) {
-    color: #64748B;
-    &:hover { color: #94A3B8; }
+    color: #64748b;
+    &:hover {
+      color: #94a3b8;
+    }
   }
 `;
 
@@ -413,19 +438,21 @@ export const AIAssistantBtn = styled.button<{ $selected?: boolean }>`
   align-items: center;
   gap: 10px;
   padding: 8px 16px;
-  background: ${p => p.$selected ? 'rgba(212, 175, 55, 0.10)' : 'transparent'};
+  background: ${p => (p.$selected ? 'rgba(227, 30, 36, 0.10)' : 'transparent')};
   border: none;
   cursor: pointer;
   transition: ${transitions.active};
   text-align: left;
 
   &:hover {
-    background: ${p => p.$selected ? 'rgba(212, 175, 55, 0.14)' : colors.background.primary};
+    background: ${p => (p.$selected ? 'rgba(227, 30, 36, 0.14)' : colors.background.primary)};
   }
 
   @media (prefers-color-scheme: dark) {
-    background: ${p => p.$selected ? 'rgba(212, 175, 55, 0.12)' : 'transparent'};
-    &:hover { background: ${p => p.$selected ? 'rgba(212, 175, 55, 0.16)' : 'rgba(255,255,255,0.04)'}; }
+    background: ${p => (p.$selected ? 'rgba(227, 30, 36, 0.12)' : 'transparent')};
+    &:hover {
+      background: ${p => (p.$selected ? 'rgba(227, 30, 36, 0.16)' : 'rgba(255,255,255,0.04)')};
+    }
   }
 `;
 
@@ -452,7 +479,7 @@ export const AIAssistantName = styled.div`
   text-overflow: ellipsis;
 
   @media (prefers-color-scheme: dark) {
-    color: #F8FAFC;
+    color: #f8fafc;
   }
 `;
 
@@ -464,7 +491,7 @@ export const AIAssistantDesc = styled.div`
   text-overflow: ellipsis;
 
   @media (prefers-color-scheme: dark) {
-    color: #94A3B8;
+    color: #94a3b8;
   }
 `;
 
@@ -482,7 +509,7 @@ export const AIFooter = styled.div`
 
   @media (prefers-color-scheme: dark) {
     border-top-color: #334155;
-    color: #64748B;
+    color: #64748b;
   }
 
   kbd {
@@ -532,7 +559,7 @@ export const RailGroupHeader = styled.button<{ $collapsed?: boolean }>`
   svg {
     flex-shrink: 0;
     transition: transform ${transitions.durations.shorter} ${transitions.easing.easeInOut};
-    transform: ${p => p.$collapsed ? 'rotate(-90deg)' : 'rotate(0deg)'};
+    transform: ${p => (p.$collapsed ? 'rotate(-90deg)' : 'rotate(0deg)')};
   }
 
   &:hover {
@@ -540,8 +567,10 @@ export const RailGroupHeader = styled.button<{ $collapsed?: boolean }>`
   }
 
   @media (prefers-color-scheme: dark) {
-    color: #64748B;
-    &:hover { color: ${colors.primaryLight}; }
+    color: #64748b;
+    &:hover {
+      color: ${colors.primaryLight};
+    }
   }
 `;
 
@@ -551,10 +580,11 @@ export const RailGroupContent = styled.div<{ $collapsed?: boolean }>`
   align-items: center;
   gap: ${spacing.xs};
   overflow: hidden;
-  max-height: ${p => p.$collapsed ? '0' : '600px'};
-  opacity: ${p => p.$collapsed ? '0' : '1'};
-  transition: max-height ${transitions.durations.standard} ${transitions.easing.easeInOut},
-              opacity ${transitions.durations.shorter} ${transitions.easing.easeOut};
+  max-height: ${p => (p.$collapsed ? '0' : '600px')};
+  opacity: ${p => (p.$collapsed ? '0' : '1')};
+  transition:
+    max-height ${transitions.durations.standard} ${transitions.easing.easeInOut},
+    opacity ${transitions.durations.shorter} ${transitions.easing.easeOut};
 
   ${reducedMotion} {
     transition: none;

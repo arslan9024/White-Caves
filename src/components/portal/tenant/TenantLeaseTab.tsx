@@ -33,7 +33,9 @@ interface LeaseData {
 
 const TenantLeaseTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
-  const token = useSelector((state: RootState) => (state.auth as { token?: string } | undefined)?.token);
+  const token = useSelector(
+    (state: RootState) => (state.auth as { token?: string } | undefined)?.token
+  );
   const [showDetails, setShowDetails] = useState(false);
   const [lease, setLease] = useState<LeaseData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -41,18 +43,20 @@ const TenantLeaseTab: FC = () => {
 
   useEffect(() => {
     if (!currentUser) return;
-    setLoading(true);
-    setError(null);
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    fetch('/api/portal/tenant/lease', { headers })
-      .then(res => {
+    const load = async (): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      try {
+        const res = await fetch('/api/portal/tenant/lease', { headers });
         if (!res.ok) throw new Error(`Server error ${res.status}`);
-        return res.json();
-      })
-      .then(data => {
+        const data = await res.json();
         const d = data.data;
-        if (!d) { setLease(null); return; }
+        if (!d) {
+          setLease(null);
+          return;
+        }
         setLease({
           id: d.id,
           property: d.property ?? '',
@@ -69,9 +73,13 @@ const TenantLeaseTab: FC = () => {
           agreementUrl: undefined,
           ejariUrl: undefined,
         });
-      })
-      .catch(err => setError((err as Error).message ?? 'Failed to load lease'))
-      .finally(() => setLoading(false));
+      } catch (err) {
+        setError((err as Error).message ?? 'Failed to load lease');
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
   }, [currentUser, token]);
 
   if (!currentUser) {
@@ -124,11 +132,15 @@ const TenantLeaseTab: FC = () => {
         </div>
         <div className="summary-card" data-testid="lease-monthly-rent-card">
           <h4>Monthly Rent</h4>
-          <p>{lease.currency} {lease.monthlyRent.toLocaleString()}</p>
+          <p>
+            {lease.currency} {lease.monthlyRent.toLocaleString()}
+          </p>
         </div>
         <div className="summary-card" data-testid="lease-deposit-card">
           <h4>Deposit Paid</h4>
-          <p>{lease.currency} {lease.depositPaid.toLocaleString()}</p>
+          <p>
+            {lease.currency} {lease.depositPaid.toLocaleString()}
+          </p>
         </div>
       </div>
 

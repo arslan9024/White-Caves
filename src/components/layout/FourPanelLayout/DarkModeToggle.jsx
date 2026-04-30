@@ -9,11 +9,11 @@ import { useTheme } from '../context/ThemeContext';
  * - Keyboard accessible with tooltip
  * - Persists preference to localStorage (via ThemeContext)
  * - WCAG AAA compliant
- * 
+ *
  * @component
  * @example
  * <DarkModeToggle />
- * 
+ *
  * @requires lucide-react for Moon and Sun icons
  */
 const DarkModeToggle = ({ Moon, Sun }) => {
@@ -24,9 +24,7 @@ const DarkModeToggle = ({ Moon, Sun }) => {
     toggleTheme();
   };
 
-  const tooltipText = isDark 
-    ? 'Switch to Light Mode' 
-    : 'Switch to Dark Mode';
+  const tooltipText = isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode';
 
   return (
     <div className="dark-mode-toggle-wrapper">
@@ -42,8 +40,8 @@ const DarkModeToggle = ({ Moon, Sun }) => {
         onBlur={() => setShowTooltip(false)}
       >
         {/* Icon container with rotation animation */}
-        <span 
-          className="theme-icon-container" 
+        <span
+          className="theme-icon-container"
           aria-hidden="true"
           style={{
             display: 'flex',
@@ -55,8 +53,8 @@ const DarkModeToggle = ({ Moon, Sun }) => {
           }}
         >
           {isDark ? (
-            <Sun 
-              size={20} 
+            <Sun
+              size={20}
               className="theme-icon sun-icon"
               style={{
                 animation: 'rotateIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
@@ -64,8 +62,8 @@ const DarkModeToggle = ({ Moon, Sun }) => {
               }}
             />
           ) : (
-            <Moon 
-              size={20} 
+            <Moon
+              size={20}
               className="theme-icon moon-icon"
               style={{
                 animation: 'rotateIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
@@ -77,8 +75,8 @@ const DarkModeToggle = ({ Moon, Sun }) => {
 
         {/* Tooltip */}
         {showTooltip && (
-          <span 
-            className="theme-tooltip" 
+          <span
+            className="theme-tooltip"
             role="tooltip"
             style={{
               position: 'absolute',
@@ -238,7 +236,7 @@ const DarkModeToggle = ({ Moon, Sun }) => {
         }
 
         body.dark-mode .theme-toggle-btn {
-          color: #FFD700;
+          color: #E31E24;
         }
 
         body.dark-mode .theme-tooltip {

@@ -33,7 +33,8 @@ const roles: RoleOption[] = [
     id: 'seller',
     title: 'Sell or List Property',
     subtitle: 'List your property with us',
-    description: 'Get property valuations, manage listings, and receive offers from qualified buyers.',
+    description:
+      'Get property valuations, manage listings, and receive offers from qualified buyers.',
     icon: (
       <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 3L4 9v12h16V9l-8-6zm0 2.5L18 10v9H6v-9l6-4.5z" />
@@ -42,7 +43,7 @@ const roles: RoleOption[] = [
     ),
     path: '/seller/dashboard',
     role: 'seller',
-    color: '#D4AF37',
+    color: '#E31E24',
   },
   {
     id: 'tenant',
@@ -72,7 +73,7 @@ const roles: RoleOption[] = [
     ),
     path: '/signin',
     role: 'agent',
-    color: '#FFB300',
+    color: '#E31E24',
   },
 ];
 
@@ -116,7 +117,7 @@ const RoleSelectionModal: React.FC = () => {
     };
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   const handleRoleSelect = useCallback(
@@ -143,9 +144,15 @@ const RoleSelectionModal: React.FC = () => {
   return (
     <div
       style={{
-        position: 'fixed', inset: 0, zIndex: 9999,
-        background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem',
+        position: 'fixed',
+        inset: 0,
+        zIndex: 9999,
+        background: 'rgba(0,0,0,0.55)',
+        backdropFilter: 'blur(8px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1rem',
       }}
       onClick={handleSkip}
       role="dialog"
@@ -155,15 +162,27 @@ const RoleSelectionModal: React.FC = () => {
       <div
         ref={modalRef}
         style={{
-          background: '#fff', borderRadius: 20, padding: '2.5rem 2rem',
-          maxWidth: 680, width: '100%',
+          background: '#fff',
+          borderRadius: 20,
+          padding: '2.5rem 2rem',
+          maxWidth: 680,
+          width: '100%',
           boxShadow: '0 30px 80px rgba(0,0,0,0.3)',
           position: 'relative',
         }}
         onClick={e => e.stopPropagation()}
       >
         <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
-          <div style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#E31E24', marginBottom: '0.5rem' }}>
+          <div
+            style={{
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: '#E31E24',
+              marginBottom: '0.5rem',
+            }}
+          >
             Welcome to White Caves
           </div>
           <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800, color: '#111' }}>
@@ -172,7 +191,15 @@ const RoleSelectionModal: React.FC = () => {
           <p style={{ margin: '0.5rem 0 0', color: '#6b7280', fontSize: '0.9rem' }}>
             Select your role to access personalised features and services
           </p>
-          <div style={{ width: 48, height: 3, background: 'linear-gradient(90deg,#E31E24,#D4AF37)', borderRadius: 2, margin: '1rem auto 0' }} />
+          <div
+            style={{
+              width: 48,
+              height: 3,
+              background: 'linear-gradient(90deg,#E31E24,#B71C1C)',
+              borderRadius: 2,
+              margin: '1rem auto 0',
+            }}
+          />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
@@ -182,19 +209,46 @@ const RoleSelectionModal: React.FC = () => {
               ref={idx === 0 ? firstButtonRef : undefined}
               onClick={() => handleRoleSelect(role)}
               style={{
-                display: 'flex', alignItems: 'flex-start', gap: '0.75rem',
-                padding: '1rem', borderRadius: 12, border: `2px solid ${role.color}30`,
-                background: `${role.color}08`, cursor: 'pointer',
-                textAlign: 'left', transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '0.75rem',
+                padding: '1rem',
+                borderRadius: 12,
+                border: `2px solid ${role.color}30`,
+                background: `${role.color}08`,
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'all 0.2s',
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = role.color; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = `${role.color}30`; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)'; }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLButtonElement).style.borderColor = role.color;
+                (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLButtonElement).style.borderColor = `${role.color}30`;
+                (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
+              }}
             >
               <div style={{ color: role.color, flexShrink: 0, marginTop: 2 }}>{role.icon}</div>
               <div>
-                <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#111', marginBottom: 2 }}>{role.title}</div>
-                <div style={{ fontSize: '0.75rem', color: role.color, fontWeight: 600, marginBottom: 4 }}>{role.subtitle}</div>
-                <div style={{ fontSize: '0.75rem', color: '#6b7280', lineHeight: 1.4 }}>{role.description}</div>
+                <div
+                  style={{ fontWeight: 700, fontSize: '0.9rem', color: '#111', marginBottom: 2 }}
+                >
+                  {role.title}
+                </div>
+                <div
+                  style={{
+                    fontSize: '0.75rem',
+                    color: role.color,
+                    fontWeight: 600,
+                    marginBottom: 4,
+                  }}
+                >
+                  {role.subtitle}
+                </div>
+                <div style={{ fontSize: '0.75rem', color: '#6b7280', lineHeight: 1.4 }}>
+                  {role.description}
+                </div>
               </div>
             </button>
           ))}
@@ -204,9 +258,15 @@ const RoleSelectionModal: React.FC = () => {
           <button
             onClick={handleSkip}
             style={{
-              background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer',
-              fontSize: '0.85rem', padding: '0.4rem 0.75rem', borderRadius: 8,
-              textDecoration: 'underline', textUnderlineOffset: 3,
+              background: 'none',
+              border: 'none',
+              color: '#9ca3af',
+              cursor: 'pointer',
+              fontSize: '0.85rem',
+              padding: '0.4rem 0.75rem',
+              borderRadius: 8,
+              textDecoration: 'underline',
+              textUnderlineOffset: 3,
             }}
           >
             Skip for now

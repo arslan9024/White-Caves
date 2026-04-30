@@ -666,8 +666,12 @@ router.post(
     // Decode the pending token to retrieve the secret
     let totpSecret: string;
     try {
-      const payload = jwt.verify(pendingToken, JWT_SECRET) as { userId: string; totpSecret: string };
-      if (payload.userId !== userId) throw new AppError('Token does not match the current user', 403);
+      const payload = jwt.verify(pendingToken, JWT_SECRET) as {
+        userId: string;
+        totpSecret: string;
+      };
+      if (payload.userId !== userId)
+        throw new AppError('Token does not match the current user', 403);
       totpSecret = payload.totpSecret;
     } catch (err) {
       if (err instanceof AppError) throw err;
@@ -675,7 +679,10 @@ router.post(
     }
 
     if (!verifyTOTP(totpSecret, String(code).trim())) {
-      throw new AppError('Verification code is incorrect — ensure your device clock is accurate', 400);
+      throw new AppError(
+        'Verification code is incorrect — ensure your device clock is accurate',
+        400
+      );
     }
 
     // Generate backup codes and hash them
@@ -693,7 +700,8 @@ router.post(
       data: {
         enabled: true,
         backupCodes: plainCodes,
-        message: 'Two-factor authentication is now active. Store your backup codes in a safe place — they will not be shown again.',
+        message:
+          'Two-factor authentication is now active. Store your backup codes in a safe place — they will not be shown again.',
       },
     });
   })
@@ -730,7 +738,10 @@ router.post(
       verified = verifyTOTP(user.totpSecret, codeStr);
     } else if (/^[A-F0-9]{8}$/.test(codeStr)) {
       for (const hashed of user.totpBackupCodes) {
-        if (await bcrypt.compare(codeStr, hashed)) { verified = true; break; }
+        if (await bcrypt.compare(codeStr, hashed)) {
+          verified = true;
+          break;
+        }
       }
     }
 
@@ -742,7 +753,12 @@ router.post(
     });
 
     logger.info('TOTP 2FA disabled', { userId });
-    res.status(200).json({ success: true, data: { enabled: false, message: 'Two-factor authentication has been disabled.' } });
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: { enabled: false, message: 'Two-factor authentication has been disabled.' },
+      });
   })
 );
 
@@ -1896,6 +1912,84 @@ router.delete(
     });
 
     res.status(200).json({ success: true, message: 'Credential removed' });
+  })
+);
+
+/**
+ * POST /api/auth/complete-social-registration
+ * Completes registration for a social-auth user who just selected their role.
+ * The user was already created by /firebase-sync; this endpoint updates their
+ * role and category using the JWT issued by that endpoint (auth required).
+ */
+router.post(
+  '/complete-social-registration',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Not authenticated', 401);
+
+    const { role, category } = req.body;
+    if (!category || !role) {
+      throw new AppError('category and role are required', 400);
+    }
+
+    const normalizedCategory = String(category).toLowerCase().trim();
+    const normalizedRole = String(role).toLowerCase().trim();
+    const clientRoles = new Set(['buyer', 'seller', 'landlord', 'tenant']);
+
+    let assignedRole: string;
+    let assignedStatus: 'active' | 'pending' = 'active';
+
+    if (normalizedCategory === 'client') {
+      if (!normalizedRole || !clientRoles.has(normalizedRole)) {
+        throw new AppError(
+          'Client signup requires a valid role: buyer, seller, landlord, or tenant',
+          400
+        );
+      }
+      assignedRole = normalizedRole;
+      assignedStatus = 'active';
+    } else if (normalizedCategory === 'staff') {
+      assignedRole = 'agent';
+      assignedStatus = 'pending';
+    } else {
+      throw new AppError('Invalid category. Must be either client or staff', 400);
+    }
+
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: { role: assignedRole, status: assignedStatus },
+    });
+
+    // Issue a new JWT reflecting the updated role
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      JWT_SIGN_OPTIONS
+    );
+
+    await prisma.activity.create({
+      data: {
+        type: 'system',
+        action: 'created',
+        description: `Social user completed registration: ${user.name || user.email} (${normalizedCategory}/${assignedRole})`,
+        userId: user.id,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          department: user.department,
+        },
+      },
+    });
   })
 );
 

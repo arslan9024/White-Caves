@@ -66,6 +66,8 @@ import { roleRequestRouter, adminRoleRequestRouter } from './routes/roleRequests
 import phase6Routes from './routes/phase6.routes.js';
 import landlordPortalRoutes from './routes/landlord.js';
 import tenantPortalRoutes from './routes/tenantPortal.js';
+import invoicesLeaseRoutes from './routes/invoicesLease.js';
+import usersRoutes from './routes/users.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
@@ -292,8 +294,8 @@ app.use('/api/properties', propertiesRoutes);
 // Agents API
 app.use('/api/agents', agentsRoutes);
 
-// Users API — alias for /api/agents (frontend calls /api/users?role=agent)
-app.use('/api/users', agentsRoutes);
+// Users API — user management (list all roles, approve/reject, update role/status)
+app.use('/api/users', usersRoutes);
 
 // Transactions API (Sophia - Pipeline, Theodora - Finance)
 app.use('/api/transactions', transactionsRoutes);
@@ -360,6 +362,9 @@ app.use('/api/offers', offersRoutes);
 
 // Leases API (lease management for landlords, tenants, leasing agents)
 app.use('/api/leases', leasesRoutes);
+
+// Lease Invoices API (deposit and rent invoices for leasing workflow)
+app.use('/api/invoices/lease', invoicesLeaseRoutes);
 
 // Maintenance API (maintenance requests for landlords and tenants)
 app.use('/api/maintenance', maintenanceRoutes);
@@ -503,7 +508,9 @@ app.post(
       throw new AppError('conversationId and body are required', 400);
     }
 
-    const conversation = await prisma.nadiaConversation.findUnique({ where: { id: conversationId } });
+    const conversation = await prisma.nadiaConversation.findUnique({
+      where: { id: conversationId },
+    });
     if (!conversation) throw new AppError('Conversation not found', 404);
 
     const message = await prisma.nadiaMessage.create({
@@ -792,8 +799,15 @@ app.post(
       entries.map(([key, value]) =>
         prisma.systemSetting.upsert({
           where: { key },
-          create: { key, value: value as Parameters<typeof prisma.systemSetting.create>[0]['data']['value'], updatedBy: userId },
-          update: { value: value as Parameters<typeof prisma.systemSetting.update>[0]['data']['value'], updatedBy: userId },
+          create: {
+            key,
+            value: value as Parameters<typeof prisma.systemSetting.create>[0]['data']['value'],
+            updatedBy: userId,
+          },
+          update: {
+            value: value as Parameters<typeof prisma.systemSetting.update>[0]['data']['value'],
+            updatedBy: userId,
+          },
         })
       )
     );

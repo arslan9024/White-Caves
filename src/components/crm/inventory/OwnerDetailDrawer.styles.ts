@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { X } from 'lucide-react';
 import { transitions } from '../../../styles/theme/transitions';
 import { typography } from '../../../styles/theme/typography';
 import { radius } from '../../../styles/theme/radius';
@@ -60,14 +59,14 @@ export const OwnerAvatar = styled.div`
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: rgba(212, 175, 55, 0.1);
+  background: rgba(227, 30, 36, 0.1);
   color: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
 
   [data-theme='dark'] & {
-    background: rgba(212, 175, 55, 0.15);
+    background: rgba(227, 30, 36, 0.15);
   }
 `;
 
@@ -182,10 +181,10 @@ export const ContactItem = styled.div<{ $isPrimary?: boolean }>`
     props.$isPrimary &&
     `
     border-color: var(--primary);
-    background: rgba(212, 175, 55, 0.05);
+    background: rgba(227, 30, 36, 0.05);
 
     [data-theme='dark'] & {
-      background: rgba(212, 175, 55, 0.12);
+      background: rgba(227, 30, 36, 0.12);
     }
   `};
 
@@ -234,7 +233,7 @@ export const PropertyItem = styled.button`
 
   &:hover {
     border-color: var(--primary);
-    background: rgba(212, 175, 55, 0.05);
+    background: rgba(227, 30, 36, 0.05);
   }
 
   [data-theme='dark'] & {
@@ -242,7 +241,7 @@ export const PropertyItem = styled.button`
     border-color: var(--border-color, #3a3a5a);
 
     &:hover {
-      background: rgba(212, 175, 55, 0.12);
+      background: rgba(227, 30, 36, 0.12);
     }
   }
 `;

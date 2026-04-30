@@ -14,7 +14,7 @@
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(20px);
   border-radius: 24px;
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(227, 30, 36, 0.2);
   animation: fadeIn 0.5s ease;
 }
 
@@ -36,17 +36,22 @@
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .not-found-content h1 {
   font-size: 100px;
   font-weight: 800;
-  color: #D4AF37;
+  color: #e31e24;
   margin: 0;
   line-height: 1;
-  text-shadow: 0 0 40px rgba(212, 175, 55, 0.3);
+  text-shadow: 0 0 40px rgba(227, 30, 36, 0.3);
 }
 
 .not-found-content h2 {
@@ -71,7 +76,7 @@
 
 .not-found-content .countdown {
   display: inline-block;
-  background: linear-gradient(135deg, #D4AF37, #B8960C);
+  background: linear-gradient(135deg, #e31e24, #b71c1c);
   color: #0a0a0f;
   width: 28px;
   height: 28px;
@@ -84,7 +89,7 @@
 .home-btn {
   margin-top: 25px;
   padding: 14px 32px;
-  background: linear-gradient(135deg, #D4AF37, #B8960C);
+  background: linear-gradient(135deg, #e31e24, #b71c1c);
   color: #0a0a0f;
   border: none;
   border-radius: 12px;
@@ -96,7 +101,7 @@
 
 .home-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 8px 25px rgba(227, 30, 36, 0.4);
 }
 
 @media (max-width: 480px) {

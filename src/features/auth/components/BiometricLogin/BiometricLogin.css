@@ -10,8 +10,8 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 2px solid var(--primary-color, #D4AF37);
-  background: linear-gradient(135deg, var(--primary-color, #D4AF37) 0%, #B8960C 100%);
+  border: 2px solid var(--primary-color, #e31e24);
+  background: linear-gradient(135deg, var(--primary-color, #e31e24) 0%, #b71c1c 100%);
   color: #ffffff;
   min-height: 56px;
   margin-bottom: 16px;
@@ -19,7 +19,7 @@
 
 .biometric-login-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 8px 20px rgba(227, 30, 36, 0.3);
 }
 
 .biometric-login-btn:active:not(:disabled) {
@@ -32,7 +32,7 @@
 }
 
 .biometric-login-btn:focus-visible {
-  outline: 2px solid var(--primary-color, #D4AF37);
+  outline: 2px solid var(--primary-color, #e31e24);
   outline-offset: 2px;
 }
 
@@ -73,7 +73,7 @@
 .biometric-setup-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, var(--primary-color, #D4AF37) 0%, #B8960C 100%);
+  background: linear-gradient(135deg, var(--primary-color, #e31e24) 0%, #b71c1c 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -111,12 +111,12 @@
 }
 
 .biometric-setup-btn.primary {
-  background: var(--primary-color, #D4AF37);
+  background: var(--primary-color, #e31e24);
   color: white;
 }
 
 .biometric-setup-btn.primary:hover {
-  background: #B8960C;
+  background: #b71c1c;
 }
 
 .biometric-setup-btn.secondary {
@@ -152,7 +152,7 @@
 .biometric-credential-icon {
   width: 36px;
   height: 36px;
-  background: var(--primary-color, #D4AF37);
+  background: var(--primary-color, #e31e24);
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -175,25 +175,25 @@
 .biometric-remove-btn {
   padding: 6px 12px;
   font-size: 12px;
-  color: #DC2626;
+  color: #dc2626;
   background: transparent;
-  border: 1px solid #DC2626;
+  border: 1px solid #dc2626;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .biometric-remove-btn:hover {
-  background: #DC2626;
+  background: #dc2626;
   color: white;
 }
 
-[data-theme="dark"] .biometric-setup-card {
+[data-theme='dark'] .biometric-setup-card {
   background: var(--bg-secondary, #1f2937);
   border-color: var(--border-color, #374151);
 }
 
-[data-theme="dark"] .biometric-credential-item {
+[data-theme='dark'] .biometric-credential-item {
   background: var(--bg-tertiary, #374151);
 }
 
@@ -202,11 +202,11 @@
     padding: 14px 16px;
     font-size: 14px;
   }
-  
+
   .biometric-setup-actions {
     flex-direction: column;
   }
-  
+
   .biometric-setup-btn {
     width: 100%;
   }
@@ -232,8 +232,8 @@
 }
 
 .biometric-reminder-banner {
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(184, 150, 12, 0.05) 100%);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  background: linear-gradient(135deg, rgba(227, 30, 36, 0.1) 0%, rgba(184, 150, 12, 0.05) 100%);
+  border: 1px solid rgba(227, 30, 36, 0.2);
   border-radius: 12px;
   padding: 16px 20px;
   margin-bottom: 20px;
@@ -249,7 +249,7 @@
 .biometric-reminder-banner .reminder-icon-large {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, var(--primary-color, #D4AF37) 0%, #B8960C 100%);
+  background: linear-gradient(135deg, var(--primary-color, #e31e24) 0%, #b71c1c 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -286,8 +286,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(212, 175, 55, 0.08);
-  border: 1px solid rgba(212, 175, 55, 0.15);
+  background: rgba(227, 30, 36, 0.08);
+  border: 1px solid rgba(227, 30, 36, 0.15);
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 13px;
@@ -303,7 +303,7 @@
 }
 
 .biometric-reminder-compact .reminder-link {
-  color: var(--primary-color, #D4AF37);
+  color: var(--primary-color, #e31e24);
   font-weight: 500;
   text-decoration: none;
 }
@@ -339,8 +339,12 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .biometric-prompt-modal {
@@ -355,11 +359,11 @@
 }
 
 @keyframes slideUp {
-  from { 
+  from {
     opacity: 0;
     transform: translateY(20px);
   }
-  to { 
+  to {
     opacity: 1;
     transform: translateY(0);
   }
@@ -390,7 +394,7 @@
 .biometric-prompt-modal .prompt-icon {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, var(--primary-color, #D4AF37) 0%, #B8960C 100%);
+  background: linear-gradient(135deg, var(--primary-color, #e31e24) 0%, #b71c1c 100%);
   border-radius: 20px;
   display: flex;
   align-items: center;
@@ -446,13 +450,13 @@
 }
 
 .biometric-prompt-modal .prompt-actions .btn-primary {
-  background: linear-gradient(135deg, var(--primary-color, #D4AF37) 0%, #B8960C 100%);
+  background: linear-gradient(135deg, var(--primary-color, #e31e24) 0%, #b71c1c 100%);
   color: white;
 }
 
 .biometric-prompt-modal .prompt-actions .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 4px 12px rgba(227, 30, 36, 0.3);
 }
 
 .biometric-prompt-modal .prompt-actions .btn-secondary {
@@ -479,28 +483,28 @@
   color: var(--text-muted, #9ca3af);
 }
 
-[data-theme="dark"] .biometric-prompt-modal {
+[data-theme='dark'] .biometric-prompt-modal {
   background: var(--bg-primary, #1f2937);
 }
 
-[data-theme="dark"] .biometric-reminder-banner {
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(184, 150, 12, 0.1) 100%);
+[data-theme='dark'] .biometric-reminder-banner {
+  background: linear-gradient(135deg, rgba(227, 30, 36, 0.15) 0%, rgba(184, 150, 12, 0.1) 100%);
 }
 
-[data-theme="dark"] .biometric-reminder-compact {
-  background: rgba(212, 175, 55, 0.12);
+[data-theme='dark'] .biometric-reminder-compact {
+  background: rgba(227, 30, 36, 0.12);
 }
 
 @media (max-width: 480px) {
   .biometric-prompt-modal {
     padding: 24px 20px;
   }
-  
+
   .biometric-reminder-banner .reminder-content {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .biometric-reminder-banner .reminder-actions {
     width: 100%;
     justify-content: center;

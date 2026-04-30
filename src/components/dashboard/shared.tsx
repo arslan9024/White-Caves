@@ -127,7 +127,7 @@ export const btnPrimary: React.CSSProperties = {
   padding: '0.5rem 1.25rem',
   borderRadius: '8px',
   border: 'none',
-  background: 'var(--color-primary, #D4AF37)',
+  background: 'var(--color-primary, #E31E24)',
   color: '#fff',
   fontWeight: 600,
   cursor: 'pointer',
@@ -155,14 +155,22 @@ export const emptyState = (icon: string, title: string, subtitle: string): React
   >
     <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>{icon}</div>
     <h3 style={{ marginBottom: '0.5rem', color: 'var(--color-text, #111827)' }}>{title}</h3>
-    <p style={{ color: 'var(--color-text-secondary, #6b7280)', maxWidth: '420px', margin: '0 auto' }}>
+    <p
+      style={{ color: 'var(--color-text-secondary, #6b7280)', maxWidth: '420px', margin: '0 auto' }}
+    >
       {subtitle}
     </p>
   </div>
 );
 
 export const loadingState: React.ReactNode = (
-  <div style={{ textAlign: 'center', padding: '3rem 0', color: 'var(--color-text-secondary, #6b7280)' }}>
+  <div
+    style={{
+      textAlign: 'center',
+      padding: '3rem 0',
+      color: 'var(--color-text-secondary, #6b7280)',
+    }}
+  >
     Loading…
   </div>
 );
@@ -201,5 +209,5 @@ export function formatCurrency(amount: number | null | undefined): string {
 
 export function formatStatus(status: string | null | undefined): string {
   if (!status) return '—';
-  return status.replace(/[_-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  return status.replace(/[_-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }

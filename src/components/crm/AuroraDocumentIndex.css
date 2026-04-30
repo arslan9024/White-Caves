@@ -33,19 +33,19 @@
 }
 
 .section-icon.aurora {
-  background: linear-gradient(135deg, #1A1A1A 0%, #1a2d52 100%);
-  color: #B03737;
+  background: linear-gradient(135deg, #1a1a1a 0%, #1a2d52 100%);
+  color: #b03737;
 }
 
 .section-icon.company {
-  background: linear-gradient(135deg, #B03737 0%, #c5a030 100%);
-  color: #1A1A1A;
+  background: linear-gradient(135deg, #b03737 0%, #c5a030 100%);
+  color: #1a1a1a;
 }
 
 .section-info h3 {
   font-size: 18px;
   font-weight: 600;
-  color: #1A1A1A;
+  color: #1a1a1a;
   margin: 0 0 4px 0;
 }
 
@@ -77,14 +77,14 @@
 
 .doc-card:hover {
   background: #f1f5f9;
-  border-color: #1A1A1A;
+  border-color: #1a1a1a;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(10, 26, 58, 0.1);
 }
 
 .doc-card.company:hover {
-  border-color: #B03737;
-  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
+  border-color: #b03737;
+  box-shadow: 0 4px 12px rgba(227, 30, 36, 0.15);
 }
 
 .doc-card-icon {
@@ -93,15 +93,15 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  background: linear-gradient(135deg, #1A1A1A 0%, #1a2d52 100%);
-  color: #B03737;
+  background: linear-gradient(135deg, #1a1a1a 0%, #1a2d52 100%);
+  color: #b03737;
   border-radius: 10px;
   flex-shrink: 0;
 }
 
 .doc-card.company .doc-card-icon {
-  background: linear-gradient(135deg, #B03737 0%, #c5a030 100%);
-  color: #1A1A1A;
+  background: linear-gradient(135deg, #b03737 0%, #c5a030 100%);
+  color: #1a1a1a;
 }
 
 .doc-card-content {
@@ -131,12 +131,12 @@
 }
 
 .doc-card:hover .doc-card-arrow {
-  color: #1A1A1A;
+  color: #1a1a1a;
   transform: translateX(4px);
 }
 
 .doc-card.company:hover .doc-card-arrow {
-  color: #B03737;
+  color: #b03737;
 }
 
 .doc-stats {
@@ -159,7 +159,7 @@
 .stat-value {
   font-size: 24px;
   font-weight: 700;
-  color: #1A1A1A;
+  color: #1a1a1a;
 }
 
 .stat-label {
@@ -172,51 +172,51 @@
   .aurora-doc-index {
     padding: 16px;
   }
-  
+
   .doc-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .doc-stats {
     flex-wrap: wrap;
   }
-  
+
   .stat-card {
     flex: 1 1 calc(50% - 8px);
   }
 }
 
-[data-theme="dark"] .doc-section {
+[data-theme='dark'] .doc-section {
   background: #1e293b;
   border-color: #334155;
 }
 
-[data-theme="dark"] .doc-section-header {
+[data-theme='dark'] .doc-section-header {
   border-color: #334155;
 }
 
-[data-theme="dark"] .section-info h3 {
+[data-theme='dark'] .section-info h3 {
   color: #f8fafc;
 }
 
-[data-theme="dark"] .doc-card {
+[data-theme='dark'] .doc-card {
   background: #0f172a;
   border-color: #334155;
 }
 
-[data-theme="dark"] .doc-card:hover {
+[data-theme='dark'] .doc-card:hover {
   background: #1e293b;
 }
 
-[data-theme="dark"] .doc-card-content h4 {
+[data-theme='dark'] .doc-card-content h4 {
   color: #f8fafc;
 }
 
-[data-theme="dark"] .stat-card {
+[data-theme='dark'] .stat-card {
   background: #0f172a;
   border-color: #334155;
 }
 
-[data-theme="dark"] .stat-value {
-  color: #B03737;
+[data-theme='dark'] .stat-value {
+  color: #b03737;
 }

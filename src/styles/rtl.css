@@ -1,0 +1,145 @@
+/* ============================================================
+   RTL (Right-to-Left) Global Utility Styles
+   Applied automatically when dir="rtl" is set on <html>
+   by LanguageContext when Arabic language is selected.
+   ============================================================ */
+
+/* ── Arabic Typography ───────────────────────────────────────── */
+[dir='rtl'] body {
+  font-family: 'Cairo', 'Noto Sans Arabic', sans-serif;
+  text-align: right;
+  line-height: 1.7;
+}
+
+[dir='rtl'] input,
+[dir='rtl'] textarea,
+[dir='rtl'] select {
+  text-align: right;
+  direction: rtl;
+}
+
+/* ── Flex Row Alignment ──────────────────────────────────────── */
+/* Most flex rows reverse automatically with dir="rtl".
+   Only override where explicit direction is set. */
+[dir='rtl'] .flex-row {
+  flex-direction: row-reverse;
+}
+
+/* ── Margin / Padding Directional Flips ──────────────────────── */
+/* Utility classes that components may apply */
+[dir='rtl'] .ml-auto {
+  margin-left: unset;
+  margin-right: auto;
+}
+[dir='rtl'] .mr-auto {
+  margin-right: unset;
+  margin-left: auto;
+}
+[dir='rtl'] .pl-4 {
+  padding-left: unset;
+  padding-right: 1rem;
+}
+[dir='rtl'] .pr-4 {
+  padding-right: unset;
+  padding-left: 1rem;
+}
+
+/* ── Icon placement helpers ──────────────────────────────────── */
+/* Icons that sit to the left in LTR should appear right in RTL */
+[dir='rtl'] .icon-left {
+  margin-left: unset;
+  margin-right: 0.5rem;
+}
+[dir='rtl'] .icon-right {
+  margin-right: unset;
+  margin-left: 0.5rem;
+}
+
+/* ── Text alignment ──────────────────────────────────────────── */
+[dir='rtl'] .text-left {
+  text-align: right;
+}
+[dir='rtl'] .text-right {
+  text-align: left;
+}
+
+/* ── PublicNavbar RTL overrides ──────────────────────────────── */
+[dir='rtl'] .public-navbar__inner {
+  flex-direction: row-reverse;
+}
+[dir='rtl'] .public-navbar__brand {
+  flex-direction: row-reverse;
+}
+[dir='rtl'] .public-navbar__brand-name {
+  text-align: right;
+}
+[dir='rtl'] .public-navbar__dropdown {
+  left: unset;
+  right: 0;
+  text-align: right;
+}
+[dir='rtl'] .public-navbar__dropdown-item {
+  flex-direction: row-reverse;
+}
+[dir='rtl'] .public-navbar__mobile-link {
+  flex-direction: row-reverse;
+}
+[dir='rtl'] .public-navbar__mobile-link-arrow {
+  transform: rotate(180deg);
+}
+[dir='rtl'] .public-navbar__caret {
+  margin-left: unset;
+  margin-right: 4px;
+}
+
+/* ── Hero section RTL ────────────────────────────────────────── */
+[dir='rtl'] .hero-content {
+  text-align: right;
+}
+[dir='rtl'] .hero-cta-group {
+  justify-content: flex-start;
+  flex-direction: row-reverse;
+}
+[dir='rtl'] .hero-stats-grid {
+  direction: rtl;
+}
+[dir='rtl'] .hero-trust-badges {
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+}
+[dir='rtl'] .hero-badge {
+  flex-direction: row-reverse;
+}
+
+/* ── Card / Section RTL ──────────────────────────────────────── */
+[dir='rtl'] .card {
+  text-align: right;
+}
+
+/* ── Form RTL ────────────────────────────────────────────────── */
+[dir='rtl'] .form-group label {
+  text-align: right;
+  display: block;
+}
+[dir='rtl'] .form-group .input-prefix {
+  left: unset;
+  right: 0.75rem;
+}
+[dir='rtl'] .form-group .input-suffix {
+  right: unset;
+  left: 0.75rem;
+}
+
+/* ── Footer RTL ──────────────────────────────────────────────── */
+[dir='rtl'] .footer {
+  text-align: right;
+}
+[dir='rtl'] .footer-links {
+  flex-direction: row-reverse;
+}
+
+/* ── Scrollbar direction ─────────────────────────────────────── */
+[dir='rtl'] .overflow-y-auto,
+[dir='rtl'] .overflow-auto {
+  direction: rtl;
+}

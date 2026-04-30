@@ -44,7 +44,7 @@ export const BreadcrumbLink = styled(Link)`
   transition: color 0.2s ease;
 
   &:hover {
-    color: var(--primary-color, #D4AF37);
+    color: var(--primary-color, #e31e24);
   }
 
   svg {

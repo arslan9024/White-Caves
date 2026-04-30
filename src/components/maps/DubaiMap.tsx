@@ -6,7 +6,7 @@
  * - Cluster grouping when zoomed out
  * - Community boundary circles
  * - Click-to-filter integration with Redux propertySlice
- * - Gold (#D4AF37) theme pins matching White Caves branding
+ * - Brand Red (#E31E24) + White theme pins
  */
 
 import React, { FC, useMemo, useCallback, useRef, useEffect } from 'react';
@@ -69,9 +69,9 @@ interface DubaiMapProps {
   className?: string;
 }
 
-/* ─── Custom Gold Marker Icon ───────────────────────────────────── */
+/* ─── Custom Marker Icon ────────────────────────────────────────── */
 
-function createGoldIcon(featured: boolean = false): L.DivIcon {
+function createMarkerIcon(featured: boolean = false): L.DivIcon {
   const bg = featured ? colors.primary : colors.secondary;
   const border = featured ? colors.primaryDark : colors.secondaryDark;
   return L.divIcon({
@@ -91,8 +91,8 @@ function createGoldIcon(featured: boolean = false): L.DivIcon {
   });
 }
 
-const goldIcon = createGoldIcon(true);
-const greenIcon = createGoldIcon(false);
+const featuredIcon = createMarkerIcon(true);
+const standardIcon = createMarkerIcon(false);
 
 /* ─── Map Fit Helper ────────────────────────────────────────────── */
 
@@ -127,11 +127,11 @@ const DubaiMap: FC<DubaiMapProps> = ({
   const markers = useMemo(() => {
     // Group properties by location to track jitter index
     const locationIndices: Record<string, number> = {};
-    return properties.map((prop) => {
+    return properties.map(prop => {
       const community = getCommunityCoords(prop.location);
       const baseLat = community?.lat ?? DUBAI_CENTER[0];
       const baseLng = community?.lng ?? DUBAI_CENTER[1];
-      const idx = (locationIndices[prop.location] ?? 0);
+      const idx = locationIndices[prop.location] ?? 0;
       locationIndices[prop.location] = idx + 1;
       const [lat, lng] = jitterCoords(baseLat, baseLng, idx);
       return { ...prop, lat, lng };
@@ -140,20 +140,21 @@ const DubaiMap: FC<DubaiMapProps> = ({
 
   // All marker positions for fit-bounds
   const markerPositions = useMemo<[number, number][]>(
-    () => markers.map((m) => [m.lat, m.lng]),
+    () => markers.map(m => [m.lat, m.lng]),
     [markers]
   );
 
   // Community stats (count per community)
   const communityStats = useMemo(() => {
-    const stats: Record<string, { count: number; avgPrice: number }> = {};
-    properties.forEach((p) => {
-      if (!stats[p.location]) stats[p.location] = { count: 0, avgPrice: 0 };
-      stats[p.location].count += 1;
-      stats[p.location].avgPrice += p.price;
+    const stats = new Map<string, { count: number; avgPrice: number }>();
+    properties.forEach(p => {
+      const entry = stats.get(p.location) ?? { count: 0, avgPrice: 0 };
+      entry.count += 1;
+      entry.avgPrice += p.price;
+      stats.set(p.location, entry);
     });
-    Object.keys(stats).forEach((key) => {
-      stats[key].avgPrice = Math.round(stats[key].avgPrice / stats[key].count);
+    stats.forEach(entry => {
+      entry.avgPrice = Math.round(entry.avgPrice / entry.count);
     });
     return stats;
   }, [properties]);
@@ -166,11 +167,7 @@ const DubaiMap: FC<DubaiMapProps> = ({
   );
 
   return (
-    <div
-      className={`dubai-map-container ${className}`}
-      style={{ height }}
-      data-testid="dubai-map"
-    >
+    <div className={`dubai-map-container ${className}`} style={{ height }} data-testid="dubai-map">
       <MapContainer
         center={DUBAI_CENTER}
         zoom={DEFAULT_ZOOM}
@@ -191,8 +188,8 @@ const DubaiMap: FC<DubaiMapProps> = ({
 
         {/* Community boundary circles */}
         {showCommunities &&
-          COMMUNITY_COORDS.map((community) => {
-            const stats = communityStats[community.name];
+          COMMUNITY_COORDS.map(community => {
+            const stats = communityStats.get(community.name);
             return (
               <Circle
                 key={community.name}
@@ -200,7 +197,7 @@ const DubaiMap: FC<DubaiMapProps> = ({
                 radius={community.radius}
                 pathOptions={{
                   color: stats ? colors.primary : colors.secondary,
-                  fillColor: stats ? 'rgba(212, 175, 55, 0.08)' : 'rgba(46, 90, 79, 0.04)',
+                  fillColor: stats ? 'rgba(227, 30, 36, 0.08)' : 'rgba(46, 90, 79, 0.04)',
                   fillOpacity: 0.4,
                   weight: stats ? 2 : 1,
                   dashArray: stats ? undefined : '4 6',
@@ -215,7 +212,9 @@ const DubaiMap: FC<DubaiMapProps> = ({
                     <p className="community-desc">{community.description}</p>
                     {stats && (
                       <div className="community-stats">
-                        <span>{stats.count} {stats.count === 1 ? 'property' : 'properties'}</span>
+                        <span>
+                          {stats.count} {stats.count === 1 ? 'property' : 'properties'}
+                        </span>
                         <span>Avg: {formatPrice(stats.avgPrice)}</span>
                       </div>
                     )}
@@ -232,20 +231,18 @@ const DubaiMap: FC<DubaiMapProps> = ({
           })}
 
         {/* Property markers */}
-        {markers.map((marker) => (
+        {markers.map(marker => (
           <Marker
             key={marker.id}
             position={[marker.lat, marker.lng]}
-            icon={marker.featured ? goldIcon : greenIcon}
+            icon={marker.featured ? featuredIcon : standardIcon}
             eventHandlers={{
               click: () => onPropertyClick?.(marker),
             }}
           >
             <Popup className="property-map-popup">
               <div
-                className={`property-popup-card ${
-                  activePropertyId === marker.id ? 'active' : ''
-                }`}
+                className={`property-popup-card ${activePropertyId === marker.id ? 'active' : ''}`}
                 onClick={() => onPropertyClick?.(marker)}
                 role="button"
                 tabIndex={0}

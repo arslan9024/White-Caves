@@ -13,7 +13,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px 24px;
-  background: linear-gradient(135deg, #1A1A1A 0%, #1a2d52 100%);
+  background: linear-gradient(135deg, #1a1a1a 0%, #1a2d52 100%);
   color: white;
   gap: 16px;
 }
@@ -49,13 +49,13 @@
 }
 
 .doc-nav-btn.back-to-dashboard {
-  background: rgba(212, 175, 55, 0.2);
-  border-color: #B03737;
-  color: #B03737;
+  background: rgba(227, 30, 36, 0.2);
+  border-color: #b03737;
+  color: #b03737;
 }
 
 .doc-nav-btn.back-to-dashboard:hover {
-  background: rgba(212, 175, 55, 0.3);
+  background: rgba(227, 30, 36, 0.3);
 }
 
 .doc-nav-btn.close {
@@ -89,7 +89,7 @@
 }
 
 .doc-icon {
-  color: #B03737;
+  color: #b03737;
   flex-shrink: 0;
 }
 
@@ -163,8 +163,8 @@
 
 .meta-item.source-badge {
   padding: 4px 12px;
-  background: linear-gradient(135deg, #1A1A1A 0%, #1a2d52 100%);
-  color: #B03737;
+  background: linear-gradient(135deg, #1a1a1a 0%, #1a2d52 100%);
+  color: #b03737;
   border-radius: 20px;
   font-weight: 500;
 }
@@ -195,15 +195,15 @@
 
 .html-content h1 {
   font-size: 2em;
-  color: #1A1A1A;
+  color: #1a1a1a;
   margin-bottom: 8px;
   padding-bottom: 16px;
-  border-bottom: 3px solid #B03737;
+  border-bottom: 3px solid #b03737;
 }
 
 .html-content h2 {
   font-size: 1.5em;
-  color: #1A1A1A;
+  color: #1a1a1a;
   margin-top: 32px;
   margin-bottom: 16px;
   padding-bottom: 8px;
@@ -227,7 +227,8 @@
   margin-bottom: 24px;
 }
 
-.html-content ul, .html-content ol {
+.html-content ul,
+.html-content ol {
   margin-bottom: 16px;
   padding-left: 24px;
 }
@@ -245,7 +246,7 @@
 
 .html-content th {
   background: #f1f5f9;
-  color: #1A1A1A;
+  color: #1a1a1a;
   font-weight: 600;
   text-align: left;
   padding: 12px 16px;
@@ -281,7 +282,7 @@
 }
 
 .html-content strong {
-  color: #1A1A1A;
+  color: #1a1a1a;
 }
 
 .pdf-viewer-container {
@@ -313,13 +314,15 @@
   width: 40px;
   height: 40px;
   border: 3px solid #e2e8f0;
-  border-top-color: #B03737;
+  border-top-color: #b03737;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 768px) {
@@ -327,25 +330,25 @@
     flex-wrap: wrap;
     padding: 12px 16px;
   }
-  
+
   .doc-title-section {
     order: -1;
     width: 100%;
     margin-bottom: 12px;
   }
-  
+
   .doc-nav-controls {
     flex: 1;
   }
-  
+
   .doc-actions {
     flex-wrap: wrap;
   }
-  
+
   .doc-viewer-content {
     padding: 16px;
   }
-  
+
   .html-content {
     font-size: 0.95em;
   }
@@ -356,57 +359,57 @@
   .doc-viewer-meta {
     display: none;
   }
-  
+
   .doc-viewer-content {
     padding: 0;
     overflow: visible;
   }
-  
+
   .crm-doc-viewer {
     box-shadow: none;
     border-radius: 0;
   }
 }
 
-[data-theme="dark"] .crm-doc-viewer {
+[data-theme='dark'] .crm-doc-viewer {
   background: #1e293b;
 }
 
-[data-theme="dark"] .doc-viewer-content {
+[data-theme='dark'] .doc-viewer-content {
   background: #1e293b;
 }
 
-[data-theme="dark"] .doc-viewer-meta {
+[data-theme='dark'] .doc-viewer-meta {
   background: #0f172a;
   border-color: #334155;
 }
 
-[data-theme="dark"] .html-content {
+[data-theme='dark'] .html-content {
   color: #e2e8f0;
 }
 
-[data-theme="dark"] .html-content h1,
-[data-theme="dark"] .html-content h2,
-[data-theme="dark"] .html-content h3,
-[data-theme="dark"] .html-content strong {
+[data-theme='dark'] .html-content h1,
+[data-theme='dark'] .html-content h2,
+[data-theme='dark'] .html-content h3,
+[data-theme='dark'] .html-content strong {
   color: #f8fafc;
 }
 
-[data-theme="dark"] .html-content th {
+[data-theme='dark'] .html-content th {
   background: #334155;
   color: #f8fafc;
   border-color: #475569;
 }
 
-[data-theme="dark"] .html-content td {
+[data-theme='dark'] .html-content td {
   border-color: #475569;
 }
 
-[data-theme="dark"] .html-content tr:nth-child(even) {
+[data-theme='dark'] .html-content tr:nth-child(even) {
   background: #0f172a;
 }
 
-[data-theme="dark"] .html-content code {
+[data-theme='dark'] .html-content code {
   background: #334155;
   color: #e2e8f0;
 }

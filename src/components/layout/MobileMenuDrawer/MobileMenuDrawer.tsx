@@ -19,7 +19,17 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../../store/store';
-import { Home, BarChart3, Users2, Settings, Shield, Bot, X, ChevronDown, Search } from 'lucide-react';
+import {
+  Home,
+  BarChart3,
+  Users2,
+  Settings,
+  Shield,
+  Bot,
+  X,
+  ChevronDown,
+  Search,
+} from 'lucide-react';
 import {
   selectSelectedDepartment,
   selectSelectedService,
@@ -216,7 +226,9 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = React.memo(function Mo
         <DrawerBody>
           {/* Global Search */}
           <DrawerSearchBar>
-            <DrawerSearchIcon aria-hidden="true"><Search size={13} /></DrawerSearchIcon>
+            <DrawerSearchIcon aria-hidden="true">
+              <Search size={13} />
+            </DrawerSearchIcon>
             <DrawerSearchInput
               type="text"
               placeholder="Search departments, AI…"
@@ -311,7 +323,7 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = React.memo(function Mo
           {/* AI Command Center */}
           <DrawerSectionLabel>AI Center</DrawerSectionLabel>
           <DrawerNavItem onClick={handleAIOpen} aria-label="AI Command Center">
-            <DrawerNavIcon $color="#D4AF37">
+            <DrawerNavIcon $color="#E31E24">
               <Bot size={18} />
             </DrawerNavIcon>
             AI Command Center

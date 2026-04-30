@@ -1,7 +1,7 @@
 /**
  * Shared CRM Page Styled Components
  * Eliminates duplication across LeadManagementPage, PropertyManagementPage, and other CRM pages.
- * 
+ *
  * Usage:
  *   import { PageContainer, PageHeader, PrimaryButton, ... } from '../styles/CrmPageStyles';
  */
@@ -16,7 +16,7 @@ export const PageContainer = styled.div`
   padding: 2rem;
   font-family: ${typography.fontFamily.primary};
   background:
-    radial-gradient(circle at top right, rgba(212, 175, 55, 0.08), transparent 30%),
+    radial-gradient(circle at top right, rgba(227, 30, 36, 0.08), transparent 30%),
     radial-gradient(circle at bottom left, rgba(46, 90, 79, 0.05), transparent 35%);
 `;
 
@@ -42,7 +42,7 @@ export const PageTitle = styled.h1`
 export const BackLink = styled.button`
   background: none;
   border: none;
-  color: #3B82F6;
+  color: #3b82f6;
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 500;
@@ -73,7 +73,7 @@ export const SearchInput = styled.input`
   transition: border-color 0.15s;
 
   &:focus {
-    border-color: #3B82F6;
+    border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 `;
@@ -88,14 +88,14 @@ export const FilterSelect = styled.select`
   cursor: pointer;
 
   &:focus {
-    border-color: #3B82F6;
+    border-color: #3b82f6;
   }
 `;
 
 // ─── Buttons ────────────────────────────────────────────────────────────
 
 export const PrimaryButton = styled.button`
-  background: linear-gradient(135deg, #D4AF37 0%, #B8960C 100%);
+  background: linear-gradient(135deg, #e31e24 0%, #b71c1c 100%);
   color: #1a1a2e;
   border: none;
   border-radius: 8px;
@@ -109,8 +109,8 @@ export const PrimaryButton = styled.button`
   gap: 0.4rem;
 
   &:hover {
-    background: linear-gradient(135deg, #e2c35a 0%, #D4AF37 100%);
-    box-shadow: 0 8px 18px rgba(212, 175, 55, 0.28);
+    background: linear-gradient(135deg, #e2c35a 0%, #e31e24 100%);
+    box-shadow: 0 8px 18px rgba(227, 30, 36, 0.28);
   }
 
   &:disabled {
@@ -120,7 +120,7 @@ export const PrimaryButton = styled.button`
 `;
 
 export const DangerButton = styled.button`
-  background: #EF4444;
+  background: #ef4444;
   color: white;
   border: none;
   border-radius: 6px;
@@ -130,7 +130,7 @@ export const DangerButton = styled.button`
   transition: all 0.15s;
 
   &:hover {
-    background: #DC2626;
+    background: #dc2626;
   }
 `;
 
@@ -228,11 +228,14 @@ export const FormInput = styled.input`
   outline: none;
   box-sizing: border-box;
   background: rgba(255, 255, 255, 0.9);
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
 
   &:focus {
-    border-color: #D4AF37;
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+    border-color: #e31e24;
+    box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.2);
     background: white;
   }
 `;
@@ -248,11 +251,14 @@ export const FormTextarea = styled.textarea`
   min-height: 80px;
   box-sizing: border-box;
   background: rgba(255, 255, 255, 0.9);
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
 
   &:focus {
-    border-color: #D4AF37;
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+    border-color: #e31e24;
+    box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.2);
     background: white;
   }
 `;
@@ -266,11 +272,13 @@ export const FormSelect = styled.select`
   outline: none;
   background: white;
   box-sizing: border-box;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
 
   &:focus {
-    border-color: #D4AF37;
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+    border-color: #e31e24;
+    box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.2);
   }
 `;
 
@@ -296,23 +304,23 @@ export const PaginationWrapper = styled.div`
 // ─── Banners ────────────────────────────────────────────────────────────
 
 export const LoadingBanner = styled.div`
-  background: #EFF6FF;
-  border: 1px solid #BFDBFE;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
   border-radius: 8px;
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   font-size: 0.85rem;
-  color: #1D4ED8;
+  color: #1d4ed8;
 `;
 
 export const ErrorBanner = styled.div`
-  background: #FEF2F2;
-  border: 1px solid #FECACA;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
   border-radius: 8px;
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   font-size: 0.85rem;
-  color: #DC2626;
+  color: #dc2626;
   display: flex;
   justify-content: space-between;
   align-items: center;

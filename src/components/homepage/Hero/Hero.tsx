@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform, useReducedMotion, type Variants } from
 import { ArrowRight, Play, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { MarketStats } from '../../../store/slices/homepageSlice';
+import { useLanguage } from '../../../context/LanguageContext';
 import HeroSearchBar from './HeroSearchBar';
 import './Hero.css';
 
@@ -86,24 +87,25 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
   const y = useTransform(scrollY, [0, 500], [0, 150]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
   const prefersReducedMotion = useReducedMotion();
+  const { t } = useLanguage();
 
   // Live stats from API, fallback to static values for instant render
   const stats: Stat[] = [
     {
       number: marketStats?.totalProperties ?? 500,
       suffix: '+',
-      label: 'Premium Properties',
+      label: t('hero.premiumProperties'),
     },
     {
       number: 1000,
       suffix: '+',
-      label: 'Happy Clients',
+      label: t('hero.happyClients'),
     },
-    { number: 15, suffix: '+', label: 'Years Experience' },
+    { number: 15, suffix: '+', label: t('hero.yearsExperience') },
     {
       number: marketStats?.activeAgents ?? 50,
       suffix: '+',
-      label: 'Expert Agents',
+      label: t('hero.expertAgents'),
     },
   ];
 
@@ -153,7 +155,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
           aria-hidden="true"
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore fetchpriority is a valid HTML attribute in modern browsers
-          fetchpriority="high"
+          fetchPriority="high"
           style={{
             position: 'absolute',
             width: 1,
@@ -169,34 +171,50 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
       <div className="floating-shapes">
         <motion.div
           className="shape shape-1"
-          animate={prefersReducedMotion ? {} : {
-            y: [0, -20, 0],
-            rotate: [0, 10, 0],
-          }}
+          animate={
+            prefersReducedMotion
+              ? {}
+              : {
+                  y: [0, -20, 0],
+                  rotate: [0, 10, 0],
+                }
+          }
           transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
           className="shape shape-2"
-          animate={prefersReducedMotion ? {} : {
-            y: [0, 20, 0],
-            rotate: [0, -10, 0],
-          }}
+          animate={
+            prefersReducedMotion
+              ? {}
+              : {
+                  y: [0, 20, 0],
+                  rotate: [0, -10, 0],
+                }
+          }
           transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
           className="shape shape-3"
-          animate={prefersReducedMotion ? {} : {
-            scale: [1, 1.1, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
+          animate={
+            prefersReducedMotion
+              ? {}
+              : {
+                  scale: [1, 1.1, 1],
+                  opacity: [0.3, 0.5, 0.3],
+                }
+          }
           transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
           className="shape shape-4"
-          animate={prefersReducedMotion ? {} : {
-            x: [0, 15, 0],
-            y: [0, -10, 0],
-          }}
+          animate={
+            prefersReducedMotion
+              ? {}
+              : {
+                  x: [0, 15, 0],
+                  y: [0, -10, 0],
+                }
+          }
           transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
@@ -211,32 +229,19 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
         <motion.div className="hero-badge" variants={itemVariants}>
           <span className="badge-icon">&#9733;</span>
           {marketStats?.totalProperties
-            ? `${marketStats.totalProperties}+ Properties Available Today`
-            : 'Trusted by 1000+ Clients in Dubai'}
-        </motion.div>
-
-        <motion.div className="hero-market-pill" variants={itemVariants}>
-          <span className="hero-market-pill-label">Dubai Prime Districts</span>
-          <span className="hero-market-pill-separator" aria-hidden="true">
-            •
-          </span>
-          <span className="hero-market-pill-value">
-            {marketStats?.averagePrice
-              ? `Avg AED ${(marketStats.averagePrice / 1_000_000).toFixed(1)}M`
-              : 'Starting from AED 1M'}
-          </span>
+            ? t('hero.propertiesAvailable', { count: marketStats.totalProperties })
+            : t('hero.trustedByClients', { count: 1000 })}
         </motion.div>
 
         <motion.h1 className="hero-title" variants={itemVariants}>
-          Find Your Dream
-          <span className="gradient-text"> Luxury Home</span>
+          {t('hero.title')}
+          <span className="gradient-text"> {t('hero.titleHighlight')}</span>
           <br />
-          in Dubai
+          {t('hero.titleSuffix')}
         </motion.h1>
 
         <motion.p className="hero-description" variants={itemVariants}>
-          Experience unparalleled luxury living in Dubai&apos;s most prestigious locations. White
-          Caves Real Estate brings you exclusive properties with world-class amenities.
+          {t('hero.description')}
         </motion.p>
 
         <motion.div variants={itemVariants}>
@@ -250,7 +255,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
             whileHover={{ scale: 1.05, boxShadow: '0 10px 30px rgba(227, 30, 36, 0.35)' }}
             whileTap={{ scale: 0.98 }}
           >
-            Browse Properties
+            {t('hero.browseProperties')}
             <ArrowRight size={20} />
           </motion.button>
 
@@ -261,7 +266,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
             whileTap={{ scale: 0.98 }}
           >
             <Play size={20} />
-            Book Consultation
+            {t('hero.bookConsultation')}
           </motion.button>
         </motion.div>
 
@@ -293,20 +298,16 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
         <motion.div className="hero-trust-badges" variants={itemVariants}>
           <div className="trust-badge">
             <span className="trust-icon">&#128737;</span>
-            Verified Properties
+            {t('hero.verifiedProperties')}
           </div>
           <div className="trust-badge">
             <span className="trust-icon">&#9989;</span>
-            RERA Licensed
+            {t('hero.reraLicensed')}
           </div>
           <div className="trust-badge">
             <span className="trust-icon">&#128176;</span>
-            Best Value
+            {t('hero.bestValue')}
           </div>
-        </motion.div>
-
-        <motion.div className="hero-response-note" variants={itemVariants}>
-          Concierge response in under 24 hours for qualified inquiries.
         </motion.div>
       </motion.div>
 
@@ -317,7 +318,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
         onClick={scrollToContent}
       >
         <ChevronDown size={32} />
-        <span>Scroll to explore</span>
+        <span>{t('hero.scrollToExplore')}</span>
       </motion.div>
     </section>
   );

@@ -54,7 +54,7 @@ export const ClearFiltersBtn = styled.button`
   transition: ${transitions.hover};
 
   &:hover {
-    background: rgba(212, 175, 55, 0.08);
+    background: rgba(227, 30, 36, 0.08);
     border-color: var(--primary);
     color: var(--primary);
   }

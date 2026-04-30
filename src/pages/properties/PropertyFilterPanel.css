@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════
    PropertyFilterPanel — Sticky filter bar with glassmorphism
-   Gold (#D4AF37) primary, responsive, dark-theme compatible
+   Gold (#E31E24) primary, responsive, dark-theme compatible
    ═══════════════════════════════════════════════════════════════════════ */
 
 .property-filter-panel {
@@ -36,8 +36,8 @@
 }
 
 .filter-search-wrapper:focus-within {
-  border-color: var(--primary-color, #D4AF37);
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+  border-color: var(--primary-color, #e31e24);
+  box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.1);
 }
 
 .filter-search-icon {
@@ -73,7 +73,7 @@
 }
 
 .filter-clear-search:hover {
-  background: var(--primary-color, #D4AF37);
+  background: var(--primary-color, #e31e24);
   color: white;
 }
 
@@ -100,9 +100,9 @@
 }
 
 .filter-purpose-tab.active {
-  background: var(--primary-color, #D4AF37);
+  background: var(--primary-color, #e31e24);
   color: white;
-  box-shadow: 0 1px 4px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 1px 4px rgba(227, 30, 36, 0.3);
 }
 
 /* ─── Quick Selects ─────────────────────────────────────────────────── */
@@ -122,7 +122,7 @@
 .filter-select-icon {
   position: absolute;
   left: 0.625rem;
-  color: var(--primary-color, #D4AF37);
+  color: var(--primary-color, #e31e24);
   pointer-events: none;
   z-index: 1;
 }
@@ -146,9 +146,9 @@
 }
 
 .filter-select-group select:focus {
-  border-color: var(--primary-color, #D4AF37);
+  border-color: var(--primary-color, #e31e24);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+  box-shadow: 0 0 0 2px rgba(227, 30, 36, 0.1);
 }
 
 /* ─── Advanced Toggle ───────────────────────────────────────────────── */
@@ -169,12 +169,12 @@
 }
 
 .filter-advanced-toggle:hover {
-  border-color: var(--primary-color, #D4AF37);
+  border-color: var(--primary-color, #e31e24);
 }
 
 .filter-advanced-toggle.active {
-  background: var(--primary-color, #D4AF37);
-  border-color: var(--primary-color, #D4AF37);
+  background: var(--primary-color, #e31e24);
+  border-color: var(--primary-color, #e31e24);
   color: white;
 }
 
@@ -189,7 +189,7 @@
   font-size: 0.7rem;
   font-weight: 700;
   background: white;
-  color: var(--primary-color, #D4AF37);
+  color: var(--primary-color, #e31e24);
 }
 
 .filter-advanced-toggle.active .filter-badge-count {
@@ -204,8 +204,14 @@
 }
 
 @keyframes filterSlideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .filter-advanced-grid {
@@ -238,9 +244,9 @@
 
 .filter-advanced-group input:focus,
 .filter-advanced-group select:focus {
-  border-color: var(--primary-color, #D4AF37);
+  border-color: var(--primary-color, #e31e24);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+  box-shadow: 0 0 0 2px rgba(227, 30, 36, 0.1);
 }
 
 .filter-sort-wrapper {
@@ -280,7 +286,7 @@
 .filter-reset-btn:hover {
   background: rgba(220, 38, 38, 0.06);
   border-color: rgba(220, 38, 38, 0.3);
-  color: #DC2626;
+  color: #dc2626;
 }
 
 /* ─── Results Bar ───────────────────────────────────────────────────── */
@@ -320,10 +326,10 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.25rem 0.625rem;
-  background: rgba(212, 175, 55, 0.1);
-  border: 1px solid rgba(212, 175, 55, 0.25);
+  background: rgba(227, 30, 36, 0.1);
+  border: 1px solid rgba(227, 30, 36, 0.25);
   border-radius: 2rem;
-  color: var(--primary-dark, #B8960C);
+  color: var(--primary-dark, #b71c1c);
   font-size: 0.75rem;
   font-weight: 500;
 }
@@ -337,14 +343,14 @@
   border-radius: 50%;
   background: transparent;
   border: none;
-  color: var(--primary-dark, #B8960C);
+  color: var(--primary-dark, #b71c1c);
   cursor: pointer;
   transition: background 0.2s;
   padding: 0;
 }
 
 .filter-pill button:hover {
-  background: rgba(212, 175, 55, 0.2);
+  background: rgba(227, 30, 36, 0.2);
 }
 
 .filter-clear-all-btn {
@@ -360,7 +366,7 @@
 }
 
 .filter-clear-all-btn:hover {
-  color: #DC2626;
+  color: #dc2626;
 }
 
 /* ════════════════════════════════════════════════════════════════════════

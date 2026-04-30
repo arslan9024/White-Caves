@@ -13,27 +13,59 @@ vi.mock('react-router-dom', () => ({
 
 // Mock child components
 vi.mock('../SocialLogin', () => ({
-  SocialLoginButtons: ({ onSuccess, onError }: any) => (
+  SocialLoginButtons: ({
+    onSuccess,
+    onError,
+  }: {
+    onSuccess: (data: Record<string, unknown>) => void;
+    onError: (err: unknown) => void;
+  }) => (
     <div data-testid="social-login">
-      <button onClick={() => onSuccess({ id: '1', name: 'Test User' })}>Social Login Success</button>
+      <button onClick={() => onSuccess({ id: '1', name: 'Test User' })}>
+        Social Login Success
+      </button>
+      <button onClick={() => onSuccess({ id: '2', name: 'Tenant User', role: 'tenant' })}>
+        Social Login Tenant
+      </button>
+      <button onClick={() => onSuccess({ id: '3', name: 'Landlord User', role: 'landlord' })}>
+        Social Login Landlord
+      </button>
       <button onClick={() => onError(new Error('Social login failed'))}>Social Login Error</button>
     </div>
   ),
 }));
 
 vi.mock('../EmailLogin', () => ({
-  EmailLoginForm: ({ mode, onSuccess, onError, onModeChange }: any) => (
+  EmailLoginForm: ({
+    mode,
+    onSuccess,
+    onError,
+    onModeChange,
+  }: {
+    mode: string;
+    onSuccess: (data: Record<string, unknown>) => void;
+    onError: (err: unknown) => void;
+    onModeChange: (mode: string) => void;
+  }) => (
     <div data-testid="email-login-form">
       <span>Mode: {mode}</span>
       <button onClick={() => onSuccess({ id: '2', email: 'test@test.com' })}>Email Submit</button>
       <button onClick={() => onError(new Error('Email auth failed'))}>Email Error</button>
-      <button onClick={() => onModeChange(mode === 'login' ? 'signup' : 'login')}>Toggle Mode</button>
+      <button onClick={() => onModeChange(mode === 'login' ? 'signup' : 'login')}>
+        Toggle Mode
+      </button>
     </div>
   ),
 }));
 
 vi.mock('../MobileLogin', () => ({
-  MobileLoginForm: ({ onSuccess, onError }: any) => (
+  MobileLoginForm: ({
+    onSuccess,
+    onError,
+  }: {
+    onSuccess: (data: Record<string, unknown>) => void;
+    onError: (err: unknown) => void;
+  }) => (
     <div data-testid="mobile-login-form">
       <button onClick={() => onSuccess({ id: '3', phone: '+971' })}>Phone Submit</button>
       <button onClick={() => onError({ message: 'Phone auth failed' })}>Phone Error</button>
@@ -105,21 +137,33 @@ describe('AuthPage', () => {
   });
 
   describe('auth success', () => {
-    it('navigates to / on social login success (no onSuccess prop)', () => {
+    it('navigates to / when user has no role', () => {
       render(<AuthPage />);
       fireEvent.click(screen.getByText('Social Login Success'));
       expect(mockNavigate).toHaveBeenCalledWith('/');
     });
 
-    it('calls onSuccess callback when provided', () => {
+    it('navigates to /tenant/portal when user role is tenant', () => {
+      render(<AuthPage />);
+      fireEvent.click(screen.getByText('Social Login Tenant'));
+      expect(mockNavigate).toHaveBeenCalledWith('/tenant/portal');
+    });
+
+    it('navigates to /landlord/portal when user role is landlord', () => {
+      render(<AuthPage />);
+      fireEvent.click(screen.getByText('Social Login Landlord'));
+      expect(mockNavigate).toHaveBeenCalledWith('/landlord/portal');
+    });
+
+    it('calls onSuccess callback when provided (no navigate)', () => {
       const onSuccess = vi.fn();
       render(<AuthPage onSuccess={onSuccess} />);
-      fireEvent.click(screen.getByText('Social Login Success'));
-      expect(onSuccess).toHaveBeenCalledWith({ id: '1', name: 'Test User' });
+      fireEvent.click(screen.getByText('Social Login Tenant'));
+      expect(onSuccess).toHaveBeenCalledWith({ id: '2', name: 'Tenant User', role: 'tenant' });
       expect(mockNavigate).not.toHaveBeenCalled();
     });
 
-    it('navigates to / on email login success', () => {
+    it('navigates to / on email login success when no role', () => {
       render(<AuthPage />);
       fireEvent.click(screen.getByText('Email Submit'));
       expect(mockNavigate).toHaveBeenCalledWith('/');

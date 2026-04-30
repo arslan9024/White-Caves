@@ -21,8 +21,8 @@ const testimonials: Testimonial[] = [
     role: 'Property Investor',
     avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150',
     rating: 5,
-    text: 'White Caves made my property investment journey in Dubai seamless. Their team\'s expertise in the luxury market is unmatched. I found my perfect villa in Palm Jumeirah within weeks.',
-    property: 'Palm Jumeirah Villa'
+    text: "White Caves made my property investment journey in Dubai seamless. Their team's expertise in the luxury market is unmatched. I found my perfect villa in Palm Jumeirah within weeks.",
+    property: 'Palm Jumeirah Villa',
   },
   {
     id: 2,
@@ -31,7 +31,7 @@ const testimonials: Testimonial[] = [
     avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
     rating: 5,
     text: 'Professional, knowledgeable, and incredibly responsive. The team at White Caves helped me find the perfect apartment in Downtown Dubai with stunning Burj Khalifa views.',
-    property: 'Downtown Dubai Apartment'
+    property: 'Downtown Dubai Apartment',
   },
   {
     id: 3,
@@ -39,8 +39,8 @@ const testimonials: Testimonial[] = [
     role: 'CEO, Tech Startup',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150',
     rating: 5,
-    text: 'I\'ve worked with many real estate agencies, but White Caves stands out for their attention to detail and deep understanding of the Dubai market. Highly recommended!',
-    property: 'Emirates Hills Estate'
+    text: "I've worked with many real estate agencies, but White Caves stands out for their attention to detail and deep understanding of the Dubai market. Highly recommended!",
+    property: 'Emirates Hills Estate',
   },
   {
     id: 4,
@@ -49,7 +49,7 @@ const testimonials: Testimonial[] = [
     avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150',
     rating: 5,
     text: 'From the first consultation to the final handover, White Caves provided exceptional service. Their virtual tour technology helped me finalize my purchase from overseas.',
-    property: 'Dubai Marina Penthouse'
+    property: 'Dubai Marina Penthouse',
   },
   {
     id: 5,
@@ -58,7 +58,7 @@ const testimonials: Testimonial[] = [
     avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=150',
     rating: 5,
     text: 'Moving to Dubai for work meant finding the right apartment fast. White Caves were incredibly responsive — they shortlisted five properties within 48 hours and I signed a lease on a stunning JBR apartment the same week.',
-    property: 'JBR Apartment'
+    property: 'JBR Apartment',
   },
   {
     id: 6,
@@ -67,8 +67,8 @@ const testimonials: Testimonial[] = [
     avatar: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150',
     rating: 5,
     text: 'I purchased two off-plan units through White Caves for investment. Their market insights and RERA compliance expertise gave me complete confidence. The ROI has surpassed my expectations.',
-    property: 'Off-Plan Units, Business Bay'
-  }
+    property: 'Off-Plan Units, Business Bay',
+  },
 ];
 
 interface Variants {
@@ -102,7 +102,7 @@ const Testimonials = () => {
     const tickMs = 50;
     const totalMs = TIMING.CAROUSEL_AUTOPLAY as number;
     progressIntervalRef.current = setInterval(() => {
-      setProgress((prev) => {
+      setProgress(prev => {
         const next = prev + (tickMs / totalMs) * 100;
         return next >= 100 ? 100 : next;
       });
@@ -118,7 +118,7 @@ const Testimonials = () => {
     if (!autoplay) return;
     const timer = setInterval(() => {
       setDirection(1);
-      setActiveIndex((prev) => (prev + 1) % testimonials.length);
+      setActiveIndex(prev => (prev + 1) % testimonials.length);
     }, TIMING.CAROUSEL_AUTOPLAY);
     return () => clearInterval(timer);
   }, [autoplay]);
@@ -129,7 +129,7 @@ const Testimonials = () => {
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
     resumeTimerRef.current = setTimeout(() => setAutoplay(true), TIMING.CAROUSEL_RESUME);
     setDirection(dir);
-    setActiveIndex((prev) => {
+    setActiveIndex(prev => {
       if (dir === 1) return (prev + 1) % testimonials.length;
       return prev === 0 ? testimonials.length - 1 : prev - 1;
     });
@@ -138,16 +138,16 @@ const Testimonials = () => {
   const variants: Variants = {
     enter: {
       x: direction > 0 ? 300 : -300,
-      opacity: 0
+      opacity: 0,
     },
     center: {
       x: 0,
-      opacity: 1
+      opacity: 1,
     },
     exit: {
       x: direction < 0 ? 300 : -300,
-      opacity: 0
-    }
+      opacity: 0,
+    },
   };
 
   const current = testimonials.find((_, index) => index === activeIndex) ?? testimonials[0];
@@ -155,7 +155,7 @@ const Testimonials = () => {
   return (
     <section className="testimonials-section" id="testimonials">
       <div className="container">
-        <motion.div 
+        <motion.div
           className="section-header"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -171,16 +171,12 @@ const Testimonials = () => {
         </motion.div>
 
         {/* Screen-reader live region */}
-        <div
-          aria-live="polite"
-          aria-atomic="true"
-          className="sr-only"
-        >
+        <div aria-live="polite" aria-atomic="true" className="sr-only">
           {`Testimonial ${activeIndex + 1} of ${testimonials.length}: ${current.name}, ${current.role}`}
         </div>
 
         <div className="testimonials-carousel" role="region" aria-label="Client testimonials">
-          <motion.button 
+          <motion.button
             className="carousel-nav prev"
             onClick={() => navigateCarousel(-1)}
             whileHover={{ scale: 1.1 }}
@@ -200,10 +196,12 @@ const Testimonials = () => {
                 initial="enter"
                 animate="center"
                 exit="exit"
-                transition={{ duration: 0.4, ease: "easeInOut" }}
+                transition={{ duration: 0.4, ease: 'easeInOut' }}
               >
                 {/* Gold watermark quote mark */}
-                <span className="testimonial-watermark" aria-hidden="true">&ldquo;</span>
+                <span className="testimonial-watermark" aria-hidden="true">
+                  &ldquo;
+                </span>
 
                 {/* Verified Client badge */}
                 <div className="verified-badge">
@@ -214,20 +212,18 @@ const Testimonials = () => {
                 <div className="quote-icon">
                   <Quote size={40} />
                 </div>
-                
+
                 <div className="testimonial-rating">
                   {[...Array(current.rating)].map((_, i) => (
-                    <Star key={`star-${i}`} size={20} fill="#FFB300" color="#FFB300" />
+                    <Star key={`star-${i}`} size={20} fill="#E31E24" color="#E31E24" />
                   ))}
                 </div>
 
-                <blockquote className="testimonial-text">
-                  &ldquo;{current.text}&rdquo;
-                </blockquote>
+                <blockquote className="testimonial-text">&ldquo;{current.text}&rdquo;</blockquote>
 
                 <div className="testimonial-footer">
-                  <img 
-                    src={current.avatar} 
+                  <img
+                    src={current.avatar}
                     alt={current.name}
                     className="testimonial-avatar"
                     loading="lazy"
@@ -250,7 +246,7 @@ const Testimonials = () => {
             </AnimatePresence>
           </div>
 
-          <motion.button 
+          <motion.button
             className="carousel-nav next"
             onClick={() => navigateCarousel(1)}
             whileHover={{ scale: 1.1 }}
@@ -284,4 +280,3 @@ const Testimonials = () => {
   );
 };
 export default Testimonials;
-

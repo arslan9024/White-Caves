@@ -7,7 +7,6 @@
 import { Router, Request, Response } from 'express';
 import { Prisma } from '@prisma/client';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
-import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { getSocketServer } from '../services/socketServer.js';
@@ -35,7 +34,7 @@ const VALID_LEAD_SOURCES = [
 ] as const;
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
-import { requirePermission, requireRole } from '../middleware/rbac';
+import { requirePermission, requireRole, scopeToOwn, requireMinRole } from '../middleware/rbac';
 import {
   scoreLead,
   overrideScore,
@@ -56,6 +55,7 @@ const router = Router();
 router.get(
   '/',
   requirePermission('view_leads'),
+  scopeToOwn('assignedToId'),
   asyncHandler(async (req: Request, res: Response) => {
     const {
       status,
@@ -103,6 +103,15 @@ router.get(
     }
     if (assignedTo) {
       where.assignedToId = assignedTo as string;
+    }
+    // Row-level security: agents only see their own assigned leads.
+    // scopeToOwn('assignedToId') sets req.ownershipFilter to { assignedToId: userId }
+    // for non-supervisor roles; supervisors get {} (no restriction).
+    // For agents, Object.assign overwrites any caller-supplied ?assignedTo param
+    // so they cannot query other agents' leads.
+    const ownerFilter = req.ownershipFilter ?? {};
+    if (Object.keys(ownerFilter).length > 0) {
+      Object.assign(where, ownerFilter);
     }
     if (minScore || maxScore) {
       where.score = {};
@@ -164,13 +173,8 @@ router.get(
 router.get(
   '/stats',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
-    // AUTHORIZATION: Only managers+ can view aggregated lead statistics
-    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — lead statistics require manager role', 403);
-    }
-
+  requireMinRole('manager'),
+  asyncHandler(async (_req: Request, res: Response) => {
     const [total, byStatus, bySource, avgScore] = await Promise.all([
       prisma.lead.count(),
       prisma.lead.groupBy({ by: ['status'], _count: { _all: true } }),
@@ -205,12 +209,8 @@ router.get(
 router.get(
   '/analytics/conversion',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
-    // Authorization: Only managers+ can view conversion analytics
-    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
-    if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
-      throw new AppError('Access denied — conversion analytics require manager role', 403);
-    }
+  requireMinRole('manager'),
+  asyncHandler(async (_req: Request, res: Response) => {
     const [total, won, lost] = await Promise.all([
       prisma.lead.count(),
       prisma.lead.count({ where: { status: 'won' } }),

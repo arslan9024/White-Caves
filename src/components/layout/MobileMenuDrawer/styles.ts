@@ -163,7 +163,7 @@ export const DrawerNavItem = styled.button<{ $active?: boolean; $color?: string 
   align-items: center;
   gap: 12px;
   padding: 12px ${spacing.md};
-  background: ${p => (p.$active ? 'rgba(212, 175, 55, 0.08)' : 'transparent')};
+  background: ${p => (p.$active ? 'rgba(227, 30, 36, 0.08)' : 'transparent')};
   border: none;
   cursor: pointer;
   font-size: 14px;
@@ -193,13 +193,13 @@ export const DrawerNavItem = styled.button<{ $active?: boolean; $color?: string 
     `}
 
   &:active {
-    background: ${p => (p.$active ? 'rgba(212, 175, 55, 0.12)' : colors.background.tertiary)};
+    background: ${p => (p.$active ? 'rgba(227, 30, 36, 0.12)' : colors.background.tertiary)};
   }
 
   @media (prefers-color-scheme: dark) {
     color: ${p => (p.$active ? colors.primaryLight : '#E2E8F0')};
     &:active {
-      background: ${p => (p.$active ? 'rgba(212, 175, 55, 0.14)' : '#334155')};
+      background: ${p => (p.$active ? 'rgba(227, 30, 36, 0.14)' : '#334155')};
     }
   }
 `;

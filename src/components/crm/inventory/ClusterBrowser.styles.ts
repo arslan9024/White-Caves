@@ -63,15 +63,15 @@ export const ClusterChip = styled.button<{ $active?: boolean }>`
   border-radius: 20px;
   font-size: ${typography.sizes.xs};
   font-weight: ${typography.weights.medium};
-  background: ${props => props.$active ? 'var(--primary)' : 'var(--bg-secondary)'};
-  border: 1px solid ${props => props.$active ? 'var(--primary)' : 'var(--border-color)'};
-  color: ${props => props.$active ? 'white' : 'var(--text-primary)'};
+  background: ${props => (props.$active ? 'var(--primary)' : 'var(--bg-secondary)')};
+  border: 1px solid ${props => (props.$active ? 'var(--primary)' : 'var(--border-color)')};
+  color: ${props => (props.$active ? 'white' : 'var(--text-primary)')};
   cursor: pointer;
   transition: ${transitions.hover};
 
   &:hover {
     border-color: var(--primary);
-    background: ${props => props.$active ? 'var(--primary)' : 'rgba(212, 175, 55, 0.05)'};
+    background: ${props => (props.$active ? 'var(--primary)' : 'rgba(227, 30, 36, 0.05)')};
   }
 
   &:active {
@@ -79,12 +79,12 @@ export const ClusterChip = styled.button<{ $active?: boolean }>`
   }
 
   @media (prefers-color-scheme: dark) {
-    background: ${props => props.$active ? colors.primary : '#333333'};
-    border-color: ${props => props.$active ? colors.primary : '#444444'};
-    color: ${props => props.$active ? 'white' : '#e2e8f0'};
+    background: ${props => (props.$active ? colors.primary : '#333333')};
+    border-color: ${props => (props.$active ? colors.primary : '#444444')};
+    color: ${props => (props.$active ? 'white' : '#e2e8f0')};
 
     &:hover {
-      background: ${props => props.$active ? colors.primaryDark : 'rgba(212, 175, 55, 0.15)'};
+      background: ${props => (props.$active ? colors.primaryDark : 'rgba(227, 30, 36, 0.15)')};
     }
   }
 `;

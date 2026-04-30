@@ -47,6 +47,7 @@ model User {
   leasesAsTenant Lease[]     @relation("LeaseTenant")
   leasesAsLandlord Lease[]   @relation("LeaseLandlord")
   maintenanceRequests Maintenance[] @relation("MaintenanceRequester")
+  pdcCheques    PDCSchedule[] @relation("PDCTenant")
 
   @@index([role])
   @@index([status])
@@ -74,8 +75,32 @@ model Property {
   images      String[]
   featured    Boolean  @default(false)
   agentName   String?
+
+  // ─── @Mary Intelligent Inventory Fields ──────────────────────────────
+  unitNumber        String?              // e.g. "A-1204"
+  floorPlan         String?              // e.g. "2BR-TypeA"
+  rentalPrice       Float?               // Annual rental price in AED
+  commissionPercent Float?  @default(5) // Agent commission %
+  availabilityDate  DateTime?            // Date property is available to lease
+  inventoryStage    String  @default("draft_collected")
+  // Inventory stages: draft_collected | verified_active | under_offer | leased_sold | handed_over
+  isLocked          Boolean @default(false) // Locked when an offer is approved
+  lockedAt          DateTime?            // Timestamp when locked
+
+  // Document flags — flagged when missing
+  titleDeedMissing         Boolean @default(false)
+  landlordPassportMissing  Boolean @default(false)
+  ejariMissing             Boolean @default(false)
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // RERA / Dubai DLD compliance fields
+  municipalityNumber  String? // Dubai municipality plot/unit number
+  plotNumber          String? // DLD plot number
+  buildingPermitNumber String? // Building permit from Dubai Municipality
+  rentIndexRef        String? // RERA Rent Index reference (for rent increase calculations)
+  furnished           Boolean @default(false) // affects max deposit calculation
 
   // Relations
   userId      String   @db.ObjectId
@@ -97,6 +122,9 @@ model Property {
   @@index([price])
   @@index([userId])
   @@index([area])
+  @@index([inventoryStage])
+  @@index([isLocked])
+  @@index([availabilityDate])
 }
 
 // ─── LEAD ───────────────────────────────────────────────────────────────
@@ -118,6 +146,10 @@ model Lead {
   notes       String?
   tags        String[]
   lastContact DateTime?
+  // Leasing-specific fields
+  dealType    String   @default("lease") // lease, sale, buy
+  leasingStage Int     @default(1) // 1=Lead Acquisition, 2=Matching, 3=Viewing, 4=Offer, 5=Decision, 6=Deposit, 7=Contract, 8=Handover, 9=Payment, 10=PnL
+  tenantRequirements Json? // { bedrooms, furnishing, maxRent, preferredArea, petPolicy, smokingPolicy, parking, community, moveInDate }
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -146,6 +178,8 @@ model Lead {
   @@index([source, createdAt])
   @@index([assignedToId, status])
   @@index([status, source, createdAt])
+  @@index([dealType])
+  @@index([leasingStage])
 }
 
 // ─── LEAD SCORE HISTORY ─────────────────────────────────────────────────
@@ -463,10 +497,13 @@ model Offer {
   amount        Float
   currency      String   @default("AED")  // AED, USD, EUR, GBP, INR
   status        String   @default("pending") // pending, accepted, rejected, countered, expired, withdrawn
+  offerType     String   @default("lease") // lease, sale
   expiresAt     DateTime?
   terms         String?  // Free-text negotiation terms
   counterAmount Float?   // Counter-offer amount
+  counterHistory Json?   // Array of { amount, terms, by, at } for multi-round negotiation
   notes         String?
+  rejectionReason String? // Reason when status = rejected
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -482,6 +519,7 @@ model Offer {
   @@index([propertyId])
   @@index([leadId])
   @@index([status])
+  @@index([offerType])
   @@index([createdAt])
 }
 
@@ -503,6 +541,13 @@ model Lease {
   ejariStatus   String?   @default("pending") // pending, registered, expired, cancelled
   ejariRegistrationDate DateTime? // When Ejari was registered
   ejariExpiryDate DateTime? // When Ejari registration expires
+  // Key handover fields
+  keyHandoverDate DateTime? // Date keys were handed over to tenant
+  keyHandoverNotes String?  // Notes from handover inspection
+  meterReadings Json?       // { dewa: "...", gas: "...", accessCards: "...", parkingSticker: "..." }
+  addendumDocuments String[] // URLs of addendum PDFs attached to this lease
+  // Linked offer that created this lease (for P&L traceability)
+  offerId       String?   @db.ObjectId
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -513,6 +558,8 @@ model Lease {
   landlord      User     @relation("LeaseLandlord", fields: [landlordId], references: [id])
   propertyId    String   @db.ObjectId
   property      Property @relation(fields: [propertyId], references: [id])
+  addenda       LeaseAddendum[]
+  pdcSchedule   PDCSchedule[]
 
   @@index([tenantId])
   @@index([landlordId])
@@ -918,3 +965,52 @@ model SystemSetting {
 
   @@index([category])
 }
+
+// ─── LEASE ADDENDUM ─────────────────────────────────────────────────────
+
+model LeaseAddendum {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  clause        String   // Full text of the addendum clause
+  agreedBy      String[] // List of party identifiers who agreed (e.g. tenantId, landlordId)
+  signedAt      DateTime?
+  documentUrl   String?  // URL of the signed addendum PDF
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  leaseId       String   @db.ObjectId
+  lease         Lease    @relation(fields: [leaseId], references: [id])
+
+  @@index([leaseId])
+  @@index([createdAt])
+}
+
+// ─── PDC SCHEDULE ───────────────────────────────────────────────────────
+
+model PDCSchedule {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  chequeNumber  String
+  bankName      String
+  amount        Float
+  currency      String   @default("AED")
+  dueDate       DateTime
+  status        String   @default("pending") // pending, presented, cleared, bounced
+  chequeImageUrl String? // Upload of scanned cheque
+  reminderSent  Boolean  @default(false)
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  leaseId       String   @db.ObjectId
+  lease         Lease    @relation(fields: [leaseId], references: [id])
+  tenantId      String   @db.ObjectId
+  tenant        User     @relation("PDCTenant", fields: [tenantId], references: [id])
+
+  @@index([leaseId])
+  @@index([tenantId])
+  @@index([status])
+  @@index([dueDate])
+  @@index([createdAt])
+}
+

@@ -28,6 +28,12 @@ vi.mock('../../components/portal/landlord/LandlordMaintenanceTab', () => ({
 vi.mock('../../components/portal/landlord/LandlordDocumentsTab', () => ({
   default: () => <div data-testid="documents-tab">Documents Tab</div>,
 }));
+vi.mock('../../components/portal/landlord/LandlordOfferReviewTab', () => ({
+  default: () => <div data-testid="offers-tab">Offer Review Tab</div>,
+}));
+vi.mock('../../components/portal/landlord/LandlordIncomeTab', () => ({
+  default: () => <div data-testid="income-tab">Income Tab</div>,
+}));
 
 const mockUser = {
   id: 'landlord-1',

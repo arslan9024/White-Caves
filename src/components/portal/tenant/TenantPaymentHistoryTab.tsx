@@ -31,8 +31,12 @@ interface PaymentSummary {
 
 const TenantPaymentHistoryTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
-  const token = useSelector((state: RootState) => (state.auth as { token?: string } | undefined)?.token);
-  const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'pending' | 'overdue' | 'upcoming'>('all');
+  const token = useSelector(
+    (state: RootState) => (state.auth as { token?: string } | undefined)?.token
+  );
+  const [statusFilter, setStatusFilter] = useState<
+    'all' | 'paid' | 'pending' | 'overdue' | 'upcoming'
+  >('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [payments, setPayments] = useState<PaymentRecord[]>([]);
   const [summary, setSummary] = useState<PaymentSummary | null>(null);
@@ -41,16 +45,15 @@ const TenantPaymentHistoryTab: FC = () => {
 
   useEffect(() => {
     if (!currentUser) return;
-    setLoading(true);
-    setError(null);
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    fetch('/api/portal/tenant/payments', { headers })
-      .then(res => {
+    const load = async (): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      try {
+        const res = await fetch('/api/portal/tenant/payments', { headers });
         if (!res.ok) throw new Error(`Server error ${res.status}`);
-        return res.json();
-      })
-      .then(data => {
+        const data = await res.json();
         const d = data.data ?? {};
         setPayments(
           (d.payments ?? []).map(
@@ -74,9 +77,13 @@ const TenantPaymentHistoryTab: FC = () => {
           )
         );
         setSummary(d.summary ?? null);
-      })
-      .catch(err => setError((err as Error).message ?? 'Failed to load payments'))
-      .finally(() => setLoading(false));
+      } catch (err) {
+        setError((err as Error).message ?? 'Failed to load payments');
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
   }, [currentUser, token]);
 
   const filteredPayments = useMemo(() => {
@@ -102,13 +109,18 @@ const TenantPaymentHistoryTab: FC = () => {
         nextPaymentAmount: summary.nextPaymentAmount,
       };
     }
-    const totalPaid = payments
-      .filter(p => p.status === 'paid')
-      .reduce((s, p) => s + p.amount, 0);
+    const totalPaid = payments.filter(p => p.status === 'paid').reduce((s, p) => s + p.amount, 0);
     const outstanding = payments
       .filter(p => p.status === 'pending' || p.status === 'overdue')
       .reduce((s, p) => s + p.amount, 0);
-    return { totalPaid, outstanding, currency: 'AED', depositPaid: 0, nextPaymentDue: null, nextPaymentAmount: 0 };
+    return {
+      totalPaid,
+      outstanding,
+      currency: 'AED',
+      depositPaid: 0,
+      nextPaymentDue: null,
+      nextPaymentAmount: 0,
+    };
   }, [summary, payments]);
 
   if (!currentUser) {
@@ -145,23 +157,41 @@ const TenantPaymentHistoryTab: FC = () => {
       <div className="summary-grid" data-testid="tenant-payment-summary">
         <div className="summary-card" data-testid="tenant-total-paid-card">
           <h4>Total Paid</h4>
-          <p>{displaySummary.currency} {displaySummary.totalPaid.toLocaleString()}</p>
+          <p>
+            {displaySummary.currency} {displaySummary.totalPaid.toLocaleString()}
+          </p>
         </div>
         <div className="summary-card" data-testid="tenant-outstanding-card">
           <h4>Outstanding</h4>
-          <p>{displaySummary.currency} {displaySummary.outstanding.toLocaleString()}</p>
+          <p>
+            {displaySummary.currency} {displaySummary.outstanding.toLocaleString()}
+          </p>
         </div>
         {displaySummary.depositPaid > 0 && (
           <div className="summary-card" data-testid="tenant-deposit-card">
             <h4>Deposit Paid</h4>
-            <p>{displaySummary.currency} {displaySummary.depositPaid.toLocaleString()}</p>
+            <p>
+              {displaySummary.currency} {displaySummary.depositPaid.toLocaleString()}
+            </p>
           </div>
         )}
         {displaySummary.nextPaymentDue && (
           <div className="summary-card" data-testid="tenant-next-payment-card">
             <h4>Next Payment Due</h4>
             <p>{new Date(displaySummary.nextPaymentDue).toLocaleDateString()}</p>
-            <p>{displaySummary.currency} {displaySummary.nextPaymentAmount.toLocaleString()}</p>
+            <p>
+              {displaySummary.currency} {displaySummary.nextPaymentAmount.toLocaleString()}
+            </p>
+          </div>
+        )}
+        {payments.filter(p => p.status === 'overdue').length > 0 && (
+          <div className="summary-card summary-card--alert" data-testid="tenant-overdue-notice">
+            <h4>Late Fee Notice</h4>
+            <p>
+              {payments.filter(p => p.status === 'overdue').length} overdue payment
+              {payments.filter(p => p.status === 'overdue').length > 1 ? 's' : ''}
+            </p>
+            <p className="summary-card-meta">Contact your agent for details</p>
           </div>
         )}
       </div>
@@ -178,7 +208,9 @@ const TenantPaymentHistoryTab: FC = () => {
           data-testid="tenant-payment-status-filter"
           value={statusFilter}
           onChange={event =>
-            setStatusFilter(event.target.value as 'all' | 'paid' | 'pending' | 'overdue' | 'upcoming')
+            setStatusFilter(
+              event.target.value as 'all' | 'paid' | 'pending' | 'overdue' | 'upcoming'
+            )
           }
         >
           <option value="all">All Statuses</option>
@@ -207,11 +239,24 @@ const TenantPaymentHistoryTab: FC = () => {
                 {payment.propertyTitle && <p className="property-label">{payment.propertyTitle}</p>}
               </div>
               <div>
-                <p>{payment.currency} {payment.amount.toLocaleString()}</p>
+                <p>
+                  {payment.currency} {payment.amount.toLocaleString()}
+                </p>
                 <p>Due: {payment.dueDate}</p>
               </div>
               <div>
                 <span className={`status-badge status-${payment.status}`}>{payment.status}</span>
+                {(payment.status === 'pending' || payment.status === 'overdue') && (
+                  <button
+                    type="button"
+                    className="btn-secondary btn-disabled"
+                    disabled
+                    title="Online payments coming soon — please pay by cheque or bank transfer"
+                    data-testid={`tenant-pay-now-btn-${payment.id}`}
+                  >
+                    Pay Now
+                  </button>
+                )}
               </div>
             </div>
           ))}

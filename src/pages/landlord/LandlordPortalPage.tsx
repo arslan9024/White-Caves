@@ -1,27 +1,41 @@
 /**
- * LandlordPortalPage — Phase 2.1-2.6: Landlord Self-Service Portal
+ * LandlordPortalPage — Phase 2.1-2.6 + Leasing Enhancements
  *
- * Provides landlords with read-only access to:
+ * Provides landlords with access to:
  * - My Properties (2.2)
  * - Tenants (2.3)
  * - Rent Payments (2.4)
  * - Maintenance Requests (2.5)
  * - Documents (2.6)
+ * - Offer Review (Stage 4-5 leasing lifecycle)
+ * - Income Summary (Stage 10 leasing lifecycle)
  *
  * @component
  */
 
 import React, { FC, useState } from 'react';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../store/store';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import type { RootState, AppDispatch } from '../../store/store';
+import { logout } from '../../store/authSlice';
+import { clearUser } from '../../store/userSlice';
 import '../RolePages.css';
 import LandlordPropertiesTab from '../../components/portal/landlord/LandlordPropertiesTab';
 import LandlordTenantsTab from '../../components/portal/landlord/LandlordTenantsTab';
 import LandlordPaymentsTab from '../../components/portal/landlord/LandlordPaymentsTab';
 import LandlordMaintenanceTab from '../../components/portal/landlord/LandlordMaintenanceTab';
 import LandlordDocumentsTab from '../../components/portal/landlord/LandlordDocumentsTab';
+import LandlordOfferReviewTab from '../../components/portal/landlord/LandlordOfferReviewTab';
+import LandlordIncomeTab from '../../components/portal/landlord/LandlordIncomeTab';
 
-type TabKey = 'properties' | 'tenants' | 'payments' | 'maintenance' | 'documents';
+type TabKey =
+  | 'properties'
+  | 'tenants'
+  | 'payments'
+  | 'maintenance'
+  | 'documents'
+  | 'offers'
+  | 'income';
 
 interface Tab {
   key: TabKey;
@@ -32,6 +46,8 @@ interface Tab {
 const tabs: Tab[] = [
   { key: 'properties', label: 'My Properties', icon: '🏢' },
   { key: 'tenants', label: 'Tenants', icon: '👥' },
+  { key: 'offers', label: 'Offer Review', icon: '📨' },
+  { key: 'income', label: 'Income', icon: '💹' },
   { key: 'payments', label: 'Rent Payments', icon: '💰' },
   { key: 'maintenance', label: 'Maintenance', icon: '🔧' },
   { key: 'documents', label: 'Documents', icon: '📄' },
@@ -40,6 +56,14 @@ const tabs: Tab[] = [
 const LandlordPortalPage: FC = () => {
   const [activeTab, setActiveTab] = useState<TabKey>('properties');
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    dispatch(clearUser());
+    navigate('/signin');
+  };
 
   if (!currentUser) {
     return (
@@ -65,6 +89,10 @@ const LandlordPortalPage: FC = () => {
         return <LandlordMaintenanceTab />;
       case 'documents':
         return <LandlordDocumentsTab />;
+      case 'offers':
+        return <LandlordOfferReviewTab />;
+      case 'income':
+        return <LandlordIncomeTab />;
       default:
         return <LandlordPropertiesTab />;
     }
@@ -72,6 +100,28 @@ const LandlordPortalPage: FC = () => {
 
   return (
     <div className="role-page no-sidebar">
+      {/* Portal Navbar */}
+      <nav className="portal-navbar" data-testid="portal-navbar">
+        <div className="portal-navbar-brand">
+          <span className="portal-navbar-logo">🏢</span>
+          <span className="portal-navbar-title">White Caves</span>
+          <span className="portal-navbar-subtitle">Landlord</span>
+        </div>
+        <div className="portal-navbar-user">
+          <span className="portal-navbar-username" data-testid="portal-navbar-username">
+            {(currentUser.name ?? currentUser.email).split(' ')[0]}
+          </span>
+          <button
+            type="button"
+            className="portal-navbar-logout"
+            onClick={handleLogout}
+            data-testid="portal-navbar-logout"
+          >
+            Sign Out
+          </button>
+        </div>
+      </nav>
+
       <div className="role-page-content full-width">
         <div className="page-header">
           <h1>Landlord Portal</h1>

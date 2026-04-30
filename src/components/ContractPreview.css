@@ -22,7 +22,7 @@
 }
 
 .contract-type {
-  color: #d4af37;
+  color: #e31e24;
   font-weight: 600;
   margin: 5px 0;
 }
@@ -87,7 +87,7 @@
 }
 
 .section-header .icon {
-  color: #d4af37;
+  color: #e31e24;
   font-size: 12px;
   display: inline-block;
 }
@@ -168,7 +168,7 @@
 }
 
 .party-card h4 {
-  color: #d4af37;
+  color: #e31e24;
   font-size: 16px;
   margin: 0 0 15px 0;
 }
@@ -189,7 +189,7 @@
 
 /* Financial Details */
 .detail-group .detail-row .value {
-  color: #d4af37;
+  color: #e31e24;
   font-weight: 700;
   font-size: 16px;
 }
@@ -215,7 +215,7 @@
 /* Signatures Section */
 .signatures-section {
   background: #fffef5;
-  border: 2px dashed #d4af37;
+  border: 2px dashed #e31e24;
 }
 
 .signatures-grid {
@@ -230,7 +230,7 @@
   padding: 20px;
   background: white;
   border-radius: 8px;
-  border: 1px solid #d4af37;
+  border: 1px solid #e31e24;
 }
 
 .placeholder-label {
@@ -291,22 +291,22 @@
   font-size: 14px;
 }
 
-.status-badge[data-status="draft"] {
+.status-badge[data-status='draft'] {
   background: #e8e8e8;
   color: #666;
 }
 
-.status-badge[data-status="pending"] {
+.status-badge[data-status='pending'] {
   background: #fff3cd;
   color: #856404;
 }
 
-.status-badge[data-status="signed"] {
+.status-badge[data-status='signed'] {
   background: #d4edda;
   color: #155724;
 }
 
-.status-badge[data-status="completed"] {
+.status-badge[data-status='completed'] {
   background: #d4edda;
   color: #155724;
 }
@@ -338,14 +338,14 @@
 }
 
 .btn-primary {
-  background-color: #d4af37;
+  background-color: #e31e24;
   color: #1a1a2e;
 }
 
 .btn-primary:hover:not(:disabled) {
   background-color: #c49f2f;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 4px 12px rgba(227, 30, 36, 0.3);
 }
 
 .btn-primary:disabled {

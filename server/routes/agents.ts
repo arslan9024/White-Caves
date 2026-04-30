@@ -6,10 +6,9 @@
 
 import { Router, Request, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
-import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { validateIdParam } from '../utils/validate';
-import { requirePermission, requireRole } from '../middleware/rbac';
+import { requirePermission } from '../middleware/rbac';
 
 const router = Router();
 
@@ -18,12 +17,6 @@ router.get(
   '/',
   requirePermission('manage_agents'),
   asyncHandler(async (req: Request, res: Response) => {
-    // AUTHORIZATION: Agent list with performance data restricted to managers+
-    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — agent list requires manager or above role', 403);
-    }
-
     const { status, department, search, page = '1', pageSize = '50' } = req.query;
 
     const pageNum = Math.max(1, parseInt(page as string) || 1);
@@ -31,9 +24,19 @@ router.get(
 
     const where: Record<string, unknown> = { role: { in: ['agent', 'owner'] } };
     const VALID_STATUSES = ['active', 'inactive', 'pending', 'suspended'];
-    const VALID_DEPARTMENTS = ['sales', 'leasing', 'support', 'management', 'marketing', 'finance', 'hr', 'it'];
+    const VALID_DEPARTMENTS = [
+      'sales',
+      'leasing',
+      'support',
+      'management',
+      'marketing',
+      'finance',
+      'hr',
+      'it',
+    ];
     if (status && VALID_STATUSES.includes(status as string)) where.status = status as string;
-    if (department && VALID_DEPARTMENTS.includes(department as string)) where.department = department as string;
+    if (department && VALID_DEPARTMENTS.includes(department as string))
+      where.department = department as string;
     if (search) {
       const s = search as string;
       where.OR = [
@@ -46,8 +49,15 @@ router.get(
       prisma.user.findMany({
         where,
         select: {
-          id: true, name: true, email: true, phone: true, role: true,
-          department: true, status: true, photoUrl: true, createdAt: true,
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          role: true,
+          department: true,
+          status: true,
+          photoUrl: true,
+          createdAt: true,
           _count: {
             select: {
               leadsAssigned: true,
@@ -64,7 +74,7 @@ router.get(
     ]);
 
     // Batch-fetch performance data to avoid N+1 queries
-    const agentIds = agents.map((a) => a.id);
+    const agentIds = agents.map(a => a.id);
 
     const [wonLeadsCounts, totalLeadsCounts, commissionSums] = await Promise.all([
       // Won leads per agent in one query
@@ -88,12 +98,12 @@ router.get(
     ]);
 
     // Build lookup maps for O(1) access
-    const wonMap = new Map(wonLeadsCounts.map((r) => [r.assignedToId, r._count]));
-    const totalMap = new Map(totalLeadsCounts.map((r) => [r.assignedToId, r._count]));
-    const commissionMap = new Map(commissionSums.map((r) => [r.agentId, r._sum.amount || 0]));
+    const wonMap = new Map(wonLeadsCounts.map(r => [r.assignedToId, r._count]));
+    const totalMap = new Map(totalLeadsCounts.map(r => [r.assignedToId, r._count]));
+    const commissionMap = new Map(commissionSums.map(r => [r.agentId, r._sum.amount || 0]));
 
     // Enrich with performance data (no additional queries)
-    const enriched = agents.map((agent) => {
+    const enriched = agents.map(agent => {
       const wonLeads = wonMap.get(agent.id) || 0;
       const totalLeads = totalMap.get(agent.id) || 0;
       const revenue = commissionMap.get(agent.id) || 0;
@@ -105,9 +115,10 @@ router.get(
         leads_assigned: totalLeads,
         revenue_generated: revenue,
         conversion_rate: conversionRate,
-        performance: Math.min(100, Math.round(
-          (conversionRate * 0.4) + (wonLeads * 3) + (revenue > 0 ? 20 : 0) + 30
-        )),
+        performance: Math.min(
+          100,
+          Math.round(conversionRate * 0.4 + wonLeads * 3 + (revenue > 0 ? 20 : 0) + 30)
+        ),
       };
     });
 
@@ -141,7 +152,9 @@ router.get(
     ]);
 
     const deptCounts: Record<string, number> = {};
-    byDepartment.forEach(d => { deptCounts[d.department || 'Unassigned'] = d._count._all; });
+    byDepartment.forEach(d => {
+      deptCounts[d.department || 'Unassigned'] = d._count._all;
+    });
 
     res.status(200).json({
       success: true,
@@ -167,19 +180,29 @@ router.get(
     const agent = await prisma.user.findUnique({
       where: { id: req.params.id },
       select: {
-        id: true, name: true, email: true, phone: true, role: true,
-        department: true, status: true, photoUrl: true, createdAt: true,
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        role: true,
+        department: true,
+        status: true,
+        photoUrl: true,
+        createdAt: true,
         leadsAssigned: {
           select: { id: true, name: true, status: true, budget: true },
-          take: 10, orderBy: { createdAt: 'desc' },
+          take: 10,
+          orderBy: { createdAt: 'desc' },
         },
         commissions: {
           select: { id: true, amount: true, status: true, type: true, createdAt: true },
-          take: 10, orderBy: { createdAt: 'desc' },
+          take: 10,
+          orderBy: { createdAt: 'desc' },
         },
         properties: {
           select: { id: true, title: true, status: true, price: true },
-          take: 10, orderBy: { createdAt: 'desc' },
+          take: 10,
+          orderBy: { createdAt: 'desc' },
         },
       },
     });
@@ -231,7 +254,9 @@ router.get(
       data: {
         agent: { id: agent.id, name: agent.name, email: agent.email, department: agent.department },
         leads: {
-          total: totalLeads, won: wonLeads, lost: lostLeads,
+          total: totalLeads,
+          won: wonLeads,
+          lost: lostLeads,
           active: totalLeads - wonLeads - lostLeads,
           conversionRate,
         },
@@ -241,9 +266,7 @@ router.get(
           paidValue: paidCommissions._sum.amount || 0,
           pendingValue: (totalCommissions._sum.amount || 0) - (paidCommissions._sum.amount || 0),
         },
-        performanceScore: Math.min(100, Math.round(
-          (conversionRate * 0.4) + (wonLeads * 3) + 30
-        )),
+        performanceScore: Math.min(100, Math.round(conversionRate * 0.4 + wonLeads * 3 + 30)),
       },
     });
   })

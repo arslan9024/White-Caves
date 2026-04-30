@@ -22,7 +22,7 @@
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(239, 68, 68, 0.2));
   border: 1px solid rgba(245, 158, 11, 0.3);
   border-radius: 50px;
-  color: #F59E0B;
+  color: #f59e0b;
   font-size: 0.875rem;
   font-weight: 500;
   margin-bottom: 1rem;
@@ -112,17 +112,17 @@
 }
 
 .rank-badge.rank-1 {
-  background: linear-gradient(135deg, #FFD700, #FFA500);
-  color: #000;
+  background: linear-gradient(135deg, #e31e24, #b71c1c);
+  color: #fff;
 }
 
 .rank-badge.rank-2 {
-  background: linear-gradient(135deg, #C0C0C0, #A9A9A9);
+  background: linear-gradient(135deg, #c0c0c0, #a9a9a9);
   color: #000;
 }
 
 .rank-badge.rank-3 {
-  background: linear-gradient(135deg, #CD7F32, #A0522D);
+  background: linear-gradient(135deg, #cd7f32, #a0522d);
   color: #fff;
 }
 
@@ -131,7 +131,7 @@
   top: 1rem;
   right: 1rem;
   padding: 0.25rem 0.75rem;
-  background: #10B981;
+  background: #10b981;
   color: #fff;
   font-size: 0.75rem;
   font-weight: 600;
@@ -168,7 +168,7 @@
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(4px);
   border-radius: 6px;
-  color: #4FACFE;
+  color: #4facfe;
   font-size: 0.75rem;
   font-weight: 500;
 }
@@ -179,7 +179,7 @@
 
 .property-type {
   font-size: 0.75rem;
-  color: #4FACFE;
+  color: #4facfe;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -232,7 +232,7 @@
 }
 
 .property-stats .stat strong {
-  color: #10B981;
+  color: #10b981;
   font-weight: 600;
 }
 
@@ -250,7 +250,7 @@
 
 .view-btn {
   padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #4FACFE 0%, #00F2FE 100%);
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
   border: none;
   border-radius: 8px;
   color: #000;
@@ -269,15 +269,15 @@
   .featured-properties-section {
     padding: 3rem 0;
   }
-  
+
   .section-header h2 {
     font-size: 1.75rem;
   }
-  
+
   .featured-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .property-meta {
     gap: 0.75rem;
   }

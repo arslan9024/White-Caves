@@ -131,10 +131,14 @@ export const AppBtn = styled.a<{ $platform?: 'whatsapp' | 'botim' | 'gochat' }>`
   transition: ${transitions.hover};
   background: ${props => {
     switch (props.$platform) {
-      case 'whatsapp': return '#25D366';
-      case 'botim': return '#00C853';
-      case 'gochat': return '#FF6B00';
-      default: return '#666';
+      case 'whatsapp':
+        return '#25D366';
+      case 'botim':
+        return '#00C853';
+      case 'gochat':
+        return '#FF6B00';
+      default:
+        return '#666';
     }
   }};
 
@@ -231,7 +235,7 @@ export const FooterRating = styled.div`
 
 export const StarRatingFooter = styled.div`
   a {
-    color: #FFB300;
+    color: #e31e24;
     font-size: 1.5rem;
     text-decoration: none;
     letter-spacing: 2px;
@@ -253,12 +257,14 @@ export const Badge = styled.span<{ type?: 'rera' | 'dld' }>`
   align-items: center;
   gap: 0.35rem;
   padding: 0.3rem 0.65rem;
-  background: ${props => props.type === 'dld' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(220, 38, 38, 0.15)'};
-  border: 1px solid ${props => props.type === 'dld' ? 'rgba(59, 130, 246, 0.35)' : 'rgba(220, 38, 38, 0.35)'};
+  background: ${props =>
+    props.type === 'dld' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(220, 38, 38, 0.15)'};
+  border: 1px solid
+    ${props => (props.type === 'dld' ? 'rgba(59, 130, 246, 0.35)' : 'rgba(220, 38, 38, 0.35)')};
   border-radius: ${radius.sm};
   font-size: 0.7rem;
   font-weight: ${typography.weights.semibold};
-  color: ${props => props.type === 'dld' ? '#93c5fd' : '#fca5a5'};
+  color: ${props => (props.type === 'dld' ? '#93c5fd' : '#fca5a5')};
   margin-right: 0.4rem;
   margin-bottom: 0.4rem;
   letter-spacing: 0.03em;

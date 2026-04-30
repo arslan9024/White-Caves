@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════
-   DubaiMap.css — Luxury Map Styles for White Caves
-   Gold (#D4AF37) + Dark Green (#2E5A4F) theme
+   DubaiMap.css — Map Styles for White Caves
+   Brand Red (#E31E24) + White theme
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ─── Container ─────────────────────────────────────────────────── */
@@ -9,7 +9,7 @@
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
-  border: 1px solid rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(227, 30, 36, 0.15);
 }
 
 .dubai-map-leaflet {
@@ -58,7 +58,7 @@
   padding: 0;
   overflow: hidden;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(227, 30, 36, 0.2);
 }
 
 .property-map-popup .leaflet-popup-content {
@@ -82,7 +82,7 @@
 }
 
 .property-popup-card.active {
-  border-left: 3px solid #d4af37;
+  border-left: 3px solid #e31e24;
 }
 
 .popup-card-image {
@@ -141,14 +141,14 @@
   display: block;
   font-size: 0.95rem;
   font-weight: 800;
-  color: #d4af37;
+  color: #e31e24;
 }
 
 .popup-featured-badge {
   position: absolute;
   top: 8px;
   left: 8px;
-  background: rgba(212, 175, 55, 0.95);
+  background: rgba(227, 30, 36, 0.95);
   color: white;
   font-size: 0.65rem;
   font-weight: 700;
@@ -226,7 +226,7 @@
   padding: 8px 16px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(227, 30, 36, 0.15);
   font-size: 0.72rem;
   color: #555;
 }
@@ -244,8 +244,8 @@
 }
 
 .legend-dot.featured {
-  background: #d4af37;
-  box-shadow: 0 0 4px rgba(212, 175, 55, 0.5);
+  background: #e31e24;
+  box-shadow: 0 0 4px rgba(227, 30, 36, 0.5);
 }
 
 .legend-dot.standard {
@@ -255,9 +255,9 @@
 .legend-circle {
   width: 12px;
   height: 12px;
-  border: 2px solid #d4af37;
+  border: 2px solid #e31e24;
   border-radius: 50%;
-  background: rgba(212, 175, 55, 0.15);
+  background: rgba(227, 30, 36, 0.15);
 }
 
 /* ─── Responsive ────────────────────────────────────────────────── */

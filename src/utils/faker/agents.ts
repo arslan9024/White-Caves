@@ -8,39 +8,116 @@ import { createRng } from './rng';
 // ─── Constants ────────────────────────────────────────────────
 
 export const AGENT_DEPARTMENTS = [
-  'Sales', 'Leasing', 'Operations', 'Finance',
-  'Marketing', 'Customer Relations', 'Property Management',
+  'Sales',
+  'Leasing',
+  'Operations',
+  'Finance',
+  'Marketing',
+  'Customer Relations',
+  'Property Management',
 ] as const;
 
 const FIRST_NAMES = [
-  'Ahmed', 'Fatima', 'Omar', 'Sara', 'Khalid', 'Noor', 'Youssef', 'Layla',
-  'Mohammed', 'Aisha', 'Hassan', 'Mariam', 'Ali', 'Huda', 'Rashed', 'Dina',
-  'Ibrahim', 'Samira', 'Tariq', 'Lina', 'Saif', 'Jasmine', 'Zayd', 'Rania',
-  'Faisal', 'Amira', 'Hamdan', 'Salma', 'Bilal', 'Ghada',
+  'Ahmed',
+  'Fatima',
+  'Omar',
+  'Sara',
+  'Khalid',
+  'Noor',
+  'Youssef',
+  'Layla',
+  'Mohammed',
+  'Aisha',
+  'Hassan',
+  'Mariam',
+  'Ali',
+  'Huda',
+  'Rashed',
+  'Dina',
+  'Ibrahim',
+  'Samira',
+  'Tariq',
+  'Lina',
+  'Saif',
+  'Jasmine',
+  'Zayd',
+  'Rania',
+  'Faisal',
+  'Amira',
+  'Hamdan',
+  'Salma',
+  'Bilal',
+  'Ghada',
 ];
 
 const LAST_NAMES = [
-  'Al Maktoum', 'Al Rashid', 'Al Nahyan', 'Al Habtoor', 'Al Ghurair',
-  'Al Falasi', 'Al Mansouri', 'Al Suwaidi', 'Al Mheiri', 'Al Shamsi',
-  'Al Ketbi', 'Al Zaabi', 'Al Mazrouei', 'Al Dhaheri', 'Al Nuaimi',
-  'Kapoor', 'Sharma', 'Patel', 'Khan', 'Malik',
-  'Johnson', 'Williams', 'Davies', 'Mitchell', 'Thompson',
+  'Al Maktoum',
+  'Al Rashid',
+  'Al Nahyan',
+  'Al Habtoor',
+  'Al Ghurair',
+  'Al Falasi',
+  'Al Mansouri',
+  'Al Suwaidi',
+  'Al Mheiri',
+  'Al Shamsi',
+  'Al Ketbi',
+  'Al Zaabi',
+  'Al Mazrouei',
+  'Al Dhaheri',
+  'Al Nuaimi',
+  'Kapoor',
+  'Sharma',
+  'Patel',
+  'Khan',
+  'Malik',
+  'Johnson',
+  'Williams',
+  'Davies',
+  'Mitchell',
+  'Thompson',
 ];
 
 const AVATAR_COLORS = [
-  '#D4AF37', '#2E5A4F', '#E67E22', '#3498DB', '#9B59B6',
-  '#1ABC9C', '#E74C3C', '#F39C12', '#2ECC71', '#34495E',
+  '#E31E24',
+  '#2E5A4F',
+  '#E67E22',
+  '#3498DB',
+  '#9B59B6',
+  '#1ABC9C',
+  '#E74C3C',
+  '#F39C12',
+  '#2ECC71',
+  '#34495E',
 ];
 
 const SPECIALTIES = [
-  'Luxury Villas', 'Off-Plan Projects', 'Commercial Spaces', 'Waterfront Properties',
-  'Investment Portfolios', 'Short-Term Rentals', 'New Developments', 'Relocation Services',
-  'High-Net-Worth Clients', 'Resort Living', 'Ready Properties', 'Distressed Sales',
+  'Luxury Villas',
+  'Off-Plan Projects',
+  'Commercial Spaces',
+  'Waterfront Properties',
+  'Investment Portfolios',
+  'Short-Term Rentals',
+  'New Developments',
+  'Relocation Services',
+  'High-Net-Worth Clients',
+  'Resort Living',
+  'Ready Properties',
+  'Distressed Sales',
 ];
 
 const LANGUAGES = [
-  'English', 'Arabic', 'Hindi', 'Urdu', 'French', 'Mandarin',
-  'Russian', 'Spanish', 'Portuguese', 'German', 'Turkish',
+  'English',
+  'Arabic',
+  'Hindi',
+  'Urdu',
+  'French',
+  'Mandarin',
+  'Russian',
+  'Spanish',
+  'Portuguese',
+  'German',
+  'Turkish',
 ];
 
 // ─── Generator ────────────────────────────────────────────────
@@ -96,22 +173,31 @@ export function generateAgents(count = 20, seed = 99): GeneratedAgent[] {
     const revPerDeal = rng.int(80_000, 600_000);
     const revenue = dealsC * revPerDeal;
 
-    const status: GeneratedAgent['status'] = rng.pick(['online', 'online', 'online', 'offline', 'busy', 'away']);
+    const status: GeneratedAgent['status'] = rng.pick([
+      'online',
+      'online',
+      'online',
+      'offline',
+      'busy',
+      'away',
+    ]);
 
     const roles: Record<string, string[]> = {
-      'Sales':                ['Senior Sales Agent', 'Sales Director', 'Sales Consultant', 'Junior Sales Agent'],
-      'Leasing':              ['Leasing Manager', 'Leasing Consultant', 'Senior Leasing Agent'],
-      'Operations':           ['Operations Manager', 'Operations Coordinator', 'Property Coordinator'],
-      'Finance':              ['Finance Analyst', 'Revenue Manager'],
-      'Marketing':            ['Marketing Lead', 'Digital Marketing Specialist'],
-      'Customer Relations':   ['Client Relations Manager', 'Client Success Lead'],
-      'Property Management':  ['Property Manager', 'Asset Manager', 'Facilities Coordinator'],
+      Sales: ['Senior Sales Agent', 'Sales Director', 'Sales Consultant', 'Junior Sales Agent'],
+      Leasing: ['Leasing Manager', 'Leasing Consultant', 'Senior Leasing Agent'],
+      Operations: ['Operations Manager', 'Operations Coordinator', 'Property Coordinator'],
+      Finance: ['Finance Analyst', 'Revenue Manager'],
+      Marketing: ['Marketing Lead', 'Digital Marketing Specialist'],
+      'Customer Relations': ['Client Relations Manager', 'Client Success Lead'],
+      'Property Management': ['Property Manager', 'Asset Manager', 'Facilities Coordinator'],
     };
 
     // Joined date: 1-5 years ago
     const yearsAgo = rng.int(1, 5);
     const daysOffset = rng.int(0, 365);
-    const joinedDate = new Date(Date.now() - (yearsAgo * 365 + daysOffset) * 86400000).toISOString().split('T')[0];
+    const joinedDate = new Date(Date.now() - (yearsAgo * 365 + daysOffset) * 86400000)
+      .toISOString()
+      .split('T')[0];
 
     // Last active: 0-7 days ago
     const lastActiveDays = status === 'online' ? 0 : rng.int(0, 7);
@@ -128,6 +214,7 @@ export function generateAgents(count = 20, seed = 99): GeneratedAgent[] {
       phone: `+971 ${rng.int(50, 58)} ${rng.int(100, 999)} ${rng.int(1000, 9999)}`,
       department,
       status,
+      // eslint-disable-next-line security/detect-object-injection
       role: rng.pick(roles[department] ?? ['Agent']),
       sales: rng.int(500_000, 25_000_000),
       roi: parseFloat((rng.int(50, 350) / 10).toFixed(1)),

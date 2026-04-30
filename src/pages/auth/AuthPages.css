@@ -216,11 +216,11 @@ body.dark-mode .social-btn:hover:not(:disabled) {
 }
 
 .social-btn.google:hover:not(:disabled) {
-  border-color: #4285F4;
+  border-color: #4285f4;
 }
 
 .social-btn.facebook:hover:not(:disabled) {
-  border-color: #1877F2;
+  border-color: #1877f2;
 }
 
 .social-btn.apple:hover:not(:disabled) {
@@ -475,7 +475,7 @@ body.dark-mode .btn-secondary:hover {
 }
 
 .role-card.selected {
-  background: rgba(212, 175, 55, 0.12);
+  background: rgba(227, 30, 36, 0.12);
   border-color: var(--primary-color);
 }
 
@@ -659,7 +659,7 @@ body.dark-mode .btn-secondary:hover {
 .role-badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  background: rgba(212, 175, 55, 0.12);
+  background: rgba(227, 30, 36, 0.12);
   border: 1px solid var(--primary-color);
   border-radius: 20px;
   color: var(--primary-color);
@@ -849,12 +849,12 @@ body.dark-mode .btn-secondary:hover {
 }
 
 .account-icon.google {
-  background: #4285F4;
+  background: #4285f4;
   color: white;
 }
 
 .account-icon.facebook {
-  background: #1877F2;
+  background: #1877f2;
   color: white;
 }
 
@@ -918,7 +918,7 @@ body.dark-mode .btn-secondary:hover {
   color: var(--text-primary);
 }
 
-.toggle-item input[type="checkbox"] {
+.toggle-item input[type='checkbox'] {
   width: 20px;
   height: 20px;
   accent-color: var(--primary-color);
@@ -945,13 +945,13 @@ body.dark-mode .btn-secondary:hover {
   .profile-container {
     flex-direction: column;
   }
-  
+
   .profile-sidebar {
     width: 100%;
     border-right: none;
     border-bottom: 1px solid var(--border-color);
   }
-  
+
   .profile-content {
     padding: 1.5rem;
   }

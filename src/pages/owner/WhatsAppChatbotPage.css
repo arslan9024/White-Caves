@@ -33,7 +33,7 @@
 }
 
 .back-btn:hover {
-  color: var(--primary-color, #D4AF37);
+  color: var(--primary-color, #e31e24);
 }
 
 .chatbot-header h1 {
@@ -55,7 +55,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
-  background: #25D366;
+  background: #25d366;
   color: white;
   border: none;
   border-radius: 10px;
@@ -66,7 +66,7 @@
 }
 
 .add-rule-btn:hover {
-  background: #128C7E;
+  background: #128c7e;
 }
 
 .chatbot-stats {
@@ -88,7 +88,7 @@
   display: block;
   font-size: 2rem;
   font-weight: 700;
-  color: #25D366;
+  color: #25d366;
 }
 
 .stat-text {
@@ -107,7 +107,7 @@
   border-radius: 12px;
   padding: 1.25rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  border-left: 4px solid #25D366;
+  border-left: 4px solid #25d366;
   transition: all 0.2s;
 }
 
@@ -144,10 +144,22 @@
   text-transform: uppercase;
 }
 
-.trigger-type.keyword { background: #E3F2FD; color: #1976D2; }
-.trigger-type.contains { background: #E8F5E9; color: #388E3C; }
-.trigger-type.regex { background: #FFF3E0; color: #F57C00; }
-.trigger-type.any { background: #F3E5F5; color: #7B1FA2; }
+.trigger-type.keyword {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+.trigger-type.contains {
+  background: #e8f5e9;
+  color: #388e3c;
+}
+.trigger-type.regex {
+  background: #fff3e0;
+  color: #f57c00;
+}
+.trigger-type.any {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
 
 .priority {
   font-size: 0.75rem;
@@ -160,7 +172,9 @@
   gap: 0.5rem;
 }
 
-.toggle-btn, .edit-btn, .delete-btn {
+.toggle-btn,
+.edit-btn,
+.delete-btn {
   padding: 0.5rem;
   border: none;
   background: transparent;
@@ -169,12 +183,24 @@
   transition: all 0.2s;
 }
 
-.toggle-btn .active { color: #25D366; }
-.toggle-btn .inactive { color: #ccc; }
-.edit-btn { color: #1976D2; }
-.edit-btn:hover { background: #E3F2FD; }
-.delete-btn { color: #E53935; }
-.delete-btn:hover { background: #FFEBEE; }
+.toggle-btn .active {
+  color: #25d366;
+}
+.toggle-btn .inactive {
+  color: #ccc;
+}
+.edit-btn {
+  color: #1976d2;
+}
+.edit-btn:hover {
+  background: #e3f2fd;
+}
+.delete-btn {
+  color: #e53935;
+}
+.delete-btn:hover {
+  background: #ffebee;
+}
 
 .rule-content {
   display: flex;
@@ -182,13 +208,15 @@
   gap: 0.75rem;
 }
 
-.trigger-section, .response-section {
+.trigger-section,
+.response-section {
   background: var(--bg-secondary, #f9f9f9);
   padding: 0.75rem 1rem;
   border-radius: 8px;
 }
 
-.trigger-section label, .response-section label {
+.trigger-section label,
+.response-section label {
   display: block;
   font-size: 0.75rem;
   color: var(--text-muted, #999);
@@ -198,8 +226,8 @@
 .trigger-section code {
   font-family: 'Fira Code', monospace;
   font-size: 0.85rem;
-  color: #E65100;
-  background: #FFF3E0;
+  color: #e65100;
+  background: #fff3e0;
   padding: 2px 6px;
   border-radius: 4px;
 }
@@ -267,7 +295,9 @@
   margin-bottom: 0.5rem;
 }
 
-.form-group input, .form-group select, .form-group textarea {
+.form-group input,
+.form-group select,
+.form-group textarea {
   width: 100%;
   padding: 0.75rem 1rem;
   border: 1px solid var(--border-color, #ddd);
@@ -276,9 +306,11 @@
   transition: border-color 0.2s;
 }
 
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
   outline: none;
-  border-color: #25D366;
+  border-color: #25d366;
 }
 
 .form-group small {
@@ -329,7 +361,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
-  background: #25D366;
+  background: #25d366;
   color: white;
   border: none;
   border-radius: 8px;
@@ -339,7 +371,7 @@
 }
 
 .save-btn:hover {
-  background: #128C7E;
+  background: #128c7e;
 }
 
 @media (max-width: 768px) {
@@ -347,21 +379,21 @@
     margin-left: 0;
     padding: 1rem;
   }
-  
+
   .chatbot-header {
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .chatbot-stats {
     flex-wrap: wrap;
   }
-  
+
   .stat-box {
     flex: 1;
     min-width: 100px;
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
   }
