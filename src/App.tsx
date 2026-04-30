@@ -196,6 +196,11 @@ const ToolsPage = lazy(() => import('./pages/ToolsPage'));
 const AIIntelligencePage = lazy(() => import('./pages/AIIntelligencePage'));
 const OffPlanPortalPage = lazy(() => import('./pages/OffPlanPortalPage'));
 
+// Phase 10 — PWA install prompt (loaded only after first paint)
+const PWAInstallPrompt = lazy(() =>
+  import('./components/pwa/PWAInstallPrompt').then(m => ({ default: m.PWAInstallPrompt }))
+);
+
 // Auth Pages
 const UAEPassSuccessPage = lazy(() => import('./pages/auth/UAEPassSuccessPage'));
 const SignContractPage = lazy(() => import('./pages/SignContractPage'));
@@ -292,6 +297,10 @@ function App(): React.JSX.Element {
             </Suspense>
             <Suspense fallback={null}>
               <UniversalComponents />
+            </Suspense>
+            {/* Phase 10 — PWA install banner (loads after idle) */}
+            <Suspense fallback={null}>
+              <PWAInstallPrompt />
             </Suspense>
             {user && (
               <Suspense fallback={null}>

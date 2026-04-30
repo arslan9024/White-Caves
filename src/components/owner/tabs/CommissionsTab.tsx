@@ -6,6 +6,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
+import { PermissionGuard } from '../../guards/PermissionGuard';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -95,12 +96,18 @@ const StatCard = styled.div`
   border: 1px solid rgba(196, 30, 58, 0.3);
   border-radius: 12px;
   padding: 1.25rem 1.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 
   &:hover {
     border-color: rgba(196, 30, 58, 0.55);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(196, 30, 58, 0.15);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(196, 30, 58, 0.15);
   }
 `;
 
@@ -208,22 +215,34 @@ const Badge = styled.span<{ $status: CommissionStatus }>`
   text-transform: uppercase;
   background: ${({ $status }) => {
     switch ($status) {
-      case 'paid':      return 'rgba(34, 197, 94, 0.15)';
-      case 'approved':  return 'rgba(59, 130, 246, 0.15)';
-      case 'pending':   return 'rgba(250, 204, 21, 0.15)';
-      case 'disputed':  return 'rgba(239, 68, 68, 0.15)';
-      case 'cancelled': return 'rgba(107, 114, 128, 0.15)';
-      default:          return 'rgba(107, 114, 128, 0.15)';
+      case 'paid':
+        return 'rgba(34, 197, 94, 0.15)';
+      case 'approved':
+        return 'rgba(59, 130, 246, 0.15)';
+      case 'pending':
+        return 'rgba(250, 204, 21, 0.15)';
+      case 'disputed':
+        return 'rgba(239, 68, 68, 0.15)';
+      case 'cancelled':
+        return 'rgba(107, 114, 128, 0.15)';
+      default:
+        return 'rgba(107, 114, 128, 0.15)';
     }
   }};
   color: ${({ $status }) => {
     switch ($status) {
-      case 'paid':      return '#4ade80';
-      case 'approved':  return '#60a5fa';
-      case 'pending':   return '#fde047';
-      case 'disputed':  return '#f87171';
-      case 'cancelled': return '#9ca3af';
-      default:          return '#9ca3af';
+      case 'paid':
+        return '#4ade80';
+      case 'approved':
+        return '#60a5fa';
+      case 'pending':
+        return '#fde047';
+      case 'disputed':
+        return '#f87171';
+      case 'cancelled':
+        return '#9ca3af';
+      default:
+        return '#9ca3af';
     }
   }};
   border: 1px solid currentColor;
@@ -246,12 +265,16 @@ const ActionBtn = styled.button<{ $variant?: 'approve' | 'pay' | 'dispute' }>`
     border-color: #c41e3a;
   }
 
-  ${({ $variant }) => $variant === 'pay' && `
+  ${({ $variant }) =>
+    $variant === 'pay' &&
+    `
     border-color: rgba(34, 197, 94, 0.4);
     color: #4ade80;
     &:hover { background: rgba(34, 197, 94, 0.1); border-color: #4ade80; }
   `}
-  ${({ $variant }) => $variant === 'dispute' && `
+  ${({ $variant }) =>
+    $variant === 'dispute' &&
+    `
     border-color: rgba(239, 68, 68, 0.4);
     color: #f87171;
     &:hover { background: rgba(239, 68, 68, 0.1); border-color: #f87171; }
@@ -356,12 +379,12 @@ const MOCK_SUMMARY: CommissionSummary = {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export const CommissionsTab: React.FC<CommissionsTabProps> = ({ onAction }) => {
-  const [commissions, setCommissions]     = useState<Commission[]>([]);
-  const [summary, setSummary]             = useState<CommissionSummary | null>(null);
-  const [loading, setLoading]             = useState<boolean>(true);
-  const [error, setError]                 = useState<string | null>(null);
-  const [statusFilter, setStatusFilter]   = useState<string>('all');
-  const [agentFilter, setAgentFilter]     = useState<string>('all');
+  const [commissions, setCommissions] = useState<Commission[]>([]);
+  const [summary, setSummary] = useState<CommissionSummary | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [agentFilter, setAgentFilter] = useState<string>('all');
 
   const fetchData = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -378,7 +401,7 @@ export const CommissionsTab: React.FC<CommissionsTabProps> = ({ onAction }) => {
       // setSummary(summaryData);
 
       // Fallback to mock data while API is being wired up
-      await new Promise<void>((resolve) => setTimeout(resolve, 600)); // simulate network
+      await new Promise<void>(resolve => setTimeout(resolve, 600)); // simulate network
       setCommissions(MOCK_COMMISSIONS);
       setSummary(MOCK_SUMMARY);
     } catch (err) {
@@ -399,20 +422,20 @@ export const CommissionsTab: React.FC<CommissionsTabProps> = ({ onAction }) => {
   const handleAction = useCallback(
     (action: string, id: string): void => {
       if (action === 'approve') {
-        setCommissions((prev) =>
-          prev.map((c) => (c._id === id ? { ...c, status: 'approved' as CommissionStatus } : c))
+        setCommissions(prev =>
+          prev.map(c => (c._id === id ? { ...c, status: 'approved' as CommissionStatus } : c))
         );
       } else if (action === 'pay') {
-        setCommissions((prev) =>
-          prev.map((c) =>
+        setCommissions(prev =>
+          prev.map(c =>
             c._id === id
               ? { ...c, status: 'paid' as CommissionStatus, paidAt: new Date().toISOString() }
               : c
           )
         );
       } else if (action === 'dispute') {
-        setCommissions((prev) =>
-          prev.map((c) => (c._id === id ? { ...c, status: 'disputed' as CommissionStatus } : c))
+        setCommissions(prev =>
+          prev.map(c => (c._id === id ? { ...c, status: 'disputed' as CommissionStatus } : c))
         );
       }
       onAction?.(action, id);
@@ -421,11 +444,11 @@ export const CommissionsTab: React.FC<CommissionsTabProps> = ({ onAction }) => {
   );
 
   // Derived data
-  const agentNames = [...new Set(commissions.map((c) => c.agentName))].sort();
+  const agentNames = [...new Set(commissions.map(c => c.agentName))].sort();
 
-  const filtered = commissions.filter((c) => {
+  const filtered = commissions.filter(c => {
     const matchStatus = statusFilter === 'all' || c.status === statusFilter;
-    const matchAgent  = agentFilter  === 'all' || c.agentName === agentFilter;
+    const matchAgent = agentFilter === 'all' || c.agentName === agentFilter;
     return matchStatus && matchAgent;
   });
 
@@ -436,8 +459,14 @@ export const CommissionsTab: React.FC<CommissionsTabProps> = ({ onAction }) => {
         <Title>💎 Commission Tracker</Title>
         {error && (
           <span
-            style={{ fontSize: '0.8rem', color: '#f87171', background: 'rgba(239,68,68,0.1)',
-              padding: '0.25rem 0.75rem', borderRadius: 6, border: '1px solid rgba(239,68,68,0.3)' }}
+            style={{
+              fontSize: '0.8rem',
+              color: '#f87171',
+              background: 'rgba(239,68,68,0.1)',
+              padding: '0.25rem 0.75rem',
+              borderRadius: 6,
+              border: '1px solid rgba(239,68,68,0.3)',
+            }}
             role="alert"
           >
             ⚠️ Using demo data — API connection pending
@@ -449,43 +478,49 @@ export const CommissionsTab: React.FC<CommissionsTabProps> = ({ onAction }) => {
       {loading ? (
         <SummaryGrid>
           {Array.from({ length: 4 }).map((_, i) => (
-            <StatCard key={i} aria-hidden="true"><LoadingRow /></StatCard>
+            <StatCard key={i} aria-hidden="true">
+              <LoadingRow />
+            </StatCard>
           ))}
         </SummaryGrid>
-      ) : summary && (
-        <SummaryGrid>
-          <StatCard>
-            <StatLabel>Total Commissions</StatLabel>
-            <StatValue>{formatAED(summary.totalAmount)}</StatValue>
-            <StatSub>{summary.totalCommissions} transactions</StatSub>
-          </StatCard>
-          <StatCard>
-            <StatLabel>Pending</StatLabel>
-            <StatValue style={{ color: '#fde047', textShadow: '0 0 18px rgba(253,224,71,0.3)' }}>
-              {formatAED(summary.pendingAmount)}
-            </StatValue>
-            <StatSub>Awaiting approval</StatSub>
-          </StatCard>
-          <StatCard>
-            <StatLabel>Paid Out</StatLabel>
-            <StatValue style={{ color: '#4ade80', textShadow: '0 0 18px rgba(74,222,128,0.3)' }}>
-              {formatAED(summary.paidAmount)}
-            </StatValue>
-            <StatSub>Settled to agents</StatSub>
-          </StatCard>
-          <StatCard>
-            <StatLabel>Avg Commission Rate</StatLabel>
-            <StatValue>{summary.averageCommissionRate.toFixed(1)}%</StatValue>
-            <StatSub>{summary.topAgent ? `Top: ${summary.topAgent.name}` : 'Dubai market avg 2%'}</StatSub>
-          </StatCard>
-        </SummaryGrid>
+      ) : (
+        summary && (
+          <SummaryGrid>
+            <StatCard>
+              <StatLabel>Total Commissions</StatLabel>
+              <StatValue>{formatAED(summary.totalAmount)}</StatValue>
+              <StatSub>{summary.totalCommissions} transactions</StatSub>
+            </StatCard>
+            <StatCard>
+              <StatLabel>Pending</StatLabel>
+              <StatValue style={{ color: '#fde047', textShadow: '0 0 18px rgba(253,224,71,0.3)' }}>
+                {formatAED(summary.pendingAmount)}
+              </StatValue>
+              <StatSub>Awaiting approval</StatSub>
+            </StatCard>
+            <StatCard>
+              <StatLabel>Paid Out</StatLabel>
+              <StatValue style={{ color: '#4ade80', textShadow: '0 0 18px rgba(74,222,128,0.3)' }}>
+                {formatAED(summary.paidAmount)}
+              </StatValue>
+              <StatSub>Settled to agents</StatSub>
+            </StatCard>
+            <StatCard>
+              <StatLabel>Avg Commission Rate</StatLabel>
+              <StatValue>{summary.averageCommissionRate.toFixed(1)}%</StatValue>
+              <StatSub>
+                {summary.topAgent ? `Top: ${summary.topAgent.name}` : 'Dubai market avg 2%'}
+              </StatSub>
+            </StatCard>
+          </SummaryGrid>
+        )
       )}
 
       {/* ── Filters ── */}
       <FilterRow>
         <FilterSelect
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+          onChange={e => setStatusFilter(e.target.value)}
           aria-label="Filter by status"
         >
           <option value="all">All Statuses</option>
@@ -498,12 +533,14 @@ export const CommissionsTab: React.FC<CommissionsTabProps> = ({ onAction }) => {
 
         <FilterSelect
           value={agentFilter}
-          onChange={(e) => setAgentFilter(e.target.value)}
+          onChange={e => setAgentFilter(e.target.value)}
           aria-label="Filter by agent"
         >
           <option value="all">All Agents</option>
-          {agentNames.map((name) => (
-            <option key={name} value={name}>{name}</option>
+          {agentNames.map(name => (
+            <option key={name} value={name}>
+              {name}
+            </option>
           ))}
         </FilterSelect>
 
@@ -516,7 +553,9 @@ export const CommissionsTab: React.FC<CommissionsTabProps> = ({ onAction }) => {
       <TableWrapper>
         {loading ? (
           <div style={{ padding: '1.5rem' }}>
-            {Array.from({ length: 4 }).map((_, i) => <LoadingRow key={i} />)}
+            {Array.from({ length: 4 }).map((_, i) => (
+              <LoadingRow key={i} />
+            ))}
           </div>
         ) : filtered.length === 0 ? (
           <EmptyState>
@@ -539,13 +578,15 @@ export const CommissionsTab: React.FC<CommissionsTabProps> = ({ onAction }) => {
               </tr>
             </Thead>
             <tbody>
-              {filtered.map((commission) => (
+              {filtered.map(commission => (
                 <Tr key={commission._id}>
                   <Td>
                     <div style={{ fontWeight: 600, color: '#fafafa' }}>
                       {commission.propertyTitle}
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: 'rgba(250,250,250,0.45)', marginTop: 2 }}>
+                    <div
+                      style={{ fontSize: '0.75rem', color: 'rgba(250,250,250,0.45)', marginTop: 2 }}
+                    >
                       {commission.propertyType}
                     </div>
                   </Td>
@@ -555,7 +596,13 @@ export const CommissionsTab: React.FC<CommissionsTabProps> = ({ onAction }) => {
                     {formatAED(commission.transactionValue)}
                   </Td>
                   <Td>{commission.commissionRate}%</Td>
-                  <Td style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: '#c41e3a' }}>
+                  <Td
+                    style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontWeight: 700,
+                      color: '#c41e3a',
+                    }}
+                  >
                     {formatAED(commission.commissionAmount)}
                   </Td>
                   <Td>
@@ -570,32 +617,36 @@ export const CommissionsTab: React.FC<CommissionsTabProps> = ({ onAction }) => {
                     )}
                   </Td>
                   <Td>
-                    {commission.status === 'pending' && (
-                      <ActionBtn
-                        onClick={() => handleAction('approve', commission._id)}
-                        aria-label={`Approve commission for ${commission.propertyTitle}`}
-                      >
-                        ✓ Approve
-                      </ActionBtn>
-                    )}
-                    {commission.status === 'approved' && (
-                      <ActionBtn
-                        $variant="pay"
-                        onClick={() => handleAction('pay', commission._id)}
-                        aria-label={`Mark commission paid for ${commission.propertyTitle}`}
-                      >
-                        💸 Pay
-                      </ActionBtn>
-                    )}
-                    {(commission.status === 'pending' || commission.status === 'approved') && (
-                      <ActionBtn
-                        $variant="dispute"
-                        onClick={() => handleAction('dispute', commission._id)}
-                        aria-label={`Dispute commission for ${commission.propertyTitle}`}
-                      >
-                        ⚠ Dispute
-                      </ActionBtn>
-                    )}
+                    <PermissionGuard require="approve_commissions">
+                      {commission.status === 'pending' && (
+                        <ActionBtn
+                          onClick={() => handleAction('approve', commission._id)}
+                          aria-label={`Approve commission for ${commission.propertyTitle}`}
+                        >
+                          ✓ Approve
+                        </ActionBtn>
+                      )}
+                      {commission.status === 'approved' && (
+                        <ActionBtn
+                          $variant="pay"
+                          onClick={() => handleAction('pay', commission._id)}
+                          aria-label={`Mark commission paid for ${commission.propertyTitle}`}
+                        >
+                          💸 Pay
+                        </ActionBtn>
+                      )}
+                    </PermissionGuard>
+                    <PermissionGuard require="manage_leads">
+                      {(commission.status === 'pending' || commission.status === 'approved') && (
+                        <ActionBtn
+                          $variant="dispute"
+                          onClick={() => handleAction('dispute', commission._id)}
+                          aria-label={`Dispute commission for ${commission.propertyTitle}`}
+                        >
+                          ⚠ Dispute
+                        </ActionBtn>
+                      )}
+                    </PermissionGuard>
                   </Td>
                 </Tr>
               ))}
@@ -606,4 +657,3 @@ export const CommissionsTab: React.FC<CommissionsTabProps> = ({ onAction }) => {
     </Container>
   );
 };
-
