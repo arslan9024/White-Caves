@@ -247,6 +247,7 @@ const LeadManagementPage: FC = () => {
           <thead>
             <tr>
               <Th>Name</Th>
+              <Th>Score</Th>
               <Th>Company</Th>
               <Th>Status</Th>
               <Th>Source</Th>
@@ -261,6 +262,13 @@ const LeadManagementPage: FC = () => {
               paginatedLeads.map((lead: Lead) => (
                 <Tr key={lead.id} onClick={() => handleEdit(lead)}>
                   <Td style={{ fontWeight: 500 }}>{lead.name || '—'}</Td>
+                  <Td>
+                    {lead.score !== undefined ? (
+                      <Badge variant={lead.score >= 80 ? 'error' : lead.score >= 50 ? 'warning' : 'default'} size="small">
+                        {lead.score >= 80 ? '🔥' : lead.score >= 50 ? '⚡' : '❄️'} {lead.score}
+                      </Badge>
+                    ) : '—'}
+                  </Td>
                   <Td>{lead.company || '—'}</Td>
                   <Td>
                     <Badge variant={getStatusBadgeVariant(lead.status || '')} size="small">

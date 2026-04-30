@@ -159,6 +159,9 @@ const ContractManagementPage = lazy(() => import('./pages/leasing-agent/Contract
 // Sales Agent Sub-Pages
 const SalesPipelinePage = lazy(() => import('./pages/secondary-sales-agent/SalesPipelinePage'));
 
+// Leasing Acquisition (Sprint 1)
+const LeasingAcquisition = lazy(() => import('./pages/LeasingAcquisition'));
+
 // Unified Dashboard (replaces role-specific dashboards)
 const UnifiedDashboardPage = lazy(() => import('./pages/UnifiedDashboardPage'));
 const NadiaPage = lazy(() => import('./pages/NadiaPage'));
@@ -639,6 +642,20 @@ function App(): React.JSX.Element {
                         <RouteErrorBoundary section="Contracts">
                           <Suspense fallback={<SuspenseLoader />}>
                             <ContractManagementPage />
+                          </Suspense>
+                        </RouteErrorBoundary>
+                      </AppLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/leasing-acquisition"
+                  element={
+                    <ProtectedRoute allowedRoles={['leasing-agent', 'owner', 'admin']}>
+                      <AppLayout>
+                        <RouteErrorBoundary section="Leasing Acquisition">
+                          <Suspense fallback={<SuspenseLoader />}>
+                            <LeasingAcquisition />
                           </Suspense>
                         </RouteErrorBoundary>
                       </AppLayout>

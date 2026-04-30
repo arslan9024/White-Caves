@@ -9,6 +9,7 @@ import { createServer } from 'http';
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import path from 'path';
 import compression from 'compression';
 import morgan from 'morgan';
 import { connectDatabase, prisma } from './database.js';
@@ -62,6 +63,8 @@ import aiChatRoutes from './routes/aiChat.js';
 import jobApplicationsRoutes from './routes/jobApplications.js';
 import invoicesLeaseRoutes from './routes/invoicesLease.js';
 import usersRoutes from './routes/users.js';
+import leasingInventoryRoutes from './routes/leasing-inventory.js';
+import secondarySalesRoutes from './routes/secondary-sales.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
@@ -173,6 +176,9 @@ app.use(
 
 // Compression
 app.use(compression());
+
+// Static files for uploads
+app.use('/uploads', express.static(path.join(process.cwd(), 'server', 'public', 'uploads')));
 
 // Logging
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
@@ -362,6 +368,12 @@ app.use('/api/invoices/lease', invoicesLeaseRoutes);
 
 // Maintenance API (maintenance requests for landlords and tenants)
 app.use('/api/maintenance', maintenanceRoutes);
+
+// Leasing Inventory API (Mary - Inventory Manager)
+app.use('/api/leasing-inventory', leasingInventoryRoutes);
+
+// Secondary Sales API
+app.use('/api/secondary-sales', secondarySalesRoutes);
 
 // WhatsApp Webhook (public endpoint — requires webhook secret for verification)
 app.post(

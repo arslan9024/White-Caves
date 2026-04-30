@@ -48,6 +48,7 @@ import {
   getAgentPerformance,
   autoRouteHotLead,
 } from '../services/ai/leadAutoRouter.js';
+import { calculateLeadScore } from '../services/leadScoringService.js';
 
 const router = Router();
 
@@ -325,6 +326,9 @@ router.post(
       },
     });
 
+    // Calculate score automatically in the background
+    calculateLeadScore(lead.id).catch(err => console.error('Background scoring failed:', err));
+
     res.status(201).json({ success: true, data: lead });
   })
 );
@@ -425,6 +429,9 @@ router.patch(
       score: lead.score ?? undefined,
       updatedBy: req.user?.id,
     });
+
+    // Calculate score automatically in the background
+    calculateLeadScore(lead.id).catch(err => console.error('Background scoring failed:', err));
 
     res.status(200).json({ success: true, data: lead });
   })

@@ -1,234 +1,193 @@
-import React, { FC, useState, useEffect, useRef } from 'react';
-import { authFetch } from '../../utils/authFetch';
-import { createLogger } from '../../utils/logger';
-import '../RolePages.css';
+import React, { FC, useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { theme } from '../../styles/theme';
 
-const log = createLogger('SalesPipeline');
+const PageContainer = styled.div`
+  padding: ${theme.spacing.xl};
+  background: ${theme.colors.background.secondary};
+  min-height: 100vh;
+`;
 
-interface Lead {
-  id: string | number;
-  name: string;
-  company?: string;
-  budget?: number;
-  status: string;
-  source?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${theme.spacing.xl};
+`;
 
-interface PipelineStage {
-  id: string;
-  name: string;
-  color: string;
-}
+const Title = styled.h1`
+  font-size: 2rem;
+  color: ${theme.colors.text.primary};
+  margin: 0;
+`;
 
-const PIPELINE_STAGES: PipelineStage[] = [
-  { id: 'new', name: 'New', color: '#6b7280' },
-  { id: 'viewing', name: 'Viewing', color: '#3b82f6' },
-  { id: 'negotiating', name: 'Negotiating', color: '#f59e0b' },
-  { id: 'offered', name: 'Offered', color: '#8b5cf6' },
-  { id: 'won', name: 'Won', color: '#10b981' },
-];
+const Board = styled.div`
+  display: flex;
+  gap: ${theme.spacing.lg};
+  overflow-x: auto;
+  padding-bottom: ${theme.spacing.md};
+  min-height: 70vh;
+`;
 
-// Statuses not shown on the board (lost/contacted/qualified fall back to new column)
-const STATUS_TO_STAGE: Record<string, string> = {
-  new: 'new',
-  contacted: 'new',
-  qualified: 'new',
-  viewing: 'viewing',
-  offered: 'offered',
-  negotiating: 'negotiating',
-  won: 'won',
-};
+const Column = styled.div`
+  background: ${theme.colors.background.primary};
+  border-radius: ${theme.spacing.md};
+  min-width: 320px;
+  max-width: 320px;
+  padding: ${theme.spacing.md};
+  box-shadow: ${theme.shadows.sm};
+  display: flex;
+  flex-direction: column;
+`;
 
-const SalesPipelinePage: FC = () => {
-  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const isMountedRef = useRef(true);
+const ColumnHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${theme.spacing.md};
+  padding-bottom: ${theme.spacing.sm};
+  border-bottom: 2px solid ${theme.colors.border};
+`;
+
+const Card = styled.div`
+  background: white;
+  border: 1px solid ${theme.colors.border};
+  border-radius: ${theme.spacing.sm};
+  padding: ${theme.spacing.md};
+  margin-bottom: ${theme.spacing.sm};
+  box-shadow: ${theme.shadows.sm};
+  cursor: grab;
+  &:active { cursor: grabbing; }
+  transition: transform 0.1s;
+  &:hover { transform: translateY(-2px); box-shadow: ${theme.shadows.md}; }
+`;
+
+export const SalesPipelinePage: FC = () => {
+  const [properties, setProperties] = useState<any[]>([]);
+
+  const fetchProperties = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/secondary-sales', {
+        headers: { 'Authorization': \`Bearer \${token}\` }
+      });
+      if (res.ok) {
+        const json = await res.json();
+        setProperties(json.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch sales properties', err);
+    }
+  };
 
   useEffect(() => {
-    isMountedRef.current = true;
-    const controller = new AbortController();
-
-    const fetchLeads = async (): Promise<void> => {
-      try {
-        setLoading(true);
-        setError(null);
-        // Exclude lost leads — they don't belong on the active pipeline board
-        const res = await authFetch('/api/leads?pageSize=100', { signal: controller.signal });
-        if (!isMountedRef.current) return;
-        if (res.ok) {
-          const json = await res.json();
-          const allLeads: Lead[] = (json.data || json.leads || []);
-          setLeads(allLeads.filter((l) => l.status !== 'lost'));
-        } else {
-          setError('Failed to load pipeline data.');
-        }
-      } catch (err) {
-        if (!isMountedRef.current) return;
-        if (err instanceof DOMException && err.name === 'AbortError') return;
-        log.error('Error fetching leads:', err);
-        setError('Unable to connect to the server.');
-      } finally {
-        if (isMountedRef.current) setLoading(false);
-      }
-    };
-
-    fetchLeads();
-    return () => {
-      isMountedRef.current = false;
-      controller.abort();
-    };
+    fetchProperties();
   }, []);
 
-  const getLeadsByStage = (stageId: string): Lead[] =>
-    leads.filter((l) => (STATUS_TO_STAGE[l.status] ?? 'new') === stageId);
+  const handleStageChange = async (id: string, newStage: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(\`/api/secondary-sales/\${id}/stage\`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': \`Bearer \${token}\`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ newStage })
+      });
+      if (res.ok) {
+        fetchProperties();
+      } else {
+        const err = await res.json();
+        alert(err.error || 'Failed to update stage');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error updating stage');
+    }
+  };
 
-  const totalPipelineValue = leads.reduce((sum, lead) => sum + (lead.budget || 0), 0);
-
-  const formatCurrency = (amount: number): string =>
-    amount >= 1_000_000
-      ? `AED ${(amount / 1_000_000).toFixed(1)}M`
-      : `AED ${amount.toLocaleString()}`;
+  const columns = [
+    { id: 'listed', title: 'Listed (Active)' },
+    { id: 'form_a_b_signed', title: 'Form A & B Signed' },
+    { id: 'form_f_mou', title: 'Form F (MOU)' },
+    { id: 'noc_pending', title: 'NOC Pending' },
+    { id: 'dld_transfer', title: 'DLD Transfer' },
+  ];
 
   return (
-    <div className="role-page no-sidebar">
-      <div className="role-page-content full-width">
-        <div className="page-header">
-          <h1>Sales Pipeline</h1>
-          <p>Track your deals from inquiry to closing</p>
+    <PageContainer>
+      <Header>
+        <div>
+          <Title>Secondary Sales Pipeline (Dubai)</Title>
+          <p style={{ color: theme.colors.text.secondary, margin: '8px 0 0 0' }}>
+            Manage the DLD secondary transaction workflow.
+          </p>
         </div>
+      </Header>
 
-        {loading && (
-          <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
-            Loading pipeline…
-          </div>
-        )}
-
-        {error && (
-          <div style={{ padding: '1rem', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', color: '#B91C1C', marginBottom: '1rem' }}>
-            {error}
-          </div>
-        )}
-
-        {!loading && !error && (
-          <>
-            <div className="pipeline-summary">
-              <div className="summary-card">
-                <span className="summary-label">Active Deals</span>
-                <span className="summary-value">{leads.length}</span>
-              </div>
-              <div className="summary-card">
-                <span className="summary-label">Pipeline Value</span>
-                <span className="summary-value">{formatCurrency(totalPipelineValue)}</span>
-              </div>
-            </div>
-
-            {leads.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '4rem 2rem', border: '2px dashed var(--border-color, #e5e7eb)', borderRadius: '12px' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📋</div>
-                <h3 style={{ marginBottom: '0.5rem' }}>No active deals</h3>
-                <p style={{ color: 'var(--text-secondary)' }}>Leads will appear here as they move through the pipeline.</p>
-              </div>
-            ) : (
-              <div className="pipeline-board">
-                {PIPELINE_STAGES.map((stage) => (
-                  <div key={stage.id} className="pipeline-column">
-                    <div className="column-header" style={{ borderTopColor: stage.color }}>
-                      <h3>{stage.name}</h3>
-                      <span className="deal-count">{getLeadsByStage(stage.id).length}</span>
-                    </div>
-                    <div className="column-deals">
-                      {getLeadsByStage(stage.id).map((lead) => (
-                        <div
-                          key={lead.id}
-                          className="deal-card"
-                          onClick={() => setSelectedLead(lead)}
-                        >
-                          <h4>{lead.name}</h4>
-                          {lead.company && <p className="deal-buyer">{lead.company}</p>}
-                          <div className="deal-details">
-                            {lead.budget ? (
-                              <span className="deal-price">{formatCurrency(lead.budget)}</span>
-                            ) : (
-                              <span className="deal-price" style={{ color: 'var(--text-secondary)' }}>No budget</span>
-                            )}
-                            <span className="deal-days" style={{ textTransform: 'capitalize' }}>{lead.source || ''}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+      <Board>
+        {columns.map(col => (
+          <Column key={col.id}>
+            <ColumnHeader>
+              <h3 style={{ margin: 0, fontSize: '1.1rem' }}>{col.title}</h3>
+              <span style={{ background: theme.colors.primary, color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '0.8rem' }}>
+                {properties.filter(p => (p.inventoryStage || 'listed') === col.id).length}
+              </span>
+            </ColumnHeader>
+            
+            <div style={{ flex: 1, overflowY: 'auto' }}>
+              {properties.filter(p => (p.inventoryStage || 'listed') === col.id).map(p => (
+                <Card key={p.id}>
+                  <h4 style={{ margin: '0 0 8px 0' }}>{p.title}</h4>
+                  <div style={{ fontSize: '0.9rem', color: theme.colors.text.secondary, marginBottom: '8px' }}>
+                    <div>💰 AED {p.price?.toLocaleString()}</div>
+                    <div>📍 {p.location}</div>
                   </div>
-                ))}
-              </div>
-            )}
-          </>
-        )}
 
-        {selectedLead && (
-          <div className="deal-modal-overlay" onClick={() => setSelectedLead(null)} role="dialog" aria-modal="true" aria-label="Deal details">
-            <div className="deal-modal" onClick={(e) => e.stopPropagation()}>
-              <button className="modal-close" onClick={() => setSelectedLead(null)}>×</button>
-              <h2>{selectedLead.name}</h2>
-              <div className="modal-details">
-                {selectedLead.company && (
-                  <div className="detail-row">
-                    <span className="detail-label">Company</span>
-                    <span className="detail-value">{selectedLead.company}</span>
-                  </div>
-                )}
-                <div className="detail-row">
-                  <span className="detail-label">Budget</span>
-                  <span className="detail-value">{selectedLead.budget ? formatCurrency(selectedLead.budget) : '—'}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Stage</span>
-                  <span className="detail-value" style={{ textTransform: 'capitalize' }}>{selectedLead.status}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Source</span>
-                  <span className="detail-value" style={{ textTransform: 'capitalize' }}>{selectedLead.source || '—'}</span>
-                </div>
-              </div>
-              <div className="modal-actions">
-                <button className="btn btn-secondary" onClick={() => setSelectedLead(null)}>Close</button>
-              </div>
+                  {col.id === 'listed' && (
+                    <button 
+                      onClick={() => handleStageChange(p.id, 'form_a_b_signed')}
+                      style={{ width: '100%', padding: '8px', cursor: 'pointer', background: theme.colors.primary, color: 'white', border: 'none', borderRadius: '4px' }}
+                    >
+                      Forms A & B Signed
+                    </button>
+                  )}
+                  {col.id === 'form_a_b_signed' && (
+                    <button 
+                      onClick={() => handleStageChange(p.id, 'form_f_mou')}
+                      style={{ width: '100%', padding: '8px', cursor: 'pointer', background: theme.colors.primary, color: 'white', border: 'none', borderRadius: '4px' }}
+                    >
+                      MOU (Form F) Signed
+                    </button>
+                  )}
+                  {col.id === 'form_f_mou' && (
+                    <button 
+                      onClick={() => handleStageChange(p.id, 'noc_pending')}
+                      style={{ width: '100%', padding: '8px', cursor: 'pointer', background: '#f39c12', color: 'white', border: 'none', borderRadius: '4px' }}
+                    >
+                      Apply for NOC
+                    </button>
+                  )}
+                  {col.id === 'noc_pending' && (
+                    <>
+                      {/* For now, just a button to simulate NOC upload/approval */}
+                      <button 
+                        onClick={() => handleStageChange(p.id, 'dld_transfer')}
+                        style={{ width: '100%', padding: '8px', cursor: 'pointer', background: theme.colors.success || '#2ecc71', color: 'white', border: 'none', borderRadius: '4px' }}
+                      >
+                        NOC Issued &rarr; DLD
+                      </button>
+                    </>
+                  )}
+                </Card>
+              ))}
             </div>
-          </div>
-        )}
-
-        <div className="info-section">
-          <h3>Sales Process Guide</h3>
-          <div className="process-steps">
-            <div className="process-step">
-              <span className="step-number">1</span>
-              <div className="step-content">
-                <h4>New / Inquiry</h4>
-                <p>Initial buyer contact. Qualify the lead, understand requirements and budget.</p>
-              </div>
-            </div>
-            <div className="process-step">
-              <span className="step-number">2</span>
-              <div className="step-content">
-                <h4>Viewing</h4>
-                <p>Property viewings. Show matching properties, gather feedback, address concerns.</p>
-              </div>
-            </div>
-            <div className="process-step">
-              <span className="step-number">3</span>
-              <div className="step-content">
-                <h4>Negotiating</h4>
-                <p>Price negotiation. Facilitate offers between buyer and seller, reach agreement.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          </Column>
+        ))}
+      </Board>
+    </PageContainer>
   );
 };
 
 export default SalesPipelinePage;
-
