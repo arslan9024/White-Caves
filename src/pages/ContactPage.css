@@ -87,13 +87,13 @@
 .contact-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  border-color: #B03737;
+  border-color: #b03737;
 }
 
 .contact-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #B03737, #F4D03F);
+  background: linear-gradient(135deg, #b03737, #f4d03f);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -152,13 +152,13 @@
 }
 
 .quick-link:hover {
-  background: linear-gradient(135deg, #B03737, #F4D03F);
+  background: linear-gradient(135deg, #b03737, #f4d03f);
   color: #1a1a2e;
   transform: translateY(-2px);
 }
 
 .quick-link.whatsapp:hover {
-  background: linear-gradient(135deg, #25D366, #128C7E);
+  background: linear-gradient(135deg, #25d366, #128c7e);
   color: white;
 }
 
@@ -251,7 +251,7 @@
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #B03737;
+  border-color: #b03737;
   box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
 }
 
@@ -272,7 +272,7 @@
 
 .submit-btn {
   padding: 16px 40px;
-  background: linear-gradient(135deg, #B03737, #F4D03F);
+  background: linear-gradient(135deg, #b03737, #f4d03f);
   border: none;
   border-radius: 12px;
   color: #1a1a2e;
@@ -361,4 +361,61 @@
   .map-container iframe {
     height: 300px;
   }
+}
+
+/* ── NEW: section-tag + divider ─────────────────────────────────────────── */
+.contact-section-tag {
+  display: inline-block;
+  padding: 0.4rem 1.1rem;
+  background: rgba(10, 36, 99, 0.08);
+  color: #0a2463;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 50px;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+[data-theme='dark'] .contact-section-tag {
+  background: rgba(212, 175, 55, 0.14);
+  color: #d4af37;
+}
+
+.contact-divider {
+  width: 52px;
+  height: 3px;
+  background: linear-gradient(90deg, #d4af37, #0a2463);
+  border-radius: 3px;
+  margin: 0.85rem 0 1.5rem;
+}
+
+/* ── NEW: quick-link icon wrapper ───────────────────────────────────────── */
+.quick-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(10, 36, 99, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0a2463;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.quick-link:hover .quick-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: inherit;
+}
+
+.quick-link.whatsapp:hover .quick-icon {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+/* ── NEW: map section tag ───────────────────────────────────────────────── */
+.map-section .contact-section-tag {
+  display: block;
+  text-align: left;
 }

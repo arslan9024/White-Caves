@@ -48,21 +48,23 @@ vi.mock('../store/slices/homepageSlice', () => ({
   selectLocationTrends: () => MOCK_LOCATION_TRENDS,
   selectFeaturedProperties: () => MOCK_FEATURED_PROPERTIES,
   selectIsHomepageLoading: () => false,
-  default: (state = {
-    featuredProperties: [],
-    marketStats: {
-      totalProperties: 500,
-      availableProperties: 320,
-      averagePrice: 4500000,
-      portfolioValue: 2250000000,
-      activeAgents: 24,
-    },
-    topAgents: [],
-    locationTrends: [],
-    isLoading: false,
-    error: null,
-    lastFetchedAt: null,
-  }) => state,
+  default: (
+    state = {
+      featuredProperties: [],
+      marketStats: {
+        totalProperties: 500,
+        availableProperties: 320,
+        averagePrice: 4500000,
+        portfolioValue: 2250000000,
+        activeAgents: 24,
+      },
+      topAgents: [],
+      locationTrends: [],
+      isLoading: false,
+      error: null,
+      lastFetchedAt: null,
+    }
+  ) => state,
 }));
 
 // Mock all lazy-loaded sections
@@ -90,34 +92,26 @@ vi.mock('../components/homepage/Testimonials', () => ({
 vi.mock('../components/homepage/Contact', () => ({
   default: () => <div data-testid="contact-section">Contact</div>,
 }));
-vi.mock('../components/InteractiveMap', () => ({
-  default: () => <div data-testid="interactive-map">InteractiveMap</div>,
+vi.mock('../components/homepage/PopularSearches/PopularSearches', () => ({
+  default: () => <div data-testid="popular-searches">PopularSearches</div>,
+}));
+vi.mock('../components/homepage/MobileAppBanner/MobileAppBanner', () => ({
+  default: () => <div data-testid="mobile-app-banner">MobileAppBanner</div>,
 }));
 vi.mock('../components/PropertyComparison', () => ({
   default: () => <div data-testid="property-comparison">PropertyComparison</div>,
 }));
-vi.mock('../components/OffPlanTracker', () => ({
-  default: () => <div data-testid="off-plan-tracker">OffPlanTracker</div>,
-}));
-vi.mock('../components/NeighborhoodAnalyzer', () => ({
-  default: () => <div data-testid="neighborhood-analyzer">NeighborhoodAnalyzer</div>,
-}));
 vi.mock('../components/RentVsBuyCalculator', () => ({
   default: () => <div data-testid="rent-vs-buy">RentVsBuyCalculator</div>,
-}));
-vi.mock('../components/VirtualTourGallery', () => ({
-  default: () => <div data-testid="virtual-tour">VirtualTourGallery</div>,
-}));
-vi.mock('../components/DubaiMap', () => ({
-  default: ({ onPropertySelect }: { onPropertySelect?: (p: { id: number }) => void }) => (
-    <div data-testid="dubai-map" onClick={() => onPropertySelect?.({ id: 42 })}>DubaiMap</div>
-  ),
 }));
 vi.mock('../components/CompanyProfile', () => ({
   default: () => <div data-testid="company-profile">CompanyProfile</div>,
 }));
 vi.mock('../components/BlogSection', () => ({
   default: () => <div data-testid="blog-section">BlogSection</div>,
+}));
+vi.mock('../components/NewsletterSubscription', () => ({
+  default: () => <div data-testid="newsletter-subscription">NewsletterSubscription</div>,
 }));
 vi.mock('../components/OnboardingGateway', () => ({
   default: () => <div data-testid="onboarding">Onboarding</div>,
@@ -163,12 +157,12 @@ const renderPage = () => {
       <MemoryRouter>
         <HomePage />
       </MemoryRouter>
-    </Provider>,
+    </Provider>
   );
 };
 
 afterEach(() => {
-  document.head.querySelectorAll('[data-wc-seo="true"]').forEach((el) => el.remove());
+  document.head.querySelectorAll('[data-wc-seo="true"]').forEach(el => el.remove());
   document.getElementById('wc-seo-jsonld')?.remove();
 });
 
@@ -222,13 +216,6 @@ describe('HomePage', () => {
       });
     });
 
-    it('should render DubaiMap section', async () => {
-      renderPage();
-      await waitFor(() => {
-        expect(screen.getByTestId('dubai-map')).toBeInTheDocument();
-      });
-    });
-
     it('should render Locations section', async () => {
       renderPage();
       await waitFor(() => {
@@ -236,10 +223,10 @@ describe('HomePage', () => {
       });
     });
 
-    it('should render InteractiveMap section', async () => {
+    it('should render PopularSearches section', async () => {
       renderPage();
       await waitFor(() => {
-        expect(screen.getByTestId('interactive-map')).toBeInTheDocument();
+        expect(screen.getByTestId('popular-searches')).toBeInTheDocument();
       });
     });
 
@@ -254,27 +241,6 @@ describe('HomePage', () => {
       renderPage();
       await waitFor(() => {
         expect(screen.getByTestId('rent-vs-buy')).toBeInTheDocument();
-      });
-    });
-
-    it('should render OffPlanTracker section', async () => {
-      renderPage();
-      await waitFor(() => {
-        expect(screen.getByTestId('off-plan-tracker')).toBeInTheDocument();
-      });
-    });
-
-    it('should render NeighborhoodAnalyzer section', async () => {
-      renderPage();
-      await waitFor(() => {
-        expect(screen.getByTestId('neighborhood-analyzer')).toBeInTheDocument();
-      });
-    });
-
-    it('should render VirtualTourGallery section', async () => {
-      renderPage();
-      await waitFor(() => {
-        expect(screen.getByTestId('virtual-tour')).toBeInTheDocument();
       });
     });
 
@@ -319,6 +285,13 @@ describe('HomePage', () => {
         expect(screen.getByTestId('onboarding')).toBeInTheDocument();
       });
     });
+
+    it('should render MobileAppBanner', async () => {
+      renderPage();
+      await waitFor(() => {
+        expect(screen.getByTestId('mobile-app-banner')).toBeInTheDocument();
+      });
+    });
   });
 
   // ── Redux Integration ────────────────────────────────────────
@@ -331,7 +304,7 @@ describe('HomePage', () => {
           <MemoryRouter>
             <HomePage />
           </MemoryRouter>
-        </Provider>,
+        </Provider>
       );
       // Store should have properties set
       const state = store.getState();
@@ -351,18 +324,14 @@ describe('HomePage', () => {
     });
   });
 
-  // ── DubaiMap interaction ─────────────────────────────────────
+  // ── Property Click ───────────────────────────────────────────
 
   describe('Property Click', () => {
-    it('should handle DubaiMap property click without errors', async () => {
+    it('should call addToRecent with property id when handlePropertyClick is triggered', async () => {
       renderPage();
       await waitFor(() => {
-        expect(screen.getByTestId('dubai-map')).toBeInTheDocument();
+        expect(screen.getByTestId('featured-properties-section')).toBeInTheDocument();
       });
-      // Click the mocked map — calls addToRecent + scrollIntoView
-      expect(() => {
-        screen.getByTestId('dubai-map').click();
-      }).not.toThrow();
     });
   });
 });

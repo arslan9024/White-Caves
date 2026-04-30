@@ -59,7 +59,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--primary-color, #E31E24);
+  color: var(--primary-color, #e31e24);
   margin-right: 0.5rem;
 }
 
@@ -111,7 +111,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.875rem 1.75rem;
-  background: var(--luxury-cta-bg, linear-gradient(135deg, #E31E24 0%, #B71C1C 100%));
+  background: var(--luxury-cta-bg, linear-gradient(135deg, #e31e24 0%, #b71c1c 100%));
   color: var(--luxury-text-dark, #1a1a2e);
   font-size: 0.95rem;
   font-weight: 700;
@@ -127,7 +127,7 @@
 }
 
 .hero-search-btn:hover {
-  background: var(--luxury-cta-bg-hover, linear-gradient(135deg, #ef5350 0%, #E31E24 100%));
+  background: var(--luxury-cta-bg-hover, linear-gradient(135deg, #ef5350 0%, #e31e24 100%));
   box-shadow: 0 6px 24px rgba(227, 30, 36, 0.45);
   transform: translateY(-1px);
 }
@@ -172,13 +172,26 @@
 .hero-search-tag:hover {
   background: var(--dubai-luxury-gold-soft, rgba(227, 30, 36, 0.2));
   border-color: rgba(227, 30, 36, 0.45);
-  color: #E31E24;
+  color: #e31e24;
 }
 
 .hero-search-tag:focus-visible {
   outline: 2px solid rgba(227, 30, 36, 0.5);
   outline-offset: 2px;
 }
+
+/* ─── Extra fields (Beds + Price) — hidden on mobile until expanded ─── */
+.hero-search-extra-fields {
+  display: contents; /* Desktop: inline as if no wrapper */
+}
+
+/* ─── More Filters toggle — mobile only ────────────────────────────── */
+.hero-search-more-filters {
+  display: none; /* Hidden on desktop */
+}
+
+/* ─── Desktop-only dividers (after Location/Type) ──────────────────── */
+/* All .hero-search-divider elements are visible on desktop */
 
 /* ════════════════════════════════════════════════════════════════════
    Responsive Breakpoints
@@ -208,7 +221,7 @@
   }
 }
 
-/* Mobile — full-width fields stacked */
+/* Mobile — show only Location + Type; collapse Beds + Price behind toggle */
 @media (max-width: 600px) {
   .hero-search-container {
     margin: 0 auto 2rem;
@@ -221,6 +234,7 @@
     border-radius: 0.875rem;
   }
 
+  /* All fields full-width */
   .hero-search-field {
     flex: 1 1 100%;
     width: 100%;
@@ -234,6 +248,43 @@
 
   .hero-search-select {
     font-size: 0.875rem;
+  }
+
+  /* Extra fields (Beds + Price): collapsed by default on mobile */
+  .hero-search-extra-fields {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .hero-search-extra-fields--open {
+    display: flex;
+  }
+
+  /* Inside the expanded container each field needs full width */
+  .hero-search-extra-fields--open .hero-search-field {
+    width: 100%;
+  }
+
+  /* Show the "More Filters" toggle on mobile */
+  .hero-search-more-filters {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.5rem;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    margin: 0.25rem 0;
+    transition: all 0.2s;
+  }
+
+  .hero-search-more-filters:hover {
+    background: rgba(255, 255, 255, 0.14);
   }
 
   .hero-search-btn {
@@ -269,4 +320,3 @@
     justify-content: center;
   }
 }
-
