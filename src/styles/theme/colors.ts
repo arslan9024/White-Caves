@@ -16,18 +16,19 @@ export const colors = {
   secondaryDark: '#1E3A32',
   secondaryLight: '#3D7A6B',
 
-  // Gold Palette (50→900)
+  // Brand Red Palette (50→900) — replaces legacy gold palette
+  // ⚠️ BRAND RULE: White Caves brand = Red (#E31E24) + White ONLY. No gold. No yellow. No amber.
   gold: {
-    50: '#FDF8E8',
-    100: '#FAF0C8',
-    200: '#F5E08E',
-    300: '#E8CC6E',
+    50: '#FFEBEE',
+    100: '#FFCDD2',
+    200: '#EF9A9A',
+    300: '#E57373',
     400: '#E31E24',
     500: '#B71C1C',
-    600: '#9A7D0A',
-    700: '#7C6408',
-    800: '#5E4B06',
-    900: '#403204',
+    600: '#C62828',
+    700: '#B71C1C',
+    800: '#961818',
+    900: '#7B1414',
   },
 
   // Green Palette (50→900)
@@ -170,7 +171,7 @@ export const colors = {
 
   // Utility Aliases for Component Compatibility
   surface: '#FFFFFF',
-  surfaceAlt: '#F5F5F5', 
+  surfaceAlt: '#F5F5F5',
   hover: '#F5F5F5',
   cardBg: '#FFFFFF',
   textColor: '#212121',
