@@ -22,6 +22,7 @@ import {
   loginWithEmail as backendLogin,
   registerWithEmail as backendRegister,
   syncFirebaseUser,
+  completeSocialRegistration,
 } from '../services/authService';
 import { safeStorage } from '../utils/safeStorage';
 
@@ -32,6 +33,7 @@ interface PendingUser {
   email: string;
   name: string;
   photo?: string;
+  fromSocialProvider?: string;
 }
 
 interface ConfirmationResult {
@@ -173,7 +175,13 @@ export function useSignIn() {
         })
       );
       setSuccess('Sign in successful!');
-      navTimerRef.current = setTimeout(() => navigate('/dashboard'), TIMING.NAVIGATION_DELAY);
+      const destination =
+        user.role === 'tenant'
+          ? '/tenant/portal'
+          : user.role === 'landlord'
+            ? '/landlord/portal'
+            : '/dashboard';
+      navTimerRef.current = setTimeout(() => navigate(destination), TIMING.NAVIGATION_DELAY);
     },
     [dispatch, navigate]
   );
@@ -184,12 +192,14 @@ export function useSignIn() {
       email: string | null;
       name: string | null;
       photoUrl?: string | null;
+      fromSocialProvider?: string;
     }): void => {
       setPendingUser({
         id: user.id,
         email: user.email || '',
         name: user.name || fullName,
         photo: user.photoUrl || undefined,
+        fromSocialProvider: user.fromSocialProvider,
       });
       setStep(2);
     },
@@ -219,21 +229,33 @@ export function useSignIn() {
     const status = selectedCategory === 'staff' ? 'pending' : 'active';
 
     try {
-      const response = await backendRegister(
-        email,
-        password,
-        fullName || undefined,
-        undefined,
-        undefined,
-        selectedCategory,
-        selectedRole
-      );
+      let backendUser;
 
-      if (!response?.data?.user) {
-        throw new Error('Invalid response: missing user data');
+      if (pendingUser?.fromSocialProvider) {
+        // Social signup: user was already created by syncFirebaseUser.
+        // Just update their role/category using the stored JWT.
+        const response = await completeSocialRegistration(selectedCategory, selectedRole);
+        if (!response?.data?.user) {
+          throw new Error('Invalid response: missing user data');
+        }
+        backendUser = response.data.user;
+      } else {
+        // Email signup: register with email + password.
+        const response = await backendRegister(
+          email,
+          password,
+          fullName || undefined,
+          undefined,
+          undefined,
+          selectedCategory,
+          selectedRole
+        );
+        if (!response?.data?.user) {
+          throw new Error('Invalid response: missing user data');
+        }
+        backendUser = response.data.user;
       }
 
-      const backendUser = response.data.user;
       dispatch(
         setUser({
           id: backendUser.id,
@@ -264,7 +286,17 @@ export function useSignIn() {
     } finally {
       setLoading(false);
     }
-  }, [selectedRole, selectedCategory, email, password, fullName, dispatch, navigate, saveUserData]);
+  }, [
+    selectedRole,
+    selectedCategory,
+    email,
+    password,
+    fullName,
+    pendingUser,
+    dispatch,
+    navigate,
+    saveUserData,
+  ]);
 
   // ── Social auth ────────────────────────────────────────────────
 
@@ -296,7 +328,7 @@ export function useSignIn() {
           const backendUser = backendResponse.data.user;
 
           if (mode === 'signup') {
-            handleSignUpSuccess(backendUser);
+            handleSignUpSuccess({ ...backendUser, fromSocialProvider: provider });
           } else {
             handleSignInSuccess(backendUser);
           }

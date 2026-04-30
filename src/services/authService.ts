@@ -172,6 +172,30 @@ export async function changePassword(
 }
 
 /**
+ * Complete registration for a social-auth user who has just selected their role.
+ * The user was already created by syncFirebaseUser; this call updates their role/category
+ * using the JWT that syncFirebaseUser stored.
+ */
+export async function completeSocialRegistration(
+  category: string,
+  role: string
+): Promise<RegisterResponse> {
+  const response = (await apiClient.post('/auth/complete-social-registration', {
+    category,
+    role,
+  })) as RegisterResponse;
+
+  if (response.success) {
+    if (!response.data?.token) {
+      throw new Error('Social registration succeeded but no authentication token was returned');
+    }
+    persistToken(response.data.token);
+  }
+
+  return response;
+}
+
+/**
  * Logout — clears JWT and user state.
  */
 export function logout(): void {
