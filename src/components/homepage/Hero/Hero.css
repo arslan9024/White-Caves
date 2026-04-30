@@ -17,6 +17,7 @@
 .hero-bg-image {
   position: absolute;
   inset: 0;
+  background-color: #1a1a2e; /* fallback if image fails to load */
   background-image: url('https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
   background-size: cover;
   background-position: center;

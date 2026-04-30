@@ -1,4 +1,6 @@
 import React, { FC, useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
+import { motion, Variants } from 'framer-motion';
+import { Phone, MessageCircle, Mail, MapPin } from 'lucide-react';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import {
   isValidEmail,
@@ -11,6 +13,15 @@ import { TIMING } from '../constants';
 import PublicLayout from '../components/layout/PublicLayout';
 import PageHeroBanner from '../components/layout/PageHeroBanner';
 import './ContactPage.css';
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 32 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.52, ease: 'easeOut' } },
+};
+const stagger: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.09 } },
+};
 
 // Type definitions
 interface ContactForm {
@@ -151,11 +162,26 @@ const ContactPage: FC = () => {
 
         <div className="contact-container">
           <div className="contact-grid">
-            <div className="contact-info-section">
+            {/* ── Contact info column ─────────────────────────────── */}
+            <motion.div
+              className="contact-info-section"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-80px' }}
+            >
+              <span className="contact-section-tag">Reach Us</span>
               <h2>White Caves Real Estate LLC</h2>
               <p className="company-tagline">Your Gateway to Luxury Living in Dubai</p>
+              <div className="contact-divider" />
 
-              <div className="contact-cards">
+              <motion.div
+                className="contact-cards"
+                variants={stagger}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+              >
                 <div className="contact-card">
                   <div className="contact-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -277,13 +303,15 @@ const ContactPage: FC = () => {
                     </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               <div className="quick-links">
                 <h3>Quick Actions</h3>
                 <div className="quick-links-grid">
                   <a href="tel:+971563616136" className="quick-link">
-                    <span className="quick-icon">📞</span>
+                    <span className="quick-icon">
+                      <Phone size={18} />
+                    </span>
                     Call Office
                   </a>
                   <a
@@ -292,11 +320,15 @@ const ContactPage: FC = () => {
                     rel="noopener noreferrer"
                     className="quick-link whatsapp"
                   >
-                    <span className="quick-icon">💬</span>
+                    <span className="quick-icon">
+                      <MessageCircle size={18} />
+                    </span>
                     WhatsApp
                   </a>
                   <a href="mailto:admin@whitecaves.com" className="quick-link">
-                    <span className="quick-icon">✉️</span>
+                    <span className="quick-icon">
+                      <Mail size={18} />
+                    </span>
                     Send Email
                   </a>
                   <a
@@ -305,14 +337,22 @@ const ContactPage: FC = () => {
                     rel="noopener noreferrer"
                     className="quick-link"
                   >
-                    <span className="quick-icon">📍</span>
+                    <span className="quick-icon">
+                      <MapPin size={18} />
+                    </span>
                     Get Directions
                   </a>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="contact-form-section">
+            <motion.div
+              className="contact-form-section"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-60px' }}
+            >
               <h2>Send Us a Message</h2>
               <p>
                 Have a question or need assistance? Fill out the form below and we&apos;ll get back
@@ -430,11 +470,19 @@ const ContactPage: FC = () => {
                   {isSubmitting ? 'Sending…' : submitted ? 'Sent ✓' : 'Send Message'}
                 </button>
               </form>
-            </div>
+            </motion.div>
           </div>
 
-          <div className="map-section">
+          <motion.div
+            className="map-section"
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+          >
+            <span className="contact-section-tag">Our Location</span>
             <h2>Find Us</h2>
+            <div className="contact-divider" style={{ margin: '0.9rem 0 1.5rem' }} />
             <div className="map-container">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3607.5678927463876!2d55.3367!3d25.2697!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjXCsDE2JzEwLjkiTiA1NcKwMjAnMTIuMSJF!5e0!3m2!1sen!2sae!4v1234567890"
@@ -448,7 +496,7 @@ const ContactPage: FC = () => {
               />
             </div>
             <p className="map-address">Office D-72, El-Shaye-4, Port Saeed, Deira, Dubai, UAE</p>
-          </div>
+          </motion.div>
         </div>
       </div>
     </PublicLayout>

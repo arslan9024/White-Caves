@@ -116,34 +116,50 @@ const HeroSearchBar = memo(function HeroSearchBar() {
   const [propertyType, setPropertyType] = useState('All Types');
   const [beds, setBeds] = useState('0');
   const [priceRange, setPriceRange] = useState('0');
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
 
   const handleSearch = useCallback(() => {
     // Clear existing filters first
     dispatch(clearFilters());
 
-    // Build filter payload
-    const filters: Record<string, unknown> = {};
+    // Build filter payload with a specific shape to avoid index-signature access
+    const locations: string[] = [];
+    const propertyTypes: string[] = [];
+    let bedCount: number | undefined;
+    let minPrice: number | undefined;
+    let maxPrice: number | undefined;
 
     if (location !== 'All Locations') {
-      filters.locations = [location];
+      locations.push(location);
     }
     if (propertyType !== 'All Types') {
-      filters.propertyTypes = [propertyType];
+      propertyTypes.push(propertyType);
     }
     const bedNum = parseFloat(beds);
     if (bedNum > 0) {
-      filters.beds = Math.ceil(bedNum);
+      bedCount = Math.ceil(bedNum);
     }
     const priceIdx = parseInt(priceRange, 10);
-    const priceEntry = priceIdx > 0 ? (PRICE_RANGES.find((_, i) => i === priceIdx) ?? null) : null;
-    if (priceEntry) {
-      filters.minPrice = priceEntry.min;
-      filters.maxPrice = priceEntry.max;
+    const selectedRange =
+      priceIdx > 0 && priceIdx < PRICE_RANGES.length
+        ? // eslint-disable-next-line security/detect-object-injection
+          PRICE_RANGES[priceIdx]
+        : undefined;
+    if (selectedRange) {
+      minPrice = selectedRange.min;
+      maxPrice = selectedRange.max;
     }
 
     // Dispatch filters to Redux
-    if (Object.keys(filters).length > 0) {
-      dispatch(setFilters(filters));
+    const payload: Record<string, unknown> = {};
+    if (locations.length > 0) payload['locations'] = locations;
+    if (propertyTypes.length > 0) payload['propertyTypes'] = propertyTypes;
+    if (bedCount !== undefined) payload['beds'] = bedCount;
+    if (minPrice !== undefined) payload['minPrice'] = minPrice;
+    if (maxPrice !== undefined) payload['maxPrice'] = maxPrice;
+
+    if (Object.keys(payload).length > 0) {
+      dispatch(setFilters(payload));
     }
 
     // Build query params for URL
@@ -152,14 +168,14 @@ const HeroSearchBar = memo(function HeroSearchBar() {
     if (location !== 'All Locations') params.set('location', location);
     if (propertyType !== 'All Types') params.set('type', propertyType);
     if (bedNum > 0) params.set('beds', String(Math.ceil(bedNum)));
-    if (priceEntry) {
-      params.set('minPrice', String(priceEntry.min));
-      params.set('maxPrice', String(priceEntry.max));
+    if (selectedRange && priceIdx > 0) {
+      params.set('minPrice', String(selectedRange.min));
+      params.set('maxPrice', String(selectedRange.max));
     }
 
     const queryString = params.toString();
     navigate(queryString ? `/properties?${queryString}` : '/properties');
-  }, [dispatch, navigate, location, propertyType, beds, priceRange, mode]);
+  }, [dispatch, navigate, mode, location, propertyType, beds, priceRange]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -263,25 +279,40 @@ const HeroSearchBar = memo(function HeroSearchBar() {
           ariaLabel="Select property type"
         />
 
-        <div className="hero-search-divider" />
+        <div className="hero-search-divider hero-search-divider--desktop" />
 
-        <SelectField
-          icon={<BedDouble size={18} />}
-          value={beds}
-          onChange={setBeds}
-          options={bedOptions}
-          ariaLabel="Select bedrooms"
-        />
+        <div
+          className={`hero-search-extra-fields${showMoreFilters ? ' hero-search-extra-fields--open' : ''}`}
+        >
+          <SelectField
+            icon={<BedDouble size={18} />}
+            value={beds}
+            onChange={setBeds}
+            options={bedOptions}
+            ariaLabel="Select bedrooms"
+          />
 
-        <div className="hero-search-divider" />
+          <div className="hero-search-divider hero-search-divider--desktop" />
 
-        <SelectField
-          icon={<DollarSign size={18} />}
-          value={priceRange}
-          onChange={setPriceRange}
-          options={priceOptions}
-          ariaLabel="Select price range"
-        />
+          <SelectField
+            icon={<DollarSign size={18} />}
+            value={priceRange}
+            onChange={setPriceRange}
+            options={priceOptions}
+            ariaLabel="Select price range"
+          />
+        </div>
+
+        {/* Mobile-only "More Filters" toggle */}
+        <button
+          type="button"
+          className="hero-search-more-filters"
+          onClick={() => setShowMoreFilters(prev => !prev)}
+          aria-expanded={showMoreFilters}
+          aria-label={showMoreFilters ? 'Hide extra filters' : 'Show more filters'}
+        >
+          {showMoreFilters ? 'Less' : 'More ▾'}
+        </button>
 
         <motion.button
           className="hero-search-btn"
