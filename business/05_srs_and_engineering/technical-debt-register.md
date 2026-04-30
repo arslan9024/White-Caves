@@ -278,3 +278,228 @@ ComplianceAudit — immutable audit entries
 **Document Owner:** Technology Department
 **Update Frequency:** Every sprint start (fortnightly)
 **Related:** `business/05_srs_and_engineering/srs-v2-2026.md`, `plans/MASTER_PLAN.md`
+
+
+---
+
+## 8. Debt Prevention Framework
+
+### 8.1 Definition of Done (DoD)
+
+Every user story or technical task is only "done" when ALL of these criteria are met:
+
+```
+Code Quality:
+☐ TypeScript: 0 `any` types used (or existing `any` documented with TS-FIXME comment)
+☐ ESLint: 0 errors, 0 warnings (no `eslint-disable` without explanation comment)
+☐ All new functions have JSDoc comments
+☐ No dead code (unreachable paths, commented-out code blocks)
+
+Testing:
+☐ Unit tests for all new business logic (> 80% line coverage for changed files)
+☐ Integration tests for all new API endpoints (at least: success, 401, 403, 400 cases)
+☐ No skipped tests (`test.skip`) without issue tracker reference
+
+Security:
+☐ `npm audit` passes (0 critical, 0 high vulnerabilities)
+☐ No secrets, API keys, or PII in code or git history
+☐ RBAC middleware applied to all protected routes
+☐ Input validation on all POST/PATCH endpoints (Zod schema)
+
+Performance:
+☐ No N+1 queries (use Prisma `include` or batched queries)
+☐ New list endpoints support pagination
+☐ Database queries use indexes (verify with MongoDB explain())
+
+Documentation:
+☐ README updated if setup steps change
+☐ OpenAPI JSDoc added for new endpoints
+☐ Business docs updated if feature changes a documented process
+```
+
+### 8.2 Pre-PR Checklist
+
+Before creating a Pull Request:
+
+```
+Self-review:
+☐ Read own diff — is every line intentional?
+☐ Are there any TODOs that should be tickets first?
+☐ Are console.log() statements removed?
+
+Testing:
+☐ `npm run test` passes locally
+☐ `npm run lint` passes locally
+☐ `npm run build` succeeds (TypeScript compile clean)
+
+Security:
+☐ `npm audit` run — 0 critical/high
+
+Documentation:
+☐ PR description explains what + why (not just what)
+☐ Linked to Jira/GitHub issue
+```
+
+### 8.3 Architectural Review Triggers
+
+Any of the following require an architectural review meeting (30 min, Aurora + Grace + MD) before implementation:
+
+- Adding a new third-party service or npm package with > 100K weekly downloads
+- Changing the authentication or session mechanism
+- Adding a new database (even for caching)
+- Adding a new background job system
+- Changing the API versioning mechanism
+- Adding a new payment method
+- Any changes to KYC/AML data storage
+
+---
+
+## 9. npm Dependency Health Management
+
+### 9.1 Dependency Audit Schedule
+
+| Action | Frequency | Owner |
+|--------|----------|-------|
+| `npm audit` run locally | Every PR | Developer |
+| `npm audit` in CI pipeline | Every push to `main` | Automated |
+| Dependabot alerts review | Weekly | Ecem (Security) |
+| Full dependency update sprint | Quarterly | Aurora + Ecem |
+| Major version upgrade review | Before each Phase | Architecture review |
+
+### 9.2 Dependency Categories
+
+| Category | Policy | Example |
+|---------|--------|---------|
+| Security patches (patch version) | Auto-merge if CI passes | `express 4.18.1 → 4.18.2` |
+| Feature updates (minor version) | Auto-merge if CI passes + Ecem review | `react 18.2.0 → 18.3.0` |
+| Breaking changes (major version) | Manual review + testing sprint | `react 18 → react 19` |
+| New dependencies | Architecture review (see 8.3) | Any new `npm install` |
+
+### 9.3 Current Vulnerability Resolution Plan
+
+| Package | Vulnerability | CVSS | Resolution | Target Date |
+|---------|-------------|------|-----------|------------|
+| `semver` | Prototype pollution (ReDoS) | 6.5 (Medium) | `npm update semver` | Phase 2 Sprint 1 |
+| `tough-cookie` | Prototype pollution | 6.5 (Medium) | Update `axios` (transitive dep) | Phase 2 Sprint 1 |
+| `word-wrap` | ReDoS | 5.3 (Medium) | `npm update word-wrap` | Phase 2 Sprint 2 |
+| `@babel/traverse` | Arbitrary code exec (indirect) | 9.8 (Critical) | Update babel devDependencies | Phase 2 Sprint 1 — **URGENT** |
+| `ip` | SSRF bypass | 6.5 (Medium) | Update `zod` or remove `ip` | Phase 2 Sprint 1 |
+| `postcss` | ReDoS | 5.3 (Medium) | `npm update postcss` | Phase 2 Sprint 2 |
+| `braces` | Uncontrolled resource consumption | 7.5 (High) | Update `micromatch` | Phase 2 Sprint 1 |
+
+**Current count:** 7 open vulnerabilities (1 critical, 2 high, 4 medium) — target 0 before Phase 2 production deployment.
+
+---
+
+## 10. Test Coverage Improvement Plan
+
+### 10.1 Current Coverage (April 2026)
+
+| Module | Lines | Statements | Branches | Functions | Status |
+|--------|-------|-----------|---------|----------|--------|
+| `routes/auth.ts` | 45% | 43% | 38% | 55% | 🔴 Poor |
+| `routes/leads.ts` | 62% | 60% | 52% | 68% | 🟡 Fair |
+| `routes/properties.ts` | 58% | 56% | 48% | 64% | 🟡 Fair |
+| `routes/aiAssistants.ts` | 78% | 76% | 70% | 82% | 🟢 Good |
+| `middleware/auth.ts` | 85% | 83% | 78% | 90% | 🟢 Good |
+| `middleware/rbac.ts` | 72% | 70% | 65% | 76% | 🟡 Fair |
+| `services/WhatsAppBotService.ts` | 28% | 26% | 22% | 35% | 🔴 Poor |
+| `store/slices/aiAssistantDashboardSlice.tsx` | 91% | 89% | 85% | 94% | 🟢 Excellent |
+| **Overall** | **61%** | **59%** | **52%** | **68%** | 🟡 **Fair** |
+
+### 10.2 Coverage Targets by Phase
+
+| Phase | Target | Priority Modules |
+|-------|--------|----------------|
+| Phase 2 | 70% overall | auth.ts, all portal routes |
+| Phase 3 | 80% overall | leads.ts, transactions.ts, analytics routes |
+| Phase 4 | 85% overall | WhatsApp service, webhook handlers |
+| Phase 5 | 90% overall | Full coverage sprint |
+
+### 10.3 Test Factory Pattern (Removing `any` Types in Tests)
+
+```typescript
+// tests/factories/lead.factory.ts
+import { faker } from '@faker-js/faker';
+import { Lead, LeadStatus, LeadSource } from '@prisma/client';
+
+export const createTestLead = (overrides: Partial<Lead> = {}): Lead => ({
+  id: faker.string.uuid(),
+  firstName: faker.person.firstName(),
+  lastName: faker.person.lastName(),
+  email: faker.internet.email(),
+  phone: '+971501234567',
+  status: 'NEW' as LeadStatus,
+  source: 'WEBSITE' as LeadSource,
+  budget: faker.number.int({ min: 500000, max: 5000000 }),
+  agentId: faker.string.uuid(),
+  createdAt: faker.date.past(),
+  updatedAt: new Date(),
+  ...overrides,
+});
+
+export const createTestLeads = (count: number, overrides?: Partial<Lead>): Lead[] =>
+  Array.from({ length: count }, () => createTestLead(overrides));
+```
+
+---
+
+## 11. Performance Monitoring & Alerting
+
+### 11.1 Prometheus Metrics to Track
+
+```typescript
+// metrics.ts — Express middleware
+import { Counter, Histogram, Gauge } from 'prom-client';
+
+// API request rate
+const httpRequestCounter = new Counter({
+  name: 'http_requests_total',
+  help: 'Total HTTP requests',
+  labelNames: ['method', 'route', 'status_code'],
+});
+
+// Response time
+const httpRequestDuration = new Histogram({
+  name: 'http_request_duration_seconds',
+  help: 'HTTP request duration',
+  labelNames: ['method', 'route'],
+  buckets: [0.01, 0.05, 0.1, 0.3, 0.5, 1.0, 2.0, 5.0],
+});
+
+// Active leads in pipeline
+const activePipelineLeads = new Gauge({
+  name: 'crm_leads_in_pipeline',
+  help: 'Active leads by stage',
+  labelNames: ['stage'],
+});
+
+// MongoDB query duration
+const dbQueryDuration = new Histogram({
+  name: 'db_query_duration_seconds',
+  help: 'Database query duration',
+  labelNames: ['operation', 'collection'],
+  buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.5, 1.0],
+});
+```
+
+### 11.2 Grafana Alert Rules
+
+| Alert | Condition | Severity | Response |
+|-------|---------|---------|---------|
+| API Error Rate High | `rate(http_requests_total{status_code=~"5.."}[5m]) > 0.01` | Critical | PagerDuty → on-call engineer |
+| Slow API Responses | `http_request_duration_seconds{quantile="0.95"} > 2` | High | Slack → #engineering |
+| MongoDB Slow Queries | `db_query_duration_seconds{quantile="0.99"} > 1` | High | Slack → #engineering |
+| Low Disk Space | `node_filesystem_avail_bytes / node_filesystem_size_bytes < 0.1` | Critical | PagerDuty |
+| High Memory Usage | `(1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) > 0.9` | High | Slack |
+| SSL Certificate Expiry | `ssl_certificate_expiry_days < 14` | Critical | PagerDuty + Email |
+
+---
+
+**Document Owner:** Technology Department
+**Update Frequency:** Every sprint start (fortnightly); vulnerability table updated immediately on discovery
+**Version History:** v1.0 April 2026 (initial); v2.0 April 2026 (expanded with DoD, testing plan, metrics)
+**Related Documents:**
+- `business/05_srs_and_engineering/srs-v2-2026.md`
+- `business/08_market_research/technology_upgrades.md`
+- `plans/MASTER_PLAN.md`

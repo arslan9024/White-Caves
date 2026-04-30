@@ -253,3 +253,267 @@ Phase 4:
 **Document Owner:** Technology Department (Aurora)
 **Review Trigger:** Before any breaking API change
 **Related:** `business_docs/06_design_architecture/api-reference.md`, `/openapi.json`
+
+
+---
+
+## 9. API Design Principles — Reference Guide
+
+### 9.1 RESTful Resource Naming
+
+White Caves API follows strict RESTful conventions:
+
+| Rule | Good ✅ | Bad ❌ |
+|------|---------|------|
+| Use nouns (not verbs) for resources | `/api/v1/leads` | `/api/v1/getLeads` |
+| Plural nouns | `/api/v1/properties` | `/api/v1/property` |
+| Lowercase + hyphens | `/api/v1/job-applications` | `/api/v1/JobApplications` |
+| Nested resources for relationships | `/api/v1/leads/:id/activities` | `/api/v1/getLeadActivities?leadId=...` |
+| HTTP method for action | `DELETE /api/v1/leads/:id` | `POST /api/v1/leads/delete/:id` |
+| Status in body, not URL | `{ "status": "qualified" }` | `/api/v1/leads/qualify/:id` |
+
+### 9.2 HTTP Status Code Policy
+
+| Scenario | Code | Body |
+|---------|------|------|
+| Success — resource created | `201 Created` | `{ data: {...}, message: "Resource created" }` |
+| Success — data returned | `200 OK` | `{ data: [...], meta: { total, page } }` |
+| Success — no content (DELETE) | `204 No Content` | (empty) |
+| Validation error | `400 Bad Request` | `{ error: "validation", fields: [{field, message}] }` |
+| Unauthenticated | `401 Unauthorized` | `{ error: "authentication_required" }` |
+| Insufficient permissions | `403 Forbidden` | `{ error: "insufficient_permissions", required: "sales_manager" }` |
+| Resource not found | `404 Not Found` | `{ error: "not_found", resource: "lead", id: "..." }` |
+| Conflict (duplicate) | `409 Conflict` | `{ error: "conflict", message: "Email already registered" }` |
+| Rate limit exceeded | `429 Too Many Requests` | `{ error: "rate_limit", retryAfter: 60 }` |
+| Server error | `500 Internal Server Error` | `{ error: "internal_error", reference: "sentry-xxxx" }` |
+| Service unavailable | `503 Service Unavailable` | `{ error: "service_unavailable", retryAfter: 30 }` |
+
+### 9.3 Pagination Standard
+
+All list endpoints support cursor-based pagination (default) or offset pagination (legacy support):
+
+```typescript
+// Request
+GET /api/v1/leads?page=2&perPage=20&sortBy=createdAt&sortDir=desc
+
+// Response envelope (all list endpoints)
+{
+  "data": [...],
+  "meta": {
+    "total": 1247,
+    "page": 2,
+    "perPage": 20,
+    "totalPages": 63,
+    "hasNextPage": true,
+    "hasPreviousPage": true,
+    "nextCursor": "eyJpZCI6Ij...",  // for cursor-based pagination
+    "previousCursor": "eyJpZCI6Ij..."
+  }
+}
+```
+
+**Cursor-based pagination** (Phase 3+): preferred for real-time data (leads, activities) where offset pagination causes "missing records" bugs when data changes between pages.
+
+### 9.4 Error Response Standard
+
+```typescript
+// All error responses follow this schema
+interface APIError {
+  error: string;           // Machine-readable error code
+  message: string;         // Human-readable description
+  fields?: {               // Validation errors only
+    field: string;
+    message: string;
+    value?: unknown;
+  }[];
+  reference?: string;      // Sentry error ID for support
+  documentation?: string;  // Link to API docs for this endpoint
+}
+```
+
+### 9.5 Request Validation Standard
+
+```typescript
+// Using Zod schemas for all incoming request bodies
+import { z } from 'zod';
+import { validateRequest } from '../middleware/validation';
+
+const createLeadSchema = z.object({
+  firstName: z.string().min(1).max(100),
+  lastName: z.string().min(1).max(100),
+  email: z.string().email().optional(),
+  phone: z.string().regex(/^\+971[0-9]{8,9}$/).optional(),
+  budget: z.number().positive().optional(),
+  propertyType: z.enum(['VILLA', 'APARTMENT', 'TOWNHOUSE', 'PENTHOUSE']).optional(),
+  source: z.enum(['WEBSITE', 'WHATSAPP', 'REFERRAL', 'PROPERTYFINDER', 'BAYUT']),
+});
+
+router.post('/leads', 
+  authMiddleware, 
+  validateRequest(createLeadSchema), 
+  LeadController.create
+);
+```
+
+**Why Zod?** TypeScript-first; runtime validation + type inference from one schema; better DX than Joi; smaller bundle than class-validator.
+
+---
+
+## 10. API Performance Standards
+
+### 10.1 Response Time Targets
+
+| Endpoint Category | p50 Target | p95 Target | p99 Target |
+|-----------------|-----------|-----------|-----------|
+| Auth (login/register) | < 150ms | < 500ms | < 1s |
+| Simple CRUD (GET by ID) | < 50ms | < 200ms | < 500ms |
+| List with pagination | < 100ms | < 300ms | < 800ms |
+| Complex aggregations | < 200ms | < 800ms | < 2s |
+| Search (Elasticsearch — Phase 7) | < 50ms | < 150ms | < 300ms |
+| AI inference (lead scoring) | < 200ms | < 800ms | < 2s |
+| File upload | < 500ms processing | < 2s | < 5s |
+| Document generation (PDF) | < 2s | < 5s | < 10s |
+| WhatsApp send | < 1s | < 3s | < 10s |
+
+### 10.2 Caching Strategy by Endpoint
+
+| Endpoint | Cache Layer | TTL | Invalidation |
+|---------|-----------|-----|-------------|
+| `GET /api/v1/properties` (public) | CDN (Vercel Edge) + Redis | 5 min | On any property update |
+| `GET /api/v1/properties/:id` (public) | Redis | 15 min | On property update |
+| `GET /api/v1/properties/search` | Redis (query hash as key) | 2 min | On property updates in area |
+| `GET /api/v1/analytics/kpis` | Redis | 1 hour | On deal status change |
+| `GET /api/v1/market/price-trends` | Redis | 24 hours | Manual invalidation |
+| Lead CRUD | No cache | — | Always fresh |
+| Auth endpoints | No cache | — | Never cache |
+| Document generation | No cache | — | Always generate fresh |
+
+### 10.3 MongoDB Index Requirements
+
+Every heavily-queried field must have an index. Current index policy:
+
+```javascript
+// /prisma/schema.prisma — index declarations
+model Lead {
+  // Indexes required for common queries:
+  @@index([status])           // Filter by pipeline stage
+  @@index([agentId])          // Filter by assigned agent
+  @@index([createdAt])        // Sort by newest
+  @@index([source])           // Filter by lead source
+  @@index([updatedAt])        // For change stream sync
+  @@index([email])            // Deduplication lookup
+  @@index([phone])            // Deduplication lookup
+  @@index([agentId, status])  // Compound: agent's pipeline view
+}
+
+model Property {
+  @@index([status])           // Filter by PUBLISHED/DRAFT
+  @@index([type])             // Filter by property type
+  @@index([communityId])      // Filter by community
+  @@index([price])            // Sort/filter by price
+  @@index([bedrooms])         // Filter by bedrooms
+  @@index([status, type])     // Compound: search filter
+}
+```
+
+**Rule:** Any query that appears in the top 20 by frequency (via Atlas Performance Advisor) must have a compound index covering its full `find()` filter + `sort()`.
+
+---
+
+## 11. API Documentation (OpenAPI / Swagger)
+
+### 11.1 Implementation Plan (Phase 2)
+
+```typescript
+// Integration via swagger-jsdoc + swagger-ui-express
+import swaggerJsDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+
+const swaggerOptions: swaggerJsDoc.Options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'White Caves Real Estate API',
+      version: '1.2.0',
+      description: 'CRM and portal API for White Caves Real Estate LLC',
+      contact: { name: 'Aurora (API Lead)', email: 'tech@whitecaves.ae' },
+      license: { name: 'Private — Internal Use Only' },
+    },
+    servers: [
+      { url: 'https://api.whitecaves.ae', description: 'Production' },
+      { url: 'https://staging-api.whitecaves.ae', description: 'Staging' },
+      { url: 'http://localhost:3001', description: 'Local Development' },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  },
+  apis: ['./routes/**/*.ts', './models/**/*.ts'],
+};
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerJsDoc(swaggerOptions)));
+```
+
+### 11.2 JSDoc Comment Standard
+
+```typescript
+/**
+ * @swagger
+ * /api/v1/leads:
+ *   post:
+ *     summary: Create a new lead
+ *     tags: [Leads]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateLeadInput'
+ *           example:
+ *             firstName: "Mohammed"
+ *             lastName: "Al-Rashidi"
+ *             phone: "+971501234567"
+ *             source: "WHATSAPP"
+ *             budget: 2000000
+ *     responses:
+ *       201:
+ *         description: Lead created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Lead'
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthenticated
+ *       403:
+ *         description: Insufficient permissions (role: sales_agent minimum)
+ */
+```
+
+### 11.3 API Testing with Thunder Client / Postman
+
+A shared collection is maintained at `docs/api/white-caves-api.postman_collection.json`:
+- All endpoints documented with example requests
+- Environment variables: `{{baseUrl}}`, `{{authToken}}`, `{{testLeadId}}`
+- Pre-request script: auto-refresh JWT token on expiry
+- Test scripts: assert status codes, response schema validation
+
+---
+
+**Document Owner:** Technology Department (Aurora — Platform Lead)
+**Version History:** v1.0 March 2026; v1.1 April 2026 (security hardening); v2.0 April 2026 (principles + performance)
+**Review Trigger:** Before any breaking API change; quarterly for performance targets
+**Related Documents:**
+- `business_docs/06_design_architecture/api-reference.md`
+- `business/05_srs_and_engineering/srs-v2-2026.md`
+- OpenAPI specification: `/openapi.json`
