@@ -79,7 +79,7 @@
   height: 300px;
   top: 60%;
   right: -5%;
-  background: linear-gradient(135deg, rgba(255, 179, 0, 0.2), rgba(255, 179, 0, 0.05));
+  background: linear-gradient(135deg, rgba(227, 30, 36, 0.18), rgba(227, 30, 36, 0.05));
 }
 
 .shape-3 {
@@ -148,7 +148,7 @@
 .hero-market-pill-value {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #f5dc88;
+  color: #ffffff;
 }
 
 .visualizer-wrapper {
@@ -156,7 +156,7 @@
 }
 
 .badge-icon {
-  color: var(--accent-gold);
+  color: var(--primary-color);
   font-size: 1rem;
 }
 
@@ -171,7 +171,7 @@
 }
 
 .hero-title .gradient-text {
-  background: linear-gradient(135deg, var(--primary-color), var(--accent-gold));
+  background: linear-gradient(135deg, var(--primary-color), #ef5350);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

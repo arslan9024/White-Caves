@@ -209,10 +209,12 @@ export const SearchContainer = styled.div<{ $focused?: boolean }>`
     background: rgba(255, 255, 255, 0.08);
   }
 
-  ${props => props.$focused && `
+  ${props =>
+    props.$focused &&
+    `
     background: ${theme.colors.background.secondary};
     border-color: ${theme.colors.primary};
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.15);
 
     @media (prefers-color-scheme: dark) {
       background: rgba(255, 255, 255, 0.12);
@@ -312,7 +314,9 @@ export const NavIconButton = styled.button<{ $hasUnread?: boolean }>`
     }
   }
 
-  ${props => props.$hasUnread && `
+  ${props =>
+    props.$hasUnread &&
+    `
     &::after {
       content: '';
       position: absolute;
@@ -463,18 +467,19 @@ export const NotificationItem = styled.div<{ $unread?: boolean }>`
   padding: ${theme.spacing.md};
   cursor: pointer;
   transition: background 0.15s ease;
-  background: ${props => (props.$unread ? 'rgba(212, 175, 55, 0.08)' : 'transparent')};
+  background: ${props => (props.$unread ? 'rgba(227, 30, 36, 0.08)' : 'transparent')};
 
   &:hover {
-    background: ${props => (props.$unread ? 'rgba(212, 175, 55, 0.14)' : theme.colors.background.tertiary)};
+    background: ${props =>
+      props.$unread ? 'rgba(227, 30, 36, 0.14)' : theme.colors.background.tertiary};
   }
 
   @media (prefers-color-scheme: dark) {
-    background: ${props => (props.$unread ? 'rgba(212, 175, 55, 0.10)' : 'transparent')};
+    background: ${props => (props.$unread ? 'rgba(227, 30, 36, 0.10)' : 'transparent')};
 
     &:hover {
       background: ${props =>
-        props.$unread ? 'rgba(212, 175, 55, 0.15)' : 'rgba(255, 255, 255, 0.05)'};
+        props.$unread ? 'rgba(227, 30, 36, 0.15)' : 'rgba(255, 255, 255, 0.05)'};
     }
   }
 `;

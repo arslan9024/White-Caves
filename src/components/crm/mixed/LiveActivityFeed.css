@@ -77,7 +77,7 @@
 }
 
 .activity-icon.default {
-  background: rgba(212, 175, 55, 0.1);
+  background: rgba(227, 30, 36, 0.1);
   color: #B03737;
 }
 
@@ -141,7 +141,7 @@
 }
 
 .feed-view-all:hover {
-  background: rgba(212, 175, 55, 0.1);
+  background: rgba(227, 30, 36, 0.1);
   border-color: #B03737;
 }
 
@@ -150,8 +150,8 @@
   align-items: flex-start;
   gap: 10px;
   padding: 10px;
-  background: linear-gradient(135deg, rgba(10, 26, 58, 0.03) 0%, rgba(212, 175, 55, 0.05) 100%);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  background: linear-gradient(135deg, rgba(10, 26, 58, 0.03) 0%, rgba(227, 30, 36, 0.05) 100%);
+  border: 1px solid rgba(227, 30, 36, 0.2);
   border-radius: 10px;
 }
 

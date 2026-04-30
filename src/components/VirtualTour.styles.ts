@@ -7,25 +7,28 @@ import { radius } from '../styles/theme/radius';
 import { spacing } from '../styles/theme/spacing';
 
 const pulse = keyframes`
-  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
-  50% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(227, 30, 36, 0.4); }
+  50% { box-shadow: 0 0 0 15px rgba(227, 30, 36, 0); }
 `;
 
 export const VirtualTourContainer = styled.div<{ $fullscreen?: boolean }>`
-  position: ${props => props.$fullscreen ? 'fixed' : 'relative'};
+  position: ${props => (props.$fullscreen ? 'fixed' : 'relative')};
   width: 100%;
-  height: ${props => props.$fullscreen ? '100vh' : '500px'};
+  height: ${props => (props.$fullscreen ? '100vh' : '500px')};
   background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
-  border-radius: ${props => props.$fullscreen ? '0' : '16px'};
+  border-radius: ${props => (props.$fullscreen ? '0' : '16px')};
   overflow: hidden;
-  border: 1px solid rgba(212, 175, 55, 0.2);
-  ${props => props.$fullscreen ? `
+  border: 1px solid rgba(227, 30, 36, 0.2);
+  ${props =>
+    props.$fullscreen
+      ? `
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     z-index: var(--z-fullscreen, 700);
-  ` : ''}
+  `
+      : ''}
 `;
 
 export const TourHeader = styled.div`
@@ -85,14 +88,14 @@ export const TourBtn = styled.button<{ $close?: boolean; $active?: boolean }>`
   transition: ${transitions.all};
 
   &:hover {
-    background: ${props => props.$close 
-      ? 'rgba(255, 100, 100, 0.3)' 
-      : 'rgba(212, 175, 55, 0.3)'};
-    border-color: ${props => props.$close ? '#ff6464' : colors.primary};
+    background: ${props => (props.$close ? 'rgba(255, 100, 100, 0.3)' : 'rgba(227, 30, 36, 0.3)')};
+    border-color: ${props => (props.$close ? '#ff6464' : colors.primary)};
   }
 
-  ${props => props.$active && `
-    background: rgba(212, 175, 55, 0.4);
+  ${props =>
+    props.$active &&
+    `
+    background: rgba(227, 30, 36, 0.4);
     border-color: ${colors.primary};
   `}
 `;
@@ -114,15 +117,17 @@ export const TourPanorama = styled.div<{ $position?: number; $zoom?: number }>`
   width: 100%;
   height: 100%;
   background-repeat: repeat-x;
-  background-position: ${props => props.$position ? `${props.$position}% center` : '0% center'};
-  background-size: ${props => props.$zoom ? `${props.$zoom * 100}% 100%` : '100% 100%'};
-  transition: background-position 0.05s linear, background-size 0.1s ease;
+  background-position: ${props => (props.$position ? `${props.$position}% center` : '0% center')};
+  background-size: ${props => (props.$zoom ? `${props.$zoom * 100}% 100%` : '100% 100%')};
+  transition:
+    background-position 0.05s linear,
+    background-size 0.1s ease;
 `;
 
 export const TourHotspot = styled.button`
   position: absolute;
   transform: translate(-50%, -50%);
-  background: rgba(212, 175, 55, 0.9);
+  background: rgba(227, 30, 36, 0.9);
   border: 2px solid white;
   border-radius: 50%;
   width: 48px;
@@ -188,7 +193,7 @@ export const CompassNeedle = styled.div<{ $rotation?: number }>`
   height: 30px;
   background: linear-gradient(to bottom, #ff4444 50%, white 50%);
   border-radius: 2px;
-  transform: ${props => props.$rotation ? `rotate(${props.$rotation}deg)` : 'rotate(0deg)'};
+  transform: ${props => (props.$rotation ? `rotate(${props.$rotation}deg)` : 'rotate(0deg)')};
   transition: transform 0.1s linear;
 `;
 
@@ -235,7 +240,7 @@ export const ZoomBtn = styled.button`
   transition: background 0.3s ease;
 
   &:hover {
-    background: rgba(212, 175, 55, 0.4);
+    background: rgba(227, 30, 36, 0.4);
   }
 `;
 
@@ -260,13 +265,13 @@ export const RoomThumb = styled.button<{ $active?: boolean }>`
   height: 50px;
   border-radius: ${radius.lg};
   overflow: hidden;
-  border: 2px solid ${props => props.$active ? colors.primary : 'transparent'};
+  border: 2px solid ${props => (props.$active ? colors.primary : 'transparent')};
   cursor: pointer;
   transition: ${transitions.all};
   position: relative;
   background: none;
   padding: 0;
-  box-shadow: ${props => props.$active ? '0 0 10px rgba(212, 175, 55, 0.5)' : 'none'};
+  box-shadow: ${props => (props.$active ? '0 0 10px rgba(227, 30, 36, 0.5)' : 'none')};
 
   img {
     width: 100%;
@@ -275,7 +280,7 @@ export const RoomThumb = styled.button<{ $active?: boolean }>`
   }
 
   &:hover {
-    border-color: rgba(212, 175, 55, 0.5);
+    border-color: rgba(227, 30, 36, 0.5);
   }
 `;
 

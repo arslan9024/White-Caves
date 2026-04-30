@@ -94,7 +94,7 @@ const services: Service[] = [
   {
     id: 'selling',
     icon: TrendingUp,
-    color: '#D4AF37',
+    color: '#E31E24',
     title: 'Selling Services',
     subtitle: 'Maximize Your Property Value',
     subServices: ['Property valuation', 'Strategic marketing', 'Seamless closing'],

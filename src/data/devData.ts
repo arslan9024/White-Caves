@@ -264,5 +264,5 @@ export const DEV_CLIENTS = DEV_DATA.leads
     agent_name: l.agent_name,
     properties_owned: Math.abs(hashStr(l.email)) % 8,
     deals_count: Math.abs(hashStr(l.name)) % 12 + 1,
-    avatar_color: DEV_DATA.agents[(l.agent_id - 1) % DEV_DATA.agents.length]?.avatar_color || '#D4AF37',
+    avatar_color: DEV_DATA.agents[(l.agent_id - 1) % DEV_DATA.agents.length]?.avatar_color || '#E31E24',
   }));

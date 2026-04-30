@@ -182,7 +182,7 @@ const AI_ASSISTANTS_REGISTRY = [
   { id: 'atlas', name: 'Atlas', role: 'Project Management', dept: 'operations', color: '#0891B2', status: 'online' },
   { id: 'vesta', name: 'Vesta', role: 'Handover Coordinator', dept: 'operations', color: '#D946EF', status: 'online' },
   { id: 'juno', name: 'Juno', role: 'Community Manager', dept: 'communications', color: '#F59E0B', status: 'online' },
-  { id: 'kairos', name: 'Kairos', role: 'Luxury Specialist', dept: 'sales', color: '#D4AF37', status: 'online' },
+  { id: 'kairos', name: 'Kairos', role: 'Luxury Specialist', dept: 'sales', color: '#E31E24', status: 'online' },
   { id: 'maven', name: 'Maven', role: 'Investment Advisor', dept: 'finance', color: '#10B981', status: 'online' },
   { id: 'chloe', name: 'Chloe', role: 'Client Relations', dept: 'sales', color: '#EC4899', status: 'online' },
   { id: 'iris', name: 'Iris', role: 'Document Processing', dept: 'legal', color: '#8B5CF6', status: 'online' },

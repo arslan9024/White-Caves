@@ -66,7 +66,7 @@ const SystemHealthPage: FC = () => {
       case 'healthy':
         return '#4CAF50';
       case 'degraded':
-        return '#FFC107';
+        return '#E31E24';
       case 'down':
         return '#F44336';
       default:

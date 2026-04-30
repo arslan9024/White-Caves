@@ -21,7 +21,7 @@ const ASSISTANT_METADATA = {
   atlas: { name: 'Atlas', color: '#0EA5E9' },
   vesta: { name: 'Vesta', color: '#10B981' },
   juno: { name: 'Juno', color: '#8B5CF6' },
-  kairos: { name: 'Kairos', color: '#FFD700' },
+  kairos: { name: 'Kairos', color: '#E31E24' },
   maven: { name: 'Maven', color: '#059669' }
 };
 

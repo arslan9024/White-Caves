@@ -382,7 +382,7 @@
 
 .chat-action-btn:hover {
   background: var(--bg-hover, #f3f4f6);
-  color: var(--primary-color, #D4AF37);
+  color: var(--primary-color, #E31E24);
 }
 
 /* Messages */

@@ -14,11 +14,18 @@ This folder now prioritizes **active pending work only**. Completed and historic
 - [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md) — fastest pending-only tracker
 - [`MASTER_PLAN.md`](./MASTER_PLAN.md) — single source of truth for status and roadmap
 - [`MASTER_PLAN_CRM_EXCELLENCE.md`](./MASTER_PLAN_CRM_EXCELLENCE.md) — longer-horizon CRM excellence roadmap
-- [`PHASE_1_HOMEPAGE.md`](./PHASE_1_HOMEPAGE.md) — current visible product phase
-- [`PHASE_2_LANDLORD_TENANT.md`](./PHASE_2_LANDLORD_TENANT.md) — next client-facing portal phase
-- [`PHASE_3_CRM_SUPERUSER.md`](./PHASE_3_CRM_SUPERUSER.md) — managing director CRM completion phase
-- [`PHASE_3_AND_BEYOND.md`](./PHASE_3_AND_BEYOND.md) — deferred future phases
-- [`PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md`](./PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md) — immediate execution checklist
+- [`PHASE_1_HOMEPAGE.md`](./PHASE_1_HOMEPAGE.md) — Phase 1: Homepage polish
+- [`PHASE_2_LANDLORD_TENANT.md`](./PHASE_2_LANDLORD_TENANT.md) — Phase 2: Landlord & Tenant portals
+- [`PHASE_3_CRM_SUPERUSER.md`](./PHASE_3_CRM_SUPERUSER.md) — Phase 3: Full CRM for managing director
+- [`PHASE_3_AND_BEYOND.md`](./PHASE_3_AND_BEYOND.md) — Phases 4–10 summary (cross-reference with detailed files below)
+- [`PHASE_4_WHATSAPP.md`](./PHASE_4_WHATSAPP.md) — Phase 4: WhatsApp Meta Cloud API, Nina bot, Olivia campaigns
+- [`PHASE_5_LEASE.md`](./PHASE_5_LEASE.md) — Phase 5: Lease/Ejari/RentPayment/Stripe full lifecycle
+- [`PHASE_6_COMPLIANCE.md`](./PHASE_6_COMPLIANCE.md) — Phase 6: RERA/KYC/AML/PDPL compliance automation
+- [`PHASE_7_ANALYTICS.md`](./PHASE_7_ANALYTICS.md) — Phase 7: Portal syndication, financial exports, multi-currency, Redis caching
+- [`PHASE_8_ARABIC.md`](./PHASE_8_ARABIC.md) — Phase 8: Arabic translations, RTL layout, locale formatting
+- [`PHASE_9_RBAC.md`](./PHASE_9_RBAC.md) — Phase 9: Multi-user RBAC, agent onboarding, role approval, CSRF, JWT refresh
+- [`PHASE_10_PWA.md`](./PHASE_10_PWA.md) — Phase 10: PWA manifest, service worker, push notifications, Cipher AI, Maven ROI
+- [`PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md`](./PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md) — production hardening sprint checklist (Apr 28 – May 4, 2026)
 - [`IMPROVEMENTS_BACKLOG.md`](./IMPROVEMENTS_BACKLOG.md) — master list of 38 improvements (all categories + phase assignments)
 - [`IMPROVEMENTS_CRITICAL.md`](./IMPROVEMENTS_CRITICAL.md) — 5 critical/broken items (WhatsApp, Stripe, 2FA, Arabic, AI registry)
 - [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md) — 7 incomplete features (scheduler, PDF, email, portals, VR, images, notifications)

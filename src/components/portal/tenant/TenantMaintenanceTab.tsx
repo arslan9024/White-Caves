@@ -11,6 +11,14 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import '../../../pages/RolePages.css';
 
+interface MaintenanceRequest {
+  id: string;
+  title: string;
+  submitted: string;
+  status: 'open' | 'in-progress' | 'closed';
+  isNew?: boolean;
+}
+
 const TenantMaintenanceTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,8 +27,11 @@ const TenantMaintenanceTab: FC = () => {
   );
   const [titleInput, setTitleInput] = useState('');
   const [descriptionInput, setDescriptionInput] = useState('');
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [newRequests, setNewRequests] = useState<MaintenanceRequest[]>([]);
 
-  const requests = useMemo(
+  const seedRequests: MaintenanceRequest[] = useMemo(
     () => [
       {
         id: 'tm-001',
@@ -44,6 +55,8 @@ const TenantMaintenanceTab: FC = () => {
     []
   );
 
+  const requests = useMemo(() => [...newRequests, ...seedRequests], [newRequests, seedRequests]);
+
   const filteredRequests = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
     return requests.filter(request => {
@@ -55,6 +68,37 @@ const TenantMaintenanceTab: FC = () => {
       return matchesStatus && matchesSearch;
     });
   }, [requests, searchQuery, statusFilter]);
+
+  const handleSubmit = () => {
+    const trimmedTitle = titleInput.trim();
+    const trimmedDesc = descriptionInput.trim();
+
+    if (!trimmedTitle) {
+      setSubmitError('Please enter an issue title.');
+      return;
+    }
+    if (!trimmedDesc) {
+      setSubmitError('Please describe the issue.');
+      return;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    const newId = `tm-${String(newRequests.length + seedRequests.length + 1).padStart(3, '0')}`;
+    const newRequest: MaintenanceRequest = {
+      id: newId,
+      title: trimmedTitle,
+      submitted: today,
+      status: 'open',
+      isNew: true,
+    };
+
+    setNewRequests(prev => [newRequest, ...prev]);
+    setTitleInput('');
+    setDescriptionInput('');
+    setSubmitError('');
+    setSubmitSuccess(true);
+    setTimeout(() => setSubmitSuccess(false), 4000);
+  };
 
   if (!currentUser) {
     return (
@@ -73,21 +117,42 @@ const TenantMaintenanceTab: FC = () => {
 
       <div className="request-form" data-testid="tenant-maintenance-form">
         <h4>Submit New Request</h4>
+        {submitSuccess && (
+          <div className="success-message" data-testid="tenant-maintenance-success">
+            ✅ Your maintenance request has been submitted. Our team will be in touch shortly.
+          </div>
+        )}
+        {submitError && (
+          <div className="error-message" data-testid="tenant-maintenance-error" role="alert">
+            {submitError}
+          </div>
+        )}
         <input
           data-testid="tenant-maintenance-title-input"
           type="text"
           placeholder="Issue title"
           value={titleInput}
-          onChange={event => setTitleInput(event.target.value)}
+          onChange={event => {
+            setTitleInput(event.target.value);
+            if (submitError) setSubmitError('');
+          }}
         />
         <textarea
           data-testid="tenant-maintenance-description-input"
           placeholder="Describe the issue"
           rows={3}
           value={descriptionInput}
-          onChange={event => setDescriptionInput(event.target.value)}
+          onChange={event => {
+            setDescriptionInput(event.target.value);
+            if (submitError) setSubmitError('');
+          }}
         />
-        <button type="button" className="btn-primary" data-testid="tenant-maintenance-submit-btn">
+        <button
+          type="button"
+          className="btn-primary"
+          data-testid="tenant-maintenance-submit-btn"
+          onClick={handleSubmit}
+        >
           Submit Request
         </button>
       </div>
@@ -123,12 +188,15 @@ const TenantMaintenanceTab: FC = () => {
           {filteredRequests.map(request => (
             <div
               key={request.id}
-              className="maintenance-row"
+              className={`maintenance-row${request.isNew ? ' maintenance-row--new' : ''}`}
               data-testid={`tenant-maintenance-row-${request.id}`}
             >
               <div>
                 <strong>{request.title}</strong>
-                <p>{request.id}</p>
+                <p>
+                  {request.id}
+                  {request.isNew ? ' · Just submitted' : ''}
+                </p>
               </div>
               <div>
                 <p>Submitted: {request.submitted}</p>

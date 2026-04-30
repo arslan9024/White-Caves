@@ -49,13 +49,13 @@
 }
 
 .doc-nav-btn.back-to-dashboard {
-  background: rgba(212, 175, 55, 0.2);
+  background: rgba(227, 30, 36, 0.2);
   border-color: #B03737;
   color: #B03737;
 }
 
 .doc-nav-btn.back-to-dashboard:hover {
-  background: rgba(212, 175, 55, 0.3);
+  background: rgba(227, 30, 36, 0.3);
 }
 
 .doc-nav-btn.close {

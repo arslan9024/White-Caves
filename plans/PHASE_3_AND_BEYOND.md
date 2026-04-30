@@ -41,6 +41,7 @@ and all 13 AI assistant dashboards.
 **Goal**: Replace all WhatsApp stubs with real Meta Cloud API connections.
 
 ### 4.1 — WhatsApp Cloud API Setup
+
 - [ ] Register for Meta Business WABA account (external dependency)
 - [ ] Approve business phone number
 - [ ] Set `WHATSAPP_BOT_TOKEN` and `WHATSAPP_PHONE_NUMBER_ID` in production env
@@ -50,6 +51,7 @@ and all 13 AI assistant dashboards.
 - [ ] Agent inbox: incoming messages assigned to agents, read/unread status
 
 ### 4.2 — Nina Bot (Automated First Response)
+
 - [ ] Conversation state machine in `server/services/NinaBotService.ts`
 - [ ] Intent classification: property inquiry, viewing request, FAQ, escalation
 - [ ] Language detection: English / Arabic
@@ -59,6 +61,7 @@ and all 13 AI assistant dashboards.
 - [ ] Lead auto-creation in Clara from bot conversation
 
 ### 4.3 — Olivia Broadcast Campaigns
+
 - [ ] Campaign builder: audience filter (status, area, budget range)
 - [ ] Template message creation and scheduling
 - [ ] Send execution with per-recipient personalisation
@@ -71,24 +74,14 @@ and all 13 AI assistant dashboards.
 
 **Goal**: Complete tenancy lifecycle from application to move-out.
 
-### 5.1 — Prisma Schema Additions
-Add these models to `prisma/schema.prisma`:
-```prisma
-model Lease {
-  id                     String    @id @default(auto()) @map("_id") @db.ObjectId
-  ejariContractNumber    String?
-  ejariRegistrationDate  DateTime?
-  ejariExpiryDate        DateTime?
-  startDate              DateTime
-  endDate                DateTime
-  monthlyRent            Float
-  depositAmount          Float
-  status                 String    @default("draft") // draft, signed, active, expired, terminated
-  tenantId               String    @db.ObjectId
-  propertyId             String    @db.ObjectId
-  // ... full fields per business_docs/09_crm_features/tenancy-ejari.md
-}
+### 5.1 — Prisma Schema Status
 
+> **✅ Already in schema**: `Lease` and `Maintenance` models exist in `prisma/schema.prisma`.
+> The `RentPayment` model does **not** yet exist and must be added.
+
+Add `RentPayment` to `prisma/schema.prisma`:
+
+```prisma
 model RentPayment {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   leaseId   String   @db.ObjectId
@@ -98,25 +91,19 @@ model RentPayment {
   status    String   @default("pending") // pending, paid, overdue
   lateFee   Float    @default(0)
 }
-
-model MaintenanceRequest {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  description String
-  priority    String   @default("normal") // urgent, high, normal, low
-  status      String   @default("open") // open, in_progress, pending_approval, closed
-  propertyId  String   @db.ObjectId
-  tenantId    String?  @db.ObjectId
-  // ...
-}
 ```
 
+> Reference the existing `Lease` model fields in `prisma/schema.prisma` for relation definition.
+> Reference the existing `Maintenance` model for the maintenance request API (do not re-create it).
+
 ### 5.2 — Lease API (`/api/leases`)
+
 - [ ] CRUD endpoints for Lease model
 - [ ] Lease status lifecycle enforcement
 - [ ] Ejari field validation: cannot set status "active" without `ejariContractNumber`
 
 ### 5.3 — Rent Schedule Auto-Generation
+
 - [ ] On lease activation → auto-create monthly `RentPayment` records
 - [ ] Day 5/10: automated WhatsApp reminder (requires Phase 4)
 - [ ] Day 15: late fee calculation applied
@@ -129,24 +116,28 @@ model MaintenanceRequest {
 **Goal**: Full UAE RERA/KYC/AML/PDPL compliance.
 
 ### 6.1 — RERA Permit Enforcement
+
 - [ ] Add `permitNumber`, `permitExpiryDate` to Property schema
 - [ ] Block property publish if permit missing or expired
 - [ ] Auto-unpublish properties with expired permits (daily cron job via `node-cron`)
 - [ ] 30-day expiry warning in Laila compliance dashboard
 
 ### 6.2 — KYC Document Workflow
+
 - [ ] Install `multer` for file uploads
 - [ ] KYC document upload endpoints: passport, Emirates ID, proof of funds
 - [ ] KYC status: Pending → Under Review → Verified → Rejected
 - [ ] Block transaction creation when client KYC is not verified
 
 ### 6.3 — AML Screening
+
 - [ ] ComplyAdvantage API integration (requires contract)
 - [ ] Auto-screen client on creation
 - [ ] PEP/Sanctions match alerts in Laila compliance dashboard
 - [ ] SAR (Suspicious Activity Report) workflow
 
 ### 6.4 — PDPL Consent Management
+
 - [ ] Consent checkbox on all data-collection forms
 - [ ] `Consent` Prisma model: userId, date, version, purpose, ipAddress
 - [ ] Opt-out for marketing communications
@@ -158,6 +149,7 @@ model MaintenanceRequest {
 ## Phase 7 — Analytics & Portal Syndication (After Phase 6)
 
 ### 7.1 — PropertyFinder & Bayut Integration
+
 - [ ] `PortalSyncService` — XML feed generator
 - [ ] PropertyFinder feed endpoint (partner agreement required)
 - [ ] Bayut feed endpoint (partner agreement required)
@@ -165,6 +157,7 @@ model MaintenanceRequest {
 - [ ] Sync status per property
 
 ### 7.2 — Advanced Financial Reporting
+
 - [ ] Install `exceljs` and `pdfkit`
 - [ ] Commission Detail Report → Excel export
 - [ ] Agent Commission Statement → PDF with company letterhead
@@ -172,12 +165,14 @@ model MaintenanceRequest {
 - [ ] Scheduled report delivery via email
 
 ### 7.3 — Multi-Currency Display
+
 - [ ] ExchangeRate API integration (hourly refresh)
 - [ ] Currency selector component in property listings
 - [ ] AED, USD, EUR, GBP, SAR, INR display
 - [ ] "Approximate conversion" disclaimer
 
 ### 7.4 — Agent Performance Full Module
+
 - [ ] Monthly target setting per agent
 - [ ] Progress tracking vs. targets
 - [ ] Response time KPI measurement
@@ -198,6 +193,7 @@ model MaintenanceRequest {
 ## Phase 9 — Multi-User CRM & RBAC (After Phase 8)
 
 ### 9.1 — User Registration & Role Approval Flow
+
 - [ ] New user signs up → enters email, name, selects role category
 - [ ] Account created with status `pending`
 - [ ] Owner sees pending users in "Users" tab with Approve/Reject actions
@@ -206,12 +202,14 @@ model MaintenanceRequest {
 - [ ] `POST /api/users/role-request` → saves to DB (Prisma model needed: `RoleRequest`)
 
 ### 9.2 — Role-Specific CRM Views
+
 - [ ] Each of the 29 roles in `ROLE_TAB_MAPPING` shows only their permitted tabs
 - [ ] Agents see: leads assigned to them, their properties, their commissions only
 - [ ] Data segmentation: agents cannot see other agents' leads/commissions (backend filter by `assignedToId`)
 - [ ] RBAC middleware on all backend routes: validate `req.user.role` matches the allowed roles list
 
 ### 9.3 — Agent Onboarding Flow
+
 - [ ] First login → profile completion wizard (photo, phone, department, bio)
 - [ ] Welcome email sent on approval (email service TBD)
 
@@ -230,32 +228,32 @@ model MaintenanceRequest {
 
 ## Technical Debt to Address Across All Phases
 
-| Item | Relevant Phase | Notes |
-|------|---------------|-------|
-| `node-cron` not installed | Phase 6 (RERA cron) | `npm install node-cron @types/node-cron` |
-| `exceljs` + `pdfkit` not installed | Phase 7 (reports) | `npm install exceljs pdfkit @types/pdfkit` |
-| `multer` not installed | Phase 6 (file upload) | `npm install multer @types/multer` |
-| 2FA returns 501 | Phase 9 (security) | Implement TOTP or Twilio SMS |
-| Stripe backend returns 503 | Phase 5 or later | Install Stripe SDK when payments are in scope |
-| Only 2 ADRs written | Ongoing | Write ADR per significant architectural decision |
-| CSS approach inconsistent | Phase 9 | Standardise on styled-components across all components |
-| Archer, Quill, Oracle not in code registry | Phase 3 | Add to `src/store/slices/aiAssistant/registry.ts` |
-| OpenAPI spec not wired to server | Phase 9 | Install `swagger-ui-express`, auto-serve `openapi.json` |
-| Test coverage at ~60% | Phase 9 | Target 80% with Vitest; critical flows in Playwright |
+| Item                                       | Relevant Phase        | Notes                                                   |
+| ------------------------------------------ | --------------------- | ------------------------------------------------------- |
+| `node-cron` not installed                  | Phase 6 (RERA cron)   | `npm install node-cron @types/node-cron`                |
+| `exceljs` + `pdfkit` not installed         | Phase 7 (reports)     | `npm install exceljs pdfkit @types/pdfkit`              |
+| `multer` not installed                     | Phase 6 (file upload) | `npm install multer @types/multer`                      |
+| 2FA returns 501                            | Phase 9 (security)    | Implement TOTP or Twilio SMS                            |
+| Stripe backend returns 503                 | Phase 5 or later      | Install Stripe SDK when payments are in scope           |
+| Only 2 ADRs written                        | Ongoing               | Write ADR per significant architectural decision        |
+| CSS approach inconsistent                  | Phase 9               | Standardise on styled-components across all components  |
+| Archer, Quill, Oracle not in code registry | Phase 3               | Add to `src/store/slices/aiAssistant/registry.ts`       |
+| OpenAPI spec not wired to server           | Phase 9               | Install `swagger-ui-express`, auto-serve `openapi.json` |
+| Test coverage at ~60%                      | Phase 9               | Target 80% with Vitest; critical flows in Playwright    |
 
 ---
 
 ## Milestone Summary (Updated April 2026)
 
-| Milestone | Target | Key Deliverables | Depends On |
-|-----------|--------|-----------------|------------|
-| Phase 1 Complete | May 2026 | Full homepage, all sections, mobile-ready | Nothing |
-| Phase 2 Complete | May 2026 | Landlord & Tenant portals live, `arslanmalikgoraha@gmail.com` managing_director login | Phase 1 |
-| Phase 3 Complete | June 2026 | Full CRM all tabs for managing_director with live data | Phase 2 |
-| Phase 4 Complete | July 2026 | WhatsApp live, Nina bot, Olivia campaigns | Phase 3 + WABA account |
-| Phase 5 Complete | August 2026 | Full lease/tenancy, Ejari, rent schedule | Phase 4 |
-| Phase 6 Complete | September 2026 | KYC/AML/PDPL/RERA enforcement | Phase 5 + ComplyAdvantage contract |
-| Phase 7 Complete | October 2026 | Portal syndication, financial exports, multi-currency | Phase 6 + portal agreements |
-| Phase 8 Complete | November 2026 | Arabic RTL full i18n | Phase 7 |
-| Phase 9 Complete | December 2026 | Multi-user RBAC, agent onboarding, role approval | Phase 8 |
-| Phase 10 Complete | Q1 2027 | PWA, push notifications, Cipher/Maven | Phase 9 + OpenAI API |
+| Milestone         | Target         | Key Deliverables                                                                      | Depends On                         |
+| ----------------- | -------------- | ------------------------------------------------------------------------------------- | ---------------------------------- |
+| Phase 1 Complete  | May 2026       | Full homepage, all sections, mobile-ready                                             | Nothing                            |
+| Phase 2 Complete  | May 2026       | Landlord & Tenant portals live, `arslanmalikgoraha@gmail.com` managing_director login | Phase 1                            |
+| Phase 3 Complete  | June 2026      | Full CRM all tabs for managing_director with live data                                | Phase 2                            |
+| Phase 4 Complete  | July 2026      | WhatsApp live, Nina bot, Olivia campaigns                                             | Phase 3 + WABA account             |
+| Phase 5 Complete  | August 2026    | Full lease/tenancy, Ejari, rent schedule                                              | Phase 4                            |
+| Phase 6 Complete  | September 2026 | KYC/AML/PDPL/RERA enforcement                                                         | Phase 5 + ComplyAdvantage contract |
+| Phase 7 Complete  | October 2026   | Portal syndication, financial exports, multi-currency                                 | Phase 6 + portal agreements        |
+| Phase 8 Complete  | November 2026  | Arabic RTL full i18n                                                                  | Phase 7                            |
+| Phase 9 Complete  | December 2026  | Multi-user RBAC, agent onboarding, role approval                                      | Phase 8                            |
+| Phase 10 Complete | Q1 2027        | PWA, push notifications, Cipher/Maven                                                 | Phase 9 + OpenAI API               |

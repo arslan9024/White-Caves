@@ -311,7 +311,7 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = React.memo(function Mo
           {/* AI Command Center */}
           <DrawerSectionLabel>AI Center</DrawerSectionLabel>
           <DrawerNavItem onClick={handleAIOpen} aria-label="AI Command Center">
-            <DrawerNavIcon $color="#D4AF37">
+            <DrawerNavIcon $color="#E31E24">
               <Bot size={18} />
             </DrawerNavIcon>
             AI Command Center

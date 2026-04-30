@@ -1,9 +1,12 @@
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 
-const { colors, shadows, transitions, radius, spacing, typography } = theme;
+const { colors, transitions, radius, spacing, typography } = theme;
 
-export const AssistantSidebarContainer = styled.div<{ $collapsed?: boolean; $sidebarAccent?: string }>`
+export const AssistantSidebarContainer = styled.div<{
+  $collapsed?: boolean;
+  $sidebarAccent?: string;
+}>`
   --sidebar-accent: ${props => props.$sidebarAccent || colors.info};
   display: flex;
   flex-direction: column;
@@ -97,7 +100,9 @@ export const FavoriteButton = styled.button<{ $isFavorite?: boolean }>`
     color: var(--primary);
   }
 
-  ${props => props.$isFavorite && `
+  ${props =>
+    props.$isFavorite &&
+    `
     background: rgba(14, 165, 233, 0.15);
     border-color: var(--primary);
     color: var(--primary);
@@ -113,7 +118,9 @@ export const FavoriteButton = styled.button<{ $isFavorite?: boolean }>`
       color: #3b82f6;
     }
 
-    ${props => props.$isFavorite && `
+    ${props =>
+      props.$isFavorite &&
+      `
       background: rgba(59, 130, 246, 0.2);
       border-color: #3b82f6;
       color: #3b82f6;
@@ -175,9 +182,9 @@ export const SidebarItem = styled.button<{ $active?: boolean }>`
   align-items: center;
   gap: 12px;
   padding: 10px 16px;
-  background: ${props => props.$active ? 'rgba(14, 165, 233, 0.1)' : 'transparent'};
+  background: ${props => (props.$active ? 'rgba(14, 165, 233, 0.1)' : 'transparent')};
   border: none;
-  color: ${props => props.$active ? 'var(--primary)' : 'var(--text-secondary)'};
+  color: ${props => (props.$active ? 'var(--primary)' : 'var(--text-secondary)')};
   cursor: pointer;
   transition: ${transitions.hover};
   text-align: left;
@@ -196,8 +203,8 @@ export const SidebarItem = styled.button<{ $active?: boolean }>`
   }
 
   @media (prefers-color-scheme: dark) {
-    background: ${props => props.$active ? 'rgba(59, 130, 246, 0.15)' : 'transparent'};
-    color: ${props => props.$active ? '#3b82f6' : '#a0aec0'};
+    background: ${props => (props.$active ? 'rgba(59, 130, 246, 0.15)' : 'transparent')};
+    color: ${props => (props.$active ? '#3b82f6' : '#a0aec0')};
 
     &:hover {
       background: rgba(59, 130, 246, 0.1);
@@ -214,7 +221,7 @@ export const ItemLabel = styled.span`
 `;
 
 export const ItemBadge = styled.span`
-  background: rgba(212, 175, 55, 0.15);
+  background: rgba(227, 30, 36, 0.15);
   color: ${colors.primary};
   font-size: 11px;
   font-weight: ${typography.weights.semibold};

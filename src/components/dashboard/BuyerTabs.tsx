@@ -150,7 +150,7 @@ export const SavedProperties: React.FC = () => {
               <div key={fav.id} style={S.card}>
                 <h4 style={{ margin: 0 }}>{fav.property?.title ?? 'Property'}</h4>
                 <p style={S.headerSubtitle}>📍 {fav.property?.location ?? '—'}</p>
-                <p style={{ fontWeight: 600, color: 'var(--color-primary, #D4AF37)' }}>
+                <p style={{ fontWeight: 600, color: 'var(--color-primary, #E31E24)' }}>
                   {S.formatCurrency(fav.property?.price)}
                 </p>
                 {fav.property?.bedrooms != null && (

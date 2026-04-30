@@ -42,7 +42,7 @@ const roles: RoleOption[] = [
     ),
     path: '/seller/dashboard',
     role: 'seller',
-    color: '#D4AF37',
+    color: '#E31E24',
   },
   {
     id: 'tenant',
@@ -72,7 +72,7 @@ const roles: RoleOption[] = [
     ),
     path: '/signin',
     role: 'agent',
-    color: '#FFB300',
+    color: '#E31E24',
   },
 ];
 
@@ -172,7 +172,7 @@ const RoleSelectionModal: React.FC = () => {
           <p style={{ margin: '0.5rem 0 0', color: '#6b7280', fontSize: '0.9rem' }}>
             Select your role to access personalised features and services
           </p>
-          <div style={{ width: 48, height: 3, background: 'linear-gradient(90deg,#E31E24,#D4AF37)', borderRadius: 2, margin: '1rem auto 0' }} />
+          <div style={{ width: 48, height: 3, background: 'linear-gradient(90deg,#E31E24,#B71C1C)', borderRadius: 2, margin: '1rem auto 0' }} />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>

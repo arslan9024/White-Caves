@@ -74,7 +74,7 @@
 }
 
 .progress-step.active .step-icon {
-  background: var(--crm-gold, #D4AF37);
+  background: var(--crm-gold, #E31E24);
   color: var(--crm-navy, #1A1A1A);
 }
 
@@ -155,7 +155,7 @@
 .form-select:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: var(--crm-gold, #D4AF37);
+  border-color: var(--crm-gold, #E31E24);
   background: #ffffff;
 }
 
@@ -195,13 +195,13 @@
 }
 
 .type-card:hover {
-  border-color: var(--crm-gold, #D4AF37);
-  background: rgba(212, 175, 55, 0.05);
+  border-color: var(--crm-gold, #E31E24);
+  background: rgba(227, 30, 36, 0.05);
 }
 
 .type-card.selected {
-  border-color: var(--crm-gold, #D4AF37);
-  background: rgba(212, 175, 55, 0.1);
+  border-color: var(--crm-gold, #E31E24);
+  background: rgba(227, 30, 36, 0.1);
   color: var(--crm-navy, #1A1A1A);
 }
 
@@ -228,7 +228,7 @@
 }
 
 .checkbox-item input[type="checkbox"] {
-  accent-color: var(--crm-gold, #D4AF37);
+  accent-color: var(--crm-gold, #E31E24);
 }
 
 .amenities-grid {
@@ -252,12 +252,12 @@
 }
 
 .amenity-card:hover {
-  border-color: var(--crm-gold, #D4AF37);
+  border-color: var(--crm-gold, #E31E24);
 }
 
 .amenity-card.selected {
-  border-color: var(--crm-gold, #D4AF37);
-  background: rgba(212, 175, 55, 0.1);
+  border-color: var(--crm-gold, #E31E24);
+  background: rgba(227, 30, 36, 0.1);
   color: var(--crm-navy, #1A1A1A);
 }
 
@@ -305,7 +305,7 @@
 .price-calc {
   margin-top: 8px;
   font-size: 0.875rem;
-  color: var(--crm-gold, #D4AF37);
+  color: var(--crm-gold, #E31E24);
   font-weight: 500;
 }
 
@@ -325,8 +325,8 @@
 }
 
 .upload-zone:hover {
-  border-color: var(--crm-gold, #D4AF37);
-  background: rgba(212, 175, 55, 0.05);
+  border-color: var(--crm-gold, #E31E24);
+  background: rgba(227, 30, 36, 0.05);
 }
 
 .upload-zone.small {
@@ -345,7 +345,7 @@
 .upload-tips {
   margin-top: 16px;
   padding: 16px;
-  background: rgba(212, 175, 55, 0.08);
+  background: rgba(227, 30, 36, 0.08);
   border-radius: 10px;
 }
 
@@ -380,7 +380,7 @@
 }
 
 .radio-item input[type="radio"] {
-  accent-color: var(--crm-gold, #D4AF37);
+  accent-color: var(--crm-gold, #E31E24);
 }
 
 .package-grid {
@@ -400,12 +400,12 @@
 }
 
 .package-card:hover {
-  border-color: var(--crm-gold, #D4AF37);
+  border-color: var(--crm-gold, #E31E24);
 }
 
 .package-card.selected {
-  border-color: var(--crm-gold, #D4AF37);
-  background: rgba(212, 175, 55, 0.1);
+  border-color: var(--crm-gold, #E31E24);
+  background: rgba(227, 30, 36, 0.1);
 }
 
 .package-header {
@@ -423,7 +423,7 @@
 .package-price {
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--crm-gold, #D4AF37);
+  color: var(--crm-gold, #E31E24);
 }
 
 .package-features {
@@ -447,7 +447,7 @@
 
 .form-range {
   width: 100%;
-  accent-color: var(--crm-gold, #D4AF37);
+  accent-color: var(--crm-gold, #E31E24);
 }
 
 .range-labels {
@@ -518,7 +518,7 @@
 }
 
 .btn-submit {
-  background: var(--crm-gold, #D4AF37);
+  background: var(--crm-gold, #E31E24);
   color: var(--crm-navy, #1A1A1A);
 }
 

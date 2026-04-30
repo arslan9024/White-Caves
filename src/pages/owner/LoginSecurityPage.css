@@ -47,7 +47,7 @@
 }
 .ls-summary-success { border-left: 4px solid #10B981; }
 .ls-summary-failed { border-left: 4px solid #EF4444; }
-.ls-summary-total { border-left: 4px solid var(--primary-color, #D4AF37); }
+.ls-summary-total { border-left: 4px solid var(--primary-color, #E31E24); }
 
 .ls-active-lockouts {
   margin: 0 0 1rem;
@@ -152,7 +152,7 @@
   padding: 0.15rem 0.5rem;
   font-size: 0.75rem;
   font-weight: 600;
-  background: var(--luxury-cta-bg, #d4af37);
+  background: var(--luxury-cta-bg, #E31E24);
   color: #1a1a1a;
   border: none;
   border-radius: 4px;
@@ -201,11 +201,11 @@
   cursor: pointer;
   font-weight: 600;
   color: white;
-  background: var(--luxury-cta-bg, var(--primary-color, #D4AF37));
+  background: var(--luxury-cta-bg, var(--primary-color, #E31E24));
   transition: filter 0.15s ease;
 }
 .ls-refresh:hover:not(:disabled) {
-  background: var(--luxury-cta-bg-hover, var(--primary-color, #D4AF37));
+  background: var(--luxury-cta-bg-hover, var(--primary-color, #E31E24));
   filter: brightness(1.05);
 }
 .ls-refresh:disabled {
@@ -214,16 +214,16 @@
 }
 .ls-export {
   padding: 0.55rem 1.1rem;
-  border: 1px solid var(--primary-color, #D4AF37);
+  border: 1px solid var(--primary-color, #E31E24);
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
   background: transparent;
-  color: var(--primary-color, #B8960C);
+  color: var(--primary-color, #B71C1C);
   transition: background 0.15s ease, color 0.15s ease;
 }
 .ls-export:hover:not(:disabled) {
-  background: var(--luxury-cta-bg, var(--primary-color, #D4AF37));
+  background: var(--luxury-cta-bg, var(--primary-color, #E31E24));
   color: white;
 }
 .ls-export:disabled {
@@ -315,9 +315,9 @@
 }
 .ls-unlock {
   padding: 0.4rem 0.8rem;
-  border: 1px solid var(--primary-color, #D4AF37);
+  border: 1px solid var(--primary-color, #E31E24);
   background: transparent;
-  color: var(--primary-color, #B8960C);
+  color: var(--primary-color, #B71C1C);
   border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
@@ -325,7 +325,7 @@
   transition: all 0.15s ease;
 }
 .ls-unlock:hover:not(:disabled) {
-  background: var(--luxury-cta-bg, var(--primary-color, #D4AF37));
+  background: var(--luxury-cta-bg, var(--primary-color, #E31E24));
   color: white;
 }
 .ls-unlock:disabled {

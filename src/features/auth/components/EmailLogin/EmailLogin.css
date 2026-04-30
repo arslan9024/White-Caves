@@ -31,8 +31,8 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: var(--primary-color, #D4AF37);
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+  border-color: var(--primary-color, #E31E24);
+  box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.1);
 }
 
 .form-group input.error {
@@ -55,7 +55,7 @@
 
 .email-submit-btn {
   padding: 14px 20px;
-  background: var(--primary-color, #D4AF37);
+  background: var(--primary-color, #E31E24);
   color: #ffffff;
   border: none;
   border-radius: 10px;
@@ -67,7 +67,7 @@
 }
 
 .email-submit-btn:hover:not(:disabled) {
-  background: #B8960C;
+  background: #B71C1C;
   transform: translateY(-1px);
 }
 
@@ -93,7 +93,7 @@
 .auth-switch button {
   background: none;
   border: none;
-  color: var(--primary-color, #D4AF37);
+  color: var(--primary-color, #E31E24);
   font-weight: 600;
   cursor: pointer;
   padding: 0;
@@ -114,8 +114,8 @@
 }
 
 [data-theme="dark"] .form-group input:focus {
-  border-color: var(--primary-color, #D4AF37);
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+  border-color: var(--primary-color, #E31E24);
+  box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.2);
 }
 
 [data-theme="dark"] .form-group input:disabled {

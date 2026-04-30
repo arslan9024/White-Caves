@@ -212,7 +212,7 @@ const Locations = ({ locationTrends, isLoading = false }: LocationsProps) => {
                       }}
                     >
                       <div style={{ color: '#fff', fontSize: '0.8rem', fontWeight: 500, textAlign: 'center', lineHeight: 1.8 }}>
-                        <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#D4AF37', marginBottom: 4 }}>{location.avgPrice}</div>
+                        <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#E31E24', marginBottom: 4 }}>{location.avgPrice}</div>
                         <div>Avg. Price</div>
                         <div style={{ marginTop: 8, fontSize: '0.95rem', fontWeight: 600 }}>{location.properties} Properties</div>
                         <div style={{

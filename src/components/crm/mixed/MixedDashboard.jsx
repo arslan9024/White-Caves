@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import './MixedDashboard.css';
 
 const containerVariants = {
@@ -7,34 +7,34 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1
-    }
-  }
+      staggerChildren: 0.1,
+    },
+  },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
-    transition: { duration: 0.4, ease: 'easeOut' }
-  }
+    transition: { duration: 0.4, ease: 'easeOut' },
+  },
 };
 
 export default function MixedDashboard({
-  departmentId,
+  departmentId: _departmentId,
   departmentLabel,
-  assistantId,
+  assistantId: _assistantId,
   assistantName,
   statsComponent,
   flowchartComponent,
   tableComponent,
   activityComponent,
   quickActionsComponent,
-  children
+  children,
 }) {
   return (
-    <motion.div 
+    <motion.div
       className="mixed-dashboard"
       variants={containerVariants}
       initial="hidden"
@@ -50,11 +50,7 @@ export default function MixedDashboard({
             </span>
           )}
         </div>
-        {quickActionsComponent && (
-          <div className="quick-actions-slot">
-            {quickActionsComponent}
-          </div>
-        )}
+        {quickActionsComponent && <div className="quick-actions-slot">{quickActionsComponent}</div>}
       </motion.div>
 
       {statsComponent && (
@@ -92,19 +88,14 @@ export default function MixedDashboard({
 
 export function DashboardSection({ title, icon, children, className = '' }) {
   return (
-    <motion.div 
-      className={`dashboard-section ${className}`}
-      variants={itemVariants}
-    >
+    <motion.div className={`dashboard-section ${className}`} variants={itemVariants}>
       {title && (
         <div className="section-header">
           {icon && <span className="section-icon">{icon}</span>}
           <h3 className="section-title">{title}</h3>
         </div>
       )}
-      <div className="section-content">
-        {children}
-      </div>
+      <div className="section-content">{children}</div>
     </motion.div>
   );
 }

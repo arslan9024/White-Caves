@@ -191,11 +191,11 @@ describe('HeroSearchBar', () => {
   });
 
   describe('Search navigation', () => {
-    it('navigates to /properties with no params when defaults are kept', () => {
+    it('navigates to /properties with mode=buy when defaults are kept', () => {
       render(<HeroSearchBar />);
       fireEvent.click(screen.getByLabelText('Search properties'));
       expect(mockDispatch).toHaveBeenCalled();
-      expect(mockNavigate).toHaveBeenCalledWith('/properties');
+      expect(mockNavigate).toHaveBeenCalledWith('/properties?mode=buy');
     });
 
     it('dispatches clearFilters before every search', () => {

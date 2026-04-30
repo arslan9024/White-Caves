@@ -16,18 +16,19 @@ export const colors = {
   secondaryDark: '#1E3A32',
   secondaryLight: '#3D7A6B',
 
-  // Gold Palette (50→900)
+  // Brand Red Palette (50→900) — replaces legacy gold palette
+  // ⚠️ BRAND RULE: White Caves brand = Red (#E31E24) + White ONLY. No gold. No yellow. No amber.
   gold: {
-    50: '#FDF8E8',
-    100: '#FAF0C8',
-    200: '#F5E08E',
-    300: '#E8CC6E',
-    400: '#D4AF37',
-    500: '#B8960C',
-    600: '#9A7D0A',
-    700: '#7C6408',
-    800: '#5E4B06',
-    900: '#403204',
+    50: '#FFEBEE',
+    100: '#FFCDD2',
+    200: '#EF9A9A',
+    300: '#E57373',
+    400: '#E31E24',
+    500: '#B71C1C',
+    600: '#C62828',
+    700: '#B71C1C',
+    800: '#961818',
+    900: '#7B1414',
   },
 
   // Green Palette (50→900)
@@ -44,12 +45,12 @@ export const colors = {
     900: '#0E1C18',
   },
 
-  // Luxury Gradients
+  // Luxury Gradients — all use brand RED, not gold
   luxury: {
-    goldShimmer: 'linear-gradient(135deg, #D4AF37 0%, #E8CC6E 50%, #D4AF37 100%)',
-    goldToGreen: 'linear-gradient(135deg, #D4AF37 0%, #2E5A4F 100%)',
+    goldShimmer: 'linear-gradient(135deg, #E31E24 0%, #EF5350 50%, #E31E24 100%)',
+    goldToGreen: 'linear-gradient(135deg, #E31E24 0%, #2E5A4F 100%)',
     darkGreen: 'linear-gradient(135deg, #2E5A4F 0%, #1E3A32 100%)',
-    goldDark: 'linear-gradient(180deg, #D4AF37, #B8960C)',
+    goldDark: 'linear-gradient(180deg, #E31E24, #B71C1C)',
     warmSand: 'linear-gradient(135deg, #F5E6D3 0%, #FDF8E8 100%)',
     premiumDark: 'linear-gradient(135deg, #1A1A1A 0%, #2E5A4F 100%)',
   },
@@ -131,10 +132,10 @@ export const colors = {
 
   // Role category colours (used by roles.ts REAL_ESTATE_ROLES)
   roles: {
-    gold: '#FFD700',
+    gold: '#E31E24',
     navyBlue: '#1E40AF',
     violet: '#7C3AED',
-    crimson: '#D4AF37',
+    crimson: '#D32F2F',
     royalBlue: '#2563EB',
     deepPurple: '#7C3AED',
     emerald: '#059669',
@@ -170,7 +171,7 @@ export const colors = {
 
   // Utility Aliases for Component Compatibility
   surface: '#FFFFFF',
-  surfaceAlt: '#F5F5F5', 
+  surfaceAlt: '#F5F5F5',
   hover: '#F5F5F5',
   cardBg: '#FFFFFF',
   textColor: '#212121',

@@ -76,8 +76,8 @@ export const Tab = styled.button<{ $active?: boolean }>`
   padding: ${spacing.md} ${spacing.lg};
   background: none;
   border: none;
-  border-bottom: 3px solid ${props => props.$active ? colors.primary : 'transparent'};
-  color: ${props => props.$active ? colors.primary : colors.text.secondary};
+  border-bottom: 3px solid ${props => (props.$active ? colors.primary : 'transparent')};
+  color: ${props => (props.$active ? colors.primary : colors.text.secondary)};
   font-size: ${typography.sizes.base};
   font-weight: ${typography.weights.medium};
   cursor: pointer;
@@ -86,10 +86,12 @@ export const Tab = styled.button<{ $active?: boolean }>`
 
   &:hover {
     color: ${colors.text.primary};
-    border-bottom-color: ${props => props.$active ? colors.primary : colors.border};
+    border-bottom-color: ${props => (props.$active ? colors.primary : colors.border)};
   }
 
-  ${reducedMotion} { transition: none; }
+  ${reducedMotion} {
+    transition: none;
+  }
 `;
 
 export const AdminContent = styled.div`
@@ -125,7 +127,9 @@ export const MetricCard = styled.div`
 
   ${reducedMotion} {
     transition: none;
-    &:hover { transform: none; }
+    &:hover {
+      transform: none;
+    }
   }
 `;
 
@@ -181,10 +185,14 @@ export const MetricStatus = styled.div<{ $status?: string }>`
   font-weight: ${typography.weights.bold};
   color: ${props => {
     switch (props.$status) {
-      case 'excellent': return colors.success;
-      case 'good': return colors.info;
-      case 'warning': return colors.warning;
-      default: return colors.error;
+      case 'excellent':
+        return colors.success;
+      case 'good':
+        return colors.info;
+      case 'warning':
+        return colors.warning;
+      default:
+        return colors.error;
     }
   }};
   margin-bottom: ${radius.xl};
@@ -256,14 +264,14 @@ export const AlertItem = styled.div<{ $severity?: 'warning' | 'info' }>`
   align-items: center;
   justify-content: space-between;
   padding: ${radius.xl} ${spacing.md};
-  background: ${props => props.$severity === 'warning' ? '#FFF3E0' : '#E3F2FD'};
-  border-left: 4px solid ${props => props.$severity === 'warning' ? colors.warning : colors.info};
+  background: ${props => (props.$severity === 'warning' ? '#FFF3E0' : '#E3F2FD')};
+  border-left: 4px solid ${props => (props.$severity === 'warning' ? colors.warning : colors.info)};
   border-radius: ${radius.sm};
   cursor: pointer;
   transition: ${transitions.hover};
 
   &:hover {
-    background: ${props => props.$severity === 'warning' ? '#FFE0B2' : '#BBDEFB'};
+    background: ${props => (props.$severity === 'warning' ? '#FFE0B2' : '#BBDEFB')};
   }
 `;
 
@@ -286,8 +294,8 @@ export const AlertStatus = styled.span<{ $status?: string }>`
   font-size: 11px;
   font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
-  background: ${props => props.$status === 'active' ? 'rgba(212, 175, 55, 0.12)' : colors.border};
-  color: ${props => props.$status === 'active' ? colors.primaryDark : '#616161'};
+  background: ${props => (props.$status === 'active' ? 'rgba(227, 30, 36, 0.12)' : colors.border)};
+  color: ${props => (props.$status === 'active' ? colors.primaryDark : '#616161')};
 `;
 
 export const ActivitySection = styled.div`
@@ -326,20 +334,30 @@ export const ActivityIcon = styled.div<{ type?: string }>`
   border-radius: ${radius.full};
   background: ${props => {
     switch (props.type) {
-      case 'create': return '#E8F5E9';
-      case 'update': return '#E3F2FD';
-      case 'download': return '#FFF3E0';
-      case 'system': return '#F3E5F5';
-      default: return colors.background.tertiary;
+      case 'create':
+        return '#E8F5E9';
+      case 'update':
+        return '#E3F2FD';
+      case 'download':
+        return '#FFF3E0';
+      case 'system':
+        return '#F3E5F5';
+      default:
+        return colors.background.tertiary;
     }
   }};
   color: ${props => {
     switch (props.type) {
-      case 'create': return colors.success;
-      case 'update': return colors.info;
-      case 'download': return colors.warning;
-      case 'system': return '#9C27B0';
-      default: return colors.text.secondary;
+      case 'create':
+        return colors.success;
+      case 'update':
+        return colors.info;
+      case 'download':
+        return colors.warning;
+      case 'system':
+        return '#9C27B0';
+      default:
+        return colors.text.secondary;
     }
   }};
   flex-shrink: 0;
@@ -419,16 +437,22 @@ export const RoleBadge = styled.span<{ $role?: string }>`
   font-weight: ${typography.weights.semibold};
   background: ${props => {
     switch (props.$role) {
-      case 'agent': return '#E3F2FD';
-      case 'admin': return '#FCE4EC';
-      default: return colors.background.tertiary;
+      case 'agent':
+        return '#E3F2FD';
+      case 'admin':
+        return '#FCE4EC';
+      default:
+        return colors.background.tertiary;
     }
   }};
   color: ${props => {
     switch (props.$role) {
-      case 'agent': return colors.info;
-      case 'admin': return colors.error;
-      default: return colors.text.secondary;
+      case 'agent':
+        return colors.info;
+      case 'admin':
+        return colors.error;
+      default:
+        return colors.text.secondary;
     }
   }};
 `;
@@ -439,8 +463,8 @@ export const StatusBadge = styled.span<{ $status?: string }>`
   border-radius: ${radius.xl};
   font-size: ${typography.sizes.xs};
   font-weight: ${typography.weights.semibold};
-  background: ${props => props.$status === 'active' ? '#E8F5E9' : '#FFEBEE'};
-  color: ${props => props.$status === 'active' ? colors.success : colors.error};
+  background: ${props => (props.$status === 'active' ? '#E8F5E9' : '#FFEBEE')};
+  color: ${props => (props.$status === 'active' ? colors.success : colors.error)};
 `;
 
 export const ActionBtn = styled.button<{ $danger?: boolean }>`
@@ -451,12 +475,12 @@ export const ActionBtn = styled.button<{ $danger?: boolean }>`
   font-size: ${typography.sizes.sm};
   font-weight: ${typography.weights.medium};
   cursor: pointer;
-  background: ${props => props.$danger ? '#FFEBEE' : '#E3F2FD'};
-  color: ${props => props.$danger ? colors.error : colors.info};
+  background: ${props => (props.$danger ? '#FFEBEE' : '#E3F2FD')};
+  color: ${props => (props.$danger ? colors.error : colors.info)};
   transition: ${transitions.hover};
 
   &:hover {
-    background: ${props => props.$danger ? '#FFCDD2' : '#BBDEFB'};
+    background: ${props => (props.$danger ? '#FFCDD2' : '#BBDEFB')};
   }
 `;
 

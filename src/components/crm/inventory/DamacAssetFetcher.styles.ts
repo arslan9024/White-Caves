@@ -3,7 +3,7 @@ import { keyframes } from 'styled-components';
 import { typography } from '../../../styles/theme/typography';
 import { theme } from '../../../styles/theme';
 
-const { colors, shadows, transitions, radius, spacing } = theme;
+const { colors, transitions, radius, spacing } = theme;
 
 const spin = keyframes`
   from { transform: rotate(0deg); }
@@ -77,10 +77,10 @@ export const ViewToggle = styled.div`
 export const ViewToggleButton = styled.button<{ $active?: boolean }>`
   padding: ${spacing.sm};
   border: none;
-  background: ${props => props.$active ? 'var(--bg-primary)' : 'transparent'};
+  background: ${props => (props.$active ? 'var(--bg-primary)' : 'transparent')};
   border-radius: ${radius.md};
   cursor: pointer;
-  color: ${props => props.$active ? colors.primary : 'var(--text-muted)'};
+  color: ${props => (props.$active ? colors.primary : 'var(--text-muted)')};
   transition: ${transitions.hover};
 
   &:hover {
@@ -88,7 +88,7 @@ export const ViewToggleButton = styled.button<{ $active?: boolean }>`
   }
 
   @media (prefers-color-scheme: dark) {
-    background: ${props => props.$active ? '#2a2a3e' : 'transparent'};
+    background: ${props => (props.$active ? '#2a2a3e' : 'transparent')};
   }
 `;
 
@@ -136,7 +136,7 @@ export const AutoFillButton = styled.button`
   transition: ${transitions.hover};
 
   &:hover {
-    background: rgba(212, 175, 55, 0.1);
+    background: rgba(227, 30, 36, 0.1);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -144,7 +144,7 @@ export const AutoFillButton = styled.button`
     border-color: #444444;
 
     &:hover {
-      background: rgba(212, 175, 55, 0.15);
+      background: rgba(227, 30, 36, 0.15);
     }
   }
 `;
@@ -163,7 +163,7 @@ export const TextArea = styled.textarea`
   &:focus {
     outline: none;
     border-color: ${colors.primary};
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.1);
   }
 
   &::placeholder {
@@ -295,12 +295,20 @@ export const SummaryItem = styled.div<{ $variant?: 'success' | 'error' }>`
   gap: 6px;
   font-size: 0.9rem;
   font-weight: ${typography.weights.medium};
-  color: ${props => props.$variant === 'success' ? colors.success : props.$variant === 'error' ? colors.error : 'var(--text-primary)'};
+  color: ${props =>
+    props.$variant === 'success'
+      ? colors.success
+      : props.$variant === 'error'
+        ? colors.error
+        : 'var(--text-primary)'};
 `;
 
 export const AssetsGrid = styled.div<{ $viewMode?: 'grid' | 'list' }>`
-  display: ${props => props.$viewMode === 'list' ? 'flex' : 'grid'};
-  ${props => props.$viewMode === 'list' ? 'flex-direction: column;' : 'grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));'}
+  display: ${props => (props.$viewMode === 'list' ? 'flex' : 'grid')};
+  ${props =>
+    props.$viewMode === 'list'
+      ? 'flex-direction: column;'
+      : 'grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));'}
   gap: 12px;
   margin-bottom: 20px;
 
@@ -313,19 +321,19 @@ export const AssetCard = styled.div<{ $selected?: boolean }>`
   position: relative;
   border-radius: ${radius.lg};
   overflow: hidden;
-  border: 2px solid ${props => props.$selected ? colors.primary : 'var(--border-color)'};
+  border: 2px solid ${props => (props.$selected ? colors.primary : 'var(--border-color)')};
   cursor: pointer;
   transition: ${transitions.hover};
   background: var(--bg-secondary);
 
   &:hover {
     border-color: ${colors.primary};
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 4px 12px rgba(227, 30, 36, 0.2);
   }
 
   @media (prefers-color-scheme: dark) {
     background: #1e1e2e;
-    border-color: ${props => props.$selected ? colors.primary : '#333333'};
+    border-color: ${props => (props.$selected ? colors.primary : '#333333')};
   }
 `;
 
@@ -351,7 +359,7 @@ export const SelectionBadge = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(212, 175, 55, 0.9);
+  background: rgba(227, 30, 36, 0.9);
   border-radius: 50%;
   padding: ${spacing.sm};
   display: flex;
@@ -390,8 +398,9 @@ export const AssetType = styled.span<{ $type?: string }>`
   display: inline-block;
   padding: 2px 6px;
   border-radius: ${radius.sm};
-  background: ${props => props.$type === 'primary' ? 'rgba(212, 175, 55, 0.2)' : 'rgba(156, 163, 175, 0.2)'};
-  color: ${props => props.$type === 'primary' ? colors.primary : '#6b7280'};
+  background: ${props =>
+    props.$type === 'primary' ? 'rgba(227, 30, 36, 0.2)' : 'rgba(156, 163, 175, 0.2)'};
+  color: ${props => (props.$type === 'primary' ? colors.primary : '#6b7280')};
   text-transform: capitalize;
   font-weight: ${typography.weights.medium};
 `;
@@ -400,7 +409,7 @@ export const OpenLink = styled.a`
   position: absolute;
   top: 4px;
   right: 4px;
-  background: rgba(212, 175, 55, 0.2);
+  background: rgba(227, 30, 36, 0.2);
   color: ${colors.primary};
   width: 24px;
   height: 24px;
@@ -413,7 +422,7 @@ export const OpenLink = styled.a`
   cursor: pointer;
 
   &:hover {
-    background: rgba(212, 175, 55, 0.4);
+    background: rgba(227, 30, 36, 0.4);
   }
 
   ${AssetCard}:hover & {

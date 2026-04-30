@@ -313,7 +313,7 @@ const CRM_MODULES: CRMModuleDef[] = [
     icon: '👑',
     description: 'KPIs, compliance, strategic overview',
     Component: ZoeExecutiveCRM,
-    color: '#D4AF37',
+    color: '#E31E24',
   },
 ];
 
@@ -432,7 +432,7 @@ const CRMHubPage: FC = () => {
         <QuickAction $color="#8B5CF6" onClick={() => handleModuleSelect('theodora')}>
           💰 Finance & Commissions
         </QuickAction>
-        <QuickAction $color="#D4AF37" onClick={() => handleModuleSelect('zoe')}>
+        <QuickAction $color="#E31E24" onClick={() => handleModuleSelect('zoe')}>
           👑 Executive View
         </QuickAction>
       </QuickActions>

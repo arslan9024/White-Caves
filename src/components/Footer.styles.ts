@@ -231,7 +231,7 @@ export const FooterRating = styled.div`
 
 export const StarRatingFooter = styled.div`
   a {
-    color: #FFB300;
+    color: #E31E24;
     font-size: 1.5rem;
     text-decoration: none;
     letter-spacing: 2px;

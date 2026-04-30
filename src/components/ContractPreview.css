@@ -22,7 +22,7 @@
 }
 
 .contract-type {
-  color: #d4af37;
+  color: #E31E24;
   font-weight: 600;
   margin: 5px 0;
 }
@@ -87,7 +87,7 @@
 }
 
 .section-header .icon {
-  color: #d4af37;
+  color: #E31E24;
   font-size: 12px;
   display: inline-block;
 }
@@ -168,7 +168,7 @@
 }
 
 .party-card h4 {
-  color: #d4af37;
+  color: #E31E24;
   font-size: 16px;
   margin: 0 0 15px 0;
 }
@@ -189,7 +189,7 @@
 
 /* Financial Details */
 .detail-group .detail-row .value {
-  color: #d4af37;
+  color: #E31E24;
   font-weight: 700;
   font-size: 16px;
 }
@@ -215,7 +215,7 @@
 /* Signatures Section */
 .signatures-section {
   background: #fffef5;
-  border: 2px dashed #d4af37;
+  border: 2px dashed #E31E24;
 }
 
 .signatures-grid {
@@ -230,7 +230,7 @@
   padding: 20px;
   background: white;
   border-radius: 8px;
-  border: 1px solid #d4af37;
+  border: 1px solid #E31E24;
 }
 
 .placeholder-label {
@@ -338,14 +338,14 @@
 }
 
 .btn-primary {
-  background-color: #d4af37;
+  background-color: #E31E24;
   color: #1a1a2e;
 }
 
 .btn-primary:hover:not(:disabled) {
   background-color: #c49f2f;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 4px 12px rgba(227, 30, 36, 0.3);
 }
 
 .btn-primary:disabled {

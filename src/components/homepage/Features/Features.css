@@ -73,7 +73,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--primary-color), var(--accent-gold));
+  background: linear-gradient(90deg, var(--primary-color), #ef5350);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform var(--transition-normal);

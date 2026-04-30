@@ -10,7 +10,7 @@ export const SelectorContainer = styled.div<{ $compact?: boolean }>`
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   width: 100%;
-  max-width: ${(props) => (props.$compact ? '300px' : '100%')};
+  max-width: ${props => (props.$compact ? '300px' : '100%')};
 `;
 
 export const CurrentAssistantDisplay = styled.div`
@@ -148,12 +148,9 @@ export const DepartmentFilter = styled.div`
 export const DeptBtn = styled.button<{ $active?: boolean }>`
   padding: 6px 12px;
   border: 1px solid var(--border-color);
-  background: ${(props) =>
-    props.$active ? 'var(--primary-color)' : 'transparent'};
-  border-color: ${(props) =>
-    props.$active ? 'var(--primary-color)' : 'var(--border-color)'};
-  color: ${(props) =>
-    props.$active ? 'white' : 'var(--text-secondary)'};
+  background: ${props => (props.$active ? 'var(--primary-color)' : 'transparent')};
+  border-color: ${props => (props.$active ? 'var(--primary-color)' : 'var(--border-color)')};
+  color: ${props => (props.$active ? 'white' : 'var(--text-secondary)')};
   border-radius: 20px;
   font-size: 11px;
   cursor: pointer;
@@ -203,10 +200,8 @@ export const AssistantItem = styled.div<{ $selected?: boolean }>`
   cursor: pointer;
   transition: ${transitions.hover};
   gap: 12px;
-  background: ${(props) =>
-    props.$selected
-      ? 'var(--primary-light, rgba(59, 130, 246, 0.1))'
-      : 'transparent'};
+  background: ${props =>
+    props.$selected ? 'var(--primary-light, rgba(59, 130, 246, 0.1))' : 'transparent'};
 
   &:hover {
     background: var(--hover-bg, rgba(0, 0, 0, 0.05));
@@ -272,7 +267,7 @@ export const HealthBadge = styled.span<{ $status?: string }>`
   font-size: 9px;
   font-weight: ${typography.weights.semibold};
   text-transform: capitalize;
-  background: ${(props) => {
+  background: ${props => {
     switch (props.$status) {
       case 'optimal':
         return 'rgba(16, 185, 129, 0.1)';
@@ -284,7 +279,7 @@ export const HealthBadge = styled.span<{ $status?: string }>`
         return 'rgba(107, 114, 128, 0.1)';
     }
   }};
-  color: ${(props) => {
+  color: ${props => {
     switch (props.$status) {
       case 'optimal':
         return '#10B981';
@@ -319,7 +314,7 @@ export const FavoriteBtn = styled.button`
 
   &:hover {
     color: var(--primary-color);
-    background: rgba(212, 175, 55, 0.1);
+    background: rgba(227, 30, 36, 0.1);
   }
 
   svg {

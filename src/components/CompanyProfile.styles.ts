@@ -71,7 +71,9 @@ export const ProfileCard = styled.div`
   border-radius: ${radius.xxl};
   padding: 2rem;
   box-shadow: ${shadows.luxuryCard};
-  transition: transform ${transitions.durations.standard} ${transitions.easing.easeOut}, box-shadow ${transitions.durations.standard} ${transitions.easing.easeOut};
+  transition:
+    transform ${transitions.durations.standard} ${transitions.easing.easeOut},
+    box-shadow ${transitions.durations.standard} ${transitions.easing.easeOut};
 
   [data-theme='dark'] & {
     background: var(--card-bg, ${colors.background.darkSecondary});
@@ -154,7 +156,7 @@ export const ServiceItem = styled.div`
   }
 
   &:hover {
-    background: var(--primary-light, rgba(212, 175, 55, 0.1));
+    background: var(--primary-light, rgba(227, 30, 36, 0.1));
   }
 
   span:last-child {

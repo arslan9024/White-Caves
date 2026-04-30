@@ -587,11 +587,11 @@
   .automation-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .insights-summary {
     grid-template-columns: 1fr;
   }
-  
+
   .hotspots-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -601,11 +601,11 @@
   .hotspots-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .schedule-buttons {
     flex-wrap: wrap;
   }
-  
+
   .freq-btn {
     flex: 1 1 45%;
   }
@@ -651,7 +651,7 @@
   align-items: center;
   gap: 0.5rem;
   font-weight: 600;
-  color: #F59E0B;
+  color: #f59e0b;
   margin-bottom: 0.75rem;
 }
 
@@ -692,7 +692,7 @@
 }
 
 .featured-status .status-card svg {
-  color: var(--primary, #4FACFE);
+  color: var(--primary, #4facfe);
 }
 
 .status-info {
@@ -785,17 +785,17 @@
 }
 
 .rank-badge.rank-1 {
-  background: linear-gradient(135deg, #FFD700, #FFA500);
-  color: #000;
+  background: linear-gradient(135deg, #e31e24, #b71c1c);
+  color: #fff;
 }
 
 .rank-badge.rank-2 {
-  background: linear-gradient(135deg, #C0C0C0, #A9A9A9);
+  background: linear-gradient(135deg, #c0c0c0, #a9a9a9);
   color: #000;
 }
 
 .rank-badge.rank-3 {
-  background: linear-gradient(135deg, #CD7F32, #A0522D);
+  background: linear-gradient(135deg, #cd7f32, #a0522d);
   color: #fff;
 }
 
@@ -850,7 +850,7 @@
 }
 
 .new-check {
-  color: #10B981;
+  color: #10b981;
 }
 
 .col-score {
@@ -864,7 +864,7 @@
   border-radius: 6px;
   font-weight: 600;
   font-size: 0.875rem;
-  color: #4FACFE;
+  color: #4facfe;
 }
 
 .col-status {
@@ -883,12 +883,12 @@
 
 .status-badge.featured {
   background: rgba(245, 158, 11, 0.15);
-  color: #F59E0B;
+  color: #f59e0b;
 }
 
 .status-badge.eligible {
   background: rgba(16, 185, 129, 0.15);
-  color: #10B981;
+  color: #10b981;
 }
 
 @media (max-width: 1024px) {
@@ -897,7 +897,7 @@
     grid-template-columns: 50px 1.5fr 70px 70px 70px 50px 70px 90px;
     font-size: 0.8rem;
   }
-  
+
   .property-thumb {
     width: 40px;
     height: 30px;

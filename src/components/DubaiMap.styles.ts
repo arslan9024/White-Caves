@@ -156,7 +156,7 @@ export const MarkerGroup = styled.g`
   }
 
   &.active .marker-dot {
-    stroke: var(--accent-gold, #D4AF37);
+    stroke: var(--primary-color, #E31E24);
     stroke-width: 3;
   }
 `;
