@@ -25,6 +25,9 @@ vi.mock('../../components/portal/tenant/TenantMaintenanceTab', () => ({
 vi.mock('../../components/portal/tenant/TenantDocumentsTab', () => ({
   default: () => <div data-testid="documents-tab">Documents Tab</div>,
 }));
+vi.mock('../../components/portal/tenant/TenantKeyHandoverTab', () => ({
+  default: () => <div data-testid="key-handover-tab">Key Handover Tab</div>,
+}));
 
 const mockTenantUser = {
   id: 'tenant-1',

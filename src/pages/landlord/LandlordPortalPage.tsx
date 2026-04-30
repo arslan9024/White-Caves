@@ -1,12 +1,14 @@
 /**
- * LandlordPortalPage — Phase 2.1-2.6: Landlord Self-Service Portal
+ * LandlordPortalPage — Phase 2.1-2.6 + Leasing Enhancements
  *
- * Provides landlords with read-only access to:
+ * Provides landlords with access to:
  * - My Properties (2.2)
  * - Tenants (2.3)
  * - Rent Payments (2.4)
  * - Maintenance Requests (2.5)
  * - Documents (2.6)
+ * - Offer Review (Stage 4-5 leasing lifecycle)
+ * - Income Summary (Stage 10 leasing lifecycle)
  *
  * @component
  */
@@ -20,8 +22,10 @@ import LandlordTenantsTab from '../../components/portal/landlord/LandlordTenants
 import LandlordPaymentsTab from '../../components/portal/landlord/LandlordPaymentsTab';
 import LandlordMaintenanceTab from '../../components/portal/landlord/LandlordMaintenanceTab';
 import LandlordDocumentsTab from '../../components/portal/landlord/LandlordDocumentsTab';
+import LandlordOfferReviewTab from '../../components/portal/landlord/LandlordOfferReviewTab';
+import LandlordIncomeTab from '../../components/portal/landlord/LandlordIncomeTab';
 
-type TabKey = 'properties' | 'tenants' | 'payments' | 'maintenance' | 'documents';
+type TabKey = 'properties' | 'tenants' | 'payments' | 'maintenance' | 'documents' | 'offers' | 'income';
 
 interface Tab {
   key: TabKey;
@@ -32,6 +36,8 @@ interface Tab {
 const tabs: Tab[] = [
   { key: 'properties', label: 'My Properties', icon: '🏢' },
   { key: 'tenants', label: 'Tenants', icon: '👥' },
+  { key: 'offers', label: 'Offer Review', icon: '📨' },
+  { key: 'income', label: 'Income', icon: '💹' },
   { key: 'payments', label: 'Rent Payments', icon: '💰' },
   { key: 'maintenance', label: 'Maintenance', icon: '🔧' },
   { key: 'documents', label: 'Documents', icon: '📄' },
@@ -65,6 +71,10 @@ const LandlordPortalPage: FC = () => {
         return <LandlordMaintenanceTab />;
       case 'documents':
         return <LandlordDocumentsTab />;
+      case 'offers':
+        return <LandlordOfferReviewTab />;
+      case 'income':
+        return <LandlordIncomeTab />;
       default:
         return <LandlordPropertiesTab />;
     }
@@ -115,3 +125,4 @@ const LandlordPortalPage: FC = () => {
 };
 
 export default LandlordPortalPage;
+

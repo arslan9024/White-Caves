@@ -1,11 +1,27 @@
-import { Home, Key, Users, Calendar, FileText, Clock, ArrowUp, ArrowDown, AlertCircle, DollarSign } from 'lucide-react';
+import React from 'react';
+import { Home, FileText, Users, Wrench, RefreshCw, BarChart2, GitBranch, CreditCard, AlertCircle, TrendingUp, ArrowUp } from 'lucide-react';
 import { useLeasingData } from './hooks/useLeasingData';
 import LeasesTab from './tabs/LeasesTab';
 import InquiriesTab from './tabs/InquiriesTab';
 import MaintenanceTab from './tabs/MaintenanceTab';
 import RenewalsTab from './tabs/RenewalsTab';
+import PipelineTab from './tabs/PipelineTab';
+import PDCPaymentsTab from './tabs/PDCPaymentsTab';
+import AnalyticsTab from './tabs/AnalyticsTab';
 import '../AssistantDashboard.css';
 import './DaisyLeasingCRM.css';
+
+type TabId = 'leases' | 'pipeline' | 'inquiries' | 'pdc' | 'maintenance' | 'renewals' | 'analytics';
+
+const TABS: Array<{ id: TabId; label: string; icon: React.ReactNode }> = [
+  { id: 'leases',      label: 'Leases',      icon: <FileText size={14} /> },
+  { id: 'pipeline',    label: 'Pipeline',    icon: <GitBranch size={14} /> },
+  { id: 'inquiries',   label: 'Inquiries',   icon: <Users size={14} /> },
+  { id: 'pdc',         label: 'PDC',         icon: <CreditCard size={14} /> },
+  { id: 'maintenance', label: 'Maintenance', icon: <Wrench size={14} /> },
+  { id: 'renewals',    label: 'Renewals',    icon: <RefreshCw size={14} /> },
+  { id: 'analytics',   label: 'Analytics',   icon: <BarChart2 size={14} /> },
+];
 
 const DaisyLeasingCRM = () => {
   const {
@@ -14,19 +30,20 @@ const DaisyLeasingCRM = () => {
     leases,
     searchQuery,
     setSearchQuery,
-    getTotalAnnualRent,
-    getOccupancyRate,
-    getActiveTenants,
+    filteredLeases,
     inquiries,
     maintenance,
+    pdcCheques,
+    renewals,
+    getOccupancyRate,
+    updateMaintenanceStatus,
+    updatePDCStatus,
+    getPnLSummary,
   } = useLeasingData();
 
-  // Renewal stats
-  const renewalStats = {
-    dueThisMonth: 12,
-    renewalSent: 8,
-    confirmed: 5
-  };
+  const pnl = getPnLSummary();
+  const bouncedPDC = pdcCheques.filter(c => c.status === 'bounced').length;
+  const expiringSoon = leases.filter(l => l.daysRemaining < 60).length;
 
   return (
     <div className="assistant-dashboard daisy">
@@ -35,8 +52,8 @@ const DaisyLeasingCRM = () => {
           <Home size={28} />
         </div>
         <div className="assistant-info">
-          <h2>Daisy - Leasing & Tenant Manager</h2>
-          <p>Manages rental properties, tenant communications, lease agreements, and maintenance requests</p>
+          <h2>Daisy — Leasing & Tenant Manager</h2>
+          <p>Rental properties, tenant communications, lease agreements, PDC tracking, and maintenance</p>
         </div>
         <div className="assistant-status online">
           <span className="status-dot"></span>
@@ -50,74 +67,104 @@ const DaisyLeasingCRM = () => {
             <FileText size={20} />
           </div>
           <div className="stat-content">
-            <span className="stat-value">{leases.length}</span>
+            <span className="stat-value">{leases.filter(l => l.status === 'active').length}</span>
             <span className="stat-label">Active Leases</span>
           </div>
-          <span className="stat-change positive"><ArrowUp size={14} /> 8</span>
+          <span className="stat-change positive"><ArrowUp size={14} /> {leases.length} total</span>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
-            <Clock size={20} />
-          </div>
-          <div className="stat-content">
-            <span className="stat-value">12</span>
-            <span className="stat-label">Expiring Soon</span>
-          </div>
-          <span className="stat-change warning">30 days</span>
-        </div>
+
         <div className="stat-card">
           <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
-            <DollarSign size={20} />
+            <TrendingUp size={20} />
           </div>
           <div className="stat-content">
-            <span className="stat-value">AED {(getTotalAnnualRent() / 1000000).toFixed(1)}M</span>
-            <span className="stat-label">Annual Revenue</span>
+            <span className="stat-value">AED {pnl.totalMRR.toLocaleString()}</span>
+            <span className="stat-label">Monthly Rent (MRR)</span>
           </div>
-          <span className="stat-change positive"><ArrowUp size={14} /> 5%</span>
+          <span className="stat-change positive"><ArrowUp size={14} /> {getOccupancyRate()}% occ.</span>
         </div>
+
+        <div className="stat-card">
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+            <RefreshCw size={20} />
+          </div>
+          <div className="stat-content">
+            <span className="stat-value">{expiringSoon}</span>
+            <span className="stat-label">Expiring &lt;60 Days</span>
+          </div>
+          <span className="stat-change warning">Action needed</span>
+        </div>
+
         <div className="stat-card">
           <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}>
             <AlertCircle size={20} />
           </div>
           <div className="stat-content">
-            <span className="stat-value">{maintenance.length}</span>
-            <span className="stat-label">Maintenance</span>
+            <span className="stat-value">{bouncedPDC}</span>
+            <span className="stat-label">Bounced PDC</span>
           </div>
-          <span className="stat-change">Open</span>
+          <span className="stat-change" style={{ color: bouncedPDC > 0 ? '#EF4444' : '#10B981' }}>
+            {bouncedPDC > 0 ? 'Follow up' : 'All clear'}
+          </span>
         </div>
       </div>
 
       <div className="assistant-tabs">
-        {['leases', 'inquiries', 'maintenance', 'renewals'].map(tab => (
+        {TABS.map(tab => (
           <button
-            key={tab}
-            className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab)}
+            key={tab.id}
+            className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+            onClick={() => setActiveTab(tab.id)}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab.icon}
+            {tab.label}
           </button>
         ))}
       </div>
 
       <div className="tab-content">
         {activeTab === 'leases' && (
-          <LeasesTab 
-            leases={leases}
+          <LeasesTab
+            leases={filteredLeases}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
           />
+        )}
+
+        {activeTab === 'pipeline' && (
+          <PipelineTab inquiries={inquiries} />
         )}
 
         {activeTab === 'inquiries' && (
           <InquiriesTab inquiries={inquiries} />
         )}
 
+        {activeTab === 'pdc' && (
+          <PDCPaymentsTab
+            pdcCheques={pdcCheques}
+            onUpdateStatus={updatePDCStatus}
+          />
+        )}
+
         {activeTab === 'maintenance' && (
-          <MaintenanceTab requests={maintenance} />
+          <MaintenanceTab
+            requests={maintenance}
+            onUpdateStatus={updateMaintenanceStatus}
+          />
         )}
 
         {activeTab === 'renewals' && (
-          <RenewalsTab renewalStats={renewalStats} renewalList={[]} />
+          <RenewalsTab renewals={renewals} />
+        )}
+
+        {activeTab === 'analytics' && (
+          <AnalyticsTab
+            leases={leases}
+            pdcCheques={pdcCheques}
+            inquiries={inquiries}
+            pnl={pnl}
+          />
         )}
       </div>
     </div>
