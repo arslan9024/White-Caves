@@ -33,6 +33,8 @@ interface PendingUser {
   email: string;
   name: string;
   photo?: string;
+  /** Provider that created this user ('google' | 'facebook' | 'apple'). Set only for social sign-ups;
+   *  absent for email/phone sign-ups. Used in completeSignUp to choose the right backend path. */
   fromSocialProvider?: string;
 }
 
@@ -233,7 +235,7 @@ export function useSignIn() {
         // Just update their role/category using the stored JWT.
         const response = await completeSocialRegistration(selectedCategory, selectedRole);
         if (!response?.data?.user) {
-          throw new Error('Invalid response: missing user data');
+          throw new Error('Social registration response missing user data');
         }
         backendUser = response.data.user;
       } else {
@@ -248,7 +250,7 @@ export function useSignIn() {
           selectedRole
         );
         if (!response?.data?.user) {
-          throw new Error('Invalid response: missing user data');
+          throw new Error('Email registration response missing user data');
         }
         backendUser = response.data.user;
       }

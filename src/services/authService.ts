@@ -187,7 +187,7 @@ export async function completeSocialRegistration(
 
   if (response.success) {
     if (!response.data?.token) {
-      throw new Error('Social registration succeeded but no authentication token was returned');
+      throw new Error('Backend returned success but missing authentication token');
     }
     persistToken(response.data.token);
   }
