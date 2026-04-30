@@ -1602,4 +1602,82 @@ router.delete(
   })
 );
 
+/**
+ * POST /api/auth/complete-social-registration
+ * Completes registration for a social-auth user who just selected their role.
+ * The user was already created by /firebase-sync; this endpoint updates their
+ * role and category using the JWT issued by that endpoint (auth required).
+ */
+router.post(
+  '/complete-social-registration',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Not authenticated', 401);
+
+    const { role, category } = req.body;
+    if (!category || !role) {
+      throw new AppError('category and role are required', 400);
+    }
+
+    const normalizedCategory = String(category).toLowerCase().trim();
+    const normalizedRole = String(role).toLowerCase().trim();
+    const clientRoles = new Set(['buyer', 'seller', 'landlord', 'tenant']);
+
+    let assignedRole: string;
+    let assignedStatus: 'active' | 'pending' = 'active';
+
+    if (normalizedCategory === 'client') {
+      if (!normalizedRole || !clientRoles.has(normalizedRole)) {
+        throw new AppError(
+          'Client signup requires a valid role: buyer, seller, landlord, or tenant',
+          400
+        );
+      }
+      assignedRole = normalizedRole;
+      assignedStatus = 'active';
+    } else if (normalizedCategory === 'staff') {
+      assignedRole = 'agent';
+      assignedStatus = 'pending';
+    } else {
+      throw new AppError('Invalid category. Must be either client or staff', 400);
+    }
+
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: { role: assignedRole, status: assignedStatus },
+    });
+
+    // Issue a new JWT reflecting the updated role
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      JWT_SIGN_OPTIONS
+    );
+
+    await prisma.activity.create({
+      data: {
+        type: 'system',
+        action: 'created',
+        description: `Social user completed registration: ${user.name || user.email} (${normalizedCategory}/${assignedRole})`,
+        userId: user.id,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          department: user.department,
+        },
+      },
+    });
+  })
+);
+
 export default router;
