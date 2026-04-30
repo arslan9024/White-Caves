@@ -254,6 +254,7 @@ export const InventoryDashboard: React.FC = () => {
     docAlerts.ejariMissing;
 
   const lockedCount = stages.find(s => s.stage === 'under_offer')?.count ?? 0;
+  const activeCount = stages.find(s => s.stage === 'verified_active')?.count ?? 0;
 
   return (
     <DashboardContainer>
@@ -269,9 +270,7 @@ export const InventoryDashboard: React.FC = () => {
         <StatCard>
           <div className="stat-label">Active Listings</div>
           <div className="stat-value">
-            {loading
-              ? '—'
-              : (stages.find(s => s.stage === 'verified_active')?.count ?? 0).toLocaleString()}
+            {loading ? '—' : activeCount.toLocaleString()}
           </div>
         </StatCard>
 

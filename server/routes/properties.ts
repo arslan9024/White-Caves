@@ -249,8 +249,8 @@ router.post(
         // @Mary Intelligent Inventory fields
         unitNumber: unitNumber ? sanitizeString(String(unitNumber).trim()) : null,
         floorPlan: floorPlan ? sanitizeString(String(floorPlan).trim()) : null,
-        rentalPrice: rentalPrice !== undefined ? parseFloat(rentalPrice) || null : null,
-        commissionPercent: commissionPercent !== undefined ? parseFloat(commissionPercent) || 5 : 5,
+        rentalPrice: (rentalPrice !== undefined && rentalPrice !== null && rentalPrice !== '') ? (parseFloat(rentalPrice) || 0) : null,
+        commissionPercent: (commissionPercent !== undefined && commissionPercent !== null && commissionPercent !== '') ? (parseFloat(commissionPercent) || 5) : 5,
         availabilityDate: availabilityDate ? new Date(availabilityDate) : null,
         inventoryStage: resolvedStage,
         titleDeedMissing: titleDeedMissing === true || titleDeedMissing === 'true',
