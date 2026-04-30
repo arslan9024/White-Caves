@@ -46,7 +46,8 @@ function resolveEffectiveRole(
 
   if (storedRoleData && typeof storedRoleData.role === 'string') {
     const isPrivileged =
-      serverRole === 'owner' || serverRole === 'admin' || serverRole === 'super_user';
+      serverRole === 'owner' || serverRole === 'admin' || serverRole === 'super_user' ||
+      serverRole === 'super_admin' || serverRole === 'managing_director';
 
     return isPrivileged ? storedRoleData.role : (serverRole ?? storedRoleData.role);
   }

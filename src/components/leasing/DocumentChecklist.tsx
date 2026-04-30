@@ -93,7 +93,7 @@ export const DocumentChecklist: React.FC<DocumentChecklistProps> = ({ property, 
       const res = await fetch(`/api/leasing-inventory/${property.id}/upload`, {
         method: 'POST',
         headers: {
-          'Authorization': \`Bearer \${token}\`
+          'Authorization': `Bearer ${token}`
         },
         body: formData
       });

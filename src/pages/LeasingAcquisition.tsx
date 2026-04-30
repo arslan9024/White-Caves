@@ -68,7 +68,7 @@ export const LeasingAcquisition: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       const res = await fetch('/api/leasing-inventory', {
-        headers: { 'Authorization': \`Bearer \${token}\` }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
         const data = await res.json();
@@ -86,10 +86,10 @@ export const LeasingAcquisition: React.FC = () => {
   const handleStageChange = async (id: string, newStage: string) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(\`/api/leasing-inventory/\${id}/stage\`, {
+      const res = await fetch(`/api/leasing-inventory/${id}/stage`, {
         method: 'PATCH',
         headers: {
-          'Authorization': \`Bearer \${token}\`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ newStage })
@@ -113,7 +113,7 @@ export const LeasingAcquisition: React.FC = () => {
       const token = localStorage.getItem('token');
       const res = await fetch(`/api/leasing-inventory/${id}/handover`, {
         method: 'POST',
-        headers: { 'Authorization': \`Bearer \${token}\` }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
         fetchProperties();

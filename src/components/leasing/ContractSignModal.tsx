@@ -94,7 +94,7 @@ export const ContractSignModal: React.FC<ContractSignModalProps> = ({ property, 
       const res = await fetch(`/api/leasing-inventory/${property.id}/sign`, {
         method: 'POST',
         headers: {
-          'Authorization': \`Bearer \${token}\`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });

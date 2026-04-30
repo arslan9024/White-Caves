@@ -83,7 +83,7 @@ export const EjariRegistrationModal: React.FC<EjariRegistrationModalProps> = ({ 
       const res = await fetch(`/api/leasing-inventory/${property.id}/ejari`, {
         method: 'POST',
         headers: {
-          'Authorization': \`Bearer \${token}\`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ ejariNumber })

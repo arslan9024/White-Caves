@@ -69,7 +69,7 @@ export const SalesPipelinePage: FC = () => {
     try {
       const token = localStorage.getItem('token');
       const res = await fetch('/api/secondary-sales', {
-        headers: { 'Authorization': \`Bearer \${token}\` }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
         const json = await res.json();
@@ -87,10 +87,10 @@ export const SalesPipelinePage: FC = () => {
   const handleStageChange = async (id: string, newStage: string) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(\`/api/secondary-sales/\${id}/stage\`, {
+        const res = await fetch(`/api/secondary-sales/${id}/stage`, {
         method: 'PATCH',
         headers: {
-          'Authorization': \`Bearer \${token}\`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ newStage })
