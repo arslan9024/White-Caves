@@ -1,5 +1,10 @@
 import { Config } from '../config/constants';
-import type { HomepageProperty, MarketStats, TopAgent, LocationTrend } from '../store/slices/homepageSlice';
+import type {
+  HomepageProperty,
+  MarketStats,
+  TopAgent,
+  LocationTrend,
+} from '../store/slices/homepageSlice';
 
 interface HomepageSeoInput {
   marketStats: MarketStats;
@@ -56,7 +61,7 @@ export function buildHomepageJsonLd({
       },
       numberOfRooms: property.bedrooms,
       numberOfBathroomsTotal: property.bathrooms,
-      amenityFeature: property.amenities?.map((amenity) => ({
+      amenityFeature: property.amenities?.map(amenity => ({
         '@type': 'LocationFeatureSpecification',
         name: amenity,
         value: true,
@@ -80,6 +85,7 @@ export function buildHomepageJsonLd({
       url: Config.DOMAIN,
       telephone: Config.COMPANY.PHONE,
       email: Config.COMPANY.EMAIL,
+      openingHours: ['Mo-Fr 09:00-18:00', 'Sa 10:00-16:00'],
       areaServed: {
         '@type': 'City',
         name: 'Dubai',
@@ -90,13 +96,13 @@ export function buildHomepageJsonLd({
         addressLocality: 'Dubai',
         addressCountry: 'AE',
       },
-      knowsAbout: locationTrends.map((trend) => trend.name),
+      knowsAbout: locationTrends.map(trend => trend.name),
       makesOffer: {
         '@type': 'OfferCatalog',
         name: 'Dubai Luxury Properties',
         numberOfItems: marketStats.totalProperties,
       },
-      employee: topAgents.slice(0, 4).map((agent) => ({
+      employee: topAgents.slice(0, 4).map(agent => ({
         '@type': 'RealEstateAgent',
         name: agent.name,
         email: agent.email,
@@ -114,10 +120,7 @@ export function buildHomepageJsonLd({
       potentialAction: {
         '@type': 'SearchAction',
         target: `${propertiesUrl}?location={location}&type={type}`,
-        'query-input': [
-          'required name=location',
-          'optional name=type',
-        ],
+        'query-input': ['required name=location', 'optional name=type'],
       },
     },
     {
@@ -126,7 +129,8 @@ export function buildHomepageJsonLd({
       '@id': `${homepageUrl}#homepage`,
       url: homepageUrl,
       name: 'Dubai Luxury Real Estate | White Caves',
-      description: 'Explore premium villas, penthouses, and investment-ready properties in Dubai with White Caves Real Estate.',
+      description:
+        'Explore premium villas, penthouses, and investment-ready properties in Dubai with White Caves Real Estate.',
       isPartOf: {
         '@id': `${homepageUrl}#website`,
       },
@@ -138,7 +142,7 @@ export function buildHomepageJsonLd({
         itemListOrder: 'https://schema.org/ItemListOrderAscending',
         itemListElement,
       },
-      about: locationTrends.map((trend) => ({
+      about: locationTrends.map(trend => ({
         '@type': 'Place',
         name: trend.name,
         additionalProperty: [

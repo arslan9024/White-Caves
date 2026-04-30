@@ -153,7 +153,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
           aria-hidden="true"
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore fetchpriority is a valid HTML attribute in modern browsers
-          fetchpriority="high"
+          fetchPriority="high"
           style={{
             position: 'absolute',
             width: 1,
@@ -169,34 +169,50 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
       <div className="floating-shapes">
         <motion.div
           className="shape shape-1"
-          animate={prefersReducedMotion ? {} : {
-            y: [0, -20, 0],
-            rotate: [0, 10, 0],
-          }}
+          animate={
+            prefersReducedMotion
+              ? {}
+              : {
+                  y: [0, -20, 0],
+                  rotate: [0, 10, 0],
+                }
+          }
           transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
           className="shape shape-2"
-          animate={prefersReducedMotion ? {} : {
-            y: [0, 20, 0],
-            rotate: [0, -10, 0],
-          }}
+          animate={
+            prefersReducedMotion
+              ? {}
+              : {
+                  y: [0, 20, 0],
+                  rotate: [0, -10, 0],
+                }
+          }
           transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
           className="shape shape-3"
-          animate={prefersReducedMotion ? {} : {
-            scale: [1, 1.1, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
+          animate={
+            prefersReducedMotion
+              ? {}
+              : {
+                  scale: [1, 1.1, 1],
+                  opacity: [0.3, 0.5, 0.3],
+                }
+          }
           transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
           className="shape shape-4"
-          animate={prefersReducedMotion ? {} : {
-            x: [0, 15, 0],
-            y: [0, -10, 0],
-          }}
+          animate={
+            prefersReducedMotion
+              ? {}
+              : {
+                  x: [0, 15, 0],
+                  y: [0, -10, 0],
+                }
+          }
           transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
@@ -213,18 +229,6 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
           {marketStats?.totalProperties
             ? `${marketStats.totalProperties}+ Properties Available Today`
             : 'Trusted by 1000+ Clients in Dubai'}
-        </motion.div>
-
-        <motion.div className="hero-market-pill" variants={itemVariants}>
-          <span className="hero-market-pill-label">Dubai Prime Districts</span>
-          <span className="hero-market-pill-separator" aria-hidden="true">
-            •
-          </span>
-          <span className="hero-market-pill-value">
-            {marketStats?.averagePrice
-              ? `Avg AED ${(marketStats.averagePrice / 1_000_000).toFixed(1)}M`
-              : 'Starting from AED 1M'}
-          </span>
         </motion.div>
 
         <motion.h1 className="hero-title" variants={itemVariants}>
@@ -303,10 +307,6 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
             <span className="trust-icon">&#128176;</span>
             Best Value
           </div>
-        </motion.div>
-
-        <motion.div className="hero-response-note" variants={itemVariants}>
-          Concierge response in under 24 hours for qualified inquiries.
         </motion.div>
       </motion.div>
 

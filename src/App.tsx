@@ -186,6 +186,7 @@ const ContactPage = lazy(() => import('./pages/ContactPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
+const ToolsPage = lazy(() => import('./pages/ToolsPage'));
 
 // Auth Pages
 const UAEPassSuccessPage = lazy(() => import('./pages/auth/UAEPassSuccessPage'));
@@ -405,6 +406,16 @@ function App(): React.JSX.Element {
                     <RouteErrorBoundary section="Terms">
                       <Suspense fallback={<SuspenseLoader />}>
                         <TermsPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/tools"
+                  element={
+                    <RouteErrorBoundary section="Tools">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <ToolsPage />
                       </Suspense>
                     </RouteErrorBoundary>
                   }
